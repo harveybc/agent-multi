@@ -1,8 +1,11 @@
-# ANN evolved with NEAT as agent that uses the ForexEnv7 environment
+# ANN evolved with NEAT as agent that uses the ForexEnv environment
 from __future__ import print_function
 from copy import deepcopy
 from gym.envs.registration import register
-#from population_syn import PopulationSyn # extended neat population for synchronizing with singularity p2p network
+#*******************************************************************
+# extended neat population for synchronizing with singularity p2p network
+from population_syn import PopulationSyn 
+# ******************************************************************
 from genome_evaluator import GenomeEvaluator
 import gym
 import sys
@@ -18,10 +21,11 @@ NUM_CORES = 1
 ts_f = sys.argv[1]
 # Second is validation dataset 
 vs_f = sys.argv[2]
-# Third argument is the  url for syngularity sync
-#my_url = sys.argv[3]
-# fourth is the config filename
+
+# Thirdis the config filename
 my_config = sys.argv[3]
+# fourth  argument is the  url for syngularity sync
+my_url = sys.argv[4]
 # for cross-validation like training set
 index_t = 0
 
@@ -59,8 +63,12 @@ def run():
     config = neat.Config(AgentGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_path)
+                         
+    #*************************************************************************
     # uses the extended NEAT population PopulationSyn that synchronizes with singularity
-    pop = neat.Population(config)
+    # pop = neat.Population(config)
+    pop = PopulationSyn(config)
+    #**************************************************************************
     # add reporters
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
@@ -92,8 +100,10 @@ def run():
                 avg_score=ec.training_validation_score(gen_best, config)
             # if it is not the first iteration
             if iteration_counter >= 0:
+                #**************************************************************
                 # synchronizes with singularity migrating maximum 3 specimens 
-                # pop.syn_singularity(4, my_url, stats,avg_score,rep.current_generation, config, ec.genomes_h)
+                pop.syn_singularity(4, my_url, stats,avg_score,rep.current_generation, config, ec.genomes_h)
+                #**************************************************************
                 pop.species.speciate(config, pop.population, pop.generation)
                 print("\nSpeciation after migration done")
                 # perform pending evaluations on the singularity network, max 2
