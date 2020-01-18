@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 nbproject/project.properties
 nbproject/project.xml
+nbproject/private/private.xml
