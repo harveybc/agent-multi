@@ -18,7 +18,7 @@
     "size_mode": "fx_units",
     "min_order_volume": 1000.0,
     "max_order_volume": 100000.0,
-    "commission": 0.00005,
+    "commission": 0.0015,
     "slippage": 0.0,
 
     "data_feed_plugin": "default_data_feed",
@@ -44,7 +44,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.02,
+    "ent_coef": 0.01,
     "vf_coef": 0.5,
 
     "save_model": "./examples/results/p4/ppo_eurusd_1h.zip",
@@ -57,5 +57,5 @@
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 iter2 J6 — EURUSD 1h PPO. leverage 100->10 (1x equity notional), ent_coef 0.05->0.02 to reduce churn."
+    "_notes": "P4 iter3 J6 — EURUSD 1h PPO. commission 0.00005->0.0015 (absorbs 30pip spread + 10pip slip per P2 heuristic reference), ent_coef 0.02->0.01 to reduce churn."
 }
