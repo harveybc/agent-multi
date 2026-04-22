@@ -12,7 +12,7 @@
     "headers": true,
     "window_size": 32,
     "initial_cash": 10000.0,
-    "position_size": 1.0,
+    "position_size": 0.1,
     "commission": 0.0002,
     "slippage": 0.0,
 
@@ -44,6 +44,7 @@
     "results_file": "./examples/results/p4/ppo_eth_1h_summary.json",
     "save_config": "./examples/results/p4/ppo_eth_1h_config_out.json",
     "eval_seed": 0,
+    "eval_deterministic": false,
     "train_seed": 0,
     "device": "cuda",
     "agent_verbose": 0,

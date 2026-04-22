@@ -79,12 +79,13 @@ class PipelinePlugin:
     # ------------------------------------------------------------------
     def _evaluate(self, env, agent_plugin, model, config: Dict[str, Any]) -> Dict[str, Any]:
         seed = int(config.get("eval_seed", self.params["eval_seed"]))
+        deterministic = bool(config.get("eval_deterministic", True))
         obs, _info = env.reset(seed=seed)
         total_reward = 0.0
         steps = 0
         done = False
         while not done:
-            action = agent_plugin.predict(model, obs, deterministic=True)
+            action = agent_plugin.predict(model, obs, deterministic=deterministic)
             obs, reward, terminated, truncated, _info = env.step(action)
             total_reward += float(reward)
             steps += 1
