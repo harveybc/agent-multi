@@ -13,6 +13,11 @@
     "window_size": 32,
     "initial_cash": 10000.0,
     "position_size": 1000.0,
+    "rel_volume": 0.10,
+    "leverage": 100.0,
+    "size_mode": "fx_units",
+    "min_order_volume": 10000.0,
+    "max_order_volume": 1000000.0,
     "commission": 0.00005,
     "slippage": 0.0,
 
