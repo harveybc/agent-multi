@@ -14,10 +14,10 @@
     "initial_cash": 10000.0,
     "position_size": 1000.0,
     "rel_volume": 0.10,
-    "leverage": 100.0,
+    "leverage": 10.0,
     "size_mode": "fx_units",
-    "min_order_volume": 10000.0,
-    "max_order_volume": 1000000.0,
+    "min_order_volume": 1000.0,
+    "max_order_volume": 100000.0,
     "commission": 0.00005,
     "slippage": 0.0,
 
@@ -44,7 +44,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.05,
+    "ent_coef": 0.02,
     "vf_coef": 0.5,
 
     "save_model": "./examples/results/p4/ppo_eurusd_1h.zip",
@@ -57,5 +57,5 @@
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 J6 — EURUSD 1h PPO, twelve_macro features (SPY/DXY/UST10Y/VIX), direct_atr_sltp, 2M steps × 3 seeds."
+    "_notes": "P4 iter2 J6 — EURUSD 1h PPO. leverage 100->10 (1x equity notional), ent_coef 0.05->0.02 to reduce churn."
 }
