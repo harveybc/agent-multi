@@ -20,7 +20,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -63,6 +63,22 @@ def _load_source(meta: Dict[str, Any]) -> pd.DataFrame:
     df = df[["DATE_TIME", "OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"]]
     df = df.sort_values("DATE_TIME").drop_duplicates(subset=["DATE_TIME"]).reset_index(drop=True)
     return df
+
+
+_FEATURE_COLS_12: List[str] = [
+    "returns",
+    "momentum_5",
+    "momentum_20",
+    "volatility_5",
+    "volatility_20",
+    "atr_norm",
+    "bb_pos",
+    "rsi_14",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "volume_ratio",
+]
 
 
 def _compute_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -135,9 +151,120 @@ def _split(df: pd.DataFrame, train_start: str) -> Dict[str, pd.DataFrame]:
     return {"d4": d4, "d5": d5, "d6": d6}
 
 
-def _prepare_one(source_key: str, manifest: Dict[str, Any], compute_features: bool) -> Dict[str, int]:
+def _load_aux(meta: Dict[str, Any]) -> pd.DataFrame:
+    """Load an auxiliary data source (macro / funding / on-chain)."""
+    fmt = meta.get("format", "csv")
+    if fmt == "csv":
+        df = pd.read_csv(meta["path"])
+    elif fmt == "parquet":
+        df = pd.read_parquet(meta["path"])
+    else:
+        raise ValueError(f"unsupported aux format: {fmt}")
+
+    dt_col = meta["datetime_col"]
+    df[dt_col] = pd.to_datetime(df[dt_col], errors="coerce", utc=True).dt.tz_convert(None)
+    df = df.dropna(subset=[dt_col])
+
+    keep = [dt_col] + list(meta.get("columns", []))
+    missing = [c for c in keep if c not in df.columns]
+    if missing:
+        raise KeyError(f"aux source {meta['path']} missing columns {missing}")
+    df = df[keep].rename(columns=meta.get("rename", {}))
+    df = df.rename(columns={dt_col: "DATE_TIME"})
+    df = df.sort_values("DATE_TIME").drop_duplicates(subset=["DATE_TIME"])
+    return df.reset_index(drop=True)
+
+
+def _merge_aux(
+    df: pd.DataFrame,
+    manifest: Dict[str, Any],
+    source_key: str,
+    preset_name: str,
+    ffill_cap_days: int = 7,
+) -> pd.DataFrame:
+    """Merge aux columns onto `df` via forward-fill with a cap."""
+    presets = manifest.get("feature_presets", {})
+    preset = presets.get(preset_name, {})
+    aux_sources = manifest.get("aux_sources", {})
+
+    aux_keys: List[str] = list(preset.get("aux", []))
+    aux_keys += list(preset.get("aux_by_source", {}).get(source_key, []))
+    if not aux_keys:
+        return df
+
+    merged = df.copy().sort_values("DATE_TIME").reset_index(drop=True)
+    cap = pd.Timedelta(days=ffill_cap_days)
+
+    for aux_key in aux_keys:
+        if aux_key not in aux_sources:
+            raise KeyError(f"aux source '{aux_key}' not in manifest.aux_sources")
+        aux_df = _load_aux(aux_sources[aux_key]).sort_values("DATE_TIME").reset_index(drop=True)
+        merged = pd.merge_asof(
+            merged,
+            aux_df,
+            on="DATE_TIME",
+            direction="backward",
+            tolerance=cap,
+        )
+    return merged
+
+
+def _fit_scaler_and_transform(
+    splits: Dict[str, pd.DataFrame],
+    non_feature_cols: List[str],
+) -> Tuple[Dict[str, pd.DataFrame], Dict[str, Any]]:
+    """Fit a StandardScaler on d4 feature cols and transform d4/d5/d6.
+
+    Returns (normalized_splits, scaler_dict). The scaler_dict is JSON-safe.
+    """
+    from sklearn.preprocessing import StandardScaler
+
+    d4 = splits.get("d4")
+    if d4 is None or d4.empty:
+        raise RuntimeError("--normalize requires a non-empty d4 split")
+
+    feature_cols = [c for c in d4.columns if c not in non_feature_cols]
+    # Drop columns that are all-NaN on d4 (they can't be normalized)
+    feature_cols = [c for c in feature_cols if d4[c].notna().any()]
+
+    scaler = StandardScaler()
+    scaler.fit(d4[feature_cols].dropna().values)
+
+    normed: Dict[str, pd.DataFrame] = {}
+    for name, df in splits.items():
+        if df is None or df.empty:
+            normed[name] = df
+            continue
+        out = df.copy()
+        values = out[feature_cols].values
+        # Safe transform: replace NaN inputs with column mean (of d4) before scaling
+        col_mean = d4[feature_cols].mean().values
+        mask = np.isnan(values)
+        if mask.any():
+            # broadcast column means
+            col_mean_b = np.broadcast_to(col_mean, values.shape).copy()
+            values = np.where(mask, col_mean_b, values)
+        out.loc[:, feature_cols] = scaler.transform(values)
+        normed[name] = out
+
+    scaler_dict = {
+        "feature_cols": feature_cols,
+        "mean": scaler.mean_.tolist(),
+        "scale": scaler.scale_.tolist(),
+        "fit_rows": int(len(d4)),
+    }
+    return normed, scaler_dict
+
+
+def _prepare_one(
+    source_key: str,
+    manifest: Dict[str, Any],
+    compute_features: bool,
+    preset: str,
+    normalize: bool,
+) -> Dict[str, int]:
     meta = manifest["sources"][source_key]
-    print(f"\n=== {source_key} ===", flush=True)
+    print(f"\n=== {source_key} (preset={preset}, normalize={normalize}) ===", flush=True)
     print(f"Loading {meta['path']}", flush=True)
     df = _load_source(meta)
     print(f"  rows={len(df)}  range=[{df['DATE_TIME'].min()} .. {df['DATE_TIME'].max()}]", flush=True)
@@ -145,20 +272,27 @@ def _prepare_one(source_key: str, manifest: Dict[str, Any], compute_features: bo
     if compute_features:
         df = _compute_features(df)
 
+    # Merge auxiliary data (macro / funding / on-chain) per preset
+    if preset != "twelve":
+        before_cols = set(df.columns)
+        df = _merge_aux(df, manifest, source_key, preset)
+        added = sorted(set(df.columns) - before_cols)
+        print(f"  preset '{preset}' added columns: {added}", flush=True)
+
     splits = _split(df, meta["train_start"])
     out_dir = OUTPUT_ROOT / source_key
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    counts = {}
+    # Drop warmup NaNs introduced by rolling features (only in d4).
+    if compute_features and "d4" in splits and not splits["d4"].empty:
+        splits["d4"] = splits["d4"].dropna(subset=_FEATURE_COLS_12).reset_index(drop=True)
+
+    counts: Dict[str, int] = {}
     for name, split_df in splits.items():
-        if split_df.empty:
+        if split_df is None or split_df.empty:
             print(f"  {name}: EMPTY (skipped)", flush=True)
             counts[name] = 0
             continue
-        # Drop warmup NaNs introduced by rolling features (only in training slice
-        # to avoid leaking across boundaries)
-        if compute_features and name == "d4":
-            split_df = split_df.dropna().reset_index(drop=True)
         path = out_dir / f"{name}.csv"
         split_df.to_csv(path, index=False)
         counts[name] = len(split_df)
@@ -168,6 +302,21 @@ def _prepare_one(source_key: str, manifest: Dict[str, Any], compute_features: bo
             f"→ {path.relative_to(REPO_ROOT)}",
             flush=True,
         )
+
+    if normalize:
+        non_feat = ["DATE_TIME", "OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"]
+        normed, scaler_dict = _fit_scaler_and_transform(splits, non_feat)
+        for name, ndf in normed.items():
+            if ndf is None or ndf.empty:
+                continue
+            npath = out_dir / f"{name}_norm.csv"
+            ndf.to_csv(npath, index=False)
+            print(f"  {name}_norm: {len(ndf)} rows → {npath.relative_to(REPO_ROOT)}", flush=True)
+        scaler_path = out_dir / "scaler.json"
+        with open(scaler_path, "w", encoding="utf-8") as fh:
+            json.dump(scaler_dict, fh, indent=2)
+        print(f"  scaler → {scaler_path.relative_to(REPO_ROOT)}", flush=True)
+
     return counts
 
 
@@ -176,11 +325,25 @@ def main() -> int:
     parser.add_argument("--source", help="manifest source key (e.g. eurusd_1h)")
     parser.add_argument("--all", action="store_true", help="process every source in manifest")
     parser.add_argument("--compute_features", action="store_true", help="add the 12-feature set columns")
+    parser.add_argument(
+        "--features",
+        default="twelve",
+        choices=["twelve", "twelve_macro", "twelve_funding", "twelve_onchain"],
+        help="feature preset (requires --compute_features for non-default)",
+    )
+    parser.add_argument(
+        "--normalize",
+        action="store_true",
+        help="fit StandardScaler on d4 feature cols and emit d{4,5,6}_norm.csv + scaler.json",
+    )
     parser.add_argument("--manifest", default=str(MANIFEST_PATH))
     args = parser.parse_args()
 
     with open(args.manifest, "r", encoding="utf-8") as fh:
         manifest = json.load(fh)
+
+    if args.features != "twelve" and not args.compute_features:
+        parser.error(f"--features {args.features} requires --compute_features")
 
     keys = list(manifest["sources"].keys()) if args.all else ([args.source] if args.source else [])
     if not keys:
@@ -191,7 +354,7 @@ def main() -> int:
         if key not in manifest["sources"]:
             print(f"[error] unknown source: {key}", file=sys.stderr)
             return 2
-        summary[key] = _prepare_one(key, manifest, args.compute_features)
+        summary[key] = _prepare_one(key, manifest, args.compute_features, args.features, args.normalize)
 
     print("\n=== summary ===")
     print(json.dumps(summary, indent=2))

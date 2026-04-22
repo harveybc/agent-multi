@@ -13,6 +13,8 @@ setup(
         ],
         "agent.plugins": [
             "ppo_agent=agent_plugins.ppo_agent:Plugin",
+            "dqn_agent=agent_plugins.dqn_agent:Plugin",
+            "sac_agent=agent_plugins.sac_agent:Plugin",
             "random_agent=agent_plugins.random_agent:Plugin",
             "buy_hold_agent=agent_plugins.buy_hold_agent:Plugin",
         ],

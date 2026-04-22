@@ -7,8 +7,10 @@ agent_multi.egg-info/requires.txt
 agent_multi.egg-info/top_level.txt
 agent_plugins/__init__.py
 agent_plugins/buy_hold_agent.py
+agent_plugins/dqn_agent.py
 agent_plugins/ppo_agent.py
 agent_plugins/random_agent.py
+agent_plugins/sac_agent.py
 app/__init__.py
 app/cli.py
 app/config.py

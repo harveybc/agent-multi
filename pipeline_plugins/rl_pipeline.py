@@ -46,7 +46,10 @@ class PipelinePlugin:
         mode: str = "train",
     ) -> Dict[str, Any]:
         mode = str(mode).lower()
-        env = env_plugin.make_env(config)
+        base_env = env_plugin.make_env(config)
+        # Agents may need a wrapped env (e.g. FlattenObservation for DQN/SAC).
+        wrap_fn = getattr(agent_plugin, "wrap_env", None)
+        env = wrap_fn(base_env, config) if callable(wrap_fn) else base_env
         try:
             if mode == "train":
                 model = agent_plugin.build(env, config)
@@ -89,7 +92,11 @@ class PipelinePlugin:
             if steps > 1_000_000:  # hard safety
                 break
 
-        summary = env.summary() if hasattr(env, "summary") else {}
+        # Unwrap any gymnasium wrappers so we get the base GymFxEnv with summary().
+        base_env = env
+        while hasattr(base_env, "env") and not hasattr(base_env, "summary"):
+            base_env = base_env.env
+        summary = base_env.summary() if hasattr(base_env, "summary") else {}
         summary.update(
             episode_reward=total_reward,
             episode_length=steps,

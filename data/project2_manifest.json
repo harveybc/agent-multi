@@ -3,6 +3,56 @@
   "ho_boundary": "2020-01-01",
   "val_end": "2022-12-31",
   "test_end": "2025-12-31",
+  "aux_sources": {
+    "spy_daily": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/yfinance/spy_daily_1993_2025.csv",
+      "format": "csv",
+      "datetime_col": "DateTime",
+      "columns": ["Close"],
+      "rename": {"Close": "SPY_close"}
+    },
+    "macro_combined": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/fred/macro_combined_daily_1990_2025.csv",
+      "format": "csv",
+      "datetime_col": "Date",
+      "columns": ["VIX", "US_10Y_Yield", "DXY_Broad", "Fed_Funds_Rate", "CPI", "Unemployment"],
+      "rename": {}
+    },
+    "funding_btcusdt": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/binance/funding_btcusdt_2019_2025.csv",
+      "format": "csv",
+      "datetime_col": "funding_time",
+      "columns": ["funding_rate"],
+      "rename": {}
+    },
+    "funding_ethusdt": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/binance/funding_ethusdt_2019_2025.csv",
+      "format": "csv",
+      "datetime_col": "funding_time",
+      "columns": ["funding_rate"],
+      "rename": {}
+    },
+    "onchain_btc": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/coinmetrics/btc_daily_metrics_2019_2025.csv",
+      "format": "csv",
+      "datetime_col": "time",
+      "columns": ["AdrActCnt", "TxCnt", "HashRate"],
+      "rename": {}
+    },
+    "onchain_eth": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/coinmetrics/eth_daily_metrics_2019_2025.csv",
+      "format": "csv",
+      "datetime_col": "time",
+      "columns": ["AdrActCnt", "TxCnt"],
+      "rename": {}
+    }
+  },
+  "feature_presets": {
+    "twelve": {"aux": []},
+    "twelve_macro": {"aux": ["spy_daily", "macro_combined"]},
+    "twelve_funding": {"aux_by_source": {"btcusdt_1h": ["funding_btcusdt"], "ethusdt_1h": ["funding_ethusdt"]}},
+    "twelve_onchain": {"aux_by_source": {"btcusdt_1h": ["onchain_btc"], "ethusdt_1h": ["onchain_eth"]}}
+  },
   "sources": {
     "eurusd_1h": {
       "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/processed/eurusd_1h.csv",
