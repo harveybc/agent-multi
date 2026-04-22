@@ -13,7 +13,7 @@
     "window_size": 32,
     "initial_cash": 10000.0,
     "position_size": 1.0,
-    "commission": 0.001,
+    "commission": 0.0002,
     "slippage": 0.0,
 
     "action_space_mode": "continuous",
