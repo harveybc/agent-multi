@@ -37,7 +37,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.01,
+    "ent_coef": 0.05,
     "vf_coef": 0.5,
 
     "save_model": "./examples/results/p4/ppo_eth_1h.zip",
@@ -45,7 +45,7 @@
     "save_config": "./examples/results/p4/ppo_eth_1h_config_out.json",
     "eval_seed": 0,
     "train_seed": 0,
-    "device": "cpu",
+    "device": "cuda",
     "agent_verbose": 0,
     "quiet_mode": true,
 

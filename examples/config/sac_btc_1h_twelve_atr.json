@@ -17,6 +17,7 @@
     "slippage": 0.0,
 
     "action_space_mode": "continuous",
+    "continuous_action_threshold": 0.10,
 
     "data_feed_plugin": "default_data_feed",
     "broker_plugin": "default_broker",
