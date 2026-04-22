@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-MIN_OK_FRAC = 0.001
+MIN_OK_FRAC = 0.0005
 MAX_OK_FRAC = 0.20
 
 
@@ -113,7 +113,7 @@ def _analyse(log_path: str) -> int:
     extreme = sum(
         1 for f in sl_fracs + tp_fracs if f < MIN_OK_FRAC or f > MAX_OK_FRAC
     )
-    print(f"out_of_band (<0.1% or >20%) = {extreme}   (must be 0)")
+    print(f"out_of_band (<{MIN_OK_FRAC*100:.2f}% or >{MAX_OK_FRAC*100:.1f}%) = {extreme}   (must be 0)")
 
     ok = (missing_bracket == 0 and zero_size == 0 and invalid_sign == 0 and extreme == 0)
     print("VERDICT:", "PASS" if ok else "FAIL")

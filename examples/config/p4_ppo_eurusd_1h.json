@@ -27,6 +27,8 @@
     "atr_period": 14,
     "k_sl": 2.0,
     "k_tp": 3.0,
+    "min_sltp_frac": 0.0005,
+    "max_sltp_frac": 0.05,
     "preprocessor_plugin": "default_preprocessor",
     "reward_plugin": "pnl_reward",
     "metrics_plugin": "default_metrics",
