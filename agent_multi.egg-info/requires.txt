@@ -1,0 +1,10 @@
+numpy
+pandas
+requests
+gymnasium
+backtrader
+stable-baselines3>=2.3
+deap
+
+[dev]
+pytest
