@@ -29,6 +29,7 @@ FIELDS = [
     "features",
     "strategy",
     "seed",
+    "tag",
     "total_timesteps",
     "trades_total",
     "trades_won",
@@ -47,7 +48,7 @@ FIELDS = [
 def _parse_run_id(run_id: str) -> Dict[str, str]:
     # <asset>_<algo>_<features>_<strategy>_s<seed>_<utc>[_tag]
     parts = run_id.split("_")
-    out = {"run_id": run_id, "asset": "?", "algo": "?", "features": "?", "strategy": "?", "seed": "?"}
+    out = {"run_id": run_id, "asset": "?", "algo": "?", "features": "?", "strategy": "?", "seed": "?", "tag": "-"}
     for i, p in enumerate(parts):
         if p.startswith("s") and p[1:].isdigit() and i >= 3:
             out["seed"] = p[1:]
@@ -56,6 +57,10 @@ def _parse_run_id(run_id: str) -> Dict[str, str]:
             if i > 3:
                 out["features"] = parts[3]
                 out["strategy"] = "_".join(parts[4:i])
+            # Remaining parts after seed: [<utc_timestamp>, <tag>?]
+            tail = parts[i + 1:]
+            if len(tail) >= 2:
+                out["tag"] = "_".join(tail[1:])
             break
     return out
 
@@ -121,15 +126,15 @@ def write_md(rows: List[Dict[str, Any]], out_md: Path) -> None:
     lines.append(f"- Runs found: {len(rows)}  (done={len(done)}, pending/other={len(pending)})")
     lines.append("")
 
-    # Group done rows by (asset, algo)
+    # Group done rows by (asset, algo, tag)
     groups: Dict[str, List[Dict[str, Any]]] = {}
     for r in done:
-        key = f"{r.get('asset','?')} / {r.get('algo','?')}"
+        key = f"{r.get('asset','?')} / {r.get('algo','?')} / {r.get('tag','-')}"
         groups.setdefault(key, []).append(r)
 
     lines.append("## Completed runs")
     lines.append("")
-    lines.append("| asset/algo | seed | steps | trades | ret | DD% | Sharpe | SQN | final_eq |")
+    lines.append("| asset/algo/tag | seed | steps | trades | ret | DD% | Sharpe | SQN | final_eq |")
     lines.append("|---|---|---|---|---|---|---|---|---|")
     for key in sorted(groups):
         for r in sorted(groups[key], key=lambda x: str(x.get("seed", ""))):
@@ -144,6 +149,27 @@ def write_md(rows: List[Dict[str, Any]], out_md: Path) -> None:
                 sq=_fmt(r.get("sqn"), 2),
                 eq=_fmt(r.get("final_equity"), 2),
             ))
+    lines.append("")
+
+    # Group aggregate stats (mean across seeds)
+    import statistics
+    lines.append("## Group aggregates (mean across seeds)")
+    lines.append("")
+    lines.append("| asset/algo/tag | n_seeds | ret_mean | ret_std | Sharpe_mean | Sharpe_std | DD_mean | trades_mean |")
+    lines.append("|---|---|---|---|---|---|---|---|")
+    for key in sorted(groups):
+        grp = groups[key]
+        def _vals(k):
+            out = []
+            for r in grp:
+                v = r.get(k)
+                if isinstance(v, (int, float)):
+                    out.append(float(v))
+            return out
+        ret = _vals("total_return"); sh = _vals("sharpe_ratio"); dd = _vals("max_drawdown_pct"); tr = _vals("trades_total")
+        def _mean(xs): return f"{statistics.mean(xs):.4f}" if xs else "-"
+        def _std(xs): return f"{statistics.stdev(xs):.4f}" if len(xs) > 1 else "-"
+        lines.append(f"| {key} | {len(grp)} | {_mean(ret)} | {_std(ret)} | {_mean(sh)} | {_std(sh)} | {_mean(dd)} | {_mean(tr)} |")
     lines.append("")
 
     if pending:
