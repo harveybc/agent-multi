@@ -110,8 +110,10 @@ def _analyse(log_path: str) -> int:
     if tp_fracs:
         print(f"TP/price              {fmt(tp_fracs)}")
 
+    tol = 1e-9
     extreme = sum(
-        1 for f in sl_fracs + tp_fracs if f < MIN_OK_FRAC or f > MAX_OK_FRAC
+        1 for f in sl_fracs + tp_fracs
+        if f < MIN_OK_FRAC - tol or f > MAX_OK_FRAC + tol
     )
     print(f"out_of_band (<{MIN_OK_FRAC*100:.2f}% or >{MAX_OK_FRAC*100:.1f}%) = {extreme}   (must be 0)")
 
