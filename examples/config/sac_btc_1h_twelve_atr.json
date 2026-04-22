@@ -31,7 +31,7 @@
     "features_preset": "twelve",
     "asset": "btcusdt_1h",
 
-    "total_timesteps": 2000000,
+    "total_timesteps": 500000,
     "learning_rate": 0.0003,
     "buffer_size": 200000,
     "learning_starts": 5000,
@@ -47,9 +47,9 @@
     "save_config": "./examples/results/p4/sac_btc_1h_config_out.json",
     "eval_seed": 0,
     "train_seed": 0,
-    "device": "cpu",
+    "device": "cuda",
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 J5 — BTC 1h SAC continuous (only crypto per II-7 findings), twelve features, direct_atr_sltp, 2M steps."
+    "_notes": "P4 J5 — BTC 1h SAC continuous (only crypto per II-7 findings), twelve features, direct_atr_sltp, 500k steps on GPU."
 }
