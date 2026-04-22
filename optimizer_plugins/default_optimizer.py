@@ -8,10 +8,32 @@ pipeline plugin and scoring via agent.fitness(summary, config).
 """
 from __future__ import annotations
 
+import os
 import random
+import tempfile as _tempfile
 from typing import Any, Dict, List, Sequence, Tuple
 
 from deap import base, creator, tools
+
+
+def _safe_unlink(path: str) -> None:
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
+
+
+def _swap_split_path(path: str, split: str) -> str:
+    """Swap d4 → d{split} in a dataset path. Preserves _norm suffix."""
+    if not path:
+        return path
+    base, filename = os.path.split(path)
+    stem, ext = os.path.splitext(filename)
+    # stem is e.g. "d4" or "d4_norm"
+    if stem.startswith("d4"):
+        new_stem = split + stem[2:]
+        return os.path.join(base, new_stem + ext)
+    return path
 
 
 _CREATOR_READY = False
@@ -164,9 +186,19 @@ class Plugin:
         run_config["total_timesteps"] = int(
             config.get("ga_eval_timesteps", self.params["ga_eval_timesteps"])
         )
-        run_config["save_model"] = None
         run_config["load_model"] = None
         run_config["quiet_mode"] = True
+
+        # P2c.3 — GA fitness split: "train" scores on the d4 train env
+        # (legacy); "val" trains on d4 then evaluates on d5 with frozen weights.
+        split = str(config.get("ga_fitness_split", "train")).lower()
+        tmp_model: str | None = None
+        if split == "val":
+            tmp_model = str(_tempfile.NamedTemporaryFile(suffix=".zip", delete=False).name)
+            run_config["save_model"] = tmp_model
+        else:
+            run_config["save_model"] = None
+
         agent_plugin.set_params(**run_config)
         try:
             summary = pipeline_plugin.run_pipeline(
@@ -177,8 +209,35 @@ class Plugin:
             )
         except Exception as exc:
             print(f"[optimizer] candidate failed: {exc}")
+            if tmp_model:
+                _safe_unlink(tmp_model)
             return -1e9
+
+        if split == "val" and tmp_model is not None:
+            val_config = dict(run_config)
+            val_config["input_data_file"] = _swap_split_path(
+                run_config.get("input_data_file", ""), "d5"
+            )
+            val_config["load_model"] = tmp_model
+            val_config["save_model"] = None
+            try:
+                summary = pipeline_plugin.run_pipeline(
+                    config=val_config,
+                    env_plugin=env_plugin,
+                    agent_plugin=agent_plugin,
+                    mode="inference",
+                )
+            except Exception as exc:
+                print(f"[optimizer] val eval failed: {exc}")
+                _safe_unlink(tmp_model)
+                return -1e9
+            finally:
+                _safe_unlink(tmp_model)
+
         fitness = agent_plugin.fitness(summary, run_config)
         if not config.get("quiet_mode"):
-            print(f"[optimizer] candidate {candidate_params} → fitness={fitness:.6f}")
+            print(
+                f"[optimizer] candidate {candidate_params} "
+                f"split={split} → fitness={fitness:.6f}"
+            )
         return float(fitness)

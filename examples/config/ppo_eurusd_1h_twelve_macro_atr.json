@@ -18,7 +18,10 @@
 
     "data_feed_plugin": "default_data_feed",
     "broker_plugin": "default_broker",
-    "strategy_plugin": "default_strategy",
+    "strategy_plugin": "direct_atr_sltp",
+    "atr_period": 14,
+    "k_sl": 2.0,
+    "k_tp": 3.0,
     "preprocessor_plugin": "default_preprocessor",
     "reward_plugin": "pnl_reward",
     "metrics_plugin": "default_metrics",

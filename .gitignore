@@ -1,2 +1,5 @@
 examples/results/p2_pilot/
 data/project2/*/*.csv
+
+logs/
+data/project2/*/scaler.json
