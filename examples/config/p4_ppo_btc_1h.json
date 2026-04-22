@@ -42,7 +42,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.05,
+    "ent_coef": 0.02,
     "vf_coef": 0.5,
 
     "save_model": "./examples/results/p4/ppo_btc_1h.zip",
@@ -55,5 +55,5 @@
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 J1 — BTC 1h PPO, twelve features, direct_atr_sltp, 2M steps × 3 seeds."
+    "_notes": "P4 iter2 J1 — BTC 1h PPO, ent_coef 0.05->0.02 to reduce trade churn."
 }
