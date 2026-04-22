@@ -1,0 +1,62 @@
+{
+  "description": "Project 2 Part II-Redux data manifest for agent-multi. Absolute paths are read-only references; prepare_project2_data.py materializes split CSVs under agent-multi/data/project2/.",
+  "ho_boundary": "2020-01-01",
+  "val_end": "2022-12-31",
+  "test_end": "2025-12-31",
+  "sources": {
+    "eurusd_1h": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/processed/eurusd_1h.csv",
+      "format": "csv",
+      "datetime_col": "DateTime",
+      "rename": {"Open": "OPEN", "High": "HIGH", "Low": "LOW", "Close": "CLOSE", "Volume": "VOLUME"},
+      "train_start": "2005-01-01",
+      "symbol": "EURUSD",
+      "timeframe": "1h",
+      "asset_class": "fx"
+    },
+    "usdjpy_1h": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/processed/usdjpy_1h.csv",
+      "format": "csv",
+      "datetime_col": "DateTime",
+      "rename": {"Open": "OPEN", "High": "HIGH", "Low": "LOW", "Close": "CLOSE", "Volume": "VOLUME"},
+      "train_start": "2005-01-01",
+      "symbol": "USDJPY",
+      "timeframe": "1h",
+      "asset_class": "fx"
+    },
+    "btcusdt_1h": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/binance/btcusdt_1h_2019_2025.parquet",
+      "format": "parquet",
+      "datetime_col": "DateTime",
+      "rename": {"Open": "OPEN", "High": "HIGH", "Low": "LOW", "Close": "CLOSE", "Volume": "VOLUME"},
+      "train_start": "2019-01-01",
+      "symbol": "BTCUSDT",
+      "timeframe": "1h",
+      "asset_class": "crypto"
+    },
+    "ethusdt_1h": {
+      "path": "/home/harveybc/Documents/GitHub/heuristic-strategy/trading_research/project2/part_II_redux/data/raw/binance/ethusdt_1h_2019_2025.parquet",
+      "format": "parquet",
+      "datetime_col": "DateTime",
+      "rename": {"Open": "OPEN", "High": "HIGH", "Low": "LOW", "Close": "CLOSE", "Volume": "VOLUME"},
+      "train_start": "2019-01-01",
+      "symbol": "ETHUSDT",
+      "timeframe": "1h",
+      "asset_class": "crypto"
+    }
+  },
+  "splits": {
+    "d4_train": {"start": "train_start", "end": "2019-12-31", "purpose": "Block B train — policy weights updated only on this range"},
+    "d5_val":   {"start": "2020-01-01", "end": "2022-12-31", "purpose": "Block B val — GA fitness / early stopping only; never backpropagated"},
+    "d6_test":  {"start": "2023-01-01", "end": "2025-12-31", "purpose": "Block B test — held out; touched exactly once in P5"}
+  },
+  "features": {
+    "project2_twelve": [
+      "returns", "momentum_5", "momentum_20",
+      "volatility_5", "volatility_20", "atr_norm",
+      "bb_pos", "rsi_14",
+      "macd", "macd_signal", "macd_hist",
+      "volume_ratio"
+    ]
+  }
+}
