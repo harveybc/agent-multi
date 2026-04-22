@@ -1,0 +1,55 @@
+{
+    "mode": "train",
+    "env_plugin": "gym_fx_env",
+    "agent_plugin": "sac_agent",
+    "pipeline_plugin": "rl_pipeline",
+    "optimizer_plugin": "default_optimizer",
+
+    "env_mode": "training",
+    "input_data_file": "./data/project2/btcusdt_1h/d4.csv",
+    "date_column": "DATE_TIME",
+    "price_column": "CLOSE",
+    "headers": true,
+    "window_size": 32,
+    "initial_cash": 10000.0,
+    "position_size": 1.0,
+    "commission": 0.001,
+    "slippage": 0.0,
+
+    "action_space_mode": "continuous",
+
+    "data_feed_plugin": "default_data_feed",
+    "broker_plugin": "default_broker",
+    "strategy_plugin": "direct_atr_sltp",
+    "atr_period": 14,
+    "k_sl": 2.0,
+    "k_tp": 3.0,
+    "preprocessor_plugin": "default_preprocessor",
+    "reward_plugin": "pnl_reward",
+    "metrics_plugin": "default_metrics",
+
+    "features_preset": "twelve",
+    "asset": "btcusdt_1h",
+
+    "total_timesteps": 2000000,
+    "learning_rate": 0.0003,
+    "buffer_size": 200000,
+    "learning_starts": 5000,
+    "batch_size": 256,
+    "tau": 0.005,
+    "gamma": 0.99,
+    "train_freq": 1,
+    "gradient_steps": 1,
+    "ent_coef": "auto",
+
+    "save_model": "./examples/results/p4/sac_btc_1h.zip",
+    "results_file": "./examples/results/p4/sac_btc_1h_summary.json",
+    "save_config": "./examples/results/p4/sac_btc_1h_config_out.json",
+    "eval_seed": 0,
+    "train_seed": 0,
+    "device": "cpu",
+    "agent_verbose": 0,
+    "quiet_mode": true,
+
+    "_notes": "P4 J5 — BTC 1h SAC continuous (only crypto per II-7 findings), twelve features, direct_atr_sltp, 2M steps."
+}

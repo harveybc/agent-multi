@@ -1,0 +1,53 @@
+{
+    "mode": "train",
+    "env_plugin": "gym_fx_env",
+    "agent_plugin": "ppo_agent",
+    "pipeline_plugin": "rl_pipeline",
+    "optimizer_plugin": "default_optimizer",
+
+    "env_mode": "training",
+    "input_data_file": "./data/project2/ethusdt_1h/d4.csv",
+    "date_column": "DATE_TIME",
+    "price_column": "CLOSE",
+    "headers": true,
+    "window_size": 32,
+    "initial_cash": 10000.0,
+    "position_size": 1.0,
+    "commission": 0.001,
+    "slippage": 0.0,
+
+    "data_feed_plugin": "default_data_feed",
+    "broker_plugin": "default_broker",
+    "strategy_plugin": "direct_atr_sltp",
+    "atr_period": 14,
+    "k_sl": 2.0,
+    "k_tp": 3.0,
+    "preprocessor_plugin": "default_preprocessor",
+    "reward_plugin": "pnl_reward",
+    "metrics_plugin": "default_metrics",
+
+    "features_preset": "twelve",
+    "asset": "ethusdt_1h",
+
+    "total_timesteps": 2000000,
+    "learning_rate": 0.0003,
+    "n_steps": 2048,
+    "batch_size": 256,
+    "n_epochs": 10,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "ent_coef": 0.01,
+    "vf_coef": 0.5,
+
+    "save_model": "./examples/results/p4/ppo_eth_1h.zip",
+    "results_file": "./examples/results/p4/ppo_eth_1h_summary.json",
+    "save_config": "./examples/results/p4/ppo_eth_1h_config_out.json",
+    "eval_seed": 0,
+    "train_seed": 0,
+    "device": "cpu",
+    "agent_verbose": 0,
+    "quiet_mode": true,
+
+    "_notes": "P4 J2 — ETH 1h PPO, twelve features, direct_atr_sltp, 2M steps × 3 seeds (conditional per v2 scope)."
+}
