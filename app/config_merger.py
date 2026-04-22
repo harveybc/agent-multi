@@ -1,78 +1,62 @@
-# config_merger.py
-
 import sys
 from app.config import DEFAULT_VALUES
 
 def process_unknown_args(unknown_args):
-    return {unknown_args[i].lstrip('--'): unknown_args[i + 1] for i in range(0, len(unknown_args), 2)}
+    """
+    Parses a list of unknown strings into a dictionary.
+    Assumes even-length list of [--key, value, --key, value].
+    If a key is a flag without a value (though argparse unknown_args
+    usually contains the next token), this might need adjustment.
+    """
+    if not unknown_args:
+        return {}
+    
+    res = {}
+    i = 0
+    while i < len(unknown_args):
+        arg = unknown_args[i]
+        if arg.startswith("--"):
+            key = arg.lstrip("-")
+            if i + 1 < len(unknown_args) and not unknown_args[i+1].startswith("--"):
+                res[key] = unknown_args[i+1]
+                i += 2
+            else:
+                # Key without value (boolean flag)
+                res[key] = True
+                i += 1
+        else:
+            # Not starting with --, skip or handle as positional
+            i += 1
+    return res
 
 def convert_type(value):
+    if isinstance(value, bool):
+        return value
     try:
-        return int(value)
-    except ValueError:
-        try:
+        if "." in value:
             return float(value)
-        except ValueError:
-            return value
+        return int(value)
+    except (ValueError, TypeError):
+        return value
 
 def merge_config(defaults, plugin_params1, plugin_params2, file_config, cli_args, unknown_args):
-    """
-    Merge configuration from multiple sources:
-    1. 'defaults': A base dictionary of default values (e.g., DEFAULT_VALUES).
-    2. 'plugin_params1': Dictionary of default parameters from the first plugin.
-    3. 'plugin_params2': Dictionary of default parameters from the second plugin (optional usage).
-    4. 'file_config': Configuration loaded from a file or remote source.
-    5. 'cli_args': CLI arguments parsed by argparse (converted to a dict).
-    6. 'unknown_args': Additional unknown arguments provided in the CLI.
-
-    The merging order ensures that if a key exists in multiple dictionaries,
-    the latter dictionary in the sequence overrides the earlier one.
-
-    This version expects six arguments, unlike the original that only handled five.
-    """
-
-    # Step 1: Merge plugin_params1 and plugin_params2 (lowest priority)
-    merged_config = {}
-    for k, v in plugin_params1.items():
-        print(f"Step 1 merging plugin_param1: {k} = {v}")
-        merged_config[k] = v
-
-    for k, v in plugin_params2.items():
-        print(f"Step 1.5 merging plugin_param2: {k} = {v}")
-        merged_config[k] = v
-
-    print(f"After merging plugin params: {merged_config}")
-
-    # Step 2: Overwrite with default values from config.py
-    # This ensures that defaults override plugin parameters.
-    for k, v in defaults.items():
-        print(f"Step 2 merging default: {k} = {v}")
-        merged_config[k] = v
-
-    print(f"After merging defaults: {merged_config}")
-
-    # Step 3: Merge with file configuration (override defaults and plugin params)
-    for k, v in file_config.items():
-        print(f"Step 3 merging from file config: {k} = {v}")
-        merged_config[k] = v
-
-    print(f"After merging file config: {merged_config}")
-
-    # Step 4: Merge with CLI arguments (highest priority)
-    cli_keys = [arg.lstrip('--') for arg in sys.argv if arg.startswith('--')]
-    for key in cli_keys:
-        if key in cli_args:
-            print(f"Step 4 merging from CLI args: {key} = {cli_args[key]}")
-            merged_config[key] = cli_args[key]
-        elif key in unknown_args:
-            value = convert_type(unknown_args[key])
-            print(f"Step 4 merging from unknown args: {key} = {value}")
-            merged_config[key] = value
-
-    # Special handling for x_train_file if provided as the first non-flag argument
-    if len(sys.argv) > 1 and not sys.argv[1].startswith('--'):
-        merged_config['x_train_file'] = sys.argv[1]
-
-    print(f"Final merged configuration: {merged_config}")
+    # Base defaults
+    merged_config = defaults.copy()
+    
+    # Plugin provided defaults (pipeline should usually be lowest)
+    merged_config.update(plugin_params1)
+    merged_config.update(plugin_params2)
+    
+    # File configuration
+    merged_config.update(file_config)
+    
+    # CLI arguments (argparse known)
+    for k, v in cli_args.items():
+        if v is not None:
+            merged_config[k] = v
+            
+    # Unknown CLI arguments
+    for k, v in unknown_args.items():
+        merged_config[k] = convert_type(v)
+        
     return merged_config
-
