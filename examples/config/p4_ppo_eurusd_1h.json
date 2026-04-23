@@ -25,8 +25,8 @@
     "broker_plugin": "default_broker",
     "strategy_plugin": "direct_atr_sltp",
     "atr_period": 14,
-    "k_sl": 2.0,
-    "k_tp": 3.0,
+    "k_sl": 2.5,
+    "k_tp": 4.0,
     "min_sltp_frac": 0.0005,
     "max_sltp_frac": 0.05,
     "preprocessor_plugin": "default_preprocessor",
@@ -57,5 +57,5 @@
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 iter7 J6 — EURUSD. ent_coef 0.005->0.01 (iter6 was bi-modal: s0=0 trades, s1=28, s2=4061). Midpoint between iter5 (0.02) and iter6 (0.005)."
+    "_notes": "P4 iter8 J6 — EURUSD. iter7 still bi-modal (s0=994tr/-11.8%, s1=15tr, s2=2tr) with ent_coef=0.01. Widen SL/TP: k_sl 2.0->2.5, k_tp 3.0->4.0 to give trades more room vs 14h ATR."
 }
