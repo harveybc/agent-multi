@@ -44,7 +44,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.02,
+    "ent_coef": 0.005,
     "vf_coef": 0.5,
 
     "save_model": "./examples/results/p4/ppo_eurusd_1h.zip",
@@ -57,5 +57,5 @@
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 iter5 J6 — EURUSD. rel_volume 0.10->0.01 (root cause of blowup: notional*commission drag over 1300 trades). commission=0.0005 kept."
+    "_notes": "P4 iter6 J6 — EURUSD. ent_coef 0.02->0.005 to reduce over-trading (iter5 mean 863 trades for -9.4% ret, tight std=0.01 but still losing). Keeps rel_volume=0.01 and commission=0.0005 from iter5."
 }
