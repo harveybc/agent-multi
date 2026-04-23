@@ -56,6 +56,7 @@ class Plugin:
         self._require_continuous(env)
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
+        seed = int(p["train_seed"])
         model = SAC(
             policy="MlpPolicy",
             env=env,
@@ -73,9 +74,18 @@ class Plugin:
             use_sde=bool(p["use_sde"]),
             policy_kwargs=policy_kwargs,
             verbose=int(p["agent_verbose"]),
-            seed=int(p["train_seed"]),
+            seed=seed,
             device=str(p["device"]),
         )
+        # Explicitly re-seed after construction so gSDE exploration noise,
+        # torch, numpy, env, and action_space all share this seed (SB3's
+        # constructor-time seeding does not always reseed gSDE on SAC).
+        model.set_random_seed(seed)
+        if bool(p["use_sde"]):
+            try:
+                model.policy.reset_noise()
+            except Exception:
+                pass
         return model
 
     def train(self, model, config: Dict[str, Any]):
