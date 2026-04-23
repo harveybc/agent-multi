@@ -37,7 +37,7 @@
     "asset": "eurusd_1h",
 
     "total_timesteps": 2000000,
-    "learning_rate": 0.0003,
+    "learning_rate": 0.0001,
     "n_steps": 2048,
     "batch_size": 256,
     "n_epochs": 10,
@@ -57,5 +57,5 @@
     "agent_verbose": 0,
     "quiet_mode": true,
 
-    "_notes": "P4 iter8 J6 — EURUSD. iter7 still bi-modal (s0=994tr/-11.8%, s1=15tr, s2=2tr) with ent_coef=0.01. Widen SL/TP: k_sl 2.0->2.5, k_tp 3.0->4.0 to give trades more room vs 14h ATR."
+    "_notes": "P4 iter10 J6 — EURUSD. iter8 (widened SL/TP) showed s2 +5.0%/112tr but iter9 high variance across seeds. Lower lr 3e-4->1e-4 for more stable convergence."
 }
