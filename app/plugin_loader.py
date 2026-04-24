@@ -38,7 +38,10 @@ def load_plugin(plugin_group: str, plugin_name: str):
         plugin_class = entry_point.load()
         # Extract the keys from the plugin's plugin_params attribute as required parameters.
         required_params = list(plugin_class.plugin_params.keys())
-        print(f"Successfully loaded plugin: {plugin_name} with params: {plugin_class.plugin_params}")
+        # NOTE: these are the CLASS-LEVEL DEFAULTS. Actual runtime values are applied
+        # later via set_params() from the loaded config; the authoritative record of
+        # what ran is config_out.json.
+        print(f"Successfully loaded plugin: {plugin_name} (class-level defaults, see config_out.json for actual): {plugin_class.plugin_params}")
         return plugin_class, required_params
     except StopIteration:
         print(f"Failed to find plugin {plugin_name} in group {plugin_group}")
