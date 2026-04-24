@@ -1,0 +1,100 @@
+{
+  "_comment": "Work queue consumed by tools/auto_orchestrator.py. Append objects to 'tasks' and the daemon will dispatch them to the first idle compatible host on its next poll (default every 120s). Status transitions pending -> running -> done/failed are written back automatically.",
+  "_task_schema": {
+    "id": "unique string label",
+    "config": "path relative to agent-multi repo root, e.g. examples/config/p4_ppo_eth_1h.json",
+    "seeds": "list of ints, e.g. [0, 1, 2]",
+    "run_tag": "run-id suffix, e.g. p4iter7",
+    "preferred_hosts": "ordered list from [dragon, gamma, omega]",
+    "requires_gpu": "bool; if true, omits hosts without GPU (currently none filtered since all 3 have GPU)",
+    "priority": "int; higher dispatched first",
+    "status": "pending|running|done|failed (orchestrator sets)",
+    "notes": "free-text"
+  },
+  "tasks": [
+    {
+      "id": "eurusd-sac-p4sacfix-s0-5",
+      "config": "examples/config/sac_eurusd_1h_twelve_macro_atr.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "run_tag": "p4sacfix",
+      "preferred_hosts": [
+        "gamma"
+      ],
+      "requires_gpu": false,
+      "priority": 10,
+      "status": "running",
+      "assigned_host": "gamma",
+      "launched_utc": "2026-04-24T06:31:17Z",
+      "launched_pid": 107031,
+      "notes": "Fills 5th P4 combo (EURUSD SAC) for P5 ranking. 6 seeds * 500k ts, cpu. Verified running on Gamma PIDs 107029/107031/107049 \u2014 ssh returned after timeout (slow bashrc) but job launched successfully; orchestrator ssh timeout bumped 30s->120s."
+    },
+    {
+      "id": "btc-sac-p4iter8-s0-5",
+      "config": "examples/config/sac_btc_1h_twelve_atr_iter8.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "run_tag": "p4iter8",
+      "preferred_hosts": [
+        "dragon"
+      ],
+      "requires_gpu": true,
+      "priority": 20,
+      "status": "running",
+      "assigned_host": "dragon",
+      "launched_utc": "2026-04-24T08:01:09Z",
+      "launched_pid": 2219064,
+      "notes": "SAC BTC iter8 (k_sl=2.5/k_tp=4.0). Verified running on Dragon PIDs 2219062/2219064/2219082; ssh timed out >120s but launch succeeded. GPU 714MB used at 71%."
+    },
+    {
+      "id": "eth-ppo-p4iter8-s0-5",
+      "config": "examples/config/p4_ppo_eth_1h_iter8.json",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "run_tag": "p4iter8",
+      "preferred_hosts": [
+        "dragon"
+      ],
+      "requires_gpu": true,
+      "priority": 15,
+      "status": "running",
+      "assigned_host": "dragon",
+      "launched_utc": "2026-04-24T08:03:10Z",
+      "launched_pid": 2219284,
+      "notes": "PPO ETH iter8 (k_tp 4.0->3.0, ent_coef 0.02->0.01). Verified running on Dragon PIDs 2219282/2219284/2219302; ssh timed out >120s but launch succeeded."
+    },
+    {
+      "id": "eurusd-ppo-p4iter9-s0-5",
+      "config": "examples/config/p4_ppo_eurusd_1h_iter9.json",
+      "seeds": [0, 1, 2, 3, 4, 5],
+      "run_tag": "p4iter9",
+      "preferred_hosts": ["omega"],
+      "requires_gpu": false,
+      "priority": 12,
+      "status": "pending",
+      "notes": "EURUSD PPO iter9: tighten k_sl/k_tp 2.5/4.0 -> 2.0/2.5 to force more round-trips after iter8ext anemic trade counts (2/53/14) and negative returns on s3-s5. CPU, Omega."
+    }
+  ],
+  "finalize": {
+    "p5_eval": true,
+    "p5_rank": true
+  }
+}
