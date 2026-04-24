@@ -29,11 +29,12 @@
       ],
       "requires_gpu": false,
       "priority": 10,
-      "status": "running",
+      "status": "done",
       "assigned_host": "gamma",
       "launched_utc": "2026-04-24T06:31:17Z",
       "launched_pid": 107031,
-      "notes": "Fills 5th P4 combo (EURUSD SAC) for P5 ranking. 6 seeds * 500k ts, cpu. Verified running on Gamma PIDs 107029/107031/107049 \u2014 ssh returned after timeout (slow bashrc) but job launched successfully; orchestrator ssh timeout bumped 30s->120s."
+      "notes": "Fills 5th P4 combo (EURUSD SAC) for P5 ranking. 6 seeds * 500k ts, cpu. Verified running on Gamma PIDs 107029/107031/107049 \u2014 ssh returned after timeout (slow bashrc) but job launched successfully; orchestrator ssh timeout bumped 30s->120s.",
+      "finished_utc": "2026-04-24T11:10:41Z"
     },
     {
       "id": "btc-sac-p4iter8-s0-5",
@@ -52,11 +53,12 @@
       ],
       "requires_gpu": true,
       "priority": 20,
-      "status": "running",
+      "status": "done",
       "assigned_host": "dragon",
       "launched_utc": "2026-04-24T08:01:09Z",
       "launched_pid": 2219064,
-      "notes": "SAC BTC iter8 (k_sl=2.5/k_tp=4.0). Verified running on Dragon PIDs 2219062/2219064/2219082; ssh timed out >120s but launch succeeded. GPU 714MB used at 71%."
+      "notes": "SAC BTC iter8 (k_sl=2.5/k_tp=4.0). Verified running on Dragon PIDs 2219062/2219064/2219082; ssh timed out >120s but launch succeeded. GPU 714MB used at 71%.",
+      "finished_utc": "2026-04-24T13:31:42Z"
     },
     {
       "id": "eth-ppo-p4iter8-s0-5",
@@ -75,22 +77,36 @@
       ],
       "requires_gpu": true,
       "priority": 15,
-      "status": "running",
+      "status": "done",
       "assigned_host": "dragon",
       "launched_utc": "2026-04-24T08:03:10Z",
       "launched_pid": 2219284,
-      "notes": "PPO ETH iter8 (k_tp 4.0->3.0, ent_coef 0.02->0.01). Verified running on Dragon PIDs 2219282/2219284/2219302; ssh timed out >120s but launch succeeded."
+      "notes": "PPO ETH iter8 (k_tp 4.0->3.0, ent_coef 0.02->0.01). Verified running on Dragon PIDs 2219282/2219284/2219302; ssh timed out >120s but launch succeeded.",
+      "finished_utc": "2026-04-24T13:31:44Z"
     },
     {
       "id": "eurusd-ppo-p4iter9-s0-5",
       "config": "examples/config/p4_ppo_eurusd_1h_iter9.json",
-      "seeds": [0, 1, 2, 3, 4, 5],
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
       "run_tag": "p4iter9",
-      "preferred_hosts": ["omega"],
+      "preferred_hosts": [
+        "omega"
+      ],
       "requires_gpu": false,
       "priority": 12,
-      "status": "pending",
-      "notes": "EURUSD PPO iter9: tighten k_sl/k_tp 2.5/4.0 -> 2.0/2.5 to force more round-trips after iter8ext anemic trade counts (2/53/14) and negative returns on s3-s5. CPU, Omega."
+      "status": "done",
+      "notes": "EURUSD PPO iter9: tighten k_sl/k_tp 2.5/4.0 -> 2.0/2.5 to force more round-trips after iter8ext anemic trade counts (2/53/14) and negative returns on s3-s5. CPU, Omega.",
+      "assigned_host": "omega",
+      "launched_utc": "2026-04-24T08:51:48Z",
+      "launched_pid": 123447,
+      "finished_utc": "2026-04-24T13:23:09Z"
     }
   ],
   "finalize": {
