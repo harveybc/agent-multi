@@ -1,0 +1,136 @@
+{
+  "allowed_different_fields": [
+    "input_data_file",
+    "total_timesteps",
+    "_protocol_lock",
+    "_phase4_arm",
+    "_arm_pretrain",
+    "_arm_finetune",
+    "save_model",
+    "save_config",
+    "results_file",
+    "train_seed",
+    "eval_seed",
+    "mode",
+    "env_mode",
+    "quiet_mode",
+    "agent_verbose"
+  ],
+  "arms": [
+    {
+      "config_path": "examples/config/project3_phase4_ethusdt_4h_sac_arms/arm_a_real_only_standard.json",
+      "description": "Reference real-only SAC training. Identical to the Stage A reference except for run-output paths and seeds.",
+      "execution_status": "RUNNABLE_AFTER_STAGE_B_APPROVAL",
+      "multi_phase": false,
+      "name": "arm_a",
+      "promotion_eligible": true,
+      "role": "real_only_standard"
+    },
+    {
+      "config_path": "examples/config/project3_phase4_ethusdt_4h_sac_arms/arm_b_real_only_compute_matched.json",
+      "description": "Real-only SAC with training budget compute-matched to Arm D's pretrain + finetune total. Only `total_timesteps` differs from Arm A.",
+      "execution_status": "RUNNABLE_AFTER_STAGE_B_APPROVAL",
+      "multi_phase": false,
+      "name": "arm_b",
+      "promotion_eligible": true,
+      "role": "real_only_compute_matched"
+    },
+    {
+      "config_path": "examples/config/project3_phase4_ethusdt_4h_sac_arms/arm_c_synthetic_only_diagnostic.json",
+      "description": "Synthetic-only training. Diagnostic only; never promotion eligible. Validation and test windows still consume the real panel.",
+      "execution_status": "DIAGNOSTIC_ONLY_NEVER_PROMOTE",
+      "multi_phase": false,
+      "name": "arm_c",
+      "promotion_eligible": false,
+      "role": "synthetic_only_diagnostic"
+    },
+    {
+      "config_path": "examples/config/project3_phase4_ethusdt_4h_sac_arms/arm_d_synthetic_pretrain_then_real_finetune.json",
+      "description": "Two-phase: pretrain on augmented synthetic panel, then fine-tune on real panel. SAC hyperparameters identical to the reference. PRIMARY Phase 4 comparison vs Arm B.",
+      "execution_status": "TEMPLATE_ONLY_MULTI_PHASE_RUNNER_NOT_IMPLEMENTED",
+      "multi_phase": true,
+      "name": "arm_d",
+      "promotion_eligible": true,
+      "role": "synthetic_pretrain_then_real_finetune"
+    }
+  ],
+  "cost_scenarios": [
+    "base",
+    "pessimistic"
+  ],
+  "dry_run_only": true,
+  "execution_status_arm_d": "TEMPLATE_ONLY_MULTI_PHASE_RUNNER_NOT_IMPLEMENTED",
+  "generated_at": "2026-05-04T05:20:15Z",
+  "multi_phase_runner_implemented": false,
+  "non_promotion_eligible_arms": [
+    "arm_c"
+  ],
+  "primary_comparison": {
+    "control": "arm_b",
+    "rule": "Arm D promoted only if mean real-validation composite_score exceeds Arm B by >= 1 SE across replicate seeds AND lift sign positive in >=2/3 seeds.",
+    "treatment": "arm_d"
+  },
+  "project3_heldout_start": "2025-01-01",
+  "promotion_eligible_arms": [
+    "arm_a",
+    "arm_b",
+    "arm_d"
+  ],
+  "protocol_packet_family_id": "regime_residual_bootstrap_v1",
+  "protocol_packet_family_revision": "anti_mem_v1",
+  "protocol_packet_hash": "db9201c31fa6ee04c1efb18f48c10f2287a1aaf30d7574ecab3407ab19e1da4c",
+  "protocol_packet_path": "/home/harveybc/Documents/GitHub/synthetic-datagen/experiments/synthetic_data/project3_eth_4h/regime_residual_bootstrap/regime_residual_bootstrap_v1_anti_mem_protocol.json",
+  "protocol_packet_stage_b_status": "PENDING_APPROVAL",
+  "reference_config_hash": "9cbd88f355bbace323a7b4246265e41e192d75044ccf29a6dc4ced3b814a870b",
+  "reference_config_path": "/home/harveybc/Documents/GitHub/financial-data/experiments/stage_a_screening/runs/dragon/ethusdt_4h_sac_tech_stat_direct_atr_sltp_s0_20260502T051413Z_project3_stage31_firstwave/config.json",
+  "required_equal_fields": [
+    "asset",
+    "env_plugin",
+    "agent_plugin",
+    "strategy_plugin",
+    "reward_plugin",
+    "metrics_plugin",
+    "broker_plugin",
+    "data_feed_plugin",
+    "preprocessor_plugin",
+    "pipeline_plugin",
+    "optimizer_plugin",
+    "features_preset",
+    "action_space_mode",
+    "continuous_action_threshold",
+    "window_size",
+    "atr_period",
+    "k_sl",
+    "k_tp",
+    "commission",
+    "slippage",
+    "leverage",
+    "position_size",
+    "rel_volume",
+    "size_mode",
+    "min_order_volume",
+    "max_order_volume",
+    "initial_cash",
+    "price_column",
+    "date_column",
+    "learning_rate",
+    "buffer_size",
+    "learning_starts",
+    "batch_size",
+    "tau",
+    "gamma",
+    "train_freq",
+    "gradient_steps",
+    "ent_coef",
+    "use_sde"
+  ],
+  "schema_version": "1.0.0",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "stage_b_status_required": "PENDING_APPROVAL or APPROVED",
+  "stage_c_access": "DENIED \u2014 Stage C must not be touched",
+  "training_launched": false
+}
