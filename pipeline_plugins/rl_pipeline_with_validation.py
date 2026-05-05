@@ -279,6 +279,9 @@ class PipelinePlugin:
                 )
                 summary["return_trace_file"] = metadata["trace_file"]
                 summary["return_trace_metadata_file"] = metadata["metadata_file"]
+                # Stash the full sidecar so _final_eval can roll the per-split
+                # metadata items into the run-level evidence index.
+                summary["_return_trace_metadata"] = metadata
             return summary
         finally:
             try:
@@ -569,6 +572,14 @@ class PipelinePlugin:
         print("\n=== Final results (best-composite checkpoint) ===")
         print(table, flush=True)
 
+        # Pop transient evidence-bearing fields out of each split summary
+        # before exporting, then build the run-level evidence index.
+        metadata_items: List[Dict[str, Any]] = []
+        for s in (train_summary, val_summary, test_summary):
+            meta = s.pop("_return_trace_metadata", None)
+            if meta is not None:
+                metadata_items.append(meta)
+
         # Build the export payload
         out = {
             "splits": {
@@ -589,6 +600,24 @@ class PipelinePlugin:
             "episode_length": val_summary.get("episode_length"),
             "eval_seed": seed,
         })
+
+        if metadata_items:
+            evidence = _trace_mod.build_return_trace_evidence(
+                metadata_items,
+                config=config,
+                run_id=_trace_mod.make_run_id(config),
+                pipeline_plugin="rl_pipeline_with_validation",
+            )
+            trace_dir = config.get("return_trace_dir")
+            evidence_path = _trace_mod.derive_evidence_path(
+                trace_dir=str(trace_dir) if trace_dir else None,
+                trace_file=metadata_items[0].get("trace_file"),
+            )
+            evidence["evidence_file"] = _trace_mod.write_return_trace_evidence(
+                evidence, evidence_path,
+            )
+            out["return_trace_evidence"] = evidence
+            out["return_trace_evidence_file"] = evidence["evidence_file"]
 
         # Save results.json next to the model file
         model_path = config.get("save_model")

@@ -165,6 +165,18 @@ class PipelinePlugin:
             )
             summary["return_trace_file"] = metadata["trace_file"]
             summary["return_trace_metadata_file"] = metadata["metadata_file"]
+            evidence = _trace_mod.build_return_trace_evidence(
+                [metadata],
+                config=config,
+                run_id=run_id,
+                pipeline_plugin="rl_pipeline",
+            )
+            evidence_path = _trace_mod.derive_evidence_path(trace_file=str(trace_file))
+            evidence["evidence_file"] = _trace_mod.write_return_trace_evidence(
+                evidence, evidence_path,
+            )
+            summary["return_trace_evidence"] = evidence
+            summary["return_trace_evidence_file"] = evidence["evidence_file"]
         return summary
 
 
