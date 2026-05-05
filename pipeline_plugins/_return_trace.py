@@ -126,12 +126,14 @@ def _safe_float(value: Any) -> Optional[float]:
 def _ts_at_or_after_heldout(ts: str) -> bool:
     """True if ``ts`` parses to a date >= HELDOUT_BOUNDARY.
 
-    Unparseable timestamps are treated as *not* heldout — the caller is
-    expected to provide ISO/parseable strings; see ``_parse_iso``.
+    This helper is intentionally only called after write_return_trace()
+    has already validated that every timestamp is parseable. Timestamp
+    parse failures are fatal because treating an unknown timestamp as
+    pre-heldout would make the Stage C guard optimistic.
     """
     parsed = _parse_iso(ts)
     if parsed is None:
-        return False
+        raise TraceTimestampError(f"unparseable return_trace timestamp: {ts!r}")
     return parsed.date() >= _dt.date(2025, 1, 1)
 
 
@@ -163,6 +165,10 @@ def _parse_iso(ts: Any) -> Optional[_dt.datetime]:
 # ---------------------------------------------------------------------------
 class StageCAccessError(RuntimeError):
     """Raised when a trace would include Stage C rows without authorization."""
+
+
+class TraceTimestampError(ValueError):
+    """Raised when trace timestamps are missing, invalid, or unordered."""
 
 
 def _is_stage_c_authorized(config: Mapping[str, Any]) -> bool:
@@ -305,6 +311,22 @@ def write_return_trace(
         )
 
     rows_list: List[Dict[str, Any]] = list(rows)
+    parsed_timestamps: List[_dt.datetime] = []
+    for idx, row in enumerate(rows_list):
+        ts = row.get("timestamp", "")
+        parsed = _parse_iso(ts)
+        if parsed is None:
+            raise TraceTimestampError(
+                f"return_trace row {idx} has missing or unparseable timestamp: {ts!r}"
+            )
+        if parsed_timestamps and parsed <= parsed_timestamps[-1]:
+            raise TraceTimestampError(
+                "return_trace timestamps must be strictly increasing within "
+                f"each split; row {idx} timestamp {ts!r} is not after the "
+                f"previous timestamp {rows_list[idx - 1].get('timestamp', '')!r}"
+            )
+        parsed_timestamps.append(parsed)
+
     contains_heldout = any(
         _ts_at_or_after_heldout(r.get("timestamp", "")) for r in rows_list
     )
@@ -381,3 +403,231 @@ def make_run_id(config: Mapping[str, Any]) -> str:
     asset = str(config.get("asset", "asset"))
     seed = config.get("train_seed", config.get("eval_seed", 0))
     return f"{asset}_seed{seed}"
+
+
+# ---------------------------------------------------------------------------
+# Run-level evidence index
+#
+# financial-data needs to discover every trace + metadata file produced by a
+# given agent-multi run *without* scraping logs. The evidence index is the
+# single durable artifact that points at all per-split traces, hashes, and
+# Stage C status flags. The index is written next to the trace(s) when
+# tracing is enabled and is also surfaced inline in the pipeline summary.
+# ---------------------------------------------------------------------------
+
+EVIDENCE_SCHEMA_VERSION = "project3_return_trace_evidence_v1"
+
+
+class EvidenceConsistencyError(RuntimeError):
+    """Raised when the evidence index would be misleading or unsafe.
+
+    Examples:
+        - a referenced trace file is missing on disk;
+        - a metadata sidecar is missing on disk;
+        - duplicate split labels (would silently overwrite a row);
+        - per-trace items disagree on schema version, asset, seed, or
+          config hash for the same run;
+        - a metadata item asserts ``contains_heldout_rows`` without
+          ``stage_c_authorized`` (defense in depth — should already
+          have been caught by ``write_return_trace``).
+    """
+
+
+def _require_existing_file(label: str, path: Optional[str]) -> str:
+    if not path:
+        raise EvidenceConsistencyError(f"evidence: missing {label} path")
+    p = Path(path)
+    if not p.exists() or not p.is_file():
+        raise EvidenceConsistencyError(
+            f"evidence: {label} not found on disk: {path}"
+        )
+    return str(p.resolve())
+
+
+def _evidence_trace_entry(meta: Mapping[str, Any]) -> Dict[str, Any]:
+    """Project a per-trace metadata sidecar into an evidence trace entry."""
+    if not isinstance(meta, Mapping):
+        raise EvidenceConsistencyError(
+            f"evidence: metadata item must be a mapping, got {type(meta)!r}"
+        )
+    if meta.get("schema_version") != SCHEMA_VERSION:
+        raise EvidenceConsistencyError(
+            "evidence: trace metadata schema_version="
+            f"{meta.get('schema_version')!r} does not match expected "
+            f"{SCHEMA_VERSION!r}"
+        )
+    contains_heldout = bool(meta.get("contains_heldout_rows"))
+    stage_c_ok = bool(meta.get("stage_c_authorized"))
+    if contains_heldout and not stage_c_ok:
+        raise EvidenceConsistencyError(
+            "evidence: trace metadata reports heldout rows without Stage C "
+            "authorization (defense in depth)"
+        )
+    trace_file = _require_existing_file(
+        "trace_file", meta.get("trace_file"),
+    )
+    metadata_file = _require_existing_file(
+        "metadata_file", meta.get("metadata_file"),
+    )
+    boundaries = meta.get("split_boundaries") or {}
+    return {
+        "split": meta.get("split"),
+        "trace_file": trace_file,
+        "trace_file_sha256": meta.get("trace_file_sha256"),
+        "metadata_file": metadata_file,
+        "row_count": int(meta.get("row_count") or 0),
+        "first_timestamp": boundaries.get("first_timestamp"),
+        "last_timestamp": boundaries.get("last_timestamp"),
+        "contains_heldout_rows": contains_heldout,
+        "stage_c_authorized": stage_c_ok,
+        "episode_id": meta.get("episode_id"),
+    }
+
+
+def _consistent_value(items: Iterable[Mapping[str, Any]], key: str) -> Any:
+    """Return the unique value for ``key`` across items, or fail closed."""
+    values = []
+    for it in items:
+        if key in it and it[key] is not None:
+            values.append(it[key])
+    if not values:
+        return None
+    first = values[0]
+    for v in values[1:]:
+        if v != first:
+            raise EvidenceConsistencyError(
+                f"evidence: trace metadata items disagree on {key!r}: "
+                f"{first!r} vs {v!r}"
+            )
+    return first
+
+
+def build_return_trace_evidence(
+    metadata_items: Sequence[Mapping[str, Any]],
+    *,
+    config: Mapping[str, Any],
+    run_id: Optional[str] = None,
+    pipeline_plugin: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Build the run-level evidence index from per-trace metadata sidecars.
+
+    Parameters
+    ----------
+    metadata_items
+        The list of metadata dicts produced by
+        :func:`write_return_trace` for this run. May be empty (callers
+        should simply skip evidence emission in that case rather than
+        passing an empty list).
+    config
+        The agent-multi config dict the run was launched with.
+    run_id
+        Override for the run identifier. When omitted, the value is
+        cross-checked from the metadata items first, then derived from
+        the config.
+    pipeline_plugin
+        Name of the pipeline plugin that produced the traces (e.g.
+        ``"rl_pipeline"`` or ``"rl_pipeline_with_validation"``).
+
+    Returns
+    -------
+    dict
+        A serializable evidence index following the
+        ``project3_return_trace_evidence_v1`` schema. The dict can be
+        written verbatim to disk via :func:`write_return_trace_evidence`
+        or surfaced inline in the pipeline summary.
+
+    Raises
+    ------
+    EvidenceConsistencyError
+        On any of the conditions documented in the class docstring.
+    """
+    if not metadata_items:
+        raise EvidenceConsistencyError(
+            "evidence: refusing to build an empty evidence index"
+        )
+
+    items = [dict(m) for m in metadata_items]
+
+    # Duplicate split detection.
+    splits = [m.get("split") for m in items]
+    seen: set = set()
+    for s in splits:
+        if s in seen:
+            raise EvidenceConsistencyError(
+                f"evidence: duplicate split label {s!r}"
+            )
+        seen.add(s)
+
+    # Cross-item consistency on identity-defining fields.
+    asset = _consistent_value(items, "asset") or config.get("asset")
+    timeframe = (
+        _consistent_value(items, "timeframe")
+        or config.get("timeframe")
+        or config.get("timeframe_label")
+    )
+    seed = _consistent_value(items, "seed")
+    config_hash = _consistent_value(items, "config_hash") or _hash_config(config)
+    data_file = _consistent_value(items, "data_file") or config.get("input_data_file")
+    data_file_hash = _consistent_value(items, "data_file_hash")
+    feature_list_hash = _consistent_value(items, "feature_list_hash")
+    items_run_id = _consistent_value(items, "run_id")
+
+    resolved_run_id = run_id or items_run_id or make_run_id(config)
+
+    trace_entries = [_evidence_trace_entry(m) for m in items]
+
+    contains_heldout_any = any(t["contains_heldout_rows"] for t in trace_entries)
+    stage_c_authorized_any = any(t["stage_c_authorized"] for t in trace_entries)
+
+    return {
+        "schema_version": EVIDENCE_SCHEMA_VERSION,
+        "generated_at": _utcnow_iso(),
+        "run_id": resolved_run_id,
+        "pipeline_plugin": pipeline_plugin,
+        "trace_schema_version": SCHEMA_VERSION,
+        "asset": asset,
+        "timeframe": timeframe,
+        "seed": seed,
+        "config_hash": config_hash,
+        "data_file": data_file,
+        "data_file_hash": data_file_hash,
+        "feature_list_hash": feature_list_hash,
+        "heldout_boundary": HELDOUT_BOUNDARY,
+        "contains_heldout_rows": contains_heldout_any,
+        "stage_c_authorized": stage_c_authorized_any,
+        "traces": trace_entries,
+    }
+
+
+def write_return_trace_evidence(
+    evidence: Mapping[str, Any],
+    output_path: str,
+) -> str:
+    """Persist an evidence index dict to ``output_path``.
+
+    Returns the absolute path of the written file.
+    """
+    out = Path(output_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w", encoding="utf-8") as fh:
+        json.dump(_jsonable(dict(evidence)), fh, indent=2, sort_keys=True, default=str)
+    return str(out.resolve())
+
+
+def derive_evidence_path(
+    *,
+    trace_file: Optional[str] = None,
+    trace_dir: Optional[str] = None,
+) -> str:
+    """Return the canonical ``evidence.json`` location.
+
+    Layout:
+      - if ``trace_dir`` is provided: ``<trace_dir>/evidence.json``;
+      - else if ``trace_file`` is provided:
+        ``<dir(trace_file)>/evidence.json``.
+    """
+    if trace_dir:
+        return str(Path(trace_dir) / "evidence.json")
+    if trace_file:
+        return str(Path(trace_file).parent / "evidence.json")
+    raise ValueError("derive_evidence_path requires trace_file or trace_dir")

@@ -206,6 +206,35 @@ def test_partial_authorization_still_blocks(tmp_path):
         pipeline._evaluate(env, FakeAgent(), model=None, config=config)
 
 
+def test_unparseable_timestamps_fail_closed(tmp_path):
+    """Unknown timestamps must not be treated as safely pre-heldout."""
+    timestamps = ["2024-01-01 00:00:00", "not-a-timestamp"]
+    env, config = _make_pipeline_inputs(timestamps)
+    config["return_trace_file"] = str(tmp_path / "bad_timestamp.csv")
+
+    pipeline = _pipeline.PipelinePlugin()
+    with pytest.raises(_trace.TraceTimestampError, match="unparseable"):
+        pipeline._evaluate(env, FakeAgent(), model=None, config=config)
+    assert not (tmp_path / "bad_timestamp.csv").exists()
+    assert not (tmp_path / "bad_timestamp.csv.meta.json").exists()
+
+
+def test_non_monotonic_timestamps_fail_closed(tmp_path):
+    """Per-split traces must be strictly ordered for time-series inference."""
+    timestamps = [
+        "2024-01-01 04:00:00",
+        "2024-01-01 00:00:00",
+    ]
+    env, config = _make_pipeline_inputs(timestamps)
+    config["return_trace_file"] = str(tmp_path / "unordered.csv")
+
+    pipeline = _pipeline.PipelinePlugin()
+    with pytest.raises(_trace.TraceTimestampError, match="strictly increasing"):
+        pipeline._evaluate(env, FakeAgent(), model=None, config=config)
+    assert not (tmp_path / "unordered.csv").exists()
+    assert not (tmp_path / "unordered.csv.meta.json").exists()
+
+
 def test_metadata_records_seed_and_split_boundaries(tmp_path):
     timestamps = ["2024-01-01 00:00:00", "2024-12-31 20:00:00"]
     env, config = _make_pipeline_inputs(timestamps, split="train")
@@ -269,3 +298,215 @@ def test_gross_minus_net_equals_cost_over_equity(tmp_path):
     # gross-net is ~8e-6 — small, positive, and finite.
     assert gross >= net
     assert (gross - net) > 0.0
+
+
+# ---------------------------------------------------------------------------
+# V2: run-level evidence index
+# ---------------------------------------------------------------------------
+def _write_synthetic_trace(tmp_path, *, split, timestamps, config_overrides=None):
+    """Drive write_return_trace directly to produce a metadata sidecar
+    we can pass into build_return_trace_evidence without bringing up
+    a full pipeline rollout."""
+    rows = []
+    eq = 10_000.0
+    for i, ts in enumerate(timestamps):
+        eq *= 1.001
+        rows.append({
+            "step": i + 1, "timestamp": ts, "asset": "ETHUSDT",
+            "timeframe": "4h", "split": split, "episode_id": f"ep::{split}",
+            "run_id": "run-xyz", "seed": 7, "bar_index": i + 1,
+            "price": 1000.0 + i, "action_raw": 0.0, "position": 0.5,
+            "reward": 0.01, "gross_return": 0.001, "net_return": 0.0009,
+            "equity": eq, "pnl": 0.5, "commission_paid": 0.02,
+            "slippage_paid": 0.01, "trade_cost": 0.05, "trades": 0,
+        })
+    config = {
+        "asset": "ETHUSDT", "timeframe": "4h",
+        "input_data_file": None, "save_model": "/tmp/agent-multi-test/model.zip",
+    }
+    if config_overrides:
+        config.update(config_overrides)
+    return _trace.write_return_trace(
+        str(tmp_path / f"{split}_return_trace.csv"),
+        rows,
+        config=config,
+        split=split,
+        seed=7,
+        asset="ETHUSDT",
+        timeframe="4h",
+        run_id="run-xyz",
+        episode_id=f"ep::{split}",
+    )
+
+
+def test_evidence_emitted_for_single_split_pipeline(tmp_path):
+    """Single-split rl_pipeline must surface evidence on the summary
+    and write evidence.json next to the trace."""
+    timestamps = ["2024-01-01 00:00:00", "2024-01-01 04:00:00"]
+    env, config = _make_pipeline_inputs(timestamps)
+    config["return_trace_file"] = str(tmp_path / "single.csv")
+
+    pipeline = _pipeline.PipelinePlugin()
+    summary = pipeline._evaluate(env, FakeAgent(), model=None, config=config)
+
+    evidence = summary["return_trace_evidence"]
+    assert evidence["schema_version"] == _trace.EVIDENCE_SCHEMA_VERSION
+    assert evidence["trace_schema_version"] == _trace.SCHEMA_VERSION
+    assert evidence["pipeline_plugin"] == "rl_pipeline"
+    assert len(evidence["traces"]) == 1
+    assert evidence["contains_heldout_rows"] is False
+    assert evidence["stage_c_authorized"] is False
+    evidence_path = Path(summary["return_trace_evidence_file"])
+    assert evidence_path.exists()
+    assert evidence_path.name == "evidence.json"
+    on_disk = json.loads(evidence_path.read_text())
+    assert on_disk["schema_version"] == _trace.EVIDENCE_SCHEMA_VERSION
+    assert on_disk["traces"][0]["split"] == "evaluation"
+
+
+def test_build_evidence_aggregates_three_splits(tmp_path):
+    metas = [
+        _write_synthetic_trace(tmp_path, split="train",
+                               timestamps=["2023-01-01 00:00:00", "2023-01-01 04:00:00"]),
+        _write_synthetic_trace(tmp_path, split="validation",
+                               timestamps=["2024-01-01 00:00:00", "2024-01-01 04:00:00"]),
+        _write_synthetic_trace(tmp_path, split="test",
+                               timestamps=["2024-06-01 00:00:00", "2024-06-01 04:00:00"]),
+    ]
+    config = {"asset": "ETHUSDT", "timeframe": "4h", "input_data_file": None}
+    evidence = _trace.build_return_trace_evidence(
+        metas, config=config, run_id="run-xyz",
+        pipeline_plugin="rl_pipeline_with_validation",
+    )
+    assert evidence["schema_version"] == _trace.EVIDENCE_SCHEMA_VERSION
+    assert evidence["run_id"] == "run-xyz"
+    assert evidence["asset"] == "ETHUSDT"
+    assert evidence["timeframe"] == "4h"
+    assert evidence["seed"] == 7
+    assert evidence["heldout_boundary"] == "2025-01-01"
+    assert evidence["contains_heldout_rows"] is False
+    assert evidence["stage_c_authorized"] is False
+    assert [t["split"] for t in evidence["traces"]] == ["train", "validation", "test"]
+    for t in evidence["traces"]:
+        assert Path(t["trace_file"]).exists()
+        assert Path(t["metadata_file"]).exists()
+        assert t["row_count"] == 2
+        assert t["first_timestamp"] and t["last_timestamp"]
+
+
+def test_legacy_config_emits_no_evidence(tmp_path):
+    """Configs without return_trace_file must not produce any evidence keys
+    or files. This is the critical backward-compat guarantee."""
+    timestamps = ["2024-06-01 00:00:00", "2024-06-01 04:00:00"]
+    env, config = _make_pipeline_inputs(timestamps)
+    pipeline = _pipeline.PipelinePlugin()
+    summary = pipeline._evaluate(env, FakeAgent(), model=None, config=config)
+    assert "return_trace_evidence" not in summary
+    assert "return_trace_evidence_file" not in summary
+    assert not (tmp_path / "evidence.json").exists()
+
+
+def test_evidence_fails_on_unauthorized_heldout_metadata(tmp_path):
+    """Defense in depth: even if a metadata sidecar somehow asserts
+    heldout rows without Stage C authorization, evidence must refuse."""
+    meta = _write_synthetic_trace(
+        tmp_path, split="train",
+        timestamps=["2023-01-01 00:00:00", "2023-01-01 04:00:00"],
+    )
+    # Tamper with the in-memory metadata to simulate the dangerous state.
+    meta["contains_heldout_rows"] = True
+    meta["stage_c_authorized"] = False
+    config = {"asset": "ETHUSDT", "input_data_file": None}
+    with pytest.raises(_trace.EvidenceConsistencyError, match="Stage C"):
+        _trace.build_return_trace_evidence(
+            [meta], config=config, pipeline_plugin="rl_pipeline",
+        )
+
+
+def test_evidence_fails_when_metadata_file_missing(tmp_path):
+    meta = _write_synthetic_trace(
+        tmp_path, split="train",
+        timestamps=["2023-01-01 00:00:00", "2023-01-01 04:00:00"],
+    )
+    Path(meta["metadata_file"]).unlink()
+    config = {"asset": "ETHUSDT", "input_data_file": None}
+    with pytest.raises(_trace.EvidenceConsistencyError, match="metadata_file"):
+        _trace.build_return_trace_evidence(
+            [meta], config=config, pipeline_plugin="rl_pipeline",
+        )
+
+
+def test_evidence_fails_when_trace_file_missing(tmp_path):
+    meta = _write_synthetic_trace(
+        tmp_path, split="train",
+        timestamps=["2023-01-01 00:00:00", "2023-01-01 04:00:00"],
+    )
+    Path(meta["trace_file"]).unlink()
+    config = {"asset": "ETHUSDT", "input_data_file": None}
+    with pytest.raises(_trace.EvidenceConsistencyError, match="trace_file"):
+        _trace.build_return_trace_evidence(
+            [meta], config=config, pipeline_plugin="rl_pipeline",
+        )
+
+
+def test_evidence_rejects_duplicate_split_labels(tmp_path):
+    a = _write_synthetic_trace(
+        tmp_path, split="train",
+        timestamps=["2023-01-01 00:00:00", "2023-01-01 04:00:00"],
+    )
+    # Build a second metadata for "train" by writing it under a different name.
+    rows = [{
+        "step": 1, "timestamp": "2023-02-01 00:00:00", "asset": "ETHUSDT",
+        "timeframe": "4h", "split": "train", "episode_id": "ep::train2",
+        "run_id": "run-xyz", "seed": 7, "bar_index": 1, "price": 1.0,
+        "action_raw": 0.0, "position": 0.0, "reward": 0.0,
+        "gross_return": 0.0, "net_return": 0.0, "equity": 10_000.0,
+        "pnl": 0.0, "commission_paid": None, "slippage_paid": None,
+        "trade_cost": None, "trades": 0,
+    }]
+    b = _trace.write_return_trace(
+        str(tmp_path / "train_return_trace_dupe.csv"),
+        rows,
+        config={"asset": "ETHUSDT", "timeframe": "4h", "input_data_file": None},
+        split="train", seed=7, asset="ETHUSDT", timeframe="4h",
+        run_id="run-xyz", episode_id="ep::train2",
+    )
+    config = {"asset": "ETHUSDT", "input_data_file": None}
+    with pytest.raises(_trace.EvidenceConsistencyError, match="duplicate"):
+        _trace.build_return_trace_evidence(
+            [a, b], config=config, pipeline_plugin="rl_pipeline",
+        )
+
+
+def test_evidence_top_level_fields_present(tmp_path):
+    metas = [
+        _write_synthetic_trace(tmp_path, split="train",
+                               timestamps=["2023-01-01 00:00:00", "2023-01-01 04:00:00"]),
+        _write_synthetic_trace(tmp_path, split="validation",
+                               timestamps=["2024-01-01 00:00:00", "2024-01-01 04:00:00"]),
+    ]
+    evidence = _trace.build_return_trace_evidence(
+        metas, config={"asset": "ETHUSDT", "input_data_file": None},
+        run_id="r", pipeline_plugin="rl_pipeline_with_validation",
+    )
+    required = {
+        "schema_version", "generated_at", "run_id", "pipeline_plugin",
+        "trace_schema_version", "asset", "timeframe", "seed",
+        "config_hash", "data_file", "data_file_hash", "feature_list_hash",
+        "heldout_boundary", "contains_heldout_rows", "stage_c_authorized",
+        "traces",
+    }
+    assert required.issubset(set(evidence.keys()))
+    for t in evidence["traces"]:
+        for key in ("split", "trace_file", "trace_file_sha256",
+                    "metadata_file", "row_count",
+                    "first_timestamp", "last_timestamp",
+                    "contains_heldout_rows", "stage_c_authorized"):
+            assert key in t
+
+
+def test_build_evidence_rejects_empty_input():
+    with pytest.raises(_trace.EvidenceConsistencyError, match="empty"):
+        _trace.build_return_trace_evidence(
+            [], config={"asset": "ETHUSDT"}, pipeline_plugin="rl_pipeline",
+        )
