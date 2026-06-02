@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
 
+from ._progress_callback import make_progress_callback
+
 
 class Plugin:
     plugin_params: Dict[str, Any] = {
@@ -32,10 +34,18 @@ class Plugin:
         "device": "auto",
         "agent_verbose": 0,
         "train_seed": 0,
+        "training_progress_file": None,
+        "progress_file": None,
+        "progress_update_interval_steps": 1000,
         "ga_fitness_dd_lambda": 1.0,
     }
 
     _PARAM_KEYS = tuple(plugin_params.keys())
+
+    plugin_debug_vars: List[str] = [
+        "total_timesteps", "learning_rate", "batch_size", "buffer_size",
+        "gamma", "tau", "use_sde", "net_arch", "device", "train_seed",
+    ]
 
     def __init__(self, config: Dict[str, Any] | None = None):
         self.params = self.plugin_params.copy()
@@ -46,6 +56,12 @@ class Plugin:
         for k, v in kwargs.items():
             if k in self._PARAM_KEYS:
                 self.params[k] = v
+
+    def get_debug_info(self) -> Dict[str, Any]:
+        return {var: self.params.get(var) for var in self.plugin_debug_vars}
+
+    def add_debug_info(self, debug_info: Dict[str, Any]) -> None:
+        debug_info.update(self.get_debug_info())
 
     def build(self, env, config: Dict[str, Any]):
         try:
@@ -90,7 +106,9 @@ class Plugin:
 
     def train(self, model, config: Dict[str, Any]):
         p = self._resolve(config)
-        model.learn(total_timesteps=int(p["total_timesteps"]))
+        total_timesteps = int(p["total_timesteps"])
+        callback = make_progress_callback({**config, **p}, total_timesteps)
+        model.learn(total_timesteps=total_timesteps, callback=callback)
         return model
 
     def predict(self, model, obs, deterministic: bool = True):

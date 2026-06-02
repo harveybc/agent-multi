@@ -36,7 +36,8 @@ SCHEMA_VERSION = "project3_stageb_run_plan_v1"
 HELDOUT_START = "2025-01-01"
 
 DEFAULT_SEEDS: Sequence[int] = (0, 1, 2, 3, 4)
-DEFAULT_COST_SCENARIOS: Sequence[str] = ("base", "pessimistic")
+DEFAULT_COST_SCENARIOS: Sequence[str] = ("base", "plus_50pct", "plus_100pct")
+REQUIRED_COST_SCENARIOS: Sequence[str] = DEFAULT_COST_SCENARIOS
 DEFAULT_BASELINES: Sequence[str] = (
     "no_trade",
     "buy_and_hold",
@@ -52,11 +53,29 @@ DEFAULT_BASELINES: Sequence[str] = (
 # matched-baseline evidence under ``base``.
 COST_SCENARIO_OVERRIDES: Dict[str, Dict[str, Any]] = {
     "base": {},
+    "plus_50pct": {
+        "_cost_scenario": "plus_50pct",
+        "commission_multiplier": 1.5,
+        "slippage_multiplier": 1.5,
+    },
+    "plus_100pct": {
+        "_cost_scenario": "plus_100pct",
+        "commission_multiplier": 2.0,
+        "slippage_multiplier": 2.0,
+    },
     "pessimistic": {
         "_cost_scenario": "pessimistic",
         "commission_multiplier": 3.0,
         "slippage_bps_floor": 2.0,
     },
+}
+
+BASELINE_AGENT_PLUGINS: Dict[str, str] = {
+    "no_trade": "no_trade_agent",
+    "buy_and_hold": "buy_hold_agent",
+    "random": "random_agent",
+    "momentum": "momentum_agent",
+    "reversal": "reversal_agent",
 }
 
 # Required reference-config fields (minimum we need to emit a config
@@ -292,11 +311,18 @@ def _build_locked_config(
     cfg["_stage_b_role"] = role
     if role == "baseline":
         cfg["_stage_b_baseline_name"] = baseline
-        # We do not silently invent baseline plugins here; if a plugin
-        # is not configured, mark the config as template-only so it
-        # cannot be promoted by accident.
+        baseline_plugin = BASELINE_AGENT_PLUGINS.get(str(baseline or ""))
         cfg["_baseline_promotion_eligible"] = False
-        cfg["_baseline_template_only"] = True
+        cfg["_baseline_template_only"] = baseline_plugin is None
+        if baseline_plugin is not None:
+            cfg["agent_plugin"] = baseline_plugin
+            cfg["total_timesteps"] = 0
+            cfg["load_model"] = None
+            cfg["eval_deterministic"] = True
+    elif int(cfg.get("total_timesteps") or 0) <= 0:
+        epoch_timesteps = int(cfg.get("epoch_timesteps") or 0)
+        max_epochs = int(cfg.get("max_epochs") or 0)
+        cfg["total_timesteps"] = max(1, epoch_timesteps * max_epochs)
 
     # Deterministic per-run output paths.
     run_dirname = (
@@ -308,6 +334,8 @@ def _build_locked_config(
     cfg["save_model"] = str(run_dir / "policy.zip")
     cfg["results_file"] = str(run_dir / "summary.json")
     cfg["save_config"] = str(run_dir / "config_out.json")
+    cfg["progress_file"] = str(run_dir / "training_progress.json")
+    cfg["training_progress_file"] = str(run_dir / "training_progress.json")
 
     # Trace + evidence wiring (consumed by financial-data's evaluator).
     trace_dir = run_dir / "return_traces"
@@ -353,10 +381,10 @@ def build_run_plan(
             "manifest will mark the plan non-promotable)"
         )
     if not allow_missing_cost_scenarios:
-        missing_costs = {"base", "pessimistic"} - set(cost_scenarios)
+        missing_costs = set(REQUIRED_COST_SCENARIOS) - set(cost_scenarios)
         if missing_costs:
             raise StageBPlanError(
-                "Stage B requires cost scenarios {'base','pessimistic'}; "
+                f"Stage B requires cost scenarios {set(REQUIRED_COST_SCENARIOS)!r}; "
                 f"missing {sorted(missing_costs)}; pass "
                 "--allow-cost-scenario-override to override"
             )
@@ -409,16 +437,21 @@ def build_run_plan(
             with config_path.open("w", encoding="utf-8") as fh:
                 json.dump(cfg, fh, indent=2, sort_keys=True, default=str)
 
+        run_dir = str(Path(str(cfg.get("save_model", ""))).parent)
         entry = {
             "role": role,
             "baseline_name": baseline,
             "seed": int(seed),
             "cost_scenario": cost_scenario,
             "config_file": str(config_path),
+            "agent_plugin": cfg.get("agent_plugin"),
+            "run_dir": run_dir,
+            "progress_file": cfg.get("progress_file"),
             "return_trace_dir": cfg.get("return_trace_dir"),
+            "return_trace_file": cfg.get("return_trace_file"),
             "expected_evidence_file": _expected_evidence_file(cfg),
             "promotion_eligible": role == "candidate",
-            "template_only": role == "baseline",
+            "template_only": bool(cfg.get("_baseline_template_only", False)),
         }
         config_entries.append(entry)
 
@@ -431,7 +464,7 @@ def build_run_plan(
     promotion_blockers: List[str] = []
     if len(seeds) < 5:
         promotion_blockers.append("TOO_FEW_PAIRED_SEEDS")
-    if "base" not in cost_scenarios or "pessimistic" not in cost_scenarios:
+    if set(REQUIRED_COST_SCENARIOS) - set(cost_scenarios):
         promotion_blockers.append("INSUFFICIENT_COST_SCENARIOS")
     if heldout_report.get("heldout_check_skipped"):
         promotion_blockers.append("HELDOUT_DATA_CHECK_SKIPPED")
@@ -459,7 +492,8 @@ def build_run_plan(
         "promotion_rules": {
             "minimum_paired_seeds": 5,
             "candidate_must_beat_matched_baseline_under_base_cost": True,
-            "pessimistic_cost_must_not_be_catastrophic": True,
+            "stress_costs_must_not_be_catastrophic": True,
+            "required_cost_scenarios": list(REQUIRED_COST_SCENARIOS),
             "stage_c_forbidden": True,
         },
         "promotion_blockers": promotion_blockers,
@@ -540,7 +574,7 @@ def _build_argparser() -> argparse.ArgumentParser:
                    help="Directory to receive manifest + locked configs.")
     p.add_argument("--seeds", default="0,1,2,3,4",
                    help="Comma-separated seed list (default: 0,1,2,3,4).")
-    p.add_argument("--cost-scenarios", default="base,pessimistic",
+    p.add_argument("--cost-scenarios", default=",".join(DEFAULT_COST_SCENARIOS),
                    help="Comma-separated cost scenarios.")
     p.add_argument("--baselines",
                    default=",".join(DEFAULT_BASELINES),

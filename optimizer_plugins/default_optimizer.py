@@ -58,7 +58,13 @@ class Plugin:
         "ga_mutpb": 0.2,
         "ga_eval_timesteps": 2_000,
         "ga_seed": 0,
+        "optimization_patience": 3,
     }
+
+    plugin_debug_vars = [
+        "ga_population", "ga_generations", "ga_cxpb", "ga_mutpb",
+        "ga_eval_timesteps", "ga_seed", "optimization_patience",
+    ]
 
     def __init__(self, config: Dict[str, Any] | None = None):
         self.params = self.plugin_params.copy()
@@ -69,6 +75,12 @@ class Plugin:
         for k, v in kwargs.items():
             if k in self.params:
                 self.params[k] = v
+
+    def get_debug_info(self) -> Dict[str, Any]:
+        return {var: self.params.get(var) for var in self.plugin_debug_vars}
+
+    def add_debug_info(self, debug_info: Dict[str, Any]) -> None:
+        debug_info.update(self.get_debug_info())
 
     # ------------------------------------------------------------------
     def optimize(
@@ -112,8 +124,16 @@ class Plugin:
             ind.fitness.values = (toolbox.evaluate(ind),)
 
         best = tools.selBest(population, 1)[0]
+        best_fitness_so_far = float(best.fitness.values[0])
+        patience = int(config.get(
+            "optimization_patience", self.params["optimization_patience"]
+        ))
+        no_improve = 0
         if not config.get("quiet_mode"):
-            print(f"[optimizer] gen 0 best fitness = {best.fitness.values[0]:.6f}")
+            print(
+                f"[optimizer] gen 0 best fitness = {best_fitness_so_far:.6f} "
+                f"| L2 patience 0/{patience}"
+            )
 
         for gen in range(1, n_gen + 1):
             offspring = list(map(toolbox.clone, toolbox.select(population, len(population))))
@@ -131,8 +151,25 @@ class Plugin:
                 ind.fitness.values = (toolbox.evaluate(ind),)
             population[:] = offspring
             best = tools.selBest(population, 1)[0]
+            current = float(best.fitness.values[0])
+            if current > best_fitness_so_far + 1e-9:
+                best_fitness_so_far = current
+                no_improve = 0
+            else:
+                no_improve += 1
             if not config.get("quiet_mode"):
-                print(f"[optimizer] gen {gen} best fitness = {best.fitness.values[0]:.6f}")
+                print(
+                    f"[optimizer] gen {gen} best fitness = {current:.6f} "
+                    f"| global best = {best_fitness_so_far:.6f} "
+                    f"| L2 patience {no_improve}/{patience}"
+                )
+            if no_improve >= patience:
+                if not config.get("quiet_mode"):
+                    print(
+                        f"[optimizer] L2 EARLY STOP at gen {gen} "
+                        f"(no improvement for {no_improve} gens, patience={patience})"
+                    )
+                break
 
         best_params = self._decode(best, schema)
         best_params["_best_fitness"] = float(best.fitness.values[0])

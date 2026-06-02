@@ -256,6 +256,33 @@ def _resolve_synthetic_inputs(packet: Dict[str, Any]) -> Tuple[str, str]:
     return augmented, syn_only
 
 
+def _resolve_real_input(reference_cfg: Dict[str, Any]) -> str:
+    """Resolve the real Project 3 panel from either a real or locked Phase 4 config.
+
+    Some callers pass the locked synthetic-pretraining template as the
+    reference config because it carries the exact SAC/agent-multi settings.
+    In that case the top-level ``input_data_file`` is intentionally synthetic,
+    while the real fine-tune panel is recorded in the protocol lock. The arm
+    scaffold must use that real panel for Arms A/B, Arm C validation/test, and
+    Arm D fine-tuning.
+    """
+    top_level = str(reference_cfg.get("input_data_file", ""))
+    if top_level and not _looks_like_synthetic(top_level):
+        return top_level
+
+    lock = reference_cfg.get("_protocol_lock") or {}
+    finetune = lock.get("finetune") or {}
+    lock_real_input = str(finetune.get("input_data_file", ""))
+    if lock_real_input and not _looks_like_synthetic(lock_real_input):
+        return lock_real_input
+
+    raise ValueError(
+        "Could not resolve a real input_data_file from reference config. "
+        "Pass a real Stage A/agent-multi config or a locked Phase 4 template "
+        "with _protocol_lock.finetune.input_data_file pointing to the real panel."
+    )
+
+
 # ---------------------------------------------------------------------------
 def build_arm_configs(
     reference_cfg: Dict[str, Any],
@@ -274,7 +301,7 @@ def build_arm_configs(
     """
     base = _strip_runtime_paths(reference_cfg)
     augmented_csv, syn_only_csv = _resolve_synthetic_inputs(protocol_packet)
-    real_input = reference_cfg["input_data_file"]
+    real_input = _resolve_real_input(reference_cfg)
     ref_total = int(reference_cfg.get("total_timesteps", 0))
     pretrain_total = ref_total  # mirror reference budget for pretrain
     finetune_total = ref_total  # mirror reference budget for finetune
