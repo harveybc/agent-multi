@@ -39,6 +39,7 @@ ALLOWED_SPLITS = (
     "train_epoch",
     "validation_epoch",
     "evaluation",
+    "stage_b_validation",
 )
 
 # Public schema. Keep this stable: financial-data binds to these names.
@@ -97,13 +98,125 @@ def _hash_config(cfg: Mapping[str, Any]) -> str:
 
 
 def _hash_feature_list(features: Any) -> Optional[str]:
+    """Deterministic hash over the ordered feature list.
+
+    Order matters — Stage B reviewers must be able to detect a reordered
+    feature pipeline. Do NOT sort the list before hashing.
+    """
     if features is None:
         return None
     try:
-        blob = json.dumps(_jsonable(features), sort_keys=True, default=str).encode("utf-8")
-    except Exception:
+        items = [str(x) for x in features]
+    except TypeError:
         return None
+    if not items:
+        return None
+    blob = json.dumps(items, sort_keys=False).encode("utf-8")
     return _sha256_bytes(blob)
+
+
+def _hash_ordered_strings(items: Any) -> Optional[str]:
+    """Hash an ordered sequence of strings; None if empty/unavailable."""
+    if items is None:
+        return None
+    try:
+        seq = [str(x) for x in items]
+    except TypeError:
+        return None
+    if not seq:
+        return None
+    blob = json.dumps(seq, sort_keys=False).encode("utf-8")
+    return _sha256_bytes(blob)
+
+
+class FeatureListUnresolvedError(RuntimeError):
+    """Raised when a Stage B-locked config produces no resolvable feature list.
+
+    Stage B evidence with `feature_list_hash == null` is non-auditable: a
+    reviewer cannot tell whether the agent saw the intended observation
+    pipeline. Stage B-locked configs MUST resolve to a non-empty feature
+    list, either via `config["feature_list"]` / `config["feature_columns"]`
+    or via the env's preprocessor.
+    """
+
+
+def _unwrap_to_base(env: Any) -> Any:
+    base = env
+    seen: set = set()
+    while base is not None and id(base) not in seen:
+        seen.add(id(base))
+        if hasattr(base, "preprocessor_plugin") or hasattr(base, "observation_space") or hasattr(base, "dataframe"):
+            return base
+        inner = getattr(base, "env", None)
+        if inner is None or inner is base:
+            return base
+        base = inner
+    return base
+
+
+def resolve_feature_list(
+    config: Mapping[str, Any],
+    env: Any = None,
+) -> Optional[List[str]]:
+    """Best-effort resolution of the ordered feature list seen by the agent.
+
+    Resolution order:
+      1. config["feature_list"]
+      2. config["feature_columns"]
+      3. env.preprocessor_plugin.{feature_columns,feature_list,features}
+      4. env.dataframe.columns (excluding the date column) — last resort
+    """
+    for key in ("feature_list", "feature_columns"):
+        v = config.get(key)
+        if v:
+            try:
+                items = [str(x) for x in v]
+            except TypeError:
+                items = []
+            if items:
+                return items
+    base = _unwrap_to_base(env) if env is not None else None
+    if base is not None:
+        prep = getattr(base, "preprocessor_plugin", None)
+        for attr in ("feature_columns", "feature_list", "features"):
+            v = getattr(prep, attr, None)
+            if v:
+                try:
+                    items = [str(x) for x in v]
+                except TypeError:
+                    items = []
+                if items:
+                    return items
+        df = getattr(base, "dataframe", None)
+        env_cfg = getattr(base, "config", None) or {}
+        date_col = "DATE_TIME"
+        if isinstance(env_cfg, Mapping):
+            date_col = str(env_cfg.get("date_column") or "DATE_TIME")
+        if df is not None and hasattr(df, "columns"):
+            cols = [str(c) for c in df.columns if str(c) != date_col]
+            if cols:
+                return cols
+    return None
+
+
+def resolve_observation_state_fields(env: Any) -> Optional[List[str]]:
+    """Return the ordered keys of the env's Dict observation space."""
+    if env is None:
+        return None
+    current = env
+    seen: set = set()
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        obs_space = getattr(current, "observation_space", None)
+        spaces_dict = getattr(obs_space, "spaces", None)
+        if isinstance(spaces_dict, Mapping):
+            # Preserve insertion order — gymnasium Dict spaces keep declared order.
+            return [str(k) for k in spaces_dict.keys()]
+        inner = getattr(current, "env", None)
+        if inner is None or inner is current:
+            break
+        current = inner
+    return None
 
 
 def _jsonable(obj: Any) -> Any:
@@ -175,6 +288,14 @@ def _is_stage_c_authorized(config: Mapping[str, Any]) -> bool:
     return bool(
         config.get("final_stage_c_evaluation")
         and config.get("stage_c_acknowledged")
+    )
+
+
+def _is_stage_b_locked(config: Mapping[str, Any]) -> bool:
+    """True if the config is a Stage B locked run plan output."""
+    return bool(
+        config.get("_project3_stage_b_lock")
+        or config.get("_NOT_TO_RUN_UNTIL_STAGE_B_APPROVED")
     )
 
 
@@ -272,15 +393,46 @@ def _timestamp_for_bar(env: Any, bar_index: int) -> str:
     df = getattr(base, "dataframe", None)
     if df is None or len(df) == 0:
         return ""
-    idx = max(0, min(int(bar_index) - 1, len(df) - 1))
+    raw_idx = max(0, int(bar_index) - 1)
+    idx = min(raw_idx, len(df) - 1)
     cfg = getattr(base, "config", None) or {}
     date_col = cfg.get("date_column", "DATE_TIME") if isinstance(cfg, Mapping) else "DATE_TIME"
     try:
         if date_col in df.columns:
-            return str(df.iloc[idx][date_col])
-        return str(df.index[idx])
+            value = df.iloc[idx][date_col]
+        else:
+            value = df.index[idx]
+        if raw_idx <= len(df) - 1:
+            return str(value)
+        parsed = _parse_iso(value)
+        delta = _timeframe_delta(cfg if isinstance(cfg, Mapping) else {})
+        if parsed is None or delta is None:
+            return str(value)
+        overflow_steps = raw_idx - (len(df) - 1)
+        return (parsed + delta * overflow_steps).strftime("%Y-%m-%d %H:%M:%S")
     except Exception:
         return ""
+
+
+def _timeframe_delta(config: Mapping[str, Any]) -> Optional[_dt.timedelta]:
+    raw = str(
+        config.get("timeframe")
+        or config.get("timeframe_label")
+        or config.get("bar_timeframe")
+        or ""
+    ).strip().lower()
+    if "_" in raw:
+        raw = raw.rsplit("_", 1)[-1]
+    try:
+        if raw.endswith("m"):
+            return _dt.timedelta(minutes=int(raw[:-1]))
+        if raw.endswith("h"):
+            return _dt.timedelta(hours=int(raw[:-1]))
+        if raw.endswith("d"):
+            return _dt.timedelta(days=int(raw[:-1]))
+    except ValueError:
+        return None
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -296,6 +448,7 @@ def write_return_trace(
     run_id: Optional[str] = None,
     episode_id: Optional[str] = None,
     feature_list: Any = None,
+    env: Any = None,
     extra_metadata: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Write the trace CSV and its metadata sidecar.
@@ -310,9 +463,10 @@ def write_return_trace(
             f"return_trace split={split!r} not in {ALLOWED_SPLITS!r}"
         )
 
-    rows_list: List[Dict[str, Any]] = list(rows)
+    raw_rows: List[Dict[str, Any]] = list(rows)
+    rows_list: List[Dict[str, Any]] = []
     parsed_timestamps: List[_dt.datetime] = []
-    for idx, row in enumerate(rows_list):
+    for idx, row in enumerate(raw_rows):
         ts = row.get("timestamp", "")
         parsed = _parse_iso(ts)
         if parsed is None:
@@ -320,12 +474,19 @@ def write_return_trace(
                 f"return_trace row {idx} has missing or unparseable timestamp: {ts!r}"
             )
         if parsed_timestamps and parsed <= parsed_timestamps[-1]:
+            if parsed == parsed_timestamps[-1] and idx == len(raw_rows) - 1:
+                # Some gym envs emit one terminal step with the same final bar
+                # timestamp. Keep one row per market timestamp, but preserve
+                # the terminal row's final equity/reward fields.
+                rows_list[-1] = row
+                continue
             raise TraceTimestampError(
                 "return_trace timestamps must be strictly increasing within "
                 f"each split; row {idx} timestamp {ts!r} is not after the "
-                f"previous timestamp {rows_list[idx - 1].get('timestamp', '')!r}"
+                f"previous timestamp {rows_list[-1].get('timestamp', '')!r}"
             )
         parsed_timestamps.append(parsed)
+        rows_list.append(row)
 
     contains_heldout = any(
         _ts_at_or_after_heldout(r.get("timestamp", "")) for r in rows_list
@@ -338,6 +499,32 @@ def write_return_trace(
             "final_stage_c_evaluation=true AND stage_c_acknowledged=true "
             "in the config to authorize. Final Stage C mode is NOT "
             "implemented in this repo."
+        )
+
+    # Resolve feature list / observation state BEFORE touching disk so a
+    # Stage B-locked config that produces no feature list never leaves a
+    # half-written, non-auditable trace behind.
+    resolved_features = feature_list
+    if resolved_features is None:
+        resolved_features = resolve_feature_list(config, env=env)
+    elif not resolved_features:
+        recovered = resolve_feature_list(config, env=env)
+        if recovered:
+            resolved_features = recovered
+    feature_columns: Optional[List[str]] = None
+    if resolved_features is not None:
+        try:
+            feature_columns = [str(x) for x in resolved_features]
+        except TypeError:
+            feature_columns = None
+    observation_state_fields = resolve_observation_state_fields(env)
+
+    if _is_stage_b_locked(config) and not feature_columns:
+        raise FeatureListUnresolvedError(
+            "Stage B-locked config produced no resolvable feature_list. "
+            "Set config['feature_list'] / config['feature_columns'] or "
+            "expose feature_columns on the env preprocessor plugin; refusing "
+            "to write non-auditable Stage B evidence."
         )
 
     out = Path(trace_path)
@@ -364,10 +551,14 @@ def write_return_trace(
         "seed": int(seed),
         "run_id": run_id,
         "episode_id": episode_id,
-        "config_hash": _hash_config(config),
+        "config_hash": config.get("_run_config_hash") or _hash_config(config),
         "data_file": config.get("input_data_file"),
         "data_file_hash": _sha256_file(config.get("input_data_file")),
-        "feature_list_hash": _hash_feature_list(feature_list),
+        "feature_list_hash": _hash_feature_list(feature_columns),
+        "feature_columns": feature_columns,
+        "feature_column_count": len(feature_columns) if feature_columns else 0,
+        "observation_state_fields": observation_state_fields,
+        "observation_state_hash": _hash_ordered_strings(observation_state_fields),
         "split_boundaries": {
             "first_timestamp": first_ts,
             "last_timestamp": last_ts,
@@ -376,6 +567,15 @@ def write_return_trace(
         "contains_heldout_rows": bool(contains_heldout),
         "stage_c_authorized": bool(stage_c_ok),
         "fields": list(TRACE_FIELDNAMES),
+        "broker_profile": config.get("broker_profile"),
+        "market_type": config.get("market_type"),
+        "trade_rate_band_id": config.get("trade_rate_band_id"),
+        "calendar_policy_id": config.get("calendar_policy_id"),
+        "market_state_profile_id": config.get("market_state_profile_id"),
+        "market_state_profile_hash": config.get("market_state_profile_hash"),
+        "market_state_profile_family": config.get("market_state_profile_family"),
+        "market_state_profile_name": config.get("market_state_profile_name"),
+        "market_state_selected_columns": config.get("market_state_selected_columns"),
     }
     if extra_metadata:
         metadata["extra"] = _jsonable(dict(extra_metadata))
@@ -481,6 +681,9 @@ def _evidence_trace_entry(meta: Mapping[str, Any]) -> Dict[str, Any]:
         "contains_heldout_rows": contains_heldout,
         "stage_c_authorized": stage_c_ok,
         "episode_id": meta.get("episode_id"),
+        "feature_list_hash": meta.get("feature_list_hash"),
+        "feature_column_count": meta.get("feature_column_count"),
+        "observation_state_hash": meta.get("observation_state_hash"),
     }
 
 
@@ -567,9 +770,13 @@ def build_return_trace_evidence(
     )
     seed = _consistent_value(items, "seed")
     config_hash = _consistent_value(items, "config_hash") or _hash_config(config)
-    data_file = _consistent_value(items, "data_file") or config.get("input_data_file")
-    data_file_hash = _consistent_value(items, "data_file_hash")
+    data_file = config.get("input_data_file")
+    data_file_hash = _sha256_file(data_file) if data_file else None
     feature_list_hash = _consistent_value(items, "feature_list_hash")
+    feature_columns = _consistent_value(items, "feature_columns")
+    feature_column_count = _consistent_value(items, "feature_column_count")
+    observation_state_fields = _consistent_value(items, "observation_state_fields")
+    observation_state_hash = _consistent_value(items, "observation_state_hash")
     items_run_id = _consistent_value(items, "run_id")
 
     resolved_run_id = run_id or items_run_id or make_run_id(config)
@@ -578,6 +785,39 @@ def build_return_trace_evidence(
 
     contains_heldout_any = any(t["contains_heldout_rows"] for t in trace_entries)
     stage_c_authorized_any = any(t["stage_c_authorized"] for t in trace_entries)
+
+    broker_profile = (
+        _consistent_value(items, "broker_profile") or config.get("broker_profile")
+    )
+    market_type = (
+        _consistent_value(items, "market_type") or config.get("market_type")
+    )
+    trade_rate_band_id = (
+        _consistent_value(items, "trade_rate_band_id") or config.get("trade_rate_band_id")
+    )
+    calendar_policy_id = (
+        _consistent_value(items, "calendar_policy_id") or config.get("calendar_policy_id")
+    )
+    market_state_profile_id = (
+        _consistent_value(items, "market_state_profile_id")
+        or config.get("market_state_profile_id")
+    )
+    market_state_profile_hash = (
+        _consistent_value(items, "market_state_profile_hash")
+        or config.get("market_state_profile_hash")
+    )
+    market_state_profile_family = (
+        _consistent_value(items, "market_state_profile_family")
+        or config.get("market_state_profile_family")
+    )
+    market_state_profile_name = (
+        _consistent_value(items, "market_state_profile_name")
+        or config.get("market_state_profile_name")
+    )
+    market_state_selected_columns = (
+        _consistent_value(items, "market_state_selected_columns")
+        or config.get("market_state_selected_columns")
+    )
 
     return {
         "schema_version": EVIDENCE_SCHEMA_VERSION,
@@ -592,9 +832,22 @@ def build_return_trace_evidence(
         "data_file": data_file,
         "data_file_hash": data_file_hash,
         "feature_list_hash": feature_list_hash,
+        "feature_columns": feature_columns,
+        "feature_column_count": feature_column_count,
+        "observation_state_fields": observation_state_fields,
+        "observation_state_hash": observation_state_hash,
         "heldout_boundary": HELDOUT_BOUNDARY,
         "contains_heldout_rows": contains_heldout_any,
         "stage_c_authorized": stage_c_authorized_any,
+        "broker_profile": broker_profile,
+        "market_type": market_type,
+        "trade_rate_band_id": trade_rate_band_id,
+        "calendar_policy_id": calendar_policy_id,
+        "market_state_profile_id": market_state_profile_id,
+        "market_state_profile_hash": market_state_profile_hash,
+        "market_state_profile_family": market_state_profile_family,
+        "market_state_profile_name": market_state_profile_name,
+        "market_state_selected_columns": market_state_selected_columns,
         "traces": trace_entries,
     }
 

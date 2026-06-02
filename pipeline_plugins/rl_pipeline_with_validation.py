@@ -35,6 +35,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
 from . import _return_trace as _trace_mod
+from agent_plugins._progress_callback import make_progress_callback
 
 
 _METRIC_KEYS = ("trades_total", "win_pct", "sharpe_ratio", "total_return", "final_equity")
@@ -118,6 +119,10 @@ class PipelinePlugin:
         "train_years": 4,
         "val_years": 1,
         "test_years": 1,
+        "train_days": None,
+        "val_days": None,
+        "test_days": None,
+        "min_split_rows": 100,
         "split_anchor": "start",  # "start" or "end" of dataset
 
         # epoch loop
@@ -136,6 +141,7 @@ class PipelinePlugin:
 
     plugin_debug_vars = [
         "train_years", "val_years", "test_years",
+        "train_days", "val_days", "test_days", "min_split_rows",
         "epoch_timesteps", "max_epochs", "l1_patience", "l1_min_delta",
         "return_trace_dir",
     ]
@@ -170,36 +176,55 @@ class PipelinePlugin:
         train_y = float(config.get("train_years", self.params["train_years"]))
         val_y = float(config.get("val_years", self.params["val_years"]))
         test_y = float(config.get("test_years", self.params["test_years"]))
+        train_d = _safe_float_or_none(config.get("train_days", self.params["train_days"]))
+        val_d = _safe_float_or_none(config.get("val_days", self.params["val_days"]))
+        test_d = _safe_float_or_none(config.get("test_days", self.params["test_days"]))
+        min_split_rows = int(config.get("min_split_rows", self.params["min_split_rows"]))
         anchor = str(config.get("split_anchor", self.params["split_anchor"])).lower()
+        use_day_splits = train_d is not None and val_d is not None and test_d is not None
 
         first = df[date_col].iloc[0]
         last = df[date_col].iloc[-1]
         if anchor == "end":
             test_end = last
-            test_start = test_end - pd.DateOffset(years=int(test_y))
-            val_end = test_start
-            val_start = val_end - pd.DateOffset(years=int(val_y))
-            train_end = val_start
-            train_start = train_end - pd.DateOffset(years=int(train_y))
+            if use_day_splits:
+                test_start = test_end - pd.DateOffset(days=int(test_d))
+                val_end = test_start
+                val_start = val_end - pd.DateOffset(days=int(val_d))
+                train_end = val_start
+                train_start = train_end - pd.DateOffset(days=int(train_d))
+            else:
+                test_start = test_end - pd.DateOffset(years=int(test_y))
+                val_end = test_start
+                val_start = val_end - pd.DateOffset(years=int(val_y))
+                train_end = val_start
+                train_start = train_end - pd.DateOffset(years=int(train_y))
         else:
             train_start = first
-            train_end = train_start + pd.DateOffset(years=int(train_y))
-            val_start = train_end
-            val_end = val_start + pd.DateOffset(years=int(val_y))
-            test_start = val_end
-            test_end = test_start + pd.DateOffset(years=int(test_y))
+            if use_day_splits:
+                train_end = train_start + pd.DateOffset(days=int(train_d))
+                val_start = train_end
+                val_end = val_start + pd.DateOffset(days=int(val_d))
+                test_start = val_end
+                test_end = test_start + pd.DateOffset(days=int(test_d))
+            else:
+                train_end = train_start + pd.DateOffset(years=int(train_y))
+                val_start = train_end
+                val_end = val_start + pd.DateOffset(years=int(val_y))
+                test_start = val_end
+                test_end = test_start + pd.DateOffset(years=int(test_y))
 
         train_df = df[(df[date_col] >= train_start) & (df[date_col] < train_end)]
         val_df = df[(df[date_col] >= val_start) & (df[date_col] < val_end)]
         test_df = df[(df[date_col] >= test_start) & (df[date_col] < test_end)]
 
         for name, part in (("train", train_df), ("val", val_df), ("test", test_df)):
-            if len(part) < 100:
+            if len(part) < min_split_rows:
                 raise ValueError(
-                    f"{name} split has only {len(part)} rows (range "
+                    f"{name} split has only {len(part)} rows; minimum is {min_split_rows} (range "
                     f"{train_start if name=='train' else val_start if name=='val' else test_start} "
                     f"-> {train_end if name=='train' else val_end if name=='val' else test_end}). "
-                    f"Adjust split_anchor or *_years."
+                    f"Adjust split_anchor, *_years, *_days, or min_split_rows."
                 )
 
         self._tempdir = tempfile.TemporaryDirectory(prefix="agent_multi_split_")
@@ -263,6 +288,7 @@ class PipelinePlugin:
                 # Per-split config view so the metadata sidecar's data_file
                 # hash matches the slice that was actually evaluated.
                 split_config = dict(config)
+                split_config["_run_config_hash"] = config.get("_run_config_hash") or _trace_mod._hash_config(config)
                 split_config["input_data_file"] = csv_path
                 split_config["_split"] = split_label
                 metadata = _trace_mod.write_return_trace(
@@ -276,6 +302,7 @@ class PipelinePlugin:
                     run_id=run_id,
                     episode_id=episode_id,
                     feature_list=config.get("feature_list"),
+                    env=env,
                 )
                 summary["return_trace_file"] = metadata["trace_file"]
                 summary["return_trace_metadata_file"] = metadata["metadata_file"]
@@ -372,9 +399,23 @@ class PipelinePlugin:
 
                 # training mode
                 model = agent_plugin.build(train_env, config)
+                if not hasattr(model, "learn"):
+                    best_model_path = config.get("save_model") or "./agent_model.zip"
+                    Path(best_model_path).parent.mkdir(parents=True, exist_ok=True)
+                    agent_plugin.save(model, best_model_path)
+                    final = self._final_eval(
+                        agent_plugin, model, train_env,
+                        env_plugin_name, paths, config, agent_plugin,
+                    )
+                    final["mode"] = "deterministic_baseline"
+                    final["history"] = []
+                    final["best_composite"] = None
+                    final["best_model_path"] = str(Path(best_model_path).resolve())
+                    return final
 
                 epoch_ts = int(config.get("epoch_timesteps", self.params["epoch_timesteps"]))
                 max_epochs = int(config.get("max_epochs", self.params["max_epochs"]))
+                total_progress_timesteps = int(config.get("total_timesteps") or epoch_ts * max_epochs)
                 l1_patience = int(config.get("l1_patience", self.params["l1_patience"]))
                 l1_min_delta = float(config.get("l1_min_delta", self.params["l1_min_delta"]))
                 seed = int(config.get("eval_seed", self.params["eval_seed"]))
@@ -424,6 +465,7 @@ class PipelinePlugin:
                         total_timesteps=epoch_ts,
                         reset_num_timesteps=(epoch == 1),
                         log_interval=max(1, epoch_ts // 1000),
+                        callback=make_progress_callback(config, total_progress_timesteps),
                     )
                     a_a, c_a, e_a = _policy_checksum(model)
                     nts_after = int(getattr(model, "num_timesteps", 0))

@@ -58,6 +58,10 @@ def _run_one(base_cfg: Dict[str, Any], seed: int, run_dir: Path, git_sha: str) -
     cfg["save_model"] = str(run_dir / "policy.zip")
     cfg["results_file"] = str(run_dir / "summary.json")
     cfg["save_config"] = str(run_dir / "config_out.json")
+    if "return_trace_file" in cfg:
+        cfg["return_trace_file"] = str(run_dir / "return_trace.csv")
+    if "return_trace_dir" in cfg:
+        cfg["return_trace_dir"] = str(run_dir / "return_traces")
 
     run_dir.mkdir(parents=True, exist_ok=True)
     cfg_path = run_dir / "config.json"
@@ -94,6 +98,19 @@ def _run_one(base_cfg: Dict[str, Any], seed: int, run_dir: Path, git_sha: str) -
     }
 
 
+def _locked_protocol_reason(cfg: Dict[str, Any]) -> str | None:
+    lock = cfg.get("_protocol_lock")
+    if not isinstance(lock, dict):
+        return None
+    if not lock.get("_NOT_TO_RUN_UNTIL_STAGE_B_APPROVED"):
+        return None
+    if os.environ.get("PROJECT3_ALLOW_STAGE_B_LOCKED_PROTOCOL") == "1":
+        return None
+    reason = lock.get("reason") or "protocol lock requires Stage B approval"
+    packet = lock.get("protocol_packet")
+    return f"{reason}" + (f" packet={packet}" if packet else "")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", required=True, help="base config JSON path")
@@ -105,6 +122,22 @@ def main() -> int:
     cfg_path = Path(args.config).resolve()
     with cfg_path.open("r", encoding="utf-8") as fh:
         base_cfg = json.load(fh)
+    locked_reason = _locked_protocol_reason(base_cfg)
+    if locked_reason:
+        print(
+            json.dumps(
+                {
+                    "ok": False,
+                    "blocked": "stage_b_protocol_lock",
+                    "config": str(cfg_path),
+                    "reason": locked_reason,
+                    "override_env": "PROJECT3_ALLOW_STAGE_B_LOCKED_PROTOCOL=1",
+                },
+                indent=2,
+            ),
+            file=sys.stderr,
+        )
+        return 2
 
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     git_sha = _git_sha()

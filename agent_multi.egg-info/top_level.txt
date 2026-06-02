@@ -3,3 +3,4 @@ app
 env_plugins
 optimizer_plugins
 pipeline_plugins
+tests

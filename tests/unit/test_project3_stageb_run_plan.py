@@ -74,14 +74,14 @@ def test_valid_reference_produces_manifest_and_locked_configs(tmp_path):
         candidate_id="ethusdt_4h_sac_tech_stat",
         output_dir=str(out),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade", "buy_and_hold"],
     )
     assert manifest["schema_version"] == "project3_stageb_run_plan_v1"
     assert manifest["training_launched"] is False
     assert manifest["stage_c_access"] == "DENIED"
-    # 5 seeds * 2 cost * (1 candidate + 2 baselines) = 30 entries
-    assert len(manifest["configs"]) == 5 * 2 * 3
+    # 5 seeds * 3 costs * (1 candidate + 2 baselines) = 45 entries
+    assert len(manifest["configs"]) == 5 * 3 * 3
     assert (out / "stageb_run_plan_manifest.json").exists()
     assert (out / "stageb_run_plan_manifest.md").exists()
     # Every emitted config file exists.
@@ -98,7 +98,7 @@ def test_all_generated_configs_are_locked(tmp_path):
         candidate_id="ethusdt_4h_sac_tech_stat",
         output_dir=str(out),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"],
     )
     for entry in manifest["configs"]:
@@ -111,6 +111,8 @@ def test_all_generated_configs_are_locked(tmp_path):
         assert cfg["stage_c_acknowledged"] is False
         assert cfg["return_trace_dir"]
         assert cfg["return_trace_file"]
+        assert cfg["progress_file"]
+        assert cfg["training_progress_file"] == cfg["progress_file"]
 
 
 def test_no_generated_config_authorizes_stage_c(tmp_path):
@@ -122,7 +124,7 @@ def test_no_generated_config_authorizes_stage_c(tmp_path):
         candidate_id="ethusdt_4h_sac_tech_stat",
         output_dir=str(out),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"],
     )
     for entry in manifest["configs"]:
@@ -157,14 +159,14 @@ def test_too_few_seeds_fails_unless_overridden(tmp_path):
         runplan.build_run_plan(
             reference_config_path=str(ref),
             candidate_id="x", output_dir=str(out),
-            seeds=[0], cost_scenarios=["base", "pessimistic"],
+            seeds=[0], cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
             baselines=["no_trade"],
         )
     # With override it succeeds but the plan is non-promotable.
     manifest = runplan.build_run_plan(
         reference_config_path=str(ref),
         candidate_id="x", output_dir=str(out),
-        seeds=[0], cost_scenarios=["base", "pessimistic"],
+        seeds=[0], cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"], allow_too_few_seeds=True,
     )
     assert "TOO_FEW_PAIRED_SEEDS" in manifest["promotion_blockers"]
@@ -193,7 +195,7 @@ def test_deterministic_output_paths(tmp_path):
         candidate_id="ethusdt_4h_sac_tech_stat",
         output_dir=str(out),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"],
     )
     for entry in manifest["configs"]:
@@ -203,6 +205,8 @@ def test_deterministic_output_paths(tmp_path):
         assert entry["cost_scenario"] in name
         # Trace + evidence paths are deterministic per cell.
         assert entry["expected_evidence_file"].endswith("evidence.json")
+        assert entry["progress_file"].endswith("training_progress.json")
+        assert entry["return_trace_file"].endswith("evaluation_return_trace.csv")
 
 
 def test_reference_sha_changes_when_config_changes(tmp_path):
@@ -213,7 +217,7 @@ def test_reference_sha_changes_when_config_changes(tmp_path):
         reference_config_path=str(ref),
         candidate_id="x", output_dir=str(out1),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"],
     )
     # Mutate the reference config
@@ -225,7 +229,7 @@ def test_reference_sha_changes_when_config_changes(tmp_path):
         reference_config_path=str(ref),
         candidate_id="x", output_dir=str(out2),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"],
     )
     assert m1["reference_config_sha256"] != m2["reference_config_sha256"]
@@ -255,7 +259,7 @@ def test_heldout_violating_reference_is_rejected(tmp_path):
             reference_config_path=str(ref),
             candidate_id="x", output_dir=str(out),
             seeds=[0, 1, 2, 3, 4],
-            cost_scenarios=["base", "pessimistic"],
+            cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
             baselines=["no_trade"],
         )
 
@@ -273,12 +277,12 @@ def test_reference_with_stage_c_flags_is_rejected(tmp_path):
             reference_config_path=str(ref),
             candidate_id="x", output_dir=str(out),
             seeds=[0, 1, 2, 3, 4],
-            cost_scenarios=["base", "pessimistic"],
+            cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
             baselines=["no_trade"],
         )
 
 
-def test_baselines_marked_template_only(tmp_path):
+def test_known_baselines_are_wired_to_real_plugins(tmp_path):
     csv = _write_synthetic_data(tmp_path)
     ref = _reference_config(tmp_path, csv)
     out = tmp_path / "out"
@@ -286,18 +290,46 @@ def test_baselines_marked_template_only(tmp_path):
         reference_config_path=str(ref),
         candidate_id="x", output_dir=str(out),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
-        baselines=["no_trade", "buy_and_hold"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
+        baselines=["no_trade", "buy_and_hold", "random", "momentum", "reversal"],
+    )
+    baseline_entries = [e for e in manifest["configs"] if e["role"] == "baseline"]
+    assert baseline_entries
+    expected = {
+        "no_trade": "no_trade_agent",
+        "buy_and_hold": "buy_hold_agent",
+        "random": "random_agent",
+        "momentum": "momentum_agent",
+        "reversal": "reversal_agent",
+    }
+    for entry in baseline_entries:
+        assert entry["template_only"] is False
+        assert entry["promotion_eligible"] is False
+        cfg = json.loads(Path(entry["config_file"]).read_text())
+        assert cfg["_baseline_template_only"] is False
+        assert cfg["_baseline_promotion_eligible"] is False
+        assert cfg["agent_plugin"] == expected[entry["baseline_name"]]
+        assert cfg["total_timesteps"] == 0
+    assert "BASELINES_TEMPLATE_ONLY" not in manifest["promotion_blockers"]
+
+
+def test_unknown_baseline_remains_template_only_and_blocks_promotion(tmp_path):
+    csv = _write_synthetic_data(tmp_path)
+    ref = _reference_config(tmp_path, csv)
+    out = tmp_path / "out"
+    manifest = runplan.build_run_plan(
+        reference_config_path=str(ref),
+        candidate_id="x", output_dir=str(out),
+        seeds=[0, 1, 2, 3, 4],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
+        baselines=["unknown_baseline"],
     )
     baseline_entries = [e for e in manifest["configs"] if e["role"] == "baseline"]
     assert baseline_entries
     for entry in baseline_entries:
         assert entry["template_only"] is True
-        assert entry["promotion_eligible"] is False
         cfg = json.loads(Path(entry["config_file"]).read_text())
         assert cfg["_baseline_template_only"] is True
-        assert cfg["_baseline_promotion_eligible"] is False
-    # Manifest must surface the template-only blocker.
     assert "BASELINES_TEMPLATE_ONLY" in manifest["promotion_blockers"]
     assert manifest["promotion_eligible"] is False
 
@@ -310,7 +342,7 @@ def test_dry_run_validate_only_writes_nothing(tmp_path):
         reference_config_path=str(ref),
         candidate_id="x", output_dir=str(out),
         seeds=[0, 1, 2, 3, 4],
-        cost_scenarios=["base", "pessimistic"],
+        cost_scenarios=list(runplan.DEFAULT_COST_SCENARIOS),
         baselines=["no_trade"],
         write_files=False,
     )

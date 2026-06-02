@@ -35,6 +35,13 @@ class Plugin:
         "metrics_plugin": "default_metrics",
     }
 
+    plugin_debug_vars = [
+        "env_mode", "input_data_file", "price_column", "window_size",
+        "initial_cash", "commission", "slippage",
+        "data_feed_plugin", "broker_plugin", "strategy_plugin",
+        "preprocessor_plugin", "reward_plugin", "metrics_plugin",
+    ]
+
     def __init__(self, config: Dict[str, Any] | None = None):
         self.params = self.plugin_params.copy()
         self._env = None
@@ -43,6 +50,12 @@ class Plugin:
 
     def set_params(self, **kwargs: Any) -> None:
         self.params.update(kwargs)
+
+    def get_debug_info(self) -> Dict[str, Any]:
+        return {var: self.params.get(var) for var in self.plugin_debug_vars}
+
+    def add_debug_info(self, debug_info: Dict[str, Any]) -> None:
+        debug_info.update(self.get_debug_info())
 
     def _build_env_config(self, agent_config: Dict[str, Any]) -> Dict[str, Any]:
         merged = dict(self.params)

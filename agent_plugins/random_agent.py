@@ -30,7 +30,20 @@ class Plugin:
         return model
 
     def predict(self, model, obs, deterministic: bool = True):
-        return int(model["action_space"].sample())
+        action_space = model["action_space"]
+        n = getattr(action_space, "n", None)
+        if n is not None:
+            return int(self._rng.randrange(int(n)))
+        sample = action_space.sample()
+        try:
+            import numpy as np
+
+            arr = np.asarray(sample).reshape(-1)
+            if len(arr):
+                return float(arr[0])
+        except Exception:
+            pass
+        return float(sample)
 
     def save(self, model, path: str) -> None:
         # Nothing to persist; write a stub file for consistency.

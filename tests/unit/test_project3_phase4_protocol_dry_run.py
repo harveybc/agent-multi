@@ -192,6 +192,39 @@ def test_validator_rejects_synthetic_validation_or_test_paths():
         validator.raise_if_invalid()
 
 
+def test_locked_synthetic_template_resolves_real_finetune_panel():
+    ref = _reference_config()
+    ref["input_data_file"] = "/tmp/synthetic-datagen/augmented_regime_residual.csv"
+    ref["_protocol_lock"] = {
+        "finetune": {
+            "input_data_file": "/tmp/project3_real_ethusdt_4h_train.csv",
+        },
+    }
+    packet = _protocol_packet()
+
+    configs = dryrun.build_arm_configs(
+        ref,
+        packet,
+        seeds=[0],
+        protocol_packet_path="/tmp/packet.json",
+        protocol_packet_hash="abc",
+        reference_config_path="/tmp/reference.json",
+    )
+
+    assert configs["arm_a"]["input_data_file"] == "/tmp/project3_real_ethusdt_4h_train.csv"
+    assert configs["arm_b"]["input_data_file"] == "/tmp/project3_real_ethusdt_4h_train.csv"
+    assert configs["arm_c"]["_phase4_arm"]["validation_input_data_file"] == (
+        "/tmp/project3_real_ethusdt_4h_train.csv"
+    )
+    assert configs["arm_d"]["_arm_finetune"]["input_data_file"] == (
+        "/tmp/project3_real_ethusdt_4h_train.csv"
+    )
+
+    validator = dryrun.DryRunValidator(ref, packet, configs)
+    validator.run_all()
+    validator.raise_if_invalid()
+
+
 def test_main_dry_run_validate_protocol_reports_no_training(tmp_path, capsys):
     ref_path = tmp_path / "reference.json"
     packet_path = tmp_path / "packet.json"

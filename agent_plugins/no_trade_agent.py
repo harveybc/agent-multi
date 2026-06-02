@@ -1,9 +1,4 @@
-"""
-buy_hold_agent.py — long on first step, then hold.
-
-Simple baseline to verify that env rewards + metrics line up with gym-fx's
-buy-hold smoke test.
-"""
+"""Always-flat deterministic baseline for Stage B evidence runs."""
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -27,14 +22,11 @@ class Plugin:
         return model
 
     def predict(self, model, obs, deterministic: bool = True):
-        # Keep requesting long exposure. The execution strategy should ignore
-        # redundant long actions once already exposed, but this avoids a single
-        # early warmup-blocked action collapsing the baseline into no-trade.
-        return 1
+        return 0
 
     def save(self, model, path: str) -> None:
         with open(path, "w", encoding="utf-8") as fh:
-            fh.write("buy_hold_agent\n")
+            fh.write("no_trade_agent\n")
 
     def load(self, path: str, env):
         return {"env": env}

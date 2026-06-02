@@ -19,6 +19,8 @@ authorizes a final Stage C evaluation.
 """
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
 
@@ -112,10 +114,15 @@ class PipelinePlugin:
         done = False
         trace_rows = []
         prev_equity = _safe_float(_info.get("equity"))
+        eval_progress_file = config.get("training_progress_file") or config.get("progress_file")
+        action_stats = _new_action_stats(
+            continuous_threshold=_safe_float(config.get("continuous_action_threshold")),
+        )
         while not done:
             action = agent_plugin.predict(model, obs, deterministic=deterministic)
             obs, reward, terminated, truncated, _info = env.step(action)
             equity = _safe_float(_info.get("equity"))
+            _update_action_stats(action_stats, action, _info)
             trace_rows.append(
                 _trace_mod.build_trace_row(
                     env=env,
@@ -135,6 +142,15 @@ class PipelinePlugin:
             prev_equity = equity
             total_reward += float(reward)
             steps += 1
+            _write_eval_progress_if_needed(
+                eval_progress_file,
+                config,
+                status="evaluation",
+                step=steps,
+                info=_info,
+                action_stats=action_stats,
+                force=steps == 1 or steps % int(config.get("progress_update_interval_steps") or 1000) == 0,
+            )
             done = bool(terminated or truncated)
             if steps > 1_000_000:  # hard safety
                 break
@@ -149,6 +165,26 @@ class PipelinePlugin:
             episode_length=steps,
             eval_seed=seed,
         )
+        summary.update(_action_summary_fields(action_stats, summary))
+        min_trades = int(config.get("no_trade_min_trades") or 0)
+        trades_total = int(float(summary.get("trades_total") or 0))
+        summary["no_trade_min_trades"] = min_trades
+        summary["no_trade_gate_passed"] = bool(trades_total >= min_trades) if min_trades else True
+        if min_trades and trades_total < min_trades:
+            summary["no_trade_gate_reason"] = (
+                f"trades_total={trades_total} below required minimum {min_trades}; "
+                "hard kill for promotion, diagnostic rerun required"
+            )
+        _write_eval_progress_if_needed(
+            eval_progress_file,
+            config,
+            status="evaluation_complete",
+            step=steps,
+            info=_info,
+            action_stats=action_stats,
+            force=True,
+            summary=summary,
+        )
         trace_file = config.get("return_trace_file") or self.params.get("return_trace_file")
         if trace_file:
             metadata = _trace_mod.write_return_trace(
@@ -162,6 +198,7 @@ class PipelinePlugin:
                 run_id=run_id,
                 episode_id=episode_id,
                 feature_list=config.get("feature_list"),
+                env=env,
             )
             summary["return_trace_file"] = metadata["trace_file"]
             summary["return_trace_metadata_file"] = metadata["metadata_file"]
@@ -185,3 +222,182 @@ def _safe_float(value) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _new_action_stats(*, continuous_threshold: float | None = None) -> Dict[str, Any]:
+    return {
+        "steps": 0,
+        "hold_actions": 0,
+        "long_actions": 0,
+        "short_actions": 0,
+        "non_hold_actions": 0,
+        "raw_abs_sum": 0.0,
+        "raw_min": None,
+        "raw_max": None,
+        "continuous_deadband_actions": 0,
+        "continuous_action_threshold": continuous_threshold,
+        "entry_actions_seen": 0,
+        "entry_orders_submitted": 0,
+        "blocked_atr_warmup": 0,
+        "blocked_session_filter": 0,
+        "blocked_non_positive_atr": 0,
+        "blocked_non_positive_size": 0,
+        "blocked_non_positive_price": 0,
+    }
+
+
+def _raw_action_value(action: Any) -> float:
+    try:
+        import numpy as np
+
+        arr = np.asarray(action).reshape(-1)
+        if len(arr):
+            return float(arr[0])
+    except Exception:
+        pass
+    try:
+        return float(action)
+    except Exception:
+        return 0.0
+
+
+def _update_action_stats(stats: Dict[str, Any], action: Any, info: Dict[str, Any]) -> None:
+    raw = _raw_action_value(action)
+    coerced = info.get("coerced_action")
+    try:
+        coerced_i = int(coerced)
+    except Exception:
+        coerced_i = None
+    stats["steps"] += 1
+    stats["raw_abs_sum"] += abs(raw)
+    stats["raw_min"] = raw if stats["raw_min"] is None else min(float(stats["raw_min"]), raw)
+    stats["raw_max"] = raw if stats["raw_max"] is None else max(float(stats["raw_max"]), raw)
+    if coerced_i == 1:
+        stats["long_actions"] += 1
+        stats["non_hold_actions"] += 1
+    elif coerced_i == 2:
+        stats["short_actions"] += 1
+        stats["non_hold_actions"] += 1
+    elif coerced_i == 0:
+        stats["hold_actions"] += 1
+    threshold = stats.get("continuous_action_threshold")
+    if threshold is not None and abs(raw) < float(threshold):
+        stats["continuous_deadband_actions"] += 1
+    exec_diag = info.get("execution_diagnostics") if isinstance(info, dict) else {}
+    if isinstance(exec_diag, dict):
+        for key in (
+            "entry_actions_seen",
+            "entry_orders_submitted",
+            "blocked_atr_warmup",
+            "blocked_session_filter",
+            "blocked_non_positive_atr",
+            "blocked_non_positive_size",
+            "blocked_non_positive_price",
+        ):
+            try:
+                stats[key] = max(int(stats.get(key, 0)), int(exec_diag.get(key, 0)))
+            except Exception:
+                pass
+
+
+def _action_summary_fields(stats: Dict[str, Any], summary: Dict[str, Any]) -> Dict[str, Any]:
+    steps = max(1, int(stats.get("steps") or 0))
+    non_hold = int(stats.get("non_hold_actions") or 0)
+    trades = int(float(summary.get("trades_total") or 0))
+    deadband = int(stats.get("continuous_deadband_actions") or 0)
+    entry_actions = int(stats.get("entry_actions_seen") or 0)
+    orders = int(stats.get("entry_orders_submitted") or 0)
+    if trades > 0:
+        diagnosis = "traded"
+    elif non_hold <= 0:
+        diagnosis = "policy_hold_collapse"
+    elif entry_actions <= 0:
+        diagnosis = "action_mapping_or_env_blocked_before_strategy"
+    elif orders <= 0:
+        diagnosis = "execution_guard_blocked_all_entries"
+    else:
+        diagnosis = "orders_submitted_but_no_closed_trades"
+    return {
+        "action_steps": int(stats.get("steps") or 0),
+        "action_hold_count": int(stats.get("hold_actions") or 0),
+        "action_long_count": int(stats.get("long_actions") or 0),
+        "action_short_count": int(stats.get("short_actions") or 0),
+        "action_non_hold_count": non_hold,
+        "action_non_hold_rate": non_hold / steps,
+        "action_abs_mean": float(stats.get("raw_abs_sum") or 0.0) / steps,
+        "action_raw_min": stats.get("raw_min"),
+        "action_raw_max": stats.get("raw_max"),
+        "action_deadband_count": deadband,
+        "action_deadband_rate": deadband / steps,
+        "execution_entry_actions_seen": entry_actions,
+        "execution_entry_orders_submitted": orders,
+        "execution_blocked_atr_warmup": int(stats.get("blocked_atr_warmup") or 0),
+        "execution_blocked_session_filter": int(stats.get("blocked_session_filter") or 0),
+        "execution_blocked_non_positive_atr": int(stats.get("blocked_non_positive_atr") or 0),
+        "execution_blocked_non_positive_size": int(stats.get("blocked_non_positive_size") or 0),
+        "execution_blocked_non_positive_price": int(stats.get("blocked_non_positive_price") or 0),
+        "no_trade_diagnosis": diagnosis if trades == 0 else "",
+    }
+
+
+def _write_eval_progress_if_needed(
+    progress_file: str | None,
+    config: Dict[str, Any],
+    *,
+    status: str,
+    step: int,
+    info: Dict[str, Any],
+    action_stats: Dict[str, Any],
+    force: bool = False,
+    summary: Dict[str, Any] | None = None,
+) -> None:
+    if not progress_file or not force:
+        return
+    equity = _safe_float(info.get("equity")) if isinstance(info, dict) else None
+    initial_cash = _safe_float(config.get("initial_cash")) or 10000.0
+    total_return = None
+    if equity is not None and initial_cash:
+        total_return = (equity - initial_cash) / initial_cash
+    trades = None
+    if summary is not None:
+        trades = summary.get("trades_total")
+        total_return = summary.get("total_return", total_return)
+        equity = summary.get("final_equity", equity)
+    if trades is None and isinstance(info, dict):
+        trades = info.get("trades")
+    payload = {
+        "schema_version": "project3_training_progress_v1",
+        "status": status,
+        "source": "rl_pipeline_evaluation",
+        "run_id": config.get("run_id") or Path(str(config.get("save_model") or "")).parent.name,
+        "agent_plugin": config.get("agent_plugin"),
+        "asset": config.get("asset"),
+        "timeframe": config.get("timeframe"),
+        "features_preset": config.get("features_preset"),
+        "seed": config.get("eval_seed", config.get("train_seed")),
+        "pid": None,
+        "updated_at_utc": _utc_now(),
+        "elapsed_seconds": None,
+        "current_step": step,
+        "num_timesteps": config.get("total_timesteps"),
+        "total_timesteps": config.get("total_timesteps"),
+        "progress_pct": 100.0 if status == "evaluation_complete" else 99.0,
+        "progress_percent": 100.0 if status == "evaluation_complete" else 99.0,
+        "progress_detail": f"evaluation step {step}; trades={trades}; return={total_return}",
+        "eval_step": step,
+        "trades_total": trades,
+        "total_return": total_return,
+        "profit_percent": None if total_return is None else float(total_return) * 100.0,
+        "equity": equity,
+        "final_equity": equity,
+        **_action_summary_fields(action_stats, summary or {"trades_total": trades or 0}),
+    }
+    path = Path(str(progress_file))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    tmp.replace(path)
