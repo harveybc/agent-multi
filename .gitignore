@@ -3,3 +3,23 @@ data/project2/*/*.csv
 
 logs/
 data/project2/*/scaler.json
+
+# Python/runtime noise
+__pycache__/
+*.pyc
+
+# Project 3 generated outputs; keep reproducible code/specs in git, not runs.
+examples/results/
+experiments/weekly_walkforward_pool/configs/
+experiments/weekly_walkforward_pool/runs/
+experiments/weekly_walkforward_pool/*.sqlite
+experiments/weekly_walkforward_pool/*.sqlite-shm
+experiments/weekly_walkforward_pool/*.sqlite-wal
+experiments/weekly_walkforward_pool/*.bak
+experiments/weekly_walkforward_pool/*.log
+experiments/weekly_walkforward_pool/*.token
+experiments/oracle_behavior_pretraining/smoke_oracle_bc_run/
+experiments/oracle_behavior_pretraining/*.json
+**/policy.zip
+**/subprocess_stdout*.log
+**/training_progress.json

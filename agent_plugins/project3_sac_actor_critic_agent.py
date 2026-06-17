@@ -41,6 +41,13 @@ class Plugin(SacPlugin):
         "agent_verbose": 0,
         "train_seed": 0,
         "ga_fitness_dd_lambda": 1.0,
+        "oracle_behavior_pretrain_enabled": False,
+        "oracle_behavior_labels_file": None,
+        "oracle_behavior_pretrain_epochs": 3,
+        "oracle_behavior_pretrain_batch_size": 512,
+        "oracle_behavior_pretrain_hold_fraction": 0.10,
+        "oracle_behavior_pretrain_max_samples": 0,
+        "oracle_behavior_pretrain_clip_grad_norm": 1.0,
 
         # Project 3 environment / strategy expectations
         "action_space_mode": "continuous",

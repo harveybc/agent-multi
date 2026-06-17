@@ -34,9 +34,11 @@ HELDOUT_BOUNDARY = "2025-01-01"
 
 ALLOWED_SPLITS = (
     "train",
+    "train_tail",
     "validation",
     "test",
     "train_epoch",
+    "train_tail_epoch",
     "validation_epoch",
     "evaluation",
     "stage_b_validation",

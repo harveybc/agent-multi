@@ -52,6 +52,11 @@ def test_progress_callback_writes_live_trade_action_metrics(tmp_path):
             "entry_actions_seen": 0,
             "entry_orders_submitted": 0,
             "blocked_atr_warmup": 0,
+            "event_context_no_trade_active_steps": 3,
+            "event_context_action_overrides": 2,
+            "event_context_blocked_entries": 1,
+            "event_context_forced_flat_actions": 1,
+            "event_context_forced_flat_orders": 1,
         }
 
     class FakeVecEnv:
@@ -127,6 +132,11 @@ def test_progress_callback_writes_live_trade_action_metrics(tmp_path):
     assert payload["action_non_hold_rate"] == 0.0
     assert payload["action_deadband_rate"] == 1.0
     assert payload["execution_entry_actions_seen"] == 0
+    assert payload["execution_event_context_no_trade_active_steps"] == 3
+    assert payload["execution_event_context_action_overrides"] == 2
+    assert payload["execution_event_context_blocked_entries"] == 1
+    assert payload["execution_event_context_forced_flat_actions"] == 1
+    assert payload["execution_event_context_forced_flat_orders"] == 1
     assert payload["no_trade_diagnosis"] == "training_policy_hold_collapse"
 
 
