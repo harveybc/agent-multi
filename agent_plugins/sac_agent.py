@@ -10,6 +10,7 @@ SAC also needs a flat obs; we wrap the env with FlattenObservation in build.
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from ._progress_callback import make_progress_callback
@@ -38,6 +39,13 @@ class Plugin:
         "progress_file": None,
         "progress_update_interval_steps": 1000,
         "ga_fitness_dd_lambda": 1.0,
+        "oracle_behavior_pretrain_enabled": False,
+        "oracle_behavior_labels_file": None,
+        "oracle_behavior_pretrain_epochs": 3,
+        "oracle_behavior_pretrain_batch_size": 512,
+        "oracle_behavior_pretrain_hold_fraction": 0.10,
+        "oracle_behavior_pretrain_max_samples": 0,
+        "oracle_behavior_pretrain_clip_grad_norm": 1.0,
     }
 
     _PARAM_KEYS = tuple(plugin_params.keys())
@@ -110,6 +118,129 @@ class Plugin:
         callback = make_progress_callback({**config, **p}, total_timesteps)
         model.learn(total_timesteps=total_timesteps, callback=callback)
         return model
+
+    def pretrain_behavior(self, model, env, config: Dict[str, Any]) -> Dict[str, Any]:
+        """Supervised actor warm-up from train-only oracle actions.
+
+        The oracle labels are not used as live features and validation/test
+        labels are never consumed here.  This only nudges SAC's actor before
+        the normal RL loop starts; critic/replay learning remains unchanged.
+        """
+        p = self._resolve(config)
+        if not bool(config.get("oracle_behavior_pretrain_enabled", p["oracle_behavior_pretrain_enabled"])):
+            return {"enabled": False}
+        labels_file = config.get("oracle_behavior_labels_file", p["oracle_behavior_labels_file"])
+        if not labels_file:
+            raise ValueError("oracle_behavior_pretrain_enabled requires oracle_behavior_labels_file")
+        labels_path = Path(str(labels_file))
+        if not labels_path.exists():
+            raise FileNotFoundError(f"oracle_behavior_labels_file not found: {labels_path}")
+
+        import csv
+        import numpy as np
+        import torch as th
+
+        labels: list[tuple[float, float]] = []
+        with labels_path.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            for row in reader:
+                try:
+                    action = float(row.get("oracle_action", 0.0) or 0.0)
+                    confidence = float(row.get("oracle_confidence", 0.0) or 0.0)
+                except (TypeError, ValueError):
+                    action, confidence = 0.0, 0.0
+                action = max(-1.0, min(1.0, action))
+                labels.append((action, max(0.0, confidence)))
+        if not labels:
+            raise ValueError(f"oracle_behavior_labels_file has no labels: {labels_path}")
+
+        seed = int(config.get("train_seed", p["train_seed"]))
+        rng = np.random.default_rng(seed)
+        hold_fraction = float(
+            config.get("oracle_behavior_pretrain_hold_fraction", p["oracle_behavior_pretrain_hold_fraction"])
+        )
+        max_samples = int(
+            config.get("oracle_behavior_pretrain_max_samples", p["oracle_behavior_pretrain_max_samples"])
+            or 0
+        )
+        observations: list[np.ndarray] = []
+        targets: list[float] = []
+        weights: list[float] = []
+
+        obs, info = env.reset(seed=seed)
+        done = False
+        steps = 0
+        while not done and steps < len(labels):
+            bar_index = int(info.get("bar_index", steps) or steps)
+            if 0 <= bar_index < len(labels):
+                target_action, confidence = labels[bar_index]
+                include = target_action != 0.0 or rng.random() < hold_fraction
+                if include:
+                    observations.append(np.asarray(obs, dtype=np.float32).reshape(-1))
+                    targets.append(target_action)
+                    weights.append(1.0 if target_action == 0.0 else max(1.0, min(10.0, confidence)))
+                    if max_samples > 0 and len(observations) >= max_samples:
+                        break
+            neutral_action = np.zeros(env.action_space.shape, dtype=np.float32)
+            obs, _reward, terminated, truncated, info = env.step(neutral_action)
+            done = bool(terminated or truncated)
+            steps += 1
+
+        if not observations:
+            raise ValueError(f"oracle_behavior_pretrain collected zero samples from {labels_path}")
+
+        obs_array = np.stack(observations).astype(np.float32)
+        action_dim = int(np.prod(env.action_space.shape))
+        target_array = np.repeat(np.asarray(targets, dtype=np.float32).reshape(-1, 1), action_dim, axis=1)
+        weight_array = np.asarray(weights, dtype=np.float32).reshape(-1, 1)
+
+        device = getattr(model, "device", "cpu")
+        batch_size = int(config.get("oracle_behavior_pretrain_batch_size", p["oracle_behavior_pretrain_batch_size"]))
+        epochs = int(config.get("oracle_behavior_pretrain_epochs", p["oracle_behavior_pretrain_epochs"]))
+        clip_norm = float(
+            config.get("oracle_behavior_pretrain_clip_grad_norm", p["oracle_behavior_pretrain_clip_grad_norm"])
+            or 0.0
+        )
+        model.policy.set_training_mode(True)
+        losses: list[float] = []
+        indices = np.arange(len(obs_array))
+        for _epoch in range(max(1, epochs)):
+            rng.shuffle(indices)
+            for start in range(0, len(indices), max(1, batch_size)):
+                batch_idx = indices[start : start + max(1, batch_size)]
+                obs_tensor = th.as_tensor(obs_array[batch_idx], device=device)
+                target_tensor = th.as_tensor(target_array[batch_idx], device=device)
+                weight_tensor = th.as_tensor(weight_array[batch_idx], device=device)
+                pred = model.actor(obs_tensor, deterministic=True)
+                loss = (((pred - target_tensor) ** 2) * weight_tensor).mean()
+                model.actor.optimizer.zero_grad()
+                loss.backward()
+                if clip_norm > 0:
+                    th.nn.utils.clip_grad_norm_(model.actor.parameters(), clip_norm)
+                model.actor.optimizer.step()
+                losses.append(float(loss.detach().cpu().item()))
+
+        nonzero = sum(1 for value in targets if value != 0.0)
+        summary = {
+            "enabled": True,
+            "labels_file": str(labels_path),
+            "samples": len(observations),
+            "nonzero_samples": nonzero,
+            "hold_samples": len(observations) - nonzero,
+            "epochs": max(1, epochs),
+            "batch_size": max(1, batch_size),
+            "loss_initial": losses[0] if losses else None,
+            "loss_final": losses[-1] if losses else None,
+            "mean_loss": sum(losses) / len(losses) if losses else None,
+        }
+        if not config.get("quiet_mode"):
+            print(
+                "[oracle_behavior_pretrain] "
+                f"samples={summary['samples']} nonzero={summary['nonzero_samples']} "
+                f"loss={summary['loss_initial']}->{summary['loss_final']}",
+                flush=True,
+            )
+        return summary
 
     def predict(self, model, obs, deterministic: bool = True):
         action, _ = model.predict(obs, deterministic=deterministic)

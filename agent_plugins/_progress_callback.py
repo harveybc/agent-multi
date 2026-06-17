@@ -245,4 +245,19 @@ def _execution_payload(exec_diag: Dict[str, Any]) -> Dict[str, Any]:
         "execution_blocked_non_positive_atr": _safe_int(exec_diag.get("blocked_non_positive_atr")),
         "execution_blocked_non_positive_size": _safe_int(exec_diag.get("blocked_non_positive_size")),
         "execution_blocked_non_positive_price": _safe_int(exec_diag.get("blocked_non_positive_price")),
+        "execution_event_context_no_trade_active_steps": _safe_int(
+            exec_diag.get("event_context_no_trade_active_steps")
+        ),
+        "execution_event_context_action_overrides": _safe_int(
+            exec_diag.get("event_context_action_overrides")
+        ),
+        "execution_event_context_blocked_entries": _safe_int(
+            exec_diag.get("event_context_blocked_entries")
+        ),
+        "execution_event_context_forced_flat_actions": _safe_int(
+            exec_diag.get("event_context_forced_flat_actions")
+        ),
+        "execution_event_context_forced_flat_orders": _safe_int(
+            exec_diag.get("event_context_forced_flat_orders")
+        ),
     }

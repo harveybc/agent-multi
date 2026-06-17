@@ -5,10 +5,13 @@ This pipeline mirrors predictor's three-mode pattern (train / inference /
 optimization upstream) and adds per-epoch validation evaluation with
 level-1 early stopping based on a composite watch metric:
 
-    composite = 0.5 * (train_total_return + val_total_return)
+    composite = 0.5 * (train_tail_total_return + val_total_return)
 
 Patience resets when composite improves over the best so far. Training
 stops when patience >= configured `l1_patience` or `max_epochs` is hit.
+The train-side watch window is the last week of the training period, not
+the full multi-year training slice, so a large historical train return cannot
+hide no-trade or bad validation behavior.
 
 Per-epoch logs include:
     epoch | L1 patience X/N | L2 patience Y/M | trades | win% | sharpe |
@@ -78,6 +81,31 @@ def _safe_float_or_none(value: Any) -> float | None:
         return None
 
 
+def _trade_count(summary: Dict[str, Any]) -> int:
+    return int(_safe_float(summary.get("trades_total")) or 0)
+
+
+def _early_stop_composite(
+    train_tail_summary: Dict[str, Any],
+    val_summary: Dict[str, Any],
+    *,
+    min_trades: int,
+    no_trade_penalty: float,
+) -> Tuple[float, float, bool, float, float, int, int]:
+    train_tail_ret = _safe_float(train_tail_summary.get("total_return"))
+    val_ret = _safe_float(val_summary.get("total_return"))
+    if math.isnan(train_tail_ret):
+        train_tail_ret = 0.0
+    if math.isnan(val_ret):
+        val_ret = 0.0
+    raw = 0.5 * (train_tail_ret + val_ret)
+    train_tail_trades = _trade_count(train_tail_summary)
+    val_trades = _trade_count(val_summary)
+    trade_gate_passed = train_tail_trades >= min_trades and val_trades >= min_trades
+    composite = raw if trade_gate_passed else raw - no_trade_penalty
+    return composite, raw, trade_gate_passed, train_tail_ret, val_ret, train_tail_trades, val_trades
+
+
 def _normalize_split_label(name: str) -> str:
     n = str(name).strip().lower()
     if n in _trace_mod.ALLOWED_SPLITS:
@@ -122,28 +150,44 @@ class PipelinePlugin:
         "train_days": None,
         "val_days": None,
         "test_days": None,
+        "train_start": None,
+        "train_end": None,
+        "validation_start": None,
+        "validation_end": None,
+        "val_start": None,
+        "val_end": None,
+        "test_start": None,
+        "test_end": None,
         "min_split_rows": 100,
         "split_anchor": "start",  # "start" or "end" of dataset
 
         # epoch loop
         "epoch_timesteps": 2_000,
-        "max_epochs": 30,
-        "l1_patience": 5,
+        "max_epochs": 500,
+        "l1_patience": 20,
         "l1_min_delta": 1e-4,
+        "early_stop_train_tail_days": 7,
+        "early_stop_min_trades": 1,
+        "early_stop_no_trade_penalty": 1_000_000.0,
 
         # eval
         "eval_seed": 0,
         "train_seed": 0,
         "save_model": "./agent_model.zip",
         "load_model": None,
+        "warm_start_model": None,
         "return_trace_dir": None,
     }
 
     plugin_debug_vars = [
         "train_years", "val_years", "test_years",
-        "train_days", "val_days", "test_days", "min_split_rows",
+        "train_days", "val_days", "test_days",
+        "train_start", "train_end", "validation_start", "validation_end",
+        "val_start", "val_end", "test_start", "test_end",
+        "min_split_rows",
         "epoch_timesteps", "max_epochs", "l1_patience", "l1_min_delta",
-        "return_trace_dir",
+        "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
+        "warm_start_model", "return_trace_dir",
     ]
 
     def __init__(self, config: Dict[str, Any] | None = None):
@@ -182,10 +226,48 @@ class PipelinePlugin:
         min_split_rows = int(config.get("min_split_rows", self.params["min_split_rows"]))
         anchor = str(config.get("split_anchor", self.params["split_anchor"])).lower()
         use_day_splits = train_d is not None and val_d is not None and test_d is not None
+        explicit_train_start = config.get("train_start", self.params["train_start"])
+        explicit_train_end = config.get("train_end", self.params["train_end"])
+        explicit_val_start = (
+            config.get("validation_start", self.params["validation_start"])
+            or config.get("val_start", self.params["val_start"])
+        )
+        explicit_val_end = (
+            config.get("validation_end", self.params["validation_end"])
+            or config.get("val_end", self.params["val_end"])
+        )
+        explicit_test_start = config.get("test_start", self.params["test_start"])
+        explicit_test_end = config.get("test_end", self.params["test_end"])
+        explicit_ranges = [
+            explicit_train_start,
+            explicit_train_end,
+            explicit_val_start,
+            explicit_val_end,
+            explicit_test_start,
+            explicit_test_end,
+        ]
+        use_explicit_splits = all(v not in (None, "") for v in explicit_ranges)
+        if any(v not in (None, "") for v in explicit_ranges) and not use_explicit_splits:
+            raise ValueError(
+                "Explicit weekly split windows require train_start, train_end, "
+                "validation_start/val_start, validation_end/val_end, test_start, and test_end."
+            )
 
         first = df[date_col].iloc[0]
         last = df[date_col].iloc[-1]
-        if anchor == "end":
+        if use_explicit_splits:
+            train_start = pd.Timestamp(explicit_train_start)
+            train_end = pd.Timestamp(explicit_train_end)
+            val_start = pd.Timestamp(explicit_val_start)
+            val_end = pd.Timestamp(explicit_val_end)
+            test_start = pd.Timestamp(explicit_test_start)
+            test_end = pd.Timestamp(explicit_test_end)
+            if not train_start < train_end <= val_start < val_end <= test_start < test_end:
+                raise ValueError(
+                    "Explicit weekly split windows must be ordered as "
+                    "train_start < train_end <= validation_start < validation_end <= test_start < test_end."
+                )
+        elif anchor == "end":
             test_end = last
             if use_day_splits:
                 test_start = test_end - pd.DateOffset(days=int(test_d))
@@ -217,6 +299,13 @@ class PipelinePlugin:
         train_df = df[(df[date_col] >= train_start) & (df[date_col] < train_end)]
         val_df = df[(df[date_col] >= val_start) & (df[date_col] < val_end)]
         test_df = df[(df[date_col] >= test_start) & (df[date_col] < test_end)]
+        train_tail_days = _safe_float_or_none(
+            config.get("early_stop_train_tail_days", self.params["early_stop_train_tail_days"])
+        )
+        train_tail_df = train_df
+        if train_tail_days is not None and train_tail_days > 0:
+            train_tail_start = train_end - pd.DateOffset(days=int(train_tail_days))
+            train_tail_df = df[(df[date_col] >= train_tail_start) & (df[date_col] < train_end)]
 
         for name, part in (("train", train_df), ("val", val_df), ("test", test_df)):
             if len(part) < min_split_rows:
@@ -230,7 +319,12 @@ class PipelinePlugin:
         self._tempdir = tempfile.TemporaryDirectory(prefix="agent_multi_split_")
         out_dir = Path(self._tempdir.name)
         paths = {}
-        for name, part in (("train", train_df), ("val", val_df), ("test", test_df)):
+        for name, part in (
+            ("train", train_df),
+            ("train_tail", train_tail_df),
+            ("val", val_df),
+            ("test", test_df),
+        ):
             p = out_dir / f"{name}.csv"
             part.to_csv(p, index=False)
             paths[name] = str(p)
@@ -397,8 +491,27 @@ class PipelinePlugin:
                     )
                     return final
 
-                # training mode
-                model = agent_plugin.build(train_env, config)
+                # training mode. Optional warm-start continues from a previous
+                # weekly checkpoint but evaluates/saves under the current
+                # split windows and run id.
+                warm_start_model = config.get("warm_start_model", self.params["warm_start_model"])
+                if warm_start_model:
+                    warm_start_path = Path(str(warm_start_model))
+                    if not warm_start_path.exists():
+                        raise FileNotFoundError(f"warm_start_model not found: {warm_start_path}")
+                    if not config.get("quiet_mode"):
+                        print(f"[train] warm-start loading {warm_start_path}", flush=True)
+                    model = agent_plugin.load(str(warm_start_path), train_env)
+                    try:
+                        model.set_env(train_env)
+                    except Exception:
+                        pass
+                else:
+                    model = agent_plugin.build(train_env, config)
+                pretrain_summary = None
+                pretrain_behavior = getattr(agent_plugin, "pretrain_behavior", None)
+                if callable(pretrain_behavior) and bool(config.get("oracle_behavior_pretrain_enabled", False)):
+                    pretrain_summary = pretrain_behavior(model, train_env, config)
                 if not hasattr(model, "learn"):
                     best_model_path = config.get("save_model") or "./agent_model.zip"
                     Path(best_model_path).parent.mkdir(parents=True, exist_ok=True)
@@ -411,6 +524,7 @@ class PipelinePlugin:
                     final["history"] = []
                     final["best_composite"] = None
                     final["best_model_path"] = str(Path(best_model_path).resolve())
+                    final["oracle_behavior_pretrain"] = pretrain_summary
                     return final
 
                 epoch_ts = int(config.get("epoch_timesteps", self.params["epoch_timesteps"]))
@@ -434,7 +548,8 @@ class PipelinePlugin:
                 if not config.get("quiet_mode"):
                     print(
                         f"[train] starting: epoch_timesteps={epoch_ts} max_epochs={max_epochs} "
-                        f"l1_patience={l1_patience} (composite=mean(train_return,val_return))"
+                        f"l1_patience={l1_patience} "
+                        f"(composite=mean(train_tail_return,val_return), no-trade penalized)"
                     )
 
                 def _policy_checksum(m) -> Tuple[float, float, float]:
@@ -474,17 +589,40 @@ class PipelinePlugin:
                     train_summary = self._eval_on_split(
                         env_plugin_name, config, paths["train"], agent_plugin, model, seed, "train_epoch"
                     )
+                    train_tail_summary = self._eval_on_split(
+                        env_plugin_name, config, paths.get("train_tail", paths["train"]),
+                        agent_plugin, model, seed, "train_tail_epoch"
+                    )
                     val_summary = self._eval_on_split(
                         env_plugin_name, config, paths["val"], agent_plugin, model, seed, "validation_epoch"
                     )
 
                     train_ret = _safe_float(train_summary.get("total_return"))
-                    val_ret = _safe_float(val_summary.get("total_return"))
                     if math.isnan(train_ret):
                         train_ret = 0.0
-                    if math.isnan(val_ret):
-                        val_ret = 0.0
-                    composite = 0.5 * (train_ret + val_ret)
+                    early_stop_min_trades = int(
+                        config.get("early_stop_min_trades", self.params["early_stop_min_trades"])
+                    )
+                    no_trade_penalty = float(
+                        config.get(
+                            "early_stop_no_trade_penalty",
+                            self.params["early_stop_no_trade_penalty"],
+                        )
+                    )
+                    (
+                        composite,
+                        composite_raw,
+                        trade_gate_passed,
+                        train_tail_ret,
+                        val_ret,
+                        train_tail_trades,
+                        val_trades,
+                    ) = _early_stop_composite(
+                        train_tail_summary,
+                        val_summary,
+                        min_trades=early_stop_min_trades,
+                        no_trade_penalty=no_trade_penalty,
+                    )
 
                     improved = composite > (best_composite + l1_min_delta)
                     if improved:
@@ -497,9 +635,13 @@ class PipelinePlugin:
                     history.append({
                         "epoch": epoch,
                         "train_total_return": train_ret,
+                        "train_tail_total_return": train_tail_ret,
                         "val_total_return": val_ret,
+                        "composite_raw": composite_raw,
                         "composite": composite,
                         "best_composite": best_composite,
+                        "early_stop_trade_gate_passed": trade_gate_passed,
+                        "early_stop_min_trades": early_stop_min_trades,
                         "l1_patience_used": no_improve,
                         "l1_patience_max": l1_patience,
                         "policy_actor_l1_before": a_b,
@@ -514,7 +656,12 @@ class PipelinePlugin:
                         "train_sharpe": _safe_float(train_summary.get("sharpe_ratio")),
                         "train_profit_pct": train_ret * 100.0,
                         "train_balance": _safe_float(train_summary.get("final_equity")),
-                        "val_trades": int(_safe_float(val_summary.get("trades_total")) or 0),
+                        "train_tail_trades": train_tail_trades,
+                        "train_tail_win_pct": _win_pct(train_tail_summary),
+                        "train_tail_sharpe": _safe_float(train_tail_summary.get("sharpe_ratio")),
+                        "train_tail_profit_pct": train_tail_ret * 100.0,
+                        "train_tail_balance": _safe_float(train_tail_summary.get("final_equity")),
+                        "val_trades": val_trades,
                         "val_win_pct": _win_pct(val_summary),
                         "val_sharpe": _safe_float(val_summary.get("sharpe_ratio")),
                         "val_profit_pct": val_ret * 100.0,
@@ -525,7 +672,9 @@ class PipelinePlugin:
                         f"[epoch {epoch:>3}/{max_epochs}] "
                         f"L1 {no_improve}/{l1_patience}  "
                         f"L2 {l2_counter}/{l2_patience}  "
-                        f"composite={composite:+.4f} best={best_composite:+.4f} "
+                        f"composite={composite:+.4f} raw={composite_raw:+.4f} "
+                        f"trade_gate={'PASS' if trade_gate_passed else 'FAIL'} "
+                        f"best={best_composite:+.4f} "
                         f"{'(IMPROVED, model saved)' if improved else ''} "
                         f"actor|w|={a_a:.2f} Δa={a_a-a_b:+.4f} "
                         f"critic|w|={c_a:.2f} Δc={c_a-c_b:+.4f} ent={e_a:.4f} "
@@ -538,6 +687,14 @@ class PipelinePlugin:
                         f"sharpe={_safe_float(train_summary.get('sharpe_ratio')):+.4f} "
                         f"profit={train_ret*100:+.2f}% "
                         f"bal={_safe_float(train_summary.get('final_equity')):.2f}",
+                        flush=True,
+                    )
+                    print(
+                        f"            TRAIN_TAIL trades={train_tail_trades:>4} "
+                        f"win%={_win_pct(train_tail_summary):>5.2f} "
+                        f"sharpe={_safe_float(train_tail_summary.get('sharpe_ratio')):+.4f} "
+                        f"profit={train_tail_ret*100:+.2f}% "
+                        f"bal={_safe_float(train_tail_summary.get('final_equity')):.2f}",
                         flush=True,
                     )
                     print(
@@ -569,6 +726,7 @@ class PipelinePlugin:
                 final["history"] = history
                 final["best_composite"] = best_composite
                 final["best_model_path"] = str(Path(best_model_path).resolve())
+                final["oracle_behavior_pretrain"] = pretrain_summary
                 return final
             finally:
                 try:
@@ -598,6 +756,10 @@ class PipelinePlugin:
         train_summary = self._eval_on_split(
             env_plugin_name, config, paths["train"], agent_plugin_for_wrap, model, seed, "train"
         )
+        train_tail_summary = self._eval_on_split(
+            env_plugin_name, config, paths.get("train_tail", paths["train"]),
+            agent_plugin_for_wrap, model, seed, "train_tail"
+        )
         val_summary = self._eval_on_split(
             env_plugin_name, config, paths["val"], agent_plugin_for_wrap, model, seed, "validation"
         )
@@ -607,6 +769,7 @@ class PipelinePlugin:
 
         rows = [
             ("Train", train_summary),
+            ("TrainTail", train_tail_summary),
             ("Validation", val_summary),
             ("Test", test_summary),
         ]
@@ -617,7 +780,7 @@ class PipelinePlugin:
         # Pop transient evidence-bearing fields out of each split summary
         # before exporting, then build the run-level evidence index.
         metadata_items: List[Dict[str, Any]] = []
-        for s in (train_summary, val_summary, test_summary):
+        for s in (train_summary, train_tail_summary, val_summary, test_summary):
             meta = s.pop("_return_trace_metadata", None)
             if meta is not None:
                 metadata_items.append(meta)
@@ -626,6 +789,7 @@ class PipelinePlugin:
         out = {
             "splits": {
                 "train": train_summary,
+                "train_tail": train_tail_summary,
                 "validation": val_summary,
                 "test": test_summary,
             },
