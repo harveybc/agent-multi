@@ -139,9 +139,7 @@ def make_handler(
             self._send({"ok": False, "error": str(exc), "error_type": exc.__class__.__name__}, status)
 
         def _conn(self):
-            conn = connect(db_path)
-            init_db(conn)
-            return conn
+            return connect(db_path)
 
         def _handle_get(self, parsed_path: str) -> None:
             if parsed_path == "/health":
@@ -172,7 +170,12 @@ def make_handler(
                 self._send({"ok": True, "task": None})
                 return
             subjob_id = task["external_id"]
-            config_path = materialize(db_path, subjob_id, output_root)
+            try:
+                config_path = materialize(db_path, subjob_id, output_root)
+            except Exception as exc:
+                fail_subjob(conn, subjob_id, f"claim materialization failed: {exc}")
+                heartbeat(conn, machine_id, None, "idle", f"claim failed for {subjob_id}: {exc}")
+                raise
             config = json.loads(config_path.read_text(encoding="utf-8"))
             parent_artifact = None
             warm_start_model = config.get("warm_start_model")
@@ -309,6 +312,9 @@ def main() -> None:
         token=token,
         max_file_bytes=args.max_file_bytes,
     )
+    conn = connect(args.db)
+    init_db(conn)
+    conn.close()
     server = ThreadingHTTPServer((args.host, args.port), handler)
     print(
         json.dumps(

@@ -187,7 +187,7 @@ def run_one(
         if not results_path.exists():
             raise FileNotFoundError(f"missing results file: {cfg['results_file']}")
 
-        result = summarize_result(results_path)
+        result = summarize_result(results_path, cfg)
         result.update(
             {
                 "subjob_id": subjob_id,

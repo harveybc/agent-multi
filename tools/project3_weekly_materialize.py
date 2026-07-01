@@ -7,6 +7,7 @@ import csv
 import json
 import math
 import random
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -18,12 +19,26 @@ TOOLS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(TOOLS_DIR))
 
 from project3_weekly_pool import connect, init_db  # noqa: E402
+from project3_event_token_transformer import (  # noqa: E402
+    encode_event_token_transformer,
+)
+
+
+SUPPORTED_CONTEXT_FAMILIES = (
+    "event_token_attention_v1",
+    "event_token_transformer_v1",
+)
+DEFAULT_OUTPUT_PREFIX_BY_FAMILY = {
+    "event_token_attention_v1": "ctx_evt",
+    "event_token_transformer_v1": "ctx_evt_tr",
+}
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_EXPERIMENT_ROOT = REPO_ROOT / "experiments" / "weekly_walkforward_pool"
 HELDOUT_START = "2025-01-01 00:00:00"
 ORACLE_BC_SUBJOB_SUFFIX = "_oracle_bc_v1"
+ORACLE_BC_FOLLOWUP_SUFFIX_RE = re.compile(r"_oracle_bc_e\d+_oracle_bc_followup_phase\d+_v\d+$")
 STABLE_SAC_OVERRIDES: dict[str, Any] = {
     "window_size": 32,
     "learning_rate": 0.0001,
@@ -104,6 +119,95 @@ def _context_source_columns(header: list[str], profile: dict[str, Any]) -> list[
     return [*explicit, *prefixed]
 
 
+def _encode_attention_v1(
+    *,
+    rows: list[dict[str, Any]],
+    source_columns: list[str],
+    train_indices: list[int],
+    price_column: str,
+    profile: dict[str, Any],
+    output_prefix: str,
+) -> dict[str, Any]:
+    """Train-only correlation-weighted attention embedding (the first bridge).
+
+    Mutates ``rows`` in place and returns the manifest fragment.
+    """
+    means: dict[str, float] = {}
+    stds: dict[str, float] = {}
+    for col in source_columns:
+        values = [_safe_float(rows[idx].get(col)) for idx in train_indices]
+        mean = sum(values) / len(values)
+        var = sum((x - mean) ** 2 for x in values) / max(1, len(values) - 1)
+        std = math.sqrt(var) if var > 1.0e-12 else 1.0
+        means[col] = mean
+        stds[col] = std
+
+    target_by_idx: dict[int, float] = {}
+    train_set = set(train_indices)
+    for idx in train_indices:
+        if idx + 1 in train_set:
+            now_price = max(1.0e-12, _safe_float(rows[idx].get(price_column)))
+            next_price = max(1.0e-12, _safe_float(rows[idx + 1].get(price_column)))
+            target_by_idx[idx] = math.log(next_price / now_price)
+        else:
+            target_by_idx[idx] = 0.0
+    targets = [target_by_idx[idx] for idx in train_indices]
+    token_scores: dict[str, float] = {}
+    for col in source_columns:
+        xs = [
+            (_safe_float(rows[idx].get(col)) - means[col]) / stds[col]
+            for idx in train_indices
+        ]
+        token_scores[col] = _pearson_abs(xs, targets)
+
+    dim = int(profile.get("embedding_dim", 8))
+    if dim <= 0 or dim > 64:
+        raise ValueError("context embedding_dim must be between 1 and 64")
+    seed = int(profile.get("seed", 0))
+    rng = random.Random(seed)
+    projection = {
+        col: [rng.uniform(-1.0, 1.0) for _ in range(dim)]
+        for col in source_columns
+    }
+    embedding_columns = [f"{output_prefix}_{i:02d}" for i in range(dim)]
+    diagnostic_columns = [f"{output_prefix}_attn_mass", f"{output_prefix}_token_count"]
+
+    for row in rows:
+        z_values = {
+            col: (_safe_float(row.get(col)) - means[col]) / stds[col]
+            for col in source_columns
+        }
+        raw_weights = {
+            col: abs(z) * max(token_scores[col], 1.0e-6)
+            for col, z in z_values.items()
+        }
+        weight_sum = sum(raw_weights.values())
+        if weight_sum <= 0.0:
+            weights = {col: 1.0 / len(source_columns) for col in source_columns}
+            attn_mass = 0.0
+        else:
+            weights = {col: raw_weights[col] / weight_sum for col in source_columns}
+            attn_mass = weight_sum
+        emb = []
+        for i in range(dim):
+            value = 0.0
+            for col in source_columns:
+                value += weights[col] * math.tanh(z_values[col]) * projection[col][i]
+            emb.append(value)
+        for col, value in zip(embedding_columns, emb):
+            row[col] = f"{value:.10g}"
+        row[diagnostic_columns[0]] = f"{attn_mass:.10g}"
+        row[diagnostic_columns[1]] = str(len(source_columns))
+
+    return {
+        "embedding_columns": embedding_columns,
+        "diagnostic_columns": diagnostic_columns,
+        "token_scores": token_scores,
+        "means": means,
+        "stds": stds,
+    }
+
+
 def _build_context_embedding_file(
     *,
     job: dict[str, Any],
@@ -115,8 +219,11 @@ def _build_context_embedding_file(
     if not profile or not bool(profile.get("enabled", False)):
         return str(job["input_data_file"]), features, None
     family = str(profile.get("family") or "event_token_attention_v1")
-    if family != "event_token_attention_v1":
-        raise ValueError(f"unsupported context_embedding_profile.family={family!r}")
+    if family not in SUPPORTED_CONTEXT_FAMILIES:
+        raise ValueError(
+            f"unsupported context_embedding_profile.family={family!r}; "
+            f"supported={list(SUPPORTED_CONTEXT_FAMILIES)}"
+        )
 
     input_path = Path(str(job["input_data_file"]))
     if not input_path.exists():
@@ -156,74 +263,34 @@ def _build_context_embedding_file(
             f"< {int(profile.get('min_fit_rows', 50))}"
         )
 
-    means: dict[str, float] = {}
-    stds: dict[str, float] = {}
-    for col in source_columns:
-        values = [_safe_float(rows[idx].get(col)) for idx in train_indices]
-        mean = sum(values) / len(values)
-        var = sum((x - mean) ** 2 for x in values) / max(1, len(values) - 1)
-        std = math.sqrt(var) if var > 1.0e-12 else 1.0
-        means[col] = mean
-        stds[col] = std
+    output_prefix = str(
+        profile.get("output_prefix")
+        or DEFAULT_OUTPUT_PREFIX_BY_FAMILY.get(family, "ctx_evt")
+    )
 
-    target_by_idx: dict[int, float] = {}
-    train_set = set(train_indices)
-    for idx in train_indices:
-        if idx + 1 in train_set:
-            now_price = max(1.0e-12, _safe_float(rows[idx].get(price_column)))
-            next_price = max(1.0e-12, _safe_float(rows[idx + 1].get(price_column)))
-            target_by_idx[idx] = math.log(next_price / now_price)
-        else:
-            target_by_idx[idx] = 0.0
-    targets = [target_by_idx[idx] for idx in train_indices]
-    token_scores: dict[str, float] = {}
-    for col in source_columns:
-        xs = [
-            (_safe_float(rows[idx].get(col)) - means[col]) / stds[col]
-            for idx in train_indices
-        ]
-        token_scores[col] = _pearson_abs(xs, targets)
+    if family == "event_token_transformer_v1":
+        result = encode_event_token_transformer(
+            rows=rows,
+            source_columns=source_columns,
+            train_indices=train_indices,
+            price_column=price_column,
+            profile=profile,
+            output_prefix=output_prefix,
+            safe_float=_safe_float,
+        )
+    else:
+        result = _encode_attention_v1(
+            rows=rows,
+            source_columns=source_columns,
+            train_indices=train_indices,
+            price_column=price_column,
+            profile=profile,
+            output_prefix=output_prefix,
+        )
 
-    dim = int(profile.get("embedding_dim", 8))
-    if dim <= 0 or dim > 64:
-        raise ValueError("context embedding_dim must be between 1 and 64")
-    seed = int(profile.get("seed", 0))
-    rng = random.Random(seed)
-    projection = {
-        col: [rng.uniform(-1.0, 1.0) for _ in range(dim)]
-        for col in source_columns
-    }
-    output_prefix = str(profile.get("output_prefix") or "ctx_evt")
-    embedding_columns = [f"{output_prefix}_{i:02d}" for i in range(dim)]
-    diagnostic_columns = [f"{output_prefix}_attn_mass", f"{output_prefix}_token_count"]
+    embedding_columns = result.pop("embedding_columns")
+    diagnostic_columns = result.pop("diagnostic_columns")
     output_header = [*header, *embedding_columns, *diagnostic_columns]
-
-    for row in rows:
-        z_values = {
-            col: (_safe_float(row.get(col)) - means[col]) / stds[col]
-            for col in source_columns
-        }
-        raw_weights = {
-            col: abs(z) * max(token_scores[col], 1.0e-6)
-            for col, z in z_values.items()
-        }
-        weight_sum = sum(raw_weights.values())
-        if weight_sum <= 0.0:
-            weights = {col: 1.0 / len(source_columns) for col in source_columns}
-            attn_mass = 0.0
-        else:
-            weights = {col: raw_weights[col] / weight_sum for col in source_columns}
-            attn_mass = weight_sum
-        emb = []
-        for i in range(dim):
-            value = 0.0
-            for col in source_columns:
-                value += weights[col] * math.tanh(z_values[col]) * projection[col][i]
-            emb.append(value)
-        for col, value in zip(embedding_columns, emb):
-            row[col] = f"{value:.10g}"
-        row[diagnostic_columns[0]] = f"{attn_mass:.10g}"
-        row[diagnostic_columns[1]] = str(len(source_columns))
 
     context_dir = run_dir / "context_embedding"
     context_dir.mkdir(parents=True, exist_ok=True)
@@ -244,12 +311,12 @@ def _build_context_embedding_file(
         "source_columns": source_columns,
         "embedding_columns": embedding_columns,
         "diagnostic_columns": diagnostic_columns,
-        "embedding_dim": dim,
-        "seed": seed,
-        "token_scores": token_scores,
-        "means": means,
-        "stds": stds,
+        "embedding_dim": len(embedding_columns),
+        "seed": int(profile.get("seed", 0)),
+        "training_summary": {},
+        "model_config": {},
     }
+    metadata.update(result)
     manifest_path = context_dir / "context_embedding_manifest.json"
     manifest_path.write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -265,6 +332,18 @@ def _json_loads(value: str | None) -> dict[str, Any]:
     if not value:
         return {}
     return json.loads(value)
+
+
+def _oracle_behavior_source_subjob_id_candidates(subjob: dict[str, Any]) -> list[str]:
+    explicit = subjob.get("oracle_behavior_source_subjob_id")
+    if explicit:
+        return [str(explicit)]
+    source_subjob_id = str(subjob["external_id"])
+    source_subjob_id = ORACLE_BC_FOLLOWUP_SUFFIX_RE.sub("", source_subjob_id)
+    candidates = [source_subjob_id]
+    if source_subjob_id.endswith(ORACLE_BC_SUBJOB_SUFFIX):
+        candidates.append(source_subjob_id[: -len(ORACLE_BC_SUBJOB_SUFFIX)])
+    return list(dict.fromkeys(candidates))
 
 
 def _fetch_subjob(conn: sqlite3.Connection, subjob_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -423,23 +502,23 @@ def build_config(
     if bool(job.get("oracle_behavior_pretrain_enabled", False)):
         source_job_id = job.get("oracle_behavior_source_job_id") or job.get("source_job_id")
         labels_root = job.get("oracle_behavior_labels_dir")
-        source_subjob_id = subjob.get("oracle_behavior_source_subjob_id")
-        if not source_subjob_id:
-            source_subjob_id = str(subjob["external_id"])
-            if source_subjob_id.endswith(ORACLE_BC_SUBJOB_SUFFIX):
-                source_subjob_id = source_subjob_id[: -len(ORACLE_BC_SUBJOB_SUFFIX)]
         if not source_job_id or not labels_root:
             raise ValueError(
                 "oracle_behavior_pretrain_enabled requires "
                 "oracle_behavior_source_job_id and oracle_behavior_labels_dir"
             )
-        labels_file = (
-            Path(str(labels_root))
-            / str(source_job_id)
-            / f"{source_subjob_id}_oracle_behavior_labels.csv"
+        label_dir = Path(str(labels_root)) / str(source_job_id)
+        label_candidates = [
+            (source_subjob_id, label_dir / f"{source_subjob_id}_oracle_behavior_labels.csv")
+            for source_subjob_id in _oracle_behavior_source_subjob_id_candidates(subjob)
+        ]
+        source_subjob_id, labels_file = next(
+            ((candidate_id, path) for candidate_id, path in label_candidates if path.exists()),
+            label_candidates[0],
         )
         if not labels_file.exists():
-            raise FileNotFoundError(f"oracle behavior labels not found: {labels_file}")
+            tried = ", ".join(str(path) for _, path in label_candidates)
+            raise FileNotFoundError(f"oracle behavior labels not found; tried: {tried}")
         cfg.update(
             {
                 "oracle_behavior_pretrain_enabled": True,

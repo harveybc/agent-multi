@@ -45,6 +45,12 @@ EVENT_CONTEXT_SOURCE_JOBS = [
     "ethusdt_4h_sota_low_cost_sac_scratch_3y",
 ]
 
+# Event-engineered source jobs carry the ``event_*`` columns the transformer
+# encoder needs as tokens, so the transformer phase clones only those.
+EVENT_TOKEN_TRANSFORMER_SOURCE_JOBS = [
+    job_id for job_id in EVENT_CONTEXT_SOURCE_JOBS if "event_engineered_v1" in job_id
+]
+
 
 @dataclass(frozen=True)
 class PhaseResult:
@@ -178,9 +184,8 @@ def _clone_jobs_with_seeds(
                     parent = row[dep_key]
                     if parent:
                         if parent not in source_ids:
-                            raise RuntimeError(
-                                f"{row['external_id']} depends on {parent}, which is not in source clone set"
-                            )
+                            subjob.setdefault("dropped_external_dependencies", {})[dep_key] = parent
+                            continue
                         subjob[dep_key] = f"{parent}_seed{seed}_{suffix}"
                 subjobs.append(subjob)
             cloned_job["subjobs"] = subjobs
@@ -217,6 +222,44 @@ def _suffix_generated_plan(
     out["generated_at"] = utc_now()
     out["stage_c_access"] = "DENIED"
     out["training_launched"] = False
+    included_subjob_ids = {
+        subjob["subjob_id"]
+        for job in out.get("jobs", [])
+        for subjob in job.get("subjobs", [])
+    }
+    skipped_subjobs: list[dict[str, str]] = []
+    changed = True
+    while changed:
+        changed = False
+        for job in out.get("jobs", []):
+            for subjob in job.get("subjobs", []):
+                subjob_id = subjob["subjob_id"]
+                if subjob_id not in included_subjob_ids:
+                    continue
+                for dep_key in ("depends_on_subjob_id", "warm_start_parent_subjob_id"):
+                    parent = subjob.get(dep_key)
+                    if parent and parent not in included_subjob_ids:
+                        included_subjob_ids.remove(subjob_id)
+                        skipped_subjobs.append(
+                            {
+                                "subjob_id": subjob_id,
+                                "missing_dependency_key": dep_key,
+                                "missing_dependency": parent,
+                            }
+                        )
+                        changed = True
+                        break
+    kept_jobs = []
+    for job in out.get("jobs", []):
+        kept_subjobs = [
+            subjob for subjob in job.get("subjobs", []) if subjob["subjob_id"] in included_subjob_ids
+        ]
+        if kept_subjobs:
+            job["subjobs"] = kept_subjobs
+            kept_jobs.append(job)
+    out["jobs"] = kept_jobs
+    if skipped_subjobs:
+        out["skipped_subjobs_due_missing_dependencies"] = skipped_subjobs
     global_subjob_map = {
         subjob["subjob_id"]: f"{subjob['subjob_id']}_seed{seed}_{suffix}"
         for job in out.get("jobs", [])
@@ -353,7 +396,7 @@ def _asset_broadening_specs() -> list[dict[str, Any]]:
                     {
                         "input_data_file": str(path),
                         "train_years": "1,3",
-                        "policies": "warm_start_chain,fine_tune_recent_window",
+                        "policies": "scratch,warm_start_chain,fine_tune_recent_window",
                         "fine_tune_months": "6,3",
                         "max_anchors": 20 if timeframe == "4h" else 12,
                         "early_stop_train_tail_days": 7,
@@ -367,11 +410,55 @@ def _asset_broadening_specs() -> list[dict[str, Any]]:
 
 
 def _top_completed_jobs(conn: sqlite3.Connection, *, limit: int, min_weeks: int) -> list[str]:
+    annual_rows = conn.execute(
+        """
+        SELECT candidate_id,
+               unique_weeks,
+               annual_rap,
+               mean_weekly_l1_score
+        FROM weekly_result_full_year_protocol_olap
+        WHERE metric_block='validation_year'
+          AND has_near_full_year_coverage = 1
+          AND unique_weeks >= ?
+        ORDER BY COALESCE(mean_weekly_l1_score, annual_rap) DESC,
+                 annual_rap DESC
+        LIMIT ?
+        """,
+        (max(48, min_weeks), limit),
+    ).fetchall()
+    annual_candidate_ids = [row["candidate_id"] for row in annual_rows if row["candidate_id"]]
+    if annual_candidate_ids:
+        placeholders = ",".join("?" for _ in annual_candidate_ids)
+        job_rows = conn.execute(
+            f"""
+            SELECT external_id
+            FROM jobs
+            WHERE candidate_id IN ({placeholders})
+              AND json_extract(config_json, '$.evaluation_protocol') = 'full_year_validation_test_v1'
+              AND json_extract(config_json, '$.evaluation_block') IN ('validation_year', 'test_year')
+            ORDER BY
+              CASE json_extract(config_json, '$.evaluation_block')
+                WHEN 'validation_year' THEN 0
+                WHEN 'test_year' THEN 1
+                ELSE 2
+              END,
+              external_id
+            """,
+            tuple(annual_candidate_ids),
+        ).fetchall()
+        annual_job_ids = [row["external_id"] for row in job_rows if row["external_id"]]
+        if annual_job_ids:
+            return annual_job_ids
     rows = conn.execute(
         """
         SELECT j.external_id AS job_id,
                COUNT(*) AS n,
-               AVG(json_extract(s.result_json, '$.train_validation_composite_score')) AS composite_avg
+               AVG(COALESCE(
+                   json_extract(s.result_json, '$.train_validation_l1_score'),
+                   json_extract(s.result_json, '$.train_validation_selection_score'),
+                   json_extract(s.result_json, '$.train_validation_risk_adjusted_composite_score'),
+                   json_extract(s.result_json, '$.train_validation_composite_score')
+               )) AS selection_avg
         FROM subjobs s
         JOIN jobs j ON j.id=s.job_id
         WHERE s.status='done'
@@ -379,7 +466,7 @@ def _top_completed_jobs(conn: sqlite3.Connection, *, limit: int, min_weeks: int)
           AND json_extract(s.result_json, '$.trade_gate_passed') = 1
         GROUP BY j.external_id
         HAVING n >= ?
-        ORDER BY composite_avg DESC
+        ORDER BY selection_avg DESC
         LIMIT ?
         """,
         (min_weeks, limit),
@@ -611,6 +698,54 @@ def _phase_event_token_embedding(conn: sqlite3.Connection, args: argparse.Namesp
     )
 
 
+def _event_token_transformer_profile() -> dict[str, Any]:
+    return {
+        "enabled": True,
+        "family": "event_token_transformer_v1",
+        "source_prefixes": ["event_"],
+        "output_prefix": "ctx_evt_tr",
+        "embedding_dim": 16,
+        "hidden_size": 16,
+        "num_heads": 2,
+        "num_blocks": 2,
+        "ff_dim": 32,
+        "seed": 20260617,
+        "fit_scope": "train_only_per_subjob",
+        "required": True,
+        "min_fit_rows": 50,
+    }
+
+
+def _phase_event_token_transformer(conn: sqlite3.Connection, args: argparse.Namespace) -> list[Path]:
+    """Clone completed event-engineered anchors with the transformer profile.
+
+    Cloning already-completed subjobs (rather than regenerating anchors via the
+    plan worker) keeps this phase self-contained and identical in window
+    coverage to the matched ``event_token_attention_v1`` baseline, which is what
+    the acceptance comparison requires.
+    """
+    if not EVENT_TOKEN_TRANSFORMER_SOURCE_JOBS:
+        return []
+    return [
+        _clone_jobs_with_seeds(
+            conn,
+            source_job_ids=EVENT_TOKEN_TRANSFORMER_SOURCE_JOBS,
+            seeds=[7],
+            phase_id="event_token_transformer_phase_next_v1",
+            output_dir=Path(args.output_dir),
+            extra_job_fields={
+                "context_embedding_profile": _event_token_transformer_profile(),
+                "feature_preset": "sota_low_cost_plus_event_token_transformer_v1",
+                "experiment_rationale": (
+                    "Train-only event-token transformer embedding "
+                    "(event_token_transformer_v1) cloned from completed "
+                    "event-engineered ETHUSDT 4h anchors."
+                ),
+            },
+        )
+    ]
+
+
 def _phase_oracle_bc_followup(conn: sqlite3.Connection, args: argparse.Namespace) -> list[Path]:
     return _build_oracle_bc_phase(
         conn,
@@ -622,12 +757,361 @@ def _phase_oracle_bc_followup(conn: sqlite3.Connection, args: argparse.Namespace
     )
 
 
+def _phase_risk_adjusted_followup(conn: sqlite3.Connection, args: argparse.Namespace) -> list[Path]:
+    """Clone current winners into a small profit-risk sweep.
+
+    This is intentionally not a broad Cartesian sweep. It starts from already
+    evidenced candidates, swaps the training reward to drawdown-penalized PnL,
+    and asks the level-1 early stopper to rank checkpoints by gap-penalized
+    train-tail/validation RAP. Test stays report-only.
+    """
+    source_job_ids = _top_completed_jobs(conn, limit=2, min_weeks=48)
+    if not source_job_ids:
+        return []
+    phase_id = "risk_adjusted_reward_phase7_v3"
+    suffix = _phase_suffix(phase_id)
+    lambdas = (0.25, 0.5, 1.0)
+    rel_volumes = (0.05, 0.075, 0.10)
+    l1_gap_beta = 0.25
+    max_subjobs_per_job = 52
+    jobs: list[dict[str, Any]] = []
+    for source_job_id in source_job_ids:
+        loaded = _load_job(conn, source_job_id)
+        if loaded is None:
+            continue
+        job_row, source_job = loaded
+        source_rows = _done_subjobs(conn, job_row, max_subjobs_per_job)
+        if not source_rows:
+            continue
+        for risk_lambda in lambdas:
+            for rel_volume in rel_volumes:
+                risk_tag = f"rap_l{str(risk_lambda).replace('.', 'p')}_rv{str(rel_volume).replace('.', 'p')}"
+                new_job_id = f"{source_job_id}_{risk_tag}_{suffix}"
+                cloned_job = json.loads(json.dumps(source_job))
+                cloned_job.update(
+                    {
+                        "job_id": new_job_id,
+                        "candidate_id": new_job_id,
+                        "source_job_id": source_job_id,
+                        "experiment_phase": phase_id,
+                        "experiment_rationale": (
+                            "Profit-risk follow-up on current winners: "
+                            "dd_penalized_reward plus level-1 selection by "
+                            "gap-penalized train-tail/validation "
+                            "risk_adjusted_return. Test remains report-only."
+                        ),
+                        "risk_adjusted_followup": True,
+                        "risk_penalty_lambda": risk_lambda,
+                        "risk_sizing_rel_volume": rel_volume,
+                        "l1_generalization_gap_penalty_beta": l1_gap_beta,
+                    }
+                )
+                hparams = dict(cloned_job.get("hyperparameters") or {})
+                hparams.update(
+                    {
+                        "reward_plugin": "dd_penalized_reward",
+                        "penalty_lambda": risk_lambda,
+                        "selection_metric": "risk_adjusted_return",
+                        "risk_penalty_lambda": risk_lambda,
+                        "l1_generalization_gap_penalty_beta": l1_gap_beta,
+                        "rel_volume": rel_volume,
+                        "train_seed": 8,
+                        "eval_seed": 8,
+                        "phase_seed": 8,
+                    }
+                )
+                cloned_job["hyperparameters"] = hparams
+                subjobs = []
+                for row in source_rows:
+                    subjob = {
+                        "subjob_id": f"{row['external_id']}_{risk_tag}_{suffix}",
+                        "weekly_anchor_id": row["weekly_anchor_id"],
+                        "train_start": row["train_start"],
+                        "train_end": row["train_end"],
+                        "validation_start": row["validation_start"],
+                        "validation_end": row["validation_end"],
+                        "test_start": row["test_start"],
+                        "test_end": row["test_end"],
+                        "train_rows": row["train_rows"],
+                        "validation_rows": row["validation_rows"],
+                        "test_rows": row["test_rows"],
+                        "depends_on_subjob_id": row["external_id"],
+                        "warm_start_parent_subjob_id": row["external_id"],
+                        # Keep this follow-up behind the currently running broadening queue
+                        # unless an operator explicitly reprioritizes it after worker rollout.
+                        "priority": int(row["priority"] or 100) + 10_000,
+                        "source_subjob_id": row["external_id"],
+                    }
+                    subjobs.append(subjob)
+                cloned_job["subjobs"] = subjobs
+                jobs.append(cloned_job)
+
+    plan = {
+        "schema_version": "project3_weekly_walkforward_pool_plan_v1",
+        "plan_id": phase_id,
+        "generated_at": utc_now(),
+        "stage_c_access": "DENIED",
+        "training_launched": False,
+        "source_jobs": source_job_ids,
+        "purpose": (
+            "Small risk-adjusted reward/sizing sweep over already evidenced "
+            "weekly walk-forward winners."
+        ),
+        "risk_metric": "RAP = total_return - lambda * max_drawdown_fraction",
+        "l1_metric": "mean(train_tail_RAP, validation_RAP) - beta * abs(train_tail_RAP - validation_RAP)",
+        "l1_generalization_gap_penalty_beta": l1_gap_beta,
+        "lambda_values": list(lambdas),
+        "rel_volume_values": list(rel_volumes),
+        "jobs": jobs,
+    }
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{phase_id}.json"
+    path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return [path]
+
+
+def _phase_sltp_risk_geometry_followup(conn: sqlite3.Connection, args: argparse.Namespace) -> list[Path]:
+    """Clone winners into a compact SL/TP/risk-control sweep.
+
+    This phase is the pragmatic follow-up after profit-only and RAP probes. It
+    keeps the historical 2ATR/3ATR, rel_volume=0.05 behavior as an explicit
+    control, then compares fixed ATR geometry against exposure-aware SL/TP
+    geometry. The selection metric remains gap-penalized train-tail/validation
+    RAP; same-week test remains report-only.
+    """
+    source_job_ids = _top_completed_jobs(conn, limit=2, min_weeks=48)
+    if not source_job_ids:
+        return []
+    phase_id = "sltp_risk_geometry_phase8_v3"
+    suffix = _phase_suffix(phase_id)
+    risk_lambda = 0.5
+    l1_gap_beta = 0.25
+    max_subjobs_per_job = 52
+    profiles = [
+        {
+            "tag": "control_rv0p05_sl2_tp3",
+            "family": "fixed_atr_sltp_control",
+            "rel_volume": 0.05,
+            "k_sl": 2.0,
+            "k_tp": 3.0,
+            "sltp_risk_mode": "fixed_atr",
+        },
+        {
+            "tag": "fixed_rv0p05_sl1p25_tp1p25",
+            "family": "fixed_atr_sltp_geometry",
+            "rel_volume": 0.05,
+            "k_sl": 1.25,
+            "k_tp": 1.25,
+            "sltp_risk_mode": "fixed_atr",
+        },
+        {
+            "tag": "fixed_rv0p05_sl1p5_tp2",
+            "family": "fixed_atr_sltp_geometry",
+            "rel_volume": 0.05,
+            "k_sl": 1.5,
+            "k_tp": 2.0,
+            "sltp_risk_mode": "fixed_atr",
+        },
+        {
+            "tag": "fixed_rv0p05_sl2_tp4",
+            "family": "fixed_atr_sltp_geometry",
+            "rel_volume": 0.05,
+            "k_sl": 2.0,
+            "k_tp": 4.0,
+            "sltp_risk_mode": "fixed_atr",
+        },
+        {
+            "tag": "fixed_rv0p10_sl2_tp3",
+            "family": "fixed_atr_sltp_volume",
+            "rel_volume": 0.10,
+            "k_sl": 2.0,
+            "k_tp": 3.0,
+            "sltp_risk_mode": "fixed_atr",
+        },
+        {
+            "tag": "fixed_rv0p10_sl1p5_tp2",
+            "family": "fixed_atr_sltp_volume",
+            "rel_volume": 0.10,
+            "k_sl": 1.5,
+            "k_tp": 2.0,
+            "sltp_risk_mode": "fixed_atr",
+        },
+        {
+            "tag": "fixed_rv0p25_sl1p25_tp1p5",
+            "family": "fixed_atr_sltp_high_exposure",
+            "rel_volume": 0.25,
+            "k_sl": 1.25,
+            "k_tp": 1.5,
+            "sltp_risk_mode": "fixed_atr",
+            "max_planned_loss_fraction": 0.025,
+        },
+        {
+            "tag": "fixed_rv0p50_sl1p25_tp1p25",
+            "family": "fixed_atr_sltp_high_exposure",
+            "rel_volume": 0.50,
+            "k_sl": 1.25,
+            "k_tp": 1.25,
+            "sltp_risk_mode": "fixed_atr",
+            "max_planned_loss_fraction": 0.025,
+        },
+        {
+            "tag": "aware_rv0p10_base",
+            "family": "rel_volume_aware_sltp",
+            "rel_volume": 0.10,
+            "k_sl": 2.0,
+            "k_tp": 3.0,
+            "sltp_risk_mode": "rel_volume_aware_atr",
+        },
+        {
+            "tag": "aware_rv0p25_base",
+            "family": "rel_volume_aware_sltp",
+            "rel_volume": 0.25,
+            "k_sl": 2.0,
+            "k_tp": 3.0,
+            "sltp_risk_mode": "rel_volume_aware_atr",
+        },
+        {
+            "tag": "aware_rv0p50_base",
+            "family": "rel_volume_aware_sltp",
+            "rel_volume": 0.50,
+            "k_sl": 2.0,
+            "k_tp": 3.0,
+            "sltp_risk_mode": "rel_volume_aware_atr",
+            "max_planned_loss_fraction": 0.025,
+        },
+        {
+            "tag": "margin_aware_rv0p50_cap2p5",
+            "family": "margin_aware_sltp",
+            "rel_volume": 0.50,
+            "k_sl": 2.0,
+            "k_tp": 3.0,
+            "sltp_risk_mode": "margin_aware_atr",
+            "max_planned_loss_fraction": 0.025,
+        },
+    ]
+    jobs: list[dict[str, Any]] = []
+    for source_job_id in source_job_ids:
+        loaded = _load_job(conn, source_job_id)
+        if loaded is None:
+            continue
+        job_row, source_job = loaded
+        source_rows = _done_subjobs(conn, job_row, max_subjobs_per_job)
+        if not source_rows:
+            continue
+        for profile in profiles:
+            if float(profile["k_tp"]) < float(profile["k_sl"]):
+                raise ValueError(f"invalid SL/TP profile has TP < SL: {profile['tag']}")
+            new_job_id = f"{source_job_id}_{profile['tag']}_{suffix}"
+            cloned_job = json.loads(json.dumps(source_job))
+            cloned_job.update(
+                {
+                    "job_id": new_job_id,
+                    "candidate_id": new_job_id,
+                    "source_job_id": source_job_id,
+                    "experiment_phase": phase_id,
+                    "experiment_rationale": (
+                        "Trade-level risk geometry follow-up: compare fixed ATR "
+                        "SL/TP, high-exposure conservative geometry, and "
+                        "rel_volume-aware SL/TP while selecting checkpoints by "
+                        "gap-penalized train-tail/validation RAP."
+                    ),
+                    "sltp_risk_geometry_followup": True,
+                    "sltp_profile_tag": profile["tag"],
+                    "sltp_profile_family": profile["family"],
+                    "risk_adjusted_followup": True,
+                    "risk_penalty_lambda": risk_lambda,
+                    "risk_sizing_rel_volume": profile["rel_volume"],
+                    "l1_generalization_gap_penalty_beta": l1_gap_beta,
+                }
+            )
+            hparams = dict(cloned_job.get("hyperparameters") or {})
+            hparams.update(
+                {
+                    "reward_plugin": "dd_penalized_reward",
+                    "penalty_lambda": risk_lambda,
+                    "selection_metric": "risk_adjusted_return",
+                    "risk_penalty_lambda": risk_lambda,
+                    "l1_generalization_gap_penalty_beta": l1_gap_beta,
+                    "rel_volume": profile["rel_volume"],
+                    "atr_period": 14,
+                    "k_sl": profile["k_sl"],
+                    "k_tp": profile["k_tp"],
+                    "sltp_risk_mode": profile["sltp_risk_mode"],
+                    "baseline_rel_volume": 0.05,
+                    "max_risk_rel_volume": 0.50,
+                    "min_reward_risk_ratio": 1.0,
+                    "rel_volume_sl_shrink_alpha": 0.35,
+                    "rel_volume_tp_shrink_alpha": 0.20,
+                    "min_k_sl": 1.0,
+                    "max_planned_loss_fraction": profile.get("max_planned_loss_fraction"),
+                    "sltp_profile_tag": profile["tag"],
+                    "sltp_profile_family": profile["family"],
+                    "train_seed": 9,
+                    "eval_seed": 9,
+                    "phase_seed": 9,
+                }
+            )
+            cloned_job["hyperparameters"] = hparams
+            subjobs = []
+            for row in source_rows:
+                subjobs.append(
+                    {
+                        "subjob_id": f"{row['external_id']}_{profile['tag']}_{suffix}",
+                        "weekly_anchor_id": row["weekly_anchor_id"],
+                        "train_start": row["train_start"],
+                        "train_end": row["train_end"],
+                        "validation_start": row["validation_start"],
+                        "validation_end": row["validation_end"],
+                        "test_start": row["test_start"],
+                        "test_end": row["test_end"],
+                        "train_rows": row["train_rows"],
+                        "validation_rows": row["validation_rows"],
+                        "test_rows": row["test_rows"],
+                        "depends_on_subjob_id": row["external_id"],
+                        "warm_start_parent_subjob_id": row["external_id"],
+                        "priority": int(row["priority"] or 100) + 500,
+                        "source_subjob_id": row["external_id"],
+                    }
+                )
+            cloned_job["subjobs"] = subjobs
+            jobs.append(cloned_job)
+
+    plan = {
+        "schema_version": "project3_weekly_walkforward_pool_plan_v1",
+        "plan_id": phase_id,
+        "generated_at": utc_now(),
+        "stage_c_access": "DENIED",
+        "training_launched": False,
+        "source_jobs": source_job_ids,
+        "purpose": (
+            "Compact trade-level risk control sweep over already evidenced "
+            "weekly walk-forward winners."
+        ),
+        "risk_metric": "RAP = total_return - 0.5 * max_drawdown_fraction",
+        "l1_metric": "mean(train_tail_RAP, validation_RAP) - beta * abs(train_tail_RAP - validation_RAP)",
+        "l1_generalization_gap_penalty_beta": l1_gap_beta,
+        "max_risk_rel_volume": 0.50,
+        "baseline": {"rel_volume": 0.05, "k_sl": 2.0, "k_tp": 3.0},
+        "profiles": profiles,
+        "jobs": jobs,
+    }
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{phase_id}.json"
+    path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return [path]
+
+
 PHASES = [
     ("eventctx_seed_robustness_phase2_v1", _phase_event_seed_robustness),
     ("eventctx_metric_window_phase3_v1", _phase_event_metric_windows),
     ("event_token_embedding_phase4_v1", _phase_event_token_embedding),
+    ("event_token_transformer_phase_next_v1", _phase_event_token_transformer),
     ("asset_preset_broadening_phase5_v1", _phase_asset_preset_broadening),
     ("oracle_bc_followup_phase6_v1", _phase_oracle_bc_followup),
+    ("risk_adjusted_reward_phase7_v3", _phase_risk_adjusted_followup),
+    ("sltp_risk_geometry_phase8_v3", _phase_sltp_risk_geometry_followup),
 ]
 
 
