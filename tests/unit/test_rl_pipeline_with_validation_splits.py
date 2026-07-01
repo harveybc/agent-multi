@@ -137,7 +137,7 @@ def test_early_stop_composite_penalizes_validation_no_trade():
         no_trade_penalty=1_000_000.0,
     )
 
-    assert raw == 1.75
+    assert raw == 0.875
     assert composite < -999_000
     assert passed is False
     assert train_tail_ret == 3.5

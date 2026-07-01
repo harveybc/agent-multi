@@ -149,42 +149,97 @@ def _parse_utc(value: str | None) -> datetime | None:
 
 
 def _recover_stale_running(conn: sqlite3.Connection, *, stale_minutes: int, worker_active: bool) -> int:
-    if worker_active or stale_minutes <= 0:
+    if stale_minutes <= 0:
         return 0
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=stale_minutes)
-    stale: list[str] = []
-    for row in conn.execute("SELECT external_id, heartbeat_at FROM subjobs WHERE status='running'"):
+    stale: list[dict[str, object]] = []
+    for row in conn.execute(
+        """
+        SELECT external_id, claimed_by, claimed_at, heartbeat_at
+        FROM subjobs
+        WHERE status='running'
+        """
+    ):
         heartbeat = _parse_utc(row["heartbeat_at"])
         if heartbeat is None or heartbeat < cutoff:
-            stale.append(row["external_id"])
+            stale.append(
+                {
+                    "external_id": row["external_id"],
+                    "claimed_by": row["claimed_by"],
+                    "claimed_at": row["claimed_at"],
+                    "heartbeat_at": row["heartbeat_at"],
+                    "stale_age_seconds": None
+                    if heartbeat is None
+                    else int((datetime.now(timezone.utc) - heartbeat).total_seconds()),
+                }
+            )
     if not stale:
         return 0
     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    recovered = 0
     with conn:
-        for subjob_id in stale:
-            conn.execute(
+        for item in stale:
+            subjob_id = str(item["external_id"])
+            claimed_by = item["claimed_by"]
+            cur = conn.execute(
                 """
                 UPDATE subjobs
                 SET status='pending',
                     claimed_by=NULL,
                     claimed_at=NULL,
                     heartbeat_at=NULL,
-                    error=?,
+                    config_path=NULL,
+                    run_dir=NULL,
+                    result_json=NULL,
+                    error=NULL,
                     updated_at=?
-                WHERE external_id=?
+                WHERE external_id=? AND status='running'
                 """,
-                (f"requeued by supervisor after stale running heartbeat > {stale_minutes} minutes", now, subjob_id),
+                (now, subjob_id),
             )
+            if cur.rowcount <= 0:
+                continue
+            recovered += 1
+            if claimed_by:
+                conn.execute(
+                    """
+                    UPDATE machine_heartbeats
+                    SET status='stale',
+                        current_subjob_id=NULL,
+                        message=?,
+                        heartbeat_at=?
+                    WHERE machine_id=? AND current_subjob_id=?
+                    """,
+                    (
+                        (
+                            "stale heartbeat; requeued "
+                            f"{subjob_id}; stale>{stale_minutes}min"
+                        ),
+                        now,
+                        str(claimed_by),
+                        subjob_id,
+                    ),
+                )
             conn.execute(
                 "INSERT INTO pool_events(event_type, subject_id, payload_json, created_at) VALUES (?, ?, ?, ?)",
                 (
                     "supervisor_requeue_stale",
                     subjob_id,
-                    json.dumps({"stale_minutes": stale_minutes}, sort_keys=True),
+                    json.dumps(
+                        {
+                            "stale_minutes": stale_minutes,
+                            "worker_active": worker_active,
+                            "previous_claimed_by": claimed_by,
+                            "previous_claimed_at": item["claimed_at"],
+                            "previous_heartbeat_at": item["heartbeat_at"],
+                            "stale_age_seconds": item["stale_age_seconds"],
+                        },
+                        sort_keys=True,
+                    ),
                     now,
                 ),
             )
-    return len(stale)
+    return recovered
 
 
 def main() -> None:

@@ -6,8 +6,9 @@ import argparse
 import csv
 import html
 import json
+import math
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -15,9 +16,16 @@ from urllib.parse import urlparse
 ORACLE_DEFAULT_FULL_SPREAD = 0.0004
 ORACLE_COST_STRESS_MULTIPLIER = 2.0
 CHART_FOCUS_START_LABEL = "2026-06-09 12:00:00Z"
+CHART_MAX_POINTS = 1200
 
 _BASELINE_CACHE: dict[tuple, dict[str, float | None]] = {}
 _PRICE_SERIES_CACHE: dict[tuple, list[tuple[datetime, float, float, float]]] = {}
+_RESULT_FILE_CACHE: dict[tuple[str, int], dict] = {}
+
+CDT_ANNUAL_BASELINE_RETURN = 0.12
+CDT_ANNUAL_STRETCH_RETURN = 0.126
+CDT_WEEKLY_BASELINE_RETURN = (1.0 + CDT_ANNUAL_BASELINE_RETURN) ** (1.0 / 52.0) - 1.0
+CDT_WEEKLY_STRETCH_RETURN = (1.0 + CDT_ANNUAL_STRETCH_RETURN) ** (1.0 / 52.0) - 1.0
 
 
 def _connect(db_path: Path) -> sqlite3.Connection:
@@ -42,13 +50,149 @@ def _progress_for_run(run_dir: str | None) -> dict:
         return {}
 
 
+def _parse_utc(value: object) -> datetime | None:
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _fmt_age(seconds: float | None) -> str:
+    if seconds is None:
+        return ""
+    seconds = max(0, int(seconds))
+    if seconds < 60:
+        return f"{seconds}s"
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"{minutes}m"
+    hours = minutes // 60
+    return f"{hours}h {minutes % 60}m"
+
+
+def _heartbeat_freshness(age_seconds: float | None, status: str | None) -> str:
+    if status == "stale":
+        return "stale"
+    if age_seconds is None:
+        return "unknown"
+    if age_seconds >= 600:
+        return "stale"
+    if age_seconds >= 180:
+        return "warn"
+    return "fresh"
+
+
 def _float_or_none(value: object) -> float | None:
     if value is None:
         return None
     try:
-        return float(value)
+        out = float(value)
     except (TypeError, ValueError):
         return None
+    return out if math.isfinite(out) else None
+
+
+def _json_or_empty(value: object) -> dict:
+    if isinstance(value, dict):
+        return value
+    if not value:
+        return {}
+    try:
+        parsed = json.loads(str(value))
+    except json.JSONDecodeError:
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _load_result_file_from_summary(summary: dict) -> dict:
+    results_file = summary.get("results_file")
+    if not results_file:
+        return {}
+    path = Path(str(results_file))
+    if not path.exists():
+        return {}
+    try:
+        stat = path.stat()
+    except OSError:
+        return {}
+    cache_key = (str(path), int(stat.st_mtime_ns))
+    cached = _RESULT_FILE_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    payload = {"splits": payload.get("splits") if isinstance(payload.get("splits"), dict) else {}}
+    _RESULT_FILE_CACHE[cache_key] = payload
+    if len(_RESULT_FILE_CACHE) > 1024:
+        for old_key in list(_RESULT_FILE_CACHE)[:256]:
+            _RESULT_FILE_CACHE.pop(old_key, None)
+    return payload
+
+
+def _split_summary_metric(
+    summary: dict,
+    raw_result: dict,
+    *,
+    split: str,
+    summary_key: str,
+    metric_key: str,
+) -> float | None:
+    value = _float_or_none(summary.get(summary_key))
+    if value is not None:
+        return value
+    split_summary = ((raw_result.get("splits") or {}).get(split) or {})
+    if isinstance(split_summary, dict):
+        return _float_or_none(split_summary.get(metric_key))
+    return None
+
+
+def _split_drawdown_fraction(
+    summary: dict,
+    raw_result: dict,
+    *,
+    split: str,
+    summary_prefix: str,
+) -> float | None:
+    value = _float_or_none(summary.get(f"{summary_prefix}_max_drawdown_fraction"))
+    if value is not None:
+        return max(0.0, value)
+    pct = _float_or_none(summary.get(f"{summary_prefix}_max_drawdown_pct"))
+    if pct is None:
+        split_summary = ((raw_result.get("splits") or {}).get(split) or {})
+        if isinstance(split_summary, dict):
+            pct = _float_or_none(split_summary.get("max_drawdown_pct"))
+            if pct is None:
+                fraction = _float_or_none(split_summary.get("max_drawdown"))
+                if fraction is not None:
+                    return abs(fraction)
+    if pct is not None:
+        return max(0.0, pct / 100.0)
+    return None
+
+
+def _risk_adjusted_return_value(total_return: float | None, drawdown: float | None, risk_lambda: float) -> float | None:
+    if total_return is None:
+        return None
+    return float(total_return) - float(risk_lambda) * float(drawdown or 0.0)
+
+
+def _drawdown_fraction_from_result(result: dict, prefix: str) -> float | None:
+    value = _float_or_none(result.get(f"{prefix}_max_drawdown_fraction"))
+    if value is not None:
+        return value
+    pct = _float_or_none(result.get(f"{prefix}_max_drawdown_pct"))
+    if pct is not None:
+        return max(0.0, pct / 100.0)
+    return None
 
 
 def _fmt_metric(value: object) -> str:
@@ -56,6 +200,13 @@ def _fmt_metric(value: object) -> str:
     if metric is None:
         return ""
     return f"{metric:+.6f}"
+
+
+def _fmt_percent(value: object, digits: int = 3) -> str:
+    metric = _float_or_none(value)
+    if metric is None:
+        return ""
+    return f"{100.0 * metric:+.{digits}f}%"
 
 
 def _mean(values: list[float]) -> float | None:
@@ -408,22 +559,31 @@ def _trim_chart_for_focus(chart: dict) -> dict:
         (idx for idx, label in enumerate(labels) if str(label) >= CHART_FOCUS_START_LABEL),
         0,
     )
-    if start_idx <= 0:
-        chart["focus_start"] = CHART_FOCUS_START_LABEL
-        chart["trimmed_points"] = 0
-        return chart
 
-    def trim_group(group: dict) -> dict:
+    def trim_group(group: dict, trim_start: int) -> dict:
         trimmed: dict = {}
         for key, value in group.items():
-            trimmed[key] = value[start_idx:] if isinstance(value, list) else value
+            trimmed[key] = value[trim_start:] if isinstance(value, list) else value
+        return trimmed
+
+    def tail_group(group: dict) -> dict:
+        trimmed: dict = {}
+        for key, value in group.items():
+            trimmed[key] = value[-CHART_MAX_POINTS:] if isinstance(value, list) else value
         return trimmed
 
     chart["labels"] = labels[start_idx:]
-    chart["model"] = trim_group(dict(chart.get("model") or {}))
-    chart["oracle"] = trim_group(dict(chart.get("oracle") or {}))
+    chart["model"] = trim_group(dict(chart.get("model") or {}), start_idx)
+    chart["oracle"] = trim_group(dict(chart.get("oracle") or {}), start_idx)
+    if len(chart["labels"]) > CHART_MAX_POINTS:
+        chart["trimmed_points"] = start_idx + len(chart["labels"]) - CHART_MAX_POINTS
+        chart["labels"] = chart["labels"][-CHART_MAX_POINTS:]
+        chart["model"] = tail_group(chart["model"])
+        chart["oracle"] = tail_group(chart["oracle"])
+        chart["point_limit"] = CHART_MAX_POINTS
+    else:
+        chart["trimmed_points"] = start_idx
     chart["focus_start"] = CHART_FOCUS_START_LABEL
-    chart["trimmed_points"] = start_idx
     return chart
 
 
@@ -554,41 +714,132 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
     champion_anti_composite: list[float | None] = []
     min_samples = 5
     job_values: dict[str, dict] = {}
+    focus_start_dt = _parse_datetime(CHART_FOCUS_START_LABEL)
 
     for row in rows:
         try:
             result = json.loads(row.get("result_json") or "{}")
         except json.JSONDecodeError:
             result = {}
-        train = _float_or_none(result.get("train_tail_total_return"))
-        validation = _float_or_none(result.get("validation_total_return"))
-        test = _float_or_none(result.get("test_total_return"))
+        raw_result = _load_result_file_from_summary(result)
+        job_config = _json_or_empty(row.get("config_json"))
+        hparams = job_config.get("hyperparameters") or {}
+        if not isinstance(hparams, dict):
+            hparams = {}
+        risk_lambda = (
+            _float_or_none(result.get("risk_penalty_lambda"))
+            or _float_or_none(hparams.get("risk_penalty_lambda"))
+            or _float_or_none(hparams.get("penalty_lambda"))
+            or _float_or_none(job_config.get("risk_penalty_lambda"))
+            or 1.0
+        )
+        rel_volume = (
+            _float_or_none(result.get("rel_volume"))
+            or _float_or_none(hparams.get("rel_volume"))
+            or _float_or_none(job_config.get("rel_volume"))
+            or _float_or_none(job_config.get("risk_sizing_rel_volume"))
+        )
+        k_sl = (
+            _float_or_none(result.get("k_sl"))
+            or _float_or_none(hparams.get("k_sl"))
+            or _float_or_none(job_config.get("k_sl"))
+        )
+        k_tp = (
+            _float_or_none(result.get("k_tp"))
+            or _float_or_none(hparams.get("k_tp"))
+            or _float_or_none(job_config.get("k_tp"))
+        )
+        reward_risk_ratio = _float_or_none(result.get("reward_risk_ratio"))
+        if reward_risk_ratio is None and k_sl and k_tp is not None:
+            reward_risk_ratio = (k_tp / k_sl) if k_sl > 0 else None
+        business_risk_fraction = _float_or_none(result.get("business_risk_fraction"))
+        sltp_risk_mode = str(
+            result.get("sltp_risk_mode")
+            or hparams.get("sltp_risk_mode")
+            or job_config.get("sltp_risk_mode")
+            or "fixed_atr"
+        )
+        sltp_profile_tag = str(
+            result.get("sltp_profile_tag")
+            or hparams.get("sltp_profile_tag")
+            or job_config.get("sltp_profile_tag")
+            or ""
+        )
+        atr_period = (
+            _float_or_none(result.get("atr_period"))
+            or _float_or_none(hparams.get("atr_period"))
+            or _float_or_none(job_config.get("atr_period"))
+        )
+        reward_plugin = str(hparams.get("reward_plugin") or job_config.get("reward_plugin") or "")
+        selection_metric = str(result.get("selection_metric") or hparams.get("selection_metric") or "total_return")
+        train = _split_summary_metric(
+            result,
+            raw_result,
+            split="train_tail",
+            summary_key="train_tail_total_return",
+            metric_key="total_return",
+        )
+        validation = _split_summary_metric(
+            result,
+            raw_result,
+            split="validation",
+            summary_key="validation_total_return",
+            metric_key="total_return",
+        )
+        test = _split_summary_metric(
+            result,
+            raw_result,
+            split="test",
+            summary_key="test_total_return",
+            metric_key="total_return",
+        )
         validation_sharpe = _float_or_none(result.get("validation_sharpe"))
         test_sharpe = _float_or_none(result.get("test_sharpe"))
+        train_dd = _split_drawdown_fraction(
+            result, raw_result, split="train_tail", summary_prefix="train_tail"
+        )
+        validation_dd = _split_drawdown_fraction(
+            result, raw_result, split="validation", summary_prefix="validation"
+        )
+        test_dd = _split_drawdown_fraction(
+            result, raw_result, split="test", summary_prefix="test"
+        )
+        train_rap = _float_or_none(result.get("train_tail_risk_adjusted_total_return"))
+        if train_rap is None:
+            train_rap = _risk_adjusted_return_value(train, train_dd, risk_lambda)
+        validation_rap = _float_or_none(result.get("validation_risk_adjusted_total_return"))
+        if validation_rap is None:
+            validation_rap = _risk_adjusted_return_value(validation, validation_dd, risk_lambda)
+        test_rap = _float_or_none(result.get("test_risk_adjusted_total_return"))
+        if test_rap is None:
+            test_rap = _risk_adjusted_return_value(test, test_dd, risk_lambda)
+        risk_composite = _float_or_none(result.get("train_validation_risk_adjusted_composite_score"))
         composite = _float_or_none(result.get("train_validation_composite_score"))
         if composite is None and train is not None and validation is not None:
             composite = (train + validation) / 2
+        if risk_composite is None and train_rap is not None and validation_rap is not None:
+            risk_composite = (train_rap + validation_rap) / 2
+        l1_score = _float_or_none(result.get("train_validation_l1_score"))
+        if l1_score is None:
+            l1_score = _float_or_none(result.get("train_validation_selection_score"))
+        if l1_score is None:
+            l1_score = risk_composite
+        if l1_score is None:
+            l1_score = composite
+        completed = str(row.get("completed_at") or "")
+        label = completed.replace("T", " ").replace("+00:00", "Z")
+        completed_dt = _parse_datetime(completed)
+        compute_oracle = bool(
+            completed_dt is not None
+            and focus_start_dt is not None
+            and completed_dt >= focus_start_dt
+        )
         _commission, _slippage, _full_spread, train_tail_days = _config_costs(row.get("config_path"))
         train_end = _parse_datetime(row.get("train_end"))
         train_tail_start = train_end - timedelta(days=train_tail_days) if train_end else None
-        train_baseline = _oracle_baseline_for_window(
-            row.get("input_data_file"),
-            train_tail_start,
-            train_end,
-            row.get("config_path"),
-        )
-        validation_baseline = _oracle_baseline_for_window(
-            row.get("input_data_file"),
-            row.get("validation_start"),
-            row.get("validation_end"),
-            row.get("config_path"),
-        )
-        test_baseline = _oracle_baseline_for_window(
-            row.get("input_data_file"),
-            row.get("test_start"),
-            row.get("test_end"),
-            row.get("config_path"),
-        )
+        train_baseline = {"ideal": None, "anti": None, "cycles": None, "threshold": None}
+        validation_baseline = {"ideal": None, "anti": None}
+        test_baseline = {"ideal": None, "anti": None}
         ideal = train_baseline.get("ideal")
         anti = train_baseline.get("anti")
         oracle_validation = validation_baseline.get("ideal")
@@ -601,9 +852,6 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
         oracle_backstep_bars = train_baseline.get("backstep_bars")
         oracle_round_trip_cost = train_baseline.get("round_trip_cost")
         oracle_profit_multiple = train_baseline.get("profit_multiple")
-
-        completed = str(row.get("completed_at") or "")
-        label = completed.replace("T", " ").replace("+00:00", "Z")
 
         job_id = str(row["job_id"])
         job = job_values.setdefault(
@@ -619,6 +867,17 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
                 "feature_count": row.get("feature_count"),
                 "input_data_file": row.get("input_data_file"),
                 "feature_summary": _feature_summary(row.get("config_json"), row.get("feature_count")),
+                "reward_plugin": reward_plugin,
+                "selection_metric": selection_metric,
+                "risk_penalty_lambda": risk_lambda,
+                "rel_volume": rel_volume,
+                "business_risk_fraction": business_risk_fraction,
+                "sltp_risk_mode": sltp_risk_mode,
+                "sltp_profile_tag": sltp_profile_tag,
+                "atr_period": atr_period,
+                "k_sl": k_sl,
+                "k_tp": k_tp,
+                "reward_risk_ratio": reward_risk_ratio,
                 "n": 0,
                 "train": [],
                 "validation": [],
@@ -626,6 +885,14 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
                 "composite": [],
                 "validation_sharpe": [],
                 "test_sharpe": [],
+                "train_rap": [],
+                "validation_rap": [],
+                "test_rap": [],
+                "risk_composite": [],
+                "l1_score": [],
+                "train_drawdown": [],
+                "validation_drawdown": [],
+                "test_drawdown": [],
                 "test_trades": [],
                 "ideal": [],
                 "anti": [],
@@ -639,8 +906,20 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
                 "oracle_backstep_bars": [],
                 "oracle_round_trip_cost": [],
                 "oracle_profit_multiple": [],
+                "oracle_rows": [],
             },
         )
+        if compute_oracle:
+            job["oracle_rows"].append(
+                {
+                    "input_data_file": row.get("input_data_file"),
+                    "train_tail_start": train_tail_start,
+                    "train_end": train_end,
+                    "validation_start": row.get("validation_start"),
+                    "validation_end": row.get("validation_end"),
+                    "config_path": row.get("config_path"),
+                }
+            )
         job["n"] += 1
         if train is not None:
             job["train"].append(train)
@@ -654,6 +933,22 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
             job["validation_sharpe"].append(validation_sharpe)
         if test_sharpe is not None:
             job["test_sharpe"].append(test_sharpe)
+        if train_rap is not None:
+            job["train_rap"].append(train_rap)
+        if validation_rap is not None:
+            job["validation_rap"].append(validation_rap)
+        if test_rap is not None:
+            job["test_rap"].append(test_rap)
+        if risk_composite is not None:
+            job["risk_composite"].append(risk_composite)
+        if l1_score is not None:
+            job["l1_score"].append(l1_score)
+        if train_dd is not None:
+            job["train_drawdown"].append(train_dd)
+        if validation_dd is not None:
+            job["validation_drawdown"].append(validation_dd)
+        if test_dd is not None:
+            job["test_drawdown"].append(test_dd)
         if ideal is not None:
             job["ideal"].append(ideal)
         if anti is not None:
@@ -686,11 +981,11 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
         eligible_running = [
             candidate
             for candidate in job_values.values()
-            if candidate["n"] >= min_samples and candidate["composite"]
+            if candidate["n"] >= min_samples and candidate["l1_score"]
         ]
         champion = max(
             eligible_running,
-            key=lambda candidate: _mean(candidate["composite"]) or float("-inf"),
+            key=lambda candidate: _mean(candidate["l1_score"]) or float("-inf"),
             default=None,
         )
         if champion is None:
@@ -723,6 +1018,14 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
         summary["composite_avg"] = _mean(job["composite"])
         summary["validation_sharpe_avg"] = _mean(job["validation_sharpe"])
         summary["test_sharpe_avg"] = _mean(job["test_sharpe"])
+        summary["train_rap_avg"] = _mean(job["train_rap"])
+        summary["validation_rap_avg"] = _mean(job["validation_rap"])
+        summary["test_rap_avg"] = _mean(job["test_rap"])
+        summary["risk_composite_avg"] = _mean(job["risk_composite"])
+        summary["l1_score_avg"] = _mean(job["l1_score"])
+        summary["train_drawdown_avg"] = _mean(job["train_drawdown"])
+        summary["validation_drawdown_avg"] = _mean(job["validation_drawdown"])
+        summary["test_drawdown_avg"] = _mean(job["test_drawdown"])
         summary["test_trades_avg"] = _mean(job["test_trades"])
         summary["ideal_avg"] = _mean(job["ideal"])
         summary["anti_avg"] = _mean(job["anti"])
@@ -738,8 +1041,54 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
         summary["oracle_profit_multiple_avg"] = _mean(job["oracle_profit_multiple"])
         summaries.append(summary)
 
-    eligible_composite = [row for row in summaries if row["n"] >= min_samples and row["composite_avg"] is not None]
-    best_composite_job = max(eligible_composite, key=lambda row: row["composite_avg"], default=None)
+    compact_summaries = [_compact_job_summary(row) for row in summaries]
+    eligible_composite = [
+        row for row in compact_summaries if row["n"] >= min_samples and row["l1_score_avg"] is not None
+    ]
+    best_composite_job = max(eligible_composite, key=lambda row: row["l1_score_avg"], default=None)
+    risk_profit_points = []
+    for row in compact_summaries:
+        if row["n"] < min_samples:
+            continue
+        test_avg = _float_or_none(row.get("test_avg"))
+        test_drawdown = _float_or_none(row.get("test_drawdown_avg"))
+        if test_avg is None or test_drawdown is None:
+            continue
+        risk_profit_points.append(
+            {
+                "x": max(0.0, test_drawdown),
+                "y": test_avg,
+                "label": str(row.get("job_id") or row.get("candidate_id") or ""),
+                "asset": row.get("asset"),
+                "timeframe": row.get("timeframe"),
+                "model": row.get("model_family"),
+                "policy": row.get("training_policy"),
+                "samples": row.get("n"),
+                "composite": row.get("composite_avg"),
+                "l1_score": row.get("l1_score_avg"),
+                "risk_composite": row.get("risk_composite_avg"),
+                "test_rap": row.get("test_rap_avg"),
+                "risk_lambda": row.get("risk_penalty_lambda"),
+                "rel_volume": row.get("rel_volume"),
+                "business_risk_fraction": row.get("business_risk_fraction"),
+                "sltp_risk_mode": row.get("sltp_risk_mode"),
+                "sltp_profile_tag": row.get("sltp_profile_tag"),
+                "atr_period": row.get("atr_period"),
+                "k_sl": row.get("k_sl"),
+                "k_tp": row.get("k_tp"),
+                "reward_risk_ratio": row.get("reward_risk_ratio"),
+                "selection_metric": row.get("selection_metric"),
+                "reward_plugin": row.get("reward_plugin"),
+            }
+        )
+    risk_profit_points.sort(
+        key=lambda item: (
+            item.get("risk_composite") is not None,
+            float(item.get("l1_score") or item.get("risk_composite") or item.get("composite") or float("-inf")),
+            float(item.get("risk_composite") or item.get("composite") or float("-inf")),
+        ),
+        reverse=True,
+    )
 
     chart = _trim_chart_for_focus(
         {
@@ -757,19 +1106,191 @@ def _performance_payload(conn: sqlite3.Connection) -> dict:
                 "composite": champion_oracle_composite,
                 "anti_composite": champion_anti_composite,
             },
+            "risk_profit": {
+                "points": risk_profit_points[:400],
+                "x_label": "Average weekly test max drawdown fraction",
+                "y_label": "Average weekly test net total_return",
+                "cdt_weekly_return": CDT_WEEKLY_BASELINE_RETURN,
+                "cdt_weekly_stretch_return": CDT_WEEKLY_STRETCH_RETURN,
+                "cdt_note": (
+                    "Colombia CDT reference: 12.0% and 12.6% effective annual returns "
+                    "converted to weekly geometric returns; drawdown baseline is shown "
+                    "near zero for held-to-maturity comparison."
+                ),
+            },
         },
     )
+    if best_composite_job:
+        raw_best = job_values.get(str(best_composite_job.get("job_id")))
+        oracle_composites: list[float] = []
+        anti_composites: list[float] = []
+        oracle_rows = list((raw_best or {}).get("oracle_rows") or [])[-64:]
+        for oracle_row in oracle_rows:
+            train_baseline = _oracle_baseline_for_window(
+                oracle_row.get("input_data_file"),
+                oracle_row.get("train_tail_start"),
+                oracle_row.get("train_end"),
+                oracle_row.get("config_path"),
+            )
+            validation_baseline = _oracle_baseline_for_window(
+                oracle_row.get("input_data_file"),
+                oracle_row.get("validation_start"),
+                oracle_row.get("validation_end"),
+                oracle_row.get("config_path"),
+            )
+            oracle_composite = _avg_pair(train_baseline.get("ideal"), validation_baseline.get("ideal"))
+            anti_composite = _avg_pair(train_baseline.get("anti"), validation_baseline.get("anti"))
+            if oracle_composite is not None:
+                oracle_composites.append(float(oracle_composite))
+            if anti_composite is not None:
+                anti_composites.append(float(anti_composite))
+        if chart["labels"]:
+            if oracle_composites:
+                chart["oracle"]["composite"] = [_mean(oracle_composites)] * len(chart["labels"])
+            if anti_composites:
+                chart["oracle"]["anti_composite"] = [_mean(anti_composites)] * len(chart["labels"])
 
     return {
         "chart": chart,
         "best_composite_job": best_composite_job,
         "job_summaries": sorted(
-            summaries,
-            key=lambda row: (row["composite_avg"] is not None, row["composite_avg"] or float("-inf")),
+            compact_summaries,
+            key=lambda row: (row["l1_score_avg"] is not None, row["l1_score_avg"] or float("-inf")),
             reverse=True,
         )[:20],
         "min_samples": min_samples,
     }
+
+
+def _annual_protocol_payload(conn: sqlite3.Connection) -> dict:
+    try:
+        rows = _rows(
+            conn,
+            """
+            SELECT metric_block, candidate_id, asset, timeframe, model_family,
+                   train_years, training_policy, experiment_phase, metric_year,
+                   unique_weeks, mean_weekly_return, sum_weekly_return, annual_return,
+                   observed_return, projected_annual_return_52w,
+                   mean_weekly_drawdown, sum_weekly_drawdown, mean_weekly_rap,
+                   sum_weekly_rap, annual_rap, worst_weekly_rap, best_weekly_rap,
+                   observed_rap, projected_annual_rap_52w,
+                   mean_weekly_l1_score, mean_weekly_l1_gap,
+                   rel_volume, business_risk_fraction, sltp_risk_mode, k_sl, k_tp,
+                   risk_penalty_lambda, first_week, last_week, has_near_full_year_coverage
+            FROM weekly_result_full_year_protocol_olap
+            WHERE has_near_full_year_coverage = 1
+            ORDER BY metric_block, annual_rap DESC
+            LIMIT 40
+            """,
+        )
+    except sqlite3.OperationalError:
+        rows = []
+    return {"rows": rows}
+
+
+def _portfolio_payload(conn: sqlite3.Connection) -> dict:
+    try:
+        rows = _rows(
+            conn,
+            """
+            SELECT run_id, generated_at, config_json, summary_json
+            FROM portfolio_runs
+            ORDER BY generated_at DESC, run_id
+            """,
+        )
+    except sqlite3.OperationalError:
+        return {"runs": [], "best": None, "chart": {"labels": [], "mean_weekly_return": [], "cumulative_return": []}}
+
+    parsed_runs: list[dict] = []
+    for row in rows:
+        try:
+            config = json.loads(row.get("config_json") or "{}")
+        except json.JSONDecodeError:
+            config = {}
+        try:
+            summary = json.loads(row.get("summary_json") or "{}")
+        except json.JSONDecodeError:
+            summary = {}
+        mean_weekly = _float_or_none(summary.get("mean_weekly_return"))
+        parsed_runs.append(
+            {
+                "run_id": row.get("run_id"),
+                "generated_at": row.get("generated_at"),
+                "method": config.get("method") or summary.get("method"),
+                "weeks": summary.get("weeks"),
+                "allocations": summary.get("allocations"),
+                "inactive_decisions": summary.get("inactive_decisions"),
+                "mean_weekly_return": mean_weekly,
+                "mean_weekly_gross_return": _float_or_none(summary.get("mean_weekly_gross_return")),
+                "mean_rebalance_cost": _float_or_none(summary.get("mean_rebalance_cost")),
+                "mean_turnover": _float_or_none(summary.get("mean_turnover")),
+                "cumulative_return": _float_or_none(summary.get("cumulative_return")),
+                "max_drawdown": _float_or_none(summary.get("max_drawdown")),
+                "cvar_20_weekly": _float_or_none(summary.get("cvar_20_weekly")),
+                "sharpe_like_weekly": _float_or_none(summary.get("sharpe_like_weekly")),
+                "max_assets": config.get("max_assets"),
+                "max_weight": config.get("max_weight"),
+                "max_asset_weight": config.get("max_asset_weight"),
+                "max_cluster_weight": config.get("max_cluster_weight"),
+                "turnover_penalty_bps": config.get("turnover_penalty_bps"),
+                "portfolio_vol_target": config.get("portfolio_vol_target"),
+                "min_observations": config.get("min_observations"),
+                "max_drawdown_threshold": config.get("max_drawdown_threshold"),
+            }
+        )
+
+    ranked = sorted(
+        [run for run in parsed_runs if run["mean_weekly_return"] is not None],
+        key=lambda run: float(run["mean_weekly_return"]),
+        reverse=True,
+    )
+    best = ranked[0] if ranked else None
+    top_chart = ranked[:10]
+    return {
+        "runs": ranked[:20],
+        "latest_runs": parsed_runs[:10],
+        "best": best,
+        "chart": {
+            "labels": [str(run.get("method") or run.get("run_id") or "") for run in top_chart],
+            "mean_weekly_return": [run.get("mean_weekly_return") for run in top_chart],
+            "cumulative_return": [run.get("cumulative_return") for run in top_chart],
+            "max_drawdown": [run.get("max_drawdown") for run in top_chart],
+        },
+    }
+
+
+def _compact_job_summary(row: dict) -> dict:
+    series_keys = {
+        "train",
+        "validation",
+        "test",
+        "composite",
+        "validation_sharpe",
+        "test_sharpe",
+        "train_rap",
+        "validation_rap",
+        "test_rap",
+        "risk_composite",
+        "l1_score",
+        "train_drawdown",
+        "validation_drawdown",
+        "test_drawdown",
+        "test_trades",
+        "ideal",
+        "anti",
+        "oracle_validation",
+        "oracle_test",
+        "oracle_composite",
+        "anti_composite",
+        "oracle_cycles",
+        "oracle_threshold",
+        "oracle_min_bars",
+        "oracle_backstep_bars",
+        "oracle_round_trip_cost",
+        "oracle_profit_multiple",
+        "oracle_rows",
+    }
+    return {key: value for key, value in row.items() if key not in series_keys}
 
 
 def _status_payload(db_path: Path) -> dict:
@@ -783,6 +1304,15 @@ def _status_payload(db_path: Path) -> dict:
         running = counts.get("running", 0)
         failed = counts.get("failed", 0)
         machines = _rows(conn, "SELECT * FROM machine_heartbeats ORDER BY machine_id")
+        now_utc = datetime.now(timezone.utc)
+        for machine in machines:
+            heartbeat_dt = _parse_utc(machine.get("heartbeat_at"))
+            age_seconds = None
+            if heartbeat_dt is not None:
+                age_seconds = (now_utc - heartbeat_dt).total_seconds()
+            machine["heartbeat_age_seconds"] = age_seconds
+            machine["heartbeat_age"] = _fmt_age(age_seconds)
+            machine["freshness"] = _heartbeat_freshness(age_seconds, str(machine.get("status") or ""))
         active = _rows(
             conn,
             """
@@ -854,6 +1384,8 @@ def _status_payload(db_path: Path) -> dict:
                 best.append(row)
         best.sort(key=lambda r: float(r["score"]), reverse=True)
         performance = _performance_payload(conn)
+        portfolio = _portfolio_payload(conn)
+        annual_protocol = _annual_protocol_payload(conn)
         return {
             "generated_at": datetime.now().isoformat(timespec="seconds"),
             "db_path": str(db_path),
@@ -865,6 +1397,8 @@ def _status_payload(db_path: Path) -> dict:
             "recent": recent,
             "best": best[:20],
             "performance": performance,
+            "portfolio": portfolio,
+            "annual_protocol": annual_protocol,
         }
     finally:
         conn.close()
@@ -877,6 +1411,10 @@ def _badge(status: str) -> str:
         "done": "success",
         "failed": "danger",
         "idle": "info",
+        "fresh": "success",
+        "warn": "warning",
+        "stale": "danger",
+        "unknown": "secondary",
     }.get(status, "dark")
     return f'<span class="badge badge-{cls}">{html.escape(status)}</span>'
 
@@ -906,10 +1444,22 @@ def _best_job_card(title: str, job: dict | None, accent: str, primary_metric: st
         <h4 class="mb-1">{html.escape(_fmt_metric(job.get(primary_metric)))}</h4>
         <p class="text-muted mb-2">{html.escape(str(job.get("job_id") or ""))}</p>
         <dl class="row mb-0 small">
+          <dt class="col-5">L1 score</dt><dd class="col-7 text-success">{html.escape(_fmt_metric(job.get("l1_score_avg")))}</dd>
           <dt class="col-5">Composite</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("composite_avg")))}</dd>
           <dt class="col-5">Train tail</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("train_avg")))}</dd>
           <dt class="col-5">Validation</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("validation_avg")))}</dd>
           <dt class="col-5">Test</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("test_avg")))}</dd>
+          <dt class="col-5">RAP comp</dt><dd class="col-7 text-info">{html.escape(_fmt_metric(job.get("risk_composite_avg")))}</dd>
+          <dt class="col-5">Train RAP</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("train_rap_avg")))}</dd>
+          <dt class="col-5">Val RAP</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("validation_rap_avg")))}</dd>
+          <dt class="col-5">Test RAP</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("test_rap_avg")))}</dd>
+          <dt class="col-5">Val DD</dt><dd class="col-7 text-warning">{html.escape(_fmt_percent(job.get("validation_drawdown_avg")))}</dd>
+          <dt class="col-5">Test DD</dt><dd class="col-7 text-warning">{html.escape(_fmt_percent(job.get("test_drawdown_avg")))}</dd>
+          <dt class="col-5">rel_volume</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("rel_volume")))}</dd>
+          <dt class="col-5">Risk fraction</dt><dd class="col-7">{html.escape(_fmt_percent(job.get("business_risk_fraction")))}</dd>
+          <dt class="col-5">SL/TP</dt><dd class="col-7">{html.escape(str(job.get("sltp_risk_mode") or ""))}</dd>
+          <dt class="col-5">ATR k</dt><dd class="col-7">SL {html.escape(_fmt_metric(job.get("k_sl")))} / TP {html.escape(_fmt_metric(job.get("k_tp")))}</dd>
+          <dt class="col-5">RR</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("reward_risk_ratio")))}</dd>
           <dt class="col-5">Val Sharpe</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("validation_sharpe_avg")))}</dd>
           <dt class="col-5">Test Sharpe</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("test_sharpe_avg")))}</dd>
           <dt class="col-5">Oracle train</dt><dd class="col-7">{html.escape(_fmt_metric(job.get("ideal_avg")))}</dd>
@@ -941,6 +1491,8 @@ def _best_job_card(title: str, job: dict | None, accent: str, primary_metric: st
 def _page(payload: dict) -> bytes:
     counts = payload["counts"]
     performance = payload.get("performance") or {}
+    portfolio = payload.get("portfolio") or {}
+    annual_protocol = payload.get("annual_protocol") or {}
     chart_payload = performance.get("chart") or {
         "labels": [],
         "model": {
@@ -956,8 +1508,10 @@ def _page(payload: dict) -> bytes:
             "composite": [],
             "anti_composite": [],
         },
+        "risk_profit": {"points": []},
     }
     chart_json = json.dumps(chart_payload)
+    portfolio_chart_json = json.dumps(portfolio.get("chart") or {"labels": [], "mean_weekly_return": [], "cumulative_return": [], "max_drawdown": []})
     focus_start = html.escape(str(chart_payload.get("focus_start") or ""))
     trimmed_points = int(chart_payload.get("trimmed_points") or 0)
     focus_badge = (
@@ -971,6 +1525,7 @@ def _page(payload: dict) -> bytes:
         ("Pending", counts["pending"], "secondary"),
         ("Running", counts["running"], "primary"),
         ("Done", counts["done"], "success"),
+        ("Deferred", counts.get("deferred", 0), "warning"),
         ("Failed", counts["failed"], "danger"),
     ]
     card_html = "".join(
@@ -988,6 +1543,8 @@ def _page(payload: dict) -> bytes:
         [
             html.escape(str(m["machine_id"])),
             _badge(str(m["status"])),
+            _badge(str(m.get("freshness") or "unknown")),
+            html.escape(str(m.get("heartbeat_age") or "")),
             html.escape(str(m.get("current_subjob_id") or "")),
             html.escape(str(m.get("heartbeat_at") or "")),
             html.escape(str(m.get("gpu_summary") or "")),
@@ -1058,6 +1615,64 @@ def _page(payload: dict) -> bytes:
                 html.escape(str(err)[:180]),
             ]
         )
+    portfolio_best = portfolio.get("best") or {}
+    portfolio_best_html = (
+        f"""
+        <dl class="row mb-0 small">
+          <dt class="col-5">Method</dt><dd class="col-7">{html.escape(str(portfolio_best.get("method") or ""))}</dd>
+          <dt class="col-5">Mean weekly net</dt><dd class="col-7 text-success">{html.escape(_fmt_percent(portfolio_best.get("mean_weekly_return")))}</dd>
+          <dt class="col-5">Cumulative</dt><dd class="col-7">{html.escape(_fmt_percent(portfolio_best.get("cumulative_return")))}</dd>
+          <dt class="col-5">Max drawdown</dt><dd class="col-7 text-warning">{html.escape(_fmt_percent(portfolio_best.get("max_drawdown")))}</dd>
+          <dt class="col-5">CVaR20 weekly</dt><dd class="col-7">{html.escape(_fmt_percent(portfolio_best.get("cvar_20_weekly")))}</dd>
+          <dt class="col-5">Weeks</dt><dd class="col-7">{html.escape(str(portfolio_best.get("weeks") or ""))}</dd>
+          <dt class="col-5">Allocations</dt><dd class="col-7">{html.escape(str(portfolio_best.get("allocations") or ""))}</dd>
+          <dt class="col-5">Inactive</dt><dd class="col-7">{html.escape(str(portfolio_best.get("inactive_decisions") or ""))}</dd>
+          <dt class="col-5">Turnover</dt><dd class="col-7">{html.escape(_fmt_metric(portfolio_best.get("mean_turnover")))}</dd>
+          <dt class="col-5">Mean cost</dt><dd class="col-7">{html.escape(_fmt_percent(portfolio_best.get("mean_rebalance_cost")))}</dd>
+          <dt class="col-5">Run</dt><dd class="col-7 text-break">{html.escape(str(portfolio_best.get("run_id") or ""))}</dd>
+        </dl>
+        """
+        if portfolio_best
+        else '<p class="text-muted mb-0">No portfolio supervisor runs yet.</p>'
+    )
+    portfolio_rows = [
+        [
+            html.escape(str(r.get("method") or "")),
+            html.escape(str(r.get("run_id") or "")),
+            html.escape(str(r.get("weeks") or "")),
+            html.escape(_fmt_percent(r.get("mean_weekly_return"))),
+            html.escape(_fmt_percent(r.get("cumulative_return"))),
+            html.escape(_fmt_percent(r.get("max_drawdown"))),
+            html.escape(_fmt_percent(r.get("cvar_20_weekly"))),
+            html.escape(_fmt_metric(r.get("mean_turnover"))),
+            html.escape(_fmt_percent(r.get("mean_rebalance_cost"))),
+            html.escape(str(r.get("generated_at") or "")),
+        ]
+        for r in (portfolio.get("runs") or [])[:12]
+    ]
+    annual_rows = [
+        [
+            html.escape(str(r.get("metric_block") or "")),
+            html.escape(str(r.get("candidate_id") or "")),
+            html.escape(f"{r.get('asset') or ''} {r.get('timeframe') or ''}"),
+            html.escape(str(r.get("metric_year") or "")),
+            html.escape(str(r.get("unique_weeks") or "")),
+            html.escape(_fmt_percent(r.get("mean_weekly_return"))),
+            html.escape(_fmt_percent(r.get("observed_return"))),
+            html.escape(_fmt_percent(r.get("projected_annual_return_52w"))),
+            html.escape(_fmt_percent(r.get("annual_return"))),
+            html.escape(_fmt_percent(r.get("mean_weekly_rap"))),
+            html.escape(_fmt_percent(r.get("observed_rap"))),
+            html.escape(_fmt_percent(r.get("projected_annual_rap_52w"))),
+            html.escape(_fmt_percent(r.get("annual_rap"))),
+            html.escape(_fmt_percent(r.get("mean_weekly_drawdown"))),
+            html.escape(_fmt_metric(r.get("mean_weekly_l1_score"))),
+            html.escape(_fmt_metric(r.get("mean_weekly_l1_gap"))),
+            html.escape(_fmt_metric(r.get("rel_volume"))),
+            html.escape(str(r.get("sltp_risk_mode") or "")),
+        ]
+        for r in (annual_protocol.get("rows") or [])[:20]
+    ]
     html_page = f"""<!doctype html>
 <html lang="en">
 <head>
@@ -1198,15 +1813,43 @@ def _page(payload: dict) -> bytes:
       max-height: 430px;
       overflow: hidden;
     }}
-    #performanceChart {{
-      display: block;
-      width: 100% !important;
-      height: 100% !important;
+	    #performanceChart {{
+	      display: block;
+	      width: 100% !important;
+	      height: 100% !important;
       min-height: 0 !important;
-      max-height: 430px !important;
-    }}
-    .chart-explainer {{
-      margin: 0 0 .85rem 0;
+	      max-height: 430px !important;
+	    }}
+	    #portfolioChart {{
+	      display: block;
+	      width: 100% !important;
+	      height: 100% !important;
+	      min-height: 0 !important;
+	      max-height: 280px !important;
+	    }}
+	    #riskProfitChart {{
+	      display: block;
+	      width: 100% !important;
+	      height: 100% !important;
+	      min-height: 0 !important;
+	      max-height: 340px !important;
+	    }}
+	    .portfolio-chart-wrap {{
+	      position: relative;
+	      width: 100%;
+	      height: 280px;
+	      max-height: 280px;
+	      overflow: hidden;
+	    }}
+	    .risk-profit-chart-wrap {{
+	      position: relative;
+	      width: 100%;
+	      height: 340px;
+	      max-height: 340px;
+	      overflow: hidden;
+	    }}
+	    .chart-explainer {{
+	      margin: 0 0 .85rem 0;
       padding: .65rem .8rem;
       border: 1px solid rgba(96, 165, 250, 0.26);
       border-radius: .45rem;
@@ -1244,21 +1887,21 @@ def _page(payload: dict) -> bytes:
   <div class="content-wrapper">
     <section class="content-header"><div class="container-fluid">
       <h1>Weekly Retrained Portfolio Experiments</h1>
-      <p class="project-subtitle mb-0">Live orchestration view for weekly walk-forward SAC experiments. Current ranking uses net total_return only: avg(train-tail total_return, validation total_return) with a trade gate; Sharpe/risk metrics are tracked separately and are not the plotted composite line.</p>
+      <p class="project-subtitle mb-0">Live orchestration view for weekly walk-forward SAC experiments. Current ranking uses L1 when present: mean(train-tail score, validation score) minus a generalization-gap penalty, with RAP score used by risk phases. Same-week test remains report-only.</p>
       <span class="db-pill"><i class="fas fa-database mr-1"></i>{html.escape(payload["db_path"])}</span>
     </div></section>
     <section class="content"><div class="container-fluid">
       <div class="row">{card_html}</div>
-      <div class="row">
-        <div class="col-lg-9">
+	      <div class="row">
+	        <div class="col-lg-9">
           <div class="card performance-chart-card">
             <div class="card-header">
-              <h3 class="card-title">Running Best Candidate Average Weekly Returns vs Composite Baselines</h3>
-              <div class="card-tools"><span class="badge badge-info">Each point is the best candidate by average composite across its completed weekly subjobs</span>{focus_badge}</div>
+              <h3 class="card-title">Running Best Candidate Average Weekly Returns vs L1 Baselines</h3>
+              <div class="card-tools"><span class="badge badge-info">Each point is the best candidate by average L1 score across completed weekly subjobs</span>{focus_badge}</div>
             </div>
             <div class="card-body">
               <p class="chart-explainer">
-                Each point is recalculated after a weekly subjob finishes. The chart selects the candidate with the highest average composite over its completed weekly retrain/fine-tune subjobs, then plots that candidate's average weekly train-tail return, average weekly validation return, average weekly test return, and average composite. Train-tail is the last 7 days of each training window; validation is the next 7 days; test is the following 7 days. Composite is avg(train-tail return, validation return) per week, then averaged across the candidate's completed weeks. The ZigZag oracle and anti-oracle lines are averaged composite baselines for that same currently best candidate.
+                Each point is recalculated after a weekly subjob finishes. The chart selects the candidate with the highest average L1 score over completed weekly retrain/fine-tune subjobs, then plots that candidate's average weekly train-tail return, average weekly validation return, average weekly test return, and legacy return composite. Train-tail is the last metric window of training; validation is the next window; test is report-only. L1 and RAP values are shown in the side card and annual table.
               </p>
               <div class="chart-canvas-wrap">
                 <canvas id="performanceChart"></canvas>
@@ -1266,12 +1909,66 @@ def _page(payload: dict) -> bytes:
             </div>
           </div>
         </div>
-        <div class="col-lg-3 best-side-card">
-          {_best_job_card("Best Composite So Far", performance.get("best_composite_job"), "success", "composite_avg")}
-        </div>
-      </div>
-      <div class="card"><div class="card-header"><h3 class="card-title">Machines</h3></div><div class="card-body">
-        {_render_table(["Machine", "Status", "Subjob", "Heartbeat", "GPU", "Message"], machine_rows)}
+	        <div class="col-lg-3 best-side-card">
+	          {_best_job_card("Best L1/RAP So Far", performance.get("best_composite_job"), "success", "l1_score_avg")}
+	        </div>
+	      </div>
+	      <div class="row">
+	        <div class="col-12">
+	          <div class="card">
+	            <div class="card-header">
+	              <h3 class="card-title">Full-Year Validation/Test Protocol</h3>
+	              <div class="card-tools"><span class="badge badge-info">near-full-year coverage only; observed is covered-week sum, projected is 52x mean weekly</span></div>
+	            </div>
+	            <div class="card-body">
+	              {_render_table(["Block", "Candidate", "Asset", "Year", "Weeks", "Mean weekly return", "Observed return", "Projected return 52w", "Legacy annual return", "Mean weekly RAP", "Observed RAP", "Projected RAP 52w", "Legacy annual RAP", "Mean weekly DD", "Mean L1", "Mean gap", "rel_volume", "SL/TP"], annual_rows)}
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	      <div class="row">
+	        <div class="col-12">
+	          <div class="card">
+	            <div class="card-header">
+	              <h3 class="card-title">Risk vs Profit Map</h3>
+	              <div class="card-tools"><span class="badge badge-info">test return vs test drawdown, averaged across completed weekly subjobs</span></div>
+	            </div>
+	            <div class="card-body">
+	              <p class="chart-explainer">
+	                Each point is one completed candidate with enough weekly walk-forward samples. X is average weekly test max drawdown fraction; Y is average weekly test net total_return. The dotted CDT lines are Colombia fixed-income references converted from annual effective return to weekly geometric return, with near-zero drawdown as a held-to-maturity reference. Selection still does not use same-week test.
+	              </p>
+	              <div class="risk-profit-chart-wrap"><canvas id="riskProfitChart"></canvas></div>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	      <div class="row">
+	        <div class="col-lg-4">
+	          <div class="card card-outline card-info">
+	            <div class="card-header"><h3 class="card-title">Best Portfolio v2 Supervisor</h3></div>
+	            <div class="card-body">{portfolio_best_html}</div>
+	          </div>
+	        </div>
+	        <div class="col-lg-8">
+	          <div class="card">
+	            <div class="card-header">
+	              <h3 class="card-title">Portfolio v2 Method Comparison</h3>
+	              <div class="card-tools"><span class="badge badge-info">net mean weekly return; drawdown shown negative</span></div>
+	            </div>
+	            <div class="card-body">
+	              <p class="chart-explainer">
+	                Portfolio runs are computed above the per-asset agents. Weights use only known train-tail, validation, prior weekly returns, activation/no-trade gates, caps, and configured cost assumptions. Same-week test is recorded only after the allocation decision.
+	              </p>
+	              <div class="portfolio-chart-wrap"><canvas id="portfolioChart"></canvas></div>
+	            </div>
+	          </div>
+	        </div>
+	      </div>
+	      <div class="card"><div class="card-header"><h3 class="card-title">Portfolio v2 Ranked Runs</h3></div><div class="card-body">
+	        {_render_table(["Method", "Run", "Weeks", "Mean Weekly Net", "Cumulative", "Max DD", "CVaR20", "Turnover", "Mean Cost", "Generated"], portfolio_rows)}
+	      </div></div>
+	      <div class="card"><div class="card-header"><h3 class="card-title">Machines</h3></div><div class="card-body">
+	        {_render_table(["Machine", "Status", "Freshness", "Age", "Subjob", "Heartbeat", "GPU", "Message"], machine_rows)}
       </div></div>
       <div class="card"><div class="card-header"><h3 class="card-title">Active Subjobs</h3></div><div class="card-body">
         {_render_table(["Subjob", "Machine", "Asset", "Model", "Train Years", "Progress", "Return", "Trades", "Train Rows", "Train Window", "Validation Window", "Test Window"], active_rows)}
@@ -1291,10 +1988,12 @@ def _page(payload: dict) -> bytes:
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 <script>
-	  const performanceData = {chart_json};
-	  const labels = performanceData.labels || [];
-	  const modelData = performanceData.model || {{}};
-	  const oracleData = performanceData.oracle || {{}};
+		  const performanceData = {chart_json};
+		  const portfolioData = {portfolio_chart_json};
+		  const labels = performanceData.labels || [];
+		  const modelData = performanceData.model || {{}};
+		  const oracleData = performanceData.oracle || {{}};
+		  const riskProfitData = performanceData.risk_profit || {{ points: [] }};
   const refreshSelect = document.getElementById("refreshInterval");
   const refreshStatus = document.getElementById("refreshStatus");
   const refreshOptions = ["300000", "600000", "1800000", "3600000"];
@@ -1323,8 +2022,8 @@ def _page(payload: dict) -> bytes:
     return String(value).replace("+00:00", "Z").replace("T", " ");
   }};
   const ctx = document.getElementById("performanceChart");
-	  if (ctx) {{
-	    new Chart(ctx, {{
+		  if (ctx) {{
+		    new Chart(ctx, {{
       type: "line",
       data: {{
         labels,
@@ -1431,9 +2130,186 @@ def _page(payload: dict) -> bytes:
 		          }}
 		        }}
 	      }}
+		    }});
+		  }}
+	  const riskProfitCtx = document.getElementById("riskProfitChart");
+	  if (riskProfitCtx) {{
+	    const riskPoints = (riskProfitData.points || []).map((point) => ({{
+	      x: Number(point.x || 0),
+	      y: Number(point.y || 0),
+	      label: point.label || "",
+	      asset: point.asset || "",
+	      timeframe: point.timeframe || "",
+	      model: point.model || "",
+	      policy: point.policy || "",
+	      samples: point.samples || "",
+	      composite: point.composite,
+	      riskComposite: point.risk_composite,
+	      testRap: point.test_rap,
+	      riskLambda: point.risk_lambda,
+	      relVolume: point.rel_volume,
+	      businessRisk: point.business_risk_fraction,
+	      sltpMode: point.sltp_risk_mode || "",
+	      sltpProfile: point.sltp_profile_tag || "",
+	      kSl: point.k_sl,
+	      kTp: point.k_tp,
+	      rewardRiskRatio: point.reward_risk_ratio,
+	      rewardPlugin: point.reward_plugin || "",
+	      selectionMetric: point.selection_metric || ""
+	    }}));
+	    const maxRisk = Math.max(0.01, ...riskPoints.map((p) => Number(p.x || 0))) * 1.08;
+	    const cdt = Number(riskProfitData.cdt_weekly_return || 0);
+	    const cdtStretch = Number(riskProfitData.cdt_weekly_stretch_return || 0);
+	    new Chart(riskProfitCtx, {{
+	      type: "scatter",
+	      data: {{
+	        datasets: [
+	          {{
+	            label: "Candidates",
+	            data: riskPoints,
+	            parsing: false,
+	            backgroundColor: "rgba(34, 197, 94, 0.58)",
+	            borderColor: "#22c55e",
+	            pointRadius: 4,
+	            pointHoverRadius: 7
+	          }},
+	          {{
+	            label: "CDT 12.0% EA weekly",
+	            type: "line",
+	            data: [{{x: 0, y: cdt}}, {{x: maxRisk, y: cdt}}],
+	            borderColor: "#facc15",
+	            backgroundColor: "rgba(250, 204, 21, 0.10)",
+	            borderDash: [8, 5],
+	            borderWidth: 2,
+	            pointRadius: 0,
+	            parsing: false
+	          }},
+	          {{
+	            label: "CDT 12.6% EA weekly",
+	            type: "line",
+	            data: [{{x: 0, y: cdtStretch}}, {{x: maxRisk, y: cdtStretch}}],
+	            borderColor: "#fb923c",
+	            backgroundColor: "rgba(251, 146, 60, 0.10)",
+	            borderDash: [4, 4],
+	            borderWidth: 2,
+	            pointRadius: 0,
+	            parsing: false
+	          }}
+	        ]
+	      }},
+	      options: {{
+	        responsive: true,
+	        maintainAspectRatio: false,
+	        animation: false,
+	        plugins: {{
+	          legend: {{
+	            position: "top",
+	            labels: {{ color: "#d7e0ea", boxWidth: 14, usePointStyle: true }}
+	          }},
+	          tooltip: {{
+	            backgroundColor: "rgba(9, 14, 21, 0.94)",
+	            titleColor: "#f8fafc",
+	            bodyColor: "#d7e0ea",
+	            borderColor: "rgba(148, 163, 184, 0.45)",
+	            borderWidth: 1,
+	            callbacks: {{
+	              title: (items) => items[0]?.raw?.label || items[0]?.dataset?.label || "",
+	              label: (item) => {{
+	                const p = item.raw || {{}};
+	                if (!p.label) return `${{item.dataset.label}}: ${{Number(item.parsed.y).toFixed(6)}}`;
+	                return [
+	                  `${{p.asset}} ${{p.timeframe}} ${{p.model}}`,
+	                  `test return=${{Number(p.y).toFixed(6)}} drawdown=${{(100 * Number(p.x)).toFixed(3)}}%`,
+	                  `RAP comp=${{p.riskComposite == null ? "" : Number(p.riskComposite).toFixed(6)}} test RAP=${{p.testRap == null ? "" : Number(p.testRap).toFixed(6)}}`,
+	                  `lambda=${{p.riskLambda ?? ""}} rel_volume=${{p.relVolume ?? ""}} risk=${{p.businessRisk == null ? "" : (100 * Number(p.businessRisk)).toFixed(1) + "%"}} samples=${{p.samples}}`,
+	                  `SL/TP=${{p.sltpMode}} ${{p.sltpProfile}} k_sl=${{p.kSl ?? ""}} k_tp=${{p.kTp ?? ""}} rr=${{p.rewardRiskRatio ?? ""}}`,
+	                  `${{p.rewardPlugin}} / ${{p.selectionMetric}}`
+	                ];
+	              }}
+	            }}
+	          }}
+	        }},
+	        scales: {{
+	          x: {{
+	            min: 0,
+	            grid: {{ color: "rgba(148, 163, 184, 0.12)" }},
+	            ticks: {{ color: "#9fb0c0", callback: (value) => `${{(100 * Number(value)).toFixed(2)}}%` }},
+	            title: {{ display: true, text: "Average weekly test max drawdown", color: "#d7e0ea" }}
+	          }},
+	          y: {{
+	            grid: {{ color: "rgba(148, 163, 184, 0.16)" }},
+	            ticks: {{ color: "#9fb0c0", callback: (value) => `${{(100 * Number(value)).toFixed(2)}}%` }},
+	            title: {{ display: true, text: "Average weekly test net total_return", color: "#d7e0ea" }}
+	          }}
+	        }}
+	      }}
 	    }});
 	  }}
-	</script>
+	  const portfolioCtx = document.getElementById("portfolioChart");
+	  if (portfolioCtx) {{
+	    new Chart(portfolioCtx, {{
+	      type: "bar",
+	      data: {{
+	        labels: portfolioData.labels || [],
+	        datasets: [
+	          {{
+	            label: "Mean weekly net return",
+	            data: portfolioData.mean_weekly_return || [],
+	            backgroundColor: "rgba(34, 197, 94, 0.48)",
+	            borderColor: "#22c55e",
+	            borderWidth: 1
+	          }},
+	          {{
+	            label: "Cumulative return",
+	            data: portfolioData.cumulative_return || [],
+	            backgroundColor: "rgba(59, 130, 246, 0.34)",
+	            borderColor: "#60a5fa",
+	            borderWidth: 1
+	          }},
+	          {{
+	            label: "Max drawdown",
+	            data: portfolioData.max_drawdown || [],
+	            backgroundColor: "rgba(239, 68, 68, 0.38)",
+	            borderColor: "#ef4444",
+	            borderWidth: 1
+	          }}
+	        ]
+	      }},
+	      options: {{
+	        responsive: true,
+	        maintainAspectRatio: false,
+	        animation: false,
+	        plugins: {{
+	          legend: {{
+	            position: "top",
+	            labels: {{ color: "#d7e0ea", boxWidth: 14, usePointStyle: true }}
+	          }},
+	          tooltip: {{
+	            backgroundColor: "rgba(9, 14, 21, 0.94)",
+	            titleColor: "#f8fafc",
+	            bodyColor: "#d7e0ea",
+	            borderColor: "rgba(148, 163, 184, 0.45)",
+	            borderWidth: 1,
+	            callbacks: {{
+	              label: (item) => `${{item.dataset.label}}: ${{(100 * Number(item.parsed.y)).toFixed(3)}}%`
+	            }}
+	          }}
+	        }},
+	        scales: {{
+	          x: {{
+	            grid: {{ color: "rgba(148, 163, 184, 0.12)" }},
+	            ticks: {{ color: "#9fb0c0", maxRotation: 35, minRotation: 0 }}
+	          }},
+	          y: {{
+	            grid: {{ color: "rgba(148, 163, 184, 0.16)" }},
+	            ticks: {{ color: "#9fb0c0", callback: (value) => `${{(100 * Number(value)).toFixed(2)}}%` }},
+	            title: {{ display: true, text: "Portfolio return fraction", color: "#d7e0ea" }}
+	          }}
+	        }}
+	      }}
+	    }});
+	  }}
+		</script>
 </body>
 </html>"""
     return html_page.encode("utf-8")
@@ -1449,6 +2325,23 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/api/status":
             payload = _status_payload(self.db_path)
+            body = json.dumps(payload, indent=2).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if parsed.path == "/api/portfolio":
+            conn = _connect(self.db_path)
+            try:
+                payload = {
+                    "generated_at": datetime.now().isoformat(timespec="seconds"),
+                    "db_path": str(self.db_path),
+                    "portfolio": _portfolio_payload(conn),
+                }
+            finally:
+                conn.close()
             body = json.dumps(payload, indent=2).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")

@@ -5,10 +5,13 @@ This pipeline mirrors predictor's three-mode pattern (train / inference /
 optimization upstream) and adds per-epoch validation evaluation with
 level-1 early stopping based on a composite watch metric:
 
-    composite = 0.5 * (train_tail_total_return + val_total_return)
+    selection_mean = 0.5 * (train_tail_score + val_score)
+    composite = selection_mean - beta * abs(train_tail_score - val_score)
 
-Patience resets when composite improves over the best so far. Training
-stops when patience >= configured `l1_patience` or `max_epochs` is hit.
+When `selection_metric=risk_adjusted_return`, train_tail_score and val_score
+are RAP = total_return - lambda * max_drawdown_fraction. Patience resets when
+the L1 composite improves over the best so far. Training stops when patience
+>= configured `l1_patience` or `max_epochs` is hit.
 The train-side watch window is the last week of the training period, not
 the full multi-year training slice, so a large historical train return cannot
 hide no-trade or bad validation behavior.
@@ -85,12 +88,88 @@ def _trade_count(summary: Dict[str, Any]) -> int:
     return int(_safe_float(summary.get("trades_total")) or 0)
 
 
+def _drawdown_fraction(summary: Dict[str, Any]) -> float:
+    """Return max drawdown as a positive fraction of equity.
+
+    Backtrader's DrawDown analyzer reports ``max.drawdown`` as a percentage
+    value (for example 2.5 means 2.5%). Some older/imported summaries may
+    already carry fractional values under ``max_drawdown``; keep that fallback
+    deliberately conservative.
+    """
+    raw_pct = _safe_float(summary.get("max_drawdown_pct"))
+    if not math.isnan(raw_pct):
+        return max(0.0, raw_pct / 100.0)
+    raw_fraction = _safe_float(summary.get("max_drawdown"))
+    if not math.isnan(raw_fraction):
+        return abs(raw_fraction)
+    return 0.0
+
+
+def _risk_adjusted_return(summary: Dict[str, Any], risk_lambda: float) -> float:
+    ret = _safe_float(summary.get("total_return"))
+    if math.isnan(ret):
+        ret = 0.0
+    return ret - float(risk_lambda) * _drawdown_fraction(summary)
+
+
+def _annotate_risk_adjusted(summary: Dict[str, Any], risk_lambda: float) -> None:
+    drawdown = _drawdown_fraction(summary)
+    ret = _safe_float(summary.get("total_return"))
+    if math.isnan(ret):
+        ret = 0.0
+    summary["max_drawdown_fraction"] = drawdown
+    summary["risk_penalty_lambda"] = float(risk_lambda)
+    summary["risk_adjusted_total_return"] = ret - float(risk_lambda) * drawdown
+
+
+def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lambda: float) -> float:
+    metric = str(selection_metric or "total_return").strip().lower()
+    if metric in {"risk_adjusted_return", "risk_adjusted_total_return", "rap"}:
+        return _risk_adjusted_return(summary, risk_lambda)
+    ret = _safe_float(summary.get("total_return"))
+    return 0.0 if math.isnan(ret) else ret
+
+
+def _selection_pair_details(
+    train_tail_summary: Dict[str, Any],
+    val_summary: Dict[str, Any],
+    *,
+    selection_metric: str,
+    risk_lambda: float,
+    gap_penalty_beta: float,
+) -> Dict[str, float]:
+    train_tail_score = _selection_value(
+        train_tail_summary,
+        selection_metric=selection_metric,
+        risk_lambda=risk_lambda,
+    )
+    val_score = _selection_value(
+        val_summary,
+        selection_metric=selection_metric,
+        risk_lambda=risk_lambda,
+    )
+    mean_score = 0.5 * (train_tail_score + val_score)
+    gap = abs(train_tail_score - val_score)
+    gap_penalty = float(gap_penalty_beta) * gap
+    return {
+        "train_tail_selection_score": train_tail_score,
+        "validation_selection_score": val_score,
+        "train_validation_selection_mean_score": mean_score,
+        "train_validation_selection_gap": gap,
+        "train_validation_selection_gap_penalty": gap_penalty,
+        "train_validation_selection_score": mean_score - gap_penalty,
+    }
+
+
 def _early_stop_composite(
     train_tail_summary: Dict[str, Any],
     val_summary: Dict[str, Any],
     *,
     min_trades: int,
     no_trade_penalty: float,
+    selection_metric: str = "total_return",
+    risk_lambda: float = 1.0,
+    gap_penalty_beta: float = 0.25,
 ) -> Tuple[float, float, bool, float, float, int, int]:
     train_tail_ret = _safe_float(train_tail_summary.get("total_return"))
     val_ret = _safe_float(val_summary.get("total_return"))
@@ -98,7 +177,14 @@ def _early_stop_composite(
         train_tail_ret = 0.0
     if math.isnan(val_ret):
         val_ret = 0.0
-    raw = 0.5 * (train_tail_ret + val_ret)
+    details = _selection_pair_details(
+        train_tail_summary,
+        val_summary,
+        selection_metric=selection_metric,
+        risk_lambda=risk_lambda,
+        gap_penalty_beta=gap_penalty_beta,
+    )
+    raw = details["train_validation_selection_score"]
     train_tail_trades = _trade_count(train_tail_summary)
     val_trades = _trade_count(val_summary)
     trade_gate_passed = train_tail_trades >= min_trades and val_trades >= min_trades
@@ -169,6 +255,9 @@ class PipelinePlugin:
         "early_stop_train_tail_days": 7,
         "early_stop_min_trades": 1,
         "early_stop_no_trade_penalty": 1_000_000.0,
+        "selection_metric": "total_return",
+        "risk_penalty_lambda": 1.0,
+        "l1_generalization_gap_penalty_beta": 0.25,
 
         # eval
         "eval_seed": 0,
@@ -187,6 +276,7 @@ class PipelinePlugin:
         "min_split_rows",
         "epoch_timesteps", "max_epochs", "l1_patience", "l1_min_delta",
         "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
+        "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
         "warm_start_model", "return_trace_dir",
     ]
 
@@ -549,7 +639,7 @@ class PipelinePlugin:
                     print(
                         f"[train] starting: epoch_timesteps={epoch_ts} max_epochs={max_epochs} "
                         f"l1_patience={l1_patience} "
-                        f"(composite=mean(train_tail_return,val_return), no-trade penalized)"
+                        f"(L1=mean(train_tail_score,val_score)-beta*gap, no-trade penalized)"
                     )
 
                 def _policy_checksum(m) -> Tuple[float, float, float]:
@@ -596,6 +686,20 @@ class PipelinePlugin:
                     val_summary = self._eval_on_split(
                         env_plugin_name, config, paths["val"], agent_plugin, model, seed, "validation_epoch"
                     )
+                    selection_metric = str(
+                        config.get("selection_metric", self.params["selection_metric"])
+                    )
+                    risk_lambda = float(
+                        config.get("risk_penalty_lambda", self.params["risk_penalty_lambda"])
+                    )
+                    l1_gap_beta = float(
+                        config.get(
+                            "l1_generalization_gap_penalty_beta",
+                            self.params["l1_generalization_gap_penalty_beta"],
+                        )
+                    )
+                    for split_summary in (train_summary, train_tail_summary, val_summary):
+                        _annotate_risk_adjusted(split_summary, risk_lambda)
 
                     train_ret = _safe_float(train_summary.get("total_return"))
                     if math.isnan(train_ret):
@@ -622,6 +726,16 @@ class PipelinePlugin:
                         val_summary,
                         min_trades=early_stop_min_trades,
                         no_trade_penalty=no_trade_penalty,
+                        selection_metric=selection_metric,
+                        risk_lambda=risk_lambda,
+                        gap_penalty_beta=l1_gap_beta,
+                    )
+                    selection_details = _selection_pair_details(
+                        train_tail_summary,
+                        val_summary,
+                        selection_metric=selection_metric,
+                        risk_lambda=risk_lambda,
+                        gap_penalty_beta=l1_gap_beta,
                     )
 
                     improved = composite > (best_composite + l1_min_delta)
@@ -637,6 +751,22 @@ class PipelinePlugin:
                         "train_total_return": train_ret,
                         "train_tail_total_return": train_tail_ret,
                         "val_total_return": val_ret,
+                        "selection_metric": selection_metric,
+                        "risk_penalty_lambda": risk_lambda,
+                        "l1_generalization_gap_penalty_beta": l1_gap_beta,
+                        "train_tail_risk_adjusted_total_return": train_tail_summary.get(
+                            "risk_adjusted_total_return"
+                        ),
+                        "val_risk_adjusted_total_return": val_summary.get(
+                            "risk_adjusted_total_return"
+                        ),
+                        "train_tail_max_drawdown_fraction": train_tail_summary.get(
+                            "max_drawdown_fraction"
+                        ),
+                        "val_max_drawdown_fraction": val_summary.get(
+                            "max_drawdown_fraction"
+                        ),
+                        **selection_details,
                         "composite_raw": composite_raw,
                         "composite": composite,
                         "best_composite": best_composite,
@@ -672,7 +802,7 @@ class PipelinePlugin:
                         f"[epoch {epoch:>3}/{max_epochs}] "
                         f"L1 {no_improve}/{l1_patience}  "
                         f"L2 {l2_counter}/{l2_patience}  "
-                        f"composite={composite:+.4f} raw={composite_raw:+.4f} "
+                        f"{selection_metric} composite={composite:+.4f} raw={composite_raw:+.4f} "
                         f"trade_gate={'PASS' if trade_gate_passed else 'FAIL'} "
                         f"best={best_composite:+.4f} "
                         f"{'(IMPROVED, model saved)' if improved else ''} "
@@ -766,6 +896,27 @@ class PipelinePlugin:
         test_summary = self._eval_on_split(
             env_plugin_name, config, paths["test"], agent_plugin_for_wrap, model, seed, "test"
         )
+        selection_metric = str(config.get("selection_metric", self.params["selection_metric"]))
+        risk_lambda = float(config.get("risk_penalty_lambda", self.params["risk_penalty_lambda"]))
+        l1_gap_beta = float(
+            config.get(
+                "l1_generalization_gap_penalty_beta",
+                self.params["l1_generalization_gap_penalty_beta"],
+            )
+        )
+        for split_summary in (train_summary, train_tail_summary, val_summary, test_summary):
+            _annotate_risk_adjusted(split_summary, risk_lambda)
+        selection_details = _selection_pair_details(
+            train_tail_summary,
+            val_summary,
+            selection_metric=selection_metric,
+            risk_lambda=risk_lambda,
+            gap_penalty_beta=l1_gap_beta,
+        )
+        risk_adjusted_mean = 0.5 * (
+            float(train_tail_summary.get("risk_adjusted_total_return") or 0.0)
+            + float(val_summary.get("risk_adjusted_total_return") or 0.0)
+        )
 
         rows = [
             ("Train", train_summary),
@@ -794,10 +945,19 @@ class PipelinePlugin:
                 "test": test_summary,
             },
             "summary_table": table,
+            "selection_metric": selection_metric,
+            "risk_penalty_lambda": risk_lambda,
+            "l1_generalization_gap_penalty_beta": l1_gap_beta,
+            "train_validation_risk_adjusted_composite_score": risk_adjusted_mean,
+            "train_validation_risk_adjusted_mean_score": risk_adjusted_mean,
+            "train_validation_l1_score": selection_details["train_validation_selection_score"],
+            **selection_details,
         }
         # also surface top-level metrics from validation for compatibility
         out.update({
             "total_return": val_summary.get("total_return"),
+            "risk_adjusted_total_return": val_summary.get("risk_adjusted_total_return"),
+            "max_drawdown_fraction": val_summary.get("max_drawdown_fraction"),
             "final_equity": val_summary.get("final_equity"),
             "max_drawdown_pct": val_summary.get("max_drawdown_pct"),
             "sharpe_ratio": val_summary.get("sharpe_ratio"),
