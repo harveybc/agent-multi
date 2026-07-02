@@ -258,8 +258,22 @@ def _select_probe_keep_ids(candidate: Candidate, slots: int) -> set[str]:
     return {pending[idx].external_id for idx in sorted(keep_indexes)}
 
 
-def _select_deferred_promote_ids(candidate: Candidate, slots: int) -> set[str]:
-    deferred = _ordered_deferred(candidate)
+def _parents_are_done(row: SubjobRow, done_subjob_ids: set[str]) -> bool:
+    parents = [row.depends_on_subjob_id, row.warm_start_parent_subjob_id]
+    return all(parent is None or parent in done_subjob_ids for parent in parents)
+
+
+def _select_deferred_promote_ids(
+    candidate: Candidate,
+    slots: int,
+    *,
+    done_subjob_ids: set[str],
+) -> set[str]:
+    deferred = [
+        row
+        for row in _ordered_deferred(candidate)
+        if _parents_are_done(row, done_subjob_ids)
+    ]
     if slots <= 0 or not deferred:
         return set()
     if slots >= len(deferred):
@@ -494,6 +508,12 @@ def build_promote_plan(
     l2_worst_loss_penalty: float = 0.50,
 ) -> dict[str, Any]:
     candidates = _load_candidates(conn, phases)
+    done_subjob_ids = {
+        row.external_id
+        for candidate in candidates
+        for row in candidate.rows
+        if row.status == "done"
+    }
     promote_reasons: dict[str, str] = {}
     candidate_summaries: list[dict[str, Any]] = []
 
@@ -551,7 +571,13 @@ def build_promote_plan(
             )
         if target <= 0:
             continue
-        promote_ids = _select_deferred_promote_ids(candidate, target)
+        promote_ids = _select_deferred_promote_ids(
+            candidate,
+            target,
+            done_subjob_ids=done_subjob_ids,
+        )
+        if not promote_ids:
+            continue
         for subjob_id in promote_ids:
             promote_reasons[subjob_id] = reason or "promote_deferred"
         candidate_summaries.append(
@@ -564,6 +590,9 @@ def build_promote_plan(
                 "running": candidate.running_count,
                 "pending": len(candidate.pending),
                 "deferred": len(deferred),
+                "claimable_deferred": sum(
+                    1 for row in deferred if _parents_are_done(row, done_subjob_ids)
+                ),
                 "promoted": len(promote_ids),
                 "mean": candidate.mean,
                 "l2_score": candidate.l2_score(l2_std_penalty, l2_worst_loss_penalty),

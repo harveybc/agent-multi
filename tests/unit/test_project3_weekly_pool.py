@@ -1341,6 +1341,26 @@ def test_adaptive_scheduler_keeps_warm_start_prefix_when_capping(tmp_path):
     assert [row["status"] for row in rows[4:]] == ["deferred"] * 6
 
 
+def test_adaptive_scheduler_promote_plan_respects_warm_start_dependencies(tmp_path):
+    conn = _enqueue_adaptive_plan(tmp_path, [_adaptive_job("warm_promote", n=5, deps=True)])
+    _mark_done(conn, "warm_promote_00", 0.01)
+    conn.execute(
+        "UPDATE subjobs SET status='deferred' WHERE external_id LIKE 'warm_promote_%' AND status='pending'"
+    )
+
+    plan = adaptive_scheduler.build_promote_plan(
+        conn,
+        phases=("asset_preset_broadening_phase5_v1",),
+        min_probe_weeks=5,
+        promote_quota=5,
+        keep_top_per_asset_timeframe=2,
+        mean_floor=0.0,
+        lcb_floor=0.0005,
+    )
+
+    assert set(plan["promote_reasons"]) == {"warm_promote_01"}
+
+
 def test_adaptive_scheduler_defers_weak_candidate_after_probe(tmp_path):
     conn = _enqueue_adaptive_plan(tmp_path, [_adaptive_job("weak_job", n=10)])
     for idx in range(5):
