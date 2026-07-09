@@ -32,6 +32,7 @@ DEFAULT_OUTPUT_PREFIX_BY_FAMILY = {
     "event_token_attention_v1": "ctx_evt",
     "event_token_transformer_v1": "ctx_evt_tr",
 }
+DEFAULT_WINDOW_SIZE = 32
 DEFAULT_MIN_SPLIT_ROWS = 40
 
 
@@ -76,8 +77,7 @@ STABLE_SAC_OVERRIDES: dict[str, Any] = {
 }
 
 
-def _weekly_min_split_rows(subjob: dict[str, Any]) -> int:
-    """Use a split minimum that cannot exceed normal weekly row availability."""
+def _weekly_observed_split_rows(subjob: dict[str, Any]) -> list[int]:
     observed_rows: list[int] = []
     for key in ("validation_rows", "test_rows"):
         try:
@@ -86,9 +86,25 @@ def _weekly_min_split_rows(subjob: dict[str, Any]) -> int:
             value = 0
         if value > 0:
             observed_rows.append(value)
+    return observed_rows
+
+
+def _weekly_min_split_rows(subjob: dict[str, Any]) -> int:
+    """Use a split minimum that cannot exceed normal weekly row availability."""
+    observed_rows = _weekly_observed_split_rows(subjob)
     if not observed_rows:
         return DEFAULT_MIN_SPLIT_ROWS
     return max(8, min(DEFAULT_MIN_SPLIT_ROWS, min(observed_rows)))
+
+
+def _weekly_window_size(subjob: dict[str, Any], requested: int = DEFAULT_WINDOW_SIZE) -> int:
+    observed_rows = _weekly_observed_split_rows(subjob)
+    if not observed_rows:
+        return requested
+    min_rows = min(observed_rows)
+    if min_rows > requested:
+        return requested
+    return max(8, min(requested, min_rows - 7))
 
 
 def _parse_dt(value: Any) -> datetime:
@@ -432,7 +448,7 @@ def build_config(
         "input_data_file": input_data_file,
         "date_column": "DATE_TIME",
         "price_column": "CLOSE",
-        "window_size": 32,
+        "window_size": DEFAULT_WINDOW_SIZE,
         "feature_list": features,
         "feature_columns": features,
         "features_preset": job.get("feature_preset"),
@@ -515,6 +531,12 @@ def build_config(
         )
     cfg.update(STABLE_SAC_OVERRIDES)
     cfg.update(hparams)
+    requested_window_size = int(cfg.get("window_size", DEFAULT_WINDOW_SIZE))
+    adapted_window_size = _weekly_window_size(subjob, requested_window_size)
+    if adapted_window_size < requested_window_size:
+        cfg["_window_size_adapted_for_weekly_rows"] = True
+        cfg["_window_size_previous"] = requested_window_size
+        cfg["window_size"] = adapted_window_size
     if bool(job.get("oracle_behavior_pretrain_enabled", False)):
         source_job_id = job.get("oracle_behavior_source_job_id") or job.get("source_job_id")
         labels_root = job.get("oracle_behavior_labels_dir")
