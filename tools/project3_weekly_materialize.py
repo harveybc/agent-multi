@@ -32,6 +32,7 @@ DEFAULT_OUTPUT_PREFIX_BY_FAMILY = {
     "event_token_attention_v1": "ctx_evt",
     "event_token_transformer_v1": "ctx_evt_tr",
 }
+DEFAULT_MIN_SPLIT_ROWS = 40
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -73,6 +74,21 @@ STABLE_SAC_OVERRIDES: dict[str, Any] = {
     "early_stop_no_trade_penalty": 1000000.0,
     "total_timesteps": 1000000,
 }
+
+
+def _weekly_min_split_rows(subjob: dict[str, Any]) -> int:
+    """Use a split minimum that cannot exceed normal weekly row availability."""
+    observed_rows: list[int] = []
+    for key in ("validation_rows", "test_rows"):
+        try:
+            value = int(subjob.get(key) or 0)
+        except (TypeError, ValueError):
+            value = 0
+        if value > 0:
+            observed_rows.append(value)
+    if not observed_rows:
+        return DEFAULT_MIN_SPLIT_ROWS
+    return max(8, min(DEFAULT_MIN_SPLIT_ROWS, min(observed_rows)))
 
 
 def _parse_dt(value: Any) -> datetime:
@@ -431,7 +447,7 @@ def build_config(
         "validation_end": subjob["validation_end"],
         "test_start": subjob["test_start"],
         "test_end": subjob["test_end"],
-        "min_split_rows": 40,
+        "min_split_rows": _weekly_min_split_rows(subjob),
         "heldout_start": HELDOUT_START,
         "stage_c_access": "DENIED",
         "final_stage_c_evaluation": False,
