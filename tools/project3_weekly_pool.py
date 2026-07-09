@@ -173,6 +173,8 @@ def init_db(conn: sqlite3.Connection) -> None:
             s.test_end,
             s.status,
             s.completed_at,
+            j.config_json AS job_config_json,
+            s.result_json AS subjob_result_json,
             CAST(json_extract(s.result_json, '$.score') AS REAL) AS score,
             CAST(json_extract(s.result_json, '$.raw_score') AS REAL) AS raw_score,
             json_extract(s.result_json, '$.selection_metric') AS selection_metric,
