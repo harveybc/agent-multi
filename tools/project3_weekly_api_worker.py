@@ -24,7 +24,9 @@ from project3_weekly_worker import gpu_summary, read_progress_message, summarize
 
 
 PYTHON_BIN = "/home/harveybc/anaconda3/envs/tensorflow/bin/python"
-DEFAULT_MAX_ARTIFACT_BYTES = 250 * 1024 * 1024
+# Keep remote workers from pushing large policy.zip payloads through the pool API.
+# Metrics/results still go to OLAP; heavy model artifacts remain on the worker host.
+DEFAULT_MAX_ARTIFACT_BYTES = 0
 
 
 def _api_post(api_url: str, path: str, payload: dict[str, Any], token: str | None) -> dict[str, Any]:

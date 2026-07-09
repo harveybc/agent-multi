@@ -141,6 +141,9 @@ def encode_event_token_transformer(
     ff_dim = int(profile.get("ff_dim", 2 * hidden_size))
     value_clip = float(profile.get("value_clip", 8.0))
     ridge_lambda = float(profile.get("ridge_lambda", 1.0))
+    batch_size = int(profile.get("batch_size", 512))
+    if batch_size <= 0 or batch_size > 8192:
+        raise ValueError("context transformer batch_size must be between 1 and 8192")
     seed = int(profile.get("seed", 0))
     prefixes = [str(p) for p in (profile.get("source_prefixes") or ["event_"])]
 
@@ -148,7 +151,7 @@ def encode_event_token_transformer(
     n_tokens = len(source_columns)
 
     # --- Train-only token value normalization -------------------------------
-    raw = np.zeros((n_rows, n_tokens), dtype=np.float64)
+    raw = np.zeros((n_rows, n_tokens), dtype=np.float32)
     present = np.zeros((n_rows, n_tokens), dtype=bool)
     for j, col in enumerate(source_columns):
         for i, row in enumerate(rows):
@@ -157,28 +160,33 @@ def encode_event_token_transformer(
             present[i, j] = cell not in (None, "")
     train_idx = np.asarray(sorted(train_indices), dtype=np.int64)
     train_raw = raw[train_idx]
-    means = train_raw.mean(axis=0)
-    stds = train_raw.std(axis=0, ddof=1) if len(train_idx) > 1 else np.ones(n_tokens)
+    means = train_raw.mean(axis=0, dtype=np.float64).astype(np.float32)
+    stds = (
+        train_raw.astype(np.float64).std(axis=0, ddof=1).astype(np.float32)
+        if len(train_idx) > 1
+        else np.ones(n_tokens, dtype=np.float32)
+    )
     stds = np.where(stds > 1.0e-9, stds, 1.0)
-    z = np.clip((raw - means) / stds, -value_clip, value_clip)
+    z = np.clip((raw - means) / stds, -value_clip, value_clip).astype(np.float32)
 
     # --- Deterministic frozen encoder weights -------------------------------
     rng = np.random.default_rng(seed)
 
     def randn(*shape: int) -> Any:
-        return rng.standard_normal(shape) / math.sqrt(hidden_size)
+        return (rng.standard_normal(shape) / math.sqrt(hidden_size)).astype(np.float32)
 
     groups = [_source_group(col, prefixes) for col in source_columns]
     unique_groups = sorted(set(groups))
-    type_emb = {g: rng.standard_normal(hidden_size) * 0.1 for g in unique_groups}
+    type_emb = {g: (rng.standard_normal(hidden_size) * 0.1).astype(np.float32) for g in unique_groups}
     # Per-token input projection: value vector + (type + identity) bias.
     value_proj = np.stack([randn(hidden_size).ravel() for _ in source_columns])  # (S, H)
     col_bias = np.stack(
-        [type_emb[groups[j]] + rng.standard_normal(hidden_size) * 0.05 for j in range(n_tokens)]
-    )  # (S, H)
-
-    # token input embeddings: (N, S, H)
-    tokens = z[:, :, None] * value_proj[None, :, :] + col_bias[None, :, :]
+        [
+            type_emb[groups[j]]
+            + (rng.standard_normal(hidden_size) * 0.05).astype(np.float32)
+            for j in range(n_tokens)
+        ]
+    ).astype(np.float32)  # (S, H)
 
     blocks = []
     for _ in range(num_blocks):
@@ -192,35 +200,40 @@ def encode_event_token_transformer(
                 "w2": randn(ff_dim, hidden_size),
             }
         )
-    q_pool = rng.standard_normal(hidden_size) / math.sqrt(hidden_size)
+    q_pool = (rng.standard_normal(hidden_size) / math.sqrt(hidden_size)).astype(np.float32)
     w_out = randn(hidden_size, embedding_dim)
-    b_out = rng.standard_normal(embedding_dim) * 0.01
+    b_out = (rng.standard_normal(embedding_dim) * 0.01).astype(np.float32)
 
     # --- Forward pass (identical math for train/val/test rows) --------------
-    x = tokens
-    for blk in blocks:
-        attn = _multi_head_self_attention(
-            x,
-            w_q=blk["w_q"],
-            w_k=blk["w_k"],
-            w_v=blk["w_v"],
-            w_o=blk["w_o"],
-            num_heads=num_heads,
-        )
-        x = _layernorm(x + attn)
-        hidden = np.maximum(0.0, x @ blk["w1"])
-        ff = hidden @ blk["w2"]
-        x = _layernorm(x + ff)
+    embeddings = np.zeros((n_rows, embedding_dim), dtype=np.float32)
+    attn_mass = np.zeros(n_rows, dtype=np.float32)
+    token_count = present.sum(axis=1).astype(np.int32)  # (N,)
 
-    # attention pooling to a single fixed vector per row
-    pool_scores = (x @ q_pool) / math.sqrt(hidden_size)  # (N, S)
-    pool_weights = _softmax(pool_scores, axis=1)  # (N, S)
-    pooled = np.einsum("ns,nsh->nh", pool_weights, x)  # (N, H)
-    token_norms = np.linalg.norm(x, axis=2)  # (N, S)
-    attn_mass = np.einsum("ns,ns->n", pool_weights, token_norms)  # (N,)
-    token_count = present.sum(axis=1)  # (N,)
+    for start in range(0, n_rows, batch_size):
+        stop = min(n_rows, start + batch_size)
+        x = z[start:stop, :, None] * value_proj[None, :, :] + col_bias[None, :, :]
+        x = x.astype(np.float32, copy=False)
+        for blk in blocks:
+            attn = _multi_head_self_attention(
+                x,
+                w_q=blk["w_q"],
+                w_k=blk["w_k"],
+                w_v=blk["w_v"],
+                w_o=blk["w_o"],
+                num_heads=num_heads,
+            )
+            x = _layernorm(x + attn).astype(np.float32, copy=False)
+            hidden = np.maximum(0.0, x @ blk["w1"])
+            ff = hidden @ blk["w2"]
+            x = _layernorm(x + ff).astype(np.float32, copy=False)
 
-    embeddings = np.tanh(pooled @ w_out + b_out)  # (N, D)
+        # attention pooling to a single fixed vector per row
+        pool_scores = (x @ q_pool) / math.sqrt(hidden_size)  # (B, S)
+        pool_weights = _softmax(pool_scores, axis=1).astype(np.float32, copy=False)  # (B, S)
+        pooled = np.einsum("ns,nsh->nh", pool_weights, x)  # (B, H)
+        token_norms = np.linalg.norm(x, axis=2)  # (B, S)
+        attn_mass[start:stop] = np.einsum("ns,ns->n", pool_weights, token_norms)
+        embeddings[start:stop] = np.tanh(pooled @ w_out + b_out)
 
     # --- Train-only supervised auxiliary readout (closed-form ridge) --------
     train_set = set(int(i) for i in train_idx)
@@ -290,6 +303,8 @@ def encode_event_token_transformer(
         "value_clip": value_clip,
         "ridge_lambda": ridge_lambda,
         "seed": seed,
+        "batch_size": batch_size,
+        "forward_dtype": "float32",
         "source_groups": {col: groups[j] for j, col in enumerate(source_columns)},
         "normalization": normalization,
         "aux_target": "next_bar_log_return",
@@ -302,6 +317,8 @@ def encode_event_token_transformer(
         "n_source_tokens": int(n_tokens),
         "aux_target": "next_bar_log_return",
         "ridge_lambda": ridge_lambda,
+        "batch_size": batch_size,
+        "forward_dtype": "float32",
         "train_mse": train_mse,
         "train_r2": train_r2,
         "train_pearson_abs": train_pearson,
