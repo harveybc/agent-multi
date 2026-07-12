@@ -29,6 +29,11 @@ _SECTION_KEYS = {
     "agent_plugin": ("asset_policy", "plugin"),
     "pipeline_plugin": ("training", "pipeline_plugin"),
     "optimizer_plugin": ("optimization", "plugin"),
+    "optimization_resume": ("optimization", "optimization_resume"),
+    "optimization_pause_on_resume": (
+        "optimization",
+        "optimization_pause_on_resume",
+    ),
     "input_data_file": ("data", "input_data_file"),
     "asset": ("data", "asset"),
     "timeframe": ("data", "timeframe"),

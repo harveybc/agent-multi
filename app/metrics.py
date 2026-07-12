@@ -29,6 +29,17 @@ def compute_optimization_fitness(
         return _number(summary, "mean_weekly_rap", missing=config)
     if name in {"annual_rap", "annualized_rap"}:
         return _number(summary, "annual_rap", missing=config)
+    if name in {"train_validation_l1_score", "l1_score"}:
+        return _number(summary, "train_validation_l1_score", missing=config)
+    if name in {
+        "train_validation_risk_adjusted_composite_score",
+        "risk_adjusted_composite_score",
+    }:
+        return _number(
+            summary,
+            "train_validation_risk_adjusted_composite_score",
+            missing=config,
+        )
     if name in {"risk_adjusted_return", "risk_adjusted_total_return"}:
         total_return = _number(summary, "total_return")
         drawdown = _drawdown_fraction(summary)

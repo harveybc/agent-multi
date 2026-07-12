@@ -80,9 +80,19 @@ Implemented locally, not yet deployed to any machine:
   only annualizes when the elapsed evaluation period is explicitly supplied;
 - entry points are `trading_asset` for optimization/evaluation and
   `trading_scenario` for synthetic verification.
-- `examples/config/doin/trading_asset_solusdt_4h_sac_v1.json` is the first
-  portable canonical asset-policy seed; it is explicitly research-only and
-  has not been promoted as a champion.
+- `examples/config/doin/trading_asset_solusdt_4h_sac_v1.json` remains the first
+  portable vertical-slice regression seed. The actual incremental campaign is
+  now under `examples/config/phase_1_asset_policy/`, with matching `data`,
+  `results` and `scripts` directories modeled on predictor's phase layout.
+- the local optimizer now executes declared stage-specific bounds, freezes
+  inactive parameters, carries its champion between stages, persists atomic
+  resume/statistics/parameter files, appends candidate history and preserves
+  the exact optimizer checkpoint separately from the final retrain;
+- Phase 1 uses independent L1 and L2 semantics: L1 monitors risk-adjusted
+  train-tail/validation behavior; L2 maximizes the gap-penalized
+  `train_validation_l1_score`;
+- candidate optimization sets `evaluate_test_split=false`; a focused firewall
+  test proves that `_final_eval` never opens the protected test path.
 
 Contract verification before the vertical smoke:
 
@@ -112,6 +122,15 @@ as declarative configuration.
 Both values are wiring evidence only. The first policy made no trades and was
 diagnosed as `policy_hold_collapse`; neither smoke value is a scientific model
 result, annual result, shortlist update or promotion candidate.
+
+On 2026-07-12 the predictor-style Phase 1 smoke executed locally on Omega with
+the real hash-verified SOLUSDT 4h source. It evaluated two candidates, preserved
+an exact 194,031-byte optimizer champion, wrote all resume/history/statistics
+artifacts, and obtained L2 wiring fitness `0.0060425180751335905`. Validation
+return was `0.02396380163676559` and validation risk-adjusted return was
+`0.006159046907203151`; the protected test summary is explicitly marked
+`evaluation_skipped`. Because the smoke caps each environment at 384 rows and
+trains for one 64-step epoch, these values are execution evidence only.
 
 The adapters were not launched as DOIN nodes on any machine. No generated node
 config has been accepted for deployment yet.

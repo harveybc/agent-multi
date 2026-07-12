@@ -161,6 +161,39 @@ def test_doin_asset_profile_resolves_risk_and_optimization_owners() -> None:
     assert resolution.runtime["k_tp"] == 2.0
 
 
+def test_phase_1_asset_policy_profile_has_executable_stages_and_protected_test() -> None:
+    profile = load_json_object(
+        "examples/config/phase_1_asset_policy/optimization/"
+        "phase_1_asset_policy_solusdt_4h_sac_optimization_config.json"
+    )
+    resolution = resolve_config(DEFAULT_VALUES, file_config=profile)
+    runtime = resolution.runtime
+    assert runtime["pipeline_plugin"] == "rl_pipeline_with_validation"
+    assert runtime["optimization_metric"] == "train_validation_l1_score"
+    assert runtime["selection_metric"] == "risk_adjusted_return"
+    assert runtime["evaluate_test_split"] is False
+    assert runtime["selection_uses_test"] is False
+    assert [stage["name"] for stage in runtime["optimization_stages"]] == [
+        "action_behavior",
+        "critic_dynamics",
+        "training_dynamics",
+        "refinement",
+    ]
+
+
+def test_cli_resume_flag_overrides_canonical_optimization_section() -> None:
+    resolution = resolve_config(
+        DEFAULT_VALUES,
+        file_config={
+            "schema_version": "trading_experiment.v1",
+            "optimization": {"optimization_resume": False},
+        },
+        cli_overrides={"optimization_resume": True},
+    )
+    assert resolution.runtime["optimization_resume"] is True
+    assert resolution.canonical.optimization["optimization_resume"] is True
+
+
 def test_main_accepts_config_alias_and_writes_lineage(tmp_path, monkeypatch) -> None:
     from app import main as main_module
 

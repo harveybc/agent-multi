@@ -266,6 +266,8 @@ class PipelinePlugin:
         "load_model": None,
         "warm_start_model": None,
         "return_trace_dir": None,
+        "evaluate_test_split": True,
+        "write_results_sidecar": True,
     }
 
     plugin_debug_vars = [
@@ -277,7 +279,8 @@ class PipelinePlugin:
         "epoch_timesteps", "max_epochs", "l1_patience", "l1_min_delta",
         "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
-        "warm_start_model", "return_trace_dir",
+        "warm_start_model", "return_trace_dir", "evaluate_test_split",
+        "write_results_sidecar",
     ]
 
     def __init__(self, config: Dict[str, Any] | None = None):
@@ -893,9 +896,24 @@ class PipelinePlugin:
         val_summary = self._eval_on_split(
             env_plugin_name, config, paths["val"], agent_plugin_for_wrap, model, seed, "validation"
         )
-        test_summary = self._eval_on_split(
-            env_plugin_name, config, paths["test"], agent_plugin_for_wrap, model, seed, "test"
+        evaluate_test = bool(
+            config.get("evaluate_test_split", self.params["evaluate_test_split"])
         )
+        if evaluate_test:
+            test_summary = self._eval_on_split(
+                env_plugin_name,
+                config,
+                paths["test"],
+                agent_plugin_for_wrap,
+                model,
+                seed,
+                "test",
+            )
+        else:
+            test_summary = {
+                "evaluation_skipped": True,
+                "skip_reason": "protected_test_disabled_for_optimization",
+            }
         selection_metric = str(config.get("selection_metric", self.params["selection_metric"]))
         risk_lambda = float(config.get("risk_penalty_lambda", self.params["risk_penalty_lambda"]))
         l1_gap_beta = float(
@@ -904,7 +922,10 @@ class PipelinePlugin:
                 self.params["l1_generalization_gap_penalty_beta"],
             )
         )
-        for split_summary in (train_summary, train_tail_summary, val_summary, test_summary):
+        metric_summaries = [train_summary, train_tail_summary, val_summary]
+        if evaluate_test:
+            metric_summaries.append(test_summary)
+        for split_summary in metric_summaries:
             _annotate_risk_adjusted(split_summary, risk_lambda)
         selection_details = _selection_pair_details(
             train_tail_summary,
@@ -922,8 +943,9 @@ class PipelinePlugin:
             ("Train", train_summary),
             ("TrainTail", train_tail_summary),
             ("Validation", val_summary),
-            ("Test", test_summary),
         ]
+        if evaluate_test:
+            rows.append(("Test", test_summary))
         table = _format_table(rows)
         print("\n=== Final results (best-composite checkpoint) ===")
         print(table, flush=True)
@@ -987,7 +1009,9 @@ class PipelinePlugin:
 
         # Save results.json next to the model file
         model_path = config.get("save_model")
-        if model_path:
+        if model_path and bool(
+            config.get("write_results_sidecar", self.params["write_results_sidecar"])
+        ):
             results_path = Path(model_path).with_name("results.json")
             results_path.parent.mkdir(parents=True, exist_ok=True)
             with results_path.open("w", encoding="utf-8") as fh:

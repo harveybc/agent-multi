@@ -18,7 +18,7 @@ def process_unknown_args(unknown_args):
         if arg.startswith("--"):
             key = arg.lstrip("-")
             if i + 1 < len(unknown_args) and not unknown_args[i+1].startswith("--"):
-                res[key] = unknown_args[i+1]
+                res[key] = convert_type(unknown_args[i+1])
                 i += 2
             else:
                 # Key without value (boolean flag)
@@ -32,6 +32,14 @@ def process_unknown_args(unknown_args):
 def convert_type(value):
     if isinstance(value, bool):
         return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized == "true":
+            return True
+        if normalized == "false":
+            return False
+        if normalized in {"none", "null"}:
+            return None
     try:
         if "." in value:
             return float(value)

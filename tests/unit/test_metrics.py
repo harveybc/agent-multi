@@ -30,3 +30,15 @@ def test_weekly_rap_metric_fails_closed_when_missing() -> None:
             {"optimization_metric": "mean_weekly_rap"},
             _Agent(),
         )
+
+
+def test_gap_penalized_l1_metric_is_selectable() -> None:
+    value = compute_optimization_fitness(
+        {"train_validation_l1_score": 0.123},
+        {
+            "optimization_metric": "train_validation_l1_score",
+            "metric_missing_policy": "fail",
+        },
+        _Agent(),
+    )
+    assert value == pytest.approx(0.123)

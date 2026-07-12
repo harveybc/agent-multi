@@ -1,0 +1,21 @@
+{
+  "schema_version": "agent_multi.dataset_manifest.v1",
+  "dataset_id": "solusdt_4h_kitchen_sink_guarded_2020_2023",
+  "asset": "SOLUSDT",
+  "timeframe": "4h",
+  "source_repository": "financial-data",
+  "source_commit": "538d7d26c94211d8364ca6953f5b99040124223f",
+  "source_path": "experiments/stage_a_screening/inputs/solusdt/4h/kitchen_sink_guarded/train.csv",
+  "sha256": "9a9df280331cec812370e079aae49682a259f8e2da16a045fd2383bff042575c",
+  "row_count": 7073,
+  "date_column": "DATE_TIME",
+  "first_timestamp": "2020-10-09T04:00:00",
+  "last_timestamp": "2023-12-31T20:00:00",
+  "data_profile": "kitchen_sink_guarded",
+  "splits": {
+    "train": ["2021-01-01T00:00:00", "2021-12-31T23:59:59"],
+    "validation": ["2022-01-01T00:00:00", "2022-12-31T23:59:59"],
+    "test": ["2023-01-01T00:00:00", "2023-12-31T23:59:59"]
+  },
+  "selection_uses_test": false
+}

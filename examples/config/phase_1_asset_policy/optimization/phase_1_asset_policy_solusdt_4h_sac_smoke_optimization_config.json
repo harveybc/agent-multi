@@ -1,0 +1,79 @@
+{
+  "schema_version": "trading_experiment.v1",
+  "experiment": {
+    "name": "phase_1_asset_policy_solusdt_4h_sac_smoke_optimization",
+    "mode": "train",
+    "quiet_mode": false,
+    "role": "asset_policy_optimization_smoke",
+    "scientific_scope": "execution_contract_only"
+  },
+  "environment": {
+    "max_rows": 384
+  },
+  "training": {
+    "epoch_timesteps": 64,
+    "max_epochs": 1,
+    "l1_patience": 1,
+    "learning_starts": 16,
+    "buffer_size": 2048,
+    "batch_size": 128,
+    "use_sde": false,
+    "net_arch": [32, 32],
+    "train_seed": 1701,
+    "eval_seed": 1701,
+    "evaluate_test_split": false
+  },
+  "optimization": {
+    "enabled": true,
+    "plugin": "default_optimizer",
+    "metric": "train_validation_l1_score",
+    "metric_schema": "trading.metrics.v1",
+    "higher_is_better": true,
+    "metric_missing_policy": "fail",
+    "ga_fitness_split": "train",
+    "ga_population": 2,
+    "ga_generations": 0,
+    "ga_cxpb": 0.0,
+    "ga_mutpb": 0.0,
+    "ga_eval_timesteps": 64,
+    "ga_seed": 1701,
+    "optimization_patience": 1,
+    "optimization_resume": false,
+    "optimization_capture_model_artifact": true,
+    "optimization_require_model_artifact": true,
+    "optimization_stages": [
+      {
+        "name": "contract_smoke",
+        "params": "all",
+        "generations": 0,
+        "patience": 1
+      }
+    ],
+    "hyperparameter_bounds": {
+      "learning_rate": [0.00001, 0.0005],
+      "batch_size": [128, 512],
+      "gamma": [0.95, 0.999],
+      "tau": [0.001, 0.02],
+      "train_freq": [1, 8],
+      "gradient_steps": [1, 8],
+      "continuous_action_threshold": [0.05, 0.35]
+    },
+    "optimization_statistics": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/optimization_stats.json",
+    "optimization_parameters_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/optimization_parameters.json",
+    "optimization_resume_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/optimization_resume.json",
+    "optimization_candidate_history": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/optimization_candidate_history.csv",
+    "optimization_champion_model_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/champion_policy.zip"
+  },
+  "artifacts": {
+    "artifact_root": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac",
+    "save_model": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/final_policy.zip",
+    "results_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/results.json",
+    "resolved_config_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/resolved_config.json",
+    "config_manifest_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/config_manifest.json",
+    "optimizer_output_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/smoke/solusdt_4h_sac/optimizer_output.json"
+  },
+  "deployment": {
+    "channel": "smoke",
+    "lifecycle": "not_for_scientific_comparison"
+  }
+}
