@@ -1,0 +1,511 @@
+{
+  "candidate_count": 14,
+  "candidates": [
+    {
+      "asset_id": "crypto:SOL/USDT",
+      "candidate_id": "solusdt_1h_tech_stat_decomp_sac_warm_start_chain_1y_seed5_asset_preset_broadening_phase5_v1_fixed_rv0p05_sl2_tp4_sltp_risk_geometry_phase8_v1",
+      "cell_id": "crypto:SOL/USDT@1h:tech_stat_decomp:sac",
+      "coverage_weeks": 8,
+      "evidence_scope": "partial",
+      "experiment_phase": "sltp_risk_geometry_phase8_v1",
+      "horizon_bucket": "short",
+      "input_family": "tech_stat_decomp",
+      "metrics": {
+        "annual_rap_percent": 1.999652,
+        "annual_return_percent": 4.487086,
+        "mean_weekly_drawdown_percent": 0.621859,
+        "mean_weekly_rap_percent": 0.249957,
+        "mean_weekly_return_percent": 0.560886,
+        "mean_weekly_test_trades": 20.625
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_rv0p05_sl2_tp4",
+      "research_symbol": "SOLUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 4.0,
+        "rel_volume": 0.05,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "short_active_doin_seed",
+      "timeframe": "1h",
+      "training": {
+        "policy": "warm_start_chain_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "crypto:BTC/USDT",
+      "candidate_id": "btcusdt_1h_kitchen_sink_guarded_sac_warm_start_chain_3y_seed5_asset_preset_broadening_phase5_v1",
+      "cell_id": "crypto:BTC/USDT@1h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 5,
+      "evidence_scope": "partial",
+      "experiment_phase": "asset_preset_broadening_phase5_v1",
+      "horizon_bucket": "short",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 0.365117,
+        "annual_return_percent": 1.167713,
+        "mean_weekly_drawdown_percent": 0.160519,
+        "mean_weekly_rap_percent": 0.073023,
+        "mean_weekly_return_percent": 0.233543,
+        "mean_weekly_test_trades": 5.8
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_atr",
+      "research_symbol": "BTCUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.05,
+        "risk_penalty_lambda": 1.0,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "short_active_doin_seed",
+      "timeframe": "1h",
+      "training": {
+        "policy": "warm_start_chain_n_years",
+        "train_years": 3
+      }
+    },
+    {
+      "asset_id": "crypto:ADA/USDT",
+      "candidate_id": "adausdt_1h_kitchen_sink_guarded_sac_warm_start_chain_1y_seed5_asset_preset_broadening_phase5_v1",
+      "cell_id": "crypto:ADA/USDT@1h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 12,
+      "evidence_scope": "partial",
+      "experiment_phase": "asset_preset_broadening_phase5_v1",
+      "horizon_bucket": "short",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 0.221749,
+        "annual_return_percent": 0.508145,
+        "mean_weekly_drawdown_percent": 0.023866,
+        "mean_weekly_rap_percent": 0.018479,
+        "mean_weekly_return_percent": 0.042345,
+        "mean_weekly_test_trades": 10.083333
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_atr",
+      "research_symbol": "ADAUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.05,
+        "risk_penalty_lambda": 1.0,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "short_active_doin_seed",
+      "timeframe": "1h",
+      "training": {
+        "policy": "warm_start_chain_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "crypto:XRP/USDT",
+      "candidate_id": "xrpusdt_1h_kitchen_sink_guarded_sac_warm_start_chain_1y_seed5_asset_preset_broadening_phase5_v1",
+      "cell_id": "crypto:XRP/USDT@1h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 8,
+      "evidence_scope": "partial",
+      "experiment_phase": "asset_preset_broadening_phase5_v1",
+      "horizon_bucket": "short",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 0.034703,
+        "annual_return_percent": 0.238453,
+        "mean_weekly_drawdown_percent": 0.025469,
+        "mean_weekly_rap_percent": 0.004338,
+        "mean_weekly_return_percent": 0.029807,
+        "mean_weekly_test_trades": 14.375
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_atr",
+      "research_symbol": "XRPUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.05,
+        "risk_penalty_lambda": 1.0,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "short_active_doin_seed",
+      "timeframe": "1h",
+      "training": {
+        "policy": "warm_start_chain_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "crypto:ETH/USDT",
+      "candidate_id": "ethusdt_1h_sota_low_cost_sac_fine_tune_recent_window_m6_base3y_seed5_asset_preset_broadening_phase5_v1",
+      "cell_id": "crypto:ETH/USDT@1h:sota_low_cost:sac",
+      "coverage_weeks": 5,
+      "evidence_scope": "partial",
+      "experiment_phase": "asset_preset_broadening_phase5_v1",
+      "horizon_bucket": "short",
+      "input_family": "sota_low_cost",
+      "metrics": {
+        "annual_rap_percent": -0.06768,
+        "annual_return_percent": 0.952187,
+        "mean_weekly_drawdown_percent": 0.203973,
+        "mean_weekly_rap_percent": -0.013536,
+        "mean_weekly_return_percent": 0.190437,
+        "mean_weekly_test_trades": 9.2
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_atr",
+      "research_symbol": "ETHUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.05,
+        "risk_penalty_lambda": 1.0,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "short_active_doin_seed",
+      "timeframe": "1h",
+      "training": {
+        "policy": "fine_tune_recent_window_chain",
+        "train_years": 3
+      }
+    },
+    {
+      "asset_id": "crypto:SOL/USDT",
+      "candidate_id": "solusdt_4h_kitchen_sink_guarded_exec_annual_diversity_survey_fast40k_v2_sac_annual_fyv2022_fyt2023_scratch_1y",
+      "cell_id": "crypto:SOL/USDT@4h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 52,
+      "evidence_scope": "near_full_year",
+      "experiment_phase": "annual_diversity_survey_fast40k_v2",
+      "horizon_bucket": "long",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 3.272312,
+        "annual_return_percent": 8.107232,
+        "mean_weekly_drawdown_percent": 0.185958,
+        "mean_weekly_rap_percent": 0.062929,
+        "mean_weekly_return_percent": 0.155908,
+        "mean_weekly_test_trades": 0.692308
+      },
+      "model_family": "sac",
+      "olap_profile_key": "annual_survey_fast40k_rv0p10_sl1p5_tp2",
+      "research_symbol": "SOLUSDT",
+      "risk_profile": {
+        "k_sl": 1.5,
+        "k_tp": 2.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "long_full_year_doin_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "fx:EUR/USD",
+      "candidate_id": "eurusd_4h_fx_full_exec_annual_diversity_survey_fast40k_v2_sac_annual_fyv2022_fyt2023_scratch_1y",
+      "cell_id": "fx:EUR/USD@4h:fx_full:sac",
+      "coverage_weeks": 52,
+      "evidence_scope": "near_full_year",
+      "experiment_phase": "annual_diversity_survey_fast40k_v2",
+      "horizon_bucket": "long",
+      "input_family": "fx_full",
+      "metrics": {
+        "annual_rap_percent": 0.005128,
+        "annual_return_percent": 0.005813,
+        "mean_weekly_drawdown_percent": 2.6e-05,
+        "mean_weekly_rap_percent": 9.9e-05,
+        "mean_weekly_return_percent": 0.000112,
+        "mean_weekly_test_trades": 0.038462
+      },
+      "model_family": "sac",
+      "olap_profile_key": "annual_survey_fast40k_rv0p10_sl1p5_tp2",
+      "research_symbol": "EURUSD",
+      "risk_profile": {
+        "k_sl": 1.5,
+        "k_tp": 2.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "long_full_year_doin_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "crypto:DOGE/USDT",
+      "candidate_id": "dogeusdt_4h_kitchen_sink_guarded_exec_annual_diversity_survey_fast40k_v2_sac_annual_fyv2022_fyt2023_scratch_1y",
+      "cell_id": "crypto:DOGE/USDT@4h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 52,
+      "evidence_scope": "near_full_year",
+      "experiment_phase": "annual_diversity_survey_fast40k_v2",
+      "horizon_bucket": "long",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 0.002791,
+        "annual_return_percent": 0.003866,
+        "mean_weekly_drawdown_percent": 4.1e-05,
+        "mean_weekly_rap_percent": 5.4e-05,
+        "mean_weekly_return_percent": 7.4e-05,
+        "mean_weekly_test_trades": 0.076923
+      },
+      "model_family": "sac",
+      "olap_profile_key": "annual_survey_fast40k_rv0p10_sl1p5_tp2",
+      "research_symbol": "DOGEUSDT",
+      "risk_profile": {
+        "k_sl": 1.5,
+        "k_tp": 2.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "long_full_year_doin_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "fx:AUD/USD",
+      "candidate_id": "audusd_4h_fx_full_exec_annual_diversity_survey_fast40k_v2_sac_annual_fyv2022_fyt2023_scratch_1y",
+      "cell_id": "fx:AUD/USD@4h:fx_full:sac",
+      "coverage_weeks": 52,
+      "evidence_scope": "near_full_year",
+      "experiment_phase": "annual_diversity_survey_fast40k_v2",
+      "horizon_bucket": "long",
+      "input_family": "fx_full",
+      "metrics": {
+        "annual_rap_percent": -0.005414,
+        "annual_return_percent": -0.002792,
+        "mean_weekly_drawdown_percent": 0.000101,
+        "mean_weekly_rap_percent": -0.000104,
+        "mean_weekly_return_percent": -5.4e-05,
+        "mean_weekly_test_trades": 0.057692
+      },
+      "model_family": "sac",
+      "olap_profile_key": "annual_survey_fast40k_rv0p10_sl1p5_tp2",
+      "research_symbol": "AUDUSD",
+      "risk_profile": {
+        "k_sl": 1.5,
+        "k_tp": 2.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "long_full_year_doin_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "fx:EUR/JPY",
+      "candidate_id": "eurjpy_4h_fx_full_exec_annual_diversity_survey_fast40k_v2_sac_annual_fyv2022_fyt2023_scratch_1y",
+      "cell_id": "fx:EUR/JPY@4h:fx_full:sac",
+      "coverage_weeks": 52,
+      "evidence_scope": "near_full_year",
+      "experiment_phase": "annual_diversity_survey_fast40k_v2",
+      "horizon_bucket": "long",
+      "input_family": "fx_full",
+      "metrics": {
+        "annual_rap_percent": -0.808067,
+        "annual_return_percent": 1.099084,
+        "mean_weekly_drawdown_percent": 0.073352,
+        "mean_weekly_rap_percent": -0.01554,
+        "mean_weekly_return_percent": 0.021136,
+        "mean_weekly_test_trades": 2.769231
+      },
+      "model_family": "sac",
+      "olap_profile_key": "annual_survey_fast40k_rv0p10_sl1p5_tp2",
+      "research_symbol": "EURJPY",
+      "risk_profile": {
+        "k_sl": 1.5,
+        "k_tp": 2.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "long_full_year_doin_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 1
+      }
+    },
+    {
+      "asset_id": "crypto:ETH/USDT",
+      "candidate_id": "ethusdt_4h_kitchen_sink_guarded_exec_annual_4y_2022val_2023test_rap_sac_annual_fyv2022_fyt2023_scratch_4y_testyear_fixed_rv0p10_sl1p5_tp2_sltp_risk_geometry_phase8_v3",
+      "cell_id": "crypto:ETH/USDT@4h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 52,
+      "evidence_scope": "near_full_year",
+      "experiment_phase": "sltp_risk_geometry_phase8_v3",
+      "horizon_bucket": "long",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": -1.897765,
+        "annual_return_percent": 6.768774,
+        "mean_weekly_drawdown_percent": 0.333328,
+        "mean_weekly_rap_percent": -0.036495,
+        "mean_weekly_return_percent": 0.130169,
+        "mean_weekly_test_trades": 3.384615
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_rv0p10_sl1p5_tp2",
+      "research_symbol": "ETHUSDT",
+      "risk_profile": {
+        "k_sl": 1.5,
+        "k_tp": 2.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "long_full_year_doin_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 4
+      }
+    },
+    {
+      "asset_id": "crypto:SOL/USDT",
+      "candidate_id": "solusdt_4h_kitchen_sink_guarded_all_available_sac_fine_tune_recent_window_m6_base3y_margin_aware_rv0p50_cap2p5_sltp_risk_geometry_phase8_v1_seed9_adaptive_top_seed_extension_seed9_v1_seed17_adaptive_top_seed_extension_seed17_v1",
+      "cell_id": "crypto:SOL/USDT@4h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 10,
+      "evidence_scope": "partial",
+      "experiment_phase": "adaptive_top_seed_extension_seed17_v1",
+      "horizon_bucket": "long",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 46.24337,
+        "annual_return_percent": 63.157022,
+        "mean_weekly_drawdown_percent": 3.382731,
+        "mean_weekly_rap_percent": 4.624337,
+        "mean_weekly_return_percent": 6.315702,
+        "mean_weekly_test_trades": 4.6
+      },
+      "model_family": "sac",
+      "olap_profile_key": "margin_aware_rv0p50_cap2p5",
+      "research_symbol": "SOLUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.5,
+        "risk_penalty_lambda": 0.5,
+        "sltp_risk_mode": "margin_aware_atr"
+      },
+      "selection_role": "rush_opportunity_detection_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "fine_tune_recent_window_chain",
+        "train_years": 3
+      }
+    },
+    {
+      "asset_id": "crypto:ETH/USDT",
+      "candidate_id": "ethusdt_4h_kitchen_sink_guarded_exec_annual_4y_2022val_2023test_rap_sac_annual_fyv2022_fyt2023_fine_tune_recent_window_m12_base4y_testyear_rap_l0p25_rv0p1_risk_adjusted_reward_phase7_v3",
+      "cell_id": "crypto:ETH/USDT@4h:kitchen_sink_guarded:sac",
+      "coverage_weeks": 13,
+      "evidence_scope": "partial",
+      "experiment_phase": "risk_adjusted_reward_phase7_v3",
+      "horizon_bucket": "long",
+      "input_family": "kitchen_sink_guarded",
+      "metrics": {
+        "annual_rap_percent": 2.479215,
+        "annual_return_percent": 3.616655,
+        "mean_weekly_drawdown_percent": 0.349981,
+        "mean_weekly_rap_percent": 0.190709,
+        "mean_weekly_return_percent": 0.278204,
+        "mean_weekly_test_trades": 2.538462
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_atr",
+      "research_symbol": "ETHUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.1,
+        "risk_penalty_lambda": 0.25,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "rush_opportunity_detection_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "fine_tune_recent_window_chain",
+        "train_years": 4
+      }
+    },
+    {
+      "asset_id": "crypto:ADA/USDT",
+      "candidate_id": "adausdt_4h_tech_stat_decomp_sac_scratch_3y_seed5_asset_preset_broadening_phase5_v1",
+      "cell_id": "crypto:ADA/USDT@4h:tech_stat_decomp:sac",
+      "coverage_weeks": 14,
+      "evidence_scope": "partial",
+      "experiment_phase": "asset_preset_broadening_phase5_v1",
+      "horizon_bucket": "long",
+      "input_family": "tech_stat_decomp",
+      "metrics": {
+        "annual_rap_percent": 0.165216,
+        "annual_return_percent": 0.349279,
+        "mean_weekly_drawdown_percent": 0.013147,
+        "mean_weekly_rap_percent": 0.011801,
+        "mean_weekly_return_percent": 0.024949,
+        "mean_weekly_test_trades": 2.714286
+      },
+      "model_family": "sac",
+      "olap_profile_key": "fixed_atr",
+      "research_symbol": "ADAUSDT",
+      "risk_profile": {
+        "k_sl": 2.0,
+        "k_tp": 3.0,
+        "rel_volume": 0.05,
+        "risk_penalty_lambda": 1.0,
+        "sltp_risk_mode": "fixed_atr"
+      },
+      "selection_role": "rush_opportunity_detection_seed",
+      "timeframe": "4h",
+      "training": {
+        "policy": "scratch_n_years",
+        "train_years": 3
+      }
+    }
+  ],
+  "evidence_files": [
+    {
+      "content_hash": "sha256:0a95637d741820760ffd414064a0c660f86f4e7ed689a31babb5651c2ed450f4",
+      "path": "work_plan/selection_artifacts_2026_07_10/doin_exploration_shortlist.csv",
+      "size_bytes": 5277
+    },
+    {
+      "content_hash": "sha256:e89a3fc81975ed760229ba5c31e4dc911dff23838bcdcf1ba36fc7befed2313a",
+      "path": "work_plan/selection_artifacts_2026_07_10/proposed_doin_asset_model_selection.csv",
+      "size_bytes": 2186
+    },
+    {
+      "content_hash": "sha256:587e60015ceb906efc3dd95ce232b922b87f1303dee4fdd7d30360b62559d1e1",
+      "path": "work_plan/PROJECT3_DOIN_SELECTION_TABLE_2026_07_10.md",
+      "size_bytes": 41591
+    }
+  ],
+  "generated_at": "2026-07-10T20:00:00-05:00",
+  "manifest_id": "project3-doin-shortlist-2026-07-10",
+  "schema_version": "project3_shortlist_import.v1",
+  "selection_policy": {
+    "partial_evidence_rule": "Partial candidates retain exact observed week coverage and cannot carry annual labels.",
+    "portfolio_requirement": "Eligibility requires comparable full validation coverage and marginal diversification evidence.",
+    "protected_test_rule": "Imported test evidence may seed the search universe but cannot select, early-stop, optimize or promote future candidates.",
+    "use": "research_seed_only"
+  },
+  "source_repository": {
+    "commit": "5670833c9af7fb47ac9f46aecab9f9eed5e2f61f",
+    "name": "financial-data"
+  }
+}

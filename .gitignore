@@ -18,8 +18,19 @@ experiments/weekly_walkforward_pool/*.sqlite-wal
 experiments/weekly_walkforward_pool/*.bak
 experiments/weekly_walkforward_pool/*.log
 experiments/weekly_walkforward_pool/*.token
+experiments/weekly_walkforward_pool/*.json
+experiments/weekly_walkforward_pool_materialize_smoke/
 experiments/oracle_behavior_pretraining/smoke_oracle_bc_run/
 experiments/oracle_behavior_pretraining/*.json
 **/policy.zip
 **/subprocess_stdout*.log
 **/training_progress.json
+
+# Canonical configuration is regenerated for each local execution.
+/resolved_config.json
+/config_manifest.json
+/artifacts/
+
+# Build/install metadata is never source of truth.
+*.egg-info/
+.pytest_cache/

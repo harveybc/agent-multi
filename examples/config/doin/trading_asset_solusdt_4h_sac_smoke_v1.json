@@ -1,0 +1,128 @@
+{
+  "schema_version": "trading_experiment.v1",
+  "experiment": {
+    "name": "trading_asset_solusdt_4h_sac_smoke_v1",
+    "mode": "train",
+    "quiet_mode": false,
+    "role": "asset_policy_smoke"
+  },
+  "code": {
+    "repositories": {},
+    "contract_versions": {
+      "trading": "trading_experiment.v1",
+      "metrics": "trading.metrics.v1"
+    }
+  },
+  "data": {
+    "asset": "SOLUSDT",
+    "timeframe": "4h",
+    "input_data_file": "${DATA_ROOT}/experiments/stage_a_screening/inputs/solusdt/4h/kitchen_sink_guarded/train.csv",
+    "date_column": "DATE_TIME",
+    "price_column": "CLOSE",
+    "headers": true,
+    "features_preset": "tech_stat",
+    "data_profile": "kitchen_sink_guarded",
+    "training_cutoff_policy": "chronological_smoke_prefix"
+  },
+  "walk_forward": {
+    "enabled": false,
+    "weekly_retraining": false,
+    "selection_uses_test": false
+  },
+  "environment": {
+    "plugin": "gym_fx_env",
+    "env_mode": "training",
+    "simulation_engine": "backtrader",
+    "max_rows": 384,
+    "data_feed_plugin": "default_data_feed",
+    "broker_plugin": "default_broker",
+    "preprocessor_plugin": "default_preprocessor",
+    "reward_plugin": "pnl_reward",
+    "metrics_plugin": "trading_metrics",
+    "strategy_plugin": "direct_atr_sltp"
+  },
+  "asset_policy": {
+    "plugin": "project3_sac_actor_critic_agent",
+    "action_space_mode": "continuous",
+    "continuous_action_threshold": 0.1,
+    "window_size": 32,
+    "project3_strict": true
+  },
+  "lifecycle_policy": {
+    "plugin": "direct_atr_sltp"
+  },
+  "risk": {
+    "initial_cash": 10000.0,
+    "position_size": 0.01,
+    "rel_volume": 0.1,
+    "leverage": 1.0,
+    "min_order_volume": 0.0,
+    "max_order_volume": 100.0,
+    "size_mode": "notional",
+    "commission": 0.0002,
+    "slippage": 0.0,
+    "atr_period": 14,
+    "k_sl": 1.5,
+    "k_tp": 2.0
+  },
+  "training": {
+    "pipeline_plugin": "rl_pipeline",
+    "total_timesteps": 64,
+    "learning_rate": 0.0001,
+    "buffer_size": 2048,
+    "learning_starts": 16,
+    "batch_size": 128,
+    "tau": 0.005,
+    "gamma": 0.99,
+    "train_freq": 1,
+    "gradient_steps": 1,
+    "ent_coef": "auto",
+    "target_update_interval": 1,
+    "target_entropy": "auto",
+    "use_sde": false,
+    "net_arch": [32, 32],
+    "device": "cuda:0",
+    "agent_verbose": 0,
+    "train_seed": 1701,
+    "eval_seed": 1701
+  },
+  "objectives": {
+    "selection_metric": "risk_adjusted_return",
+    "selection_uses_test": false
+  },
+  "optimization": {
+    "enabled": true,
+    "plugin": "default_optimizer",
+    "metric": "risk_adjusted_return",
+    "metric_schema": "trading.metrics.v1",
+    "higher_is_better": true,
+    "risk_lambda": 0.5,
+    "metric_missing_policy": "fail",
+    "ga_population": 2,
+    "ga_generations": 1,
+    "ga_cxpb": 0.5,
+    "ga_mutpb": 0.2,
+    "ga_eval_timesteps": 64,
+    "ga_seed": 1701,
+    "optimization_patience": 1,
+    "optimization_capture_model_artifact": true,
+    "optimization_require_model_artifact": true
+  },
+  "artifacts": {
+    "artifact_root": "${ARTIFACT_ROOT}/smoke/trading_asset_solusdt_4h_sac_smoke_v1",
+    "save_model": "${ARTIFACT_ROOT}/smoke/trading_asset_solusdt_4h_sac_smoke_v1/policy.zip",
+    "results_file": "${ARTIFACT_ROOT}/smoke/trading_asset_solusdt_4h_sac_smoke_v1/results.json",
+    "resolved_config_file": "${ARTIFACT_ROOT}/smoke/trading_asset_solusdt_4h_sac_smoke_v1/resolved_config.json",
+    "config_manifest_file": "${ARTIFACT_ROOT}/smoke/trading_asset_solusdt_4h_sac_smoke_v1/config_manifest.json",
+    "optimizer_output_file": "${ARTIFACT_ROOT}/smoke/trading_asset_solusdt_4h_sac_smoke_v1/optimizer_output.json"
+  },
+  "olap": {
+    "enabled": false,
+    "metric_schema": "trading.metrics.v1",
+    "experiment_dimension": "local_vertical_smoke"
+  },
+  "deployment": {
+    "channel": "smoke",
+    "lifecycle": "not_for_live_orders"
+  }
+}

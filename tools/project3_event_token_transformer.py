@@ -152,14 +152,25 @@ def encode_event_token_transformer(
 
     # --- Train-only token value normalization -------------------------------
     raw = np.zeros((n_rows, n_tokens), dtype=np.float32)
+    manifest_raw = np.zeros((n_rows, n_tokens), dtype=np.float64)
     present = np.zeros((n_rows, n_tokens), dtype=bool)
     for j, col in enumerate(source_columns):
         for i, row in enumerate(rows):
             cell = row.get(col)
-            raw[i, j] = safe_float(cell)
+            value = safe_float(cell)
+            raw[i, j] = value
+            manifest_raw[i, j] = value
             present[i, j] = cell not in (None, "")
     train_idx = np.asarray(sorted(train_indices), dtype=np.int64)
     train_raw = raw[train_idx]
+    manifest_train_raw = manifest_raw[train_idx]
+    manifest_means = manifest_train_raw.mean(axis=0, dtype=np.float64)
+    manifest_stds = (
+        manifest_train_raw.std(axis=0, ddof=1)
+        if len(train_idx) > 1
+        else np.ones(n_tokens, dtype=np.float64)
+    )
+    manifest_stds = np.where(manifest_stds > 1.0e-9, manifest_stds, 1.0)
     means = train_raw.mean(axis=0, dtype=np.float64).astype(np.float32)
     stds = (
         train_raw.astype(np.float64).std(axis=0, ddof=1).astype(np.float32)
@@ -290,7 +301,7 @@ def encode_event_token_transformer(
         row[diagnostic_columns[1]] = str(int(token_count[i]))
 
     normalization = {
-        col: {"mean": float(means[j]), "std": float(stds[j])}
+        col: {"mean": float(manifest_means[j]), "std": float(manifest_stds[j])}
         for j, col in enumerate(source_columns)
     }
     model_config = {

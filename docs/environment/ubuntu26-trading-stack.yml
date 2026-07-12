@@ -1,0 +1,6 @@
+name: trading-stack
+channels:
+  - defaults
+dependencies:
+  - python=3.12.13
+  - pip=26.1.2

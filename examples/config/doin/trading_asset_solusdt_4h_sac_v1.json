@@ -1,0 +1,152 @@
+{
+  "schema_version": "trading_experiment.v1",
+  "experiment": {
+    "name": "trading_asset_solusdt_4h_sac_v1",
+    "mode": "train",
+    "quiet_mode": true,
+    "role": "asset_policy"
+  },
+  "code": {
+    "repositories": {},
+    "contract_versions": {
+      "trading": "trading_experiment.v1",
+      "metrics": "trading.metrics.v1"
+    }
+  },
+  "data": {
+    "asset": "SOLUSDT",
+    "timeframe": "4h",
+    "input_data_file": "${DATA_ROOT}/experiments/stage_a_screening/inputs/solusdt/4h/kitchen_sink_guarded/train.csv",
+    "date_column": "DATE_TIME",
+    "price_column": "CLOSE",
+    "headers": true,
+    "features_preset": "tech_stat",
+    "data_profile": "kitchen_sink_guarded",
+    "training_cutoff_policy": "chronological_walk_forward"
+  },
+  "walk_forward": {
+    "enabled": true,
+    "train_years": 1,
+    "validation_years": 1,
+    "test_years": 1,
+    "weekly_retraining": true,
+    "selection_uses_test": false
+  },
+  "environment": {
+    "plugin": "gym_fx_env",
+    "env_mode": "training",
+    "simulation_engine": "backtrader",
+    "data_feed_plugin": "default_data_feed",
+    "broker_plugin": "default_broker",
+    "preprocessor_plugin": "default_preprocessor",
+    "reward_plugin": "pnl_reward",
+    "metrics_plugin": "trading_metrics",
+    "strategy_plugin": "direct_atr_sltp"
+  },
+  "context_encoder": {
+    "enabled": false,
+    "profile": "none_v1"
+  },
+  "predictions": {
+    "enabled": false,
+    "provider": "none"
+  },
+  "rush_detector": {
+    "enabled": false,
+    "profile": "deferred_until_asset_policy_gate"
+  },
+  "asset_policy": {
+    "plugin": "project3_sac_actor_critic_agent",
+    "action_space_mode": "continuous",
+    "continuous_action_threshold": 0.1,
+    "window_size": 32,
+    "project3_strict": true
+  },
+  "lifecycle_policy": {
+    "plugin": "direct_atr_sltp"
+  },
+  "risk": {
+    "initial_cash": 10000.0,
+    "position_size": 0.01,
+    "rel_volume": 0.1,
+    "leverage": 1.0,
+    "min_order_volume": 0.0,
+    "max_order_volume": 100.0,
+    "size_mode": "notional",
+    "commission": 0.0002,
+    "slippage": 0.0,
+    "atr_period": 14,
+    "k_sl": 1.5,
+    "k_tp": 2.0
+  },
+  "portfolio": {
+    "enabled": false,
+    "role": "single_asset_vertical_slice"
+  },
+  "training": {
+    "pipeline_plugin": "rl_pipeline",
+    "total_timesteps": 25000,
+    "learning_rate": 0.0001,
+    "buffer_size": 200000,
+    "learning_starts": 5000,
+    "batch_size": 256,
+    "tau": 0.005,
+    "gamma": 0.99,
+    "train_freq": 1,
+    "gradient_steps": 1,
+    "ent_coef": "auto",
+    "target_update_interval": 1,
+    "target_entropy": "auto",
+    "use_sde": true,
+    "net_arch": [256, 256],
+    "device": "auto",
+    "agent_verbose": 0,
+    "train_seed": 0,
+    "eval_seed": 0
+  },
+  "objectives": {
+    "selection_metric": "mean_weekly_rap",
+    "primary_report_metrics": [
+      "mean_weekly_return",
+      "annual_return",
+      "mean_weekly_rap",
+      "annual_rap",
+      "max_drawdown",
+      "coverage_weeks"
+    ],
+    "selection_uses_test": false
+  },
+  "optimization": {
+    "enabled": true,
+    "plugin": "default_optimizer",
+    "metric": "risk_adjusted_return",
+    "metric_schema": "trading.metrics.v1",
+    "higher_is_better": true,
+    "risk_lambda": 0.5,
+    "metric_missing_policy": "fail",
+    "ga_population": 8,
+    "ga_generations": 4,
+    "ga_cxpb": 0.5,
+    "ga_mutpb": 0.2,
+    "ga_eval_timesteps": 2000,
+    "ga_seed": 0,
+    "optimization_patience": 3
+  },
+  "artifacts": {
+    "artifact_root": "${ARTIFACT_ROOT}/trading_asset_solusdt_4h_sac_v1",
+    "save_model": "${ARTIFACT_ROOT}/trading_asset_solusdt_4h_sac_v1/policy.zip",
+    "results_file": "${ARTIFACT_ROOT}/trading_asset_solusdt_4h_sac_v1/results.json",
+    "resolved_config_file": "${ARTIFACT_ROOT}/trading_asset_solusdt_4h_sac_v1/resolved_config.json",
+    "config_manifest_file": "${ARTIFACT_ROOT}/trading_asset_solusdt_4h_sac_v1/config_manifest.json",
+    "optimizer_output_file": "${ARTIFACT_ROOT}/trading_asset_solusdt_4h_sac_v1/optimizer_output.json"
+  },
+  "olap": {
+    "enabled": true,
+    "metric_schema": "trading.metrics.v1",
+    "experiment_dimension": "asset_timeframe_policy"
+  },
+  "deployment": {
+    "channel": "research",
+    "lifecycle": "not_for_live_orders"
+  }
+}

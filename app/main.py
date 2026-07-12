@@ -22,10 +22,12 @@ from pathlib import Path
 from typing import Any, Dict
 
 from app.cli import parse_args
+from app.canonical_config import load_json_object, resolve_config, write_json_file
 from app.config import DEFAULT_VALUES
-from app.config_handler import load_config, remote_load_config, save_config
-from app.config_merger import merge_config, process_unknown_args
+from app.config_handler import save_config
+from app.config_merger import process_unknown_args
 from app.plugin_loader import load_plugin
+from app.runtime_overlay import resolve_runtime_overlay
 
 
 def _load_plugin_instance(group: str, name: str, config: Dict[str, Any]):
@@ -87,16 +89,72 @@ def _run(config: Dict[str, Any]) -> Dict[str, Any]:
 
 def main():
     args, unknown_args = parse_args()
-    cli_args = {k: v for k, v in vars(args).items() if v is not None and v is not False}
+    cli_args = {
+        k: v
+        for k, v in vars(args).items()
+        if v is not None and v is not False
+        and k not in {"load_config", "base_config", "candidate_patch", "runtime_overlay"}
+    }
     unknown_args_dict = process_unknown_args(unknown_args)
+    cli_args.update(unknown_args_dict)
 
-    file_config: Dict[str, Any] = {}
+    source_descriptors: Dict[str, str] = {}
+    base_config: Dict[str, Any] | None = None
+    if getattr(args, "base_config", None):
+        base_config = load_json_object(args.base_config)
+        source_descriptors["base_profile"] = str(Path(args.base_config).resolve())
+
+    file_config: Dict[str, Any] | None = None
     if getattr(args, "load_config", None):
-        file_config = load_config(args.load_config)
+        file_config = load_json_object(args.load_config)
+        source_descriptors["file_config"] = str(Path(args.load_config).resolve())
 
-    config = merge_config(DEFAULT_VALUES.copy(), {}, {}, file_config, cli_args, unknown_args_dict)
+    candidate_patch: Dict[str, Any] | None = None
+    if getattr(args, "candidate_patch", None):
+        candidate_patch = load_json_object(args.candidate_patch)
+        source_descriptors["candidate_patch"] = str(Path(args.candidate_patch).resolve())
+
+    runtime_overlay: Dict[str, Any] | None = None
+    runtime_overlay_path: Path | None = None
+    if getattr(args, "runtime_overlay", None):
+        runtime_overlay_path = Path(args.runtime_overlay).resolve()
+        runtime_overlay = load_json_object(runtime_overlay_path)
+        source_descriptors["runtime_overlay"] = str(runtime_overlay_path)
+
+    resolution = resolve_config(
+        DEFAULT_VALUES,
+        base_profile=base_config,
+        file_config=file_config,
+        cli_overrides=cli_args,
+        candidate_patch=candidate_patch,
+        source_descriptors=source_descriptors,
+    )
+    expected_repositories = resolution.canonical.code.get("repositories", {})
+    runtime_resolution = resolve_runtime_overlay(
+        resolution.runtime,
+        overlay_payload=runtime_overlay,
+        overlay_base_dir=(runtime_overlay_path.parent if runtime_overlay_path else Path.cwd()),
+        expected_repositories=(
+            expected_repositories if isinstance(expected_repositories, dict) else {}
+        ),
+    )
+    config = runtime_resolution.runtime
+    manifest = dict(resolution.manifest)
+    manifest["runtime"] = runtime_resolution.manifest
+
+    write_json_file(
+        config.get("resolved_config_file", "resolved_config.json"),
+        resolution.canonical.model_dump(mode="json", exclude_none=True),
+    )
+    write_json_file(
+        config.get("config_manifest_file", "config_manifest.json"),
+        manifest,
+    )
 
     summary = _run(config)
+    if isinstance(summary, dict):
+        summary.setdefault("canonical_config_hash", resolution.canonical.canonical_hash)
+        summary.setdefault("canonical_schema_version", resolution.canonical.schema_version)
 
     results_file = Path(config.get("results_file", "results.json"))
     results_file.parent.mkdir(parents=True, exist_ok=True)
