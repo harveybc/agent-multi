@@ -231,13 +231,18 @@ class Plugin:
                             self._mutate_active(candidate, schema, active_indices, rng, indpb=0.3)
                             self._invalidate(candidate)
 
-                evaluated = self._evaluate_population(
+                evaluated, candidate_best = self._evaluate_population(
                     candidates, toolbox, schema=schema, callbacks=callbacks,
                     generation=generation, stage_info=stage_info, config=config,
                     evaluation_offset=total_evaluations,
+                    incumbent_fitness=global_best_fitness,
                 )
                 total_evaluations += evaluated
                 population[:] = candidates
+                if candidate_best is not None:
+                    global_best = toolbox.clone(candidate_best)
+                    global_best_fitness = float(global_best.fitness.values[0])
+                    base_params = self._decode(global_best, schema)
                 successful = [
                     item for item in population
                     if not getattr(item, "evaluation_metrics", {}).get("evaluation_error")
@@ -255,17 +260,6 @@ class Plugin:
                     no_improve = 0
                 else:
                     no_improve += 1
-                if current > global_best_fitness + 1e-9:
-                    global_best = toolbox.clone(stage_best)
-                    global_best_fitness = current
-                    base_params = self._decode(global_best, schema)
-                    self._persist_champion_model(
-                        config, getattr(global_best, "evaluation_metrics", {})
-                    )
-                    self._notify_champion(
-                        callbacks, base_params, current, generation,
-                        getattr(global_best, "evaluation_metrics", {}), stage_info,
-                    )
                 self._write_resume(
                     config, schema, stage_index, generation, base_params,
                     global_best_fitness,
@@ -513,8 +507,11 @@ class Plugin:
     def _evaluate_population(
         self, population, toolbox, *, schema, callbacks, generation: int,
         stage_info: Dict[str, Any], config: Dict[str, Any], evaluation_offset: int,
-    ) -> int:
+        incumbent_fitness: float,
+    ) -> Tuple[int, Any | None]:
         evaluated = 0
+        best_fitness = float(incumbent_fitness)
+        candidate_best = None
         for candidate_index, individual in enumerate(population):
             if individual.fitness.valid:
                 continue
@@ -548,6 +545,23 @@ class Plugin:
             public_metrics = {
                 key: value for key, value in metrics.items() if key != "_model_b64"
             }
+            if not metrics.get("evaluation_error") and fitness > best_fitness + 1e-9:
+                best_fitness = fitness
+                candidate_best = toolbox.clone(individual)
+                champion_params = self._decode(individual, schema)
+                champion_stage_info = {
+                    **stage_info,
+                    "generation": generation,
+                    "candidate_num": candidate_number,
+                    "total_candidates": len(population),
+                    "total_candidates_evaluated": evaluation_offset + evaluated,
+                    "champion_fitness": best_fitness,
+                }
+                self._persist_champion_model(config, metrics)
+                self._notify_champion(
+                    callbacks, champion_params, fitness, generation,
+                    metrics, champion_stage_info,
+                )
             candidate_record = {
                 "parameters": self._decode(individual, schema),
                 "fitness": fitness,
@@ -581,10 +595,12 @@ class Plugin:
                     **progress,
                     "total_candidates_evaluated": evaluation_offset + evaluated,
                     "fitness": fitness,
+                    "champion_fitness": best_fitness,
                     "candidate_params": candidate_record["parameters"],
+                    "metric_evidence": _dashboard_metric_payload(public_metrics),
                 },
             )
-        return evaluated
+        return evaluated, candidate_best
 
     @staticmethod
     def _replace_worst(population, candidate) -> None:
@@ -862,6 +878,32 @@ def _metric_payload(summary: Dict[str, Any]) -> Dict[str, Any]:
             return str(value)
 
     return {str(key): convert(value) for key, value in summary.items()}
+
+
+def _dashboard_metric_payload(metrics: Dict[str, Any]) -> Dict[str, Any]:
+    """Keep live telemetry compact while preserving decision-grade metrics."""
+    keys = (
+        "metric_schema",
+        "optimization_metric",
+        "total_return",
+        "risk_adjusted_total_return",
+        "train_validation_l1_score",
+        "train_tail_selection_score",
+        "validation_selection_score",
+        "train_validation_selection_mean_score",
+        "train_validation_selection_gap",
+        "train_validation_selection_gap_penalty",
+        "max_drawdown_fraction",
+        "max_drawdown_pct",
+        "sharpe_ratio",
+        "trades_total",
+        "final_equity",
+        "model_artifact_sha256",
+        "model_artifact_bytes",
+        "model_artifact_format",
+        "evaluation_error",
+    )
+    return {key: metrics[key] for key in keys if metrics.get(key) is not None}
 
 
 def _call_callback(callbacks: Dict[str, Any], name: str, *args):

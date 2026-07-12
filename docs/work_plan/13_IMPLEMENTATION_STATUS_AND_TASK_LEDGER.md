@@ -164,6 +164,23 @@ the RTX 4070 remained active and host swap remained unused. The service has
 `Restart=on-failure`, is not installed for boot-time activation, and remains
 running while later node configurations are reviewed.
 
+The first live dashboard review then exposed a publication-granularity defect:
+candidate fitness was calculated and persisted, but `on_new_champion` was held
+until all 20 candidates in the generation completed. The optimizer now compares
+and publishes each successful candidate immediately, including its exact model
+artifact and compact generic metric evidence. Omega reproduced the recovered
+best seed and accepted block `#1` after candidate 1 with L2 fitness
+`0.030345322807962153`; validation return was `0.1337667688568993`, validation
+RAP `0.10337026583851741`, max drawdown fraction `0.03039650301838189`, and
+validation trade count `117`. The protected test remained disabled.
+
+The DOIN dashboard now recognizes the trading metric contract instead of
+labeling it as predictor MAE. Champion and candidate views expose train-tail
+RAP, validation RAP, mean score, gap penalty, return, drawdown and trades. Its
+monitoring APIs redact embedded model bytes and epoch/split traces, reducing the
+live optimization response to about 1.5 KB and the 30-block chain response to
+about 2.8 KB while leaving the canonical chain payload unchanged.
+
 Dragon and Gamma were manually probed at their known SSH endpoints and remained
 powered off as intended. Their three node configurations are now materialized
 and schema-loaded, but no remote node has been started. During review, a latent
