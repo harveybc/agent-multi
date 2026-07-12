@@ -1,0 +1,29 @@
+{
+  "schema_version": "trading_experiment.v1",
+  "experiment": {
+    "name": "phase_1_asset_policy_solusdt_4h_sac_inference",
+    "mode": "inference",
+    "quiet_mode": false,
+    "role": "asset_policy_inference"
+  },
+  "environment": {
+    "env_mode": "inference"
+  },
+  "training": {
+    "pipeline_plugin": "rl_pipeline",
+    "eval_seed": 1701
+  },
+  "optimization": {
+    "enabled": false
+  },
+  "artifacts": {
+    "load_model": "${MODEL_ROOT}/phase_1_asset_policy/solusdt_4h_sac/champion_policy.zip",
+    "results_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/inference/solusdt_4h_sac/results.json",
+    "resolved_config_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/inference/solusdt_4h_sac/resolved_config.json",
+    "config_manifest_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/inference/solusdt_4h_sac/config_manifest.json"
+  },
+  "deployment": {
+    "channel": "research_inference",
+    "lifecycle": "not_for_live_orders"
+  }
+}

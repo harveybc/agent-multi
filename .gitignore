@@ -9,7 +9,10 @@ __pycache__/
 *.pyc
 
 # Project 3 generated outputs; keep reproducible code/specs in git, not runs.
-examples/results/
+examples/results/*
+!examples/results/phase_1_asset_policy/
+examples/results/phase_1_asset_policy/*
+!examples/results/phase_1_asset_policy/README.md
 experiments/weekly_walkforward_pool/configs/
 experiments/weekly_walkforward_pool/runs/
 experiments/weekly_walkforward_pool/*.sqlite

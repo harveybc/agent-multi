@@ -74,8 +74,11 @@ It defines the reproducible domain experiment:
 - deterministic seed policy;
 - output/artifact locations.
 
-The trading equivalent belongs in `agent-multi/examples/config/doin/` and is
-the same on every machine, modulo content-addressed path resolution.
+The implemented trading equivalent belongs in
+`agent-multi/examples/config/phase_1_asset_policy/` and is the same on every
+machine, modulo validated runtime-root resolution. The older
+`examples/config/doin/` files remain bounded vertical-slice regression fixtures;
+they are not the campaign configuration.
 
 ### 2.2 Per-machine unified-node configuration
 
@@ -102,19 +105,30 @@ It defines:
 
 ### 3.1 Canonical experiment config
 
-Proposed path pattern:
+Implemented Phase 1 pattern and future sibling phases:
 
 ```text
-agent-multi/examples/config/doin/
-  trading_asset_<asset>_<timeframe>_<policy>_v1.json
-  trading_rush_<asset>_<timeframe>_v1.json
-  trading_portfolio_<universe>_v1.json
-  trading_stack_<profile>_v1.json
+agent-multi/examples/
+  config/phase_1_asset_policy/
+    phase_1_asset_policy_<asset>_<timeframe>_<policy>_config.json
+    optimization/*_optimization_config.json
+    inference/*_inference_config.json
+  data/phase_1_asset_policy/
+    <asset>_<timeframe>_dataset_manifest.json
+  results/phase_1_asset_policy/
+    README.md
+  scripts/
+    validate_phase_1_asset_policy.py
+    run_phase_1_asset_policy_local.sh
 ```
 
 This config owns model/data/policy semantics and optimization stages. It is
 canonicalized and hashed. It does not contain hostname, IP, GPU ID, credentials
-or absolute workstation paths.
+or machine-specific GPU selection. The standalone optimization config includes
+explicit split dates, plugins, L1/L2 stopping, executable bounds, stage-local
+active parameters, resume/history/statistics/checkpoint paths and the protected
+test firewall, matching the substantive predictor contract rather than merely
+its directory names.
 
 ### 3.2 Machine overlay
 
@@ -148,7 +162,7 @@ Conceptual shape:
   "port": 8470,
   "data_dir": "./doin-data-trading-omega",
   "bootstrap_peers": [],
-  "network_protocol": "gossipsub",
+  "network_protocol": "flooding",
   "require_deterministic_seed": true,
   "domains": [
     {
@@ -157,11 +171,11 @@ Conceptual shape:
       "evaluate": true,
       "optimization_plugin": "trading_asset",
       "inference_plugin": "trading_asset",
-      "synthetic_data_plugin": "trading_scenarios",
+      "synthetic_data_plugin": "trading_scenario",
       "has_synthetic_data": true,
       "optimization_config": {
         "agent_multi_root": "${AGENT_MULTI_ROOT}",
-        "load_config": "examples/config/doin/trading_asset_solusdt_4h_sac_v1.json",
+        "load_config": "examples/config/phase_1_asset_policy/optimization/phase_1_asset_policy_solusdt_4h_sac_optimization_config.json",
         "node_seed_offset": 0,
         "device": "cuda:0",
         "artifact_root": "${TRADING_ARTIFACT_ROOT}"

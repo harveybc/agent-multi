@@ -60,3 +60,90 @@ def test_optimizer_preserves_metric_vector_and_champion_artifact() -> None:
     assert candidates[0]["metrics"]["metric_schema"] == "trading.metrics.v1"
     assert "_model_b64" not in candidates[0]["metrics"]
     assert champions[0][2]["_model_b64"]
+
+
+def test_staged_optimizer_freezes_parameters_and_writes_resume(tmp_path: Path) -> None:
+    calls = []
+    stages = []
+
+    class StagedAgent(_Agent):
+        def hparam_schema(self):
+            return [("alpha", 0.0, 1.0, "float"), ("beta", 0.0, 1.0, "float")]
+
+    class StagedPipeline(_Pipeline):
+        def run_pipeline(self, *, config, env_plugin, agent_plugin, mode):
+            calls.append((float(config["alpha"]), float(config["beta"])))
+            Path(config["save_model"]).write_bytes(
+                f"{config['alpha']:.8f}:{config['beta']:.8f}".encode()
+            )
+            return {"total_return": 10.0 * config["alpha"] + config["beta"]}
+
+    config = {
+        "alpha": 0.2,
+        "beta": 0.3,
+        "ga_population": 2,
+        "ga_seed": 3,
+        "ga_cxpb": 0.0,
+        "ga_mutpb": 0.0,
+        "optimization_stages": [
+            {"name": "alpha_stage", "params": ["alpha"], "generations": 0},
+            {"name": "beta_stage", "params": ["beta"], "generations": 0},
+        ],
+        "optimization_capture_model_artifact": True,
+        "optimization_require_model_artifact": True,
+        "optimization_resume_file": str(tmp_path / "resume.json"),
+        "optimization_candidate_history": str(tmp_path / "history.csv"),
+        "optimization_statistics": str(tmp_path / "stats.json"),
+        "optimization_parameters_file": str(tmp_path / "params.json"),
+        "optimization_champion_model_file": str(tmp_path / "champion.zip"),
+        "optimization_callbacks": {
+            "on_new_champion": lambda *args: stages.append(args[4]["stage_name"]),
+        },
+        "quiet_mode": True,
+    }
+
+    result = Plugin().optimize(
+        env_plugin=object(), agent_plugin=StagedAgent(),
+        pipeline_plugin=StagedPipeline(), config=config,
+    )
+
+    assert len(calls) == 3
+    assert calls[0][1] == pytest.approx(0.3)
+    assert calls[1][1] == pytest.approx(0.3)
+    assert calls[2][0] == pytest.approx(result["alpha"])
+    assert stages[0] == "alpha_stage"
+    assert (tmp_path / "history.csv").read_text().count("\n") == 4
+    assert (tmp_path / "resume.json").is_file()
+    assert (tmp_path / "stats.json").is_file()
+    assert (tmp_path / "params.json").is_file()
+    assert (tmp_path / "champion.zip").is_file()
+
+    resumed = Plugin().optimize(
+        env_plugin=object(), agent_plugin=StagedAgent(),
+        pipeline_plugin=StagedPipeline(),
+        config={
+            **config,
+            "optimization_resume": True,
+            "canonical_config_hash": "sha256:resume-toggle-changes-canonical-hash",
+        },
+    )
+    assert base64.b64decode(resumed["_best_model_b64"])
+    assert len(calls) == 3
+
+
+def test_declared_bounds_are_executable_and_cannot_exceed_agent_contract() -> None:
+    schema = [("alpha", 0.0, 1.0, "float"), ("count", 1, 8, "int")]
+    effective = Plugin._effective_schema(
+        schema,
+        {"hyperparameter_bounds": {"alpha": [0.2, 0.4], "count": [2, 5]}},
+    )
+    assert effective == [
+        ("alpha", 0.2, 0.4, "float"),
+        ("count", 2.0, 5.0, "int"),
+    ]
+
+    with pytest.raises(ValueError, match="exceeds agent safety bounds"):
+        Plugin._effective_schema(
+            schema,
+            {"hyperparameter_bounds": {"alpha": [-1.0, 0.4]}},
+        )
