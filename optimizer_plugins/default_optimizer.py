@@ -191,6 +191,7 @@ class Plugin:
                 "frozen_params": list(stage["frozen_params"]),
                 "n_generations_stage": stage["generations"],
                 "n_generations_total": sum(item["generations"] for item in stages),
+                "patience": int(stage["patience"]),
             }
             _call_callback(callbacks, "on_stage_start", stage_index + 1, len(stages))
             active_indices = {
@@ -237,7 +238,16 @@ class Plugin:
                 )
                 total_evaluations += evaluated
                 population[:] = candidates
-                stage_best = tools.selBest(population, 1)[0]
+                successful = [
+                    item for item in population
+                    if not getattr(item, "evaluation_metrics", {}).get("evaluation_error")
+                ]
+                if not successful:
+                    raise RuntimeError(
+                        f"all candidates failed in stage {stage['name']!r} "
+                        f"generation {generation}; no champion was published"
+                    )
+                stage_best = tools.selBest(successful, 1)[0]
                 current = float(stage_best.fitness.values[0])
                 completed_generation = generation
                 if current > stage_best_fitness + 1e-9:
@@ -261,9 +271,22 @@ class Plugin:
                     global_best_fitness,
                     getattr(global_best, "evaluation_metrics", {}) if global_best else {},
                 )
+                generation_info = {
+                    **stage_info,
+                    "generation": generation,
+                    "gen_in_stage": generation,
+                    "total_candidates_evaluated": total_evaluations,
+                    "population_size": len(population),
+                    "no_improve_counter": no_improve,
+                    "champion_fitness": global_best_fitness,
+                    "best_fitness_gen": current,
+                    "avg_fitness": sum(
+                        float(item.fitness.values[0]) for item in population
+                    ) / len(population),
+                }
                 _call_callback(
                     callbacks, "on_generation_end", population, [],
-                    list(stage["active_params"]), generation, stage_info,
+                    list(stage["active_params"]), generation, generation_info,
                     {"best_fitness": current, "global_best_fitness": global_best_fitness},
                 )
                 if not config.get("quiet_mode"):
@@ -495,6 +518,23 @@ class Plugin:
         for candidate_index, individual in enumerate(population):
             if individual.fitness.valid:
                 continue
+            candidate_number = candidate_index + 1
+            progress = {
+                **stage_info,
+                "generation": generation,
+                "gen_in_stage": generation,
+                "candidate_num": candidate_number,
+                "candidate_in_gen": candidate_number,
+                "total_candidates": len(population),
+                "population_size": len(population),
+                "total_candidates_evaluated": evaluation_offset + evaluated,
+                "candidate_params": self._decode(individual, schema),
+                "fitness": None,
+            }
+            _call_callback(
+                callbacks, "on_between_candidates",
+                generation, candidate_number, progress,
+            )
             evaluation = toolbox.evaluate(individual)
             if isinstance(evaluation, tuple) and len(evaluation) == 2:
                 fitness = float(evaluation[0])
@@ -513,9 +553,17 @@ class Plugin:
                 "fitness": fitness,
                 "generation": generation,
                 "candidate_index": candidate_index,
+                "candidate_in_gen": candidate_number,
                 "total_evaluation": evaluation_offset + evaluated,
+                "total_eval": evaluation_offset + evaluated,
                 "stage_index": int(stage_info["stage"]) - 1,
+                "stage": int(stage_info["stage"]),
+                "total_stages": int(stage_info["total_stages"]),
                 "stage_name": stage_info["stage_name"],
+                "gen_in_stage": generation,
+                "n_generations_stage": stage_info["n_generations_stage"],
+                "n_generations_total": stage_info["n_generations_total"],
+                "population_size": len(population),
                 "metrics": public_metrics,
                 **public_metrics,
             }
@@ -523,6 +571,18 @@ class Plugin:
             _call_callback(
                 callbacks, "on_candidate_evaluated",
                 candidate_record,
+            )
+            _call_callback(
+                callbacks,
+                "on_between_candidates",
+                generation,
+                candidate_number,
+                {
+                    **progress,
+                    "total_candidates_evaluated": evaluation_offset + evaluated,
+                    "fitness": fitness,
+                    "candidate_params": candidate_record["parameters"],
+                },
             )
         return evaluated
 
@@ -697,6 +757,9 @@ class Plugin:
         run_config["load_model"] = None
         run_config["quiet_mode"] = True
         run_config["write_results_sidecar"] = False
+        # DOIN callbacks close over asyncio loops and thread locks. They belong
+        # to the optimizer process, never to an SB3 model/env configuration.
+        run_config.pop("optimization_callbacks", None)
 
         # P2c.3 — GA fitness split: "train" scores on the d4 train env
         # (legacy); "val" trains on d4 then evaluates on d5 with frozen weights.

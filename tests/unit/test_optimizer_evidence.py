@@ -34,6 +34,7 @@ class _Pipeline:
 def test_optimizer_preserves_metric_vector_and_champion_artifact() -> None:
     candidates = []
     champions = []
+    progress = []
     result = Plugin().optimize(
         env_plugin=object(),
         agent_plugin=_Agent(),
@@ -48,6 +49,7 @@ def test_optimizer_preserves_metric_vector_and_champion_artifact() -> None:
             "optimization_callbacks": {
                 "on_candidate_evaluated": candidates.append,
                 "on_new_champion": lambda *args: champions.append(args),
+                "on_between_candidates": lambda *args: progress.append(args),
             },
             "quiet_mode": True,
         },
@@ -60,6 +62,10 @@ def test_optimizer_preserves_metric_vector_and_champion_artifact() -> None:
     assert candidates[0]["metrics"]["metric_schema"] == "trading.metrics.v1"
     assert "_model_b64" not in candidates[0]["metrics"]
     assert champions[0][2]["_model_b64"]
+    assert progress[0][2]["fitness"] is None
+    assert progress[-1][2]["fitness"] is not None
+    assert candidates[0]["stage"] == 1
+    assert candidates[0]["total_eval"] == 1
 
 
 def test_staged_optimizer_freezes_parameters_and_writes_resume(tmp_path: Path) -> None:
@@ -147,3 +153,26 @@ def test_declared_bounds_are_executable_and_cannot_exceed_agent_contract() -> No
             schema,
             {"hyperparameter_bounds": {"alpha": [-1.0, 0.4]}},
         )
+
+
+def test_all_failed_generation_aborts_without_publishing_champion() -> None:
+    class FailingPipeline(_Pipeline):
+        def run_pipeline(self, **kwargs):
+            raise RuntimeError("candidate exploded")
+
+    champions = []
+    with pytest.raises(RuntimeError, match="all candidates failed"):
+        Plugin().optimize(
+            env_plugin=object(),
+            agent_plugin=_Agent(),
+            pipeline_plugin=FailingPipeline(),
+            config={
+                "ga_population": 2,
+                "ga_generations": 0,
+                "optimization_callbacks": {
+                    "on_new_champion": lambda *args: champions.append(args),
+                },
+                "quiet_mode": True,
+            },
+        )
+    assert champions == []
