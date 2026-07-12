@@ -64,6 +64,9 @@ def test_optimizer_preserves_metric_vector_and_champion_artifact() -> None:
     assert champions[0][2]["_model_b64"]
     assert progress[0][2]["fitness"] is None
     assert progress[-1][2]["fitness"] is not None
+    assert progress[-1][2]["champion_fitness"] == pytest.approx(0.99)
+    completed_progress = [item[2] for item in progress if item[2]["fitness"] is not None]
+    assert completed_progress[0]["metric_evidence"]["total_return"] == pytest.approx(0.99)
     assert candidates[0]["stage"] == 1
     assert candidates[0]["total_eval"] == 1
 
