@@ -38,6 +38,7 @@ setup(
         "backtrader",
         "stable-baselines3>=2.3",
         "deap",
+        "trading-contracts>=0.1.0",
     ],
     extras_require={
         "dev": ["pytest"],

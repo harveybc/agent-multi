@@ -22,8 +22,28 @@ def parse_args():
                         help="Path to a pre-trained agent checkpoint (forces inference).")
     parser.add_argument("--save_model", type=str,
                         help="Where to save the trained agent checkpoint.")
-    parser.add_argument("--load_config", type=str, help="Path to a JSON config file to load.")
+    parser.add_argument(
+        "--load_config", "--config", dest="load_config", type=str,
+        help="Path to a legacy or trading_experiment.v1 JSON config file.",
+    )
+    parser.add_argument("--base_config", type=str, help="Optional base profile JSON.")
+    parser.add_argument(
+        "--candidate_patch", type=str,
+        help="Optional candidate_genome_patch.v1 JSON applied after CLI overrides.",
+    )
+    parser.add_argument(
+        "--runtime_overlay", type=str,
+        help="Machine-local trading_runtime_overlay.v1 JSON.",
+    )
     parser.add_argument("--save_config", type=str, help="Path to write the resolved config.")
+    parser.add_argument(
+        "--resolved_config_file", type=str,
+        help="Path to write the canonical resolved experiment config.",
+    )
+    parser.add_argument(
+        "--config_manifest_file", type=str,
+        help="Path to write config source hashes and translation metadata.",
+    )
     parser.add_argument("--results_file", type=str, help="Path to write the run summary JSON.")
 
     parser.add_argument("--env_plugin", type=str, help="env.plugins name.")

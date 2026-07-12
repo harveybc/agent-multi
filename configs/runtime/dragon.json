@@ -1,0 +1,30 @@
+{
+  "schema_version": "trading_runtime_overlay.v1",
+  "machine_id": "dragon",
+  "roots": {
+    "ARTIFACT_ROOT": "/home/harveybc/Documents/GitHub/agent-multi/artifacts/dragon",
+    "CACHE_ROOT": "/home/harveybc/.cache/adaptive-trading/dragon",
+    "DATA_ROOT": "/home/harveybc/Documents/GitHub/financial-data",
+    "MODEL_ROOT": "/home/harveybc/Documents/GitHub/agent-multi/models/dragon",
+    "REPO_ROOT": "/home/harveybc/Documents/GitHub"
+  },
+  "repositories": {
+    "agent-multi": "/home/harveybc/Documents/GitHub/agent-multi",
+    "financial-data": "/home/harveybc/Documents/GitHub/financial-data",
+    "gym-fx": "/home/harveybc/Documents/GitHub/gym-fx",
+    "trading-contracts": "/home/harveybc/Documents/GitHub/trading-contracts"
+  },
+  "devices": {
+    "default": "cuda:0",
+    "training": "cuda:0"
+  },
+  "resource_limits": {
+    "max_memory_mb": 14000,
+    "max_workers": 1
+  },
+  "environment_refs": {},
+  "metadata": {
+    "gpu": "RTX 4090 Laptop",
+    "role": "worker"
+  }
+}

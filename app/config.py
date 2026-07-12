@@ -23,7 +23,12 @@ DEFAULT_VALUES = {
     "load_model": None,
     "results_file": "./results.json",
     "save_config": "./config_out.json",
+    "resolved_config_file": "./resolved_config.json",
+    "config_manifest_file": "./config_manifest.json",
     "load_config": None,
+    "base_config": None,
+    "candidate_patch": None,
+    "runtime_overlay": None,
     "save_log": "./debug_out.json",
     "optimizer_output_file": "./optimizer_output.json",
 

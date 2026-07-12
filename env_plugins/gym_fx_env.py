@@ -25,6 +25,8 @@ class Plugin:
         "window_size": 32,
         "initial_cash": 10000.0,
         "position_size": 1.0,
+        "simulation_engine": "backtrader",
+        "execution_cost_profile": None,
         "commission": 0.0,
         "slippage": 0.0,
         "data_feed_plugin": "default_data_feed",
@@ -77,7 +79,7 @@ class Plugin:
 
     def make_env(self, agent_config: Dict[str, Any]):
         try:
-            from gym_fx import GymFxEnv
+            from gym_fx import build_environment
         except ImportError as exc:
             raise ImportError(
                 "gym-fx is not installed. Run: pip install -e ../gym-fx"
@@ -91,7 +93,7 @@ class Plugin:
         reward = self._load_bundle_plugin("reward.plugins", env_config["reward_plugin"], env_config)
         metrics = self._load_bundle_plugin("metrics.plugins", env_config["metrics_plugin"], env_config)
 
-        self._env = GymFxEnv(
+        self._env = build_environment(
             config=env_config,
             data_feed_plugin=data_feed,
             broker_plugin=broker,
