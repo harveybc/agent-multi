@@ -275,23 +275,30 @@ node config cannot silently lose behavior.
 - one unified `doin-node` instance;
 - optimization/evaluation roles according to available GPU and host state;
 - unique seed offset, identity, port and data directory;
-- can act as bootstrap/supervisor but no trading-domain correctness depends on
-  one permanent central machine.
+- first launch target and initial bootstrap peer, but no trading-domain
+  correctness depends on one permanent central machine;
+- launch alone first on port `8470`, verify a real candidate is training in
+  `/dashboard`, and keep this process running while later peers join;
+- use a transient user service for the campaign: restart on process failure,
+  no persistent boot-time activation.
 
 ### 7.2 Dragon
 
 - one unified node on current reachable LAN/Tailscale address;
 - RTX 4090 explicit device;
 - WiFi latency affects peer transport estimates, not candidate fitness;
-- local artifacts/OLAP with chain sync and backup.
+- local artifacts/OLAP with chain sync and backup;
+- join only after Omega's dashboard proves the first real candidate is
+  training; bootstrap from Omega without restarting Omega.
 
 ### 7.3 Gamma 5070 Ti and RTX 5090
 
 Preferred initial layout: two unified-node processes when both GPUs run
 concurrently:
 
+- node names `gamma-5070ti` and `gamma-5090`;
 - unique persisted identity files;
-- unique ports and data directories;
+- unique ports and data directories (`8470` and `8471` respectively);
 - `CUDA_VISIBLE_DEVICES` or explicit framework device isolation;
 - distinct node seed offsets;
 - no shared writable candidate/output path;
@@ -300,6 +307,43 @@ concurrently:
 
 A later single-process multi-GPU scheduler is optional and must demonstrate
 better reliability/throughput before replacing process isolation.
+
+The two Gamma dashboards are served by their respective node processes at
+`http://<gamma>:8470/dashboard` and `http://<gamma>:8471/dashboard`. They must
+not share an identity, SQLite database, artifact directory, optimizer history,
+or writable model path. Both nodes bootstrap from the already-running Omega
+island; adding either node must not interrupt Omega.
+
+The first campaign node files are versioned in
+`doin-node/examples/trading/phase_1_asset_policy/`:
+
+| Node | Config | Port | GA offset | Runtime overlay |
+| --- | --- | ---: | ---: | --- |
+| Omega | `omega_node.json` | 8470 | 0 | `omega.json` |
+| Dragon | `dragon_node.json` | 8470 | 1 | `dragon.json` |
+| Gamma 5070 Ti | `gamma_5070ti_node.json` | 8470 | 2 | `gamma_5070ti.json` |
+| Gamma 5090 | `gamma_5090_node.json` | 8471 | 3 | `gamma_5090.json` |
+
+The external `trading_asset` adapter computes the local search seed as
+`ga_seed + node_seed_offset`. It does not offset canonical training or
+evaluation seeds: islands explore different candidate trajectories while the
+same candidate remains deterministically comparable across machines.
+
+### 7.4 Mandatory rollout order
+
+1. Run the bounded isolated smoke on Omega and verify chain, OLAP, protected
+   test firewall, exact model artifact, callbacks and dashboard telemetry.
+2. Stop and discard only the isolated smoke state.
+3. Start the persistent Omega Phase 1 optimization and verify that the web UI
+   shows a live non-null candidate identity, stage and progress.
+4. Keep Omega running while adding Dragon.
+5. Add `gamma-5070ti` and verify GPU isolation.
+6. Add `gamma-5090` on its second port and verify concurrent host/GPU isolation.
+7. Verify peer discovery, matching domain semantics, independent identities,
+   no shared writable state and migrated champion flow across all nodes.
+
+No later node may be started merely because its configuration validates. The
+preceding runtime gate must be observed first.
 
 ## 8. Domain Config Example Mapping
 

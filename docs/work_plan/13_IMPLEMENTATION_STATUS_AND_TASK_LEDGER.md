@@ -2,7 +2,7 @@
 
 Status timestamp: 2026-07-12
 Plan version: 1.3.0
-Current focus: verified local trading vertical and publication gate
+Current focus: Omega-first DOIN Phase 1 rollout
 
 ## 1. Phase Summary
 
@@ -15,8 +15,9 @@ Current focus: verified local trading vertical and publication gate
 | Phase 4 and later | Not started | Depends on the Phase 3 multi-asset environment and config review gates |
 
 A bounded local optimization and independent inference verification were run on
-Omega. No DOIN node, daemon, machine service, Dragon or Gamma process was
-started.
+Omega. An isolated Omega `doin-node` smoke was then completed and observed
+through the real web dashboard. Dragon and Gamma remain intentionally powered
+off and have not been joined.
 
 Current operator state reported on 2026-07-11: `dragon` and `gamma` are powered
 off intentionally during design. This is not an outage. Do not wake, deploy to,
@@ -132,8 +133,42 @@ return was `0.02396380163676559` and validation risk-adjusted return was
 `evaluation_skipped`. Because the smoke caps each environment at 384 rows and
 trains for one 64-step epoch, these values are execution evidence only.
 
-The adapters were not launched as DOIN nodes on any machine. No generated node
-config has been accepted for deployment yet.
+The isolated Omega DOIN smoke used two real candidates and completed one
+accepted champion block. During candidate evaluation, `/api/candidate` exposed
+candidate number, stage, progress and parameters while fitness remained null;
+after evaluation it exposed fitness `0.0060425180751335905`. The dashboard was
+HTTP 200 at `http://127.0.0.1:8470/dashboard`, the exact 194,031-byte champion
+artifact had SHA-256
+`f72671fd62d1a6bbc645bb111bd0fb832a2a5648d7bb321a7e813d630c07096d`,
+and protected test evidence remained `evaluation_skipped`.
+
+The first attempted node smoke found two real integration defects: callbacks
+containing thread/async locks were reaching a deep-copy boundary, and an
+all-failed generation could publish the numeric failure sentinel as champion.
+Callbacks are now removed from declarative pipeline configuration before model
+construction, and a generation whose candidates all carry `evaluation_error`
+fails closed without publishing a champion. A first-champion configuration
+lookup in `doin-node` was also corrected to read the domain role's
+`optimization_config` rather than treating the node dataclass as a dictionary.
+
+This is wiring evidence, not a scientific result. The persistent Omega Phase 1
+campaign was the next runtime gate. Dragon, `gamma-5070ti`, and `gamma-5090`
+must join in that order only after Omega is visibly training, and Omega must not
+be restarted when those peers are added.
+
+The persistent Omega campaign passed that gate on 2026-07-12: the transient
+`doin-phase1-omega.service` became healthy on port `8470`, and its dashboard
+showed candidate `1/20` in stage `action_behavior` before fitness existed. It
+subsequently advanced to candidate `2/20` with one completed evaluation while
+the RTX 4070 remained active and host swap remained unused. The service has
+`Restart=on-failure`, is not installed for boot-time activation, and remains
+running while later node configurations are reviewed.
+
+Dragon and Gamma were manually probed at their known SSH endpoints and remained
+powered off as intended. Their three node configurations are now materialized
+and schema-loaded, but no remote node has been started. During review, a latent
+island-diversity defect was fixed: the declared `node_seed_offset` now changes
+only the local GA seed instead of being silently ignored.
 
 ### 2.2 Canonical configuration in `agent-multi`
 
@@ -347,19 +382,21 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Finish full-suite, clean-repository and GitHub publication gates for the
-   modified repositories.
-2. Preserve and hash the Project 3 OLAP evidence before removing any redundant
+1. Stop and remove only the isolated Omega smoke runtime after recording its
+   compact evidence.
+2. Start the persistent Omega Phase 1 node as a transient user service and
+   verify dashboard, candidate progress, GPU ownership, health and persistence.
+3. Keep Omega running while preparing and reviewing Dragon and dual-Gamma node
+   configurations; do not power or join them before the Omega runtime gate.
+4. Finish full-suite, clean-repository and GitHub publication gates for the
+   modified repositories without committing runtime databases or artifacts.
+5. Preserve and hash the Project 3 OLAP evidence before removing any redundant
    generated output.
-3. Complete Phase 0/1 gates on a second machine path only after code/config
-   review and explicit startup approval.
-4. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+6. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-5. Implement and fault-test the decentralized artifact plane before a
+7. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-6. When Phase 8 is reached, stop for the mandatory user review of the common
-   optimizer JSON and all per-machine/generated DOIN node JSONs before launch.
 
 ## 5. Current Risks
 
