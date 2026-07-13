@@ -204,9 +204,9 @@ environments were not deleted.
 The exact active component revisions, rendered by every dashboard, are:
 
 ```text
-agent-multi       5bd048f (runtime code before this monitoring follow-up)
+agent-multi       current deployment revision (this ledger commit)
 doin-core         8573a87
-doin-node         0164275
+doin-node         fd03023
 doin-plugins      0f23702
 gym-fx            20b667b
 trading-contracts 4675c8f
@@ -281,20 +281,22 @@ six-component revisions.
 
 ### 2.10 Decentralized consolidated dashboard
 
-`doin-node` commits `309a64a` and `0164275` add a network monitor to every
+`doin-node` commits `309a64a`, `0164275` and `fd03023` add a network monitor to every
 participant rather than introducing a central supervisor. Node JSONs declare the labels
 `omega`, `dragon`, `gamma-5070ti` and `gamma-5090`. Each node exposes a compact
 local monitor payload and a cached network overview assembled through the
 existing bounded transport client.
 
-The overview deduplicates alternate LAN/Tailscale routes by peer identity,
-tries fallback routes, preserves known unavailable peers as offline, compares
-the exact six active revisions, and aggregates recent alerts with their source
-node. The dashboard's initial `Network` tab shows participant health, chain
+The overview first groups alternate LAN/Tailscale routes by discovery identity,
+then deduplicates fetched snapshots again by the real peer identity returned by
+`/api/monitor`. This prevents provisional route identities from counting one
+machine more than once. It tries fallback routes, preserves known unavailable
+peers as offline, compares the exact six active revisions, and aggregates recent
+alerts with their source node. The dashboard's initial `Network` tab shows participant health, chain
 range, active candidate progress, best fitness, alert counts, revision status
 and icon links to individual dashboards. A peer timeout cannot block the rest
-of the view. Focused dashboard/config/transport coverage passes 30 tests; the
-complete suite passes 324 tests with only the three documented historical
+of the view. Focused dashboard/config/transport coverage passes 36 tests; the
+complete suite passes 325 tests with only the three documented historical
 assertions deselected.
 
 The first live overview also exposed that Omega knew Gamma 5090 only through
