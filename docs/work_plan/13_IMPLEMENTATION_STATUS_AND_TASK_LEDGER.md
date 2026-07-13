@@ -206,7 +206,7 @@ The exact active component revisions, rendered by every dashboard, are:
 ```text
 agent-multi       current deployment revision (this ledger commit)
 doin-core         8573a87
-doin-node         fd03023
+doin-node         c365e56
 doin-plugins      0f23702
 gym-fx            20b667b
 trading-contracts 4675c8f
@@ -281,7 +281,7 @@ six-component revisions.
 
 ### 2.10 Decentralized consolidated dashboard
 
-`doin-node` commits `309a64a`, `0164275` and `fd03023` add a network monitor to every
+`doin-node` commits `309a64a`, `0164275`, `fd03023` and `c365e56` add a network monitor to every
 participant rather than introducing a central supervisor. Node JSONs declare the labels
 `omega`, `dragon`, `gamma-5070ti` and `gamma-5090`. Each node exposes a compact
 local monitor payload and a cached network overview assembled through the
@@ -295,8 +295,12 @@ peers as offline, compares the exact six active revisions, and aggregates recent
 alerts with their source node. The dashboard's initial `Network` tab shows participant health, chain
 range, active candidate progress, best fitness, alert counts, revision status
 and icon links to individual dashboards. A peer timeout cannot block the rest
-of the view. Focused dashboard/config/transport coverage passes 36 tests; the
-complete suite passes 325 tests with only the three documented historical
+of the view. Each node advertises every local interface as an `IP:port` alias;
+an unresolved offline route is suppressed only when an online peer explicitly
+claims the same alias. This avoids false participants when different machines
+reach Omega through different LANs while retaining genuine offline nodes.
+Focused dashboard/config/transport coverage passes 37 tests; the complete
+suite passes 326 tests with only the three documented historical
 assertions deselected.
 
 The first live overview also exposed that Omega knew Gamma 5090 only through
