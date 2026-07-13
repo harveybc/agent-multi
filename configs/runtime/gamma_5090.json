@@ -15,8 +15,8 @@
     "trading-contracts": "/home/harveybc/Documents/GitHub/trading-contracts"
   },
   "devices": {
-    "default": "cuda:1",
-    "training": "cuda:1"
+    "default": "cuda:0",
+    "training": "cuda:0"
   },
   "resource_limits": {
     "max_memory_mb": 30000,
