@@ -1,8 +1,8 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-07-13
-Plan version: 1.4.0
-Current focus: four-island DOIN Phase 1 optimization
+Plan version: 1.5.0
+Current focus: four-island DOIN Phase 1 optimization and decentralized monitoring
 
 ## 1. Phase Summary
 
@@ -204,9 +204,9 @@ environments were not deleted.
 The exact active component revisions, rendered by every dashboard, are:
 
 ```text
-agent-multi       2a92101 (runtime code before this ledger-only follow-up)
+agent-multi       5bd048f (runtime code before this monitoring follow-up)
 doin-core         8573a87
-doin-node         abb2971
+doin-node         309a64a
 doin-plugins      0f23702
 gym-fx            20b667b
 trading-contracts 4675c8f
@@ -271,11 +271,31 @@ stopped before changing code; optimizer chains and artifacts were preserved.
   limits with bounded keepalive.
 
 The focused network and unified-node suite passes 42 tests with the two known
-stale VUW assertions explicitly deselected. Four-island acceptance additionally
-requires a live soak longer than the prior nine-minute failure interval,
-bounded descriptor/socket counts, no `Too many open files` records, fresh
-candidate progress, zero compatibility alerts, and identical six-component
-dashboard revisions.
+stale VUW assertions explicitly deselected. The four-island live soak exceeded
+the prior nine-minute failure interval. Maximum observed descriptors were 90
+on Omega, 96 on Dragon, 92 on Gamma 5070 Ti and 73 on Gamma 5090; counts later
+fell, proving that sockets were being reused and closed rather than accumulated.
+No `Too many open files` record, process restart or compatibility alert occurred,
+candidate progress remained fresh, and all dashboards rendered identical
+six-component revisions.
+
+### 2.10 Decentralized consolidated dashboard
+
+`doin-node` commit `309a64a` adds a network monitor to every participant rather
+than introducing a central supervisor. Node JSONs now declare the labels
+`omega`, `dragon`, `gamma-5070ti` and `gamma-5090`. Each node exposes a compact
+local monitor payload and a cached network overview assembled through the
+existing bounded transport client.
+
+The overview deduplicates alternate LAN/Tailscale routes by peer identity,
+tries fallback routes, preserves known unavailable peers as offline, compares
+the exact six active revisions, and aggregates recent alerts with their source
+node. The dashboard's initial `Network` tab shows participant health, chain
+range, active candidate progress, best fitness, alert counts, revision status
+and icon links to individual dashboards. A peer timeout cannot block the rest
+of the view. Focused dashboard/config/transport coverage passes 30 tests; the
+complete suite passes 324 tests with only the three documented historical
+assertions deselected.
 
 ### 2.2 Canonical configuration in `agent-multi`
 
@@ -472,6 +492,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `SIM-ENGINE-001` | Codex | `gym-fx`, `agent-multi` | verified_local | Nautilus engine bake-off, cost profiles and canonical execution reports | Codex |
 | `SIM-GYM-001` | Codex | `gym-fx`, `agent-multi` | verified_single_cell | JSON-selectable Nautilus Gym compatibility bridge | Codex |
 | `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
+| `DOIN-MONITOR-001` | Codex | `doin-node` | verified_local | Decentralized consolidated health, candidate, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
 
 Claude packet:
