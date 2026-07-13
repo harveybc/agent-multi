@@ -1,28 +1,23 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-12
-Plan version: 1.3.0
-Current focus: Omega-first DOIN Phase 1 rollout
+Status timestamp: 2026-07-13
+Plan version: 1.4.0
+Current focus: four-island DOIN Phase 1 optimization
 
 ## 1. Phase Summary
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: configuration and lineage | Implemented locally; cross-machine gate pending | Canonical resolver, runtime overlays and Git lineage implemented in `agent-multi` |
+| Phase 1: configuration and lineage | Four-island runtime verified | Canonical resolver, runtime overlays, Git lineage and exact six-component revision gate verified on Omega, Dragon and both Gamma GPUs |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
 | Phase 4 and later | Not started | Depends on the Phase 3 multi-asset environment and config review gates |
 
 A bounded local optimization and independent inference verification were run on
-Omega. An isolated Omega `doin-node` smoke was then completed and observed
-through the real web dashboard. Dragon and Gamma remain intentionally powered
-off and have not been joined.
-
-Current operator state reported on 2026-07-11: `dragon` and `gamma` are powered
-off intentionally during design. This is not an outage. Do not wake, deploy to,
-or report them as failed until the user approves the DOIN configuration review
-and launch gate.
+Omega before the persistent campaign. On 2026-07-13 Dragon and the two Gamma
+GPU islands joined the same live domain after environment, dataset, device,
+revision, dashboard and blockchain compatibility checks passed.
 
 ## 2. Verified Local Deliverables
 
@@ -153,8 +148,9 @@ lookup in `doin-node` was also corrected to read the domain role's
 
 This is wiring evidence, not a scientific result. The persistent Omega Phase 1
 campaign was the next runtime gate. Dragon, `gamma-5070ti`, and `gamma-5090`
-must join in that order only after Omega is visibly training, and Omega must not
-be restarted when those peers are added.
+were admitted only after Omega was visibly training. Omega was later restarted
+once under a controlled resume check to load the final component-version code;
+its chain, resume state and champion were preserved.
 
 The persistent Omega campaign passed that gate on 2026-07-12: the transient
 `doin-phase1-omega.service` became healthy on port `8470`, and its dashboard
@@ -181,11 +177,105 @@ monitoring APIs redact embedded model bytes and epoch/split traces, reducing the
 live optimization response to about 1.5 KB and the 30-block chain response to
 about 2.8 KB while leaving the canonical chain payload unchanged.
 
-Dragon and Gamma were manually probed at their known SSH endpoints and remained
-powered off as intended. Their three node configurations are now materialized
-and schema-loaded, but no remote node has been started. During review, a latent
-island-diversity defect was fixed: the declared `node_seed_offset` now changes
-only the local GA seed instead of being silently ignored.
+During review, a latent island-diversity defect was fixed: the declared
+`node_seed_offset` now changes only the local GA seed instead of being silently
+ignored.
+
+### 2.8 Four-island Phase 1 deployment
+
+The persistent campaign expanded on 2026-07-13 without resetting Omega's
+blockchain or optimizer resume state. The four active islands are:
+
+| Island | Compute device | Dashboard |
+| --- | --- | --- |
+| `omega` | RTX 4070 Laptop | `http://127.0.0.1:8470/dashboard` |
+| `dragon` | RTX 4090 Laptop | `http://100.110.215.85:8470/dashboard` |
+| `gamma-5070ti` | RTX 5070 Ti Laptop | `http://192.168.0.109:8470/dashboard` |
+| `gamma-5090` | RTX 5090 eGPU | `http://100.107.204.49:8471/dashboard` |
+
+All nodes use Python 3.12 from the clean `trading-stack` environment. The
+sorted installed-package inventory has SHA-256
+`ac6825091b3eca8d72a9181638e3cec662d85ee3cde4a689207d95411d718145`
+on all three machines, and `pip check` reports no broken requirements.
+`predictor` and `heuristic_strategy` were removed from Omega's new environment
+because neither belongs to the canonical lock. Their repositories and old
+environments were not deleted.
+
+The exact active component revisions, rendered by every dashboard, are:
+
+```text
+agent-multi       2a92101 (runtime code before this ledger-only follow-up)
+doin-core         8573a87
+doin-node         abb2971
+doin-plugins      0f23702
+gym-fx            20b667b
+trading-contracts 4675c8f
+```
+
+The dashboard no longer reports a `predictor` repository revision. Peer
+handshakes compare all six active component revisions, and all four alert APIs
+reported zero compatibility alerts after joining. Headless Chromium confirmed
+the same six-revision footer on every rendered dashboard.
+
+The runtime dataset is identical on every machine, with SHA-256
+`9a9df280331cec812370e079aae49682a259f8e2da16a045fd2383bff042575c`.
+Remote `financial-data` paths are now clean Git checkouts at commit
+`538d7d26c94211d8364ca6953f5b99040124223f`, materialized from a complete Git
+bundle because the repository is private. The previous 133-179 GB remote trees
+remain preserved under
+`/home/harveybc/Documents/GitHub/_pre_trading_stack_20260713/financial-data`;
+no research data was deleted.
+
+The shared chain had height 7 and tip block 6 when the islands joined. Every
+remote node synchronized the current champion from that block before starting
+its own candidate. Its reported L2 fitness is computed from the inner L1
+evidence as follows:
+
+```text
+RAP(split) = total_return(split) - 1.0 * max_drawdown_fraction(split)
+L2 fitness = 0.5 * (RAP(train_tail) + RAP(validation))
+             - 0.25 * abs(RAP(train_tail) - RAP(validation))
+```
+
+For the inherited champion, train-tail RAP is `0.0035364078221380483`,
+validation RAP is `0.14666270871929155`, their mean is
+`0.0750995582707148`, the generalization-gap penalty is
+`0.035781575224288376`, and final fitness is
+`0.03931798304642642`. Validation total return is `0.186652148410007`,
+validation drawdown is `0.039989439690715445`, and the protected test split is
+not evaluated or used by this campaign.
+
+Omega runs as the non-boot-enabled transient user service
+`doin-phase1-omega.service`. Dragon and Gamma have `Linger=no`; their transient
+user services were correctly terminated when SSH sessions ended, so the three
+remote nodes run in detached named `screen` sessions instead. This preserves
+the explicit no-boot-autostart requirement while keeping current work alive
+across SSH disconnects. Gamma retained about 4.2 GiB available RAM after both
+nodes began training and must remain under memory observation.
+
+### 2.9 Controlled-flooding resource gate
+
+The first four-island join exposed a real network defect before acceptance:
+forwarding metadata changed the deduplication identity of an otherwise
+identical logical message, locally originated messages were not inserted into
+the seen cache, and dual LAN/Tailscale routes could broadcast twice to the same
+logical peer. Dragon reached its 1,024-file-descriptor process limit after
+about nine minutes, with roughly 980 established sockets. All islands were
+stopped before changing code; optimizer chains and artifacts were preserved.
+
+`doin-node` commit `abb2971` fixes the failure at three boundaries:
+
+- deduplication hashes exclude transport-only metadata;
+- local broadcasts are marked seen and use one endpoint per logical peer;
+- the shared `aiohttp` client uses explicit global and per-host connection
+  limits with bounded keepalive.
+
+The focused network and unified-node suite passes 42 tests with the two known
+stale VUW assertions explicitly deselected. Four-island acceptance additionally
+requires a live soak longer than the prior nine-minute failure interval,
+bounded descriptor/socket counts, no `Too many open files` records, fresh
+candidate progress, zero compatibility alerts, and identical six-component
+dashboard revisions.
 
 ### 2.2 Canonical configuration in `agent-multi`
 
@@ -247,10 +337,12 @@ configs/runtime/gamma_5070ti.json
 configs/runtime/gamma_5090.json
 ```
 
-Gamma's two profiles use separate artifact/model/cache roots. The 5070 Ti
-profile selects `cuda:0`; the 5090 eGPU profile selects `cuda:1`, matching the
-observed enumeration at specification time. Runtime preflight must still verify
-device enumeration before launching work.
+Gamma's two profiles use separate artifact/model/cache roots. PyTorch 2.13.0
+enumerates the RTX 5090 as `cuda:0` and the RTX 5070 Ti Laptop as `cuda:1`, even
+though `nvidia-smi` lists the physical adapters in the opposite order. The
+profiles and their regression test use the PyTorch order because Stable
+Baselines3 executes through PyTorch. Runtime preflight must continue to verify
+both framework and physical GPU enumeration before launching work.
 
 ### 2.6 Component and deployment compatibility gate
 
@@ -379,7 +471,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-CONFIG-001` | Claude + Codex review corrections | `doin-node` | verified_local | Complete unified-node config materialization | Codex |
 | `SIM-ENGINE-001` | Codex | `gym-fx`, `agent-multi` | verified_local | Nautilus engine bake-off, cost profiles and canonical execution reports | Codex |
 | `SIM-GYM-001` | Codex | `gym-fx`, `agent-multi` | verified_single_cell | JSON-selectable Nautilus Gym compatibility bridge | Codex |
-| `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_local_vertical | Local optimizer, exact champion artifact, generic metric evidence, external adapter and independent inference | Codex |
+| `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
 
 Claude packet:
@@ -399,20 +491,17 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Stop and remove only the isolated Omega smoke runtime after recording its
-   compact evidence.
-2. Start the persistent Omega Phase 1 node as a transient user service and
-   verify dashboard, candidate progress, GPU ownership, health and persistence.
-3. Keep Omega running while preparing and reviewing Dragon and dual-Gamma node
-   configurations; do not power or join them before the Omega runtime gate.
-4. Finish full-suite, clean-repository and GitHub publication gates for the
-   modified repositories without committing runtime databases or artifacts.
-5. Preserve and hash the Project 3 OLAP evidence before removing any redundant
-   generated output.
-6. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+1. Monitor candidate throughput, memory and peer/champion migration across all
+   four active islands; fail closed on revision, dataset, descriptor or socket
+   growth.
+2. Preserve and hash the Phase 1 optimizer/OLAP evidence before pruning any
+   runtime databases or logs.
+3. Compare the four islands after enough complete candidates exist; do not use
+   the protected test split for ranking or tuning.
+4. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-7. Implement and fault-test the decentralized artifact plane before a
+5. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks
@@ -426,6 +515,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
   slice freezes their real fields.
 - `doin-node` still has three independently confirmed baseline test failures:
   one GossipSub mesh-capacity failure and two stale VUW zero-weight assertions.
+- Controlled flooding is now connection-bounded after the first four-island
+  run exposed an FD leak; the live descriptor/socket soak remains a mandatory
+  deployment gate for future topology changes.
 - Two historical `doin-plugins` network modules target the retired separate
   evaluator service. They remain in the repository but are explicitly skipped
   when that legacy package is absent; active network coverage belongs to the
