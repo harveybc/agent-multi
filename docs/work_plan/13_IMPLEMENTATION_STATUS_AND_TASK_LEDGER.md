@@ -206,7 +206,7 @@ The exact active component revisions, rendered by every dashboard, are:
 ```text
 agent-multi       current deployment revision (this ledger commit)
 doin-core         8573a87
-doin-node         c365e56
+doin-node         bc36999
 doin-plugins      0f23702
 gym-fx            20b667b
 trading-contracts 4675c8f
@@ -302,6 +302,14 @@ reach Omega through different LANs while retaining genuine offline nodes.
 Focused dashboard/config/transport coverage passes 37 tests; the complete
 suite passes 326 tests with only the three documented historical
 assertions deselected.
+
+The consolidated chain range exposed one additional routing defect during the
+four-island acceptance run: Dragon received block `11` through Omega over
+Tailscale but selected the original author's unreachable Gamma LAN route for
+the download. `doin-node` commit `bc36999` makes block synchronization prefer
+the peer that physically forwarded the announcement. Other directed protocol
+responses retain author-first routing. The complete suite then passed 327
+tests with the same three historical assertions deselected.
 
 The first live overview also exposed that Omega knew Gamma 5090 only through
 its firewalled LAN port. Omega's canonical bootstrap now includes stable

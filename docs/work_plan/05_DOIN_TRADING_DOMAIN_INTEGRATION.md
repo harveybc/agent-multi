@@ -468,6 +468,12 @@ Because every participant can produce this view, loss of Omega does not remove
 operational visibility; Dragon or either Gamma island can become the operator's
 entry point.
 
+Block-height divergence shown by this view is actionable. For flooded block
+announcements, synchronization must request the missing range from the direct
+forwarder before considering the original author, because the author's LAN may
+not be routable from the receiving island. Directed champion and evaluation
+responses continue to prefer the original protocol identity.
+
 The authoritative two-level configuration and generation procedure is defined
 in [11 DOIN Configuration Profiles](11_DOIN_CONFIGURATION_PROFILES.md).
 
