@@ -206,7 +206,7 @@ The exact active component revisions, rendered by every dashboard, are:
 ```text
 agent-multi       5bd048f (runtime code before this monitoring follow-up)
 doin-core         8573a87
-doin-node         309a64a
+doin-node         0164275
 doin-plugins      0f23702
 gym-fx            20b667b
 trading-contracts 4675c8f
@@ -281,8 +281,8 @@ six-component revisions.
 
 ### 2.10 Decentralized consolidated dashboard
 
-`doin-node` commit `309a64a` adds a network monitor to every participant rather
-than introducing a central supervisor. Node JSONs now declare the labels
+`doin-node` commits `309a64a` and `0164275` add a network monitor to every
+participant rather than introducing a central supervisor. Node JSONs declare the labels
 `omega`, `dragon`, `gamma-5070ti` and `gamma-5090`. Each node exposes a compact
 local monitor payload and a cached network overview assembled through the
 existing bounded transport client.
@@ -296,6 +296,11 @@ and icon links to individual dashboards. A peer timeout cannot block the rest
 of the view. Focused dashboard/config/transport coverage passes 30 tests; the
 complete suite passes 324 tests with only the three documented historical
 assertions deselected.
+
+The first live overview also exposed that Omega knew Gamma 5090 only through
+its firewalled LAN port. Omega's canonical bootstrap now includes stable
+Tailscale endpoints for Dragon and both Gamma ports, so route fallback is
+available immediately after restart instead of depending on incidental PEX.
 
 ### 2.2 Canonical configuration in `agent-multi`
 
