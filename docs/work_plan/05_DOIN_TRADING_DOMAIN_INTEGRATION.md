@@ -450,11 +450,12 @@ introduced. The monitoring contract is:
 
 - `/api/monitor` returns a compact local snapshot containing node identity,
   label, uptime, chain height, active candidate, best domain performance,
-  alerts and exact active-component revisions;
+  alerts, exact active-component revisions and all local `IP:port` aliases;
 - `/api/network` groups LAN/Tailscale endpoints by discovery identity, fetches
   snapshots through the bounded transport pool, then merges them by the real
   peer identity in each response; it tries alternate routes before declaring a
-  peer offline and retains discovered offline peers;
+  peer offline, removes an unresolved route only when an online peer claims
+  that exact alias, and retains other discovered offline peers;
 - the dashboard opens on a `Network` tab showing health, chain alignment,
   candidate progress, fitness, alert counts, revision compatibility and a link
   to each individual dashboard;
