@@ -475,6 +475,10 @@ Optimization throughput and provenance use three deliberately separate views:
   `transaction.peer_id`; it is globally verifiable but can lag local execution
   until pending transactions enter a block;
 - these counters overlap and must never be added together;
+- optimizer-thread callbacks use `sync_manager.our_height`, never a direct
+  `ChainDB` query, because the SQLite chain connection belongs to the event
+  loop thread; local CSV/OLAP persistence failures are emitted as warnings with
+  tracebacks rather than being silently discarded;
 - champion history contains only accepted running-best improvements;
 - `transaction.peer_id` identifies the island that found a champion, while
   `block.generator_id` identifies the separate island that assembled its block;
