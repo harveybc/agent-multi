@@ -471,6 +471,18 @@ Optimization throughput and provenance use three deliberately separate views:
   survives node/process restarts;
 - `Active run` is the optimizer's current resumed-segment counter and provides
   immediate progress before any transaction is mined;
+- `Cand/h` is calculated independently by each island from the median of up to
+  19 recent candidate-completion intervals in its durable history. Intervals
+  that clearly span a reboot or pause are excluded; the dashboard reports `--`
+  until at least two valid intervals exist;
+- `Stage ETA` multiplies the active stage's planned remaining candidates by
+  that median interval. The tooltip exposes the recent interquartile time
+  range. It is not a promise for the whole optimization: L2 early stopping can
+  finish the stage sooner, and a material workload/configuration change makes
+  old timing evidence less representative;
+- network throughput is the sum of the currently online islands' independently
+  observed `Cand/h`; it is an operational capacity estimate, not a fitness or
+  scientific-result metric;
 - `On-chain` counts `candidate_evaluated` transactions by
   `transaction.peer_id`; it is globally verifiable but can lag local execution
   until pending transactions enter a block;
@@ -484,6 +496,20 @@ Optimization throughput and provenance use three deliberately separate views:
   `block.generator_id` identifies the separate island that assembled its block;
 - fitness, delta, validation/train-tail RAP, return and drawdown remain linked
   to the champion's immutable metric evidence.
+
+The top performance box must name the configured metric and its period. For
+Phase 1, `train_validation_l1_score` is displayed as `Best L2 fitness` with the
+visible qualifier `Composite; not weekly or annual return`. It is a
+return-fraction composite, not mean weekly return, annual return, mean weekly
+RAP or annual RAP:
+
+```text
+L2 = mean(RAP(train_tail), RAP(validation))
+     - beta * abs(RAP(validation) - RAP(train_tail))
+```
+
+Return and RAP period metrics remain separate evidence fields and must not be
+silently relabeled as the L2 fitness.
 
 Because every participant can produce this view, loss of Omega does not remove
 operational visibility; Dragon or either Gamma island can become the operator's
