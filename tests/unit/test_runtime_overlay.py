@@ -182,8 +182,8 @@ def test_versioned_machine_overlays_are_valid_and_isolated() -> None:
         for path in sorted(root.glob("*.json"))
     }
     assert set(overlays) == {"dragon", "gamma_5070ti", "gamma_5090", "omega"}
-    assert overlays["gamma_5070ti"].devices["training"] == "cuda:0"
-    assert overlays["gamma_5090"].devices["training"] == "cuda:1"
+    assert overlays["gamma_5070ti"].devices["training"] == "cuda:1"
+    assert overlays["gamma_5090"].devices["training"] == "cuda:0"
     assert (
         overlays["gamma_5070ti"].roots["ARTIFACT_ROOT"]
         != overlays["gamma_5090"].roots["ARTIFACT_ROOT"]
