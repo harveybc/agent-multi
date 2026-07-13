@@ -422,6 +422,7 @@ candidate while preserving its metrics and artifact lineage in OLAP-on-chain.
 
 Reuse the existing DOIN JSON structure. Each machine config declares:
 
+- a human-readable node label for decentralized monitoring;
 - roles per trading domain;
 - optimization/inference/synthetic plugins;
 - base experiment config and parameter bounds;
@@ -441,6 +442,30 @@ port, data directory, device, seed, resource limits and output paths. They are
 not standalone `doin-optimizer` processes. The plan does not assume linear
 speedup over Thunderbolt.
 
+### 10.1 Decentralized network monitoring
+
+Every unified node provides both its individual dashboard and the same
+consolidated network view. No monitor service or privileged coordinator is
+introduced. The monitoring contract is:
+
+- `/api/monitor` returns a compact local snapshot containing node identity,
+  label, uptime, chain height, active candidate, best domain performance,
+  alerts and exact active-component revisions;
+- `/api/network` groups LAN/Tailscale endpoints by peer identity, fetches one
+  snapshot per logical peer through the bounded transport pool, tries alternate
+  routes before declaring a peer offline, and retains discovered offline peers;
+- the dashboard opens on a `Network` tab showing health, chain alignment,
+  candidate progress, fitness, alert counts, revision compatibility and a link
+  to each individual dashboard;
+- recent alerts are aggregated with their originating node while local alert
+  acknowledgement remains local;
+- peer timeouts and partial failures produce an incomplete but usable view
+  instead of blocking the dashboard.
+
+Because every participant can produce this view, loss of Omega does not remove
+operational visibility; Dragon or either Gamma island can become the operator's
+entry point.
+
 The authoritative two-level configuration and generation procedure is defined
 in [11 DOIN Configuration Profiles](11_DOIN_CONFIGURATION_PROFILES.md).
 
@@ -455,6 +480,7 @@ Only backward-compatible domain-general improvements are expected:
 - generic arbitrary metric persistence in OLAP;
 - artifact reference fields where current parameter payload is insufficient;
 - dashboard rendering from domain metric metadata;
+- decentralized consolidated node health, progress, version and alert views;
 - resource accounting needed by long weekly walk-forward candidates.
 - content-addressed artifact descriptors, provider discovery, replication
   proofs and hash-verified fetch without a central service.
@@ -475,6 +501,9 @@ found.
 - A champion remains fetchable after its producing node is removed, and the
   acceptance gate rejects insufficient replication or a hash mismatch.
 - Code/version mismatch is rejected as today.
+- Every live node renders the same participant set and revision compatibility;
+  an unavailable participant remains visible as offline without freezing the
+  remaining dashboard.
 - No trading plugin requires modifications to controlled flooding or Proof of
   Optimization.
 - A promoted weekly deployment references an accepted DOIN candidate and a
