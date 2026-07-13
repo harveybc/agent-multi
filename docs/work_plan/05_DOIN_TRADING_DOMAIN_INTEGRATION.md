@@ -464,6 +464,18 @@ introduced. The monitoring contract is:
 - peer timeouts and partial failures produce an incomplete but usable view
   instead of blocking the dashboard.
 
+Optimization provenance is derived from blockchain rather than process logs:
+
+- `candidate_evaluated` transactions are counted by `transaction.peer_id` for
+  durable per-island throughput;
+- the current process counter remains visible separately because it includes
+  work that may not yet be committed to a block;
+- champion history contains only accepted running-best improvements;
+- `transaction.peer_id` identifies the island that found a champion, while
+  `block.generator_id` identifies the separate island that assembled its block;
+- fitness, delta, validation/train-tail RAP, return and drawdown remain linked
+  to the champion's immutable metric evidence.
+
 Because every participant can produce this view, loss of Omega does not remove
 operational visibility; Dragon or either Gamma island can become the operator's
 entry point.

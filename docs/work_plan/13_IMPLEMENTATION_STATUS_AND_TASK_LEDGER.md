@@ -206,7 +206,7 @@ The exact active component revisions, rendered by every dashboard, are:
 ```text
 agent-multi       current deployment revision (this ledger commit)
 doin-core         8573a87
-doin-node         bc36999
+doin-node         84f371b
 doin-plugins      0f23702
 gym-fx            20b667b
 trading-contracts 4675c8f
@@ -310,6 +310,20 @@ the download. `doin-node` commit `bc36999` makes block synchronization prefer
 the peer that physically forwarded the announcement. Other directed protocol
 responses retain author-first routing. The complete suite then passed 327
 tests with the same three historical assertions deselected.
+
+`doin-node` commit `84f371b` extends the same decentralized view with durable
+optimization provenance. The `Network` table reports both evaluations completed
+by the current process (`run evals`) and `candidate_evaluated` transactions
+committed to blockchain (`on-chain`). These counters are intentionally separate:
+the first is freshest but resets with the process, while the second survives
+restarts but advances only when a block commits pending transactions.
+
+The `Champions` tab and fitness plot now include only true running-best
+improvements. Each record distinguishes `transaction.peer_id`, the optimizer
+island that found the champion, from `block.generator_id`, the island that
+assembled its block. The table also exposes fitness delta, validation RAP,
+train-tail RAP, return and drawdown from immutable metric evidence. The complete
+suite passes 328 tests with the same three historical assertions deselected.
 
 The first live overview also exposed that Omega knew Gamma 5090 only through
 its firewalled LAN port. Omega's canonical bootstrap now includes stable
