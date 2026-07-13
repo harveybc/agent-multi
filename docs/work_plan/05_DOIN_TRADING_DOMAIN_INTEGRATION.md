@@ -464,12 +464,17 @@ introduced. The monitoring contract is:
 - peer timeouts and partial failures produce an incomplete but usable view
   instead of blocking the dashboard.
 
-Optimization provenance is derived from blockchain rather than process logs:
+Optimization throughput and provenance use three deliberately separate views:
 
-- `candidate_evaluated` transactions are counted by `transaction.peer_id` for
-  durable per-island throughput;
-- the current process counter remains visible separately because it includes
-  work that may not yet be committed to a block;
+- `Local total` is read from each adapter's append-only
+  `optimization_candidate_history.csv`; it is the durable per-island count and
+  survives node/process restarts;
+- `Active run` is the optimizer's current resumed-segment counter and provides
+  immediate progress before any transaction is mined;
+- `On-chain` counts `candidate_evaluated` transactions by
+  `transaction.peer_id`; it is globally verifiable but can lag local execution
+  until pending transactions enter a block;
+- these counters overlap and must never be added together;
 - champion history contains only accepted running-best improvements;
 - `transaction.peer_id` identifies the island that found a champion, while
   `block.generator_id` identifies the separate island that assembled its block;
