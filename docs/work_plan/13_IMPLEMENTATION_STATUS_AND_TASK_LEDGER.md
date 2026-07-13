@@ -330,6 +330,14 @@ its firewalled LAN port. Omega's canonical bootstrap now includes stable
 Tailscale endpoints for Dragon and both Gamma ports, so route fallback is
 available immediately after restart instead of depending on incidental PEX.
 
+The dashboard now also makes metric period and runtime capacity explicit. The
+Phase 1 summary card says `Best L2 fitness` and visibly identifies it as a
+train-tail plus validation composite that is not annualized. Each network row
+shows the island's recent median `Cand/h` and planned active-stage ETA; the
+summary shows aggregate online throughput. ETA is derived from durable
+completion timestamps, excludes clear pause/reboot gaps, exposes a recent
+range in its tooltip, and remains explicitly subject to earlier L2 stopping.
+
 ### 2.2 Canonical configuration in `agent-multi`
 
 Implemented:
@@ -525,7 +533,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `SIM-ENGINE-001` | Codex | `gym-fx`, `agent-multi` | verified_local | Nautilus engine bake-off, cost profiles and canonical execution reports | Codex |
 | `SIM-GYM-001` | Codex | `gym-fx`, `agent-multi` | verified_single_cell | JSON-selectable Nautilus Gym compatibility bridge | Codex |
 | `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
-| `DOIN-MONITOR-001` | Codex | `doin-node` | verified_local | Decentralized consolidated health, candidate, revision and alert dashboard | Codex |
+| `DOIN-MONITOR-001` | Codex | `doin-node`, `doin-plugins` | verified_four_island | Decentralized health, candidate, exact metric basis, throughput, stage ETA, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
 
 Claude packet:
