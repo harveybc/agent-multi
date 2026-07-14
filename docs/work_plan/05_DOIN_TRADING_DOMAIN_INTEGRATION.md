@@ -357,6 +357,25 @@ If a higher stage exposes a lower-layer defect, reopen the smallest responsible
 stage, mint new artifact/config hashes, and invalidate only dependent
 promotions. Do not restart every layer automatically.
 
+### 7.3 Weekly-retrained protected promotion execution
+
+`examples/scripts/run_phase_1_weekly_promotion.py` is the local-first execution
+path for a frozen Phase 1 candidate. It materializes one JSON configuration per
+complete target week, applies only the frozen typed candidate parameters, uses
+a rolling validation window ending before the target week, and enables the test
+split only for that target-week report. It never sets `selection_uses_test`.
+
+The runner writes resumable week configs/results, a compact SQLite OLAP store
+and `promotion_summary.json`. Annual return compounds weekly returns; annual
+RAP subtracts the conservative maximum of per-week intra-period drawdown and
+the compounded weekly endpoint drawdown. It is an explicit aggregation method,
+not a claim of a monolithic intrayear equity replay.
+
+The first fleet use assigns the three frozen Pareto recipes to separate workers
+and uses the fourth worker for a deterministic cross-hardware replication. The
+result remains a promotion report until all coverage, reproducibility,
+compatibility and release gates pass.
+
 ## 8. Continuous Optimization and Weekly Release
 
 DOIN optimizes continuously. Deployment changes on a controlled cadence:
