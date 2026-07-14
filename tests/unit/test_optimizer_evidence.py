@@ -179,3 +179,35 @@ def test_all_failed_generation_aborts_without_publishing_champion() -> None:
             },
         )
     assert champions == []
+
+
+def test_network_champion_seed_is_valid_before_tournament_selection() -> None:
+    """A migrated champion must not leave an invalid DEAP fitness tuple."""
+    provider_calls = []
+
+    def network_champion_provider():
+        provider_calls.append(True)
+        return {"score": 0.9}
+
+    result = Plugin().optimize(
+        env_plugin=object(),
+        agent_plugin=_Agent(),
+        pipeline_plugin=_Pipeline(),
+        config={
+            "ga_population": 2,
+            "ga_seed": 7,
+            "ga_cxpb": 0.0,
+            "ga_mutpb": 0.0,
+            "initial_candidate_params": {"score": 0.2},
+            "optimization_stages": [
+                {"name": "migration", "params": "all", "generations": 1},
+            ],
+            "optimization_callbacks": {
+                "network_champion_provider": network_champion_provider,
+            },
+            "quiet_mode": True,
+        },
+    )
+
+    assert provider_calls == [True]
+    assert result["_best_fitness"] >= 0.2

@@ -503,6 +503,13 @@ visible qualifier `Composite; not weekly or annual return`. It is a
 return-fraction composite, not mean weekly return, annual return, mean weekly
 RAP or annual RAP:
 
+The dashboard's primary progress percentage is cumulative across the declared
+candidate budget of **all** incremental stages. It does not reset when a later
+stage begins. Stage number, generation, candidate number and an explicitly
+labelled stage ETA remain visible as local operational detail. The percentage
+and its planned campaign denominator do not attempt to predict L2 early
+stopping; patience may finish the campaign sooner.
+
 ```text
 L2 = mean(RAP(train_tail), RAP(validation))
      - beta * abs(RAP(validation) - RAP(train_tail))

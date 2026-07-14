@@ -1,15 +1,15 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-13
+Status timestamp: 2026-07-14
 Plan version: 1.5.0
-Current focus: four-island DOIN Phase 1 optimization and decentralized monitoring
+Current focus: Phase 1 campaign closeout, promotion evidence and decentralized monitoring
 
 ## 1. Phase Summary
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: configuration and lineage | Four-island runtime verified | Canonical resolver, runtime overlays, Git lineage and exact six-component revision gate verified on Omega, Dragon and both Gamma GPUs |
+| Phase 1: configuration and lineage | Campaign closeout in progress | Canonical resolver, runtime overlays, Git lineage and exact six-component revision gate verified on Omega, Dragon and both Gamma GPUs; finalized candidates must pass the promotion and weekly walk-forward gates |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
 | Phase 4 and later | Not started | Depends on the Phase 3 multi-asset environment and config review gates |
