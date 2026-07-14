@@ -367,9 +367,11 @@ split only for that target-week report. It never sets `selection_uses_test`.
 
 The runner writes resumable week configs/results, a compact SQLite OLAP store
 and `promotion_summary.json`. Annual return compounds weekly returns; annual
-RAP subtracts the conservative maximum of per-week intra-period drawdown and
-the compounded weekly endpoint drawdown. It is an explicit aggregation method,
-not a claim of a monolithic intrayear equity replay.
+maximum drawdown is calculated from the observed, concatenated 4-hour equity
+traces after rescaling each reset weekly account onto one compounded path.
+Annual RAP subtracts that observed drawdown. A missing trace is explicitly
+labelled as a lower-bound fallback and cannot qualify a candidate for
+promotion.
 
 The first fleet use assigns the three frozen Pareto recipes to separate workers
 and uses the fourth worker for a deterministic cross-hardware replication. The

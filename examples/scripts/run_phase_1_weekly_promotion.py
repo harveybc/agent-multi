@@ -161,7 +161,18 @@ def main() -> int:
                 break
 
     aggregate = aggregate_weekly_results(rows, expected_weeks=len(windows)) if rows else None
-    complete = bool(aggregate and aggregate["complete_coverage"] and not failures)
+    trace_complete = bool(
+        aggregate
+        and aggregate.get("annual_drawdown_method")
+        == "observed_concatenated_intraperiod_equity_trace"
+    )
+    complete = bool(aggregate and aggregate["complete_coverage"] and not failures and trace_complete)
+    if complete:
+        promotion_blockers = ["RELEASE_VALIDATION_NOT_RUN", "COMPONENT_COMPATIBILITY_NOT_RUN"]
+    elif aggregate and aggregate["complete_coverage"] and not failures:
+        promotion_blockers = ["MISSING_RETURN_TRACE_EVIDENCE"]
+    else:
+        promotion_blockers = ["INCOMPLETE_PROTECTED_TEST_COVERAGE"]
     summary = {
         "schema_version": PROMOTION_SCHEMA_VERSION,
         "run_id": run_id,
@@ -171,11 +182,7 @@ def main() -> int:
         "aggregate": aggregate,
         "weekly_results": rows,
         "failures": failures,
-        "promotion_blockers": (
-            ["RELEASE_VALIDATION_NOT_RUN", "COMPONENT_COMPATIBILITY_NOT_RUN"]
-            if complete
-            else ["INCOMPLETE_PROTECTED_TEST_COVERAGE"]
-        ),
+        "promotion_blockers": promotion_blockers,
         "promotion_eligible": False,
         "olap_db": str(olap_path),
     }
