@@ -12,6 +12,9 @@ DOIN already provides the hard distributed-systems layer:
 - quorum, incentives, reputation, resource limits and finality;
 - Proof of Optimization block generation;
 - island-model champion migration and startup champion synchronization;
+- a proven shared-population mode: decentralized candidate claims, result
+  propagation, deterministic generation reproduction and on-chain population
+  snapshots;
 - stage synchronization and candidate-evaluation messages;
 - pull-based evaluator/inference tasks;
 - local SQLite OLAP, chain metrics, PostgreSQL sync and dashboard.
@@ -123,12 +126,45 @@ The `doin.optimization` entry point in `doin-plugins` is a thin
 
 The adapter must not create a hidden second optimizer. If the selected
 `agent-multi` component already owns a local DEAP/NEAT search, DOIN invokes
-that component exactly as predictor does. DOIN adds the island-model operator:
-it injects the network champion into the next local population and broadcasts
-local improvements through the existing callbacks. If a future component is a
-single-candidate evaluator instead, that is a separately declared mode; it is
-not silently nested with the local DEAP/NEAT search. The choice is explicit in
-the canonical experiment config and recorded in the domain hash.
+that component exactly as predictor does. Two explicit existing DOIN modes are
+available:
+
+- legacy island migration, where each node evolves a local population and
+  accepts compatible network champions; and
+- shared population, where `doin-node` owns one deterministic candidate queue,
+  claims each candidate once, gathers results from peers, reproduces the next
+  generation deterministically, and stores the population state on-chain.
+
+The selected Phase 1 campaign is shared population. The trading adapter only
+implements the same four local methods already used by the working TFT
+predictor adapter: initialize local evaluation, create a serializable
+population, evaluate one supplied genome, and reproduce from a fully observed
+generation. It never replaces candidate claiming, flooding, chain persistence
+or synchronization in `doin-node`. Island mode remains supported for historic
+experiments but is not silently selected for the new campaign.
+
+### 4.1.1 Selected shared-population campaign
+
+`doin-node/examples/trading/phase_1_asset_policy_shared_v2/` is the first
+clean trading configuration family using the established TFT shared protocol.
+It intentionally leaves `phase_1_asset_policy/` v1 island data and chain
+directories untouched as exploratory evidence.
+
+All four v2 node JSON files share exactly these optimization semantics:
+
+- domain `trading-asset-policy-solusdt-4h-sac-shared-v2`;
+- `shared_population: true`, `shared_population_size: 20` and
+  `population_size: 20`;
+- the same canonical SOLUSDT 4h SAC experiment JSON, initial candidate,
+  parameter bounds, metric direction and four-stage schedule;
+- `optimization_resume: false`, because the v2 shared state is created and
+  recovered from the new blockchain domain rather than from a v1 island
+  checkpoint.
+
+Only node identity, port, local data/OLAP directory, bootstrap routes, runtime
+overlay and resource limits differ. Omega starts first and persists the genesis
+population. Gamma and Dragon are then joined one at a time and must recover
+that on-chain population before any production-scale run is accepted.
 
 ### 4.2 DOIN inference/evaluator adapter
 

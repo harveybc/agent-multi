@@ -115,6 +115,7 @@ class Plugin:
 
     def __init__(self, config: Dict[str, Any] | None = None):
         self.params = self.plugin_params.copy()
+        self._shared_context: dict[str, Any] | None = None
         if config:
             self.set_params(**config)
 
@@ -128,6 +129,309 @@ class Plugin:
 
     def add_debug_info(self, debug_info: Dict[str, Any]) -> None:
         debug_info.update(self.get_debug_info())
+
+    # ------------------------------------------------------------------
+    # Shared-population bridge
+    # ------------------------------------------------------------------
+    # These four methods deliberately mirror predictor's proven NEAT bridge.
+    # doin-node owns claiming, deduplication, blockchain persistence, and
+    # deterministic cross-node coordination.  This local optimizer only owns
+    # the typed DEAP genome and its train/validation evaluation.
+    def setup_shared_mode(
+        self,
+        *,
+        env_plugin: Any,
+        agent_plugin: Any,
+        pipeline_plugin: Any,
+        config: Dict[str, Any],
+    ) -> None:
+        """Bind the normal local training stack for shared candidate calls."""
+        if not bool(config.get("higher_is_better", True)):
+            raise ValueError(
+                "default_optimizer shared mode supports higher-is-better fitness only"
+            )
+        schema = self._effective_schema(agent_plugin.hparam_schema(), config)
+        if not schema:
+            raise ValueError("agent plugin exposes no hparam_schema; cannot share a population")
+        _ensure_creator()
+        shared_config = dict(config)
+        # Callbacks belong to the island-mode local optimizer.  A shared run is
+        # coordinated by doin-node instead, and those closures are not portable.
+        shared_config.pop("optimization_callbacks", None)
+        self._shared_context = {
+            "env_plugin": env_plugin,
+            "agent_plugin": agent_plugin,
+            "pipeline_plugin": pipeline_plugin,
+            "config": shared_config,
+            "schema": schema,
+        }
+
+    def _require_shared_context(self) -> dict[str, Any]:
+        if self._shared_context is None:
+            raise RuntimeError(
+                "setup_shared_mode() must run before shared-population operations"
+            )
+        return self._shared_context
+
+    def create_shared_population(
+        self,
+        population_size: int,
+        *,
+        seed: int = 42,
+    ) -> dict[str, Any]:
+        """Create a deterministic, JSON-serializable DEAP population.
+
+        The result has the same state-shape consumed by doin-node's existing
+        shared-population loop: genomes, a staged schedule, defaults, and a
+        compact schema snapshot.  It contains no process-local objects.
+        """
+        context = self._require_shared_context()
+        schema = context["schema"]
+        config = context["config"]
+        if population_size < 1:
+            raise ValueError("shared population_size must be at least 1")
+
+        stages = self._shared_stage_schedule(schema, config)
+        if not stages:
+            raise ValueError("shared optimization needs at least one stage")
+        baseline = self._initial_params(schema, config)
+        population = self._make_shared_stage_population(
+            size=population_size,
+            baseline=baseline,
+            schema=schema,
+            active_params=set(stages[0]["active_params"]),
+            rng=random.Random(seed),
+        )
+        schema_payload = [list(item) for item in schema]
+        schema_hash = hashlib.sha256(
+            json.dumps(schema_payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+        ).hexdigest()
+        return {
+            "population": population,
+            "innovation_tracker": {
+                "schema_version": "agent_multi.deap_shared.v1",
+                "schema_hash": schema_hash,
+                "parameter_names": [item[0] for item in schema],
+            },
+            "stage_schedule": stages,
+            "param_defaults": baseline,
+            "config_snapshot": {
+                "population_size": population_size,
+                "parameter_schema": schema_payload,
+                "schema_hash": schema_hash,
+            },
+        }
+
+    def evaluate_candidate(
+        self,
+        genome_serialized: dict[str, Any],
+        generation: int,
+    ) -> dict[str, Any]:
+        """Run one shared DEAP genome through the existing L1/L2 evaluator."""
+        del generation  # Candidate provenance is recorded by doin-node.
+        context = self._require_shared_context()
+        schema = context["schema"]
+        raw_params = genome_serialized.get("parameters")
+        if not isinstance(raw_params, dict):
+            raise ValueError("shared DEAP genome is missing a parameters object")
+        individual = self._encode(raw_params, schema)
+        parameters = self._decode(individual, schema)
+        fitness, metrics = self._evaluate(
+            individual,
+            schema=schema,
+            env_plugin=context["env_plugin"],
+            agent_plugin=context["agent_plugin"],
+            pipeline_plugin=context["pipeline_plugin"],
+            config=context["config"],
+        )
+        return {
+            "fitness": float(fitness),
+            "hyper_dict": parameters,
+            **dict(metrics),
+        }
+
+    def reproduce_shared(
+        self,
+        evaluated_population: list[dict[str, Any]],
+        generation: int,
+        seed: int,
+        innovation_tracker_data: dict[str, Any],
+        stage_schedule: list[dict[str, Any]],
+        param_defaults: dict[str, Any],
+        current_stage_idx: int = 0,
+        no_improve_count: int = 0,
+    ) -> dict[str, Any]:
+        """Deterministically produce the next DEAP generation.
+
+        The node supplies a seed derived from the fully observed generation.
+        Given that same state, every participant produces byte-equivalent
+        candidate parameters.  Candidate claiming itself stays entirely in
+        doin-node's established protocol.
+        """
+        context = self._require_shared_context()
+        schema = context["schema"]
+        config = context["config"]
+        expected_names = [item[0] for item in schema]
+        actual_names = list(innovation_tracker_data.get("parameter_names") or [])
+        if actual_names and actual_names != expected_names:
+            raise ValueError("shared population parameter schema does not match local optimizer")
+        if not stage_schedule:
+            raise ValueError("shared population state has no stage schedule")
+        if current_stage_idx < 0 or current_stage_idx >= len(stage_schedule):
+            raise ValueError("shared population state has an invalid stage index")
+        if not evaluated_population:
+            raise ValueError("cannot reproduce an empty shared population")
+
+        rng = random.Random(seed)
+        population_size = len(evaluated_population)
+        normalized = [
+            self._decode(self._encode(item.get("parameters") or {}, schema), schema)
+            for item in evaluated_population
+        ]
+        scored = []
+        for params, genome in zip(normalized, evaluated_population):
+            value = genome.get("fitness", float("-inf"))
+            try:
+                fitness = float(value)
+            except (TypeError, ValueError):
+                fitness = float("-inf")
+            scored.append((fitness if fitness == fitness else float("-inf"), params))
+        scored.sort(key=lambda item: item[0], reverse=True)
+        best_fitness, best_params = scored[0]
+        if best_fitness == float("-inf"):
+            best_params = self._decode(self._encode(param_defaults, schema), schema)
+
+        current_stage = stage_schedule[current_stage_idx]
+        patience = int(current_stage.get(
+            "patience", config.get("optimization_patience", self.params["optimization_patience"])
+        ))
+        next_generation = generation + 1
+        planned_end = int(current_stage.get("end_gen", next_generation))
+        stage_finished = next_generation >= planned_end or no_improve_count >= patience
+
+        if stage_finished:
+            if current_stage_idx >= len(stage_schedule) - 1:
+                return {
+                    "population": evaluated_population,
+                    "generation": next_generation,
+                    "best_fitness": best_fitness,
+                    "stage_idx": current_stage_idx,
+                    "no_improve_count": no_improve_count,
+                    "converged": True,
+                    "stage_advanced": False,
+                    "patience": patience,
+                }
+            next_stage_idx = current_stage_idx + 1
+            next_stage = stage_schedule[next_stage_idx]
+            return {
+                "population": self._make_shared_stage_population(
+                    size=population_size,
+                    baseline=best_params,
+                    schema=schema,
+                    active_params=set(next_stage["active_params"]),
+                    rng=rng,
+                ),
+                "generation": next_generation,
+                "best_fitness": best_fitness,
+                "stage_idx": next_stage_idx,
+                "no_improve_count": 0,
+                "stage_advanced": True,
+                "patience": int(next_stage.get("patience", patience)),
+            }
+
+        active_params = set(current_stage["active_params"])
+        elite_count = max(1, min(population_size, int(config.get("shared_elitism", 1))))
+        next_population = [
+            {"parameters": dict(params)} for _fitness, params in scored[:elite_count]
+        ]
+        cxpb = float(config.get("ga_cxpb", self.params["ga_cxpb"]))
+        mutpb = float(config.get("ga_mutpb", self.params["ga_mutpb"]))
+        tournsize = min(3, population_size)
+        while len(next_population) < population_size:
+            first = dict(self._shared_tournament(scored, tournsize, rng)[1])
+            second = dict(self._shared_tournament(scored, tournsize, rng)[1])
+            if rng.random() < cxpb:
+                self._mate_shared_parameters(first, second, schema, active_params, rng)
+            if rng.random() < mutpb:
+                self._mutate_shared_parameters(first, schema, active_params, rng)
+            if rng.random() < mutpb:
+                self._mutate_shared_parameters(second, schema, active_params, rng)
+            next_population.append({"parameters": self._decode(self._encode(first, schema), schema)})
+            if len(next_population) < population_size:
+                next_population.append({"parameters": self._decode(self._encode(second, schema), schema)})
+
+        return {
+            "population": next_population,
+            "generation": next_generation,
+            "best_fitness": best_fitness,
+            "stage_idx": current_stage_idx,
+            "no_improve_count": no_improve_count,
+            "stage_advanced": False,
+            "patience": patience,
+        }
+
+    def _shared_stage_schedule(self, schema, config: Dict[str, Any]) -> list[dict[str, Any]]:
+        stages = self._build_stage_schedule(schema, config)
+        cursor = 0
+        schedule = []
+        for index, stage in enumerate(stages):
+            generations = int(stage["generations"])
+            schedule.append({
+                "name": stage["name"],
+                "stage_idx": index,
+                "active_params": list(stage["active_params"]),
+                "frozen_params": list(stage["frozen_params"]),
+                "start_gen": cursor,
+                "end_gen": cursor + generations,
+                "patience": int(stage["patience"]),
+            })
+            cursor += generations
+        return schedule
+
+    def _make_shared_stage_population(
+        self,
+        *,
+        size: int,
+        baseline: Dict[str, Any],
+        schema,
+        active_params: set[str],
+        rng: random.Random,
+    ) -> list[dict[str, Any]]:
+        result = []
+        for index in range(size):
+            params = dict(baseline)
+            if index:
+                for name, low, high, kind in schema:
+                    if name not in active_params:
+                        continue
+                    params[name] = (
+                        int(rng.randint(int(low), int(high)))
+                        if kind == "int" else rng.uniform(float(low), float(high))
+                    )
+            result.append({"parameters": self._decode(self._encode(params, schema), schema)})
+        return result
+
+    @staticmethod
+    def _shared_tournament(scored, tournsize: int, rng: random.Random):
+        return max([rng.choice(scored) for _ in range(tournsize)], key=lambda item: item[0])
+
+    def _mate_shared_parameters(self, first, second, schema, active_params, rng) -> None:
+        for name, low, high, _kind in schema:
+            if name not in active_params:
+                continue
+            gamma = 2.0 * rng.random() - 0.5
+            x1, x2 = float(first[name]), float(second[name])
+            first[name] = max(float(low), min(float(high), (1.0 - gamma) * x1 + gamma * x2))
+            second[name] = max(float(low), min(float(high), gamma * x1 + (1.0 - gamma) * x2))
+
+    @staticmethod
+    def _mutate_shared_parameters(params, schema, active_params, rng) -> None:
+        for name, low, high, kind in schema:
+            if name in active_params and rng.random() < 0.3:
+                params[name] = (
+                    int(rng.randint(int(low), int(high)))
+                    if kind == "int" else rng.uniform(float(low), float(high))
+                )
 
     # ------------------------------------------------------------------
     def optimize(
