@@ -1,0 +1,168 @@
+{
+  "candidates": [
+    {
+      "artifact": {
+        "bytes": 3741684,
+        "format": "stable_baselines3_zip",
+        "retrieval": "doin_chain_embedded_or_replicated",
+        "sha256": "da917f108efb9890dee098111eac2fb6d03b88c3e76b438a71ea88cad7ff7f69"
+      },
+      "candidate_id": "sha256:a0edc034fc44c9e74183485b535413269eb47e41dd0a5781ae2ef143dd1160ea",
+      "l2_fitness": 0.056462263311023844,
+      "parameter_hash": "sha256:3aa2ccc110e27180371805d980c68b48d8866f74f7bf0806f09cb916f1780f8c",
+      "parameters": {
+        "batch_size": 437,
+        "continuous_action_threshold": 0.2567521453320557,
+        "gamma": 0.9656919435658856,
+        "gradient_steps": 4,
+        "learning_rate": 0.0003279292512922572,
+        "tau": 0.0024037991526796344,
+        "train_freq": 1
+      },
+      "promotion_rank": 1,
+      "promotion_status": "frozen_pending_weekly_retrained_protected_test",
+      "source": {
+        "block_hash_prefix": "249c0fbeb0ee9acd",
+        "block_index": 16,
+        "data_hash": "",
+        "optimization_config_hash": "a8fb98cc973747fd91f6fee607ce9281da3f54ff3bbc89129d7cb914bfd9303f",
+        "peer_id": "7e630dbea4e2",
+        "timestamp": "2026-07-13T23:28:04.372580+00:00",
+        "transaction_id": "184eb73acae5c1cf"
+      },
+      "validation_evidence": {
+        "max_drawdown_fraction": 0.04361530342168846,
+        "max_drawdown_pct": 4.361530342168846,
+        "risk_adjusted_total_return": 0.22938530126464912,
+        "sharpe_ratio": 0.16066699900311818,
+        "total_return": 0.2730006046863376,
+        "trades_total": 575,
+        "train_tail_selection_score": -0.0011787493401845934,
+        "train_validation_selection_gap": 0.2305640506048337,
+        "train_validation_selection_gap_penalty": 0.057641012651208426,
+        "validation_selection_score": 0.22938530126464912
+      }
+    },
+    {
+      "artifact": {
+        "bytes": 3741496,
+        "format": "stable_baselines3_zip",
+        "retrieval": "doin_chain_embedded_or_replicated",
+        "sha256": "e6ae72794d65effaeee1d0aad7fcf42a18ab8a6b9c72638dd7016a80c34b30ca"
+      },
+      "candidate_id": "sha256:2e988aa9ad8785df274f1450753fcacb2fe7db2f166c1f6aa73f4db7b40f30e8",
+      "l2_fitness": 0.055668720806908364,
+      "parameter_hash": "sha256:53a3cfcc3c1c9a28d4b89d337d7cd7ca920966c74af5cc598a1bc4e91b73f482",
+      "parameters": {
+        "batch_size": 406,
+        "continuous_action_threshold": 0.13505359032848036,
+        "gamma": 0.9809563280155138,
+        "gradient_steps": 8,
+        "learning_rate": 0.0004926204508698041,
+        "tau": 0.02,
+        "train_freq": 1
+      },
+      "promotion_rank": 2,
+      "promotion_status": "frozen_pending_weekly_retrained_protected_test",
+      "source": {
+        "block_hash_prefix": "d78017124d6e53d1",
+        "block_index": 15,
+        "data_hash": "",
+        "optimization_config_hash": "d46ce25eb6c3d7c604e0cb36f206a6318c0a4afe51c3e66f8cd9a412faa6dddf",
+        "peer_id": "0618ce61c6eb",
+        "timestamp": "2026-07-13T20:03:50.278540+00:00",
+        "transaction_id": "9c3e1b0bdaa22b23"
+      },
+      "validation_evidence": {
+        "max_drawdown_fraction": 0.03794022952498984,
+        "max_drawdown_pct": 3.794022952498984,
+        "risk_adjusted_total_return": 0.20030178271131552,
+        "sharpe_ratio": 0.14228913771751653,
+        "total_return": 0.23824201223630537,
+        "trades_total": 300,
+        "train_tail_selection_score": 0.007457700172105983,
+        "train_validation_selection_gap": 0.19284408253920954,
+        "train_validation_selection_gap_penalty": 0.048211020634802385,
+        "validation_selection_score": 0.20030178271131552
+      }
+    },
+    {
+      "artifact": {
+        "bytes": 3741425,
+        "format": "stable_baselines3_zip",
+        "retrieval": "doin_chain_embedded_or_replicated",
+        "sha256": "a1b204cb34ce966cb6d8d9cb589f71d0ecddba6c1a750883ab9af15937e3423c"
+      },
+      "candidate_id": "sha256:75cef2253a70d5cdbf8dd48f7fbc367ba78ede97cdd2a99831470453dde9502b",
+      "l2_fitness": 0.03149330502486031,
+      "parameter_hash": "sha256:d33b26e268d748362f27985f9957af0338c5f6b354c83f0c2b938a6553dcafb9",
+      "parameters": {
+        "batch_size": 256,
+        "continuous_action_threshold": 0.2842556303809886,
+        "gamma": 0.9809563280155138,
+        "gradient_steps": 1,
+        "learning_rate": 0.0001,
+        "tau": 0.02,
+        "train_freq": 1
+      },
+      "promotion_rank": 3,
+      "promotion_status": "frozen_pending_weekly_retrained_protected_test",
+      "source": {
+        "block_hash_prefix": "9d4ef81cb8dd6904",
+        "block_index": 5,
+        "data_hash": "",
+        "optimization_config_hash": "a8fb98cc973747fd91f6fee607ce9281da3f54ff3bbc89129d7cb914bfd9303f",
+        "peer_id": "9610b85299f0",
+        "timestamp": "2026-07-13T04:38:09.891267+00:00",
+        "transaction_id": "a9251e2cad7f0bfd"
+      },
+      "validation_evidence": {
+        "max_drawdown_fraction": 0.03039650301838189,
+        "max_drawdown_pct": 3.039650301838189,
+        "risk_adjusted_total_return": 0.10796219470611004,
+        "sharpe_ratio": 0.10390199083128461,
+        "total_return": 0.13835869772449194,
+        "trades_total": 116,
+        "train_tail_selection_score": 0.006003675131110405,
+        "train_validation_selection_gap": 0.10195851957499964,
+        "train_validation_selection_gap_penalty": 0.02548962989374991,
+        "validation_selection_score": 0.10796219470611004
+      }
+    }
+  ],
+  "generated_at": "2026-07-14T08:55:43.817901+00:00",
+  "promotion_blockers": [
+    "WEEKLY_RETRAINED_PROTECTED_TEST_NOT_RUN",
+    "RELEASE_VALIDATION_NOT_RUN",
+    "COMPONENT_COMPATIBILITY_NOT_RUN"
+  ],
+  "schema_version": "agent_multi.phase1_promotion_candidates.v1",
+  "selection_rules": {
+    "deduplication": "parameter_hash_and_exact_validation_metric_vector",
+    "minimum_validation_trades": 50,
+    "pareto_objectives": [
+      "maximize_train_validation_l1_score",
+      "maximize_validation_risk_adjusted_total_return",
+      "maximize_validation_total_return",
+      "minimize_validation_max_drawdown_fraction"
+    ]
+  },
+  "selection_scope": {
+    "asset": "SOLUSDT",
+    "domain_id": "trading-asset-policy-solusdt-4h-sac-v1",
+    "protected_test": {
+      "period": "2023",
+      "rule": "Excluded from reconciliation, ranking, and this manifest.",
+      "status": "not_opened"
+    },
+    "source_split": "validation_only",
+    "timeframe": "4h"
+  },
+  "source": {
+    "chain_height": 17,
+    "chain_json": null,
+    "chain_url": "http://127.0.0.1:8470/api/chain?limit=500",
+    "experiment_config": "examples/config/phase_1_asset_policy/optimization/phase_1_asset_policy_solusdt_4h_sac_optimization_config.json",
+    "experiment_config_sha256": "sha256:b791b476b9e8a975563cc79368570a5d4dc4dc7181ef373a0c14796eb88a2b75"
+  }
+}
