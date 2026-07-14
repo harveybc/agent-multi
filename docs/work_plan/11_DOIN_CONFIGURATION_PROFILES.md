@@ -96,7 +96,7 @@ It defines:
 - per-domain `optimize`/`evaluate` roles;
 - optimization/inference/synthetic plugin names;
 - path/reference to the common repository config;
-- machine seed offset;
+- machine seed offset for legacy island mode only;
 - resource limits;
 - local stats/OLAP paths;
 - device and artifact/data-root overlay for the trading deployment.
@@ -132,24 +132,23 @@ its directory names.
 
 ### 3.2 Machine overlay
 
-Proposed source overlays:
+The first shared-population campaign uses committed, validated node files:
 
 ```text
 doin-node/examples/trading/
-  machines/
-    omega.json
-    dragon.json
-    gamma_5070ti.json
-    gamma_5090.json
-  generated/
-    <experiment>_omega_node.json
-    <experiment>_dragon_node.json
-    <experiment>_gamma_5070ti_node.json
-    <experiment>_gamma_5090_node.json
+  phase_1_asset_policy/
+    # Historical v1 island experiment and evidence.
+  phase_1_asset_policy_shared_v2/
+    omega_node.json
+    dragon_node.json
+    gamma_5070ti_node.json
+    gamma_5090_node.json
 ```
 
-The source overlay contains only machine/runtime fields. Generated node configs
-conform exactly to the current `doin-node` JSON schema.
+The machine-only fields are node identity, port, local storage, peer routes,
+runtime overlay and resource limits. The v2 configs conform exactly to the
+current `doin-node` JSON schema and preserve the working predictor shared-pool
+contract without changing node code.
 
 ### 3.3 Generated full node config
 
@@ -204,7 +203,7 @@ current loader.
 | Optimization stages/bounds | `agent-multi` experiment config | No |
 | Metric schema/fitness | `agent-multi` experiment config and DOIN domain metadata | No |
 | DOIN role plugins | generated node config | No between peers for same domain |
-| Seed offset | machine overlay | Yes, unique |
+| Seed offset | machine overlay | Legacy island mode only; do not use it to diversify a shared population |
 | Device/GPU | machine overlay | Yes |
 | Resource limits | machine overlay constrained by experiment maximum | Yes |
 | Host/port/peers/data dir | machine overlay | Yes |
