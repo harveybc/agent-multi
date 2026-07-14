@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+
 import pytest
 
 from app.weekly_promotion import aggregate_weekly_results, build_week_config, build_week_windows
@@ -99,3 +101,41 @@ def test_aggregate_weekly_results_compounds_return_and_penalizes_drawdown() -> N
     assert result["annual_max_drawdown_fraction"] == pytest.approx(0.05)
     assert result["annual_rap"] == pytest.approx(-0.005)
     assert result["trades_total"] == 9
+
+
+def test_aggregate_weekly_results_uses_concatenated_equity_traces(tmp_path) -> None:
+    first_trace = tmp_path / "first.csv"
+    second_trace = tmp_path / "second.csv"
+    for path, equities in ((first_trace, [10000.0, 11000.0]), (second_trace, [10000.0, 9500.0])):
+        with path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=["equity"])
+            writer.writeheader()
+            writer.writerows({"equity": value} for value in equities)
+
+    result = aggregate_weekly_results(
+        [
+            {
+                "week_start": "2023-01-02T00:00:00",
+                "total_return": 0.10,
+                "risk_adjusted_total_return": 0.08,
+                "max_drawdown_fraction": 0.02,
+                "trades_total": 5,
+                "final_equity": 11000.0,
+                "return_trace_file": str(first_trace),
+            },
+            {
+                "week_start": "2023-01-09T00:00:00",
+                "total_return": -0.05,
+                "risk_adjusted_total_return": -0.08,
+                "max_drawdown_fraction": 0.03,
+                "trades_total": 4,
+                "final_equity": 9500.0,
+                "return_trace_file": str(second_trace),
+            },
+        ],
+        expected_weeks=2,
+    )
+
+    assert result["annual_max_drawdown_fraction"] == pytest.approx(0.05)
+    assert result["annual_drawdown_method"] == "observed_concatenated_intraperiod_equity_trace"
+    assert result["annual_drawdown_trace_observations"] == 4

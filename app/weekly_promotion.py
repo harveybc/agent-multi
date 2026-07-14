@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import csv
 import hashlib
 import json
 import math
@@ -275,6 +276,54 @@ def weekly_result_from_pipeline(
     }
 
 
+def _annual_drawdown_from_traces(ordered: list[dict[str, Any]]) -> tuple[float, str, int]:
+    """Compute annual drawdown from the concatenated observed equity path.
+
+    Weekly evaluations reset their own account balance. Their 4-hour traces
+    are rescaled onto one compounded portfolio path so this retains both
+    intra-week adverse excursions and peaks that span week boundaries.
+    """
+    annual_equity = 1.0
+    peak = annual_equity
+    maximum_drawdown = 0.0
+    observations = 0
+    for row in ordered:
+        raw_path = row.get("return_trace_file")
+        trace_path = Path(str(raw_path)) if raw_path else None
+        if not trace_path or not trace_path.is_file():
+            return 0.0, "weekly_summary_lower_bound_fallback", 0
+        week_return = _finite(row["total_return"], field="total_return")
+        final_equity = _finite(row["final_equity"], field="final_equity")
+        denominator = 1.0 + week_return
+        if denominator <= 0.0:
+            raise ValueError("weekly total_return implies non-positive final equity")
+        week_initial_equity = final_equity / denominator
+        if week_initial_equity <= 0.0:
+            raise ValueError("weekly evaluation initial equity must be positive")
+        scale = annual_equity / week_initial_equity
+        # Include the boundary itself: the first trace row follows a bar and
+        # could otherwise conceal a decline from the preceding week's peak.
+        peak = max(peak, annual_equity)
+        maximum_drawdown = max(maximum_drawdown, 1.0 - annual_equity / peak)
+        with trace_path.open(newline="", encoding="utf-8") as handle:
+            reader = csv.DictReader(handle)
+            for trace_row in reader:
+                try:
+                    traced_equity = _finite(float(trace_row.get("equity", "")), field="trace.equity")
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(f"trace.equity must be numeric in {trace_path}") from exc
+                annual_equity = traced_equity * scale
+                peak = max(peak, annual_equity)
+                maximum_drawdown = max(maximum_drawdown, 1.0 - annual_equity / peak)
+                observations += 1
+        # Match the tested week-end exactly, avoiding any float formatting
+        # difference between the trace CSV and the summary result.
+        annual_equity = scale * final_equity
+    if observations == 0:
+        return 0.0, "weekly_summary_lower_bound_fallback", 0
+    return maximum_drawdown, "observed_concatenated_intraperiod_equity_trace", observations
+
+
 def aggregate_weekly_results(rows: Iterable[dict[str, Any]], *, expected_weeks: int) -> dict[str, Any]:
     ordered = sorted(rows, key=lambda item: item["week_start"])
     if not ordered:
@@ -289,7 +338,11 @@ def aggregate_weekly_results(rows: Iterable[dict[str, Any]], *, expected_weeks: 
         equity *= 1.0 + weekly_return
         peak = max(peak, equity)
         endpoint_drawdown = max(endpoint_drawdown, 1.0 - equity / peak)
-    annual_drawdown = max(max(weekly_drawdowns), endpoint_drawdown)
+    trace_drawdown, drawdown_method, trace_observations = _annual_drawdown_from_traces(ordered)
+    if trace_observations:
+        annual_drawdown = trace_drawdown
+    else:
+        annual_drawdown = max(max(weekly_drawdowns), endpoint_drawdown)
     annual_return = equity - 1.0
     return {
         "coverage_weeks": len(ordered),
@@ -301,7 +354,8 @@ def aggregate_weekly_results(rows: Iterable[dict[str, Any]], *, expected_weeks: 
         "annual_rap": annual_return - annual_drawdown,
         "mean_weekly_drawdown": sum(weekly_drawdowns) / len(weekly_drawdowns),
         "annual_max_drawdown_fraction": annual_drawdown,
-        "annual_drawdown_method": "max_of_per_week_intraperiod_and_compounded_week_end_drawdown",
+        "annual_drawdown_method": drawdown_method,
+        "annual_drawdown_trace_observations": trace_observations,
         "trades_total": sum(int(item["trades_total"]) for item in ordered),
     }
 
