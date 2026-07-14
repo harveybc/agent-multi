@@ -13,6 +13,7 @@ examples/results/*
 !examples/results/phase_1_asset_policy/
 examples/results/phase_1_asset_policy/*
 !examples/results/phase_1_asset_policy/README.md
+!examples/results/phase_1_asset_policy/*_promotion_candidates.json
 experiments/weekly_walkforward_pool/configs/
 experiments/weekly_walkforward_pool/runs/
 experiments/weekly_walkforward_pool/*.sqlite

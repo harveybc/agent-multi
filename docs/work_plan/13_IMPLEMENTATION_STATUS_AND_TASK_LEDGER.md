@@ -14,6 +14,39 @@ Current focus: Phase 1 campaign closeout, promotion evidence and decentralized m
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
 | Phase 4 and later | Not started | Depends on the Phase 3 multi-asset environment and config review gates |
 
+### 1.1 Phase 1 closeout sequence
+
+The Phase 1 asset-policy campaign does not promote an accepted DOIN block by
+itself. Its closeout sequence is fixed and auditable:
+
+1. reconcile accepted chain evidence into a small validation-only Pareto set,
+   deduplicating equivalent re-acceptances caused by the permissive research
+   threshold;
+2. freeze each candidate's typed parameters, config hash, model artifact hash,
+   source block and validation metric vector in a promotion-input manifest;
+3. run the separate full-year, weekly-retrained protected evaluation without
+   feeding test outcomes back into L1, L2, candidate ranking or migration;
+4. retain only candidates whose complete promotion evidence passes coverage,
+   reproducibility, compatibility and release-validation gates;
+5. add promoted component recipes to the asset/timeframe library before the
+   next asset-policy domain is opened.
+
+The initial SOLUSDT 4h result is promising validation evidence, not a promoted
+model. Its 2023 protected test remains unopened until step 3.
+
+The first compact reconciliation snapshot is
+[`solusdt_4h_promotion_candidates.json`](../../examples/results/phase_1_asset_policy/solusdt_4h_promotion_candidates.json).
+At chain height 17 it retains three validation-only, non-dominated recipes:
+
+| Rank | Source block | L2 fitness | Validation return | Validation RAP | Max drawdown | Trades |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 16 | 0.056462 | 27.30% | 22.94% | 4.36% | 575 |
+| 2 | 15 | 0.055669 | 23.82% | 20.03% | 3.79% | 300 |
+| 3 | 5 | 0.031493 | 13.84% | 10.80% | 3.04% | 116 |
+
+The manifest records validation evidence and artifacts only. It carries the
+explicit blocker `WEEKLY_RETRAINED_PROTECTED_TEST_NOT_RUN`.
+
 A bounded local optimization and independent inference verification were run on
 Omega before the persistent campaign. On 2026-07-13 Dragon and the two Gamma
 GPU islands joined the same live domain after environment, dataset, device,

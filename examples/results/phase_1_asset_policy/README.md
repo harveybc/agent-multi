@@ -16,3 +16,10 @@ Each optimization directory receives a candidate-history CSV, resume JSON,
 statistics JSON, optimized-parameters JSON, exact champion checkpoint and final
 resolved config/manifest. Consolidated comparable metrics belong in DOIN OLAP;
 these local files are reproducibility evidence and resumable working state.
+This directory intentionally excludes raw training logs, temporary checkpoints,
+and large candidate histories. It retains only compact, reproducible selection
+evidence such as `*_promotion_candidates.json`.
+
+`solusdt_4h_promotion_candidates.json` is a validation-only chain
+reconciliation snapshot. It is not a protected-test report, a promoted model,
+or a release manifest.
