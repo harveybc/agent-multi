@@ -217,7 +217,18 @@ class Plugin:
                 else:
                     incoming = _call_callback(callbacks, "network_champion_provider")
                     if isinstance(incoming, dict):
-                        self._replace_worst(population, self._encode(incoming, schema))
+                        # Selection happens before the next local evaluation.
+                        # A migrated DOIN champion is already accepted by the
+                        # network, so retain its known incumbent score until a
+                        # later local mutation invalidates and re-evaluates it.
+                        # Leaving this DEAP individual fitness-invalid caused
+                        # tournament selection to index an empty tuple.
+                        migrated = self._encode(incoming, schema)
+                        migrated.fitness.values = (global_best_fitness,)
+                        migrated.evaluation_metrics = {
+                            "network_champion_seed": True,
+                        }
+                        self._replace_worst(population, migrated)
                     if bool(_call_callback(callbacks, "stage_advance_requested")):
                         break
                     candidates = list(map(toolbox.clone, toolbox.select(population, len(population))))
@@ -362,10 +373,17 @@ class Plugin:
 
     @staticmethod
     def _select_tournament(population, k: int, *, tournsize: int, rng: random.Random):
+        def fitness_or_negative_infinity(individual) -> float:
+            fitness = getattr(individual, "fitness", None)
+            values = getattr(fitness, "values", ())
+            if not getattr(fitness, "valid", False) or not values:
+                return float("-inf")
+            return float(values[0])
+
         selected = []
         for _ in range(k):
             aspirants = [rng.choice(population) for _ in range(tournsize)]
-            selected.append(max(aspirants, key=lambda item: item.fitness.values[0]))
+            selected.append(max(aspirants, key=fitness_or_negative_infinity))
         return selected
 
     @staticmethod
