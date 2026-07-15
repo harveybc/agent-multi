@@ -14,14 +14,12 @@
     "gamma-5070ti": {
       "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
       "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
-      "log_level": "INFO",
-      "environment": {"CUDA_VISIBLE_DEVICES": "0"}
+      "log_level": "INFO"
     },
     "gamma-5090": {
       "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
       "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
-      "log_level": "INFO",
-      "environment": {"CUDA_VISIBLE_DEVICES": "1"}
+      "log_level": "INFO"
     }
   }
 }

@@ -56,6 +56,10 @@ examples/campaigns/phase_1_asset_policy_fleet_v2/campaign_plan.json
 Per-host profiles are adjacent to it. Runtime state and champion bytes live
 under `~/.local/state/agent-multi/doin-campaigns/`, outside Git.
 
+Gamma does not set `CUDA_VISIBLE_DEVICES`: its versioned runtime overlays select
+the internal 5070 Ti as `cuda:0` and external 5090 as `cuda:1`. Masking either
+device would renumber it and make the overlay's explicit ordinal invalid.
+
 ## 3. Lifecycle State Machine
 
 ```text
