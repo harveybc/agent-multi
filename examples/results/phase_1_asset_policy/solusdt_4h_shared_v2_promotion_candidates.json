@@ -1,0 +1,82 @@
+{
+  "candidates": [
+    {
+      "artifact": {
+        "bytes": 3741513,
+        "format": "stable_baselines3_zip",
+        "retrieval": "doin_chain_embedded_or_replicated",
+        "sha256": "cf17e4bc74abec11a16cf8a7235e66fe84cf652516adcc206024642289ff19b1"
+      },
+      "candidate_id": "sha256:fc8fbd695c4345b333bbcba5444d8f87ff16e66d13ff41dab6ad5e9e958998f9",
+      "l2_fitness": 0.06704331595778694,
+      "parameter_hash": "sha256:d7461917e187cfa35a401f18f1ee5bc8759713908c93c3d93f93358443a453ec",
+      "parameters": {
+        "batch_size": 256,
+        "continuous_action_threshold": 0.18798110300070983,
+        "gamma": 0.957651059044391,
+        "gradient_steps": 8,
+        "learning_rate": 0.00035593553866490607,
+        "tau": 0.001547040562484868,
+        "train_freq": 1
+      },
+      "promotion_rank": 1,
+      "promotion_status": "frozen_pending_weekly_retrained_protected_test",
+      "source": {
+        "block_hash_prefix": "f82b595be1489993",
+        "block_index": 41,
+        "data_hash": "",
+        "optimization_config_hash": "40856349814246dbf8f06ad42bbc60336a8fec2c5d3f4cda138dd94adf3b3121",
+        "peer_id": "7cbd582585cb",
+        "timestamp": "2026-07-14T17:53:18.947091+00:00",
+        "transaction_id": "3dc4ba73543fd5a7"
+      },
+      "validation_evidence": {
+        "max_drawdown_fraction": 0.023274105713448238,
+        "max_drawdown_pct": 2.327410571344824,
+        "risk_adjusted_total_return": 0.2628408753649658,
+        "sharpe_ratio": 0.18483911482772722,
+        "total_return": 0.28611498107841404,
+        "trades_total": 549,
+        "train_tail_selection_score": 0.0017774628220606245,
+        "train_validation_selection_gap": 0.26106341254290516,
+        "train_validation_selection_gap_penalty": 0.06526585313572629,
+        "validation_selection_score": 0.2628408753649658
+      }
+    }
+  ],
+  "generated_at": "2026-07-15T07:04:12.102329+00:00",
+  "promotion_blockers": [
+    "WEEKLY_RETRAINED_PROTECTED_TEST_NOT_RUN",
+    "RELEASE_VALIDATION_NOT_RUN",
+    "COMPONENT_COMPATIBILITY_NOT_RUN"
+  ],
+  "schema_version": "agent_multi.phase1_promotion_candidates.v1",
+  "selection_rules": {
+    "deduplication": "parameter_hash_and_exact_validation_metric_vector",
+    "minimum_validation_trades": 1,
+    "pareto_objectives": [
+      "maximize_train_validation_l1_score",
+      "maximize_validation_risk_adjusted_total_return",
+      "maximize_validation_total_return",
+      "minimize_validation_max_drawdown_fraction"
+    ]
+  },
+  "selection_scope": {
+    "asset": "SOLUSDT",
+    "domain_id": "trading-asset-policy-solusdt-4h-sac-shared-v2",
+    "protected_test": {
+      "period": "2023",
+      "rule": "Excluded from reconciliation, ranking, and this manifest.",
+      "status": "not_opened"
+    },
+    "source_split": "validation_only",
+    "timeframe": "4h"
+  },
+  "source": {
+    "chain_height": 51,
+    "chain_json": null,
+    "chain_url": "http://100.110.215.85:8470/api/chain?limit=500",
+    "experiment_config": "examples/config/phase_1_asset_policy/optimization/phase_1_asset_policy_solusdt_4h_sac_optimization_config.json",
+    "experiment_config_sha256": "sha256:b791b476b9e8a975563cc79368570a5d4dc4dc7181ef373a0c14796eb88a2b75"
+  }
+}

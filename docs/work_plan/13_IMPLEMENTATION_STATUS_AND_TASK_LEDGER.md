@@ -2,7 +2,7 @@
 
 Status timestamp: 2026-07-14
 Plan version: 1.5.0
-Current focus: Phase 1 campaign closeout, promotion evidence and decentralized monitoring
+Current focus: Phase 1 campaign closeout, 48-week protected promotion evidence and decentralized monitoring
 
 ## 1. Phase Summary
 
@@ -24,7 +24,7 @@ itself. Its closeout sequence is fixed and auditable:
    threshold;
 2. freeze each candidate's typed parameters, config hash, model artifact hash,
    source block and validation metric vector in a promotion-input manifest;
-3. run the separate full-year, weekly-retrained protected evaluation without
+3. run the separate fixed 48-week, weekly-retrained protected evaluation without
    feeding test outcomes back into L1, L2, candidate ranking or migration;
 4. retain only candidates whose complete promotion evidence passes coverage,
    reproducibility, compatibility and release-validation gates;
