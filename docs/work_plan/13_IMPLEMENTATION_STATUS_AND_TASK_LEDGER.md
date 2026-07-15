@@ -568,6 +568,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
 | `DOIN-MONITOR-001` | Codex | `doin-node`, `doin-plugins` | verified_four_island | Decentralized health, candidate, exact metric basis, throughput, stage ETA, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
+| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` configs | verified_local_integration | Replicated campaign plan, strict convergence/stop barriers, crash adoption, champion archive and decentralized history dashboard | Codex |
 
 Claude packet:
 
@@ -586,13 +587,13 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Monitor candidate throughput, memory and peer/champion migration across all
-   four active islands; fail closed on revision, dataset, descriptor or socket
-   growth.
-2. Preserve and hash the Phase 1 optimizer/OLAP evidence before pruning any
-   runtime databases or logs.
-3. Compare the four islands after enough complete candidates exist; do not use
-   the protected test split for ranking or tuning.
+1. Deploy and observe `DOIN-CAMPAIGN-001` adopting the completed SOL 4h job,
+   archiving the exact block-41 model and advancing all four workers exactly
+   once into the immutable SOL, BTC and ADA 1h Stage A queue.
+2. Preserve and compare the replicated campaign histories/artifact hashes on
+   Omega, Dragon and Gamma; fail closed on revision, plan or chain divergence.
+3. Specify the staged nested weekly walk-forward L2 metric without opening the
+   protected 2023 test period during optimization.
 4. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.

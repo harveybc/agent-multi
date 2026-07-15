@@ -373,6 +373,13 @@ hashes, adequate evaluator coverage, and an explicit compute allocation. The
 default is not to leave one machine optimizing a portfolio while another still
 changes the asset policies on which that portfolio depends.
 
+Campaign-to-campaign transition is implemented outside `doin-node` by the
+replicated state machine in document 15. It consumes `converged` and blockchain
+evidence from the existing unified-node APIs, archives the exact accepted model
+artifact, proves all four worker processes stopped, and then derives the next
+immutable job ordinal. It does not alter shared-population claiming,
+reproduction, controlled flooding, or consensus.
+
 ### 7.2 Promotion and freezing order
 
 1. Promote a small Pareto set per asset/timeframe from Stage A, not only one

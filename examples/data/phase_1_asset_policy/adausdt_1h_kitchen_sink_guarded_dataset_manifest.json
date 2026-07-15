@@ -1,0 +1,30 @@
+{
+  "schema_version": "agent_multi.dataset_manifest.v1",
+  "dataset_id": "adausdt_1h_kitchen_sink_guarded_2018_2023",
+  "asset": "ADAUSDT",
+  "timeframe": "1h",
+  "source_repository": "financial-data",
+  "source_path": "experiments/stage_a_screening/inputs/adausdt/1h/kitchen_sink_guarded/train.csv",
+  "sha256": "5e218b05e917a8847a719dc1b242b0b91cb54de3d6811e6d09ba52638ebb8fba",
+  "row_count": 49594,
+  "column_count": 127,
+  "first_timestamp": "2018-05-01T22:00:00",
+  "last_timestamp": "2023-12-31T23:00:00",
+  "date_column": "DATE_TIME",
+  "data_profile": "kitchen_sink_guarded",
+  "splits": {
+    "train": [
+      "2021-01-01T00:00:00",
+      "2021-12-31T23:59:59"
+    ],
+    "validation": [
+      "2022-01-01T00:00:00",
+      "2022-12-31T23:59:59"
+    ],
+    "test": [
+      "2023-01-01T00:00:00",
+      "2023-12-31T23:59:59"
+    ]
+  },
+  "selection_uses_test": false
+}

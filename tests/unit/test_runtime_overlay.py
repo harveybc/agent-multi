@@ -182,8 +182,11 @@ def test_versioned_machine_overlays_are_valid_and_isolated() -> None:
         for path in sorted(root.glob("*.json"))
     }
     assert set(overlays) == {"dragon", "gamma_5070ti", "gamma_5090", "omega"}
-    assert overlays["gamma_5070ti"].devices["training"] == "cuda:1"
-    assert overlays["gamma_5090"].devices["training"] == "cuda:0"
+    # Gamma enumerates the internal laptop GPU first and the external GPU
+    # second. Keep this assertion aligned with nvidia-smi and the campaign
+    # supervisor's CUDA_VISIBLE_DEVICES isolation.
+    assert overlays["gamma_5070ti"].devices["training"] == "cuda:0"
+    assert overlays["gamma_5090"].devices["training"] == "cuda:1"
     assert (
         overlays["gamma_5070ti"].roots["ARTIFACT_ROOT"]
         != overlays["gamma_5090"].roots["ARTIFACT_ROOT"]

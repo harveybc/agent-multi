@@ -281,6 +281,12 @@ node config cannot silently lose behavior.
 - use a transient user service for the campaign: restart on process failure,
   no persistent boot-time activation.
 
+The transient rule above applies to a manually launched DOIN campaign and is
+superseded for the multi-campaign fleet by document 15. The replicated
+`doin-campaign-supervisor` is a persistent user service on every physical host;
+individual DOIN workers remain campaign-scoped children. This preserves worker
+adoption after a supervisor crash while eliminating an Omega-only launcher.
+
 ### 7.2 Dragon
 
 - one unified node on current reachable LAN/Tailscale address;
@@ -340,6 +346,10 @@ same candidate remains deterministically comparable across machines.
 6. Add `gamma-5090` on its second port and verify concurrent host/GPU isolation.
 7. Verify peer discovery, matching domain semantics, independent identities,
    no shared writable state and migrated champion flow across all nodes.
+
+After this one-time compatibility rollout, subsequent campaigns are advanced
+by the replicated lifecycle and strict stop barrier in document 15. Manual
+`screen` launch remains a recovery tool, not the normal scheduler.
 
 No later node may be started merely because its configuration validates. The
 preceding runtime gate must be observed first.

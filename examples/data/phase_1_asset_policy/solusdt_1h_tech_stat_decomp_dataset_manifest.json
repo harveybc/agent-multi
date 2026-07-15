@@ -1,0 +1,21 @@
+{
+  "schema_version": "agent_multi.dataset_manifest.v1",
+  "dataset_id": "solusdt_1h_tech_stat_decomp_2020_2023",
+  "asset": "SOLUSDT",
+  "timeframe": "1h",
+  "source_repository": "financial-data",
+  "source_path": "experiments/stage_a_screening/inputs/solusdt/1h/tech_stat_decomp/train.csv",
+  "sha256": "646cec5ea0c9a5ea4ed512346be7aac877417cc519ae9050fa8021ac9cd448aa",
+  "row_count": 29431,
+  "column_count": 113,
+  "date_column": "DATE_TIME",
+  "first_timestamp": "2020-08-21T21:00:00",
+  "last_timestamp": "2023-12-31T23:00:00",
+  "data_profile": "tech_stat_decomp",
+  "splits": {
+    "train": ["2021-01-01T00:00:00", "2021-12-31T23:59:59"],
+    "validation": ["2022-01-01T00:00:00", "2022-12-31T23:59:59"],
+    "test": ["2023-01-01T00:00:00", "2023-12-31T23:59:59"]
+  },
+  "selection_uses_test": false
+}

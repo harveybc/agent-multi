@@ -1,0 +1,180 @@
+{
+  "schema_version": "trading_experiment.v1",
+  "experiment": {
+    "name": "phase_1_asset_policy_solusdt_1h_sac_optimization",
+    "mode": "train",
+    "quiet_mode": false,
+    "role": "asset_policy_optimization",
+    "phase": "phase_1_asset_policy",
+    "scientific_scope": "single_fit_component_screening"
+  },
+  "code": {
+    "repositories": {},
+    "contract_versions": {
+      "trading": "trading_experiment.v1",
+      "metrics": "trading.metrics.v1",
+      "optimizer_resume": "agent_multi.optimization_resume.v1"
+    }
+  },
+  "data": {
+    "asset": "SOLUSDT",
+    "timeframe": "1h",
+    "input_data_file": "${DATA_ROOT}/experiments/stage_a_screening/inputs/solusdt/1h/tech_stat_decomp/train.csv",
+    "dataset_manifest_file": "${REPO_ROOT}/agent-multi/examples/data/phase_1_asset_policy/solusdt_1h_tech_stat_decomp_dataset_manifest.json",
+    "date_column": "DATE_TIME",
+    "price_column": "CLOSE",
+    "headers": true,
+    "features_preset": "tech_stat",
+    "data_profile": "tech_stat_decomp",
+    "train_start": "2021-01-01T00:00:00",
+    "train_end": "2021-12-31T23:59:59",
+    "validation_start": "2022-01-01T00:00:00",
+    "validation_end": "2022-12-31T23:59:59",
+    "test_start": "2023-01-01T00:00:00",
+    "test_end": "2023-12-31T23:59:59",
+    "min_split_rows": 4000
+  },
+  "walk_forward": {
+    "enabled": false,
+    "weekly_retraining": false,
+    "selection_uses_test": false,
+    "promotion_requires_weekly_walk_forward": true
+  },
+  "environment": {
+    "plugin": "gym_fx_env",
+    "env_mode": "training",
+    "simulation_engine": "backtrader",
+    "data_feed_plugin": "default_data_feed",
+    "broker_plugin": "default_broker",
+    "preprocessor_plugin": "default_preprocessor",
+    "reward_plugin": "pnl_reward",
+    "metrics_plugin": "trading_metrics",
+    "strategy_plugin": "direct_atr_sltp"
+  },
+  "context_encoder": {"enabled": false, "profile": "none_v1"},
+  "predictions": {"enabled": false, "provider": "none"},
+  "rush_detector": {"enabled": false, "profile": "deferred_until_asset_policy_gate"},
+  "asset_policy": {
+    "plugin": "project3_sac_actor_critic_agent",
+    "action_space_mode": "continuous",
+    "continuous_action_threshold": 0.18798110300070983,
+    "window_size": 32,
+    "project3_strict": true
+  },
+  "lifecycle_policy": {"plugin": "direct_atr_sltp"},
+  "risk": {
+    "initial_cash": 10000.0,
+    "position_size": 0.01,
+    "rel_volume": 0.05,
+    "leverage": 1.0,
+    "min_order_volume": 0.0,
+    "max_order_volume": 100.0,
+    "size_mode": "notional",
+    "commission": 0.0002,
+    "slippage": 0.0,
+    "atr_period": 14,
+    "k_sl": 2.0,
+    "k_tp": 4.0
+  },
+  "portfolio": {"enabled": false, "role": "single_asset_component"},
+  "training": {
+    "pipeline_plugin": "rl_pipeline_with_validation",
+    "epoch_timesteps": 4000,
+    "max_epochs": 40,
+    "l1_patience": 8,
+    "l1_min_delta": 0.0001,
+    "early_stop_train_tail_days": 7,
+    "early_stop_min_trades": 1,
+    "early_stop_no_trade_penalty": 1000000.0,
+    "selection_metric": "risk_adjusted_return",
+    "risk_penalty_lambda": 0.5,
+    "l1_generalization_gap_penalty_beta": 0.25,
+    "evaluate_test_split": false,
+    "learning_rate": 0.00035593553866490607,
+    "buffer_size": 200000,
+    "learning_starts": 5000,
+    "batch_size": 256,
+    "tau": 0.001547040562484868,
+    "gamma": 0.957651059044391,
+    "train_freq": 1,
+    "gradient_steps": 8,
+    "ent_coef": "auto",
+    "target_update_interval": 1,
+    "target_entropy": "auto",
+    "use_sde": true,
+    "net_arch": [256, 256],
+    "device": "auto",
+    "agent_verbose": 0,
+    "train_seed": 1701,
+    "eval_seed": 1701
+  },
+  "objectives": {
+    "selection_metric": "train_validation_l1_score",
+    "primary_report_metrics": [
+      "total_return",
+      "risk_adjusted_total_return",
+      "train_validation_l1_score",
+      "max_drawdown_fraction",
+      "trades_total"
+    ],
+    "selection_uses_test": false
+  },
+  "optimization": {
+    "enabled": true,
+    "plugin": "default_optimizer",
+    "metric": "train_validation_l1_score",
+    "metric_schema": "trading.metrics.v1",
+    "higher_is_better": true,
+    "metric_missing_policy": "fail",
+    "ga_fitness_split": "train",
+    "ga_population": 20,
+    "ga_generations": 20,
+    "ga_cxpb": 0.5,
+    "ga_mutpb": 0.2,
+    "ga_eval_timesteps": 4000,
+    "ga_seed": 1701,
+    "optimization_patience": 5,
+    "optimization_resume": false,
+    "optimization_pause_on_resume": false,
+    "optimization_capture_model_artifact": true,
+    "optimization_require_model_artifact": true,
+    "optimization_stages": [
+      {"name": "action_behavior", "params": ["continuous_action_threshold"], "generations": 5, "patience": 3},
+      {"name": "critic_dynamics", "params": ["gamma", "tau"], "generations": 5, "patience": 3},
+      {"name": "training_dynamics", "params": ["learning_rate", "batch_size", "train_freq", "gradient_steps"], "generations": 5, "patience": 3},
+      {"name": "refinement", "params": "all", "generations": 5, "patience": 4}
+    ],
+    "hyperparameter_bounds": {
+      "learning_rate": [0.00001, 0.0005],
+      "batch_size": [128, 512],
+      "gamma": [0.95, 0.999],
+      "tau": [0.001, 0.02],
+      "train_freq": [1, 8],
+      "gradient_steps": [1, 8],
+      "continuous_action_threshold": [0.05, 0.35]
+    },
+    "optimization_statistics": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/optimization_stats.json",
+    "optimization_parameters_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/optimization_parameters.json",
+    "optimization_resume_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/optimization_resume.json",
+    "optimization_candidate_history": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/optimization_candidate_history.csv",
+    "optimization_champion_model_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/champion_policy.zip"
+  },
+  "artifacts": {
+    "artifact_root": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac",
+    "save_model": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/final_policy.zip",
+    "results_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/results.json",
+    "resolved_config_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/resolved_config.json",
+    "config_manifest_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/config_manifest.json",
+    "optimizer_output_file": "${ARTIFACT_ROOT}/phase_1_asset_policy/optimization/solusdt_1h_sac/optimizer_output.json"
+  },
+  "olap": {
+    "enabled": true,
+    "metric_schema": "trading.metrics.v1",
+    "experiment_dimension": "asset_timeframe_policy"
+  },
+  "deployment": {
+    "channel": "research_component",
+    "lifecycle": "not_for_live_orders",
+    "promotion_gate": "weekly_walk_forward_validation_required"
+  }
+}
