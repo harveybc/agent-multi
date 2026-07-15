@@ -568,7 +568,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
 | `DOIN-MONITOR-001` | Codex | `doin-node`, `doin-plugins` | verified_four_island | Decentralized health, candidate, exact metric basis, throughput, stage ETA, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
-| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` configs | verified_four_island | Replicated campaign plan, strict convergence/stop barriers, crash adoption, champion archive and decentralized history dashboard | Codex |
+| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_island | Replicated campaign plan, strict convergence/stop barriers, crash adoption, champion archive, decentralized history, long-running claim leases and deterministic duplicate-claim arbitration | Codex |
 
 Claude packet:
 
@@ -589,8 +589,8 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 1. Monitor the deployed immutable SOL, BTC and ADA 1h Stage A campaign queue;
    fail closed on worker, revision, finalized-anchor or artifact divergence.
-2. Enable user linger on Dragon and Gamma, then remove the temporary Omega SSH
-   session bridge and re-test service persistence without an administrative login.
+2. Enable user linger on Dragon and Gamma, then remove the persistent Omega SSH
+   availability bridge and re-test service persistence without an administrative login.
 3. Specify the staged nested weekly walk-forward L2 metric without opening the
    protected 2023 test period during optimization.
 4. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native

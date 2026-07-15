@@ -21,7 +21,10 @@ domains:
 5. wait for the same durable acknowledgement from every physical host;
 6. deterministically start the next immutable job on all hosts.
 
-It does not replace or modify DOIN's internal shared-population protocol.
+It does not replace DOIN's internal shared-population protocol. During the
+fleet rollout, that protocol was hardened in `doin-node` without changing its
+population, migration, flooding, blockchain, or reproduction semantics; see
+the claim-safety notes below.
 
 ## 2. Decentralization Model
 
@@ -62,10 +65,12 @@ device would renumber it and make the overlay's explicit ordinal invalid.
 
 Dragon and Gamma currently report `linger=no`, which requires root privileges
 to correct. Until the operator runs `sudo loginctl enable-linger harveybc` on
-both, Omega's lingering user manager holds one transient SSH keepalive session
-to each host. This bridge prevents `logind` from stopping their enabled user
-services when an administrative SSH command ends; it is an explicit temporary
-availability dependency, not a scheduler or source of campaign truth.
+both, Omega's lingering user manager holds one enabled, persistent systemd user
+SSH session to each host. Both units use `Restart=always` and survive an Omega
+user-manager restart. This bridge prevents `logind` from stopping the remote
+enabled user services when an administrative SSH command ends; it is an
+explicit temporary availability dependency, not a scheduler or source of
+campaign truth. The installed units are versioned under `examples/systemd/`.
 
 ## 3. Lifecycle State Machine
 
@@ -129,6 +134,36 @@ may advance seconds before another participant reads its transient `stopped`
 state, so campaign completion is also exposed as a durable SQLite-backed
 acknowledgement. This prevents a distributed barrier deadlock without electing
 a leader.
+
+### 3.4 Shared-candidate lease and duplicate prevention
+
+The original shared pool used a fixed 600-second claim timeout and expired a
+claim after four other results. The trading policy candidates take roughly 18
+minutes, so valid work could be reassigned while its GPU was still training.
+The claim API also returned `409` for a collision, but the caller proceeded to
+evaluate the rejected candidate. This created duplicate evaluations during a
+simultaneous four-worker start.
+
+`doin-node` now retains the historical `600/4` defaults but exposes global
+`shared_claim_timeout` and `shared_claim_result_patience` settings. The long
+SOL/BTC/ADA jobs use `3600/20`. Simultaneous claims are arbitrated by the
+lexicographically smallest persistent `peer_id`; a losing worker confirms the
+loss through peer APIs and controlled flooding before GPU evaluation, releases
+its local lease, and pulls another free candidate. Candidate status includes
+the owner so every replica and the dashboard can audit the assignment.
+
+The clean deployed start was accepted only after all four APIs returned the
+same pool-state hash and exactly four leases:
+
+| Worker | Generation 0 candidate |
+| --- | ---: |
+| Omega RTX 4070 | 1 |
+| Dragon RTX 4090 | 2 |
+| Gamma RTX 5070 Ti | 3 |
+| Gamma RTX 5090 | 4 |
+
+There were zero ownerless or duplicate leases. The relevant `doin-node` commit
+is `f060f81`.
 
 ## 4. Crash and Restart Semantics
 
@@ -249,10 +284,18 @@ deterministic job materialization, terminal-fork safety and the distributed
 two-job lifecycle.
 
 The deployed SOL 1h successor was observed on Omega, Dragon, Gamma 5070 Ti and
-Gamma 5090 with one domain/tip, matching component commits, active GPU load and
-no post-restart CUDA or optimizer errors. The supervisor dashboard is available
-on every host at port `8795`; Omega's local view is
+Gamma 5090 with one domain and one identical shared-pool view, matching
+component commits, active GPU/CPU load and no post-restart CUDA or optimizer
+errors. Unfinalized blockchain tips may temporarily differ while concurrent
+champion blocks are flooded; the completion barrier still requires the safe
+finalized-anchor and exact-artifact conditions described above. The supervisor
+dashboard is available on every host at port `8795`; Omega's local view is
 `http://127.0.0.1:8795/dashboard`.
+
+The `doin-node` focused lease/arbitration tests pass, and its complete suite
+reports `337 passed`. Three unrelated pre-existing assertions remain red: one
+GossipSub full-mesh test and two VUW tests whose expected zero weight currently
+observes `0.5`.
 
 ## 8. Remaining Scientific Work
 
