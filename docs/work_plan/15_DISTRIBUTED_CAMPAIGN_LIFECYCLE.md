@@ -1,6 +1,6 @@
 # Distributed DOIN Campaign Lifecycle
 
-Status: implemented and integration-tested; fleet rollout in progress
+Status: implemented, integration-tested and deployed on the four-worker fleet
 Date: 2026-07-15
 Owner: `agent-multi`
 
@@ -59,6 +59,13 @@ under `~/.local/state/agent-multi/doin-campaigns/`, outside Git.
 Gamma does not set `CUDA_VISIBLE_DEVICES`: its versioned runtime overlays select
 the internal 5070 Ti as `cuda:0` and external 5090 as `cuda:1`. Masking either
 device would renumber it and make the overlay's explicit ordinal invalid.
+
+Dragon and Gamma currently report `linger=no`, which requires root privileges
+to correct. Until the operator runs `sudo loginctl enable-linger harveybc` on
+both, Omega's lingering user manager holds one transient SSH keepalive session
+to each host. This bridge prevents `logind` from stopping their enabled user
+services when an administrative SSH command ends; it is an explicit temporary
+availability dependency, not a scheduler or source of campaign truth.
 
 ## 3. Lifecycle State Machine
 
@@ -175,6 +182,18 @@ but the subsequent protected 48-week walk-forward result did not pass:
 - 48-week RAP: `-3.0634179%`;
 - coverage: `48/48` weeks.
 
+Fleet rollout archived the exact accepted policy independently on every host:
+
+- champion fitness: `0.06704331595778694`;
+- artifact format: `stable_baselines3_zip`;
+- bytes: `3,741,513`;
+- SHA-256: `cf17e4bc74abec11a16cf8a7235e66fe84cf652516adcc206024642289ff19b1`.
+
+The observed chain had an equal-height terminal fork after finalized block 45.
+All replicas proved finalized hash
+`72ebc57fb6d0316ce3a283e630aa8473c5059127ce10fba41e4f1860410c37df`
+and the exact artifact hash above before the four old workers stopped.
+
 Ordinal 1 is the next Stage A screening campaign:
 
 ```text
@@ -228,6 +247,12 @@ python -m pytest -q tests/unit tests/integration/test_campaign_supervisor_swarm.
 Coverage includes process adoption from relative `screen` command paths,
 deterministic job materialization, terminal-fork safety and the distributed
 two-job lifecycle.
+
+The deployed SOL 1h successor was observed on Omega, Dragon, Gamma 5070 Ti and
+Gamma 5090 with one domain/tip, matching component commits, active GPU load and
+no post-restart CUDA or optimizer errors. The supervisor dashboard is available
+on every host at port `8795`; Omega's local view is
+`http://127.0.0.1:8795/dashboard`.
 
 ## 8. Remaining Scientific Work
 
