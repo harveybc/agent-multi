@@ -1,0 +1,13 @@
+[Unit]
+Description=Keep Gamma user session available for the DOIN campaign supervisor
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -p 62024 -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=yes harveybc@100.107.204.49
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
