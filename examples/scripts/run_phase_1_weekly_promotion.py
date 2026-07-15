@@ -19,6 +19,8 @@ from app.weekly_promotion import (
     init_weekly_olap,
     now_utc,
     run_week_subprocess,
+    select_execution_week_windows,
+    select_protocol_week_windows,
     upsert_weekly_result,
     weekly_result_from_pipeline,
 )
@@ -44,7 +46,24 @@ def main() -> int:
     parser.add_argument("--validation-days", type=int, default=182)
     parser.add_argument("--min-test-rows", type=int, default=36)
     parser.add_argument("--python-bin", default=sys.executable)
-    parser.add_argument("--max-weeks", type=int, default=0, help="0 means all complete protected weeks")
+    parser.add_argument(
+        "--protocol-weeks",
+        type=int,
+        default=48,
+        help="Fixed contiguous promotion horizon; results must not be called a calendar-year result.",
+    )
+    parser.add_argument(
+        "--week-offset",
+        type=int,
+        default=0,
+        help="Zero-based offset within the frozen protocol horizon for distributed shards.",
+    )
+    parser.add_argument(
+        "--max-weeks",
+        type=int,
+        default=0,
+        help="Shard length; 0 means all remaining protocol weeks from --week-offset.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--keep-weekly-models", action="store_true")
     parser.add_argument("--continue-on-error", action="store_true")
@@ -57,14 +76,21 @@ def main() -> int:
     candidate = _candidate_by_rank(candidate_manifest, args.candidate_rank)
     base_config = _read_json(args.base_config)
     data = base_config.get("data", {})
-    windows = build_week_windows(
+    all_windows = build_week_windows(
         train_start=data["train_start"],
         protected_test_start=data["test_start"],
         protected_test_end=data["test_end"],
         validation_days=args.validation_days,
     )
-    if args.max_weeks:
-        windows = windows[: args.max_weeks]
+    protocol_windows = select_protocol_week_windows(
+        all_windows,
+        protocol_weeks=args.protocol_weeks,
+    )
+    windows = select_execution_week_windows(
+        protocol_windows,
+        week_offset=args.week_offset,
+        max_weeks=args.max_weeks,
+    )
 
     run_id = f"{candidate['candidate_id'].split(':', 1)[-1][:16]}_weekly_retrained_2023"
     run_root = args.output_root / run_id
@@ -80,14 +106,34 @@ def main() -> int:
         "candidate": candidate,
         "base_config": str(args.base_config.resolve()),
         "runtime_overlay": str(args.runtime_overlay.resolve()),
+        "protocol_weeks": args.protocol_weeks,
+        "protocol_window_start": protocol_windows[0].label,
+        "protocol_window_end": protocol_windows[-1].label,
+        "execution_week_offset": args.week_offset,
+        "execution_weeks": len(windows),
         "validation_days": args.validation_days,
         "min_test_rows": args.min_test_rows,
-        "windows": [window.as_dict() for window in windows],
-        "protected_test_rule": "Each target week is opened only after its frozen recipe trains with data ending before that week.",
+        "protocol_windows": [window.as_dict() for window in protocol_windows],
+        "execution_windows": [window.as_dict() for window in windows],
+        "protected_test_rule": (
+            "Each target week is opened only after its frozen recipe trains with data ending before that week. "
+            "A complete promotion result requires every frozen protocol week."
+        ),
     }
     _atomic_write_json(plan_path, plan)
     if args.dry_run:
-        print(json.dumps({"dry_run": True, "plan": str(plan_path), "weeks": len(windows)}, indent=2))
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "plan": str(plan_path),
+                    "protocol_weeks": len(protocol_windows),
+                    "execution_weeks": len(windows),
+                    "week_offset": args.week_offset,
+                },
+                indent=2,
+            )
+        )
         return 0
 
     connection = init_weekly_olap(olap_path)
@@ -160,7 +206,9 @@ def main() -> int:
             if not args.continue_on_error:
                 break
 
-    aggregate = aggregate_weekly_results(rows, expected_weeks=len(windows)) if rows else None
+    aggregate = (
+        aggregate_weekly_results(rows, expected_weeks=len(protocol_windows)) if rows else None
+    )
     trace_complete = bool(
         aggregate
         and aggregate.get("annual_drawdown_method")
@@ -177,8 +225,14 @@ def main() -> int:
         "schema_version": PROMOTION_SCHEMA_VERSION,
         "run_id": run_id,
         "candidate_id": candidate["candidate_id"],
-        "status": "protected_test_complete" if complete else "incomplete",
-        "protected_test": {"opened": True, "period": protected.get("period")},
+        "status": "protected_test_complete" if complete else "partial",
+        "protected_test": {
+            "opened": True,
+            "period": protected.get("period"),
+            "protocol_weeks": len(protocol_windows),
+            "execution_weeks": len(windows),
+            "week_offset": args.week_offset,
+        },
         "aggregate": aggregate,
         "weekly_results": rows,
         "failures": failures,

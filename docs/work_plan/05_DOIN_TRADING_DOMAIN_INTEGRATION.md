@@ -402,12 +402,22 @@ a rolling validation window ending before the target week, and enables the test
 split only for that target-week report. It never sets `selection_uses_test`.
 
 The runner writes resumable week configs/results, a compact SQLite OLAP store
-and `promotion_summary.json`. Annual return compounds weekly returns; annual
-maximum drawdown is calculated from the observed, concatenated 4-hour equity
-traces after rescaling each reset weekly account onto one compounded path.
-Annual RAP subtracts that observed drawdown. A missing trace is explicitly
-labelled as a lower-bound fallback and cannot qualify a candidate for
-promotion.
+and `promotion_summary.json`. The current Project 3 protocol freezes **48
+contiguous Monday-aligned target weeks** before execution. A partial shard is
+never labelled a complete protected test; it records its offset and coverage
+and remains blocked until all 48 results are consolidated. The four nodes may
+therefore evaluate disjoint 12-week shards without overlap. Annual return
+compounds weekly returns; annual maximum drawdown is calculated from the
+observed, concatenated 4-hour equity traces after rescaling each reset weekly
+account onto one compounded path. Annual RAP subtracts that observed drawdown.
+A missing trace is explicitly labelled as a lower-bound fallback and cannot
+qualify a candidate for promotion.
+
+When the 48-week run is sharded across machines, each worker writes its own
+partial summary and SQLite OLAP store. `examples/scripts/consolidate_phase_1_weekly_promotion.py`
+validates candidate/run identity, rejects conflicting duplicate weeks, remaps
+the copied return traces, and writes the only summary that can be labelled a
+complete protected evaluation.
 
 The first fleet use assigns the three frozen Pareto recipes to separate workers
 and uses the fourth worker for a deterministic cross-hardware replication. The

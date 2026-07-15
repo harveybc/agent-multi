@@ -134,6 +134,48 @@ def build_week_windows(
     return windows
 
 
+def select_protocol_week_windows(
+    windows: Iterable[WeekWindow], *, protocol_weeks: int
+) -> list[WeekWindow]:
+    """Freeze the fixed-length promotion horizon from valid calendar weeks.
+
+    A promotion protocol is allowed to define a 48-week research year even
+    when the calendar interval contains 52 complete Monday-aligned weeks.
+    The returned windows are contiguous, chronological and therefore retain a
+    meaningful compounded equity path.  Callers must report the result as a
+    ``protocol_weeks`` evaluation, never as the full calendar year.
+    """
+    if protocol_weeks < 1:
+        raise ValueError("protocol_weeks must be at least 1")
+    available = list(windows)
+    if len(available) < protocol_weeks:
+        raise ValueError(
+            f"Protected test provides {len(available)} complete weeks, "
+            f"fewer than the required protocol horizon of {protocol_weeks}"
+        )
+    return available[:protocol_weeks]
+
+
+def select_execution_week_windows(
+    protocol_windows: Iterable[WeekWindow], *, week_offset: int, max_weeks: int
+) -> list[WeekWindow]:
+    """Select one non-overlapping execution shard from frozen protocol weeks."""
+    if week_offset < 0:
+        raise ValueError("week_offset must be non-negative")
+    if max_weeks < 0:
+        raise ValueError("max_weeks must be non-negative")
+    available = list(protocol_windows)
+    if week_offset >= len(available):
+        raise ValueError(
+            f"week_offset {week_offset} is outside {len(available)} protocol weeks"
+        )
+    stop = len(available) if max_weeks == 0 else min(len(available), week_offset + max_weeks)
+    selected = available[week_offset:stop]
+    if not selected:
+        raise ValueError("Execution shard contains no weeks")
+    return selected
+
+
 def _candidate_by_rank(manifest: dict[str, Any], rank: int) -> dict[str, Any]:
     for candidate in manifest.get("candidates", []):
         if candidate.get("promotion_rank") == rank:

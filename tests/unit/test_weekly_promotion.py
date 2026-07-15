@@ -4,7 +4,13 @@ import csv
 
 import pytest
 
-from app.weekly_promotion import aggregate_weekly_results, build_week_config, build_week_windows
+from app.weekly_promotion import (
+    aggregate_weekly_results,
+    build_week_config,
+    build_week_windows,
+    select_execution_week_windows,
+    select_protocol_week_windows,
+)
 
 
 def _base_config() -> dict:
@@ -51,6 +57,25 @@ def test_week_windows_cover_2023_with_causal_boundaries() -> None:
     for window in windows:
         assert window.train_start < window.train_end <= window.validation_start
         assert window.validation_start < window.validation_end == window.test_start < window.test_end
+
+
+def test_protocol_and_execution_windows_are_fixed_and_non_overlapping() -> None:
+    calendar_windows = build_week_windows(
+        train_start="2021-01-01T00:00:00",
+        protected_test_start="2023-01-01T00:00:00",
+        protected_test_end="2023-12-31T23:59:59",
+        validation_days=182,
+    )
+    protocol = select_protocol_week_windows(calendar_windows, protocol_weeks=48)
+    first_shard = select_execution_week_windows(protocol, week_offset=0, max_weeks=12)
+    last_shard = select_execution_week_windows(protocol, week_offset=36, max_weeks=12)
+
+    assert len(protocol) == 48
+    assert protocol[0].label == "2023-01-02"
+    assert protocol[-1].label == "2023-11-27"
+    assert [item.index for item in first_shard] == list(range(1, 13))
+    assert [item.index for item in last_shard] == list(range(37, 49))
+    assert {item.index for item in first_shard}.isdisjoint(item.index for item in last_shard)
 
 
 def test_week_config_freezes_candidate_and_never_selects_on_test(tmp_path) -> None:
