@@ -1,0 +1,30 @@
+{
+  "schema_version": "agent_multi.dataset_manifest.v1",
+  "dataset_id": "btcusdt_1h_kitchen_sink_guarded_2017_2023",
+  "asset": "BTCUSDT",
+  "timeframe": "1h",
+  "source_repository": "financial-data",
+  "source_path": "experiments/stage_a_screening/inputs/btcusdt/1h/kitchen_sink_guarded/train.csv",
+  "sha256": "ca86972bc4a608df1629558a16619ecd525cc435dc97782c70060eb37281b912",
+  "row_count": 55582,
+  "column_count": 186,
+  "first_timestamp": "2017-08-23T18:00:00",
+  "last_timestamp": "2023-12-31T23:00:00",
+  "date_column": "DATE_TIME",
+  "data_profile": "kitchen_sink_guarded",
+  "splits": {
+    "train": [
+      "2019-01-01T00:00:00",
+      "2021-12-31T23:59:59"
+    ],
+    "validation": [
+      "2022-01-01T00:00:00",
+      "2022-12-31T23:59:59"
+    ],
+    "test": [
+      "2023-01-01T00:00:00",
+      "2023-12-31T23:59:59"
+    ]
+  },
+  "selection_uses_test": false
+}

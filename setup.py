@@ -7,6 +7,7 @@ setup(
     entry_points={
         "console_scripts": [
             "agent-multi=app.main:main",
+            "doin-campaign-supervisor=app.campaign_supervisor:main",
         ],
         "env.plugins": [
             "gym_fx_env=env_plugins.gym_fx_env:Plugin",

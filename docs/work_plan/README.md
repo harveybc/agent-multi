@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: architecture approved; implementation in progress
-Plan version: 1.3.0
-Date: 2026-07-12
+Plan version: 1.4.0
+Date: 2026-07-15
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -64,6 +64,7 @@ trading domain.
 | [12 Collaborative implementation](12_COLLABORATIVE_IMPLEMENTATION_AND_REVIEW.md) | Codex ownership, bounded Claude task packets, independent review, and acceptance evidence |
 | [13 Implementation status](13_IMPLEMENTATION_STATUS_AND_TASK_LEDGER.md) | Executed increments, verification evidence, delegation ledger, and immediate next tasks |
 | [14 Simulation engine selection](14_SIMULATION_ENGINE_SELECTION_2026_07_11.md) | NautilusTrader/LEAN/Backtrader bake-off and no-reimplementation rule |
+| [15 Distributed campaign lifecycle](15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md) | Replicated job order, convergence/stop barriers, recovery, champion archive, and swarm history |
 
 ## Repository Ownership Summary
 
