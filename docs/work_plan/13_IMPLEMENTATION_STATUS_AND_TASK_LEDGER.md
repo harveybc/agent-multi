@@ -569,6 +569,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-MONITOR-001` | Codex | `doin-node`, `doin-plugins` | verified_four_island | Decentralized health, candidate, exact metric basis, throughput, stage ETA, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
 | `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_worker_swarm | Replicated six-cell campaign plan, append-only live migration, deterministic single-worker bootstrap, ordered follower joins, seed/data/config/version contract, lineage watchdogs, scoped worker repair, strict convergence/stop barriers, crash adoption, champion archive, decentralized history, duplicate-claim arbitration and non-resurrecting replicated leases | Codex |
+| `GPU-WATCHDOG-001` | Codex | `agent-multi` | verified_three_hosts | Five-minute GPU temperature, GPU-count and NVIDIA telemetry watchdog with Hermes Telegram alert, recovery and hourly repeat semantics | Codex |
 
 Claude packet:
 
