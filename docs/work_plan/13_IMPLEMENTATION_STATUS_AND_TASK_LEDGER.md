@@ -568,7 +568,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
 | `DOIN-MONITOR-001` | Codex | `doin-node`, `doin-plugins` | verified_four_island | Decentralized health, candidate, exact metric basis, throughput, stage ETA, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
-| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_island | Replicated campaign plan, strict convergence/stop barriers, crash adoption, champion archive, decentralized history, long-running claim leases and deterministic duplicate-claim arbitration | Codex |
+| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_island | Replicated campaign plan, strict convergence/stop barriers, crash adoption, champion archive, decentralized history, deterministic duplicate-claim arbitration and non-resurrecting replicated leases | Codex |
 
 Claude packet:
 
