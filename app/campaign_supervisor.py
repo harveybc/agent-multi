@@ -48,6 +48,23 @@ def _sha256_json(value: Any) -> str:
     return hashlib.sha256(_canonical_json(value).encode("utf-8")).hexdigest()
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _expand_runtime_path(value: str, roots: dict[str, Any]) -> Path:
+    expanded = str(value)
+    for key, root in roots.items():
+        expanded = expanded.replace(f"${{{key}}}", str(root))
+    if "${" in expanded:
+        raise ValueError(f"unresolved runtime path variable in {value!r}")
+    return Path(expanded).expanduser().resolve()
+
+
 def _atomic_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
@@ -252,7 +269,11 @@ class HistoryStore:
                    (job_id, ordinal, domain_id, plan_hash, status, started_at)
                    VALUES (?, ?, ?, ?, 'running', ?)
                    ON CONFLICT(job_id) DO UPDATE SET
-                     status='running', started_at=COALESCE(campaigns.started_at, excluded.started_at)""",
+                     ordinal=excluded.ordinal,
+                     domain_id=excluded.domain_id,
+                     plan_hash=excluded.plan_hash,
+                     status='running',
+                     started_at=COALESCE(campaigns.started_at, excluded.started_at)""",
                 (
                     job["job_id"], int(job["ordinal"]), job["domain_id"], plan_hash,
                     _utc_now(),
@@ -270,6 +291,9 @@ class HistoryStore:
                     parameters_json, metrics_json, evidence_json)
                    VALUES (?, ?, ?, ?, 'completed', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(job_id) DO UPDATE SET
+                    ordinal=excluded.ordinal,
+                    domain_id=excluded.domain_id,
+                    plan_hash=excluded.plan_hash,
                     status='completed', completed_at=excluded.completed_at,
                     chain_height=excluded.chain_height, tip_hash=excluded.tip_hash,
                     champion_fitness=excluded.champion_fitness,
@@ -352,6 +376,7 @@ class CampaignSupervisor:
         self._shutdown = threading.Event()
         self._httpd: ThreadingHTTPServer | None = None
         self._lock_handle = None
+        self._dataset_validation_cache: dict[tuple[str, int, int, str], dict[str, Any]] = {}
         self.state = self._load_or_initialize_state()
 
     def _resolve_path(self, value: str | os.PathLike[str]) -> Path:
@@ -471,6 +496,62 @@ class CampaignSupervisor:
         path = Path(worker_cfg).expanduser()
         return path.resolve() if path.is_absolute() else (doin_root / path).resolve()
 
+    def _validate_dataset_evidence(self, node_config: dict[str, Any]) -> dict[str, Any] | None:
+        domains = node_config.get("domains") or []
+        if len(domains) != 1:
+            return None
+        optimization = domains[0].get("optimization_config") or {}
+        agent_root_value = optimization.get("agent_multi_root")
+        load_config_value = optimization.get("load_config")
+        runtime_overlay_value = optimization.get("runtime_overlay")
+        if not all((agent_root_value, load_config_value, runtime_overlay_value)):
+            return None
+
+        agent_root = Path(str(agent_root_value)).expanduser().resolve()
+        canonical_path = Path(str(load_config_value)).expanduser()
+        if not canonical_path.is_absolute():
+            canonical_path = agent_root / canonical_path
+        overlay_path = Path(str(runtime_overlay_value)).expanduser()
+        if not overlay_path.is_absolute():
+            overlay_path = agent_root / overlay_path
+        canonical = _load_json(canonical_path.resolve())
+        overlay = _load_json(overlay_path.resolve())
+        roots = overlay.get("roots") or {}
+        data = canonical.get("data") or {}
+        dataset_path = _expand_runtime_path(str(data["input_data_file"]), roots)
+        manifest_path = _expand_runtime_path(str(data["dataset_manifest_file"]), roots)
+        manifest = _load_json(manifest_path)
+        if str(manifest.get("asset")) != str(data.get("asset")):
+            raise ValueError(f"dataset manifest asset mismatch for {dataset_path}")
+        if str(manifest.get("timeframe")) != str(data.get("timeframe")):
+            raise ValueError(f"dataset manifest timeframe mismatch for {dataset_path}")
+        expected_hash = str(manifest.get("sha256") or "")
+        if not expected_hash:
+            raise ValueError(f"dataset manifest has no sha256: {manifest_path}")
+        stat = dataset_path.stat()
+        cache_key = (
+            str(dataset_path),
+            int(stat.st_size),
+            int(stat.st_mtime_ns),
+            expected_hash,
+        )
+        cached = self._dataset_validation_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        actual_hash = _sha256_file(dataset_path)
+        if actual_hash != expected_hash:
+            raise ValueError(
+                f"dataset sha256 {actual_hash} != manifest {expected_hash}: {dataset_path}"
+            )
+        evidence = {
+            "path": str(dataset_path),
+            "manifest_path": str(manifest_path),
+            "sha256": actual_hash,
+            "bytes": int(stat.st_size),
+        }
+        self._dataset_validation_cache[cache_key] = evidence
+        return evidence
+
     def _validate_local_configs(self, job: dict[str, Any]) -> dict[str, dict[str, Any]]:
         loaded: dict[str, dict[str, Any]] = {}
         semantic_hashes: set[str] = set()
@@ -488,10 +569,12 @@ class CampaignSupervisor:
                 raise ValueError(
                     f"{worker_id} semantic hash {semantic_hash} != planned {expected}"
                 )
+            dataset_evidence = self._validate_dataset_evidence(config)
             loaded[worker_id] = {
                 "path": str(path),
                 "port": _config_port(config),
                 "semantic_hash": semantic_hash,
+                "dataset": dataset_evidence,
             }
         if len(semantic_hashes) != 1:
             raise ValueError("local worker configs do not describe the same optimization domain")

@@ -50,14 +50,34 @@ same plan. A plan-hash mismatch blocks progression and produces an alert.
 Omega can disappear without corrupting or forking the campaign; the strict
 barrier waits until the required participant returns.
 
-The current immutable plan is:
+The complete immutable six-cell plan is:
 
 ```text
-examples/campaigns/phase_1_asset_policy_fleet_v2/campaign_plan.json
+examples/campaigns/phase_1_asset_policy_fleet_v3/campaign_plan.json
 ```
 
-Per-host profiles are adjacent to it. Runtime state and champion bytes live
-under `~/.local/state/agent-multi/doin-campaigns/`, outside Git.
+Jobs 0-3 preserve the deployed `fleet_v2` prefix exactly. Jobs 4-5 add
+`EURUSD@4h/fx_full` and `DOGEUSDT@4h/kitchen_sink_guarded`, completing the
+initial six model/timeframe components:
+
+| Ordinal | Component | Operational state at plan extension |
+| ---: | --- | --- |
+| 0 | `SOLUSDT@4h` | completed and archived |
+| 1 | `SOLUSDT@1h` | running |
+| 2 | `BTCUSDT@1h` | queued |
+| 3 | `ADAUSDT@1h` | queued |
+| 4 | `EURUSD@4h` | queued |
+| 5 | `DOGEUSDT@4h` | queued |
+
+Per-host profiles are adjacent to the plan. Runtime state and champion bytes
+remain under the existing `fleet_v2` state directory so the append-only plan
+migration preserves worker adoption, history and the current job. The migration
+utility refuses changed prefixes, participant changes, active supervisor locks,
+non-running phases and mismatched plan hashes:
+
+```text
+examples/scripts/migrate_doin_campaign_plan.py
+```
 
 Gamma does not set `CUDA_VISIBLE_DEVICES`: PyTorch 2.13.0 enumerates the external
 5090 as `cuda:0` and the internal 5070 Ti as `cuda:1`, the opposite of the

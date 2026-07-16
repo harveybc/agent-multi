@@ -1,0 +1,30 @@
+{
+  "schema_version": "agent_multi.dataset_manifest.v1",
+  "dataset_id": "eurusd_4h_fx_full_2005_2023",
+  "asset": "EURUSD",
+  "timeframe": "4h",
+  "source_repository": "financial-data",
+  "source_path": "experiments/stage_a_screening/inputs/eurusd/4h/fx_full/train.csv",
+  "sha256": "4aa63901db3856bb61767789693513bbfdbca884149e663d2c004a7666acc92e",
+  "row_count": 30290,
+  "column_count": 186,
+  "first_timestamp": "2005-02-18T08:00:00",
+  "last_timestamp": "2023-12-29T16:00:00",
+  "date_column": "DATE_TIME",
+  "data_profile": "fx_full",
+  "splits": {
+    "train": [
+      "2021-01-01T00:00:00",
+      "2021-12-31T23:59:59"
+    ],
+    "validation": [
+      "2022-01-01T00:00:00",
+      "2022-12-31T23:59:59"
+    ],
+    "test": [
+      "2023-01-01T00:00:00",
+      "2023-12-31T23:59:59"
+    ]
+  },
+  "selection_uses_test": false
+}

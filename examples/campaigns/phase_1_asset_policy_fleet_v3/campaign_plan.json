@@ -1,0 +1,108 @@
+{
+  "schema_version": "agent_multi.doin_campaign_plan.v1",
+  "plan_id": "phase-1-asset-policy-fleet-v3",
+  "$doc": "Replicated immutable order for the complete six-cell initial portfolio model set. Jobs 0-3 preserve the active fleet-v2 prefix exactly; jobs 4-5 add the missing diversified 4h cells.",
+  "participants": [
+    {
+      "node_id": "omega",
+      "supervisor_url": "http://100.99.54.79:8795",
+      "workers": ["omega"]
+    },
+    {
+      "node_id": "dragon",
+      "supervisor_url": "http://100.110.215.85:8795",
+      "workers": ["dragon"]
+    },
+    {
+      "node_id": "gamma",
+      "supervisor_url": "http://100.107.204.49:8795",
+      "workers": ["gamma-5070ti", "gamma-5090"]
+    }
+  ],
+  "jobs": [
+    {
+      "ordinal": 0,
+      "job_id": "solusdt-4h-sac-shared-v2",
+      "domain_id": "trading-asset-policy-solusdt-4h-sac-shared-v2",
+      "purpose": "adopt_archive_and_close_completed_single_fit_screen",
+      "higher_is_better": true,
+      "domain_semantic_hash": "73ab1d346f8f25ef299dadac62c22c77fab9e941dd371fb57841e272a445776f",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_shared_v2/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_shared_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_shared_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_shared_v2/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 1,
+      "job_id": "solusdt-1h-tech-stat-decomp-sac-shared-v1",
+      "domain_id": "trading-asset-policy-solusdt-1h-sac-shared-v1",
+      "purpose": "stage_a_short_horizon_single_fit_screen",
+      "higher_is_better": true,
+      "domain_semantic_hash": "3d377cd577d8c599501e161ee60a4564487baf4151aa805d980ef9fcbcf7a596",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_solusdt_1h_shared_v1/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_solusdt_1h_shared_v1/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_solusdt_1h_shared_v1/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_solusdt_1h_shared_v1/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 2,
+      "job_id": "btcusdt-1h-kitchen-sink-guarded-sac-shared-v1",
+      "domain_id": "trading-asset-policy-btcusdt-1h-sac-shared-v1",
+      "purpose": "stage_a_short_horizon_single_fit_screen",
+      "higher_is_better": true,
+      "domain_semantic_hash": "81fe3674e52e07ab7d2e15306a3de27966f8a699b2667bbff56610b0df447b40",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v1/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v1/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v1/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v1/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 3,
+      "job_id": "adausdt-1h-kitchen-sink-guarded-sac-shared-v1",
+      "domain_id": "trading-asset-policy-adausdt-1h-sac-shared-v1",
+      "purpose": "stage_a_short_horizon_single_fit_screen",
+      "higher_is_better": true,
+      "domain_semantic_hash": "7ef9e249a94e58916b39767a543786912bdcb4bcc9128afd21f9ecc0ac42a13c",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v1/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v1/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v1/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v1/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 4,
+      "job_id": "eurusd-4h-fx-full-sac-shared-v1",
+      "domain_id": "trading-asset-policy-eurusd-4h-sac-shared-v1",
+      "purpose": "stage_a_long_horizon_diversified_fx_single_fit_screen",
+      "higher_is_better": true,
+      "domain_semantic_hash": "f9b5222207e5119251fe1eaeb23d463c411a9945c381c7f9e7b641d4feb56c20",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v1/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v1/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v1/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v1/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 5,
+      "job_id": "dogeusdt-4h-kitchen-sink-guarded-sac-shared-v1",
+      "domain_id": "trading-asset-policy-dogeusdt-4h-sac-shared-v1",
+      "purpose": "stage_a_long_horizon_crypto_single_fit_screen",
+      "higher_is_better": true,
+      "domain_semantic_hash": "9f803606ca3ad2df1d4b60fafe8ef0f167c8f84a640f799974199d9cc63b6edf",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v1/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v1/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v1/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v1/gamma_5090_node.json"
+      }
+    }
+  ]
+}

@@ -157,6 +157,66 @@ def test_semantic_hash_ignores_machine_overlay_but_not_domain_changes():
     assert _domain_semantic_hash(left) != _domain_semantic_hash(right)
 
 
+def test_dataset_preflight_validates_runtime_path_and_manifest_hash(tmp_path: Path):
+    profile_path, plan, profile = _materialize(tmp_path)
+    agent_root = tmp_path / "agent-multi"
+    data_root = tmp_path / "financial-data"
+    dataset = data_root / "inputs" / "train.csv"
+    dataset.parent.mkdir(parents=True)
+    dataset.write_text("DATE_TIME,CLOSE\n2022-01-01T00:00:00,1.0\n", encoding="utf-8")
+    manifest = agent_root / "manifest.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(
+        json.dumps({
+            "asset": "TEST",
+            "timeframe": "1h",
+            "sha256": hashlib.sha256(dataset.read_bytes()).hexdigest(),
+        }),
+        encoding="utf-8",
+    )
+    canonical = agent_root / "config.json"
+    canonical.write_text(
+        json.dumps({
+            "data": {
+                "asset": "TEST",
+                "timeframe": "1h",
+                "input_data_file": "${DATA_ROOT}/inputs/train.csv",
+                "dataset_manifest_file": "${REPO_ROOT}/agent-multi/manifest.json",
+            }
+        }),
+        encoding="utf-8",
+    )
+    overlay = agent_root / "overlay.json"
+    overlay.write_text(
+        json.dumps({
+            "roots": {
+                "DATA_ROOT": str(data_root),
+                "REPO_ROOT": str(tmp_path),
+            }
+        }),
+        encoding="utf-8",
+    )
+    doin_root = Path(profile["workers"]["omega"]["doin_node_root"])
+    node_path = doin_root / plan["jobs"][0]["worker_configs"]["omega"]
+    node = json.loads(node_path.read_text())
+    node["domains"][0]["optimization_config"].update({
+        "agent_multi_root": str(agent_root),
+        "load_config": "config.json",
+        "runtime_overlay": "overlay.json",
+    })
+    node_path.write_text(json.dumps(node), encoding="utf-8")
+    plan["jobs"][0]["domain_semantic_hash"] = _domain_semantic_hash(node)
+    Path(profile["plan_file"]).write_text(json.dumps(plan), encoding="utf-8")
+
+    supervisor = CampaignSupervisor(profile_path)
+    loaded = supervisor._validate_local_configs(supervisor.plan["jobs"][0])
+    assert loaded["omega"]["dataset"]["sha256"] == hashlib.sha256(dataset.read_bytes()).hexdigest()
+
+    dataset.write_text("DATE_TIME,CLOSE\n2022-01-01T00:00:00,2.0\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="dataset sha256"):
+        supervisor._validate_local_configs(supervisor.plan["jobs"][0])
+
+
 def test_process_config_matching_resolves_relative_path_from_process_cwd(tmp_path: Path):
     doin_root = tmp_path / "doin-node"
     target = doin_root / "examples" / "trading" / "campaign" / "omega_node.json"
