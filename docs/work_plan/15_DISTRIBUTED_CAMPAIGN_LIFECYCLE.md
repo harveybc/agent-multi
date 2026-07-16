@@ -154,6 +154,15 @@ loss through peer APIs and controlled flooding before GPU evaluation, releases
 its local lease, and pulls another free candidate. Candidate status includes
 the owner so every replica and the dashboard can audit the assignment.
 
+Polling a peer is replication, not a lease heartbeat. A live incident on
+2026-07-16 showed that assigning `time.time()` when importing a peer-observed
+claim allowed four expired leases to circulate indefinitely: each replica
+renewed the lease immediately after another replica expired it. `doin-node`
+now preserves the peer's original `claimed_at` and
+`results_since_claim` evidence. Only an explicit claim from the owner renews a
+lease, so stale work converges to free on every replica instead of being
+resurrected by polling.
+
 The clean deployed start was accepted only after all four APIs returned the
 same pool-state hash and exactly four leases:
 
@@ -164,8 +173,8 @@ same pool-state hash and exactly four leases:
 | Gamma RTX 5070 Ti | 3 |
 | Gamma RTX 5090 | 4 |
 
-There were zero ownerless or duplicate leases. The relevant `doin-node` commit
-is `f060f81`.
+There were zero ownerless or duplicate leases. The deterministic arbitration
+commit is `f060f81`; the lease-replication fix is `6de2bc4`.
 
 ## 4. Crash and Restart Semantics
 
@@ -294,10 +303,11 @@ finalized-anchor and exact-artifact conditions described above. The supervisor
 dashboard is available on every host at port `8795`; Omega's local view is
 `http://127.0.0.1:8795/dashboard`.
 
-The `doin-node` focused lease/arbitration tests pass, and its complete suite
-reports `337 passed`. Three unrelated pre-existing assertions remain red: one
-GossipSub full-mesh test and two VUW tests whose expected zero weight currently
-observes `0.5`.
+The `doin-node` focused lease/arbitration tests pass, including preservation of
+remote lease age and expiry after repeated observation. The broader related
+suite reports `52 passed`; two unrelated pre-existing VUW assertions remain
+red because an expected zero weight currently observes `0.5`. The previous full
+suite also exposed one independent GossipSub full-mesh assertion.
 
 ## 8. Remaining Scientific Work
 
