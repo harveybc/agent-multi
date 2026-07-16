@@ -248,6 +248,15 @@ def test_plan_requires_every_worker_exactly_once(tmp_path: Path):
         CampaignSupervisor(profile_path)
 
 
+def test_network_status_exposes_complete_optimization_queue(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    network = supervisor._network_status()
+
+    assert [job["job_id"] for job in network["plan_jobs"]] == ["job-0", "job-1"]
+    assert [job["status"] for job in network["plan_jobs"]] == ["starting", "queued"]
+
+
 def test_single_process_lock_rejects_second_supervisor(tmp_path: Path):
     profile_path, _, _ = _materialize(tmp_path)
     first = CampaignSupervisor(profile_path)

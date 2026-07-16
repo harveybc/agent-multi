@@ -772,6 +772,30 @@ class CampaignSupervisor:
 
     def _network_status(self) -> dict[str, Any]:
         local = self.status_payload()
+        history = self.history.campaigns()
+        history_by_job = {item["job_id"]: item for item in history}
+        current_index = int(local.get("job_index", 0))
+        plan_jobs = []
+        for job in self.plan["jobs"]:
+            ordinal = int(job["ordinal"])
+            historical = history_by_job.get(job["job_id"])
+            if historical and historical.get("status") == "completed":
+                status = "completed"
+            elif ordinal == current_index and local.get("phase") != "complete":
+                status = str(local.get("phase") or "running")
+            elif ordinal < current_index:
+                status = "history_missing"
+            else:
+                status = "queued"
+            plan_jobs.append({
+                "ordinal": ordinal,
+                "job_id": job["job_id"],
+                "domain_id": job["domain_id"],
+                "purpose": job.get("purpose"),
+                "status": status,
+                "champion_fitness": historical.get("champion_fitness") if historical else None,
+                "artifact_sha256": historical.get("artifact_sha256") if historical else None,
+            })
         participants: dict[str, Any] = {self.node_id: {"online": True, "status": local}}
         for participant in self.plan["participants"]:
             node_id = str(participant["node_id"])
@@ -787,8 +811,9 @@ class CampaignSupervisor:
         return {
             "plan_id": self.plan.get("plan_id"),
             "plan_hash": self.plan_hash,
+            "plan_jobs": plan_jobs,
             "participants": participants,
-            "history": self.history.campaigns(),
+            "history": history,
             "generated_at": _utc_now(),
         }
 
@@ -1231,6 +1256,7 @@ table{{width:100%;border-collapse:collapse;background:var(--panel);border:1px so
 </style></head><body><header><h1>{title}</h1><p>Replicated campaign lifecycle and champion registry</p></header>
 <main><div id="alerts"></div><section><div class="summary" id="summary"></div></section>
 <section><h2>Participants</h2><table><thead><tr><th>Node / worker</th><th>Phase</th><th>Process</th><th>Chain</th><th>Fitness</th><th>Versions</th></tr></thead><tbody id="workers"></tbody></table></section>
+<section><h2>Optimization queue</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Purpose</th><th>Champion</th></tr></thead><tbody id="queue"></tbody></table></section>
 <section><h2>Campaign history</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Champion</th><th>Artifact</th><th>Completed</th></tr></thead><tbody id="history"></tbody></table></section></main>
 <script>
 const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}}[c]));
@@ -1242,6 +1268,7 @@ async function refresh(){{let d;try{{d=await(await fetch('/api/network')).json()
  document.querySelector('#alerts').innerHTML=alerts.length?`<div class="alerts"><b>SWARM ALERT</b><br>${{alerts.map(esc).join('<br>')}}</div>`:'';
  let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="4">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn'; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td>${{esc(w.chain_height||'-')}}<br><code>${{short(w.tip_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
  document.querySelector('#workers').innerHTML=rows||'<tr><td colspan="6">No workers reported</td></tr>';
+ document.querySelector('#queue').innerHTML=(d.plan_jobs||[]).map(j=>{{const cls=j.status==='completed'?'ok':j.status==='queued'?'':j.status==='history_missing'?'bad':'warn';return `<tr><td>${{esc(j.ordinal)}}</td><td>${{esc(j.job_id)}}</td><td>${{esc(j.domain_id)}}</td><td class="${{cls}}">${{esc(j.status)}}</td><td>${{esc(j.purpose||'-')}}</td><td>${{pct(j.champion_fitness)}}<br><code>${{short(j.artifact_sha256)}}</code></td></tr>`}}).join('')||'<tr><td colspan="6">No queued jobs</td></tr>';
  document.querySelector('#history').innerHTML=d.history.map(h=>`<tr><td>${{esc(h.ordinal)}}</td><td>${{esc(h.job_id)}}</td><td>${{esc(h.domain_id)}}</td><td class="${{h.status==='completed'?'ok':'warn'}}">${{esc(h.status)}}</td><td>${{pct(h.champion_fitness)}}<br>${{short(h.champion_peer_id)}}</td><td><code>${{short(h.artifact_sha256)}}</code><br>${{esc(h.artifact_format||'')}}</td><td>${{esc(h.completed_at||'-')}}</td></tr>`).join('')||'<tr><td colspan="7">No completed campaigns yet</td></tr>';
 }}
 refresh();setInterval(refresh,5000);

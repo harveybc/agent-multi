@@ -79,6 +79,10 @@ non-running phases and mismatched plan hashes:
 examples/scripts/migrate_doin_campaign_plan.py
 ```
 
+The supervisor API and dashboard expose the complete ordered queue, including
+completed, running and queued jobs, so continuity can be audited before the
+current optimization reaches its stop barrier.
+
 Gamma does not set `CUDA_VISIBLE_DEVICES`: PyTorch 2.13.0 enumerates the external
 5090 as `cuda:0` and the internal 5070 Ti as `cuda:1`, the opposite of the
 physical indices displayed by `nvidia-smi`. Its versioned runtime overlays use
