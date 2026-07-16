@@ -26,6 +26,7 @@ def _node_config(port: int) -> dict:
         "node_label": "test",
         "port": port,
         "data_dir": "./state",
+        "require_deterministic_seed": True,
         "domains": [
             {
                 "domain_id": DOMAIN_ID,
@@ -33,6 +34,8 @@ def _node_config(port: int) -> dict:
                 "higher_is_better": True,
                 "optimization_config": {
                     "shared_population": True,
+                    "shared_population_size": 4,
+                    "ga_seed": 1701,
                     "runtime_overlay": "machine.json",
                     "hyperparameter_bounds": {"x": [0.0, 1.0]},
                 },
@@ -157,6 +160,14 @@ def test_semantic_hash_ignores_machine_overlay_but_not_domain_changes():
     assert _domain_semantic_hash(left) != _domain_semantic_hash(right)
 
 
+def test_semantic_hash_rejects_shared_population_seed_offsets():
+    left = _node_config(1000)
+    right = _node_config(2000)
+    right["domains"][0]["optimization_config"]["runtime_overlay"] = "other.json"
+    right["domains"][0]["optimization_config"]["node_seed_offset"] = 1
+    assert _domain_semantic_hash(left) != _domain_semantic_hash(right)
+
+
 def test_dataset_preflight_validates_runtime_path_and_manifest_hash(tmp_path: Path):
     profile_path, plan, profile = _materialize(tmp_path)
     agent_root = tmp_path / "agent-multi"
@@ -257,6 +268,58 @@ def test_network_status_exposes_complete_optimization_queue(tmp_path: Path):
     assert [job["status"] for job in network["plan_jobs"]] == ["starting", "queued"]
 
 
+def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):
+    participants = [
+        {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
+        {"node_id": "dragon", "supervisor_url": "http://dragon:8795", "workers": ["dragon"]},
+        {"node_id": "gamma", "supervisor_url": "http://gamma:8795", "workers": ["gamma-0", "gamma-1"]},
+    ]
+    profile_path, _, _ = _materialize(tmp_path, participants=participants)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    configs = supervisor._validate_local_configs(job)
+    contract = supervisor._prepare_coordination(job, configs)
+    network = {"participants": {}}
+    for participant in participants:
+        network["participants"][participant["node_id"]] = {
+            "online": True,
+            "status": {
+                "plan_hash": supervisor.plan_hash,
+                "job_index": 0,
+                "job_id": "job-0",
+                "coordination": {
+                    "preflight_ready": True,
+                    "contract_hash": contract["contract_hash"],
+                },
+                "workers": {
+                    worker_id: {"join_ready": False}
+                    for worker_id in participant["workers"]
+                },
+            },
+        }
+
+    ready, reason = supervisor._worker_launch_ready(network, job, "omega")
+    assert ready, reason
+    ready, reason = supervisor._worker_launch_ready(network, job, "dragon")
+    assert not ready
+    assert "omega" in reason
+
+    omega = network["participants"]["omega"]["status"]["workers"]["omega"]
+    omega.update({
+        "join_ready": True,
+        "bootstrap_evidence": {
+            "genesis_hash": "genesis",
+            "population_block_hash": "population",
+            "population_fingerprint": "fingerprint",
+        },
+    })
+    ready, reason = supervisor._worker_launch_ready(network, job, "dragon")
+    assert ready, reason
+    ready, reason = supervisor._worker_launch_ready(network, job, "gamma-0")
+    assert not ready
+    assert "dragon" in reason
+
+
 def test_single_process_lock_rejects_second_supervisor(tmp_path: Path):
     profile_path, _, _ = _materialize(tmp_path)
     first = CampaignSupervisor(profile_path)
@@ -298,6 +361,49 @@ def test_completion_barrier_requires_all_workers_same_tip_and_versions(tmp_path:
     ready, reason, _ = supervisor._completion_evidence(network, supervisor.plan["jobs"][0])
     assert not ready
     assert "offline" in reason
+
+
+def test_runtime_health_detects_bootstrap_lineage_divergence(tmp_path: Path):
+    participants = [
+        {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
+        {"node_id": "dragon", "supervisor_url": "http://dragon:8795", "workers": ["dragon"]},
+    ]
+    profile_path, _, _ = _materialize(tmp_path, participants=participants)
+    supervisor = CampaignSupervisor(profile_path)
+    network = {"participants": {}}
+    for participant in participants:
+        status = _participant_status(
+            supervisor, participant["node_id"], participant["workers"]
+        )
+        for worker in status["workers"].values():
+            worker.update({
+                "bootstrap_evidence": {
+                    "genesis_hash": "genesis",
+                    "population_block_hash": "population",
+                    "population_fingerprint": "fingerprint",
+                },
+                "shared_population": {
+                    "generation": 0,
+                    "pop_size": 4,
+                },
+            })
+        network["participants"][participant["node_id"]] = {
+            "online": True,
+            "status": status,
+        }
+
+    healthy, issues = supervisor._runtime_swarm_health(
+        network, supervisor.plan["jobs"][0]
+    )
+    assert healthy, issues
+    network["participants"]["dragon"]["status"]["workers"]["dragon"][
+        "bootstrap_evidence"
+    ]["population_block_hash"] = "fork"
+    healthy, issues = supervisor._runtime_swarm_health(
+        network, supervisor.plan["jobs"][0]
+    )
+    assert not healthy
+    assert "lineage" in "; ".join(issues)
 
 
 def test_stop_barrier_rejects_unverified_process_or_different_artifact(tmp_path: Path):
@@ -353,6 +459,10 @@ def test_stop_barrier_accepts_durable_ack_from_node_that_already_advanced(tmp_pa
     }}
     ready, reason = supervisor._stop_barrier_ready(network, supervisor.plan["jobs"][0])
     assert ready, reason
+    dragon["completed_campaigns"][0]["artifact_sha256"] = "other"
+    ready, reason = supervisor._stop_barrier_ready(network, supervisor.plan["jobs"][0])
+    assert not ready
+    assert "same champion" in reason
 
 
 class _ChainHandler(BaseHTTPRequestHandler):

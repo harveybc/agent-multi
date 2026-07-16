@@ -568,7 +568,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-TRADING-001` | Codex | `agent-multi`, `doin-plugins`, `doin-core`, `doin-node` | verified_four_island | Local optimizer, exact champion artifact, generic metric evidence, external adapter, independent inference and four-island live optimization | Codex |
 | `DOIN-MONITOR-001` | Codex | `doin-node`, `doin-plugins` | verified_four_island | Decentralized health, candidate, exact metric basis, throughput, stage ETA, revision and alert dashboard | Codex |
 | `ARTIFACT-P2P-001` | Codex | DOIN stack | designed_not_implemented | Content-addressed descriptor, trackerless transfer and multi-peer replication gate | Codex |
-| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_island | Replicated six-cell campaign plan, append-only live migration, strict convergence/stop barriers, crash adoption, champion archive, decentralized history, deterministic duplicate-claim arbitration and non-resurrecting replicated leases | Codex |
+| `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_worker_swarm | Replicated six-cell campaign plan, append-only live migration, deterministic single-worker bootstrap, ordered follower joins, seed/data/config/version contract, lineage watchdogs, scoped worker repair, strict convergence/stop barriers, crash adoption, champion archive, decentralized history, duplicate-claim arbitration and non-resurrecting replicated leases | Codex |
 
 Claude packet:
 
@@ -587,8 +587,11 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Monitor the deployed immutable six-cell Stage A campaign queue;
-   fail closed on worker, revision, finalized-anchor or artifact divergence.
+1. Monitor the deployed immutable six-cell Stage A campaign queue; verify the
+   next automatic transition follows
+   `omega -> dragon -> gamma-5070ti -> gamma-5090` and fail closed on seed,
+   dataset, revision, genesis, population, finalized-anchor or artifact
+   divergence.
 2. Enable user linger on Dragon and Gamma, then remove the persistent Omega SSH
    availability bridge and re-test service persistence without an administrative login.
 3. Specify the staged nested weekly walk-forward L2 metric without opening the

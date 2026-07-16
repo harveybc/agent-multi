@@ -22,6 +22,7 @@ import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -175,7 +176,8 @@ def _domain_semantic_payload(config: dict[str, Any]) -> dict[str, Any]:
     optimization = domain.get("optimization_config")
     if isinstance(optimization, dict):
         optimization.pop("runtime_overlay", None)
-        optimization.pop("node_seed_offset", None)
+        if not optimization.get("shared_population"):
+            optimization.pop("node_seed_offset", None)
     domain.pop("resource_limits", None)
     return domain
 
@@ -193,6 +195,33 @@ def _config_port(config: dict[str, Any]) -> int:
     if not 1 <= port <= 65535:
         raise ValueError("node config port must be between 1 and 65535")
     return port
+
+
+def _shared_population_seed(config: dict[str, Any]) -> int:
+    domains = config.get("domains") or []
+    if len(domains) != 1:
+        raise ValueError("campaign node config must contain exactly one domain")
+    optimization = domains[0].get("optimization_config") or {}
+    if not optimization.get("shared_population"):
+        raise ValueError("campaign worker must use shared_population")
+    if config.get("require_deterministic_seed") is not True:
+        raise ValueError("campaign worker must require deterministic seeds")
+    offset = optimization.get("node_seed_offset")
+    if offset not in (None, 0, "0"):
+        raise ValueError("shared-population workers cannot use node_seed_offset")
+    configured = optimization.get(
+        "shared_population_seed", optimization.get("ga_seed")
+    )
+    if configured is None:
+        raise ValueError("shared-population worker has no explicit seed")
+    seed = int(configured)
+    if not 0 <= seed <= 0xFFFFFFFF:
+        raise ValueError("shared-population seed must fit uint32")
+    return seed
+
+
+def _population_fingerprint(population_state: dict[str, Any]) -> str:
+    return _sha256_json(population_state)
 
 
 class HistoryStore:
@@ -372,6 +401,12 @@ class CampaignSupervisor:
         self.stability_seconds = float(self.profile.get("convergence_stability_seconds", 20.0))
         self.stop_timeout = float(self.profile.get("stop_timeout_seconds", 30.0))
         self.restart_limit = int(self.profile.get("worker_restart_limit", 5))
+        self.join_grace_seconds = float(
+            self.profile.get("worker_join_grace_seconds", 120.0)
+        )
+        self.claimless_grace_seconds = float(
+            self.profile.get("claimless_worker_grace_seconds", 300.0)
+        )
         self._mutex = threading.RLock()
         self._shutdown = threading.Event()
         self._httpd: ThreadingHTTPServer | None = None
@@ -422,6 +457,25 @@ class CampaignSupervisor:
     def _local_worker_ids(self) -> list[str]:
         return [str(value) for value in self._participant()["workers"]]
 
+    def _global_worker_ids(self) -> list[str]:
+        return [
+            str(worker_id)
+            for participant in self.plan["participants"]
+            for worker_id in participant["workers"]
+        ]
+
+    def _bootstrap_worker_id(self) -> str:
+        return self._global_worker_ids()[0]
+
+    def _bootstrap_node_id(self) -> str:
+        return str(self.plan["participants"][0]["node_id"])
+
+    def _worker_node_id(self, worker_id: str) -> str:
+        for participant in self.plan["participants"]:
+            if worker_id in participant["workers"]:
+                return str(participant["node_id"])
+        raise ValueError(f"unknown campaign worker {worker_id}")
+
     def _worker_profile(self, worker_id: str) -> dict[str, Any]:
         profiles = self.profile.get("workers") or {}
         value = profiles.get(worker_id)
@@ -461,6 +515,7 @@ class CampaignSupervisor:
             "archive": {},
             "alerts": [],
             "completion_candidate_since": None,
+            "coordination": {},
             "updated_at": _utc_now(),
         }
         _atomic_json(self.state_path, state)
@@ -555,6 +610,8 @@ class CampaignSupervisor:
     def _validate_local_configs(self, job: dict[str, Any]) -> dict[str, dict[str, Any]]:
         loaded: dict[str, dict[str, Any]] = {}
         semantic_hashes: set[str] = set()
+        seeds: set[int] = set()
+        population_sizes: set[int] = set()
         for worker_id in self._local_worker_ids():
             path = self._worker_config_path(job, worker_id)
             config = _load_json(path)
@@ -569,16 +626,115 @@ class CampaignSupervisor:
                 raise ValueError(
                     f"{worker_id} semantic hash {semantic_hash} != planned {expected}"
                 )
+            seed = _shared_population_seed(config)
+            domain = (config.get("domains") or [])[0]
+            optimization = domain.get("optimization_config") or {}
+            population_size = int(
+                optimization.get(
+                    "shared_population_size",
+                    optimization.get("population_size", 0),
+                )
+            )
+            if population_size < 1:
+                raise ValueError(f"{worker_id} has no shared population size")
+            seeds.add(seed)
+            population_sizes.add(population_size)
             dataset_evidence = self._validate_dataset_evidence(config)
             loaded[worker_id] = {
                 "path": str(path),
                 "port": _config_port(config),
                 "semantic_hash": semantic_hash,
+                "seed": seed,
+                "population_size": population_size,
                 "dataset": dataset_evidence,
             }
         if len(semantic_hashes) != 1:
             raise ValueError("local worker configs do not describe the same optimization domain")
+        if len(seeds) != 1:
+            raise ValueError("local worker configs do not use the same shared seed")
+        if len(population_sizes) != 1:
+            raise ValueError("local worker configs do not use the same population size")
         return loaded
+
+    def _component_versions(self) -> dict[str, str]:
+        configured = self.profile.get("component_versions")
+        if isinstance(configured, dict) and configured:
+            return {
+                str(key): str(value)
+                for key, value in sorted(configured.items())
+            }
+        try:
+            from doin_node.versioning import compute_component_versions
+        except Exception as exc:
+            raise RuntimeError(f"cannot compute DOIN component versions: {exc}") from exc
+        versions = compute_component_versions()
+        if not isinstance(versions, dict) or not versions:
+            raise RuntimeError("DOIN component version map is empty")
+        return {str(key): str(value) for key, value in sorted(versions.items())}
+
+    def _coordination_contract(
+        self, job: dict[str, Any], configs: dict[str, dict[str, Any]]
+    ) -> dict[str, Any]:
+        datasets = {
+            (
+                value.get("dataset") or {}
+            ).get("sha256")
+            for value in configs.values()
+        }
+        datasets.discard(None)
+        if len(datasets) > 1:
+            raise ValueError("local workers do not use the same dataset bytes")
+        seeds = {int(value["seed"]) for value in configs.values()}
+        population_sizes = {
+            int(value["population_size"]) for value in configs.values()
+        }
+        contract = {
+            "plan_hash": self.plan_hash,
+            "job_index": int(job["ordinal"]),
+            "job_id": str(job["job_id"]),
+            "domain_id": str(job["domain_id"]),
+            "domain_semantic_hash": str(job.get("domain_semantic_hash") or ""),
+            "shared_population_seed": next(iter(seeds)),
+            "shared_population_size": next(iter(population_sizes)),
+            "dataset_sha256": next(iter(datasets), None),
+            "component_versions": self._component_versions(),
+            "bootstrap_node_id": self._bootstrap_node_id(),
+            "bootstrap_worker_id": self._bootstrap_worker_id(),
+            "worker_join_order": self._global_worker_ids(),
+        }
+        contract["contract_hash"] = _sha256_json(contract)
+        return contract
+
+    def _prepare_coordination(
+        self, job: dict[str, Any], configs: dict[str, dict[str, Any]]
+    ) -> dict[str, Any]:
+        contract = self._coordination_contract(job, configs)
+        existing = self.state.get("coordination") or {}
+        if existing.get("job_id") not in (None, job["job_id"]):
+            existing = {}
+        legacy_adopted = bool(
+            existing.get("legacy_adopted")
+            or (not existing and self.state.get("phase") == "running")
+        )
+        coordination = {
+            **existing,
+            **contract,
+            "job_id": job["job_id"],
+            "preflight_ready": True,
+            "preflight_at": existing.get("preflight_at") or _utc_now(),
+            "local_datasets": {
+                worker_id: value.get("dataset")
+                for worker_id, value in configs.items()
+            },
+            "role": (
+                "bootstrap"
+                if self.node_id == contract["bootstrap_node_id"]
+                else "follower"
+            ),
+            "legacy_adopted": legacy_adopted,
+        }
+        self.state["coordination"] = coordination
+        return coordination
 
     def _worker_state(self, worker_id: str) -> dict[str, Any]:
         workers = self.state.setdefault("workers", {})
@@ -651,11 +807,60 @@ class CampaignSupervisor:
             "api_url": f"http://127.0.0.1:{config['port']}",
             "log_path": str(log_path),
             "command_hash": hashlib.sha256("\0".join(command).encode("utf-8")).hexdigest(),
+            "stopped_verified": False,
+            "join_ready": False,
+            "join_reason": "worker API has not completed bootstrap verification",
+            "join_mismatch_since": None,
         })
         self.history.event(
             node_id=self.node_id, job_id=job["job_id"], worker_id=worker_id,
             event="worker_started", detail={"pid": process.pid, "log_path": str(log_path)},
         )
+
+    def _bootstrap_chain_evidence(
+        self, api_url: str, domain_id: str, chain_height: int
+    ) -> dict[str, Any]:
+        genesis = _http_json(
+            api_url + "/chain/block/0", max(self.peer_timeout, 10.0)
+        )
+        evidence: dict[str, Any] = {
+            "genesis_hash": genesis.get("hash"),
+            "population_block_index": None,
+            "population_block_hash": None,
+            "population_transaction_id": None,
+            "population_fingerprint": None,
+            "shared_population_seed": None,
+        }
+        for index in range(1, max(1, chain_height)):
+            block = _http_json(
+                api_url + f"/chain/block/{index}",
+                max(self.peer_timeout, 20.0),
+            )
+            for transaction in block.get("transactions") or []:
+                if transaction.get("domain_id") != domain_id:
+                    continue
+                payload = transaction.get("payload") or {}
+                population = payload.get("_shared_population")
+                if not isinstance(population, dict):
+                    continue
+                if int(population.get("generation", -1)) != 0:
+                    continue
+                evidence.update({
+                    "population_block_index": index,
+                    "population_block_hash": block.get("hash"),
+                    "population_transaction_id": transaction.get("id"),
+                    "population_fingerprint": (
+                        payload.get("_shared_population_fingerprint")
+                        or _population_fingerprint(population)
+                    ),
+                    "shared_population_seed": (
+                        payload.get("_shared_population_seed")
+                        if payload.get("_shared_population_seed") is not None
+                        else population.get("bootstrap_seed")
+                    ),
+                })
+                return evidence
+        return evidence
 
     def _poll_local_workers(self, job: dict[str, Any], configs: dict[str, dict[str, Any]]) -> None:
         for worker_id, config in configs.items():
@@ -682,11 +887,70 @@ class CampaignSupervisor:
             domain = (status.get("domains") or {}).get(job["domain_id"]) or {}
             worker["converged"] = bool(domain.get("converged"))
             worker["best_performance"] = domain.get("best_performance")
+            if (
+                not worker.get("bootstrap_evidence")
+                and int(chain.get("chain_height", 0)) > 1
+            ):
+                try:
+                    worker["bootstrap_evidence"] = self._bootstrap_chain_evidence(
+                        api_url, job["domain_id"], int(chain["chain_height"])
+                    )
+                    worker["bootstrap_evidence_error"] = None
+                except Exception as exc:
+                    worker["bootstrap_evidence_error"] = str(exc)
+            query = urllib.parse.urlencode({"domain_id": job["domain_id"]})
+            try:
+                shared = _http_json(
+                    api_url + f"/api/shared/candidates?{query}",
+                    max(self.peer_timeout, 5.0),
+                )
+            except Exception as exc:
+                worker["shared_population_error"] = str(exc)
+            else:
+                worker["shared_population"] = {
+                    key: shared.get(key)
+                    for key in (
+                        "domain_id",
+                        "generation",
+                        "pop_size",
+                        "evaluated",
+                        "claimed",
+                        "free",
+                        "bootstrap_seed",
+                        "population_fingerprint",
+                    )
+                    if shared.get(key) is not None
+                }
+                worker["shared_population_error"] = None
+                peer_prefix = str(status.get("peer_id") or "")
+                owned_claims = [
+                    item
+                    for item in shared.get("candidates") or []
+                    if item.get("state") == "claimed"
+                    and str(item.get("owner") or "").startswith(peer_prefix)
+                ]
+                worker["owns_candidate"] = bool(owned_claims)
+                worker["owned_candidate_indices"] = [
+                    int(item["index"]) for item in owned_claims
+                ]
+                progress_signature = _sha256_json({
+                    "generation": shared.get("generation"),
+                    "evaluated": shared.get("evaluated"),
+                    "claimed": shared.get("claimed"),
+                    "free": shared.get("free"),
+                    "chain_height": chain.get("chain_height"),
+                })
+                if worker.get("progress_signature") != progress_signature:
+                    worker["progress_signature"] = progress_signature
+                    worker["last_progress_at"] = time.time()
+                if worker["owns_candidate"] or not int(shared.get("free", 0)):
+                    worker["claimless_since"] = None
+                elif worker.get("claimless_since") is None:
+                    worker["claimless_since"] = time.time()
             finalized_height = chain.get("finalized_height")
             worker["finalized_height"] = finalized_height
             if (
-                worker["converged"]
-                and finalized_height is not None
+                finalized_height is not None
                 and int(finalized_height) >= 0
                 and worker.get("finalized_hash_height") != int(finalized_height)
             ):
@@ -718,6 +982,14 @@ class CampaignSupervisor:
             "finalized_hash": worker.get("finalized_hash"),
             "component_versions": chain.get("component_versions") or {},
             "peer_count": doin.get("peers"),
+            "owns_candidate": bool(worker.get("owns_candidate")),
+            "owned_candidate_indices": worker.get("owned_candidate_indices") or [],
+            "shared_population": worker.get("shared_population") or {},
+            "shared_population_error": worker.get("shared_population_error"),
+            "bootstrap_evidence": worker.get("bootstrap_evidence") or {},
+            "bootstrap_evidence_error": worker.get("bootstrap_evidence_error"),
+            "join_ready": bool(worker.get("join_ready")),
+            "join_reason": worker.get("join_reason"),
             "api_url": worker.get("api_url"),
             "api_error": worker.get("api_error"),
             "last_seen": worker.get("last_seen"),
@@ -764,6 +1036,7 @@ class CampaignSupervisor:
                 worker_id: self._public_worker(worker_id, worker_states.get(worker_id, {}))
                 for worker_id in self._local_worker_ids()
             },
+            "coordination": state.get("coordination") or {},
             "archive": state.get("archive") or {},
             "completed_campaigns": completed_campaigns,
             "alerts": state.get("alerts") or [],
@@ -816,6 +1089,264 @@ class CampaignSupervisor:
             "history": history,
             "generated_at": _utc_now(),
         }
+
+    def _network_worker(
+        self, network: dict[str, Any], worker_id: str
+    ) -> dict[str, Any] | None:
+        node_id = self._worker_node_id(worker_id)
+        report = (network.get("participants") or {}).get(node_id) or {}
+        if not report.get("online"):
+            return None
+        return ((report.get("status") or {}).get("workers") or {}).get(worker_id)
+
+    def _startup_preflight_ready(
+        self, network: dict[str, Any], job: dict[str, Any]
+    ) -> tuple[bool, str]:
+        contracts: set[str] = set()
+        for participant in self.plan["participants"]:
+            node_id = str(participant["node_id"])
+            report = (network.get("participants") or {}).get(node_id) or {}
+            if not report.get("online"):
+                return False, f"required startup supervisor {node_id} is offline"
+            status = report.get("status") or {}
+            if status.get("plan_hash") != self.plan_hash:
+                return False, f"{node_id} has a different plan hash"
+            if status.get("job_index") != int(job["ordinal"]):
+                return False, f"{node_id} has not reached job {job['ordinal']}"
+            if status.get("job_id") != job["job_id"]:
+                return False, f"{node_id} is on job {status.get('job_id')}"
+            coordination = status.get("coordination") or {}
+            if not coordination.get("preflight_ready"):
+                return False, f"{node_id} has not completed startup preflight"
+            contract_hash = str(coordination.get("contract_hash") or "")
+            if not contract_hash:
+                return False, f"{node_id} has no startup contract"
+            contracts.add(contract_hash)
+        if len(contracts) != 1:
+            return False, "supervisors disagree on seed/data/config/version contract"
+        expected = str(
+            (self.state.get("coordination") or {}).get("contract_hash") or ""
+        )
+        if contracts != {expected}:
+            return False, "local startup contract differs from the swarm contract"
+        return True, "all supervisors passed the identical startup preflight"
+
+    @staticmethod
+    def _lineage_key(worker: dict[str, Any] | None) -> tuple[Any, ...] | None:
+        if not worker:
+            return None
+        evidence = worker.get("bootstrap_evidence") or {}
+        values = (
+            evidence.get("genesis_hash"),
+            evidence.get("population_block_hash"),
+            evidence.get("population_fingerprint"),
+        )
+        if any(value in (None, "") for value in values):
+            return None
+        return values
+
+    def _worker_launch_ready(
+        self,
+        network: dict[str, Any],
+        job: dict[str, Any],
+        worker_id: str,
+    ) -> tuple[bool, str]:
+        ready, reason = self._startup_preflight_ready(network, job)
+        if not ready:
+            return False, reason
+        order = self._global_worker_ids()
+        rank = order.index(worker_id)
+        for predecessor in order[:rank]:
+            worker = self._network_worker(network, predecessor)
+            if not worker or not worker.get("join_ready"):
+                return False, f"waiting for predecessor {predecessor}"
+        if rank:
+            bootstrap = self._network_worker(network, order[0])
+            if not bootstrap or self._lineage_key(bootstrap) is None:
+                return False, "bootstrap worker has no verified chain lineage"
+        return True, "ordered startup predecessor barrier passed"
+
+    def _validate_worker_join(
+        self,
+        network: dict[str, Any],
+        job: dict[str, Any],
+        worker_id: str,
+        config: dict[str, Any],
+    ) -> tuple[bool, str]:
+        worker = self._worker_state(worker_id)
+        if worker.get("status") != "running":
+            return False, f"{worker_id} API is not running"
+        evidence = worker.get("bootstrap_evidence") or {}
+        if not evidence.get("genesis_hash"):
+            return False, f"{worker_id} has no genesis evidence"
+        if not evidence.get("population_block_hash"):
+            return False, f"{worker_id} has no generation-zero population block"
+        shared = worker.get("shared_population") or {}
+        if shared.get("domain_id") != job["domain_id"]:
+            return False, f"{worker_id} shared pool domain mismatch"
+        if int(shared.get("pop_size", 0)) != int(config["population_size"]):
+            return False, f"{worker_id} shared population size mismatch"
+        observed_seed = evidence.get("shared_population_seed")
+        if observed_seed is not None and int(observed_seed) != int(config["seed"]):
+            return False, f"{worker_id} shared seed mismatch"
+        expected_versions = (
+            (self.state.get("coordination") or {}).get("component_versions") or {}
+        )
+        observed_versions = (
+            (worker.get("last_chain_status") or {}).get("component_versions") or {}
+        )
+        if observed_versions != expected_versions:
+            return False, f"{worker_id} component versions differ from startup contract"
+        if worker_id != self._bootstrap_worker_id():
+            bootstrap = self._network_worker(network, self._bootstrap_worker_id())
+            expected_lineage = self._lineage_key(bootstrap)
+            observed_lineage = self._lineage_key(self._public_worker(worker_id, worker))
+            if expected_lineage is None:
+                return False, "bootstrap lineage is not yet available"
+            if observed_lineage != expected_lineage:
+                return False, f"{worker_id} joined a different blockchain lineage"
+        return True, "seed, genesis, population and component lineage match"
+
+    def _repair_join_mismatch(
+        self,
+        job: dict[str, Any],
+        worker_id: str,
+        config: dict[str, Any],
+        reason: str,
+    ) -> None:
+        worker = self._worker_state(worker_id)
+        since = worker.get("join_mismatch_since")
+        if since is None:
+            worker["join_mismatch_since"] = time.time()
+            return
+        if time.time() - float(since) < self.join_grace_seconds:
+            return
+        repairs = int(worker.get("join_repair_count", 0))
+        if repairs >= self.restart_limit:
+            self.state["phase"] = "blocked"
+            self._alert(
+                f"join_repair_limit:{worker_id}",
+                f"{worker_id} could not join the canonical swarm: {reason}",
+            )
+            return
+        self._stop_worker(job, worker_id, config)
+        worker["join_repair_count"] = repairs + 1
+        worker["join_mismatch_since"] = None
+        worker["bootstrap_evidence"] = {}
+        worker["shared_population"] = {}
+        worker["join_ready"] = False
+        self.history.event(
+            node_id=self.node_id,
+            job_id=job["job_id"],
+            worker_id=worker_id,
+            event="worker_join_repair",
+            detail={"reason": reason, "repair_count": repairs + 1},
+        )
+
+    def _update_join_state(
+        self,
+        network: dict[str, Any],
+        job: dict[str, Any],
+        configs: dict[str, dict[str, Any]],
+    ) -> None:
+        for worker_id, config in configs.items():
+            worker = self._worker_state(worker_id)
+            if worker.get("status") not in {"running", "starting", "adopted"}:
+                continue
+            ready, reason = self._validate_worker_join(
+                network, job, worker_id, config
+            )
+            worker["join_ready"] = ready
+            worker["join_reason"] = reason
+            if ready:
+                worker["join_mismatch_since"] = None
+                worker["joined_at"] = worker.get("joined_at") or _utc_now()
+                self._clear_alert(f"join_mismatch:{worker_id}")
+            elif worker.get("status") == "running":
+                self._alert(
+                    f"join_mismatch:{worker_id}", reason, severity="warning"
+                )
+                self._repair_join_mismatch(
+                    job, worker_id, config, reason
+                )
+
+    def _runtime_swarm_health(
+        self, network: dict[str, Any], job: dict[str, Any]
+    ) -> tuple[bool, list[str]]:
+        issues: list[str] = []
+        workers: list[dict[str, Any]] = []
+        for worker_id in self._global_worker_ids():
+            worker = self._network_worker(network, worker_id)
+            if not worker or worker.get("status") != "running":
+                issues.append(f"{worker_id} is not running")
+                continue
+            workers.append(worker)
+        lineages = {
+            lineage for worker in workers
+            if (lineage := self._lineage_key(worker)) is not None
+        }
+        if len(lineages) > 1:
+            issues.append("workers report different genesis/population lineage")
+        versions = {
+            _canonical_json(worker.get("component_versions") or {})
+            for worker in workers
+        }
+        if len(versions) > 1:
+            issues.append("workers report different component versions")
+        finalized = {
+            (worker.get("finalized_height"), worker.get("finalized_hash"))
+            for worker in workers
+            if worker.get("finalized_hash")
+        }
+        if len(finalized) > 1:
+            issues.append("workers report different finalized blockchain anchors")
+        pools = [
+            worker.get("shared_population") or {}
+            for worker in workers
+        ]
+        generations = {
+            (pool.get("generation"), pool.get("pop_size")) for pool in pools
+            if pool.get("generation") is not None
+        }
+        if len(generations) > 1:
+            issues.append("workers report different shared-population generations")
+        return not issues, issues
+
+    def _repair_claimless_local_workers(
+        self,
+        job: dict[str, Any],
+        configs: dict[str, dict[str, Any]],
+    ) -> None:
+        for worker_id, config in configs.items():
+            worker = self._worker_state(worker_id)
+            since = worker.get("claimless_since")
+            shared = worker.get("shared_population") or {}
+            if (
+                worker.get("status") != "running"
+                or worker.get("converged")
+                or worker.get("owns_candidate")
+                or int(shared.get("free", 0)) < 1
+                or since is None
+                or time.time() - float(since) < self.claimless_grace_seconds
+            ):
+                continue
+            repairs = int(worker.get("claimless_repair_count", 0))
+            if repairs >= self.restart_limit:
+                self._alert(
+                    f"claimless_repair_limit:{worker_id}",
+                    f"{worker_id} remains idle while shared candidates are free",
+                )
+                continue
+            self._stop_worker(job, worker_id, config)
+            worker["claimless_repair_count"] = repairs + 1
+            worker["claimless_since"] = None
+            self.history.event(
+                node_id=self.node_id,
+                job_id=job["job_id"],
+                worker_id=worker_id,
+                event="claimless_worker_repair",
+                detail={"repair_count": repairs + 1},
+            )
 
     def _completion_evidence(self, network: dict[str, Any], job: dict[str, Any]) -> tuple[bool, str, dict[str, Any]]:
         worker_rows: dict[str, dict[str, Any]] = {}
@@ -906,13 +1437,13 @@ class CampaignSupervisor:
                 return False, f"{node_id} is on another job without a completion acknowledgement"
             if not completed.get("tip_hash") or not completed.get("artifact_sha256"):
                 return False, f"{node_id} completion acknowledgement is incomplete"
-                archives.append({
-                    "chain_height": completed.get("chain_height"),
-                    "tip_hash": completed.get("tip_hash"),
-                    "finalized_height": completed.get("finalized_height"),
-                    "finalized_hash": completed.get("finalized_hash"),
-                    "champion": {"artifact_sha256": completed.get("artifact_sha256")},
-                })
+            archives.append({
+                "chain_height": completed.get("chain_height"),
+                "tip_hash": completed.get("tip_hash"),
+                "finalized_height": completed.get("finalized_height"),
+                "finalized_hash": completed.get("finalized_hash"),
+                "champion": {"artifact_sha256": completed.get("artifact_sha256")},
+            })
         champions = {
             (item.get("champion") or {}).get("artifact_sha256") for item in archives
         }
@@ -1123,6 +1654,7 @@ class CampaignSupervisor:
             "archive": {},
             "alerts": [],
             "completion_candidate_since": None,
+            "coordination": {},
         })
 
     def tick(self) -> None:
@@ -1134,6 +1666,7 @@ class CampaignSupervisor:
                 return
             try:
                 configs = self._validate_local_configs(job)
+                coordination = self._prepare_coordination(job, configs)
             except Exception as exc:
                 self.state["phase"] = "blocked"
                 self._alert("config_validation", str(exc))
@@ -1141,24 +1674,97 @@ class CampaignSupervisor:
                 return
 
             phase = self.state.get("phase", "starting")
-            if phase in {"starting", "running"}:
+            if phase == "starting":
+                self._poll_local_workers(job, configs)
+                network = self._network_status()
+                for worker_id in self._global_worker_ids():
+                    if worker_id not in configs:
+                        continue
+                    worker = self._worker_state(worker_id)
+                    if _pid_matches(
+                        worker.get("pid"), worker.get("pid_start_ticks")
+                    ):
+                        continue
+                    ready, reason = self._worker_launch_ready(
+                        network, job, worker_id
+                    )
+                    worker["launch_ready"] = ready
+                    worker["launch_reason"] = reason
+                    if ready:
+                        self._start_or_adopt_worker(
+                            job, worker_id, configs[worker_id]
+                        )
+                        break
+                self._poll_local_workers(job, configs)
+                network = self._network_status()
+                self._update_join_state(network, job, configs)
+                network = self._network_status()
+                all_joined = all(
+                    (
+                        self._network_worker(network, worker_id) or {}
+                    ).get("join_ready")
+                    for worker_id in self._global_worker_ids()
+                )
+                if all_joined:
+                    self.history.mark_started(job, self.plan_hash)
+                    self.history.event(
+                        node_id=self.node_id,
+                        job_id=job["job_id"],
+                        event="campaign_running",
+                        detail={
+                            "contract_hash": coordination["contract_hash"],
+                            "bootstrap_worker_id": self._bootstrap_worker_id(),
+                            "worker_join_order": self._global_worker_ids(),
+                        },
+                    )
+                    self.state["phase"] = "running"
+                    self.state["coordination"]["swarm_ready_at"] = _utc_now()
+                    self._clear_alert("startup_barrier")
+                    self._clear_alert("local_worker_unavailable")
+                else:
+                    ready, reason = self._startup_preflight_ready(network, job)
+                    if ready:
+                        reason = "waiting for ordered worker bootstrap/join barrier"
+                    self._alert("startup_barrier", reason, severity="warning")
+
+            elif phase == "running":
+                network = self._network_status()
                 for worker_id, config in configs.items():
-                    self._start_or_adopt_worker(job, worker_id, config)
+                    worker = self._worker_state(worker_id)
+                    if _pid_matches(
+                        worker.get("pid"), worker.get("pid_start_ticks")
+                    ):
+                        continue
+                    if coordination.get("legacy_adopted"):
+                        self._start_or_adopt_worker(job, worker_id, config)
+                        continue
+                    ready, reason = self._worker_launch_ready(
+                        network, job, worker_id
+                    )
+                    worker["launch_ready"] = ready
+                    worker["launch_reason"] = reason
+                    if ready:
+                        self._start_or_adopt_worker(job, worker_id, config)
                 self._poll_local_workers(job, configs)
                 if self.state.get("phase") == "blocked":
                     self._save_state()
                     return
+                network = self._network_status()
+                if not coordination.get("legacy_adopted"):
+                    self._update_join_state(network, job, configs)
+                    network = self._network_status()
+                healthy, issues = self._runtime_swarm_health(network, job)
+                if healthy:
+                    self._clear_alert("swarm_health")
+                else:
+                    self._alert(
+                        "swarm_health", "; ".join(issues), severity="warning"
+                    )
+                self._repair_claimless_local_workers(job, configs)
                 if all(
                     self._worker_state(worker_id).get("status") == "running"
                     for worker_id in configs
                 ):
-                    if phase == "starting":
-                        self.history.mark_started(job, self.plan_hash)
-                        self.history.event(
-                            node_id=self.node_id, job_id=job["job_id"],
-                            event="campaign_running",
-                        )
-                    self.state["phase"] = "running"
                     self._clear_alert("local_worker_unavailable")
                 else:
                     self._alert(
@@ -1166,7 +1772,6 @@ class CampaignSupervisor:
                         "one or more local DOIN workers have not exposed a healthy API",
                         severity="warning",
                     )
-                network = self._network_status()
                 ready, reason, _ = self._completion_evidence(network, job)
                 if ready:
                     since = self.state.get("completion_candidate_since")
@@ -1248,14 +1853,14 @@ class CampaignSupervisor:
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,sans-serif}}
 header{{background:#17232d;color:#fff;padding:18px 24px}}h1{{font-size:20px;margin:0;letter-spacing:0}}header p{{margin:4px 0 0;color:#c6d0d8}}
 main{{max-width:1500px;margin:auto;padding:18px 24px}}section{{margin:0 0 22px}}h2{{font-size:15px;margin:0 0 8px}}
-.summary{{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}}
+.summary{{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}}
 .metric{{background:var(--panel);padding:12px;min-height:72px}}.metric b{{display:block;font-size:18px}}.metric span{{color:var(--muted);font-size:12px}}
 table{{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line)}}th,td{{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}}th{{font-size:12px;color:var(--muted);background:#eef2f5}}code{{font-size:12px}}
 .ok{{color:var(--ok);font-weight:650}}.warn{{color:var(--warn);font-weight:650}}.bad{{color:var(--bad);font-weight:700}}.alerts{{border-left:4px solid var(--bad);background:#fff3f2;padding:10px 14px;margin-bottom:14px}}a{{color:#075c9c}}
 @media(max-width:800px){{main{{padding:12px}}.summary{{grid-template-columns:1fr 1fr}}table{{display:block;overflow:auto}}}}
 </style></head><body><header><h1>{title}</h1><p>Replicated campaign lifecycle and champion registry</p></header>
 <main><div id="alerts"></div><section><div class="summary" id="summary"></div></section>
-<section><h2>Participants</h2><table><thead><tr><th>Node / worker</th><th>Phase</th><th>Process</th><th>Chain</th><th>Fitness</th><th>Versions</th></tr></thead><tbody id="workers"></tbody></table></section>
+<section><h2>Participants</h2><table><thead><tr><th>Node / worker</th><th>Phase</th><th>Process</th><th>Join / candidate</th><th>Chain lineage</th><th>Fitness</th><th>Versions</th></tr></thead><tbody id="workers"></tbody></table></section>
 <section><h2>Optimization queue</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Purpose</th><th>Champion</th></tr></thead><tbody id="queue"></tbody></table></section>
 <section><h2>Campaign history</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Champion</th><th>Artifact</th><th>Completed</th></tr></thead><tbody id="history"></tbody></table></section></main>
 <script>
@@ -1263,11 +1868,12 @@ const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({{'&':'&amp;','<':'&lt;','>':
 const short=v=>v?esc(String(v).slice(0,12)):'-'; const pct=v=>v==null?'-':Number(v).toFixed(6);
 async function refresh(){{let d;try{{d=await(await fetch('/api/network')).json()}}catch(e){{document.querySelector('#alerts').innerHTML='<div class="alerts">Dashboard API unavailable: '+esc(e)+'</div>';return}}
  const ps=Object.values(d.participants), online=ps.filter(x=>x.online).length, local=ps.find(x=>x.status)?.status||{{}};
- document.querySelector('#summary').innerHTML=[['Current job',local.job_id||'complete'],['Phase',local.phase],['Supervisors',online+'/'+ps.length],['Plan hash',short(d.plan_hash)],['History',d.history.length+' campaigns']].map(x=>`<div class="metric"><b>${{esc(x[1])}}</b><span>${{esc(x[0])}}</span></div>`).join('');
+ const coordination=local.coordination||{{}}, joined=ps.filter(p=>p.online).flatMap(p=>Object.values((p.status||{{}}).workers||{{}})).filter(w=>w.join_ready).length, workers=ps.filter(p=>p.online).flatMap(p=>Object.values((p.status||{{}}).workers||{{}}));
+ document.querySelector('#summary').innerHTML=[['Current job',local.job_id||'complete'],['Phase',local.phase],['Supervisors',online+'/'+ps.length],['Workers joined',joined+'/'+workers.length],['Bootstrap',coordination.bootstrap_worker_id||'-'],['Contract',short(coordination.contract_hash)],['History',d.history.length+' campaigns']].map(x=>`<div class="metric"><b>${{esc(x[1])}}</b><span>${{esc(x[0])}}</span></div>`).join('');
  const alerts=[]; ps.forEach(p=>{{if(!p.online)alerts.push('OFFLINE: '+(p.url||'peer')); else (p.status.alerts||[]).forEach(a=>alerts.push(p.status.node_id+': '+a.message))}});
  document.querySelector('#alerts').innerHTML=alerts.length?`<div class="alerts"><b>SWARM ALERT</b><br>${{alerts.map(esc).join('<br>')}}</div>`:'';
- let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="4">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn'; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td>${{esc(w.chain_height||'-')}}<br><code>${{short(w.tip_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
- document.querySelector('#workers').innerHTML=rows||'<tr><td colspan="6">No workers reported</td></tr>';
+ let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="5">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn', joinCls=w.join_ready?'ok':'warn', pool=w.shared_population||{{}}, lineage=w.bootstrap_evidence||{{}}; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td class="${{joinCls}}">${{w.join_ready?'verified':esc(w.join_reason||'waiting')}}<br>${{w.owns_candidate?'candidate '+esc((w.owned_candidate_indices||[]).join(',')):'no active claim'}}<br>gen ${{esc(pool.generation??'-')}} / free ${{esc(pool.free??'-')}}</td><td>height ${{esc(w.chain_height||'-')}}<br><code>genesis ${{short(lineage.genesis_hash)}}<br>population ${{short(lineage.population_block_hash)}}<br>final ${{short(w.finalized_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
+ document.querySelector('#workers').innerHTML=rows||'<tr><td colspan="7">No workers reported</td></tr>';
  document.querySelector('#queue').innerHTML=(d.plan_jobs||[]).map(j=>{{const cls=j.status==='completed'?'ok':j.status==='queued'?'':j.status==='history_missing'?'bad':'warn';return `<tr><td>${{esc(j.ordinal)}}</td><td>${{esc(j.job_id)}}</td><td>${{esc(j.domain_id)}}</td><td class="${{cls}}">${{esc(j.status)}}</td><td>${{esc(j.purpose||'-')}}</td><td>${{pct(j.champion_fitness)}}<br><code>${{short(j.artifact_sha256)}}</code></td></tr>`}}).join('')||'<tr><td colspan="6">No queued jobs</td></tr>';
  document.querySelector('#history').innerHTML=d.history.map(h=>`<tr><td>${{esc(h.ordinal)}}</td><td>${{esc(h.job_id)}}</td><td>${{esc(h.domain_id)}}</td><td class="${{h.status==='completed'?'ok':'warn'}}">${{esc(h.status)}}</td><td>${{pct(h.champion_fitness)}}<br>${{short(h.champion_peer_id)}}</td><td><code>${{short(h.artifact_sha256)}}</code><br>${{esc(h.artifact_format||'')}}</td><td>${{esc(h.completed_at||'-')}}</td></tr>`).join('')||'<tr><td colspan="7">No completed campaigns yet</td></tr>';
 }}
