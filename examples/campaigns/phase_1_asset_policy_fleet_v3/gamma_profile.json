@@ -1,0 +1,26 @@
+{
+  "schema_version": "agent_multi.doin_campaign_profile.v1",
+  "node_id": "gamma",
+  "plan_file": "campaign_plan.json",
+  "expected_plan_hash": "2797627c93fe7fb785f995f3eb43d30578476579ff7bb74bef21674de2b9a137",
+  "state_dir": "~/.local/state/agent-multi/doin-campaigns/phase-1-asset-policy-fleet-v2/gamma",
+  "listen_host": "0.0.0.0",
+  "listen_port": 8795,
+  "poll_seconds": 5,
+  "peer_timeout_seconds": 2,
+  "convergence_stability_seconds": 20,
+  "stop_timeout_seconds": 30,
+  "worker_restart_limit": 5,
+  "workers": {
+    "gamma-5070ti": {
+      "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
+      "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+      "log_level": "INFO"
+    },
+    "gamma-5090": {
+      "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
+      "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+      "log_level": "INFO"
+    }
+  }
+}

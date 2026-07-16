@@ -1,0 +1,30 @@
+{
+  "schema_version": "agent_multi.dataset_manifest.v1",
+  "dataset_id": "dogeusdt_4h_kitchen_sink_guarded_2019_2023",
+  "asset": "DOGEUSDT",
+  "timeframe": "4h",
+  "source_repository": "financial-data",
+  "source_path": "experiments/stage_a_screening/inputs/dogeusdt/4h/kitchen_sink_guarded/train.csv",
+  "sha256": "3d525894a5c1f6aac1b6dfc00cdff4d32106f9ac5bf9722318dc80b9cef530ce",
+  "row_count": 9487,
+  "column_count": 127,
+  "first_timestamp": "2019-09-02T16:00:00",
+  "last_timestamp": "2023-12-31T20:00:00",
+  "date_column": "DATE_TIME",
+  "data_profile": "kitchen_sink_guarded",
+  "splits": {
+    "train": [
+      "2021-01-01T00:00:00",
+      "2021-12-31T23:59:59"
+    ],
+    "validation": [
+      "2022-01-01T00:00:00",
+      "2022-12-31T23:59:59"
+    ],
+    "test": [
+      "2023-01-01T00:00:00",
+      "2023-12-31T23:59:59"
+    ]
+  },
+  "selection_uses_test": false
+}
