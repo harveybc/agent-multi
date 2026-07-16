@@ -398,9 +398,33 @@ dashboard is available on every host at port `8795`; Omega's local view is
 
 The `doin-node` focused lease/arbitration tests pass, including preservation of
 remote lease age and expiry after repeated observation. The broader related
-suite reports `52 passed`; two unrelated pre-existing VUW assertions remain
-red because an expected zero weight currently observes `0.5`. The previous full
-suite also exposed one independent GossipSub full-mesh assertion.
+suite reports `80` focused tests with only the two unrelated pre-existing VUW
+assertions red because an expected zero weight currently observes `0.5`. The
+full suite reports `353 passed` and those same two VUW failures plus one
+independent pre-existing GossipSub full-mesh assertion.
+
+The 2026-07-16 generation-5 recovery exposed two coordination races that the
+previous lease rules did not cover. A worker entering a new generation could
+reserve the pool while lagging peers rejected its claims, and two cold-starting
+workers could begin the same candidate before their claims converged. The
+deployed correction in `doin-node@63b3cac` adds:
+
+- one unresolved lease per owner and distributed release propagation;
+- a configurable full-membership barrier before shared optimization;
+- a per-generation barrier over domain, generation and immutable population
+  fingerprint;
+- two stable all-peer ownership confirmation rounds before GPU evaluation;
+- logical-peer deduplication, route identity resolution and responder identity
+  verification;
+- full-mesh Tailscale bootstrap routes for this four-worker campaign.
+
+Live acceptance evidence used chain height `19` and common tip
+`d6131c28e79cba349afec1b40ce0e9fe5d1a9f8aea61e489f7341aee2cf8b53d`.
+All four workers reported the exact component revisions and the same generation
+5 claim map: Gamma 5070 Ti candidate `0`, Gamma 5090 candidate `1`, Dragon
+candidate `2`, and Omega candidate `3`. The supervisor APIs reported every
+worker `running`, owning exactly one candidate, with no active alerts; live GPU
+telemetry confirmed compute on all four devices.
 
 ## 8. Remaining Scientific Work
 
