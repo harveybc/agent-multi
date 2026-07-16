@@ -12,6 +12,7 @@ import urllib.request
 from pathlib import Path
 
 from app.campaign_supervisor import PLAN_SCHEMA, PROFILE_SCHEMA, _domain_semantic_hash
+from doin_node.versioning import compute_component_versions
 
 
 FAKE_DOIN = r'''
@@ -23,16 +24,28 @@ p=argparse.ArgumentParser(); p.add_argument('--config',required=True); p.add_arg
 c=json.loads(Path(a.config).read_text()); domain=c['domains'][0]['domain_id']; started=time.time()
 counter=Path(c['launch_counter_file']); counter.parent.mkdir(parents=True,exist_ok=True)
 with counter.open('a') as f: f.write('start\n')
+global_counter=Path(c['global_launch_counter_file']); global_counter.parent.mkdir(parents=True,exist_ok=True)
+with global_counter.open('a') as f: f.write(c['node_label']+'\n')
 model=('model:'+domain).encode(); digest=hashlib.sha256(model).hexdigest(); performance=float(c.get('performance',0.1))
+seed=int(c['domains'][0]['optimization_config']['ga_seed'])
+pop={'population':[{'x':0.5}],'generation':0,'stage_idx':0,'bootstrap_seed':seed,'bootstrap_domain_id':domain}
+pop_fingerprint=hashlib.sha256(json.dumps(pop,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+genesis_hash='genesis-hash'
+population_hash='population-'+hashlib.sha256(domain.encode()).hexdigest()
+peer_id=hashlib.sha256(c['node_label'].encode()).hexdigest()
 class H(BaseHTTPRequestHandler):
  def log_message(self,*args): pass
  def do_GET(self):
   if self.path=='/status':
-   value={'status':'healthy','domains':{domain:{'converged':time.time()-started>0.25,'best_performance':performance}},'peers':3}
+   value={'status':'healthy','peer_id':peer_id[:12],'domains':{domain:{'converged':time.time()-started>0.25,'best_performance':performance}},'peers':3}
   elif self.path=='/chain/status':
-   value={'chain_height':1,'tip_hash':'tip-'+hashlib.sha256(domain.encode()).hexdigest(),'component_versions':{'agent-multi':'test1','doin-node':'test1','doin-plugins':'test1'}}
+   value={'chain_height':2,'tip_hash':population_hash,'finalized_height':0,'component_versions':c['component_versions']}
   elif self.path=='/chain/block/0':
-   value={'hash':'tip-'+hashlib.sha256(domain.encode()).hexdigest(),'transactions':[{'id':'tx-'+domain,'tx_type':'optimae_accepted','domain_id':domain,'peer_id':c['node_label'],'payload':{'verified_performance':performance,'parameters':{'x':0.5,'_model_b64':base64.b64encode(model).decode()},'champion_metrics':{'risk_adjusted_total_return':performance,'model_artifact_sha256':digest,'model_artifact_bytes':len(model),'model_artifact_format':'stable_baselines3_zip'}}}]}
+   value={'hash':genesis_hash,'transactions':[]}
+  elif self.path=='/chain/block/1':
+   value={'hash':population_hash,'transactions':[{'id':'shared-'+domain,'tx_type':'optimae_accepted','domain_id':domain,'peer_id':'bootstrap','payload':{'_shared_population':pop,'_shared_population_fingerprint':pop_fingerprint,'_shared_population_seed':seed,'performance':0.0}}, {'id':'tx-'+domain,'tx_type':'optimae_accepted','domain_id':domain,'peer_id':'bootstrap','payload':{'verified_performance':performance,'parameters':{'x':0.5,'_model_b64':base64.b64encode(model).decode()},'champion_metrics':{'risk_adjusted_total_return':performance,'model_artifact_sha256':digest,'model_artifact_bytes':len(model),'model_artifact_format':'stable_baselines3_zip'}}}]}
+  elif self.path.startswith('/api/shared/candidates'):
+   value={'domain_id':domain,'generation':0,'pop_size':1,'bootstrap_seed':seed,'population_fingerprint':pop_fingerprint,'evaluated':1,'claimed':0,'free':0,'candidates':[{'index':0,'state':'evaluated','generation':0,'fitness':performance}]}
   else: self.send_response(404); self.end_headers(); return
   body=json.dumps(value).encode(); self.send_response(200); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(body))); self.end_headers(); self.wfile.write(body)
 ThreadingHTTPServer(('127.0.0.1',int(c['port'])),H).serve_forever()
@@ -50,7 +63,7 @@ def _free_port() -> int:
         return int(sock.getsockname()[1])
 
 
-def test_three_supervisors_advance_two_jobs_once_without_a_leader(tmp_path: Path):
+def test_three_supervisors_advance_two_jobs_in_order_from_one_bootstrap(tmp_path: Path):
     agent_root = Path(__file__).resolve().parents[2]
     fake_root = tmp_path / "fake-doin"
     package = fake_root / "doin_node"
@@ -65,6 +78,7 @@ def test_three_supervisors_advance_two_jobs_once_without_a_leader(tmp_path: Path
         {"node_id": "gamma", "supervisor_url": f"http://127.0.0.1:{supervisor_ports[2]}", "workers": ["gamma-0", "gamma-1"]},
     ]
     worker_ids = [worker for participant in participants for worker in participant["workers"]]
+    component_versions = compute_component_versions()
     jobs = []
     for job_index in range(2):
         domain_id = f"integration-domain-{job_index}"
@@ -75,12 +89,17 @@ def test_three_supervisors_advance_two_jobs_once_without_a_leader(tmp_path: Path
                 "node_label": worker_id,
                 "port": worker_ports[worker_index],
                 "launch_counter_file": str(tmp_path / "launches" / f"{job_index}-{worker_id}.txt"),
+                "global_launch_counter_file": str(tmp_path / "launches" / f"{job_index}-global.txt"),
                 "performance": 0.1 + job_index,
+                "require_deterministic_seed": True,
+                "component_versions": component_versions,
                 "domains": [{
                     "domain_id": domain_id,
                     "higher_is_better": True,
                     "optimization_config": {
                         "shared_population": True,
+                        "shared_population_size": 1,
+                        "ga_seed": 1701,
                         "runtime_overlay": f"{worker_id}.json",
                         "hyperparameter_bounds": {"x": [0.0, 1.0]},
                     },
@@ -120,8 +139,9 @@ def test_three_supervisors_advance_two_jobs_once_without_a_leader(tmp_path: Path
             "peer_timeout_seconds": 0.2,
             "convergence_stability_seconds": 0.2,
             "stop_timeout_seconds": 1.0,
-            "worker_restart_limit": 3,
-            "workers": {
+                "worker_restart_limit": 3,
+                "component_versions": component_versions,
+                "workers": {
                 worker_id: {
                     "doin_node_root": str(fake_root),
                     "python": sys.executable,
@@ -168,6 +188,10 @@ def test_three_supervisors_advance_two_jobs_once_without_a_leader(tmp_path: Path
             assert all(item["status"] == "completed" for item in history)
             assert all(Path(item["artifact_path"]).is_file() for item in history)
         for job_index in range(2):
+            launch_order = (
+                tmp_path / "launches" / f"{job_index}-global.txt"
+            ).read_text().splitlines()
+            assert launch_order == worker_ids
             for worker_id in worker_ids:
                 launches = (tmp_path / "launches" / f"{job_index}-{worker_id}.txt").read_text().splitlines()
                 assert launches == ["start"]

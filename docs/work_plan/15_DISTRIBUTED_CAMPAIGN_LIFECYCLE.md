@@ -1,7 +1,7 @@
 # Distributed DOIN Campaign Lifecycle
 
-Status: implemented, integration-tested and deployed on the four-worker fleet
-Date: 2026-07-15
+Status: deterministic bootstrap hardening implemented and integration-tested
+Date: 2026-07-16
 Owner: `agent-multi`
 
 ## 1. Scope
@@ -19,7 +19,9 @@ domains:
 3. archive and verify the accepted champion and trained model bytes;
 4. stop every local DOIN process and prove that its PID and API port are gone;
 5. wait for the same durable acknowledgement from every physical host;
-6. deterministically start the next immutable job on all hosts.
+6. preflight the next immutable job on every host;
+7. start one deterministic bootstrap worker;
+8. join every remaining worker in a verified order.
 
 It does not replace DOIN's internal shared-population protocol. During the
 fleet rollout, that protocol was hardened in `doin-node` without changing its
@@ -44,11 +46,26 @@ Every supervisor has the same versioned campaign-plan JSON. The plan fixes:
 - one DOIN node config per worker and job;
 - domain semantic hash and metric direction.
 
-There is no scheduler leader, mutable central queue, central SQL database, or
-Omega-only decision. Every participant derives the same next ordinal from the
-same plan. A plan-hash mismatch blocks progression and produces an alert.
-Omega can disappear without corrupting or forking the campaign; the strict
-barrier waits until the required participant returns.
+There is no permanent scheduler leader, mutable central queue, central SQL
+database, or Omega-only campaign truth. Every participant derives the same next
+ordinal from the same plan. A plan-hash mismatch blocks progression and
+produces an alert.
+
+There is one deliberately narrow bootstrap role at the start of each job. The
+first worker in the immutable participant order (`omega`) is the only worker
+allowed to create the generation-zero shared population. The remaining workers
+join in this order:
+
+```text
+omega -> dragon -> gamma-5070ti -> gamma-5090
+```
+
+This is not a permanent central coordinator. It is a short startup mutex that
+prevents simultaneous generation-zero transactions and independent equal-height
+chains. After the join barrier, all four nodes resume normal decentralized
+claiming, flooding, consensus and block production. If Omega is unavailable,
+the strict startup barrier waits and raises an alert rather than risking a
+second swarm. The plan and completed history remain replicated on every host.
 
 The complete immutable six-cell plan is:
 
@@ -102,6 +119,11 @@ campaign truth. The installed units are versioned under `examples/systemd/`.
 
 ```text
 starting
+   -> preflight(all supervisors)
+   -> bootstrap(omega)
+   -> join(dragon)
+   -> join(gamma-5070ti)
+   -> join(gamma-5090)
    -> running
    -> archiving
    -> stopping
@@ -114,7 +136,43 @@ Any incompatible config, exhausted restart budget, corrupt model artifact, or
 unverifiable stop transitions to `blocked`. A blocked state is visible through
 the API/dashboard and never silently skips a campaign.
 
-### 3.1 Convergence barrier
+### 3.1 Startup contract and ordered join
+
+Before any worker starts, every supervisor independently computes and publishes
+one content-addressed startup contract containing:
+
+- plan hash, ordinal, job ID and domain ID;
+- domain semantic hash;
+- explicit shared-population seed;
+- population size;
+- input dataset SHA-256;
+- exact component revision map;
+- bootstrap worker and global worker join order.
+
+All required supervisors must be online, on the same ordinal, and report the
+same contract hash. `require_deterministic_seed=true` is mandatory.
+Shared-population jobs cannot use per-node seed offsets.
+
+`doin-node` now uses the configured `shared_population_seed`, falling back to
+`ga_seed`, for generation zero. The seed is embedded in the population state.
+The population receives a canonical SHA-256 fingerprint and its transaction ID
+is derived from `(domain, generation, fingerprint)`.
+
+The bootstrap worker must expose:
+
+- the canonical genesis block;
+- a generation-zero population block;
+- the configured seed;
+- the expected population size and fingerprint;
+- the exact component revisions.
+
+Each follower is launched only after every predecessor reports `join_ready`.
+The follower must then prove the same genesis hash, generation-zero population
+block hash and population fingerprint. A mismatch waits through a bounded sync
+grace period and restarts only that worker. Repeated failure trips the circuit
+breaker and blocks the campaign instead of starting independent work.
+
+### 3.2 Convergence barrier
 
 Advancement requires all expected logical workers to report:
 
@@ -133,7 +191,7 @@ its local chain and proves the exact same content-addressed champion model.
 A different model, component revision, chain height or finalized anchor fails
 closed. The condition must remain stable for the configured interval.
 
-### 3.2 Champion archive
+### 3.3 Champion archive
 
 Before stopping a worker, every supervisor reads its local synchronized chain,
 selects the best full `optimae_accepted` record for the active domain, and:
@@ -148,7 +206,7 @@ selects the best full `optimae_accepted` record for the active domain, and:
 This retains the exact trained model that produced the accepted statistics.
 It does not retrain from the same hyperparameters.
 
-### 3.3 Stop and advancement barrier
+### 3.4 Stop and advancement barrier
 
 The supervisor sends `SIGTERM`, waits, escalates to `SIGKILL` only after the
 configured timeout, reaps local child processes, and verifies both process
@@ -159,9 +217,11 @@ All hosts then exchange stopped/archive acknowledgements. An early participant
 may advance seconds before another participant reads its transient `stopped`
 state, so campaign completion is also exposed as a durable SQLite-backed
 acknowledgement. This prevents a distributed barrier deadlock without electing
-a leader.
+a permanent leader. The durable acknowledgement path now includes every
+already-advanced participant in artifact, height, tip and finalized-anchor
+consistency checks.
 
-### 3.4 Shared-candidate lease and duplicate prevention
+### 3.5 Shared-candidate lease and duplicate prevention
 
 The original shared pool used a fixed 600-second claim timeout and expired a
 claim after four other results. The trading policy candidates take roughly 18
@@ -209,6 +269,12 @@ commit is `f060f81`; the lease-replication fix is `6de2bc4`.
 - DOIN workers use independent process groups and survive a supervisor crash.
 - A missing pre-convergence worker restarts the same job, bounded by a circuit
   breaker; it never advances to another ordinal.
+- A worker joining a different bootstrap lineage is stopped and retried without
+  touching healthy workers.
+- A healthy worker that remains claimless while free candidates exist is
+  restarted only after a conservative grace period.
+- Runtime monitoring compares bootstrap lineage, component versions, finalized
+  anchors and shared-population generation across all workers.
 - A process that has become a zombie is reaped and cannot block a stop barrier.
 - Runtime history uses SQLite WAL and remains readable while events are added.
 
@@ -239,7 +305,9 @@ block the page and are rendered as high-visibility swarm alerts.
 The SQLite `campaigns` table preserves final fitness, finding peer, chain tip,
 artifact hash/path, public parameters, metric vector and full evidence. The
 `worker_events` table records starts, adoption, convergence barrier, archive,
-verified stop and campaign completion.
+verified stop and campaign completion. The dashboard also exposes the startup
+contract hash, bootstrap worker, join readiness, candidate ownership, genesis
+and population block hashes, finalized anchor and free shared candidates.
 
 ## 6. Current Queue and Scientific Meaning
 
@@ -306,8 +374,9 @@ Focused unit coverage rejects:
 
 The integration test launches three real supervisor processes and four fake
 DOIN workers, executes two campaigns, verifies exactly one launch per
-`(job, worker)`, archives identical content-addressed models on all hosts, stops
-all workers, advances without a leader, and completes all replicated histories.
+`(job, worker)` in the mandatory bootstrap order, archives identical
+content-addressed models on all hosts, stops all workers, and completes all
+replicated histories.
 
 ```text
 python -m pytest -q tests/unit tests/integration/test_campaign_supervisor_swarm.py
