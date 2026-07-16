@@ -447,8 +447,26 @@ def completion_key(row: dict[str, Any]) -> str:
     return ":".join([
         str(row.get("job_id") or "unknown"),
         str(row.get("artifact_sha256") or "no-artifact"),
-        str(row.get("completed_at") or "no-time"),
     ])
+
+
+def normalize_completion_records(records: dict[str, Any]) -> None:
+    normalized: dict[str, dict[str, Any]] = {}
+    for key, value in records.items():
+        parts = str(key).split(":")
+        target = ":".join(parts[:2]) if len(parts) >= 2 else str(key)
+        current = normalized.setdefault(target, {})
+        if isinstance(value, dict):
+            for field, item in value.items():
+                if field.endswith("_at") and current.get(field) is not None:
+                    try:
+                        current[field] = max(float(current[field]), float(item))
+                    except (TypeError, ValueError):
+                        current[field] = item
+                else:
+                    current[field] = item
+    records.clear()
+    records.update(normalized)
 
 
 def format_number(value: Any, digits: int = 6) -> str | None:
@@ -675,6 +693,7 @@ def main(argv: list[str] | None = None) -> int:
         completion_messages: list[str] = []
         completion_keys: list[str] = []
         completions = state.setdefault("completions", {})
+        normalize_completion_records(completions)
         history = snapshot.get("history") or []
         if owner == node_id:
             for row in history:
@@ -682,7 +701,10 @@ def main(argv: list[str] | None = None) -> int:
                     continue
                 key = completion_key(row)
                 record = completions.setdefault(key, {})
-                if not record.get("notified_at"):
+                if not (
+                    record.get("notified_at")
+                    or record.get("acknowledged_by_owner_at")
+                ):
                     completion_messages.append(
                         format_completion(row, snapshot.get("plan_jobs") or [])
                     )
@@ -692,7 +714,11 @@ def main(argv: list[str] | None = None) -> int:
                 if row.get("status") != "completed":
                     continue
                 key = completion_key(row)
-                completions.setdefault(key, {})["observed_with_owner_at"] = now
+                record = completions.setdefault(key, {})
+                record.update({
+                    "acknowledged_by_owner_at": now,
+                    "notification_owner": owner,
+                })
 
         messages, sent_event_keys, recovered_event_keys = due_events(
             local_events + global_events,

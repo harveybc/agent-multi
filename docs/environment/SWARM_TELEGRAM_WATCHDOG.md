@@ -21,6 +21,8 @@ It never starts, stops, repairs or modifies a DOIN process.
 - notify each completed optimization once using job ID, exact fitness metric,
   available return/RAP/drawdown/Sharpe/trade metrics, champion peer and
   content-addressed model artifact;
+- deduplicate completion notifications by `job_id + artifact_sha256`, which is
+  identical across replicas even when their local completion timestamps differ;
 - alert after a five-minute grace period for offline or stale machines,
   unhealthy workers, supervisor alerts, mismatched jobs/domains/plans,
   divergent genesis/population lineages or generations;
