@@ -59,9 +59,11 @@ examples/campaigns/phase_1_asset_policy_fleet_v2/campaign_plan.json
 Per-host profiles are adjacent to it. Runtime state and champion bytes live
 under `~/.local/state/agent-multi/doin-campaigns/`, outside Git.
 
-Gamma does not set `CUDA_VISIBLE_DEVICES`: its versioned runtime overlays select
-the internal 5070 Ti as `cuda:0` and external 5090 as `cuda:1`. Masking either
-device would renumber it and make the overlay's explicit ordinal invalid.
+Gamma does not set `CUDA_VISIBLE_DEVICES`: PyTorch 2.13.0 enumerates the external
+5090 as `cuda:0` and the internal 5070 Ti as `cuda:1`, the opposite of the
+physical indices displayed by `nvidia-smi`. Its versioned runtime overlays use
+the PyTorch order consumed by Stable Baselines3. Masking either device would
+renumber it and make the overlay's explicit ordinal invalid.
 
 Dragon and Gamma currently report `linger=no`, which requires root privileges
 to correct. Until the operator runs `sudo loginctl enable-linger harveybc` on
