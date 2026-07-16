@@ -1749,6 +1749,20 @@ class CampaignSupervisor:
                 if self.state.get("phase") == "blocked":
                     self._save_state()
                     return
+                if coordination.get("legacy_adopted"):
+                    for worker_id in configs:
+                        worker = self._worker_state(worker_id)
+                        lineage = self._lineage_key(
+                            self._public_worker(worker_id, worker)
+                        )
+                        worker["join_ready"] = bool(
+                            worker.get("status") == "running" and lineage
+                        )
+                        worker["join_reason"] = (
+                            "running swarm adopted; genesis and population lineage verified"
+                            if worker["join_ready"]
+                            else "waiting for adopted worker lineage evidence"
+                        )
                 network = self._network_status()
                 if not coordination.get("legacy_adopted"):
                     self._update_join_state(network, job, configs)
