@@ -4,7 +4,9 @@ from tools.swarm_telegram_watchdog import (
     collect_global_events,
     collect_local_process_events,
     due_events,
+    completion_key,
     format_completion,
+    normalize_completion_records,
     select_notification_owner,
     split_telegram_text,
 )
@@ -173,3 +175,31 @@ def test_telegram_messages_are_split_below_limit() -> None:
     chunks = split_telegram_text(("alert detail\n\n" * 500), limit=300)
     assert len(chunks) > 1
     assert all(len(chunk) <= 300 for chunk in chunks)
+
+
+def test_completion_identity_is_shared_across_local_completion_times() -> None:
+    first = {
+        "job_id": "job-a",
+        "artifact_sha256": "artifact",
+        "completed_at": "2026-07-16T20:00:00+00:00",
+    }
+    second = {**first, "completed_at": "2026-07-16T20:00:02+00:00"}
+    assert completion_key(first) == completion_key(second)
+
+
+def test_migrates_old_completion_keys_without_losing_notification() -> None:
+    records = {
+        "job-a:artifact:2026-07-16T20:00:00+00:00": {
+            "notified_at": 1000,
+        },
+        "job-a:artifact:2026-07-16T20:00:02+00:00": {
+            "observed_with_owner_at": 1002,
+        },
+    }
+    normalize_completion_records(records)
+    assert records == {
+        "job-a:artifact": {
+            "notified_at": 1000,
+            "observed_with_owner_at": 1002,
+        }
+    }
