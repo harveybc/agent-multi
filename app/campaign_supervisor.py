@@ -1156,14 +1156,18 @@ class CampaignSupervisor:
             return False, reason
         order = self._global_worker_ids()
         rank = order.index(worker_id)
+        bootstrap_lineage = None
         for predecessor in order[:rank]:
             worker = self._network_worker(network, predecessor)
-            if not worker or not worker.get("join_ready"):
+            if not worker or worker.get("status") != "running":
                 return False, f"waiting for predecessor {predecessor}"
-        if rank:
-            bootstrap = self._network_worker(network, order[0])
-            if not bootstrap or self._lineage_key(bootstrap) is None:
-                return False, "bootstrap worker has no verified chain lineage"
+            lineage = self._lineage_key(worker)
+            if lineage is None:
+                return False, f"predecessor {predecessor} has no verified chain lineage"
+            if bootstrap_lineage is None:
+                bootstrap_lineage = lineage
+            elif lineage != bootstrap_lineage:
+                return False, f"predecessor {predecessor} joined a different blockchain lineage"
         return True, "ordered startup predecessor barrier passed"
 
     def _validate_worker_join(

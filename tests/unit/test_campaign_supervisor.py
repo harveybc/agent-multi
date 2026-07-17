@@ -306,7 +306,7 @@ def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):
 
     omega = network["participants"]["omega"]["status"]["workers"]["omega"]
     omega.update({
-        "join_ready": True,
+        "status": "running",
         "bootstrap_evidence": {
             "genesis_hash": "genesis",
             "population_block_hash": "population",
@@ -318,6 +318,14 @@ def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):
     ready, reason = supervisor._worker_launch_ready(network, job, "gamma-0")
     assert not ready
     assert "dragon" in reason
+
+    dragon = network["participants"]["dragon"]["status"]["workers"]["dragon"]
+    dragon.update({
+        "status": "running",
+        "bootstrap_evidence": dict(omega["bootstrap_evidence"]),
+    })
+    ready, reason = supervisor._worker_launch_ready(network, job, "gamma-0")
+    assert ready, reason
 
 
 def test_single_process_lock_rejects_second_supervisor(tmp_path: Path):
