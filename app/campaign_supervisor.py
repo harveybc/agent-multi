@@ -789,10 +789,59 @@ class CampaignSupervisor:
     def _prepare_coordination(
         self, job: dict[str, Any], configs: dict[str, dict[str, Any]]
     ) -> dict[str, Any]:
-        contract = self._coordination_contract(job, configs)
         existing = self.state.get("coordination") or {}
         if existing.get("job_id") not in (None, job["job_id"]):
             existing = {}
+        contract_keys = (
+            "plan_hash",
+            "job_index",
+            "job_id",
+            "domain_id",
+            "domain_semantic_hash",
+            "shared_population_seed",
+            "shared_population_size",
+            "dataset_sha256",
+            "component_versions",
+            "bootstrap_node_id",
+            "bootstrap_worker_id",
+            "worker_join_order",
+            "contract_hash",
+        )
+        preserve_active_contract = bool(
+            existing.get("contract_hash")
+            and all(key in existing for key in contract_keys)
+            and existing.get("job_id") == job["job_id"]
+            and existing.get("plan_hash") == self.plan_hash
+            and existing.get("domain_id") == job["domain_id"]
+            and self.state.get("phase") in {
+                "running", "converged", "archiving", "stopping", "stopped"
+            }
+        )
+        if preserve_active_contract:
+            contract = {
+                key: copy.deepcopy(existing[key])
+                for key in contract_keys
+            }
+            running_version_sets = {
+                _canonical_json(
+                    (worker.get("last_chain_status") or {}).get("component_versions")
+                    or {}
+                )
+                for worker in (self.state.get("workers") or {}).values()
+                if worker.get("status") == "running"
+                and (worker.get("last_chain_status") or {}).get("component_versions")
+            }
+            if len(running_version_sets) == 1:
+                running_versions = json.loads(next(iter(running_version_sets)))
+                if running_versions != contract.get("component_versions"):
+                    contract["component_versions"] = running_versions
+                    contract["contract_hash"] = _sha256_json({
+                        key: value
+                        for key, value in contract.items()
+                        if key != "contract_hash"
+                    })
+        else:
+            contract = self._coordination_contract(job, configs)
         legacy_adopted = bool(
             existing.get("legacy_adopted")
             or (not existing and self.state.get("phase") == "running")

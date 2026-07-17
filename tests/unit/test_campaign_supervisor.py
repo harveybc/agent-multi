@@ -337,6 +337,60 @@ def test_network_eta_covers_current_campaign_and_queued_pool(tmp_path: Path):
     assert eta["pool_eta_seconds"] == pytest.approx(54 / 0.015)
 
 
+def test_supervisor_restart_preserves_running_worker_component_contract(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    configs = supervisor._validate_local_configs(job)
+    original = supervisor._coordination_contract(job, configs)
+    original["component_versions"] = {"agent-multi": "old-worker-commit"}
+    original["contract_hash"] = "old-contract"
+    supervisor.state.update({
+        "phase": "running",
+        "coordination": original,
+        "workers": {
+            "omega": {
+                "status": "running",
+                "last_chain_status": {
+                    "component_versions": {"agent-multi": "old-worker-commit"},
+                },
+            }
+        },
+    })
+
+    prepared = supervisor._prepare_coordination(job, configs)
+
+    assert prepared["component_versions"] == {"agent-multi": "old-worker-commit"}
+    assert prepared["contract_hash"] == "old-contract"
+
+
+def test_supervisor_reanchors_accidentally_recomputed_contract_to_running_worker(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    configs = supervisor._validate_local_configs(job)
+    wrong = supervisor._coordination_contract(job, configs)
+    wrong["component_versions"] = {"agent-multi": "new-supervisor-commit"}
+    wrong["contract_hash"] = "wrong-contract"
+    supervisor.state.update({
+        "phase": "running",
+        "coordination": wrong,
+        "workers": {
+            "omega": {
+                "status": "running",
+                "last_chain_status": {
+                    "component_versions": {"agent-multi": "running-worker-commit"},
+                },
+            }
+        },
+    })
+
+    prepared = supervisor._prepare_coordination(job, configs)
+
+    assert prepared["component_versions"] == {"agent-multi": "running-worker-commit"}
+    assert prepared["contract_hash"] != "wrong-contract"
+
+
 def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):
     participants = [
         {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
