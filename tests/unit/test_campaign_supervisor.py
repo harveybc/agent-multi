@@ -13,6 +13,7 @@ from app.campaign_supervisor import (
     PLAN_SCHEMA,
     PROFILE_SCHEMA,
     CampaignSupervisor,
+    _candidate_duration_samples_from_log,
     _cmdline_references_config,
     _domain_semantic_hash,
 )
@@ -266,6 +267,74 @@ def test_network_status_exposes_complete_optimization_queue(tmp_path: Path):
 
     assert [job["job_id"] for job in network["plan_jobs"]] == ["job-0", "job-1"]
     assert [job["status"] for job in network["plan_jobs"]] == ["starting", "queued"]
+
+
+def test_candidate_duration_samples_pair_shared_log_entries(tmp_path: Path):
+    log = tmp_path / "worker.log"
+    log.write_text(
+        "\n".join([
+            "2026-07-17 10:00:00 [doin_node.unified] INFO: [SHARED] Evaluating candidate 2/20 gen=3 for domain",
+            "2026-07-17 10:03:00 [doin_node.unified] INFO: [SHARED] Candidate 2/20 result: fitness=0.1 gen=3 domain",
+            "2026-07-17 10:04:00 [doin_node.unified] INFO: [SHARED] Evaluating candidate 5/20 gen=3 for domain",
+            "2026-07-17 10:09:00 [doin_node.unified] INFO: [SHARED] Candidate 5/20 result: fitness=0.2 gen=3 domain",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+
+    assert _candidate_duration_samples_from_log(log) == [180.0, 300.0]
+
+
+def test_network_eta_covers_current_campaign_and_queued_pool(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    common_worker = {
+        "status": "running",
+        "candidate": {
+            "domain_id": DOMAIN_ID,
+            "stage": 2,
+            "gen_in_stage": 1,
+        },
+        "shared_population": {"pop_size": 4, "evaluated": 2},
+        "optimization": {
+            "domains": [{
+                "domain_id": DOMAIN_ID,
+                "stage_generations": [5, 5],
+            }]
+        },
+    }
+    first = {
+        **common_worker,
+        "candidate_eta": {
+            "candidate_seconds_p25": 80.0,
+            "candidate_seconds_median": 100.0,
+            "candidate_seconds_p75": 120.0,
+        },
+    }
+    second = {
+        **common_worker,
+        "candidate_eta": {
+            "candidate_seconds_p25": 160.0,
+            "candidate_seconds_median": 200.0,
+            "candidate_seconds_p75": 240.0,
+        },
+    }
+    participants = {
+        "omega": {"online": True, "status": {"workers": {"omega": first}}},
+        "dragon": {"online": True, "status": {"workers": {"dragon": second}}},
+    }
+    jobs = [
+        {"ordinal": 0, "job_id": "job-0", "status": "running", "planned_candidates": 40},
+        {"ordinal": 1, "job_id": "job-1", "status": "queued", "planned_candidates": 40},
+    ]
+
+    eta = supervisor._network_eta(participants, jobs, 0)
+
+    assert eta["current_job_candidates_completed"] == 26
+    assert eta["current_job_candidates_remaining"] == 14
+    assert eta["pool_candidates_remaining"] == 54
+    assert eta["swarm_candidates_per_hour"] == pytest.approx(54.0)
+    assert eta["current_job_eta_seconds"] == pytest.approx(14 / 0.015)
+    assert eta["pool_eta_seconds"] == pytest.approx(54 / 0.015)
 
 
 def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):

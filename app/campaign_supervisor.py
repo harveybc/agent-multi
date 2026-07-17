@@ -15,8 +15,10 @@ import hashlib
 import html
 import json
 import os
+import re
 import signal
 import sqlite3
+import statistics
 import subprocess
 import sys
 import threading
@@ -35,6 +37,85 @@ PLAN_SCHEMA = "agent_multi.doin_campaign_plan.v1"
 PROFILE_SCHEMA = "agent_multi.doin_campaign_profile.v1"
 HISTORY_SCHEMA = "agent_multi.doin_campaign_history.v1"
 TERMINAL_PHASES = {"stopped", "complete", "blocked"}
+
+_CANDIDATE_START_RE = re.compile(
+    r"^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*"
+    r"\[SHARED\] Evaluating candidate (?P<candidate>\d+)/\d+ gen=(?P<generation>\d+)"
+)
+_CANDIDATE_RESULT_RE = re.compile(
+    r"^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*"
+    r"\[SHARED\] Candidate (?P<candidate>\d+)/\d+ result:.*gen=(?P<generation>\d+)"
+)
+
+
+def _parse_timestamp(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _percentile(values: list[float], quantile: float) -> float:
+    ordered = sorted(values)
+    if not ordered:
+        raise ValueError("cannot calculate a percentile from no values")
+    if len(ordered) == 1:
+        return ordered[0]
+    position = (len(ordered) - 1) * quantile
+    lower = int(position)
+    upper = min(lower + 1, len(ordered) - 1)
+    fraction = position - lower
+    return ordered[lower] + (ordered[upper] - ordered[lower]) * fraction
+
+
+def _candidate_duration_samples_from_log(
+    path: Path,
+    *,
+    limit: int = 20,
+    maximum_seconds: float = 21_600.0,
+) -> list[float]:
+    """Recover completed shared-candidate durations from a worker log."""
+    if not path.is_file():
+        return []
+    starts: dict[tuple[int, int], datetime] = {}
+    durations: list[float] = []
+    with path.open("r", encoding="utf-8", errors="replace") as handle:
+        for line in handle:
+            match = _CANDIDATE_START_RE.search(line)
+            if match:
+                starts[(int(match["generation"]), int(match["candidate"]))] = datetime.strptime(
+                    match["timestamp"], "%Y-%m-%d %H:%M:%S"
+                )
+                continue
+            match = _CANDIDATE_RESULT_RE.search(line)
+            if not match:
+                continue
+            key = (int(match["generation"]), int(match["candidate"]))
+            started = starts.pop(key, None)
+            if started is None:
+                continue
+            finished = datetime.strptime(match["timestamp"], "%Y-%m-%d %H:%M:%S")
+            seconds = (finished - started).total_seconds()
+            if 1.0 <= seconds <= maximum_seconds:
+                durations.append(seconds)
+    return durations[-max(1, int(limit)):]
+
+
+def _duration_statistics(samples: list[float]) -> dict[str, Any]:
+    positive = [float(value) for value in samples if float(value) > 0]
+    if not positive:
+        return {}
+    median = float(statistics.median(positive))
+    return {
+        "sample_size": len(positive),
+        "candidate_seconds_p25": _percentile(positive, 0.25),
+        "candidate_seconds_median": median,
+        "candidate_seconds_p75": _percentile(positive, 0.75),
+        "candidates_per_hour": 3600.0 / median,
+    }
 
 
 def _utc_now() -> str:
@@ -862,6 +943,73 @@ class CampaignSupervisor:
                 return evidence
         return evidence
 
+    def _update_worker_candidate_timing(
+        self,
+        worker: dict[str, Any],
+        monitor: dict[str, Any],
+    ) -> None:
+        samples = [
+            float(value)
+            for value in worker.get("candidate_duration_samples") or []
+            if float(value) > 0
+        ]
+        if not samples:
+            samples = _candidate_duration_samples_from_log(
+                Path(str(worker.get("log_path") or ""))
+            )
+
+        candidate = monitor.get("candidate") or {}
+        started = _parse_timestamp(candidate.get("timestamp"))
+        identity = None
+        if candidate and started is not None:
+            identity = {
+                "domain_id": candidate.get("domain_id"),
+                "generation": candidate.get("gen"),
+                "candidate_num": candidate.get("candidate_num"),
+                "started_at": started.isoformat(),
+                "pid": worker.get("pid"),
+            }
+
+        previous = worker.get("candidate_tracking") or {}
+        if identity and previous and identity != previous:
+            previous_started = _parse_timestamp(previous.get("started_at"))
+            if (
+                previous_started is not None
+                and previous.get("pid") == identity.get("pid")
+                and previous.get("domain_id") == identity.get("domain_id")
+            ):
+                seconds = (started - previous_started).total_seconds()
+                if 1.0 <= seconds <= 21_600.0:
+                    samples.append(seconds)
+
+        worker["candidate_tracking"] = identity or previous
+        worker["candidate_duration_samples"] = samples[-20:]
+        statistics_payload = _duration_statistics(worker["candidate_duration_samples"])
+        eta: dict[str, Any] = {**statistics_payload}
+        if identity and statistics_payload:
+            elapsed = max(
+                0.0,
+                (datetime.now(timezone.utc) - started).total_seconds(),
+            )
+            eta.update({
+                "candidate_started_at": started.isoformat(),
+                "candidate_elapsed_seconds": elapsed,
+                "candidate_eta_seconds": max(
+                    0.0,
+                    statistics_payload["candidate_seconds_median"] - elapsed,
+                ),
+                "candidate_eta_low_seconds": max(
+                    0.0,
+                    statistics_payload["candidate_seconds_p25"] - elapsed,
+                ),
+                "candidate_eta_high_seconds": max(
+                    0.0,
+                    statistics_payload["candidate_seconds_p75"] - elapsed,
+                ),
+                "basis": "recent_completed_candidates_on_this_worker",
+            })
+        worker["candidate_eta"] = eta
+
     def _poll_local_workers(self, job: dict[str, Any], configs: dict[str, dict[str, Any]]) -> None:
         for worker_id, config in configs.items():
             worker = self._worker_state(worker_id)
@@ -884,6 +1032,25 @@ class CampaignSupervisor:
                 "last_doin_status": status,
                 "last_chain_status": chain,
             })
+            try:
+                monitor = _http_json(
+                    api_url + "/api/monitor", max(self.peer_timeout, 5.0)
+                )
+            except Exception as exc:
+                worker["monitor_error"] = str(exc)
+            else:
+                worker["monitor"] = monitor
+                worker["monitor_error"] = None
+                self._update_worker_candidate_timing(worker, monitor)
+            try:
+                optimization = _http_json(
+                    api_url + "/api/optimization", max(self.peer_timeout, 5.0)
+                )
+            except Exception as exc:
+                worker["optimization_error"] = str(exc)
+            else:
+                worker["optimization"] = optimization
+                worker["optimization_error"] = None
             domain = (status.get("domains") or {}).get(job["domain_id"]) or {}
             worker["converged"] = bool(domain.get("converged"))
             worker["best_performance"] = domain.get("best_performance")
@@ -992,6 +1159,11 @@ class CampaignSupervisor:
             "join_reason": worker.get("join_reason"),
             "api_url": worker.get("api_url"),
             "api_error": worker.get("api_error"),
+            "monitor_error": worker.get("monitor_error"),
+            "optimization_error": worker.get("optimization_error"),
+            "candidate": (worker.get("monitor") or {}).get("candidate") or {},
+            "candidate_eta": worker.get("candidate_eta") or {},
+            "optimization": worker.get("optimization") or {},
             "last_seen": worker.get("last_seen"),
             "stopped_verified": bool(worker.get("stopped_verified")),
             "log_path": worker.get("log_path"),
@@ -1066,6 +1238,7 @@ class CampaignSupervisor:
                 "domain_id": job["domain_id"],
                 "purpose": job.get("purpose"),
                 "status": status,
+                "planned_candidates": self._job_planned_candidate_budget(job),
                 "champion_fitness": historical.get("champion_fitness") if historical else None,
                 "artifact_sha256": historical.get("artifact_sha256") if historical else None,
             })
@@ -1081,13 +1254,161 @@ class CampaignSupervisor:
                 participants[node_id] = {"online": False, "error": str(exc), "url": url}
             else:
                 participants[node_id] = {"online": True, "status": remote, "url": url}
+        eta = self._network_eta(participants, plan_jobs, current_index)
+        per_job_eta = eta.get("queued_job_eta_seconds") or {}
+        for planned_job in plan_jobs:
+            planned_job["eta_seconds"] = per_job_eta.get(planned_job["job_id"])
         return {
             "plan_id": self.plan.get("plan_id"),
             "plan_hash": self.plan_hash,
             "plan_jobs": plan_jobs,
             "participants": participants,
             "history": history,
+            "eta": eta,
             "generated_at": _utc_now(),
+        }
+
+    def _job_planned_candidate_budget(self, job: dict[str, Any]) -> int:
+        try:
+            worker_id = self._local_worker_ids()[0]
+            node_config = _load_json(self._worker_config_path(job, worker_id))
+            domain = (node_config.get("domains") or [])[0]
+            optimization = domain.get("optimization_config") or {}
+            population = int(
+                optimization.get(
+                    "shared_population_size",
+                    optimization.get("population_size", 0),
+                )
+            )
+            stages = optimization.get("optimization_stages") or []
+            generations = sum(int(stage.get("generations", 0)) for stage in stages)
+            if generations <= 0:
+                generations = int(
+                    optimization.get(
+                        "n_generations",
+                        optimization.get("ga_generations", 0),
+                    )
+                )
+        except (IndexError, KeyError, OSError, TypeError, ValueError):
+            return 0
+        return max(0, population) * max(0, generations)
+
+    def _network_eta(
+        self,
+        participants: dict[str, Any],
+        plan_jobs: list[dict[str, Any]],
+        current_index: int,
+    ) -> dict[str, Any]:
+        workers: list[dict[str, Any]] = []
+        for participant in participants.values():
+            if not participant.get("online"):
+                continue
+            workers.extend(
+                ((participant.get("status") or {}).get("workers") or {}).values()
+            )
+
+        timing = [
+            worker.get("candidate_eta") or {}
+            for worker in workers
+            if worker.get("status") == "running"
+            and (worker.get("candidate_eta") or {}).get("candidate_seconds_median")
+        ]
+        if not timing:
+            return {
+                "basis": "waiting_for_completed_candidate_timing_samples",
+                "jobs_total": len(plan_jobs),
+                "jobs_completed": sum(job["status"] == "completed" for job in plan_jobs),
+                "jobs_queued": sum(job["status"] == "queued" for job in plan_jobs),
+            }
+
+        median_rate = sum(1.0 / float(item["candidate_seconds_median"]) for item in timing)
+        fast_rate = sum(1.0 / float(item["candidate_seconds_p25"]) for item in timing)
+        slow_rate = sum(1.0 / float(item["candidate_seconds_p75"]) for item in timing)
+
+        representative = next(
+            (
+                worker for worker in workers
+                if worker.get("status") == "running" and worker.get("candidate")
+            ),
+            {},
+        )
+        candidate = representative.get("candidate") or {}
+        shared = representative.get("shared_population") or {}
+        optimization_domains = (
+            (representative.get("optimization") or {}).get("domains") or []
+        )
+        optimization = next(
+            (
+                item for item in optimization_domains
+                if item.get("domain_id") == candidate.get("domain_id")
+            ),
+            {},
+        )
+        stage_generations = [
+            max(0, int(value))
+            for value in optimization.get("stage_generations") or []
+        ]
+        population = max(
+            0,
+            int(shared.get("pop_size") or candidate.get("total_candidates") or 0),
+        )
+        stage_number = max(1, int(candidate.get("stage") or 1))
+        stage_index = min(max(0, stage_number - 1), max(0, len(stage_generations) - 1))
+        generation_in_stage = max(0, int(candidate.get("gen_in_stage") or 0))
+        evaluated_current_generation = max(0, int(shared.get("evaluated") or 0))
+        current_planned = (
+            sum(stage_generations) * population
+            if stage_generations and population
+            else int(plan_jobs[current_index].get("planned_candidates") or 0)
+            if 0 <= current_index < len(plan_jobs)
+            else 0
+        )
+        current_completed = min(
+            current_planned,
+            (
+                sum(stage_generations[:stage_index]) * population
+                + min(generation_in_stage, stage_generations[stage_index]) * population
+                + min(evaluated_current_generation, population)
+            )
+            if stage_generations and population
+            else 0,
+        )
+        current_remaining = max(0, current_planned - current_completed)
+        queued_budgets = {
+            str(job["job_id"]): int(job.get("planned_candidates") or 0)
+            for job in plan_jobs
+            if int(job["ordinal"]) > current_index and job.get("status") == "queued"
+        }
+        pool_remaining = current_remaining + sum(queued_budgets.values())
+
+        def estimate(candidates: int, rate: float) -> float | None:
+            return candidates / rate if candidates > 0 and rate > 0 else 0.0
+
+        return {
+            "basis": "planned_candidate_budget_at_recent_measured_swarm_throughput",
+            "early_stopping_may_reduce_eta": True,
+            "workers_with_timing": len(timing),
+            "swarm_candidates_per_hour": median_rate * 3600.0,
+            "swarm_candidates_per_hour_fast": fast_rate * 3600.0,
+            "swarm_candidates_per_hour_slow": slow_rate * 3600.0,
+            "current_job_candidates_completed": current_completed,
+            "current_job_candidates_planned": current_planned,
+            "current_job_candidates_remaining": current_remaining,
+            "current_job_eta_seconds": estimate(current_remaining, median_rate),
+            "current_job_eta_low_seconds": estimate(current_remaining, fast_rate),
+            "current_job_eta_high_seconds": estimate(current_remaining, slow_rate),
+            "pool_candidates_remaining": pool_remaining,
+            "pool_eta_seconds": estimate(pool_remaining, median_rate),
+            "pool_eta_low_seconds": estimate(pool_remaining, fast_rate),
+            "pool_eta_high_seconds": estimate(pool_remaining, slow_rate),
+            "jobs_total": len(plan_jobs),
+            "jobs_completed": sum(job["status"] == "completed" for job in plan_jobs),
+            "jobs_running": sum(job["status"] == "running" for job in plan_jobs),
+            "jobs_queued": sum(job["status"] == "queued" for job in plan_jobs),
+            "queued_job_eta_seconds": {
+                job_id: estimate(budget, median_rate)
+                for job_id, budget in queued_budgets.items()
+            },
         }
 
     def _network_worker(
@@ -1890,21 +2211,22 @@ table{{width:100%;border-collapse:collapse;background:var(--panel);border:1px so
 @media(max-width:800px){{main{{padding:12px}}.summary{{grid-template-columns:1fr 1fr}}table{{display:block;overflow:auto}}}}
 </style></head><body><header><h1>{title}</h1><p>Replicated campaign lifecycle and champion registry</p></header>
 <main><div id="alerts"></div><section><div class="summary" id="summary"></div></section>
-<section><h2>Participants</h2><table><thead><tr><th>Node / worker</th><th>Phase</th><th>Process</th><th>Join / candidate</th><th>Chain lineage</th><th>Fitness</th><th>Versions</th></tr></thead><tbody id="workers"></tbody></table></section>
-<section><h2>Optimization queue</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Purpose</th><th>Champion</th></tr></thead><tbody id="queue"></tbody></table></section>
+<section><h2>Participants</h2><table><thead><tr><th>Node / worker</th><th>Phase</th><th>Process</th><th>Join / candidate</th><th>Candidate ETA</th><th>Chain lineage</th><th>Fitness</th><th>Versions</th></tr></thead><tbody id="workers"></tbody></table></section>
+<section><h2>Optimization queue</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Candidate budget</th><th>ETA</th><th>Purpose</th><th>Champion</th></tr></thead><tbody id="queue"></tbody></table></section>
 <section><h2>Campaign history</h2><table><thead><tr><th>#</th><th>Job</th><th>Domain</th><th>Status</th><th>Champion</th><th>Artifact</th><th>Completed</th></tr></thead><tbody id="history"></tbody></table></section></main>
 <script>
 const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}}[c]));
 const short=v=>v?esc(String(v).slice(0,12)):'-'; const pct=v=>v==null?'-':Number(v).toFixed(6);
+const duration=v=>{{if(v==null||!Number.isFinite(Number(v)))return '-';let s=Math.max(0,Math.round(Number(v)));const d=Math.floor(s/86400);s%=86400;const h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);return [d?d+'d':'',h?h+'h':'',m?m+'m':(!d&&!h?'under 1m':'')].filter(Boolean).join(' ')}};
 async function refresh(){{let d;try{{d=await(await fetch('/api/network')).json()}}catch(e){{document.querySelector('#alerts').innerHTML='<div class="alerts">Dashboard API unavailable: '+esc(e)+'</div>';return}}
  const ps=Object.values(d.participants), online=ps.filter(x=>x.online).length, local=ps.find(x=>x.status)?.status||{{}};
- const coordination=local.coordination||{{}}, joined=ps.filter(p=>p.online).flatMap(p=>Object.values((p.status||{{}}).workers||{{}})).filter(w=>w.join_ready).length, workers=ps.filter(p=>p.online).flatMap(p=>Object.values((p.status||{{}}).workers||{{}}));
- document.querySelector('#summary').innerHTML=[['Current job',local.job_id||'complete'],['Phase',local.phase],['Supervisors',online+'/'+ps.length],['Workers joined',joined+'/'+workers.length],['Bootstrap',coordination.bootstrap_worker_id||'-'],['Contract',short(coordination.contract_hash)],['History',d.history.length+' campaigns']].map(x=>`<div class="metric"><b>${{esc(x[1])}}</b><span>${{esc(x[0])}}</span></div>`).join('');
+ const coordination=local.coordination||{{}}, eta=d.eta||{{}}, joined=ps.filter(p=>p.online).flatMap(p=>Object.values((p.status||{{}}).workers||{{}})).filter(w=>w.join_ready).length, workers=ps.filter(p=>p.online).flatMap(p=>Object.values((p.status||{{}}).workers||{{}}));
+ document.querySelector('#summary').innerHTML=[['Current job',local.job_id||'complete'],['Phase',local.phase],['Supervisors',online+'/'+ps.length],['Workers joined',joined+'/'+workers.length],['Current job ETA',duration(eta.current_job_eta_seconds)],['Whole pool ETA',duration(eta.pool_eta_seconds)],['Pool jobs',(eta.jobs_completed??0)+' done / '+(eta.jobs_queued??0)+' queued'],['Throughput',eta.swarm_candidates_per_hour==null?'-':Number(eta.swarm_candidates_per_hour).toFixed(2)+'/h'],['History',d.history.length+' campaigns']].map(x=>`<div class="metric"><b>${{esc(x[1])}}</b><span>${{esc(x[0])}}</span></div>`).join('');
  const alerts=[]; ps.forEach(p=>{{if(!p.online)alerts.push('OFFLINE: '+(p.url||'peer')); else (p.status.alerts||[]).forEach(a=>alerts.push(p.status.node_id+': '+a.message))}});
  document.querySelector('#alerts').innerHTML=alerts.length?`<div class="alerts"><b>SWARM ALERT</b><br>${{alerts.map(esc).join('<br>')}}</div>`:'';
- let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="5">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn', joinCls=w.join_ready?'ok':'warn', pool=w.shared_population||{{}}, lineage=w.bootstrap_evidence||{{}}; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td class="${{joinCls}}">${{w.join_ready?'verified':esc(w.join_reason||'waiting')}}<br>${{w.owns_candidate?'candidate '+esc((w.owned_candidate_indices||[]).join(',')):'no active claim'}}<br>gen ${{esc(pool.generation??'-')}} / free ${{esc(pool.free??'-')}}</td><td>height ${{esc(w.chain_height||'-')}}<br><code>genesis ${{short(lineage.genesis_hash)}}<br>population ${{short(lineage.population_block_hash)}}<br>final ${{short(w.finalized_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
- document.querySelector('#workers').innerHTML=rows||'<tr><td colspan="7">No workers reported</td></tr>';
- document.querySelector('#queue').innerHTML=(d.plan_jobs||[]).map(j=>{{const cls=j.status==='completed'?'ok':j.status==='queued'?'':j.status==='history_missing'?'bad':'warn';return `<tr><td>${{esc(j.ordinal)}}</td><td>${{esc(j.job_id)}}</td><td>${{esc(j.domain_id)}}</td><td class="${{cls}}">${{esc(j.status)}}</td><td>${{esc(j.purpose||'-')}}</td><td>${{pct(j.champion_fitness)}}<br><code>${{short(j.artifact_sha256)}}</code></td></tr>`}}).join('')||'<tr><td colspan="6">No queued jobs</td></tr>';
+ let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="6">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn', joinCls=w.join_ready?'ok':'warn', pool=w.shared_population||{{}}, lineage=w.bootstrap_evidence||{{}}, candidate=w.candidate||{{}}, candidateEta=w.candidate_eta||{{}}; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td class="${{joinCls}}">${{w.join_ready?'verified':esc(w.join_reason||'waiting')}}<br>${{w.owns_candidate?'candidate '+esc((w.owned_candidate_indices||[]).join(',')):'no active claim'}}<br>gen ${{esc(pool.generation??'-')}} / free ${{esc(pool.free??'-')}}</td><td><b>${{duration(candidateEta.candidate_eta_seconds)}}</b><br>elapsed ${{duration(candidateEta.candidate_elapsed_seconds)}}<br>${{candidateEta.sample_size?esc(candidateEta.sample_size)+' samples':'learning rate'}}<br>${{candidate.stage_name?esc(candidate.stage_name):''}}</td><td>height ${{esc(w.chain_height||'-')}}<br><code>genesis ${{short(lineage.genesis_hash)}}<br>population ${{short(lineage.population_block_hash)}}<br>final ${{short(w.finalized_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
+ document.querySelector('#workers').innerHTML=rows||'<tr><td colspan="8">No workers reported</td></tr>';
+ document.querySelector('#queue').innerHTML=(d.plan_jobs||[]).map(j=>{{const cls=j.status==='completed'?'ok':j.status==='queued'?'':j.status==='history_missing'?'bad':'warn';return `<tr><td>${{esc(j.ordinal)}}</td><td>${{esc(j.job_id)}}</td><td>${{esc(j.domain_id)}}</td><td class="${{cls}}">${{esc(j.status)}}</td><td>${{esc(j.planned_candidates||'-')}}</td><td>${{j.status==='running'?duration(eta.current_job_eta_seconds):duration(j.eta_seconds)}}</td><td>${{esc(j.purpose||'-')}}</td><td>${{pct(j.champion_fitness)}}<br><code>${{short(j.artifact_sha256)}}</code></td></tr>`}}).join('')||'<tr><td colspan="8">No queued jobs</td></tr>';
  document.querySelector('#history').innerHTML=d.history.map(h=>`<tr><td>${{esc(h.ordinal)}}</td><td>${{esc(h.job_id)}}</td><td>${{esc(h.domain_id)}}</td><td class="${{h.status==='completed'?'ok':'warn'}}">${{esc(h.status)}}</td><td>${{pct(h.champion_fitness)}}<br>${{short(h.champion_peer_id)}}</td><td><code>${{short(h.artifact_sha256)}}</code><br>${{esc(h.artifact_format||'')}}</td><td>${{esc(h.completed_at||'-')}}</td></tr>`).join('')||'<tr><td colspan="7">No completed campaigns yet</td></tr>';
 }}
 refresh();setInterval(refresh,5000);

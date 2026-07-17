@@ -1,35 +1,40 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-14
-Plan version: 1.5.0
-Current focus: Phase 1 campaign closeout, 48-week protected promotion evidence and decentralized monitoring
+Status timestamp: 2026-07-17
+Plan version: 1.6.0
+Current focus: uninterrupted six-cell static asset optimization, exact artifact closeout and portfolio-research handoff
 
 ## 1. Phase Summary
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: configuration and lineage | Campaign closeout in progress | Canonical resolver, runtime overlays, Git lineage and exact six-component revision gate verified on Omega, Dragon and both Gamma GPUs; finalized candidates must pass the promotion and weekly walk-forward gates |
+| Phase 1: configuration and lineage | Six-cell campaign running | Canonical resolver, runtime overlays, Git lineage and exact six-component revision gate verified on Omega, Dragon and both Gamma GPUs; every accepted cell retains exact model/config evidence for portfolio research |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
 | Phase 4 and later | Not started | Depends on the Phase 3 multi-asset environment and config review gates |
 
 ### 1.1 Phase 1 closeout sequence
 
-The Phase 1 asset-policy campaign does not promote an accepted DOIN block by
-itself. Its closeout sequence is fixed and auditable:
+The Phase 1 asset-policy campaign does not authorize live deployment from an
+accepted DOIN block by itself. Its closeout sequence is fixed and auditable:
 
 1. reconcile accepted chain evidence into a small validation-only Pareto set,
    deduplicating equivalent re-acceptances caused by the permissive research
    threshold;
 2. freeze each candidate's typed parameters, config hash, model artifact hash,
    source block and validation metric vector in a promotion-input manifest;
-3. run the separate fixed 48-week, weekly-retrained protected evaluation without
-   feeding test outcomes back into L1, L2, candidate ranking or migration;
-4. retain only candidates whose complete promotion evidence passes coverage,
-   reproducibility, compatibility and release-validation gates;
-5. add promoted component recipes to the asset/timeframe library before the
-   next asset-policy domain is opened.
+3. archive all six selected static asset/timeframe artifacts and expose their
+   deterministic action streams to the first portfolio-research optimizer;
+4. optimize and verify portfolio mechanics without retraining an asset model
+   inside every portfolio candidate;
+5. run the separate weekly-retrained walk-forward evaluation and retain only
+   policies whose complete evidence passes coverage, reproducibility,
+   compatibility and release-validation gates before live deployment.
+
+Decision recorded 2026-07-17: weekly retraining follows the first end-to-end
+portfolio experiment. It does not block completion of the six static swarm
+jobs or use of their exact artifacts in portfolio research.
 
 The initial SOLUSDT 4h result is promising validation evidence, not a promoted
 model. Its 2023 protected test remains unopened until step 3.
