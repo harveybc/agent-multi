@@ -340,9 +340,10 @@ rv=0.05 / SL=2 ATR / TP=4 ATR / risk lambda=0.5
 ```
 
 It starts from the block-41 SOL 4h champion hyperparameters to avoid throwing
-away useful search evidence. It is still a single-fit component screen. Its
-fitness is not an annual result and it cannot enter the portfolio until it
-passes a leakage-safe weekly walk-forward validation/promotion gate.
+away useful search evidence. Its accepted artifact, fully resolved JSON and
+chain lineage may enter the first portfolio-research optimization after swarm
+closeout. Weekly retraining remains mandatory before release/live deployment,
+but is no longer a prerequisite for the portfolio-mechanics experiment.
 
 Ordinals 2 and 3 continue the same four-worker swarm without waiting for a
 human status request:
@@ -354,8 +355,31 @@ human status request:
 
 These are the other two evidence-backed short-horizon seeds in the Project 3
 selection table. Their immutable manifests record source path, full CSV SHA,
-row/column counts, timestamp coverage and untouched 2023 test split. All three
-jobs remain component screens rather than portfolio promotion evidence.
+row/column counts, timestamp coverage and untouched 2023 test split.
+
+Ordinals 4 and 5 complete the first balanced six-cell portfolio input library:
+
+| Horizon | Cells |
+|---|---|
+| Short | `SOLUSDT@1h`, `BTCUSDT@1h`, `ADAUSDT@1h` |
+| Long | `SOLUSDT@4h`, `EURUSD@4h`, `DOGEUSDT@4h` |
+
+### 6.1 Execution-order decision, 2026-07-17
+
+The approved pragmatic order is:
+
+1. run all six static train/validation swarm optimizations without repetition;
+2. archive the exact accepted model bytes, resolved parameters, config hashes,
+   source block and metric evidence for every cell;
+3. optimize and exercise portfolio mechanics from that six-cell library;
+4. add weekly retraining/walk-forward evaluation to measure adaptation and
+   finalize the deployment policy after the portfolio path works end to end.
+
+The campaign supervisor must move directly from one immutable plan job to the
+next through the distributed stop/start barriers. Every status and dashboard
+view reports current-candidate ETA per worker, current-job ETA and whole-pool
+ETA. ETA uses measured per-worker candidate durations and the remaining planned
+candidate budgets; stage patience may shorten the observed completion time.
 
 ## 7. Verification Evidence
 
@@ -429,8 +453,9 @@ telemetry confirmed compute on all four devices.
 ## 8. Remaining Scientific Work
 
 The lifecycle problem and the weekly-retrained fitness problem are separate.
-The supervisor can sequence either static screens or walk-forward-aware jobs,
-but it must not disguise static validation as weekly deployment evidence.
+The six static artifacts are now intentionally consumed by the portfolio
+research phase before weekly retraining. They still cannot be released as live
+weekly-adaptive policies until the chronology below is implemented and passed.
 
 Before a component is promoted, the next metric increment must define a
 computationally tractable nested chronology:
