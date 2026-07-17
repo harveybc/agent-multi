@@ -1316,7 +1316,17 @@ class CampaignSupervisor:
         self,
         job: dict[str, Any],
         configs: dict[str, dict[str, Any]],
+        *,
+        swarm_healthy: bool,
     ) -> None:
+        if not swarm_healthy:
+            # A generation transition can temporarily leave newer workers with
+            # free candidates while older peers catch up at the DOIN barrier.
+            # Restarting during that window removes more peers and turns a
+            # harmless synchronization delay into a restart cascade.
+            for worker_id in configs:
+                self._worker_state(worker_id)["claimless_since"] = None
+            return
         for worker_id, config in configs.items():
             worker = self._worker_state(worker_id)
             since = worker.get("claimless_since")
@@ -1774,7 +1784,9 @@ class CampaignSupervisor:
                     self._alert(
                         "swarm_health", "; ".join(issues), severity="warning"
                     )
-                self._repair_claimless_local_workers(job, configs)
+                self._repair_claimless_local_workers(
+                    job, configs, swarm_healthy=healthy
+                )
                 if all(
                     self._worker_state(worker_id).get("status") == "running"
                     for worker_id in configs

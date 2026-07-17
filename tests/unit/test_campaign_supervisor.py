@@ -406,6 +406,28 @@ def test_runtime_health_detects_bootstrap_lineage_divergence(tmp_path: Path):
     assert "lineage" in "; ".join(issues)
 
 
+def test_claimless_repair_is_suspended_while_swarm_is_unhealthy(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    worker = supervisor._worker_state("omega")
+    worker.update({
+        "status": "running",
+        "owns_candidate": False,
+        "shared_population": {"free": 4},
+        "claimless_since": 1.0,
+        "claimless_repair_count": 2,
+    })
+
+    supervisor._repair_claimless_local_workers(
+        supervisor.plan["jobs"][0],
+        {"omega": {"path": "unused.json"}},
+        swarm_healthy=False,
+    )
+
+    assert worker["claimless_since"] is None
+    assert worker["claimless_repair_count"] == 2
+
+
 def test_stop_barrier_rejects_unverified_process_or_different_artifact(tmp_path: Path):
     participants = [
         {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
