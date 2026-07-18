@@ -188,6 +188,13 @@ and SOLUSDT 1h artifacts remain valid: their stored models report 8000 training
 timesteps with `learning_starts: 5000`, so both crossed the barrier. They remain
 in immutable campaign history and are not repeated.
 
+The ordered startup has one intentional runtime asymmetry. Omega, the declared
+bootstrap worker, uses `shared_min_peers: 0` long enough to persist the
+deterministic generation-zero population. Every joining worker retains
+`shared_min_peers: 3`. The supervisor does not launch a joiner until the
+bootstrap genesis, population block and fingerprint exist, preventing both the
+startup deadlock and independent population chains.
+
 ### 4.2 DOIN inference/evaluator adapter
 
 The `doin.inference` entry point is a separate `TradingInferencer`. When a DOIN
