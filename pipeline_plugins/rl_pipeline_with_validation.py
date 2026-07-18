@@ -122,6 +122,40 @@ def _annotate_risk_adjusted(summary: Dict[str, Any], risk_lambda: float) -> None
     summary["risk_adjusted_total_return"] = ret - float(risk_lambda) * drawdown
 
 
+def _resolve_l1_min_checkpoint_timesteps(
+    config: Dict[str, Any],
+    default: int | None = None,
+) -> int:
+    """Return the earliest timestep at which an L1 checkpoint is trainable.
+
+    Off-policy agents do not update their networks before ``learning_starts``.
+    Letting an earlier rollout compete for the best checkpoint makes every
+    hyperparameter candidate collapse to the same seeded, untrained policy.
+    """
+    configured = config.get("l1_min_checkpoint_timesteps", default)
+    if configured is None:
+        learning_starts = max(0, int(config.get("learning_starts", 0)))
+        return learning_starts + 1 if learning_starts else 0
+    return max(0, int(configured))
+
+
+def _update_l1_checkpoint_state(
+    *,
+    composite: float,
+    best_composite: float,
+    no_improve: int,
+    min_delta: float,
+    eligible: bool,
+) -> tuple[float, int, bool]:
+    """Update checkpoint/patience state without charging warm-up epochs."""
+    if not eligible:
+        return best_composite, no_improve, False
+    improved = composite > (best_composite + min_delta)
+    if improved:
+        return composite, 0, True
+    return best_composite, no_improve + 1, False
+
+
 def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lambda: float) -> float:
     metric = str(selection_metric or "total_return").strip().lower()
     if metric in {"risk_adjusted_return", "risk_adjusted_total_return", "rap"}:
@@ -252,6 +286,7 @@ class PipelinePlugin:
         "max_epochs": 500,
         "l1_patience": 20,
         "l1_min_delta": 1e-4,
+        "l1_min_checkpoint_timesteps": None,
         "early_stop_train_tail_days": 7,
         "early_stop_min_trades": 1,
         "early_stop_no_trade_penalty": 1_000_000.0,
@@ -277,6 +312,7 @@ class PipelinePlugin:
         "val_start", "val_end", "test_start", "test_end",
         "min_split_rows",
         "epoch_timesteps", "max_epochs", "l1_patience", "l1_min_delta",
+        "l1_min_checkpoint_timesteps",
         "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
         "warm_start_model", "return_trace_dir", "evaluate_test_split",
@@ -625,6 +661,10 @@ class PipelinePlugin:
                 total_progress_timesteps = int(config.get("total_timesteps") or epoch_ts * max_epochs)
                 l1_patience = int(config.get("l1_patience", self.params["l1_patience"]))
                 l1_min_delta = float(config.get("l1_min_delta", self.params["l1_min_delta"]))
+                l1_min_checkpoint_timesteps = _resolve_l1_min_checkpoint_timesteps(
+                    config,
+                    self.params["l1_min_checkpoint_timesteps"],
+                )
                 seed = int(config.get("eval_seed", self.params["eval_seed"]))
 
                 # L2 patience info shown in logs (driven externally by optimizer if any)
@@ -633,6 +673,7 @@ class PipelinePlugin:
 
                 best_composite = -math.inf
                 no_improve = 0
+                best_checkpoint_saved = False
                 best_model_path = config.get("save_model") or "./agent_model.zip"
                 Path(best_model_path).parent.mkdir(parents=True, exist_ok=True)
 
@@ -741,13 +782,17 @@ class PipelinePlugin:
                         gap_penalty_beta=l1_gap_beta,
                     )
 
-                    improved = composite > (best_composite + l1_min_delta)
+                    checkpoint_eligible = nts_after >= l1_min_checkpoint_timesteps
+                    best_composite, no_improve, improved = _update_l1_checkpoint_state(
+                        composite=composite,
+                        best_composite=best_composite,
+                        no_improve=no_improve,
+                        min_delta=l1_min_delta,
+                        eligible=checkpoint_eligible,
+                    )
                     if improved:
-                        best_composite = composite
-                        no_improve = 0
                         agent_plugin.save(model, best_model_path)
-                    else:
-                        no_improve += 1
+                        best_checkpoint_saved = True
 
                     history.append({
                         "epoch": epoch,
@@ -772,7 +817,9 @@ class PipelinePlugin:
                         **selection_details,
                         "composite_raw": composite_raw,
                         "composite": composite,
-                        "best_composite": best_composite,
+                        "best_composite": best_composite if best_checkpoint_saved else None,
+                        "l1_checkpoint_eligible": checkpoint_eligible,
+                        "l1_min_checkpoint_timesteps": l1_min_checkpoint_timesteps,
                         "early_stop_trade_gate_passed": trade_gate_passed,
                         "early_stop_min_trades": early_stop_min_trades,
                         "l1_patience_used": no_improve,
@@ -801,14 +848,24 @@ class PipelinePlugin:
                         "val_balance": _safe_float(val_summary.get("final_equity")),
                     })
 
+                    l1_status = (
+                        f"{no_improve}/{l1_patience}"
+                        if checkpoint_eligible
+                        else f"warmup<{l1_min_checkpoint_timesteps}"
+                    )
+                    checkpoint_status = (
+                        "(IMPROVED, model saved)"
+                        if improved
+                        else "(checkpoint ineligible)" if not checkpoint_eligible else ""
+                    )
                     print(
                         f"[epoch {epoch:>3}/{max_epochs}] "
-                        f"L1 {no_improve}/{l1_patience}  "
+                        f"L1 {l1_status}  "
                         f"L2 {l2_counter}/{l2_patience}  "
                         f"{selection_metric} composite={composite:+.4f} raw={composite_raw:+.4f} "
                         f"trade_gate={'PASS' if trade_gate_passed else 'FAIL'} "
                         f"best={best_composite:+.4f} "
-                        f"{'(IMPROVED, model saved)' if improved else ''} "
+                        f"{checkpoint_status} "
                         f"actor|w|={a_a:.2f} Δa={a_a-a_b:+.4f} "
                         f"critic|w|={c_a:.2f} Δc={c_a-c_b:+.4f} ent={e_a:.4f} "
                         f"steps={nts_before}->{nts_after} buf={rb_before}->{rb_after}",
@@ -839,7 +896,7 @@ class PipelinePlugin:
                         flush=True,
                     )
 
-                    if no_improve >= l1_patience:
+                    if checkpoint_eligible and no_improve >= l1_patience:
                         print(
                             f"[train] L1 EARLY STOP at epoch {epoch} "
                             f"(no improvement for {no_improve} epochs, patience={l1_patience})",
@@ -847,9 +904,15 @@ class PipelinePlugin:
                         )
                         break
 
-                # Reload best model for final evaluation
-                if Path(best_model_path).exists():
-                    model = agent_plugin.load(best_model_path, train_env)
+                if not best_checkpoint_saved:
+                    raise RuntimeError(
+                        "training ended before an L1 checkpoint became eligible: "
+                        f"num_timesteps={int(getattr(model, 'num_timesteps', 0))}, "
+                        f"l1_min_checkpoint_timesteps={l1_min_checkpoint_timesteps}"
+                    )
+
+                # Reload best model for final evaluation.
+                model = agent_plugin.load(best_model_path, train_env)
 
                 final = self._final_eval(
                     agent_plugin, model, train_env,
