@@ -166,6 +166,28 @@ overlay and resource limits differ. Omega starts first and persists the genesis
 population. Gamma and Dragon are then joined one at a time and must recover
 that on-chain population before any production-scale run is accepted.
 
+### 4.1.2 Post-learning checkpoint barrier and corrected fleet
+
+Every off-policy L1 run must make at least one network update before a model is
+eligible to become the saved best checkpoint. The default barrier is
+`learning_starts + 1`; canonical Phase 1 SAC configs declare
+`l1_min_checkpoint_timesteps: 5001` explicitly. Warm-up epochs neither save a
+checkpoint nor consume L1 patience. A run that ends before crossing the barrier
+fails instead of emitting an untrained champion artifact.
+
+This rule was added after the BTCUSDT 1h v1 domain varied DEAP parameters but
+returned the exact same fitness for 75 observed candidates. Its L1 epoch size
+was 4000 while `learning_starts` was 5000, so epoch 1 saved the identical
+seeded pre-learning policy for every candidate. The v1 BTC chain is retained as
+diagnostic evidence and is not promotable.
+
+The corrected remaining-asset campaign is
+`examples/campaigns/phase_1_asset_policy_fleet_v4/` and uses fresh v2 domains
+for BTCUSDT 1h, ADAUSDT 1h, EURUSD 4h and DOGEUSDT 4h. The completed SOLUSDT 4h
+and SOLUSDT 1h artifacts remain valid: their stored models report 8000 training
+timesteps with `learning_starts: 5000`, so both crossed the barrier. They remain
+in immutable campaign history and are not repeated.
+
 ### 4.2 DOIN inference/evaluator adapter
 
 The `doin.inference` entry point is a separate `TradingInferencer`. When a DOIN

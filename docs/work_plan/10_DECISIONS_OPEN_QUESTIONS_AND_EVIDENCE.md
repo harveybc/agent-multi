@@ -122,6 +122,20 @@ and retained under explicit top-K, Pareto, anomaly or reproducibility policies;
 their metrics and artifact hashes remain in OLAP-on-chain even when their blobs
 expire.
 
+### ADR-017: Off-policy champions require a post-learning checkpoint
+
+An L1 checkpoint from an off-policy agent is ineligible until its timestep
+count is strictly greater than `learning_starts`. Warm-up checkpoints cannot
+become best, cannot consume patience and cannot be exported as champions. If a
+run never crosses that barrier it fails explicitly.
+
+The BTCUSDT 1h v1 domain is permanently non-promotable because 75 candidates
+with distinct DEAP parameters all selected the same seeded 4000-step policy
+before SAC's `learning_starts: 5000`. Corrected asset domains receive new domain
+identities and chains. Previously completed SOLUSDT 4h and 1h artifacts remain
+accepted because their stored models contain 8000 timesteps and therefore
+include learning updates.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |

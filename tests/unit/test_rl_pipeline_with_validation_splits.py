@@ -8,7 +8,12 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from pipeline_plugins.rl_pipeline_with_validation import PipelinePlugin, _early_stop_composite
+from pipeline_plugins.rl_pipeline_with_validation import (
+    PipelinePlugin,
+    _early_stop_composite,
+    _resolve_l1_min_checkpoint_timesteps,
+    _update_l1_checkpoint_state,
+)
 
 
 def test_day_based_micro_split_uses_small_windows(tmp_path):
@@ -144,3 +149,36 @@ def test_early_stop_composite_penalizes_validation_no_trade():
     assert val_ret == 0.0
     assert train_trades == 2
     assert val_trades == 0
+
+
+def test_l1_checkpoint_defaults_to_after_off_policy_learning_starts():
+    assert _resolve_l1_min_checkpoint_timesteps({"learning_starts": 5_000}) == 5_001
+    assert _resolve_l1_min_checkpoint_timesteps({}) == 0
+    assert _resolve_l1_min_checkpoint_timesteps(
+        {"learning_starts": 5_000, "l1_min_checkpoint_timesteps": 8_000}
+    ) == 8_000
+
+
+def test_l1_warmup_epoch_cannot_become_best_or_consume_patience():
+    best, no_improve, improved = _update_l1_checkpoint_state(
+        composite=0.25,
+        best_composite=float("-inf"),
+        no_improve=0,
+        min_delta=0.0001,
+        eligible=False,
+    )
+
+    assert best == float("-inf")
+    assert no_improve == 0
+    assert improved is False
+
+    best, no_improve, improved = _update_l1_checkpoint_state(
+        composite=0.20,
+        best_composite=best,
+        no_improve=no_improve,
+        min_delta=0.0001,
+        eligible=True,
+    )
+    assert best == 0.20
+    assert no_improve == 0
+    assert improved is True

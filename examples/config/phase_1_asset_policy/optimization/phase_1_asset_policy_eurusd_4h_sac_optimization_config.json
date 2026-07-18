@@ -97,6 +97,7 @@
     "max_epochs": 40,
     "l1_patience": 8,
     "l1_min_delta": 0.0001,
+    "l1_min_checkpoint_timesteps": 5001,
     "early_stop_train_tail_days": 7,
     "early_stop_min_trades": 1,
     "early_stop_no_trade_penalty": 1000000.0,

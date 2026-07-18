@@ -1,0 +1,80 @@
+{
+  "schema_version": "agent_multi.doin_campaign_plan.v1",
+  "plan_id": "phase-1-asset-policy-fleet-v4",
+  "$doc": "Remaining four portfolio asset policies after enforcing post-learning L1 checkpoints. The completed SOL artifacts remain in immutable fleet-v2 history; the invalid BTC v1 chain is preserved for diagnosis and never promoted.",
+  "participants": [
+    {
+      "node_id": "omega",
+      "supervisor_url": "http://100.99.54.79:8795",
+      "workers": ["omega"]
+    },
+    {
+      "node_id": "dragon",
+      "supervisor_url": "http://100.110.215.85:8795",
+      "workers": ["dragon"]
+    },
+    {
+      "node_id": "gamma",
+      "supervisor_url": "http://100.107.204.49:8795",
+      "workers": ["gamma-5070ti", "gamma-5090"]
+    }
+  ],
+  "jobs": [
+    {
+      "ordinal": 0,
+      "job_id": "btcusdt-1h-kitchen-sink-guarded-sac-shared-v2",
+      "domain_id": "trading-asset-policy-btcusdt-1h-sac-shared-v2",
+      "purpose": "short_horizon_asset_policy_with_post_learning_checkpoint_gate",
+      "higher_is_better": true,
+      "domain_semantic_hash": "1f518ddb05bb08be5c96192df1df1afae5d8c48c0099e51c586728f06bbad34e",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v2/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_btcusdt_1h_shared_v2/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 1,
+      "job_id": "adausdt-1h-kitchen-sink-guarded-sac-shared-v2",
+      "domain_id": "trading-asset-policy-adausdt-1h-sac-shared-v2",
+      "purpose": "short_horizon_asset_policy_with_post_learning_checkpoint_gate",
+      "higher_is_better": true,
+      "domain_semantic_hash": "b519733ea2999f919a6087e31b1926c78bfc3093c65eab482e9dfd948d9ced15",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v2/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_adausdt_1h_shared_v2/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 2,
+      "job_id": "eurusd-4h-fx-full-sac-shared-v2",
+      "domain_id": "trading-asset-policy-eurusd-4h-sac-shared-v2",
+      "purpose": "long_horizon_diversified_fx_policy_with_post_learning_checkpoint_gate",
+      "higher_is_better": true,
+      "domain_semantic_hash": "4be2ec289b9a1d11954585f796323fb8dd955fe72d01cec0757373007271a333",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v2/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_eurusd_4h_shared_v2/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 3,
+      "job_id": "dogeusdt-4h-kitchen-sink-guarded-sac-shared-v2",
+      "domain_id": "trading-asset-policy-dogeusdt-4h-sac-shared-v2",
+      "purpose": "long_horizon_crypto_policy_with_post_learning_checkpoint_gate",
+      "higher_is_better": true,
+      "domain_semantic_hash": "d2415d521989eefa635283367d8b2518359ea47738e90f64d7232ce78868098e",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v2/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_dogeusdt_4h_shared_v2/gamma_5090_node.json"
+      }
+    }
+  ]
+}
