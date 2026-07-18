@@ -57,8 +57,8 @@ def test_materializer_keeps_machine_runtime_and_unifies_domain(tmp_path: Path):
     gamma = json.loads((output / "gamma-5090_node.json").read_text())
     assert omega["port"] == 8470
     assert gamma["port"] == 8471
-    assert omega["shared_min_peers"] == 0
-    assert "shared_min_peers" not in gamma
+    assert omega["shared_initialize_before_peers"] is True
+    assert gamma["shared_initialize_before_peers"] is True
     assert omega["domains"][0]["optimization_config"]["runtime_overlay"] == "omega.json"
     assert gamma["domains"][0]["optimization_config"]["runtime_overlay"] == "gamma.json"
     assert omega["domains"][0]["domain_id"] == "new-domain"
