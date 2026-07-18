@@ -47,7 +47,6 @@ def materialize(
     load_config: str,
     domain_id: str,
     campaign_slug: str,
-    bootstrap_label: str = "omega",
 ) -> list[Path]:
     canonical = _load(canonical_config)
     optimization = canonical.get("optimization") or {}
@@ -78,12 +77,11 @@ def materialize(
         node["experiment_stats_file"] = f"./{state_name}/experiment_stats.csv"
         node["olap_db_path"] = f"./{state_name}/olap.db"
         node["reset_chain"] = False
-        # The ordered supervisor launches the bootstrap worker first. It must
-        # persist generation zero before the remaining workers are allowed to
-        # join, so waiting for those peers here would deadlock startup. Joiners
-        # retain the template's full-swarm peer barrier.
-        if label == bootstrap_label:
-            node["shared_min_peers"] = 0
+        # Ordered startup verifies each worker's shared lineage before launching
+        # the next worker. Population initialization/recovery therefore happens
+        # before the full peer barrier, while candidate claiming remains behind
+        # the template's shared_min_peers requirement.
+        node["shared_initialize_before_peers"] = True
         domains = node.get("domains") or []
         if len(domains) != 1:
             raise ValueError(f"{template_path} must contain exactly one domain")
@@ -127,7 +125,6 @@ def main() -> int:
     parser.add_argument("--load-config", required=True)
     parser.add_argument("--domain-id", required=True)
     parser.add_argument("--campaign-slug", required=True)
-    parser.add_argument("--bootstrap-label", default="omega")
     args = parser.parse_args()
     paths = materialize(
         template_dir=args.template_dir.resolve(),
@@ -136,7 +133,6 @@ def main() -> int:
         load_config=args.load_config,
         domain_id=args.domain_id,
         campaign_slug=args.campaign_slug,
-        bootstrap_label=args.bootstrap_label,
     )
     for path in paths:
         print(path)

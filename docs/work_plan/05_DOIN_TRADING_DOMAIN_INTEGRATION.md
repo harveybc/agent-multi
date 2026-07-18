@@ -188,12 +188,13 @@ and SOLUSDT 1h artifacts remain valid: their stored models report 8000 training
 timesteps with `learning_starts: 5000`, so both crossed the barrier. They remain
 in immutable campaign history and are not repeated.
 
-The ordered startup has one intentional runtime asymmetry. Omega, the declared
-bootstrap worker, uses `shared_min_peers: 0` long enough to persist the
-deterministic generation-zero population. Every joining worker retains
-`shared_min_peers: 3`. The supervisor does not launch a joiner until the
-bootstrap genesis, population block and fingerprint exist, preventing both the
-startup deadlock and independent population chains.
+Every v4 worker uses `shared_initialize_before_peers: true` and retains
+`shared_min_peers: 3`. Initialization means only publishing or recovering the
+deterministic generation-zero population; candidate claiming remains blocked
+until all three other workers are verified. The supervisor does not launch a
+joiner until its predecessor exposes the same genesis, population block and
+fingerprint. This prevents startup deadlock, independent population chains and
+pre-join candidate claims.
 
 ### 4.2 DOIN inference/evaluator adapter
 
