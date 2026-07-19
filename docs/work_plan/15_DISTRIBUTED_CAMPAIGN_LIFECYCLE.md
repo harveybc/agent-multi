@@ -263,6 +263,14 @@ now preserves the peer's original `claimed_at` and
 lease, so stale work converges to free on every replica instead of being
 resurrected by polling.
 
+The feature-complete BTCUSDT 1h candidates introduced on 2026-07-19 can run
+longer than the configured one-hour claim timeout. `doin-node@d795c04` therefore
+renews the active owner's local and replicated claim while candidate evaluation
+is still running. The already-running four-worker process predates that commit,
+so a transient five-minute lease guard renews only claims whose owner API still
+reports the same active candidate. It must remain active until the current
+campaign stops; the following campaign uses the native owner heartbeat.
+
 The clean deployed start was accepted only after all four APIs returned the
 same pool-state hash and exactly four leases:
 
@@ -324,6 +332,21 @@ artifact hash/path, public parameters, metric vector and full evidence. The
 verified stop and campaign completion. The dashboard also exposes the startup
 contract hash, bootstrap worker, join readiness, candidate ownership, genesis
 and population block hashes, finalized anchor and free shared candidates.
+
+Progress has two deliberately separate granularities. Global campaign progress
+counts only candidates already present in the replicated shared result map; a
+candidate's population index is never treated as completed work. While a long
+candidate is still training, the consolidated participant row exposes its
+latest logged epoch, L1 patience counter and environment step count. Candidate
+ETA remains unavailable until at least one comparable candidate duration has
+completed, rather than extrapolating from a population index.
+
+The five-minute GPU watchdog uses a 78 C alert threshold and a 72 C recovery
+threshold. A 2026-07-19 Omega incident reached 79 C after the external fan's AC
+adapter lost contact; Telegram alert and recovery both fired, and reconnecting
+the fan returned the GPU to 55-61 C under load. A throttled active alert is now
+logged as active rather than incorrectly labeled `healthy` between Telegram
+repeat intervals.
 
 ## 6. Current Queue and Scientific Meaning
 
