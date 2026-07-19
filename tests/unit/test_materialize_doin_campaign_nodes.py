@@ -25,9 +25,20 @@ def test_materializer_keeps_machine_runtime_and_unifies_domain(tmp_path: Path):
         }
         (templates / f"{label}_node.json").write_text(json.dumps(value))
     canonical = {
-        "training": {"learning_rate": 0.001},
-        "asset_policy": {"continuous_action_threshold": 0.2},
+        "environment": {
+            "plugin": "gym_fx_env",
+            "preprocessor_plugin": "feature_window_preprocessor",
+        },
+        "training": {
+            "learning_rate": 0.001,
+            "pipeline_plugin": "rl_pipeline_with_validation",
+        },
+        "asset_policy": {
+            "plugin": "project3_sac_actor_critic_agent",
+            "continuous_action_threshold": 0.2,
+        },
         "optimization": {
+            "plugin": "default_optimizer",
             "metric": "rap",
             "metric_schema": "trading.metrics.v1",
             "higher_is_better": True,
@@ -66,3 +77,9 @@ def test_materializer_keeps_machine_runtime_and_unifies_domain(tmp_path: Path):
         "learning_rate": 0.001,
         "continuous_action_threshold": 0.2,
     }
+    assert omega["domains"][0]["optimization_config"]["preprocessor_plugin"] == (
+        "feature_window_preprocessor"
+    )
+    assert omega["domains"][0]["optimization_config"]["pipeline_plugin"] == (
+        "rl_pipeline_with_validation"
+    )

@@ -17,6 +17,7 @@ from app.canonical_config import load_json_object, resolve_config
 from app.config import DEFAULT_VALUES
 from app.runtime_overlay import resolve_runtime_overlay
 from optimizer_plugins.default_optimizer import Plugin as OptimizerPlugin
+from pipeline_plugins._observation_contract import validate_observation_contract
 
 
 CONFIG_ROOT = ROOT / "examples/config/phase_1_asset_policy"
@@ -81,6 +82,7 @@ def _validate_data(runtime: dict, manifest: dict) -> None:
 
 
 def _validate_optimizer(runtime: dict) -> None:
+    validate_observation_contract(runtime)
     schema = OptimizerPlugin._effective_schema(SacPlugin().hparam_schema(), runtime)
     names = [item[0] for item in schema]
     stages = runtime.get("optimization_stages") or []
@@ -103,6 +105,8 @@ def _validate_optimizer(runtime: dict) -> None:
         raise SystemExit("test data cannot participate in selection")
     if not bool(runtime.get("optimization_capture_model_artifact")):
         raise SystemExit("optimizer must capture the exact champion checkpoint")
+    if not bool(runtime.get("optimization_reject_action_collapse")):
+        raise SystemExit("optimizer must reject deterministic action collapse")
 
 
 def main() -> int:

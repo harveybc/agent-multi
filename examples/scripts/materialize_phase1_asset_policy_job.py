@@ -7,6 +7,7 @@ import copy
 import csv
 import hashlib
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -34,19 +35,45 @@ def _dataset_evidence(path: Path, date_column: str) -> dict[str, Any]:
         reader = csv.reader(handle)
         header = next(reader)
         date_index = header.index(date_column)
+        binary_candidates = {
+            index: True for index, name in enumerate(header) if name != date_column
+        }
+
+        def update_binary_candidates(row: list[str]) -> None:
+            for index in tuple(binary_candidates):
+                if not binary_candidates[index]:
+                    continue
+                try:
+                    value = float(row[index])
+                except (TypeError, ValueError, IndexError):
+                    binary_candidates[index] = False
+                    continue
+                if not math.isfinite(value) or value not in {-1.0, 0.0, 1.0}:
+                    binary_candidates[index] = False
+
         first = next(reader)
         last = first
         rows = 1
+        update_binary_candidates(first)
         for row in reader:
             rows += 1
             last = row
-    return {
-        "sha256": digest.hexdigest(),
-        "row_count": rows,
-        "column_count": len(header),
-        "first_timestamp": first[date_index].replace(" ", "T"),
-        "last_timestamp": last[date_index].replace(" ", "T"),
-    }
+            update_binary_candidates(row)
+        feature_columns = [name for name in header if name != date_column]
+        return {
+            "sha256": digest.hexdigest(),
+            "row_count": rows,
+            "column_count": len(header),
+            "first_timestamp": first[date_index].replace(" ", "T"),
+            "last_timestamp": last[date_index].replace(" ", "T"),
+            "columns": header,
+            "feature_columns": feature_columns,
+            "feature_binary_columns": [
+                header[index]
+                for index, is_binary in binary_candidates.items()
+                if is_binary
+            ],
+        }
 
 
 def materialize(
@@ -121,6 +148,24 @@ def materialize(
     })
 
     evidence = _dataset_evidence(dataset, str(data["date_column"]))
+    config.setdefault("environment", {}).update({
+        "preprocessor_plugin": "feature_window_preprocessor",
+        "feature_columns": evidence["feature_columns"],
+        "feature_binary_columns": evidence["feature_binary_columns"],
+        "feature_scaling": "rolling_zscore",
+        "feature_scaling_window": 256,
+        "feature_clip": 10.0,
+        "include_price_window": False,
+        "include_agent_state": True,
+        "require_feature_aware_preprocessor": True,
+    })
+    config["optimization"].update({
+        "optimization_reject_action_collapse": True,
+        "optimization_action_collapse_min_steps": 64,
+        "optimization_min_action_std": 1e-5,
+        "optimization_max_dominant_action_rate": 0.999,
+        "optimization_action_collapse_splits": ["train_tail", "validation"],
+    })
     manifest = {
         "schema_version": "agent_multi.dataset_manifest.v1",
         "dataset_id": (

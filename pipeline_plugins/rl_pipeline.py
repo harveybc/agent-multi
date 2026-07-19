@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from . import _return_trace as _trace_mod
+from ._observation_contract import validate_observation_contract
 
 
 class PipelinePlugin:
@@ -68,6 +69,7 @@ class PipelinePlugin:
         mode: str = "train",
     ) -> Dict[str, Any]:
         mode = str(mode).lower()
+        validate_observation_contract(config)
         base_env = env_plugin.make_env(config)
         # Agents may need a wrapped env (e.g. FlattenObservation for DQN/SAC).
         wrap_fn = getattr(agent_plugin, "wrap_env", None)
@@ -236,6 +238,8 @@ def _new_action_stats(*, continuous_threshold: float | None = None) -> Dict[str,
         "short_actions": 0,
         "non_hold_actions": 0,
         "raw_abs_sum": 0.0,
+        "raw_sum": 0.0,
+        "raw_square_sum": 0.0,
         "raw_min": None,
         "raw_max": None,
         "continuous_deadband_actions": 0,
@@ -274,6 +278,8 @@ def _update_action_stats(stats: Dict[str, Any], action: Any, info: Dict[str, Any
         coerced_i = None
     stats["steps"] += 1
     stats["raw_abs_sum"] += abs(raw)
+    stats["raw_sum"] += raw
+    stats["raw_square_sum"] += raw * raw
     stats["raw_min"] = raw if stats["raw_min"] is None else min(float(stats["raw_min"]), raw)
     stats["raw_max"] = raw if stats["raw_max"] is None else max(float(stats["raw_max"]), raw)
     if coerced_i == 1:
@@ -311,6 +317,22 @@ def _action_summary_fields(stats: Dict[str, Any], summary: Dict[str, Any]) -> Di
     deadband = int(stats.get("continuous_deadband_actions") or 0)
     entry_actions = int(stats.get("entry_actions_seen") or 0)
     orders = int(stats.get("entry_orders_submitted") or 0)
+    raw_mean = float(stats.get("raw_sum") or 0.0) / steps
+    raw_second_moment = float(stats.get("raw_square_sum") or 0.0) / steps
+    raw_std = max(0.0, raw_second_moment - raw_mean * raw_mean) ** 0.5
+    action_counts = {
+        "hold": int(stats.get("hold_actions") or 0),
+        "long": int(stats.get("long_actions") or 0),
+        "short": int(stats.get("short_actions") or 0),
+    }
+    dominant_side, dominant_count = max(action_counts.items(), key=lambda item: item[1])
+    raw_min = stats.get("raw_min")
+    raw_max = stats.get("raw_max")
+    raw_range = (
+        float(raw_max) - float(raw_min)
+        if raw_min is not None and raw_max is not None
+        else None
+    )
     if trades > 0:
         diagnosis = "traded"
     elif non_hold <= 0:
@@ -329,8 +351,14 @@ def _action_summary_fields(stats: Dict[str, Any], summary: Dict[str, Any]) -> Di
         "action_non_hold_count": non_hold,
         "action_non_hold_rate": non_hold / steps,
         "action_abs_mean": float(stats.get("raw_abs_sum") or 0.0) / steps,
-        "action_raw_min": stats.get("raw_min"),
-        "action_raw_max": stats.get("raw_max"),
+        "action_raw_mean": raw_mean,
+        "action_raw_std": raw_std,
+        "action_raw_min": raw_min,
+        "action_raw_max": raw_max,
+        "action_raw_range": raw_range,
+        "action_dominant_side": dominant_side,
+        "action_dominant_count": dominant_count,
+        "action_dominant_rate": dominant_count / steps,
         "action_deadband_count": deadband,
         "action_deadband_rate": deadband / steps,
         "execution_entry_actions_seen": entry_actions,

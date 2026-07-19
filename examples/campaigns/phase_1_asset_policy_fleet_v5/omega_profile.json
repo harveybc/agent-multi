@@ -1,0 +1,24 @@
+{
+  "schema_version": "agent_multi.doin_campaign_profile.v1",
+  "node_id": "omega",
+  "plan_file": "campaign_plan.json",
+  "expected_plan_hash": "7ecd6409f2a6730621e2eaea66917879c88a0094e54a1ff15152ce47595cd95b",
+  "state_dir": "~/.local/state/agent-multi/doin-campaigns/phase-1-asset-policy-fleet-v5/omega",
+  "listen_host": "0.0.0.0",
+  "listen_port": 8795,
+  "poll_seconds": 5,
+  "peer_timeout_seconds": 2,
+  "convergence_stability_seconds": 20,
+  "stop_timeout_seconds": 30,
+  "worker_restart_limit": 5,
+  "workers": {
+    "omega": {
+      "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
+      "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+      "log_level": "INFO",
+      "environment": {
+        "CUDA_VISIBLE_DEVICES": "0"
+      }
+    }
+  }
+}

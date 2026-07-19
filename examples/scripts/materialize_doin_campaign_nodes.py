@@ -63,6 +63,15 @@ def materialize(
     metric = str(optimization.get("metric") or canonical.get("objectives", {}).get("selection_metric"))
     metric_schema = str(optimization.get("metric_schema") or "trading.metrics.v1")
     higher_is_better = bool(optimization.get("higher_is_better", True))
+    plugin_contract = {
+        "env_plugin": (canonical.get("environment") or {}).get("plugin"),
+        "preprocessor_plugin": (canonical.get("environment") or {}).get(
+            "preprocessor_plugin"
+        ),
+        "agent_plugin": (canonical.get("asset_policy") or {}).get("plugin"),
+        "pipeline_plugin": (canonical.get("training") or {}).get("pipeline_plugin"),
+        "optimizer_plugin": optimization.get("plugin"),
+    }
     created: list[Path] = []
     for template_path in sorted(template_dir.glob("*_node.json")):
         node = _load(template_path)
@@ -109,6 +118,7 @@ def materialize(
             "optimization_resume": False,
             "optimization_pause_on_resume": False,
         })
+        opt.update({key: value for key, value in plugin_contract.items() if value})
         output_path = output_dir / template_path.name
         _write(output_path, node)
         created.append(output_path)

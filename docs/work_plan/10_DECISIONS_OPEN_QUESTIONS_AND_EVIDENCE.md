@@ -136,6 +136,23 @@ identities and chains. Previously completed SOLUSDT 4h and 1h artifacts remain
 accepted because their stored models contain 8000 timesteps and therefore
 include learning updates.
 
+### ADR-018: Enriched policies fail closed on input or action collapse
+
+Date: 2026-07-19
+
+A data-profile label is not evidence that its columns reached the model. Every
+enriched asset-policy config materializes its exact feature columns, applies
+causal scaling, excludes the raw-price bypass and requires the feature-aware
+preprocessor. Generated DOIN node configs derive plugin identity from that
+canonical config instead of retaining stale overrides.
+
+Train-tail and validation rollouts record raw action dispersion and dominant
+side. A deterministic policy that is constant on every diagnostic split is an
+invalid candidate and cannot publish a champion. Historical models trained
+with the price-only preprocessor remain reproducible only under the explicit
+`price_state_only` label; their results cannot be attributed to an ignored
+feature pack.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |

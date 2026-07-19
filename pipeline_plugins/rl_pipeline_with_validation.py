@@ -41,6 +41,12 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
 from . import _return_trace as _trace_mod
+from ._observation_contract import validate_observation_contract
+from .rl_pipeline import (
+    _action_summary_fields,
+    _new_action_stats,
+    _update_action_stats,
+)
 from agent_plugins._progress_callback import make_progress_callback
 
 
@@ -503,6 +509,9 @@ class PipelinePlugin:
                 env, agent_plugin, model, seed,
                 asset=asset, timeframe=timeframe, split=split_label,
                 run_id=run_id, episode_id=episode_id,
+                continuous_threshold=_safe_float_or_none(
+                    config.get("continuous_action_threshold")
+                ),
             )
             trace_rows = summary.pop("_return_trace_rows", None)
             trace_dir = config.get("return_trace_dir")
@@ -548,17 +557,22 @@ class PipelinePlugin:
         split: str = "evaluation",
         run_id: str = "run",
         episode_id: str = "run::ep0",
+        continuous_threshold: float | None = None,
     ) -> Dict[str, Any]:
         obs, info = env.reset(seed=seed)
         total_reward = 0.0
         steps = 0
         done = False
         trace_rows: List[Dict[str, Any]] = []
+        action_stats = _new_action_stats(
+            continuous_threshold=continuous_threshold,
+        )
         prev_equity = _safe_float_or_none(info.get("equity"))
         while not done:
             action = agent_plugin.predict(model, obs, deterministic=True)
             obs, reward, terminated, truncated, info = env.step(action)
             equity = _safe_float_or_none(info.get("equity"))
+            _update_action_stats(action_stats, action, info)
             trace_rows.append(
                 _trace_mod.build_trace_row(
                     env=env,
@@ -587,6 +601,7 @@ class PipelinePlugin:
         summary = base.summary() if hasattr(base, "summary") else {}
         summary["episode_reward"] = total_reward
         summary["episode_length"] = steps
+        summary.update(_action_summary_fields(action_stats, summary))
         summary["_return_trace_rows"] = trace_rows
         return summary
 
@@ -601,6 +616,7 @@ class PipelinePlugin:
     ) -> Dict[str, Any]:
         mode = str(mode).lower()
         env_plugin_name = config.get("env_plugin", "gym_fx_env")
+        validate_observation_contract(config)
         try:
             paths = self._split_csv(config)
 
