@@ -391,6 +391,38 @@ def test_supervisor_reanchors_accidentally_recomputed_contract_to_running_worker
     assert prepared["contract_hash"] != "wrong-contract"
 
 
+def test_supervisor_refreshes_component_contract_when_all_workers_are_stopped(
+    tmp_path: Path,
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    configs = supervisor._validate_local_configs(job)
+    stale = supervisor._coordination_contract(job, configs)
+    stale["component_versions"] = {"agent-multi": "old-worker-commit"}
+    stale["contract_hash"] = "old-contract"
+    supervisor.state.update({
+        "phase": "running",
+        "coordination": stale,
+        "workers": {
+            "omega": {
+                "pid": None,
+                "pid_start_ticks": None,
+                "status": "exited",
+                "last_chain_status": {
+                    "component_versions": {"agent-multi": "old-worker-commit"},
+                },
+            }
+        },
+    })
+    supervisor._component_versions = lambda: {"agent-multi": "installed-commit"}
+
+    prepared = supervisor._prepare_coordination(job, configs)
+
+    assert prepared["component_versions"] == {"agent-multi": "installed-commit"}
+    assert prepared["contract_hash"] != "old-contract"
+
+
 def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):
     participants = [
         {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
