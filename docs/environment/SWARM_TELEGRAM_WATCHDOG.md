@@ -28,8 +28,15 @@ It never starts, stops, repairs or modifies a DOIN process.
   divergent genesis/population lineages or generations;
 - inspect local `/proc` on every host and alert when an extra, missing or
   duplicated DOIN configuration reveals a parallel local swarm;
+- compare the configured profile plan with the live supervisor plan before
+  interpreting processes, fleet state or completion history; a stale profile
+  produces one explicit configuration alert and suppresses misleading
+  parallel-swarm diagnostics;
 - alert when there is no observable fleet progress for 120 minutes;
 - repeat unresolved alerts every 60 minutes and send one recovery message.
+- retry transient Telegram transport failures three times with bounded
+  backoff; permanent HTTP errors still fail immediately and remain visible in
+  the cron log.
 
 The primary/failover owner avoids ordinary duplicate global notifications.
 During a network partition, duplicate alerts are preferred over silently
@@ -45,8 +52,11 @@ Installation preserves unrelated crontab entries:
 
 ```bash
 python3 examples/scripts/install_swarm_telegram_watchdog.py \
-  --profile examples/campaigns/phase_1_asset_policy_fleet_v3/omega_profile.json \
+  --profile examples/campaigns/<active-campaign>/omega_profile.json \
   --apply
 ```
 
 Use the matching Dragon or Gamma profile on those hosts.
+The installer must be rerun whenever the campaign supervisor changes to a new
+profile. The runtime plan-ID guard is a fail-closed diagnostic, not a substitute
+for updating the cron entry.

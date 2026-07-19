@@ -9,6 +9,7 @@ import json
 import os
 import socket
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
@@ -18,6 +19,7 @@ from typing import Any
 
 
 STATE_SCHEMA = "agent_multi.swarm_telegram_watchdog.v1"
+TELEGRAM_SEND_ATTEMPTS = 3
 
 
 def load_env_file(path: Path) -> None:
@@ -58,10 +60,19 @@ def send_telegram(text: str) -> None:
             "disable_web_page_preview": "true",
         }).encode("utf-8")
         request = urllib.request.Request(endpoint, data=body, method="POST")
-        with urllib.request.urlopen(request, timeout=20) as response:
-            result = json.loads(
-                response.read().decode("utf-8", errors="replace")
-            )
+        for attempt in range(1, TELEGRAM_SEND_ATTEMPTS + 1):
+            try:
+                with urllib.request.urlopen(request, timeout=20) as response:
+                    result = json.loads(
+                        response.read().decode("utf-8", errors="replace")
+                    )
+                break
+            except urllib.error.HTTPError:
+                raise
+            except (urllib.error.URLError, ConnectionError, TimeoutError):
+                if attempt == TELEGRAM_SEND_ATTEMPTS:
+                    raise
+                time.sleep(2 ** (attempt - 1))
         if not result.get("ok"):
             raise RuntimeError("Telegram rejected the swarm notification")
 
@@ -165,6 +176,28 @@ def event(
         "severity": severity,
         "grace_seconds": grace_seconds,
     }
+
+
+def collect_profile_alignment_events(
+    *,
+    node_id: str,
+    configured_plan_id: str,
+    snapshot: dict[str, Any],
+) -> list[dict[str, Any]]:
+    active_plan_id = str(snapshot.get("plan_id") or "").strip()
+    if not active_plan_id or active_plan_id == configured_plan_id:
+        return []
+    return [event(
+        f"watchdog_profile_mismatch:{node_id}",
+        "🚨🚨🚨 SWARM WATCHDOG PROFILE STALE 🚨🚨🚨\n"
+        f"machine: {node_id}\n"
+        f"watchdog plan: {configured_plan_id}\n"
+        f"active supervisor plan: {active_plan_id}\n"
+        "Process, fleet and completion checks from the stale profile were "
+        "suppressed to prevent false parallel-swarm alerts. Reinstall the "
+        "watchdog with the active campaign profile.",
+        grace_seconds=0,
+    )]
 
 
 def collect_global_events(
@@ -654,20 +687,31 @@ def main(argv: list[str] | None = None) -> int:
                 grace_seconds=300.0,
             ))
 
-        local_status = (
-            ((snapshot.get("participants") or {}).get(node_id) or {}).get("status")
-            or {}
-        )
         processes = scan_local_doin_processes()
-        expected = expected_local_configs(
-            profile, plan, local_status.get("job_id")
-        )
-        local_events.extend(collect_local_process_events(
+        alignment_events = collect_profile_alignment_events(
             node_id=node_id,
-            phase=local_status.get("phase"),
-            expected_configs=expected,
-            processes=processes,
-        ))
+            configured_plan_id=plan_id,
+            snapshot=snapshot,
+        )
+        profile_aligned = not alignment_events
+        local_events.extend(alignment_events)
+
+        if profile_aligned:
+            local_status = (
+                ((snapshot.get("participants") or {}).get(node_id) or {}).get(
+                    "status"
+                )
+                or {}
+            )
+            expected = expected_local_configs(
+                profile, plan, local_status.get("job_id")
+            )
+            local_events.extend(collect_local_process_events(
+                node_id=node_id,
+                phase=local_status.get("phase"),
+                expected_configs=expected,
+                processes=processes,
+            ))
 
         stale_seconds = args.stale_minutes * 60.0
         owner = (
@@ -677,7 +721,7 @@ def main(argv: list[str] | None = None) -> int:
             if snapshot else None
         )
         global_events: list[dict[str, Any]] = []
-        if owner == node_id:
+        if profile_aligned and owner == node_id:
             global_events.extend(collect_global_events(
                 plan, snapshot, now=now, stale_seconds=stale_seconds
             ))
@@ -695,7 +739,7 @@ def main(argv: list[str] | None = None) -> int:
         completions = state.setdefault("completions", {})
         normalize_completion_records(completions)
         history = snapshot.get("history") or []
-        if owner == node_id:
+        if profile_aligned and owner == node_id:
             for row in history:
                 if row.get("status") != "completed":
                     continue
@@ -709,7 +753,7 @@ def main(argv: list[str] | None = None) -> int:
                         format_completion(row, snapshot.get("plan_jobs") or [])
                     )
                     completion_keys.append(key)
-        elif owner:
+        elif profile_aligned and owner:
             for row in history:
                 if row.get("status") != "completed":
                     continue
