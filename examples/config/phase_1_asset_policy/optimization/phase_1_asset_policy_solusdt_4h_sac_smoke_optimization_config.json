@@ -41,6 +41,14 @@
     "optimization_resume": false,
     "optimization_capture_model_artifact": true,
     "optimization_require_model_artifact": true,
+    "optimization_reject_action_collapse": true,
+    "optimization_action_collapse_min_steps": 64,
+    "optimization_min_action_std": 1e-05,
+    "optimization_max_dominant_action_rate": 0.999,
+    "optimization_action_collapse_splits": [
+      "train_tail",
+      "validation"
+    ],
     "optimization_stages": [
       {
         "name": "contract_smoke",

@@ -181,14 +181,26 @@ was 4000 while `learning_starts` was 5000, so epoch 1 saved the identical
 seeded pre-learning policy for every candidate. The v1 BTC chain is retained as
 diagnostic evidence and is not promotable.
 
-The corrected remaining-asset campaign is
-`examples/campaigns/phase_1_asset_policy_fleet_v4/` and uses fresh v2 domains
-for BTCUSDT 1h, ADAUSDT 1h, EURUSD 4h and DOGEUSDT 4h. The completed SOLUSDT 4h
-and SOLUSDT 1h artifacts remain valid: their stored models report 8000 training
-timesteps with `learning_starts: 5000`, so both crossed the barrier. They remain
-in immutable campaign history and are not repeated.
+The post-learning correction alone was insufficient. The BTC v2 campaign
+subsequently proved that the generated node and canonical configs still chose
+`default_preprocessor`: 185 declared engineered columns were ignored, raw BTC
+levels saturated the gSDE actor, and the accepted policy emitted exactly
+`tanh(-2)` on every evaluated step. That chain is diagnostic-only.
 
-Every v4 worker uses `shared_initialize_before_peers: true` and retains
+The corrected remaining-asset campaign is
+`examples/campaigns/phase_1_asset_policy_fleet_v5/` and uses fresh v3 domains
+for BTCUSDT 1h, ADAUSDT 1h, EURUSD 4h and DOGEUSDT 4h. It requires explicit
+feature columns, causal scaling, no raw-price observation block and an
+action-collapse rejection gate. The complete incident evidence is in
+`16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md`.
+
+The completed SOLUSDT 4h and SOLUSDT 1h artifacts crossed the post-learning
+barrier and their actions vary over time, but they also used
+`default_preprocessor`. They are retained and usable as precisely labeled
+`price_state_only` policies, not as evidence for the declared engineered
+feature profiles. They are not repeated in the immediate queue.
+
+Every v5 worker uses `shared_initialize_before_peers: true` and retains
 `shared_min_peers: 3`. Initialization means only publishing or recovering the
 deterministic generation-zero population; candidate claiming remains blocked
 until all three other workers are verified. The supervisor does not launch a

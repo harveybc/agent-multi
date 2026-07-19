@@ -21,9 +21,9 @@ def test_materialize_rewrites_identity_risk_artifacts_and_manifest(tmp_path: Pat
     dataset = tmp_path / "train.csv"
     with dataset.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["DATE_TIME", "CLOSE"])
-        writer.writerow(["2020-01-01 00:00:00", 1])
-        writer.writerow(["2023-12-31 23:00:00", 2])
+        writer.writerow(["DATE_TIME", "CLOSE", "regime_flag"])
+        writer.writerow(["2020-01-01 00:00:00", 1, 0])
+        writer.writerow(["2023-12-31 23:00:00", 2, 1])
     config_path = tmp_path / "config.json"
     manifest_path = tmp_path / "manifest.json"
     materialize(
@@ -54,5 +54,13 @@ def test_materialize_rewrites_identity_risk_artifacts_and_manifest(tmp_path: Pat
     assert config["training"]["risk_penalty_lambda"] == 1.0
     assert "btcusdt_1h_sac" in config["optimization"]["optimization_champion_model_file"]
     assert manifest["row_count"] == 2
-    assert manifest["column_count"] == 2
+    assert manifest["column_count"] == 3
+    assert manifest["feature_columns"] == ["CLOSE", "regime_flag"]
+    assert manifest["feature_binary_columns"] == ["regime_flag"]
     assert manifest["selection_uses_test"] is False
+    assert config["environment"]["preprocessor_plugin"] == "feature_window_preprocessor"
+    assert config["environment"]["feature_columns"] == ["CLOSE", "regime_flag"]
+    assert config["environment"]["feature_binary_columns"] == ["regime_flag"]
+    assert config["environment"]["include_price_window"] is False
+    assert config["environment"]["require_feature_aware_preprocessor"] is True
+    assert config["optimization"]["optimization_reject_action_collapse"] is True

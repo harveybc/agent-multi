@@ -68,6 +68,65 @@ def _safe_unlink(path: str) -> None:
         pass
 
 
+def _action_collapse_evidence(
+    summary: Dict[str, Any],
+    config: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Return a fail-closed diagnosis for deterministic policy collapse."""
+    enabled = bool(config.get("optimization_reject_action_collapse", False))
+    min_steps = max(1, int(config.get("optimization_action_collapse_min_steps", 64)))
+    min_std = max(0.0, float(config.get("optimization_min_action_std", 1e-5)))
+    max_dominant = float(
+        config.get("optimization_max_dominant_action_rate", 0.999)
+    )
+    splits = summary.get("splits") if isinstance(summary.get("splits"), dict) else {}
+    requested = config.get(
+        "optimization_action_collapse_splits", ["train_tail", "validation"]
+    )
+    if not isinstance(requested, list) or not requested:
+        requested = ["train_tail", "validation"]
+
+    details: Dict[str, Any] = {}
+    collapsed: list[str] = []
+    for split_name in requested:
+        split = splits.get(split_name)
+        if not isinstance(split, dict):
+            continue
+        steps = int(split.get("action_steps") or 0)
+        std = float(split.get("action_raw_std") or 0.0)
+        dominant_rate = float(split.get("action_dominant_rate") or 0.0)
+        is_collapsed = (
+            steps >= min_steps
+            and std <= min_std
+            and dominant_rate >= max_dominant
+        )
+        details[str(split_name)] = {
+            "steps": steps,
+            "raw_std": std,
+            "raw_min": split.get("action_raw_min"),
+            "raw_max": split.get("action_raw_max"),
+            "dominant_side": split.get("action_dominant_side"),
+            "dominant_rate": dominant_rate,
+            "collapsed": is_collapsed,
+        }
+        if is_collapsed:
+            collapsed.append(str(split_name))
+
+    evaluated = list(details)
+    rejected = bool(enabled and evaluated and len(collapsed) == len(evaluated))
+    return {
+        "policy_action_collapse_guard_enabled": enabled,
+        "policy_action_collapse_rejected": rejected,
+        "policy_action_collapse_splits": collapsed,
+        "policy_action_collapse_details": details,
+        "candidate_rejected_reason": (
+            "deterministic_policy_action_collapse"
+            if rejected
+            else None
+        ),
+    }
+
+
 def _swap_split_path(path: str, split: str) -> str:
     """Swap d4 → d{split} in a dataset path. Preserves _norm suffix."""
     if not path:
@@ -1153,8 +1212,14 @@ class Plugin:
 
         from app.metrics import compute_optimization_fitness
 
-        fitness = compute_optimization_fitness(summary, run_config, agent_plugin)
         metrics = _metric_payload(summary)
+        collapse = _action_collapse_evidence(summary, run_config)
+        metrics.update(collapse)
+        fitness = (
+            -1e9
+            if collapse["policy_action_collapse_rejected"]
+            else compute_optimization_fitness(summary, run_config, agent_plugin)
+        )
         metrics["fitness"] = float(fitness)
         metrics["optimization_metric"] = str(
             run_config.get("optimization_metric")
@@ -1223,6 +1288,10 @@ def _dashboard_metric_payload(metrics: Dict[str, Any]) -> Dict[str, Any]:
         "model_artifact_sha256",
         "model_artifact_bytes",
         "model_artifact_format",
+        "policy_action_collapse_rejected",
+        "policy_action_collapse_splits",
+        "policy_action_collapse_details",
+        "candidate_rejected_reason",
         "evaluation_error",
     )
     return {key: metrics[key] for key in keys if metrics.get(key) is not None}

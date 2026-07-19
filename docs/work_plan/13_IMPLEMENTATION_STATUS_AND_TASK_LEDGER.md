@@ -576,6 +576,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `DOIN-CAMPAIGN-001` | Codex | `agent-multi`, `doin-node` | verified_four_worker_swarm | Replicated six-cell campaign plan, append-only live migration, deterministic bootstrap, ordered joins, seed/data/config/version contract, lineage watchdogs, scoped repair, convergence/stop barriers, crash adoption, champion archive, decentralized history, non-resurrecting leases, strict generation membership barrier, stable claim confirmation and responder identity verification | Codex |
 | `GPU-WATCHDOG-001` | Codex | `agent-multi` | verified_three_hosts | Five-minute GPU temperature, GPU-count and NVIDIA telemetry watchdog with Hermes Telegram alert, recovery and hourly repeat semantics | Codex |
 | `SWARM-TELEGRAM-001` | Codex | `agent-multi` | verified_three_hosts | Idempotent completion metrics and failover-owned health notifications for frozen machines, unhealthy workers, divergent lineages, parallel swarms and stalled progress | Codex |
+| `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
 
 Claude packet:
 
@@ -594,8 +595,8 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Monitor the deployed immutable six-cell Stage A campaign queue; verify the
-   next automatic transition follows
+1. Deploy and smoke-test the corrected `fleet_v5` four-job queue; verify the
+   start follows
    `omega -> dragon -> gamma-5070ti -> gamma-5090` and fail closed on seed,
    dataset, revision, genesis, population, finalized-anchor or artifact
    divergence.

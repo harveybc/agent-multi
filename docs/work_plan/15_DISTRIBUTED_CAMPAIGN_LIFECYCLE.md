@@ -1,8 +1,24 @@
 # Distributed DOIN Campaign Lifecycle
 
-Status: deterministic bootstrap hardening implemented and integration-tested
-Date: 2026-07-16
+Status: deterministic bootstrap hardening implemented; feature-aware fleet v5 pending redeploy
+Date: 2026-07-19
 Owner: `agent-multi`
+
+## 0. Active Campaign Revision
+
+The earlier queue/history descriptions below document the deployed lifecycle
+evolution. The active next plan is now:
+
+```text
+examples/campaigns/phase_1_asset_policy_fleet_v5/campaign_plan.json
+```
+
+It contains fresh shared-v3 domains for BTCUSDT 1h, ADAUSDT 1h, EURUSD 4h and
+DOGEUSDT 4h. The BTC shared-v2 domain in `fleet_v4` was stopped and frozen
+after direct artifact replay proved an always-short saturated actor caused by
+a stale price-only preprocessor. No v2 chain or log was removed. The exact
+cause, historical SOL disposition and new action-collapse gate are recorded in
+`16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md`.
 
 ## 1. Scope
 
