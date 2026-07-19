@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from tools.gpu_temperature_watchdog import evaluate, parse_nvidia_smi
+from tools.gpu_temperature_watchdog import (
+    active_event_keys,
+    evaluate,
+    parse_nvidia_smi,
+)
 
 
 def test_parse_nvidia_smi_rows() -> None:
@@ -83,3 +87,15 @@ def test_missing_egpu_produces_count_alert() -> None:
     )
     assert "GPU COUNT ALERT" in messages[0]
     assert keys == ["gpu_count"]
+
+
+def test_active_event_keys_keeps_throttled_alert_visibly_unhealthy() -> None:
+    state = {
+        "events": {
+            "gpu_count": {"active": False},
+            "temperature:0": {"active": True},
+            "nvidia_smi": {"active": False},
+        }
+    }
+
+    assert active_event_keys(state) == ["temperature:0"]

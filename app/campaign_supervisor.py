@@ -46,6 +46,13 @@ _CANDIDATE_RESULT_RE = re.compile(
     r"^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}).*"
     r"\[SHARED\] Candidate (?P<candidate>\d+)/\d+ result:.*gen=(?P<generation>\d+)"
 )
+_TRAINING_EPOCH_RE = re.compile(
+    r"\[epoch\s+(?P<epoch>\d+)/(?P<max_epochs>\d+)\]\s+"
+    r"L1\s+(?P<l1_counter>\d+)/(?P<l1_patience>\d+)\s+"
+    r"L2\s+(?P<l2_counter>-|\d+)/(?P<l2_patience>\d+).*?"
+    r"best=(?P<best>[+-]?(?:\d+(?:\.\d*)?|\.\d+)).*?"
+    r"steps=(?P<steps_before>\d+)->(?P<steps_after>\d+)"
+)
 
 
 def _parse_timestamp(value: Any) -> datetime | None:
@@ -102,6 +109,44 @@ def _candidate_duration_samples_from_log(
             if 1.0 <= seconds <= maximum_seconds:
                 durations.append(seconds)
     return durations[-max(1, int(limit)):]
+
+
+def _latest_training_progress_from_log(
+    path: Path,
+    *,
+    maximum_bytes: int = 2 * 1024 * 1024,
+) -> dict[str, Any]:
+    """Read the latest in-candidate epoch checkpoint from a worker log."""
+    if not path.is_file():
+        return {}
+    with path.open("rb") as handle:
+        size = handle.seek(0, os.SEEK_END)
+        handle.seek(max(0, size - max(1, int(maximum_bytes))))
+        text = handle.read().decode("utf-8", errors="replace")
+
+    progress: dict[str, Any] = {}
+    for line in text.splitlines():
+        if _CANDIDATE_START_RE.search(line):
+            progress = {}
+        match = _TRAINING_EPOCH_RE.search(line)
+        if not match:
+            continue
+        l2_counter = match["l2_counter"]
+        epoch = int(match["epoch"])
+        max_epochs = max(1, int(match["max_epochs"]))
+        progress = {
+            "epoch": epoch,
+            "max_epochs": max_epochs,
+            "epoch_progress_fraction": min(1.0, epoch / max_epochs),
+            "l1_counter": int(match["l1_counter"]),
+            "l1_patience": int(match["l1_patience"]),
+            "l2_counter": None if l2_counter == "-" else int(l2_counter),
+            "l2_patience": int(match["l2_patience"]),
+            "best_training_score": float(match["best"]),
+            "steps_before": int(match["steps_before"]),
+            "steps_after": int(match["steps_after"]),
+        }
+    return progress
 
 
 def _duration_statistics(samples: list[float]) -> dict[str, Any]:
@@ -1074,6 +1119,9 @@ class CampaignSupervisor:
                 "basis": "recent_completed_candidates_on_this_worker",
             })
         worker["candidate_eta"] = eta
+        worker["training_progress"] = _latest_training_progress_from_log(
+            Path(str(worker.get("log_path") or ""))
+        )
 
     def _poll_local_workers(self, job: dict[str, Any], configs: dict[str, dict[str, Any]]) -> None:
         for worker_id, config in configs.items():
@@ -1228,6 +1276,7 @@ class CampaignSupervisor:
             "optimization_error": worker.get("optimization_error"),
             "candidate": (worker.get("monitor") or {}).get("candidate") or {},
             "candidate_eta": worker.get("candidate_eta") or {},
+            "training_progress": worker.get("training_progress") or {},
             "optimization": worker.get("optimization") or {},
             "last_seen": worker.get("last_seen"),
             "stopped_verified": bool(worker.get("stopped_verified")),
@@ -2289,7 +2338,7 @@ async function refresh(){{let d;try{{d=await(await fetch('/api/network')).json()
  document.querySelector('#summary').innerHTML=[['Current job',local.job_id||'complete'],['Phase',local.phase],['Supervisors',online+'/'+ps.length],['Workers joined',joined+'/'+workers.length],['Current job ETA',duration(eta.current_job_eta_seconds)],['Whole pool ETA',duration(eta.pool_eta_seconds)],['Pool jobs',(eta.jobs_completed??0)+' done / '+(eta.jobs_queued??0)+' queued'],['Throughput',eta.swarm_candidates_per_hour==null?'-':Number(eta.swarm_candidates_per_hour).toFixed(2)+'/h'],['History',d.history.length+' campaigns']].map(x=>`<div class="metric"><b>${{esc(x[1])}}</b><span>${{esc(x[0])}}</span></div>`).join('');
  const alerts=[]; ps.forEach(p=>{{if(!p.online)alerts.push('OFFLINE: '+(p.url||'peer')); else (p.status.alerts||[]).forEach(a=>alerts.push(p.status.node_id+': '+a.message))}});
  document.querySelector('#alerts').innerHTML=alerts.length?`<div class="alerts"><b>SWARM ALERT</b><br>${{alerts.map(esc).join('<br>')}}</div>`:'';
- let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="6">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn', joinCls=w.join_ready?'ok':'warn', pool=w.shared_population||{{}}, lineage=w.bootstrap_evidence||{{}}, candidate=w.candidate||{{}}, candidateEta=w.candidate_eta||{{}}; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td class="${{joinCls}}">${{w.join_ready?'verified':esc(w.join_reason||'waiting')}}<br>${{w.owns_candidate?'candidate '+esc((w.owned_candidate_indices||[]).join(',')):'no active claim'}}<br>gen ${{esc(pool.generation??'-')}} / free ${{esc(pool.free??'-')}}</td><td><b>${{duration(candidateEta.candidate_eta_seconds)}}</b><br>elapsed ${{duration(candidateEta.candidate_elapsed_seconds)}}<br>${{candidateEta.sample_size?esc(candidateEta.sample_size)+' samples':'learning rate'}}<br>${{candidate.stage_name?esc(candidate.stage_name):''}}</td><td>height ${{esc(w.chain_height||'-')}}<br><code>genesis ${{short(lineage.genesis_hash)}}<br>population ${{short(lineage.population_block_hash)}}<br>final ${{short(w.finalized_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
+ let rows=''; for(const [node,p] of Object.entries(d.participants)){{if(!p.online){{rows+=`<tr><td>${{esc(node)}}</td><td class="bad">OFFLINE</td><td colspan="6">${{esc(p.error)}}</td></tr>`;continue}} const s=p.status; for(const [wid,w] of Object.entries(s.workers||{{}})){{const cls=w.status==='running'?'ok':w.stopped_verified?'ok':'warn', joinCls=w.join_ready?'ok':'warn', pool=w.shared_population||{{}}, lineage=w.bootstrap_evidence||{{}}, candidate=w.candidate||{{}}, candidateEta=w.candidate_eta||{{}}, training=w.training_progress||{{}}; rows+=`<tr><td><b>${{esc(node)}}</b><br>${{esc(wid)}}</td><td class="${{cls}}">${{esc(s.phase)}}</td><td>${{esc(w.status)}}<br>pid ${{esc(w.pid||'-')}}</td><td class="${{joinCls}}">${{w.join_ready?'verified':esc(w.join_reason||'waiting')}}<br>${{w.owns_candidate?'candidate '+esc((w.owned_candidate_indices||[]).join(',')):'no active claim'}}<br>gen ${{esc(pool.generation??'-')}} / evaluated ${{esc(pool.evaluated??'-')}} / free ${{esc(pool.free??'-')}}</td><td><b>${{duration(candidateEta.candidate_eta_seconds)}}</b><br>elapsed ${{duration(candidateEta.candidate_elapsed_seconds)}}<br>${{training.epoch?'epoch '+esc(training.epoch)+'/'+esc(training.max_epochs)+' | L1 '+esc(training.l1_counter)+'/'+esc(training.l1_patience):candidateEta.sample_size?esc(candidateEta.sample_size)+' samples':'learning rate'}}<br>${{training.steps_after?'steps '+esc(training.steps_after):candidate.stage_name?esc(candidate.stage_name):''}}</td><td>height ${{esc(w.chain_height||'-')}}<br><code>genesis ${{short(lineage.genesis_hash)}}<br>population ${{short(lineage.population_block_hash)}}<br>final ${{short(w.finalized_hash)}}</code></td><td>${{pct(w.best_performance)}}</td><td><code>${{Object.entries(w.component_versions||{{}}).map(([k,v])=>esc(k)+':'+short(v)).join('<br>')}}</code></td></tr>`}}}}
  document.querySelector('#workers').innerHTML=rows||'<tr><td colspan="8">No workers reported</td></tr>';
  document.querySelector('#queue').innerHTML=(d.plan_jobs||[]).map(j=>{{const cls=j.status==='completed'?'ok':j.status==='queued'?'':j.status==='history_missing'?'bad':'warn';return `<tr><td>${{esc(j.ordinal)}}</td><td>${{esc(j.job_id)}}</td><td>${{esc(j.domain_id)}}</td><td class="${{cls}}">${{esc(j.status)}}</td><td>${{esc(j.planned_candidates||'-')}}</td><td>${{j.status==='running'?duration(eta.current_job_eta_seconds):duration(j.eta_seconds)}}</td><td>${{esc(j.purpose||'-')}}</td><td>${{pct(j.champion_fitness)}}<br><code>${{short(j.artifact_sha256)}}</code></td></tr>`}}).join('')||'<tr><td colspan="8">No queued jobs</td></tr>';
  document.querySelector('#history').innerHTML=d.history.map(h=>`<tr><td>${{esc(h.ordinal)}}</td><td>${{esc(h.job_id)}}</td><td>${{esc(h.domain_id)}}</td><td class="${{h.status==='completed'?'ok':'warn'}}">${{esc(h.status)}}</td><td>${{pct(h.champion_fitness)}}<br>${{short(h.champion_peer_id)}}</td><td><code>${{short(h.artifact_sha256)}}</code><br>${{esc(h.artifact_format||'')}}</td><td>${{esc(h.completed_at||'-')}}</td></tr>`).join('')||'<tr><td colspan="7">No completed campaigns yet</td></tr>';

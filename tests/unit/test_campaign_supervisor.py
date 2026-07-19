@@ -16,6 +16,7 @@ from app.campaign_supervisor import (
     _candidate_duration_samples_from_log,
     _cmdline_references_config,
     _domain_semantic_hash,
+    _latest_training_progress_from_log,
 )
 
 
@@ -282,6 +283,32 @@ def test_candidate_duration_samples_pair_shared_log_entries(tmp_path: Path):
     )
 
     assert _candidate_duration_samples_from_log(log) == [180.0, 300.0]
+
+
+def test_latest_training_progress_uses_active_candidate_epoch(tmp_path: Path):
+    log = tmp_path / "worker.log"
+    log.write_text(
+        "\n".join([
+            "2026-07-19 10:00:00 [doin_node.unified] INFO: [SHARED] Evaluating candidate 1/20 gen=0 for domain",
+            "[epoch   7/40] L1 4/8  L2 -/5  score composite=+0.1 best=+0.2 steps=24000->28000",
+            "2026-07-19 11:00:00 [doin_node.unified] INFO: [SHARED] Evaluating candidate 2/20 gen=0 for domain",
+            "[epoch   3/40] L1 1/8  L2 -/5  score composite=+0.3 best=+0.4 steps=8000->12000",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+
+    assert _latest_training_progress_from_log(log) == {
+        "epoch": 3,
+        "max_epochs": 40,
+        "epoch_progress_fraction": 0.075,
+        "l1_counter": 1,
+        "l1_patience": 8,
+        "l2_counter": None,
+        "l2_patience": 5,
+        "best_training_score": 0.4,
+        "steps_before": 8000,
+        "steps_after": 12000,
+    }
 
 
 def test_network_eta_covers_current_campaign_and_queued_pool(tmp_path: Path):

@@ -143,6 +143,14 @@ def event_due(
     return now - float(event.get("last_sent_at", 0)) >= repeat_seconds
 
 
+def active_event_keys(state: dict[str, Any]) -> list[str]:
+    return sorted(
+        key
+        for key, event in (state.get("events") or {}).items()
+        if isinstance(event, dict) and bool(event.get("active"))
+    )
+
+
 def evaluate(
     *,
     machine: str,
@@ -343,13 +351,18 @@ def main() -> int:
                     state["events"][key]["last_sent_at"] = now
                 state["last_notification_at"] = now
         else:
-            print(
-                f"GPU watchdog healthy: {args.machine}, "
-                + ", ".join(
-                    f"GPU {gpu['index']}={gpu['temperature_c']:.0f}C"
-                    for gpu in gpus
-                )
+            gpu_summary = ", ".join(
+                f"GPU {gpu['index']}={gpu['temperature_c']:.0f}C"
+                for gpu in gpus
             )
+            active_keys = active_event_keys(state)
+            if active_keys:
+                print(
+                    f"GPU watchdog alert remains active: {args.machine}, "
+                    f"events={','.join(active_keys)}, {gpu_summary}"
+                )
+            else:
+                print(f"GPU watchdog healthy: {args.machine}, {gpu_summary}")
 
         state.update({
             "schema_version": STATE_SCHEMA,
