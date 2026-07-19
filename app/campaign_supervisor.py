@@ -840,6 +840,22 @@ class CampaignSupervisor:
                         for key, value in contract.items()
                         if key != "contract_hash"
                     })
+            elif not any(
+                _pid_matches(worker.get("pid"), worker.get("pid_start_ticks"))
+                for worker in (self.state.get("workers") or {}).values()
+            ):
+                # A fully stopped host has no running worker contract to
+                # preserve. Refresh to the installed revisions so followers
+                # can rejoin after a coordinated deploy instead of retaining
+                # stale versions forever.
+                installed_versions = self._component_versions()
+                if installed_versions != contract.get("component_versions"):
+                    contract["component_versions"] = installed_versions
+                    contract["contract_hash"] = _sha256_json({
+                        key: value
+                        for key, value in contract.items()
+                        if key != "contract_hash"
+                    })
         else:
             contract = self._coordination_contract(job, configs)
         legacy_adopted = bool(
