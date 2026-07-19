@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import urllib.error
+
 from tools.swarm_telegram_watchdog import (
     collect_global_events,
     collect_local_process_events,
+    collect_profile_alignment_events,
     due_events,
     completion_key,
     format_completion,
     normalize_completion_records,
     select_notification_owner,
+    send_telegram,
     split_telegram_text,
 )
 
@@ -116,6 +120,26 @@ def test_detects_local_duplicate_or_extra_process() -> None:
     assert "LOCAL DOIN PROCESS ANOMALY" in events[0]["message"]
 
 
+def test_stale_profile_is_reported_before_process_checks() -> None:
+    events = collect_profile_alignment_events(
+        node_id="omega",
+        configured_plan_id="fleet-v3",
+        snapshot={"plan_id": "fleet-v5"},
+    )
+    assert events[0]["key"] == "watchdog_profile_mismatch:omega"
+    assert "fleet-v3" in events[0]["message"]
+    assert "fleet-v5" in events[0]["message"]
+    assert events[0]["grace_seconds"] == 0
+
+
+def test_matching_profile_has_no_alignment_event() -> None:
+    assert collect_profile_alignment_events(
+        node_id="omega",
+        configured_plan_id="fleet-v5",
+        snapshot={"plan_id": "fleet-v5"},
+    ) == []
+
+
 def test_event_grace_repeat_and_recovery() -> None:
     state = {"events": {}}
     current = [{
@@ -175,6 +199,34 @@ def test_telegram_messages_are_split_below_limit() -> None:
     chunks = split_telegram_text(("alert detail\n\n" * 500), limit=300)
     assert len(chunks) > 1
     assert all(len(chunk) <= 300 for chunk in chunks)
+
+
+def test_telegram_send_retries_transient_network_failure(monkeypatch) -> None:
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "token")
+    monkeypatch.setenv("PROJECT3_TELEGRAM_CHAT_ID", "chat")
+    attempts = 0
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self):
+            return b'{"ok": true}'
+
+    def urlopen(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise urllib.error.URLError(ConnectionResetError("reset"))
+        return Response()
+
+    monkeypatch.setattr("urllib.request.urlopen", urlopen)
+    monkeypatch.setattr("time.sleep", lambda _: None)
+    send_telegram("test")
+    assert attempts == 2
 
 
 def test_completion_identity_is_shared_across_local_completion_times() -> None:

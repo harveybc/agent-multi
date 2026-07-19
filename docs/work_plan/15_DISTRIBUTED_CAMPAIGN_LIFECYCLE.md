@@ -348,6 +348,16 @@ the fan returned the GPU to 55-61 C under load. A throttled active alert is now
 logged as active rather than incorrectly labeled `healthy` between Telegram
 repeat intervals.
 
+At 16:30-16:35 COT on 2026-07-19 the Telegram swarm watchdog produced a false
+recovery followed by a local-process anomaly. The DOIN fleet remained on the
+single healthy `phase-1-asset-policy-fleet-v5` chain; all three cron entries
+still referenced the completed `v3` campaign and therefore treated the valid
+`v5` worker as an extra process. The cron profiles were moved to `v5`, and the
+watchdog now compares its configured plan ID with `/api/network` before
+interpreting process or fleet evidence. A mismatch raises one configuration
+alert while suppressing false parallel-swarm and completion conclusions.
+Transient Telegram connection resets are retried three times.
+
 ## 6. Current Queue and Scientific Meaning
 
 Ordinal 0 adopts, archives and closes the completed
