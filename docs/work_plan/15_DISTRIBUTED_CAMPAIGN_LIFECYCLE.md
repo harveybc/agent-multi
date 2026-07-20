@@ -358,6 +358,15 @@ interpreting process or fleet evidence. A mismatch raises one configuration
 alert while suppressing false parallel-swarm and completion conclusions.
 Transient Telegram connection resets are retried three times.
 
+After an Omega kernel crash and reboot later that day, the enabled supervisor
+correctly recreated the same worker identity and reclaimed candidate 3 on the
+existing v5 lineage. The worker API remained responsive but dashboard polling
+could queue `/status` for slightly more than the original two-second campaign
+monitor timeout, producing false `omega is not running` warnings while epochs
+and GPU work continued. Fleet-v5 profiles now allow ten seconds for peer API
+reads. This changes only health observation; population seed, candidate leases,
+domain semantics and optimizer behavior are unchanged.
+
 ## 6. Current Queue and Scientific Meaning
 
 Ordinal 0 adopts, archives and closes the completed

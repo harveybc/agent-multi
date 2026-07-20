@@ -7,7 +7,7 @@
   "listen_host": "0.0.0.0",
   "listen_port": 8795,
   "poll_seconds": 5,
-  "peer_timeout_seconds": 2,
+  "peer_timeout_seconds": 10,
   "convergence_stability_seconds": 20,
   "stop_timeout_seconds": 30,
   "worker_restart_limit": 5,
