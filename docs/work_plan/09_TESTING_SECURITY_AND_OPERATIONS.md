@@ -161,6 +161,12 @@ Do not wait many hours to suspect a worker.
 - Prevent auto-restart loops from repeatedly exhausting memory.
 - Preserve candidate state/idempotency before retry.
 
+Omega additionally contains the DOIN service with `MemoryHigh=20G`,
+`MemoryMax=24G` and `MemorySwapMax=6G`. A two-minute memory-pressure watchdog
+alerts through Hermes Telegram and tracks cgroup `oom_kill` counters. Kernel
+oops recovery, AMD hardware-watchdog probing and patch-kernel installation are
+documented in `docs/environment/MEMORY_AND_KERNEL_RECOVERY.md`.
+
 ## 10. Release Gates
 
 Automatic adaptive-practice release requires:

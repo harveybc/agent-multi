@@ -1,8 +1,21 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-17
-Plan version: 1.6.0
+Status timestamp: 2026-07-22
+Plan version: 1.6.2
 Current focus: uninterrupted six-cell static asset optimization, exact artifact closeout and portfolio-research handoff
+
+Omega recovery evidence on 2026-07-21 identified a kernel `NULL pointer
+dereference`, not an OOM kill. Omega automatically rejoined the active BTCUSDT
+swarm with matching seed, genesis, generation-5 population and component
+lineage. DOIN cgroup memory containment and a Telegram memory-pressure
+watchdog are active; kernel panic recovery and kernel `7.0.0-28` installation
+are prepared behind one explicit root command.
+
+The 2026-07-22 BTC campaign audit identified and corrected follower shutdowns
+during temporary bootstrap unavailability and contaminated ETA samples. The
+campaign retained the same four worker PIDs and canonical chain while the
+supervisors were reloaded. Current timing is based only on completed local
+evaluation intervals; see `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md` section 7.1.
 
 ## 1. Phase Summary
 
