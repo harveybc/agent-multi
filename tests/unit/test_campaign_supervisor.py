@@ -285,6 +285,59 @@ def test_candidate_duration_samples_pair_shared_log_entries(tmp_path: Path):
     assert _candidate_duration_samples_from_log(log) == [180.0, 300.0]
 
 
+def test_candidate_timing_uses_exact_log_durations_without_claim_gaps(
+    tmp_path: Path,
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    log = tmp_path / "worker.log"
+    log.write_text(
+        "\n".join([
+            "2026-07-17 10:00:00 [doin_node.unified] INFO: [SHARED] Evaluating candidate 1/20 gen=3 for domain",
+            "2026-07-17 10:40:00 [doin_node.unified] INFO: [SHARED] Candidate 1/20 result: fitness=0.1 gen=3 domain",
+            "2026-07-17 10:40:10 [doin_node.unified] INFO: [SHARED] Evaluating candidate 2/20 gen=3 for domain",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+    worker = {
+        "pid": 123,
+        "log_path": str(log),
+        "candidate_duration_samples": [10.0, 20.0, 30.0],
+        "candidate_tracking": {
+            "domain_id": DOMAIN_ID,
+            "generation": 3,
+            "candidate_num": 1,
+            "started_at": "2026-07-17T10:40:00+00:00",
+            "pid": 123,
+        },
+    }
+    monitor = {
+        "candidate": {
+            "domain_id": DOMAIN_ID,
+            "gen": 3,
+            "candidate_num": 2,
+            "timestamp": "2026-07-17T10:40:10+00:00",
+        }
+    }
+
+    supervisor._update_worker_candidate_timing(worker, monitor)
+
+    assert worker["candidate_duration_samples"] == [2400.0]
+    assert worker["candidate_eta"]["candidate_seconds_median"] == 2400.0
+    assert worker["candidate_eta"]["basis"] == (
+        "local_evaluation_start_to_result_log_samples"
+    )
+
+    # A result-time timestamp update for candidate 2 must not overwrite the
+    # original evaluation start or create a ten-second pseudo sample.
+    monitor["candidate"]["timestamp"] = "2026-07-17T11:20:00+00:00"
+    supervisor._update_worker_candidate_timing(worker, monitor)
+    assert worker["candidate_duration_samples"] == [2400.0]
+    assert worker["candidate_tracking"]["started_at"] == (
+        "2026-07-17T10:40:10+00:00"
+    )
+
+
 def test_latest_training_progress_uses_active_candidate_epoch(tmp_path: Path):
     log = tmp_path / "worker.log"
     log.write_text(
@@ -586,6 +639,14 @@ def test_runtime_health_detects_bootstrap_lineage_divergence(tmp_path: Path):
         network, supervisor.plan["jobs"][0]
     )
     assert healthy, issues
+    network["participants"]["omega"]["status"]["workers"]["omega"].update({
+        "finalized_height": -1,
+        "finalized_hash": "stale-local-cache",
+    })
+    healthy, issues = supervisor._runtime_swarm_health(
+        network, supervisor.plan["jobs"][0]
+    )
+    assert healthy, issues
     network["participants"]["dragon"]["status"]["workers"]["dragon"][
         "bootstrap_evidence"
     ]["population_block_hash"] = "fork"
@@ -594,6 +655,97 @@ def test_runtime_health_detects_bootstrap_lineage_divergence(tmp_path: Path):
     )
     assert not healthy
     assert "lineage" in "; ".join(issues)
+
+
+def test_verified_follower_survives_temporary_bootstrap_outage(tmp_path: Path):
+    participants = [
+        {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
+        {"node_id": "dragon", "supervisor_url": "http://dragon:8795", "workers": ["dragon"]},
+    ]
+    profile_path, _, _ = _materialize(
+        tmp_path, participants=participants, node_id="dragon"
+    )
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    versions = {"agent-multi": "a1", "doin-node": "d1"}
+    lineage = {
+        "job_id": job["job_id"],
+        "domain_id": job["domain_id"],
+        "genesis_hash": "genesis",
+        "population_block_hash": "population",
+        "population_fingerprint": "fingerprint",
+        "verified_at": "2026-07-22T00:00:00+00:00",
+    }
+    supervisor.state["coordination"] = {
+        "component_versions": versions,
+        "canonical_lineage": lineage,
+    }
+    worker = supervisor._worker_state("dragon")
+    worker.update({
+        "status": "running",
+        "bootstrap_evidence": {
+            "genesis_hash": "genesis",
+            "population_block_hash": "population",
+            "population_fingerprint": "fingerprint",
+            "shared_population_seed": 1701,
+        },
+        "shared_population": {"domain_id": DOMAIN_ID, "pop_size": 4},
+        "last_chain_status": {"component_versions": versions},
+    })
+    network = {
+        "participants": {
+            "omega": {"online": False},
+            "dragon": {
+                "online": True,
+                "status": {"workers": {"dragon": supervisor._public_worker("dragon", worker)}},
+            },
+        }
+    }
+
+    ready, reason = supervisor._validate_worker_join(
+        network, job, "dragon", {"population_size": 4, "seed": 1701}
+    )
+
+    assert ready, reason
+    assert "lineage match" in reason
+
+
+def test_unverified_follower_waits_when_bootstrap_lineage_is_unavailable(
+    tmp_path: Path,
+):
+    participants = [
+        {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
+        {"node_id": "dragon", "supervisor_url": "http://dragon:8795", "workers": ["dragon"]},
+    ]
+    profile_path, _, _ = _materialize(
+        tmp_path, participants=participants, node_id="dragon"
+    )
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    versions = {"agent-multi": "a1", "doin-node": "d1"}
+    supervisor.state["coordination"] = {"component_versions": versions}
+    worker = supervisor._worker_state("dragon")
+    worker.update({
+        "status": "running",
+        "bootstrap_evidence": {
+            "genesis_hash": "genesis",
+            "population_block_hash": "population",
+            "population_fingerprint": "fingerprint",
+            "shared_population_seed": 1701,
+        },
+        "shared_population": {"domain_id": DOMAIN_ID, "pop_size": 4},
+        "last_chain_status": {"component_versions": versions},
+    })
+
+    ready, reason = supervisor._validate_worker_join(
+        {"participants": {"omega": {"online": False}}},
+        job,
+        "dragon",
+        {"population_size": 4, "seed": 1701},
+    )
+
+    assert not ready
+    assert reason == "bootstrap lineage is not yet available"
 
 
 def test_claimless_repair_is_suspended_while_swarm_is_unhealthy(tmp_path: Path):
@@ -616,6 +768,174 @@ def test_claimless_repair_is_suspended_while_swarm_is_unhealthy(tmp_path: Path):
 
     assert worker["claimless_since"] is None
     assert worker["claimless_repair_count"] == 2
+
+
+def test_claimless_repair_waits_while_shared_population_advances(
+    tmp_path: Path, monkeypatch
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    worker = supervisor._worker_state("omega")
+    worker.update({
+        "status": "running",
+        "converged": False,
+        "owns_candidate": False,
+        "shared_population": {"free": 2},
+        "claimless_since": 1.0,
+        "last_progress_at": 900.0,
+        "claimless_repair_count": 0,
+    })
+    stopped = []
+    monkeypatch.setattr("app.campaign_supervisor.time.time", lambda: 1000.0)
+    monkeypatch.setattr(
+        supervisor, "_stop_worker", lambda *args: stopped.append(args) or True
+    )
+
+    supervisor._repair_claimless_local_workers(
+        supervisor.plan["jobs"][0],
+        {"omega": {"path": "unused.json"}},
+        swarm_healthy=True,
+    )
+
+    assert stopped == []
+    assert worker["claimless_repair_count"] == 0
+
+
+def test_claimless_repair_restarts_only_after_pool_stalls(
+    tmp_path: Path, monkeypatch
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    worker = supervisor._worker_state("omega")
+    worker.update({
+        "status": "running",
+        "converged": False,
+        "owns_candidate": False,
+        "shared_population": {"free": 2},
+        "claimless_since": 1.0,
+        "last_progress_at": 1.0,
+        "claimless_repair_count": 0,
+    })
+    stopped = []
+    monkeypatch.setattr("app.campaign_supervisor.time.time", lambda: 1000.0)
+    monkeypatch.setattr(
+        supervisor, "_stop_worker", lambda *args: stopped.append(args) or True
+    )
+
+    supervisor._repair_claimless_local_workers(
+        supervisor.plan["jobs"][0],
+        {"omega": {"path": "unused.json"}},
+        swarm_healthy=True,
+    )
+
+    assert len(stopped) == 1
+    assert worker["claimless_repair_count"] == 1
+
+
+def test_healthy_worker_resets_consecutive_restart_budget(
+    tmp_path: Path, monkeypatch
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    worker = supervisor._worker_state("omega")
+    worker.update({
+        "status": "running",
+        "pid": 123,
+        "pid_start_ticks": 456,
+        "restart_count": supervisor.restart_limit,
+        "healthy_since": 1.0,
+    })
+    job = supervisor.plan["jobs"][0]
+
+    def response(url, _timeout):
+        if url.endswith("/status"):
+            return {"peer_id": "peer", "domains": {job["domain_id"]: {}}}
+        if url.endswith("/chain/status"):
+            return {"chain_height": 1, "component_versions": {}}
+        if url.endswith("/api/monitor"):
+            return {}
+        if url.endswith("/api/optimization"):
+            return {"domains": []}
+        if "/api/shared/candidates?" in url:
+            return {"free": 0, "candidates": []}
+        raise AssertionError(url)
+
+    monkeypatch.setattr("app.campaign_supervisor.time.time", lambda: 1000.0)
+    monkeypatch.setattr("app.campaign_supervisor._http_json", response)
+
+    supervisor._poll_local_workers(job, {"omega": {"port": 8470}})
+
+    assert worker["status"] == "running"
+    assert worker["restart_count"] == 0
+
+
+def test_local_worker_poll_preserves_verified_live_worker_during_api_timeout(
+    tmp_path: Path, monkeypatch
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    worker = supervisor._worker_state("omega")
+    worker.update({
+        "status": "running",
+        "pid": 123,
+        "pid_start_ticks": 456,
+        "join_ready": True,
+        "last_chain_status": {"chain_height": 2},
+        "bootstrap_evidence": {
+            "genesis_hash": "genesis",
+            "population_block_hash": "population",
+        },
+    })
+
+    monkeypatch.setattr(
+        "app.campaign_supervisor._pid_matches", lambda *args: True
+    )
+    monkeypatch.setattr(
+        "app.campaign_supervisor._http_json",
+        lambda *args, **kwargs: (_ for _ in ()).throw(TimeoutError("timed out")),
+    )
+
+    job = supervisor.plan["jobs"][0]
+    configs = {"omega": {"port": 8470}}
+    supervisor._poll_local_workers(job, configs)
+    assert worker["status"] == "running"
+    assert worker["join_ready"] is True
+    assert worker["api_consecutive_failures"] == 1
+
+    supervisor._poll_local_workers(job, configs)
+    supervisor._poll_local_workers(job, configs)
+    assert worker["status"] == "running"
+    assert worker["join_ready"] is True
+    assert worker["api_consecutive_failures"] == 3
+
+
+def test_local_worker_poll_keeps_unverified_live_worker_starting(
+    tmp_path: Path, monkeypatch
+):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    worker = supervisor._worker_state("omega")
+    worker.update({
+        "status": "starting",
+        "pid": 123,
+        "pid_start_ticks": 456,
+        "join_ready": False,
+    })
+
+    monkeypatch.setattr(
+        "app.campaign_supervisor._pid_matches", lambda *args: True
+    )
+    monkeypatch.setattr(
+        "app.campaign_supervisor._http_json",
+        lambda *args, **kwargs: (_ for _ in ()).throw(TimeoutError("timed out")),
+    )
+
+    supervisor._poll_local_workers(
+        supervisor.plan["jobs"][0], {"omega": {"port": 8470}}
+    )
+
+    assert worker["status"] == "starting"
+    assert worker["join_ready"] is False
 
 
 def test_stop_barrier_rejects_unverified_process_or_different_artifact(tmp_path: Path):

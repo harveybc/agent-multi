@@ -508,6 +508,39 @@ candidate `2`, and Omega candidate `3`. The supervisor APIs reported every
 worker `running`, owning exactly one candidate, with no active alerts; live GPU
 telemetry confirmed compute on all four devices.
 
+### 7.1 BTC campaign incident and ETA correction, 2026-07-22
+
+The BTCUSDT 1h campaign audit reconstructed every local evaluation from the
+four append-only worker logs. At generation 8 it found `173` accepted campaign
+evaluations plus `27` discarded re-evaluations, consuming approximately
+`30.67` aggregate GPU-hours. Generation 0 repeated `16` candidates and
+generation 5 repeated `11`. The latter incident included an `11 h 46 min`
+interval with no newly accepted candidate result.
+
+The direct cause was supervisor join repair on the follower hosts. When Omega
+temporarily stopped exposing bootstrap lineage, Dragon and Gamma interpreted
+the unavailable bootstrap as a local lineage mismatch and stopped otherwise
+healthy workers. Restarting an incomplete generation recovered the last
+committed population but not its in-memory partial results, so those candidates
+were evaluated again. Followers now cache the immutable, job-scoped canonical
+genesis/population lineage after successful admission. A bootstrap outage no
+longer invalidates a worker that still matches that cached lineage; an actual
+lineage mismatch remains a hard repair condition.
+
+The audit also found that ETA samples mixed real candidate runtimes with the
+short claim interval between a result and the next candidate. ETA now uses only
+matched local `Evaluating candidate` to `Candidate result` log pairs. The live
+four-worker throughput changed from the invalid `6.53 candidates/hour` estimate
+to `4.03 candidates/hour`; the impossible fast bound above `700/hour` was
+removed. Dashboard ETA remains a maximum planned-budget estimate and explicitly
+notes that stage patience may reduce it.
+
+Deployment preserved all four active DOIN worker PIDs while restarting only
+the supervisors. Post-change evidence showed one domain, seed `1701`, generation
+8, identical population fingerprint and finalized hash, six identical component
+revisions, four distinct claims, no alerts and active compute on all four GPUs.
+Focused supervisor coverage passes `29` tests.
+
 ## 8. Remaining Scientific Work
 
 The lifecycle problem and the weekly-retrained fitness problem are separate.

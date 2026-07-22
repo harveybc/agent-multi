@@ -527,6 +527,9 @@ class CampaignSupervisor:
         self.stability_seconds = float(self.profile.get("convergence_stability_seconds", 20.0))
         self.stop_timeout = float(self.profile.get("stop_timeout_seconds", 30.0))
         self.restart_limit = int(self.profile.get("worker_restart_limit", 5))
+        self.restart_reset_seconds = float(
+            self.profile.get("worker_restart_reset_seconds", 900.0)
+        )
         self.join_grace_seconds = float(
             self.profile.get("worker_join_grace_seconds", 120.0)
         )
@@ -993,6 +996,7 @@ class CampaignSupervisor:
             "restart_count": int(worker.get("restart_count", 0)) + 1,
             "status": "starting",
             "started_at": _utc_now(),
+            "healthy_since": None,
             "config_path": config["path"],
             "config_semantic_hash": config["semantic_hash"],
             "api_url": f"http://127.0.0.1:{config['port']}",
@@ -1058,16 +1062,6 @@ class CampaignSupervisor:
         worker: dict[str, Any],
         monitor: dict[str, Any],
     ) -> None:
-        samples = [
-            float(value)
-            for value in worker.get("candidate_duration_samples") or []
-            if float(value) > 0
-        ]
-        if not samples:
-            samples = _candidate_duration_samples_from_log(
-                Path(str(worker.get("log_path") or ""))
-            )
-
         candidate = monitor.get("candidate") or {}
         started = _parse_timestamp(candidate.get("timestamp"))
         identity = None
@@ -1081,28 +1075,55 @@ class CampaignSupervisor:
             }
 
         previous = worker.get("candidate_tracking") or {}
-        if identity and previous and identity != previous:
-            previous_started = _parse_timestamp(previous.get("started_at"))
-            if (
-                previous_started is not None
-                and previous.get("pid") == identity.get("pid")
-                and previous.get("domain_id") == identity.get("domain_id")
-            ):
-                seconds = (started - previous_started).total_seconds()
-                if 1.0 <= seconds <= 21_600.0:
-                    samples.append(seconds)
+        identity_key = (
+            identity.get("domain_id"),
+            identity.get("generation"),
+            identity.get("candidate_num"),
+            identity.get("pid"),
+        ) if identity else None
+        previous_key = (
+            previous.get("domain_id"),
+            previous.get("generation"),
+            previous.get("candidate_num"),
+            previous.get("pid"),
+        ) if previous else None
+        timing_version = 2
+        refresh_samples = (
+            int(worker.get("candidate_timing_basis_version", 0)) != timing_version
+            or (identity_key is not None and identity_key != previous_key)
+        )
+        if refresh_samples:
+            samples = _candidate_duration_samples_from_log(
+                Path(str(worker.get("log_path") or ""))
+            )
+        else:
+            samples = [
+                float(value)
+                for value in worker.get("candidate_duration_samples") or []
+                if float(value) > 0
+            ]
 
-        worker["candidate_tracking"] = identity or previous
+        # The node updates candidate.timestamp once when evaluation starts and
+        # again when the result is published. Keep the original start for the
+        # same candidate; treating the result timestamp as another candidate
+        # used to contaminate timing samples with 10-30 second claim gaps.
+        if identity_key is not None and identity_key != previous_key:
+            worker["candidate_tracking"] = identity
+        elif not previous and identity:
+            worker["candidate_tracking"] = identity
+        worker["candidate_timing_basis_version"] = timing_version
         worker["candidate_duration_samples"] = samples[-20:]
         statistics_payload = _duration_statistics(worker["candidate_duration_samples"])
         eta: dict[str, Any] = {**statistics_payload}
-        if identity and statistics_payload:
+        tracked = worker.get("candidate_tracking") or identity or {}
+        tracked_started = _parse_timestamp(tracked.get("started_at"))
+        if identity and statistics_payload and tracked_started is not None:
             elapsed = max(
                 0.0,
-                (datetime.now(timezone.utc) - started).total_seconds(),
+                (datetime.now(timezone.utc) - tracked_started).total_seconds(),
             )
             eta.update({
-                "candidate_started_at": started.isoformat(),
+                "candidate_started_at": tracked_started.isoformat(),
                 "candidate_elapsed_seconds": elapsed,
                 "candidate_eta_seconds": max(
                     0.0,
@@ -1116,7 +1137,7 @@ class CampaignSupervisor:
                     0.0,
                     statistics_payload["candidate_seconds_p75"] - elapsed,
                 ),
-                "basis": "recent_completed_candidates_on_this_worker",
+                "basis": "local_evaluation_start_to_result_log_samples",
             })
         worker["candidate_eta"] = eta
         worker["training_progress"] = _latest_training_progress_from_log(
@@ -1129,22 +1150,56 @@ class CampaignSupervisor:
             api_url = f"http://127.0.0.1:{config['port']}"
             worker["api_url"] = api_url
             try:
-                status = _http_json(api_url + "/status", self.peer_timeout)
-                chain = _http_json(api_url + "/chain/status", self.peer_timeout)
+                # Training runs in the node process and can delay its aiohttp
+                # loop for several seconds. A short monitoring timeout must not
+                # demote a live worker or trigger join-repair churn.
+                status_timeout = max(self.peer_timeout, 15.0)
+                status = _http_json(api_url + "/status", status_timeout)
+                chain = _http_json(api_url + "/chain/status", status_timeout)
             except Exception as exc:
                 worker["api_error"] = str(exc)
-                if _pid_matches(worker.get("pid"), worker.get("pid_start_ticks")):
+                failures = int(worker.get("api_consecutive_failures", 0)) + 1
+                worker["api_consecutive_failures"] = failures
+                worker["api_last_failure_at"] = _utc_now()
+                pid_alive = _pid_matches(
+                    worker.get("pid"), worker.get("pid_start_ticks")
+                )
+                has_verified_runtime = bool(
+                    worker.get("last_chain_status")
+                    and worker.get("bootstrap_evidence")
+                )
+                if not pid_alive:
+                    worker["status"] = "exited"
+                elif not has_verified_runtime:
                     worker["status"] = "starting"
                 else:
-                    worker["status"] = "exited"
+                    # Candidate training runs synchronously in the DOIN node and
+                    # may starve its HTTP loop longer than any useful monitor
+                    # timeout. Keep a live, previously verified worker in the
+                    # swarm; process identity, claim leases and peer replicas
+                    # remain the authoritative liveness evidence here.
+                    worker["status"] = "running"
                 continue
             worker.update({
                 "status": "running",
                 "api_error": None,
+                "api_consecutive_failures": 0,
                 "last_seen": _utc_now(),
                 "last_doin_status": status,
                 "last_chain_status": chain,
             })
+            healthy_since = worker.get("healthy_since")
+            if healthy_since is None:
+                worker["healthy_since"] = time.time()
+            elif (
+                int(worker.get("restart_count", 0)) > 0
+                and time.time() - float(healthy_since) >= self.restart_reset_seconds
+            ):
+                # The limit protects against a tight crash loop, not ordinary
+                # restarts accumulated over days. A worker that has remained
+                # healthy earns a fresh recovery budget.
+                worker["restart_count"] = 0
+                self._clear_alert(f"restart_limit:{worker_id}")
             try:
                 monitor = _http_json(
                     api_url + "/api/monitor", max(self.peer_timeout, 5.0)
@@ -1580,6 +1635,40 @@ class CampaignSupervisor:
             return None
         return values
 
+    def _cached_canonical_lineage(
+        self, job: dict[str, Any]
+    ) -> tuple[Any, ...] | None:
+        coordination = self.state.get("coordination") or {}
+        cached = coordination.get("canonical_lineage") or {}
+        if (
+            cached.get("job_id") != job["job_id"]
+            or cached.get("domain_id") != job["domain_id"]
+        ):
+            return None
+        values = (
+            cached.get("genesis_hash"),
+            cached.get("population_block_hash"),
+            cached.get("population_fingerprint"),
+        )
+        if any(value in (None, "") for value in values):
+            return None
+        return values
+
+    def _remember_canonical_lineage(
+        self, job: dict[str, Any], lineage: tuple[Any, ...]
+    ) -> None:
+        coordination = self.state.setdefault("coordination", {})
+        if self._cached_canonical_lineage(job) is not None:
+            return
+        coordination["canonical_lineage"] = {
+            "job_id": job["job_id"],
+            "domain_id": job["domain_id"],
+            "genesis_hash": lineage[0],
+            "population_block_hash": lineage[1],
+            "population_fingerprint": lineage[2],
+            "verified_at": _utc_now(),
+        }
+
     def _worker_launch_ready(
         self,
         network: dict[str, Any],
@@ -1638,12 +1727,25 @@ class CampaignSupervisor:
             return False, f"{worker_id} component versions differ from startup contract"
         if worker_id != self._bootstrap_worker_id():
             bootstrap = self._network_worker(network, self._bootstrap_worker_id())
-            expected_lineage = self._lineage_key(bootstrap)
+            live_bootstrap_lineage = self._lineage_key(bootstrap)
+            cached_lineage = self._cached_canonical_lineage(job)
+            if cached_lineage is None and live_bootstrap_lineage is not None:
+                self._remember_canonical_lineage(job, live_bootstrap_lineage)
+                cached_lineage = live_bootstrap_lineage
+            expected_lineage = cached_lineage or live_bootstrap_lineage
             observed_lineage = self._lineage_key(self._public_worker(worker_id, worker))
             if expected_lineage is None:
                 return False, "bootstrap lineage is not yet available"
             if observed_lineage != expected_lineage:
                 return False, f"{worker_id} joined a different blockchain lineage"
+            if (
+                live_bootstrap_lineage is not None
+                and live_bootstrap_lineage != expected_lineage
+            ):
+                return True, (
+                    "worker matches the cached canonical lineage; live bootstrap "
+                    "lineage currently differs"
+                )
         return True, "seed, genesis, population and component lineage match"
 
     def _repair_join_mismatch(
@@ -1736,6 +1838,8 @@ class CampaignSupervisor:
             (worker.get("finalized_height"), worker.get("finalized_hash"))
             for worker in workers
             if worker.get("finalized_hash")
+            and worker.get("finalized_height") is not None
+            and int(worker["finalized_height"]) >= 0
         }
         if len(finalized) > 1:
             issues.append("workers report different finalized blockchain anchors")
@@ -1770,6 +1874,7 @@ class CampaignSupervisor:
             worker = self._worker_state(worker_id)
             since = worker.get("claimless_since")
             shared = worker.get("shared_population") or {}
+            last_progress_at = worker.get("last_progress_at")
             if (
                 worker.get("status") != "running"
                 or worker.get("converged")
@@ -1777,6 +1882,9 @@ class CampaignSupervisor:
                 or int(shared.get("free", 0)) < 1
                 or since is None
                 or time.time() - float(since) < self.claimless_grace_seconds
+                or last_progress_at is None
+                or time.time() - float(last_progress_at)
+                < self.claimless_grace_seconds
             ):
                 continue
             repairs = int(worker.get("claimless_repair_count", 0))
