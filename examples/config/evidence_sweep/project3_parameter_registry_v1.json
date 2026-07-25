@@ -26,7 +26,7 @@
       "scope": "asset",
       "kind": "categorical",
       "candidates": "all inventory assets with valid OHLCV",
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "executing_comparable",
       "screen_stage": "E0_E1"
     },
     {
@@ -35,7 +35,7 @@
       "scope": "asset",
       "kind": "categorical",
       "candidates": ["15m", "1h", "4h"],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "executing_comparable",
       "screen_stage": "E0_E1"
     },
     {
@@ -122,6 +122,15 @@
       "screen_stage": "E2"
     },
     {
+      "path": "features.cross_asset_volatility_window_hours",
+      "layer": "feature_engineering",
+      "scope": "asset_class",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
       "path": "data.target_horizon_hours",
       "layer": "target",
       "scope": "horizon_bucket",
@@ -140,6 +149,33 @@
       "screen_stage": "E2"
     },
     {
+      "path": "features.transform_volatility_window_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.transform_detrend_window_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.transform_sample_interval_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [6, 24, 72],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
       "path": "features.transform_input_signal",
       "layer": "feature_engineering",
       "scope": "transform_family",
@@ -153,8 +189,18 @@
       "layer": "feature_engineering",
       "scope": "transform_family",
       "kind": "categorical",
-      "candidates": ["off", "causal_multiscale_rolling", "dwt_causal_window"],
-      "evidence_status": "executed_noncomparable",
+      "candidates": ["off", "causal_multiscale_rolling"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2",
+      "note": "Whole-series DWT is excluded because its boundary handling can use future observations."
+    },
+    {
+      "path": "features.wavelet_base_scale_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [4, 8, 24],
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {
@@ -172,7 +218,7 @@
       "scope": "transform_family",
       "kind": "categorical",
       "candidates": ["off", "detrended_close", "log_return", "volatility"],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {
@@ -190,7 +236,34 @@
       "scope": "transform_family",
       "kind": "categorical",
       "candidates": ["off", "log_return", "volatility", "volume_change"],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.multitaper_window_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [72, 168, 336, 720],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.multitaper_time_bandwidth",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [2.5, 3.5, 4.5],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.multitaper_taper_count",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [3, 5, 7],
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {
@@ -199,7 +272,26 @@
       "scope": "transform_family",
       "kind": "categorical",
       "candidates": ["off", "detrended_close", "log_return"],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.emd_backend",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["causal_rolling_proxy"],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "E2",
+      "note": "True EMD is deferred until a causal, runtime-bounded implementation is benchmarked."
+    },
+    {
+      "path": "features.emd_window_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric_list",
+      "candidates": [[8, 32, 128], [24, 168, 720], [72, 336, 2160]],
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {
@@ -208,7 +300,7 @@
       "scope": "transform_family",
       "kind": "categorical",
       "candidates": ["off", "close", "log_close"],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {
@@ -217,7 +309,25 @@
       "scope": "transform_family",
       "kind": "numeric",
       "candidates": [0.2, 0.4, 0.6, 0.8],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.fracdiff_weight_threshold",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [0.0001],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.fracdiff_max_history_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [168, 720, 2160],
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {

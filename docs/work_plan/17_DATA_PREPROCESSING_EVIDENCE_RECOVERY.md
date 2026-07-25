@@ -129,22 +129,37 @@ Run only on robust E1 contracts and compare:
   prediction horizons;
 - external publication lag, missing-value policy, and staleness;
 - cross-asset context sets, including BTC/ETH, crypto leaders, FX leaders, and
-  portfolio candidates;
+  portfolio candidates, with cross-asset volatility history expressed in
+  hours;
 - the literal complete materialized cross-source inventory for
   `all_non_cryptoquant`, with CryptoQuant excluded and no hidden curated
   subset;
+- positive-feature log transforms and interactions among the best isolated
+  parameter changes;
+- isolated causal wavelet, Hilbert, multitaper, EMD-proxy, and fractional
+  differentiation features, with the transformed input signal, window/levels,
+  sampling interval, and numerical settings stored as parameter facts instead
+  of hidden defaults.
 
 Publication lags are elapsed UTC hours applied to source timestamps. They are
 never interpreted as a count of source rows, which would distort low-frequency
 macro and calendar series.
-- positive-feature log transforms and interactions among the best isolated
-  parameter changes.
+
+The transform screen is deliberately not one monolithic decomposition bundle.
+It compares close, log-close, return, log-return, volume, volatility, and
+spread proxies where applicable. True EMD remains explicitly deferred until a
+causal implementation has acceptable bounded runtime; E2 uses the same causal
+rolling band-pass proxy already produced by `financial-data`.
 
 Observation duration is expressed in hours, then converted to bars per
-timeframe. A fixed 32-bar window is not assumed to transfer across timeframes.
+timeframe. This includes context, volatility and detrending histories, wavelet
+base scales, spectral windows and sampling intervals, EMD-proxy bands, and
+fractional-differencing history. A fixed bar count is not assumed to transfer
+across timeframes.
 
 E2 has two automatic passes. `E2_PREPROCESSING_CONTEXT` performs the broad
-one-factor screen (110-121 variants per asset/timeframe contract).
+one-factor screen (including data, preprocessing, context, selector, target,
+and transform variants per asset/timeframe contract).
 `E2_INTERACTION_CONFIRMATION` combines the best validation-ranked changes so a
 parameter is not selected solely from an isolated comparison.
 

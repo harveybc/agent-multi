@@ -15,6 +15,7 @@ from project3_evidence_screen import (  # noqa: E402
     _evaluate_split,
     _load_external_frame,
     _target_series,
+    add_configured_transform_features,
     execute,
     feature_proxy_screen,
     merge_cross_asset_context,
@@ -291,3 +292,71 @@ def test_external_publication_lag_uses_elapsed_time_not_source_rows(tmp_path: Pa
         pd.Timestamp("2023-01-02T00:00:00Z"),
         pd.Timestamp("2023-02-02T00:00:00Z"),
     ]
+
+
+@pytest.mark.parametrize(
+    ("patch", "family"),
+    [
+        (
+            {
+                "wavelet_family": "causal_multiscale_rolling",
+                "transform_input_signal": "log_return",
+                "wavelet_levels": [1, 2, 3],
+            },
+            "wavelet",
+        ),
+        (
+            {"hilbert_input_signal": "volatility", "hilbert_window_hours": 72},
+            "hilbert",
+        ),
+        (
+            {
+                "multitaper_input_signal": "log_return",
+                "multitaper_window_hours": 72,
+                "multitaper_time_bandwidth": 2.5,
+                "multitaper_taper_count": 3,
+            },
+            "multitaper",
+        ),
+        ({"emd_input_signal": "detrended_close"}, "emd_proxy"),
+        (
+            {
+                "fracdiff_input_signal": "log_close",
+                "fracdiff_d": 0.6,
+                "fracdiff_weight_threshold": 0.0001,
+                "fracdiff_max_history_hours": 256,
+            },
+            "fracdiff",
+        ),
+    ],
+)
+def test_configured_transform_families_are_causal(
+    patch: dict,
+    family: str,
+) -> None:
+    count = 900
+    rng = np.random.default_rng(91)
+    close = 100.0 * np.cumprod(1.0 + rng.normal(0.0001, 0.003, count))
+    frame = pd.DataFrame(
+        {
+            "DATE_TIME": pd.date_range("2023-01-01", periods=count, freq="1h", tz="UTC"),
+            "OPEN": close,
+            "HIGH": close * 1.002,
+            "LOW": close * 0.998,
+            "CLOSE": close,
+            "VOLUME": 1000.0 + np.abs(rng.normal(size=count)),
+        }
+    )
+    config = {"timeframe": "1h", **patch}
+    transformed, metadata = add_configured_transform_features(frame, config)
+    modified = frame.copy()
+    modified.loc[700:, "CLOSE"] *= 3.0
+    modified.loc[700:, "VOLUME"] *= 7.0
+    transformed_modified, _ = add_configured_transform_features(modified, config)
+    generated = metadata["configured_transform_features"]
+    assert family in metadata["configured_transform_families"]
+    assert generated
+    pd.testing.assert_frame_equal(
+        transformed.loc[:699, generated],
+        transformed_modified.loc[:699, generated],
+    )
