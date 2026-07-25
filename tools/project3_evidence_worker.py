@@ -305,6 +305,37 @@ def _run_job_with_heartbeats(
                 continue
 
 
+def _report_until_acknowledged(
+    api_url: str,
+    path: str,
+    *,
+    token: str | None,
+    payload: dict[str, Any],
+) -> None:
+    delay = 1
+    while True:
+        try:
+            _request(api_url, path, token=token, payload=payload)
+            return
+        except Exception as exc:
+            print(
+                json.dumps(
+                    {
+                        "event": "terminal_report_retry",
+                        "path": path,
+                        "job_id": payload.get("job_id"),
+                        "attempt": payload.get("attempt"),
+                        "error": f"{type(exc).__name__}: {exc}",
+                        "retry_in_seconds": delay,
+                    },
+                    sort_keys=True,
+                ),
+                flush=True,
+            )
+            time.sleep(delay)
+            delay = min(30, delay * 2)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--api-url", required=True)
@@ -349,32 +380,35 @@ def main() -> None:
             args.machine_id,
             job,
             args.heartbeat_seconds,
-            Path(args.cache_root),
-            int(args.max_cache_gb * 1024**3),
-        )
-            _request(
-                args.api_url,
-                "/complete",
-                token=token,
-                payload={
-                    **_state_payload(args.machine_id, job_id, "completed", f"completed {job_id}"),
-                    "result": result,
-                },
+                Path(args.cache_root),
+                int(args.max_cache_gb * 1024**3),
             )
-            completed += 1
         except Exception as exc:
             retry = not isinstance(exc, (FileNotFoundError, ValueError))
-            _request(
+            _report_until_acknowledged(
                 args.api_url,
                 "/fail",
                 token=token,
                 payload={
                     **_state_payload(args.machine_id, job_id, "failed", str(exc)),
+                    "attempt": job["attempt"],
                     "error": f"{type(exc).__name__}: {exc}",
                     "retry": retry,
                 },
             )
             time.sleep(2)
+            continue
+        _report_until_acknowledged(
+            args.api_url,
+            "/complete",
+            token=token,
+            payload={
+                **_state_payload(args.machine_id, job_id, "completed", f"completed {job_id}"),
+                "attempt": job["attempt"],
+                "result": result,
+            },
+        )
+        completed += 1
 
 
 if __name__ == "__main__":

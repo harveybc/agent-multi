@@ -196,6 +196,9 @@ Properties:
   a duplicate 60+ GB data lake or exhaust its remaining filesystem space.
 - online SQLite snapshots that do not stop WAL writers, each verified with
   `PRAGMA quick_check`, SHA-256, atomic publication, and bounded retention.
+- idempotent terminal reports keyed by job attempt: a coordinator restart
+  cannot turn a completed computation into an abandoned lease or make one
+  worker claim a second job before the first result is acknowledged.
 
 The initial generated campaign has 1,890 jobs:
 

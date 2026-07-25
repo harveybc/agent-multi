@@ -554,20 +554,47 @@ def complete_job(
     machine_id: str,
     job_external_id: str,
     result: dict[str, Any],
+    *,
+    attempt_number: int | None = None,
 ) -> None:
     now = utc_now()
+    serialized_result = _json(result)
     row = conn.execute(
-        "SELECT id, attempt_count, claimed_by, status FROM jobs WHERE external_id=?",
+        """
+        SELECT id, attempt_count, claimed_by, status, result_json
+        FROM jobs WHERE external_id=?
+        """,
         (job_external_id,),
     ).fetchone()
-    if row is None or row["claimed_by"] != machine_id or row["status"] != "running":
+    if row is None:
+        raise PermissionError(f"unknown job {job_external_id}")
+    expected_attempt = int(attempt_number or row["attempt_count"])
+    previous = conn.execute(
+        """
+        SELECT status FROM job_attempts
+        WHERE job_id=? AND attempt_number=? AND machine_id=?
+        """,
+        (row["id"], expected_attempt, machine_id),
+    ).fetchone()
+    if (
+        row["status"] == "completed"
+        and row["result_json"] == serialized_result
+        and previous is not None
+        and previous["status"] == "completed"
+    ):
+        return
+    if (
+        row["claimed_by"] != machine_id
+        or row["status"] != "running"
+        or int(row["attempt_count"]) != expected_attempt
+    ):
         raise PermissionError(f"{machine_id} does not own running job {job_external_id}")
     conn.execute(
         """
         UPDATE jobs SET status='completed', completed_at=?, result_json=?,
             lease_until=NULL, updated_at=? WHERE id=?
         """,
-        (now, _json(result), now, row["id"]),
+        (now, serialized_result, now, row["id"]),
     )
     conn.execute(
         """
@@ -632,13 +659,35 @@ def fail_job(
     error: str,
     *,
     retry: bool = True,
+    attempt_number: int | None = None,
 ) -> None:
     now = utc_now()
     row = conn.execute(
         "SELECT id, attempt_count, max_attempts, claimed_by, status FROM jobs WHERE external_id=?",
         (job_external_id,),
     ).fetchone()
-    if row is None or row["claimed_by"] != machine_id or row["status"] != "running":
+    if row is None:
+        raise PermissionError(f"unknown job {job_external_id}")
+    expected_attempt = int(attempt_number or row["attempt_count"])
+    previous = conn.execute(
+        """
+        SELECT status,error FROM job_attempts
+        WHERE job_id=? AND attempt_number=? AND machine_id=?
+        """,
+        (row["id"], expected_attempt, machine_id),
+    ).fetchone()
+    truncated_error = error[-20000:]
+    if (
+        previous is not None
+        and previous["status"] in {"pending", "failed"}
+        and previous["error"] == truncated_error
+    ):
+        return
+    if (
+        row["claimed_by"] != machine_id
+        or row["status"] != "running"
+        or int(row["attempt_count"]) != expected_attempt
+    ):
         raise PermissionError(f"{machine_id} does not own running job {job_external_id}")
     status = "pending" if retry and row["attempt_count"] < row["max_attempts"] else "failed"
     conn.execute(
@@ -646,14 +695,14 @@ def fail_job(
         UPDATE jobs SET status=?, claimed_by=NULL, lease_until=NULL, error=?, updated_at=?
         WHERE id=?
         """,
-        (status, error[-20000:], now, row["id"]),
+        (status, truncated_error, now, row["id"]),
     )
     conn.execute(
         """
         UPDATE job_attempts SET status=?, completed_at=?, error=?
         WHERE job_id=? AND attempt_number=?
         """,
-        (status, now, error[-20000:], row["id"], row["attempt_count"]),
+        (status, now, truncated_error, row["id"], row["attempt_count"]),
     )
     conn.commit()
 

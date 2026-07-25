@@ -187,7 +187,13 @@ def make_handler(db_path: Path, token: str | None):
                     )
                     self._send({"ok": True})
                 elif path == "/complete":
-                    complete_job(conn, machine_id, str(payload["job_id"]), dict(payload["result"]))
+                    complete_job(
+                        conn,
+                        machine_id,
+                        str(payload["job_id"]),
+                        dict(payload["result"]),
+                        attempt_number=payload.get("attempt"),
+                    )
                     heartbeat(
                         conn,
                         machine_id,
@@ -205,6 +211,7 @@ def make_handler(db_path: Path, token: str | None):
                         str(payload["job_id"]),
                         str(payload.get("error") or "worker failed"),
                         retry=bool(payload.get("retry", True)),
+                        attempt_number=payload.get("attempt"),
                     )
                     self._send({"ok": True})
                 else:
