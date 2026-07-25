@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import sys
@@ -97,16 +98,29 @@ def make_handler(db_path: Path, token: str | None):
             self.end_headers()
             self.wfile.write(data)
 
-        def _send_file(self, path: Path) -> None:
+        def _send_file(self, path: Path, *, use_gzip: bool) -> None:
             stat = path.stat()
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-Type", "application/octet-stream")
-            self.send_header("Content-Length", str(stat.st_size))
+            if use_gzip:
+                self.send_header("Content-Encoding", "gzip")
+                self.send_header("X-Uncompressed-Length", str(stat.st_size))
+            else:
+                self.send_header("Content-Length", str(stat.st_size))
             self.send_header("X-Content-SHA256", _sha256(path))
             self.end_headers()
-            with path.open("rb") as handle:
-                for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
-                    self.wfile.write(chunk)
+            if use_gzip:
+                with path.open("rb") as handle, gzip.GzipFile(
+                    fileobj=self.wfile,
+                    mode="wb",
+                    compresslevel=1,
+                ) as compressed:
+                    for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
+                        compressed.write(chunk)
+            else:
+                with path.open("rb") as handle:
+                    for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
+                        self.wfile.write(chunk)
 
         def _conn(self):
             return connect(db_path)
@@ -127,7 +141,11 @@ def make_handler(db_path: Path, token: str | None):
                     values = parse_qs(parsed.query).get("path") or []
                     if not values:
                         raise ValueError("path query parameter is required")
-                    self._send_file(_safe_data_path(values[0]))
+                    compression = (parse_qs(parsed.query).get("compression") or [""])[0]
+                    self._send_file(
+                        _safe_data_path(values[0]),
+                        use_gzip=compression == "gzip",
+                    )
                 else:
                     self._send({"ok": False, "error": f"unknown path: {path}"}, HTTPStatus.NOT_FOUND)
             except Exception as exc:

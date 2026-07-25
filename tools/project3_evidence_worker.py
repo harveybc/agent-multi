@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import os
@@ -148,7 +149,8 @@ def _download_file(
             destination.touch()
             return
     destination.parent.mkdir(parents=True, exist_ok=True)
-    query = urlencode({"path": str(manifest["path"])})
+    compression = "gzip" if str(manifest["path"]).lower().endswith(".csv") else ""
+    query = urlencode({"path": str(manifest["path"]), "compression": compression})
     headers = {}
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -158,8 +160,13 @@ def _download_file(
     written = 0
     try:
         with urlopen(request, timeout=600) as response, temporary.open("wb") as handle:
+            source = (
+                gzip.GzipFile(fileobj=response, mode="rb")
+                if response.headers.get("Content-Encoding") == "gzip"
+                else response
+            )
             while True:
-                chunk = response.read(4 * 1024 * 1024)
+                chunk = source.read(4 * 1024 * 1024)
                 if not chunk:
                     break
                 handle.write(chunk)
