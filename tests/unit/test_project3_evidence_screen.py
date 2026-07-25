@@ -13,10 +13,12 @@ sys.path.insert(0, str(TOOLS))
 
 from project3_evidence_screen import (  # noqa: E402
     _evaluate_split,
+    _load_external_frame,
     _target_series,
     execute,
     feature_proxy_screen,
     merge_cross_asset_context,
+    source_files,
 )
 
 
@@ -245,3 +247,47 @@ def test_empty_learned_bundle_is_recorded_as_blocked_not_worker_failure(tmp_path
     assert result["summary"]["screen_status"] == "blocked_no_numeric_nonleaking_features"
     assert result["metric_rows"][0]["value"] == 0.0
     assert result["evaluation_protocol_id"].endswith("one_bar_execution.v2")
+
+
+def test_all_non_cryptoquant_bundle_uses_every_materialized_source(tmp_path: Path) -> None:
+    root = tmp_path / "features" / "cross_source_features" / "1h"
+    root.mkdir(parents=True)
+    included = (
+        "macro_economic__fred__rates__dff__observations.parquet",
+        "economic_calendar__release_actuals__provider__announcements.parquet",
+        "alternative_data__sentiment__provider__observations.parquet",
+    )
+    for name in included:
+        (root / name).touch()
+    (root / "alternative_data__cryptoquant__btc__observations.parquet").touch()
+    files = source_files(
+        {
+            "asset": "BTCUSDT",
+            "timeframe": "1h",
+            "data_root": str(tmp_path),
+            "external_context_bundle": "all_non_cryptoquant",
+        }
+    )
+    assert [path.name for path in files] == sorted(included)
+
+
+def test_external_publication_lag_uses_elapsed_time_not_source_rows(tmp_path: Path) -> None:
+    path = tmp_path / "monthly.parquet"
+    pd.DataFrame(
+        {
+            "timestamp": pd.to_datetime(
+                ["2023-01-01T00:00:00Z", "2023-02-01T00:00:00Z"]
+            ),
+            "value": [1.0, 2.0],
+        }
+    ).to_parquet(path, index=False)
+    loaded = _load_external_frame(
+        path,
+        start=pd.Timestamp("2023-01-01T00:00:00Z"),
+        end=pd.Timestamp("2023-03-01T00:00:00Z"),
+        lag_hours=24.0,
+    )
+    assert loaded["DATE_TIME"].tolist() == [
+        pd.Timestamp("2023-01-02T00:00:00Z"),
+        pd.Timestamp("2023-02-02T00:00:00Z"),
+    ]

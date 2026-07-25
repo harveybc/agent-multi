@@ -234,14 +234,20 @@ def source_files(config: dict[str, Any]) -> list[Path]:
         / "cross_source_features"
         / str(config["timeframe"])
     )
+    if bundle == "all_non_cryptoquant":
+        return sorted(
+            path
+            for path in root.glob("*.parquet")
+            if "cryptoquant" not in path.name.lower()
+        )
     patterns: list[str] = []
-    if bundle in {"macro_core", "macro_market", "all_non_cryptoquant"}:
+    if bundle in {"macro_core", "macro_market"}:
         patterns.extend(SOURCE_PATTERNS["macro_core"])
-    if bundle in {"market_core", "macro_market", "crypto_context", "all_non_cryptoquant"}:
+    if bundle in {"market_core", "macro_market", "crypto_context"}:
         patterns.extend(SOURCE_PATTERNS["market_core"])
-    if bundle in {"onchain_asset", "crypto_context", "all_non_cryptoquant"}:
+    if bundle in {"onchain_asset", "crypto_context"}:
         patterns.extend(_onchain_patterns(str(config["asset"])))
-    if bundle in {"funding_core", "crypto_context", "all_non_cryptoquant"}:
+    if bundle in {"funding_core", "crypto_context"}:
         patterns.extend(SOURCE_PATTERNS["funding_core"])
     if bundle == "economic_calendar":
         patterns.extend(SOURCE_PATTERNS["economic_calendar"])
@@ -287,14 +293,15 @@ def _load_external_frame(
     *,
     start: pd.Timestamp,
     end: pd.Timestamp,
-    lag_rows: int,
+    lag_hours: float,
 ) -> pd.DataFrame:
+    lag = pd.Timedelta(hours=float(lag_hours))
     try:
         source = pd.read_parquet(
             path,
             filters=[
-                ("timestamp", ">=", start.to_pydatetime()),
-                ("timestamp", "<=", end.to_pydatetime()),
+                ("timestamp", ">=", (start - lag).to_pydatetime()),
+                ("timestamp", "<=", (end - lag).to_pydatetime()),
             ],
         )
     except Exception:
@@ -302,6 +309,8 @@ def _load_external_frame(
     if "timestamp" not in source:
         raise ValueError(f"missing timestamp: {path}")
     source["timestamp"] = pd.to_datetime(source["timestamp"], utc=True, errors="coerce")
+    if lag > pd.Timedelta(0):
+        source["timestamp"] = source["timestamp"] + lag
     source = source.dropna(subset=["timestamp"]).sort_values("timestamp")
     source = source[(source["timestamp"] >= start) & (source["timestamp"] <= end)]
     numeric = [
@@ -315,8 +324,6 @@ def _load_external_frame(
     result = pd.DataFrame({"DATE_TIME": source["timestamp"]})
     for column in numeric:
         values = pd.to_numeric(source[column], errors="coerce")
-        if lag_rows > 0:
-            values = values.shift(lag_rows)
         name = f"external__{prefix}__{column}"
         result[name] = values
         result[f"{name}__change"] = values.diff()
@@ -334,13 +341,12 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
         }
     timeframe_hours = _timeframe_hours(str(config["timeframe"]))
     lag_hours = float(config.get("external_context_lag_hours") or 0.0)
-    lag_rows = int(math.ceil(lag_hours / timeframe_hours))
     start = frame["DATE_TIME"].min()
     end = frame["DATE_TIME"].max()
     before = set(frame.columns)
     merged = frame
     for path in files:
-        context = _load_external_frame(path, start=start, end=end, lag_rows=lag_rows)
+        context = _load_external_frame(path, start=start, end=end, lag_hours=lag_hours)
         if len(context.columns) <= 1:
             continue
         merged = merged.merge(context, on="DATE_TIME", how="left")

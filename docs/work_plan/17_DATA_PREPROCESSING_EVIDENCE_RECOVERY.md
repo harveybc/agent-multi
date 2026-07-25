@@ -130,6 +130,13 @@ Run only on robust E1 contracts and compare:
 - external publication lag, missing-value policy, and staleness;
 - cross-asset context sets, including BTC/ETH, crypto leaders, FX leaders, and
   portfolio candidates;
+- the literal complete materialized cross-source inventory for
+  `all_non_cryptoquant`, with CryptoQuant excluded and no hidden curated
+  subset;
+
+Publication lags are elapsed UTC hours applied to source timestamps. They are
+never interpreted as a count of source rows, which would distort low-frequency
+macro and calendar series.
 - positive-feature log transforms and interactions among the best isolated
   parameter changes.
 
