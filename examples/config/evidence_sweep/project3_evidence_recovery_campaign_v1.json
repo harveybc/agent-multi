@@ -17,7 +17,27 @@
         "observation.context_representation",
         "selection.feature_budget",
         "selection.method",
-        "data.external_context_lag_hours"
+        "data.external_context_lag_hours",
+        "features.cross_asset_volatility_window_hours",
+        "features.transform_input_signal",
+        "features.transform_volatility_window_hours",
+        "features.transform_detrend_window_hours",
+        "features.transform_sample_interval_hours",
+        "features.wavelet_family",
+        "features.wavelet_base_scale_hours",
+        "features.wavelet_levels",
+        "features.hilbert_input_signal",
+        "features.hilbert_window_hours",
+        "features.multitaper_input_signal",
+        "features.multitaper_window_hours",
+        "features.multitaper_time_bandwidth",
+        "features.multitaper_taper_count",
+        "features.emd_input_signal",
+        "features.emd_backend",
+        "features.emd_window_hours",
+        "features.fracdiff_input_signal",
+        "features.fracdiff_d",
+        "features.fracdiff_max_history_hours"
       ],
       "promotion_rule": "rank by validation annual_rap, inspect test stability; no positive-return gate",
       "source": "top robust E1 contracts per asset/timeframe and cross-asset global effects"
@@ -50,7 +70,7 @@
       "source": "one selected contract per asset/timeframe"
     }
   },
-  "generated_at": "2026-07-25T19:04:16.520164+00:00",
+  "generated_at": "2026-07-25T19:39:11.772859+00:00",
   "job_counts": {
     "E0_DATA_CONTRACT": 427,
     "E0_EXTERNAL_COVERAGE": 318,

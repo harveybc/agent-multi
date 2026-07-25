@@ -64,7 +64,7 @@ def test_scheduler_materializes_bounded_e2_after_e1_finishes(tmp_path: Path) -> 
     materialized = tmp_path / "materialized.json"
     result = promote_e2(conn, materialized_plan=materialized)
     assert result["status"] == "enqueued"
-    assert 100 <= result["jobs"] <= 140
+    assert 165 <= result["jobs"] <= 200
     assert materialized.exists()
     stages = {
         row["stage"]: row["n"]

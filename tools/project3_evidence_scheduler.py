@@ -160,6 +160,13 @@ def _e2_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
     ):
         cfg = {**base, "cross_asset_reference_set": reference_set}
         _add_variant(variants, cfg)
+    for volatility_window_hours in (24, 72, 168, 336):
+        cfg = {
+            **base,
+            "cross_asset_reference_set": "portfolio_candidates",
+            "cross_asset_volatility_window_hours": volatility_window_hours,
+        }
+        _add_variant(variants, cfg)
     timeframe_hours = {"15m": 0.25, "1h": 1.0, "4h": 4.0}[str(base["timeframe"])]
     for target_hours in (1, 4, 12, 24, 72, 168):
         if target_hours < timeframe_hours:
@@ -190,6 +197,106 @@ def _e2_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
         _add_variant(variants, cfg)
     for enabled in (False, True):
         cfg = {**base, "log_transform_positive_features": enabled}
+        _add_variant(variants, cfg)
+    for signal in (
+        "close",
+        "log_close",
+        "return",
+        "log_return",
+        "volume",
+        "volatility",
+        "spread_proxy",
+    ):
+        cfg = {
+            **base,
+            "wavelet_family": "causal_multiscale_rolling",
+            "transform_input_signal": signal,
+        }
+        _add_variant(variants, cfg)
+    for levels in ([1, 2, 3], [1, 2, 3, 4], [2, 3, 4, 5]):
+        cfg = {
+            **base,
+            "wavelet_family": "causal_multiscale_rolling",
+            "wavelet_levels": levels,
+        }
+        _add_variant(variants, cfg)
+    for base_scale_hours in (4, 8, 24):
+        cfg = {
+            **base,
+            "wavelet_family": "causal_multiscale_rolling",
+            "wavelet_base_scale_hours": base_scale_hours,
+        }
+        _add_variant(variants, cfg)
+    for volatility_window_hours in (24, 72, 168, 336):
+        cfg = {
+            **base,
+            "wavelet_family": "causal_multiscale_rolling",
+            "transform_input_signal": "volatility",
+            "transform_volatility_window_hours": volatility_window_hours,
+        }
+        _add_variant(variants, cfg)
+    for detrend_window_hours in (24, 72, 168, 336):
+        cfg = {
+            **base,
+            "hilbert_input_signal": "detrended_close",
+            "transform_detrend_window_hours": detrend_window_hours,
+        }
+        _add_variant(variants, cfg)
+    for signal in ("detrended_close", "log_return", "volatility"):
+        for window_hours in (72, 168, 336, 720):
+            cfg = {
+                **base,
+                "hilbert_input_signal": signal,
+                "hilbert_window_hours": window_hours,
+            }
+            _add_variant(variants, cfg)
+    for signal in ("log_return", "volatility", "volume_change"):
+        for window_hours in (72, 168, 336, 720):
+            cfg = {
+                **base,
+                "multitaper_input_signal": signal,
+                "multitaper_window_hours": window_hours,
+            }
+            _add_variant(variants, cfg)
+    for time_bandwidth, taper_count in ((2.5, 3), (3.5, 5), (4.5, 7)):
+        cfg = {
+            **base,
+            "multitaper_input_signal": "log_return",
+            "multitaper_time_bandwidth": time_bandwidth,
+            "multitaper_taper_count": taper_count,
+        }
+        _add_variant(variants, cfg)
+    for sample_interval_hours in (6, 24, 72):
+        cfg = {
+            **base,
+            "hilbert_input_signal": "log_return",
+            "transform_sample_interval_hours": sample_interval_hours,
+        }
+        _add_variant(variants, cfg)
+    for signal in ("detrended_close", "log_return"):
+        cfg = {**base, "emd_input_signal": signal}
+        _add_variant(variants, cfg)
+    for windows in ([8, 32, 128], [24, 168, 720], [72, 336, 2160]):
+        cfg = {
+            **base,
+            "emd_input_signal": "log_return",
+            "emd_window_hours": windows,
+        }
+        _add_variant(variants, cfg)
+    for signal in ("close", "log_close"):
+        for d in (0.2, 0.4, 0.6, 0.8):
+            cfg = {
+                **base,
+                "fracdiff_input_signal": signal,
+                "fracdiff_d": d,
+            }
+            _add_variant(variants, cfg)
+    for history_hours in (168, 720, 2160):
+        cfg = {
+            **base,
+            "fracdiff_input_signal": "log_close",
+            "fracdiff_max_history_hours": history_hours,
+        }
         _add_variant(variants, cfg)
     return list(variants.values())
 

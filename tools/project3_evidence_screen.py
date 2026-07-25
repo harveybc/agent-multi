@@ -10,6 +10,8 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from scipy.signal import hilbert
+from scipy.signal.windows import dpss
 from scipy.stats import norm, spearmanr
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.linear_model import Lasso, Ridge
@@ -34,6 +36,7 @@ SCREEN_DEFAULTS = {
     "missing_value_policy": "causal_ffill",
     "max_staleness_hours": None,
     "cross_asset_reference_set": "none",
+    "cross_asset_volatility_window_hours": 24,
     "target_definition": "forward_return",
     "feature_selection_method": "rank_ic_topk",
     "feature_budget": 32,
@@ -43,6 +46,26 @@ SCREEN_DEFAULTS = {
     "scaling_history_hours": 168,
     "clip_value": 10,
     "log_transform_positive_features": False,
+    "transform_volatility_window_hours": 24,
+    "transform_detrend_window_hours": 168,
+    "transform_sample_interval_hours": 24,
+    "transform_input_signal": "close",
+    "wavelet_family": "off",
+    "wavelet_base_scale_hours": 8,
+    "wavelet_levels": [1, 2, 3, 4],
+    "hilbert_input_signal": "off",
+    "hilbert_window_hours": 168,
+    "multitaper_input_signal": "off",
+    "multitaper_window_hours": 168,
+    "multitaper_time_bandwidth": 3.5,
+    "multitaper_taper_count": 5,
+    "emd_input_signal": "off",
+    "emd_backend": "causal_rolling_proxy",
+    "emd_window_hours": [8, 32, 128],
+    "fracdiff_input_signal": "off",
+    "fracdiff_d": 0.4,
+    "fracdiff_weight_threshold": 0.0001,
+    "fracdiff_max_history_hours": 720,
     "context_hours": 168,
     "context_representation": "summary",
     "ridge_alpha": 1.0,
@@ -61,6 +84,7 @@ RESOLVED_PARAMETER_KEYS = (
     "missing_value_policy",
     "max_staleness_hours",
     "cross_asset_reference_set",
+    "cross_asset_volatility_window_hours",
     "target_horizon_hours",
     "target_definition",
     "feature_selection_method",
@@ -71,6 +95,26 @@ RESOLVED_PARAMETER_KEYS = (
     "scaling_history_hours",
     "clip_value",
     "log_transform_positive_features",
+    "transform_volatility_window_hours",
+    "transform_detrend_window_hours",
+    "transform_sample_interval_hours",
+    "transform_input_signal",
+    "wavelet_family",
+    "wavelet_base_scale_hours",
+    "wavelet_levels",
+    "hilbert_input_signal",
+    "hilbert_window_hours",
+    "multitaper_input_signal",
+    "multitaper_window_hours",
+    "multitaper_time_bandwidth",
+    "multitaper_taper_count",
+    "emd_input_signal",
+    "emd_backend",
+    "emd_window_hours",
+    "fracdiff_input_signal",
+    "fracdiff_d",
+    "fracdiff_weight_threshold",
+    "fracdiff_max_history_hours",
     "context_hours",
     "context_representation",
     "ridge_alpha",
@@ -398,6 +442,14 @@ def merge_cross_asset_context(
         }
     merged = frame
     generated: list[str] = []
+    timeframe_hours = _timeframe_hours(str(config["timeframe"]))
+    volatility_window_hours = float(
+        config.get("cross_asset_volatility_window_hours") or 24
+    )
+    volatility_rows = max(
+        4,
+        int(round(volatility_window_hours / timeframe_hours)),
+    )
     for path in files:
         source = pd.read_csv(
             path,
@@ -412,7 +464,13 @@ def merge_cross_asset_context(
                 "DATE_TIME": source["DATE_TIME"],
                 f"cross_asset__{prefix}__return_1": close.pct_change(),
                 f"cross_asset__{prefix}__log_return_1": np.log(close.clip(lower=1e-12)).diff(),
-                f"cross_asset__{prefix}__volatility_24": close.pct_change().rolling(24).std(),
+                (
+                    f"cross_asset__{prefix}__volatility_"
+                    f"{volatility_window_hours:g}h"
+                ): close.pct_change().rolling(
+                    volatility_rows,
+                    min_periods=max(4, volatility_rows // 3),
+                ).std(),
             }
         )
         if "VOLUME" in source:
@@ -431,7 +489,381 @@ def merge_cross_asset_context(
         "cross_asset_feature_count": len(generated),
         "cross_asset_source_files": [str(path) for path in files],
         "cross_asset_coverage_fraction": float(merged[generated].notna().mean().mean()),
+        "cross_asset_volatility_window_hours": volatility_window_hours,
     }
+
+
+def _transform_signal(
+    frame: pd.DataFrame,
+    name: str,
+    *,
+    timeframe_hours: float,
+    volatility_window_hours: float,
+    detrend_window_hours: float,
+) -> pd.Series:
+    close = pd.to_numeric(frame["CLOSE"], errors="coerce")
+    if name == "close":
+        return close
+    if name == "log_close":
+        return np.log(close.clip(lower=1e-12))
+    if name == "return":
+        return close.pct_change()
+    if name == "log_return":
+        return np.log(close.clip(lower=1e-12)).diff()
+    if name == "volume":
+        return pd.to_numeric(frame["VOLUME"], errors="coerce")
+    if name == "volume_change":
+        return pd.to_numeric(frame["VOLUME"], errors="coerce").pct_change()
+    if name == "volatility":
+        window_rows = max(4, int(round(volatility_window_hours / timeframe_hours)))
+        return close.pct_change().rolling(
+            window_rows,
+            min_periods=max(4, window_rows // 3),
+        ).std()
+    if name == "spread_proxy":
+        high = pd.to_numeric(frame["HIGH"], errors="coerce")
+        low = pd.to_numeric(frame["LOW"], errors="coerce")
+        return (high - low) / close.replace(0.0, np.nan)
+    if name == "detrended_close":
+        window_rows = max(4, int(round(detrend_window_hours / timeframe_hours)))
+        return close - close.rolling(
+            window_rows,
+            min_periods=max(4, window_rows // 3),
+        ).mean()
+    raise ValueError(f"unsupported transform input signal: {name}")
+
+
+def _wavelet_proxy_features(
+    signal: pd.Series,
+    *,
+    signal_name: str,
+    levels: list[int],
+    timeframe_hours: float,
+    base_scale_hours: float,
+) -> pd.DataFrame:
+    valid_levels = sorted({int(level) for level in levels if 1 <= int(level) <= 8})
+    if not valid_levels:
+        raise ValueError("wavelet_levels must contain at least one level in [1, 8]")
+    prefix = f"transform__wavelet__{signal_name}"
+    approximations: dict[int, pd.Series] = {}
+    output: dict[str, pd.Series] = {}
+    previous = signal
+    energy_columns: list[str] = []
+    for level in valid_levels:
+        window = max(
+            2,
+            int(round(float(base_scale_hours) * (2**level) / timeframe_hours)),
+        )
+        approximation = signal.rolling(window, min_periods=window).mean()
+        detail = previous - approximation
+        approximations[level] = approximation
+        output[f"{prefix}__approx_l{level}"] = approximation
+        output[f"{prefix}__detail_l{level}"] = detail
+        energy_name = f"{prefix}__energy_l{level}"
+        output[energy_name] = detail.pow(2).rolling(
+            max(
+                4,
+                int(
+                    round(
+                        float(base_scale_hours)
+                        * (2 ** max(valid_levels))
+                        / timeframe_hours
+                    )
+                ),
+            ),
+            min_periods=max(4, window // 3),
+        ).mean()
+        energy_columns.append(energy_name)
+        previous = approximation
+    result = pd.DataFrame(output, index=signal.index)
+    total_energy = result[energy_columns].sum(axis=1).replace(0.0, np.nan)
+    relative_columns = []
+    for level, energy_name in zip(valid_levels, energy_columns):
+        name = f"{prefix}__relative_energy_l{level}"
+        result[name] = result[energy_name] / total_energy
+        relative_columns.append(name)
+    probabilities = result[relative_columns].clip(lower=0.0)
+    result[f"{prefix}__entropy"] = -(
+        probabilities * np.log(probabilities + 1e-12)
+    ).sum(axis=1)
+    return result
+
+
+def _hilbert_features(
+    signal: pd.Series,
+    *,
+    signal_name: str,
+    window_rows: int,
+    step: int,
+) -> pd.DataFrame:
+    values = signal.reset_index(drop=True)
+    output = pd.DataFrame(
+        {
+            f"transform__hilbert__{signal_name}__amplitude": np.nan,
+            f"transform__hilbert__{signal_name}__phase": np.nan,
+            f"transform__hilbert__{signal_name}__instantaneous_frequency": np.nan,
+        },
+        index=signal.index,
+    )
+    for end in range(window_rows, len(values) + 1, max(1, step)):
+        segment = values.iloc[end - window_rows : end].interpolate(
+            limit_direction="both"
+        ).to_numpy(dtype=float)
+        if not np.isfinite(segment).all():
+            continue
+        analytic = hilbert(segment)
+        phase = np.unwrap(np.angle(analytic))
+        target_index = output.index[end - 1]
+        output.at[
+            target_index, f"transform__hilbert__{signal_name}__amplitude"
+        ] = float(np.abs(analytic[-1]))
+        output.at[
+            target_index, f"transform__hilbert__{signal_name}__phase"
+        ] = float(phase[-1])
+        output.at[
+            target_index,
+            f"transform__hilbert__{signal_name}__instantaneous_frequency",
+        ] = float(phase[-1] - phase[-2])
+    return output.ffill()
+
+
+def _multitaper_features(
+    signal: pd.Series,
+    *,
+    signal_name: str,
+    window_rows: int,
+    step: int,
+    time_bandwidth: float,
+    taper_count: int,
+) -> pd.DataFrame:
+    values = signal.reset_index(drop=True)
+    names = {
+        "entropy": f"transform__multitaper__{signal_name}__spectral_entropy",
+        "dominant": f"transform__multitaper__{signal_name}__dominant_frequency",
+        "centroid": f"transform__multitaper__{signal_name}__spectral_centroid",
+    }
+    output = pd.DataFrame({name: np.nan for name in names.values()}, index=signal.index)
+    tapers = dpss(
+        window_rows,
+        NW=float(time_bandwidth),
+        Kmax=int(taper_count),
+        sym=False,
+    )
+    for end in range(window_rows, len(values) + 1, max(1, step)):
+        segment = values.iloc[end - window_rows : end].interpolate(
+            limit_direction="both"
+        ).to_numpy(dtype=float)
+        if not np.isfinite(segment).all():
+            continue
+        centered = segment - float(np.mean(segment))
+        spectrum = np.fft.rfft(tapers * centered, axis=1)
+        power = np.mean(np.abs(spectrum) ** 2, axis=0)
+        total = float(power.sum())
+        if total <= 0.0 or not np.isfinite(total):
+            continue
+        frequencies = np.fft.rfftfreq(window_rows, d=1.0)
+        normalized = power / total
+        target_index = output.index[end - 1]
+        output.at[target_index, names["entropy"]] = float(
+            -(normalized * np.log(normalized + 1e-12)).sum()
+        )
+        output.at[target_index, names["dominant"]] = float(
+            frequencies[int(np.argmax(power))]
+        )
+        output.at[target_index, names["centroid"]] = float(
+            (frequencies * power).sum() / total
+        )
+    return output.ffill()
+
+
+def _emd_proxy_features(
+    signal: pd.Series,
+    *,
+    signal_name: str,
+    window_rows: list[int],
+) -> pd.DataFrame:
+    if len(window_rows) != 3 or sorted(window_rows) != window_rows:
+        raise ValueError("emd_window_hours must define three increasing windows")
+    short, medium, long = window_rows
+    mean_short = signal.rolling(short, min_periods=short).mean()
+    mean_medium = signal.rolling(medium, min_periods=medium).mean()
+    mean_long = signal.rolling(long, min_periods=long).mean()
+    prefix = f"transform__emd_proxy__{signal_name}"
+    return pd.DataFrame(
+        {
+            f"{prefix}__imf_1": signal - mean_short,
+            f"{prefix}__imf_2": mean_short - mean_medium,
+            f"{prefix}__imf_3": mean_medium - mean_long,
+            f"{prefix}__residue": mean_long,
+        },
+        index=signal.index,
+    )
+
+
+def _fractional_difference(
+    signal: pd.Series,
+    *,
+    signal_name: str,
+    d: float,
+    threshold: float = 1e-4,
+    max_size: int = 256,
+) -> pd.DataFrame:
+    weights = [1.0]
+    for k in range(1, max_size):
+        weight = -weights[-1] * (float(d) - k + 1) / k
+        if abs(weight) < threshold:
+            break
+        weights.append(weight)
+    values = signal.ffill().to_numpy(dtype=float)
+    transformed = np.convolve(values, np.asarray(weights), mode="full")[: len(values)]
+    transformed[: len(weights) - 1] = np.nan
+    return pd.DataFrame(
+        {
+            f"transform__fracdiff__{signal_name}__d_{float(d):.2f}": transformed
+        },
+        index=signal.index,
+    )
+
+
+def add_configured_transform_features(
+    frame: pd.DataFrame,
+    config: dict[str, Any],
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    generated: list[pd.DataFrame] = []
+    metadata: dict[str, Any] = {"configured_transform_families": []}
+    timeframe = str(config["timeframe"])
+    timeframe_hours = _timeframe_hours(timeframe)
+    volatility_window_hours = float(
+        config.get("transform_volatility_window_hours") or 24
+    )
+    detrend_window_hours = float(config.get("transform_detrend_window_hours") or 168)
+    sample_step = max(
+        1,
+        int(
+            round(
+                float(config.get("transform_sample_interval_hours") or 24)
+                / timeframe_hours
+            )
+        ),
+    )
+
+    def input_signal(name: str) -> pd.Series:
+        return _transform_signal(
+            frame,
+            name,
+            timeframe_hours=timeframe_hours,
+            volatility_window_hours=volatility_window_hours,
+            detrend_window_hours=detrend_window_hours,
+        )
+
+    wavelet_family = str(config.get("wavelet_family") or "off")
+    if wavelet_family != "off":
+        if wavelet_family != "causal_multiscale_rolling":
+            raise ValueError(f"unsupported wavelet_family: {wavelet_family}")
+        signal_name = str(config.get("transform_input_signal") or "close")
+        levels = [int(value) for value in config.get("wavelet_levels") or [1, 2, 3, 4]]
+        generated.append(
+            _wavelet_proxy_features(
+                input_signal(signal_name),
+                signal_name=signal_name,
+                levels=levels,
+                timeframe_hours=timeframe_hours,
+                base_scale_hours=float(config.get("wavelet_base_scale_hours") or 8),
+            )
+        )
+        metadata["configured_transform_families"].append("wavelet")
+
+    hilbert_signal = str(config.get("hilbert_input_signal") or "off")
+    if hilbert_signal != "off":
+        window_rows = max(
+            32,
+            int(round(float(config.get("hilbert_window_hours") or 168) / timeframe_hours)),
+        )
+        generated.append(
+            _hilbert_features(
+                input_signal(hilbert_signal),
+                signal_name=hilbert_signal,
+                window_rows=window_rows,
+                step=sample_step,
+            )
+        )
+        metadata["configured_transform_families"].append("hilbert")
+
+    multitaper_signal = str(config.get("multitaper_input_signal") or "off")
+    if multitaper_signal != "off":
+        window_rows = max(
+            32,
+            int(
+                round(
+                    float(config.get("multitaper_window_hours") or 168)
+                    / timeframe_hours
+                )
+            ),
+        )
+        generated.append(
+            _multitaper_features(
+                input_signal(multitaper_signal),
+                signal_name=multitaper_signal,
+                window_rows=window_rows,
+                step=sample_step,
+                time_bandwidth=float(
+                    config.get("multitaper_time_bandwidth") or 3.5
+                ),
+                taper_count=int(config.get("multitaper_taper_count") or 5),
+            )
+        )
+        metadata["configured_transform_families"].append("multitaper")
+
+    emd_signal = str(config.get("emd_input_signal") or "off")
+    if emd_signal != "off":
+        backend = str(config.get("emd_backend") or "causal_rolling_proxy")
+        if backend != "causal_rolling_proxy":
+            raise ValueError(f"unsupported emd_backend: {backend}")
+        generated.append(
+            _emd_proxy_features(
+                input_signal(emd_signal),
+                signal_name=emd_signal,
+                window_rows=[
+                    max(2, int(round(float(hours) / timeframe_hours)))
+                    for hours in config.get("emd_window_hours") or [8, 32, 128]
+                ],
+            )
+        )
+        metadata["configured_transform_families"].append("emd_proxy")
+
+    fracdiff_signal = str(config.get("fracdiff_input_signal") or "off")
+    if fracdiff_signal != "off":
+        generated.append(
+            _fractional_difference(
+                input_signal(fracdiff_signal),
+                signal_name=fracdiff_signal,
+                d=float(config.get("fracdiff_d") or 0.4),
+                threshold=float(
+                    config.get("fracdiff_weight_threshold") or 0.0001
+                ),
+                max_size=max(
+                    2,
+                    int(
+                        round(
+                            float(
+                                config.get("fracdiff_max_history_hours") or 720
+                            )
+                            / timeframe_hours
+                        )
+                    ),
+                ),
+            )
+        )
+        metadata["configured_transform_families"].append("fracdiff")
+
+    if not generated:
+        metadata["configured_transform_feature_count"] = 0
+        return frame, metadata
+    transformed = pd.concat([frame, *generated], axis=1)
+    generated_columns = sorted(set(transformed.columns) - set(frame.columns))
+    metadata["configured_transform_feature_count"] = len(generated_columns)
+    metadata["configured_transform_features"] = generated_columns
+    return transformed, metadata
 
 
 def _causal_scale(
@@ -822,6 +1254,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
     frame = _load_base(config)
     frame, source_meta = merge_external_context(frame, config)
     frame, cross_asset_meta = merge_cross_asset_context(frame, config)
+    frame, transform_meta = add_configured_transform_features(frame, config)
     features = _feature_columns(frame)
     if not features:
         path = Path(str(config["input_data_file"]))
@@ -846,6 +1279,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
                 "selection_uses_test": False,
                 **source_meta,
                 **cross_asset_meta,
+                **transform_meta,
                 "cryptoquant_excluded": True,
             },
             "artifacts": [
@@ -1009,6 +1443,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
             **model_meta,
             **source_meta,
             **cross_asset_meta,
+            **transform_meta,
             "cryptoquant_excluded": True,
             "selection_uses_validation": False,
             "selection_uses_test": False,
