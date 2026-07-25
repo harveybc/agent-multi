@@ -10,15 +10,75 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr
+from scipy.stats import norm, spearmanr
 from sklearn.feature_selection import mutual_info_regression
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso, Ridge
 
 from project3_evidence_metrics import METRIC_SCHEMA, canonical_trading_metrics
 
 
 CORE_COLUMNS = {"DATE_TIME", "OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"}
 LEAK_TOKENS = ("target", "label", "future", "fwd_", "next_", "prediction")
+FEATURE_PROXY_PROTOCOL = "project3.feature_proxy.one_bar_execution.v2"
+FEATURE_PROXY_PROTOCOL_HASH = hashlib.sha256(
+    (
+        "target may span configured horizon; positions are recomputed per bar; "
+        "equity uses next-bar realized return exactly once; transaction cost "
+        "is charged on absolute position turnover; train-only feature selection"
+    ).encode("utf-8")
+).hexdigest()
+
+SCREEN_DEFAULTS = {
+    "external_context_bundle": "none",
+    "external_context_lag_hours": 0,
+    "missing_value_policy": "causal_ffill",
+    "max_staleness_hours": None,
+    "cross_asset_reference_set": "none",
+    "target_definition": "forward_return",
+    "feature_selection_method": "rank_ic_topk",
+    "feature_budget": 32,
+    "redundancy_threshold": 0.95,
+    "stability_folds": 5,
+    "preprocessing_mode": "rolling_zscore",
+    "scaling_history_hours": 168,
+    "clip_value": 10,
+    "log_transform_positive_features": False,
+    "context_hours": 168,
+    "context_representation": "summary",
+    "ridge_alpha": 1.0,
+    "action_threshold_quantile": 0.65,
+    "transaction_cost_fraction": 0.0005,
+    "risk_penalty_lambda": 1.0,
+    "minimum_split_rows": 200,
+}
+
+RESOLVED_PARAMETER_KEYS = (
+    "asset",
+    "timeframe",
+    "base_feature_bundle",
+    "external_context_bundle",
+    "external_context_lag_hours",
+    "missing_value_policy",
+    "max_staleness_hours",
+    "cross_asset_reference_set",
+    "target_horizon_hours",
+    "target_definition",
+    "feature_selection_method",
+    "feature_budget",
+    "redundancy_threshold",
+    "stability_folds",
+    "preprocessing_mode",
+    "scaling_history_hours",
+    "clip_value",
+    "log_transform_positive_features",
+    "context_hours",
+    "context_representation",
+    "ridge_alpha",
+    "action_threshold_quantile",
+    "transaction_cost_fraction",
+    "risk_penalty_lambda",
+    "minimum_split_rows",
+)
 
 SOURCE_PATTERNS = {
     "macro_core": [
@@ -57,6 +117,20 @@ SOURCE_PATTERNS = {
         "economic_calendar__scheduled_events__fxmacrodata__release_calendar.parquet",
         "economic_calendar__release_actuals__fxmacrodata__announcements.parquet",
     ],
+}
+
+CROSS_ASSET_SETS = {
+    "btc_eth": ("btcusdt", "ethusdt"),
+    "crypto_leaders": ("btcusdt", "ethusdt", "solusdt"),
+    "fx_leaders": ("eurusd", "usdjpy", "gbpusd"),
+    "portfolio_candidates": (
+        "solusdt",
+        "btcusdt",
+        "adausdt",
+        "eurusd",
+        "dogeusdt",
+        "audusd",
+    ),
 }
 
 
@@ -175,6 +249,39 @@ def source_files(config: dict[str, Any]) -> list[Path]:
     return [path for path in files if "cryptoquant" not in path.name.lower()]
 
 
+def cross_asset_files(config: dict[str, Any]) -> list[Path]:
+    reference_set = str(config.get("cross_asset_reference_set") or "none")
+    if reference_set == "none":
+        return []
+    references = CROSS_ASSET_SETS.get(reference_set)
+    if references is None:
+        raise ValueError(f"unsupported cross_asset_reference_set: {reference_set}")
+    data_root = Path(str(config["data_root"]))
+    timeframe = str(config["timeframe"])
+    target = str(config["asset"]).lower().replace("_perp", "")
+    files = []
+    for asset in references:
+        if asset == target:
+            continue
+        path = (
+            data_root
+            / "experiments"
+            / "stage_a_screening"
+            / "inputs"
+            / asset
+            / timeframe
+            / "baseline_12"
+            / "train.csv"
+        )
+        if path.is_file():
+            files.append(path)
+    return sorted(set(files))
+
+
+def required_source_files(config: dict[str, Any]) -> list[Path]:
+    return sorted(set([*source_files(config), *cross_asset_files(config)]))
+
+
 def _load_external_frame(
     path: Path,
     *,
@@ -240,7 +347,25 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
     merged = merged.copy()
     external_columns = sorted(set(merged.columns) - before)
     if external_columns:
-        merged[external_columns] = merged[external_columns].ffill()
+        missing_policy = str(config.get("missing_value_policy") or "causal_ffill")
+        timeframe_hours = _timeframe_hours(str(config["timeframe"]))
+        max_staleness_hours = config.get("max_staleness_hours")
+        ffill_limit = None
+        if max_staleness_hours is not None:
+            ffill_limit = max(1, int(math.ceil(float(max_staleness_hours) / timeframe_hours)))
+        if missing_policy in {"causal_ffill", "causal_ffill_plus_missing_indicator"}:
+            missing_before = merged[external_columns].isna()
+            merged[external_columns] = merged[external_columns].ffill(limit=ffill_limit)
+            if missing_policy == "causal_ffill_plus_missing_indicator":
+                for column in external_columns:
+                    merged[f"{column}__was_missing"] = missing_before[column].astype(float)
+        elif missing_policy == "train_median":
+            train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
+            train_mask = merged["DATE_TIME"] <= train_end
+            medians = merged.loc[train_mask, external_columns].median()
+            merged[external_columns] = merged[external_columns].fillna(medians)
+        else:
+            raise ValueError(f"unsupported missing_value_policy: {missing_policy}")
         coverage = float(merged[external_columns].notna().mean().mean())
     else:
         coverage = 0.0
@@ -250,6 +375,56 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
         "external_source_files": [str(path) for path in files],
         "external_coverage_fraction": coverage,
         "external_context_lag_hours": lag_hours,
+    }
+
+
+def merge_cross_asset_context(
+    frame: pd.DataFrame,
+    config: dict[str, Any],
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    files = cross_asset_files(config)
+    if not files:
+        return frame, {
+            "cross_asset_source_count": 0,
+            "cross_asset_feature_count": 0,
+            "cross_asset_source_files": [],
+            "cross_asset_coverage_fraction": 0.0,
+        }
+    merged = frame
+    generated: list[str] = []
+    for path in files:
+        source = pd.read_csv(
+            path,
+            usecols=lambda column: column in {"DATE_TIME", "CLOSE", "VOLUME"},
+        )
+        source["DATE_TIME"] = pd.to_datetime(source["DATE_TIME"], utc=True, errors="coerce")
+        source = source.dropna(subset=["DATE_TIME"]).sort_values("DATE_TIME")
+        prefix = path.parents[2].name
+        close = pd.to_numeric(source["CLOSE"], errors="coerce")
+        context = pd.DataFrame(
+            {
+                "DATE_TIME": source["DATE_TIME"],
+                f"cross_asset__{prefix}__return_1": close.pct_change(),
+                f"cross_asset__{prefix}__log_return_1": np.log(close.clip(lower=1e-12)).diff(),
+                f"cross_asset__{prefix}__volatility_24": close.pct_change().rolling(24).std(),
+            }
+        )
+        if "VOLUME" in source:
+            volume = pd.to_numeric(source["VOLUME"], errors="coerce")
+            context[f"cross_asset__{prefix}__volume_change"] = volume.pct_change()
+        generated.extend(column for column in context if column != "DATE_TIME")
+        merged = merged.merge(
+            context.drop_duplicates("DATE_TIME", keep="last"),
+            on="DATE_TIME",
+            how="left",
+        )
+    generated = sorted(set(generated))
+    merged[generated] = merged[generated].ffill()
+    return merged, {
+        "cross_asset_source_count": len(files),
+        "cross_asset_feature_count": len(generated),
+        "cross_asset_source_files": [str(path) for path in files],
+        "cross_asset_coverage_fraction": float(merged[generated].notna().mean().mean()),
     }
 
 
@@ -279,6 +454,18 @@ def _causal_scale(
         deviation = (values - center).abs()
         spread = deviation.rolling(window_rows, min_periods=min_periods).median().shift(1)
         scaled = (values - center) / (1.4826 * spread.replace(0.0, np.nan))
+    elif mode == "rolling_rank_gaussian":
+        min_periods = max(8, min(window_rows // 4, window_rows))
+        percentile = values.rolling(
+            window_rows,
+            min_periods=min_periods,
+        ).rank(pct=True).shift(1)
+        clipped = percentile.clip(1e-4, 1.0 - 1e-4)
+        scaled = pd.DataFrame(
+            norm.ppf(clipped.to_numpy(dtype=float)),
+            index=values.index,
+            columns=values.columns,
+        )
     else:
         raise ValueError(f"unsupported preprocessing mode: {mode}")
     if clip is not None and float(clip) > 0.0:
@@ -300,6 +487,8 @@ def _select_features(
     *,
     method: str,
     budget: int,
+    redundancy_threshold: float = 0.95,
+    stability_folds: int = 5,
 ) -> tuple[list[str], dict[str, float]]:
     valid = [
         column
@@ -320,10 +509,64 @@ def _select_features(
             y = y.iloc[indices]
         values = mutual_info_regression(x, y, random_state=1701, n_neighbors=5)
         scores = {column: _safe_float(value) for column, value in zip(valid, values)}
+    elif method == "redundancy_stability_topk":
+        folds = np.array_split(np.arange(len(train)), max(2, int(stability_folds)))
+        for column in valid:
+            fold_scores = [
+                abs(_spearman(train.iloc[index][column], train.iloc[index][target]))
+                for index in folds
+                if len(index) >= 40
+            ]
+            scores[column] = (
+                float(np.mean(fold_scores) - np.std(fold_scores))
+                if fold_scores
+                else 0.0
+            )
+    elif method == "regime_conditioned_topk":
+        target_volatility = train[target].rolling(24, min_periods=8).std()
+        try:
+            regimes = pd.qcut(target_volatility.rank(method="first"), 3, labels=False)
+        except ValueError:
+            regimes = pd.Series(0, index=train.index)
+        for column in valid:
+            regime_scores = [
+                abs(_spearman(train.loc[regimes == regime, column], train.loc[regimes == regime, target]))
+                for regime in sorted(regimes.dropna().unique())
+            ]
+            scores[column] = float(np.mean(regime_scores)) if regime_scores else 0.0
+    elif method == "sparse_mask":
+        sample = train[[*valid, target]].replace([np.inf, -np.inf], np.nan)
+        medians = sample[valid].median()
+        x = sample[valid].fillna(medians)
+        y = sample[target].fillna(0.0)
+        if len(x) > 10_000:
+            indices = np.linspace(0, len(x) - 1, 10_000).astype(int)
+            x = x.iloc[indices]
+            y = y.iloc[indices]
+        means = x.mean()
+        stds = x.std().replace(0.0, 1.0)
+        model = Lasso(alpha=1e-4, max_iter=5000, random_state=1701)
+        model.fit((x - means) / stds, y)
+        scores = {
+            column: abs(_safe_float(coefficient))
+            for column, coefficient in zip(valid, model.coef_)
+        }
     else:
         raise ValueError(f"unsupported feature selection method: {method}")
-    selected = sorted(valid, key=lambda column: (scores.get(column, 0.0), column), reverse=True)
-    return selected[: max(1, int(budget))], scores
+    ranked = sorted(valid, key=lambda column: (scores.get(column, 0.0), column), reverse=True)
+    if method != "redundancy_stability_topk":
+        return ranked[: max(1, int(budget))], scores
+    selected: list[str] = []
+    for column in ranked:
+        if len(selected) >= max(1, int(budget)):
+            break
+        if not selected:
+            selected.append(column)
+            continue
+        correlations = train[[column, *selected]].corr(method="spearman").loc[column, selected]
+        if correlations.abs().max() < float(redundancy_threshold):
+            selected.append(column)
+    return selected, scores
 
 
 def _context_features(
@@ -354,7 +597,85 @@ def _context_features(
             lag.columns = [f"{column}__lag_{offset}" for column in selected]
             pieces.append(lag)
         return pd.concat(pieces, axis=1)
+    if representation == "raw_sequence":
+        offsets = np.unique(
+            np.linspace(0, max(1, context_rows - 1), min(context_rows, 32)).astype(int)
+        )
+        pieces = []
+        for offset in offsets:
+            lag = scaled[selected].shift(int(offset))
+            lag.columns = [f"{column}__lag_{int(offset)}" for column in selected]
+            pieces.append(lag)
+        return pd.concat(pieces, axis=1)
+    if representation == "multiscale_sequence":
+        scales = sorted(
+            {
+                max(2, context_rows // 16),
+                max(2, context_rows // 8),
+                max(2, context_rows // 4),
+                max(2, context_rows // 2),
+                context_rows,
+            }
+        )
+        pieces = [current]
+        for scale in scales:
+            rolling = scaled[selected].rolling(
+                scale,
+                min_periods=min(scale, max(4, scale // 4)),
+            )
+            mean = rolling.mean().shift(1)
+            mean.columns = [f"{column}__mean_{scale}" for column in selected]
+            std = rolling.std().shift(1)
+            std.columns = [f"{column}__std_{scale}" for column in selected]
+            pieces.extend([mean, std])
+        return pd.concat(pieces, axis=1)
     raise ValueError(f"unsupported context representation: {representation}")
+
+
+def _target_series(
+    frame: pd.DataFrame,
+    *,
+    horizon_rows: int,
+    definition: str,
+    transaction_cost: float,
+    risk_penalty_lambda: float,
+) -> pd.Series:
+    close = pd.to_numeric(frame["CLOSE"], errors="coerce")
+    forward = close.shift(-horizon_rows) / close - 1.0
+    if definition == "forward_return":
+        return forward
+    if definition == "cost_adjusted_forward_return":
+        net_magnitude = (forward.abs() - 2.0 * float(transaction_cost)).clip(lower=0.0)
+        return np.sign(forward) * net_magnitude
+    high = pd.to_numeric(frame["HIGH"], errors="coerce")
+    low = pd.to_numeric(frame["LOW"], errors="coerce")
+    future_high = (
+        high.shift(-1).iloc[::-1].rolling(horizon_rows, min_periods=horizon_rows).max().iloc[::-1]
+    )
+    future_low = (
+        low.shift(-1).iloc[::-1].rolling(horizon_rows, min_periods=horizon_rows).min().iloc[::-1]
+    )
+    past_volatility = close.pct_change().rolling(max(24, horizon_rows), min_periods=8).std().shift(1)
+    barrier = (past_volatility * math.sqrt(horizon_rows)).clip(lower=2.0 * transaction_cost)
+    upper_excursion = future_high / close - 1.0
+    lower_excursion = future_low / close - 1.0
+    if definition == "triple_barrier":
+        return pd.Series(
+            np.where(
+                upper_excursion >= barrier,
+                1.0,
+                np.where(lower_excursion <= -barrier, -1.0, np.sign(forward)),
+            ),
+            index=frame.index,
+        )
+    if definition == "future_rap":
+        adverse = np.where(
+            forward >= 0.0,
+            np.maximum(0.0, -lower_excursion),
+            np.maximum(0.0, upper_excursion),
+        )
+        return forward - np.sign(forward) * float(risk_penalty_lambda) * adverse
+    raise ValueError(f"unsupported target_definition: {definition}")
 
 
 def _fit_ridge(
@@ -409,7 +730,7 @@ def _evaluate_split(
     equity, position, turnover = _strategy_equity(
         frame["DATE_TIME"],
         predictions,
-        frame["target_return"],
+        frame["realized_return"],
         threshold=threshold,
         transaction_cost=transaction_cost,
     )
@@ -424,7 +745,7 @@ def _evaluate_split(
         risk_penalty_lambda=risk_penalty_lambda,
     )
     rows = [{**row, "split": split_name} for row in canonical["metrics"]]
-    ic = _safe_float(spearmanr(predictions, frame["target_return"]).statistic)
+    ic = _spearman(pd.Series(predictions, index=frame.index), frame["target_return"])
     direction = float(np.mean(np.sign(predictions) == np.sign(frame["target_return"].to_numpy(dtype=float))))
     exposure = float(np.mean(position != 0.0))
     rows.extend(
@@ -448,6 +769,7 @@ def _evaluate_split(
 def data_contract_audit(config: dict[str, Any]) -> dict[str, Any]:
     frame = _load_base(config)
     enriched, source_meta = merge_external_context(frame, config)
+    enriched, cross_asset_meta = merge_cross_asset_context(enriched, config)
     features = _feature_columns(enriched)
     start = enriched["DATE_TIME"].min()
     end = enriched["DATE_TIME"].max()
@@ -460,6 +782,9 @@ def data_contract_audit(config: dict[str, Any]) -> dict[str, Any]:
         _metric("external_source_count", float(source_meta["external_source_count"]), unit="count", horizon="dataset", aggregation="count", split="audit"),
         _metric("external_feature_count", float(source_meta["external_feature_count"]), unit="count", horizon="dataset", aggregation="count", split="audit"),
         _metric("external_coverage", source_coverage, unit="fraction", horizon="dataset", aggregation="mean", split="audit"),
+        _metric("cross_asset_source_count", float(cross_asset_meta["cross_asset_source_count"]), unit="count", horizon="dataset", aggregation="count", split="audit"),
+        _metric("cross_asset_feature_count", float(cross_asset_meta["cross_asset_feature_count"]), unit="count", horizon="dataset", aggregation="count", split="audit"),
+        _metric("cross_asset_coverage", float(cross_asset_meta["cross_asset_coverage_fraction"]), unit="fraction", horizon="dataset", aggregation="mean", split="audit"),
         _metric("duplicate_timestamp_rows", float(duplicate_rows), unit="count", horizon="dataset", aggregation="count", split="audit"),
     ]
     return {
@@ -473,6 +798,7 @@ def data_contract_audit(config: dict[str, Any]) -> dict[str, Any]:
             "timestamps_monotonic": monotonic,
             "duplicate_timestamp_rows": duplicate_rows,
             **source_meta,
+            **cross_asset_meta,
             "cryptoquant_excluded": True,
         },
         "artifacts": [
@@ -489,12 +815,58 @@ def data_contract_audit(config: dict[str, Any]) -> dict[str, Any]:
 def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
     frame = _load_base(config)
     frame, source_meta = merge_external_context(frame, config)
+    frame, cross_asset_meta = merge_cross_asset_context(frame, config)
     features = _feature_columns(frame)
     if not features:
-        raise ValueError("no numeric non-leaking features available")
+        path = Path(str(config["input_data_file"]))
+        return {
+            "task_type": "feature_proxy_screen",
+            "evaluation_protocol_id": FEATURE_PROXY_PROTOCOL,
+            "evaluation_protocol_hash": FEATURE_PROXY_PROTOCOL_HASH,
+            "metric_rows": [
+                _metric(
+                    "selected_feature_count",
+                    0.0,
+                    unit="count",
+                    horizon="dataset",
+                    aggregation="count",
+                    split="train",
+                )
+            ],
+            "summary": {
+                "screen_status": "blocked_no_numeric_nonleaking_features",
+                "selected_features": [],
+                "selection_uses_validation": False,
+                "selection_uses_test": False,
+                **source_meta,
+                **cross_asset_meta,
+                "cryptoquant_excluded": True,
+            },
+            "artifacts": [
+                {
+                    "artifact_type": "input_dataset",
+                    "path": str(path),
+                    "sha256": _sha256(path),
+                    "size_bytes": path.stat().st_size,
+                    "metadata": {
+                        "screen_status": "blocked_no_numeric_nonleaking_features"
+                    },
+                }
+            ],
+        }
     timeframe_hours = _timeframe_hours(str(config["timeframe"]))
     horizon_rows = max(1, int(round(float(config["target_horizon_hours"]) / timeframe_hours)))
-    frame["target_return"] = pd.to_numeric(frame["CLOSE"], errors="coerce").shift(-horizon_rows) / frame["CLOSE"] - 1.0
+    transaction_cost = float(config.get("transaction_cost_fraction") or 0.0005)
+    risk_lambda = float(config.get("risk_penalty_lambda") or 1.0)
+    frame["target_return"] = _target_series(
+        frame,
+        horizon_rows=horizon_rows,
+        definition=str(config.get("target_definition") or "forward_return"),
+        transaction_cost=transaction_cost,
+        risk_penalty_lambda=risk_lambda,
+    )
+    close = pd.to_numeric(frame["CLOSE"], errors="coerce")
+    frame["realized_return"] = close.shift(-1) / close - 1.0
     frame = frame.replace([np.inf, -np.inf], np.nan)
 
     train_start = pd.Timestamp(str(config["train_start"]), tz="UTC")
@@ -514,8 +886,15 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         2,
         int(round(float(config["scaling_history_hours"]) / timeframe_hours)),
     )
+    feature_frame = in_scope[features].copy()
+    if bool(config.get("log_transform_positive_features", False)):
+        for column in features:
+            values = pd.to_numeric(feature_frame[column], errors="coerce")
+            if values.dropna().empty or float(values.min(skipna=True)) < 0.0:
+                continue
+            feature_frame[column] = np.log1p(values)
     scaled = _causal_scale(
-        in_scope,
+        feature_frame,
         features,
         mode=str(config["preprocessing_mode"]),
         window_rows=scaling_rows,
@@ -533,6 +912,8 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         "target_return",
         method=str(config["feature_selection_method"]),
         budget=int(config["feature_budget"]),
+        redundancy_threshold=float(config.get("redundancy_threshold") or 0.95),
+        stability_folds=int(config.get("stability_folds") or 5),
     )
     context_rows = max(2, int(round(float(config["context_hours"]) / timeframe_hours)))
     observations = _context_features(
@@ -542,9 +923,9 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         context_rows=context_rows,
     )
     model_frame = pd.concat(
-        [in_scope[["DATE_TIME", "target_return"]], observations],
+        [in_scope[["DATE_TIME", "target_return", "realized_return"]], observations],
         axis=1,
-    ).dropna(subset=["target_return"])
+    ).dropna(subset=["target_return", "realized_return"])
     observation_columns = list(observations.columns)
     train = model_frame.loc[train_mask.reindex(model_frame.index, fill_value=False)].copy()
     validation = model_frame.loc[validation_mask.reindex(model_frame.index, fill_value=False)].copy()
@@ -568,8 +949,6 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
     )
     threshold_quantile = float(config.get("action_threshold_quantile") or 0.65)
     threshold = float(np.quantile(np.abs(train_pred), threshold_quantile))
-    transaction_cost = float(config.get("transaction_cost_fraction") or 0.0005)
-    risk_lambda = float(config.get("risk_penalty_lambda") or 1.0)
     validation_rows, validation_summary = _evaluate_split(
         "validation",
         validation,
@@ -601,11 +980,16 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         _metric("selected_feature_count", float(len(selected)), unit="count", horizon="dataset", aggregation="count", split="train"),
         _metric("observation_dimension", float(len(observation_columns)), unit="count", horizon="observation", aggregation="count", split="train"),
         _metric("external_coverage", float(source_meta["external_coverage_fraction"]), unit="fraction", horizon="dataset", aggregation="mean", split="train"),
+        _metric("cross_asset_coverage", float(cross_asset_meta["cross_asset_coverage_fraction"]), unit="fraction", horizon="dataset", aggregation="mean", split="train"),
     ]
     return {
         "task_type": "feature_proxy_screen",
+        "evaluation_protocol_id": FEATURE_PROXY_PROTOCOL,
+        "evaluation_protocol_hash": FEATURE_PROXY_PROTOCOL_HASH,
         "metric_rows": metric_rows,
         "summary": {
+            "evaluation_protocol_id": FEATURE_PROXY_PROTOCOL,
+            "evaluation_protocol_hash": FEATURE_PROXY_PROTOCOL_HASH,
             "optimization_score_dimensionless": optimization_score,
             "validation": validation_summary,
             "test": test_summary,
@@ -618,6 +1002,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
             "test_rows": len(test),
             **model_meta,
             **source_meta,
+            **cross_asset_meta,
             "cryptoquant_excluded": True,
             "selection_uses_validation": False,
             "selection_uses_test": False,
@@ -634,11 +1019,19 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def execute(task_type: str, config: dict[str, Any]) -> dict[str, Any]:
+    resolved = {**SCREEN_DEFAULTS, **config}
     if task_type == "data_contract_audit":
-        return data_contract_audit(config)
-    if task_type == "feature_proxy_screen":
-        return feature_proxy_screen(config)
-    raise ValueError(f"unsupported task_type: {task_type}")
+        result = data_contract_audit(resolved)
+    elif task_type == "feature_proxy_screen":
+        result = feature_proxy_screen(resolved)
+    else:
+        raise ValueError(f"unsupported task_type: {task_type}")
+    result["resolved_parameters"] = {
+        key: resolved.get(key)
+        for key in RESOLVED_PARAMETER_KEYS
+        if key in resolved
+    }
+    return result
 
 
 def main() -> None:

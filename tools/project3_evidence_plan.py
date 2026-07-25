@@ -207,6 +207,7 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
             "E1_BASE_SOURCE_SCREEN",
             "E1_EXTERNAL_SOURCE_SCREEN",
             "E2_PREPROCESSING_CONTEXT",
+            "E2_INTERACTION_CONFIRMATION",
             "E3_REPRESENTATION_MODEL",
             "E4_WEEKLY_RETRAINING_CONFIRMATION",
             "DOIN_L2_ASSET_OPTIMIZATION",
@@ -237,6 +238,13 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                     "agent.net_arch"
                 ],
                 "promotion_rule": "cost-aware validation/test evidence and runtime, not cosmetic significance gates"
+            },
+            "E2_INTERACTION_CONFIRMATION": {
+                "source": "top five E2 contracts per asset/timeframe",
+                "parameters": [
+                    "pairwise and three-way combinations of validation-ranked E2 changes"
+                ],
+                "promotion_rule": "validation annual_rap ranking under one execution protocol hash; no positive-return gate"
             },
             "E4_WEEKLY_RETRAINING_CONFIRMATION": {
                 "source": "one selected contract per asset/timeframe",

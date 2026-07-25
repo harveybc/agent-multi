@@ -1,6 +1,6 @@
 # Data, Preprocessing, and Observation Evidence Recovery
 
-Status: active; DOIN asset campaign frozen; E0/E1 implementation complete
+Status: active; DOIN asset campaign frozen; E0 complete; E1 running under corrected execution protocol
 
 Date: 2026-07-25
 
@@ -121,12 +121,25 @@ Run only on robust E1 contracts and compare:
 - normalization family and history duration;
 - clipping disabled and thresholds 3/5/10/20;
 - context durations 24/72/168/336/720/2160 hours;
-- last, causal summary, sparse-lag, and later raw/multiscale sequences;
-- feature budgets and selectors;
-- external publication lag and staleness.
+- last, causal summary, sparse-lag, raw-sequence, and multiscale-sequence
+  observations;
+- five train-only feature selectors, feature budgets, redundancy thresholds,
+  and stability folds;
+- forward, cost-adjusted, triple-barrier, and future-RAP targets over explicit
+  prediction horizons;
+- external publication lag, missing-value policy, and staleness;
+- cross-asset context sets, including BTC/ETH, crypto leaders, FX leaders, and
+  portfolio candidates;
+- positive-feature log transforms and interactions among the best isolated
+  parameter changes.
 
 Observation duration is expressed in hours, then converted to bars per
 timeframe. A fixed 32-bar window is not assumed to transfer across timeframes.
+
+E2 has two automatic passes. `E2_PREPROCESSING_CONTEXT` performs the broad
+one-factor screen (110-121 variants per asset/timeframe contract).
+`E2_INTERACTION_CONFIRMATION` combines the best validation-ranked changes so a
+parameter is not selected solely from an isolated comparison.
 
 ### E3: Representation and policy family
 
@@ -181,6 +194,8 @@ Properties:
   do not hold the complete lake;
 - per-worker bounded caches with LRU-style eviction, so gamma does not require
   a duplicate 60+ GB data lake or exhaust its remaining filesystem space.
+- online SQLite snapshots that do not stop WAL writers, each verified with
+  `PRAGMA quick_check`, SHA-256, atomic publication, and bounded retention.
 
 The initial generated campaign has 1,890 jobs:
 
@@ -198,6 +213,27 @@ examples/config/evidence_sweep/project3_evidence_recovery_campaign_v1.json
 ```
 
 E2-E4 are generated from upstream OLAP results, not guessed in advance.
+
+## Execution Protocol Correction
+
+The first 56 E1 completions on 2026-07-25 exposed a proxy-accounting defect:
+when the prediction target covered multiple bars, its full forward return was
+incorrectly applied to equity on every intervening bar. This double-counted
+overlapping horizons.
+
+The corrected protocol is
+`project3.feature_proxy.one_bar_execution.v2`:
+
+- the supervised target may span the configured prediction horizon;
+- the position is recomputed at each decision bar;
+- equity receives the next-bar realized return exactly once;
+- costs are charged on absolute position turnover;
+- every result stores the protocol ID and SHA-256.
+
+All E1 jobs, including completed, running, and failed attempts, are
+transactionally invalidated and requeued. Their old metrics and artifact facts
+are removed from comparative OLAP views; the attempt history and invalidation
+event remain for audit. E0 data-contract results remain valid.
 
 ## Selection Discipline
 

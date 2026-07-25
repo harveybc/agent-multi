@@ -10,9 +10,11 @@ sys.path.insert(0, str(TOOLS))
 from project3_evidence_pool import (  # noqa: E402
     claim_job,
     complete_job,
+    backfill_parameter_facts,
     connect,
     enqueue_plan,
     init_db,
+    invalidate_stages,
     requeue_machine,
     status,
 )
@@ -71,6 +73,15 @@ def test_pool_claim_is_atomic_and_materializes_olap_facts(tmp_path: Path) -> Non
         (first["job_id"],),
     ).fetchone()
     assert row["validation_mean_weekly_return"] == 0.01
+    canonical_parameter = conn.execute(
+        """
+        SELECT value_numeric FROM parameter_facts
+        WHERE job_id=(SELECT id FROM jobs WHERE external_id=?)
+          AND parameter_path='observation.context_hours'
+        """,
+        (first["job_id"],),
+    ).fetchone()
+    assert canonical_parameter["value_numeric"] == 168.0
     assert status(conn)["counts"] == {"completed": 1, "running": 1}
 
 
@@ -98,3 +109,75 @@ def test_operator_can_requeue_stopped_machine_without_waiting_for_lease(tmp_path
     replacement = claim_job(conn, "dragon")
     assert replacement
     assert replacement["job_id"] == claimed["job_id"]
+
+
+def test_protocol_invalidation_removes_results_and_requeues_stage(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(conn, _plan())
+    claimed = claim_job(conn, "omega")
+    assert claimed and claimed["stage"] == "E0"
+    complete_job(
+        conn,
+        "omega",
+        claimed["job_id"],
+        {
+            "metric_rows": [
+                {
+                    "metric_name": "annual_rap",
+                    "value": 1.0,
+                    "unit": "fraction",
+                    "horizon": "year",
+                    "aggregation": "weekly_mean_x_52",
+                    "split": "validation",
+                }
+            ]
+        },
+    )
+    assert invalidate_stages(conn, ["E0"], "realized-return protocol correction") == 1
+    row = conn.execute(
+        "SELECT status,result_json,attempt_count,max_attempts FROM jobs WHERE external_id=?",
+        (claimed["job_id"],),
+    ).fetchone()
+    assert dict(row) == {
+        "status": "pending",
+        "result_json": None,
+        "attempt_count": 1,
+        "max_attempts": 4,
+    }
+    assert conn.execute("SELECT COUNT(*) FROM metric_facts").fetchone()[0] == 0
+    replacement = claim_job(conn, "dragon")
+    assert replacement and replacement["job_id"] == claimed["job_id"]
+    assert replacement["attempt"] == 2
+
+
+def test_resolved_defaults_are_written_as_canonical_parameter_facts(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(conn, _plan())
+    claimed = claim_job(conn, "omega")
+    complete_job(
+        conn,
+        "omega",
+        claimed["job_id"],
+        {
+            "resolved_parameters": {
+                "target_definition": "forward_return",
+                "cross_asset_reference_set": "none",
+            },
+            "metric_rows": [],
+        },
+    )
+    backfill_parameter_facts(conn)
+    rows = {
+        row["parameter_path"]: row["value_text"]
+        for row in conn.execute(
+            """
+            SELECT parameter_path,value_text FROM parameter_facts
+            WHERE job_id=(SELECT id FROM jobs WHERE external_id=?)
+            """,
+            (claimed["job_id"],),
+        )
+    }
+    assert rows["data.target_definition"] == "forward_return"
+    assert rows["data.cross_asset_reference_set"] == "none"

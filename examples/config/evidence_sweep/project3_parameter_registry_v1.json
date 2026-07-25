@@ -117,7 +117,7 @@
       "layer": "data",
       "scope": "asset_class",
       "kind": "categorical",
-      "candidates": ["none", "btc_eth", "market_leaders", "portfolio_candidates"],
+      "candidates": ["none", "btc_eth", "crypto_leaders", "fx_leaders", "portfolio_candidates"],
       "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },

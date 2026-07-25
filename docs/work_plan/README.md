@@ -143,7 +143,8 @@ adding value.
 
 1. Execute E0 data/source coverage contracts.
 2. Execute E1 base/external source screens.
-3. Select and execute E2 preprocessing/context experiments.
+3. Select and execute E2 preprocessing/context screens, then confirm
+   interactions among their strongest changes.
 4. Select and execute E3 representation/policy comparisons.
 5. Execute E4 weekly retraining and export per-asset artifacts.
 6. Resume DOIN Level 2 optimization on those explicit contracts.
