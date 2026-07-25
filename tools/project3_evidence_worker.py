@@ -113,6 +113,17 @@ def _cache_size(root: Path) -> int:
     return sum(path.stat().st_size for path in root.rglob("*") if path.is_file())
 
 
+def _purge_partial_downloads(root: Path) -> int:
+    removed = 0
+    if not root.exists():
+        return removed
+    for path in root.rglob("*.part"):
+        if path.is_file():
+            path.unlink(missing_ok=True)
+            removed += 1
+    return removed
+
+
 def _prune_cache(root: Path, required: set[Path], required_bytes: int, max_bytes: int) -> None:
     root.mkdir(parents=True, exist_ok=True)
     current = _cache_size(root)
@@ -309,6 +320,7 @@ def main() -> None:
     token = args.token
     if args.token_file:
         token = Path(args.token_file).read_text(encoding="utf-8").strip()
+    _purge_partial_downloads(Path(args.cache_root) / args.machine_id)
     _request(args.api_url, "/health", token=token)
 
     completed = 0
