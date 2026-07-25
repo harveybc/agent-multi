@@ -92,6 +92,37 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def _parse_utc(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    parsed = datetime.fromisoformat(value)
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _quantile(values: list[float], probability: float) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * min(1.0, max(0.0, probability))
+    lower = int(position)
+    upper = min(lower + 1, len(ordered) - 1)
+    weight = position - lower
+    return ordered[lower] * (1.0 - weight) + ordered[upper] * weight
+
+
+def _duration_label(seconds: float | None) -> str | None:
+    if seconds is None:
+        return None
+    value = max(0, int(round(seconds)))
+    hours, remainder = divmod(value, 3600)
+    minutes, secs = divmod(remainder, 60)
+    if hours:
+        return f"{hours}h {minutes:02d}m"
+    if minutes:
+        return f"{minutes}m {secs:02d}s"
+    return f"{secs}s"
+
+
 def _json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
 
@@ -959,6 +990,7 @@ def invalidate_stages(
 
 def status(conn: sqlite3.Connection) -> dict[str, Any]:
     requeue_expired(conn)
+    now = datetime.now(timezone.utc)
     counts = {
         row["status"]: int(row["n"])
         for row in conn.execute("SELECT status,COUNT(*) AS n FROM jobs GROUP BY status")
@@ -973,6 +1005,141 @@ def status(conn: sqlite3.Connection) -> dict[str, Any]:
         )
     ]
     machines = [dict(row) for row in conn.execute("SELECT * FROM evidence_machine_olap ORDER BY machine_id")]
+    completed_durations: dict[tuple[str, str], list[float]] = {}
+    stage_durations: dict[str, list[float]] = {}
+    for row in conn.execute(
+        """
+        SELECT a.machine_id,j.stage,a.started_at,a.completed_at
+        FROM job_attempts a
+        JOIN jobs j ON j.id=a.job_id
+        WHERE a.status='completed' AND a.completed_at IS NOT NULL
+        """
+    ):
+        started = _parse_utc(row["started_at"])
+        completed = _parse_utc(row["completed_at"])
+        if started is None or completed is None:
+            continue
+        duration = max(0.0, (completed - started).total_seconds())
+        key = (str(row["machine_id"]), str(row["stage"]))
+        completed_durations.setdefault(key, []).append(duration)
+        stage_durations.setdefault(str(row["stage"]), []).append(duration)
+
+    active_workers = sum(bool(machine.get("current_job_id")) for machine in machines)
+    for machine in machines:
+        current_job_id = machine.get("current_job_id")
+        machine["candidate_eta"] = {
+            "status": "idle",
+            "remaining_range_seconds": None,
+            "remaining_range_human": None,
+            "sample_count": 0,
+        }
+        if not current_job_id:
+            continue
+        job = conn.execute(
+            "SELECT stage,claimed_at FROM jobs WHERE external_id=?",
+            (current_job_id,),
+        ).fetchone()
+        if job is None:
+            machine["candidate_eta"]["status"] = "job_not_found"
+            continue
+        stage = str(job["stage"])
+        machine["current_stage"] = stage
+        samples = completed_durations.get((str(machine["machine_id"]), stage))
+        source = "machine_stage"
+        if not samples:
+            samples = stage_durations.get(stage, [])
+            source = "stage_all_machines"
+        claimed_at = _parse_utc(job["claimed_at"])
+        elapsed = max(0.0, (now - claimed_at).total_seconds()) if claimed_at else 0.0
+        median = _quantile(samples, 0.5)
+        p90 = _quantile(samples, 0.9)
+        if median is None or p90 is None:
+            machine["candidate_eta"] = {
+                "status": "uncalibrated",
+                "elapsed_seconds": round(elapsed, 1),
+                "remaining_range_seconds": None,
+                "remaining_range_human": None,
+                "sample_count": 0,
+                "sample_source": source,
+            }
+            continue
+        low = max(0.0, median - elapsed)
+        high = max(0.0, p90 - elapsed)
+        estimate_status = "calibrated"
+        if elapsed > p90:
+            estimate_status = "exceeded_observed_p90"
+        machine["candidate_eta"] = {
+            "status": estimate_status,
+            "elapsed_seconds": round(elapsed, 1),
+            "expected_duration_p50_seconds": round(median, 1),
+            "expected_duration_p90_seconds": round(p90, 1),
+            "remaining_range_seconds": [round(low, 1), round(high, 1)],
+            "remaining_range_human": [
+                _duration_label(low),
+                _duration_label(high),
+            ],
+            "sample_count": len(samples),
+            "sample_source": source,
+        }
+
+    stage_estimates = []
+    uncalibrated_stages = []
+    total_low = 0.0
+    total_high = 0.0
+    worker_divisor = max(1, active_workers)
+    for row in conn.execute(
+        """
+        SELECT stage,
+               SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) AS pending_jobs,
+               SUM(CASE WHEN status='running' THEN 1 ELSE 0 END) AS running_jobs
+        FROM jobs
+        GROUP BY stage
+        HAVING pending_jobs > 0 OR running_jobs > 0
+        ORDER BY MIN(priority),stage
+        """
+    ):
+        stage = str(row["stage"])
+        remaining_jobs = int(row["pending_jobs"] or 0) + int(row["running_jobs"] or 0)
+        samples = stage_durations.get(stage, [])
+        median = _quantile(samples, 0.5)
+        p90 = _quantile(samples, 0.9)
+        estimate = {
+            "stage": stage,
+            "pending_jobs": int(row["pending_jobs"] or 0),
+            "running_jobs": int(row["running_jobs"] or 0),
+            "remaining_jobs": remaining_jobs,
+            "sample_count": len(samples),
+        }
+        if median is None or p90 is None:
+            estimate.update(
+                {
+                    "status": "uncalibrated",
+                    "remaining_range_seconds": None,
+                    "remaining_range_human": None,
+                }
+            )
+            uncalibrated_stages.append(stage)
+        else:
+            low = remaining_jobs * median / worker_divisor
+            high = remaining_jobs * p90 / worker_divisor
+            total_low += low
+            total_high += high
+            estimate.update(
+                {
+                    "status": "calibrated",
+                    "job_duration_p50_seconds": round(median, 1),
+                    "job_duration_p90_seconds": round(p90, 1),
+                    "remaining_range_seconds": [round(low, 1), round(high, 1)],
+                    "remaining_range_human": [
+                        _duration_label(low),
+                        _duration_label(high),
+                    ],
+                }
+            )
+        stage_estimates.append(estimate)
+
+    total_jobs = sum(counts.values())
+    remaining_jobs = int(counts.get("pending", 0)) + int(counts.get("running", 0))
     return {
         "schema_version": SCHEMA_VERSION,
         "metric_schema": METRIC_SCHEMA,
@@ -989,6 +1156,27 @@ def status(conn: sqlite3.Connection) -> dict[str, Any]:
         "counts": counts,
         "stages": stages,
         "machines": machines,
+        "eta": {
+            "generated_at": now.isoformat(timespec="seconds"),
+            "status": (
+                "fully_calibrated"
+                if not uncalibrated_stages
+                else "partially_calibrated"
+            ),
+            "active_workers": active_workers,
+            "total_jobs_in_pool": total_jobs,
+            "remaining_jobs_in_pool": remaining_jobs,
+            "calibrated_remaining_range_seconds": [
+                round(total_low, 1),
+                round(total_high, 1),
+            ],
+            "calibrated_remaining_range_human": [
+                _duration_label(total_low),
+                _duration_label(total_high),
+            ],
+            "uncalibrated_stages": uncalibrated_stages,
+            "stage_estimates": stage_estimates,
+        },
     }
 
 

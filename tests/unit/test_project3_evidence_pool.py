@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -18,6 +19,7 @@ from project3_evidence_pool import (  # noqa: E402
     connect,
     enqueue_plan,
     fail_job,
+    heartbeat,
     init_db,
     invalidate_stages,
     requeue_machine,
@@ -350,3 +352,72 @@ def test_leaderboard_always_exposes_labeled_percent_scales(tmp_path: Path) -> No
     assert result["annual_rap_percent"] == 26.0
     assert result["max_drawdown_percent"] == 12.0
     assert result["evaluation_weeks"] == 52.0
+
+
+def test_status_exposes_candidate_and_pool_eta_from_observed_durations(
+    tmp_path: Path,
+) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(
+        conn,
+        {
+            "campaign_id": "eta-test",
+            "jobs": [
+                {
+                    "job_id": f"job-{index}",
+                    "stage": "E1",
+                    "task_type": "screen",
+                    "config": {"asset": "BTCUSDT"},
+                }
+                for index in range(3)
+            ],
+        },
+    )
+    now = datetime.now(timezone.utc)
+    for index, duration in enumerate((60, 120)):
+        claimed = claim_job(conn, "omega")
+        assert claimed
+        complete_job(
+            conn,
+            "omega",
+            claimed["job_id"],
+            {"metric_rows": []},
+        )
+        conn.execute(
+            """
+            UPDATE job_attempts
+            SET started_at=?,completed_at=?
+            WHERE job_id=(SELECT id FROM jobs WHERE external_id=?)
+            """,
+            (
+                (now - timedelta(seconds=duration)).isoformat(timespec="seconds"),
+                now.isoformat(timespec="seconds"),
+                f"job-{index}",
+            ),
+        )
+        conn.commit()
+    current = claim_job(conn, "omega")
+    assert current
+    claimed_at = (now - timedelta(seconds=30)).isoformat(timespec="seconds")
+    conn.execute(
+        "UPDATE jobs SET claimed_at=? WHERE external_id=?",
+        (claimed_at, current["job_id"]),
+    )
+    conn.commit()
+    heartbeat(conn, "omega", current["job_id"], status="running")
+
+    payload = status(conn)
+    assert payload["eta"]["status"] == "fully_calibrated"
+    assert payload["eta"]["total_jobs_in_pool"] == 3
+    assert payload["eta"]["remaining_jobs_in_pool"] == 1
+    assert payload["eta"]["stage_estimates"][0]["sample_count"] == 2
+    assert payload["eta"]["stage_estimates"][0]["remaining_range_seconds"] == [
+        90.0,
+        114.0,
+    ]
+    candidate = payload["machines"][0]["candidate_eta"]
+    assert candidate["status"] == "calibrated"
+    assert candidate["sample_count"] == 2
+    assert 59.0 <= candidate["remaining_range_seconds"][0] <= 60.0
+    assert 83.0 <= candidate["remaining_range_seconds"][1] <= 84.0
