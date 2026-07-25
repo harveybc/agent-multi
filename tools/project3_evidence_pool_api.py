@@ -18,6 +18,7 @@ TOOLS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(TOOLS_DIR))
 
 from project3_evidence_pool import (  # noqa: E402
+    canonical_leaderboard,
     claim_job,
     complete_job,
     connect,
@@ -137,6 +138,21 @@ def make_handler(db_path: Path, token: str | None):
                 elif path == "/status":
                     conn = self._conn()
                     self._send({"ok": True, "status": status(conn)})
+                elif path == "/leaderboard":
+                    query = parse_qs(parsed.query)
+                    split = (query.get("split") or ["validation"])[0]
+                    limit = int((query.get("limit") or ["100"])[0])
+                    conn = self._conn()
+                    self._send(
+                        {
+                            "ok": True,
+                            "leaderboard": canonical_leaderboard(
+                                conn,
+                                split=split,
+                                limit=limit,
+                            ),
+                        }
+                    )
                 elif path == "/file":
                     values = parse_qs(parsed.query).get("path") or []
                     if not values:

@@ -14,6 +14,7 @@ from project3_evidence_pool import (  # noqa: E402
     claim_job,
     complete_job,
     backfill_parameter_facts,
+    canonical_leaderboard,
     connect,
     enqueue_plan,
     fail_job,
@@ -290,3 +291,62 @@ def test_resolved_defaults_are_written_as_canonical_parameter_facts(tmp_path: Pa
     }
     assert rows["data.target_definition"] == "forward_return"
     assert rows["data.cross_asset_reference_set"] == "none"
+
+
+def test_leaderboard_always_exposes_labeled_percent_scales(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(
+        conn,
+        {
+            "campaign_id": "leaderboard-test",
+            "jobs": [
+                {
+                    "job_id": "leader",
+                    "stage": "TEST_STAGE",
+                    "task_type": "test",
+                    "config": {
+                        "asset": "BTCUSDT",
+                        "timeframe": "1h",
+                        "base_feature_bundle": "baseline_12",
+                    },
+                }
+            ],
+        },
+    )
+    claimed = claim_job(conn, "omega")
+    rows = []
+    metrics = {
+        "mean_weekly_return": (0.01, "fraction", "week"),
+        "annualized_return": (0.6777, "fraction", "year"),
+        "mean_weekly_rap": (0.005, "fraction", "week"),
+        "annual_rap": (0.26, "fraction", "year"),
+        "max_drawdown": (0.12, "fraction", "evaluation_period"),
+        "evaluation_weeks": (52.0, "count", "evaluation_period"),
+    }
+    for name, (value, unit, horizon) in metrics.items():
+        rows.append(
+            {
+                "metric_name": name,
+                "value": value,
+                "unit": unit,
+                "horizon": horizon,
+                "aggregation": "fixture",
+                "split": "validation",
+            }
+        )
+    complete_job(
+        conn,
+        "omega",
+        claimed["job_id"],
+        {"metric_rows": rows},
+    )
+    payload = canonical_leaderboard(conn, split="validation")
+    assert payload["return_and_risk_scale"] == "percent"
+    result = payload["results"][0]
+    assert result["mean_weekly_return_percent"] == 1.0
+    assert result["annualized_return_percent"] == 67.77
+    assert result["mean_weekly_rap_percent"] == 0.5
+    assert result["annual_rap_percent"] == 26.0
+    assert result["max_drawdown_percent"] == 12.0
+    assert result["evaluation_weeks"] == 52.0
