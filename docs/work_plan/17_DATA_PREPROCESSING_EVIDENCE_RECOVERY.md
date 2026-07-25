@@ -249,6 +249,10 @@ Properties:
 - idempotent terminal reports keyed by job attempt: a coordinator restart
   cannot turn a completed computation into an abandoned lease or make one
   worker claim a second job before the first result is acknowledged.
+- authenticated `/leaderboard` API output that always presents return and risk
+  as explicitly named percentages (`mean_weekly_*_percent`,
+  `annual*_percent`) plus evaluation-week count and a separately labeled
+  dimensionless optimization score.
 
 The initial generated campaign has 1,890 jobs:
 

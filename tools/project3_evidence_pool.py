@@ -976,9 +976,95 @@ def status(conn: sqlite3.Connection) -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
         "metric_schema": METRIC_SCHEMA,
+        "display_metric_contract": {
+            "return_and_risk_scale": "percent",
+            "mean_weekly_return_percent": "week",
+            "annualized_return_percent": "year",
+            "mean_weekly_rap_percent": "week",
+            "annual_rap_percent": "year",
+            "max_drawdown_percent": "evaluation_period",
+            "evaluation_weeks": "count",
+            "optimization_score_dimensionless": "dimensionless",
+        },
         "counts": counts,
         "stages": stages,
         "machines": machines,
+    }
+
+
+def canonical_leaderboard(
+    conn: sqlite3.Connection,
+    *,
+    split: str = "validation",
+    limit: int = 100,
+) -> dict[str, Any]:
+    if split not in {"validation", "test"}:
+        raise ValueError("split must be validation or test")
+    prefix = f"{split}_"
+    rows = conn.execute(
+        f"""
+        SELECT
+            job_id,
+            stage,
+            machine_id,
+            completed_at,
+            evaluation_protocol_id,
+            evaluation_protocol_hash,
+            json_extract(config_json, '$.asset') AS asset,
+            json_extract(config_json, '$.timeframe') AS timeframe,
+            json_extract(config_json, '$.base_feature_bundle') AS base_feature_bundle,
+            json_extract(config_json, '$.external_context_bundle') AS external_context_bundle,
+            {prefix}mean_weekly_return AS mean_weekly_return,
+            {prefix}annualized_return AS annualized_return,
+            {prefix}mean_weekly_rap AS mean_weekly_rap,
+            {prefix}annual_rap AS annual_rap,
+            {prefix}max_drawdown AS max_drawdown,
+            {prefix}evaluation_weeks AS evaluation_weeks,
+            optimization_score_dimensionless
+        FROM evidence_result_olap
+        WHERE status='completed'
+          AND {prefix}annual_rap IS NOT NULL
+        ORDER BY {prefix}annual_rap DESC, job_id ASC
+        LIMIT ?
+        """,
+        (max(1, min(int(limit), 5000)),),
+    ).fetchall()
+
+    def percent(value: Any) -> float | None:
+        return None if value is None else float(value) * 100.0
+
+    results = []
+    for row in rows:
+        results.append(
+            {
+                "job_id": row["job_id"],
+                "stage": row["stage"],
+                "machine_id": row["machine_id"],
+                "completed_at": row["completed_at"],
+                "asset": row["asset"],
+                "timeframe": row["timeframe"],
+                "base_feature_bundle": row["base_feature_bundle"],
+                "external_context_bundle": row["external_context_bundle"],
+                "evaluation_protocol_id": row["evaluation_protocol_id"],
+                "evaluation_protocol_hash": row["evaluation_protocol_hash"],
+                "mean_weekly_return_percent": percent(
+                    row["mean_weekly_return"]
+                ),
+                "annualized_return_percent": percent(row["annualized_return"]),
+                "mean_weekly_rap_percent": percent(row["mean_weekly_rap"]),
+                "annual_rap_percent": percent(row["annual_rap"]),
+                "max_drawdown_percent": percent(row["max_drawdown"]),
+                "evaluation_weeks": row["evaluation_weeks"],
+                "optimization_score_dimensionless": row[
+                    "optimization_score_dimensionless"
+                ],
+            }
+        )
+    return {
+        "metric_schema": METRIC_SCHEMA,
+        "split": split,
+        "return_and_risk_scale": "percent",
+        "results": results,
     }
 
 
