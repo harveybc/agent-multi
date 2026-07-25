@@ -177,6 +177,10 @@ Properties:
   `evidence_parameter_effect_olap`, and `evidence_machine_olap`;
 - continuous worker polling so a machine claims the next eligible job without
   waiting for a status request.
+- content-hashed, on-demand data transfer from the coordinator for workers that
+  do not hold the complete lake;
+- per-worker bounded caches with LRU-style eviction, so gamma does not require
+  a duplicate 60+ GB data lake or exhaust its remaining filesystem space.
 
 The initial generated campaign has 1,890 jobs:
 
