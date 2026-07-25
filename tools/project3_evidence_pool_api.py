@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 
 TOOLS_DIR = Path(__file__).resolve().parent
@@ -24,6 +25,53 @@ from project3_evidence_pool import (  # noqa: E402
     init_db,
     status,
 )
+from project3_evidence_screen import source_files  # noqa: E402
+
+
+DATA_ROOT = Path("/home/harveybc/Documents/GitHub/financial-data").resolve()
+_HASH_CACHE: dict[str, tuple[int, int, str]] = {}
+
+
+def _safe_data_path(raw: str) -> Path:
+    path = Path(raw).expanduser().resolve()
+    try:
+        path.relative_to(DATA_ROOT)
+    except ValueError as exc:
+        raise PermissionError(f"path outside data root: {raw}") from exc
+    if not path.is_file():
+        raise FileNotFoundError(str(path))
+    return path
+
+
+def _sha256(path: Path) -> str:
+    stat = path.stat()
+    key = str(path)
+    cached = _HASH_CACHE.get(key)
+    signature = (stat.st_size, stat.st_mtime_ns)
+    if cached and cached[:2] == signature:
+        return cached[2]
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
+            digest.update(chunk)
+    value = digest.hexdigest()
+    _HASH_CACHE[key] = (signature[0], signature[1], value)
+    return value
+
+
+def _file_manifest(path: Path) -> dict[str, Any]:
+    return {
+        "path": str(path),
+        "relative_path": str(path.relative_to(DATA_ROOT)),
+        "size_bytes": path.stat().st_size,
+        "sha256": _sha256(path),
+    }
+
+
+def _required_files(config: dict[str, Any]) -> list[dict[str, Any]]:
+    paths = [_safe_data_path(str(config["input_data_file"]))]
+    paths.extend(_safe_data_path(str(path)) for path in source_files(config))
+    return [_file_manifest(path) for path in sorted(set(paths))]
 
 
 def _body(handler: BaseHTTPRequestHandler) -> dict[str, Any]:
@@ -49,6 +97,17 @@ def make_handler(db_path: Path, token: str | None):
             self.end_headers()
             self.wfile.write(data)
 
+        def _send_file(self, path: Path) -> None:
+            stat = path.stat()
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(stat.st_size))
+            self.send_header("X-Content-SHA256", _sha256(path))
+            self.end_headers()
+            with path.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
+                    self.wfile.write(chunk)
+
         def _conn(self):
             return connect(db_path)
 
@@ -57,12 +116,18 @@ def make_handler(db_path: Path, token: str | None):
                 self._send({"ok": False, "error": "unauthorized"}, HTTPStatus.UNAUTHORIZED)
                 return
             try:
-                path = urlparse(self.path).path
+                parsed = urlparse(self.path)
+                path = parsed.path
                 if path == "/health":
                     self._send({"ok": True, "service": "project3_evidence_pool_api"})
                 elif path == "/status":
                     conn = self._conn()
                     self._send({"ok": True, "status": status(conn)})
+                elif path == "/file":
+                    values = parse_qs(parsed.query).get("path") or []
+                    if not values:
+                        raise ValueError("path query parameter is required")
+                    self._send_file(_safe_data_path(values[0]))
                 else:
                     self._send({"ok": False, "error": f"unknown path: {path}"}, HTTPStatus.NOT_FOUND)
             except Exception as exc:
@@ -88,6 +153,8 @@ def make_handler(db_path: Path, token: str | None):
                         machine_id,
                         lease_seconds=int(payload.get("lease_seconds") or 300),
                     )
+                    if job is not None:
+                        job["required_files"] = _required_files(job["config"])
                     self._send({"ok": True, "job": job})
                 elif path == "/heartbeat":
                     heartbeat(

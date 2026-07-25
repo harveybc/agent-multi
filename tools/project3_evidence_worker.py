@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import socket
@@ -12,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import psutil
@@ -93,8 +95,135 @@ def _state_payload(machine_id: str, job_id: str | None, status: str, message: st
         "message": message,
         "cpu_summary": _cpu_summary(),
         "gpu_summary": _gpu_summary(),
-        "lease_seconds": 300,
+        "lease_seconds": 900,
     }
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(4 * 1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _cache_size(root: Path) -> int:
+    return sum(path.stat().st_size for path in root.rglob("*") if path.is_file())
+
+
+def _prune_cache(root: Path, required: set[Path], required_bytes: int, max_bytes: int) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    current = _cache_size(root)
+    if required_bytes > max_bytes:
+        raise RuntimeError(
+            f"job requires {required_bytes} bytes but cache limit is {max_bytes}"
+        )
+    target = max_bytes - required_bytes
+    candidates = sorted(
+        (
+            path
+            for path in root.rglob("*")
+            if path.is_file() and path not in required and not path.name.endswith(".part")
+        ),
+        key=lambda path: path.stat().st_mtime,
+    )
+    for path in candidates:
+        if current <= target:
+            break
+        size = path.stat().st_size
+        path.unlink(missing_ok=True)
+        current -= size
+
+
+def _download_file(
+    api_url: str,
+    token: str | None,
+    manifest: dict[str, Any],
+    destination: Path,
+) -> None:
+    expected_size = int(manifest["size_bytes"])
+    expected_sha = str(manifest["sha256"])
+    if destination.exists() and destination.stat().st_size == expected_size:
+        if _file_sha256(destination) == expected_sha:
+            destination.touch()
+            return
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    query = urlencode({"path": str(manifest["path"])})
+    headers = {}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    request = Request(api_url.rstrip("/") + f"/file?{query}", headers=headers, method="GET")
+    temporary = destination.with_name(f"{destination.name}.{os.getpid()}.part")
+    digest = hashlib.sha256()
+    written = 0
+    try:
+        with urlopen(request, timeout=600) as response, temporary.open("wb") as handle:
+            while True:
+                chunk = response.read(4 * 1024 * 1024)
+                if not chunk:
+                    break
+                handle.write(chunk)
+                digest.update(chunk)
+                written += len(chunk)
+        if written != expected_size:
+            raise RuntimeError(
+                f"download size mismatch for {manifest['path']}: {written} != {expected_size}"
+            )
+        if digest.hexdigest() != expected_sha:
+            raise RuntimeError(f"download hash mismatch for {manifest['path']}")
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _materialize_job_files(
+    *,
+    api_url: str,
+    token: str | None,
+    machine_id: str,
+    job: dict[str, Any],
+    cache_root: Path,
+    max_cache_bytes: int,
+) -> dict[str, Any]:
+    root = cache_root / machine_id
+    manifests = list(job.get("required_files") or [])
+    if manifests and all(
+        Path(str(manifest["path"])).is_file()
+        and Path(str(manifest["path"])).stat().st_size == int(manifest["size_bytes"])
+        for manifest in manifests
+    ):
+        return dict(job["config"])
+    destinations = {
+        root / str(manifest["relative_path"]): manifest
+        for manifest in manifests
+    }
+    missing_bytes = sum(
+        int(manifest["size_bytes"])
+        for destination, manifest in destinations.items()
+        if not destination.exists() or destination.stat().st_size != int(manifest["size_bytes"])
+    )
+    _prune_cache(root, set(destinations), missing_bytes, max_cache_bytes)
+    job_id = str(job["job_id"])
+    for index, (destination, manifest) in enumerate(destinations.items(), start=1):
+        _request(
+            api_url,
+            "/heartbeat",
+            token=token,
+            payload=_state_payload(
+                machine_id,
+                job_id,
+                "downloading",
+                f"file {index}/{len(destinations)} {manifest['relative_path']}",
+            ),
+        )
+        _download_file(api_url, token, manifest, destination)
+    config = dict(job["config"])
+    original_root = Path(str(config["data_root"])).resolve()
+    input_path = Path(str(config["input_data_file"])).resolve()
+    relative_input = input_path.relative_to(original_root)
+    config["data_root"] = str(root)
+    config["input_data_file"] = str(root / relative_input)
+    return config
 
 
 def _run_job_with_heartbeats(
@@ -103,10 +232,19 @@ def _run_job_with_heartbeats(
     machine_id: str,
     job: dict[str, Any],
     heartbeat_seconds: int,
+    cache_root: Path,
+    max_cache_bytes: int,
 ) -> dict[str, Any]:
     job_id = str(job["job_id"])
     task_type = str(job["task_type"])
-    config = dict(job["config"])
+    config = _materialize_job_files(
+        api_url=api_url,
+        token=token,
+        machine_id=machine_id,
+        job=job,
+        cache_root=cache_root,
+        max_cache_bytes=max_cache_bytes,
+    )
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(execute, task_type, config)
         while True:
@@ -136,6 +274,8 @@ def main() -> None:
     parser.add_argument("--poll-seconds", type=int, default=10)
     parser.add_argument("--heartbeat-seconds", type=int, default=30)
     parser.add_argument("--max-jobs", type=int, default=0)
+    parser.add_argument("--cache-root", default=str(Path.home() / ".cache/project3-evidence-data"))
+    parser.add_argument("--max-cache-gb", type=float, default=12.0)
     args = parser.parse_args()
     token = args.token
     if args.token_file:
@@ -148,7 +288,7 @@ def main() -> None:
             args.api_url,
             "/claim",
             token=token,
-            payload={"machine_id": args.machine_id, "lease_seconds": 300},
+            payload={"machine_id": args.machine_id, "lease_seconds": 900},
         )
         job = claim.get("job")
         if not job:
@@ -165,10 +305,12 @@ def main() -> None:
             result = _run_job_with_heartbeats(
                 args.api_url,
                 token,
-                args.machine_id,
-                job,
-                args.heartbeat_seconds,
-            )
+            args.machine_id,
+            job,
+            args.heartbeat_seconds,
+            Path(args.cache_root),
+            int(args.max_cache_gb * 1024**3),
+        )
             _request(
                 args.api_url,
                 "/complete",
