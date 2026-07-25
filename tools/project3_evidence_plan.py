@@ -155,10 +155,6 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                 "context_hours": 168,
                 "context_representation": "summary",
                 "ridge_alpha": 1.0,
-                "proxy_model_family": "ridge",
-                "proxy_latent_dimension": 32,
-                "proxy_random_seed": 1701,
-                "proxy_max_train_rows": 25000,
                 "action_threshold_quantile": 0.65,
                 "minimum_split_rows": 200,
             }
@@ -187,10 +183,6 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                 "context_hours": 168,
                 "context_representation": "summary",
                 "ridge_alpha": 1.0,
-                "proxy_model_family": "ridge",
-                "proxy_latent_dimension": 32,
-                "proxy_random_seed": 1701,
-                "proxy_max_train_rows": 25000,
                 "action_threshold_quantile": 0.65,
                 "minimum_split_rows": 200,
             }
