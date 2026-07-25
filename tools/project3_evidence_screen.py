@@ -2,6 +2,7 @@
 """Leakage-aware CPU evidence screens for Project 3 data contracts."""
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import math
@@ -13,20 +14,25 @@ import pandas as pd
 from scipy.signal import hilbert
 from scipy.signal.windows import dpss
 from scipy.stats import norm, spearmanr
+from sklearn.decomposition import PCA
+from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.feature_selection import mutual_info_regression
-from sklearn.linear_model import Lasso, Ridge
+from sklearn.linear_model import ElasticNet, Lasso, Ridge
+from sklearn.neural_network import MLPRegressor
 
 from project3_evidence_metrics import METRIC_SCHEMA, canonical_trading_metrics
 
 
 CORE_COLUMNS = {"DATE_TIME", "OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"}
 LEAK_TOKENS = ("target", "label", "future", "fwd_", "next_", "prediction")
-FEATURE_PROXY_PROTOCOL = "project3.feature_proxy.one_bar_execution.v2"
+FEATURE_PROXY_PROTOCOL = "project3.feature_proxy.one_bar_execution.v3"
+EVIDENCE_EXECUTOR_VERSION = "project3.evidence.executor.v3"
 FEATURE_PROXY_PROTOCOL_HASH = hashlib.sha256(
     (
         "target may span configured horizon; positions are recomputed per bar; "
         "equity uses next-bar realized return exactly once; transaction cost "
-        "is charged on absolute position turnover; train-only feature selection"
+        "is charged on absolute position turnover; train-only feature selection; "
+        "each split purges decisions whose target horizon crosses its end"
     ).encode("utf-8")
 ).hexdigest()
 
@@ -38,10 +44,12 @@ SCREEN_DEFAULTS = {
     "cross_asset_reference_set": "none",
     "cross_asset_volatility_window_hours": 24,
     "target_definition": "forward_return",
+    "target_barrier_volatility_window_hours": 24,
     "feature_selection_method": "rank_ic_topk",
     "feature_budget": 32,
     "redundancy_threshold": 0.95,
     "stability_folds": 5,
+    "selection_regime_volatility_window_hours": 24,
     "preprocessing_mode": "rolling_zscore",
     "scaling_history_hours": 168,
     "clip_value": 10,
@@ -69,6 +77,10 @@ SCREEN_DEFAULTS = {
     "context_hours": 168,
     "context_representation": "summary",
     "ridge_alpha": 1.0,
+    "proxy_model_family": "ridge",
+    "proxy_latent_dimension": 32,
+    "proxy_random_seed": 1701,
+    "proxy_max_train_rows": 25000,
     "action_threshold_quantile": 0.65,
     "transaction_cost_fraction": 0.0005,
     "risk_penalty_lambda": 1.0,
@@ -87,10 +99,12 @@ RESOLVED_PARAMETER_KEYS = (
     "cross_asset_volatility_window_hours",
     "target_horizon_hours",
     "target_definition",
+    "target_barrier_volatility_window_hours",
     "feature_selection_method",
     "feature_budget",
     "redundancy_threshold",
     "stability_folds",
+    "selection_regime_volatility_window_hours",
     "preprocessing_mode",
     "scaling_history_hours",
     "clip_value",
@@ -118,6 +132,10 @@ RESOLVED_PARAMETER_KEYS = (
     "context_hours",
     "context_representation",
     "ridge_alpha",
+    "proxy_model_family",
+    "proxy_latent_dimension",
+    "proxy_random_seed",
+    "proxy_max_train_rows",
     "action_threshold_quantile",
     "transaction_cost_fraction",
     "risk_penalty_lambda",
@@ -203,6 +221,17 @@ def _timeframe_hours(timeframe: str) -> float:
     if text.endswith("d"):
         return float(text[:-1]) * 24.0
     raise ValueError(f"unsupported timeframe: {timeframe}")
+
+
+def _purged_split_mask(
+    timestamps: pd.Series,
+    *,
+    start: pd.Timestamp,
+    end: pd.Timestamp,
+    target_horizon_hours: float,
+) -> pd.Series:
+    horizon = pd.Timedelta(hours=float(target_horizon_hours))
+    return (timestamps >= start) & (timestamps <= end - horizon)
 
 
 def _metric(
@@ -365,12 +394,15 @@ def _load_external_frame(
     if not numeric:
         return pd.DataFrame({"DATE_TIME": source["timestamp"]})
     prefix = path.stem.replace("__observations", "").replace("__daily", "")
-    result = pd.DataFrame({"DATE_TIME": source["timestamp"]})
+    result_columns: dict[str, pd.Series] = {
+        "DATE_TIME": source["timestamp"].reset_index(drop=True)
+    }
     for column in numeric:
-        values = pd.to_numeric(source[column], errors="coerce")
+        values = pd.to_numeric(source[column], errors="coerce").reset_index(drop=True)
         name = f"external__{prefix}__{column}"
-        result[name] = values
-        result[f"{name}__change"] = values.diff()
+        result_columns[name] = values
+        result_columns[f"{name}__change"] = values.diff()
+    result = pd.DataFrame(result_columns)
     return result.drop_duplicates("DATE_TIME", keep="last")
 
 
@@ -388,13 +420,28 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
     start = frame["DATE_TIME"].min()
     end = frame["DATE_TIME"].max()
     before = set(frame.columns)
-    merged = frame
+    base = frame.reset_index(drop=True)
+    base_index = pd.DatetimeIndex(base["DATE_TIME"])
+    aligned_contexts: list[pd.DataFrame] = []
     for path in files:
         context = _load_external_frame(path, start=start, end=end, lag_hours=lag_hours)
         if len(context.columns) <= 1:
             continue
-        merged = merged.merge(context, on="DATE_TIME", how="left")
-    merged = merged.copy()
+        context = context.set_index("DATE_TIME")
+        context = context[~context.index.duplicated(keep="last")]
+        aligned = context.reindex(base_index)
+        aligned.index = base.index
+        aligned_contexts.append(aligned)
+    if aligned_contexts:
+        external = pd.concat(aligned_contexts, axis=1, copy=False)
+        if external.columns.duplicated().any():
+            external = external.loc[:, ~external.columns.duplicated(keep="last")]
+        merged = pd.concat([base, external], axis=1, copy=False).copy()
+        del external
+    else:
+        merged = base.copy()
+    aligned_contexts.clear()
+    gc.collect()
     external_columns = sorted(set(merged.columns) - before)
     if external_columns:
         missing_policy = str(config.get("missing_value_policy") or "causal_ffill")
@@ -407,8 +454,11 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
             missing_before = merged[external_columns].isna()
             merged[external_columns] = merged[external_columns].ffill(limit=ffill_limit)
             if missing_policy == "causal_ffill_plus_missing_indicator":
-                for column in external_columns:
-                    merged[f"{column}__was_missing"] = missing_before[column].astype(float)
+                indicators = missing_before.astype(float)
+                indicators.columns = [
+                    f"{column}__was_missing" for column in external_columns
+                ]
+                merged = pd.concat([merged, indicators], axis=1, copy=False).copy()
         elif missing_policy == "train_median":
             train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
             train_mask = merged["DATE_TIME"] <= train_end
@@ -927,6 +977,8 @@ def _select_features(
     budget: int,
     redundancy_threshold: float = 0.95,
     stability_folds: int = 5,
+    timeframe_hours: float = 1.0,
+    regime_volatility_window_hours: float = 24.0,
 ) -> tuple[list[str], dict[str, float]]:
     valid = [
         column
@@ -961,7 +1013,14 @@ def _select_features(
                 else 0.0
             )
     elif method == "regime_conditioned_topk":
-        target_volatility = train[target].rolling(24, min_periods=8).std()
+        regime_rows = max(
+            4,
+            int(round(float(regime_volatility_window_hours) / timeframe_hours)),
+        )
+        target_volatility = train[target].rolling(
+            regime_rows,
+            min_periods=max(4, regime_rows // 3),
+        ).std()
         try:
             regimes = pd.qcut(target_volatility.rank(method="first"), 3, labels=False)
         except ValueError:
@@ -1077,6 +1136,8 @@ def _target_series(
     definition: str,
     transaction_cost: float,
     risk_penalty_lambda: float,
+    timeframe_hours: float = 1.0,
+    barrier_volatility_window_hours: float = 24.0,
 ) -> pd.Series:
     close = pd.to_numeric(frame["CLOSE"], errors="coerce")
     forward = close.shift(-horizon_rows) / close - 1.0
@@ -1093,7 +1154,15 @@ def _target_series(
     future_low = (
         low.shift(-1).iloc[::-1].rolling(horizon_rows, min_periods=horizon_rows).min().iloc[::-1]
     )
-    past_volatility = close.pct_change().rolling(max(24, horizon_rows), min_periods=8).std().shift(1)
+    barrier_volatility_rows = max(
+        horizon_rows,
+        4,
+        int(round(float(barrier_volatility_window_hours) / timeframe_hours)),
+    )
+    past_volatility = close.pct_change().rolling(
+        barrier_volatility_rows,
+        min_periods=max(4, barrier_volatility_rows // 3),
+    ).std().shift(1)
     barrier = (past_volatility * math.sqrt(horizon_rows)).clip(lower=2.0 * transaction_cost)
     upper_excursion = future_high / close - 1.0
     lower_excursion = future_low / close - 1.0
@@ -1116,13 +1185,17 @@ def _target_series(
     raise ValueError(f"unsupported target_definition: {definition}")
 
 
-def _fit_ridge(
+def _fit_proxy_model(
     train_x: pd.DataFrame,
     train_y: pd.Series,
     eval_x: pd.DataFrame,
     *,
+    family: str,
     alpha: float,
-) -> tuple[np.ndarray, np.ndarray, dict[str, float]]:
+    latent_dimension: int,
+    random_seed: int,
+    max_train_rows: int,
+) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     medians = train_x.median().fillna(0.0)
     x_train = train_x.fillna(medians).to_numpy(dtype=np.float64)
     x_eval = eval_x.fillna(medians).to_numpy(dtype=np.float64)
@@ -1131,12 +1204,88 @@ def _fit_ridge(
     scales[scales < 1e-12] = 1.0
     x_train = (x_train - means) / scales
     x_eval = (x_eval - means) / scales
-    model = Ridge(alpha=float(alpha))
-    model.fit(x_train, train_y.to_numpy(dtype=float))
+    y_train = train_y.to_numpy(dtype=float)
+    if len(x_train) > max(1000, int(max_train_rows)):
+        indices = np.linspace(
+            0,
+            len(x_train) - 1,
+            max(1000, int(max_train_rows)),
+        ).astype(int)
+        x_fit = x_train[indices]
+        y_fit = y_train[indices]
+    else:
+        x_fit = x_train
+        y_fit = y_train
+    model_family = str(family or "ridge")
+    metadata: dict[str, float | int | str] = {
+        "proxy_model_family": model_family,
+        "proxy_fit_rows": int(len(x_fit)),
+        "proxy_input_dimension": int(x_fit.shape[1]),
+    }
+    if model_family == "ridge":
+        model = Ridge(alpha=float(alpha))
+    elif model_family == "pca_ridge":
+        components = max(
+            1,
+            min(int(latent_dimension), x_fit.shape[1], len(x_fit) - 1),
+        )
+        pca = PCA(
+            n_components=components,
+            svd_solver="randomized",
+            random_state=int(random_seed),
+        )
+        x_fit = pca.fit_transform(x_fit)
+        x_train = pca.transform(x_train)
+        x_eval = pca.transform(x_eval)
+        model = Ridge(alpha=float(alpha))
+        metadata["proxy_latent_dimension"] = components
+        metadata["proxy_explained_variance"] = float(
+            pca.explained_variance_ratio_.sum()
+        )
+    elif model_family == "elastic_net":
+        model = ElasticNet(
+            alpha=max(1e-8, float(alpha)),
+            l1_ratio=0.5,
+            max_iter=5000,
+            random_state=int(random_seed),
+        )
+    elif model_family == "hist_gradient_boosting":
+        model = HistGradientBoostingRegressor(
+            learning_rate=0.05,
+            max_iter=200,
+            max_leaf_nodes=max(7, min(63, int(latent_dimension))),
+            l2_regularization=max(0.0, float(alpha)),
+            random_state=int(random_seed),
+        )
+    elif model_family == "mlp":
+        width = max(8, int(latent_dimension))
+        model = MLPRegressor(
+            hidden_layer_sizes=(width, width),
+            activation="relu",
+            alpha=max(1e-8, float(alpha)),
+            batch_size=min(512, max(32, len(x_fit) // 20)),
+            learning_rate_init=1e-3,
+            max_iter=200,
+            early_stopping=True,
+            validation_fraction=0.15,
+            n_iter_no_change=12,
+            random_state=int(random_seed),
+        )
+    else:
+        raise ValueError(f"unsupported proxy_model_family: {model_family}")
+    model.fit(x_fit, y_fit)
+    coefficients = getattr(model, "coef_", np.asarray([], dtype=float))
+    metadata.update(
+        {
+            "ridge_alpha": float(alpha),
+            "coefficient_l1": float(np.abs(coefficients).sum()),
+            "coefficient_nonzero": int(
+                (np.abs(coefficients) > 1e-12).sum()
+            ),
+        }
+    )
     return model.predict(x_train), model.predict(x_eval), {
-        "ridge_alpha": float(alpha),
-        "coefficient_l1": float(np.abs(model.coef_).sum()),
-        "coefficient_nonzero": int((np.abs(model.coef_) > 1e-12).sum()),
+        **metadata,
     }
 
 
@@ -1251,6 +1400,17 @@ def data_contract_audit(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
+    upstream_protocol_id = config.get("upstream_evaluation_protocol_id")
+    upstream_protocol_hash = config.get("upstream_evaluation_protocol_hash")
+    if upstream_protocol_id and upstream_protocol_id != FEATURE_PROXY_PROTOCOL:
+        raise ValueError(
+            "upstream evaluation protocol does not match current executor: "
+            f"{upstream_protocol_id} != {FEATURE_PROXY_PROTOCOL}"
+        )
+    if upstream_protocol_hash and upstream_protocol_hash != FEATURE_PROXY_PROTOCOL_HASH:
+        raise ValueError(
+            "upstream evaluation protocol hash does not match current executor"
+        )
     frame = _load_base(config)
     frame, source_meta = merge_external_context(frame, config)
     frame, cross_asset_meta = merge_cross_asset_context(frame, config)
@@ -1304,6 +1464,10 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         definition=str(config.get("target_definition") or "forward_return"),
         transaction_cost=transaction_cost,
         risk_penalty_lambda=risk_lambda,
+        timeframe_hours=timeframe_hours,
+        barrier_volatility_window_hours=float(
+            config.get("target_barrier_volatility_window_hours") or 24
+        ),
     )
     close = pd.to_numeric(frame["CLOSE"], errors="coerce")
     frame["realized_return"] = close.shift(-1) / close - 1.0
@@ -1319,6 +1483,8 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         (frame["DATE_TIME"] >= train_start)
         & (frame["DATE_TIME"] <= test_end)
     ].copy()
+    del frame
+    gc.collect()
     if in_scope.empty:
         raise ValueError("dataset has no rows in configured experiment period")
 
@@ -1333,28 +1499,76 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
             if values.dropna().empty or float(values.min(skipna=True)) < 0.0:
                 continue
             feature_frame[column] = np.log1p(values)
-    scaled = _causal_scale(
-        feature_frame,
+    target = in_scope["target_return"]
+    train_mask = _purged_split_mask(
+        in_scope["DATE_TIME"],
+        start=train_start,
+        end=train_end,
+        target_horizon_hours=float(config["target_horizon_hours"]),
+    )
+    validation_mask = _purged_split_mask(
+        in_scope["DATE_TIME"],
+        start=validation_start,
+        end=validation_end,
+        target_horizon_hours=float(config["target_horizon_hours"]),
+    )
+    test_mask = _purged_split_mask(
+        in_scope["DATE_TIME"],
+        start=test_start,
+        end=test_end,
+        target_horizon_hours=float(config["target_horizon_hours"]),
+    )
+    selection_scaled = _causal_scale(
+        feature_frame.loc[train_mask],
         features,
         mode=str(config["preprocessing_mode"]),
         window_rows=scaling_rows,
         clip=config.get("clip_value"),
     )
-    target = in_scope["target_return"]
-    train_mask = (in_scope["DATE_TIME"] >= train_start) & (in_scope["DATE_TIME"] <= train_end)
-    validation_mask = (in_scope["DATE_TIME"] >= validation_start) & (in_scope["DATE_TIME"] <= validation_end)
-    test_mask = (in_scope["DATE_TIME"] >= test_start) & (in_scope["DATE_TIME"] <= test_end)
-    selection_frame = scaled.loc[train_mask].copy()
+    selection_frame = selection_scaled.copy()
     selection_frame["target_return"] = target.loc[train_mask]
-    selected, feature_scores = _select_features(
-        selection_frame,
-        features,
-        "target_return",
-        method=str(config["feature_selection_method"]),
-        budget=int(config["feature_budget"]),
-        redundancy_threshold=float(config.get("redundancy_threshold") or 0.95),
-        stability_folds=int(config.get("stability_folds") or 5),
+    upstream_selected = [
+        str(column) for column in config.get("upstream_selected_features") or []
+    ]
+    if upstream_selected:
+        missing = sorted(set(upstream_selected) - set(features))
+        if missing:
+            raise ValueError(
+                "upstream_selected_features missing from materialized input: "
+                + ", ".join(missing)
+            )
+        selected = upstream_selected
+        feature_scores = {
+            name: _spearman(selection_frame[name], selection_frame["target_return"])
+            for name in selected
+        }
+        selection_source = "frozen_upstream_contract"
+    else:
+        selected, feature_scores = _select_features(
+            selection_frame,
+            features,
+            "target_return",
+            method=str(config["feature_selection_method"]),
+            budget=int(config["feature_budget"]),
+            redundancy_threshold=float(config.get("redundancy_threshold") or 0.95),
+            stability_folds=int(config.get("stability_folds") or 5),
+            timeframe_hours=timeframe_hours,
+            regime_volatility_window_hours=float(
+                config.get("selection_regime_volatility_window_hours") or 24
+            ),
+        )
+        selection_source = "train_only_selector"
+    scaled = _causal_scale(
+        feature_frame[selected],
+        selected,
+        mode=str(config["preprocessing_mode"]),
+        window_rows=scaling_rows,
+        clip=config.get("clip_value"),
     )
+    del selection_scaled
+    del feature_frame
+    del selection_frame
+    gc.collect()
     context_rows = max(2, int(round(float(config["context_hours"]) / timeframe_hours)))
     observations = _context_features(
         scaled,
@@ -1375,17 +1589,24 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         if len(split) < minimum_rows:
             raise ValueError(f"{name} has {len(split)} rows; need {minimum_rows}")
 
-    train_pred, validation_pred, model_meta = _fit_ridge(
+    model_kwargs = {
+        "family": str(config.get("proxy_model_family") or "ridge"),
+        "alpha": float(config.get("ridge_alpha") or 1.0),
+        "latent_dimension": int(config.get("proxy_latent_dimension") or 32),
+        "random_seed": int(config.get("proxy_random_seed") or 1701),
+        "max_train_rows": int(config.get("proxy_max_train_rows") or 25000),
+    }
+    train_pred, validation_pred, model_meta = _fit_proxy_model(
         train[observation_columns],
         train["target_return"],
         validation[observation_columns],
-        alpha=float(config.get("ridge_alpha") or 1.0),
+        **model_kwargs,
     )
-    _, test_pred, _ = _fit_ridge(
+    _, test_pred, _ = _fit_proxy_model(
         train[observation_columns],
         train["target_return"],
         test[observation_columns],
-        alpha=float(config.get("ridge_alpha") or 1.0),
+        **model_kwargs,
     )
     threshold_quantile = float(config.get("action_threshold_quantile") or 0.65)
     threshold = float(np.quantile(np.abs(train_pred), threshold_quantile))
@@ -1435,6 +1656,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
             "test": test_summary,
             "selected_features": selected,
             "selected_feature_scores": {name: feature_scores[name] for name in selected},
+            "selection_source": selection_source,
             "observation_columns": observation_columns,
             "action_threshold": threshold,
             "train_rows": len(train),

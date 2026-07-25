@@ -20,7 +20,7 @@ from urllib.request import Request, urlopen
 
 import psutil
 
-from project3_evidence_screen import execute
+from project3_evidence_screen import EVIDENCE_EXECUTOR_VERSION, execute
 
 
 def _request(
@@ -90,12 +90,14 @@ def _cpu_summary() -> dict[str, Any]:
 
 
 def _state_payload(machine_id: str, job_id: str | None, status: str, message: str) -> dict[str, Any]:
+    cpu_summary = _cpu_summary()
+    cpu_summary["evidence_executor_version"] = EVIDENCE_EXECUTOR_VERSION
     return {
         "machine_id": machine_id,
         "job_id": job_id,
         "status": status,
         "message": message,
-        "cpu_summary": _cpu_summary(),
+        "cpu_summary": cpu_summary,
         "gpu_summary": _gpu_summary(),
         "lease_seconds": 900,
     }

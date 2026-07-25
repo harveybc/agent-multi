@@ -163,14 +163,42 @@ and transform variants per asset/timeframe contract).
 `E2_INTERACTION_CONFIRMATION` combines the best validation-ranked changes so a
 parameter is not selected solely from an isolated comparison.
 
-### E3: Representation and policy family
+Before E2 is materialized, the scheduler requires fresh heartbeats from every
+declared worker and an exact match on `required_executor_version`. This creates
+a deployment barrier: a stale worker cannot silently evaluate a new parameter
+with old semantics.
 
-Compare PCA/autoencoder/TCN/LSTM/Transformer/event-token encoders and compatible
-SAC policies on the selected E2 contracts. Transform input signals are explicit
-genes; wavelet, Hilbert, multitaper, EMD, and fractional differencing are not
-assumed to be best on raw close.
+### E3: Proxy model family and representation sensitivity
 
-### E4: Weekly retraining confirmation
+Keep the E2-selected features frozen and compare five implemented, inexpensive
+supervised proxies: Ridge, Elastic Net, PCA plus Ridge, histogram gradient
+boosting, and MLP. Run three deterministic seeds and record the proxy family,
+latent dimension, fit-row cap, seed, runtime, protocol hash, and complete
+validation/test metrics.
+
+This stage tests whether a data contract survives a change in model inductive
+bias. It does not produce or pretend to produce a deployable trading policy.
+Autoencoder, TCN, LSTM, Transformer, and event-token encoders remain marked
+`blocked_by_implementation` until their plugins exist and pass causality and
+artifact round-trip tests.
+
+### E4: Asset policy training
+
+Train only the implemented `sac_mlp` policy on the robust E3 contracts. Other
+SAC policy families are explicitly blocked rather than represented as
+executable candidates. A completed E4 result must include:
+
+- loadable champion `.zip`;
+- artifact SHA-256, byte size, and format;
+- fully resolved canonical JSON config;
+- selected features and feature-contract hash;
+- input data-contract hashes;
+- evaluation protocol ID and hash;
+- validation and test metrics in the canonical scale.
+
+The pool rejects an E4 completion that lacks this contract.
+
+### E5: Weekly retraining confirmation
 
 For one selected contract per asset/timeframe:
 
@@ -183,9 +211,9 @@ This is the artifact set consumed by portfolio optimization.
 
 ### DOIN and portfolio
 
-DOIN Level 2 resumes per asset only after E0-E3 select its contract. Portfolio
-optimization begins after E4 produces the required deployable artifact set for
-the portfolio cells.
+DOIN Level 2 resumes per asset only after E0-E4 select its contract and create a
+loadable policy. Portfolio optimization begins after E5 produces the required
+weekly-retrained artifact set for the portfolio cells.
 
 ## Pool and OLAP
 
@@ -237,7 +265,7 @@ Campaign file:
 examples/config/evidence_sweep/project3_evidence_recovery_campaign_v1.json
 ```
 
-E2-E4 are generated from upstream OLAP results, not guessed in advance.
+E2-E5 are generated from upstream OLAP results, not guessed in advance.
 
 ## Execution Protocol Correction
 
@@ -246,19 +274,22 @@ when the prediction target covered multiple bars, its full forward return was
 incorrectly applied to equity on every intervening bar. This double-counted
 overlapping horizons.
 
-The corrected protocol is
-`project3.feature_proxy.one_bar_execution.v2`:
+The current corrected protocol is
+`project3.feature_proxy.one_bar_execution.v3`:
 
 - the supervised target may span the configured prediction horizon;
 - the position is recomputed at each decision bar;
 - equity receives the next-bar realized return exactly once;
 - costs are charged on absolute position turnover;
+- train, validation, and test purge decisions whose target horizon crosses the
+  end of that split;
 - every result stores the protocol ID and SHA-256.
 
-All E1 jobs, including completed, running, and failed attempts, are
-transactionally invalidated and requeued. Their old metrics and artifact facts
-are removed from comparative OLAP views; the attempt history and invalidation
-event remain for audit. E0 data-contract results remain valid.
+All E1 jobs created under older proxy protocols, including completed, running,
+and failed attempts, are transactionally invalidated and requeued. Their old
+metrics and artifact facts are removed from comparative OLAP views; attempt
+history and invalidation events remain for audit. E0 data-contract results
+remain valid.
 
 ## Selection Discipline
 
@@ -282,7 +313,7 @@ This recovery phase is complete only when:
    recorded reason;
 2. selected per-asset/timeframe contracts have complete configuration and data
    hashes;
-3. E4 creates weights and resolved configs usable without reverse-engineering
+3. E4 and E5 create weights and resolved configs usable without reverse-engineering
    source code;
 4. all required metrics are present in the same labeled scale;
 5. DOIN resumes from a newly materialized contract, never from an implicit
