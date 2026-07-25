@@ -13,6 +13,7 @@ from project3_evidence_pool import (  # noqa: E402
     backfill_parameter_facts,
     connect,
     enqueue_plan,
+    fail_job,
     init_db,
     invalidate_stages,
     requeue_machine,
@@ -95,6 +96,45 @@ def test_pool_claim_is_atomic_and_materializes_olap_facts(tmp_path: Path) -> Non
     ).fetchone()
     assert canonical_parameter["value_numeric"] == 168.0
     assert status(conn)["counts"] == {"completed": 1, "running": 1}
+
+
+def test_terminal_reports_are_idempotent_by_attempt(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(conn, _plan())
+    completed = claim_job(conn, "omega")
+    result = {"metric_rows": []}
+    complete_job(
+        conn,
+        "omega",
+        completed["job_id"],
+        result,
+        attempt_number=completed["attempt"],
+    )
+    complete_job(
+        conn,
+        "omega",
+        completed["job_id"],
+        result,
+        attempt_number=completed["attempt"],
+    )
+
+    failed = claim_job(conn, "dragon")
+    fail_job(
+        conn,
+        "dragon",
+        failed["job_id"],
+        "transient failure",
+        attempt_number=failed["attempt"],
+    )
+    fail_job(
+        conn,
+        "dragon",
+        failed["job_id"],
+        "transient failure",
+        attempt_number=failed["attempt"],
+    )
+    assert status(conn)["counts"] == {"completed": 1, "pending": 1}
 
 
 def test_enqueue_rejects_changed_config_for_existing_job(tmp_path: Path) -> None:
