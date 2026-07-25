@@ -62,6 +62,22 @@ Fields:
 Existing wide columns remain populated for predictor compatibility and can be
 mirrored into the generic table.
 
+### 3.3 Evidence-recovery implementation
+
+Before DOIN resumes, the E0-E4 screening pool writes a separate SQLite OLAP so
+the historical weekly database remains immutable:
+
+- `jobs` and `job_attempts` for atomic ownership, retries and runtime;
+- `parameter_facts` for every flattened resolved parameter;
+- `metric_facts` with metric schema, unit, horizon, aggregation and split;
+- `artifacts`, `pool_events` and `machine_heartbeats`;
+- `evidence_result_olap`, `evidence_parameter_effect_olap` and
+  `evidence_machine_olap`.
+
+The active schema is `project3.evidence.metrics.v2`. Return and risk are stored
+as fractions. Every status view presents both weekly and annual forms; a
+dimensionless optimizer score is never formatted as a return percentage.
+
 ## 4. Trading Dimensions
 
 - `dim_config`: canonical resolved config and hash;

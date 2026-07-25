@@ -1,0 +1,603 @@
+{
+  "schema_version": "project3.parameter_registry.v1",
+  "purpose": "Every material Project 3 choice must be explicit, scoped, and backed by executed evidence before per-asset DOIN optimization resumes.",
+  "evidence_states": [
+    "executed_comparable",
+    "executed_noncomparable",
+    "planned_not_executed",
+    "fixed_by_contract",
+    "blocked_by_data",
+    "retired"
+  ],
+  "rules": {
+    "implicit_defaults_forbidden": true,
+    "test_split_may_select_parameters": false,
+    "all_jobs_write_parameter_facts": true,
+    "all_jobs_write_metric_facts": true,
+    "all_return_metrics_stored_as_fraction": true,
+    "presentation_requires_unit_and_horizon": true,
+    "cryptoquant_status": "retired",
+    "cryptoquant_reason": "subscription cancelled and acquired coverage does not span the 2021-2023 evidence period"
+  },
+  "parameters": [
+    {
+      "path": "data.asset",
+      "layer": "data",
+      "scope": "asset",
+      "kind": "categorical",
+      "candidates": "all inventory assets with valid OHLCV",
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E0_E1"
+    },
+    {
+      "path": "data.timeframe",
+      "layer": "data",
+      "scope": "asset",
+      "kind": "categorical",
+      "candidates": ["15m", "1h", "4h"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E0_E1"
+    },
+    {
+      "path": "data.base_feature_bundle",
+      "layer": "data",
+      "scope": "asset_timeframe",
+      "kind": "categorical",
+      "candidates": [
+        "baseline_12",
+        "tech_full",
+        "tech_stat",
+        "tech_stat_decomp",
+        "sota_low_cost",
+        "learned_lstm",
+        "learned_cnn",
+        "kitchen_sink_guarded"
+      ],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E1"
+    },
+    {
+      "path": "data.external_context_bundle",
+      "layer": "data",
+      "scope": "asset_timeframe",
+      "kind": "categorical",
+      "candidates": [
+        "none",
+        "macro_core",
+        "market_core",
+        "macro_market",
+        "onchain_asset",
+        "funding_core",
+        "crypto_context",
+        "economic_calendar",
+        "all_non_cryptoquant"
+      ],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E0_E1"
+    },
+    {
+      "path": "data.external_context_lag_hours",
+      "layer": "data",
+      "scope": "source_family",
+      "kind": "numeric",
+      "candidates": [0, 24, 168, 744],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2",
+      "note": "Zero is a diagnostic control only; macro data requires a conservative point-in-time lag unless vintage release timestamps exist."
+    },
+    {
+      "path": "data.missing_value_policy",
+      "layer": "data",
+      "scope": "global",
+      "kind": "categorical",
+      "candidates": ["causal_ffill", "causal_ffill_plus_missing_indicator", "train_median"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "data.max_staleness_hours",
+      "layer": "data",
+      "scope": "source_family",
+      "kind": "numeric",
+      "candidates": [24, 168, 744, 2160],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "data.publication_vintage_policy",
+      "layer": "data",
+      "scope": "source_family",
+      "kind": "categorical",
+      "candidates": ["observed_release_timestamp", "conservative_lag", "exclude_if_not_point_in_time"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E0"
+    },
+    {
+      "path": "data.cross_asset_reference_set",
+      "layer": "data",
+      "scope": "asset_class",
+      "kind": "categorical",
+      "candidates": ["none", "btc_eth", "market_leaders", "portfolio_candidates"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "data.target_horizon_hours",
+      "layer": "target",
+      "scope": "horizon_bucket",
+      "kind": "numeric",
+      "candidates": [1, 4, 12, 24, 72, 168],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E1_E2"
+    },
+    {
+      "path": "data.target_definition",
+      "layer": "target",
+      "scope": "horizon_bucket",
+      "kind": "categorical",
+      "candidates": ["forward_return", "cost_adjusted_forward_return", "triple_barrier", "future_rap"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.transform_input_signal",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["close", "log_close", "return", "log_return", "volume", "volatility", "spread_proxy"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.wavelet_family",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["off", "causal_multiscale_rolling", "dwt_causal_window"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.wavelet_levels",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric_list",
+      "candidates": [[1, 2, 3], [1, 2, 3, 4], [2, 3, 4, 5]],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.hilbert_input_signal",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["off", "detrended_close", "log_return", "volatility"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.hilbert_window_hours",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [72, 168, 336, 720],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.multitaper_input_signal",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["off", "log_return", "volatility", "volume_change"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.emd_input_signal",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["off", "detrended_close", "log_return"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.fracdiff_input_signal",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "categorical",
+      "candidates": ["off", "close", "log_close"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.fracdiff_d",
+      "layer": "feature_engineering",
+      "scope": "transform_family",
+      "kind": "numeric",
+      "candidates": [0.2, 0.4, 0.6, 0.8],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "features.event_encoding",
+      "layer": "feature_engineering",
+      "scope": "event_source",
+      "kind": "categorical",
+      "candidates": ["off", "time_to_event", "time_since_event", "actual_minus_consensus", "event_token_embedding"],
+      "evidence_status": "blocked_by_data",
+      "screen_stage": "E3",
+      "note": "FXMacroData acquired actuals start in 2025 and do not cover the 2021-2023 selection period."
+    },
+    {
+      "path": "features.event_effect_estimator",
+      "layer": "feature_engineering",
+      "scope": "event_source",
+      "kind": "categorical",
+      "candidates": ["none", "matched_event_study", "double_machine_learning", "causal_forest"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3"
+    },
+    {
+      "path": "selection.method",
+      "layer": "feature_selection",
+      "scope": "asset_timeframe",
+      "kind": "categorical",
+      "candidates": ["rank_ic_topk", "mutual_info_topk", "redundancy_stability_topk", "regime_conditioned_topk", "sparse_mask"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E1_E2"
+    },
+    {
+      "path": "selection.feature_budget",
+      "layer": "feature_selection",
+      "scope": "asset_timeframe",
+      "kind": "numeric",
+      "candidates": [8, 12, 16, 24, 32, 48, 64, 96, 128],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E1_E2"
+    },
+    {
+      "path": "selection.redundancy_threshold",
+      "layer": "feature_selection",
+      "scope": "global",
+      "kind": "numeric",
+      "candidates": [0.85, 0.9, 0.95, 0.98],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "selection.stability_folds",
+      "layer": "feature_selection",
+      "scope": "global",
+      "kind": "numeric",
+      "candidates": [3, 5, 8],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "preprocessing.mode",
+      "layer": "preprocessing",
+      "scope": "global_then_asset",
+      "kind": "categorical",
+      "candidates": ["none", "rolling_zscore", "expanding_zscore", "rolling_robust", "rolling_rank_gaussian"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "preprocessing.scaling_history_hours",
+      "layer": "preprocessing",
+      "scope": "global_then_horizon",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336, 720, 2160, 4320],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "preprocessing.clip_value",
+      "layer": "preprocessing",
+      "scope": "global",
+      "kind": "numeric_nullable",
+      "candidates": [null, 3, 5, 10, 20],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "preprocessing.log_transform_positive_features",
+      "layer": "preprocessing",
+      "scope": "feature_family",
+      "kind": "boolean",
+      "candidates": [false, true],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "observation.context_hours",
+      "layer": "observation",
+      "scope": "global_then_horizon",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336, 720, 2160],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "observation.context_representation",
+      "layer": "observation",
+      "scope": "model_family",
+      "kind": "categorical",
+      "candidates": ["last", "summary", "sparse_lags", "raw_sequence", "multiscale_sequence", "event_tokens"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E1_E2"
+    },
+    {
+      "path": "observation.include_price_window",
+      "layer": "observation",
+      "scope": "global",
+      "kind": "boolean",
+      "candidates": [false, true],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "observation.include_agent_state",
+      "layer": "observation",
+      "scope": "global",
+      "kind": "boolean",
+      "candidates": [false, true],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "observation.state_features",
+      "layer": "observation",
+      "scope": "global",
+      "kind": "categorical_set",
+      "candidates": ["position", "cash_fraction", "unrealized_pnl", "holding_time", "distance_to_sl", "distance_to_tp", "portfolio_exposure"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "representation.encoder",
+      "layer": "representation",
+      "scope": "model_family",
+      "kind": "categorical",
+      "candidates": ["none", "pca", "autoencoder", "temporal_cnn", "tcn", "lstm", "transformer", "event_token_transformer"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3"
+    },
+    {
+      "path": "representation.latent_dimension",
+      "layer": "representation",
+      "scope": "model_family",
+      "kind": "numeric",
+      "candidates": [16, 32, 64, 128, 256],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3"
+    },
+    {
+      "path": "representation.pretraining_objective",
+      "layer": "representation",
+      "scope": "model_family",
+      "kind": "categorical",
+      "candidates": ["reconstruction", "contrastive", "masked_step", "multi_horizon_return", "oracle_behavior"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3"
+    },
+    {
+      "path": "agent.model_family",
+      "layer": "agent",
+      "scope": "asset_timeframe",
+      "kind": "categorical",
+      "candidates": ["sac_mlp", "sac_tcn", "sac_lstm", "sac_transformer"],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E3"
+    },
+    {
+      "path": "agent.action_threshold",
+      "layer": "agent",
+      "scope": "asset_timeframe",
+      "kind": "numeric",
+      "candidates": [0.02, 0.05, 0.1, 0.2, 0.35],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "agent.net_arch",
+      "layer": "agent",
+      "scope": "model_family",
+      "kind": "categorical",
+      "candidates": [[128, 128], [256, 256], [512, 256], [512, 512]],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3_DOIN"
+    },
+    {
+      "path": "training.learning_rate",
+      "layer": "training",
+      "scope": "asset_timeframe",
+      "kind": "numeric_range",
+      "candidates": [1e-05, 0.0005],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "training.batch_size",
+      "layer": "training",
+      "scope": "global_then_asset",
+      "kind": "numeric",
+      "candidates": [64, 128, 256, 512, 1024],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "E3_DOIN"
+    },
+    {
+      "path": "training.gamma",
+      "layer": "training",
+      "scope": "horizon_bucket",
+      "kind": "numeric_range",
+      "candidates": [0.9, 0.9999],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "training.tau",
+      "layer": "training",
+      "scope": "model_family",
+      "kind": "numeric_range",
+      "candidates": [0.0005, 0.05],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "training.train_freq",
+      "layer": "training",
+      "scope": "model_family",
+      "kind": "numeric",
+      "candidates": [1, 2, 4, 8, 16],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "training.gradient_steps",
+      "layer": "training",
+      "scope": "model_family",
+      "kind": "numeric",
+      "candidates": [1, 2, 4, 8, 16],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "training.entropy_coefficient",
+      "layer": "training",
+      "scope": "model_family",
+      "kind": "categorical",
+      "candidates": ["auto", 0.001, 0.005, 0.01, 0.03],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3_DOIN"
+    },
+    {
+      "path": "training.seed",
+      "layer": "training",
+      "scope": "replication",
+      "kind": "numeric",
+      "candidates": [1701, 1702, 1703, 1704, 1705],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E3_DOIN"
+    },
+    {
+      "path": "risk.rel_volume",
+      "layer": "risk",
+      "scope": "asset_timeframe",
+      "kind": "numeric",
+      "candidates": [0.01, 0.025, 0.05, 0.1, 0.25, 0.5],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "risk.stop_loss_mode",
+      "layer": "risk",
+      "scope": "asset_timeframe",
+      "kind": "categorical",
+      "candidates": ["fixed_atr", "margin_aware_atr", "volatility_target", "policy_output"],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "risk.k_sl",
+      "layer": "risk",
+      "scope": "asset_timeframe",
+      "kind": "numeric",
+      "candidates": [0.5, 1, 1.5, 2, 3, 4],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "risk.k_tp",
+      "layer": "risk",
+      "scope": "asset_timeframe",
+      "kind": "numeric",
+      "candidates": [1, 1.5, 2, 3, 4, 6, 8],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "reward.risk_penalty_lambda",
+      "layer": "reward",
+      "scope": "business_objective",
+      "kind": "numeric",
+      "candidates": [0.25, 0.5, 1, 2],
+      "evidence_status": "executed_comparable",
+      "screen_stage": "DOIN_L2"
+    },
+    {
+      "path": "execution.commission_fraction",
+      "layer": "execution",
+      "scope": "broker_market",
+      "kind": "numeric",
+      "candidates": "broker-specific pessimistic scenarios",
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "E0"
+    },
+    {
+      "path": "execution.slippage_fraction",
+      "layer": "execution",
+      "scope": "broker_market",
+      "kind": "numeric",
+      "candidates": "broker-specific base and pessimistic scenarios",
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "E0"
+    },
+    {
+      "path": "evaluation.train_period",
+      "layer": "evaluation",
+      "scope": "global",
+      "kind": "date_range",
+      "candidates": ["2021"],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "all"
+    },
+    {
+      "path": "evaluation.validation_period",
+      "layer": "evaluation",
+      "scope": "global",
+      "kind": "date_range",
+      "candidates": ["2022"],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "all"
+    },
+    {
+      "path": "evaluation.test_period",
+      "layer": "evaluation",
+      "scope": "global",
+      "kind": "date_range",
+      "candidates": ["2023"],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "all"
+    },
+    {
+      "path": "evaluation.weekly_retraining",
+      "layer": "evaluation",
+      "scope": "protocol",
+      "kind": "boolean",
+      "candidates": [false, true],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E4"
+    },
+    {
+      "path": "evaluation.retraining_history_years",
+      "layer": "evaluation",
+      "scope": "protocol",
+      "kind": "numeric",
+      "candidates": [1, 2, 3, 4],
+      "evidence_status": "executed_noncomparable",
+      "screen_stage": "E4"
+    },
+    {
+      "path": "evaluation.metric_contract",
+      "layer": "evaluation",
+      "scope": "global",
+      "kind": "categorical",
+      "candidates": ["project3.evidence.metrics.v2"],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "all"
+    }
+  ]
+}

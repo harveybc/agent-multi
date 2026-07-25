@@ -261,6 +261,22 @@ only trading-domain behavior.
 
 ## 7. Change Log
 
+### 1.3.0 - 2026-07-25
+
+- Froze and checksummed the active per-asset DOIN campaign after confirming
+  that observation duration, preprocessing, clipping, external-source
+  inclusion and transform inputs lacked executed comparative evidence.
+- Adopted `project3.parameter_registry.v1` and forbade implicit material
+  defaults.
+- Adopted `project3.evidence.metrics.v2`: all status/reporting surfaces must
+  show labeled mean-weekly return, annualized return, mean-weekly RAP, annual
+  RAP and drawdown; optimization score remains dimensionless.
+- Replaced positive-profit and presentation gates with a pragmatic hierarchy:
+  data/source coverage, source value, preprocessing/context, representation,
+  weekly retraining, then DOIN and portfolio optimization.
+- Recorded CryptoQuant as retired and FXMacroData 2021-2023 event coverage as
+  blocked rather than silently treating either source as available.
+
 ### 1.2.0 - 2026-07-10
 
 - Began Phase 0/1 execution with the `trading-contracts` package, canonical

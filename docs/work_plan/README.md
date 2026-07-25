@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: architecture approved; implementation in progress
-Plan version: 1.5.0
-Date: 2026-07-19
+Status: evidence-recovery execution in progress; DOIN campaign safely frozen
+Plan version: 1.6.0
+Date: 2026-07-25
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -66,6 +66,7 @@ trading domain.
 | [14 Simulation engine selection](14_SIMULATION_ENGINE_SELECTION_2026_07_11.md) | NautilusTrader/LEAN/Backtrader bake-off and no-reimplementation rule |
 | [15 Distributed campaign lifecycle](15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md) | Replicated job order, convergence/stop barriers, recovery, champion archive, and swarm history |
 | [16 Flat-fitness root cause](16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md) | BTC actor saturation evidence, corrected feature contract, action-collapse guard, and campaign disposition |
+| [17 Data and preprocessing evidence recovery](17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md) | Parameter registry, canonical metrics, source coverage, hierarchical sweeps, transactional pool, and DOIN-resume conditions |
 
 ## Repository Ownership Summary
 
@@ -108,9 +109,11 @@ runtime behavior pass the independent review protocol in document 12.
 
 - Selection, early stopping, optimization, migration, and allocation never use
   the protected test period.
-- Validation and test each target one complete chronological year evaluated by
-  weekly walk-forward retraining/fine-tuning.
-- Partial candidates are labeled with their exact number of observed weeks.
+- Cheap data/preprocessing screens may use a fixed-fit proxy, but their protocol
+  is explicit and their metrics cannot be relabeled as deployable SAC results.
+- Final per-asset artifacts use one complete validation year and one complete
+  test year with weekly walk-forward retraining/fine-tuning.
+- Every result records its exact evaluation dates and observed week count.
 - Annual metrics are calculated from an ordered annual weekly series, not by
   renaming a partial-period mean.
 - Every candidate records resolved config, data hash, code commits, seed,
@@ -138,16 +141,14 @@ adding value.
 
 ## Current Build Order
 
-1. Shared schemas and canonical nested configuration.
-2. Single-cell compatibility and multi-asset account ledger.
-3. Six-cell static-allocation full-year validation replay.
-4. Baseline allocators and generic OLAP metrics.
-5. Project 3 SAC and heuristic lifecycle adapters.
-6. Context encoder and rush detector.
-7. Trainable portfolio allocator.
-8. DOIN trading domain plugins and deterministic verification.
-9. Model registry and `prediction_provider` serving.
-10. LTS simulation parity and OANDA practice.
+1. Execute E0 data/source coverage contracts.
+2. Execute E1 base/external source screens.
+3. Select and execute E2 preprocessing/context experiments.
+4. Select and execute E3 representation/policy comparisons.
+5. Execute E4 weekly retraining and export per-asset artifacts.
+6. Resume DOIN Level 2 optimization on those explicit contracts.
+7. Optimize portfolio allocation, rush activation, and risk overlays.
+8. Complete registry, serving, LTS parity, and OANDA practice integration.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
