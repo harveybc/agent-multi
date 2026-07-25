@@ -7,15 +7,18 @@ import hashlib
 import itertools
 import json
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 from project3_evidence_pool import connect, enqueue_plan, init_db
+from project3_evidence_screen import EVIDENCE_EXECUTOR_VERSION
 
 
 UPSTREAM_STAGES = ("E1_BASE_SOURCE_SCREEN", "E1_EXTERNAL_SOURCE_SCREEN")
 E2_STAGE = "E2_PREPROCESSING_CONTEXT"
 E2_INTERACTION_STAGE = "E2_INTERACTION_CONFIRMATION"
+E3_PROXY_STAGE = "E3_PROXY_MODEL_SCREEN"
 
 
 def _json(value: Any) -> str:
@@ -43,6 +46,43 @@ def _finished(conn, stages: tuple[str, ...]) -> bool:
     return total > 0 and active == 0
 
 
+def _executor_fleet_ready(conn) -> tuple[bool, dict[str, str]]:
+    campaign = conn.execute(
+        "SELECT plan_json FROM campaigns ORDER BY created_at DESC LIMIT 1"
+    ).fetchone()
+    if campaign is None:
+        return False, {"campaign": "missing"}
+    plan = json.loads(campaign["plan_json"])
+    required = [str(value) for value in plan.get("required_workers") or []]
+    expected = str(
+        plan.get("required_executor_version") or EVIDENCE_EXECUTOR_VERSION
+    )
+    if not required:
+        return True, {}
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=5)
+    problems: dict[str, str] = {}
+    for machine_id in required:
+        row = conn.execute(
+            """
+            SELECT cpu_summary_json,heartbeat_at
+            FROM machine_heartbeats WHERE machine_id=?
+            """,
+            (machine_id,),
+        ).fetchone()
+        if row is None:
+            problems[machine_id] = "missing_heartbeat"
+            continue
+        heartbeat_at = datetime.fromisoformat(str(row["heartbeat_at"]))
+        if heartbeat_at < cutoff:
+            problems[machine_id] = "stale_heartbeat"
+            continue
+        summary = json.loads(row["cpu_summary_json"] or "{}")
+        actual = str(summary.get("evidence_executor_version") or "missing")
+        if actual != expected:
+            problems[machine_id] = f"executor={actual}; expected={expected}"
+    return not problems, problems
+
+
 def _top_contracts(
     conn,
     stages: tuple[str, ...],
@@ -55,6 +95,7 @@ def _top_contracts(
         WITH ranked AS (
             SELECT
                 config_json,
+                result_json,
                 validation_annual_rap,
                 ROW_NUMBER() OVER (
                     PARTITION BY
@@ -67,7 +108,7 @@ def _top_contracts(
               AND status='completed'
               AND validation_annual_rap IS NOT NULL
         )
-        SELECT config_json, validation_annual_rap
+        SELECT config_json, result_json, validation_annual_rap
         FROM ranked WHERE rank_in_cell <= ?
         ORDER BY json_extract(config_json, '$.asset'), json_extract(config_json, '$.timeframe')
         """,
@@ -76,6 +117,7 @@ def _top_contracts(
     return [
         {
             "config": json.loads(row["config_json"]),
+            "result": json.loads(row["result_json"] or "{}"),
             "validation_annual_rap": row["validation_annual_rap"],
         }
         for row in rows
@@ -181,6 +223,13 @@ def _e2_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
     ):
         cfg = {**base, "target_definition": definition}
         _add_variant(variants, cfg)
+    for window_hours in (24, 72, 168, 336):
+        cfg = {
+            **base,
+            "target_definition": "triple_barrier",
+            "target_barrier_volatility_window_hours": window_hours,
+        }
+        _add_variant(variants, cfg)
     for threshold in (0.85, 0.90, 0.95, 0.98):
         cfg = {
             **base,
@@ -193,6 +242,13 @@ def _e2_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
             **base,
             "feature_selection_method": "redundancy_stability_topk",
             "stability_folds": folds,
+        }
+        _add_variant(variants, cfg)
+    for window_hours in (24, 72, 168, 336):
+        cfg = {
+            **base,
+            "feature_selection_method": "regime_conditioned_topk",
+            "selection_regime_volatility_window_hours": window_hours,
         }
         _add_variant(variants, cfg)
     for enabled in (False, True):
@@ -298,6 +354,12 @@ def _e2_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
             "fracdiff_max_history_hours": history_hours,
         }
         _add_variant(variants, cfg)
+    for ridge_alpha in (0.01, 0.1, 1.0, 10.0, 100.0):
+        cfg = {**base, "ridge_alpha": ridge_alpha}
+        _add_variant(variants, cfg)
+    for threshold_quantile in (0.50, 0.65, 0.80, 0.90):
+        cfg = {**base, "action_threshold_quantile": threshold_quantile}
+        _add_variant(variants, cfg)
     return list(variants.values())
 
 
@@ -341,12 +403,62 @@ def _interaction_variants(
     return list(variants.values())
 
 
-def promote_e2(conn, *, materialized_plan: Path | None = None) -> dict[str, int | str]:
+def _e3_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
+    variants: dict[str, dict[str, Any]] = {}
+    for seed in (1701, 1702, 1703):
+        _add_variant(
+            variants,
+            {
+                **base,
+                "proxy_model_family": "ridge",
+                "proxy_random_seed": seed,
+            },
+        )
+        _add_variant(
+            variants,
+            {
+                **base,
+                "proxy_model_family": "elastic_net",
+                "proxy_random_seed": seed,
+            },
+        )
+        for dimension in (16, 32, 64, 128):
+            _add_variant(
+                variants,
+                {
+                    **base,
+                    "proxy_model_family": "pca_ridge",
+                    "proxy_latent_dimension": dimension,
+                    "proxy_random_seed": seed,
+                },
+            )
+        for family in ("hist_gradient_boosting", "mlp"):
+            for dimension in (32, 64, 128):
+                _add_variant(
+                    variants,
+                    {
+                        **base,
+                        "proxy_model_family": family,
+                        "proxy_latent_dimension": dimension,
+                        "proxy_random_seed": seed,
+                    },
+                )
+    return list(variants.values())
+
+
+def promote_e2(conn, *, materialized_plan: Path | None = None) -> dict[str, Any]:
     existing = conn.execute("SELECT COUNT(*) FROM jobs WHERE stage=?", (E2_STAGE,)).fetchone()[0]
     if existing:
         return {"status": "already_enqueued", "jobs": int(existing)}
     if not _finished(conn, UPSTREAM_STAGES):
         return {"status": "waiting_for_e1", "jobs": 0}
+    ready, problems = _executor_fleet_ready(conn)
+    if not ready:
+        return {
+            "status": "waiting_for_executor_fleet",
+            "jobs": 0,
+            "problems": problems,
+        }
     contracts = _top_contracts(conn, UPSTREAM_STAGES)
     if not contracts:
         return {"status": "no_completed_e1_contracts", "jobs": 0}
@@ -440,10 +552,83 @@ def promote_e2_interactions(
     }
 
 
+def promote_e3(
+    conn,
+    *,
+    materialized_plan: Path | None = None,
+) -> dict[str, int | str]:
+    existing = conn.execute(
+        "SELECT COUNT(*) FROM jobs WHERE stage=?",
+        (E3_PROXY_STAGE,),
+    ).fetchone()[0]
+    if existing:
+        return {"status": "already_enqueued", "jobs": int(existing)}
+    if not _finished(conn, (E2_INTERACTION_STAGE,)):
+        return {"status": "waiting_for_e2_interactions", "jobs": 0}
+    contracts = _top_contracts(conn, (E2_INTERACTION_STAGE,), per_cell=1)
+    if not contracts:
+        return {"status": "no_completed_e2_interactions", "jobs": 0}
+
+    campaign_row = conn.execute(
+        "SELECT campaign_id, plan_json FROM campaigns ORDER BY created_at DESC LIMIT 1"
+    ).fetchone()
+    if campaign_row is None:
+        raise RuntimeError("no campaign found")
+    plan = json.loads(campaign_row["plan_json"])
+    added = []
+    for contract in contracts:
+        result = contract["result"]
+        summary = dict(result.get("summary") or {})
+        selected = list(summary.get("selected_features") or [])
+        protocol_id = result.get("evaluation_protocol_id")
+        protocol_hash = result.get("evaluation_protocol_hash")
+        if not selected or not protocol_id or not protocol_hash:
+            continue
+        base = {
+            **contract["config"],
+            "upstream_selected_features": selected,
+            "upstream_evaluation_protocol_id": protocol_id,
+            "upstream_evaluation_protocol_hash": protocol_hash,
+        }
+        for config in _e3_variants(base):
+            digest = hashlib.sha256(_json(config).encode("utf-8")).hexdigest()[:16]
+            added.append(
+                {
+                    "job_id": (
+                        f"e3__{config['asset']}__{config['timeframe']}__"
+                        f"{config['base_feature_bundle']}__{digest}"
+                    ),
+                    "stage": E3_PROXY_STAGE,
+                    "task_type": "feature_proxy_screen",
+                    "priority": 400,
+                    "max_attempts": 3,
+                    "config": config,
+                }
+            )
+    if not added:
+        return {"status": "no_eligible_e2_artifacts", "jobs": 0}
+    plan["jobs"] = list(plan.get("jobs") or []) + added
+    plan.setdefault("materialized_stage_counts", {})[E3_PROXY_STAGE] = len(added)
+    result = enqueue_plan(conn, plan)
+    if materialized_plan:
+        materialized_plan.parent.mkdir(parents=True, exist_ok=True)
+        materialized_plan.write_text(
+            json.dumps(plan, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    return {
+        "status": "enqueued",
+        "jobs": len(added),
+        "inserted": result["inserted"],
+        "existing": result["existing"],
+    }
+
+
 def promote_all(conn, *, materialized_plan: Path | None = None) -> dict[str, Any]:
     e2 = promote_e2(conn, materialized_plan=materialized_plan)
     e2_interactions = promote_e2_interactions(conn, materialized_plan=materialized_plan)
-    return {"e2": e2, "e2_interactions": e2_interactions}
+    e3 = promote_e3(conn, materialized_plan=materialized_plan)
+    return {"e2": e2, "e2_interactions": e2_interactions, "e3": e3}
 
 
 def main() -> None:

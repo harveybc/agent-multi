@@ -14,6 +14,21 @@ from project3_evidence_metrics import METRIC_SCHEMA, metric_rows_from_result
 
 
 SCHEMA_VERSION = "project3.evidence.pool.v1"
+PROXY_RESULT_STAGES = {
+    "E1_BASE_SOURCE_SCREEN",
+    "E1_EXTERNAL_SOURCE_SCREEN",
+    "E2_PREPROCESSING_CONTEXT",
+    "E2_INTERACTION_CONFIRMATION",
+    "E3_PROXY_MODEL_SCREEN",
+}
+CANONICAL_TRADING_METRICS = {
+    "mean_weekly_return": ("fraction", "week"),
+    "annualized_return": ("fraction", "year"),
+    "mean_weekly_rap": ("fraction", "week"),
+    "annual_rap": ("fraction", "year"),
+    "max_drawdown": ("fraction", "evaluation_period"),
+    "evaluation_weeks": ("count", "evaluation_period"),
+}
 
 PARAMETER_PATH_ALIASES = {
     "asset": "data.asset",
@@ -27,10 +42,12 @@ PARAMETER_PATH_ALIASES = {
     "cross_asset_volatility_window_hours": "features.cross_asset_volatility_window_hours",
     "target_horizon_hours": "data.target_horizon_hours",
     "target_definition": "data.target_definition",
+    "target_barrier_volatility_window_hours": "data.target_barrier_volatility_window_hours",
     "feature_selection_method": "selection.method",
     "feature_budget": "selection.feature_budget",
     "redundancy_threshold": "selection.redundancy_threshold",
     "stability_folds": "selection.stability_folds",
+    "selection_regime_volatility_window_hours": "selection.regime_volatility_window_hours",
     "preprocessing_mode": "preprocessing.mode",
     "scaling_history_hours": "preprocessing.scaling_history_hours",
     "clip_value": "preprocessing.clip_value",
@@ -57,10 +74,17 @@ PARAMETER_PATH_ALIASES = {
     "fracdiff_max_history_hours": "features.fracdiff_max_history_hours",
     "context_hours": "observation.context_hours",
     "context_representation": "observation.context_representation",
+    "ridge_alpha": "proxy.ridge_alpha",
+    "proxy_model_family": "proxy.model_family",
+    "proxy_latent_dimension": "proxy.latent_dimension",
+    "proxy_random_seed": "proxy.random_seed",
+    "proxy_max_train_rows": "proxy.max_train_rows",
+    "action_threshold_quantile": "proxy.action_threshold_quantile",
     "include_price_window": "observation.include_price_window",
     "include_agent_state": "observation.include_agent_state",
     "transaction_cost_fraction": "execution.commission_fraction",
     "risk_penalty_lambda": "reward.risk_penalty_lambda",
+    "minimum_split_rows": "evaluation.minimum_split_rows",
 }
 
 
@@ -352,6 +376,83 @@ def backfill_parameter_facts(conn: sqlite3.Connection) -> int:
     return len(rows)
 
 
+def _validate_terminal_result(stage: str, result: dict[str, Any]) -> None:
+    if stage in PROXY_RESULT_STAGES:
+        summary = result.get("summary")
+        if not isinstance(summary, dict):
+            raise ValueError(f"{stage} result requires a summary object")
+        if str(summary.get("screen_status") or "").startswith("blocked_"):
+            return
+        if not result.get("evaluation_protocol_id"):
+            raise ValueError(f"{stage} result requires evaluation_protocol_id")
+        if not result.get("evaluation_protocol_hash"):
+            raise ValueError(f"{stage} result requires evaluation_protocol_hash")
+        rows = metric_rows_from_result(result)
+        indexed = {
+            (row["metric_name"], row["split"]): row
+            for row in rows
+        }
+        missing: list[str] = []
+        invalid: list[str] = []
+        for split in ("validation", "test"):
+            for name, (unit, horizon) in CANONICAL_TRADING_METRICS.items():
+                row = indexed.get((name, split))
+                label = f"{split}.{name}"
+                if row is None or row["value"] is None:
+                    missing.append(label)
+                    continue
+                if row["unit"] != unit or row["horizon"] != horizon:
+                    invalid.append(
+                        f"{label}={row['unit']}/{row['horizon']}; "
+                        f"expected={unit}/{horizon}"
+                    )
+        if missing:
+            raise ValueError(
+                f"{stage} result missing canonical metrics: {', '.join(missing)}"
+            )
+        if invalid:
+            raise ValueError(
+                f"{stage} result has mislabeled canonical metrics: "
+                + "; ".join(invalid)
+            )
+        if stage == "E3_PROXY_MODEL_SCREEN":
+            if summary.get("selection_source") != "frozen_upstream_contract":
+                raise ValueError(
+                    "E3_PROXY_MODEL_SCREEN requires frozen upstream features"
+                )
+
+    if stage == "E4_ASSET_POLICY_TRAINING":
+        artifacts = list(result.get("artifacts") or [])
+        champion = next(
+            (
+                item
+                for item in artifacts
+                if item.get("artifact_type") == "champion_model"
+            ),
+            None,
+        )
+        if champion is None:
+            raise ValueError(
+                "E4_ASSET_POLICY_TRAINING requires champion_model artifact"
+            )
+        for field in ("path", "sha256", "size_bytes"):
+            if not champion.get(field):
+                raise ValueError(
+                    "E4_ASSET_POLICY_TRAINING champion_model requires "
+                    + field
+                )
+        for field in (
+            "resolved_config",
+            "selected_features",
+            "selected_features_sha256",
+            "data_contract_sha256",
+        ):
+            if not result.get(field):
+                raise ValueError(
+                    f"E4_ASSET_POLICY_TRAINING requires {field}"
+                )
+
+
 def enqueue_plan(conn: sqlite3.Connection, plan: dict[str, Any]) -> dict[str, int]:
     campaign_id = str(plan["campaign_id"])
     now = utc_now()
@@ -582,7 +683,7 @@ def complete_job(
     serialized_result = _json(result)
     row = conn.execute(
         """
-        SELECT id, attempt_count, claimed_by, status, result_json
+        SELECT id, stage, attempt_count, claimed_by, status, result_json
         FROM jobs WHERE external_id=?
         """,
         (job_external_id,),
@@ -610,6 +711,7 @@ def complete_job(
         or int(row["attempt_count"]) != expected_attempt
     ):
         raise PermissionError(f"{machine_id} does not own running job {job_external_id}")
+    _validate_terminal_result(str(row["stage"]), result)
     conn.execute(
         """
         UPDATE jobs SET status='completed', completed_at=?, result_json=?,

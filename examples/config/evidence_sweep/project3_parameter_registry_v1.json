@@ -53,7 +53,7 @@
         "learned_cnn",
         "kitchen_sink_guarded"
       ],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "executing_comparable",
       "screen_stage": "E1"
     },
     {
@@ -72,7 +72,7 @@
         "economic_calendar",
         "all_non_cryptoquant"
       ],
-      "evidence_status": "planned_not_executed",
+      "evidence_status": "executing_comparable",
       "screen_stage": "E0_E1"
     },
     {
@@ -145,6 +145,15 @@
       "scope": "horizon_bucket",
       "kind": "categorical",
       "candidates": ["forward_return", "cost_adjusted_forward_return", "triple_barrier", "future_rap"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "data.target_barrier_volatility_window_hours",
+      "layer": "target",
+      "scope": "horizon_bucket",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336],
       "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
@@ -386,6 +395,15 @@
       "screen_stage": "E2"
     },
     {
+      "path": "selection.regime_volatility_window_hours",
+      "layer": "feature_selection",
+      "scope": "asset_class",
+      "kind": "numeric",
+      "candidates": [24, 72, 168, 336],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
       "path": "preprocessing.mode",
       "layer": "preprocessing",
       "scope": "global_then_asset",
@@ -446,7 +464,7 @@
       "kind": "boolean",
       "candidates": [false, true],
       "evidence_status": "planned_not_executed",
-      "screen_stage": "E2"
+      "screen_stage": "E3"
     },
     {
       "path": "observation.include_agent_state",
@@ -455,7 +473,7 @@
       "kind": "boolean",
       "candidates": [false, true],
       "evidence_status": "planned_not_executed",
-      "screen_stage": "E2"
+      "screen_stage": "E3"
     },
     {
       "path": "observation.state_features",
@@ -464,6 +482,60 @@
       "kind": "categorical_set",
       "candidates": ["position", "cash_fraction", "unrealized_pnl", "holding_time", "distance_to_sl", "distance_to_tp", "portfolio_exposure"],
       "evidence_status": "planned_not_executed",
+      "screen_stage": "E3"
+    },
+    {
+      "path": "proxy.ridge_alpha",
+      "layer": "screening_proxy",
+      "scope": "global_then_asset_timeframe",
+      "kind": "numeric",
+      "candidates": [0.01, 0.1, 1.0, 10.0, 100.0],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E2"
+    },
+    {
+      "path": "proxy.model_family",
+      "layer": "screening_proxy",
+      "scope": "global_then_asset_timeframe",
+      "kind": "categorical",
+      "candidates": ["ridge", "elastic_net", "pca_ridge", "hist_gradient_boosting", "mlp"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3_PROXY"
+    },
+    {
+      "path": "proxy.latent_dimension",
+      "layer": "screening_proxy",
+      "scope": "model_family",
+      "kind": "numeric",
+      "candidates": [16, 32, 64, 128],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3_PROXY"
+    },
+    {
+      "path": "proxy.random_seed",
+      "layer": "screening_proxy",
+      "scope": "replication",
+      "kind": "numeric",
+      "candidates": [1701, 1702, 1703],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E3_PROXY"
+    },
+    {
+      "path": "proxy.max_train_rows",
+      "layer": "screening_proxy",
+      "scope": "global",
+      "kind": "numeric",
+      "candidates": [25000],
+      "evidence_status": "fixed_by_compute_contract",
+      "screen_stage": "E3_PROXY"
+    },
+    {
+      "path": "proxy.action_threshold_quantile",
+      "layer": "screening_proxy",
+      "scope": "global_then_asset_timeframe",
+      "kind": "numeric",
+      "candidates": [0.5, 0.65, 0.8, 0.9],
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E2"
     },
     {
@@ -471,9 +543,10 @@
       "layer": "representation",
       "scope": "model_family",
       "kind": "categorical",
-      "candidates": ["none", "pca", "autoencoder", "temporal_cnn", "tcn", "lstm", "transformer", "event_token_transformer"],
-      "evidence_status": "planned_not_executed",
-      "screen_stage": "E3"
+      "candidates": ["none", "pca"],
+      "blocked_candidates": ["autoencoder", "temporal_cnn", "tcn", "lstm", "transformer", "event_token_transformer"],
+      "evidence_status": "blocked_by_implementation",
+      "screen_stage": "POST_EVIDENCE_IMPLEMENTATION"
     },
     {
       "path": "representation.latent_dimension",
@@ -498,9 +571,10 @@
       "layer": "agent",
       "scope": "asset_timeframe",
       "kind": "categorical",
-      "candidates": ["sac_mlp", "sac_tcn", "sac_lstm", "sac_transformer"],
-      "evidence_status": "executed_noncomparable",
-      "screen_stage": "E3"
+      "candidates": ["sac_mlp"],
+      "blocked_candidates": ["sac_tcn", "sac_lstm", "sac_transformer"],
+      "evidence_status": "planned_not_executed",
+      "screen_stage": "E4_ASSET_POLICY"
     },
     {
       "path": "agent.action_threshold",
@@ -656,6 +730,15 @@
       "screen_stage": "E0"
     },
     {
+      "path": "evaluation.minimum_split_rows",
+      "layer": "evaluation",
+      "scope": "timeframe",
+      "kind": "numeric",
+      "candidates": [200],
+      "evidence_status": "fixed_by_contract",
+      "screen_stage": "E1_E2"
+    },
+    {
       "path": "evaluation.train_period",
       "layer": "evaluation",
       "scope": "global",
@@ -688,7 +771,7 @@
       "scope": "protocol",
       "kind": "boolean",
       "candidates": [false, true],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E4"
     },
     {
@@ -697,7 +780,7 @@
       "scope": "protocol",
       "kind": "numeric",
       "candidates": [1, 2, 3, 4],
-      "evidence_status": "executed_noncomparable",
+      "evidence_status": "planned_not_executed",
       "screen_stage": "E4"
     },
     {

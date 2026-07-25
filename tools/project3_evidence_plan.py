@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from project3_evidence_screen import EVIDENCE_EXECUTOR_VERSION
+
 
 DEFAULT_DATA_ROOT = Path("/home/harveybc/Documents/GitHub/financial-data")
 PRESETS = {
@@ -153,6 +155,10 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                 "context_hours": 168,
                 "context_representation": "summary",
                 "ridge_alpha": 1.0,
+                "proxy_model_family": "ridge",
+                "proxy_latent_dimension": 32,
+                "proxy_random_seed": 1701,
+                "proxy_max_train_rows": 25000,
                 "action_threshold_quantile": 0.65,
                 "minimum_split_rows": 200,
             }
@@ -181,6 +187,10 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                 "context_hours": 168,
                 "context_representation": "summary",
                 "ridge_alpha": 1.0,
+                "proxy_model_family": "ridge",
+                "proxy_latent_dimension": 32,
+                "proxy_random_seed": 1701,
+                "proxy_max_train_rows": 25000,
                 "action_threshold_quantile": 0.65,
                 "minimum_split_rows": 200,
             }
@@ -189,6 +199,8 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
     return {
         "schema_version": "project3.evidence.plan.v1",
         "campaign_id": campaign_id,
+        "required_workers": ["omega", "dragon", "gamma-5070ti", "gamma-5090"],
+        "required_executor_version": EVIDENCE_EXECUTOR_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "parameter_registry": "examples/config/evidence_sweep/project3_parameter_registry_v1.json",
         "metric_schema": "project3.evidence.metrics.v2",
@@ -208,8 +220,9 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
             "E1_EXTERNAL_SOURCE_SCREEN",
             "E2_PREPROCESSING_CONTEXT",
             "E2_INTERACTION_CONFIRMATION",
-            "E3_REPRESENTATION_MODEL",
-            "E4_WEEKLY_RETRAINING_CONFIRMATION",
+            "E3_PROXY_MODEL_SCREEN",
+            "E4_ASSET_POLICY_TRAINING",
+            "E5_WEEKLY_RETRAINING_CONFIRMATION",
             "DOIN_L2_ASSET_OPTIMIZATION",
             "PORTFOLIO_OPTIMIZATION"
         ],
@@ -224,7 +237,9 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                     "observation.context_representation",
                     "selection.feature_budget",
                     "selection.method",
+                    "selection.regime_volatility_window_hours",
                     "data.external_context_lag_hours",
+                    "data.target_barrier_volatility_window_hours",
                     "features.cross_asset_volatility_window_hours",
                     "features.transform_input_signal",
                     "features.transform_volatility_window_hours",
@@ -244,20 +259,21 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                     "features.emd_window_hours",
                     "features.fracdiff_input_signal",
                     "features.fracdiff_d",
-                    "features.fracdiff_max_history_hours"
+                    "features.fracdiff_max_history_hours",
+                    "proxy.ridge_alpha",
+                    "proxy.action_threshold_quantile"
                 ],
                 "promotion_rule": "rank by validation annual_rap, inspect test stability; no positive-return gate"
             },
-            "E3_REPRESENTATION_MODEL": {
+            "E3_PROXY_MODEL_SCREEN": {
                 "source": "top E2 contracts",
                 "parameters": [
-                    "representation.encoder",
-                    "representation.latent_dimension",
-                    "representation.pretraining_objective",
-                    "agent.model_family",
-                    "agent.net_arch"
+                    "proxy.model_family",
+                    "proxy.latent_dimension",
+                    "proxy.random_seed",
+                    "proxy.max_train_rows"
                 ],
-                "promotion_rule": "cost-aware validation/test evidence and runtime, not cosmetic significance gates"
+                "promotion_rule": "validation annual_rap stability across seeds and runtime; no positive-return gate"
             },
             "E2_INTERACTION_CONFIRMATION": {
                 "source": "top five E2 contracts per asset/timeframe",
@@ -266,7 +282,30 @@ def build_plan(data_root: Path, campaign_id: str) -> dict[str, Any]:
                 ],
                 "promotion_rule": "validation annual_rap ranking under one execution protocol hash; no positive-return gate"
             },
-            "E4_WEEKLY_RETRAINING_CONFIRMATION": {
+            "E4_ASSET_POLICY_TRAINING": {
+                "source": "top robust E3 proxy contracts",
+                "parameters": [
+                    "agent.model_family",
+                    "agent.net_arch",
+                    "training.learning_rate",
+                    "training.batch_size",
+                    "training.gamma",
+                    "training.tau",
+                    "training.train_freq",
+                    "training.gradient_steps",
+                    "training.entropy_coefficient",
+                    "training.seed"
+                ],
+                "required_outputs": [
+                    "loadable policy artifact",
+                    "artifact sha256 and byte size",
+                    "fully resolved canonical config",
+                    "selected feature list and hash",
+                    "data contract hashes",
+                    "validation and test canonical metrics"
+                ]
+            },
+            "E5_WEEKLY_RETRAINING_CONFIRMATION": {
                 "source": "one selected contract per asset/timeframe",
                 "parameters": [
                     "evaluation.weekly_retraining",

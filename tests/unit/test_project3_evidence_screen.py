@@ -13,14 +13,44 @@ sys.path.insert(0, str(TOOLS))
 
 from project3_evidence_screen import (  # noqa: E402
     _evaluate_split,
+    _fit_proxy_model,
     _load_external_frame,
+    _purged_split_mask,
     _target_series,
+    FEATURE_PROXY_PROTOCOL,
     add_configured_transform_features,
     execute,
     feature_proxy_screen,
     merge_cross_asset_context,
     source_files,
 )
+
+
+@pytest.mark.parametrize(
+    "family",
+    ("ridge", "elastic_net", "pca_ridge", "hist_gradient_boosting", "mlp"),
+)
+def test_proxy_model_families_are_executable_and_deterministic(family: str) -> None:
+    rng = np.random.default_rng(1701)
+    train_x = pd.DataFrame(rng.normal(size=(220, 12)))
+    train_y = pd.Series(
+        0.4 * train_x.iloc[:, 0] - 0.2 * train_x.iloc[:, 1]
+        + rng.normal(scale=0.05, size=len(train_x))
+    )
+    eval_x = pd.DataFrame(rng.normal(size=(40, 12)))
+    kwargs = {
+        "family": family,
+        "alpha": 0.1,
+        "latent_dimension": 8,
+        "random_seed": 1701,
+        "max_train_rows": 1000,
+    }
+    _, first, metadata = _fit_proxy_model(train_x, train_y, eval_x, **kwargs)
+    _, second, _ = _fit_proxy_model(train_x, train_y, eval_x, **kwargs)
+    assert len(first) == len(eval_x)
+    assert np.isfinite(first).all()
+    assert np.allclose(first, second)
+    assert metadata["proxy_model_family"] == family
 
 
 def test_feature_screen_keeps_selection_train_only_and_labels_metrics(tmp_path: Path) -> None:
@@ -221,6 +251,21 @@ def test_proxy_equity_uses_one_bar_realized_returns_not_overlapping_target() -> 
     assert summary["total_return"] == pytest.approx(-0.001)
 
 
+def test_split_mask_purges_targets_that_cross_the_split_boundary() -> None:
+    timestamps = pd.Series(
+        pd.date_range("2022-12-31 16:00", "2023-01-01 04:00", freq="4h", tz="UTC")
+    )
+    mask = _purged_split_mask(
+        timestamps,
+        start=pd.Timestamp("2022-01-01T00:00:00Z"),
+        end=pd.Timestamp("2022-12-31T23:59:59Z"),
+        target_horizon_hours=4,
+    )
+    assert timestamps[mask].tolist() == [
+        pd.Timestamp("2022-12-31T16:00:00Z"),
+    ]
+
+
 def test_empty_learned_bundle_is_recorded_as_blocked_not_worker_failure(tmp_path: Path) -> None:
     timestamps = pd.date_range("2021-01-01", periods=20, freq="1h", tz="UTC")
     path = tmp_path / "train.csv"
@@ -247,7 +292,7 @@ def test_empty_learned_bundle_is_recorded_as_blocked_not_worker_failure(tmp_path
     )
     assert result["summary"]["screen_status"] == "blocked_no_numeric_nonleaking_features"
     assert result["metric_rows"][0]["value"] == 0.0
-    assert result["evaluation_protocol_id"].endswith("one_bar_execution.v2")
+    assert result["evaluation_protocol_id"] == FEATURE_PROXY_PROTOCOL
 
 
 def test_all_non_cryptoquant_bundle_uses_every_materialized_source(tmp_path: Path) -> None:

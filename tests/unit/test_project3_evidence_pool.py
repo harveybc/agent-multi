@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -8,6 +9,8 @@ TOOLS = Path(__file__).resolve().parents[2] / "tools"
 sys.path.insert(0, str(TOOLS))
 
 from project3_evidence_pool import (  # noqa: E402
+    PARAMETER_PATH_ALIASES,
+    _validate_terminal_result,
     claim_job,
     complete_job,
     backfill_parameter_facts,
@@ -19,6 +22,60 @@ from project3_evidence_pool import (  # noqa: E402
     requeue_machine,
     status,
 )
+from project3_evidence_screen import RESOLVED_PARAMETER_KEYS  # noqa: E402
+
+
+def test_every_executed_parameter_has_a_canonical_olap_registry_path() -> None:
+    registry_path = (
+        Path(__file__).resolve().parents[2]
+        / "examples/config/evidence_sweep/project3_parameter_registry_v1.json"
+    )
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    registered = {item["path"] for item in registry["parameters"]}
+    missing_aliases = sorted(set(RESOLVED_PARAMETER_KEYS) - set(PARAMETER_PATH_ALIASES))
+    assert not missing_aliases
+    missing_registry = sorted(
+        PARAMETER_PATH_ALIASES[key]
+        for key in RESOLVED_PARAMETER_KEYS
+        if PARAMETER_PATH_ALIASES[key] not in registered
+    )
+    assert not missing_registry
+
+
+def test_proxy_completion_rejects_missing_or_mislabeled_canonical_metrics() -> None:
+    result = {
+        "evaluation_protocol_id": "protocol",
+        "evaluation_protocol_hash": "hash",
+        "summary": {"selection_source": "train_only_selector"},
+        "metric_rows": [
+            {
+                "metric_name": "annual_rap",
+                "value": 0.2,
+                "unit": "fraction",
+                "horizon": "week",
+                "aggregation": "bad_fixture",
+                "split": "validation",
+            }
+        ],
+    }
+    try:
+        _validate_terminal_result("E2_PREPROCESSING_CONTEXT", result)
+    except ValueError as exc:
+        assert "canonical metrics" in str(exc)
+    else:
+        raise AssertionError("incomplete canonical metrics should be rejected")
+
+
+def test_asset_policy_completion_requires_loadable_champion_contract() -> None:
+    try:
+        _validate_terminal_result(
+            "E4_ASSET_POLICY_TRAINING",
+            {"artifacts": []},
+        )
+    except ValueError as exc:
+        assert "champion_model" in str(exc)
+    else:
+        raise AssertionError("missing champion artifact should be rejected")
 
 
 def _plan() -> dict:
