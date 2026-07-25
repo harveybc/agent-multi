@@ -211,6 +211,8 @@ def init_db(conn: sqlite3.Connection) -> None:
                      THEN m.value END) AS validation_annual_rap,
             MAX(CASE WHEN m.metric_name='max_drawdown' AND m.split='validation'
                      THEN m.value END) AS validation_max_drawdown,
+            MAX(CASE WHEN m.metric_name='evaluation_weeks' AND m.split='validation'
+                     THEN m.value END) AS validation_evaluation_weeks,
             MAX(CASE WHEN m.metric_name='mean_weekly_return' AND m.split='test'
                      THEN m.value END) AS test_mean_weekly_return,
             MAX(CASE WHEN m.metric_name='annualized_return' AND m.split='test'
@@ -221,6 +223,8 @@ def init_db(conn: sqlite3.Connection) -> None:
                      THEN m.value END) AS test_annual_rap,
             MAX(CASE WHEN m.metric_name='max_drawdown' AND m.split='test'
                      THEN m.value END) AS test_max_drawdown,
+            MAX(CASE WHEN m.metric_name='evaluation_weeks' AND m.split='test'
+                     THEN m.value END) AS test_evaluation_weeks,
             MAX(CASE WHEN m.metric_name='optimization_score' THEN m.value END)
                 AS optimization_score_dimensionless
         FROM jobs j

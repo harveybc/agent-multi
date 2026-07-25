@@ -64,15 +64,27 @@ def test_pool_claim_is_atomic_and_materializes_olap_facts(tmp_path: Path) -> Non
                     "horizon": "week",
                     "aggregation": "arithmetic_mean",
                     "split": "validation",
-                }
+                },
+                {
+                    "metric_name": "evaluation_weeks",
+                    "value": 52.0,
+                    "unit": "count",
+                    "horizon": "evaluation_period",
+                    "aggregation": "count",
+                    "split": "validation",
+                },
             ]
         },
     )
     row = conn.execute(
-        "SELECT validation_mean_weekly_return FROM evidence_result_olap WHERE job_id=?",
+        """
+        SELECT validation_mean_weekly_return,validation_evaluation_weeks
+        FROM evidence_result_olap WHERE job_id=?
+        """,
         (first["job_id"],),
     ).fetchone()
     assert row["validation_mean_weekly_return"] == 0.01
+    assert row["validation_evaluation_weeks"] == 52.0
     canonical_parameter = conn.execute(
         """
         SELECT value_numeric FROM parameter_facts
