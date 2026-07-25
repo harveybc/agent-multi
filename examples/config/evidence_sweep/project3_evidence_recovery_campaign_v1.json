@@ -1,6 +1,13 @@
 {
   "campaign_id": "project3-evidence-recovery-20260725-v1",
   "future_stage_templates": {
+    "E2_INTERACTION_CONFIRMATION": {
+      "parameters": [
+        "pairwise and three-way combinations of validation-ranked E2 changes"
+      ],
+      "promotion_rule": "validation annual_rap ranking under one execution protocol hash; no positive-return gate",
+      "source": "top five E2 contracts per asset/timeframe"
+    },
     "E2_PREPROCESSING_CONTEXT": {
       "parameters": [
         "preprocessing.mode",
@@ -43,7 +50,7 @@
       "source": "one selected contract per asset/timeframe"
     }
   },
-  "generated_at": "2026-07-25T18:27:25.153080+00:00",
+  "generated_at": "2026-07-25T19:04:16.520164+00:00",
   "job_counts": {
     "E0_DATA_CONTRACT": 427,
     "E0_EXTERNAL_COVERAGE": 318,
@@ -60667,6 +60674,7 @@
     "E1_BASE_SOURCE_SCREEN",
     "E1_EXTERNAL_SOURCE_SCREEN",
     "E2_PREPROCESSING_CONTEXT",
+    "E2_INTERACTION_CONFIRMATION",
     "E3_REPRESENTATION_MODEL",
     "E4_WEEKLY_RETRAINING_CONFIRMATION",
     "DOIN_L2_ASSET_OPTIMIZATION",

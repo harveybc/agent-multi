@@ -15,6 +15,33 @@ from project3_evidence_metrics import METRIC_SCHEMA, metric_rows_from_result
 
 SCHEMA_VERSION = "project3.evidence.pool.v1"
 
+PARAMETER_PATH_ALIASES = {
+    "asset": "data.asset",
+    "timeframe": "data.timeframe",
+    "base_feature_bundle": "data.base_feature_bundle",
+    "external_context_bundle": "data.external_context_bundle",
+    "external_context_lag_hours": "data.external_context_lag_hours",
+    "missing_value_policy": "data.missing_value_policy",
+    "max_staleness_hours": "data.max_staleness_hours",
+    "cross_asset_reference_set": "data.cross_asset_reference_set",
+    "target_horizon_hours": "data.target_horizon_hours",
+    "target_definition": "data.target_definition",
+    "feature_selection_method": "selection.method",
+    "feature_budget": "selection.feature_budget",
+    "redundancy_threshold": "selection.redundancy_threshold",
+    "stability_folds": "selection.stability_folds",
+    "preprocessing_mode": "preprocessing.mode",
+    "scaling_history_hours": "preprocessing.scaling_history_hours",
+    "clip_value": "preprocessing.clip_value",
+    "log_transform_positive_features": "preprocessing.log_transform_positive_features",
+    "context_hours": "observation.context_hours",
+    "context_representation": "observation.context_representation",
+    "include_price_window": "observation.include_price_window",
+    "include_agent_state": "observation.include_agent_state",
+    "transaction_cost_fraction": "execution.commission_fraction",
+    "risk_penalty_lambda": "reward.risk_penalty_lambda",
+}
+
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -170,6 +197,10 @@ def init_db(conn: sqlite3.Connection) -> None:
             j.config_sha256,
             j.config_json,
             j.result_json,
+            json_extract(j.result_json, '$.evaluation_protocol_id')
+                AS evaluation_protocol_id,
+            json_extract(j.result_json, '$.evaluation_protocol_hash')
+                AS evaluation_protocol_hash,
             MAX(CASE WHEN m.metric_name='mean_weekly_return' AND m.split='validation'
                      THEN m.value END) AS validation_mean_weekly_return,
             MAX(CASE WHEN m.metric_name='annualized_return' AND m.split='validation'
@@ -250,25 +281,50 @@ def _flatten(value: Any, prefix: str = "") -> Iterable[tuple[str, Any]]:
         yield prefix, value
 
 
+def _write_parameter_fact(
+    conn: sqlite3.Connection,
+    job_id: int,
+    path: str,
+    value: Any,
+    now: str,
+) -> None:
+    numeric = None
+    text = None
+    if isinstance(value, bool):
+        text = str(value).lower()
+    elif isinstance(value, (int, float)):
+        numeric = float(value)
+    elif value is not None:
+        text = str(value)
+    conn.execute(
+        """
+        INSERT OR REPLACE INTO parameter_facts(
+            job_id, parameter_path, value_json, value_numeric, value_text, created_at
+        ) VALUES(?,?,?,?,?,?)
+        """,
+        (job_id, path, _json(value), numeric, text, now),
+    )
+
+
 def _write_parameter_facts(conn: sqlite3.Connection, job_id: int, config: dict[str, Any]) -> None:
     now = utc_now()
     for path, value in _flatten(config):
-        numeric = None
-        text = None
-        if isinstance(value, bool):
-            text = str(value).lower()
-        elif isinstance(value, (int, float)):
-            numeric = float(value)
-        elif value is not None:
-            text = str(value)
-        conn.execute(
-            """
-            INSERT OR REPLACE INTO parameter_facts(
-                job_id, parameter_path, value_json, value_numeric, value_text, created_at
-            ) VALUES(?,?,?,?,?,?)
-            """,
-            (job_id, path, _json(value), numeric, text, now),
-        )
+        _write_parameter_fact(conn, job_id, path, value, now)
+        alias = PARAMETER_PATH_ALIASES.get(path)
+        if alias and alias != path:
+            _write_parameter_fact(conn, job_id, alias, value, now)
+
+
+def backfill_parameter_facts(conn: sqlite3.Connection) -> int:
+    rows = conn.execute("SELECT id,config_json,result_json FROM jobs").fetchall()
+    for row in rows:
+        config = json.loads(row["config_json"])
+        if row["result_json"]:
+            result = json.loads(row["result_json"])
+            config.update(dict(result.get("resolved_parameters") or {}))
+        _write_parameter_facts(conn, int(row["id"]), config)
+    conn.commit()
+    return len(rows)
 
 
 def enqueue_plan(conn: sqlite3.Connection, plan: dict[str, Any]) -> dict[str, int]:
@@ -552,6 +608,9 @@ def complete_job(
                 now,
             ),
         )
+    resolved_parameters = result.get("resolved_parameters")
+    if isinstance(resolved_parameters, dict):
+        _write_parameter_facts(conn, int(row["id"]), resolved_parameters)
     conn.execute(
         """
         INSERT INTO pool_events(event_type,subject_id,payload_json,created_at)
@@ -648,6 +707,80 @@ def requeue_machine(conn: sqlite3.Connection, machine_id: str, reason: str) -> i
         raise
 
 
+def invalidate_stages(
+    conn: sqlite3.Connection,
+    stages: list[str],
+    reason: str,
+) -> int:
+    """Invalidate protocol-incompatible results and restart those jobs."""
+    normalized = sorted({str(stage).strip() for stage in stages if str(stage).strip()})
+    if not normalized:
+        raise ValueError("at least one stage is required")
+    now = utc_now()
+    placeholders = ",".join("?" for _ in normalized)
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        rows = conn.execute(
+            f"SELECT id,external_id FROM jobs WHERE stage IN ({placeholders})",
+            normalized,
+        ).fetchall()
+        ids = [int(row["id"]) for row in rows]
+        if ids:
+            id_placeholders = ",".join("?" for _ in ids)
+            conn.execute(
+                f"DELETE FROM metric_facts WHERE job_id IN ({id_placeholders})",
+                ids,
+            )
+            conn.execute(
+                f"DELETE FROM artifacts WHERE job_id IN ({id_placeholders})",
+                ids,
+            )
+            conn.execute(
+                f"""
+                UPDATE job_attempts
+                SET status='invalidated_protocol',
+                    completed_at=COALESCE(completed_at,?),
+                    error=?
+                WHERE job_id IN ({id_placeholders})
+                """,
+                (now, reason, *ids),
+            )
+            conn.execute(
+                f"""
+                UPDATE jobs
+                SET status='pending',
+                    claimed_by=NULL,
+                    claimed_at=NULL,
+                    heartbeat_at=NULL,
+                    lease_until=NULL,
+                    max_attempts=max_attempts+attempt_count,
+                    started_at=NULL,
+                    completed_at=NULL,
+                    result_json=NULL,
+                    error=NULL,
+                    updated_at=?
+                WHERE id IN ({id_placeholders})
+                """,
+                (now, *ids),
+            )
+        conn.execute(
+            """
+            INSERT INTO pool_events(event_type,subject_id,payload_json,created_at)
+            VALUES('stages_invalidated',?,?,?)
+            """,
+            (
+                ",".join(normalized),
+                _json({"stages": normalized, "reason": reason, "jobs": len(rows)}),
+                now,
+            ),
+        )
+        conn.commit()
+        return len(rows)
+    except Exception:
+        conn.rollback()
+        raise
+
+
 def status(conn: sqlite3.Connection) -> dict[str, Any]:
     requeue_expired(conn)
     counts = {
@@ -689,6 +822,10 @@ def main() -> None:
     requeue = sub.add_parser("requeue-machine")
     requeue.add_argument("--machine-id", required=True)
     requeue.add_argument("--reason", default="operator requeue")
+    invalidate = sub.add_parser("invalidate-stages")
+    invalidate.add_argument("--stage", action="append", required=True)
+    invalidate.add_argument("--reason", required=True)
+    sub.add_parser("backfill-parameter-facts")
     sub.add_parser("status")
     args = parser.parse_args()
     conn = connect(args.db)
@@ -707,6 +844,16 @@ def main() -> None:
         output = {
             "ok": True,
             "requeued": requeue_machine(conn, args.machine_id, args.reason),
+        }
+    elif args.command == "invalidate-stages":
+        output = {
+            "ok": True,
+            "invalidated": invalidate_stages(conn, args.stage, args.reason),
+        }
+    elif args.command == "backfill-parameter-facts":
+        output = {
+            "ok": True,
+            "jobs": backfill_parameter_facts(conn),
         }
     else:
         output = status(conn)

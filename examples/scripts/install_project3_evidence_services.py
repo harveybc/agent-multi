@@ -61,6 +61,34 @@ NoNewPrivileges=true
 WantedBy=default.target
 """
     _write(USER_UNIT_DIR / scheduler_name, scheduler_unit)
+    backup_name = "project3-evidence-backup.service"
+    backup_unit = f"""
+[Unit]
+Description=Verified online backup of Project 3 evidence OLAP
+
+[Service]
+Type=oneshot
+WorkingDirectory={REPO}
+ExecStart={PYTHON} {REPO / 'tools/project3_evidence_backup.py'} --source-db {args.db} --destination-dir {args.backup_dir} --retention-count {args.backup_retention}
+Nice=10
+NoNewPrivileges=true
+"""
+    _write(USER_UNIT_DIR / backup_name, backup_unit)
+    backup_timer_name = "project3-evidence-backup.timer"
+    backup_timer = f"""
+[Unit]
+Description=Hourly verified Project 3 evidence OLAP backup
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec={args.backup_interval}
+Persistent=true
+Unit={backup_name}
+
+[Install]
+WantedBy=timers.target
+"""
+    _write(USER_UNIT_DIR / backup_timer_name, backup_timer)
     return name
 
 
@@ -99,6 +127,9 @@ def main() -> None:
     coordinator.add_argument("--db", required=True)
     coordinator.add_argument("--token-file", required=True)
     coordinator.add_argument("--port", type=int, default=8796)
+    coordinator.add_argument("--backup-dir")
+    coordinator.add_argument("--backup-retention", type=int, default=48)
+    coordinator.add_argument("--backup-interval", default="1h")
     worker = sub.add_parser("worker")
     worker.add_argument("--api-url", required=True)
     worker.add_argument("--token-file", required=True)
@@ -106,12 +137,18 @@ def main() -> None:
     worker.add_argument("--memory-high", default="6G")
     worker.add_argument("--memory-max", default="8G")
     args = parser.parse_args()
+    if args.role == "coordinator" and not args.backup_dir:
+        args.backup_dir = str(Path(args.db).resolve().parent / "backups")
     name = install_coordinator(args) if args.role == "coordinator" else install_worker(args)
     subprocess.run(["systemctl", "--user", "daemon-reload"], check=True)
     subprocess.run(["systemctl", "--user", "enable", "--now", name], check=True)
     if args.role == "coordinator":
         subprocess.run(
             ["systemctl", "--user", "enable", "--now", "project3-evidence-scheduler.service"],
+            check=True,
+        )
+        subprocess.run(
+            ["systemctl", "--user", "enable", "--now", "project3-evidence-backup.timer"],
             check=True,
         )
     subprocess.run(["systemctl", "--user", "--no-pager", "--full", "status", name], check=False)

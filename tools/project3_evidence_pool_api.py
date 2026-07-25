@@ -26,7 +26,7 @@ from project3_evidence_pool import (  # noqa: E402
     init_db,
     status,
 )
-from project3_evidence_screen import source_files  # noqa: E402
+from project3_evidence_screen import required_source_files  # noqa: E402
 
 
 DATA_ROOT = Path("/home/harveybc/Documents/GitHub/financial-data").resolve()
@@ -71,7 +71,7 @@ def _file_manifest(path: Path) -> dict[str, Any]:
 
 def _required_files(config: dict[str, Any]) -> list[dict[str, Any]]:
     paths = [_safe_data_path(str(config["input_data_file"]))]
-    paths.extend(_safe_data_path(str(path)) for path in source_files(config))
+    paths.extend(_safe_data_path(str(path)) for path in required_source_files(config))
     return [_file_manifest(path) for path in sorted(set(paths))]
 
 
