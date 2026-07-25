@@ -13,6 +13,7 @@ from project3_evidence_pool import (  # noqa: E402
     connect,
     enqueue_plan,
     init_db,
+    requeue_machine,
     status,
 )
 
@@ -85,3 +86,15 @@ def test_enqueue_rejects_changed_config_for_existing_job(tmp_path: Path) -> None
         assert "different config" in str(exc)
     else:
         raise AssertionError("changed config should have been rejected")
+
+
+def test_operator_can_requeue_stopped_machine_without_waiting_for_lease(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(conn, _plan())
+    claimed = claim_job(conn, "gamma-5090")
+    assert claimed
+    assert requeue_machine(conn, "gamma-5090", "rolling service update") == 1
+    replacement = claim_job(conn, "dragon")
+    assert replacement
+    assert replacement["job_id"] == claimed["job_id"]

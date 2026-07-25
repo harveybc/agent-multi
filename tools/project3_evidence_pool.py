@@ -595,6 +595,59 @@ def fail_job(
     conn.commit()
 
 
+def requeue_machine(conn: sqlite3.Connection, machine_id: str, reason: str) -> int:
+    """Return a stopped machine's owned jobs to the pool immediately."""
+    now = utc_now()
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        rows = conn.execute(
+            """
+            SELECT id, external_id, attempt_count, max_attempts
+            FROM jobs WHERE status='running' AND claimed_by=?
+            """,
+            (machine_id,),
+        ).fetchall()
+        for row in rows:
+            status_value = "pending" if row["attempt_count"] < row["max_attempts"] else "failed"
+            conn.execute(
+                """
+                UPDATE jobs SET status=?, claimed_by=NULL, lease_until=NULL,
+                    error=?, updated_at=? WHERE id=?
+                """,
+                (status_value, reason, now, row["id"]),
+            )
+            conn.execute(
+                """
+                UPDATE job_attempts SET status='operator_requeued', completed_at=?, error=?
+                WHERE job_id=? AND attempt_number=? AND completed_at IS NULL
+                """,
+                (now, reason, row["id"], row["attempt_count"]),
+            )
+            conn.execute(
+                """
+                INSERT INTO pool_events(event_type,subject_id,payload_json,created_at)
+                VALUES('job_operator_requeued',?,?,?)
+                """,
+                (
+                    row["external_id"],
+                    _json({"machine_id": machine_id, "reason": reason}),
+                    now,
+                ),
+            )
+        conn.execute(
+            """
+            UPDATE machine_heartbeats SET status='stopped', current_job_id=NULL,
+                message=?, heartbeat_at=? WHERE machine_id=?
+            """,
+            (reason, now, machine_id),
+        )
+        conn.commit()
+        return len(rows)
+    except Exception:
+        conn.rollback()
+        raise
+
+
 def status(conn: sqlite3.Connection) -> dict[str, Any]:
     requeue_expired(conn)
     counts = {
@@ -633,6 +686,9 @@ def main() -> None:
     complete.add_argument("--machine-id", required=True)
     complete.add_argument("--job-id", required=True)
     complete.add_argument("--result", required=True)
+    requeue = sub.add_parser("requeue-machine")
+    requeue.add_argument("--machine-id", required=True)
+    requeue.add_argument("--reason", default="operator requeue")
     sub.add_parser("status")
     args = parser.parse_args()
     conn = connect(args.db)
@@ -647,6 +703,11 @@ def main() -> None:
         result = json.loads(Path(args.result).read_text(encoding="utf-8"))
         complete_job(conn, args.machine_id, args.job_id, result)
         output = {"ok": True}
+    elif args.command == "requeue-machine":
+        output = {
+            "ok": True,
+            "requeued": requeue_machine(conn, args.machine_id, args.reason),
+        }
     else:
         output = status(conn)
     print(json.dumps(output, indent=2, sort_keys=True))
