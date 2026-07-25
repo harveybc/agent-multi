@@ -1458,7 +1458,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
     horizon_rows = max(1, int(round(float(config["target_horizon_hours"]) / timeframe_hours)))
     transaction_cost = float(config.get("transaction_cost_fraction") or 0.0005)
     risk_lambda = float(config.get("risk_penalty_lambda") or 1.0)
-    frame["target_return"] = _target_series(
+    target_return = _target_series(
         frame,
         horizon_rows=horizon_rows,
         definition=str(config.get("target_definition") or "forward_return"),
@@ -1470,8 +1470,17 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         ),
     )
     close = pd.to_numeric(frame["CLOSE"], errors="coerce")
-    frame["realized_return"] = close.shift(-1) / close - 1.0
-    frame = frame.replace([np.inf, -np.inf], np.nan)
+    outcome_columns = pd.DataFrame(
+        {
+            "target_return": target_return,
+            "realized_return": close.shift(-1) / close - 1.0,
+        },
+        index=frame.index,
+    )
+    frame = pd.concat([frame, outcome_columns], axis=1).replace(
+        [np.inf, -np.inf],
+        np.nan,
+    )
 
     train_start = pd.Timestamp(str(config["train_start"]), tz="UTC")
     train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
