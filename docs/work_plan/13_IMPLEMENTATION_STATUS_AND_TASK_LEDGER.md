@@ -1,8 +1,22 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-22
-Plan version: 1.6.2
-Current focus: uninterrupted six-cell static asset optimization, exact artifact closeout and portfolio-research handoff
+Status timestamp: 2026-07-25
+Plan version: 1.7.0
+Current focus: evidence-first data, preprocessing, context and proxy-model
+screening before per-asset DOIN optimization
+
+The static per-asset DOIN campaign is stopped and preserved. It must not resume
+until the evidence stages select explicit data, preprocessing, feature,
+context, target and model contracts. The active runtime is the transactional
+Project 3 evidence pool on omega, dragon, gamma-5070ti and gamma-5090.
+
+The active pool contains 1,890 E0/E1 jobs. E0 data-contract and external-source
+coverage audits are complete. E1 base-source screening is running continuously;
+E1 external-source screening follows through the stage scheduler. Every
+accepted E1/E2/E3 result must contain validation and test values for mean weekly
+return, annualized return, mean weekly RAP, annual RAP, max drawdown and
+evaluation-week count. Return and risk values are stored as fractions in OLAP
+and presented only as explicitly labeled percentages.
 
 Omega recovery evidence on 2026-07-21 identified a kernel `NULL pointer
 dereference`, not an OOM kill. Omega automatically rejoined the active BTCUSDT
@@ -22,10 +36,10 @@ evaluation intervals; see `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md` section 7.1.
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: configuration and lineage | Six-cell campaign running | Canonical resolver, runtime overlays, Git lineage and exact six-component revision gate verified on Omega, Dragon and both Gamma GPUs; every accepted cell retains exact model/config evidence for portfolio research |
+| Phase 1: evidence recovery | Running on four workers | Transactional E0/E1 pool, exact v3 protocol lineage, canonical OLAP facts, candidate/pool ETA and continuous pulls verified on Omega, Dragon and both Gamma GPUs |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
-| Phase 4 and later | Not started | Depends on the Phase 3 multi-asset environment and config review gates |
+| Phase 4 and later | Gated | E4 asset-policy artifacts require E1/E2/E3 evidence-selected contracts; E5 weekly retraining follows before DOIN resumes |
 
 ### 1.1 Phase 1 closeout sequence
 
@@ -590,7 +604,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `GPU-WATCHDOG-001` | Codex | `agent-multi` | verified_three_hosts | Five-minute GPU temperature, GPU-count and NVIDIA telemetry watchdog with Hermes Telegram alert, recovery and hourly repeat semantics | Codex |
 | `SWARM-TELEGRAM-001` | Codex | `agent-multi` | verified_three_hosts | Idempotent completion metrics and failover-owned health notifications for frozen machines, unhealthy workers, divergent lineages, parallel swarms and stalled progress | Codex |
 | `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
-| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | implemented_local_pending_fleet | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 1,890-job E0/E1 plan, transactional pull pool, normalized OLAP facts and continuous workers | Codex |
+| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | running_four_workers | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 1,890-job E0/E1 plan, transactional pull pool, normalized OLAP facts, measured ETA and continuous workers | Codex |
 
 Claude packet:
 
@@ -609,20 +623,25 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Deploy the E0/E1 evidence pool to omega, dragon, gamma-5070ti, and
-   gamma-5090; verify atomic claims, fresh heartbeats, no duplicate config
-   hashes, and continuous pulls.
+1. Complete E1 base and external-source screens on omega, dragon,
+   gamma-5070ti and gamma-5090 with continuous atomic pulls.
 2. Analyze E1 OLAP effects and generate the bounded E2
    preprocessing/context matrix from the top robust contracts per
    asset/timeframe. Positive profit is not a promotion requirement.
-3. Generate E3 representation/model comparisons, then execute E4 full-year
-   weekly retraining for one selected contract per portfolio cell.
-4. Resume DOIN Level 2 only with explicit E4 configs and champion artifact
+3. Execute E2 context, preprocessing, feature-selection and transform sweeps,
+   retaining all canonical validation/test metrics and resolved parameters in
+   OLAP.
+4. Execute E3 proxy-family comparisons with frozen upstream contracts.
+5. Materialize E4 loadable per-asset policy artifacts, resolved configs,
+   selected-feature hashes and data-contract hashes.
+6. Execute E5 weekly-retraining confirmation and persist its full-year
+   weekly/annual metric contract.
+7. Resume DOIN Level 2 only with explicit E4/E5 configs and champion artifact
    paths.
-5. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+8. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-6. Implement and fault-test the decentralized artifact plane before a
+9. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks
