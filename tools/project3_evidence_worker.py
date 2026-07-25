@@ -13,6 +13,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from pathlib import Path
 from typing import Any
+from collections.abc import Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -141,6 +142,7 @@ def _download_file(
     token: str | None,
     manifest: dict[str, Any],
     destination: Path,
+    progress_callback: Callable[[int, int], None] | None = None,
 ) -> None:
     expected_size = int(manifest["size_bytes"])
     expected_sha = str(manifest["sha256"])
@@ -158,6 +160,7 @@ def _download_file(
     temporary = destination.with_name(f"{destination.name}.{os.getpid()}.part")
     digest = hashlib.sha256()
     written = 0
+    last_progress = time.monotonic()
     try:
         with urlopen(request, timeout=600) as response, temporary.open("wb") as handle:
             source = (
@@ -172,6 +175,9 @@ def _download_file(
                 handle.write(chunk)
                 digest.update(chunk)
                 written += len(chunk)
+                if progress_callback and time.monotonic() - last_progress >= 20:
+                    progress_callback(written, expected_size)
+                    last_progress = time.monotonic()
         if written != expected_size:
             raise RuntimeError(
                 f"download size mismatch for {manifest['path']}: {written} != {expected_size}"
@@ -223,7 +229,23 @@ def _materialize_job_files(
                 f"file {index}/{len(destinations)} {manifest['relative_path']}",
             ),
         )
-        _download_file(api_url, token, manifest, destination)
+        _download_file(
+            api_url,
+            token,
+            manifest,
+            destination,
+            progress_callback=lambda written, total, relative=manifest["relative_path"]: _request(
+                api_url,
+                "/heartbeat",
+                token=token,
+                payload=_state_payload(
+                    machine_id,
+                    job_id,
+                    "downloading",
+                    f"{relative} {written}/{total} bytes",
+                ),
+            ),
+        )
     config = dict(job["config"])
     original_root = Path(str(config["data_root"])).resolve()
     input_path = Path(str(config["input_data_file"])).resolve()
