@@ -590,6 +590,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `GPU-WATCHDOG-001` | Codex | `agent-multi` | verified_three_hosts | Five-minute GPU temperature, GPU-count and NVIDIA telemetry watchdog with Hermes Telegram alert, recovery and hourly repeat semantics | Codex |
 | `SWARM-TELEGRAM-001` | Codex | `agent-multi` | verified_three_hosts | Idempotent completion metrics and failover-owned health notifications for frozen machines, unhealthy workers, divergent lineages, parallel swarms and stalled progress | Codex |
 | `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
+| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | implemented_local_pending_fleet | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 1,890-job E0/E1 plan, transactional pull pool, normalized OLAP facts and continuous workers | Codex |
 
 Claude packet:
 
@@ -608,19 +609,20 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Deploy and smoke-test the corrected `fleet_v5` four-job queue; verify the
-   start follows
-   `omega -> dragon -> gamma-5070ti -> gamma-5090` and fail closed on seed,
-   dataset, revision, genesis, population, finalized-anchor or artifact
-   divergence.
-2. Enable user linger on Dragon and Gamma, then remove the persistent Omega SSH
-   availability bridge and re-test service persistence without an administrative login.
-3. Specify the staged nested weekly walk-forward L2 metric without opening the
-   protected 2023 test period during optimization.
-4. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+1. Deploy the E0/E1 evidence pool to omega, dragon, gamma-5070ti, and
+   gamma-5090; verify atomic claims, fresh heartbeats, no duplicate config
+   hashes, and continuous pulls.
+2. Analyze E1 OLAP effects and generate the bounded E2
+   preprocessing/context matrix from the top robust contracts per
+   asset/timeframe. Positive profit is not a promotion requirement.
+3. Generate E3 representation/model comparisons, then execute E4 full-year
+   weekly retraining for one selected contract per portfolio cell.
+4. Resume DOIN Level 2 only with explicit E4 configs and champion artifact
+   paths.
+5. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-5. Implement and fault-test the decentralized artifact plane before a
+6. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks
