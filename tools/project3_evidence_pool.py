@@ -578,6 +578,71 @@ def requeue_expired(conn: sqlite3.Connection, *, commit: bool = True) -> int:
     return len(rows)
 
 
+def requeue_orphaned_jobs(
+    conn: sqlite3.Connection,
+    *,
+    commit: bool = True,
+) -> int:
+    """Recover claims contradicted by a newer heartbeat from the same worker."""
+    now = utc_now()
+    rows = conn.execute(
+        """
+        SELECT j.id,j.external_id,j.claimed_by,j.attempt_count,j.max_attempts,
+               m.status AS machine_status,m.current_job_id,m.heartbeat_at
+        FROM jobs j
+        JOIN machine_heartbeats m ON m.machine_id=j.claimed_by
+        WHERE j.status='running'
+          AND m.heartbeat_at > COALESCE(j.claimed_at,'')
+          AND (
+              m.current_job_id IS NULL
+              OR m.current_job_id != j.external_id
+          )
+        """
+    ).fetchall()
+    for row in rows:
+        reason = (
+            "worker heartbeat moved to "
+            f"{row['current_job_id'] or row['machine_status']}; orphan claim recovered"
+        )
+        conn.execute(
+            """
+            UPDATE jobs SET status='pending', claimed_by=NULL, lease_until=NULL,
+                max_attempts=MAX(max_attempts,attempt_count+1),
+                error=?, updated_at=? WHERE id=? AND status='running'
+            """,
+            (reason, now, row["id"]),
+        )
+        conn.execute(
+            """
+            UPDATE job_attempts
+            SET status='orphaned_worker_requeue',completed_at=?,error=?
+            WHERE job_id=? AND attempt_number=? AND completed_at IS NULL
+            """,
+            (now, reason, row["id"], row["attempt_count"]),
+        )
+        conn.execute(
+            """
+            INSERT INTO pool_events(event_type,subject_id,payload_json,created_at)
+            VALUES('job_orphan_requeued',?,?,?)
+            """,
+            (
+                row["external_id"],
+                _json(
+                    {
+                        "machine_id": row["claimed_by"],
+                        "heartbeat_status": row["machine_status"],
+                        "heartbeat_job_id": row["current_job_id"],
+                        "reason": reason,
+                    }
+                ),
+                now,
+            ),
+        )
+    if rows and commit:
+        conn.commit()
+    return len(rows)
+
+
 def claim_job(
     conn: sqlite3.Connection,
     machine_id: str,
@@ -587,6 +652,7 @@ def claim_job(
     conn.execute("BEGIN IMMEDIATE")
     try:
         requeue_expired(conn, commit=False)
+        requeue_orphaned_jobs(conn, commit=False)
         candidates = conn.execute(
             """
             SELECT * FROM jobs
@@ -874,13 +940,13 @@ def requeue_machine(conn: sqlite3.Connection, machine_id: str, reason: str) -> i
             (machine_id,),
         ).fetchall()
         for row in rows:
-            status_value = "pending" if row["attempt_count"] < row["max_attempts"] else "failed"
             conn.execute(
                 """
-                UPDATE jobs SET status=?, claimed_by=NULL, lease_until=NULL,
+                UPDATE jobs SET status='pending', claimed_by=NULL, lease_until=NULL,
+                    max_attempts=MAX(max_attempts,attempt_count+1),
                     error=?, updated_at=? WHERE id=?
                 """,
-                (status_value, reason, now, row["id"]),
+                (reason, now, row["id"]),
             )
             conn.execute(
                 """
@@ -990,6 +1056,7 @@ def invalidate_stages(
 
 def status(conn: sqlite3.Connection) -> dict[str, Any]:
     requeue_expired(conn)
+    requeue_orphaned_jobs(conn)
     now = datetime.now(timezone.utc)
     counts = {
         row["status"]: int(row["n"])

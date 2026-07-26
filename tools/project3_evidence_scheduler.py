@@ -19,6 +19,7 @@ UPSTREAM_STAGES = ("E1_BASE_SOURCE_SCREEN", "E1_EXTERNAL_SOURCE_SCREEN")
 E2_STAGE = "E2_PREPROCESSING_CONTEXT"
 E2_INTERACTION_STAGE = "E2_INTERACTION_CONFIRMATION"
 E3_PROXY_STAGE = "E3_PROXY_MODEL_SCREEN"
+MEMORY_HEAVY_WORKERS = ["omega", "dragon", "gamma-5090"]
 
 
 def _json(value: Any) -> str:
@@ -126,6 +127,35 @@ def _top_contracts(
 
 def _add_variant(variants: dict[str, dict[str, Any]], config: dict[str, Any]) -> None:
     variants[hashlib.sha256(_json(config).encode("utf-8")).hexdigest()] = config
+
+
+def _eligible_machines(config: dict[str, Any]) -> list[str]:
+    if (
+        str(config.get("timeframe") or "").lower() == "15m"
+        and str(config.get("external_context_bundle") or "")
+        == "all_non_cryptoquant"
+    ):
+        return list(MEMORY_HEAVY_WORKERS)
+    return []
+
+
+def apply_resource_eligibility(conn) -> int:
+    """Keep two workers on gamma from loading the widest 15m frame together."""
+    eligible = _json(MEMORY_HEAVY_WORKERS)
+    cursor = conn.execute(
+        """
+        UPDATE jobs
+        SET eligible_machines_json=?,updated_at=?
+        WHERE json_extract(config_json,'$.timeframe')='15m'
+          AND json_extract(config_json,'$.external_context_bundle')
+              ='all_non_cryptoquant'
+          AND eligible_machines_json != ?
+        """,
+        (eligible, datetime.now(timezone.utc).isoformat(timespec="seconds"), eligible),
+    )
+    if cursor.rowcount:
+        conn.commit()
+    return int(cursor.rowcount)
 
 
 def _e2_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
@@ -480,6 +510,7 @@ def promote_e2(conn, *, materialized_plan: Path | None = None) -> dict[str, Any]
                     "task_type": "feature_proxy_screen",
                     "priority": 200,
                     "max_attempts": 3,
+                    "eligible_machines": _eligible_machines(config),
                     "config": config,
                 }
             )
@@ -535,6 +566,7 @@ def promote_e2_interactions(
                     "task_type": "feature_proxy_screen",
                     "priority": 300,
                     "max_attempts": 3,
+                    "eligible_machines": _eligible_machines(config),
                     "config": config,
                 }
             )
@@ -602,6 +634,7 @@ def promote_e3(
                     "task_type": "feature_proxy_screen",
                     "priority": 400,
                     "max_attempts": 3,
+                    "eligible_machines": _eligible_machines(config),
                     "config": config,
                 }
             )
@@ -625,10 +658,16 @@ def promote_e3(
 
 
 def promote_all(conn, *, materialized_plan: Path | None = None) -> dict[str, Any]:
+    eligibility_updates = apply_resource_eligibility(conn)
     e2 = promote_e2(conn, materialized_plan=materialized_plan)
     e2_interactions = promote_e2_interactions(conn, materialized_plan=materialized_plan)
     e3 = promote_e3(conn, materialized_plan=materialized_plan)
-    return {"e2": e2, "e2_interactions": e2_interactions, "e3": e3}
+    return {
+        "resource_eligibility_updates": eligibility_updates,
+        "e2": e2,
+        "e2_interactions": e2_interactions,
+        "e3": e3,
+    }
 
 
 def main() -> None:
