@@ -233,6 +233,9 @@ Properties:
 - SQLite WAL and `BEGIN IMMEDIATE` atomic claims;
 - one owner per job;
 - renewable leases, expired-worker recovery, and bounded retries;
+- immediate orphan recovery when a newer heartbeat proves that a restarted
+  worker has moved to another job; stale heartbeat state older than the claim
+  cannot requeue a live attempt;
 - deterministic config hashes and duplicate-config rejection;
 - normalized `parameter_facts`, `metric_facts`, `artifacts`, attempts, events,
   and machine heartbeats;
@@ -244,6 +247,13 @@ Properties:
   do not hold the complete lake;
 - per-worker bounded caches with LRU-style eviction, so gamma does not require
   a duplicate 60+ GB data lake or exhaust its remaining filesystem space.
+- memory-bounded causal feature selection: wide external frames are normalized
+  and scored in column blocks, while per-source filling retains the complete
+  causal history before the evaluation interval is materialized.
+- host-aware eligibility for `15m/all_non_cryptoquant`: omega, dragon and
+  gamma-5090 may execute the approximately 6.6-7.2 GB cases; gamma-5070ti
+  remains available for another pool job so the two workers on gamma cannot
+  exhaust the host together.
 - online SQLite snapshots that do not stop WAL writers, each verified with
   `PRAGMA quick_check`, SHA-256, atomic publication, and bounded retention.
 - idempotent terminal reports keyed by job attempt: a coordinator restart
@@ -270,6 +280,20 @@ examples/config/evidence_sweep/project3_evidence_recovery_campaign_v1.json
 ```
 
 E2-E5 are generated from upstream OLAP results, not guessed in advance.
+
+The stage scheduler materialized 11,490
+`E2_PREPROCESSING_CONTEXT` jobs on 2026-07-25, for 13,380 jobs in the pool
+after E0/E1. A 2026-07-26 measured regression used the real
+`BNBUSDT@15m/all_non_cryptoquant` contract:
+
+- ordinary causal-fill case: 273 sources, 1,748 external features, 35,036
+  validation rows, 35,031 test rows, 53 weeks per evaluation split, 6.6 GB
+  peak RSS;
+- missing-indicator case: the same sources plus 1,748 boolean missingness
+  indicators, 7.2 GB peak RSS;
+- both completed under the 8 GB worker limit; the ordinary case preserved the
+  selected features and all validation/test metrics from the pre-optimization
+  execution while reducing peak RSS from 15.0 GB.
 
 ## Execution Protocol Correction
 

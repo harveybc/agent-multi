@@ -17,6 +17,7 @@ from project3_evidence_pool import (  # noqa: E402
     init_db,
 )
 from project3_evidence_scheduler import (  # noqa: E402
+    _eligible_machines,
     E3_PROXY_STAGE,
     _executor_fleet_ready,
     promote_e2,
@@ -258,3 +259,18 @@ def test_scheduler_freezes_e2_features_for_bounded_e3_proxy_screen(
             config["upstream_evaluation_protocol_hash"]
             == FEATURE_PROXY_PROTOCOL_HASH
         )
+
+
+def test_widest_15m_jobs_exclude_second_gamma_worker() -> None:
+    assert _eligible_machines(
+        {
+            "timeframe": "15m",
+            "external_context_bundle": "all_non_cryptoquant",
+        }
+    ) == ["omega", "dragon", "gamma-5090"]
+    assert _eligible_machines(
+        {
+            "timeframe": "1h",
+            "external_context_bundle": "all_non_cryptoquant",
+        }
+    ) == []

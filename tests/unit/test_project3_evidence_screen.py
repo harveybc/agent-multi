@@ -12,10 +12,12 @@ TOOLS = Path(__file__).resolve().parents[2] / "tools"
 sys.path.insert(0, str(TOOLS))
 
 from project3_evidence_screen import (  # noqa: E402
+    _causal_scale,
     _evaluate_split,
     _fit_proxy_model,
     _load_external_frame,
     _purged_split_mask,
+    _select_features_bounded,
     _target_series,
     FEATURE_PROXY_PROTOCOL,
     add_configured_transform_features,
@@ -24,6 +26,49 @@ from project3_evidence_screen import (  # noqa: E402
     merge_cross_asset_context,
     source_files,
 )
+
+
+@pytest.mark.parametrize(
+    "mode",
+    ("rolling_zscore", "rolling_robust", "rolling_rank_gaussian"),
+)
+def test_short_rolling_windows_never_request_too_many_periods(mode: str) -> None:
+    frame = pd.DataFrame({"signal": np.linspace(1.0, 20.0, 20)})
+    scaled = _causal_scale(
+        frame,
+        ["signal"],
+        mode=mode,
+        window_rows=6,
+        clip=10.0,
+    )
+    assert len(scaled) == len(frame)
+    assert scaled["signal"].notna().any()
+
+
+def test_bounded_mutual_information_accepts_an_all_invalid_block() -> None:
+    rng = np.random.default_rng(1701)
+    frame = pd.DataFrame(
+        {
+            **{
+                f"valid_{index}": rng.normal(size=200)
+                for index in range(64)
+            },
+            "invalid": np.nan,
+        }
+    )
+    target = pd.Series(rng.normal(size=len(frame)))
+    selected, scores = _select_features_bounded(
+        frame,
+        list(frame.columns),
+        target,
+        scaling_mode="none",
+        scaling_window_rows=6,
+        clip=None,
+        method="mutual_info_topk",
+        budget=8,
+    )
+    assert len(selected) == 8
+    assert "invalid" not in scores
 
 
 @pytest.mark.parametrize(

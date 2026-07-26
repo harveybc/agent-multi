@@ -406,9 +406,19 @@ def _load_external_frame(
     return result.drop_duplicates("DATE_TIME", keep="last")
 
 
-def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple[pd.DataFrame, dict[str, Any]]:
+def merge_external_context(
+    frame: pd.DataFrame,
+    config: dict[str, Any],
+    *,
+    output_start: pd.Timestamp | None = None,
+    output_end: pd.Timestamp | None = None,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
     files = source_files(config)
     if not files:
+        if output_start is not None:
+            frame = frame[frame["DATE_TIME"] >= output_start]
+        if output_end is not None:
+            frame = frame[frame["DATE_TIME"] <= output_end]
         return frame, {
             "external_source_count": 0,
             "external_feature_count": 0,
@@ -419,10 +429,28 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
     lag_hours = float(config.get("external_context_lag_hours") or 0.0)
     start = frame["DATE_TIME"].min()
     end = frame["DATE_TIME"].max()
-    before = set(frame.columns)
     base = frame.reset_index(drop=True)
     base_index = pd.DatetimeIndex(base["DATE_TIME"])
+    output_mask = pd.Series(True, index=base.index)
+    if output_start is not None:
+        output_mask &= base["DATE_TIME"] >= output_start
+    if output_end is not None:
+        output_mask &= base["DATE_TIME"] <= output_end
+    output_base = base.loc[output_mask]
+    missing_policy = str(config.get("missing_value_policy") or "causal_ffill")
+    max_staleness_hours = config.get("max_staleness_hours")
+    ffill_limit = None
+    if max_staleness_hours is not None:
+        ffill_limit = max(
+            1,
+            int(math.ceil(float(max_staleness_hours) / timeframe_hours)),
+        )
+    train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
+    train_mask = base["DATE_TIME"] <= train_end
     aligned_contexts: list[pd.DataFrame] = []
+    indicator_contexts: list[pd.DataFrame] = []
+    external_columns: list[str] = []
+    coverage_by_column: dict[str, int] = {}
     for path in files:
         context = _load_external_frame(path, start=start, end=end, lag_hours=lag_hours)
         if len(context.columns) <= 1:
@@ -431,44 +459,58 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
         context = context[~context.index.duplicated(keep="last")]
         aligned = context.reindex(base_index)
         aligned.index = base.index
-        aligned_contexts.append(aligned)
-    if aligned_contexts:
-        external = pd.concat(aligned_contexts, axis=1, copy=False)
-        if external.columns.duplicated().any():
-            external = external.loc[:, ~external.columns.duplicated(keep="last")]
-        merged = pd.concat([base, external], axis=1, copy=False).copy()
-        del external
-    else:
-        merged = base.copy()
-    aligned_contexts.clear()
-    gc.collect()
-    external_columns = sorted(set(merged.columns) - before)
-    if external_columns:
-        missing_policy = str(config.get("missing_value_policy") or "causal_ffill")
-        timeframe_hours = _timeframe_hours(str(config["timeframe"]))
-        max_staleness_hours = config.get("max_staleness_hours")
-        ffill_limit = None
-        if max_staleness_hours is not None:
-            ffill_limit = max(1, int(math.ceil(float(max_staleness_hours) / timeframe_hours)))
-        if missing_policy in {"causal_ffill", "causal_ffill_plus_missing_indicator"}:
-            missing_before = merged[external_columns].isna()
-            merged[external_columns] = merged[external_columns].ffill(limit=ffill_limit)
+        if missing_policy in {
+            "causal_ffill",
+            "causal_ffill_plus_missing_indicator",
+        }:
             if missing_policy == "causal_ffill_plus_missing_indicator":
-                indicators = missing_before.astype(float)
+                indicators = aligned.isna()
                 indicators.columns = [
-                    f"{column}__was_missing" for column in external_columns
+                    f"{column}__was_missing" for column in aligned.columns
                 ]
-                merged = pd.concat([merged, indicators], axis=1, copy=False).copy()
+                indicator_contexts.append(indicators.loc[output_mask])
+            aligned = aligned.ffill(limit=ffill_limit)
         elif missing_policy == "train_median":
-            train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
-            train_mask = merged["DATE_TIME"] <= train_end
-            medians = merged.loc[train_mask, external_columns].median()
-            merged[external_columns] = merged[external_columns].fillna(medians)
+            medians = aligned.loc[train_mask].median()
+            aligned = aligned.fillna(medians)
         else:
             raise ValueError(f"unsupported missing_value_policy: {missing_policy}")
-        coverage = float(merged[external_columns].notna().mean().mean())
+        for column in aligned.columns:
+            name = str(column)
+            external_columns.append(name)
+            coverage_by_column[name] = int(aligned[column].notna().sum())
+        aligned_contexts.append(aligned.loc[output_mask])
+    if aligned_contexts:
+        external = pd.concat(aligned_contexts, axis=1)
+        aligned_contexts.clear()
+        gc.collect()
+        if external.columns.duplicated().any():
+            external = external.loc[:, ~external.columns.duplicated(keep="last")]
+        external_columns = list(external.columns)
+        coverage = (
+            float(sum(coverage_by_column.values()))
+            / float(len(base) * len(external_columns))
+            if external_columns and len(base)
+            else 0.0
+        )
+        pieces = [output_base, external]
+        if indicator_contexts:
+            indicators = pd.concat(indicator_contexts, axis=1)
+            indicator_contexts.clear()
+            if indicators.columns.duplicated().any():
+                indicators = indicators.loc[
+                    :, ~indicators.columns.duplicated(keep="last")
+                ]
+            pieces.append(indicators)
+        merged = pd.concat(pieces, axis=1)
+        del external
+        if len(pieces) > 2:
+            del indicators
     else:
+        merged = output_base
+        external_columns = []
         coverage = 0.0
+    gc.collect()
     return merged, {
         "external_source_count": len(files),
         "external_feature_count": len(external_columns),
@@ -476,6 +518,23 @@ def merge_external_context(frame: pd.DataFrame, config: dict[str, Any]) -> tuple
         "external_coverage_fraction": coverage,
         "external_context_lag_hours": lag_hours,
     }
+
+
+def _transform_warmup_hours(config: dict[str, Any]) -> float:
+    emd_windows = config.get("emd_window_hours") or [8, 32, 128]
+    wavelet_levels = config.get("wavelet_levels") or [1, 2, 3, 4]
+    return max(
+        24.0,
+        float(config.get("cross_asset_volatility_window_hours") or 24),
+        float(config.get("transform_volatility_window_hours") or 24),
+        float(config.get("transform_detrend_window_hours") or 168),
+        float(config.get("hilbert_window_hours") or 168),
+        float(config.get("multitaper_window_hours") or 168),
+        float(config.get("fracdiff_max_history_hours") or 720),
+        max(float(value) for value in emd_windows),
+        float(config.get("wavelet_base_scale_hours") or 8)
+        * max(float(value) for value in wavelet_levels),
+    )
 
 
 def merge_cross_asset_context(
@@ -928,7 +987,7 @@ def _causal_scale(
     if mode == "none":
         scaled = values.copy()
     elif mode == "rolling_zscore":
-        min_periods = max(8, min(window_rows // 4, window_rows))
+        min_periods = min(window_rows, max(8, window_rows // 4))
         center = values.rolling(window_rows, min_periods=min_periods).mean().shift(1)
         spread = values.rolling(window_rows, min_periods=min_periods).std().shift(1)
         scaled = (values - center) / spread.replace(0.0, np.nan)
@@ -937,13 +996,13 @@ def _causal_scale(
         spread = values.expanding(min_periods=16).std().shift(1)
         scaled = (values - center) / spread.replace(0.0, np.nan)
     elif mode == "rolling_robust":
-        min_periods = max(8, min(window_rows // 4, window_rows))
+        min_periods = min(window_rows, max(8, window_rows // 4))
         center = values.rolling(window_rows, min_periods=min_periods).median().shift(1)
         deviation = (values - center).abs()
         spread = deviation.rolling(window_rows, min_periods=min_periods).median().shift(1)
         scaled = (values - center) / (1.4826 * spread.replace(0.0, np.nan))
     elif mode == "rolling_rank_gaussian":
-        min_periods = max(8, min(window_rows // 4, window_rows))
+        min_periods = min(window_rows, max(8, window_rows // 4))
         percentile = values.rolling(
             window_rows,
             min_periods=min_periods,
@@ -1063,6 +1122,208 @@ def _select_features(
         correlations = train[[column, *selected]].corr(method="spearman").loc[column, selected]
         if correlations.abs().max() < float(redundancy_threshold):
             selected.append(column)
+    return selected, scores
+
+
+def _column_blocks(columns: list[str], block_size: int) -> list[list[str]]:
+    size = max(1, int(block_size))
+    return [columns[start : start + size] for start in range(0, len(columns), size)]
+
+
+def _select_features_bounded(
+    train_features: pd.DataFrame,
+    columns: list[str],
+    target: pd.Series,
+    *,
+    scaling_mode: str,
+    scaling_window_rows: int,
+    clip: float | None,
+    method: str,
+    budget: int,
+    redundancy_threshold: float = 0.95,
+    stability_folds: int = 5,
+    timeframe_hours: float = 1.0,
+    regime_volatility_window_hours: float = 24.0,
+    block_size: int = 64,
+) -> tuple[list[str], dict[str, float]]:
+    """Select from a wide frame without materializing every scaled column at once."""
+    aligned_target = target.reindex(train_features.index)
+    valid: list[str] = []
+    scores: dict[str, float] = {}
+    folds = np.array_split(
+        np.arange(len(train_features)),
+        max(2, int(stability_folds)),
+    )
+    regimes: pd.Series | None = None
+    if method == "regime_conditioned_topk":
+        regime_rows = max(
+            4,
+            int(round(float(regime_volatility_window_hours) / timeframe_hours)),
+        )
+        target_volatility = aligned_target.rolling(
+            regime_rows,
+            min_periods=max(4, regime_rows // 3),
+        ).std()
+        try:
+            regimes = pd.qcut(
+                target_volatility.rank(method="first"),
+                3,
+                labels=False,
+            )
+        except ValueError:
+            regimes = pd.Series(0, index=train_features.index)
+
+    for block in _column_blocks(columns, block_size):
+        scaled = _causal_scale(
+            train_features,
+            block,
+            mode=scaling_mode,
+            window_rows=scaling_window_rows,
+            clip=clip,
+        )
+        block_valid = [
+            column
+            for column in block
+            if scaled[column].notna().mean() >= 0.75
+            and scaled[column].nunique(dropna=True) > 2
+        ]
+        valid.extend(block_valid)
+        if method == "rank_ic_topk":
+            scores.update(
+                {
+                    column: abs(_spearman(scaled[column], aligned_target))
+                    for column in block_valid
+                }
+            )
+        elif method == "mutual_info_topk":
+            if block_valid:
+                sample = scaled[block_valid].replace([np.inf, -np.inf], np.nan)
+                medians = sample.median()
+                x = sample.fillna(medians)
+                y = aligned_target.fillna(0.0)
+                if len(x) > 5000:
+                    indices = np.linspace(0, len(x) - 1, 5000).astype(int)
+                    x = x.iloc[indices]
+                    y = y.iloc[indices]
+                values = mutual_info_regression(
+                    x,
+                    y,
+                    random_state=1701,
+                    n_neighbors=5,
+                )
+                scores.update(
+                    {
+                        column: _safe_float(value)
+                        for column, value in zip(block_valid, values)
+                    }
+                )
+        elif method == "redundancy_stability_topk":
+            for column in block_valid:
+                fold_scores = [
+                    abs(
+                        _spearman(
+                            scaled.iloc[index][column],
+                            aligned_target.iloc[index],
+                        )
+                    )
+                    for index in folds
+                    if len(index) >= 40
+                ]
+                scores[column] = (
+                    float(np.mean(fold_scores) - np.std(fold_scores))
+                    if fold_scores
+                    else 0.0
+                )
+        elif method == "regime_conditioned_topk":
+            assert regimes is not None
+            for column in block_valid:
+                regime_scores = [
+                    abs(
+                        _spearman(
+                            scaled.loc[regimes == regime, column],
+                            aligned_target.loc[regimes == regime],
+                        )
+                    )
+                    for regime in sorted(regimes.dropna().unique())
+                ]
+                scores[column] = (
+                    float(np.mean(regime_scores)) if regime_scores else 0.0
+                )
+        elif method != "sparse_mask":
+            raise ValueError(f"unsupported feature selection method: {method}")
+        del scaled
+
+    if method == "sparse_mask" and valid:
+        sample_indices = np.arange(len(train_features))
+        if len(sample_indices) > 10_000:
+            sample_indices = np.linspace(
+                0,
+                len(sample_indices) - 1,
+                10_000,
+            ).astype(int)
+        x = np.empty((len(sample_indices), len(valid)), dtype=np.float64)
+        offset = 0
+        for block in _column_blocks(valid, block_size):
+            scaled = _causal_scale(
+                train_features,
+                block,
+                mode=scaling_mode,
+                window_rows=scaling_window_rows,
+                clip=clip,
+            ).replace([np.inf, -np.inf], np.nan)
+            medians = scaled.median()
+            block_values = (
+                scaled.fillna(medians)
+                .iloc[sample_indices]
+                .to_numpy(dtype=np.float64)
+            )
+            x[:, offset : offset + len(block)] = block_values
+            offset += len(block)
+            del scaled
+        y = aligned_target.fillna(0.0).iloc[sample_indices].to_numpy(dtype=float)
+        means = np.mean(x, axis=0)
+        stds = np.std(x, axis=0, ddof=1)
+        stds[~np.isfinite(stds) | (stds == 0.0)] = 1.0
+        model = Lasso(alpha=1e-4, max_iter=5000, random_state=1701)
+        model.fit((x - means) / stds, y)
+        scores = {
+            column: abs(_safe_float(coefficient))
+            for column, coefficient in zip(valid, model.coef_)
+        }
+        del x
+
+    ranked = sorted(
+        valid,
+        key=lambda column: (scores.get(column, 0.0), column),
+        reverse=True,
+    )
+    limit = max(1, int(budget))
+    if method != "redundancy_stability_topk":
+        return ranked[:limit], scores
+
+    selected: list[str] = []
+    selected_scaled = pd.DataFrame(index=train_features.index)
+    for column in ranked:
+        if len(selected) >= limit:
+            break
+        candidate = _causal_scale(
+            train_features,
+            [column],
+            mode=scaling_mode,
+            window_rows=scaling_window_rows,
+            clip=clip,
+        )[column]
+        if not selected:
+            selected.append(column)
+            selected_scaled[column] = candidate
+            continue
+        correlations = pd.concat(
+            [candidate.rename(column), selected_scaled],
+            axis=1,
+        ).corr(method="spearman").loc[column, selected]
+        if correlations.abs().max() < float(redundancy_threshold):
+            selected.append(column)
+            selected_scaled[column] = candidate
     return selected, scores
 
 
@@ -1411,8 +1672,40 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(
             "upstream evaluation protocol hash does not match current executor"
         )
+    split_keys = (
+        "train_start",
+        "train_end",
+        "validation_start",
+        "validation_end",
+        "test_start",
+        "test_end",
+    )
+    has_split_contract = all(config.get(key) is not None for key in split_keys)
+    if has_split_contract:
+        train_start = pd.Timestamp(str(config["train_start"]), tz="UTC")
+        train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
+        validation_start = pd.Timestamp(str(config["validation_start"]), tz="UTC")
+        validation_end = pd.Timestamp(str(config["validation_end"]), tz="UTC")
+        test_start = pd.Timestamp(str(config["test_start"]), tz="UTC")
+        test_end = pd.Timestamp(str(config["test_end"]), tz="UTC")
     frame = _load_base(config)
-    frame, source_meta = merge_external_context(frame, config)
+    if has_split_contract:
+        warmup_start = train_start - pd.Timedelta(
+            hours=_transform_warmup_hours(config)
+        )
+        output_start = warmup_start
+        output_end = test_end
+    else:
+        output_start = None
+        output_end = None
+    frame, source_meta = merge_external_context(
+        frame,
+        config,
+        output_start=output_start,
+        output_end=output_end,
+    )
+    if has_split_contract and frame.empty:
+        raise ValueError("dataset has no rows in configured experiment period")
     frame, cross_asset_meta = merge_cross_asset_context(frame, config)
     frame, transform_meta = add_configured_transform_features(frame, config)
     features = _feature_columns(frame)
@@ -1454,6 +1747,8 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
                 }
             ],
         }
+    if not has_split_contract:
+        raise ValueError("feature proxy evaluation requires train/validation/test splits")
     timeframe_hours = _timeframe_hours(str(config["timeframe"]))
     horizon_rows = max(1, int(round(float(config["target_horizon_hours"]) / timeframe_hours)))
     transaction_cost = float(config.get("transaction_cost_fraction") or 0.0005)
@@ -1482,12 +1777,6 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         np.nan,
     )
 
-    train_start = pd.Timestamp(str(config["train_start"]), tz="UTC")
-    train_end = pd.Timestamp(str(config["train_end"]), tz="UTC")
-    validation_start = pd.Timestamp(str(config["validation_start"]), tz="UTC")
-    validation_end = pd.Timestamp(str(config["validation_end"]), tz="UTC")
-    test_start = pd.Timestamp(str(config["test_start"]), tz="UTC")
-    test_end = pd.Timestamp(str(config["test_end"]), tz="UTC")
     in_scope = frame[
         (frame["DATE_TIME"] >= train_start)
         & (frame["DATE_TIME"] <= test_end)
@@ -1502,40 +1791,38 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         int(round(float(config["scaling_history_hours"]) / timeframe_hours)),
     )
     feature_frame = in_scope[features].copy()
+    split_frame = in_scope[
+        ["DATE_TIME", "target_return", "realized_return"]
+    ].copy()
+    del in_scope
+    gc.collect()
     if bool(config.get("log_transform_positive_features", False)):
         for column in features:
             values = pd.to_numeric(feature_frame[column], errors="coerce")
             if values.dropna().empty or float(values.min(skipna=True)) < 0.0:
                 continue
             feature_frame[column] = np.log1p(values)
-    target = in_scope["target_return"]
+    target = split_frame["target_return"]
     train_mask = _purged_split_mask(
-        in_scope["DATE_TIME"],
+        split_frame["DATE_TIME"],
         start=train_start,
         end=train_end,
         target_horizon_hours=float(config["target_horizon_hours"]),
     )
     validation_mask = _purged_split_mask(
-        in_scope["DATE_TIME"],
+        split_frame["DATE_TIME"],
         start=validation_start,
         end=validation_end,
         target_horizon_hours=float(config["target_horizon_hours"]),
     )
     test_mask = _purged_split_mask(
-        in_scope["DATE_TIME"],
+        split_frame["DATE_TIME"],
         start=test_start,
         end=test_end,
         target_horizon_hours=float(config["target_horizon_hours"]),
     )
-    selection_scaled = _causal_scale(
-        feature_frame.loc[train_mask],
-        features,
-        mode=str(config["preprocessing_mode"]),
-        window_rows=scaling_rows,
-        clip=config.get("clip_value"),
-    )
-    selection_frame = selection_scaled.copy()
-    selection_frame["target_return"] = target.loc[train_mask]
+    train_features = feature_frame.loc[train_mask]
+    train_target = target.loc[train_mask]
     upstream_selected = [
         str(column) for column in config.get("upstream_selected_features") or []
     ]
@@ -1547,16 +1834,27 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
                 + ", ".join(missing)
             )
         selected = upstream_selected
+        selected_train = _causal_scale(
+            train_features,
+            selected,
+            mode=str(config["preprocessing_mode"]),
+            window_rows=scaling_rows,
+            clip=config.get("clip_value"),
+        )
         feature_scores = {
-            name: _spearman(selection_frame[name], selection_frame["target_return"])
+            name: _spearman(selected_train[name], train_target)
             for name in selected
         }
+        del selected_train
         selection_source = "frozen_upstream_contract"
     else:
-        selected, feature_scores = _select_features(
-            selection_frame,
+        selected, feature_scores = _select_features_bounded(
+            train_features,
             features,
-            "target_return",
+            train_target,
+            scaling_mode=str(config["preprocessing_mode"]),
+            scaling_window_rows=scaling_rows,
+            clip=config.get("clip_value"),
             method=str(config["feature_selection_method"]),
             budget=int(config["feature_budget"]),
             redundancy_threshold=float(config.get("redundancy_threshold") or 0.95),
@@ -1574,9 +1872,8 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         window_rows=scaling_rows,
         clip=config.get("clip_value"),
     )
-    del selection_scaled
+    del train_features
     del feature_frame
-    del selection_frame
     gc.collect()
     context_rows = max(2, int(round(float(config["context_hours"]) / timeframe_hours)))
     observations = _context_features(
@@ -1586,7 +1883,7 @@ def feature_proxy_screen(config: dict[str, Any]) -> dict[str, Any]:
         context_rows=context_rows,
     )
     model_frame = pd.concat(
-        [in_scope[["DATE_TIME", "target_return", "realized_return"]], observations],
+        [split_frame, observations],
         axis=1,
     ).dropna(subset=["target_return", "realized_return"])
     observation_columns = list(observations.columns)

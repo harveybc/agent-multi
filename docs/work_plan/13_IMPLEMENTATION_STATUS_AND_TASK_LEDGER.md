@@ -1,7 +1,7 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-25
-Plan version: 1.7.0
+Status timestamp: 2026-07-26
+Plan version: 1.8.0
 Current focus: evidence-first data, preprocessing, context and proxy-model
 screening before per-asset DOIN optimization
 
@@ -10,9 +10,9 @@ until the evidence stages select explicit data, preprocessing, feature,
 context, target and model contracts. The active runtime is the transactional
 Project 3 evidence pool on omega, dragon, gamma-5070ti and gamma-5090.
 
-The active pool contains 1,890 E0/E1 jobs. E0 data-contract and external-source
-coverage audits are complete. E1 base-source screening is running continuously;
-E1 external-source screening follows through the stage scheduler. Every
+The active pool contains 13,380 materialized jobs: 1,890 completed E0/E1 jobs
+and 11,490 E2 preprocessing/context jobs. At the 2026-07-26 runtime checkpoint,
+3,125 total jobs were complete and 10,255 E2 jobs remained pending. Every
 accepted E1/E2/E3 result must contain validation and test values for mean weekly
 return, annualized return, mean weekly RAP, annual RAP, max drawdown and
 evaluation-week count. Return and risk values are stored as fractions in OLAP
@@ -36,7 +36,7 @@ evaluation intervals; see `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md` section 7.1.
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: evidence recovery | Running on four workers | Transactional E0/E1 pool, exact v3 protocol lineage, canonical OLAP facts, candidate/pool ETA and continuous pulls verified on Omega, Dragon and both Gamma GPUs |
+| Phase 1: evidence recovery | E2 running on four workers | Transactional E0-E2 pool, exact v3 protocol lineage, canonical OLAP facts, candidate/pool ETA, bounded-memory wide-source screens and continuous pulls verified on Omega, Dragon and both Gamma GPUs |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
 | Phase 4 and later | Gated | E4 asset-policy artifacts require E1/E2/E3 evidence-selected contracts; E5 weekly retraining follows before DOIN resumes |
@@ -604,7 +604,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `GPU-WATCHDOG-001` | Codex | `agent-multi` | verified_three_hosts | Five-minute GPU temperature, GPU-count and NVIDIA telemetry watchdog with Hermes Telegram alert, recovery and hourly repeat semantics | Codex |
 | `SWARM-TELEGRAM-001` | Codex | `agent-multi` | verified_three_hosts | Idempotent completion metrics and failover-owned health notifications for frozen machines, unhealthy workers, divergent lineages, parallel swarms and stalled progress | Codex |
 | `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
-| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | running_four_workers | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 1,890-job E0/E1 plan, transactional pull pool, normalized OLAP facts, measured ETA and continuous workers | Codex |
+| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | e2_running_four_workers | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 13,380 materialized E0-E2 jobs, transactional pull pool, immediate orphan recovery, normalized OLAP facts, bounded-memory wide-source execution, measured ETA and continuous workers | Codex |
 
 Claude packet:
 

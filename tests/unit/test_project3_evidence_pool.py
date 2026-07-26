@@ -23,6 +23,7 @@ from project3_evidence_pool import (  # noqa: E402
     init_db,
     invalidate_stages,
     requeue_machine,
+    requeue_orphaned_jobs,
     status,
 )
 from project3_evidence_screen import RESOLVED_PARAMETER_KEYS  # noqa: E402
@@ -221,6 +222,57 @@ def test_operator_can_requeue_stopped_machine_without_waiting_for_lease(tmp_path
     replacement = claim_job(conn, "dragon")
     assert replacement
     assert replacement["job_id"] == claimed["job_id"]
+
+
+def test_newer_worker_heartbeat_recovers_old_orphan_claim(tmp_path: Path) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(conn, _plan())
+    old_claim = claim_job(conn, "gamma")
+    assert old_claim
+    claimed_at = datetime.now(timezone.utc) - timedelta(seconds=10)
+    heartbeat_at = datetime.now(timezone.utc)
+    conn.execute(
+        "UPDATE jobs SET claimed_at=? WHERE external_id=?",
+        (claimed_at.isoformat(timespec="seconds"), old_claim["job_id"]),
+    )
+    conn.execute(
+        """
+        INSERT INTO machine_heartbeats(
+            machine_id,status,current_job_id,message,cpu_summary_json,
+            gpu_summary_json,heartbeat_at
+        ) VALUES(?,?,?,?,?,?,?)
+        """,
+        (
+            "gamma",
+            "running",
+            "a-newer-job",
+            "restarted worker",
+            "{}",
+            "{}",
+            heartbeat_at.isoformat(timespec="seconds"),
+        ),
+    )
+    conn.commit()
+
+    assert requeue_orphaned_jobs(conn) == 1
+    recovered = conn.execute(
+        "SELECT status,claimed_by,max_attempts FROM jobs WHERE external_id=?",
+        (old_claim["job_id"],),
+    ).fetchone()
+    assert dict(recovered) == {
+        "status": "pending",
+        "claimed_by": None,
+        "max_attempts": 3,
+    }
+    attempt = conn.execute(
+        """
+        SELECT status FROM job_attempts
+        WHERE job_id=(SELECT id FROM jobs WHERE external_id=?)
+        """,
+        (old_claim["job_id"],),
+    ).fetchone()
+    assert attempt["status"] == "orphaned_worker_requeue"
 
 
 def test_protocol_invalidation_removes_results_and_requeues_stage(tmp_path: Path) -> None:
