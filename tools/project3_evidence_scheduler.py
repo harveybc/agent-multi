@@ -153,8 +153,7 @@ def apply_resource_eligibility(conn) -> int:
         """,
         (eligible, datetime.now(timezone.utc).isoformat(timespec="seconds"), eligible),
     )
-    if cursor.rowcount:
-        conn.commit()
+    conn.commit()
     return int(cursor.rowcount)
 
 

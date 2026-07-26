@@ -18,6 +18,7 @@ from project3_evidence_pool import (  # noqa: E402
 )
 from project3_evidence_scheduler import (  # noqa: E402
     _eligible_machines,
+    apply_resource_eligibility,
     E3_PROXY_STAGE,
     _executor_fleet_ready,
     promote_e2,
@@ -274,3 +275,31 @@ def test_widest_15m_jobs_exclude_second_gamma_worker() -> None:
             "external_context_bundle": "all_non_cryptoquant",
         }
     ) == []
+
+
+def test_resource_eligibility_never_leaves_a_write_transaction_open(
+    tmp_path: Path,
+) -> None:
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(
+        conn,
+        {
+            "campaign_id": "memory-policy-test",
+            "jobs": [
+                {
+                    "job_id": "heavy",
+                    "stage": "E2_PREPROCESSING_CONTEXT",
+                    "task_type": "feature_proxy_screen",
+                    "config": {
+                        "timeframe": "15m",
+                        "external_context_bundle": "all_non_cryptoquant",
+                    },
+                }
+            ],
+        },
+    )
+    assert apply_resource_eligibility(conn) == 1
+    assert conn.in_transaction is False
+    assert apply_resource_eligibility(conn) == 0
+    assert conn.in_transaction is False
