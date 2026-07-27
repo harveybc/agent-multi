@@ -15,12 +15,18 @@
     "gamma-5070ti": {
       "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
       "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
-      "log_level": "INFO"
+      "log_level": "INFO",
+      "environment": {
+        "CUDA_VISIBLE_DEVICES": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"
+      }
     },
     "gamma-5090": {
       "doin_node_root": "/home/harveybc/Documents/GitHub/doin-node",
       "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
-      "log_level": "INFO"
+      "log_level": "INFO",
+      "environment": {
+        "CUDA_VISIBLE_DEVICES": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"
+      }
     }
   }
 }
