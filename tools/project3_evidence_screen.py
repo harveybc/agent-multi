@@ -26,7 +26,7 @@ from project3_evidence_metrics import METRIC_SCHEMA, canonical_trading_metrics
 CORE_COLUMNS = {"DATE_TIME", "OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"}
 LEAK_TOKENS = ("target", "label", "future", "fwd_", "next_", "prediction")
 FEATURE_PROXY_PROTOCOL = "project3.feature_proxy.one_bar_execution.v3"
-EVIDENCE_EXECUTOR_VERSION = "project3.evidence.executor.v3"
+EVIDENCE_EXECUTOR_VERSION = "project3.evidence.executor.v4"
 FEATURE_PROXY_PROTOCOL_HASH = hashlib.sha256(
     (
         "target may span configured horizon; positions are recomputed per bar; "
@@ -1993,13 +1993,19 @@ def execute(task_type: str, config: dict[str, Any]) -> dict[str, Any]:
         result = data_contract_audit(resolved)
     elif task_type == "feature_proxy_screen":
         result = feature_proxy_screen(resolved)
+    elif task_type == "asset_policy_training":
+        from project3_asset_policy_training import asset_policy_training
+
+        result = asset_policy_training(resolved)
     else:
         raise ValueError(f"unsupported task_type: {task_type}")
-    result["resolved_parameters"] = {
+    resolved_parameters = dict(result.get("resolved_parameters") or {})
+    resolved_parameters.update({
         key: resolved.get(key)
         for key in RESOLVED_PARAMETER_KEYS
         if key in resolved
-    }
+    })
+    result["resolved_parameters"] = resolved_parameters
     return result
 
 

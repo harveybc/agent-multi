@@ -1,19 +1,20 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-26
-Plan version: 1.8.0
-Current focus: evidence-first data, preprocessing, context and proxy-model
-screening before per-asset DOIN optimization
+Status timestamp: 2026-07-27
+Plan version: 1.9.0
+Current focus: E4 static SAC policy training from robust E3 contracts
 
 The static per-asset DOIN campaign is stopped and preserved. It must not resume
 until the evidence stages select explicit data, preprocessing, feature,
 context, target and model contracts. The active runtime is the transactional
 Project 3 evidence pool on omega, dragon, gamma-5070ti and gamma-5090.
 
-The active pool contains 13,380 materialized jobs: 1,890 completed E0/E1 jobs
-and 11,490 E2 preprocessing/context jobs. At the 2026-07-26 runtime checkpoint,
-3,125 total jobs were complete and 10,255 E2 jobs remained pending. Every
-accepted E1/E2/E3 result must contain validation and test values for mean weekly
+The evidence pool completed all 15,995 E0-E3 jobs with zero failed jobs:
+427 E0 data audits, 318 E0 external audits, 1,145 E1 screens, 12,053 E2
+preprocessing/context and interaction screens, and 2,052 E3 proxy-model
+screens. E4 now selects eight robust portfolio cells using validation-only
+three-seed aggregation and materializes 24 SAC training jobs. Every accepted
+E1-E4 result must contain validation and test values for mean weekly
 return, annualized return, mean weekly RAP, annual RAP, max drawdown and
 evaluation-week count. Return and risk values are stored as fractions in OLAP
 and presented only as explicitly labeled percentages.
@@ -36,10 +37,10 @@ evaluation intervals; see `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md` section 7.1.
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: evidence recovery | E2 running on four workers | Transactional E0-E2 pool, exact v3 protocol lineage, canonical OLAP facts, candidate/pool ETA, bounded-memory wide-source screens and continuous pulls verified on Omega, Dragon and both Gamma GPUs |
+| Phase 1: evidence recovery | E0-E3 complete; E4 ready for four-worker execution | Transactional pool, exact protocol lineage, canonical OLAP facts, robust validation-only selection, candidate/pool ETA, bounded-memory screens and continuous pulls verified on Omega, Dragon and both Gamma GPUs |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
-| Phase 4 and later | Gated | E4 asset-policy artifacts require E1/E2/E3 evidence-selected contracts; E5 weekly retraining follows before DOIN resumes |
+| Phase 4 and later | E4 implementation verified | E4 emits load-tested SAC `.zip`, resolved config, feature/data hashes and validation/test metrics; E5 weekly retraining follows |
 
 ### 1.1 Phase 1 closeout sequence
 
@@ -623,25 +624,19 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Complete E1 base and external-source screens on omega, dragon,
-   gamma-5070ti and gamma-5090 with continuous atomic pulls.
-2. Analyze E1 OLAP effects and generate the bounded E2
-   preprocessing/context matrix from the top robust contracts per
-   asset/timeframe. Positive profit is not a promotion requirement.
-3. Execute E2 context, preprocessing, feature-selection and transform sweeps,
-   retaining all canonical validation/test metrics and resolved parameters in
-   OLAP.
-4. Execute E3 proxy-family comparisons with frozen upstream contracts.
-5. Materialize E4 loadable per-asset policy artifacts, resolved configs,
+1. Execute the 24 E4 SAC jobs across the four workers and retain all terminal
+   results in the evidence OLAP.
+2. Reconcile the three training seeds for each of the eight selected cells.
+3. Materialize E4 loadable per-asset policy artifacts, resolved configs,
    selected-feature hashes and data-contract hashes.
-6. Execute E5 weekly-retraining confirmation and persist its full-year
+4. Execute E5 weekly-retraining confirmation and persist its full-year
    weekly/annual metric contract.
-7. Resume DOIN Level 2 only with explicit E4/E5 configs and champion artifact
+5. Resume DOIN Level 2 only with explicit E4/E5 configs and champion artifact
    paths.
-8. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+6. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-9. Implement and fault-test the decentralized artifact plane before a
+7. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks

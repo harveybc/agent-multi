@@ -4,6 +4,8 @@ import json
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import base64
+import hashlib
 
 
 TOOLS = Path(__file__).resolve().parents[2] / "tools"
@@ -74,12 +76,69 @@ def test_asset_policy_completion_requires_loadable_champion_contract() -> None:
     try:
         _validate_terminal_result(
             "E4_ASSET_POLICY_TRAINING",
-            {"artifacts": []},
+            {
+                "summary": {"screen_status": "blocked_test_fixture"},
+                "artifacts": [],
+            },
         )
     except ValueError as exc:
         assert "champion_model" in str(exc)
     else:
         raise AssertionError("missing champion artifact should be rejected")
+
+
+def test_asset_policy_completion_accepts_verified_artifact_and_metrics() -> None:
+    content = b"stable-baselines3-fixture"
+    metrics = []
+    values = {
+        "mean_weekly_return": (0.01, "fraction", "week"),
+        "annualized_return": (0.52, "fraction", "year"),
+        "mean_weekly_rap": (0.005, "fraction", "week"),
+        "annual_rap": (0.26, "fraction", "year"),
+        "max_drawdown": (0.08, "fraction", "evaluation_period"),
+        "evaluation_weeks": (52.0, "count", "evaluation_period"),
+    }
+    for split in ("validation", "test"):
+        for name, (value, unit, horizon) in values.items():
+            metrics.append(
+                {
+                    "metric_name": name,
+                    "value": value,
+                    "unit": unit,
+                    "horizon": horizon,
+                    "aggregation": "fixture",
+                    "split": split,
+                }
+            )
+    _validate_terminal_result(
+        "E4_ASSET_POLICY_TRAINING",
+        {
+            "evaluation_protocol_id": "asset-policy-protocol",
+            "evaluation_protocol_hash": "a" * 64,
+            "summary": {},
+            "metric_rows": metrics,
+            "artifacts": [
+                {
+                    "artifact_type": "champion_model",
+                    "path": "/tmp/champion.zip",
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                    "size_bytes": len(content),
+                    "content_base64": base64.b64encode(content).decode("ascii"),
+                    "metadata": {
+                        "format": "stable_baselines3_zip",
+                        "load_tested": True,
+                    },
+                }
+            ],
+            "resolved_config": {"experiment": {"name": "fixture"}},
+            "selected_features": ["signal"],
+            "selected_features_sha256": "b" * 64,
+            "observation_columns": ["signal__last"],
+            "observation_columns_sha256": "c" * 64,
+            "data_contract_sha256": "d" * 64,
+            "source_manifest": [{"relative_path": "input.csv"}],
+        },
+    )
 
 
 def _plan() -> dict:

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import hashlib
 import json
 import sqlite3
@@ -14,12 +16,13 @@ from project3_evidence_metrics import METRIC_SCHEMA, metric_rows_from_result
 
 
 SCHEMA_VERSION = "project3.evidence.pool.v1"
-PROXY_RESULT_STAGES = {
+CANONICAL_RESULT_STAGES = {
     "E1_BASE_SOURCE_SCREEN",
     "E1_EXTERNAL_SOURCE_SCREEN",
     "E2_PREPROCESSING_CONTEXT",
     "E2_INTERACTION_CONFIRMATION",
     "E3_PROXY_MODEL_SCREEN",
+    "E4_ASSET_POLICY_TRAINING",
 }
 CANONICAL_TRADING_METRICS = {
     "mean_weekly_return": ("fraction", "week"),
@@ -408,7 +411,14 @@ def backfill_parameter_facts(conn: sqlite3.Connection) -> int:
 
 
 def _validate_terminal_result(stage: str, result: dict[str, Any]) -> None:
-    if stage in PROXY_RESULT_STAGES:
+    if stage == "E4_ASSET_POLICY_TRAINING" and not any(
+        item.get("artifact_type") == "champion_model"
+        for item in (result.get("artifacts") or [])
+    ):
+        raise ValueError(
+            "E4_ASSET_POLICY_TRAINING requires champion_model artifact"
+        )
+    if stage in CANONICAL_RESULT_STAGES:
         summary = result.get("summary")
         if not isinstance(summary, dict):
             raise ValueError(f"{stage} result requires a summary object")
@@ -466,17 +476,47 @@ def _validate_terminal_result(stage: str, result: dict[str, Any]) -> None:
             raise ValueError(
                 "E4_ASSET_POLICY_TRAINING requires champion_model artifact"
             )
-        for field in ("path", "sha256", "size_bytes"):
+        for field in ("path", "sha256", "size_bytes", "content_base64"):
             if not champion.get(field):
                 raise ValueError(
                     "E4_ASSET_POLICY_TRAINING champion_model requires "
                     + field
                 )
+        metadata = dict(champion.get("metadata") or {})
+        if metadata.get("format") != "stable_baselines3_zip":
+            raise ValueError(
+                "E4_ASSET_POLICY_TRAINING champion_model format must be "
+                "stable_baselines3_zip"
+            )
+        if metadata.get("load_tested") is not True:
+            raise ValueError(
+                "E4_ASSET_POLICY_TRAINING champion_model must be load tested"
+            )
+        try:
+            content = base64.b64decode(
+                str(champion["content_base64"]),
+                validate=True,
+            )
+        except (binascii.Error, ValueError) as exc:
+            raise ValueError(
+                "E4_ASSET_POLICY_TRAINING champion_model content_base64 is invalid"
+            ) from exc
+        if len(content) != int(champion["size_bytes"]):
+            raise ValueError(
+                "E4_ASSET_POLICY_TRAINING champion_model size mismatch"
+            )
+        if hashlib.sha256(content).hexdigest() != str(champion["sha256"]):
+            raise ValueError(
+                "E4_ASSET_POLICY_TRAINING champion_model SHA-256 mismatch"
+            )
         for field in (
             "resolved_config",
             "selected_features",
             "selected_features_sha256",
+            "observation_columns",
+            "observation_columns_sha256",
             "data_contract_sha256",
+            "source_manifest",
         ):
             if not result.get(field):
                 raise ValueError(

@@ -287,6 +287,7 @@ def _run_job_with_heartbeats(
         cache_root=cache_root,
         max_cache_bytes=max_cache_bytes,
     )
+    config["_machine_id"] = machine_id
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(execute, task_type, config)
         while True:

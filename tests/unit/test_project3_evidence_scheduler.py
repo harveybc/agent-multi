@@ -20,10 +20,12 @@ from project3_evidence_scheduler import (  # noqa: E402
     _eligible_machines,
     apply_resource_eligibility,
     E3_PROXY_STAGE,
+    E4_POLICY_STAGE,
     _executor_fleet_ready,
     promote_e2,
     promote_e2_interactions,
     promote_e3,
+    promote_e4,
 )
 from project3_evidence_screen import (  # noqa: E402
     EVIDENCE_EXECUTOR_VERSION,
@@ -58,6 +60,16 @@ def _proxy_result(
                     "split": split,
                 }
             )
+    metric_rows.append(
+        {
+            "metric_name": "turnover_events",
+            "value": 25.0,
+            "unit": "count",
+            "horizon": "evaluation_period",
+            "aggregation": "test_fixture",
+            "split": "validation",
+        }
+    )
     return {
         "evaluation_protocol_id": FEATURE_PROXY_PROTOCOL,
         "evaluation_protocol_hash": FEATURE_PROXY_PROTOCOL_HASH,
@@ -260,6 +272,69 @@ def test_scheduler_freezes_e2_features_for_bounded_e3_proxy_screen(
             config["upstream_evaluation_protocol_hash"]
             == FEATURE_PROXY_PROTOCOL_HASH
         )
+
+
+def test_scheduler_selects_robust_e3_cells_and_materializes_e4_training(
+    tmp_path: Path,
+) -> None:
+    assets = (
+        ("NZDUSD", "1h"),
+        ("BNBUSDT", "1h"),
+        ("EURUSD", "1h"),
+        ("ETHUSDT", "1h"),
+        ("ADAUSDT", "4h"),
+        ("BTCUSDT", "4h"),
+        ("XRPUSDT", "4h"),
+        ("USDCAD", "4h"),
+    )
+    jobs = []
+    for asset_index, (asset, timeframe) in enumerate(assets):
+        for seed in (1701, 1702, 1703):
+            jobs.append(
+                {
+                    "job_id": f"e3-{asset}-{timeframe}-{seed}",
+                    "stage": E3_PROXY_STAGE,
+                    "task_type": "feature_proxy_screen",
+                    "config": {
+                        "asset": asset,
+                        "timeframe": timeframe,
+                        "base_feature_bundle": "baseline_12",
+                        "proxy_model_family": "ridge",
+                        "proxy_random_seed": seed,
+                        "upstream_selected_features": ["signal", "volume"],
+                    },
+                }
+            )
+    conn = connect(tmp_path / "pool.sqlite")
+    init_db(conn)
+    enqueue_plan(conn, {"campaign_id": "e4-test", "jobs": jobs})
+    for index in range(len(jobs)):
+        claimed = claim_job(conn, "omega")
+        result = _proxy_result(
+            annual_rap=0.5 - index / 1000.0,
+            selected_features=["signal", "volume"],
+        )
+        result["summary"]["selection_source"] = "frozen_upstream_contract"
+        complete_job(conn, "omega", claimed["job_id"], result)
+
+    promoted = promote_e4(conn)
+
+    assert promoted["status"] == "enqueued"
+    assert promoted["selected_cells"] == 8
+    assert promoted["jobs"] == 24
+    rows = conn.execute(
+        "SELECT task_type,config_json FROM jobs WHERE stage=?",
+        (E4_POLICY_STAGE,),
+    ).fetchall()
+    assert len(rows) == 24
+    assert {row["task_type"] for row in rows} == {"asset_policy_training"}
+    configs = [json.loads(row["config_json"]) for row in rows]
+    assert {config["training_seed"] for config in configs} == {2701, 2702, 2703}
+    assert {config["portfolio_role"] for config in configs} == {
+        "short_horizon",
+        "long_horizon",
+    }
+    assert all(config["upstream_selected_features"] for config in configs)
 
 
 def test_widest_15m_jobs_exclude_second_gamma_worker() -> None:
