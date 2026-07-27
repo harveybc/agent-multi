@@ -674,6 +674,24 @@ class CampaignSupervisor:
             item for item in self.state.get("alerts", []) if item.get("code") != code
         ]
 
+    def _recover_config_validation_block(self) -> None:
+        had_config_error = any(
+            item.get("code") == "config_validation"
+            for item in self.state.get("alerts", [])
+        )
+        self._clear_alert("config_validation")
+        remaining_errors = [
+            item
+            for item in self.state.get("alerts", [])
+            if item.get("severity", "error") == "error"
+        ]
+        if (
+            had_config_error
+            and self.state.get("phase") == "blocked"
+            and not remaining_errors
+        ):
+            self.state["phase"] = "starting"
+
     def _worker_config_path(self, job: dict[str, Any], worker_id: str) -> Path:
         worker_cfg = job["worker_configs"][worker_id]
         doin_root = self._resolve_path(self._worker_profile(worker_id)["doin_node_root"])
@@ -2231,6 +2249,7 @@ class CampaignSupervisor:
                 self._alert("config_validation", str(exc))
                 self._save_state()
                 return
+            self._recover_config_validation_block()
 
             phase = self.state.get("phase", "starting")
             if phase == "starting":
