@@ -160,3 +160,8 @@ lowercase directory identifiers while canonical trading configs use uppercase
 instrument symbols. Timeframe remains an exact match, and the CSV must match
 the manifest SHA-256 byte for byte. A mismatch blocks the campaign before a
 chain or candidate claim can be created.
+
+Gamma's two workers are isolated by physical NVIDIA GPU UUID in the campaign
+profile. Each process sees exactly one CUDA device and addresses it as
+`cuda:0`; this prevents both workers from silently selecting the faster eGPU
+when the generic agent device is `cuda`.
