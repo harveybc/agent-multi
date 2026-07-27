@@ -19,7 +19,10 @@ UPSTREAM_STAGES = ("E1_BASE_SOURCE_SCREEN", "E1_EXTERNAL_SOURCE_SCREEN")
 E2_STAGE = "E2_PREPROCESSING_CONTEXT"
 E2_INTERACTION_STAGE = "E2_INTERACTION_CONFIRMATION"
 E3_PROXY_STAGE = "E3_PROXY_MODEL_SCREEN"
+E4_POLICY_STAGE = "E4_ASSET_POLICY_TRAINING"
 MEMORY_HEAVY_WORKERS = ["omega", "dragon", "gamma-5090"]
+E4_TRAINING_SEEDS = (2701, 2702, 2703)
+E4_COMPONENTS_PER_HORIZON = 4
 
 
 def _json(value: Any) -> str:
@@ -475,6 +478,167 @@ def _e3_variants(base: dict[str, Any]) -> list[dict[str, Any]]:
     return list(variants.values())
 
 
+def _metric_value(
+    result: dict[str, Any],
+    name: str,
+    *,
+    split: str = "validation",
+) -> float | None:
+    for row in result.get("metric_rows") or []:
+        if row.get("metric_name") == name and row.get("split") == split:
+            value = row.get("value")
+            return None if value is None else float(value)
+    return None
+
+
+def _asset_class(asset: str) -> str:
+    upper = asset.upper()
+    if upper.endswith(("USDT", "USDT_PERP")):
+        return "crypto"
+    return "fx"
+
+
+def _robust_e3_candidates(conn) -> list[dict[str, Any]]:
+    """Aggregate E3 seeds without consulting protected test metrics."""
+    rows = conn.execute(
+        """
+        SELECT job_id,config_json,result_json,validation_annual_rap,
+               validation_annualized_return,validation_max_drawdown
+        FROM evidence_result_olap
+        WHERE stage=? AND status='completed'
+          AND validation_annual_rap IS NOT NULL
+        """,
+        (E3_PROXY_STAGE,),
+    ).fetchall()
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = {}
+    for row in rows:
+        config = json.loads(row["config_json"])
+        result = json.loads(row["result_json"] or "{}")
+        turnover = _metric_value(result, "turnover_events")
+        if turnover is None or turnover <= 0:
+            continue
+        selected = list(
+            (result.get("summary") or {}).get("selected_features")
+            or config.get("upstream_selected_features")
+            or []
+        )
+        if not selected:
+            continue
+        selected_hash = hashlib.sha256(_json(selected).encode("utf-8")).hexdigest()
+        key = (
+            str(config["asset"]).lower(),
+            str(config["timeframe"]).lower(),
+            str(config.get("proxy_model_family") or ""),
+            int(config.get("proxy_latent_dimension") or 0),
+            selected_hash,
+        )
+        grouped.setdefault(key, []).append(
+            {
+                "job_id": str(row["job_id"]),
+                "config": config,
+                "result": result,
+                "annual_rap": float(row["validation_annual_rap"]),
+                "annual_return": float(row["validation_annualized_return"]),
+                "max_drawdown": float(row["validation_max_drawdown"]),
+                "turnover": turnover,
+                "seed": int(config.get("proxy_random_seed") or 0),
+            }
+        )
+
+    candidates: list[dict[str, Any]] = []
+    for key, members in grouped.items():
+        seeds = {member["seed"] for member in members}
+        if len(seeds) < 3:
+            continue
+        representative = max(
+            members,
+            key=lambda member: (member["annual_rap"], member["job_id"]),
+        )
+        raps = [member["annual_rap"] for member in members]
+        candidates.append(
+            {
+                "asset": key[0],
+                "timeframe": key[1],
+                "asset_class": _asset_class(key[0]),
+                "model_family": key[2],
+                "latent_dimension": key[3],
+                "seed_count": len(seeds),
+                "mean_validation_annual_rap": sum(raps) / len(raps),
+                "worst_validation_annual_rap": min(raps),
+                "mean_validation_annual_return": (
+                    sum(member["annual_return"] for member in members)
+                    / len(members)
+                ),
+                "mean_validation_max_drawdown": (
+                    sum(member["max_drawdown"] for member in members)
+                    / len(members)
+                ),
+                "mean_validation_turnover": (
+                    sum(member["turnover"] for member in members)
+                    / len(members)
+                ),
+                "representative": representative,
+            }
+        )
+    return sorted(
+        candidates,
+        key=lambda item: (
+            item["mean_validation_annual_rap"],
+            item["worst_validation_annual_rap"],
+            item["mean_validation_annual_return"],
+        ),
+        reverse=True,
+    )
+
+
+def _select_e4_portfolio_cells(
+    candidates: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    selected: list[dict[str, Any]] = []
+    used_assets: set[str] = set()
+    for role, timeframes in (
+        ("short_horizon", {"15m", "1h"}),
+        ("long_horizon", {"4h"}),
+    ):
+        eligible = [
+            candidate
+            for candidate in candidates
+            if candidate["timeframe"] in timeframes
+            and candidate["asset"] not in used_assets
+        ]
+        horizon: list[dict[str, Any]] = []
+        horizon_assets: set[str] = set()
+        for candidate in eligible:
+            if candidate["asset"] in horizon_assets:
+                continue
+            horizon.append({**candidate, "portfolio_role": role})
+            horizon_assets.add(candidate["asset"])
+            if len(horizon) == E4_COMPONENTS_PER_HORIZON:
+                break
+        classes = {candidate["asset_class"] for candidate in horizon}
+        for required_class in ("crypto", "fx"):
+            if required_class in classes:
+                continue
+            replacement = next(
+                (
+                    candidate
+                    for candidate in eligible
+                    if candidate["asset_class"] == required_class
+                    and candidate["asset"] not in horizon_assets
+                ),
+                None,
+            )
+            if replacement is not None and horizon:
+                removed = horizon.pop()
+                horizon_assets.remove(removed["asset"])
+                horizon.append({**replacement, "portfolio_role": role})
+                horizon_assets.add(replacement["asset"])
+                classes.add(required_class)
+        selected.extend(horizon)
+        used_assets.update(horizon_assets)
+    return selected
+
+
 def promote_e2(conn, *, materialized_plan: Path | None = None) -> dict[str, Any]:
     existing = conn.execute("SELECT COUNT(*) FROM jobs WHERE stage=?", (E2_STAGE,)).fetchone()[0]
     if existing:
@@ -656,16 +820,152 @@ def promote_e3(
     }
 
 
+def promote_e4(
+    conn,
+    *,
+    materialized_plan: Path | None = None,
+) -> dict[str, Any]:
+    existing = conn.execute(
+        "SELECT COUNT(*) FROM jobs WHERE stage=?",
+        (E4_POLICY_STAGE,),
+    ).fetchone()[0]
+    if existing:
+        return {"status": "already_enqueued", "jobs": int(existing)}
+    if not _finished(conn, (E3_PROXY_STAGE,)):
+        return {"status": "waiting_for_e3", "jobs": 0}
+
+    campaign_row = conn.execute(
+        "SELECT campaign_id,plan_json FROM campaigns ORDER BY created_at DESC LIMIT 1"
+    ).fetchone()
+    if campaign_row is None:
+        raise RuntimeError("no campaign found")
+    plan = json.loads(campaign_row["plan_json"])
+    if plan.get("required_executor_version") != EVIDENCE_EXECUTOR_VERSION:
+        plan["required_executor_version"] = EVIDENCE_EXECUTOR_VERSION
+        enqueue_plan(conn, plan)
+
+    ready, problems = _executor_fleet_ready(conn)
+    if not ready:
+        return {
+            "status": "waiting_for_executor_fleet",
+            "jobs": 0,
+            "problems": problems,
+        }
+
+    cells = _select_e4_portfolio_cells(_robust_e3_candidates(conn))
+    if len(cells) < E4_COMPONENTS_PER_HORIZON * 2:
+        return {
+            "status": "insufficient_robust_e3_cells",
+            "jobs": 0,
+            "selected_cells": len(cells),
+        }
+
+    added: list[dict[str, Any]] = []
+    selection_manifest: list[dict[str, Any]] = []
+    for cell in cells:
+        representative = cell["representative"]
+        upstream_config = representative["config"]
+        upstream_result = representative["result"]
+        upstream_summary = dict(upstream_result.get("summary") or {})
+        selected_features = list(
+            upstream_summary.get("selected_features")
+            or upstream_config.get("upstream_selected_features")
+            or []
+        )
+        evidence = {
+            key: value
+            for key, value in cell.items()
+            if key != "representative"
+        }
+        evidence["upstream_job_id"] = representative["job_id"]
+        selection_manifest.append(evidence)
+        for training_seed in E4_TRAINING_SEEDS:
+            artifact_id = (
+                f"{cell['portfolio_role']}__{cell['asset']}__"
+                f"{cell['timeframe']}__seed{training_seed}"
+            )
+            config = {
+                **upstream_config,
+                "task_type": "asset_policy_training",
+                "upstream_job_id": representative["job_id"],
+                "upstream_selected_features": selected_features,
+                "upstream_evaluation_protocol_id": upstream_result[
+                    "evaluation_protocol_id"
+                ],
+                "upstream_evaluation_protocol_hash": upstream_result[
+                    "evaluation_protocol_hash"
+                ],
+                "portfolio_role": cell["portfolio_role"],
+                "e4_artifact_id": artifact_id,
+                "training_seed": training_seed,
+                "e4_selection_evidence": evidence,
+                "initial_cash": 10000.0,
+                "slippage_fraction": 0.0,
+                "rel_volume": 0.05,
+                "k_sl": 2.0,
+                "k_tp": 3.0,
+                "epoch_timesteps": 4000,
+                "max_epochs": 40,
+                "l1_patience": 8,
+                "l1_min_delta": 0.0001,
+                "l1_min_checkpoint_timesteps": 5001,
+                "learning_rate": 0.00035593553866490607,
+                "batch_size": 256,
+                "gamma": 0.957651059044391,
+                "tau": 0.001547040562484868,
+                "train_freq": 1,
+                "gradient_steps": 8,
+                "ent_coef": "auto",
+                "net_arch": [256, 256],
+            }
+            digest = hashlib.sha256(_json(config).encode("utf-8")).hexdigest()[:16]
+            added.append(
+                {
+                    "job_id": (
+                        f"e4__{cell['asset']}__{cell['timeframe']}__"
+                        f"seed{training_seed}__{digest}"
+                    ),
+                    "stage": E4_POLICY_STAGE,
+                    "task_type": "asset_policy_training",
+                    "priority": 500,
+                    "max_attempts": 2,
+                    "eligible_machines": [],
+                    "config": config,
+                }
+            )
+
+    plan["jobs"] = list(plan.get("jobs") or []) + added
+    plan.setdefault("materialized_stage_counts", {})[E4_POLICY_STAGE] = len(added)
+    plan["e4_selection_manifest"] = selection_manifest
+    result = enqueue_plan(conn, plan)
+    if materialized_plan:
+        materialized_plan.parent.mkdir(parents=True, exist_ok=True)
+        materialized_plan.write_text(
+            json.dumps(plan, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    return {
+        "status": "enqueued",
+        "jobs": len(added),
+        "inserted": result["inserted"],
+        "existing": result["existing"],
+        "selected_cells": len(cells),
+        "selection": selection_manifest,
+    }
+
+
 def promote_all(conn, *, materialized_plan: Path | None = None) -> dict[str, Any]:
     eligibility_updates = apply_resource_eligibility(conn)
     e2 = promote_e2(conn, materialized_plan=materialized_plan)
     e2_interactions = promote_e2_interactions(conn, materialized_plan=materialized_plan)
     e3 = promote_e3(conn, materialized_plan=materialized_plan)
+    e4 = promote_e4(conn, materialized_plan=materialized_plan)
     return {
         "resource_eligibility_updates": eligibility_updates,
         "e2": e2,
         "e2_interactions": e2_interactions,
         "e3": e3,
+        "e4": e4,
     }
 
 

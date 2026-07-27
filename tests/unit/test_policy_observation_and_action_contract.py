@@ -88,3 +88,32 @@ def test_feature_aware_contract_accepts_causal_scaled_features() -> None:
             "include_price_window": False,
         }
     )
+
+
+def test_feature_aware_contract_rejects_unverified_precomputed_features() -> None:
+    with pytest.raises(ValueError, match="precomputed causal features"):
+        validate_observation_contract(
+            {
+                "require_feature_aware_preprocessor": True,
+                "preprocessor_plugin": "feature_window_preprocessor",
+                "feature_columns": ["signal"],
+                "feature_scaling": "none",
+                "precomputed_causal_features": True,
+                "precomputed_feature_contract_sha256": "not-a-sha256",
+                "include_price_window": False,
+            }
+        )
+
+
+def test_feature_aware_contract_accepts_hashed_precomputed_features() -> None:
+    validate_observation_contract(
+        {
+            "require_feature_aware_preprocessor": True,
+            "preprocessor_plugin": "feature_window_preprocessor",
+            "feature_columns": ["signal"],
+            "feature_scaling": "none",
+            "precomputed_causal_features": True,
+            "precomputed_feature_contract_sha256": "a" * 64,
+            "include_price_window": False,
+        }
+    )

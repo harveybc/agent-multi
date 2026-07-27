@@ -141,15 +141,12 @@ adding value.
 
 ## Current Build Order
 
-1. Execute E0 data/source coverage contracts.
-2. Execute E1 base/external source screens.
-3. Select and execute E2 preprocessing/context screens, then confirm
-   interactions among their strongest changes.
-4. Select and execute E3 representation/policy comparisons.
-5. Execute E4 weekly retraining and export per-asset artifacts.
-6. Resume DOIN Level 2 optimization on those explicit contracts.
-7. Optimize portfolio allocation, rush activation, and risk overlays.
-8. Complete registry, serving, LTS parity, and OANDA practice integration.
+1. E0-E3 evidence screening: complete.
+2. Execute E4 static SAC training and export load-tested per-asset artifacts.
+3. Execute E5 weekly-retraining confirmation on the selected E4 cells.
+4. Resume DOIN Level 2 optimization on those explicit contracts.
+5. Optimize portfolio allocation, rush activation, and risk overlays.
+6. Complete registry, serving, LTS parity, and OANDA practice integration.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

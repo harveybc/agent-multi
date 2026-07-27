@@ -1,6 +1,6 @@
 # Data, Preprocessing, and Observation Evidence Recovery
 
-Status: active; DOIN asset campaign frozen; E0 complete; E1 running under corrected execution protocol
+Status: active; DOIN asset campaign frozen; E0-E3 complete; E4 SAC policy training ready
 
 Date: 2026-07-25
 
