@@ -181,7 +181,7 @@ def test_dataset_preflight_validates_runtime_path_and_manifest_hash(tmp_path: Pa
     manifest.parent.mkdir(parents=True)
     manifest.write_text(
         json.dumps({
-            "asset": "TEST",
+            "asset": "test",
             "timeframe": "1h",
             "sha256": hashlib.sha256(dataset.read_bytes()).hexdigest(),
         }),

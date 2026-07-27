@@ -606,7 +606,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `SWARM-TELEGRAM-001` | Codex | `agent-multi` | verified_three_hosts | Idempotent completion metrics and failover-owned health notifications for frozen machines, unhealthy workers, divergent lineages, parallel swarms and stalled progress | Codex |
 | `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
 | `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | e0_e4_complete | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 16,019 completed E0-E4 jobs, transactional pull pool, normalized OLAP facts, bounded-memory execution and 24 load-tested E4 baseline artifacts | Codex |
-| `FULL-GENOME-001` | Codex | `agent-multi`, `doin-node`, `doin-plugins` | verified_local_campaign_materialized | Typed mixed feature/preprocessing/context/model/training/execution genome, corrected full-fidelity L1 protocol, exact champion persistence, local smoke, identical four-worker population fingerprint and first sequential DOIN campaign | Codex |
+| `FULL-GENOME-001` | Codex | `agent-multi`, `doin-node`, `doin-plugins` | verified_local_campaign_materialized | Typed mixed feature/preprocessing/context/model/training/execution genome, corrected full-fidelity L1 protocol, exact champion persistence, local smoke, identical four-worker population fingerprint, immutable dataset preflight and first sequential DOIN campaign | Codex |
 
 Claude packet:
 
