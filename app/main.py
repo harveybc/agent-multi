@@ -68,12 +68,41 @@ def _run(config: Dict[str, Any]) -> Dict[str, Any]:
         )
         out = Path(config.get("optimizer_output_file", "optimizer_output.json"))
         out.parent.mkdir(parents=True, exist_ok=True)
+        optimizer_output = {
+            key: value
+            for key, value in optimal.items()
+            if key != "_best_model_b64"
+        }
         with out.open("w", encoding="utf-8") as fh:
-            json.dump(optimal, fh, indent=2, default=str)
-        config.update({k: v for k, v in optimal.items() if not k.startswith("_")})
+            json.dump(optimizer_output, fh, indent=2, default=str)
+        resolve_best_config = getattr(optimizer_plugin, "resolve_best_config", None)
+        if callable(resolve_best_config):
+            resolved_best = resolve_best_config(optimal, config)
+            config.clear()
+            config.update(resolved_best)
+        else:
+            config.update({k: v for k, v in optimal.items() if not k.startswith("_")})
         agent_plugin.set_params(**config)
         if not config.get("quiet_mode"):
             print(f"Optimizer wrote best params to {out}")
+        if not bool(config.get("optimization_run_final_pipeline", True)):
+            best_metrics = dict(optimal.get("_best_metrics") or {})
+            best_metrics.update(
+                {
+                    "mode": "optimization",
+                    "best_fitness": optimal.get("_best_fitness"),
+                    "best_parameters": {
+                        key: value
+                        for key, value in optimal.items()
+                        if not key.startswith("_")
+                    },
+                    "champion_model_path": config.get(
+                        "optimization_champion_model_file"
+                    ),
+                    "optimizer_output_file": str(out.resolve()),
+                }
+            )
+            return best_metrics
 
     mode = _resolve_mode(config)
     if not config.get("quiet_mode"):

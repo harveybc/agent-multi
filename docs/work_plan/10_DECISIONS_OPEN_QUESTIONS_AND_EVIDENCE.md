@@ -153,6 +153,29 @@ with the price-only preprocessor remain reproducible only under the explicit
 `price_state_only` label; their results cannot be attributed to an ignored
 feature pack.
 
+### ADR-019: E4 is a fixed-policy baseline; full-genome DOIN creates champions
+
+Date: 2026-07-27
+
+The 24 `E4_ASSET_POLICY_TRAINING` runs used a fixed SAC MLP, `max_epochs: 40`
+and `l1_patience: 8`. They verified data-contract materialization, causal
+observations, model serialization, artifact hashing, protected split
+evaluation, canonical metrics and distributed evidence collection. Their
+load-tested weights are valid baselines and warm starts.
+
+E4 did not optimize the native policy window, data source composition,
+feature/preprocessing choices, SAC architecture, training dynamics or trade
+risk geometry. Therefore its weights are not the optimized per-asset library
+consumed by portfolio optimization.
+
+Per-asset champions are produced by a local-first mixed-genome optimizer,
+extended collaboratively by the existing DOIN shared-population protocol. Its
+full-fidelity L1 contract uses a 2000-epoch ceiling, patience 60, a 40-epoch
+patience floor, best-checkpoint restoration and validation-only selection.
+Protected test results never migrate or influence fitness. Weekly retraining is
+evaluated after the static per-asset and portfolio vertical, not as a
+prerequisite for starting DOIN.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |

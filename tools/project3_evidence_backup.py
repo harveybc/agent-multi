@@ -91,7 +91,7 @@ def create_backup(
     source_db: str | Path,
     destination_dir: str | Path,
     *,
-    retention_count: int = 24,
+    retention_count: int = 8,
     created_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Create, verify, and atomically publish one SQLite snapshot."""
@@ -177,7 +177,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-db", required=True, type=Path)
     parser.add_argument("--destination-dir", required=True, type=Path)
-    parser.add_argument("--retention-count", type=int, default=24)
+    parser.add_argument("--retention-count", type=int, default=8)
     args = parser.parse_args()
     result = create_backup(
         args.source_db,

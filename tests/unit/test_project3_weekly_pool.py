@@ -592,7 +592,7 @@ def test_materializer_preserves_job_early_stop_train_tail_days(tmp_path):
     assert config["l1_patience"] == 33
     assert config["validation_days"] == 14
     assert config["test_days"] == 21
-    assert config["max_epochs"] == 500
+    assert config["max_epochs"] == 2000
     assert config["strategy_plugin"] == "direct_atr_sltp"
     assert config["atr_period"] == 14
 

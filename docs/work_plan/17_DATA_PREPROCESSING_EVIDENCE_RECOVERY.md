@@ -1,6 +1,7 @@
 # Data, Preprocessing, and Observation Evidence Recovery
 
-Status: active; DOIN asset campaign frozen; E0-E3 complete; E4 SAC policy training ready
+Status: E0-E4 complete; full-genome optimizer verified; first corrected DOIN
+campaign materialized
 
 Date: 2026-07-25
 
@@ -182,11 +183,13 @@ Autoencoder, TCN, LSTM, Transformer, and event-token encoders remain marked
 `blocked_by_implementation` until their plugins exist and pass causality and
 artifact round-trip tests.
 
-### E4: Asset policy training
+### E4: Fixed-policy integration baseline
 
-Train only the implemented `sac_mlp` policy on the robust E3 contracts. Other
-SAC policy families are explicitly blocked rather than represented as
-executable candidates. A completed E4 result must include:
+Train only the implemented fixed `sac_mlp` policy on the robust E3 contracts.
+Other SAC policy families are explicitly blocked rather than represented as
+executable candidates. E4 used `max_epochs: 40` and `l1_patience: 8` to verify
+the executable boundary and artifact pipeline. It did not establish converged
+or optimized per-asset weights. A completed E4 result must include:
 
 - loadable champion `.zip`;
 - artifact SHA-256, byte size, and format;
@@ -196,24 +199,38 @@ executable candidates. A completed E4 result must include:
 - evaluation protocol ID and hash;
 - validation and test metrics in the canonical scale.
 
-The pool rejects an E4 completion that lacks this contract.
+The pool rejects an E4 completion that lacks this contract. A valid E4
+artifact is a reproducible baseline and DOIN warm start, not a portfolio-ready
+champion.
 
-### E5: Weekly retraining confirmation
+### D1: Full-genome per-asset optimization
 
-For one selected contract per asset/timeframe:
+For every selected asset/timeframe, the local optimizer and DOIN evolve:
 
-- train/fine-tune weekly across the complete validation year;
-- report the complete test year using the same cadence;
-- save champion weights, resolved config, selected feature contract, data hash,
-  and all canonical metrics.
+- data/source and cross-asset context choices;
+- hierarchical feature selection and causal preprocessing;
+- observation context and native policy window;
+- encoder/SAC architecture and training dynamics;
+- action threshold, sizing and trade risk geometry.
 
-This is the artifact set consumed by portfolio optimization.
+Every promoted candidate is re-evaluated under the full-fidelity L1 protocol
+defined in document 18. This stage creates the per-asset artifact set consumed
+by portfolio optimization.
 
-### DOIN and portfolio
+The executable v1 genome now covers feature-family masks, preprocessing,
+context, SAC architecture/training and execution-risk geometry. Source-bundle
+genes are added per asset only after the selected source frame exists with an
+exact manifest. E2 evidence currently requires market context for BTC-perp,
+GBPJPY and USDJPY and macro-market context for NZDUSD before those jobs are
+queued. USDCAD's top E2 contracts used no external context, so
+`USDCAD@4h/full-genome-v1` is the first coordinated campaign.
 
-DOIN Level 2 resumes per asset only after E0-E4 select its contract and create a
-loadable policy. Portfolio optimization begins after E5 produces the required
-weekly-retrained artifact set for the portfolio cells.
+### P1 and A1: Portfolio, adaptation, and rush
+
+Portfolio optimization begins after D1 freezes the selected per-asset
+champions. Rush activation and weekly retraining/fine-tuning follow the first
+static portfolio vertical so they can be measured as explicit incremental
+components rather than delaying the portfolio indefinitely.
 
 ## Pool and OLAP
 
@@ -341,8 +358,8 @@ This recovery phase is complete only when:
    recorded reason;
 2. selected per-asset/timeframe contracts have complete configuration and data
    hashes;
-3. E4 and E5 create weights and resolved configs usable without reverse-engineering
-   source code;
+3. E4 baselines and D1 champions create weights and resolved configs usable
+   without reverse-engineering source code;
 4. all required metrics are present in the same labeled scale;
 5. DOIN resumes from a newly materialized contract, never from an implicit
    default.

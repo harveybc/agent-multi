@@ -378,9 +378,12 @@ def _resolved_training_config(
         {
             "pipeline_plugin": "rl_pipeline_with_validation",
             "epoch_timesteps": int(config.get("epoch_timesteps") or 4000),
-            "max_epochs": int(config.get("max_epochs") or 40),
-            "l1_patience": int(config.get("l1_patience") or 8),
-            "l1_min_delta": float(config.get("l1_min_delta") or 0.0001),
+            "max_epochs": int(config.get("max_epochs") or 2000),
+            "l1_patience": int(config.get("l1_patience") or 60),
+            "l1_patience_start_epoch": int(
+                config.get("l1_patience_start_epoch") or 40
+            ),
+            "l1_min_delta": float(config.get("l1_min_delta") or 0.00001),
             "l1_min_checkpoint_timesteps": int(
                 config.get("l1_min_checkpoint_timesteps") or 5001
             ),

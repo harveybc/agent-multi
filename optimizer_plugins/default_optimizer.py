@@ -52,6 +52,8 @@ def _resume_contract_hash(config: Dict[str, Any], schema) -> str:
         "optimization_stages", "hyperparameter_bounds", "ga_population",
         "ga_cxpb", "ga_mutpb", "ga_seed", "risk_penalty_lambda",
         "l1_generalization_gap_penalty_beta",
+        "mixed_genome_schema", "mixed_genome_feature_groups",
+        "mixed_genome_repair_rules",
     )
     payload = {
         "parameter_schema": [list(item) for item in schema],
@@ -1146,8 +1148,13 @@ class Plugin:
         config: Dict[str, Any],
     ) -> Tuple[float, Dict[str, Any]]:
         candidate_params = self._decode(individual, schema)
-        run_config = dict(config)
-        run_config.update(candidate_params)
+        try:
+            run_config = self._candidate_run_config(candidate_params, config)
+        except Exception as exc:
+            return -1e9, {
+                "evaluation_error": f"candidate config decode failed: {exc}",
+                "candidate_parameters": candidate_params,
+            }
         run_config["total_timesteps"] = int(
             config.get("ga_eval_timesteps", self.params["ga_eval_timesteps"])
         )
@@ -1213,6 +1220,13 @@ class Plugin:
         from app.metrics import compute_optimization_fitness
 
         metrics = _metric_payload(summary)
+        metrics.update(
+            self._candidate_metric_evidence(
+                candidate_params,
+                run_config,
+                config,
+            )
+        )
         collapse = _action_collapse_evidence(summary, run_config)
         metrics.update(collapse)
         fitness = (
@@ -1247,6 +1261,26 @@ class Plugin:
                 f"split={split} → fitness={fitness:.6f}"
             )
         return float(fitness), metrics
+
+    def _candidate_run_config(
+        self,
+        candidate_params: Dict[str, Any],
+        config: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Resolve one numeric optimizer chromosome into a pipeline config."""
+        run_config = dict(config)
+        run_config.update(candidate_params)
+        return run_config
+
+    def _candidate_metric_evidence(
+        self,
+        candidate_params: Dict[str, Any],
+        run_config: Dict[str, Any],
+        config: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Expose optimizer-specific decoding evidence without changing fitness."""
+        del candidate_params, run_config, config
+        return {}
 
 
 def _metric_payload(summary: Dict[str, Any]) -> Dict[str, Any]:

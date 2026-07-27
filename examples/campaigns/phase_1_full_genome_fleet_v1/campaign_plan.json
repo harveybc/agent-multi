@@ -1,0 +1,45 @@
+{
+  "schema_version": "agent_multi.doin_campaign_plan.v1",
+  "plan_id": "phase-1-full-genome-fleet-v1",
+  "$doc": "First full-fidelity mixed-genome per-asset campaign. USDCAD@4h validates the exact shared chromosome, 2000/60 L1 convergence contract, unique distributed claims, and champion artifact persistence before the evidence-ranked remaining asset queue is appended.",
+  "participants": [
+    {
+      "node_id": "omega",
+      "supervisor_url": "http://100.99.54.79:8795",
+      "workers": [
+        "omega"
+      ]
+    },
+    {
+      "node_id": "dragon",
+      "supervisor_url": "http://100.110.215.85:8795",
+      "workers": [
+        "dragon"
+      ]
+    },
+    {
+      "node_id": "gamma",
+      "supervisor_url": "http://100.107.204.49:8795",
+      "workers": [
+        "gamma-5070ti",
+        "gamma-5090"
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "ordinal": 0,
+      "job_id": "usdcad-4h-full-genome-sac-shared-v1",
+      "domain_id": "trading-asset-policy-usdcad-4h-full-genome-v1",
+      "purpose": "full_fidelity_mixed_genome_asset_policy_optimization",
+      "higher_is_better": true,
+      "domain_semantic_hash": "75e58fb8029b438530f82f208c6435b877ee907fca6103b6ecaa212a99258921",
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_usdcad_4h_full_genome_v1/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_usdcad_4h_full_genome_v1/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_usdcad_4h_full_genome_v1/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_usdcad_4h_full_genome_v1/gamma_5090_node.json"
+      }
+    }
+  ]
+}

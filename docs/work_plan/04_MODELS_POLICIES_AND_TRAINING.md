@@ -194,6 +194,23 @@ Gradient optimization and candidate early stopping. Monitors train/validation
 only. For deterministic heuristic policies there is no gradient L1; their
 predictor dependencies may still have L1 training.
 
+The full-fidelity per-asset protocol uses:
+
+- `max_epochs: 2000` as a safety ceiling;
+- `l1_patience: 60`;
+- a 40-epoch minimum training floor before non-improvement may consume
+  patience;
+- best-checkpoint restoration;
+- a scale-explicit `l1_min_delta` in fractional weekly RAP units;
+- an epoch step count derived from the valid training transitions rather than
+  an unexplained constant shared by incompatible timeframes.
+
+A cheaper run may be labeled as a smoke test or ranking-only fidelity. It
+cannot become a promoted per-asset champion until the same decoded candidate
+has been evaluated under the full-fidelity protocol. L1 budget controls are
+part of the evaluator contract, not genes that may gain fitness by terminating
+training early.
+
 ### 9.2 L2 DOIN/DEAP optimization
 
 Evolves typed config patches. L2 patience is independent from L1 callbacks and
