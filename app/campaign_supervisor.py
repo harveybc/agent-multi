@@ -705,7 +705,9 @@ class CampaignSupervisor:
         dataset_path = _expand_runtime_path(str(data["input_data_file"]), roots)
         manifest_path = _expand_runtime_path(str(data["dataset_manifest_file"]), roots)
         manifest = _load_json(manifest_path)
-        if str(manifest.get("asset")) != str(data.get("asset")):
+        manifest_asset = str(manifest.get("asset") or "").strip().casefold()
+        configured_asset = str(data.get("asset") or "").strip().casefold()
+        if not manifest_asset or manifest_asset != configured_asset:
             raise ValueError(f"dataset manifest asset mismatch for {dataset_path}")
         if str(manifest.get("timeframe")) != str(data.get("timeframe")):
             raise ValueError(f"dataset manifest timeframe mismatch for {dataset_path}")

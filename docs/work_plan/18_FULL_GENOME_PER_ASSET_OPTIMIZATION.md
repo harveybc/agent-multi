@@ -150,3 +150,13 @@ No asset is ready for portfolio optimization until it has:
 Items 1-3 are complete for `USDCAD@4h`. The four generated worker configs
 produce the same encoded 28-gene schema, initial population and population
 fingerprint. Item 4 is the active deployment boundary.
+
+## 9. Dataset Deployment Gate
+
+Before any worker may create or join the campaign, the supervisor resolves the
+machine overlay and verifies the dataset against its versioned manifest. Asset
+identifiers are compared case-insensitively because source manifests use
+lowercase directory identifiers while canonical trading configs use uppercase
+instrument symbols. Timeframe remains an exact match, and the CSV must match
+the manifest SHA-256 byte for byte. A mismatch blocks the campaign before a
+chain or candidate claim can be created.
