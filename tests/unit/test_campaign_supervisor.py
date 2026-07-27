@@ -230,6 +230,47 @@ def test_dataset_preflight_validates_runtime_path_and_manifest_hash(tmp_path: Pa
         supervisor._validate_local_configs(supervisor.plan["jobs"][0])
 
 
+def test_corrected_config_validation_is_the_only_auto_recoverable_block(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    supervisor.state.update({
+        "phase": "blocked",
+        "alerts": [{
+            "code": "config_validation",
+            "message": "dataset mismatch",
+            "severity": "error",
+        }],
+    })
+
+    supervisor._recover_config_validation_block()
+
+    assert supervisor.state["phase"] == "starting"
+    assert supervisor.state["alerts"] == []
+
+    supervisor.state.update({
+        "phase": "blocked",
+        "alerts": [
+            {
+                "code": "config_validation",
+                "message": "dataset mismatch",
+                "severity": "error",
+            },
+            {
+                "code": "join_repair_limit:omega",
+                "message": "lineage mismatch",
+                "severity": "error",
+            },
+        ],
+    })
+
+    supervisor._recover_config_validation_block()
+
+    assert supervisor.state["phase"] == "blocked"
+    assert [item["code"] for item in supervisor.state["alerts"]] == [
+        "join_repair_limit:omega"
+    ]
+
+
 def test_process_config_matching_resolves_relative_path_from_process_cwd(tmp_path: Path):
     doin_root = tmp_path / "doin-node"
     target = doin_root / "examples" / "trading" / "campaign" / "omega_node.json"
