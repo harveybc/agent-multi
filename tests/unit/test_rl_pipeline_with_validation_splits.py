@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -134,6 +135,50 @@ def test_explicit_split_uses_configurable_train_tail_window(tmp_path):
     assert parts["train_tail"]["DATE_TIME"].iloc[0] == "2020-01-18 00:00:00"
 
 
+def test_train_tail_expands_to_support_configured_observation_window(tmp_path):
+    data = tmp_path / "weekly_window.csv"
+    dates = pd.date_range("2020-01-01 00:00:00", "2020-03-01 20:00:00", freq="4h")
+    data.write_text(
+        "DATE_TIME,CLOSE,f1\n"
+        + "\n".join(f"{ts},100,0.1" for ts in dates)
+        + "\n",
+        encoding="utf-8",
+    )
+    plugin = PipelinePlugin(
+        {
+            "input_data_file": str(data),
+            "date_column": "DATE_TIME",
+            "train_start": "2020-01-01 00:00:00",
+            "train_end": "2020-02-01 00:00:00",
+            "validation_start": "2020-02-01 00:00:00",
+            "validation_end": "2020-02-15 00:00:00",
+            "test_start": "2020-02-15 00:00:00",
+            "test_end": "2020-02-29 00:00:00",
+            "early_stop_train_tail_days": 2,
+            "window_size": 42,
+            "min_split_rows": 30,
+            "quiet_mode": True,
+        }
+    )
+
+    paths = plugin._split_csv(
+        plugin.params
+        | {
+            "input_data_file": str(data),
+            "date_column": "DATE_TIME",
+            "window_size": 42,
+        }
+    )
+
+    try:
+        parts = {name: pd.read_csv(path) for name, path in paths.items()}
+    finally:
+        plugin._tempdir.cleanup()
+
+    assert len(parts["train_tail"]) == 44
+    assert parts["train_tail"]["DATE_TIME"].iloc[-1] == "2020-01-31 20:00:00"
+
+
 def test_early_stop_composite_penalizes_validation_no_trade():
     composite, raw, passed, train_tail_ret, val_ret, train_trades, val_trades = _early_stop_composite(
         {"total_return": 3.5, "trades_total": 2},
@@ -182,3 +227,29 @@ def test_l1_warmup_epoch_cannot_become_best_or_consume_patience():
     assert best == 0.20
     assert no_improve == 0
     assert improved is True
+
+
+def test_l1_checkpoint_can_improve_before_patience_counter_starts():
+    best, no_improve, improved = _update_l1_checkpoint_state(
+        composite=0.25,
+        best_composite=0.2,
+        no_improve=0,
+        min_delta=0.01,
+        eligible=True,
+        patience_eligible=False,
+    )
+    assert best == pytest.approx(0.25)
+    assert no_improve == 0
+    assert improved is True
+
+    best, no_improve, improved = _update_l1_checkpoint_state(
+        composite=0.24,
+        best_composite=best,
+        no_improve=no_improve,
+        min_delta=0.01,
+        eligible=True,
+        patience_eligible=False,
+    )
+    assert best == pytest.approx(0.25)
+    assert no_improve == 0
+    assert improved is False

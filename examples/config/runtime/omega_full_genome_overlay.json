@@ -1,0 +1,23 @@
+{
+  "schema_version": "trading_runtime_overlay.v1",
+  "machine_id": "omega",
+  "roots": {
+    "ARTIFACT_ROOT": "/home/harveybc/.local/share/agent-multi"
+  },
+  "repositories": {
+    "agent-multi": "/home/harveybc/Documents/GitHub/agent-multi",
+    "financial-data": "/home/harveybc/Documents/GitHub/financial-data",
+    "gym-fx": "/home/harveybc/Documents/GitHub/gym-fx"
+  },
+  "devices": {
+    "training": "cuda"
+  },
+  "resource_limits": {
+    "max_observation_elements": 4096,
+    "max_replay_observation_values": 300000000
+  },
+  "environment_refs": {},
+  "metadata": {
+    "role": "local_full_genome_acceptance"
+  }
+}

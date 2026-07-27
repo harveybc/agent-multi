@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: evidence-recovery execution in progress; DOIN campaign safely frozen
-Plan version: 1.6.0
-Date: 2026-07-25
+Status: E0-E4 complete; full-genome implementation verified; first campaign materialized
+Plan version: 1.7.1
+Date: 2026-07-27
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -67,6 +67,7 @@ trading domain.
 | [15 Distributed campaign lifecycle](15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md) | Replicated job order, convergence/stop barriers, recovery, champion archive, and swarm history |
 | [16 Flat-fitness root cause](16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md) | BTC actor saturation evidence, corrected feature contract, action-collapse guard, and campaign disposition |
 | [17 Data and preprocessing evidence recovery](17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md) | Parameter registry, canonical metrics, source coverage, hierarchical sweeps, transactional pool, and DOIN-resume conditions |
+| [18 Full-genome per-asset optimization](18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md) | Corrected E4 interpretation, L1 convergence protocol, mixed genome, execution order, and champion contract |
 
 ## Repository Ownership Summary
 
@@ -111,8 +112,12 @@ runtime behavior pass the independent review protocol in document 12.
   the protected test period.
 - Cheap data/preprocessing screens may use a fixed-fit proxy, but their protocol
   is explicit and their metrics cannot be relabeled as deployable SAC results.
-- Final per-asset artifacts use one complete validation year and one complete
-  test year with weekly walk-forward retraining/fine-tuning.
+- Per-asset DOIN optimization uses the declared static chronological train and
+  complete validation-year protocol. The protected test year is evaluated once
+  after selection and cannot affect optimization.
+- Weekly walk-forward retraining/fine-tuning is a later stack-confirmation
+  experiment. It does not block obtaining the optimized per-asset artifacts
+  required to begin portfolio mechanics.
 - Every result records its exact evaluation dates and observed week count.
 - Annual metrics are calculated from an ordered annual weekly series, not by
   renaming a partial-period mean.
@@ -142,11 +147,17 @@ adding value.
 ## Current Build Order
 
 1. E0-E3 evidence screening: complete.
-2. Execute E4 static SAC training and export load-tested per-asset artifacts.
-3. Execute E5 weekly-retraining confirmation on the selected E4 cells.
-4. Resume DOIN Level 2 optimization on those explicit contracts.
-5. Optimize portfolio allocation, rush activation, and risk overlays.
-6. Complete registry, serving, LTS parity, and OANDA practice integration.
+2. E4 fixed-SAC integration baselines and load-tested warm-start artifacts:
+   complete. These are not optimized per-asset champions.
+3. Implement and verify the local full-genome optimizer with the corrected L1
+   convergence protocol.
+4. Run one coordinated DOIN Level 2 campaign per asset, sequentially, with all
+   available workers sharing one chain and candidate pool.
+5. Freeze the optimized per-asset champion library and optimize portfolio
+   allocation using those artifacts.
+6. Add rush activation and weekly retraining/fine-tuning experiments after the
+   static portfolio vertical is operational.
+7. Complete registry, serving, LTS parity, and OANDA practice integration.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

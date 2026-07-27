@@ -128,7 +128,7 @@ def main() -> None:
     coordinator.add_argument("--token-file", required=True)
     coordinator.add_argument("--port", type=int, default=8796)
     coordinator.add_argument("--backup-dir")
-    coordinator.add_argument("--backup-retention", type=int, default=48)
+    coordinator.add_argument("--backup-retention", type=int, default=8)
     coordinator.add_argument("--backup-interval", default="1h")
     worker = sub.add_parser("worker")
     worker.add_argument("--api-url", required=True)

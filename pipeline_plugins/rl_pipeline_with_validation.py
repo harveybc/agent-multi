@@ -152,13 +152,16 @@ def _update_l1_checkpoint_state(
     no_improve: int,
     min_delta: float,
     eligible: bool,
+    patience_eligible: bool | None = None,
 ) -> tuple[float, int, bool]:
-    """Update checkpoint/patience state without charging warm-up epochs."""
+    """Update checkpoint state without charging pre-patience warm-up epochs."""
     if not eligible:
         return best_composite, no_improve, False
     improved = composite > (best_composite + min_delta)
     if improved:
         return composite, 0, True
+    if patience_eligible is False:
+        return best_composite, no_improve, False
     return best_composite, no_improve + 1, False
 
 
@@ -289,9 +292,10 @@ class PipelinePlugin:
 
         # epoch loop
         "epoch_timesteps": 2_000,
-        "max_epochs": 500,
-        "l1_patience": 20,
-        "l1_min_delta": 1e-4,
+        "max_epochs": 2_000,
+        "l1_patience": 60,
+        "l1_patience_start_epoch": 40,
+        "l1_min_delta": 1e-5,
         "l1_min_checkpoint_timesteps": None,
         "early_stop_train_tail_days": 7,
         "early_stop_min_trades": 1,
@@ -317,7 +321,8 @@ class PipelinePlugin:
         "train_start", "train_end", "validation_start", "validation_end",
         "val_start", "val_end", "test_start", "test_end",
         "min_split_rows",
-        "epoch_timesteps", "max_epochs", "l1_patience", "l1_min_delta",
+        "epoch_timesteps", "max_epochs", "l1_patience",
+        "l1_patience_start_epoch", "l1_min_delta",
         "l1_min_checkpoint_timesteps",
         "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
@@ -441,6 +446,11 @@ class PipelinePlugin:
         if train_tail_days is not None and train_tail_days > 0:
             train_tail_start = train_end - pd.DateOffset(days=int(train_tail_days))
             train_tail_df = df[(df[date_col] >= train_tail_start) & (df[date_col] < train_end)]
+            configured_window = config.get("window_size")
+            if configured_window not in (None, ""):
+                min_env_rows = max(3, int(configured_window) + 2)
+                if len(train_tail_df) < min_env_rows:
+                    train_tail_df = train_df.tail(min_env_rows)
 
         for name, part in (("train", train_df), ("val", val_df), ("test", test_df)):
             if len(part) < min_split_rows:
@@ -676,6 +686,15 @@ class PipelinePlugin:
                 max_epochs = int(config.get("max_epochs", self.params["max_epochs"]))
                 total_progress_timesteps = int(config.get("total_timesteps") or epoch_ts * max_epochs)
                 l1_patience = int(config.get("l1_patience", self.params["l1_patience"]))
+                l1_patience_start_epoch = max(
+                    1,
+                    int(
+                        config.get(
+                            "l1_patience_start_epoch",
+                            self.params["l1_patience_start_epoch"],
+                        )
+                    ),
+                )
                 l1_min_delta = float(config.get("l1_min_delta", self.params["l1_min_delta"]))
                 l1_min_checkpoint_timesteps = _resolve_l1_min_checkpoint_timesteps(
                     config,
@@ -699,6 +718,7 @@ class PipelinePlugin:
                     print(
                         f"[train] starting: epoch_timesteps={epoch_ts} max_epochs={max_epochs} "
                         f"l1_patience={l1_patience} "
+                        f"l1_patience_start_epoch={l1_patience_start_epoch} "
                         f"(L1=mean(train_tail_score,val_score)-beta*gap, no-trade penalized)"
                     )
 
@@ -799,12 +819,17 @@ class PipelinePlugin:
                     )
 
                     checkpoint_eligible = nts_after >= l1_min_checkpoint_timesteps
+                    patience_eligible = (
+                        checkpoint_eligible
+                        and epoch >= l1_patience_start_epoch
+                    )
                     best_composite, no_improve, improved = _update_l1_checkpoint_state(
                         composite=composite,
                         best_composite=best_composite,
                         no_improve=no_improve,
                         min_delta=l1_min_delta,
                         eligible=checkpoint_eligible,
+                        patience_eligible=patience_eligible,
                     )
                     if improved:
                         agent_plugin.save(model, best_model_path)
@@ -835,6 +860,8 @@ class PipelinePlugin:
                         "composite": composite,
                         "best_composite": best_composite if best_checkpoint_saved else None,
                         "l1_checkpoint_eligible": checkpoint_eligible,
+                        "l1_patience_eligible": patience_eligible,
+                        "l1_patience_start_epoch": l1_patience_start_epoch,
                         "l1_min_checkpoint_timesteps": l1_min_checkpoint_timesteps,
                         "early_stop_trade_gate_passed": trade_gate_passed,
                         "early_stop_min_trades": early_stop_min_trades,
@@ -866,8 +893,12 @@ class PipelinePlugin:
 
                     l1_status = (
                         f"{no_improve}/{l1_patience}"
-                        if checkpoint_eligible
-                        else f"warmup<{l1_min_checkpoint_timesteps}"
+                        if patience_eligible
+                        else (
+                            f"epoch-warmup<{l1_patience_start_epoch}"
+                            if checkpoint_eligible
+                            else f"step-warmup<{l1_min_checkpoint_timesteps}"
+                        )
                     )
                     checkpoint_status = (
                         "(IMPROVED, model saved)"
@@ -912,7 +943,7 @@ class PipelinePlugin:
                         flush=True,
                     )
 
-                    if checkpoint_eligible and no_improve >= l1_patience:
+                    if patience_eligible and no_improve >= l1_patience:
                         print(
                             f"[train] L1 EARLY STOP at epoch {epoch} "
                             f"(no improvement for {no_improve} epochs, patience={l1_patience})",

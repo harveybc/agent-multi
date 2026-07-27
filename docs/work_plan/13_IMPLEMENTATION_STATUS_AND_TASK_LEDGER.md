@@ -605,7 +605,8 @@ cannot select, early-stop, optimize or promote future candidates.
 | `GPU-WATCHDOG-001` | Codex | `agent-multi` | verified_three_hosts | Five-minute GPU temperature, GPU-count and NVIDIA telemetry watchdog with Hermes Telegram alert, recovery and hourly repeat semantics | Codex |
 | `SWARM-TELEGRAM-001` | Codex | `agent-multi` | verified_three_hosts | Idempotent completion metrics and failover-owned health notifications for frozen machines, unhealthy workers, divergent lineages, parallel swarms and stalled progress | Codex |
 | `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
-| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | e2_running_four_workers | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 13,380 materialized E0-E2 jobs, transactional pull pool, immediate orphan recovery, normalized OLAP facts, bounded-memory wide-source execution, measured ETA and continuous workers | Codex |
+| `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | e0_e4_complete | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 16,019 completed E0-E4 jobs, transactional pull pool, normalized OLAP facts, bounded-memory execution and 24 load-tested E4 baseline artifacts | Codex |
+| `FULL-GENOME-001` | Codex | `agent-multi`, `doin-node`, `doin-plugins` | verified_local_campaign_materialized | Typed mixed feature/preprocessing/context/model/training/execution genome, corrected full-fidelity L1 protocol, exact champion persistence, local smoke, identical four-worker population fingerprint and first sequential DOIN campaign | Codex |
 
 Claude packet:
 
@@ -624,19 +625,22 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Execute the 24 E4 SAC jobs across the four workers and retain all terminal
-   results in the evidence OLAP.
-2. Reconcile the three training seeds for each of the eight selected cells.
-3. Materialize E4 loadable per-asset policy artifacts, resolved configs,
-   selected-feature hashes and data-contract hashes.
-4. Execute E5 weekly-retraining confirmation and persist its full-year
-   weekly/annual metric contract.
-5. Resume DOIN Level 2 only with explicit E4/E5 configs and champion artifact
-   paths.
+1. Commit, deploy and start the materialized `USDCAD@4h` full-genome campaign
+   on one shared population across all four workers.
+2. Verify joined peers, shared schema/population fingerprint, unique claims,
+   live L1 progress and artifact persistence.
+3. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+   GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
+4. Execute one coordinated DOIN campaign per selected asset, using every
+   available worker on one chain at a time.
+5. Confirm frozen winners across three seeds and build the per-asset champion
+   library before portfolio optimization.
 6. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-7. Implement and fault-test the decentralized artifact plane before a
+7. Optimize the portfolio, then evaluate rush activation and weekly
+   retraining/fine-tuning.
+8. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks
@@ -667,3 +671,20 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 - The Nautilus replay adapter is multi-asset, but the interactive Gym bridge is
   currently the verified single-cell compatibility slice. It is not yet the
   complete portfolio training environment.
+
+## 6. Evidence Archive Closure (2026-07-27)
+
+E0-E4 services were stopped and disabled after completion. The authoritative
+SQLite OLAP remains at:
+
+```text
+~/.local/state/agent-multi/evidence-pool-20260725/evidence.sqlite
+```
+
+A fresh online backup passed `PRAGMA quick_check`, has SHA-256
+`73c46d56c24de8d85e75f7dd621718a5ac6ff4eb0250a3a100eb9acced7887ca`,
+and is retained with the two preceding verified snapshots. Reducing 48 hourly
+duplicates to three final snapshots reduced that state directory from 32 GB to
+4 GB without deleting the source database, normalized OLAP facts, E4 artifacts
+or attempt history. Future evidence-service installations default to eight
+rolling snapshots.

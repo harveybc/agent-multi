@@ -29,6 +29,7 @@ setup(
         ],
         "optimizer.plugins": [
             "default_optimizer=optimizer_plugins.default_optimizer:Plugin",
+            "project3_full_genome_optimizer=optimizer_plugins.project3_full_genome_optimizer:Plugin",
         ],
     },
     install_requires=[
