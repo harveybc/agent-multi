@@ -1,8 +1,30 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-07-27
-Plan version: 1.9.0
-Current focus: E4 static SAC policy training from robust E3 contracts
+Plan version: 1.11.0
+Current focus: active USDCAD full-genome campaign plus verified, disabled execution-curriculum follow-up
+
+Decision 2026-07-27: the active USDCAD chain remains unchanged and becomes the
+market-entry pretraining source. The next campaign adds a visible three-phase
+cost curriculum, immutable multi-scenario robust weekly-RAP fitness, and a
+market/limit/stop execution router. Implementation and exact sequencing are in
+`19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md`.
+
+Implementation is complete locally without modifying the active campaign:
+
+- `trading-contracts` 0.2.0 adds optional asset-intent urgency;
+- `gym-fx` 0.3.0 supports visible cost conditions and native market, limit and
+  stop entries with GTD expiry and cancel/market fallback;
+- `agent-multi` 0.4.0 adds deterministic three-phase cost selection, robust
+  scenario evaluation in weekly-return units, SAC observation expansion, and
+  the adaptive router;
+- the tracked USDCAD follow-up template is disabled;
+- the launch materializer requires and hashes the final policy and parameter
+  artifacts before enabling a new optimization;
+- the router profile is blocked until the robust policy is frozen.
+
+The active swarm keeps its existing market-entry fitness, domain, genesis and
+processes. No curriculum job is added to its campaign plan.
 
 The static per-asset DOIN campaign is stopped and preserved. It must not resume
 until the evidence stages select explicit data, preprocessing, feature,
@@ -607,6 +629,8 @@ cannot select, early-stop, optimize or promote future candidates.
 | `INPUT-CONTRACT-001` | Codex | `agent-multi`, `gym-fx`, `doin-node` | verified_local_pending_redeploy | Feature-aware observation contract, exact observation-space wiring, neutral causal warm-up, action-collapse rejection, fresh v3 node configs and flat-fitness incident evidence | Codex |
 | `EVIDENCE-RECOVERY-001` | Codex | `agent-multi`, `financial-data` | e0_e4_complete | Canonical weekly/annual metric schema, exhaustive parameter registry, explicit external-source bundles, 16,019 completed E0-E4 jobs, transactional pull pool, normalized OLAP facts, bounded-memory execution and 24 load-tested E4 baseline artifacts | Codex |
 | `FULL-GENOME-001` | Codex | `agent-multi`, `doin-node`, `doin-plugins` | verified_local_campaign_materialized | Typed mixed feature/preprocessing/context/model/training/execution genome, corrected full-fidelity L1 protocol, exact champion persistence, local smoke, identical four-worker population fingerprint, immutable dataset preflight and first sequential DOIN campaign | Codex |
+| `EXEC-CURRICULUM-001` | Codex | `agent-multi`, `gym-fx` | verified_local_disabled_followup | Visible deterministic cost curriculum, immutable robust validation scenarios, weekly-RAP fitness, SAC observation expansion and fail-closed champion materializer | Codex |
+| `ORDER-ROUTER-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | verified_local_blocked_on_policy | Account-independent adaptive market/limit/stop router, urgency contract, native GTD execution, expiry and cancel/market fallback | Codex |
 
 Claude packet:
 
@@ -625,22 +649,26 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Commit, deploy and start the materialized `USDCAD@4h` full-genome campaign
-   on one shared population across all four workers.
-2. Verify joined peers, shared schema/population fingerprint, unique claims,
-   live L1 progress and artifact persistence.
-3. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+1. Let the active `USDCAD@4h` full-genome campaign reach its normal distributed
+   stop barrier without changing its domain, fitness or processes.
+2. Archive and independently load the exact final champion model and parameter
+   artifacts; verify all workers agree on block and artifact hash.
+3. Use the fail-closed materializer to create the launchable execution-cost
+   curriculum config and a new domain/genesis, then run it across all workers.
+4. Freeze the robust policy and generate its deterministic action trace; only
+   then enable and optimize the adaptive order router with Nautilus.
+5. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
    GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
-4. Execute one coordinated DOIN campaign per selected asset, using every
+6. Execute one coordinated DOIN campaign per selected asset, using every
    available worker on one chain at a time.
-5. Confirm frozen winners across three seeds and build the per-asset champion
+7. Confirm frozen winners across three seeds and build the per-asset champion
    library before portfolio optimization.
-6. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+8. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-7. Optimize the portfolio, then evaluate rush activation and weekly
+9. Optimize the portfolio, then evaluate rush activation and weekly
    retraining/fine-tuning.
-8. Implement and fault-test the decentralized artifact plane before a
+10. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks

@@ -182,9 +182,9 @@ def test_versioned_machine_overlays_are_valid_and_isolated() -> None:
         for path in sorted(root.glob("*.json"))
     }
     assert set(overlays) == {"dragon", "gamma_5070ti", "gamma_5090", "omega"}
-    # PyTorch enumerates Gamma's external 5090 before the internal 5070 Ti,
-    # independently of nvidia-smi's physical-index display order.
-    assert overlays["gamma_5070ti"].devices["training"] == "cuda:1"
+    # The campaign profile pins each worker with CUDA_VISIBLE_DEVICES by GPU
+    # UUID, so each isolated process addresses its assigned GPU as cuda:0.
+    assert overlays["gamma_5070ti"].devices["training"] == "cuda:0"
     assert overlays["gamma_5090"].devices["training"] == "cuda:0"
     assert (
         overlays["gamma_5070ti"].roots["ARTIFACT_ROOT"]

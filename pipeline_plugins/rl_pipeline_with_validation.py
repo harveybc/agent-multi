@@ -30,6 +30,7 @@ same content next to the saved model.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import tempfile
@@ -51,6 +52,22 @@ from agent_plugins._progress_callback import make_progress_callback
 
 
 _METRIC_KEYS = ("trades_total", "win_pct", "sharpe_ratio", "total_return", "final_equity")
+
+
+def _verify_artifact_sha256(path: Path, expected: str | None) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    actual = digest.hexdigest()
+    if expected:
+        normalized = str(expected).removeprefix("sha256:")
+        if normalized != actual:
+            raise ValueError(
+                f"warm-start model sha256 mismatch: expected {normalized}, "
+                f"got {actual}"
+            )
+    return actual
 
 
 def _load_env_plugin(name: str, config: Dict[str, Any]):
@@ -88,6 +105,46 @@ def _safe_float_or_none(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _set_env_training_progress(env: Any, progress: float) -> bool:
+    """Propagate normalized training progress through common Gym wrappers."""
+    bounded = max(0.0, min(1.0, float(progress)))
+    visited: set[int] = set()
+
+    def visit(current: Any) -> bool:
+        if current is None or id(current) in visited:
+            return False
+        visited.add(id(current))
+        setter = getattr(current, "set_training_progress", None)
+        if callable(setter):
+            setter(bounded)
+            return True
+        changed = False
+        for child in getattr(current, "envs", ()) or ():
+            changed = visit(child) or changed
+        inner = getattr(current, "env", None)
+        if inner is not current:
+            changed = visit(inner) or changed
+        unwrapped = getattr(current, "unwrapped", None)
+        if unwrapped is not current:
+            changed = visit(unwrapped) or changed
+        return changed
+
+    return visit(env)
+
+
+def _training_progress_for_epoch(
+    epoch: int,
+    *,
+    max_epochs: int,
+    curriculum_epochs: int | None,
+) -> float:
+    """Map epochs to a bounded curriculum horizon independent of hard cap."""
+    horizon = int(curriculum_epochs or max_epochs)
+    if horizon < 2:
+        raise ValueError("execution_cost_curriculum_epochs must be >= 2")
+    return min(1.0, max(0.0, (int(epoch) - 1) / (horizon - 1)))
 
 
 def _trade_count(summary: Dict[str, Any]) -> int:
@@ -167,6 +224,15 @@ def _update_l1_checkpoint_state(
 
 def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lambda: float) -> float:
     metric = str(selection_metric or "total_return").strip().lower()
+    if metric in {
+        "robust_weekly_rap_fitness",
+        "robust_weekly_rap",
+        "execution_curriculum_robust_fitness",
+    }:
+        value = _safe_float(summary.get("robust_weekly_rap_fitness"))
+        if math.isnan(value):
+            raise ValueError("robust validation summary is missing finite fitness")
+        return value
     if metric in {"risk_adjusted_return", "risk_adjusted_total_return", "rap"}:
         return _risk_adjusted_return(summary, risk_lambda)
     ret = _safe_float(summary.get("total_return"))
@@ -313,6 +379,7 @@ class PipelinePlugin:
         "return_trace_dir": None,
         "evaluate_test_split": True,
         "write_results_sidecar": True,
+        "execution_cost_curriculum_epochs": None,
     }
 
     plugin_debug_vars = [
@@ -327,7 +394,7 @@ class PipelinePlugin:
         "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
         "warm_start_model", "return_trace_dir", "evaluate_test_split",
-        "write_results_sidecar",
+        "write_results_sidecar", "execution_cost_curriculum_epochs",
     ]
 
     def __init__(self, config: Dict[str, Any] | None = None):
@@ -523,7 +590,9 @@ class PipelinePlugin:
                     config.get("continuous_action_threshold")
                 ),
             )
-            trace_rows = summary.pop("_return_trace_rows", None)
+            trace_rows = summary.get("_return_trace_rows")
+            if not bool(config.get("_retain_return_trace_rows", False)):
+                summary.pop("_return_trace_rows", None)
             trace_dir = config.get("return_trace_dir")
             if trace_dir and trace_rows is not None:
                 trace_path = _trace_mod.derive_split_trace_path(str(trace_dir), split_label)
@@ -654,9 +723,34 @@ class PipelinePlugin:
                     warm_start_path = Path(str(warm_start_model))
                     if not warm_start_path.exists():
                         raise FileNotFoundError(f"warm_start_model not found: {warm_start_path}")
+                    _verify_artifact_sha256(
+                        warm_start_path,
+                        config.get("warm_start_model_sha256"),
+                    )
                     if not config.get("quiet_mode"):
                         print(f"[train] warm-start loading {warm_start_path}", flush=True)
-                    model = agent_plugin.load(str(warm_start_path), train_env)
+                    expansion_loader = getattr(
+                        agent_plugin,
+                        "load_with_observation_expansion",
+                        None,
+                    )
+                    if bool(
+                        config.get(
+                            "warm_start_expand_observation_space",
+                            False,
+                        )
+                    ):
+                        if not callable(expansion_loader):
+                            raise ValueError(
+                                "agent does not support warm-start observation expansion"
+                            )
+                        model = expansion_loader(
+                            str(warm_start_path),
+                            train_env,
+                            config,
+                        )
+                    else:
+                        model = agent_plugin.load(str(warm_start_path), train_env)
                     try:
                         model.set_env(train_env)
                     except Exception:
@@ -740,6 +834,16 @@ class PipelinePlugin:
                     return actor, critic, ent
 
                 for epoch in range(1, max_epochs + 1):
+                    _set_env_training_progress(
+                        train_env,
+                        _training_progress_for_epoch(
+                            epoch,
+                            max_epochs=max_epochs,
+                            curriculum_epochs=config.get(
+                                "execution_cost_curriculum_epochs"
+                            ),
+                        ),
+                    )
                     a_b, c_b, e_b = _policy_checksum(model)
                     nts_before = int(getattr(model, "num_timesteps", 0))
                     rb_before = int(getattr(getattr(model, "replay_buffer", None), "size", lambda: 0)()) if hasattr(model, "replay_buffer") else 0
@@ -1088,6 +1192,23 @@ class PipelinePlugin:
         # also surface top-level metrics from validation for compatibility
         out.update({
             "total_return": val_summary.get("total_return"),
+            "mean_weekly_return": val_summary.get("mean_weekly_return"),
+            "annualized_return": val_summary.get("annualized_return"),
+            "annual_return": val_summary.get("annual_return"),
+            "mean_weekly_rap": val_summary.get("mean_weekly_rap"),
+            "annual_rap": val_summary.get("annual_rap"),
+            "robust_weekly_rap_fitness": val_summary.get(
+                "robust_weekly_rap_fitness"
+            ),
+            "worst_scenario_weekly_rap": val_summary.get(
+                "worst_scenario_weekly_rap"
+            ),
+            "lower_tail_cvar_weekly_rap": val_summary.get(
+                "lower_tail_cvar_weekly_rap"
+            ),
+            "scenario_weekly_rap_dispersion": val_summary.get(
+                "scenario_weekly_rap_dispersion"
+            ),
             "risk_adjusted_total_return": val_summary.get("risk_adjusted_total_return"),
             "max_drawdown_fraction": val_summary.get("max_drawdown_fraction"),
             "final_equity": val_summary.get("final_equity"),

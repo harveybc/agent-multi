@@ -11,7 +11,13 @@ Requires `gym-fx` to be installed (editable install recommended):
 from __future__ import annotations
 
 from importlib.metadata import entry_points
+from pathlib import Path
 from typing import Any, Dict
+
+from env_plugins.execution_cost_curriculum import (
+    ExecutionCostCurriculumWrapper,
+    load_curriculum,
+)
 
 
 class Plugin:
@@ -65,6 +71,8 @@ class Plugin:
         # gym-fx uses key "mode"; we relabel from env_mode to avoid
         # stomping on agent-multi's own "mode".
         merged["mode"] = merged.get("env_mode", "inference")
+        if merged.get("execution_cost_curriculum"):
+            merged["execution_cost_observation_enabled"] = True
         return merged
 
     def _load_bundle_plugin(self, group: str, name: str, cfg: Dict[str, Any]):
@@ -102,6 +110,26 @@ class Plugin:
             reward_plugin=reward,
             metrics_plugin=metrics,
         )
+        curriculum_value = env_config.get("execution_cost_curriculum")
+        if curriculum_value:
+            curriculum = load_curriculum(
+                curriculum_value,
+                base_dir=Path(__file__).resolve().parents[1],
+            )
+            expected = env_config.get("execution_cost_curriculum_fingerprint")
+            if expected and str(expected) != curriculum.fingerprint:
+                raise ValueError(
+                    "execution cost curriculum fingerprint mismatch: "
+                    f"expected {expected}, got {curriculum.fingerprint}"
+                )
+            self._env = ExecutionCostCurriculumWrapper(
+                self._env,
+                curriculum=curriculum,
+                seed=int(env_config.get("train_seed", 0)),
+                fixed_scenario_id=env_config.get(
+                    "execution_cost_fixed_scenario_id"
+                ),
+            )
         return self._env
 
     def close(self) -> None:
