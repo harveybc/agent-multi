@@ -1861,6 +1861,9 @@ class CampaignSupervisor:
             for job in plan_jobs
             if int(job["ordinal"]) > current_index and job.get("status") == "queued"
         }
+        unknown_queued_jobs = sorted(
+            job_id for job_id, budget in queued_budgets.items() if budget <= 0
+        )
         pool_remaining = current_remaining + sum(queued_budgets.values())
 
         def estimate(candidates: int, rate: float) -> float | None:
@@ -1880,9 +1883,23 @@ class CampaignSupervisor:
             "current_job_eta_low_seconds": estimate(current_remaining, fast_rate),
             "current_job_eta_high_seconds": estimate(current_remaining, slow_rate),
             "pool_candidates_remaining": pool_remaining,
-            "pool_eta_seconds": estimate(pool_remaining, median_rate),
-            "pool_eta_low_seconds": estimate(pool_remaining, fast_rate),
-            "pool_eta_high_seconds": estimate(pool_remaining, slow_rate),
+            "pool_eta_seconds": (
+                None
+                if unknown_queued_jobs
+                else estimate(pool_remaining, median_rate)
+            ),
+            "pool_eta_low_seconds": (
+                None
+                if unknown_queued_jobs
+                else estimate(pool_remaining, fast_rate)
+            ),
+            "pool_eta_high_seconds": (
+                None
+                if unknown_queued_jobs
+                else estimate(pool_remaining, slow_rate)
+            ),
+            "pool_candidate_budget_complete": not unknown_queued_jobs,
+            "queued_jobs_waiting_for_materialization": unknown_queued_jobs,
             "jobs_total": len(plan_jobs),
             "jobs_completed": sum(job["status"] == "completed" for job in plan_jobs),
             "jobs_running": sum(job["status"] == "running" for job in plan_jobs),
@@ -2979,9 +2996,12 @@ class CampaignSupervisor:
                         self._clear_alert("completion_barrier")
                     else:
                         self.state["completion_candidate_since"] = None
-                        self._alert(
-                            "completion_barrier", reason, severity="warning"
-                        )
+                        if "waiting for stage" in reason:
+                            self._clear_alert("completion_barrier")
+                        else:
+                            self._alert(
+                                "completion_barrier", reason, severity="warning"
+                            )
                 else:
                     ready, reason, _ = self._completion_evidence(network, job)
                     if ready:
