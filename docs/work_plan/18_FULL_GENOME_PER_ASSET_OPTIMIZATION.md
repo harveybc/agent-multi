@@ -85,14 +85,17 @@ Each asset runs one sequential DOIN campaign using all available workers:
 
 1. feature families, preprocessing and observation;
 2. model architecture and training dynamics;
-3. trade lifecycle and risk geometry;
+3. execution-cost curriculum and risk geometry in a distinct warm-started
+   domain;
 4. restricted joint refinement around the best prior stages;
 5. final three-seed confirmation and frozen protected-test evaluation.
 
-Stages preserve compatible best parameters. They do not restart independent
-chains or allow a reduced-fidelity score to overwrite a full-fidelity result.
-E4 champions, top E2/E3 neighborhoods and stratified random candidates seed
-the first population.
+Stages preserve compatible best parameters. The first USDCAD campaign stops
+after step 2 because its execution environment has free fills; optimizing
+execution/risk genes there would teach the wrong objective. A hash-verified
+champion then warm-starts step 3 under strictly positive, visible costs and
+robust validation. This is a new domain and chain, never a mutation of the
+active one.
 
 ## 6. Fitness and Metrics
 

@@ -15,8 +15,11 @@ from app.campaign_supervisor import (
     CampaignSupervisor,
     _candidate_duration_samples_from_log,
     _cmdline_references_config,
+    _completion_boundary_contract,
+    _decoded_champion_parameters,
     _domain_semantic_hash,
     _latest_training_progress_from_log,
+    _select_diverse_elites,
 )
 
 
@@ -170,6 +173,55 @@ def test_semantic_hash_rejects_shared_population_seed_offsets():
     assert _domain_semantic_hash(left) != _domain_semantic_hash(right)
 
 
+def test_elite_selection_uses_decoded_parameters_and_retains_diversity():
+    candidates = [
+        {
+            "fitness": 0.30,
+            "artifact_sha256": "best",
+            "parameters": {"preprocessing_mode": 1},
+            "metrics": {
+                "mixed_genome_decoded": {
+                    "preprocessing_mode": "rolling_zscore",
+                    "learning_rate_gene": 0.001,
+                    "_repairs": [],
+                }
+            },
+        },
+        {
+            "fitness": 0.29,
+            "artifact_sha256": "near-duplicate",
+            "parameters": {"preprocessing_mode": 1},
+            "metrics": {
+                "mixed_genome_decoded": {
+                    "preprocessing_mode": "rolling_zscore",
+                    "learning_rate_gene": 0.0011,
+                }
+            },
+        },
+        {
+            "fitness": 0.27,
+            "artifact_sha256": "diverse",
+            "parameters": {"preprocessing_mode": 0},
+            "metrics": {
+                "mixed_genome_decoded": {
+                    "preprocessing_mode": "robust_rolling",
+                    "learning_rate_gene": 0.01,
+                }
+            },
+        },
+    ]
+
+    selected = _select_diverse_elites(
+        candidates, count=2, higher_is_better=True
+    )
+
+    assert [item["artifact_sha256"] for item in selected] == ["best", "diverse"]
+    assert _decoded_champion_parameters(candidates[0]) == {
+        "preprocessing_mode": "rolling_zscore",
+        "learning_rate_gene": 0.001,
+    }
+
+
 def test_dataset_preflight_validates_runtime_path_and_manifest_hash(tmp_path: Path):
     profile_path, plan, profile = _materialize(tmp_path)
     agent_root = tmp_path / "agent-multi"
@@ -309,6 +361,63 @@ def test_network_status_exposes_complete_optimization_queue(tmp_path: Path):
 
     assert [job["job_id"] for job in network["plan_jobs"]] == ["job-0", "job-1"]
     assert [job["status"] for job in network["plan_jobs"]] == ["starting", "queued"]
+
+
+def test_planned_budget_stops_at_configured_stage_boundary(tmp_path: Path):
+    profile_path, plan, _ = _materialize(tmp_path)
+    config_path = tmp_path / "doin-node" / "omega.json"
+    config = json.loads(config_path.read_text())
+    config["domains"][0]["optimization_config"]["optimization_stages"] = [
+        {"name": "data_observation", "generations": 2},
+        {"name": "model_training", "generations": 1},
+        {"name": "execution_risk", "generations": 5},
+    ]
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    plan["jobs"][0].update(
+        {
+            "domain_semantic_hash": _domain_semantic_hash(config),
+            "completion_boundary": {
+                "mode": "after_stage",
+                "stage_name": "model_training",
+                "target_stage_number": 3,
+                "elite_count": 5,
+            },
+        }
+    )
+    (tmp_path / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+    supervisor = CampaignSupervisor(profile_path)
+
+    assert supervisor._job_planned_candidate_budget(plan["jobs"][0]) == 12
+
+
+def test_job_preparation_is_idempotent_and_hashes_required_outputs(
+    tmp_path: Path,
+) -> None:
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    output = tmp_path / "generated.json"
+    counter = tmp_path / "counter.txt"
+    job = supervisor.plan["jobs"][0]
+    job["preparation"] = {
+        "command": [
+            "/usr/bin/python3",
+            "-c",
+            (
+                "from pathlib import Path;"
+                f"p=Path({str(counter)!r});"
+                "p.write_text(str(int(p.read_text())+1) if p.exists() else '1');"
+                f"Path({str(output)!r}).write_text('{{}}')"
+            ),
+        ],
+        "required_outputs": [str(output)],
+    }
+
+    supervisor._prepare_job(job)
+    supervisor._prepare_job(job)
+
+    assert counter.read_text() == "1"
+    assert supervisor.state["preparation"]["status"] == "prepared"
+    assert str(output) in supervisor.state["preparation"]["output_sha256"]
 
 
 def test_candidate_duration_samples_pair_shared_log_entries(tmp_path: Path):
@@ -645,6 +754,67 @@ def test_completion_barrier_requires_all_workers_same_tip_and_versions(tmp_path:
     ready, reason, _ = supervisor._completion_evidence(network, supervisor.plan["jobs"][0])
     assert not ready
     assert "offline" in reason
+
+
+def test_stage_boundary_requires_one_generation_population_and_champion(
+    tmp_path: Path,
+):
+    participants = [
+        {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
+        {"node_id": "dragon", "supervisor_url": "http://dragon:8795", "workers": ["dragon"]},
+    ]
+    profile_path, _, _ = _materialize(tmp_path, participants=participants)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    job["completion_boundary"] = {
+        "mode": "after_stage",
+        "stage_name": "model_training",
+        "target_stage_number": 3,
+        "elite_count": 5,
+    }
+    contract = _completion_boundary_contract(job)
+    network = {"participants": {}}
+    for participant in participants:
+        status = _participant_status(
+            supervisor, participant["node_id"], participant["workers"]
+        )
+        status["coordination"] = {
+            "completion_boundary_contract": contract,
+        }
+        for worker in status["workers"].values():
+            worker.update(
+                {
+                    "converged": False,
+                    "candidate": {"stage": 3, "stage_name": "execution_risk"},
+                    "shared_population": {
+                        "generation": 11,
+                        "population_fingerprint": "stage-3-pool",
+                    },
+                    "champion_artifact_sha256": "champion-model",
+                    "bootstrap_evidence": {
+                        "genesis_hash": "genesis",
+                        "population_block_hash": "initial-population",
+                        "population_fingerprint": "initial-fingerprint",
+                    },
+                }
+            )
+        network["participants"][participant["node_id"]] = {
+            "online": True,
+            "status": status,
+        }
+
+    ready, reason, evidence = supervisor._stage_boundary_evidence(network, job)
+
+    assert ready, reason
+    assert evidence["generation"] == 11
+    assert evidence["artifact_sha256"] == "champion-model"
+    assert evidence["evidence_hash"]
+
+    dragon = network["participants"]["dragon"]["status"]["workers"]["dragon"]
+    dragon["shared_population"]["population_fingerprint"] = "parallel-pool"
+    ready, reason, _ = supervisor._stage_boundary_evidence(network, job)
+    assert not ready
+    assert "one boundary population" in reason
 
 
 def test_runtime_health_detects_bootstrap_lineage_divergence(tmp_path: Path):
@@ -1038,6 +1208,50 @@ def test_stop_barrier_accepts_durable_ack_from_node_that_already_advanced(tmp_pa
     assert "same champion" in reason
 
 
+def test_stop_barrier_accepts_stage_boundary_forks_with_identical_evidence(
+    tmp_path: Path,
+):
+    participants = [
+        {"node_id": "omega", "supervisor_url": "http://omega:8795", "workers": ["omega"]},
+        {"node_id": "dragon", "supervisor_url": "http://dragon:8795", "workers": ["dragon"]},
+    ]
+    profile_path, _, _ = _materialize(tmp_path, participants=participants)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    job["completion_boundary"] = {
+        "mode": "after_stage",
+        "stage_name": "model_training",
+        "target_stage_number": 3,
+        "elite_count": 5,
+    }
+    boundary = {
+        **_completion_boundary_contract(job),
+        "artifact_sha256": "model",
+        "evidence_hash": "same-boundary",
+    }
+    network = {"participants": {}}
+    for offset, participant in enumerate(participants):
+        status = _participant_status(
+            supervisor,
+            participant["node_id"],
+            participant["workers"],
+            phase="stopped",
+            tip=f"fork-{offset}",
+        )
+        status["archive"]["completion_boundary"] = boundary
+        status["archive"]["chain_height"] += offset
+        for worker in status["workers"].values():
+            worker["stopped_verified"] = True
+        network["participants"][participant["node_id"]] = {
+            "online": True,
+            "status": status,
+        }
+
+    ready, reason = supervisor._stop_barrier_ready(network, job)
+
+    assert ready, reason
+
+
 class _ChainHandler(BaseHTTPRequestHandler):
     blocks: list[dict] = []
 
@@ -1094,6 +1308,10 @@ def test_champion_archive_extracts_and_verifies_embedded_model(tmp_path: Path):
                             "model_artifact_sha256": digest,
                             "model_artifact_bytes": len(model),
                             "model_artifact_format": "stable_baselines3_zip",
+                            "mixed_genome_decoded": {
+                                "x": 0.75,
+                                "_repairs": [],
+                            },
                         },
                     },
                 }
@@ -1116,6 +1334,11 @@ def test_champion_archive_extracts_and_verifies_embedded_model(tmp_path: Path):
     assert Path(champion["artifact_path"]).read_bytes() == model
     manifest = json.loads(Path(champion["manifest_path"]).read_text())
     assert manifest["parameters"] == {"x": 0.4}
+    assert manifest["decoded_parameters"] == {"x": 0.75}
+    parameters = json.loads(Path(champion["parameters_path"]).read_text())
+    assert parameters["parameters"] == {"x": 0.75}
+    assert parameters["encoded_parameters"] == {"x": 0.4}
+    assert archive["elites"][0]["artifact_sha256"] == digest
 
 
 def test_state_recovery_keeps_same_job_and_plan(tmp_path: Path):

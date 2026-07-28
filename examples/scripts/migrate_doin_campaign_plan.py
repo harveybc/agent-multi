@@ -14,6 +14,7 @@ from app.campaign_supervisor import (
     PROFILE_SCHEMA,
     HistoryStore,
     _atomic_json,
+    _completion_boundary_contract,
     _sha256_json,
 )
 
@@ -50,6 +51,58 @@ def _profile_and_plan(profile_path: Path) -> tuple[dict[str, Any], Path, dict[st
     return profile, plan_path, plan, plan_hash
 
 
+def _same_active_job_contract(old: dict[str, Any], new: dict[str, Any]) -> bool:
+    lifecycle_keys = {"completion_boundary", "artifact_handoff"}
+    old_core = {
+        key: value for key, value in old.items() if key not in lifecycle_keys
+    }
+    new_core = {
+        key: value for key, value in new.items() if key not in lifecycle_keys
+    }
+    return old_core == new_core
+
+
+def _migrated_coordination(
+    state: dict[str, Any],
+    *,
+    plan_hash: str,
+    job: dict[str, Any],
+) -> dict[str, Any]:
+    coordination = dict(state.get("coordination") or {})
+    if not coordination:
+        return coordination
+    coordination.update(
+        {
+            "plan_hash": plan_hash,
+            "job_index": int(job["ordinal"]),
+            "job_id": str(job["job_id"]),
+            "domain_id": str(job["domain_id"]),
+            "completion_boundary_contract": _completion_boundary_contract(job),
+        }
+    )
+    contract_keys = (
+        "plan_hash",
+        "job_index",
+        "job_id",
+        "domain_id",
+        "domain_semantic_hash",
+        "shared_population_seed",
+        "shared_population_size",
+        "dataset_sha256",
+        "component_versions",
+        "bootstrap_node_id",
+        "bootstrap_worker_id",
+        "worker_join_order",
+        "completion_boundary_contract",
+    )
+    contract = {
+        key: coordination.get(key)
+        for key in contract_keys
+    }
+    coordination["contract_hash"] = _sha256_json(contract)
+    return coordination
+
+
 def migrate(old_profile_path: Path, new_profile_path: Path, *, apply: bool) -> dict[str, Any]:
     old_profile, old_plan_path, old_plan, old_hash = _profile_and_plan(old_profile_path)
     new_profile, new_plan_path, new_plan, new_hash = _profile_and_plan(new_profile_path)
@@ -60,9 +113,8 @@ def migrate(old_profile_path: Path, new_profile_path: Path, *, apply: bool) -> d
         raise ValueError("successor plan must preserve the participant topology exactly")
     old_jobs = old_plan.get("jobs") or []
     new_jobs = new_plan.get("jobs") or []
-    if len(new_jobs) <= len(old_jobs) or new_jobs[:len(old_jobs)] != old_jobs:
-        raise ValueError("successor plan must be a strict append-only extension")
-
+    if len(new_jobs) <= len(old_jobs):
+        raise ValueError("successor plan must append at least one job")
     old_state_dir = _resolve(old_profile_path.resolve(), str(old_profile["state_dir"]))
     new_state_dir = _resolve(new_profile_path.resolve(), str(new_profile["state_dir"]))
     if old_state_dir != new_state_dir:
@@ -80,6 +132,15 @@ def migrate(old_profile_path: Path, new_profile_path: Path, *, apply: bool) -> d
         raise ValueError("persisted job index is outside the old plan")
     if state.get("job_id") != old_jobs[job_index].get("job_id"):
         raise ValueError("persisted job id does not match the old plan")
+    for index, old_job in enumerate(old_jobs):
+        new_job = new_jobs[index]
+        if old_job == new_job:
+            continue
+        if index != job_index or not _same_active_job_contract(old_job, new_job):
+            raise ValueError(
+                "successor plan must be append-only; only completion_boundary "
+                "and artifact_handoff may be added to the active job"
+            )
 
     result = {
         "node_id": old_profile["node_id"],
@@ -112,6 +173,11 @@ def migrate(old_profile_path: Path, new_profile_path: Path, *, apply: bool) -> d
         if not backup_path.exists():
             shutil.copy2(state_path, backup_path)
         state["plan_hash"] = new_hash
+        state["coordination"] = _migrated_coordination(
+            state,
+            plan_hash=new_hash,
+            job=new_jobs[job_index],
+        )
         _atomic_json(state_path, state)
         HistoryStore(old_state_dir / "campaign_history.sqlite").event(
             node_id=str(old_profile["node_id"]),

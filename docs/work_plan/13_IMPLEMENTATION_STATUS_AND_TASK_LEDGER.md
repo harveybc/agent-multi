@@ -1,16 +1,19 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-27
-Plan version: 1.11.0
-Current focus: active USDCAD full-genome campaign plus verified, disabled execution-curriculum follow-up
+Status timestamp: 2026-07-28
+Plan version: 1.12.0
+Current focus: active USDCAD data/model search with an automatic, fail-closed transition to execution-cost curriculum
 
-Decision 2026-07-27: the active USDCAD chain remains unchanged and becomes the
-market-entry pretraining source. The next campaign adds a visible three-phase
-cost curriculum, immutable multi-scenario robust weekly-RAP fitness, and a
-market/limit/stop execution router. Implementation and exact sequencing are in
+Decision 2026-07-28: retain the useful `data_observation` and `model_training`
+search, then stop as the synchronized swarm enters stage 3 before spending
+meaningful candidates on zero-cost execution/risk refinement. The agreed champion and five
+strong/diverse artifacts become the warm-start source for a new domain with a
+visible three-phase cost curriculum and immutable multi-scenario robust
+weekly-RAP fitness. Exact sequencing is in
 `19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md`.
 
-Implementation is complete locally without modifying the active campaign:
+Implementation is complete locally and packaged as a lifecycle-only,
+append-safe successor plan:
 
 - `trading-contracts` 0.2.0 adds optional asset-intent urgency;
 - `gym-fx` 0.3.0 supports visible cost conditions and native market, limit and
@@ -18,13 +21,15 @@ Implementation is complete locally without modifying the active campaign:
 - `agent-multi` 0.4.0 adds deterministic three-phase cost selection, robust
   scenario evaluation in weekly-return units, SAC observation expansion, and
   the adaptive router;
-- the tracked USDCAD follow-up template is disabled;
-- the launch materializer requires and hashes the final policy and parameter
-  artifacts before enabling a new optimization;
+- the tracked USDCAD follow-up template remains disabled as source;
+- the launch materializer requires decoded parameters, hashes the policy and
+  parameter artifacts, and generates one semantic DOIN domain for all workers;
 - the router profile is blocked until the robust policy is frozen.
 
-The active swarm keeps its existing market-entry fitness, domain, genesis and
-processes. No curriculum job is added to its campaign plan.
+The active worker configs, fitness, seed, domain, genesis and candidate pool
+remain unchanged. Supervisor metadata adds only the generation-14 completion
+boundary, stable artifact handoff, and queued curriculum job. Migration
+preserves active worker PIDs and recomputes the replicated lifecycle contract.
 
 The static per-asset DOIN campaign is stopped and preserved. It must not resume
 until the evidence stages select explicit data, preprocessing, feature,

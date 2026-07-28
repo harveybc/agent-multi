@@ -1,7 +1,7 @@
 # 19. Execution Curriculum and Adaptive Order Routing
 
-Status: implementation verified locally; active USDCAD campaign unchanged
-Decision date: 2026-07-27
+Status: implementation verified; successor campaign materialized and queued for controlled deployment
+Decision date: 2026-07-28
 
 ## 1. Objective
 
@@ -11,10 +11,14 @@ completed. The implementation adds two orthogonal capabilities:
 1. a visible, versioned cost curriculum for policy fine-tuning; and
 2. an account-independent router that selects market, limit, or stop entry.
 
-The current `usdcad-4h-full-genome-sac-shared-v1` campaign remains byte-for-byte
-unchanged. Its champion is the market-entry pretraining source for a new domain.
-No running blockchain, candidate pool, resume contract, or fitness definition
-is modified in place.
+The current `usdcad-4h-full-genome-sac-shared-v1` worker configuration remains
+byte-for-byte unchanged. Its useful data/observation and model/training stages
+finish first. When every worker enters stage 3 with the same shared generation
+and population, the replicated supervisors freeze one agreed champion hash,
+archive it with diverse alternatives, verify every local
+worker has stopped, and only then start a new domain. No running blockchain,
+candidate pool, optimizer genome, seed, or fitness definition is modified in
+place.
 
 ## 2. Non-Negotiable Boundaries
 
@@ -157,7 +161,8 @@ not genes.
 
 The sequence minimizes repeated model training:
 
-1. finish and archive the active market-bracket campaign;
+1. finish `data_observation` and `model_training` in the active zero-cost
+   campaign, stopping at the synchronized transition into stage 3;
 2. load its exact champion weights and resolved genome;
 3. fine-tune the asset policy under the cost curriculum;
 4. select with immutable robust validation fitness;
@@ -191,17 +196,28 @@ required for local inference.
 
 ## 9. Campaign Transition Safety
 
-The supervisor may enqueue the new campaign only after:
+The successor is present in an append-only lifecycle plan but cannot start
+until all of these conditions hold:
 
-1. the active swarm reaches its normal stop barrier;
-2. all participants agree on the final block and champion artifact hash;
-3. the champion archive passes independent load/inference verification;
-4. the new config resolves all profile paths and hashes;
-5. all node revisions and plugin versions match;
-6. the new domain/genesis is unique and no parallel chain exists.
+1. every worker reports stage 3, the same current generation and pool
+   fingerprint, bootstrap lineage, component versions, and champion artifact
+   hash;
+2. that agreement remains stable for the configured barrier interval;
+3. every supervisor archives exactly the frozen hash, plus up to five
+   deterministic strong/diverse alternatives;
+4. model bytes, declared bytes and SHA-256 all match;
+5. every local worker process and API is verified stopped;
+6. every supervisor acknowledges the same boundary evidence and champion;
+7. the launchable curriculum config is generated independently on every host
+   from its local handoff artifacts;
+8. startup preflight proves identical config semantics, dataset, seed,
+   population, code versions and worker order before creating the new chain.
 
-The future job may be materialized before then, but it remains disabled and
-must not be inserted into the active campaign plan automatically.
+Terminal chain tips may differ at the boundary because DOIN can retain
+equal-generation local forks. That is accepted only when the frozen champion,
+generation pool, initial lineage and complete boundary evidence hash are
+identical. Normal campaign completion still requires one tip or one verified
+finalized anchor.
 
 The disabled template is:
 
@@ -216,10 +232,23 @@ The launchable config must be generated with:
 examples/scripts/materialize_execution_curriculum_followup.py
 ```
 
-Without both the archived champion policy and optimization-parameter files,
-the materializer fails closed. It hashes both files, seeds the bounded
-follow-up genome from the archived parameters, enables optimization, and
-records source lineage. The template itself has `optimization.enabled=false`.
+Without both the archived champion policy and decoded optimization-parameter
+files, the materializer fails closed. It hashes both files, seeds the bounded
+follow-up genome from decoded categorical/numeric values, enables
+optimization, and records source lineage. The template itself has
+`optimization.enabled=false`.
+
+The replicated transition plan and profiles are under:
+
+```text
+examples/campaigns/phase_1_full_genome_to_curriculum_fleet_v1/
+```
+
+The idempotent campaign materializer is:
+
+```text
+examples/scripts/materialize_execution_curriculum_campaign.py
+```
 
 The router profile and bounded parameter ranges are versioned at:
 

@@ -16,6 +16,7 @@ import html
 import json
 import os
 import re
+import shutil
 import signal
 import sqlite3
 import statistics
@@ -316,6 +317,124 @@ def _domain_id(config: dict[str, Any]) -> str:
     return str(_domain_semantic_payload(config).get("domain_id") or "")
 
 
+def _champion_artifact_sha(worker: dict[str, Any], domain_id: str) -> str | None:
+    domains = ((worker.get("optimization") or {}).get("domains") or [])
+    domain = next(
+        (item for item in domains if item.get("domain_id") == domain_id),
+        {},
+    )
+    evidence = ((domain.get("champion") or {}).get("metric_evidence") or {})
+    value = evidence.get("model_artifact_sha256")
+    return str(value) if value else None
+
+
+def _decoded_champion_parameters(candidate: dict[str, Any]) -> dict[str, Any]:
+    metrics = candidate.get("metrics") or {}
+    decoded = metrics.get("mixed_genome_decoded")
+    if isinstance(decoded, dict):
+        return {
+            str(key): copy.deepcopy(value)
+            for key, value in decoded.items()
+            if not str(key).startswith("_")
+        }
+    return copy.deepcopy(candidate.get("parameters") or {})
+
+
+def _parameter_distance(
+    left: dict[str, Any],
+    right: dict[str, Any],
+    ranges: dict[str, tuple[float, float]],
+) -> float:
+    keys = sorted(set(left) | set(right))
+    if not keys:
+        return 0.0
+    distances: list[float] = []
+    for key in keys:
+        a = left.get(key)
+        b = right.get(key)
+        if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            low, high = ranges.get(key, (0.0, 0.0))
+            span = high - low
+            distances.append(abs(float(a) - float(b)) / span if span > 0 else 0.0)
+        else:
+            distances.append(0.0 if a == b else 1.0)
+    return sum(distances) / len(distances)
+
+
+def _select_diverse_elites(
+    candidates: list[dict[str, Any]],
+    *,
+    count: int,
+    higher_is_better: bool,
+) -> list[dict[str, Any]]:
+    """Select a strong champion plus deterministic parameter-diverse alternates."""
+    if not candidates or count < 1:
+        return []
+    ordered = sorted(
+        candidates,
+        key=lambda item: (
+            float(item["fitness"]) if higher_is_better else -float(item["fitness"]),
+            str(item["artifact_sha256"]),
+        ),
+        reverse=True,
+    )
+    unique: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in ordered:
+        artifact_sha = str(item["artifact_sha256"])
+        if artifact_sha in seen:
+            continue
+        seen.add(artifact_sha)
+        unique.append(item)
+    if len(unique) <= count:
+        return unique
+
+    numeric_values: dict[str, list[float]] = {}
+    for item in unique:
+        for key, value in _decoded_champion_parameters(item).items():
+            if isinstance(value, (int, float)):
+                numeric_values.setdefault(key, []).append(float(value))
+    ranges = {
+        key: (min(values), max(values))
+        for key, values in numeric_values.items()
+    }
+    fitnesses = [float(item["fitness"]) for item in unique]
+    fitness_low, fitness_high = min(fitnesses), max(fitnesses)
+    fitness_span = fitness_high - fitness_low
+
+    selected = [unique[0]]
+    remaining = unique[1:]
+    while remaining and len(selected) < count:
+        def score(item: dict[str, Any]) -> tuple[float, float, str]:
+            fitness = float(item["fitness"])
+            quality = (
+                (fitness - fitness_low) / fitness_span
+                if higher_is_better and fitness_span > 0
+                else (fitness_high - fitness) / fitness_span
+                if not higher_is_better and fitness_span > 0
+                else 1.0
+            )
+            params = _decoded_champion_parameters(item)
+            novelty = min(
+                _parameter_distance(
+                    params,
+                    _decoded_champion_parameters(chosen),
+                    ranges,
+                )
+                for chosen in selected
+            )
+            return (
+                0.65 * novelty + 0.35 * quality,
+                quality,
+                str(item["artifact_sha256"]),
+            )
+
+        chosen = max(remaining, key=score)
+        selected.append(chosen)
+        remaining.remove(chosen)
+    return selected
+
+
 def _config_port(config: dict[str, Any]) -> int:
     port = int(config.get("port", 0))
     if not 1 <= port <= 65535:
@@ -348,6 +467,37 @@ def _shared_population_seed(config: dict[str, Any]) -> int:
 
 def _population_fingerprint(population_state: dict[str, Any]) -> str:
     return _sha256_json(population_state)
+
+
+def _completion_boundary_contract(job: dict[str, Any]) -> dict[str, Any] | None:
+    raw = job.get("completion_boundary")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise ValueError("completion_boundary must be an object")
+    mode = str(raw.get("mode") or "")
+    if mode != "after_stage":
+        raise ValueError("completion_boundary.mode must be 'after_stage'")
+    stage_name = str(raw.get("stage_name") or "")
+    if not stage_name:
+        raise ValueError("completion_boundary.stage_name is required")
+    target_stage_number = int(raw.get("target_stage_number", 0))
+    if target_stage_number < 2:
+        raise ValueError(
+            "completion_boundary.target_stage_number must identify the stage "
+            "after the completed stage"
+        )
+    elite_count = int(raw.get("elite_count", 5))
+    if not 1 <= elite_count <= 20:
+        raise ValueError("completion_boundary.elite_count must be between 1 and 20")
+    contract = {
+        "mode": mode,
+        "stage_name": stage_name,
+        "target_stage_number": target_stage_number,
+        "elite_count": elite_count,
+    }
+    contract["contract_hash"] = _sha256_json(contract)
+    return contract
 
 
 class HistoryStore:
@@ -578,6 +728,29 @@ class CampaignSupervisor:
             configs = job.get("worker_configs")
             if not isinstance(configs, dict) or set(configs) != set(worker_ids):
                 raise ValueError(f"job {job_id} must map every worker exactly once")
+            _completion_boundary_contract(job)
+            preparation = job.get("preparation")
+            if preparation is not None:
+                if not isinstance(preparation, dict):
+                    raise ValueError(f"job {job_id} preparation must be an object")
+                command = preparation.get("command")
+                outputs = preparation.get("required_outputs")
+                if (
+                    not isinstance(command, list)
+                    or not command
+                    or not all(isinstance(value, str) and value for value in command)
+                ):
+                    raise ValueError(
+                        f"job {job_id} preparation.command must be a string array"
+                    )
+                if (
+                    not isinstance(outputs, list)
+                    or not outputs
+                    or not all(isinstance(value, str) and value for value in outputs)
+                ):
+                    raise ValueError(
+                        f"job {job_id} preparation.required_outputs must be a string array"
+                    )
 
     def _participant(self, node_id: str | None = None) -> dict[str, Any]:
         target = node_id or self.node_id
@@ -698,6 +871,75 @@ class CampaignSupervisor:
         path = Path(worker_cfg).expanduser()
         return path.resolve() if path.is_absolute() else (doin_root / path).resolve()
 
+    def _prepare_job(self, job: dict[str, Any]) -> None:
+        preparation = job.get("preparation")
+        if not preparation:
+            return
+        command = [str(value) for value in preparation["command"]]
+        required = [
+            Path(str(value)).expanduser().resolve()
+            for value in preparation["required_outputs"]
+        ]
+        signature = _sha256_json(
+            {
+                "job_id": job["job_id"],
+                "command": command,
+                "required_outputs": [str(path) for path in required],
+            }
+        )
+        current = self.state.get("preparation") or {}
+        if (
+            current.get("job_id") == job["job_id"]
+            and current.get("signature") == signature
+            and current.get("status") == "prepared"
+            and all(path.is_file() for path in required)
+        ):
+            return
+        cwd_value = preparation.get("cwd")
+        cwd = (
+            Path(str(cwd_value)).expanduser().resolve()
+            if cwd_value
+            else Path(__file__).resolve().parents[1]
+        )
+        result = subprocess.run(
+            command,
+            cwd=str(cwd),
+            text=True,
+            capture_output=True,
+            timeout=float(preparation.get("timeout_seconds", 600)),
+            check=False,
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"job preparation failed ({result.returncode}): "
+                f"{(result.stderr or result.stdout)[-2000:]}"
+            )
+        missing = [str(path) for path in required if not path.is_file()]
+        if missing:
+            raise RuntimeError(
+                "job preparation did not create required outputs: "
+                + ", ".join(missing)
+            )
+        prepared = {
+            "job_id": job["job_id"],
+            "signature": signature,
+            "status": "prepared",
+            "required_outputs": [str(path) for path in required],
+            "output_sha256": {
+                str(path): _sha256_file(path)
+                for path in required
+            },
+            "prepared_at": _utc_now(),
+            "stdout_tail": result.stdout[-2000:],
+        }
+        self.state["preparation"] = prepared
+        self.history.event(
+            node_id=self.node_id,
+            job_id=job["job_id"],
+            event="campaign_job_materialized",
+            detail=prepared,
+        )
+
     def _validate_dataset_evidence(self, node_config: dict[str, Any]) -> dict[str, Any] | None:
         domains = node_config.get("domains") or []
         if len(domains) != 1:
@@ -796,6 +1038,9 @@ class CampaignSupervisor:
                 "seed": seed,
                 "population_size": population_size,
                 "dataset": dataset_evidence,
+                "optimization_stages": copy.deepcopy(
+                    optimization.get("optimization_stages") or []
+                ),
             }
         if len(semantic_hashes) != 1:
             raise ValueError("local worker configs do not describe the same optimization domain")
@@ -803,6 +1048,27 @@ class CampaignSupervisor:
             raise ValueError("local worker configs do not use the same shared seed")
         if len(population_sizes) != 1:
             raise ValueError("local worker configs do not use the same population size")
+        boundary = _completion_boundary_contract(job)
+        if boundary:
+            stages = next(iter(loaded.values())).get("optimization_stages") or []
+            matched = False
+            next_stage_number = None
+            for stage_index, stage in enumerate(stages):
+                if str(stage.get("name") or "") == boundary["stage_name"]:
+                    matched = True
+                    next_stage_number = stage_index + 2
+                    break
+            if not matched:
+                raise ValueError(
+                    "completion boundary stage is absent from optimization stages: "
+                    f"{boundary['stage_name']}"
+                )
+            if next_stage_number != boundary["target_stage_number"]:
+                raise ValueError(
+                    "completion boundary stage number does not match the staged "
+                    f"schedule: declared {boundary['target_stage_number']}, "
+                    f"derived {next_stage_number}"
+                )
         return loaded
 
     def _component_versions(self) -> dict[str, str]:
@@ -850,6 +1116,7 @@ class CampaignSupervisor:
             "bootstrap_node_id": self._bootstrap_node_id(),
             "bootstrap_worker_id": self._bootstrap_worker_id(),
             "worker_join_order": self._global_worker_ids(),
+            "completion_boundary_contract": _completion_boundary_contract(job),
         }
         contract["contract_hash"] = _sha256_json(contract)
         return contract
@@ -873,6 +1140,7 @@ class CampaignSupervisor:
             "bootstrap_node_id",
             "bootstrap_worker_id",
             "worker_join_order",
+            "completion_boundary_contract",
             "contract_hash",
         )
         preserve_active_contract = bool(
@@ -1239,6 +1507,9 @@ class CampaignSupervisor:
             else:
                 worker["optimization"] = optimization
                 worker["optimization_error"] = None
+                worker["champion_artifact_sha256"] = _champion_artifact_sha(
+                    worker, job["domain_id"]
+                )
             domain = (status.get("domains") or {}).get(job["domain_id"]) or {}
             worker["converged"] = bool(domain.get("converged"))
             worker["best_performance"] = domain.get("best_performance")
@@ -1353,6 +1624,9 @@ class CampaignSupervisor:
             "candidate_eta": worker.get("candidate_eta") or {},
             "training_progress": worker.get("training_progress") or {},
             "optimization": worker.get("optimization") or {},
+            "champion_artifact_sha256": worker.get(
+                "champion_artifact_sha256"
+            ),
             "last_seen": worker.get("last_seen"),
             "stopped_verified": bool(worker.get("stopped_verified")),
             "log_path": worker.get("log_path"),
@@ -1378,6 +1652,9 @@ class CampaignSupervisor:
                 "finalized_hash": (item.get("evidence") or {}).get("finalized_hash"),
                 "artifact_sha256": item.get("artifact_sha256"),
                 "champion_fitness": item.get("champion_fitness"),
+                "completion_boundary": (item.get("evidence") or {}).get(
+                    "completion_boundary"
+                ),
                 "completed_at": item.get("completed_at"),
             }
             for item in self.history.campaigns()
@@ -1470,6 +1747,14 @@ class CampaignSupervisor:
                 )
             )
             stages = optimization.get("optimization_stages") or []
+            boundary = _completion_boundary_contract(job)
+            if boundary:
+                bounded_stages = []
+                for stage in stages:
+                    bounded_stages.append(stage)
+                    if stage.get("name") == boundary["stage_name"]:
+                        break
+                stages = bounded_stages
             generations = sum(int(stage.get("generations", 0)) for stage in stages)
             if generations <= 0:
                 generations = int(
@@ -1545,12 +1830,20 @@ class CampaignSupervisor:
         stage_index = min(max(0, stage_number - 1), max(0, len(stage_generations) - 1))
         generation_in_stage = max(0, int(candidate.get("gen_in_stage") or 0))
         evaluated_current_generation = max(0, int(shared.get("evaluated") or 0))
-        current_planned = (
-            sum(stage_generations) * population
-            if stage_generations and population
-            else int(plan_jobs[current_index].get("planned_candidates") or 0)
+        declared_planned = (
+            int(plan_jobs[current_index].get("planned_candidates") or 0)
             if 0 <= current_index < len(plan_jobs)
             else 0
+        )
+        scheduled_planned = (
+            sum(stage_generations) * population
+            if stage_generations and population
+            else 0
+        )
+        current_planned = (
+            min(scheduled_planned, declared_planned)
+            if scheduled_planned and declared_planned
+            else scheduled_planned or declared_planned
         )
         current_completed = min(
             current_planned,
@@ -1976,6 +2269,108 @@ class CampaignSupervisor:
             worker_rows,
         )
 
+    def _stage_boundary_evidence(
+        self,
+        network: dict[str, Any],
+        job: dict[str, Any],
+    ) -> tuple[bool, str, dict[str, Any]]:
+        contract = _completion_boundary_contract(job)
+        if contract is None:
+            return False, "job has no stage completion boundary", {}
+
+        worker_rows: dict[str, dict[str, Any]] = {}
+        for participant in self.plan["participants"]:
+            node_id = str(participant["node_id"])
+            report = network["participants"].get(node_id) or {}
+            if not report.get("online"):
+                return False, f"required supervisor {node_id} is offline", {}
+            status = report.get("status") or {}
+            if status.get("plan_hash") != self.plan_hash:
+                return False, f"{node_id} has a different plan hash", {}
+            if status.get("job_id") != job["job_id"]:
+                return False, f"{node_id} is on job {status.get('job_id')}", {}
+            if status.get("phase") not in {
+                "running",
+                "boundary_stopping",
+                "archiving",
+                "stopped",
+            }:
+                return False, f"{node_id} phase is {status.get('phase')}", {}
+            remote_contract = (
+                (status.get("coordination") or {}).get(
+                    "completion_boundary_contract"
+                )
+            )
+            if remote_contract != contract:
+                return False, f"{node_id} completion boundary differs", {}
+            for worker_id in participant["workers"]:
+                worker = (status.get("workers") or {}).get(worker_id)
+                if not worker:
+                    return False, f"{node_id} does not report {worker_id}", {}
+                shared = worker.get("shared_population") or {}
+                generation = shared.get("generation")
+                candidate = worker.get("candidate") or {}
+                stage_number = candidate.get("stage")
+                if stage_number is None or int(stage_number) < int(
+                    contract["target_stage_number"]
+                ):
+                    return (
+                        False,
+                        f"{worker_id} is at stage {stage_number}, waiting for "
+                        f"stage {contract['target_stage_number']}",
+                        worker_rows,
+                    )
+                if generation is None:
+                    return False, f"{worker_id} lacks shared generation", worker_rows
+                if not shared.get("population_fingerprint"):
+                    return False, f"{worker_id} lacks population fingerprint", worker_rows
+                if not worker.get("champion_artifact_sha256"):
+                    return False, f"{worker_id} lacks champion artifact hash", worker_rows
+                if self._lineage_key(worker) is None:
+                    return False, f"{worker_id} lacks bootstrap lineage", worker_rows
+                worker_rows[str(worker_id)] = worker
+
+        generations = {
+            int((row.get("shared_population") or {})["generation"])
+            for row in worker_rows.values()
+        }
+        if len(generations) != 1:
+            return False, "workers are not on the same boundary generation", worker_rows
+        fingerprints = {
+            (row.get("shared_population") or {}).get("population_fingerprint")
+            for row in worker_rows.values()
+        }
+        if len(fingerprints) != 1 or None in fingerprints:
+            return False, "workers do not share one boundary population", worker_rows
+        artifacts = {
+            row.get("champion_artifact_sha256") for row in worker_rows.values()
+        }
+        if len(artifacts) != 1 or None in artifacts:
+            return False, "workers do not report the same boundary champion", worker_rows
+        lineages = {self._lineage_key(row) for row in worker_rows.values()}
+        if len(lineages) != 1 or None in lineages:
+            return False, "workers do not share one bootstrap lineage", worker_rows
+        versions = {
+            _canonical_json(row.get("component_versions") or {})
+            for row in worker_rows.values()
+        }
+        if len(versions) != 1:
+            return False, "worker component versions do not match", worker_rows
+
+        lineage = next(iter(lineages))
+        evidence = {
+            **contract,
+            "generation": next(iter(generations)),
+            "population_fingerprint": next(iter(fingerprints)),
+            "artifact_sha256": next(iter(artifacts)),
+            "genesis_hash": lineage[0],
+            "bootstrap_population_block_hash": lineage[1],
+            "bootstrap_population_fingerprint": lineage[2],
+            "component_versions": json.loads(next(iter(versions))),
+        }
+        evidence["evidence_hash"] = _sha256_json(evidence)
+        return True, "all workers reached the same configured stage boundary", evidence
+
     def _stop_barrier_ready(self, network: dict[str, Any], job: dict[str, Any]) -> tuple[bool, str]:
         archives: list[dict[str, Any]] = []
         for participant in self.plan["participants"]:
@@ -2019,6 +2414,7 @@ class CampaignSupervisor:
                 "tip_hash": completed.get("tip_hash"),
                 "finalized_height": completed.get("finalized_height"),
                 "finalized_hash": completed.get("finalized_hash"),
+                "completion_boundary": completed.get("completion_boundary"),
                 "champion": {"artifact_sha256": completed.get("artifact_sha256")},
             })
         champions = {
@@ -2026,6 +2422,28 @@ class CampaignSupervisor:
         }
         if len(champions) != 1 or None in champions:
             return False, "participant archives do not identify the same champion artifact"
+        if _completion_boundary_contract(job):
+            boundaries = [
+                item.get("completion_boundary") or {}
+                for item in archives
+            ]
+            evidence_hashes = {
+                item.get("evidence_hash") for item in boundaries
+            }
+            if len(evidence_hashes) != 1 or None in evidence_hashes:
+                return (
+                    False,
+                    "stage-boundary archives do not share one evidence hash",
+                )
+            boundary_artifacts = {
+                item.get("artifact_sha256") for item in boundaries
+            }
+            if boundary_artifacts != champions:
+                return (
+                    False,
+                    "stage-boundary evidence and archived champion differ",
+                )
+            return True, "all supervisors archived the same stage-boundary champion"
         heights = {item.get("chain_height") for item in archives}
         if len(heights) != 1 or None in heights:
             return False, "participant archives do not identify the same chain height"
@@ -2054,18 +2472,45 @@ class CampaignSupervisor:
                 max(self.peer_timeout, 20.0),
             )
             finalized_hash = finalized_block.get("hash")
+
         higher_is_better = bool(job.get("higher_is_better", True))
+        destination = self.artifact_dir / job["job_id"]
+        destination.mkdir(parents=True, exist_ok=True)
         candidates: list[dict[str, Any]] = []
+        population_provenance: dict[str, Any] = {}
+
+        # Decode and persist one accepted model at a time. Keeping every
+        # base64 model in memory made archival itself an OOM risk on omega.
         for index in range(height):
-            block = _http_json(api_url + f"/chain/block/{index}", max(self.peer_timeout, 20.0))
+            block = _http_json(
+                api_url + f"/chain/block/{index}",
+                max(self.peer_timeout, 20.0),
+            )
             for transaction in block.get("transactions") or []:
-                if transaction.get("tx_type") != "optimae_accepted":
-                    continue
                 if transaction.get("domain_id") != job["domain_id"]:
                     continue
                 payload = transaction.get("payload") or {}
+                population = payload.get("_shared_population")
+                if isinstance(population, dict):
+                    population_provenance = {
+                        "generation": population.get("generation"),
+                        "stage_idx": population.get("stage_idx"),
+                        "stage_name": population.get("stage_name"),
+                        "population_fingerprint": (
+                            payload.get("_shared_population_fingerprint")
+                            or _population_fingerprint(population)
+                        ),
+                        "population_block_index": index,
+                        "population_block_hash": block.get("hash"),
+                    }
+                if transaction.get("tx_type") != "optimae_accepted":
+                    continue
                 parameters = payload.get("parameters") or {}
-                model_b64 = parameters.get("_model_b64") if isinstance(parameters, dict) else None
+                model_b64 = (
+                    parameters.get("_model_b64")
+                    if isinstance(parameters, dict)
+                    else None
+                )
                 if not model_b64:
                     continue
                 fitness = payload.get("verified_performance")
@@ -2073,53 +2518,129 @@ class CampaignSupervisor:
                     fitness = payload.get("reported_performance")
                 if fitness is None:
                     continue
-                candidates.append({
-                    "fitness": float(fitness),
-                    "block_index": index,
-                    "block_hash": block.get("hash"),
-                    "transaction_id": transaction.get("id"),
-                    "peer_id": transaction.get("peer_id"),
-                    "payload": payload,
-                    "model_b64": model_b64,
-                })
+                try:
+                    model_bytes = base64.b64decode(model_b64, validate=True)
+                except Exception as exc:
+                    raise RuntimeError(
+                        f"champion model artifact in block {index} is not valid base64"
+                    ) from exc
+                metrics = dict(payload.get("champion_metrics") or {})
+                artifact_sha = hashlib.sha256(model_bytes).hexdigest()
+                declared_sha = metrics.get("model_artifact_sha256")
+                if declared_sha and declared_sha != artifact_sha:
+                    raise RuntimeError(
+                        "champion artifact hash mismatch: "
+                        f"declared {declared_sha}, observed {artifact_sha}"
+                    )
+                declared_bytes = metrics.get("model_artifact_bytes")
+                if declared_bytes is not None and int(declared_bytes) != len(model_bytes):
+                    raise RuntimeError(
+                        "champion artifact size does not match blockchain metadata"
+                    )
+                artifact_format = str(
+                    metrics.get("model_artifact_format") or "binary"
+                )
+                suffix = {
+                    "stable_baselines3_zip": ".zip",
+                    "keras": ".keras",
+                    "pytorch": ".pt",
+                }.get(artifact_format, ".bin")
+                artifact_path = destination / f"{artifact_sha}{suffix}"
+                if artifact_path.exists():
+                    if _sha256_file(artifact_path) != artifact_sha:
+                        raise RuntimeError(
+                            f"existing artifact at {artifact_path} failed hash verification"
+                        )
+                else:
+                    temporary = artifact_path.with_name(artifact_path.name + ".tmp")
+                    temporary.write_bytes(model_bytes)
+                    temporary.replace(artifact_path)
+                del model_bytes
+                public_parameters = {
+                    key: value
+                    for key, value in parameters.items()
+                    if key != "_model_b64"
+                }
+                candidates.append(
+                    {
+                        "fitness": float(fitness),
+                        "block_index": index,
+                        "block_hash": block.get("hash"),
+                        "transaction_id": transaction.get("id"),
+                        "peer_id": transaction.get("peer_id"),
+                        "parameters": public_parameters,
+                        "metrics": metrics,
+                        "artifact_sha256": artifact_sha,
+                        "artifact_bytes": int(
+                            declared_bytes
+                            if declared_bytes is not None
+                            else artifact_path.stat().st_size
+                        ),
+                        "artifact_format": artifact_format,
+                        "artifact_path": str(artifact_path),
+                        "population": copy.deepcopy(population_provenance),
+                    }
+                )
         if not candidates:
-            raise RuntimeError(f"no embedded champion artifact found for {job['domain_id']}")
-        champion = (max if higher_is_better else min)(candidates, key=lambda item: item["fitness"])
-        try:
-            model_bytes = base64.b64decode(champion["model_b64"], validate=True)
-        except Exception as exc:
-            raise RuntimeError("champion model artifact is not valid base64") from exc
-        payload = champion["payload"]
-        metrics = dict(payload.get("champion_metrics") or {})
-        artifact_sha = hashlib.sha256(model_bytes).hexdigest()
-        declared_sha = metrics.get("model_artifact_sha256")
-        if declared_sha and declared_sha != artifact_sha:
             raise RuntimeError(
-                f"champion artifact hash mismatch: declared {declared_sha}, observed {artifact_sha}"
+                f"no embedded champion artifact found for {job['domain_id']}"
             )
-        declared_bytes = metrics.get("model_artifact_bytes")
-        if declared_bytes is not None and int(declared_bytes) != len(model_bytes):
-            raise RuntimeError("champion artifact size does not match blockchain metadata")
-        artifact_format = str(metrics.get("model_artifact_format") or "binary")
-        suffix = {
-            "stable_baselines3_zip": ".zip",
-            "keras": ".keras",
-            "pytorch": ".pt",
-        }.get(artifact_format, ".bin")
-        destination = self.artifact_dir / job["job_id"]
-        destination.mkdir(parents=True, exist_ok=True)
-        artifact_path = destination / f"{artifact_sha}{suffix}"
-        if artifact_path.exists():
-            if hashlib.sha256(artifact_path.read_bytes()).hexdigest() != artifact_sha:
-                raise RuntimeError(f"existing artifact at {artifact_path} failed hash verification")
+
+        boundary = copy.deepcopy(
+            (self.state.get("coordination") or {}).get("completion_boundary")
+            or {}
+        )
+        target_sha = boundary.get("artifact_sha256")
+        if target_sha:
+            champion = next(
+                (
+                    item
+                    for item in candidates
+                    if item["artifact_sha256"] == target_sha
+                ),
+                None,
+            )
+            if champion is None:
+                raise RuntimeError(
+                    "the stage-boundary champion artifact is absent from the local chain: "
+                    f"{target_sha}"
+                )
         else:
-            temporary = artifact_path.with_name(artifact_path.name + ".tmp")
-            temporary.write_bytes(model_bytes)
-            temporary.replace(artifact_path)
-        public_parameters = {
-            key: value for key, value in (payload.get("parameters") or {}).items()
-            if key != "_model_b64"
+            champion = (max if higher_is_better else min)(
+                candidates, key=lambda item: item["fitness"]
+            )
+
+        elite_count = int(
+            boundary.get("elite_count")
+            or (job.get("artifact_handoff") or {}).get("elite_count")
+            or 5
+        )
+        elites = _select_diverse_elites(
+            candidates,
+            count=elite_count,
+            higher_is_better=higher_is_better,
+        )
+        if champion not in elites:
+            elites = [champion, *elites[: max(0, elite_count - 1)]]
+
+        decoded_parameters = _decoded_champion_parameters(champion)
+        parameters_path = destination / "champion_parameters.json"
+        parameters_document = {
+            "schema_version": "agent_multi.champion_parameters.v1",
+            "plan_id": self.plan.get("plan_id"),
+            "plan_hash": self.plan_hash,
+            "job_id": job["job_id"],
+            "domain_id": job["domain_id"],
+            "fitness": champion["fitness"],
+            "artifact_sha256": champion["artifact_sha256"],
+            "parameters": decoded_parameters,
+            "decoded_parameters": decoded_parameters,
+            "encoded_parameters": champion["parameters"],
+            "source_block_index": champion["block_index"],
+            "source_transaction_id": champion["transaction_id"],
         }
+        _atomic_json(parameters_path, parameters_document)
+
         manifest_path = destination / "champion_manifest.json"
         manifest = {
             "schema_version": HISTORY_SCHEMA,
@@ -2138,35 +2659,99 @@ class CampaignSupervisor:
             "finalized_height": finalized_height,
             "finalized_hash": finalized_hash,
             "component_versions": chain.get("component_versions") or {},
-            "parameters": public_parameters,
-            "metrics": {key: value for key, value in metrics.items() if key != "_model_b64"},
-            "artifact": {
-                "sha256": artifact_sha,
-                "bytes": len(model_bytes),
-                "format": artifact_format,
-                "path": str(artifact_path),
+            "parameters": champion["parameters"],
+            "decoded_parameters": decoded_parameters,
+            "metrics": {
+                key: value
+                for key, value in champion["metrics"].items()
+                if key != "_model_b64"
             },
+            "population": champion["population"],
+            "completion_boundary": boundary or None,
+            "artifact": {
+                "sha256": champion["artifact_sha256"],
+                "bytes": champion["artifact_bytes"],
+                "format": champion["artifact_format"],
+                "path": champion["artifact_path"],
+            },
+            "parameters_file": str(parameters_path),
             "archived_at": _utc_now(),
         }
         _atomic_json(manifest_path, manifest)
+
+        elite_manifest_path = destination / "elite_manifest.json"
+        elite_manifest = {
+            "schema_version": "agent_multi.champion_elites.v1",
+            "job_id": job["job_id"],
+            "domain_id": job["domain_id"],
+            "higher_is_better": higher_is_better,
+            "selection": "best_then_parameter_novelty_0p65_quality_0p35",
+            "elites": [
+                {
+                    "rank": rank,
+                    "fitness": item["fitness"],
+                    "peer_id": item["peer_id"],
+                    "block_index": item["block_index"],
+                    "transaction_id": item["transaction_id"],
+                    "artifact_sha256": item["artifact_sha256"],
+                    "artifact_path": item["artifact_path"],
+                    "decoded_parameters": _decoded_champion_parameters(item),
+                    "population": item["population"],
+                }
+                for rank, item in enumerate(elites, start=1)
+            ],
+            "archived_at": _utc_now(),
+        }
+        _atomic_json(elite_manifest_path, elite_manifest)
+
+        handoff_result: dict[str, Any] = {}
+        handoff = job.get("artifact_handoff") or {}
+        if handoff:
+            source_map = {
+                "model_path": Path(champion["artifact_path"]),
+                "parameters_path": parameters_path,
+                "manifest_path": manifest_path,
+                "elite_manifest_path": elite_manifest_path,
+            }
+            for key, source in source_map.items():
+                configured = handoff.get(key)
+                if not configured:
+                    continue
+                target = Path(str(configured)).expanduser()
+                if not target.is_absolute():
+                    target = (self.state_dir / target).resolve()
+                target.parent.mkdir(parents=True, exist_ok=True)
+                temporary = target.with_name(target.name + ".tmp")
+                shutil.copy2(source, temporary)
+                temporary.replace(target)
+                if key == "model_path" and _sha256_file(target) != champion["artifact_sha256"]:
+                    raise RuntimeError(f"handoff model hash verification failed: {target}")
+                handoff_result[key] = str(target)
+
         return {
             "chain_height": height,
             "tip_hash": chain.get("tip_hash"),
             "finalized_height": finalized_height,
             "finalized_hash": finalized_hash,
             "component_versions": chain.get("component_versions") or {},
+            "completion_boundary": boundary or None,
+            "handoff": handoff_result,
+            "elites": elite_manifest["elites"],
+            "elite_manifest_path": str(elite_manifest_path),
             "champion": {
                 "fitness": champion["fitness"],
                 "peer_id": champion["peer_id"],
                 "block_index": champion["block_index"],
                 "transaction_id": champion["transaction_id"],
-                "parameters": public_parameters,
-                "metrics": self._compact_metrics(metrics),
-                "artifact_sha256": artifact_sha,
-                "artifact_bytes": len(model_bytes),
-                "artifact_format": artifact_format,
-                "artifact_path": str(artifact_path),
+                "parameters": champion["parameters"],
+                "decoded_parameters": decoded_parameters,
+                "metrics": self._compact_metrics(champion["metrics"]),
+                "artifact_sha256": champion["artifact_sha256"],
+                "artifact_bytes": champion["artifact_bytes"],
+                "artifact_format": champion["artifact_format"],
+                "artifact_path": champion["artifact_path"],
                 "manifest_path": str(manifest_path),
+                "parameters_path": str(parameters_path),
             },
         }
 
@@ -2232,6 +2817,7 @@ class CampaignSupervisor:
             "alerts": [],
             "completion_candidate_since": None,
             "coordination": {},
+            "preparation": {},
         })
 
     def tick(self) -> None:
@@ -2242,6 +2828,7 @@ class CampaignSupervisor:
                 self._save_state()
                 return
             try:
+                self._prepare_job(job)
                 configs = self._validate_local_configs(job)
                 coordination = self._prepare_coordination(job, configs)
             except Exception as exc:
@@ -2366,22 +2953,57 @@ class CampaignSupervisor:
                         "one or more local DOIN workers have not exposed a healthy API",
                         severity="warning",
                     )
-                ready, reason, _ = self._completion_evidence(network, job)
-                if ready:
-                    since = self.state.get("completion_candidate_since")
-                    if since is None:
-                        self.state["completion_candidate_since"] = time.time()
-                    elif time.time() - float(since) >= self.stability_seconds:
-                        self.state["phase"] = "archiving"
-                        self.history.event(
-                            node_id=self.node_id, job_id=job["job_id"],
-                            event="global_convergence_barrier_reached",
+                boundary_contract = _completion_boundary_contract(job)
+                if boundary_contract:
+                    ready, reason, evidence = self._stage_boundary_evidence(
+                        network, job
+                    )
+                    if ready:
+                        since = self.state.get("completion_candidate_since")
+                        if since is None:
+                            self.state["completion_candidate_since"] = time.time()
+                        elif time.time() - float(since) >= self.stability_seconds:
+                            self.state["coordination"][
+                                "completion_boundary"
+                            ] = evidence
+                            # Freeze the agreed artifact hash before archival.
+                            # The blockchain API is hosted by the worker, so
+                            # archival must complete before that process stops.
+                            self.state["phase"] = "archiving"
+                            self.history.event(
+                                node_id=self.node_id,
+                                job_id=job["job_id"],
+                                event="configured_stage_boundary_reached",
+                                detail=evidence,
+                            )
+                        self._clear_alert("completion_barrier")
+                    else:
+                        self.state["completion_candidate_since"] = None
+                        self._alert(
+                            "completion_barrier", reason, severity="warning"
                         )
-                    self._clear_alert("completion_barrier")
                 else:
-                    self.state["completion_candidate_since"] = None
-                    if any(self._worker_state(w).get("converged") for w in configs):
-                        self._alert("completion_barrier", reason, severity="warning")
+                    ready, reason, _ = self._completion_evidence(network, job)
+                    if ready:
+                        since = self.state.get("completion_candidate_since")
+                        if since is None:
+                            self.state["completion_candidate_since"] = time.time()
+                        elif time.time() - float(since) >= self.stability_seconds:
+                            self.state["phase"] = "archiving"
+                            self.history.event(
+                                node_id=self.node_id, job_id=job["job_id"],
+                                event="global_convergence_barrier_reached",
+                            )
+                        self._clear_alert("completion_barrier")
+                    else:
+                        self.state["completion_candidate_since"] = None
+                        if any(
+                            self._worker_state(w).get("converged")
+                            for w in configs
+                        ):
+                            self._alert(
+                                "completion_barrier", reason, severity="warning"
+                            )
 
             elif phase == "archiving":
                 first_worker = next(iter(configs))
