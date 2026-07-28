@@ -75,11 +75,21 @@ def _champion_parameters(
     if source is None:
         return initial, None
     payload = _load(source)
-    parameters = payload.get("parameters")
+    parameters = (
+        payload.get("decoded_parameters")
+        or payload.get("parameters_decoded")
+        or payload.get("parameters")
+    )
     if not isinstance(parameters, dict):
         raise ValueError(
-            "champion parameters must contain an object at 'parameters'"
+            "champion parameters must contain decoded parameters at "
+            "'decoded_parameters', 'parameters_decoded', or 'parameters'"
         )
+    unknown = sorted(set(parameters) - set(initial))
+    if unknown:
+        parameters = {
+            key: value for key, value in parameters.items() if key in initial
+        }
     for key in initial:
         if key in parameters:
             initial[key] = copy.deepcopy(parameters[key])

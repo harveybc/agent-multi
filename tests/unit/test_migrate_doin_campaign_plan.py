@@ -78,6 +78,21 @@ def _fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             "workers": {},
             "archive": {},
             "alerts": [],
+            "coordination": {
+                "plan_hash": _sha256_json(old_plan),
+                "job_index": 0,
+                "job_id": "job-0",
+                "domain_id": "domain-0",
+                "domain_semantic_hash": "semantic",
+                "shared_population_seed": 1701,
+                "shared_population_size": 20,
+                "dataset_sha256": "dataset",
+                "component_versions": {"agent-multi": "running"},
+                "bootstrap_node_id": "omega",
+                "bootstrap_worker_id": "omega",
+                "worker_join_order": ["omega"],
+                "contract_hash": "old-contract",
+            },
         },
     )
     return old_profile_path, new_profile_path, state_dir
@@ -97,6 +112,8 @@ def test_append_only_campaign_plan_migration_preserves_running_job(tmp_path: Pat
     assert state["job_id"] == "job-0"
     assert state["phase"] == "running"
     assert state["plan_hash"] == applied["new_plan_hash"]
+    assert state["coordination"]["plan_hash"] == applied["new_plan_hash"]
+    assert state["coordination"]["contract_hash"] != "old-contract"
     assert Path(applied["backup_path"]).is_file()
 
 
@@ -112,3 +129,37 @@ def test_campaign_plan_migration_rejects_changed_prefix(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="append-only"):
         migrate(old_profile, new_profile, apply=False)
+
+
+def test_campaign_plan_migration_allows_active_lifecycle_boundary(
+    tmp_path: Path,
+) -> None:
+    old_profile, new_profile, state_dir = _fixture(tmp_path)
+    plan_path = Path(json.loads(new_profile.read_text())["plan_file"])
+    plan = json.loads(plan_path.read_text())
+    plan["jobs"][0].update(
+        {
+            "completion_boundary": {
+                "mode": "after_stage",
+                "stage_name": "model_training",
+                "target_stage_number": 3,
+                "elite_count": 5,
+            },
+            "artifact_handoff": {
+                "model_path": "/tmp/champion.zip",
+            },
+        }
+    )
+    _write(plan_path, plan)
+    profile = json.loads(new_profile.read_text())
+    profile["expected_plan_hash"] = _sha256_json(plan)
+    _write(new_profile, profile)
+
+    applied = migrate(old_profile, new_profile, apply=True)
+
+    state = json.loads((state_dir / "state.json").read_text())
+    boundary = state["coordination"]["completion_boundary_contract"]
+    assert applied["applied"] is True
+    assert boundary["stage_name"] == "model_training"
+    assert boundary["target_stage_number"] == 3
+    assert boundary["contract_hash"]

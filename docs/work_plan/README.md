@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; full-genome campaign active; execution curriculum implementation verified
-Plan version: 1.11.0
-Date: 2026-07-27
+Status: E0-E4 complete; full-genome campaign active; execution curriculum queued behind a verified stage boundary
+Plan version: 1.12.0
+Date: 2026-07-28
 Primary implementation repository: `agent-multi`
 
 ## Mission
