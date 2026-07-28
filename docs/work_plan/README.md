@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; full-genome implementation verified; first campaign materialized
-Plan version: 1.7.1
+Status: E0-E4 complete; full-genome campaign active; execution curriculum implementation verified
+Plan version: 1.11.0
 Date: 2026-07-27
 Primary implementation repository: `agent-multi`
 
@@ -68,6 +68,7 @@ trading domain.
 | [16 Flat-fitness root cause](16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md) | BTC actor saturation evidence, corrected feature contract, action-collapse guard, and campaign disposition |
 | [17 Data and preprocessing evidence recovery](17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md) | Parameter registry, canonical metrics, source coverage, hierarchical sweeps, transactional pool, and DOIN-resume conditions |
 | [18 Full-genome per-asset optimization](18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md) | Corrected E4 interpretation, L1 convergence protocol, mixed genome, execution order, and champion contract |
+| [19 Execution curriculum and order routing](19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md) | Visible cost curriculum, immutable robust fitness, market/limit/stop routing, artifact contract, and campaign transition |
 
 ## Repository Ownership Summary
 
@@ -153,11 +154,13 @@ adding value.
    convergence protocol.
 4. Run one coordinated DOIN Level 2 campaign per asset, sequentially, with all
    available workers sharing one chain and candidate pool.
-5. Freeze the optimized per-asset champion library and optimize portfolio
+5. Fine-tune each selected champion under the visible cost curriculum, optimize
+   its execution router, and freeze the resulting cell release.
+6. Freeze the optimized per-asset cell library and optimize portfolio
    allocation using those artifacts.
-6. Add rush activation and weekly retraining/fine-tuning experiments after the
+7. Add rush activation and weekly retraining/fine-tuning experiments after the
    static portfolio vertical is operational.
-7. Complete registry, serving, LTS parity, and OANDA practice integration.
+8. Complete registry, serving, LTS parity, and OANDA practice integration.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

@@ -13,8 +13,55 @@ from pipeline_plugins.rl_pipeline_with_validation import (
     PipelinePlugin,
     _early_stop_composite,
     _resolve_l1_min_checkpoint_timesteps,
+    _set_env_training_progress,
+    _training_progress_for_epoch,
     _update_l1_checkpoint_state,
+    _verify_artifact_sha256,
 )
+
+
+def test_training_progress_reaches_wrapped_env() -> None:
+    class Base:
+        progress = None
+
+        def set_training_progress(self, value):
+            self.progress = value
+
+    class Wrapper:
+        def __init__(self, env):
+            self.env = env
+
+    base = Base()
+    assert _set_env_training_progress(Wrapper(Wrapper(base)), 1.4)
+    assert base.progress == 1.0
+
+
+def test_curriculum_progress_reaches_stress_before_hard_epoch_cap() -> None:
+    assert _training_progress_for_epoch(
+        1,
+        max_epochs=2_000,
+        curriculum_epochs=100,
+    ) == 0.0
+    assert _training_progress_for_epoch(
+        81,
+        max_epochs=2_000,
+        curriculum_epochs=100,
+    ) > 0.8
+    assert _training_progress_for_epoch(
+        101,
+        max_epochs=2_000,
+        curriculum_epochs=100,
+    ) == 1.0
+
+
+def test_warm_start_artifact_hash_fails_closed(tmp_path) -> None:
+    artifact = tmp_path / "policy.zip"
+    artifact.write_bytes(b"champion")
+
+    actual = _verify_artifact_sha256(artifact, None)
+    assert _verify_artifact_sha256(artifact, actual) == actual
+    with pytest.raises(ValueError, match="sha256 mismatch"):
+        _verify_artifact_sha256(artifact, "0" * 64)
 
 
 def test_day_based_micro_split_uses_small_windows(tmp_path):

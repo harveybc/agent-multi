@@ -29,6 +29,12 @@ def compute_optimization_fitness(
         return _number(summary, "mean_weekly_rap", missing=config)
     if name in {"annual_rap", "annualized_rap"}:
         return _number(summary, "annual_rap", missing=config)
+    if name in {
+        "robust_weekly_rap_fitness",
+        "robust_weekly_rap",
+        "execution_curriculum_robust_fitness",
+    }:
+        return _number(summary, "robust_weekly_rap_fitness", missing=config)
     if name in {"train_validation_l1_score", "l1_score"}:
         return _number(summary, "train_validation_l1_score", missing=config)
     if name in {

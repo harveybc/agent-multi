@@ -16,6 +16,65 @@ from typing import Any, Dict, List, Tuple
 from ._progress_callback import make_progress_callback
 
 
+def _transfer_expanded_policy_state(
+    source_state,
+    target_state,
+    *,
+    source_observation_dim: int,
+    target_observation_dim: int,
+    action_dim: int,
+):
+    """Copy SAC policy tensors while adding neutral observation columns."""
+    if target_observation_dim < source_observation_dim:
+        raise ValueError("warm start cannot remove observation dimensions")
+    transferred = {}
+    expanded_keys: list[str] = []
+    for key, target_value in target_state.items():
+        source_value = source_state.get(key)
+        if source_value is None:
+            transferred[key] = target_value
+            continue
+        if tuple(source_value.shape) == tuple(target_value.shape):
+            transferred[key] = source_value
+            continue
+        if (
+            source_value.ndim == 2
+            and target_value.ndim == 2
+            and source_value.shape[0] == target_value.shape[0]
+        ):
+            source_width = int(source_value.shape[1])
+            target_width = int(target_value.shape[1])
+            replacement = target_value.clone()
+            if (
+                source_width == source_observation_dim
+                and target_width == target_observation_dim
+            ):
+                replacement.zero_()
+                replacement[:, :source_observation_dim] = source_value
+            elif (
+                source_width == source_observation_dim + action_dim
+                and target_width == target_observation_dim + action_dim
+            ):
+                replacement.zero_()
+                replacement[:, :source_observation_dim] = source_value[
+                    :, :source_observation_dim
+                ]
+                replacement[:, -action_dim:] = source_value[:, -action_dim:]
+            else:
+                raise ValueError(
+                    f"unsupported warm-start tensor expansion for {key}: "
+                    f"{tuple(source_value.shape)} -> {tuple(target_value.shape)}"
+                )
+            transferred[key] = replacement
+            expanded_keys.append(key)
+            continue
+        raise ValueError(
+            f"incompatible warm-start tensor {key}: "
+            f"{tuple(source_value.shape)} -> {tuple(target_value.shape)}"
+        )
+    return transferred, expanded_keys
+
+
 class Plugin:
     plugin_params: Dict[str, Any] = {
         "total_timesteps": 10_000,
@@ -253,6 +312,50 @@ class Plugin:
         from stable_baselines3 import SAC
         self._require_continuous(env)
         return SAC.load(path, env=env)
+
+    def load_with_observation_expansion(
+        self,
+        path: str,
+        env,
+        config: Dict[str, Any],
+    ):
+        """Warm-start SAC after appending visible execution-cost observations."""
+        import numpy as np
+        from stable_baselines3 import SAC
+
+        self._require_continuous(env)
+        source = SAC.load(path, device=str(self._resolve(config)["device"]))
+        target = self.build(env, config)
+        source_observation_dim = int(np.prod(source.observation_space.shape))
+        target_observation_dim = int(np.prod(target.observation_space.shape))
+        action_dim = int(np.prod(target.action_space.shape))
+        if target_observation_dim == source_observation_dim:
+            return SAC.load(path, env=env)
+        transferred, expanded_keys = _transfer_expanded_policy_state(
+            source.policy.state_dict(),
+            target.policy.state_dict(),
+            source_observation_dim=source_observation_dim,
+            target_observation_dim=target_observation_dim,
+            action_dim=action_dim,
+        )
+        target.policy.load_state_dict(transferred, strict=True)
+        if (
+            getattr(source, "log_ent_coef", None) is not None
+            and getattr(target, "log_ent_coef", None) is not None
+            and source.log_ent_coef.shape == target.log_ent_coef.shape
+        ):
+            target.log_ent_coef.data.copy_(source.log_ent_coef.data)
+        target.warm_start_transfer_evidence = {
+            "source_model": str(Path(path).resolve()),
+            "source_observation_dim": source_observation_dim,
+            "target_observation_dim": target_observation_dim,
+            "added_observation_dimensions": (
+                target_observation_dim - source_observation_dim
+            ),
+            "expanded_policy_tensors": expanded_keys,
+            "new_observation_weights_initialized_to": 0.0,
+        }
+        return target
 
     def wrap_env(self, env, config: Dict[str, Any] | None = None):
         """Called by the pipeline before build/load — SAC needs flat obs."""

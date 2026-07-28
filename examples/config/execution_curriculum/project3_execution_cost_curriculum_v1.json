@@ -1,0 +1,111 @@
+{
+  "contract_version": "execution_cost_curriculum.v1",
+  "curriculum_id": "project3_execution_cost_curriculum_v1",
+  "normalization_bounds": {
+    "commission_fraction_per_side": 0.001,
+    "full_spread_rate": 0.002,
+    "slippage_bps_per_side": 10.0
+  },
+  "scenarios": [
+    {
+      "scenario_id": "easy_floor",
+      "commission_fraction_per_side": 0.00005,
+      "full_spread_rate": 0.0001,
+      "slippage_bps_per_side": 0.25,
+      "financing_enabled": false
+    },
+    {
+      "scenario_id": "easy_upper",
+      "commission_fraction_per_side": 0.0001,
+      "full_spread_rate": 0.0002,
+      "slippage_bps_per_side": 0.5,
+      "financing_enabled": false
+    },
+    {
+      "scenario_id": "nominal_low",
+      "commission_fraction_per_side": 0.0002,
+      "full_spread_rate": 0.0003,
+      "slippage_bps_per_side": 1.0,
+      "financing_enabled": false
+    },
+    {
+      "scenario_id": "nominal_reference",
+      "commission_fraction_per_side": 0.0003,
+      "full_spread_rate": 0.0004,
+      "slippage_bps_per_side": 2.0,
+      "financing_enabled": false
+    },
+    {
+      "scenario_id": "nominal_high",
+      "commission_fraction_per_side": 0.0004,
+      "full_spread_rate": 0.0006,
+      "slippage_bps_per_side": 3.0,
+      "financing_enabled": false
+    },
+    {
+      "scenario_id": "stress",
+      "commission_fraction_per_side": 0.0005,
+      "full_spread_rate": 0.0008,
+      "slippage_bps_per_side": 5.0,
+      "financing_enabled": false
+    },
+    {
+      "scenario_id": "stress_severe",
+      "commission_fraction_per_side": 0.00075,
+      "full_spread_rate": 0.0012,
+      "slippage_bps_per_side": 8.0,
+      "financing_enabled": false
+    }
+  ],
+  "phases": [
+    {
+      "name": "easy_nonzero",
+      "start_progress": 0.0,
+      "end_progress": 0.35,
+      "scenario_weights": [
+        {
+          "scenario_id": "easy_floor",
+          "weight": 2.0
+        },
+        {
+          "scenario_id": "easy_upper",
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "name": "nominal_randomized",
+      "start_progress": 0.35,
+      "end_progress": 0.8,
+      "scenario_weights": [
+        {
+          "scenario_id": "nominal_low",
+          "weight": 1.0
+        },
+        {
+          "scenario_id": "nominal_reference",
+          "weight": 2.0
+        },
+        {
+          "scenario_id": "nominal_high",
+          "weight": 1.0
+        }
+      ]
+    },
+    {
+      "name": "stress",
+      "start_progress": 0.8,
+      "end_progress": 1.0,
+      "scenario_weights": [
+        {
+          "scenario_id": "stress",
+          "weight": 2.0
+        },
+        {
+          "scenario_id": "stress_severe",
+          "weight": 1.0
+        }
+      ]
+    }
+  ]
+}

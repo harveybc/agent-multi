@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="agent-multi",
-    version="0.3.0",
+    version="0.4.0",
     packages=find_packages(),
     entry_points={
         "console_scripts": [
@@ -26,6 +26,10 @@ setup(
         "pipeline.plugins": [
             "rl_pipeline=pipeline_plugins.rl_pipeline:PipelinePlugin",
             "rl_pipeline_with_validation=pipeline_plugins.rl_pipeline_with_validation:PipelinePlugin",
+            "rl_pipeline_with_execution_curriculum=pipeline_plugins.rl_pipeline_with_execution_curriculum:PipelinePlugin",
+        ],
+        "execution_policy.plugins": [
+            "adaptive_order_router=execution_policy_plugins.adaptive_order_router:Plugin",
         ],
         "optimizer.plugins": [
             "default_optimizer=optimizer_plugins.default_optimizer:Plugin",

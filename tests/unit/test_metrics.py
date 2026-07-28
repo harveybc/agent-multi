@@ -42,3 +42,15 @@ def test_gap_penalized_l1_metric_is_selectable() -> None:
         _Agent(),
     )
     assert value == pytest.approx(0.123)
+
+
+def test_robust_weekly_rap_metric_is_selectable() -> None:
+    value = compute_optimization_fitness(
+        {"robust_weekly_rap_fitness": 0.0042},
+        {
+            "optimization_metric": "robust_weekly_rap_fitness",
+            "metric_missing_policy": "fail",
+        },
+        _Agent(),
+    )
+    assert value == pytest.approx(0.0042)

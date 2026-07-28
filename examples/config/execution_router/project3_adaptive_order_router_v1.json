@@ -1,0 +1,101 @@
+{
+  "schema_version": "adaptive_order_router.v1",
+  "router_id": "project3_adaptive_order_router_v1",
+  "plugin": "adaptive_order_router",
+  "status": "blocked_until_robust_asset_policy_is_frozen",
+  "parameters": {
+    "execution_deadband": 0.05,
+    "market_urgency_threshold": 0.75,
+    "market_max_spread_bps": 8.0,
+    "stop_breakout_threshold": 0.65,
+    "limit_offset_spread_multiple": 0.5,
+    "limit_offset_atr_multiple": 0.05,
+    "stop_offset_spread_multiple": 0.5,
+    "stop_offset_atr_multiple": 0.05,
+    "passive_valid_for_bars": 2,
+    "stop_valid_for_bars": 2,
+    "unfilled_fallback": "cancel"
+  },
+  "optimization_ranges": {
+    "execution_deadband": {
+      "kind": "float",
+      "low": 0.01,
+      "high": 0.3
+    },
+    "market_urgency_threshold": {
+      "kind": "float",
+      "low": 0.5,
+      "high": 0.98
+    },
+    "market_max_spread_bps": {
+      "kind": "float",
+      "low": 1.0,
+      "high": 20.0
+    },
+    "stop_breakout_threshold": {
+      "kind": "float",
+      "low": 0.2,
+      "high": 0.95
+    },
+    "limit_offset_spread_multiple": {
+      "kind": "float",
+      "low": 0.0,
+      "high": 2.0
+    },
+    "limit_offset_atr_multiple": {
+      "kind": "float",
+      "low": 0.0,
+      "high": 0.5
+    },
+    "stop_offset_spread_multiple": {
+      "kind": "float",
+      "low": 0.0,
+      "high": 2.0
+    },
+    "stop_offset_atr_multiple": {
+      "kind": "float",
+      "low": 0.0,
+      "high": 0.5
+    },
+    "passive_valid_for_bars": {
+      "kind": "categorical",
+      "choices": [
+        1,
+        2,
+        3,
+        6
+      ]
+    },
+    "stop_valid_for_bars": {
+      "kind": "categorical",
+      "choices": [
+        1,
+        2,
+        3,
+        6
+      ]
+    },
+    "unfilled_fallback": {
+      "kind": "categorical",
+      "choices": [
+        "cancel",
+        "market"
+      ]
+    }
+  },
+  "evaluation_contract": {
+    "simulation_engine": "nautilus_trader",
+    "asset_policy": "frozen_robust_champion",
+    "cost_scenarios": [
+      "easy_upper",
+      "nominal_low",
+      "nominal_reference",
+      "nominal_high",
+      "stress_severe"
+    ],
+    "fitness": "robust_weekly_rap_fitness",
+    "units": "fraction_per_week",
+    "requires_action_trace": true,
+    "requires_source_model_sha256": true
+  }
+}
