@@ -1,6 +1,6 @@
 # 19. Execution Curriculum and Adaptive Order Routing
 
-Status: implementation verified; successor campaign materialized and queued for controlled deployment
+Status: implementation verified and deployed; successor campaign queued behind the replicated stage barrier
 Decision date: 2026-07-28
 
 ## 1. Objective
