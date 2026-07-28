@@ -12,7 +12,7 @@ visible three-phase cost curriculum and immutable multi-scenario robust
 weekly-RAP fitness. Exact sequencing is in
 `19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md`.
 
-Implementation is complete locally and packaged as a lifecycle-only,
+Implementation is deployed on omega, dragon and gamma as a lifecycle-only,
 append-safe successor plan:
 
 - `trading-contracts` 0.2.0 adds optional asset-intent urgency;
@@ -27,9 +27,24 @@ append-safe successor plan:
 - the router profile is blocked until the robust policy is frozen.
 
 The active worker configs, fitness, seed, domain, genesis and candidate pool
-remain unchanged. Supervisor metadata adds only the generation-14 completion
-boundary, stable artifact handoff, and queued curriculum job. Migration
-preserves active worker PIDs and recomputes the replicated lifecycle contract.
+remain unchanged. Supervisor metadata adds only the semantic stage-3
+completion boundary, stable artifact handoff, and queued curriculum job.
+Migration preserves active worker PIDs and recomputes the replicated lifecycle
+contract.
+
+Deployment evidence on 2026-07-28:
+
+- plan hash:
+  `f06b0f75c2783d298b23c6f0436d3dae318d862166cc56827e65a1d230103921`;
+- replicated lifecycle contract:
+  `52875e9f163ecd076fedfef450765de6ba917ab503f4156b93821237434c1109`;
+- all three hosts run supervisor code revision `2fef5080`;
+- worker PIDs preserved across migration: omega `2466249`, dragon `1664737`,
+  gamma-5070ti `1808707`, gamma-5090 `1808951`;
+- shared generation, pool fingerprint and champion artifact remained
+  identical after migration;
+- current pre-boundary budget is at most 280 candidates; the generated
+  curriculum schedule is 320 candidates before early stopping.
 
 The static per-asset DOIN campaign is stopped and preserved. It must not resume
 until the evidence stages select explicit data, preprocessing, feature,
