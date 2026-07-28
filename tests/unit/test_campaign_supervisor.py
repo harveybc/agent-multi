@@ -566,6 +566,12 @@ def test_network_eta_covers_current_campaign_and_queued_pool(tmp_path: Path):
     assert eta["current_job_eta_seconds"] == pytest.approx(14 / 0.015)
     assert eta["pool_eta_seconds"] == pytest.approx(54 / 0.015)
 
+    jobs[1]["planned_candidates"] = 0
+    eta = supervisor._network_eta(participants, jobs, 0)
+    assert eta["pool_eta_seconds"] is None
+    assert eta["pool_candidate_budget_complete"] is False
+    assert eta["queued_jobs_waiting_for_materialization"] == ["job-1"]
+
 
 def test_supervisor_restart_preserves_running_worker_component_contract(tmp_path: Path):
     profile_path, _, _ = _materialize(tmp_path)
