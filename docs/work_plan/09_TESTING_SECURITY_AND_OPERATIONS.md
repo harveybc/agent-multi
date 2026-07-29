@@ -126,6 +126,13 @@ cause OOM thrash.
 - A four-worker shared population uses two remote claim confirmations, yielding
   a three-worker majority that tolerates one planned or failed worker without
   permitting two-worker minority partitions to allocate new candidates.
+- Shared generation results are persisted atomically with their domain,
+  generation and population fingerprint and are restored after a full worker
+  process outage. A mismatched population snapshot is rejected.
+- Initial swarm genesis uses strict ordered startup. A worker restart in an
+  active campaign may use the previously accepted canonical lineage when all
+  reachable participants match it, so loss of the bootstrap host does not block
+  recovery.
 - Startup never resumes real trading without reconciliation and explicit live
   enablement.
 
@@ -205,5 +212,7 @@ Each incident captures:
 - Multi-node deterministic verification succeeds.
 - OOM/stale detection alerts before long idle periods.
 - Process restart does not duplicate candidates or orders.
+- Restarting every worker preserves completed generation results and resumes
+  only the unevaluated candidates.
 - Live safety gates fail closed.
 - Status always reports period/unit/coverage for financial metrics.
