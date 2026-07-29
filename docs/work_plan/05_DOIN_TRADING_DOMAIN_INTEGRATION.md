@@ -682,6 +682,10 @@ found.
 - Every live node renders the same participant set and revision compatibility;
   an unavailable participant remains visible as offline without freezing the
   remaining dashboard.
+- Shared-candidate ownership uses a three-of-four worker majority: each claimant
+  requires two remote confirmations in addition to itself. This preserves
+  intersecting claim quorums while allowing any one worker, including Omega, to
+  leave without freezing new candidate allocation.
 - No trading plugin requires modifications to controlled flooding or Proof of
   Optimization.
 - A promoted weekly deployment references an accepted DOIN candidate and a

@@ -123,6 +123,9 @@ cause OOM thrash.
   command.
 - Supervisor failover uses Git, node config overlays, chain/OLAP restore and
   artifact manifests.
+- A four-worker shared population uses two remote claim confirmations, yielding
+  a three-worker majority that tolerates one planned or failed worker without
+  permitting two-worker minority partitions to allocate new candidates.
 - Startup never resumes real trading without reconciliation and explicit live
   enablement.
 
