@@ -136,6 +136,9 @@ cause OOM thrash.
 - A pre-canonical-lineage campaign may migrate only from matching per-worker
   evidence retained after a completed all-worker join barrier; unverified or
   conflicting legacy evidence blocks restart.
+- Startup and announcement-driven synchronization apply the existing
+  heaviest-chain fork rule to equal-height competing tips. Same-height
+  divergence is an alert until every participant reports one tip.
 - Startup never resumes real trading without reconciliation and explicit live
   enablement.
 

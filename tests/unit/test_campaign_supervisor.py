@@ -1041,6 +1041,26 @@ def test_runtime_health_detects_bootstrap_lineage_divergence(tmp_path: Path):
         network, supervisor.plan["jobs"][0]
     )
     assert healthy, issues
+    for participant in participants:
+        worker_id = participant["workers"][0]
+        network["participants"][participant["node_id"]]["status"]["workers"][
+            worker_id
+        ].update({"chain_height": 3, "tip_hash": "canonical-tip"})
+    healthy, issues = supervisor._runtime_swarm_health(
+        network, supervisor.plan["jobs"][0]
+    )
+    assert healthy, issues
+    network["participants"]["dragon"]["status"]["workers"]["dragon"][
+        "tip_hash"
+    ] = "competing-tip"
+    healthy, issues = supervisor._runtime_swarm_health(
+        network, supervisor.plan["jobs"][0]
+    )
+    assert not healthy
+    assert "competing blockchain tips" in "; ".join(issues)
+    network["participants"]["dragon"]["status"]["workers"]["dragon"][
+        "tip_hash"
+    ] = "canonical-tip"
     network["participants"]["omega"]["status"]["workers"]["omega"].update({
         "finalized_height": -1,
         "finalized_hash": "stale-local-cache",

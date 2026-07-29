@@ -644,6 +644,11 @@ forwarder before considering the original author, because the author's LAN may
 not be routable from the receiving island. Directed champion and evaluation
 responses continue to prefer the original protocol identity.
 
+Competing tips at the same height are resolved through DOIN's existing
+heaviest-chain `ForkChoiceRule`, including its deterministic tie-break. Startup
+sync and equal-height block announcements both invoke this resolution; a node
+must not wait for one branch to become longer before converging.
+
 The authoritative two-level configuration and generation procedure is defined
 in [11 DOIN Configuration Profiles](11_DOIN_CONFIGURATION_PROFILES.md).
 
@@ -676,6 +681,8 @@ found.
 - Candidate/champion metric vectors reach dashboard, local OLAP and chain
   metrics without being forced into MAE semantics.
 - A new node syncs chain, recovers champion and joins optimization.
+- Concurrent equal-height blocks converge to one deterministic fork before a
+  later block can extend independent branches.
 - A champion remains fetchable after its producing node is removed, and the
   acceptance gate rejects insufficient replication or a hash mismatch.
 - Code/version mismatch is rejected as today.

@@ -2254,6 +2254,17 @@ class CampaignSupervisor:
         }
         if len(finalized) > 1:
             issues.append("workers report different finalized blockchain anchors")
+        live_tips = {
+            (worker.get("chain_height"), worker.get("tip_hash"))
+            for worker in workers
+            if worker.get("chain_height") is not None
+            and worker.get("tip_hash")
+        }
+        live_heights = {height for height, _tip in live_tips}
+        if len(live_heights) == 1 and len(live_tips) > 1:
+            issues.append(
+                "workers report competing blockchain tips at the same height"
+            )
         pools = [
             worker.get("shared_population") or {}
             for worker in workers
