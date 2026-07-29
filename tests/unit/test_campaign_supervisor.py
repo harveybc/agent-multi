@@ -719,6 +719,158 @@ def test_startup_barrier_launches_workers_in_global_order(tmp_path: Path):
     assert ready, reason
 
 
+def test_running_campaign_can_recover_without_bootstrap_supervisor(
+    tmp_path: Path,
+):
+    participants = [
+        {
+            "node_id": "omega",
+            "supervisor_url": "http://omega:8795",
+            "workers": ["omega"],
+        },
+        {
+            "node_id": "dragon",
+            "supervisor_url": "http://dragon:8795",
+            "workers": ["dragon"],
+        },
+        {
+            "node_id": "gamma",
+            "supervisor_url": "http://gamma:8795",
+            "workers": ["gamma-0"],
+        },
+    ]
+    profile_path, _, _ = _materialize(
+        tmp_path,
+        participants=participants,
+    )
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    configs = supervisor._validate_local_configs(job)
+    contract = supervisor._prepare_coordination(job, configs)
+    lineage = {
+        "genesis_hash": "genesis",
+        "population_block_hash": "population",
+        "population_fingerprint": "fingerprint",
+    }
+    supervisor.state["phase"] = "running"
+    supervisor.state["coordination"]["canonical_lineage"] = {
+        "job_id": job["job_id"],
+        "domain_id": job["domain_id"],
+        **lineage,
+    }
+    network = {
+        "participants": {
+            "omega": {"online": False},
+            "dragon": {
+                "online": True,
+                "status": {
+                    "plan_hash": supervisor.plan_hash,
+                    "job_index": 0,
+                    "job_id": job["job_id"],
+                    "coordination": {
+                        "contract_hash": contract["contract_hash"],
+                    },
+                    "workers": {
+                        "dragon": {"status": "exited"},
+                    },
+                },
+            },
+            "gamma": {
+                "online": True,
+                "status": {
+                    "plan_hash": supervisor.plan_hash,
+                    "job_index": 0,
+                    "job_id": job["job_id"],
+                    "coordination": {
+                        "contract_hash": contract["contract_hash"],
+                    },
+                    "workers": {
+                        "gamma-0": {
+                            "status": "running",
+                            "bootstrap_evidence": lineage,
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+    ready, reason = supervisor._worker_launch_ready(
+        network,
+        job,
+        "dragon",
+    )
+
+    assert ready, reason
+    assert "canonical lineage" in reason
+
+
+def test_running_campaign_recovery_rejects_parallel_lineage(tmp_path: Path):
+    participants = [
+        {
+            "node_id": "omega",
+            "supervisor_url": "http://omega:8795",
+            "workers": ["omega"],
+        },
+        {
+            "node_id": "dragon",
+            "supervisor_url": "http://dragon:8795",
+            "workers": ["dragon"],
+        },
+    ]
+    profile_path, _, _ = _materialize(
+        tmp_path,
+        participants=participants,
+    )
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    configs = supervisor._validate_local_configs(job)
+    contract = supervisor._prepare_coordination(job, configs)
+    supervisor.state["phase"] = "running"
+    supervisor.state["coordination"]["canonical_lineage"] = {
+        "job_id": job["job_id"],
+        "domain_id": job["domain_id"],
+        "genesis_hash": "genesis",
+        "population_block_hash": "population",
+        "population_fingerprint": "fingerprint",
+    }
+    network = {
+        "participants": {
+            "omega": {"online": False},
+            "dragon": {
+                "online": True,
+                "status": {
+                    "plan_hash": supervisor.plan_hash,
+                    "job_index": 0,
+                    "job_id": job["job_id"],
+                    "coordination": {
+                        "contract_hash": contract["contract_hash"],
+                    },
+                    "workers": {
+                        "dragon": {
+                            "status": "running",
+                            "bootstrap_evidence": {
+                                "genesis_hash": "parallel-genesis",
+                                "population_block_hash": "parallel-population",
+                                "population_fingerprint": "parallel-fingerprint",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+    ready, reason = supervisor._worker_launch_ready(
+        network,
+        job,
+        "dragon",
+    )
+
+    assert not ready
+    assert "different blockchain lineage" in reason
+
+
 def test_single_process_lock_rejects_second_supervisor(tmp_path: Path):
     profile_path, _, _ = _materialize(tmp_path)
     first = CampaignSupervisor(profile_path)

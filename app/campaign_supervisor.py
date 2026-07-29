@@ -2005,6 +2005,58 @@ class CampaignSupervisor:
         job: dict[str, Any],
         worker_id: str,
     ) -> tuple[bool, str]:
+        if (
+            self.state.get("phase") == "running"
+            and (cached_lineage := self._cached_canonical_lineage(job))
+            is not None
+        ):
+            expected_contract = str(
+                (self.state.get("coordination") or {}).get(
+                    "contract_hash"
+                ) or ""
+            )
+            online_supervisors = 0
+            for participant in self.plan["participants"]:
+                node_id = str(participant["node_id"])
+                report = (
+                    (network.get("participants") or {}).get(node_id) or {}
+                )
+                if not report.get("online"):
+                    continue
+                online_supervisors += 1
+                status = report.get("status") or {}
+                if status.get("plan_hash") != self.plan_hash:
+                    return False, f"{node_id} has a different plan hash"
+                if status.get("job_index") != int(job["ordinal"]):
+                    return False, (
+                        f"{node_id} has not reached job {job['ordinal']}"
+                    )
+                if status.get("job_id") != job["job_id"]:
+                    return False, (
+                        f"{node_id} is on job {status.get('job_id')}"
+                    )
+                contract_hash = str(
+                    (status.get("coordination") or {}).get(
+                        "contract_hash"
+                    ) or ""
+                )
+                if not contract_hash or contract_hash != expected_contract:
+                    return False, (
+                        f"{node_id} has a different runtime contract"
+                    )
+                for observed in (status.get("workers") or {}).values():
+                    if observed.get("status") != "running":
+                        continue
+                    lineage = self._lineage_key(observed)
+                    if lineage is not None and lineage != cached_lineage:
+                        return False, (
+                            f"{node_id} reports a different blockchain lineage"
+                        )
+            if online_supervisors:
+                return True, (
+                    "active campaign recovery uses verified canonical lineage"
+                )
+
         ready, reason = self._startup_preflight_ready(network, job)
         if not ready:
             return False, reason

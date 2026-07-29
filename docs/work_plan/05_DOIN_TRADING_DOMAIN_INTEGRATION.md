@@ -686,6 +686,14 @@ found.
   requires two remote confirmations in addition to itself. This preserves
   intersecting claim quorums while allowing any one worker, including Omega, to
   leave without freezing new candidate allocation.
+- Each worker atomically persists the shared result set for the current
+  generation, keyed by domain, generation and population fingerprint. A process
+  restart rehydrates only a matching snapshot; a different population cannot
+  inherit stale candidate fitness.
+- Initial genesis remains an ordered launch. During an already-running campaign,
+  a worker may recover while the bootstrap supervisor is offline only when its
+  cached canonical lineage exists and every reachable supervisor/worker agrees
+  on plan, job, runtime contract, genesis, seed and population fingerprint.
 - No trading plugin requires modifications to controlled flooding or Proof of
   Optimization.
 - A promoted weekly deployment references an accepted DOIN candidate and a
