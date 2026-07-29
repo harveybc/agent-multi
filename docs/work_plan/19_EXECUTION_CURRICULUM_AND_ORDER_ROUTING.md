@@ -1,9 +1,8 @@
 # 19. Execution Curriculum, State Models, and Adaptive Order Policy
 
-Status: deterministic baseline and curriculum transition verified/deployed;
-learned execution-policy contract specified; successor campaign queued behind
-the replicated stage barrier
-Decision date: 2026-07-28
+Status: protected-entry v2 implementation and local preflight verified;
+coordinated deployment pending exact-revision synchronization
+Decision date: 2026-07-29
 
 ## 1. Objective
 
@@ -17,14 +16,18 @@ completed. The plan separates three orthogonal capabilities:
    selection, short paths and event hazard before selecting entry/exit order
    actions.
 
-The current `usdcad-4h-full-genome-sac-shared-v1` worker configuration remains
-byte-for-byte unchanged. Its useful data/observation and model/training stages
-finish first. When every worker enters stage 3 with the same shared generation
-and population, the replicated supervisors freeze one agreed champion hash,
-archive it with diverse alternatives, verify every local
-worker has stopped, and only then start a new domain. No running blockchain,
-candidate pool, optimizer genome, seed, or fitness definition is modified in
-place.
+The `usdcad-4h-full-genome-sac-shared-v1` domain was stopped on 2026-07-29
+after its blockchain proved that one annual validation trade could win by
+remaining almost flat. Its chain, 60 completed candidates and artifacts are
+preserved as incident evidence; they are never resumed or used as an eligible
+warm start.
+
+The successor is `phase-1-protected-execution-fleet-v2`. Job 0 starts a fresh
+domain/genesis under `easy_floor` positive costs, optimizes the complete mixed
+genome and requires both annual activity and protected entries. Job 1 is a
+separate warm-started domain that advances from easy through nominal and stress
+costs with immutable robust weekly-RAP validation. No existing blockchain,
+candidate pool, seed or fitness is mutated in place.
 
 ## 2. Non-Negotiable Boundaries
 
@@ -43,6 +46,12 @@ place.
 - `agent-multi` owns policy learning, routing research, robust aggregation, and
   artifacts.
 - DOIN coordinates candidates but does not acquire trading-domain logic.
+- Every risk-increasing market, limit or stop parent is submitted as a bracket
+  with both SL and TP children. A plugin exception fails closed.
+- Risk-reducing closes may cancel an existing bracket and flatten exposure;
+  they cannot increase or reverse exposure in the same bar.
+- Annual validation requires at least 12 completed trades. Losing active
+  policies remain eligible; inactivity does not.
 
 ## 3. Cost Curriculum
 
@@ -283,21 +292,25 @@ walk-forward utility.
 
 The sequence minimizes repeated model training:
 
-1. finish `data_observation` and `model_training` in the active zero-cost
-   campaign, stopping at the synchronized transition into stage 3;
-2. load its exact champion weights and resolved genome;
-3. fine-tune the asset policy under the cost curriculum;
-4. select with immutable robust validation fitness;
-5. freeze the robust asset-policy artifact;
-6. pass the execution-fidelity gate and train/calibrate the auxiliary models;
-7. optimize the deterministic execution router against frozen policy actions;
-8. train the shared entry/exit policy locally and compare it with market-only
+1. optimize the complete mixed genome under `easy_floor` positive costs with
+   protected market/limit/stop/adaptive entries;
+2. reject any candidate that misses train-tail or annual-validation activity,
+   collapses its actions, lacks its exact model artifact, or emits an
+   unprotected entry;
+3. archive the agreed eligible champion weights, resolved genome, metrics and
+   five diverse elites;
+4. warm-start a new domain and fine-tune under the visible cost curriculum;
+5. select with immutable robust validation fitness;
+6. freeze the robust asset-policy artifact;
+7. pass the execution-fidelity gate and train/calibrate the auxiliary models;
+8. optimize the deterministic execution router against frozen policy actions;
+9. train the shared entry/exit policy locally and compare it with market-only
    and deterministic-router controls;
-9. optimize the learned execution policy with DOIN over allowed feature masks,
+10. optimize the learned execution policy with DOIN over allowed feature masks,
    order family, offsets, TTL, fallback, size hints and model parameters;
-10. run one bounded joint refinement over only the asset-policy parameters that
+11. run one bounded joint refinement over only the asset-policy parameters that
    materially interact with routing;
-11. package model, router/policy, auxiliaries, preprocessing, feature, cost and
+12. package model, router/policy, auxiliaries, preprocessing, feature, cost and
    metric contracts as
    one cell release;
 12. use frozen cell releases in the portfolio optimizer.

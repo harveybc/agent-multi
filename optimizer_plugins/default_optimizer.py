@@ -62,6 +62,10 @@ def _resume_contract_hash(config: Dict[str, Any], schema) -> str:
         "execution_policy_config",
         "warm_start_model_sha256",
         "warm_start_expand_observation_space",
+        "early_stop_min_train_tail_trades",
+        "early_stop_min_validation_trades",
+        "optimization_reject_insufficient_activity",
+        "optimization_min_trades_by_split",
     )
     payload = {
         "parameter_schema": [list(item) for item in schema],
@@ -133,6 +137,59 @@ def _action_collapse_evidence(
             "deterministic_policy_action_collapse"
             if rejected
             else None
+        ),
+    }
+
+
+def _activity_eligibility_evidence(
+    summary: Dict[str, Any],
+    config: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Reject candidates that do not demonstrate configured split activity.
+
+    This is intentionally an eligibility constraint rather than a positive
+    profitability gate. A losing but active policy remains valid evidence; a
+    near-flat policy that wins only by avoiding decisions does not.
+    """
+    enabled = bool(
+        config.get("optimization_reject_insufficient_activity", False)
+    )
+    configured = config.get(
+        "optimization_min_trades_by_split",
+        {"train_tail": 1, "validation": 1},
+    )
+    if not isinstance(configured, dict) or not configured:
+        raise ValueError(
+            "optimization_min_trades_by_split must be a non-empty object"
+        )
+
+    splits = summary.get("splits") if isinstance(summary.get("splits"), dict) else {}
+    details: Dict[str, Any] = {}
+    failed: list[str] = []
+    for split_name, raw_minimum in configured.items():
+        name = str(split_name)
+        minimum = max(0, int(raw_minimum))
+        split = splits.get(name)
+        present = isinstance(split, dict)
+        trades = int((split or {}).get("trades_total") or 0) if present else 0
+        passed = present and trades >= minimum
+        details[name] = {
+            "present": present,
+            "trades": trades,
+            "minimum_trades": minimum,
+            "passed": passed,
+        }
+        if not passed:
+            failed.append(name)
+
+    rejected = bool(enabled and failed)
+    return {
+        "policy_activity_guard_enabled": enabled,
+        "policy_activity_rejected": rejected,
+        "policy_activity_failed_splits": failed,
+        "policy_activity_details": details,
+        "candidate_rejected_reason": (
+            "insufficient_split_activity" if rejected else None
         ),
     }
 
@@ -1236,10 +1293,28 @@ class Plugin:
             )
         )
         collapse = _action_collapse_evidence(summary, run_config)
+        activity = _activity_eligibility_evidence(summary, run_config)
         metrics.update(collapse)
+        metrics.update({
+            key: value
+            for key, value in activity.items()
+            if key != "candidate_rejected_reason"
+        })
+        rejection_reasons = [
+            reason
+            for reason in (
+                collapse.get("candidate_rejected_reason"),
+                activity.get("candidate_rejected_reason"),
+            )
+            if reason
+        ]
+        metrics["candidate_rejected_reasons"] = rejection_reasons
+        metrics["candidate_rejected_reason"] = (
+            rejection_reasons[0] if rejection_reasons else None
+        )
         fitness = (
             -1e9
-            if collapse["policy_action_collapse_rejected"]
+            if rejection_reasons
             else compute_optimization_fitness(summary, run_config, agent_plugin)
         )
         metrics["fitness"] = float(fitness)
@@ -1318,8 +1393,12 @@ def _dashboard_metric_payload(metrics: Dict[str, Any]) -> Dict[str, Any]:
         "mean_weekly_return",
         "annualized_return",
         "annual_return",
+        "annual_return_method",
         "mean_weekly_rap",
         "annual_rap",
+        "annual_rap_method",
+        "evaluation_weeks",
+        "evaluation_days",
         "robust_weekly_rap_fitness",
         "worst_scenario_weekly_rap",
         "lower_tail_cvar_weekly_rap",
@@ -1342,7 +1421,12 @@ def _dashboard_metric_payload(metrics: Dict[str, Any]) -> Dict[str, Any]:
         "policy_action_collapse_rejected",
         "policy_action_collapse_splits",
         "policy_action_collapse_details",
+        "policy_activity_guard_enabled",
+        "policy_activity_rejected",
+        "policy_activity_failed_splits",
+        "policy_activity_details",
         "candidate_rejected_reason",
+        "candidate_rejected_reasons",
         "evaluation_error",
     )
     return {key: metrics[key] for key in keys if metrics.get(key) is not None}
