@@ -26,7 +26,7 @@ Contracts/config
                          |
                          +--> generic OLAP metrics
                          |
-                         +--> context/rush/risk/allocator
+                         +--> context/rush/execution/risk/allocator
                          |
                          +--> DOIN trading plugins
                                       |
@@ -36,6 +36,29 @@ Contracts/config
                                                             |
                                                             +--> OANDA practice
 ```
+
+### 2.1 Current pragmatic sequence
+
+The numbered phases describe dependency ownership, not permission to repeat
+completed experiments. As of 2026-07-28 the executable sequence is:
+
+1. finish the active `USDCAD@4h` data/observation and model/training
+   full-genome stages;
+2. freeze the agreed alpha champion and five strong/diverse elites;
+3. materialize the positive-cost curriculum as a new domain;
+4. pass the execution-data fidelity gate and train fill-time,
+   adverse-selection, short-path and event-hazard auxiliaries;
+5. compare market-only, deterministic router and shared learned entry/exit
+   execution policy under identical frozen alpha streams;
+6. optimize execution with easy, nominal and stress costs, then freeze the
+   complete asset cell;
+7. repeat the bounded per-asset process for the selected library;
+8. optimize static portfolio mechanics from frozen cells;
+9. add calibrated rush/event gating and then evaluate weekly retraining.
+
+This order preserves useful active work, avoids retraining alpha inside every
+execution or portfolio candidate, and prevents low-fidelity bar replays from
+publishing queue-sensitive order-placement claims.
 
 ## 3. Phase 0: Freeze Contracts and Evidence
 
@@ -161,7 +184,7 @@ Gate:
 - allocator baselines satisfy all constraints;
 - test is inaccessible during selection.
 
-## 9. Phase 6: Context, Rush, and Risk
+## 9. Phase 6: Context, Rush, Execution, and Risk
 
 Repositories: `agent-multi`, `financial-data`, `gym-fx`.
 
@@ -171,6 +194,11 @@ Deliverables:
 - local-only/engineered/attention/trainable ablations;
 - causal rush labels, detector and calibration;
 - base-policy rush gate;
+- point-in-time event phase, expectation/surprise and causal-evidence features;
+- execution-data fidelity manifest and quote/L1/L2/live-calibration gates;
+- fill-time, adverse-selection, short-path and event-hazard auxiliaries;
+- deterministic market/limit/stop/MIT router baseline;
+- shared learned execution policy with separate entry and exit heads;
 - legacy and risk-at-stop sizing;
 - SL/TP/early-close/risk geometry profiles.
 
@@ -179,6 +207,10 @@ Gate:
 - no leakage in token/label/preprocessing audit;
 - context improvement survives comparable compute/seed controls;
 - rush detector improves downstream validation utility in multiple episodes;
+- execution auxiliaries are calibrated and the learned policy beats
+  market-only/deterministic-router controls under identical alpha streams;
+- actual event values cannot alter a pre-release observation;
+- order-placement claims do not exceed the replay-data fidelity;
 - risk metrics and exposure behave monotonically in property tests.
 
 ## 10. Phase 7: Trainable Portfolio Allocator

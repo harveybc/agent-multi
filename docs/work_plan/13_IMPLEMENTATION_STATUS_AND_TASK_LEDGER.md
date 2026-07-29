@@ -1,8 +1,9 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-07-28
-Plan version: 1.12.0
-Current focus: active USDCAD data/model search with an automatic, fail-closed transition to execution-cost curriculum
+Plan version: 1.13.0
+Current focus: active USDCAD alpha/data/model search with an automatic,
+fail-closed transition to execution-cost and adaptive-order curriculum
 
 Decision 2026-07-28: retain the useful `data_observation` and `model_training`
 search, then stop as the synchronized swarm enters stage 3 before spending
@@ -46,43 +47,52 @@ Deployment evidence on 2026-07-28:
 - current pre-boundary budget is at most 280 candidates; the generated
   curriculum schedule is 320 candidates before early stopping.
 
-The static per-asset DOIN campaign is stopped and preserved. It must not resume
-until the evidence stages select explicit data, preprocessing, feature,
-context, target and model contracts. The active runtime is the transactional
-Project 3 evidence pool on omega, dragon, gamma-5070ti and gamma-5090.
+Current operational snapshot at 2026-07-28 21:45 COT:
 
-The evidence pool completed all 15,995 E0-E3 jobs with zero failed jobs:
-427 E0 data audits, 318 E0 external audits, 1,145 E1 screens, 12,053 E2
-preprocessing/context and interaction screens, and 2,052 E3 proxy-model
-screens. E4 now selects eight robust portfolio cells using validation-only
-three-seed aggregation and materializes 24 SAC training jobs. Every accepted
-E1-E4 result must contain validation and test values for mean weekly
-return, annualized return, mean weekly RAP, annual RAP, max drawdown and
-evaluation-week count. Return and risk values are stored as fractions in OLAP
-and presented only as explicitly labeled percentages.
+- all four workers run `usdcad-4h-full-genome-sac-shared-v1` with matching
+  plan, job, domain, seed, dataset, population fingerprint, component versions
+  and champion artifact;
+- live component revisions are `agent-multi@8935b4b`,
+  `doin-core@8573a87`, `doin-node@d7bf671`, `doin-plugins@f5fedf8`,
+  `gym-fx@5630734` and `trading-contracts@4675c8f`; the work-plan publication
+  commit is newer documentation and is not falsely reported as deployed code;
+- active dataset SHA-256 is
+  `f2fa13f4ab9df7cb6577e9785d0e5952362c554e24a2e28c79dffdc8b698818b`;
+- stage `data_observation`, generation 2: 56/280 pre-boundary candidates
+  complete and four distinct candidates claimed;
+- measured swarm throughput is 1.688 candidates/hour;
+- all GPU temperatures are below the 78 C alert threshold;
+- one warning remains for different finalized blockchain anchors. It is not
+  accepted as harmless by wording alone: supervisors continue to require
+  matching canonical genesis/population evidence, candidate uniqueness and
+  champion artifact while monitoring for a true parallel lineage.
 
-Omega recovery evidence on 2026-07-21 identified a kernel `NULL pointer
-dereference`, not an OOM kill. Omega automatically rejoined the active BTCUSDT
-swarm with matching seed, genesis, generation-5 population and component
-lineage. DOIN cgroup memory containment and a Telegram memory-pressure
-watchdog are active; kernel panic recovery and kernel `7.0.0-28` installation
-are prepared behind one explicit root command.
+Historical evidence-recovery closeout, retained for lineage:
 
-The 2026-07-22 BTC campaign audit identified and corrected follower shutdowns
-during temporary bootstrap unavailability and contaminated ETA samples. The
-campaign retained the same four worker PIDs and canonical chain while the
-supervisors were reloaded. Current timing is based only on completed local
-evaluation intervals; see `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md` section 7.1.
+- the transactional E0-E4 pool completed 16,019 jobs and was stopped/disabled
+  after its OLAP, configs and load-tested artifacts were archived;
+- the earlier BTC recovery and follower-shutdown incidents remain documented
+  in sections 2.9, 2.10, 5 and document 15;
+- those closed pools are not the current runtime and must not be reported as
+  active.
+
+Decision 2026-07-28: order type is not a separate alpha model. After the alpha
+handoff, execution uses a deterministic router control, calibrated fill-time,
+adverse-selection, path and event-hazard auxiliaries, then one shared learned
+encoder with entry and exit heads. Detailed contracts and data-fidelity gates
+are in documents 03, 04, 06 and 19.
 
 ## 1. Phase Summary
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: contracts and evidence | Implemented and published | Contracts, schemas, metric catalog, shortlist and compatibility gate implemented; `trading-contracts` commit `4675c8f` published |
-| Phase 1: evidence recovery | E0-E3 complete; E4 ready for four-worker execution | Transactional pool, exact protocol lineage, canonical OLAP facts, robust validation-only selection, candidate/pool ETA, bounded-memory screens and continuous pulls verified on Omega, Dragon and both Gamma GPUs |
+| Phase 1: evidence recovery | E0-E4 complete and archived | 16,019 jobs, transactional lineage, canonical OLAP facts, validation-only selection and 24 load-tested E4 baseline artifacts |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
-| Phase 4 and later | E4 implementation verified | E4 emits load-tested SAC `.zip`, resolved config, feature/data hashes and validation/test metrics; E5 weekly retraining follows |
+| Phase 4: full-genome alpha | Active four-worker USDCAD campaign | Mixed data/feature/preprocessing/context/model/training genome, full L1 convergence and exact SB3 artifacts |
+| Phase 5: execution curriculum | Deterministic baseline verified; successor queued | Positive-cost curriculum, robust validation, router control and alpha-handoff materializer implemented; execution auxiliaries/policy specified behind data gate |
+| Phase 6 and later | Planned behind frozen cell library | Static portfolio first, then probabilistic rush/event activation and weekly retraining |
 
 ### 1.1 Phase 1 closeout sequence
 
@@ -94,8 +104,8 @@ accepted DOIN block by itself. Its closeout sequence is fixed and auditable:
    threshold;
 2. freeze each candidate's typed parameters, config hash, model artifact hash,
    source block and validation metric vector in a promotion-input manifest;
-3. archive all six selected static asset/timeframe artifacts and expose their
-   deterministic action streams to the first portfolio-research optimizer;
+3. archive every selected static asset/timeframe artifact and expose its
+   deterministic action stream to execution and portfolio research;
 4. optimize and verify portfolio mechanics without retraining an asset model
    inside every portfolio candidate;
 5. run the separate weekly-retrained walk-forward evaluation and retain only
@@ -289,10 +299,10 @@ During review, a latent island-diversity defect was fixed: the declared
 `node_seed_offset` now changes only the local GA seed instead of being silently
 ignored.
 
-### 2.8 Four-island Phase 1 deployment
+### 2.8 Historical four-island Phase 1 deployment baseline
 
-The persistent campaign expanded on 2026-07-13 without resetting Omega's
-blockchain or optimizer resume state. The four active islands are:
+The earlier persistent campaign expanded on 2026-07-13 without resetting
+Omega's blockchain or optimizer resume state. Its four islands were:
 
 | Island | Compute device | Dashboard |
 | --- | --- | --- |
@@ -309,10 +319,10 @@ on all three machines, and `pip check` reports no broken requirements.
 because neither belongs to the canonical lock. Their repositories and old
 environments were not deleted.
 
-The exact active component revisions, rendered by every dashboard, are:
+The exact component revisions in that 2026-07-13 deployment were:
 
 ```text
-agent-multi       current deployment revision (this ledger commit)
+agent-multi       deployment revision recorded by that release
 doin-core         8573a87
 doin-node         84f371b
 doin-plugins      0f23702
@@ -651,6 +661,8 @@ cannot select, early-stop, optimize or promote future candidates.
 | `FULL-GENOME-001` | Codex | `agent-multi`, `doin-node`, `doin-plugins` | verified_local_campaign_materialized | Typed mixed feature/preprocessing/context/model/training/execution genome, corrected full-fidelity L1 protocol, exact champion persistence, local smoke, identical four-worker population fingerprint, immutable dataset preflight and first sequential DOIN campaign | Codex |
 | `EXEC-CURRICULUM-001` | Codex | `agent-multi`, `gym-fx` | verified_local_disabled_followup | Visible deterministic cost curriculum, immutable robust validation scenarios, weekly-RAP fitness, SAC observation expansion and fail-closed champion materializer | Codex |
 | `ORDER-ROUTER-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | verified_local_blocked_on_policy | Account-independent adaptive market/limit/stop router, urgency contract, native GTD execution, expiry and cancel/market fallback | Codex |
+| `EXEC-STATE-001` | Codex | `agent-multi`, `financial-data`, `gym-fx` | specified_blocked_on_alpha_and_data_gate | Point-in-time execution-fidelity manifest plus calibrated fill-time, adverse-selection, short-path and event-hazard auxiliaries | Codex |
+| `EXEC-POLICY-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | specified_blocked_on_exec_state | Shared causal encoder with entry/exit heads, deterministic risk overrides and market-only/router control comparison | Codex |
 
 Claude packet:
 
@@ -675,20 +687,25 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    artifacts; verify all workers agree on block and artifact hash.
 3. Use the fail-closed materializer to create the launchable execution-cost
    curriculum config and a new domain/genesis, then run it across all workers.
-4. Freeze the robust policy and generate its deterministic action trace; only
-   then enable and optimize the adaptive order router with Nautilus.
-5. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+4. Freeze the robust alpha policy and generate its deterministic action trace.
+5. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
+   only the execution claims supported by the available fidelity.
+6. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
+   auxiliaries, then optimize the deterministic router with Nautilus.
+7. Train the shared entry/exit policy and require improvement over market-only
+   and deterministic-router controls under identical alpha streams.
+8. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
    GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
-6. Execute one coordinated DOIN campaign per selected asset, using every
+9. Execute one coordinated DOIN campaign per selected asset, using every
    available worker on one chain at a time.
-7. Confirm frozen winners across three seeds and build the per-asset champion
+10. Confirm frozen winners across three seeds and build the per-asset champion
    library before portfolio optimization.
-8. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+11. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-9. Optimize the portfolio, then evaluate rush activation and weekly
-   retraining/fine-tuning.
-10. Implement and fault-test the decentralized artifact plane before a
+12. Optimize the static portfolio, then add calibrated multi-horizon rush/event
+   activation and evaluate weekly retraining/fine-tuning.
+13. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks

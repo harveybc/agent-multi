@@ -176,6 +176,34 @@ Protected test results never migrate or influence fitness. Weekly retraining is
 evaluated after the static per-asset and portfolio vertical, not as a
 prerequisite for starting DOIN.
 
+### ADR-020: Alpha, rush and order execution are separate multi-timescale components
+
+Date: 2026-07-28
+
+Order type is not a separate asset-alpha model. The asset policy emits desired
+exposure, confidence, urgency and alpha-decay evidence. A deterministic router
+is the mandatory baseline; the learned successor uses one causal execution
+encoder with separate entry and exit heads to select wait, market, limit, stop,
+MIT, cancel/replace, protection or close actions.
+
+Execution learning is preceded by calibrated fill-time, adverse-selection,
+short-path and event-hazard auxiliaries. Its action utility includes fills,
+costs, missed opportunity and tail risk. Weekly rush probabilities provide
+context but cannot alone select an order whose relevant state changes over
+ticks or minutes.
+
+Rush is a probabilistic multi-horizon onset/continuation/termination problem,
+not a hard model switch. Scheduled-event inputs distinguish pre-release,
+release and post-release availability. Actual results and normalized surprises
+are forbidden before publication. Causal event analysis is used for mechanism
+discovery, heterogeneous response estimation and policy priors; it does not
+replace chronological validation.
+
+No commercial regime-label dataset is required. Raw point-in-time quote/book
+data and calendar expectation/actual vintages may be acquired only after the
+inventory proves a fidelity gap. Model and execution claims are bounded by the
+declared bar/quote/L1/L2/live-calibration evidence.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |
@@ -185,7 +213,9 @@ prerequisite for starting DOIN.
 | Rebalance cadence | Weekly weekend | After allocator baselines and turnover analysis |
 | One or several positions per cell | One | After LTS netting/reconciliation and marginal utility evidence |
 | Risk sizing | Legacy notional first | After reproduction; compare risk-at-stop |
-| Rush specialist | Exposure gate | Train separate policy only if gate adds reproducible utility |
+| Rush specialist | Calibrated exposure gate | Train a separate rush policy only if the probabilistic gate adds reproducible utility |
+| Learned execution policy | Shared encoder with entry/exit heads; deterministic router baseline | Split models only after negative-transfer evidence; promote only after quote/L1 fidelity and control improvement |
+| Execution data acquisition | Existing point-in-time inventory first | Buy raw quotes/book or event vintages only for a demonstrated coverage/fidelity gap |
 | Context architecture | Small masked attention ladder | Increase complexity only after ablation benefit |
 | DOIN decentralized live inference | Optional for non-urgent tasks | After latency/reliability/payment tests |
 | OANDA live universe | Discovered per account | At account capability preflight |
@@ -281,8 +311,32 @@ only trading-domain behavior.
   https://developer.oanda.com/rest-live-v20/order-ep/
 - OANDA trades/dependent orders:
   https://developer.oanda.com/rest-live-v20/trade-ep/
+- NautilusTrader order model:
+  https://nautilustrader.io/docs/latest/concepts/orders/
+- NautilusTrader backtest/fill models:
+  https://nautilustrader.io/docs/latest/concepts/backtesting/
+- Cont and Kukanov, optimal limit/market order placement:
+  https://arxiv.org/abs/1210.1625
+- Arroyo, Cartea, Moreno-Pino and Zohren, fill-time survival modeling:
+  https://arxiv.org/abs/2306.05479
+- Andersen, Bollerslev, Diebold and Vega, macro-announcement FX response:
+  https://www.nber.org/papers/w8959
 
 ## 7. Change Log
+
+### 1.4.0 - 2026-07-28
+
+- Separated asset alpha, probabilistic rush detection, execution-state
+  estimation, order policy and deterministic risk overrides.
+- Adopted a shared execution encoder with entry/exit heads instead of one alpha
+  model per order type.
+- Added fill-time, adverse-selection, path and event-hazard auxiliaries,
+  explicit execution-data fidelity levels and common action utility.
+- Added pre/release/post event availability rules, causal-evidence limits and
+  point-in-time event vintages.
+- Expanded the OLAP contract with execution-decision and event-effect facts and
+  fixed the current sequence from active full-genome search through execution,
+  cell releases, portfolio and rush/retraining.
 
 ### 1.3.0 - 2026-07-25
 

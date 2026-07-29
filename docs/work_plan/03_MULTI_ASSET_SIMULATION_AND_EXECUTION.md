@@ -149,6 +149,31 @@ When OHLC data cannot determine whether SL or TP occurred first inside a bar,
 use the configured pessimistic ordering. Tick data may replace this ambiguity.
 The collision policy is recorded in config and metrics.
 
+### 8.1 Execution data fidelity
+
+Order-policy claims cannot exceed the fidelity of the replay data:
+
+| Level | Minimum data | Permitted evidence |
+| --- | --- | --- |
+| bar | causal OHLCV plus declared spread/cost model | market-order and protective-order controls with pessimistic intrabar ambiguity |
+| quote | timestamped bid/ask ticks | spread-aware trigger, market, stop, MIT and coarse limit-fill evidence |
+| L1 | top-of-book price and size plus trades | size-aware aggressive/passive routing and better fill-time estimates |
+| L2/L3 | depth or order-level book events | queue-sensitive limit placement, partial fill and cancellation research |
+| live calibration | broker acknowledgements, fills, rejects and latency | broker-specific slippage/fill calibration and simulation-gap monitoring |
+
+A bar-touch is never silently treated as proof that a passive limit order
+filled. When queue data are unavailable, the configured probabilistic or
+pessimistic fill model, its uncertainty and the unsupported claims are stored.
+For OANDA FX, broker quote ticks and observed practice/live fills are the
+relevant calibration evidence; a centralized exchange queue is not assumed.
+
+### 8.2 Decision horizons
+
+Portfolio/rush context may span days or weeks, but order selection uses the
+latest causally available execution state. Execution features have their own
+age and staleness masks and normally operate from ticks to minutes. A weekly
+regime label alone cannot select a market, limit or stop order.
+
 ## 9. Costs and Financing
 
 Costs are asset, venue, timestamp and account-profile dependent. Required

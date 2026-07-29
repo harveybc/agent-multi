@@ -148,12 +148,39 @@ One logical or broker order lifecycle:
 ### 5.5 `fact_rush_prediction`
 
 - prediction timestamp and lead horizon;
-- probability, direction, intensity and calibration version;
+- onset/continuation/termination probability, direction, intensity, expected
+  duration and calibration version;
 - realized label and outcome;
 - false-positive/negative cost;
 - policy and portfolio utility.
 
-### 5.6 `fact_portfolio_allocation`
+### 5.6 `fact_execution_decision`
+
+One execution-policy decision with its alternatives:
+
+- source asset intent, entry/exit intent and decision timestamp;
+- execution-data fidelity, feature ages and event phase;
+- candidate order type, side, offset, size, TTL, fallback and protection;
+- predicted fill probability/time, adverse selection, alpha decay, costs,
+  missed opportunity and tail risk;
+- selected action and deterministic override reason;
+- realized fill/expiration/cancellation, implementation shortfall and
+  post-decision outcome;
+- auxiliary model, policy, router, scenario and artifact hashes.
+
+### 5.7 `fact_event_effect`
+
+One point-in-time event episode:
+
+- event identity, family, countries/assets and scheduled publication time;
+- point-in-time expectation, consensus dispersion, actual publication time and
+  normalized surprise;
+- pre/release/post phase and availability timestamps;
+- estimated association/treatment effect, uncertainty and method version;
+- realized price, volatility, spread, liquidity and order-flow response;
+- affected rush, execution and portfolio decisions.
+
+### 5.8 `fact_portfolio_allocation`
 
 - proposed, constrained and executed weights;
 - cash and risk budgets;
@@ -161,7 +188,7 @@ One logical or broker order lifecycle:
 - expected and realized contribution;
 - constraint reasons and unavailable assets.
 
-### 5.7 `fact_live_reconciliation`
+### 5.9 `fact_live_reconciliation`
 
 - signal/intended order/broker order differences;
 - provider, LTS and broker timestamps;
@@ -195,6 +222,12 @@ One logical or broker order lifecycle:
 - hit rate and payoff ratio;
 - turnover;
 - spread/slippage/commission/financing/conversion drag;
+- fill probability calibration and time-to-fill survival error;
+- implementation shortfall and price improvement;
+- post-fill adverse selection and missed-opportunity cost;
+- limit expiration, cancellation, replacement and market-fallback rates;
+- metrics grouped by order type, entry/exit head, event phase and replay
+  fidelity;
 - early-close benefit/harm;
 - rejected/duplicate/partial orders.
 
@@ -222,6 +255,15 @@ One logical or broker order lifecycle:
 - lead time and duration error;
 - utility under exposure gate;
 - opportunity capture and false-positive drawdown.
+
+### 6.7 Event and execution models
+
+- event-hazard and jump-probability calibration;
+- effect estimate, uncertainty and stability by event family;
+- pre-release versus post-release policy utility;
+- fill/adverse-selection/path-model calibration by asset family;
+- learned-policy incremental utility over market-only and deterministic router;
+- data-fidelity sensitivity and simulation-to-live residual.
 
 ## 7. Metric Semantics
 
@@ -270,6 +312,12 @@ Initial Metabase/query pack:
 - asset/timeframe/data/model interaction effects;
 - partial rush versus full-year stability;
 - cost sensitivity and no-trade pathology;
+- order-type utility versus urgency, alpha decay, spread, liquidity and event
+  phase;
+- fill probability calibration versus realized fill and expiration;
+- adverse selection and missed opportunity by limit offset/TTL;
+- deterministic-router versus learned entry/exit policy under identical alpha;
+- event surprise versus rush onset, volatility, spread and execution outcome;
 - marginal portfolio contribution and correlated redundancy;
 - parameter convergence and champion migration benefit per machine;
 - metric improvement rate versus compute/time;

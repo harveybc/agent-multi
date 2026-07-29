@@ -133,6 +133,8 @@ Owns domain learning and evaluation:
 
 - actor-critic and other learned asset policies;
 - context encoder and rush detector training;
+- fill-time, adverse-selection, path-distribution and event-hazard models;
+- account-independent execution policies with entry and exit heads;
 - heuristic policy loading for controls and candidates;
 - weekly walk-forward orchestration;
 - portfolio allocator training/evaluation;
@@ -188,17 +190,26 @@ LTS does not train a model or calculate future-aware research labels.
 
 ## 5. Decision Hierarchy
 
-The runtime contains six decision levels:
+The runtime contains eight decision levels:
 
 1. **Representation:** encode variable-length causal market context.
-2. **Opportunity:** detect ordinary, rush, hostile, and uncertain regimes.
-3. **Asset control:** propose direction and target exposure.
-4. **Trade lifecycle:** open, hold, modify, early close, or force close.
-5. **Portfolio allocation:** assign weekly weights and risk budgets.
-6. **Customer execution:** apply user constraints and broker capabilities.
+2. **Opportunity:** estimate ordinary, rush, hostile, jump and uncertain
+   regimes over declared horizons.
+3. **Asset control:** propose direction, target exposure, confidence and alpha
+   decay without selecting broker order types.
+4. **Execution state:** estimate fill-time distributions, adverse selection,
+   short-horizon paths, liquidity and event hazard.
+5. **Order and lifecycle policy:** choose wait, market, limit, stop, MIT,
+   cancel/replace, protection or close through separate entry and exit heads.
+6. **Risk control:** enforce account-independent exposure and protection
+   boundaries, including deterministic emergency overrides.
+7. **Portfolio allocation:** assign weekly weights and risk budgets.
+8. **Customer execution:** apply user constraints and broker capabilities.
 
 Each layer has its own metrics and DOIN domain. A complete deployable system is
-a compatible bundle of layer artifacts.
+a compatible bundle of layer artifacts. Order type is not an alpha-model
+identity: the same asset policy can be executed through several order actions
+as urgency, liquidity and expected alpha decay change.
 
 ## 6. Four Independent Clocks
 
@@ -233,6 +244,8 @@ TradingStack
   context encoder
   asset policy per cell
   rush detector/calibrator
+  execution-state auxiliaries
+  entry/exit execution policy
   lifecycle policy
   risk geometry
   portfolio allocator

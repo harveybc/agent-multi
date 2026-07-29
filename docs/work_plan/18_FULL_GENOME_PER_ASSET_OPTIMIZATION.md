@@ -97,6 +97,12 @@ champion then warm-starts step 3 under strictly positive, visible costs and
 robust validation. This is a new domain and chain, never a mutation of the
 active one.
 
+The stage-2 artifact is an **alpha handoff**, not yet a portfolio-ready cell.
+It emits desired exposure, confidence, urgency and alpha-decay evidence. Order
+type is selected later by the deterministic-router control and learned
+execution policy described in document 19; no independent alpha model is
+trained merely because the router may use market, limit, stop or MIT.
+
 ## 6. Fitness and Metrics
 
 DOIN receives one higher-is-better fitness during the shared search:
@@ -123,9 +129,9 @@ explicit split, unit and week count:
 The protected test is absent from candidate selection, patience, migration and
 stage advancement. It is evaluated only for the frozen final candidate.
 
-## 7. Champion Contract
+## 7. Champion and Cell Contracts
 
-No asset is ready for portfolio optimization until it has:
+The alpha handoff requires:
 
 - load-tested Stable-Baselines3 `.zip` weights;
 - encoded genome and fully decoded canonical JSON;
@@ -135,6 +141,13 @@ No asset is ready for portfolio optimization until it has:
 - training history and stopping evidence;
 - artifact SHA-256, byte size and format;
 - DOIN chain/domain/campaign lineage.
+
+Portfolio readiness additionally requires the cell-release contract from
+document 19: positive-cost robust validation, execution data-fidelity manifest,
+deterministic-router baseline, auxiliary execution artifacts where supported,
+entry/exit policy or an explicit baseline-only decision, and exact order-policy
+metrics/hashes. An alpha handoff alone cannot be counted as a finished
+portfolio cell.
 
 ## 8. Execution Order
 
