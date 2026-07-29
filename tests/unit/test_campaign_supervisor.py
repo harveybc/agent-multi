@@ -805,6 +805,39 @@ def test_running_campaign_can_recover_without_bootstrap_supervisor(
     assert "canonical lineage" in reason
 
 
+def test_running_campaign_migrates_verified_worker_lineage(tmp_path: Path):
+    profile_path, _, _ = _materialize(tmp_path)
+    supervisor = CampaignSupervisor(profile_path)
+    job = supervisor.plan["jobs"][0]
+    lineage = {
+        "genesis_hash": "genesis",
+        "population_block_hash": "population",
+        "population_fingerprint": "fingerprint",
+    }
+    supervisor.state["phase"] = "running"
+    supervisor.state["coordination"] = {
+        "swarm_ready_at": "2026-07-29T00:00:00+00:00",
+    }
+    supervisor.state["workers"] = {
+        "omega": {
+            "join_ready": True,
+            "bootstrap_evidence": lineage,
+        },
+    }
+
+    assert supervisor._cached_canonical_lineage(job) == (
+        "genesis",
+        "population",
+        "fingerprint",
+    )
+    assert (
+        supervisor.state["coordination"]["canonical_lineage"][
+            "recovered_from"
+        ]
+        == "verified_worker_state"
+    )
+
+
 def test_running_campaign_recovery_rejects_parallel_lineage(tmp_path: Path):
     participants = [
         {
