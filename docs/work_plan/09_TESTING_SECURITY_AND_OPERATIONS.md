@@ -133,6 +133,9 @@ cause OOM thrash.
   active campaign may use the previously accepted canonical lineage when all
   reachable participants match it, so loss of the bootstrap host does not block
   recovery.
+- A pre-canonical-lineage campaign may migrate only from matching per-worker
+  evidence retained after a completed all-worker join barrier; unverified or
+  conflicting legacy evidence blocks restart.
 - Startup never resumes real trading without reconciliation and explicit live
   enablement.
 

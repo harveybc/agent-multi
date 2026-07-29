@@ -1970,19 +1970,48 @@ class CampaignSupervisor:
     ) -> tuple[Any, ...] | None:
         coordination = self.state.get("coordination") or {}
         cached = coordination.get("canonical_lineage") or {}
+        if cached:
+            if (
+                cached.get("job_id") != job["job_id"]
+                or cached.get("domain_id") != job["domain_id"]
+            ):
+                return None
+            values = (
+                cached.get("genesis_hash"),
+                cached.get("population_block_hash"),
+                cached.get("population_fingerprint"),
+            )
+            if not any(value in (None, "") for value in values):
+                return values
+
+        # Campaigns started before canonical_lineage was persisted still have
+        # verified per-worker evidence. Migrate only a running swarm that had
+        # already crossed the all-workers join barrier, and only when every
+        # retained verified worker agrees on one lineage.
         if (
-            cached.get("job_id") != job["job_id"]
-            or cached.get("domain_id") != job["domain_id"]
+            self.state.get("phase") != "running"
+            or not coordination.get("swarm_ready_at")
         ):
             return None
-        values = (
-            cached.get("genesis_hash"),
-            cached.get("population_block_hash"),
-            cached.get("population_fingerprint"),
-        )
-        if any(value in (None, "") for value in values):
+        verified = {
+            lineage
+            for worker in (self.state.get("workers") or {}).values()
+            if worker.get("join_ready")
+            and (lineage := self._lineage_key(worker)) is not None
+        }
+        if len(verified) != 1:
             return None
-        return values
+        lineage = next(iter(verified))
+        coordination["canonical_lineage"] = {
+            "job_id": job["job_id"],
+            "domain_id": job["domain_id"],
+            "genesis_hash": lineage[0],
+            "population_block_hash": lineage[1],
+            "population_fingerprint": lineage[2],
+            "verified_at": _utc_now(),
+            "recovered_from": "verified_worker_state",
+        }
+        return lineage
 
     def _remember_canonical_lineage(
         self, job: dict[str, Any], lineage: tuple[Any, ...]
