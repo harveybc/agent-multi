@@ -8,10 +8,11 @@ validation:
 1. market context representation;
 2. asset opportunity/rush detection;
 3. asset directional/exposure control;
-4. trade lifecycle management;
-5. risk geometry and sizing hint;
-6. portfolio allocation;
-7. stack composition.
+4. execution-state estimation;
+5. entry/exit order and trade lifecycle management;
+6. risk geometry and sizing hint;
+7. portfolio allocation;
+8. stack composition.
 
 The first implementation avoids an opaque end-to-end monolith. Restricted joint
 refinement is permitted after independent baselines are stable.
@@ -102,16 +103,25 @@ parameters through the `agent-multi` evaluator.
 
 Rush detection predicts opportunity, not action. Per asset/horizon outputs:
 
-- favorable-rush probability;
+- probability that a favorable rush starts within one day and one week;
+- continuation and termination probabilities;
 - expected direction, intensity and duration;
 - adverse/hostile regime probability;
+- volatility, jump and liquidity-stress probabilities;
 - calibrated confidence.
 
 ### 5.1 Labels
 
 Labels use future outcomes only as targets and must never enter inputs. Define
-rush relative to the asset's rolling training distribution using excess RAP,
-return, activity, liquidity and persistence. Store label version and thresholds.
+rush relative to the asset's rolling training distribution using directional
+efficiency, realized volatility, maximum favorable/adverse excursion, jump
+frequency, liquidity, achievable after-cost return and persistence. Store the
+label version, horizon, thresholds and training-distribution cutoff.
+
+The detector is a probabilistic multi-horizon hazard model, not a hard regime
+switch. The portfolio allocator and asset policy consume probabilities and
+uncertainty. They do not replace an asset model merely because one class has
+the largest probability.
 
 ### 5.2 Evaluation
 
@@ -129,7 +139,117 @@ Accuracy alone is insufficient for a rare-event detector.
 Start with an exposure gate over the base policy. Train a specialized rush
 policy only if the gate shows reproducible validation utility.
 
-## 6. Risk Geometry
+## 6. Execution State and Adaptive Order Policy
+
+### 6.1 Separation from alpha
+
+The asset policy answers whether and how strongly the system wants exposure.
+The execution policy answers how to reach or leave that exposure. We do not
+train one independent alpha model for each order type. That would fragment the
+sample, confound prediction with fill mechanics and prevent direct comparison
+of alternative orders for the same intent.
+
+The deterministic hierarchy in document 19 remains the first baseline. A
+learned policy is eligible only after it beats market-only and deterministic
+router controls under identical signal streams and replay conditions.
+
+### 6.2 Shared encoder and specialized heads
+
+The execution policy uses one causal state encoder with two heads:
+
+- entry head: `WAIT`, `MARKET`, `LIMIT`, `STOP` or `MARKET_IF_TOUCHED`, plus
+  offset, volume, time-in-force, TTL, fallback and initial protection;
+- exit head: `HOLD`, `MARKET_CLOSE`, `LIMIT_CLOSE`, `CANCEL_REPLACE`,
+  protection modification, trailing stop or forced close.
+
+Both heads observe alpha direction/quantiles/confidence/decay, rush and event
+probabilities, volatility, spread, liquidity, order flow, session, position
+age, unrealized P&L, remaining quantity and risk budget. Hard risk and broker
+capability checks remain deterministic overrides outside the learned policy.
+
+Negative-transfer tests compare the shared encoder against fully separate entry
+and exit models. A split is accepted only when comparable walk-forward evidence
+justifies the extra artifacts and smaller effective samples.
+
+### 6.3 Auxiliary execution models
+
+Before optimizing the policy, train and calibrate:
+
+- time-to-fill/survival distribution by order type, offset and size;
+- post-fill adverse-selection distribution;
+- short-horizon price-path quantiles and alpha decay;
+- spread, liquidity and jump/event hazard;
+- broker/simulator slippage and rejection residuals.
+
+These models expose estimates and uncertainty; they do not submit orders.
+Family-level models may pool normalized data across similar FX, crypto or
+equity cells. Microstructure-incompatible asset classes are not pooled merely
+to increase row count.
+
+### 6.4 Unified action utility
+
+Alternative actions for one intent are compared in common return/risk units:
+
+```text
+utility(action | state) =
+    P(fill) * (
+        expected alpha after fill
+      - fees
+      - slippage/impact
+      - expected adverse selection
+    )
+  - P(no fill) * missed-opportunity cost
+  - tail-risk penalty
+```
+
+The stored components remain visible even when DOIN receives one scalar
+fitness. Market orders trade fill certainty for cost; passive orders trade
+price improvement for non-fill/adverse-selection risk; stop/MIT actions make
+entry conditional on a future trigger. Protective stops are risk controls and
+are not confused with entry-stop actions.
+
+### 6.5 Training examples and fidelity
+
+At each historical decision point, replay the same immutable asset intent
+against a bounded action grid. Persist the realized fill, time-to-fill,
+implementation shortfall, adverse post-fill movement, missed opportunity and
+tail outcome. This counterfactual action table is simulator-derived evidence,
+not a claim that unobserved historical orders actually existed.
+
+Bars can support conservative controls, but learned passive placement requires
+timestamped bid/ask data and preferably L1/L2 depth as declared in document 03.
+No purchased vendor regime label is required. Purchase decisions, if any,
+target raw quote/book data or point-in-time calendar consensus/actual vintages.
+
+### 6.6 Scheduled events and causal evidence
+
+Event inputs are phase-specific:
+
+- pre-release: schedule, event family, importance, time to release, consensus
+  dispersion and prior-reaction distribution;
+- release: actual value and normalized surprise, only after publication;
+- post-release: elapsed time, price/order-flow response and propagation across
+  rates or related assets.
+
+Actual results cannot enter a pre-release observation. Event studies, local
+projections and heterogeneous treatment-effect estimates may identify robust
+event mechanisms and policy priors. They support prediction and execution but
+do not replace chronological walk-forward evaluation or establish causality
+from ordinary market association alone.
+
+### 6.7 Optimization order
+
+1. Freeze the asset alpha champion and diverse elites.
+2. Materialize execution-fidelity data and immutable replay scenarios.
+3. Train/calibrate auxiliary execution models with L1.
+4. Train the entry/exit policy locally against deterministic controls.
+5. Use DOIN L2 for feature masks, order family, offsets, TTL, fallback, sizing
+   hints and model hyperparameters under easy, nominal and stress costs.
+6. Run bounded joint refinement only for alpha parameters shown to interact
+   materially with execution.
+7. Freeze a complete cell release before portfolio optimization.
+
+## 7. Risk Geometry
 
 Keep independently configurable:
 
@@ -146,7 +266,7 @@ The first comparison preserves the Project 3 geometry at `rel_volume=0.05` or
 the exact candidate profile. Risk-aware geometry is then optimized as its own
 stage so model improvements are not confused with exposure changes.
 
-## 7. Portfolio Allocator
+## 8. Portfolio Allocator
 
 Runs at a configured rebalance boundary and outputs cell weights, cash and risk
 budgets.
@@ -169,7 +289,7 @@ The first eligible portfolio targets at least three short-horizon and three
 medium/long-horizon cells. Symbols do not count as diversification when they
 share one dominant risk factor.
 
-## 8. Weekly Walk-Forward Protocol
+## 9. Weekly Walk-Forward Protocol
 
 For each validation/test week:
 
@@ -186,9 +306,9 @@ For each validation/test week:
 Validation and test each target a complete chronological year. Coverage gates
 are explicit and partial evidence cannot be promoted as annual performance.
 
-## 9. Optimization Levels
+## 10. Optimization Levels
 
-### 9.1 L1 candidate training
+### 10.1 L1 candidate training
 
 Gradient optimization and candidate early stopping. Monitors train/validation
 only. For deterministic heuristic policies there is no gradient L1; their
@@ -211,19 +331,19 @@ has been evaluated under the full-fidelity protocol. L1 budget controls are
 part of the evaluator contract, not genes that may gain fitness by terminating
 training early.
 
-### 9.2 L2 DOIN/DEAP optimization
+### 10.2 L2 DOIN/DEAP optimization
 
 Evolves typed config patches. L2 patience is independent from L1 callbacks and
 uses validation fitness.
 
-### 9.3 L3 meta-optimization
+### 10.3 L3 meta-optimization
 
 Future use of DOIN OLAP to predict promising parameter regions. L3 proposes
 candidates; it does not certify them and never accesses protected test results.
 
-## 10. Objective Functions
+## 11. Objective Functions
 
-### 10.1 L1
+### 11.1 L1
 
 Stepwise reward can include:
 
@@ -235,7 +355,7 @@ Stepwise reward can include:
 
 Weights are config fields and raw components are logged.
 
-### 10.2 Asset L2
+### 11.2 Asset L2
 
 Full validation-year score combines:
 
@@ -246,14 +366,14 @@ Full validation-year score combines:
 - seed/subperiod instability;
 - no-trade and trivial-strategy improvement.
 
-### 10.3 Portfolio L2
+### 11.3 Portfolio L2
 
 Combines validation portfolio RAP/return with downside tail, drawdown,
 concentration, turnover, margin and stability penalties.
 
 Every scalar fitness is accompanied by its complete raw metric vector.
 
-## 11. Pareto Releases
+## 12. Pareto Releases
 
 There is no universal best stack. Maintain feasible champions for conservative,
 balanced and aggressive profiles across:
@@ -269,7 +389,7 @@ balanced and aggressive profiles across:
 LTS maps customer risk profiles to promoted Pareto releases, then applies hard
 customer-level constraints.
 
-## 12. Protected Test and Live Evidence
+## 13. Protected Test and Live Evidence
 
 - Test is excluded from selection, optimization, migration, patience and weekly
   allocation.
@@ -279,13 +399,18 @@ customer-level constraints.
   chronological period and embargo are complete.
 - Historical scores are never rewritten using later knowledge.
 
-## 13. Acceptance Criteria
+## 14. Acceptance Criteria
 
 - Every component has an independently measurable baseline and contract.
 - Weekly fitting is train-only and reproducible.
 - Heuristic policy decisions match legacy behavior on a frozen fixture.
 - SAC single-cell adapter reproduces a selected Project 3 candidate.
 - Rush detector is calibrated and improves downstream validation utility.
+- Learned execution beats market-only and deterministic-router controls on the
+  same signal stream after costs, including non-fill and adverse-selection
+  outcomes.
+- Entry/exit decisions are reproducible from point-in-time inputs, and no
+  order-policy claim exceeds the declared replay-data fidelity.
 - Portfolio allocator beats declared baselines after costs without hidden
   concentration.
 - L1 and L2 stopping states cannot overwrite or consume one another.

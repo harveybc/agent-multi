@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; full-genome campaign active; execution curriculum transition deployed and queued
-Plan version: 1.12.0
+Status: E0-E4 complete; full-genome campaign active; multi-timescale execution curriculum transition deployed and queued
+Plan version: 1.13.0
 Date: 2026-07-28
 Primary implementation repository: `agent-multi`
 
@@ -15,6 +15,8 @@ of the existing DOIN network. The system must support:
 - variable-length market context encoders;
 - causal rush/opportunity detection;
 - trade lifecycle management, including early close;
+- adaptive market/limit/stop/MIT order selection with explicit fill,
+  adverse-selection and missed-opportunity modeling;
 - weekly walk-forward retraining or fine-tuning;
 - weekly portfolio allocation, with cadence later treated as optimizable;
 - decentralized Level 2 optimization and verification through DOIN;
@@ -68,7 +70,7 @@ trading domain.
 | [16 Flat-fitness root cause](16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md) | BTC actor saturation evidence, corrected feature contract, action-collapse guard, and campaign disposition |
 | [17 Data and preprocessing evidence recovery](17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md) | Parameter registry, canonical metrics, source coverage, hierarchical sweeps, transactional pool, and DOIN-resume conditions |
 | [18 Full-genome per-asset optimization](18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md) | Corrected E4 interpretation, L1 convergence protocol, mixed genome, execution order, and champion contract |
-| [19 Execution curriculum and order routing](19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md) | Visible cost curriculum, immutable robust fitness, market/limit/stop routing, artifact contract, and campaign transition |
+| [19 Execution curriculum and order routing](19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md) | Visible cost curriculum, immutable robust fitness, multi-timescale execution-state models, market/limit/stop/MIT policy, artifact contract, and campaign transition |
 
 ## Repository Ownership Summary
 
@@ -154,13 +156,19 @@ adding value.
    convergence protocol.
 4. Run one coordinated DOIN Level 2 campaign per asset, sequentially, with all
    available workers sharing one chain and candidate pool.
-5. Fine-tune each selected champion under the visible cost curriculum, optimize
-   its execution router, and freeze the resulting cell release.
-6. Freeze the optimized per-asset cell library and optimize portfolio
+5. Freeze the alpha champion and diverse elites, then pass an execution-data
+   fidelity gate before learning order placement.
+6. Train calibrated fill-time, adverse-selection, short-path and event-hazard
+   auxiliaries; retain the deterministic router as the mandatory baseline.
+7. Fine-tune the asset policy under the visible cost curriculum and optimize a
+   shared execution policy with separate entry and exit heads. Do not train one
+   independent alpha model per order type.
+8. Freeze the optimized per-asset cell library and optimize static portfolio
    allocation using those artifacts.
-7. Add rush activation and weekly retraining/fine-tuning experiments after the
-   static portfolio vertical is operational.
-8. Complete registry, serving, LTS parity, and OANDA practice integration.
+9. Add probabilistic rush activation and causal event conditioning, then
+   compare weekly retraining/fine-tuning after the static portfolio vertical is
+   operational.
+10. Complete registry, serving, LTS parity, and OANDA practice integration.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
