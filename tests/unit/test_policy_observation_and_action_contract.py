@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from optimizer_plugins.default_optimizer import _action_collapse_evidence
+from optimizer_plugins.default_optimizer import (
+    _action_collapse_evidence,
+    _activity_eligibility_evidence,
+)
 from pipeline_plugins._observation_contract import validate_observation_contract
 from pipeline_plugins.rl_pipeline import (
     _action_summary_fields,
@@ -52,6 +55,55 @@ def test_optimizer_accepts_observation_sensitive_actions() -> None:
     )
 
     assert evidence["policy_action_collapse_rejected"] is False
+    assert evidence["candidate_rejected_reason"] is None
+
+
+def test_optimizer_rejects_one_trade_annual_validation() -> None:
+    evidence = _activity_eligibility_evidence(
+        {
+            "splits": {
+                "train_tail": {"trades_total": 1},
+                "validation": {"trades_total": 1},
+            }
+        },
+        {
+            "optimization_reject_insufficient_activity": True,
+            "optimization_min_trades_by_split": {
+                "train_tail": 1,
+                "validation": 12,
+            },
+        },
+    )
+
+    assert evidence["policy_activity_rejected"] is True
+    assert evidence["policy_activity_failed_splits"] == ["validation"]
+    assert evidence["candidate_rejected_reason"] == "insufficient_split_activity"
+
+
+def test_optimizer_accepts_active_candidate_without_profit_gate() -> None:
+    evidence = _activity_eligibility_evidence(
+        {
+            "splits": {
+                "train_tail": {
+                    "trades_total": 1,
+                    "total_return": -0.01,
+                },
+                "validation": {
+                    "trades_total": 12,
+                    "total_return": -0.20,
+                },
+            }
+        },
+        {
+            "optimization_reject_insufficient_activity": True,
+            "optimization_min_trades_by_split": {
+                "train_tail": 1,
+                "validation": 12,
+            },
+        },
+    )
+
+    assert evidence["policy_activity_rejected"] is False
     assert evidence["candidate_rejected_reason"] is None
 
 

@@ -243,6 +243,19 @@ def test_early_stop_composite_penalizes_validation_no_trade():
     assert val_trades == 0
 
 
+def test_early_stop_composite_uses_split_specific_trade_minimums():
+    composite, raw, passed, *_ = _early_stop_composite(
+        {"total_return": 0.01, "trades_total": 1},
+        {"total_return": 0.02, "trades_total": 1},
+        min_train_tail_trades=1,
+        min_validation_trades=12,
+        no_trade_penalty=1_000_000.0,
+    )
+
+    assert passed is False
+    assert composite == pytest.approx(raw - 1_000_000.0)
+
+
 def test_l1_checkpoint_defaults_to_after_off_policy_learning_starts():
     assert _resolve_l1_min_checkpoint_timesteps({"learning_starts": 5_000}) == 5_001
     assert _resolve_l1_min_checkpoint_timesteps({}) == 0

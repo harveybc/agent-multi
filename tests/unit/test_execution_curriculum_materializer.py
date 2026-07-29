@@ -11,6 +11,10 @@ from examples.scripts.materialize_execution_curriculum_followup import (
 from examples.scripts.materialize_execution_curriculum_campaign import (
     materialize_campaign,
 )
+from examples.scripts.materialize_protected_execution_v2_configs import (
+    build_curriculum,
+    build_easy,
+)
 from app.campaign_supervisor import _domain_semantic_hash
 
 
@@ -24,6 +28,22 @@ CURRICULUM = (
     ROOT
     / "examples/config/execution_curriculum"
     / "project3_execution_cost_curriculum_v1.json"
+)
+OPTIMIZATION_CONFIG_ROOT = (
+    ROOT / "examples/config/phase_1_asset_policy/optimization"
+)
+PROTECTED_EASY = (
+    OPTIMIZATION_CONFIG_ROOT
+    / "phase_1_asset_policy_usdcad_4h_protected_easy_v2.json"
+)
+PROTECTED_CURRICULUM = (
+    OPTIMIZATION_CONFIG_ROOT
+    / "phase_1_asset_policy_usdcad_4h_protected_curriculum_template_v2.json"
+)
+PROTECTED_NODE_TEMPLATES = (
+    ROOT.parent
+    / "doin-node/examples/trading"
+    / "phase_1_asset_policy_usdcad_4h_protected_easy_v2"
 )
 
 
@@ -181,3 +201,69 @@ def test_campaign_materialization_builds_one_semantic_domain_for_all_workers(
         config["domains"][0]["domain_id"] for config in node_configs
     } == {"curriculum-test-domain"}
     assert len({_domain_semantic_hash(config) for config in node_configs}) == 1
+
+
+def test_protected_v2_configs_are_reproducible_from_versioned_sources() -> None:
+    easy_source = json.loads(BASE.read_text(encoding="utf-8"))
+    curriculum_source = json.loads(
+        (
+            OPTIMIZATION_CONFIG_ROOT
+            / "phase_1_asset_policy_usdcad_4h_execution_curriculum_template_v1.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    assert build_easy(easy_source) == json.loads(
+        PROTECTED_EASY.read_text(encoding="utf-8")
+    )
+    assert build_curriculum(curriculum_source) == json.loads(
+        PROTECTED_CURRICULUM.read_text(encoding="utf-8")
+    )
+
+
+def test_protected_campaign_transition_uses_v2_template_and_runtime_artifact(
+    tmp_path: Path,
+) -> None:
+    model = tmp_path / "champion_policy.zip"
+    model.write_bytes(b"protected champion")
+    parameters = tmp_path / "champion_parameters.json"
+    parameters.write_text(
+        json.dumps(
+            {
+                "decoded_parameters": {
+                    "entry_order_mode_gene": "limit",
+                    "limit_offset_atr_gene": 0.07,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    runtime_model = "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/champion_policy.zip"
+
+    result = materialize_campaign(
+        agent_root=ROOT,
+        doin_root=ROOT.parent / "doin-node",
+        source_model_file=model,
+        source_parameters_file=parameters,
+        output_root=tmp_path / "generated",
+        domain_id="protected-curriculum-test-domain",
+        campaign_slug="protected-curriculum-test",
+        base_config=PROTECTED_CURRICULUM,
+        node_template_dir=PROTECTED_NODE_TEMPLATES,
+        source_model_runtime_path=runtime_model,
+    )
+
+    canonical = json.loads(Path(result["canonical_config"]).read_text())
+    assert canonical["environment"]["require_protected_entries"] is True
+    assert canonical["training"]["warm_start_model"] == runtime_model
+    assert canonical["optimization"]["initial_candidate_decoded"][
+        "entry_order_mode_gene"
+    ] == "limit"
+    nodes = [
+        json.loads(Path(item["path"]).read_text())
+        for item in result["node_configs"].values()
+    ]
+    assert len(nodes) == 4
+    assert {
+        node["domains"][0]["domain_id"] for node in nodes
+    } == {"protected-curriculum-test-domain"}
+    assert len({_domain_semantic_hash(node) for node in nodes}) == 1

@@ -42,6 +42,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
 from . import _return_trace as _trace_mod
+from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import validate_observation_contract
 from .rl_pipeline import (
     _action_summary_fields,
@@ -274,7 +275,9 @@ def _early_stop_composite(
     train_tail_summary: Dict[str, Any],
     val_summary: Dict[str, Any],
     *,
-    min_trades: int,
+    min_trades: int | None = None,
+    min_train_tail_trades: int | None = None,
+    min_validation_trades: int | None = None,
     no_trade_penalty: float,
     selection_metric: str = "total_return",
     risk_lambda: float = 1.0,
@@ -296,7 +299,27 @@ def _early_stop_composite(
     raw = details["train_validation_selection_score"]
     train_tail_trades = _trade_count(train_tail_summary)
     val_trades = _trade_count(val_summary)
-    trade_gate_passed = train_tail_trades >= min_trades and val_trades >= min_trades
+    legacy_min = max(0, int(min_trades or 0))
+    train_tail_min = max(
+        0,
+        int(
+            legacy_min
+            if min_train_tail_trades is None
+            else min_train_tail_trades
+        ),
+    )
+    validation_min = max(
+        0,
+        int(
+            legacy_min
+            if min_validation_trades is None
+            else min_validation_trades
+        ),
+    )
+    trade_gate_passed = (
+        train_tail_trades >= train_tail_min
+        and val_trades >= validation_min
+    )
     composite = raw if trade_gate_passed else raw - no_trade_penalty
     return composite, raw, trade_gate_passed, train_tail_ret, val_ret, train_tail_trades, val_trades
 
@@ -365,6 +388,8 @@ class PipelinePlugin:
         "l1_min_checkpoint_timesteps": None,
         "early_stop_train_tail_days": 7,
         "early_stop_min_trades": 1,
+        "early_stop_min_train_tail_trades": None,
+        "early_stop_min_validation_trades": None,
         "early_stop_no_trade_penalty": 1_000_000.0,
         "selection_metric": "total_return",
         "risk_penalty_lambda": 1.0,
@@ -391,7 +416,10 @@ class PipelinePlugin:
         "epoch_timesteps", "max_epochs", "l1_patience",
         "l1_patience_start_epoch", "l1_min_delta",
         "l1_min_checkpoint_timesteps",
-        "early_stop_train_tail_days", "early_stop_min_trades", "early_stop_no_trade_penalty",
+        "early_stop_train_tail_days", "early_stop_min_trades",
+        "early_stop_min_train_tail_trades",
+        "early_stop_min_validation_trades",
+        "early_stop_no_trade_penalty",
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
         "warm_start_model", "return_trace_dir", "evaluate_test_split",
         "write_results_sidecar", "execution_cost_curriculum_epochs",
@@ -591,6 +619,18 @@ class PipelinePlugin:
                 ),
             )
             trace_rows = summary.get("_return_trace_rows")
+            if trace_rows:
+                weekly_metrics = canonical_weekly_metrics_from_trace(
+                    trace_rows,
+                    initial_cash=float(config.get("initial_cash", 10_000.0)),
+                    risk_penalty_lambda=float(
+                        config.get("risk_penalty_lambda", 1.0)
+                    ),
+                    metric_schema="trading.weekly.v1",
+                )
+                if not bool(config.get("_retain_weekly_rows", False)):
+                    weekly_metrics.pop("weekly_rows", None)
+                summary.update(weekly_metrics)
             if not bool(config.get("_retain_return_trace_rows", False)):
                 summary.pop("_return_trace_rows", None)
             trace_dir = config.get("return_trace_dir")
@@ -891,6 +931,24 @@ class PipelinePlugin:
                     early_stop_min_trades = int(
                         config.get("early_stop_min_trades", self.params["early_stop_min_trades"])
                     )
+                    configured_train_tail_min = config.get(
+                        "early_stop_min_train_tail_trades",
+                        self.params["early_stop_min_train_tail_trades"],
+                    )
+                    configured_validation_min = config.get(
+                        "early_stop_min_validation_trades",
+                        self.params["early_stop_min_validation_trades"],
+                    )
+                    early_stop_min_train_tail_trades = int(
+                        early_stop_min_trades
+                        if configured_train_tail_min is None
+                        else configured_train_tail_min
+                    )
+                    early_stop_min_validation_trades = int(
+                        early_stop_min_trades
+                        if configured_validation_min is None
+                        else configured_validation_min
+                    )
                     no_trade_penalty = float(
                         config.get(
                             "early_stop_no_trade_penalty",
@@ -909,6 +967,8 @@ class PipelinePlugin:
                         train_tail_summary,
                         val_summary,
                         min_trades=early_stop_min_trades,
+                        min_train_tail_trades=early_stop_min_train_tail_trades,
+                        min_validation_trades=early_stop_min_validation_trades,
                         no_trade_penalty=no_trade_penalty,
                         selection_metric=selection_metric,
                         risk_lambda=risk_lambda,
@@ -969,6 +1029,12 @@ class PipelinePlugin:
                         "l1_min_checkpoint_timesteps": l1_min_checkpoint_timesteps,
                         "early_stop_trade_gate_passed": trade_gate_passed,
                         "early_stop_min_trades": early_stop_min_trades,
+                        "early_stop_min_train_tail_trades": (
+                            early_stop_min_train_tail_trades
+                        ),
+                        "early_stop_min_validation_trades": (
+                            early_stop_min_validation_trades
+                        ),
                         "l1_patience_used": no_improve,
                         "l1_patience_max": l1_patience,
                         "policy_actor_l1_before": a_b,
@@ -1195,8 +1261,12 @@ class PipelinePlugin:
             "mean_weekly_return": val_summary.get("mean_weekly_return"),
             "annualized_return": val_summary.get("annualized_return"),
             "annual_return": val_summary.get("annual_return"),
+            "annual_return_method": val_summary.get("annual_return_method"),
             "mean_weekly_rap": val_summary.get("mean_weekly_rap"),
             "annual_rap": val_summary.get("annual_rap"),
+            "annual_rap_method": val_summary.get("annual_rap_method"),
+            "evaluation_weeks": val_summary.get("evaluation_weeks"),
+            "evaluation_days": val_summary.get("evaluation_days"),
             "robust_weekly_rap_fitness": val_summary.get(
                 "robust_weekly_rap_fitness"
             ),

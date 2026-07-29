@@ -32,7 +32,10 @@ def test_trace_metrics_preserve_weekly_and_annual_units() -> None:
 
     assert metrics["evaluation_weeks"] == 3
     assert math.isfinite(metrics["annualized_return"])
-    assert metrics["annual_return"] == metrics["annualized_return"]
+    assert metrics["annual_return"] == pytest.approx(
+        52.0 * metrics["mean_weekly_return"]
+    )
+    assert metrics["annual_return_method"] == "weekly_arithmetic_mean_x_52"
     assert metrics["annual_rap"] == pytest.approx(
         52.0 * metrics["mean_weekly_rap"]
     )

@@ -1,0 +1,108 @@
+{
+  "schema_version": "agent_multi.doin_campaign_plan.v1",
+  "plan_id": "phase-1-protected-execution-fleet-v2",
+  "$doc": "Immutable two-job campaign: optimize the full mixed genome under easy non-zero costs with mandatory protected market/limit/stop entries and split-specific activity eligibility; then warm-start an execution-cost curriculum through nominal and stress robust weekly RAP.",
+  "participants": [
+    {
+      "node_id": "omega",
+      "supervisor_url": "http://100.99.54.79:8795",
+      "workers": [
+        "omega"
+      ]
+    },
+    {
+      "node_id": "dragon",
+      "supervisor_url": "http://100.110.215.85:8795",
+      "workers": [
+        "dragon"
+      ]
+    },
+    {
+      "node_id": "gamma",
+      "supervisor_url": "http://100.107.204.49:8795",
+      "workers": [
+        "gamma-5070ti",
+        "gamma-5090"
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "ordinal": 0,
+      "job_id": "usdcad-4h-protected-easy-sac-shared-v2",
+      "domain_id": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "purpose": "protected_full_genome_easy_nonzero_optimization",
+      "higher_is_better": true,
+      "domain_semantic_hash": "6f3c85b10a121f1062a92ae8ab328e00b120d717c8f086d534195899e8bce432",
+      "artifact_handoff": {
+        "elite_count": 5,
+        "model_path": "/home/harveybc/.local/share/agent-multi/protected_easy/usdcad_4h/champion_policy.zip",
+        "parameters_path": "/home/harveybc/.local/share/agent-multi/protected_easy/usdcad_4h/champion_parameters.json",
+        "manifest_path": "/home/harveybc/.local/share/agent-multi/protected_easy/usdcad_4h/champion_manifest.json",
+        "elite_manifest_path": "/home/harveybc/.local/share/agent-multi/protected_easy/usdcad_4h/elite_manifest.json"
+      },
+      "worker_configs": {
+        "omega": "examples/trading/phase_1_asset_policy_usdcad_4h_protected_easy_v2/omega_node.json",
+        "dragon": "examples/trading/phase_1_asset_policy_usdcad_4h_protected_easy_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_1_asset_policy_usdcad_4h_protected_easy_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_1_asset_policy_usdcad_4h_protected_easy_v2/gamma_5090_node.json"
+      }
+    },
+    {
+      "ordinal": 1,
+      "job_id": "usdcad-4h-protected-curriculum-sac-shared-v2",
+      "domain_id": "trading-asset-policy-usdcad-4h-protected-curriculum-v2",
+      "purpose": "protected_execution_easy_nominal_stress_robust_optimization",
+      "higher_is_better": true,
+      "preparation": {
+        "cwd": "/home/harveybc/Documents/GitHub/agent-multi",
+        "timeout_seconds": 600,
+        "command": [
+          "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+          "/home/harveybc/Documents/GitHub/agent-multi/examples/scripts/materialize_execution_curriculum_campaign.py",
+          "--agent-root",
+          "/home/harveybc/Documents/GitHub/agent-multi",
+          "--doin-root",
+          "/home/harveybc/Documents/GitHub/doin-node",
+          "--source-model-file",
+          "/home/harveybc/.local/share/agent-multi/protected_easy/usdcad_4h/champion_policy.zip",
+          "--source-parameters-file",
+          "/home/harveybc/.local/share/agent-multi/protected_easy/usdcad_4h/champion_parameters.json",
+          "--output-root",
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2",
+          "--domain-id",
+          "trading-asset-policy-usdcad-4h-protected-curriculum-v2",
+          "--campaign-slug",
+          "usdcad-protected-curriculum-v2",
+          "--base-config",
+          "/home/harveybc/Documents/GitHub/agent-multi/examples/config/phase_1_asset_policy/optimization/phase_1_asset_policy_usdcad_4h_protected_curriculum_template_v2.json",
+          "--node-template-dir",
+          "/home/harveybc/Documents/GitHub/doin-node/examples/trading/phase_1_asset_policy_usdcad_4h_protected_easy_v2",
+          "--source-model-runtime-path",
+          "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/champion_policy.zip"
+        ],
+        "required_outputs": [
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/canonical_config.json",
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/materialization_manifest.json",
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/omega_node.json",
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/dragon_node.json",
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/gamma_5070ti_node.json",
+          "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/gamma_5090_node.json"
+        ]
+      },
+      "artifact_handoff": {
+        "elite_count": 5,
+        "model_path": "/home/harveybc/.local/share/agent-multi/protected_curriculum/usdcad_4h/champion_policy.zip",
+        "parameters_path": "/home/harveybc/.local/share/agent-multi/protected_curriculum/usdcad_4h/champion_parameters.json",
+        "manifest_path": "/home/harveybc/.local/share/agent-multi/protected_curriculum/usdcad_4h/champion_manifest.json",
+        "elite_manifest_path": "/home/harveybc/.local/share/agent-multi/protected_curriculum/usdcad_4h/elite_manifest.json"
+      },
+      "worker_configs": {
+        "omega": "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/omega_node.json",
+        "dragon": "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/dragon_node.json",
+        "gamma-5070ti": "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/gamma_5070ti_node.json",
+        "gamma-5090": "/home/harveybc/.local/state/agent-multi/generated/usdcad_protected_curriculum_v2/nodes/gamma_5090_node.json"
+      }
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; full-genome campaign active; multi-timescale execution curriculum transition deployed and queued
-Plan version: 1.13.0
-Date: 2026-07-28
+Status: E0-E4 complete; invalid USDCAD v1 swarm archived; protected-entry v2 campaign verified locally and pending coordinated deployment
+Plan version: 1.14.0
+Date: 2026-07-29
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -71,6 +71,7 @@ trading domain.
 | [17 Data and preprocessing evidence recovery](17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md) | Parameter registry, canonical metrics, source coverage, hierarchical sweeps, transactional pool, and DOIN-resume conditions |
 | [18 Full-genome per-asset optimization](18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md) | Corrected E4 interpretation, L1 convergence protocol, mixed genome, execution order, and champion contract |
 | [19 Execution curriculum and order routing](19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md) | Visible cost curriculum, immutable robust fitness, multi-timescale execution-state models, market/limit/stop/MIT policy, artifact contract, and campaign transition |
+| [20 Protected execution incident](20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md) | One-trade champion root cause, coordinated stop, corrected activity/SL-TP/metric contract, v2 lineage and relaunch gates |
 
 ## Repository Ownership Summary
 
@@ -129,6 +130,12 @@ runtime behavior pass the independent review protocol in document 12.
 - All fitting, normalization, vocabulary construction, and feature selection
   happen inside the training cutoff.
 - Simulation and live execution use the same intent and execution contracts.
+- Every risk-increasing market, limit or stop entry carries both a stop loss
+  and take profit. Plugin failure rejects the entry; it never falls back to an
+  unprotected order.
+- A candidate must satisfy split-specific activity eligibility. The current
+  annual validation floor is 12 completed trades; this is not a positive-profit
+  gate.
 - OANDA availability is discovered from the account; it is never inferred from
   a research symbol.
 
@@ -152,17 +159,19 @@ adding value.
 1. E0-E3 evidence screening: complete.
 2. E4 fixed-SAC integration baselines and load-tested warm-start artifacts:
    complete. These are not optimized per-asset champions.
-3. Implement and verify the local full-genome optimizer with the corrected L1
-   convergence protocol.
-4. Run one coordinated DOIN Level 2 campaign per asset, sequentially, with all
-   available workers sharing one chain and candidate pool.
-5. Freeze the alpha champion and diverse elites, then pass an execution-data
-   fidelity gate before learning order placement.
-6. Train calibrated fill-time, adverse-selection, short-path and event-hazard
-   auxiliaries; retain the deterministic router as the mandatory baseline.
-7. Fine-tune the asset policy under the visible cost curriculum and optimize a
-   shared execution policy with separate entry and exit heads. Do not train one
-   independent alpha model per order type.
+3. Run the immutable protected-entry v2 full-genome job under `easy_floor`
+   non-zero costs. Optimize data, preprocessing, model, risk geometry and
+   market/limit/stop/adaptive routing while enforcing annual activity.
+4. Archive the exact eligible champion and diverse elites, then warm-start a
+   distinct easy-to-nominal-to-stress curriculum domain selected by robust
+   weekly RAP.
+5. Repeat one coordinated DOIN Level 2 campaign per asset, sequentially, with
+   all workers sharing one chain and candidate pool.
+6. Freeze each alpha/execution champion and pass an execution-data fidelity
+   gate before learning higher-fidelity order placement.
+7. Train calibrated fill-time, adverse-selection, short-path and event-hazard
+   auxiliaries; retain protected market-only and deterministic routing as
+   mandatory controls.
 8. Freeze the optimized per-asset cell library and optimize static portfolio
    allocation using those artifacts.
 9. Add probabilistic rush activation and causal event conditioning, then

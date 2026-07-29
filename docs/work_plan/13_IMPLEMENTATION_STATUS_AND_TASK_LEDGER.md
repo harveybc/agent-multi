@@ -1,9 +1,34 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-28
-Plan version: 1.13.0
-Current focus: active USDCAD alpha/data/model search with an automatic,
-fail-closed transition to execution-cost and adaptive-order curriculum
+Status timestamp: 2026-07-29
+Plan version: 1.14.0
+Current focus: deploy the fresh USDCAD protected-entry v2 lineage after local
+activity, order-safety, metric and campaign preflight
+
+Decision 2026-07-29: the v1 USDCAD swarm is invalid for champion selection.
+One annual validation trade was sufficient to pass its gate, allowing a
+near-flat checkpoint to displace an active 98-trade checkpoint by roughly
+`2e-6` fitness. All four workers and the old replicated supervisors were
+stopped; 60 completed candidates, blockchain state and models were archived.
+Four in-progress candidates were intentionally discarded.
+
+The replacement contract is implemented and locally verified:
+
+- train-tail minimum: one completed trade;
+- annual validation minimum: 12 completed trades;
+- no positive-profit requirement;
+- market, limit and stop entries are atomic brackets with mandatory SL and TP;
+- protected-plugin failures reject the entry instead of falling back;
+- `easy_floor` uses positive commission, spread and slippage;
+- the genome includes order family and adaptive-routing thresholds/offsets;
+- every split exports mean weekly return, annual return, mean weekly RAP,
+  annual RAP, observed weeks and both explicit annualization methods;
+- the v2 campaign archives champions after easy and curriculum jobs.
+
+Local preflight evidence: 21 train and 12 validation completed trades, all
+submitted as protected limit brackets; zero default orders, plugin failures,
+or protection rejections. Focused `agent-multi` tests pass (`84 passed`) and
+the complete `gym-fx` suite passes (`73 passed`).
 
 Decision 2026-07-28: retain the useful `data_observation` and `model_training`
 search, then stop as the synchronized swarm enters stage 3 before spending
@@ -90,8 +115,8 @@ are in documents 03, 04, 06 and 19.
 | Phase 1: evidence recovery | E0-E4 complete and archived | 16,019 jobs, transactional lineage, canonical OLAP facts, validation-only selection and 24 load-tested E4 baseline artifacts |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
-| Phase 4: full-genome alpha | Active four-worker USDCAD campaign | Mixed data/feature/preprocessing/context/model/training genome, full L1 convergence and exact SB3 artifacts |
-| Phase 5: execution curriculum | Deterministic baseline verified; successor queued | Positive-cost curriculum, robust validation, router control and alpha-handoff materializer implemented; execution auxiliaries/policy specified behind data gate |
+| Phase 4: full-genome alpha | v1 invalid/archived; protected v2 pending deploy | Mixed data/feature/preprocessing/context/model/training/execution genome, split activity eligibility, protected brackets and exact SB3 artifacts |
+| Phase 5: execution curriculum | Protected v2 successor materialized | Positive-cost curriculum, robust validation, evolvable market/limit/stop/adaptive routing and two-stage artifact handoff |
 | Phase 6 and later | Planned behind frozen cell library | Static portfolio first, then probabilistic rush/event activation and weekly retraining |
 
 ### 1.1 Phase 1 closeout sequence
@@ -663,6 +688,9 @@ cannot select, early-stop, optimize or promote future candidates.
 | `ORDER-ROUTER-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | verified_local_blocked_on_policy | Account-independent adaptive market/limit/stop router, urgency contract, native GTD execution, expiry and cancel/market fallback | Codex |
 | `EXEC-STATE-001` | Codex | `agent-multi`, `financial-data`, `gym-fx` | specified_blocked_on_alpha_and_data_gate | Point-in-time execution-fidelity manifest plus calibrated fill-time, adverse-selection, short-path and event-hazard auxiliaries | Codex |
 | `EXEC-POLICY-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | specified_blocked_on_exec_state | Shared causal encoder with entry/exit heads, deterministic risk overrides and market-only/router control comparison | Codex |
+| `ACTIVITY-GATE-002` | Codex | `agent-multi` | verified_local_pending_deploy | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate | Codex |
+| `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | verified_local_pending_deploy | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
+| `WEEKLY-METRICS-002` | Codex | `agent-multi` | verified_local_pending_deploy | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 
 Claude packet:
 
@@ -681,14 +709,16 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Let the active `USDCAD@4h` full-genome campaign reach its normal distributed
-   stop barrier without changing its domain, fitness or processes.
-2. Archive and independently load the exact final champion model and parameter
-   artifacts; verify all workers agree on block and artifact hash.
-3. Use the fail-closed materializer to create the launchable execution-cost
-   curriculum config and a new domain/genesis, then run it across all workers.
-4. Freeze the robust alpha policy and generate its deterministic action trace.
-5. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
+1. Commit and publish `agent-multi`, `gym-fx` and `doin-node` protected v2
+   changes; synchronize exact revisions and editable environments on all hosts.
+2. Install the fresh v2 campaign supervisors with new state directories and
+   verify matching plan/domain/config/seed/genesis/population evidence.
+3. Run the `USDCAD@4h` easy non-zero-cost full-genome job across all workers,
+   then archive and independently load its eligible champion model and JSON.
+4. Let the replicated campaign prepare and start the separate protected
+   easy→nominal→stress curriculum domain automatically.
+5. Freeze the robust alpha policy and generate its deterministic action trace.
+6. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
 6. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
    auxiliaries, then optimize the deterministic router with Nautilus.
