@@ -49,7 +49,8 @@ MT5 host decision:
   account selection remain interactive; MT5 is not installed yet.
 - LTS now contains the authenticated read-only bridge, SQLite OLAP, fail-closed
   broker plugin, MT5 EA source, user service, restricted-firewall script and
-  automated bridge/watchdog tests. The EA remains unaccepted until MetaEditor
+  an independent five-minute Dragon watchdog with Telegram alerting. Automated
+  bridge/watchdog tests pass. The EA remains unaccepted until MetaEditor
   reports zero compilation errors.
 
 Credentials, raw account IDs and recovery data must never be committed,
