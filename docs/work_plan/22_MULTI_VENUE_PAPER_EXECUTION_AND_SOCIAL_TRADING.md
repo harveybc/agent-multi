@@ -26,8 +26,9 @@ Runtime evidence on Omega:
 
 - Alpaca Paper read-only preflight is authenticated and runs every five
   minutes; six crypto quote cells are available and exposure is zero;
-- IBKR Paper adapter, OLAP and five-minute observer are installed and wait
-  safely for local TWS Paper port `7497`;
+- IBKR Paper adapter, OLAP and five-minute observer are authenticated against
+  local TWS Paper port `7497`; all six initial contracts qualified with zero
+  positions and zero orders;
 - OANDA Global Markets MT5 remains unconfigured; MT5 credentials are not REST
   API credentials;
 - the consolidated watchdog reports freshness, endpoint health, missing data,
