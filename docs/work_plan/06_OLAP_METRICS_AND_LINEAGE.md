@@ -196,6 +196,25 @@ One point-in-time event episode:
 - stale/fallback/rollback reason;
 - model release and customer risk profile class.
 
+### 5.10 Implemented OANDA Practice facts
+
+The Practice execution laboratory currently persists a restart-safe local
+SQLite cube with:
+
+- `lab_sessions` and `lab_state`;
+- `instrument_capabilities`;
+- `account_snapshots`;
+- `price_observations`;
+- `broker_transactions`;
+- `order_intents`;
+- `execution_reports`;
+- `practice_price_summary_olap`;
+- `practice_execution_summary_olap`.
+
+The account is represented by a one-way fingerprint. Tokens and raw account IDs
+are not facts. Transaction identity is the idempotency key across observer
+restarts.
+
 ## 6. Required Metric Families
 
 ### 6.1 Return
@@ -279,6 +298,14 @@ Every metric stores:
 
 Status/UI must never show a naked `0.02698` without unit, period, scope and
 coverage.
+
+The first 24 live-observation hours are evaluated with operational metrics:
+instrument availability, quote coverage, p50/p95 spread, API/session failure
+rate and transaction reconciliation. After protected canaries and seven days,
+the report adds implementation shortfall, spread/commission/financing drag,
+protected-order acceptance, execution-adjusted weekly return/RAP and
+simulation-to-Practice drift. A one-week financial result is descriptive
+calibration evidence, not an alpha-promotion gate.
 
 ## 8. Chain Versus Off-Chain Detail
 
