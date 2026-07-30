@@ -22,6 +22,17 @@ User-reported state on 2026-07-29:
 | OANDA | Global Markets live | compliance review pending | future CFD venue after approval |
 | OANDA | Global Markets MT5 demo | credentials not yet provisioned | FX and available crypto-CFD execution calibration |
 
+Runtime evidence on Omega:
+
+- Alpaca Paper read-only preflight is authenticated and runs every five
+  minutes; six crypto quote cells are available and exposure is zero;
+- IBKR Paper adapter, OLAP and five-minute observer are installed and wait
+  safely for local TWS Paper port `7497`;
+- OANDA Global Markets MT5 remains unconfigured; MT5 credentials are not REST
+  API credentials;
+- the consolidated watchdog reports freshness, endpoint health, missing data,
+  unexpected exposure and venue availability through Telegram.
+
 Credentials, raw account IDs and recovery data must never be committed,
 included in chat, written to chain/portable OLAP or copied into tracked JSON.
 
@@ -203,16 +214,35 @@ The current Individual accounts validate our own portfolio only.
 
 ## 12. Immediate Inputs and Next Actions
 
-1. Create the independent OANDA Global Markets MT5 demo; retain its login and
-   `OANDA_Global-Demo-1` credentials locally.
-2. Generate Alpaca Paper keys and store them in a local untracked environment
-   file.
-3. Activate/find the IBKR Paper username, verify TWS login, and confirm whether
-   market-data sharing is enabled.
-4. Choose a Windows host for the OANDA MT5 terminal/EA bridge.
-5. Run read-only capability preflights before implementing or enabling orders.
+1. Start IBKR TWS for Linux in Paper mode on Omega, enable socket clients,
+   retain Read-Only API, use port `7497` and run the installed preflight.
+2. Create the independent OANDA Global Markets MT5 demo; retain its login and
+   `OANDA_Global-Demo-1` credentials inside MT5, never in Git or chat.
+3. Provision a Windows VM for MT5 Desktop and the EA bridge. Prefer the VM over
+   dual boot so the Linux worker remains available. Wine is a fallback.
+4. Complete 24-hour read-only observations before enabling protected canaries.
+5. Implement and test the MT5 EA bridge before declaring OANDA active.
 
-## 13. Authoritative References
+## 13. Hermes and Telegram Operations
+
+Deterministic monitoring owns alerts. Hermes/DeepSeek is an analyst, not an
+execution controller.
+
+- five-minute watchdog: stale observers, broker/API failures, missing quotes,
+  reconciliation exposure and venue availability;
+- event discussion: one-hour and four-hour moves are surfaced for inspection,
+  never converted directly into orders or queued optimization;
+- 12-hour DeepSeek review: receives a sanitized evidence packet and reports
+  health, business evidence, anomalies and up to three bounded offline
+  experiment proposals;
+- hard policy: no order placement, risk change, model promotion or job enqueue
+  by Hermes; every experiment proposal requires human review.
+
+Only Omega runs the bidirectional Telegram gateway for the shared bot token.
+Other machines may send outbound deterministic alerts but must not compete for
+Telegram updates.
+
+## 14. Authoritative References
 
 - OANDA Global Markets MT5:
   https://help.oanda.com/bvi/es/faqs/mt5-user-guide-bvi.htm
