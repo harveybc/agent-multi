@@ -1,9 +1,11 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-29
-Plan version: 1.16.0
-Current focus: preserve the protected-entry v2 optimization path while starting
-the independent multi-venue paper execution-reality track
+Status timestamp: 2026-07-30
+Plan version: 1.19.0
+Current focus: preserve the protected-entry v2 optimization path, commission
+the independent multi-venue paper execution-reality track, and specify the
+bounded social-intelligence/operational-continuity track without taking compute
+from DOIN
 
 Account state reported on 2026-07-29:
 
@@ -717,6 +719,8 @@ cannot select, early-stop, optimize or promote future candidates.
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | verified_local_pending_deploy | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
 | `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | specified_accounts_ready_for_preflight | LTS global ledger, OANDA MT5 EA bridge, Alpaca Paper, IBKR Paper, capability snapshots, protected canaries and consolidated OLAP | Codex |
+| `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | specified_not_activated | Hermes-routed low-cost research, social OLAP, Telegram review, bounded Moltbook publishing and DOIN domain discovery | Codex |
+| `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 
 Claude packet:
 
@@ -768,6 +772,13 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    multi-node trading-domain acceptance run.
 16. Implement the multi-venue adapter contract and consolidated LTS capital
     ledger, then run 24-hour read-only observations before protected canaries.
+17. Implement social-intelligence S0/S1 only after MT5 commissioning: source
+    allowlist, deterministic collection, normalized OLAP and daily Telegram
+    review with publishing disabled.
+18. Benchmark local social models in a declared resource window before
+    installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
+19. Provision the continuity VPS from code, restore encrypted state in a clean
+    drill and verify credential revocation before treating it as operational.
 
 ## 5. Current Risks
 
