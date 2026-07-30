@@ -42,10 +42,11 @@ MT5 host decision:
   active RTX 5070 Ti plus RTX 5090 eGPU compute path;
 - Omega remains the mobile supervisor and current TWS Paper host, so it is not
   the unattended MT5 anchor;
-- reproducible host and VM creation scripts are staged in
-  `lts/examples/scripts`; the hypervisor install still requires the user's
-  interactive `sudo` on Dragon and the VM is not considered provisioned until
-  runtime verification passes.
+- KVM/libvirt host validation, persistent NAT, the official ISO hash, the
+  effective VM XML and Windows Setup boot have passed on Dragon;
+- `lts-mt5-paper` is running with 8 GiB RAM, 4 vCPU, 100 GiB sparse disk,
+  UEFI/Secure Boot and TPM 2.0. Windows language, licensing, edition and
+  account selection remain interactive; MT5 is not installed yet.
 
 Credentials, raw account IDs and recovery data must never be committed,
 included in chat, written to chain/portable OLAP or copied into tracked JSON.
