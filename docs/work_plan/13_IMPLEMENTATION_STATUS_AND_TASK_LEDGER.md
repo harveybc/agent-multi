@@ -1,9 +1,25 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-07-29
-Plan version: 1.15.0
+Plan version: 1.16.0
 Current focus: preserve the protected-entry v2 optimization path while starting
-the independent OANDA Practice execution-reality track
+the independent multi-venue paper execution-reality track
+
+Account state reported on 2026-07-29:
+
+- Alpaca Trading API account: created and verified; Paper credential preflight
+  has not yet been executed from LTS.
+- IBKR Individual Margin account: created and verified; Paper API/TWS
+  credential and session preflight has not yet been executed from LTS.
+- OANDA Global Markets live application: created, compliance review pending.
+- OANDA MT5 demo: independent of live approval; local credentials and exact
+  instrument inventory have not yet been supplied to the adapter.
+
+Architecture correction 2026-07-29: OANDA Global Markets is not a REST-v20
+division. The existing Practice REST client remains preserved for compatible
+accounts, but it cannot be activated against this account. LTS will own one
+global portfolio and route to OANDA MT5, Alpaca or IBKR through separate
+capability-checked adapters.
 
 Decision 2026-07-29: broker knowledge will be measured in parallel with model
 optimization. LTS now contains a Practice-only preflight/observer/canary tool,
@@ -699,7 +715,8 @@ cannot select, early-stop, optimize or promote future candidates.
 | `ACTIVITY-GATE-002` | Codex | `agent-multi` | verified_local_pending_deploy | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate | Codex |
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | verified_local_pending_deploy | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | verified_local_pending_deploy | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
-| `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_awaiting_account_preflight | Practice-only capability/quote/transaction observer, protected canary, restart-safe OLAP, evidence-backed asset manifest and day/week gates | Codex |
+| `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
+| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | specified_accounts_ready_for_preflight | LTS global ledger, OANDA MT5 EA bridge, Alpaca Paper, IBKR Paper, capability snapshots, protected canaries and consolidated OLAP | Codex |
 
 Claude packet:
 
@@ -718,8 +735,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Run OANDA Practice account/instrument preflight, then start the independent
-   24-hour read-only observation; do not enable orders before review.
+1. Provision local Paper/demo secrets without committing them; run Alpaca and
+   IBKR read-only preflights and create/run the independent OANDA MT5 demo
+   preflight. Do not enable orders before capability review.
 2. Commit and publish `agent-multi`, `gym-fx` and `doin-node` protected v2
    changes; synchronize exact revisions and editable environments on all hosts.
 3. Install the fresh v2 campaign supervisors with new state directories and
@@ -748,6 +766,8 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    activation and evaluate weekly retraining/fine-tuning.
 15. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
+16. Implement the multi-venue adapter contract and consolidated LTS capital
+    ledger, then run 24-hour read-only observations before protected canaries.
 
 ## 5. Current Risks
 

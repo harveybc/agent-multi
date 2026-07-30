@@ -164,8 +164,10 @@ Order-policy claims cannot exceed the fidelity of the replay data:
 A bar-touch is never silently treated as proof that a passive limit order
 filled. When queue data are unavailable, the configured probabilistic or
 pessimistic fill model, its uncertainty and the unsupported claims are stored.
-For OANDA FX, broker quote ticks and observed practice/live fills are the
-relevant calibration evidence; a centralized exchange queue is not assumed.
+For OTC/CFD venues such as OANDA, broker quote ticks and observed paper/live
+fills are the relevant calibration evidence; a centralized exchange queue is
+not assumed. Exchange and agency-broker adapters retain their own market-data
+and fill semantics.
 
 ### 8.2 Decision horizons
 
@@ -220,7 +222,7 @@ Required parity sequence:
 3. compare policy decisions timestamp by timestamp;
 4. compare requested orders;
 5. explain any fill/P&L difference caused by simulator semantics;
-6. freeze a parity report before OANDA practice.
+6. freeze a parity report before any venue-specific paper execution.
 
 ## 12. Baselines
 

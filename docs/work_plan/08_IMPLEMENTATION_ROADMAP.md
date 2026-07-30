@@ -34,7 +34,7 @@ Contracts/config
                                                    |
                                                    +--> LTS simulation
                                                             |
-                                                            +--> OANDA practice
+                                                            +--> multi-venue paper
 ```
 
 ### 2.1 Current pragmatic sequence
@@ -313,25 +313,30 @@ Gate:
 - simulation replay matches `gym-fx` intent/order behavior within declared
   execution differences.
 
-## 14. Phase 11: OANDA Practice
+## 14. Phase 11: Multi-Venue Paper Execution
 
 Repositories: `lts`, `prediction_provider`.
 
 Deliverables:
 
-- account instrument discovery and mappings;
-- read-only shadow operation;
-- minimal-size practice execution;
-- transaction reconciliation;
+- OANDA Global Markets MT5 adapter and capability discovery;
+- Alpaca Trading API Paper adapter and capability discovery;
+- IBKR Individual Margin Paper adapter and capability discovery;
+- one global LTS NAV/risk ledger with per-venue capital reservations;
+- read-only shadow operation on each reachable venue;
+- minimal-size protected paper execution where native SL/TP semantics qualify;
+- transaction reconciliation and duplicate-route prevention;
 - weekly rebalance/flatten operation;
 - failure, stale, rollback and kill-switch exercises;
-- simulation-versus-practice OLAP comparison.
+- simulation-versus-paper and cross-venue OLAP comparison.
 
 Gate:
 
-- all positions/orders reconcile;
+- all venue positions/orders reconcile to the global LTS ledger;
 - no unexplained divergence;
 - unsupported instruments fail closed;
+- every risk-increasing order has confirmed server-side SL and TP;
+- one portfolio intent cannot create duplicate exposure across venues;
 - portfolio/margin limits hold;
 - operator demonstrates emergency flatten and release rollback.
 

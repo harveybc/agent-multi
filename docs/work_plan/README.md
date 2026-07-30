@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign prepared; OANDA Practice execution-reality lab verified locally and awaiting account preflight
-Plan version: 1.15.0
+Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue paper execution track defined and awaiting local credential preflight
+Plan version: 1.16.0
 Date: 2026-07-29
 Primary implementation repository: `agent-multi`
 
@@ -22,7 +22,7 @@ of the existing DOIN network. The system must support:
 - decentralized Level 2 optimization and verification through DOIN;
 - model serving through `prediction_provider`;
 - customer-specific risk and broker execution through LTS;
-- OANDA practice/live execution where instruments are available;
+- multi-venue paper/live execution through account-specific broker adapters;
 - complete candidate, metric, lineage, and deployment traceability.
 
 ## Critical Premise
@@ -58,7 +58,7 @@ trading domain.
 | [04 Models and training](04_MODELS_POLICIES_AND_TRAINING.md) | Actor-critic, heuristic policies, context, rush, risk, allocation, and walk-forward training |
 | [05 DOIN integration](05_DOIN_TRADING_DOMAIN_INTEGRATION.md) | Domain plugins, genomes, verification, migration, releases, and node configs |
 | [06 OLAP and analytics](06_OLAP_METRICS_AND_LINEAGE.md) | Metrics, star schema extensions, cross-experiment analysis, and retention |
-| [07 Serving and live trading](07_SERVING_LTS_AND_OANDA.md) | `prediction_provider`, LTS, customer channels, OANDA, safety, and rollback |
+| [07 Serving and live trading](07_SERVING_LTS_AND_OANDA.md) | `prediction_provider`, LTS, multi-venue routing, safety, and rollback |
 | [08 Roadmap](08_IMPLEMENTATION_ROADMAP.md) | Phases, dependencies, deliverables, gates, and first vertical slice |
 | [09 Verification and operations](09_TESTING_SECURITY_AND_OPERATIONS.md) | Tests, leakage controls, deterministic verification, monitoring, and incident handling |
 | [10 Decisions and evidence](10_DECISIONS_OPEN_QUESTIONS_AND_EVIDENCE.md) | Accepted decisions, deferred choices, evidence, and authoritative references |
@@ -73,6 +73,7 @@ trading domain.
 | [19 Execution curriculum and order routing](19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md) | Visible cost curriculum, immutable robust fitness, multi-timescale execution-state models, market/limit/stop/MIT policy, artifact contract, and campaign transition |
 | [20 Protected execution incident](20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md) | One-trade champion root cause, coordinated stop, corrected activity/SL-TP/metric contract, v2 lineage and relaunch gates |
 | [21 OANDA Practice execution lab](21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md) | Broker-observation track, OLAP-backed asset selection, protected canaries, day/week metrics, and activation gates |
+| [22 Multi-venue paper execution](22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md) | OANDA MT5, Alpaca Paper, IBKR Paper, global LTS ledger, venue routing, account status, and social-trading boundary |
 
 ## Repository Ownership Summary
 
@@ -178,10 +179,11 @@ adding value.
 9. Add probabilistic rush activation and causal event conditioning, then
    compare weekly retraining/fine-tuning after the static portfolio vertical is
    operational.
-10. In parallel with optimization, run the OANDA Practice execution-reality
-    lab: account/instrument preflight, 24-hour read-only observation, protected
-    canaries, then a seven-day portfolio shadow.
-11. Complete registry, serving, LTS parity, and controlled Practice execution.
+10. In parallel with optimization, run the multi-venue execution-reality lab:
+    account/instrument preflight, 24-hour read-only observation, protected
+    canaries, then a seven-day consolidated portfolio shadow.
+11. Complete registry, serving, LTS parity, and controlled paper execution
+    across the account-compatible venue adapters.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

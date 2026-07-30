@@ -204,6 +204,31 @@ data and calendar expectation/actual vintages may be acquired only after the
 inventory proves a fidelity gap. Model and execution claims are bounded by the
 declared bar/quote/L1/L2/live-calibration evidence.
 
+### ADR-021: LTS owns one portfolio above replaceable venue adapters
+
+Date: 2026-07-29
+
+MT5, Alpaca and IBKR are execution venues, not portfolio managers. LTS owns the
+global NAV, customer risk, capital reservations, canonical exposures, virtual
+sleeves, venue choice, idempotent routing and reconciliation. A portfolio
+intent is routed to exactly one venue unless an isolated paper A/B experiment
+explicitly declares duplicate execution.
+
+The existing OANDA REST-v20 laboratory remains valid only for an account
+division that supports REST v20. OANDA Global Markets is not supported by REST
+v20, so its active adapter target is MT5. The preferred MT5 boundary is a thin
+EA that polls signed LTS commands through `WebRequest`, validates and submits
+orders with native MT5 APIs, and reports `OnTradeTransaction` events. MT5 does
+not allocate the portfolio.
+
+Alpaca Trading API Paper is an API-native crypto observation and long-only
+control venue. It is ineligible for production crypto routing until native
+server-side SL and TP protection satisfying the common contract is proven.
+IBKR Individual Margin Paper is the initial equities/ETF and broad multi-asset
+venue. Future social trading uses a separately reviewed Advisor/Broker/OAuth
+structure; personal Individual accounts never custody or commingle customer
+funds.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |
@@ -218,8 +243,9 @@ declared bar/quote/L1/L2/live-calibration evidence.
 | Execution data acquisition | Existing point-in-time inventory first | Buy raw quotes/book or event vintages only for a demonstrated coverage/fidelity gap |
 | Context architecture | Small masked attention ladder | Increase complexity only after ablation benefit |
 | DOIN decentralized live inference | Optional for non-urgent tasks | After latency/reliability/payment tests |
-| OANDA live universe | Discovered per account | At account capability preflight |
-| Additional crypto broker | None initially | After selected live crypto asset lacks OANDA route |
+| OANDA Global Markets universe | Discovered from MT5 account | At MT5 demo capability preflight |
+| Crypto execution venue | Compare OANDA CFD and API-native venues | After protection, shorting, fee and Colombia-eligibility preflight |
+| Social-trading legal/account structure | Personal accounts for paper validation only | Separate legal/compliance review before any customer-connected execution |
 | P2P artifact backend | Evaluate trackerless BitTorrent/libtorrent versus IPFS/Kubo; no central dependency | Before multi-node trading-domain acceptance |
 | Generic DOIN metric persistence design | Tall metric fact plus catalog | Before trading domain three-node run |
 | Separate `inference_config`/`synthetic_data_config` fields | Prefer explicit subtrees with backward-compatible `optimization_config` fallback | Unified-node config loader audit in Phase 8 |
@@ -303,6 +329,22 @@ only trading-domain behavior.
 
 - OANDA REST-v20 introduction:
   https://developer.oanda.com/rest-live-v20/introduction/
+- OANDA Global Markets MT5:
+  https://help.oanda.com/bvi/es/faqs/mt5-user-guide-bvi.htm
+- OANDA Global Markets CFD eligibility:
+  https://help.oanda.com/bvi/es/faqs/trade-cfds-eligibility.htm
+- MQL5 WebRequest:
+  https://www.mql5.com/en/docs/network/webrequest
+- MQL5 OrderSend:
+  https://www.mql5.com/en/docs/trading/ordersend
+- Alpaca Trading API versus Broker API:
+  https://docs.alpaca.markets/us/v1.1/docs/broker-api-faq
+- Alpaca crypto orders:
+  https://docs.alpaca.markets/us/docs/crypto-orders
+- IBKR Paper Trading:
+  https://www.interactivebrokers.com/campus/glossary-terms/paper-trading-account/
+- IBKR Trading Web API:
+  https://www.interactivebrokers.com/campus/ibkr-api-page/web-api-trading/
 - OANDA account/instruments:
   https://developer.oanda.com/rest-live-v20/account-ep/
 - OANDA pricing:
@@ -323,6 +365,17 @@ only trading-domain behavior.
   https://www.nber.org/papers/w8959
 
 ## 7. Change Log
+
+### Plan 1.16.0 - 2026-07-29
+
+- Replaced the single-broker activation assumption with one LTS-owned
+  multi-venue portfolio above OANDA MT5, Alpaca and IBKR adapters.
+- Recorded that OANDA Global Markets does not expose REST v20 and preserved the
+  existing REST laboratory only for compatible OANDA account divisions.
+- Added account-opening state, paper capability gates, mandatory server-side
+  protection, global capital reservations and duplicate-route prevention.
+- Separated personal paper validation from the future regulated social-trading
+  Advisor/Broker/OAuth structure.
 
 ### 1.4.0 - 2026-07-28
 

@@ -1,5 +1,11 @@
 # 21. OANDA Practice Execution Reality Lab
 
+Compatibility status: the implemented client uses OANDA REST v20. OANDA Global
+Markets does not expose REST v20, so this implementation must not be pointed at
+the user's Colombian account. It remains preserved and tested for compatible
+OANDA divisions. The active OANDA Global Markets path is the MT5 adapter
+specified in document 22.
+
 ## 1. Purpose
 
 The optimization stack estimates trading behavior; this track measures the
@@ -154,7 +160,7 @@ As of 2026-07-29:
 - asset-selection query and materialized manifest: complete;
 - tracked order mode: disabled;
 - OANDA credentials: intentionally absent from Git;
-- account-specific preflight: pending;
+- account-specific preflight: blocked for the OANDA Global Markets account;
 - 24-hour observation: pending;
 - protected canaries: blocked on successful observation review;
 - seven-day portfolio shadow: blocked on canary reconciliation.
@@ -164,3 +170,6 @@ The operator procedure is:
 ```text
 lts/docs/OANDA_PRACTICE_EXECUTION_LAB.md
 ```
+
+Do not request or provision a REST-v20 token for OANDA Global Markets. Create
+an independent MT5 demo and use the multi-venue preflight instead.

@@ -35,9 +35,11 @@
 - DOIN candidate -> reconstructed evaluation;
 - DOIN synthetic seed -> same data hash on evaluators;
 - provider -> LTS signal/order plan;
-- LTS simulation -> OANDA practice parity.
-- OANDA Practice preflight -> capability, quote and transaction OLAP;
-- protected Practice canary -> accepted broker trade with attached SL/TP.
+- LTS simulation -> venue-paper parity;
+- OANDA MT5, Alpaca Paper and IBKR Paper preflight -> capability, quote and
+  transaction OLAP;
+- protected paper canary -> accepted broker trade with confirmed SL/TP;
+- one portfolio intent -> exactly one selected venue and one exposure.
 
 ### 1.4 System/acceptance tests
 
@@ -46,8 +48,8 @@
 - continuous optimization plus weekly release boundary;
 - provider channel switch and rollback;
 - multi-user LTS portfolios with different risk profiles;
-- OANDA practice weekly operation and reconciliation.
-- 24-hour read-only quote/cost observation before any Practice order.
+- multi-venue paper weekly operation and consolidated reconciliation;
+- 24-hour read-only quote/cost observation before any paper order per venue.
 
 ## 2. Leakage Controls
 
@@ -84,7 +86,9 @@ Test:
 - network partition, duplicate/flooded message and chain resync;
 - DOIN code/version mismatch;
 - insufficient margin and precision rejection;
-- OANDA disconnect, rate limit, duplicate submission and partial fill;
+- MT5 bridge/API disconnect, rate limit, duplicate submission and partial fill;
+- venue failover during a pending or partially filled order;
+- two broker accounts reporting the same canonical exposure;
 - LTS/provider restart during open positions;
 - release activation failure and rollback;
 - model output NaN/out-of-range or concentration violation.
@@ -94,15 +98,17 @@ Test:
 - Tokens and account IDs are secret-store/environment references.
 - No credentials in config, logs, OLAP, chain, checkpoints or screenshots.
 - LTS is the only real-order authority.
-- Practice/live environments and credentials are separate.
+- Paper/live environments and credentials are separate per venue.
 - Artifact and deployment manifests are signed/hash-verified.
 - Provider and LTS authenticate requests and authorize model channels.
 - Client identity, balance and exact positions are not public/on-chain usage
   telemetry.
 - DOIN resource and parameter bounds remain active for untrusted candidates.
 - Candidate code execution is constrained to approved plugin/code versions.
-- The Practice laboratory rejects the live REST endpoint in code and requires
+- Every paper adapter rejects live endpoints/accounts in code and requires
   config enablement plus an exact confirmation phrase before a canary.
+- MT5 bridge requests are signed, replay-protected and restricted to an
+  allowlisted LTS endpoint.
 
 ## 6. Resource Management
 
@@ -226,6 +232,6 @@ Each incident captures:
 - Restarting every worker preserves completed generation results and resumes
   only the unevaluated candidates.
 - Live safety gates fail closed.
-- Practice observation restarts without duplicate transactions.
-- Practice account identity and tokens never enter persisted facts.
+- Paper observation restarts without duplicate transactions.
+- Paper account identity and tokens never enter portable persisted facts.
 - Status always reports period/unit/coverage for financial metrics.

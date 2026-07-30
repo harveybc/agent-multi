@@ -61,12 +61,17 @@ how aggressively and how automatically to consume promoted improvements.
                               v
                   +-----------+-------------+
                   | LTS                     |
-                  | users + risk + orders   |
+                  | users + global risk     |
+                  | portfolio + routing     |
                   +-----------+-------------+
                               |
-                     +--------+---------+
-                     | OANDA / brokers  |
-                     +------------------+
+                 +------------+-------------+
+                 | venue adapter contract   |
+                 +-----+-----------+--------+
+                       |           |
+             +---------+--+  +-----+------+  +-------------+
+             | OANDA MT5 |  | Alpaca API |  | IBKR API    |
+             +------------+  +------------+  +-------------+
 ```
 
 ## 4. Repository Boundaries
@@ -181,12 +186,15 @@ Owns production state:
 - model-channel selection;
 - customer risk overlays;
 - broker capability discovery;
-- virtual strategy sleeves and broker netting;
+- global NAV, capital reservation and venue-aware exposure;
+- virtual strategy sleeves, venue selection and broker netting;
 - target-position delta planning;
 - order execution, reconciliation and audit;
 - stale-signal, failure, rollback and kill-switch policies.
 
 LTS does not train a model or calculate future-aware research labels.
+No broker terminal, including MT5, owns portfolio allocation or global risk.
+Each terminal/API is a replaceable execution adapter below LTS.
 
 ## 5. Decision Hierarchy
 
@@ -204,7 +212,8 @@ The runtime contains eight decision levels:
 6. **Risk control:** enforce account-independent exposure and protection
    boundaries, including deterministic emergency overrides.
 7. **Portfolio allocation:** assign weekly weights and risk budgets.
-8. **Customer execution:** apply user constraints and broker capabilities.
+8. **Customer execution:** apply user constraints, select an eligible venue,
+   reserve venue capital and execute through one idempotent broker adapter.
 
 Each layer has its own metrics and DOIN domain. A complete deployable system is
 a compatible bundle of layer artifacts. Order type is not an alpha-model
@@ -274,7 +283,7 @@ An accepted optimae is evidence, not an order. The permitted path is:
 ```text
 DOIN candidate -> promotion -> signed deployment manifest
 -> prediction_provider -> validated signal bundle
--> LTS risk/execution planner -> broker order
+-> LTS portfolio/risk planner -> venue router -> broker order
 ```
 
 This provides rollout control, local low-latency inference, fallback, and a

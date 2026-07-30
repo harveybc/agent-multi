@@ -39,7 +39,9 @@ Research symbols and broker instruments are not interchangeable.
   "base": "EUR",
   "quote": "USD",
   "venue_mappings": {
-    "oanda": "EUR_USD"
+    "oanda_ogm_mt5": "EURUSD",
+    "alpaca": null,
+    "ibkr": "EUR.USD"
   }
 }
 ```
@@ -145,14 +147,21 @@ auditable before LTS nets them by broker instrument.
 LTS output after user risk and capability checks:
 
 - broker account reference;
+- selected venue, adapter identity and capability-snapshot hash;
 - canonical asset and venue instrument;
 - target/delta units;
 - side/order type;
-- SL/TP/trailing protection;
+- mandatory SL/TP/trailing protection and server-side protection requirement;
 - idempotency key;
+- portfolio intent, route and capital-reservation IDs;
 - source asset/portfolio intent IDs;
 - preflight margin and risk calculation;
 - expiration and fallback behavior.
+
+One `OrderIntent` is routed to exactly one venue unless an explicitly isolated
+paper A/B experiment declares duplicate execution. A retry preserves the same
+idempotency key and route; failover never silently opens the same exposure at a
+second broker.
 
 ### 4.7 `ExecutionReport`
 
@@ -165,6 +174,10 @@ Broker/simulator response normalized into:
 - timestamps and latency;
 - resulting position/account snapshot;
 - rejection or divergence reason.
+
+Every report carries `venue_id`, `account_fingerprint`, `adapter_version`,
+`capability_snapshot_hash` and protection state. Raw account identifiers and
+credentials are not persisted in portable OLAP facts.
 
 ### 4.8 `ComponentManifest`
 
