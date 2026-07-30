@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; invalid USDCAD v1 swarm archived; protected-entry v2 campaign verified locally and pending coordinated deployment
-Plan version: 1.14.0
+Status: E0-E4 complete; protected-entry v2 campaign prepared; OANDA Practice execution-reality lab verified locally and awaiting account preflight
+Plan version: 1.15.0
 Date: 2026-07-29
 Primary implementation repository: `agent-multi`
 
@@ -72,6 +72,7 @@ trading domain.
 | [18 Full-genome per-asset optimization](18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md) | Corrected E4 interpretation, L1 convergence protocol, mixed genome, execution order, and champion contract |
 | [19 Execution curriculum and order routing](19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md) | Visible cost curriculum, immutable robust fitness, multi-timescale execution-state models, market/limit/stop/MIT policy, artifact contract, and campaign transition |
 | [20 Protected execution incident](20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md) | One-trade champion root cause, coordinated stop, corrected activity/SL-TP/metric contract, v2 lineage and relaunch gates |
+| [21 OANDA Practice execution lab](21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md) | Broker-observation track, OLAP-backed asset selection, protected canaries, day/week metrics, and activation gates |
 
 ## Repository Ownership Summary
 
@@ -177,7 +178,10 @@ adding value.
 9. Add probabilistic rush activation and causal event conditioning, then
    compare weekly retraining/fine-tuning after the static portfolio vertical is
    operational.
-10. Complete registry, serving, LTS parity, and OANDA practice integration.
+10. In parallel with optimization, run the OANDA Practice execution-reality
+    lab: account/instrument preflight, 24-hour read-only observation, protected
+    canaries, then a seven-day portfolio shadow.
+11. Complete registry, serving, LTS parity, and controlled Practice execution.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

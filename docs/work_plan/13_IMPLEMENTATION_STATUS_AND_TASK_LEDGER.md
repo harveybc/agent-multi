@@ -1,9 +1,17 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-07-29
-Plan version: 1.14.0
-Current focus: deploy the fresh USDCAD protected-entry v2 lineage after local
-activity, order-safety, metric and campaign preflight
+Plan version: 1.15.0
+Current focus: preserve the protected-entry v2 optimization path while starting
+the independent OANDA Practice execution-reality track
+
+Decision 2026-07-29: broker knowledge will be measured in parallel with model
+optimization. LTS now contains a Practice-only preflight/observer/canary tool,
+a restart-safe SQLite OLAP, mandatory SL/TP enforcement and account-identity
+redaction. The provisional six-instrument observation universe is generated
+reproducibly from validation-only E4 evidence plus the comparable historical
+activity survey. No Practice connection or order is claimed yet; account
+credentials and a successful preflight are still required.
 
 Decision 2026-07-29: the v1 USDCAD swarm is invalid for champion selection.
 One annual validation trade was sufficient to pass its gate, allowing a
@@ -691,6 +699,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `ACTIVITY-GATE-002` | Codex | `agent-multi` | verified_local_pending_deploy | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate | Codex |
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | verified_local_pending_deploy | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | verified_local_pending_deploy | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
+| `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_awaiting_account_preflight | Practice-only capability/quote/transaction observer, protected canary, restart-safe OLAP, evidence-backed asset manifest and day/week gates | Codex |
 
 Claude packet:
 
@@ -709,33 +718,35 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Commit and publish `agent-multi`, `gym-fx` and `doin-node` protected v2
+1. Run OANDA Practice account/instrument preflight, then start the independent
+   24-hour read-only observation; do not enable orders before review.
+2. Commit and publish `agent-multi`, `gym-fx` and `doin-node` protected v2
    changes; synchronize exact revisions and editable environments on all hosts.
-2. Install the fresh v2 campaign supervisors with new state directories and
+3. Install the fresh v2 campaign supervisors with new state directories and
    verify matching plan/domain/config/seed/genesis/population evidence.
-3. Run the `USDCAD@4h` easy non-zero-cost full-genome job across all workers,
+4. Run the `USDCAD@4h` easy non-zero-cost full-genome job across all workers,
    then archive and independently load its eligible champion model and JSON.
-4. Let the replicated campaign prepare and start the separate protected
+5. Let the replicated campaign prepare and start the separate protected
    easy→nominal→stress curriculum domain automatically.
-5. Freeze the robust alpha policy and generate its deterministic action trace.
-6. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
+6. Freeze the robust alpha policy and generate its deterministic action trace.
+7. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
-6. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
+8. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
    auxiliaries, then optimize the deterministic router with Nautilus.
-7. Train the shared entry/exit policy and require improvement over market-only
+9. Train the shared entry/exit policy and require improvement over market-only
    and deterministic-router controls under identical alpha streams.
-8. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+10. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
    GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
-9. Execute one coordinated DOIN campaign per selected asset, using every
+11. Execute one coordinated DOIN campaign per selected asset, using every
    available worker on one chain at a time.
-10. Confirm frozen winners across three seeds and build the per-asset champion
+12. Confirm frozen winners across three seeds and build the per-asset champion
    library before portfolio optimization.
-11. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+13. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-12. Optimize the static portfolio, then add calibrated multi-horizon rush/event
+14. Optimize the static portfolio, then add calibrated multi-horizon rush/event
    activation and evaluate weekly retraining/fine-tuning.
-13. Implement and fault-test the decentralized artifact plane before a
+15. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
 
 ## 5. Current Risks

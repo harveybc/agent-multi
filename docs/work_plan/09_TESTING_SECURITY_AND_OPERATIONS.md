@@ -36,6 +36,8 @@
 - DOIN synthetic seed -> same data hash on evaluators;
 - provider -> LTS signal/order plan;
 - LTS simulation -> OANDA practice parity.
+- OANDA Practice preflight -> capability, quote and transaction OLAP;
+- protected Practice canary -> accepted broker trade with attached SL/TP.
 
 ### 1.4 System/acceptance tests
 
@@ -45,6 +47,7 @@
 - provider channel switch and rollback;
 - multi-user LTS portfolios with different risk profiles;
 - OANDA practice weekly operation and reconciliation.
+- 24-hour read-only quote/cost observation before any Practice order.
 
 ## 2. Leakage Controls
 
@@ -98,6 +101,8 @@ Test:
   telemetry.
 - DOIN resource and parameter bounds remain active for untrusted candidates.
 - Candidate code execution is constrained to approved plugin/code versions.
+- The Practice laboratory rejects the live REST endpoint in code and requires
+  config enablement plus an exact confirmation phrase before a canary.
 
 ## 6. Resource Management
 
@@ -221,4 +226,6 @@ Each incident captures:
 - Restarting every worker preserves completed generation results and resumes
   only the unevaluated candidates.
 - Live safety gates fail closed.
+- Practice observation restarts without duplicate transactions.
+- Practice account identity and tokens never enter persisted facts.
 - Status always reports period/unit/coverage for financial metrics.

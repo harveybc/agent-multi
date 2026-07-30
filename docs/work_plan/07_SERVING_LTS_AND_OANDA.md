@@ -165,9 +165,12 @@ Required operations:
 - transaction stream or incremental reconciliation;
 - idempotency and request correlation.
 
-The current OANDA plugin is a prototype. Production readiness requires dynamic
-precision, capabilities, client IDs, transaction reconciliation, partial fills,
-home-currency conversion, account-level risk gates and robust retry semantics.
+The general LTS OANDA broker remains a prototype. A separate Practice-only
+execution laboratory is now implemented for capability discovery, account and
+quote observation, transaction-cursor reconciliation, protected market
+canaries and execution evidence. Production readiness still requires partial
+fill handling, home-currency conversion, portfolio risk gates, idempotent
+target-position planning and robust retry semantics in the general broker.
 
 ## 11. Safety and Fallback
 
@@ -211,6 +214,20 @@ side effects.
 Each step compares signals, intended deltas, fills, costs and positions against
 the prior layer.
 
+The executable Practice path is:
+
+```text
+lts/app/oanda_practice_lab.py
+lts/app/oanda_practice_cli.py
+lts/examples/configs/oanda_practice_execution_lab_v1.json
+lts/docs/OANDA_PRACTICE_EXECUTION_LAB.md
+```
+
+Its REST client cannot be pointed at the live endpoint. The default config is
+read-only, credentials are environment references, account identity is
+redacted before OLAP persistence, and every risk-increasing canary requires
+attached SL and TP plus two independent opt-ins.
+
 ## 14. Acceptance Criteria
 
 - Provider output matches direct model inference for a frozen fixture.
@@ -221,6 +238,12 @@ the prior layer.
 - Practice orders reconcile with no unexplained position divergence.
 - Provider/network restart cannot duplicate an order.
 - Unsupported instruments fail closed before order creation.
+- The Practice preflight records account-specific instrument availability,
+  precision, pip location, minimum trade size and margin rate.
+- Restarting observation resumes from the broker transaction cursor and cannot
+  duplicate a persisted transaction.
+- No raw account ID or token appears in config, OLAP, logs or reports.
+- A canary without both SL and TP is rejected before any broker request.
 
 ## 15. OANDA References
 
