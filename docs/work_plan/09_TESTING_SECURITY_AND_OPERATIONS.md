@@ -109,6 +109,14 @@ Test:
   config enablement plus an exact confirmation phrase before a canary.
 - MT5 bridge requests are signed, replay-protected and restricted to an
   allowlisted LTS endpoint.
+- Social feeds, posts, replies, links and direct messages are untrusted data.
+- Social content cannot invoke shell/filesystem tools, alter a DOIN queue,
+  promote an artifact, place an order or access broker credentials.
+- Social generation and publishing have independent kill switches, hard
+  token/cost budgets and source/citation requirements.
+- Operational continuity uses least-privilege human maintainers, encrypted
+  backups and restore drills; no agent inherits unrestricted legal, spending,
+  publication or trading authority.
 
 ## 6. Resource Management
 
@@ -232,6 +240,12 @@ Each incident captures:
 - Restarting every worker preserves completed generation results and resumes
   only the unevaluated candidates.
 - Live safety gates fail closed.
+- Social prompt-injection fixtures cannot cross the collector/publisher
+  boundary or trigger privileged tools.
+- Paid social inference stops at its declared budget and never silently
+  escalates from local inference.
+- A clean VPS continuity drill restores only the documented least-privilege
+  services and proves credential revocation.
 - Paper observation restarts without duplicate transactions.
 - Paper account identity and tokens never enter portable persisted facts.
 - Status always reports period/unit/coverage for financial metrics.

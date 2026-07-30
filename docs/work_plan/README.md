@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign prepared; Alpaca and IBKR Paper observation active; OANDA MT5 Dragon VM in Windows Setup
-Plan version: 1.18.0
-Date: 2026-07-29
+Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue Paper commissioning active; bounded social-intelligence track specified
+Plan version: 1.19.0
+Date: 2026-07-30
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -23,6 +23,8 @@ of the existing DOIN network. The system must support:
 - model serving through `prediction_provider`;
 - customer-specific risk and broker execution through LTS;
 - multi-venue paper/live execution through account-specific broker adapters;
+- bounded social intelligence, source-backed technical participation and
+  recoverable low-cost agent operations;
 - complete candidate, metric, lineage, and deployment traceability.
 
 ## Critical Premise
@@ -74,6 +76,7 @@ trading domain.
 | [20 Protected execution incident](20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md) | One-trade champion root cause, coordinated stop, corrected activity/SL-TP/metric contract, v2 lineage and relaunch gates |
 | [21 OANDA Practice execution lab](21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md) | Broker-observation track, OLAP-backed asset selection, protected canaries, day/week metrics, and activation gates |
 | [22 Multi-venue paper execution](22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md) | OANDA MT5, Alpaca Paper, IBKR Paper, global LTS ledger, venue routing, account status, and social-trading boundary |
+| [23 Social intelligence and continuity](23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md) | Hermes/Moltbook research, local-model cost routing, social OLAP, bounded publishing, DOIN domain discovery, and recoverable operations |
 
 ## Repository Ownership Summary
 
@@ -184,6 +187,9 @@ adding value.
     canaries, then a seven-day consolidated portfolio shadow.
 11. Complete registry, serving, LTS parity, and controlled paper execution
     across the account-compatible venue adapters.
+12. Add the social-intelligence track without competing with optimization:
+    deterministic collection, Telegram review, measured local-model bake-off,
+    then bounded publication and a clean VPS continuity drill.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
