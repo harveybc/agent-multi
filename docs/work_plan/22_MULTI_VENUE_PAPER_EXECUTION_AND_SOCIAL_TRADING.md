@@ -34,6 +34,19 @@ Runtime evidence on Omega:
 - the consolidated watchdog reports freshness, endpoint health, missing data,
   unexpected exposure and venue availability through Telegram.
 
+MT5 host decision:
+
+- Dragon is the persistent Windows 11 KVM/libvirt host: 30 GiB RAM, 32 CPU
+  threads, hardware virtualization and 585 GiB free were manually verified;
+- Gamma is excluded because it has 14 GiB RAM, limited free disk and owns the
+  active RTX 5070 Ti plus RTX 5090 eGPU compute path;
+- Omega remains the mobile supervisor and current TWS Paper host, so it is not
+  the unattended MT5 anchor;
+- reproducible host and VM creation scripts are staged in
+  `lts/examples/scripts`; the hypervisor install still requires the user's
+  interactive `sudo` on Dragon and the VM is not considered provisioned until
+  runtime verification passes.
+
 Credentials, raw account IDs and recovery data must never be committed,
 included in chat, written to chain/portable OLAP or copied into tracked JSON.
 
@@ -215,12 +228,14 @@ The current Individual accounts validate our own portfolio only.
 
 ## 12. Immediate Inputs and Next Actions
 
-1. Start IBKR TWS for Linux in Paper mode on Omega, enable socket clients,
-   retain Read-Only API, use port `7497` and run the installed preflight.
+1. Keep the verified IBKR TWS Paper observer on Omega in read-only mode and
+   retain port `7497`.
 2. Create the independent OANDA Global Markets MT5 demo; retain its login and
    `OANDA_Global-Demo-1` credentials inside MT5, never in Git or chat.
-3. Provision a Windows VM for MT5 Desktop and the EA bridge. Prefer the VM over
-   dual boot so the Linux worker remains available. Wine is a fallback.
+3. Provision `lts-mt5-paper` on Dragon using KVM/libvirt, 8 GiB RAM, 4 vCPU,
+   100 GiB sparse storage, UEFI, TPM 2.0 and NAT. Use only an official
+   Microsoft x64 ISO and verify its published SHA-256. Wine and dual boot are
+   not part of the primary path.
 4. Complete 24-hour read-only observations before enabling protected canaries.
 5. Implement and test the MT5 EA bridge before declaring OANDA active.
 
@@ -263,3 +278,5 @@ Telegram updates.
   https://www.interactivebrokers.com/campus/glossary-terms/paper-trading-account/
 - IBKR Trading Web API:
   https://www.interactivebrokers.com/campus/ibkr-api-page/web-api-trading/
+- Microsoft Windows 11 x64 ISO:
+  https://www.microsoft.com/software-download/windows11
