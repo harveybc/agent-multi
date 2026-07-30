@@ -1,4 +1,4 @@
-# 07. Serving, LTS, and OANDA
+# 07. Serving, LTS, and Multi-Venue Execution
 
 ## 1. Serving Boundary
 
@@ -123,32 +123,59 @@ and obtains `AssetIntent`.
 
 The initial portfolio permits one logical position per cell and many concurrent
 assets. Multiple cells for one instrument are virtual sleeves; LTS nets them
-before OANDA while retaining cell-level attribution.
+before selecting and calling a venue while retaining cell-level attribution.
 
-## 9. OANDA Capability
+## 9. Multi-Venue Capability
 
-OANDA v20 supports multiple instruments, orders, trades/positions, dependent
-SL/TP orders, account-level margin state, and multi-instrument pricing. Actual
-tradeable instruments depend on the account's regulatory division and account
-configuration.
+Every adapter materializes an account-specific `BrokerCapabilitySnapshot`.
+Research symbols never imply venue availability. A route is eligible only when
+the latest snapshot supports its asset, direction, order family, protection,
+precision, market state, financing and capital requirements.
 
-At account onboarding and periodically, LTS must fetch instruments and create a
-`BrokerCapabilitySnapshot` with:
+Snapshots contain:
 
-- canonical-to-OANDA symbol mapping;
+- canonical-to-venue symbol mapping;
 - instrument type;
 - price and unit precision;
 - minimum trade size;
 - maximum order and position units;
 - margin rate and account margin state;
 - financing/commission;
-- stop and guaranteed-stop restrictions;
+- native stop-loss, take-profit, bracket/OCO and guaranteed-stop restrictions;
 - hedging/netting and position-fill behavior;
 - current market/tradeability status.
 
-Research symbols such as `SOLUSDT` or perpetual futures are not assumed to be
-OANDA instruments. Unsupported assets are excluded from that live account or
-routed through a future broker/exchange plugin.
+LTS maintains one synthetic/canonical NAV and explicit per-venue capital
+reservations. Demo account balances are not summed. One intent routes to one
+venue unless an isolated paper A/B experiment declares duplicate execution in
+an excluded accounting namespace.
+
+### 9.1 OANDA Global Markets
+
+The Colombian account is expected to belong to OANDA Global Markets. That
+division uses MT5 and is not available through REST v20. Its adapter target is
+a thin MT5 Expert Advisor that polls signed LTS commands through `WebRequest`,
+validates and submits orders with MT5 trade APIs, and reports
+`OnTradeTransaction` events. MT5 is a transport and local reconciliation
+surface; it never owns portfolio allocation.
+
+The existing REST-v20 Practice laboratory is preserved for account divisions
+that support it. It must fail closed for OANDA Global Markets credentials.
+
+### 9.2 Alpaca
+
+Use Trading API Paper for API-native crypto observation and a long-only
+control. Current crypto restrictions prohibit shorting and margin and expose
+market, limit and stop-limit orders. Alpaca is not eligible for protected
+production routing until native server-side SL and TP behavior satisfies the
+common protection contract.
+
+### 9.3 Interactive Brokers
+
+Use the verified Individual Margin account and its Paper identity for
+equities/ETF and broad multi-asset calibration. Margin account capability
+preserves short and order-type testing; LTS initially caps gross leverage at
+1.0, disables borrowing and prohibits uncovered short options.
 
 ## 10. Broker Abstraction
 
@@ -165,16 +192,16 @@ Required operations:
 - transaction stream or incremental reconciliation;
 - idempotency and request correlation.
 
-The general LTS OANDA broker remains a prototype. A separate Practice-only
-execution laboratory is now implemented for capability discovery, account and
-quote observation, transaction-cursor reconciliation, protected market
-canaries and execution evidence. Production readiness still requires partial
-fill handling, home-currency conversion, portfolio risk gates, idempotent
-target-position planning and robust retry semantics in the general broker.
+The general LTS OANDA REST broker remains a prototype and is not the Global
+Markets adapter. The shared adapter contract must now be implemented for OANDA
+MT5, Alpaca Paper and IBKR Paper. Production readiness still requires partial
+fill handling, home-currency conversion, global portfolio risk gates,
+idempotent target-position planning, venue capital reservations and robust
+retry/reconciliation semantics.
 
 ## 11. Safety and Fallback
 
-- Separate practice and live credentials/configs.
+- Separate paper and live credentials/configs per venue.
 - Default all new releases and customers to practice/shadow.
 - Never log or persist tokens in config/OLAP/chain.
 - Reject stale signals and unknown schema versions.
@@ -200,21 +227,21 @@ public/on-chain telemetry. Economic rewards for optimization/evaluation/inferenc
 use existing DOIN mechanisms or explicit future extensions, not hidden LTS
 side effects.
 
-## 13. Simulation-to-Practice Sequence
+## 13. Simulation-to-Paper Sequence
 
 1. Direct `agent-multi` deterministic replay.
 2. `prediction_provider` historical replay.
 3. LTS plus simulation broker.
-4. LTS read-only OANDA shadow.
-5. minimal-size OANDA practice orders.
-6. full practice weekly portfolio operation.
+4. LTS read-only multi-venue shadow.
+5. minimal-size protected paper orders on each eligible venue.
+6. full paper weekly portfolio operation with one consolidated NAV.
 7. frozen release review.
 8. conservative live pilot after explicit approval.
 
 Each step compares signals, intended deltas, fills, costs and positions against
 the prior layer.
 
-The executable Practice path is:
+The existing executable REST-v20 Practice path is:
 
 ```text
 lts/app/oanda_practice_lab.py
@@ -223,10 +250,12 @@ lts/examples/configs/oanda_practice_execution_lab_v1.json
 lts/docs/OANDA_PRACTICE_EXECUTION_LAB.md
 ```
 
-Its REST client cannot be pointed at the live endpoint. The default config is
-read-only, credentials are environment references, account identity is
-redacted before OLAP persistence, and every risk-increasing canary requires
-attached SL and TP plus two independent opt-ins.
+Its REST client cannot be pointed at the live endpoint and cannot be used for
+OANDA Global Markets. The multi-venue successor is specified in
+`22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md`. Every adapter defaults
+to read-only, uses environment/secret references, redacts account identity and
+requires attached SL and TP plus independent opt-ins for risk-increasing
+canaries.
 
 ## 14. Acceptance Criteria
 
@@ -234,21 +263,26 @@ attached SL and TP plus two independent opt-ins.
 - Channel switch is atomic at release boundary and rollback succeeds.
 - LTS never downloads or activates an unverified artifact hash.
 - Customer overlays cannot exceed hard portfolio/broker limits.
-- Multiple virtual cells net correctly into one OANDA instrument target.
-- Practice orders reconcile with no unexplained position divergence.
+- Multiple virtual cells net correctly before venue selection.
+- All paper orders reconcile with no unexplained global/venue divergence.
 - Provider/network restart cannot duplicate an order.
 - Unsupported instruments fail closed before order creation.
-- The Practice preflight records account-specific instrument availability,
+- Each venue preflight records account-specific instrument availability,
   precision, pip location, minimum trade size and margin rate.
-- Restarting observation resumes from the broker transaction cursor and cannot
+- Restarting observation resumes from the venue cursor/snapshot and cannot
   duplicate a persisted transaction.
 - No raw account ID or token appears in config, OLAP, logs or reports.
 - A canary without both SL and TP is rejected before any broker request.
+- A route timeout cannot create the same exposure at another venue without
+  reconciling the original route.
 
-## 15. OANDA References
+## 15. Venue References
 
 - https://developer.oanda.com/rest-live-v20/introduction/
-- https://developer.oanda.com/rest-live-v20/account-ep/
-- https://developer.oanda.com/rest-live-v20/pricing-ep/
-- https://developer.oanda.com/rest-live-v20/order-ep/
-- https://developer.oanda.com/rest-live-v20/trade-ep/
+- https://help.oanda.com/bvi/es/faqs/mt5-user-guide-bvi.htm
+- https://www.mql5.com/en/docs/network/webrequest
+- https://www.mql5.com/en/docs/trading/ordersend
+- https://docs.alpaca.markets/us/v1.1/docs/broker-api-faq
+- https://docs.alpaca.markets/us/docs/crypto-orders
+- https://www.interactivebrokers.com/campus/glossary-terms/paper-trading-account/
+- https://www.interactivebrokers.com/campus/ibkr-api-page/web-api-trading/
