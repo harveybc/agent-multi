@@ -1,6 +1,6 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign prepared; Alpaca Paper observation active; IBKR waiting for TWS Paper; OANDA MT5 bridge pending
+Status: E0-E4 complete; protected-entry v2 campaign prepared; Alpaca and IBKR Paper observation active; OANDA MT5 bridge pending
 Plan version: 1.17.0
 Date: 2026-07-29
 Primary implementation repository: `agent-multi`
