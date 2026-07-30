@@ -13,14 +13,14 @@ capped live evidence.
 
 ## 2. Account State
 
-User-reported state on 2026-07-29:
+User-reported state, updated 2026-07-30:
 
 | Venue | Account | State | Intended paper role |
 | --- | --- | --- | --- |
 | Alpaca | Trading API | created and verified | API-native crypto observation and long-only control |
 | IBKR | Individual Margin | created and verified | equities/ETF, FX and broad multi-asset paper execution |
 | OANDA | Global Markets live | compliance review pending | future CFD venue after approval |
-| OANDA | Global Markets MT5 demo | credentials not yet provisioned | FX and available crypto-CFD execution calibration |
+| OANDA | Global Markets MT5 demo | credentials remain user-owned inside MT5 | FX and available crypto-CFD execution calibration |
 
 Runtime evidence on Omega:
 
@@ -29,8 +29,8 @@ Runtime evidence on Omega:
 - IBKR Paper adapter, OLAP and five-minute observer are authenticated against
   local TWS Paper port `7497`; all six initial contracts qualified with zero
   positions and zero orders;
-- OANDA Global Markets MT5 remains unconfigured; MT5 credentials are not REST
-  API credentials;
+- the OANDA Global Markets MT5 Windows VM is running at the first Windows
+  Setup screen; MT5 credentials are not REST API credentials;
 - the consolidated watchdog reports freshness, endpoint health, missing data,
   unexpected exposure and venue availability through Telegram.
 
@@ -47,6 +47,10 @@ MT5 host decision:
 - `lts-mt5-paper` is running with 8 GiB RAM, 4 vCPU, 100 GiB sparse disk,
   UEFI/Secure Boot and TPM 2.0. Windows language, licensing, edition and
   account selection remain interactive; MT5 is not installed yet.
+- LTS now contains the authenticated read-only bridge, SQLite OLAP, fail-closed
+  broker plugin, MT5 EA source, user service, restricted-firewall script and
+  automated bridge/watchdog tests. The EA remains unaccepted until MetaEditor
+  reports zero compilation errors.
 
 Credentials, raw account IDs and recovery data must never be committed,
 included in chat, written to chain/portable OLAP or copied into tracked JSON.
@@ -107,8 +111,23 @@ Client-side polling alone is not accepted as the stop-loss mechanism.
 
 ## 6. OANDA Global Markets MT5 Adapter
 
-OANDA Global Markets uses MT5 rather than REST v20. The preferred boundary is a
-small Expert Advisor:
+OANDA Global Markets uses MT5 rather than REST v20. Commissioning is split into
+two explicit capabilities.
+
+Read-only capability, implemented first:
+
+- the EA refuses non-demo accounts and any configuration with read-only
+  disabled;
+- signed heartbeats and full snapshots record terminal health, account
+  fingerprint, positions, pending orders, symbols, quotes, spreads and volume
+  constraints;
+- `OnTradeTransaction` records idempotent transaction facts;
+- HMAC-SHA256, bounded timestamps and persistent nonces reject tampering and
+  replay;
+- the command endpoint always returns no command and every broker mutation
+  fails closed.
+
+Protected execution capability, disabled until M3:
 
 - `OnTimer` polls an allowlisted signed LTS endpoint for commands;
 - command envelopes include nonce, expiry, idempotency and account fingerprint;
@@ -237,8 +256,12 @@ The current Individual accounts validate our own portfolio only.
    100 GiB sparse storage, UEFI, TPM 2.0 and NAT. Use only an official
    Microsoft x64 ISO and verify its published SHA-256. Wine and dual boot are
    not part of the primary path.
-4. Complete 24-hour read-only observations before enabling protected canaries.
-5. Implement and test the MT5 EA bridge before declaring OANDA active.
+4. Complete Windows Setup, install MT5 Desktop, compile the tracked EA with
+   zero errors, allowlist only `http://192.168.122.1:8766`, attach the EA to
+   one chart and verify authenticated OLAP facts.
+5. Complete 24-hour read-only observations before enabling protected canaries.
+6. Treat the bridge as active only when heartbeat/snapshot freshness and
+   unexpected-exposure alerts are visible in deterministic monitoring.
 
 ## 13. Hermes and Telegram Operations
 
@@ -246,7 +269,8 @@ Deterministic monitoring owns alerts. Hermes/DeepSeek is an analyst, not an
 execution controller.
 
 - five-minute watchdog: stale observers, broker/API failures, missing quotes,
-  reconciliation exposure and venue availability;
+  reconciliation exposure and venue availability, including stale or
+  disconnected MT5 and any unexpected MT5 position/order;
 - event discussion: one-hour and four-hour moves are surfaced for inspection,
   never converted directly into orders or queued optimization;
 - 12-hour DeepSeek review: receives a sanitized evidence packet and reports
