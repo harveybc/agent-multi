@@ -91,9 +91,9 @@ Added `.github/workflows/tier-a.yml` with:
 - focused deterministic contract tests;
 - publication and incident-manifest validation.
 
-This is the first repository-local workflow. Finding 009 remains open until
-the workflow runs from a clean GitHub runner and the other Tier A repositories
-receive their own bounded gates.
+This is the first repository-local workflow. GitHub Actions run
+`30617139414` passed on commit `af343923` in 16 seconds. Finding 009 remains
+open until the other Tier A repositories receive their own bounded gates.
 
 ### First invariant artifacts
 
@@ -162,8 +162,10 @@ Running the full suite from `base` is unsupported because that environment
 does not contain `trading-contracts` or `gymnasium`; no packages were added to
 `base`.
 
-The suite will be rerun after all response artifacts are complete. A green
-local suite is not a substitute for the first clean GitHub Actions result.
+The first clean GitHub Actions result passed after two useful fail-closed
+iterations: the first exposed an undeclared cache dependency path; the second
+exposed shallow history as incompatible with preregistration verification.
+Neither failure was suppressed.
 
 ## 6. Closure Boundary
 
