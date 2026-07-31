@@ -1,7 +1,7 @@
 # 04. Open Findings Register
 
-Version: 1.2.0
-Date: 2026-07-30
+Version: 1.3.0
+Date: 2026-07-31
 Owner: Satoshi (state updates); closure of S0-S2 requires an independent
 verifier (normally Musashi) per `../README.md`.
 
@@ -13,6 +13,10 @@ state and the next required action only.
 
 | ID | Sev | State | Title | Source report | Next action | Owner |
 | --- | --- | --- | --- | --- | --- | --- |
+| AUD-GEN-20260731-025 | S3 provisional | open, self-reported | Satoshi omitted `doin-plugins` from D2 after the governing finding named it, an enumeration-drift defect acknowledged by the auditor | `../AUDIT_GS_COUNTER_RESPONSE_AND_AT_F1_001_2026_07_31.md` section 3 | Harvey adjudicates severity; retain in P13 incident corpus | Harvey + Satoshi |
+| AUD-F1-20260731-026 | S2 provisional | open | AT-F1-001 reconstructed the configured full-period L2 correctly but certified it as weekly-fraction; train tail covers 3 weeks, validation 53, and the mean-weekly reconstruction changes the champion score from positive to negative | `../CODEX_CROSS_REVIEW_OF_SATOSHI_AT_F1_001_2026_07_31.md` | Harvey selects the authoritative objective; no mid-chain mutation; then add a regression and correct the audit disposition | Harvey (decision) + Musashi (implementation) + Satoshi (verify) |
+| AUD-GEN-20260731-027 | S3 provisional | open | Satoshi report timestamp 04:40 COT predates audited commits created at 04:58 and 05:16; local file birth is 13:31 | `../CODEX_CROSS_REVIEW_OF_SATOSHI_AT_F1_001_2026_07_31.md` | Publish a non-destructive provenance addendum with separate evidence and write times | Satoshi |
+| AUD-GEN-20260731-028 | S3 provisional | open | Satoshi declared AT-F1-001 reported and opened finding 025 but wrote only the report, leaving backlog, findings register and recovery state contradictory to his mandatory handoff lifecycle | `../CODEX_CROSS_REVIEW_OF_SATOSHI_AT_F1_001_2026_07_31.md` | Reconcile recovery state and publish the bounded correction report; backlog/register were repaired by cross-review | Satoshi |
 | AUD-F1-20260730-005 | S3 | open (re-sampled 23:51 COT: **3 h 25 min**) | Equal-height chain fork: dragon on tip `603dfe1a…`, other three on `4b4f06a1…` at height 9; finalized anchor identical on all four, so no parallel lineage and no corruption. **Key mitigating evidence:** chain height has not advanced past 9 during the whole window (finalized height stuck at 2, 7 unfinalized blocks), so finalization has had no opportunity to resolve it — persistence is convergence latency pending a new block, not a demonstrated fork-choice failure | `../AUDIT_FULL_CROSS_FRONT_2026_07_30.md` section 3.2 | Re-sample at the generation-2→3 boundary (gen 2 at 17/20, ~2-4 h out) when new blocks seal; run read-only AT-F1-011. **No chain mutation on current evidence.** Escalates to S2 if the split survives that boundary, or Dragon holds unique accepted transactions, or finalized anchors diverge | Musashi (decision) + Satoshi (test) |
 
 | AUD-F3-20260731-006 | S3 | open | Prompt-injection screening is five English-only regexes and is the **sole** barrier, because flagged content is withheld rather than sanitized. Spanish phrasing, paraphrase, code fences, homoglyphs and base64 all pass unflagged. Bounded by compensating controls: packet declares content untrusted, publishing disabled, no tool access, human review required | `../AUDIT_FULL_CROSS_FRONT_2026_07_30.md` section 5.3 | Add Spanish patterns and multilingual malicious-post fixtures; consider quarantine over silent drop so evasions stay auditable | Musashi |

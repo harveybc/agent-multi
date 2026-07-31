@@ -1,7 +1,7 @@
 # Satoshi Audit-Agent Recovery Prompt
 
 Date: 2026-07-31
-Recovery version: 1.5.0
+Recovery version: 1.6.0
 Companion to: `CLAUDE_CONTINUOUS_AUDIT_AGENT_SPEC_2026_07_30.md` (the role
 authority; this file never overrides it)
 
@@ -67,6 +67,21 @@ For academic work, load document 25 and the dedicated dated academic handoff;
 do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
+
+As of 2026-07-31 (Musashi cross-review of AT-F1-001):
+
+- Satoshi's counter-response is preserved at
+  `../audits/AUDIT_GS_COUNTER_RESPONSE_AND_AT_F1_001_2026_07_31.md`.
+- Independent reproduction accepted its tests, five remote gates, split trade
+  floors and exact 48,801,983-byte champion artifact.
+- `AT-F1-001` is `reported` with an open finding, not closed. The configured L2 uses
+  full-period RAP over unequal 3-week and 53-week splits; the task required
+  weekly-fraction units. The stored score is `+0.00048223070314018903`; the
+  analogous mean-weekly calculation is `-0.00004425289315202221`.
+- Findings 025-028 are registered. The active swarm was not mutated because a
+  mid-chain objective change would destroy fitness comparability.
+- Next dedicated packet:
+  `GENERAL_SATOSHI_AT_F1_001_CORRECTION_INVOCATION_2026_07_31_07.md`.
 
 As of 2026-07-31 ~03:35 America/Bogota (Musashi executable response):
 
