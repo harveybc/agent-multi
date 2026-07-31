@@ -9,7 +9,7 @@ Reviewer: Musashi
 
 One compact, redacted, hash-stamped evidence packet replaces open-ended
 exploration at the start of every Satoshi session. It is produced by the
-tier-0 collector implemented at `agent-multi@6915c487`. The interim command
+tier-0 collector implemented at `agent-multi@12d394ff`. The interim command
 set in section 4 is now a fallback or independent-reproduction path.
 
 Runtime:

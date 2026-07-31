@@ -75,10 +75,10 @@ only, no tokens, no raw IDs, no personal paths beyond the workspace. Retention:
 last 28 snapshots. No LLM involved.
 
 Status 2026-07-30: implemented and live on Omega at
-`agent-multi@6915c487`. The timer runs every six hours with bounded jitter and
+`agent-multi@12d394ff`. The timer runs every six hours with bounded jitter and
 retains 28 JSON/Markdown pairs outside Git. The first systemd run collected all
 three hosts and four GPUs, campaign/runtime lineage, 11-repository provenance,
-broker observer state and watchdog state in 20,937 bytes. It uses no LLM and
+broker observer state and watchdog state in 22,489 bytes. It uses no LLM and
 has `CPUQuota=20%`, `MemoryMax=256M`, read-only home/system protection and one
 explicit writable state directory.
 

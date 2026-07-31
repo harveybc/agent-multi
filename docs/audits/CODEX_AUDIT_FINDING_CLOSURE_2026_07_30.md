@@ -88,12 +88,14 @@ mutation.
 
 ## Audit Infrastructure Follow-Up
 
-`OBS-20260730-C` was resolved by `agent-multi@6915c487`. The deterministic
+`OBS-20260730-C` was resolved by `agent-multi@12d394ff`. The deterministic
 collector and six-hour user timer now record all three hosts, four GPUs,
 utilization/temperature/memory, RAM, swap, disk and campaign cgroup OOM
-counters. The first systemd packet was 20,937 bytes, below the 32 KiB target,
+counters. The verified systemd packet was 22,489 bytes, below the 32 KiB target,
 and contained neither the local home path nor tested secret markers. Operational
-watchdogs continue to own alerts; the packet is read-only audit input.
+watchdogs continue to own alerts; the packet is read-only audit input. The
+collector regressions passed (`10 passed`) and the complete `agent-multi` suite
+passed (`373 passed`).
 
 ## Safety Result
 
