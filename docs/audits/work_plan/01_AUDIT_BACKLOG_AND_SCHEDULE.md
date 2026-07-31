@@ -1,6 +1,6 @@
 # 01. Audit Backlog and Schedule
 
-Version: 1.1.0
+Version: 1.2.0
 Date: 2026-07-31
 Owner: Satoshi
 Reviewer: Musashi
@@ -34,6 +34,7 @@ From document 24 section 7, mapped to this backlog:
 | Monthly | Recovery/supply-chain session | AT-GEN-008 |
 | Event | Campaign transition, incident, broker activation, contract change | AT-F1-003, AT-F2-006, or ad hoc |
 | Paper outline/evidence freeze/pre-submission | Academic audit | AT-ACADEMIC-030 or its dated successor |
+| Weekly/quarterly innovation cycle | Academic research | AT-ACADEMIC-032 permanent queue |
 
 ## 3. Risk-Ranked Backlog
 
@@ -56,7 +57,9 @@ explored by Satoshi at full token cost.
 | AT-GEN-008 | GEN | proposed | Continuity evidence: evidence-pool snapshot hashes exist and verify; backup retention matches doc 13 section 6 | monthly slot | hash listing, `quick_check` results |
 | AT-GEN-009 | GEN | proposed | Weekly recovery-prompt reviews (both Musashi's and Satoshi's) against architecture changes | weekly slot | git delta of docs |
 | AT-F2-009 | F2 | proposed (machine telemetry materialized) | Dragon/Gamma linger + SSH-bridge dependency check; MT5 VM state; Alpaca scheduling mechanism | first session requiring process-level remote evidence | deterministic machine packet plus bounded process verification |
-| AT-ACADEMIC-030 | GEN | **scheduled after post-fix verification** | Audit the five-paper publication program, seed a verified related-work ledger and classify evidence readiness using the dedicated handoff | after current post-fix report unless S0/S1 preempts | paper artifact manifests and publication-plan diff |
+| AT-ACADEMIC-030 | GEN | reported | Audit the five-paper publication program, seed a related-work ledger and classify evidence readiness | complete; awaiting cross-review disposition | paper artifact manifests and publication-plan diff |
+| AT-ACADEMIC-031 | GEN | scheduled | Verify the seeded P5/P1 primary sources and seed their claim/evidence matrices | after S0/S1 and AT-F1-011 | primary-source ledger delta |
+| AT-ACADEMIC-032 | GEN | scheduled permanent | Audit Musashi's governance response, P1 scope and P6+ continuous-research program; then maintain future-work, collision-test, replication and retirement queue | dedicated 2026-07-31 handoff, then weekly/quarterly cadence | dated innovation audit, prior-art delta, future-work files |
 
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 

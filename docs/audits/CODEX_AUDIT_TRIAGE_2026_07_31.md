@@ -3,7 +3,8 @@
 Date: 2026-07-31
 Reviewer: Musashi
 Reporter: Satoshi
-Independent corroborator: Arendt
+Independent corroborator: none. The prior unregistered `Arendt` designation
+was removed on 2026-07-31 and carried no evidentiary or closure weight.
 
 ## 1. Decision Summary
 

@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue Paper commissioning active; bounded social-intelligence, independent-audit and academic-preservation tracks specified
-Plan version: 1.21.0
+Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
+Plan version: 1.22.0
 Date: 2026-07-31
 Primary implementation repository: `agent-multi`
 
@@ -26,6 +26,7 @@ of the existing DOIN network. The system must support:
 - bounded social intelligence, source-backed technical participation and
   recoverable low-cost agent operations;
 - a reproducible IEEE-compatible paper series and later synthesis book;
+- a continuous falsifiable research program extending beyond the initial paper series;
 - complete candidate, metric, lineage, and deployment traceability.
 
 ## Critical Premise
@@ -80,6 +81,7 @@ trading domain.
 | [23 Social intelligence and continuity](23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md) | Hermes/Moltbook research, local-model cost routing, social OLAP, bounded publishing, DOIN domain discovery, and recoverable operations |
 | [24 Independent audit and continuous improvement](24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md) | Claude audit authority, cross-front checks, cadence, evidence, Hermes boundary, findings, and Codex role recovery |
 | [25 Academic publication and reproducibility](25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md) | Five-paper research program, IEEE-compatible outlines, claim/citation ledgers, evidence gates, reproducibility packages, disclosure, and later synthesis book |
+| [26 Continuous research and innovation](26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md) | Permanent discovery loop, research horizons, P6+ registry, falsification gates, cadence, and non-idle academic queue |
 
 ## Repository Ownership Summary
 
@@ -205,6 +207,9 @@ adding value.
 14. Preserve validated contributions through the five-paper academic program,
     without allowing publication work to relabel incomplete evidence or
     interfere with protected experiments.
+15. Maintain the continuous research registry: reject prior-art collisions
+    cheaply, promote only falsifiable lines and keep Satoshi on the permanent
+    bounded queue when no urgent finding or paper gate is ready.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

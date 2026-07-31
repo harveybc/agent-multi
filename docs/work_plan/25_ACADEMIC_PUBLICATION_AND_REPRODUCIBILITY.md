@@ -1,7 +1,7 @@
 # Academic Publication and Reproducibility Program
 
-Status: specified; evidence collection active; no submission authorized
-Version: 1.0.0
+Status: specified; evidence collection and continuous research active; no submission authorized
+Version: 1.1.0
 Date: 2026-07-31
 
 ## 1. Purpose and Authority
@@ -33,6 +33,9 @@ Human and review responsibilities are:
 AI systems are tools and reviewers, not authors. Harvey retains responsibility
 for every submitted claim. AI-generated text, figures, code or analysis must be
 disclosed according to the target venue's current policy.
+
+Harvey alone selects the venue, accepts publication fees, signs copyright or
+license agreements and authorizes public release.
 
 Academic and technical authority use cross-review:
 
@@ -164,6 +167,18 @@ matrix and protocol-comparison table.
 Publication gate: deterministic multi-node reproduction, frozen protocol
 version, explicit threat model, fault-injection experiments and verified
 artifact bundle.
+
+The initial P1 threat model is deliberately narrow. It may claim only
+properties demonstrated under cooperative heterogeneous peers with crash,
+omission, stale, duplicate, lazy and malformed-result behavior. Current code
+contains hash-chained blocks, deterministic candidate identity and evaluator
+selection, commit-reveal, quorum logic, checkpoints and deterministic fork
+choice. Network messages are not presently cryptographically authenticated,
+the deployed research profile can accept reported candidate results without
+independent re-evaluation, and one operator controls the observed fleet.
+Byzantine tolerance, Sybil resistance, collusion resistance, permissionless
+economic security and externally anchored finality are non-goals until
+separate implementations and adversarial experiments support them.
 
 ### P2. Data-First Mixed-Genome Trading Search
 
@@ -349,6 +364,19 @@ Publication gate: versioned incident taxonomy, reproducible fault scenarios,
 detection latency, false-alert rate, runtime overhead and recovery evidence.
 Personal and operationally sensitive security details are excluded.
 
+P5 uses the following conflict controls:
+
+1. Its incident corpus is enumerated before analysis from every incident in
+   work-plan documents 13, 15, 16 and 20, every S0-S2 audit finding, and every
+   deterministic alert escalated to an incident. Exclusions require a dated
+   reason and remain visible.
+2. Musashi reconstructs every quantitative effectiveness claim from raw
+   timestamps and immutable evidence packets; Satoshi does not verify its own
+   effectiveness claims.
+3. P5 requires external human or independent technical review before any
+   preprint. Every cited Satoshi audit artifact carries an explicit
+   self-evaluation conflict disclosure in addition to the AI disclosure.
+
 ## 5. Later Synthesis Book
 
 Provisional title:
@@ -369,6 +397,11 @@ Provisional parts:
 
 Book drafting does not begin until at least three papers have frozen evidence
 packages and one paper has received external technical review.
+
+The book is not the end of the research program. New research questions,
+replications, negative results and protocol extensions enter through
+`26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md`. Papers P1-P5 are the first
+registered series, not a finite backlog.
 
 ## 6. Related-Work and Citation Ledger
 
@@ -424,6 +457,10 @@ idea
 No stage transition is automatic. Satoshi records academic readiness, Musashi
 records technical/reproducibility readiness, and neither substitutes for the
 other. Harvey authorizes public release and submission.
+
+When no paper gate or urgent audit is ready, Satoshi continues the bounded
+research queue defined in document 26. Completion of P5 never places the
+academic role in an idle state.
 
 ## 9. Authoritative Publication Guidance
 
