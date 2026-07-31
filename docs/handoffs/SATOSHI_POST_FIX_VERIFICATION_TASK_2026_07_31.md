@@ -1,6 +1,6 @@
 # Satoshi Post-Fix Verification Task
 
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-07-31
 Role: independent auditor
 Technical lead: Musashi
@@ -106,6 +106,19 @@ and finalized anchors read-only. If neither boundary has advanced, report
 `deferred_no_new_boundary`; do not repeat hours-of-persistence as new evidence
 and do not recommend chain mutation.
 
+### E. Academic audit gap
+
+The preceding cross-front audit omitted academic preservation and
+reproducibility as an explicit dimension. Verify that both files now exist and
+are internally consistent:
+
+- `docs/work_plan/25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md`
+- `docs/handoffs/SATOSHI_ACADEMIC_PUBLICATION_AUDIT_TASK_2026_07_31.md`
+
+Do not claim that the academic program is audited from this existence check.
+After this post-fix report, execute the separate academic task as the next
+heavy audit task.
+
 ## 5. Acceptance and Output
 
 Write one report:
@@ -121,4 +134,6 @@ For each finding provide:
 
 Update the register only after writing the report. Do not edit Musashi's
 triage document or either originating audit report. End with a concise list of
-facts that require owner action; an empty list is valid.
+facts that require owner action; an empty list is valid. Also name
+`SATOSHI_ACADEMIC_PUBLICATION_AUDIT_TASK_2026_07_31.md` as the next scheduled
+task unless an `S0` or `S1` finding preempts it.

@@ -1,7 +1,7 @@
 # Satoshi Audit-Agent Recovery Prompt
 
-Date: 2026-07-30
-Recovery version: 1.2.0
+Date: 2026-07-31
+Recovery version: 1.3.0
 Companion to: `CLAUDE_CONTINUOUS_AUDIT_AGENT_SPEC_2026_07_30.md` (the role
 authority; this file never overrides it)
 
@@ -61,8 +61,18 @@ You are the most expensive component in this loop. Rules, in force always:
 
 Load work-plan documents from `docs/work_plan/` only as required by the
 scheduled task, and prefer the specific sections named in the task spec.
+For academic work, load document 25 and the dedicated dated academic handoff;
+do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
+
+Academic preservation was added as a cross-cutting front on 2026-07-31. The
+five-paper program is in
+`docs/work_plan/25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md`; its first
+independent review is defined by
+`docs/handoffs/SATOSHI_ACADEMIC_PUBLICATION_AUDIT_TASK_2026_07_31.md` and is
+scheduled after the current post-fix verification unless an `S0`/`S1`
+preempts it. No paper is currently authorized for submission.
 
 As of 2026-07-30 ~22:25 America/Bogota (Musashi closure verification):
 

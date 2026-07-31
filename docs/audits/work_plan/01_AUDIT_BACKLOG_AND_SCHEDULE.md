@@ -1,7 +1,7 @@
 # 01. Audit Backlog and Schedule
 
-Version: 1.0.0
-Date: 2026-07-30
+Version: 1.1.0
+Date: 2026-07-31
 Owner: Satoshi
 Reviewer: Musashi
 
@@ -33,6 +33,7 @@ From document 24 section 7, mapped to this backlog:
 | Weekly full | Satoshi cross-front session | AT-GEN-009 plus full-front sweep |
 | Monthly | Recovery/supply-chain session | AT-GEN-008 |
 | Event | Campaign transition, incident, broker activation, contract change | AT-F1-003, AT-F2-006, or ad hoc |
+| Paper outline/evidence freeze/pre-submission | Academic audit | AT-ACADEMIC-030 or its dated successor |
 
 ## 3. Risk-Ranked Backlog
 
@@ -55,6 +56,7 @@ explored by Satoshi at full token cost.
 | AT-GEN-008 | GEN | proposed | Continuity evidence: evidence-pool snapshot hashes exist and verify; backup retention matches doc 13 section 6 | monthly slot | hash listing, `quick_check` results |
 | AT-GEN-009 | GEN | proposed | Weekly recovery-prompt reviews (both Musashi's and Satoshi's) against architecture changes | weekly slot | git delta of docs |
 | AT-F2-009 | F2 | proposed (machine telemetry materialized) | Dragon/Gamma linger + SSH-bridge dependency check; MT5 VM state; Alpaca scheduling mechanism | first session requiring process-level remote evidence | deterministic machine packet plus bounded process verification |
+| AT-ACADEMIC-030 | GEN | **scheduled after post-fix verification** | Audit the five-paper publication program, seed a verified related-work ledger and classify evidence readiness using the dedicated handoff | after current post-fix report unless S0/S1 preempts | paper artifact manifests and publication-plan diff |
 
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 

@@ -1,12 +1,13 @@
 # 24. Independent Audit and Continuous Improvement
 
-Status: specified, baseline audit pending
-Date: 2026-07-30
+Status: specified, baseline audit complete, academic audit scheduled
+Date: 2026-07-31
 
 ## 1. Objective
 
-Add an independent, evidence-driven audit function across the three active
-fronts without creating a second orchestrator or weakening ownership:
+Add an independent, evidence-driven audit function across three active runtime
+fronts and one cross-cutting preservation front without creating a second
+orchestrator or weakening ownership:
 
 1. optimization and research: data, preprocessing, models, DOIN campaigns,
    artifacts and portfolio construction;
@@ -14,6 +15,8 @@ fronts without creating a second orchestrator or weakening ownership:
    reconciliation and the social-trading boundary;
 3. social intelligence and continuity: Hermes, Telegram, source collection,
    Moltbook, local-model cost routing, backups and recovery.
+4. academic preservation and reproducibility: contribution boundaries,
+   related work, claims, artifacts, disclosures and publication maintenance.
 
 The audit function exists to find contradictions, defects, missing evidence,
 security exposure, invalid assumptions and wasted work early. It is not a
@@ -136,6 +139,21 @@ independent closure evidence.
 - Status answers include anomalies and missing evidence instead of hiding them.
 - Retention removes redundant bulk without deleting unique lineage.
 
+### 3.9 Academic contribution and reproducibility
+
+- Each contribution is distinguished from prior art by a documented search.
+- Research questions and claims are falsifiable.
+- Every claim maps to an immutable artifact or a verified citation.
+- References are opened and checked; no bibliographic field is invented.
+- Baselines, ablations, uncertainty, negative results, limitations and threats
+  to validity are explicit.
+- Protected-test outcomes cannot choose the method, narrative or title claim.
+- Manuscripts remain `outline` or `evidence_incomplete` until their paper gate
+  passes.
+- AI use, human responsibility, conflicts, licenses and availability are
+  disclosed according to the target venue's current rules.
+- Reproducibility packages do not redistribute paid or restricted raw data.
+
 ## 4. Evidence and Source Hierarchy
 
 The auditor uses the same source hierarchy as the main plan:
@@ -238,9 +256,10 @@ LLM audits are change-driven. Deterministic monitoring remains continuous.
 | Hourly | Deterministic summary, Telegram only on state change or active risk | Fleet and execution health; no full LLM review |
 | Event-driven | Claude audit requested after a material event | Campaign transition, champion archive, incident, contract/fitness/risk change, broker activation or security alert |
 | Every 24 hours while active work changes | Delta audit | Changed commits/configs, open high findings and one rotating front |
-| Every 72 hours | Front coverage requirement | Each of the three fronts receives at least one focused audit |
+| Every 72 hours | Runtime-front coverage requirement | Each of the three runtime fronts receives at least one focused audit |
 | Weekly | Full cross-front review | Architecture, ML/data, distributed behavior, execution, security, OLAP, cost and backlog |
 | Monthly | Recovery and supply-chain review | Restore drill, secret inventory/expiry, dependency provenance, storage, cost and governance |
+| Paper outline, evidence freeze and pre-submission | Academic review | Novelty search, claim ledger, baselines, ablations, reproducibility, licensing and disclosure |
 
 Claude cannot remain alive between chat turns and must not claim continuous
 monitoring. Cron/systemd and Hermes may collect deterministic snapshots. Claude
@@ -331,8 +350,8 @@ The report format and lifecycle are defined in `docs/audits/README.md`.
 
 ### A0: context and provenance
 
-- Read the index, architecture, implementation ledger and all three front
-  documents.
+- Read the index, architecture, implementation ledger, all three runtime-front
+  documents and the academic-preservation contract.
 - Capture branch, commit, dirty state and remote tracking for active repos.
 - Produce a repository and responsibility map.
 - Identify stale or contradictory status statements.
@@ -367,9 +386,18 @@ The report format and lifecycle are defined in `docs/audits/README.md`.
 - From observed recurring gaps, propose the minimum deterministic monitors.
 - Do not implement them without a task packet.
 
+### A6: academic preservation
+
+- Audit the five-paper program in document 25.
+- Separate engineering, integration and scientific novelty.
+- Build a verified related-work ledger and claim/evidence matrix.
+- Reject submission readiness when decisive evidence, controls, licensing or
+  disclosure is missing.
+
 ## 13. Acceptance Criteria
 
-- Claude can reconstruct all three fronts without relying on chat memory.
+- Claude can reconstruct the three runtime fronts and academic-preservation
+  contract without relying on chat memory.
 - Findings cite reproducible evidence and distinguish facts from hypotheses.
 - No auditor action can alter a campaign, broker, service, secret or published
   content by default.
@@ -380,3 +408,5 @@ The report format and lifecycle are defined in `docs/audits/README.md`.
   observation.
 - Findings produce regressions, monitors, decisions or explicit accepted risk,
   not an endlessly growing criticism document.
+- No academic claim or submission state can advance without independent
+  citation/evidence review and human approval.

@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue Paper commissioning active; bounded social-intelligence and independent-audit tracks specified
-Plan version: 1.20.0
-Date: 2026-07-30
+Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue Paper commissioning active; bounded social-intelligence, independent-audit and academic-preservation tracks specified
+Plan version: 1.21.0
+Date: 2026-07-31
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -25,6 +25,7 @@ of the existing DOIN network. The system must support:
 - multi-venue paper/live execution through account-specific broker adapters;
 - bounded social intelligence, source-backed technical participation and
   recoverable low-cost agent operations;
+- a reproducible IEEE-compatible paper series and later synthesis book;
 - complete candidate, metric, lineage, and deployment traceability.
 
 ## Critical Premise
@@ -78,6 +79,7 @@ trading domain.
 | [22 Multi-venue paper execution](22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md) | OANDA MT5, Alpaca Paper, IBKR Paper, global LTS ledger, venue routing, account status, and social-trading boundary |
 | [23 Social intelligence and continuity](23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md) | Hermes/Moltbook research, local-model cost routing, social OLAP, bounded publishing, DOIN domain discovery, and recoverable operations |
 | [24 Independent audit and continuous improvement](24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md) | Claude audit authority, cross-front checks, cadence, evidence, Hermes boundary, findings, and Codex role recovery |
+| [25 Academic publication and reproducibility](25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md) | Five-paper research program, IEEE-compatible outlines, claim/citation ledgers, evidence gates, reproducibility packages, disclosure, and later synthesis book |
 
 ## Repository Ownership Summary
 
@@ -196,9 +198,12 @@ adding value.
 12. Add the social-intelligence track without competing with optimization:
     deterministic collection, Telegram review, measured local-model bake-off,
     then bounded publication and a clean VPS continuity drill.
-13. Run change-driven independent audits across all three fronts, with Codex
+13. Run change-driven independent audits across the three runtime fronts, with Codex
     reproducing findings and maintaining a versioned technical-lead recovery
     prompt.
+14. Preserve validated contributions through the five-paper academic program,
+    without allowing publication work to relabel incomplete evidence or
+    interfere with protected experiments.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
