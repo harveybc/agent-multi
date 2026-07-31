@@ -1,6 +1,6 @@
 # 01. Audit Backlog and Schedule
 
-Version: 1.2.0
+Version: 1.3.0
 Date: 2026-07-31
 Owner: Satoshi
 Reviewer: Musashi
@@ -45,7 +45,7 @@ explored by Satoshi at full token cost.
 | ID | Front | State | Task | Trigger | Hermes pre-collect |
 | --- | --- | --- | --- | --- | --- |
 | AT-F1-011 | F1 | **scheduled (next)** | Equal-height fork classification for AUD-F1-20260730-005: compare block 9 across branches for unique accepted transactions, read the `ForkChoiceRule` tie-break, re-sample after finalization advances. Read-only; proposes no chain mutation (details 4.4) | now, while the fork is observable | snapshot tip/anchor fields (already collected) |
-| AT-F1-001 | F1 | scheduled | Protected-entry v2 eligibility/bracket contract verification (details 4.1) | next 24-48 h | test-suite outputs, champion metric JSON |
+| AT-F1-001 | F1 | **reported (finding open)** | Protected-entry v2 eligibility/bracket contract verification (details 4.1); cross-review rejected the PASS because full-period RAP was certified as weekly RAP | Harvey metric-contract decision, then correction addendum | block-8 split metrics and artifact hash independently reproduced |
 | AT-F2-002 | F2 | scheduled | Broker-boundary fail-closed and secret-redaction audit (details 4.2) | next 72 h | OLAP schema dumps, adapter config hashes |
 | AT-F1-003 | F1 | scheduled (event) | Champion archive and job-0 to job-1 transition verification (details 4.3) | job-0 convergence event | supervisor history JSON, artifact hashes |
 | AT-GEN-010 | GEN | scheduled | Doc-drift delta sweep: doc 13 refresh vs runtime; verify open findings still reproduce | every 24 h delta session | git log delta, snapshot diff |
