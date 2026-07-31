@@ -13,14 +13,14 @@ capped live evidence.
 
 ## 2. Account State
 
-User-reported state, updated 2026-07-30:
+User-reported and runtime-verified state, updated 2026-07-31:
 
 | Venue | Account | State | Intended paper role |
 | --- | --- | --- | --- |
 | Alpaca | Trading API | created and verified | API-native crypto observation and long-only control |
 | IBKR | Individual Margin | created and verified | equities/ETF, FX and broad multi-asset paper execution |
-| OANDA | Global Markets live | compliance review pending | future CFD venue after approval |
-| OANDA | Global Markets MT5 demo | credentials remain user-owned inside MT5 | FX and available crypto-CFD execution calibration |
+| OANDA | Global Markets live | created; MT5 Live login verified; automation prohibited | future tightly capped CFD venue only after an independent live-activation decision |
+| OANDA | Global Markets MT5 demo | separate Demo credentials not yet issued or recovered | FX and available crypto-CFD execution calibration |
 | Capital.com | Demo API | adapter ready; account/API key pending | GET-only crypto, FX, index and CFD capability fallback |
 
 Runtime evidence on Omega:
@@ -29,14 +29,21 @@ Runtime evidence on Omega:
   minutes; six crypto quote cells are available and exposure is zero;
 - IBKR Paper adapter, OLAP and five-minute observer are authenticated against
   local TWS Paper port `7497`; all six initial contracts qualified with zero
-  positions and zero orders. The post-disclaimer verification recorded 222
-  completed sessions;
+  positions and zero orders. The post-recovery verification recorded more than
+  240 completed sessions;
 - IBKR watchdog health requires a recent completed authenticated session with
   reconciliation facts. TCP reachability is retained only as a separate
   diagnostic;
 - the OANDA Global Markets MT5 Windows VM has Windows 11 and MT5 installed.
-  OANDA demo authentication is blocked on the account/support path, so no
-  broker heartbeat or instrument inventory is claimed;
+  The OGM Live login works against `OANDA_Global-Live-1`, but it must never be
+  used to commission the bridge. OANDA documents separate credentials for
+  `OANDA_Global-Demo-1`; those Demo credentials remain blocked on the official
+  account/support path, so no broker heartbeat or instrument inventory is
+  claimed;
+- OANDA REST-v20 is explicitly non-applicable to Global Markets. The watchdog
+  therefore treats an absent REST token as an optional inactive adapter, not
+  an operational incident. MT5 Demo remains the only active OGM commissioning
+  path;
 - the consolidated watchdog reports functional observer freshness, endpoint
   health, missing data, unexpected exposure and venue availability through
   Telegram.

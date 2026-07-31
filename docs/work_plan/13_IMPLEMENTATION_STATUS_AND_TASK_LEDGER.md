@@ -32,21 +32,28 @@ Runtime acceptance evidence:
   and delivered it successfully to the configured Telegram group;
 - the multi-venue shadow marked all nine cells with `available_weight=1.0`,
   zero missing/stale cells and `orders_submitted=0`;
-- full suites pass: `379` Agent Multi tests and `211` LTS tests.
+- full suites pass: `379` Agent Multi tests and `215` LTS tests.
 
-Account and observer state verified on 2026-07-30:
+Account and observer state verified on 2026-07-31:
 
 - Alpaca Trading API Paper is authenticated in read-only mode and observed
   every five minutes. The initial crypto universe is available; positions,
   orders and submitted orders are zero.
 - IBKR Individual Margin Paper is authenticated through TWS Paper port `7497`
   after the API disclaimer was accepted. The read-only observer and
-  reconciliation run every five minutes; 222 completed sessions were present
-  at the verification point with zero positions and zero orders.
-- OANDA Global Markets live application remains under compliance review.
-- Windows 11 and MT5 are installed in the Dragon VM. A valid OANDA Global
-  Markets demo server/session is still blocked on the account/support path, so
-  no authenticated MT5 heartbeat is claimed.
+  reconciliation run every five minutes; more than 240 completed sessions were
+  present at the verification point with zero positions and zero orders.
+- OANDA Global Markets Live was created and its MT5 login was verified against
+  `OANDA_Global-Live-1`. It is not authorized for bridge commissioning or
+  automated orders.
+- Windows 11 and MT5 are installed in the Dragon VM. OANDA requires an
+  independent Demo login and password for `OANDA_Global-Demo-1`; those Demo
+  credentials are still blocked on the account/support path, so no
+  authenticated MT5 heartbeat is claimed.
+- The runtime watchdog no longer raises an actionable incident for absent
+  REST-v20 credentials when REST is optional. This matches the permanent OGM
+  incompatibility and leaves `mt5_bridge_missing` as the truthful active OANDA
+  commissioning alert.
 
 Architecture correction 2026-07-29: OANDA Global Markets is not a REST-v20
 division. The existing Practice REST client remains preserved for compatible
@@ -773,7 +780,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_observers_active_mt5_oanda_blocked | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
+| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_observers_active_ogm_live_verified_demo_bridge_blocked | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | specified_not_activated | Hermes-routed low-cost research, social OLAP, Telegram review, bounded Moltbook publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
