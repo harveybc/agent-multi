@@ -59,7 +59,10 @@ not a monolithic cross-repository environment:
   not pull-request checks.
 
 Repository-local Tier A workflows now exist for `agent-multi`, `doin-core`,
-`doin-node`, and `lts`. Each installs a generated hash-pinned lock with
-`pip --require-hashes`; `doin-node` additionally checks out exact commits of
-`doin-core` and `doin-plugins`. Local clean-environment reproductions passed.
-Finding 009 remains open until the new workflows pass on clean GitHub runners.
+`doin-node`, `doin-plugins`, and `lts`. Each installs a generated hash-pinned
+lock with `pip --require-hashes`; `doin-node` checks out exact commits of
+`doin-core` and `doin-plugins`, while `doin-plugins` checks out exact commits
+of `doin-core`, `doin-node` and the adapted `agent-multi` optimizer. All five
+local clean-environment reproductions and all five clean GitHub runner jobs
+passed. Finding 009 therefore meets its stated closure condition, subject to
+independent audit verification.
