@@ -100,3 +100,22 @@ boundary.
 - `doin-node/tests/test_multinode.py`
 - `doin-plugins/tests/test_e2e_lifecycle.py`
 - `tests/integration/test_campaign_supervisor_swarm.py`
+
+## 5. Omitted Academic Dimension
+
+The audit did not cover academic preservation, publication-quality
+reproducibility, novelty search or claim-to-evidence traceability. That is a
+valid scope gap: a useful system is more likely to persist when its distinct
+contributions can be independently examined and reproduced.
+
+The corrective contract is now:
+
+- `../work_plan/25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md`
+- `../handoffs/SATOSHI_ACADEMIC_PUBLICATION_AUDIT_TASK_2026_07_31.md`
+
+The contract defines five short papers rather than one monolithic manuscript,
+an IEEE-compatible structure, a verified citation ledger, immutable
+claim/artifact mappings, protected-test and negative-result rules,
+reproducibility packages, AI-use disclosure and human submission authority.
+The existence of that contract does not make any paper evidence-ready;
+Satoshi's separate academic audit must classify each one.

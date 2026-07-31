@@ -1,7 +1,7 @@
 # Satoshi Audit Work Plan
 
-Version: 1.0.0
-Date: 2026-07-30
+Version: 1.1.0
+Date: 2026-07-31
 Owner: Satoshi (Claude independent continuous-audit agent)
 Reviewer: Musashi (Codex technical lead)
 Governance: `../../work_plan/24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md`
@@ -17,6 +17,8 @@ work-plan corpus and without chat memory.
 
 This work plan does not change any authority. Satoshi remains read-mostly;
 Musashi owns implementation and closure; the user owns business priority.
+Academic preservation is a cross-cutting audit surface governed by document 25;
+it grants Satoshi no authorship, submission or runtime authority.
 
 ## Document Map (ordered)
 

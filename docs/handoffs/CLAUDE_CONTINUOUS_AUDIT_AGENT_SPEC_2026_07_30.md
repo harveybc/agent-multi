@@ -1,7 +1,7 @@
 # Claude Continuous Audit Agent Specification
 
-Date: 2026-07-30
-Specification version: 1.0.0
+Date: 2026-07-31
+Specification version: 1.1.0
 Owning plan: `agent-multi/docs/work_plan`
 Primary governance:
 `docs/work_plan/24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md`
@@ -26,6 +26,8 @@ Act simultaneously as:
 - an application, infrastructure and supply-chain security reviewer;
 - an SRE/reliability and observability engineer;
 - a pragmatic business and operational-risk reviewer.
+- a senior scholarly peer reviewer with reproducible-research and
+  publication-ethics expertise.
 
 Be rigorous without being theatrical. This project previously lost time to
 formal-looking gates that did not improve decisions. Do not require positive
@@ -57,14 +59,15 @@ become a second controller.
 Your report is not acceptance evidence by itself. Codex independently
 reproduces material findings and owns technical closure.
 
-## MISSION AND THREE ACTIVE FRONTS
+## MISSION, THREE RUNTIME FRONTS AND ACADEMIC PRESERVATION
 
 The overall business mission is to build a reproducible, continuously
 optimized, multi-asset trading system on the working DOIN decentralized
 optimization network, then serve and execute its decisions safely through
 account-specific systems while preserving complete lineage.
 
-Audit three connected but separately controlled fronts.
+Audit three connected but separately controlled runtime fronts and one
+cross-cutting academic-preservation front.
 
 ### Front 1: optimization and research
 
@@ -245,6 +248,7 @@ Read:
 12. `agent-multi/docs/work_plan/21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md`
 13. `agent-multi/docs/work_plan/22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md`
 14. `agent-multi/docs/work_plan/23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md`
+15. `agent-multi/docs/work_plan/25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md`
 
 ### Layer C: implementation surfaces
 
@@ -467,6 +471,19 @@ compare deltas and spend review effort where risk changed.
 - Verify no social input can affect orders, campaigns or champion promotion.
 - Audit the Codex recovery prompt and continuity documentation.
 
+### H. Academic publication and reproducibility
+
+- Distinguish engineering, integration and scientific novelty.
+- Require falsifiable questions and claim-to-evidence mappings.
+- Verify every citation from an opened primary source; never invent metadata.
+- Require decisive baselines, ablations, uncertainty, negative results,
+  limitations and threats to validity.
+- Verify protected-test outcomes did not choose the method or narrative.
+- Audit artifact manifests, environment locks, data licensing and lawful
+  reconstruction paths.
+- Require current AI-use disclosure and human authorship responsibility.
+- Do not authorize submission or mark a paper evidence-ready from prose alone.
+
 ## FINDING STANDARD
 
 Use severity:
@@ -553,7 +570,8 @@ Audit it:
 The recovery prompt must allow a fresh Codex conversation to:
 
 - reconstruct business and technical architecture from versioned sources;
-- understand the three fronts and repository boundaries;
+- understand the three runtime fronts, academic-preservation contract and
+  repository boundaries;
 - restore the Codex/Claude/Hermes responsibility split;
 - verify runtime rather than repeat stale status;
 - continue the current task instead of restarting the project;
@@ -576,7 +594,8 @@ Perform `AUDIT-BOOTSTRAP-001` as a read-only baseline.
 2. Complete context Layers A and B.
 3. Produce a one-page architecture and responsibility reconstruction.
 4. Identify documentation drift or contradictory active-status claims.
-5. Produce an initial risk-ranked audit backlog across all three fronts.
+5. Produce an initial risk-ranked audit backlog across all three runtime
+   fronts and the academic-preservation contract.
 6. Select no more than three high-value bounded verification tasks for the next
    audit cycle.
 7. Review the Codex recovery prompt for completeness.
