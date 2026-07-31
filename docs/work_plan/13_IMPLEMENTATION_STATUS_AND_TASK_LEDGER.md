@@ -1,21 +1,25 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-30
-Plan version: 1.20.0
-Current focus: preserve the protected-entry v2 optimization path, commission
-the independent multi-venue paper execution-reality track, and specify the
-bounded social-intelligence/operational-continuity and independent-audit tracks
-without taking compute from DOIN
+Status timestamp: 2026-07-30 22:25 America/Bogota
+Plan version: 1.21.0
+Current focus: run the protected-entry v2 optimization path to an exact
+champion handoff, collect independent read-only Alpaca/IBKR execution evidence,
+commission OANDA MT5 when valid demo credentials are available, and close
+independently reproduced audit findings without taking compute from DOIN
 
-Account state reported on 2026-07-29:
+Account and observer state verified on 2026-07-30:
 
-- Alpaca Trading API account: created and verified; Paper credential preflight
-  has not yet been executed from LTS.
-- IBKR Individual Margin account: created and verified; Paper API/TWS
-  credential and session preflight has not yet been executed from LTS.
-- OANDA Global Markets live application: created, compliance review pending.
-- OANDA MT5 demo: independent of live approval; local credentials and exact
-  instrument inventory have not yet been supplied to the adapter.
+- Alpaca Trading API Paper is authenticated in read-only mode and observed
+  every five minutes. The initial crypto universe is available; positions,
+  orders and submitted orders are zero.
+- IBKR Individual Margin Paper is authenticated through TWS Paper port `7497`
+  after the API disclaimer was accepted. The read-only observer and
+  reconciliation run every five minutes; 222 completed sessions were present
+  at the verification point with zero positions and zero orders.
+- OANDA Global Markets live application remains under compliance review.
+- Windows 11 and MT5 are installed in the Dragon VM. A valid OANDA Global
+  Markets demo server/session is still blocked on the account/support path, so
+  no authenticated MT5 heartbeat is claimed.
 
 Architecture correction 2026-07-29: OANDA Global Markets is not a REST-v20
 division. The existing Practice REST client remains preserved for compatible
@@ -23,13 +27,12 @@ accounts, but it cannot be activated against this account. LTS will own one
 global portfolio and route to OANDA MT5, Alpaca or IBKR through separate
 capability-checked adapters.
 
-Decision 2026-07-29: broker knowledge will be measured in parallel with model
-optimization. LTS now contains a Practice-only preflight/observer/canary tool,
-a restart-safe SQLite OLAP, mandatory SL/TP enforcement and account-identity
-redaction. The provisional six-instrument observation universe is generated
-reproducibly from validation-only E4 evidence plus the comparable historical
-activity survey. No Practice connection or order is claimed yet; account
-credentials and a successful preflight are still required.
+Decision 2026-07-29, updated 2026-07-30: broker knowledge is measured in
+parallel with model optimization. Alpaca and IBKR are active read-only
+observers with restart-safe SQLite OLAP, account-identity redaction and
+deterministic Telegram monitoring. Watchdog health now requires recent
+authenticated observer/reconciliation facts; a reachable IBKR TCP port is
+diagnostic evidence only. No protected canary or broker order is enabled.
 
 Decision 2026-07-29: the v1 USDCAD swarm is invalid for champion selection.
 One annual validation trade was sufficient to pass its gate, allowing a
@@ -55,6 +58,31 @@ Local preflight evidence: 21 train and 12 validation completed trades, all
 submitted as protected limit brackets; zero default orders, plugin failures,
 or protection rejections. Focused `agent-multi` tests pass (`84 passed`) and
 the complete `gym-fx` suite passes (`73 passed`).
+
+Current protected-v2 operational snapshot at 2026-07-30 22:20 COT:
+
+- plan `phase-1-protected-execution-fleet-v2`, plan hash
+  `b43844a7ebd7c85a782c557a8c3459622e1cb353a5d33391816e85f107cb6b21`;
+- active job `usdcad-4h-protected-easy-sac-shared-v2`, domain
+  `trading-asset-policy-usdcad-4h-protected-easy-v2`, stage 1/4
+  `data_observation`, generation 2;
+- 56 of 480 planned campaign candidates complete, 16/20 in the current
+  generation evaluated and four distinct candidates claimed;
+- best L2 fitness `0.00048223070314018903`; exact SB3 artifact SHA-256
+  `892fbee0f00ecf7b93ca6ed2bea05ca4db3cd09aa557a8cd16b9698fa7e09842`;
+- all four workers share plan, domain, seed, genesis, current generation,
+  current population fingerprint, component revisions and finalized anchor;
+- measured fleet throughput is approximately 1.73 candidates/hour. The
+  remaining full budget is roughly 10-14 days at that rate, subject to L2
+  early stopping;
+- decision point: at completion of stage 1, compare measured throughput,
+  candidate diversity, activity and fitness progression. Continue
+  automatically when invariants remain healthy; stop only for an evidence,
+  safety or lineage failure, not a profit gate;
+- active warning: Dragon currently reports a different unfinalized tip at the
+  same height while all workers retain the same finalized anchor and shared
+  population. Monitor it as an unfinalized fork warning; do not mutate chain
+  state without evidence of a confirmed parallel lineage.
 
 Decision 2026-07-28: retain the useful `data_observation` and `model_training`
 search, then stop as the synchronized swarm enters stage 3 before spending
@@ -141,8 +169,8 @@ are in documents 03, 04, 06 and 19.
 | Phase 1: evidence recovery | E0-E4 complete and archived | 16,019 jobs, transactional lineage, canonical OLAP facts, validation-only selection and 24 load-tested E4 baseline artifacts |
 | Phase 2: heuristic lifecycle extraction | Verified locally | Pure policy, source substitution, packaging and frozen Backtrader requested-action replay pass |
 | Phase 3 | Engine selected; vertical slice verified | NautilusTrader 1.230.0 multi-asset replay, costs, margin preflight, rollover, canonical reports and Gym bridge pass; portfolio-native Gym expansion remains |
-| Phase 4: full-genome alpha | v1 invalid/archived; protected v2 pending deploy | Mixed data/feature/preprocessing/context/model/training/execution genome, split activity eligibility, protected brackets and exact SB3 artifacts |
-| Phase 5: execution curriculum | Protected v2 successor materialized | Positive-cost curriculum, robust validation, evolvable market/limit/stop/adaptive routing and two-stage artifact handoff |
+| Phase 4: full-genome alpha | v1 invalid/archived; protected v2 running on four workers | Mixed data/feature/preprocessing/context/model/training/execution genome, split activity eligibility, protected brackets and exact SB3 artifacts |
+| Phase 5: execution curriculum | Protected v2 successor queued fail-closed | Positive-cost curriculum, robust validation, evolvable market/limit/stop/adaptive routing and two-stage artifact handoff; materialization awaits the exact job-0 champion |
 | Phase 6 and later | Planned behind frozen cell library | Static portfolio first, then probabilistic rush/event activation and weekly retraining |
 
 ### 1.1 Phase 1 closeout sequence
@@ -714,14 +742,14 @@ cannot select, early-stop, optimize or promote future candidates.
 | `ORDER-ROUTER-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | verified_local_blocked_on_policy | Account-independent adaptive market/limit/stop router, urgency contract, native GTD execution, expiry and cancel/market fallback | Codex |
 | `EXEC-STATE-001` | Codex | `agent-multi`, `financial-data`, `gym-fx` | specified_blocked_on_alpha_and_data_gate | Point-in-time execution-fidelity manifest plus calibrated fill-time, adverse-selection, short-path and event-hazard auxiliaries | Codex |
 | `EXEC-POLICY-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | specified_blocked_on_exec_state | Shared causal encoder with entry/exit heads, deterministic risk overrides and market-only/router control comparison | Codex |
-| `ACTIVITY-GATE-002` | Codex | `agent-multi` | verified_local_pending_deploy | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate | Codex |
-| `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | verified_local_pending_deploy | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
-| `WEEKLY-METRICS-002` | Codex | `agent-multi` | verified_local_pending_deploy | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
+| `ACTIVITY-GATE-002` | Codex | `agent-multi` | deployed_four_worker_running | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate | Codex |
+| `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
+| `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | specified_accounts_ready_for_preflight | LTS global ledger, OANDA MT5 EA bridge, Alpaca Paper, IBKR Paper, capability snapshots, protected canaries and consolidated OLAP | Codex |
+| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_observers_active_mt5_oanda_blocked | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | specified_not_activated | Hermes-routed low-cost research, social OLAP, Telegram review, bounded Moltbook publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
-| `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | specified_baseline_pending | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
+| `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
 
 Claude packet:
 
@@ -740,18 +768,22 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Provision local Paper/demo secrets without committing them; run Alpaca and
-   IBKR read-only preflights and create/run the independent OANDA MT5 demo
-   preflight. Do not enable orders before capability review.
-2. Commit and publish `agent-multi`, `gym-fx` and `doin-node` protected v2
-   changes; synchronize exact revisions and editable environments on all hosts.
-3. Install the fresh v2 campaign supervisors with new state directories and
-   verify matching plan/domain/config/seed/genesis/population evidence.
-4. Run the `USDCAD@4h` easy non-zero-cost full-genome job across all workers,
-   then archive and independently load its eligible champion model and JSON.
-5. Let the replicated campaign prepare and start the separate protected
-   easy→nominal→stress curriculum domain automatically.
-6. Freeze the robust alpha policy and generate its deterministic action trace.
+1. Keep Alpaca and IBKR read-only observers and their functional-freshness
+   watchdog active until each has at least 24 hours of continuous evidence. Do
+   not enable orders before capability review.
+2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
+   job. At the end of stage 1, record the declared duration decision point and
+   continue automatically unless evidence, safety or lineage invariants fail.
+3. On job-0 convergence, archive and independently load its exact champion
+   model, decoded JSON, metric evidence and hashes before crossing the
+   replicated stop barrier.
+4. Let the replicated campaign materialize and start the separate protected
+   easy-to-nominal-to-stress curriculum domain from that exact handoff.
+5. Complete the OANDA Global Markets demo/support path, then authenticate MT5,
+   compile the tracked EA with zero errors and require a fresh signed heartbeat
+   before claiming the bridge active.
+6. Freeze the resulting robust alpha policy and generate its deterministic
+   action trace.
 7. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
 8. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
@@ -771,8 +803,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    activation and evaluate weekly retraining/fine-tuning.
 15. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-16. Implement the multi-venue adapter contract and consolidated LTS capital
-    ledger, then run 24-hour read-only observations before protected canaries.
+16. Complete the consolidated LTS capital ledger and the remaining MT5 adapter
+    commissioning, then review the 24-hour read-only observations before
+    protected canaries.
 17. Implement social-intelligence S0/S1 only after MT5 commissioning: source
     allowlist, deterministic collection, normalized OLAP and daily Telegram
     review with publishing disabled.
@@ -780,9 +813,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
 19. Provision the continuity VPS from code, restore encrypted state in a clean
     drill and verify credential revocation before treating it as operational.
-20. Run the read-only `AUDIT-BOOTSTRAP-001` Claude baseline, independently
-    reproduce material findings, and keep the Codex recovery prompt current as
-    architecture and runtime contracts change.
+20. Run the next change-triggered audit from the deterministic snapshot
+    contract, independently reproduce material findings, and keep both role
+    recovery prompts current as architecture and runtime contracts change.
 
 ## 5. Current Risks
 

@@ -28,11 +28,17 @@ Runtime evidence on Omega:
   minutes; six crypto quote cells are available and exposure is zero;
 - IBKR Paper adapter, OLAP and five-minute observer are authenticated against
   local TWS Paper port `7497`; all six initial contracts qualified with zero
-  positions and zero orders;
-- the OANDA Global Markets MT5 Windows VM is running at the first Windows
-  Setup screen; MT5 credentials are not REST API credentials;
-- the consolidated watchdog reports freshness, endpoint health, missing data,
-  unexpected exposure and venue availability through Telegram.
+  positions and zero orders. The post-disclaimer verification recorded 222
+  completed sessions;
+- IBKR watchdog health requires a recent completed authenticated session with
+  reconciliation facts. TCP reachability is retained only as a separate
+  diagnostic;
+- the OANDA Global Markets MT5 Windows VM has Windows 11 and MT5 installed.
+  OANDA demo authentication is blocked on the account/support path, so no
+  broker heartbeat or instrument inventory is claimed;
+- the consolidated watchdog reports functional observer freshness, endpoint
+  health, missing data, unexpected exposure and venue availability through
+  Telegram.
 
 MT5 host decision:
 
@@ -45,8 +51,9 @@ MT5 host decision:
 - KVM/libvirt host validation, persistent NAT, the official ISO hash, the
   effective VM XML and Windows Setup boot have passed on Dragon;
 - `lts-mt5-paper` is running with 8 GiB RAM, 4 vCPU, 100 GiB sparse disk,
-  UEFI/Secure Boot and TPM 2.0. Windows language, licensing, edition and
-  account selection remain interactive; MT5 is not installed yet.
+  UEFI/Secure Boot and TPM 2.0. Windows 11 is installed and activated, and MT5
+  is installed. A MetaQuotes/MQL5 community demo identity is not accepted as
+  OANDA Global Markets execution evidence.
 - LTS now contains the authenticated read-only bridge, SQLite OLAP, fail-closed
   broker plugin, MT5 EA source, user service, restricted-firewall script and
   an independent five-minute Dragon watchdog with Telegram alerting. Automated
@@ -249,20 +256,18 @@ The current Individual accounts validate our own portfolio only.
 
 ## 12. Immediate Inputs and Next Actions
 
-1. Keep the verified IBKR TWS Paper observer on Omega in read-only mode and
-   retain port `7497`.
-2. Create the independent OANDA Global Markets MT5 demo; retain its login and
-   `OANDA_Global-Demo-1` credentials inside MT5, never in Git or chat.
-3. Provision `lts-mt5-paper` on Dragon using KVM/libvirt, 8 GiB RAM, 4 vCPU,
-   100 GiB sparse storage, UEFI, TPM 2.0 and NAT. Use only an official
-   Microsoft x64 ISO and verify its published SHA-256. Wine and dual boot are
-   not part of the primary path.
-4. Complete Windows Setup, install MT5 Desktop, compile the tracked EA with
-   zero errors, allowlist only `http://192.168.122.1:8766`, attach the EA to
-   one chart and verify authenticated OLAP facts.
-5. Complete 24-hour read-only observations before enabling protected canaries.
-6. Treat the bridge as active only when heartbeat/snapshot freshness and
-   unexpected-exposure alerts are visible in deterministic monitoring.
+1. Keep the verified Alpaca and IBKR Paper observers on Omega in read-only
+   mode and complete their independent 24-hour observation windows.
+2. Resolve the OANDA Global Markets demo account/server through the official
+   account/support path. Retain credentials inside MT5, never in Git or chat.
+3. After authenticated OANDA demo login, compile the tracked EA with zero
+   errors, allowlist only `http://192.168.122.1:8766`, attach the EA to one
+   chart and verify signed heartbeat/snapshot OLAP facts.
+4. Treat the MT5 bridge as active only when heartbeat freshness, broker
+   connection, account fingerprint and unexpected-exposure alerts are visible
+   in deterministic monitoring.
+5. Review all 24-hour read-only evidence before enabling any minimum-size
+   protected canary.
 
 ## 13. Hermes and Telegram Operations
 
