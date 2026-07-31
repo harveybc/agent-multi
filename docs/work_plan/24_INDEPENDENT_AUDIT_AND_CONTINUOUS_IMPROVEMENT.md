@@ -30,7 +30,7 @@ their real impact.
 | --- | --- |
 | User | Product, business, risk-tolerance and priority authority |
 | Codex | Technical lead, architecture owner, primary implementer, runtime orchestrator, integration owner and final verifier |
-| Claude audit agent | Independent read-mostly auditor, adversarial reviewer and improvement proposer |
+| Claude ("Satoshi") | Independent read-mostly operational auditor and academic research lead; owns literature strategy, novelty review and paper architecture |
 | Hermes agents | Machine-local telemetry, deterministic alert delivery and bounded analysis |
 | Deterministic services | Scheduling, health checks, watchdogs, OLAP writes, broker reconciliation and fail-closed controls |
 
@@ -39,6 +39,10 @@ launch or stop DOIN jobs, select a champion, alter a chain, enable broker
 orders, change credentials, deploy services, direct Hermes, commit, push or
 merge. A separate bounded implementation packet under document 12 is required
 before Claude changes production code.
+
+Academic leadership does not grant runtime or submission authority. Satoshi
+leads scholarly direction and drafts; Codex supplies and independently verifies
+technical evidence; Harvey remains the human author and release authority.
 
 Codex does not accept a Claude report as proof. Codex reproduces material
 findings, decides the correction, implements or delegates it, and records

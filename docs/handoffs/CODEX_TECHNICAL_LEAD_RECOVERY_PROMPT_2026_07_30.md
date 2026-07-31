@@ -1,7 +1,7 @@
 # Codex Technical-Lead Recovery Prompt
 
 Date: 2026-07-31
-Recovery version: 1.2.0
+Recovery version: 1.3.0
 
 Use this prompt when a new Codex conversation must replace a lost, compacted or
 unusable technical-lead conversation. Give the new Codex conversation the
@@ -171,8 +171,12 @@ Preserve distinct, validated contributions as five short reproducible papers:
 DOIN protocol, data-first mixed-genome search, hierarchical portfolio control,
 simulation-to-paper parity and continuous audit/recovery. Paper work cannot
 alter protected experiments, hide negative results or promote incomplete
-evidence. Harvey is the human author and submission authority; Satoshi audits
-related work and claims; Codex owns artifact and reproducibility integration.
+evidence. Harvey is the human author and submission authority. Satoshi is the
+academic research lead and owns literature strategy, novelty analysis,
+research questions, paper architecture and scholarly drafting. Codex is the
+experimental and technical lead and owns implementation, artifact integrity,
+metric reconstruction and reproducibility execution. Each cross-reviews the
+other's material claims.
 
 ## MANDATORY CONTEXT LOAD
 

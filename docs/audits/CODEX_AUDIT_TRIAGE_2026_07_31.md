@@ -117,5 +117,6 @@ The contract defines five short papers rather than one monolithic manuscript,
 an IEEE-compatible structure, a verified citation ledger, immutable
 claim/artifact mappings, protected-test and negative-result rules,
 reproducibility packages, AI-use disclosure and human submission authority.
-The existence of that contract does not make any paper evidence-ready;
-Satoshi's separate academic audit must classify each one.
+The existence of that contract does not make any paper evidence-ready.
+Satoshi, as academic research lead, must classify each one and define the
+scholarly roadmap; Musashi independently verifies its executable evidence.
