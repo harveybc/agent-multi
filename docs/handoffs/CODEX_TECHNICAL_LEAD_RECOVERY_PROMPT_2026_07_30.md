@@ -1,7 +1,7 @@
 # Codex Technical-Lead Recovery Prompt
 
 Date: 2026-07-30
-Recovery version: 1.0.0
+Recovery version: 1.1.0
 
 Use this prompt when a new Codex conversation must replace a lost, compacted or
 unusable technical-lead conversation. Give the new Codex conversation the
@@ -183,15 +183,19 @@ Then load the documents owning the active task. For broad recovery, read:
 4. `05_DOIN_TRADING_DOMAIN_INTEGRATION.md`
 5. `06_OLAP_METRICS_AND_LINEAGE.md`
 6. `07_SERVING_LTS_AND_OANDA.md`
-7. `09_TESTING_SECURITY_AND_OPERATIONS.md`
-8. `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md`
-9. `17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md`
-10. `18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md`
-11. `19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md`
-12. `20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md`
-13. `21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md`
-14. `22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md`
-15. `23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md`
+7. `08_IMPLEMENTATION_ROADMAP.md`
+8. `09_TESTING_SECURITY_AND_OPERATIONS.md`
+9. `11_DOIN_CONFIGURATION_PROFILES.md`
+10. `14_SIMULATION_ENGINE_SELECTION_2026_07_11.md`
+11. `15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md`
+12. `16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md`
+13. `17_DATA_PREPROCESSING_EVIDENCE_RECOVERY.md`
+14. `18_FULL_GENOME_PER_ASSET_OPTIMIZATION.md`
+15. `19_EXECUTION_CURRICULUM_AND_ORDER_ROUTING.md`
+16. `20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md`
+17. `21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md`
+18. `22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md`
+19. `23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md`
 
 Read the current independent audit reports under:
 
@@ -372,13 +376,14 @@ accepts changes. Never copy secrets or private personal context into this file.
 At the time this prompt was created, the work-plan index reported:
 
 - E0-E4 evidence recovery complete;
-- protected-entry v2 work active/prepared;
-- multi-venue Paper commissioning active;
+- protected-entry v2 running as a four-worker coordinated campaign since
+  2026-07-29;
+- authenticated Alpaca and IBKR read-only Paper observers active;
 - social intelligence specified but not activated.
 
-The MT5 Windows VM on Dragon was still being commissioned. Alpaca and IBKR
-Paper observers had progressed beyond some older prose status. Treat every
-sentence in this section as stale until direct verification.
+The MT5 Windows VM on Dragon had Windows 11 and MT5 installed, but OANDA demo
+authentication and the first signed bridge heartbeat were still blocked. Treat
+every sentence in this section as stale until direct verification.
 
 ## REQUIRED RECOVERY OUTPUT
 
