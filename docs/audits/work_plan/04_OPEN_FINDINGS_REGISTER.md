@@ -11,7 +11,14 @@ state and the next required action only.
 
 ## 1. Open
 
-None.
+| ID | Sev | State | Title | Source report | Next action | Owner |
+| --- | --- | --- | --- | --- | --- | --- |
+| AUD-F1-20260730-005 | S3 | open | Equal-height chain fork persisting ~2 h 16 min: dragon on tip `603dfe1a…`, other three on `4b4f06a1…` at height 9; finalized anchor identical on all four, so no parallel lineage and no corruption | `../AUDIT_DELTA_2026_07_30_02.md` section 2 | Run read-only test AT-F1-011 (compare block 9 across branches for unique accepted transactions; read `ForkChoiceRule` tie-break). **No chain mutation on current evidence.** Escalates to S2 if the split survives a generation boundary or Dragon holds unique accepted transactions | Musashi (classification/repair) + Satoshi (test) |
+
+All four bootstrap/status findings were independently verified closed by
+Satoshi on 2026-07-30 22:44 COT; see `../AUDIT_DELTA_2026_07_30_02.md`
+section 1. The `clientId 7` sub-hypothesis in AUD-F2-20260730-004 is withdrawn
+as not reproduced.
 
 ## 2. Closed / Resolved
 
@@ -27,6 +34,7 @@ None.
 | Ref | Observed | Verify in |
 | --- | --- | --- |
 | OBS-20260730-A | Job-0 record `started_at` is 2026-07-29T07:16:30Z (02:16 COT) but the Omega node process start implies ~18:18 COT the same day, a ~16 h gap with `restart_count=0`. Likely the job record marks plan materialization while workers launched after the deployment sequence, but unverified. | `worker_events` table, next delta session |
+| OBS-20260730-D | Gamma is the resource-constrained host: 6.12 GB of 15.34 GB RAM available, ~2.4 GB swap in use, 50.66 GB free disk (12 %), campaign-cgroup `sock_throttled` = 6,228 while omega/dragon report 0. No OOM kills; both GPUs healthy. | Trend check each delta session; escalate if `sock_throttled` grows or swap use trends up |
 Resolved observation: `OBS-20260730-B` was the symptom that became
 `AUD-F2-20260730-004`; the finding is now verified closed.
 
