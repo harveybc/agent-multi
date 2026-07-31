@@ -31,7 +31,7 @@ Resolved observation: `OBS-20260730-B` was the symptom that became
 `AUD-F2-20260730-004`; the finding is now verified closed.
 
 Resolved observation: `OBS-20260730-C` is covered by the live tier-0 collector
-at `agent-multi@6915c487`. Its first systemd packet directly recorded all three
+at `agent-multi@12d394ff`. Its verified systemd packet recorded all three
 hosts, four GPUs, utilization/temperature/memory, RAM, swap, disk and campaign
 cgroup OOM counters.
 

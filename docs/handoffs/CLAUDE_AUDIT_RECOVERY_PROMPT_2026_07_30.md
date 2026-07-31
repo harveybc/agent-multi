@@ -115,7 +115,7 @@ Earlier baseline (2026-07-30 ~21:00):
   (broker boundary), AT-F1-003 (champion archive, event-driven at job-0
   convergence), AT-GEN-010 every delta session.
 - The deterministic snapshot collector is implemented at
-  `agent-multi@6915c487` and runs every six hours. Read
+  `agent-multi@12d394ff` and runs every six hours. Read
   `~/.local/state/agent-multi/audit-snapshots/latest.json` before any manual
   collection. The bounded test-evidence runner and optional Hermes digest are
   not implemented.
