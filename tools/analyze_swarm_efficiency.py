@@ -6,11 +6,12 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 from collections import defaultdict
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
 
 
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -364,6 +365,89 @@ def analyze_logs(
     }
 
 
+def capture_clock_samples(
+    clock_hosts: dict[str, str],
+    *,
+    runner: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
+    now: Callable[[], datetime] | None = None,
+) -> dict[str, dict[str, object]]:
+    """Measure each log host's UTC offset against the collector midpoint."""
+    clock = now or (lambda: datetime.now(timezone.utc))
+    samples: dict[str, dict[str, object]] = {}
+    for worker, target in clock_hosts.items():
+        command = (
+            ["date", "-u", "+%Y-%m-%dT%H:%M:%S.%6NZ"]
+            if target == "local"
+            else [
+                "ssh",
+                "-o",
+                "BatchMode=yes",
+                "-o",
+                "ConnectTimeout=5",
+                target,
+                "date -u +%Y-%m-%dT%H:%M:%S.%6NZ",
+            ]
+        )
+        started_at = clock().astimezone(timezone.utc)
+        try:
+            completed = runner(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            samples[worker] = {
+                "target": target,
+                "status": "error",
+                "error": type(exc).__name__,
+                "requested_at": started_at.isoformat(),
+            }
+            continue
+        received_at = clock().astimezone(timezone.utc)
+        raw_remote = completed.stdout.strip()
+        try:
+            remote_at = datetime.fromisoformat(
+                raw_remote.replace("Z", "+00:00")
+            ).astimezone(timezone.utc)
+        except ValueError:
+            samples[worker] = {
+                "target": target,
+                "status": "error",
+                "returncode": completed.returncode,
+                "error": "invalid_remote_utc",
+                "requested_at": started_at.isoformat(),
+                "received_at": received_at.isoformat(),
+            }
+            continue
+        if completed.returncode != 0:
+            samples[worker] = {
+                "target": target,
+                "status": "error",
+                "returncode": completed.returncode,
+                "error": "date_command_failed",
+                "requested_at": started_at.isoformat(),
+                "received_at": received_at.isoformat(),
+            }
+            continue
+        midpoint = started_at + (received_at - started_at) / 2
+        samples[worker] = {
+            "target": target,
+            "status": "ok",
+            "requested_at": started_at.isoformat(),
+            "received_at": received_at.isoformat(),
+            "remote_utc": remote_at.isoformat(),
+            "round_trip_seconds": (
+                received_at - started_at
+            ).total_seconds(),
+            "offset_from_collector_midpoint_seconds": (
+                remote_at - midpoint
+            ).total_seconds(),
+        }
+    return samples
+
+
 def _median(values: list[float]) -> float | None:
     if not values:
         return None
@@ -412,6 +496,36 @@ def render_markdown(result: dict[str, object]) -> str:
             "- Median announcement-to-convergence latency: "
             f"`{summary['median_announcement_to_convergence_seconds']}` seconds.",
             "",
+            "## Clock Samples",
+            "",
+        ]
+    )
+    clock_samples = result.get("clock_samples", {})
+    if clock_samples:
+        lines.extend(
+            [
+                "| Worker | Target | Status | Offset vs collector midpoint | RTT |",
+                "| --- | --- | --- | ---: | ---: |",
+            ]
+        )
+        for worker, sample in clock_samples.items():
+            offset = sample.get("offset_from_collector_midpoint_seconds")
+            rtt = sample.get("round_trip_seconds")
+            lines.append(
+                f"| {worker} | {sample.get('target')} | {sample.get('status')} | "
+                f"{float(offset):.6f}s | {float(rtt):.6f}s |"
+                if offset is not None and rtt is not None
+                else f"| {worker} | {sample.get('target')} | "
+                f"{sample.get('status')} | N/A | N/A |"
+            )
+    else:
+        lines.append(
+            "No per-host clock samples were supplied; cross-host timing "
+            "assumptions remain unmeasured."
+        )
+    lines.extend(
+        [
+            "",
             "## Generation Detail",
             "",
             "| Generation | Candidates | Complete | Tail idle | Non-evaluation gap |",
@@ -458,6 +572,15 @@ def _parse_log(value: str) -> tuple[str, Path]:
     return worker, Path(path).expanduser().resolve()
 
 
+def _parse_clock_host(value: str) -> tuple[str, str]:
+    worker, separator, target = value.partition("=")
+    if not separator or not worker or not target:
+        raise argparse.ArgumentTypeError(
+            "--clock-host must be WORKER=local-or-ssh-target"
+        )
+    return worker, target
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -468,6 +591,14 @@ def main() -> int:
         metavar="WORKER=PATH",
     )
     parser.add_argument("--campaign")
+    parser.add_argument(
+        "--clock-host",
+        action="append",
+        default=[],
+        type=_parse_clock_host,
+        metavar="WORKER=local-or-ssh-target",
+        help="capture one UTC clock sample per log worker",
+    )
     parser.add_argument("--output-json", type=Path)
     parser.add_argument("--output-md", type=Path)
     args = parser.parse_args()
@@ -477,8 +608,14 @@ def main() -> int:
     for path in log_paths.values():
         if not path.is_file():
             parser.error(f"log does not exist: {path}")
+    clock_hosts = dict(args.clock_host)
+    if len(clock_hosts) != len(args.clock_host):
+        parser.error("worker names in --clock-host must be unique")
+    if clock_hosts and set(clock_hosts) != set(log_paths):
+        parser.error("--clock-host workers must exactly match --log workers")
 
     result = analyze_logs(log_paths, campaign_filter=args.campaign)
+    result["clock_samples"] = capture_clock_samples(clock_hosts)
     json_text = json.dumps(result, indent=2, sort_keys=True) + "\n"
     markdown = render_markdown(result)
     if args.output_json:

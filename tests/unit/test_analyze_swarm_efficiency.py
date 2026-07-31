@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -10,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from analyze_swarm_efficiency import (  # noqa: E402
+    capture_clock_samples,
     measure_generations,
     parse_worker_log,
 )
@@ -97,3 +100,33 @@ def test_fork_adoption_pairs_announcement_route_and_height() -> None:
     event = forks["peer_adoptions"][0]
     assert event["announcement_to_convergence_seconds"] == pytest.approx(11.0)
     assert event["selection_to_convergence_seconds"] == pytest.approx(1.0)
+
+
+def test_clock_capture_records_remote_offset_and_round_trip() -> None:
+    instants = iter(
+        [
+            datetime(2026, 7, 31, 5, 0, 0, tzinfo=timezone.utc),
+            datetime(2026, 7, 31, 5, 0, 2, tzinfo=timezone.utc),
+        ]
+    )
+
+    def runner(command, **kwargs):
+        assert command[-1] == "date -u +%Y-%m-%dT%H:%M:%S.%6NZ"
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            stdout="2026-07-31T05:00:01.250000Z\n",
+            stderr="",
+        )
+
+    samples = capture_clock_samples(
+        {"dragon": "dragon"},
+        runner=runner,
+        now=lambda: next(instants),
+    )
+
+    assert samples["dragon"]["status"] == "ok"
+    assert samples["dragon"]["round_trip_seconds"] == pytest.approx(2.0)
+    assert samples["dragon"][
+        "offset_from_collector_midpoint_seconds"
+    ] == pytest.approx(0.25)

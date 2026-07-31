@@ -317,8 +317,11 @@ capability and must use an isolated identity and budget.
 
 The independent auditor retains all judgment involving severity, closure,
 security, consensus, novelty, causal/statistical interpretation, architecture
-or final recommendations. Lower-cost Hermes/OpenCode models may perform only
-bounded mechanical tasks such as hashes, file inventories, schema checks,
+or final recommendations. This paragraph grants no delegation or tool
+authority. An auditor may propose a bounded mechanical task, but only Harvey
+or the technical lead may authorize it through a reviewed task packet.
+Lower-cost Hermes/OpenCode models may then perform only that packet's
+mechanical work, such as hashes, file inventories, schema checks,
 deterministic command execution, formatting, deduplication and frozen-regex
 event extraction.
 
@@ -328,6 +331,10 @@ decision. The independent auditor verifies every delegated result before use.
 A delegated task class is retired after two consecutive runs with no
 decision-changing output. Token reservations and actual billed cost are
 reported separately.
+
+Invocation prose can never create capabilities, change permissions or
+authorize delegation. Capability changes require a versioned task packet and
+Harvey's approval when they alter the standing authority model.
 
 ## 10. Technical-Lead Recovery
 

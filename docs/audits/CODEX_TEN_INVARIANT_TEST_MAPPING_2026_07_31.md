@@ -17,13 +17,13 @@ two have partial adjacent coverage and five are named gaps.
 | 1 | Zero exposure creates no trading P&L before account fees | gap | Nautilus reconciliation and flat replay exist in `gym-fx/tests/test_nautilus_bakeoff.py` | Explicit zero-target replay with non-zero price movement and account-fee separation |
 | 2 | Linear notional scaling produces linear P&L/costs while unconstrained | gap | Cost and sizing unit tests exist, but no metamorphic scale pair was located | Replay identical path at `k` and `2k` below all constraints; assert P&L and variable costs scale by two |
 | 3 | Asset/cell order permutation cannot alter results | gap | Portfolio allocation determinism exists in `tests/unit/test_project3_portfolio_supervisor.py:326` | Permute input asset/cell order and compare canonical weights, intents and ledger facts |
-| 4 | Unavailable assets cannot fill | partial | Margin rejection and calendar tests exist in `gym-fx/tests/test_nautilus_bakeoff.py:81` and `gym-fx/tests/test_oanda_calendar.py` | Closed/unavailable instrument fixture must emit zero fills and an explicit rejection reason |
+| 4 | Unavailable assets cannot fill | covered | `gym-fx/tests/test_nautilus_bakeoff.py::test_unavailable_market_rejects_downstream_intent_without_fill`; the full Nautilus path receives a downstream intent, emits an explicit `MARKET_UNAVAILABLE` rejection, leaves balance unchanged and records zero fills | None |
 | 5 | Future input mutation cannot alter earlier decisions | covered | `gym-fx/tests/test_feature_window_preprocessor.py:113`; earlier fill facts in `gym-fx/tests/test_nautilus_bakeoff.py:124`; portfolio test exclusion in `tests/unit/test_project3_portfolio_supervisor.py:247` | None for the declared property; retain all three layers |
 | 6 | One-cell portfolio matches single-asset behavior | gap | Single-cell and portfolio paths are separately tested | Feed one identical intent through both paths and compare fills, costs, equity and attribution |
 | 7 | Same hashes/seed produce identical deterministic replay | covered | Nautilus replay `gym-fx/tests/test_nautilus_bakeoff.py:35`; portfolio DB replay `tests/unit/test_project3_portfolio_supervisor.py:409`; shared population tests in `tests/unit/test_default_optimizer_shared.py` | Add cross-host packet only when hardware-determinism scope is declared |
 | 8 | Tighter hard risk limits cannot increase permitted exposure | partial | Max-weight cap is tested in `tests/unit/test_project3_portfolio_supervisor.py:303`; same-asset cap in line 461 | Metamorphic pair over multiple monotonically tighter caps, including leverage and drawdown governor |
-| 9 | Invalid/stale signal cannot create a larger position | gap | LTS validates malformed input; paper watchdog tests stale observers in `lts/tests/unit/test_paper_execution_watchdog.py` | Start with exposure, inject invalid/stale signal and assert target exposure is non-increasing |
-| 10 | Net instrument target equals sum of virtual cell targets | gap | Asset-cap/netting behavior has adjacent coverage in `tests/unit/test_project3_portfolio_supervisor.py:461` | Multi-cell same-instrument fixture with long/short intents and exact attribution identity |
+| 9 | Invalid/stale signal cannot create a larger position | covered | `gym-fx/tests/test_nautilus_bakeoff.py::test_stale_signal_cannot_increase_existing_position`; the full intent path rejects before order creation, preserves existing exposure and persists `STALE_OR_INVALID_SIGNAL` | None |
+| 10 | Net instrument target equals sum of virtual cell targets | covered | `lts/tests/unit/test_portfolio_invariants.py`; exact long/short cell attribution, permutation invariance and duplicate-cell rejection exercise `DefaultPortfolio.net_instrument_targets` | None |
 
 ## AT-QUAL-024 Execution Order
 
@@ -31,9 +31,9 @@ Implement gaps in this order because each protects a larger downstream
 surface:
 
 1. future mutation remains mandatory in CI;
-2. unavailable asset cannot fill;
-3. stale/invalid signal cannot increase exposure;
-4. net target equals cell sum;
+2. unavailable asset cannot fill (completed 2026-07-31);
+3. stale/invalid signal cannot increase exposure (completed 2026-07-31);
+4. net target equals cell sum (completed 2026-07-31);
 5. one-cell parity;
 6. risk-limit monotonicity;
 7. input-order permutation;
@@ -58,6 +58,8 @@ not a monolithic cross-repository environment:
 - full GPU, broker, fleet and 24-hour gates remain scheduled evidence jobs,
   not pull-request checks.
 
-Implementing CI safely requires one workflow per Tier A repository because
-their installation boundaries differ. The absence remains open S3 until those
-workflows run from a clean GitHub runner.
+Repository-local Tier A workflows now exist for `agent-multi`, `doin-core`,
+`doin-node`, and `lts`. Each installs a generated hash-pinned lock with
+`pip --require-hashes`; `doin-node` additionally checks out exact commits of
+`doin-core` and `doin-plugins`. Local clean-environment reproductions passed.
+Finding 009 remains open until the new workflows pass on clean GitHub runners.

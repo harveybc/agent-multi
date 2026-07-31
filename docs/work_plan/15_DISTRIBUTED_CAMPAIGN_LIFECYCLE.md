@@ -284,6 +284,41 @@ same pool-state hash and exactly four leases:
 There were zero ownerless or duplicate leases. The deterministic arbitration
 commit is `f060f81`; the lease-replication fix is `6de2bc4`.
 
+### 3.6 Normative shared-population semantics
+
+The following rules remove ambiguity for implementation, incident review and
+the bounded formal model. They describe the deployed cooperative crash-fault
+profile; changing one requires a versioned campaign/config transition.
+
+1. **Lease renewal:** only an explicit claim heartbeat emitted by the current
+   owner while its evaluation is active renews `claimed_at`, locally and on
+   replicas. Polling or importing another node's claim is replication and
+   preserves the owner's original lease age. A non-owner observation never
+   renews a lease.
+2. **Claim confirmation:** `shared_min_peers` is a fixed count of distinct
+   configured *remote* peers, not a majority of currently live workers. With
+   only two live workers in a four-worker campaign configured with
+   `shared_min_peers=3`, no new claim can be confirmed. The system chooses
+   safety over liveness until membership is changed by a new versioned
+   campaign contract.
+3. **Fork-score order:** checkpoint consistency, cumulative effective
+   increment and accepted-optimae count sort in descending preference. The
+   final deterministic tie prefers the lexicographically lower tip hash.
+   `ChainScore.__lt__` therefore compares tip hashes in the apparently inverted
+   direction because `ForkChoiceRule.select_best()` uses descending sort.
+4. **Restart and barrier re-entry:** a restarted worker recovers the canonical
+   generation/population from its synchronized chain, restores compatible
+   persisted results, discards process-local claim ownership and joins as a
+   fresh participant on that canonical lineage. It cannot claim work until the
+   fixed configured peer count exposes the same generation and population
+   fingerprint. A cached process-local `join_ready` state cannot bypass this
+   barrier.
+
+Normative code anchors are `doin-node.unified` claim/lease and generation
+barrier handlers plus `doin-core.consensus.fork_choice`. Contract tests must
+cover owner-only renewal, fixed remote confirmation count, restart barrier
+re-entry and the lower-hash call site.
+
 ## 4. Crash and Restart Semantics
 
 - A filesystem lock permits one supervisor process per host/profile.
