@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+from types import SimpleNamespace
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -210,3 +211,21 @@ def test_redaction_removes_secrets_and_personal_home_paths() -> None:
     assert value["api_token"] == "[REDACTED]"
     assert value["account_fingerprint"] == "safe"
     assert value["error"] == "%h/private/file"
+
+
+def test_remote_probe_uses_explicit_user_ssh_config(monkeypatch) -> None:
+    captured = {}
+
+    def run(command, **kwargs):
+        captured["command"] = command
+        captured["input"] = kwargs["input"]
+        return SimpleNamespace(stdout='{"hostname":"dragon"}')
+
+    monkeypatch.setattr(collector.subprocess, "run", run)
+
+    result = collector.remote_machine_data("dragon")
+
+    assert result["hostname"] == "dragon"
+    assert captured["command"][0:2] == ["ssh", "-F"]
+    assert captured["command"][2] == str(Path.home() / ".ssh/config")
+    assert captured["input"] == collector.REMOTE_MACHINE_SCRIPT

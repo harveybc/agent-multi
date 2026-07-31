@@ -420,25 +420,34 @@ def local_machine_data() -> dict[str, Any]:
 
 
 def remote_machine_data(target: str) -> dict[str, Any]:
-    completed = subprocess.run(
-        [
-            "ssh",
-            "-o",
-            "BatchMode=yes",
-            "-o",
-            "ConnectTimeout=6",
-            "-o",
-            "StrictHostKeyChecking=yes",
-            target,
-            "python3",
-            "-",
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-        input=REMOTE_MACHINE_SCRIPT,
-        timeout=35,
-    )
+    command = [
+        "ssh",
+        "-F",
+        str(Path.home() / ".ssh/config"),
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=6",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        target,
+        "python3",
+        "-",
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            check=True,
+            capture_output=True,
+            text=True,
+            input=REMOTE_MACHINE_SCRIPT,
+            timeout=35,
+        )
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or exc.stdout or "no SSH detail").strip()
+        raise RuntimeError(
+            f"remote machine probe failed: {detail[:MAX_ERROR_CHARS]}"
+        ) from exc
     value = json.loads(completed.stdout)
     if not isinstance(value, dict):
         raise ValueError("remote machine probe returned a non-object")
