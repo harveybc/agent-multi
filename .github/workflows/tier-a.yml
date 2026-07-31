@@ -24,7 +24,7 @@ jobs:
       - name: Record dependency identity
         run: sha256sum setup.py requirements-ci.txt
       - name: Install focused test dependencies
-        run: python -m pip install -r requirements-ci.txt
+        run: python -m pip install --require-hashes -r requirements-ci.txt
       - name: Compile production modules
         run: python -m compileall -q app execution_policy_plugins tools
       - name: Run Tier A invariants
