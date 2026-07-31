@@ -313,6 +313,22 @@ A future dedicated Hermes audit agent may summarize already-redacted evidence.
 It must have no broker, publication, campaign-control or unrestricted shell
 capability and must use an isolated identity and budget.
 
+### 9.1 Model-cost delegation boundary
+
+The independent auditor retains all judgment involving severity, closure,
+security, consensus, novelty, causal/statistical interpretation, architecture
+or final recommendations. Lower-cost Hermes/OpenCode models may perform only
+bounded mechanical tasks such as hashes, file inventories, schema checks,
+deterministic command execution, formatting, deduplication and frozen-regex
+event extraction.
+
+Every delegated task records its exact prompt, model/provider, token ceiling,
+inputs, output hash when practical, verification and whether it changed a
+decision. The independent auditor verifies every delegated result before use.
+A delegated task class is retired after two consecutive runs with no
+decision-changing output. Token reservations and actual billed cost are
+reported separately.
+
 ## 10. Technical-Lead Recovery
 
 The durable recovery prompt is:
