@@ -45,8 +45,8 @@ Full disposition:
   aggregate S3 threshold. Evidence:
   `../evidence/SWARM_EFFICIENCY_MEASUREMENT_2026_07_31.json`.
 - **009 remains open S3.** The first repository-local Tier A workflow now
-  exists and passes in a clean Python 3.12 environment, but it has not yet run
-  on GitHub and other Tier A repositories remain.
+  exists and GitHub Actions run `30617139414` passed on commit `af343923`.
+  Other Tier A repositories remain without their bounded gates.
 - **010 remains open S3.** Future mutation is in the gate; unavailable-market
   and stale/invalid-signal router guards now have executable tests. End-to-end
   fill/ledger fixtures and the remaining mapped invariants are still missing.

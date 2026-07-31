@@ -78,8 +78,9 @@ As of 2026-07-31 ~03:35 America/Bogota (Musashi executable response):
   announcement-to-convergence latency.
 - First Tier A workflow, unavailable-market guard, stale/invalid-signal guard,
   swarm parser and preregistration hash validator are implemented. Clean
-  Python 3.12 gate: 37 passed. Findings 009/010 remain open pending GitHub and
-  fill/ledger/cross-repository coverage.
+  Python 3.12 gate: 37 passed; GitHub Actions run `30617139414` passed on
+  `af343923`. Findings 009/010 remain open pending cross-repository and
+  fill/ledger coverage.
 - Incident enumeration rule is pinned to commit `3b3e9a7a`, lines 369-372,
   SHA-256 `6abc241d95ce686ff741f6629f31f4b2ea3da86a1fbf982a7dfa801b68aea88c`.
 - Registry decisions: P7/P9 narrowed, P11 held, P14 deferred, P16 first
