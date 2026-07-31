@@ -1,6 +1,6 @@
 # 04. Open Findings Register
 
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-07-30
 Owner: Satoshi (state updates); closure of S0-S2 requires an independent
 verifier (normally Musashi) per `../README.md`.
@@ -11,24 +11,26 @@ state and the next required action only.
 
 ## 1. Open
 
-| ID | Sev | State | Title | Source report | Next action | Owner |
-| --- | --- | --- | --- | --- | --- | --- |
-| AUD-GEN-20260730-001 | S3 | open | Doc 13 reports live v2 campaign as "pending deploy" | `../AUDIT_BOOTSTRAP_2026_07_30.md` | Musashi refreshes doc 13 status/ledger with deployment evidence | Musashi |
-| AUD-F1-20260730-002 | S4 | open (revised 2026-07-30 21:05) | Job-0 wall clock undeclared. REVISED: fleet throughput measured on all four workers is 1.73 cand/h (omega 0.280, dragon 0.539, gamma-5070ti 0.520, gamma-5090 0.393), not the 0.95-1.5 inferred from Omega alone. Remaining budget ~427 of 480 candidates -> ~10-14 days, subject to L2 patience. The bootstrap claim that protected brackets "roughly halved" throughput was an extrapolation error from the slowest worker; fleet rate is comparable to v1's 1.688 cand/h. | `../AUDIT_BOOTSTRAP_2026_07_30.md` | User/Musashi record an expected-duration decision point; auditor must not extrapolate fleet rates from one worker again | Musashi + user |
-| AUD-F2-20260730-004 | **S2** | open | IBKR Paper observer failing every 5 min for ~4 h while the watchdog reports IBKR "available" from a TCP probe only | `../AUDIT_STATUS_2026_07_30.md` section 7b | (a) user accepts the IBKR paper API disclaimer; (b) Musashi makes the watchdog assert per-venue observer freshness instead of port reachability | Musashi + user |
-| AUD-GEN-20260730-003 | S4 | open | Codex recovery prompt omits docs 08/11/14/16; snapshot warning stale | `../AUDIT_BOOTSTRAP_2026_07_30.md` | Musashi revises prompt at next version bump | Musashi |
+None.
 
 ## 2. Closed / Resolved
 
-None yet.
+| ID | Sev | State | Closure | Verifier | Date | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| AUD-F2-20260730-004 | S2 | verified_closed | User accepted the TWS Paper disclaimer; watchdog now requires a recent authenticated reconciled session and overlapping preflights fail closed | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `lts@12d389d`; `205 passed`; successful systemd observer/watchdog run |
+| AUD-GEN-20260730-001 | S3 | verified_closed | Document 13 phase summary, ledger and immediate tasks now record the deployed four-worker v2 campaign | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
+| AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
+| AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
 | --- | --- | --- |
 | OBS-20260730-A | Job-0 record `started_at` is 2026-07-29T07:16:30Z (02:16 COT) but the Omega node process start implies ~18:18 COT the same day, a ~16 h gap with `restart_count=0`. Likely the job record marks plan materialization while workers launched after the deployment sequence, but unverified. | `worker_events` table, next delta session |
-| OBS-20260730-B | `ibkr-paper-lab.sqlite` last written 18:12 COT while `alpaca-paper-lab.sqlite` writes every ~5 min; watchdog reports IBKR "available" from a TCP probe only, and `equity_market_open=false`. Possibly correct closed-market behavior, possibly a stalled writer. | AT-F2-002 |
 | OBS-20260730-C | The campaign supervisor API carries no per-worker machine telemetry (GPU temp/util, RAM, swap). Remote host health is inferred from absence of watchdog alerts rather than measured in the audit path. | Snapshot collector packet (file 02 section 4.1) |
+
+Resolved observation: `OBS-20260730-B` was the symptom that became
+`AUD-F2-20260730-004`; the finding is now verified closed.
 
 ## 3. Verified Non-Findings (do not reopen without new evidence)
 
