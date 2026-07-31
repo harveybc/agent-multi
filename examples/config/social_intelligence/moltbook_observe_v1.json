@@ -6,7 +6,8 @@
   "database_path": "~/.local/state/agent-multi/social-intelligence.sqlite",
   "state_path": "~/.local/state/agent-multi/social-intelligence-state.json",
   "secrets": {
-    "api_key_env": "MOLTBOOK_API_KEY"
+    "api_key_env": "MOLTBOOK_API_KEY",
+    "env_file": "~/.config/agent-multi/moltbook.env"
   },
   "collection": {
     "max_posts_per_run": 120,

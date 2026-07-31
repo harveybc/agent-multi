@@ -1,4 +1,5 @@
 import json
+import os
 
 import pytest
 
@@ -9,6 +10,7 @@ from tools.social_intelligence import (
     SocialOlap,
     collect,
     injection_flags,
+    load_secret_env_value,
     normalize_post,
     publish_approved,
     verify_pending,
@@ -176,3 +178,23 @@ def test_verification_challenge_is_persisted_and_completed(tmp_path):
         assert store.status()["drafts_by_state"]["published"] == 1
     finally:
         store.close()
+
+
+def test_secret_env_file_is_loaded_without_shell_evaluation(tmp_path, monkeypatch):
+    monkeypatch.delenv("MOLTBOOK_API_KEY", raising=False)
+    path = tmp_path / "moltbook.env"
+    path.write_text(
+        "IGNORED=value\nMOLTBOOK_API_KEY=moltbook_test_value\n",
+        encoding="utf-8",
+    )
+    os.chmod(path, 0o600)
+    assert load_secret_env_value("MOLTBOOK_API_KEY", path) == "moltbook_test_value"
+
+
+def test_secret_env_file_rejects_broad_permissions(tmp_path, monkeypatch):
+    monkeypatch.delenv("MOLTBOOK_API_KEY", raising=False)
+    path = tmp_path / "moltbook.env"
+    path.write_text("MOLTBOOK_API_KEY=moltbook_test_value\n", encoding="utf-8")
+    os.chmod(path, 0o644)
+    with pytest.raises(SocialIntelligenceError, match="permissions"):
+        load_secret_env_value("MOLTBOOK_API_KEY", path)
