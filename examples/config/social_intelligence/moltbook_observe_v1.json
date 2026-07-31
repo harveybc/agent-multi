@@ -48,6 +48,21 @@
       "prompt injection"
     ]
   },
+  "model_budget": {
+    "daily_reserved_token_cap": 250000,
+    "monthly_reserved_token_cap": 6000000,
+    "warning_ratio": 0.8,
+    "tiers": {
+      "triage": {
+        "max_input_tokens": 12000,
+        "reserved_output_tokens": 3500
+      },
+      "review": {
+        "max_input_tokens": 12000,
+        "reserved_output_tokens": 3000
+      }
+    }
+  },
   "publishing": {
     "enabled": false,
     "require_human_approval": true,

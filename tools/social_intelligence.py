@@ -4,12 +4,16 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import codecs
 import hashlib
 import json
+import math
 import os
 import re
 import sqlite3
 import sys
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -27,10 +31,20 @@ USER_AGENT = "agent-multi-social-intelligence/1.0"
 
 INJECTION_PATTERNS = (
     re.compile(r"\bignore (?:all |any )?(?:previous|prior|system) instructions?\b", re.I),
+    re.compile(r"\b(disregard|forget|override)\b.{0,48}\b(earlier|previous|prior|system)\b.{0,24}\b(directives?|instructions?)\b", re.I),
     re.compile(r"\b(system prompt|developer message|hidden instructions?)\b", re.I),
     re.compile(r"\b(send|upload|reveal|print|exfiltrate)\b.{0,48}\b(api key|token|secret|credential)", re.I),
     re.compile(r"\b(run|execute|open)\b.{0,32}\b(shell|terminal|command|tool)\b", re.I),
     re.compile(r"\b(disable|bypass|override)\b.{0,32}\b(safety|guard|policy|approval)\b", re.I),
+    re.compile(r"\b(ignora|omite|descarta|desobedece)\b.{0,48}\b(instrucciones?|directivas?)\b.{0,24}\b(anteriores?|previas?|del sistema)\b", re.I),
+    re.compile(r"\b(prompt|mensaje|instrucciones?)\b.{0,24}\b(del sistema|ocultas?)\b", re.I),
+    re.compile(r"\b(env[ií]a|sube|revela|imprime|exfiltra)\b.{0,48}\b(clave api|token|secreto|credencial)\b", re.I),
+    re.compile(r"\b(ejecuta|corre|abre)\b.{0,32}\b(shell|terminal|comando|herramienta)\b", re.I),
+    re.compile(r"\b(desactiva|elude|evade|sobrescribe)\b.{0,32}\b(seguridad|protecci[oó]n|pol[ií]tica|aprobaci[oó]n)\b", re.I),
+)
+BASE64_TOKEN = re.compile(r"(?<![A-Za-z0-9+/])[A-Za-z0-9+/]{24,}={0,2}(?![A-Za-z0-9+/])")
+GENERIC_RELEVANCE_TERMS = frozenset(
+    {"agent", "market", "trading", "security", "monitoring", "inference"}
 )
 
 
@@ -90,6 +104,11 @@ class SocialConfig:
     publication_submolts: tuple[str, ...]
     api_key_env: str
     secret_env_file: Path
+    daily_reserved_token_cap: int
+    monthly_reserved_token_cap: int
+    budget_warning_ratio: float
+    model_tiers: Mapping[str, Mapping[str, Any]]
+    config_sha256: str
 
     @classmethod
     def load(cls, path: str | Path) -> "SocialConfig":
@@ -124,6 +143,14 @@ class SocialConfig:
                 "Publishing requires an explicit non-empty submolt allowlist"
             )
         secrets = payload.get("secrets") or {}
+        model_budget = payload.get("model_budget") or {}
+        daily_cap = int(model_budget.get("daily_reserved_token_cap", 250_000))
+        monthly_cap = int(model_budget.get("monthly_reserved_token_cap", 6_000_000))
+        warning_ratio = float(model_budget.get("warning_ratio", 0.8))
+        if daily_cap <= 0 or monthly_cap <= 0:
+            raise SocialIntelligenceError("Model token budgets must be positive")
+        if not 0 < warning_ratio < 1:
+            raise SocialIntelligenceError("Model budget warning_ratio must be between 0 and 1")
         return cls(
             database_path=expand_path(
                 str(payload.get("database_path", "~/.local/state/agent-multi/social-intelligence.sqlite"))
@@ -152,6 +179,15 @@ class SocialConfig:
             secret_env_file=expand_path(
                 str(secrets.get("env_file", "~/.config/agent-multi/moltbook.env"))
             ),
+            daily_reserved_token_cap=daily_cap,
+            monthly_reserved_token_cap=monthly_cap,
+            budget_warning_ratio=warning_ratio,
+            model_tiers={
+                str(name): dict(values)
+                for name, values in (model_budget.get("tiers") or {}).items()
+                if isinstance(values, Mapping)
+            },
+            config_sha256=sha256_text(canonical_json(payload)),
         )
 
 
@@ -262,8 +298,41 @@ class MoltbookClient:
         )
 
 
+def security_text_variants(text: str) -> list[tuple[str, str]]:
+    normalized = unicodedata.normalize("NFKC", text)
+    normalized = "".join(
+        character
+        for character in normalized
+        if unicodedata.category(character) != "Cf"
+    )
+    folded = "".join(
+        character
+        for character in unicodedata.normalize("NFKD", normalized)
+        if not unicodedata.combining(character)
+    )
+    variants = [
+        ("plain", normalized),
+        ("folded", folded),
+        ("rot13", codecs.decode(folded, "rot_13")),
+    ]
+    for index, token in enumerate(BASE64_TOKEN.findall(normalized)[:8]):
+        try:
+            decoded = base64.b64decode(token, validate=True).decode(
+                "utf-8", errors="strict"
+            )
+        except (ValueError, UnicodeDecodeError):
+            continue
+        variants.append((f"base64_{index + 1}", unicodedata.normalize("NFKC", decoded)))
+    return variants
+
+
 def injection_flags(text: str) -> list[str]:
-    return [f"pattern_{index + 1}" for index, pattern in enumerate(INJECTION_PATTERNS) if pattern.search(text)]
+    flags: set[str] = set()
+    for variant_name, variant in security_text_variants(text):
+        for index, pattern in enumerate(INJECTION_PATTERNS):
+            if pattern.search(variant):
+                flags.add(f"{variant_name}_pattern_{index + 1}")
+    return sorted(flags)
 
 
 def normalize_post(raw: Mapping[str, Any], *, retrieval_source: str) -> dict[str, Any] | None:
@@ -300,12 +369,54 @@ def normalize_post(raw: Mapping[str, Any], *, retrieval_source: str) -> dict[str
     }
 
 
-def relevance_score(post: Mapping[str, Any], terms: Sequence[str]) -> float:
-    text = f"{post.get('title', '')}\n{post.get('content', '')}".lower()
+def _parse_timestamp(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def relevance_score(
+    post: Mapping[str, Any],
+    terms: Sequence[str],
+    *,
+    now: datetime | None = None,
+) -> float:
+    title = str(post.get("title", "")).lower()
+    content = str(post.get("content", "")).lower()
     if not terms:
         return 0.0
-    matches = sum(1 for term in terms if term in text)
-    return min(1.0, matches / max(3.0, len(terms) ** 0.5))
+    weighted_matches = 0.0
+    for raw_term in terms:
+        term = raw_term.lower()
+        if term not in title and term not in content:
+            continue
+        weight = 0.45 if term in GENERIC_RELEVANCE_TERMS else 1.0
+        if " " in term or "-" in term:
+            weight *= 1.35
+        if term in title:
+            weight *= 1.4
+        weighted_matches += weight
+    if weighted_matches <= 0:
+        return 0.0
+
+    word_count = max(1, len(content.split()))
+    length_factor = 1.0 / (1.0 + 0.08 * math.log1p(word_count))
+    published = _parse_timestamp(post.get("published_at"))
+    if published is None:
+        recency_factor = 0.8
+    else:
+        age_days = max(
+            0.0,
+            ((now or datetime.now(timezone.utc)) - published).total_seconds()
+            / 86_400,
+        )
+        recency_factor = 0.65 + 0.35 * math.exp(-age_days / 30.0)
+    score = math.tanh(weighted_matches / 3.2) * length_factor * recency_factor
+    return round(min(1.0, score), 8)
 
 
 class SocialOlap:
@@ -375,6 +486,28 @@ class SocialOlap:
                 selected_post_ids_json TEXT NOT NULL,
                 packet_sha256 TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS model_call_reservations (
+                call_id TEXT PRIMARY KEY,
+                reserved_at TEXT NOT NULL,
+                tier TEXT NOT NULL,
+                provider TEXT NOT NULL,
+                model TEXT NOT NULL,
+                config_sha256 TEXT NOT NULL,
+                prompt_template_sha256 TEXT NOT NULL,
+                packet_sha256 TEXT NOT NULL,
+                input_chars INTEGER NOT NULL,
+                estimated_input_tokens INTEGER NOT NULL,
+                reserved_output_tokens INTEGER NOT NULL,
+                reserved_total_tokens INTEGER NOT NULL,
+                daily_reserved_after INTEGER NOT NULL,
+                monthly_reserved_after INTEGER NOT NULL,
+                status TEXT NOT NULL,
+                block_reason TEXT,
+                estimated_cost_usd REAL,
+                cost_basis TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS model_call_budget_idx
+                ON model_call_reservations(status,reserved_at);
             CREATE VIEW IF NOT EXISTS social_source_yield_olap AS
             SELECT retrieval_source,submolt,COUNT(*) AS posts,
                    SUM(CASE WHEN relevance_score >= 0.25 THEN 1 ELSE 0 END) AS relevant_posts,
@@ -416,7 +549,7 @@ class SocialOlap:
             self.connection.execute(
                 """
                 UPDATE posts SET last_retrieved_at=?,retrieval_source=?,
-                    relevance_score=MAX(relevance_score,?)
+                    relevance_score=?
                 WHERE external_id=?
                 """,
                 (
@@ -454,6 +587,28 @@ class SocialOlap:
         )
         return True
 
+    def rescore_all(
+        self,
+        terms: Sequence[str],
+        *,
+        now: datetime | None = None,
+    ) -> int:
+        rows = self.connection.execute(
+            "SELECT external_id,title,content,published_at FROM posts"
+        ).fetchall()
+        score_now = now or datetime.now(timezone.utc)
+        self.connection.executemany(
+            "UPDATE posts SET relevance_score=? WHERE external_id=?",
+            [
+                (
+                    relevance_score(dict(row), terms, now=score_now),
+                    row["external_id"],
+                )
+                for row in rows
+            ],
+        )
+        return len(rows)
+
     def finish_run(self, run_id: str, *, status: str, counters: Mapping[str, int], error_kind: str | None = None) -> None:
         self.connection.execute(
             """
@@ -480,18 +635,25 @@ class SocialOlap:
             SELECT external_id,submolt,author,title,content,url,published_at,
                    content_sha256,relevance_score,injection_flags_json
             FROM posts
-            WHERE last_retrieved_at >= ?
+            WHERE last_retrieved_at >= ? AND injection_flags_json='[]'
             ORDER BY relevance_score DESC,last_retrieved_at DESC
             LIMIT ?
             """,
             (cutoff, limit),
         ).fetchall()
+        flagged_count = int(
+            self.connection.execute(
+                """
+                SELECT COUNT(*) FROM posts
+                WHERE last_retrieved_at >= ? AND injection_flags_json!='[]'
+                """,
+                (cutoff,),
+            ).fetchone()[0]
+        )
         safe_items = []
-        flagged_count = 0
         for row in rows:
             flags = json.loads(row["injection_flags_json"])
             if flags:
-                flagged_count += 1
                 continue
             safe_items.append(
                 {
@@ -539,10 +701,14 @@ class SocialOlap:
     def create_draft(self, *, title: str, content: str, submolt: str, source_ids: Sequence[str]) -> str:
         if not title.strip() or not content.strip():
             raise SocialIntelligenceError("Draft title and content are required")
+        if not source_ids:
+            raise SocialIntelligenceError(
+                "At least one social OLAP source ID is required"
+            )
         rows = self.connection.execute(
             f"SELECT external_id,content_sha256 FROM posts WHERE external_id IN ({','.join('?' for _ in source_ids)})",
             tuple(source_ids),
-        ).fetchall() if source_ids else []
+        ).fetchall()
         if len(rows) != len(set(source_ids)):
             raise SocialIntelligenceError("Every draft source ID must exist in the social OLAP")
         draft_id = f"draft-{uuid.uuid4().hex[:16]}"
@@ -656,7 +822,180 @@ class SocialOlap:
                 "Draft verification state changed unexpectedly"
             )
 
-    def status(self) -> dict[str, Any]:
+    def reserve_model_call(
+        self,
+        config: SocialConfig,
+        *,
+        tier: str,
+        provider: str,
+        model: str,
+        prompt_template_sha256: str,
+        packet_sha256: str,
+        input_chars: int,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        tier_config = config.model_tiers.get(tier)
+        if not tier_config:
+            raise SocialIntelligenceError(f"Unknown or unbudgeted model tier: {tier}")
+        max_input_tokens = int(tier_config.get("max_input_tokens", 0))
+        reserved_output_tokens = int(
+            tier_config.get("reserved_output_tokens", 0)
+        )
+        if max_input_tokens <= 0 or reserved_output_tokens <= 0:
+            raise SocialIntelligenceError(
+                f"Model tier {tier} has an invalid token budget"
+            )
+        estimated_input_tokens = max(1, math.ceil(max(0, input_chars) / 4))
+        reserved_total_tokens = estimated_input_tokens + reserved_output_tokens
+        reserved_at = now or datetime.now(timezone.utc)
+        day_start = reserved_at.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ).isoformat()
+        month_start = reserved_at.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        ).isoformat()
+        daily_before = int(
+            self.connection.execute(
+                """
+                SELECT COALESCE(SUM(reserved_total_tokens),0)
+                FROM model_call_reservations
+                WHERE status='reserved' AND reserved_at>=?
+                """,
+                (day_start,),
+            ).fetchone()[0]
+        )
+        monthly_before = int(
+            self.connection.execute(
+                """
+                SELECT COALESCE(SUM(reserved_total_tokens),0)
+                FROM model_call_reservations
+                WHERE status='reserved' AND reserved_at>=?
+                """,
+                (month_start,),
+            ).fetchone()[0]
+        )
+        daily_after = daily_before + reserved_total_tokens
+        monthly_after = monthly_before + reserved_total_tokens
+        block_reason = None
+        if estimated_input_tokens > max_input_tokens:
+            block_reason = "tier_input_cap_exceeded"
+        elif daily_after > config.daily_reserved_token_cap:
+            block_reason = "daily_reserved_token_cap_exceeded"
+        elif monthly_after > config.monthly_reserved_token_cap:
+            block_reason = "monthly_reserved_token_cap_exceeded"
+        status = "blocked" if block_reason else "reserved"
+        warning = bool(
+            not block_reason
+            and (
+                daily_after
+                >= config.daily_reserved_token_cap * config.budget_warning_ratio
+                or monthly_after
+                >= config.monthly_reserved_token_cap
+                * config.budget_warning_ratio
+            )
+        )
+        call_id = f"model-call-{uuid.uuid4().hex[:16]}"
+        self.connection.execute(
+            """
+            INSERT INTO model_call_reservations(
+                call_id,reserved_at,tier,provider,model,config_sha256,
+                prompt_template_sha256,packet_sha256,input_chars,
+                estimated_input_tokens,reserved_output_tokens,
+                reserved_total_tokens,daily_reserved_after,
+                monthly_reserved_after,status,block_reason,
+                estimated_cost_usd,cost_basis
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,?)
+            """,
+            (
+                call_id,
+                reserved_at.isoformat(),
+                tier,
+                provider,
+                model,
+                config.config_sha256,
+                prompt_template_sha256,
+                packet_sha256,
+                input_chars,
+                estimated_input_tokens,
+                reserved_output_tokens,
+                reserved_total_tokens,
+                daily_after,
+                monthly_after,
+                status,
+                block_reason,
+                "reserved_token_upper_bound;provider_price_unavailable",
+            ),
+        )
+        self.connection.commit()
+        return {
+            "call_id": call_id,
+            "status": status,
+            "block_reason": block_reason,
+            "warning": warning,
+            "tier": tier,
+            "provider": provider,
+            "model": model,
+            "estimated_input_tokens": estimated_input_tokens,
+            "reserved_output_tokens": reserved_output_tokens,
+            "reserved_total_tokens": reserved_total_tokens,
+            "daily_reserved_after": daily_after,
+            "daily_reserved_token_cap": config.daily_reserved_token_cap,
+            "monthly_reserved_after": monthly_after,
+            "monthly_reserved_token_cap": config.monthly_reserved_token_cap,
+            "cost_basis": "reserved_token_upper_bound;provider_price_unavailable",
+        }
+
+    def model_budget_status(
+        self,
+        config: SocialConfig,
+        *,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        current = now or datetime.now(timezone.utc)
+        day_start = current.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ).isoformat()
+        month_start = current.replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        ).isoformat()
+        daily = int(
+            self.connection.execute(
+                """
+                SELECT COALESCE(SUM(reserved_total_tokens),0)
+                FROM model_call_reservations
+                WHERE status='reserved' AND reserved_at>=?
+                """,
+                (day_start,),
+            ).fetchone()[0]
+        )
+        monthly = int(
+            self.connection.execute(
+                """
+                SELECT COALESCE(SUM(reserved_total_tokens),0)
+                FROM model_call_reservations
+                WHERE status='reserved' AND reserved_at>=?
+                """,
+                (month_start,),
+            ).fetchone()[0]
+        )
+        latest = self.connection.execute(
+            """
+            SELECT call_id,reserved_at,tier,provider,model,status,block_reason,
+                   reserved_total_tokens,daily_reserved_after,
+                   monthly_reserved_after,cost_basis
+            FROM model_call_reservations ORDER BY reserved_at DESC LIMIT 1
+            """
+        ).fetchone()
+        return {
+            "accounting": "reserved_token_upper_bound",
+            "daily_reserved_tokens": daily,
+            "daily_reserved_token_cap": config.daily_reserved_token_cap,
+            "monthly_reserved_tokens": monthly,
+            "monthly_reserved_token_cap": config.monthly_reserved_token_cap,
+            "latest": dict(latest) if latest else None,
+        }
+
+    def status(self, config: SocialConfig | None = None) -> dict[str, Any]:
         counts = dict(
             self.connection.execute(
                 "SELECT review_state,COUNT(*) FROM posts GROUP BY review_state"
@@ -670,19 +1009,23 @@ class SocialOlap:
         latest = self.connection.execute(
             "SELECT * FROM collection_runs ORDER BY started_at DESC LIMIT 1"
         ).fetchone()
-        return {
+        result = {
             "schema": SCHEMA_VERSION,
             "database_path": str(self.path),
             "posts_by_review_state": counts,
             "drafts_by_state": drafts,
             "latest_collection": dict(latest) if latest else None,
         }
+        if config is not None:
+            result["model_budget"] = self.model_budget_status(config)
+        return result
 
 
 def collect(config: SocialConfig, client: MoltbookClient, store: SocialOlap) -> dict[str, Any]:
     run_id = store.start_run()
     counters = {"fetched": 0, "inserted": 0, "duplicates": 0, "flagged": 0}
     seen: set[str] = set()
+    score_now = datetime.now(timezone.utc)
     try:
         sources: list[tuple[str, Iterable[Mapping[str, Any]]]] = []
         per_source = max(5, min(100, config.max_posts_per_run // max(1, len(config.sorts) + len(config.submolts) + len(config.search_queries))))
@@ -702,7 +1045,14 @@ def collect(config: SocialConfig, client: MoltbookClient, store: SocialOlap) -> 
                 seen.add(post["external_id"])
                 counters["fetched"] += 1
                 counters["flagged"] += int(bool(post["injection_flags"]))
-                if store.ingest(post, relevance_score(post, config.relevance_terms)):
+                if store.ingest(
+                    post,
+                    relevance_score(
+                        post,
+                        config.relevance_terms,
+                        now=score_now,
+                    ),
+                ):
                     counters["inserted"] += 1
                 else:
                     counters["duplicates"] += 1
@@ -710,6 +1060,7 @@ def collect(config: SocialConfig, client: MoltbookClient, store: SocialOlap) -> 
                     break
             if counters["fetched"] >= config.max_posts_per_run:
                 break
+        store.rescore_all(config.relevance_terms, now=score_now)
         store.finish_run(run_id, status="complete", counters=counters)
         return {"run_id": run_id, "status": "complete", **counters}
     except Exception as exc:
@@ -819,7 +1170,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.command == "digest-context":
             result = store.digest_packet(hours=args.hours, limit=args.limit)
         elif args.command == "status":
-            result = store.status()
+            result = store.status(config)
             if api_key:
                 try:
                     profile = client.me()

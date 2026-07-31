@@ -90,6 +90,14 @@ once daily off-peak, capturing exit codes and pass counts into the snapshot.
 Must not train, must respect a CPU/GPU guard so it never competes with a DOIN
 candidate, and must record suite duration.
 
+Status 2026-07-31: implemented and active on Omega. The daily timer runs at
+03:30 America/Bogota with bounded jitter. It skips without replacing valid
+evidence when Omega owns a candidate, a GPU is at least 70 percent utilized,
+available RAM is below 4 GiB, campaign status is unavailable or CPU load
+exceeds the declared guard. The first packet recorded 73 agent-multi
+safety/campaign, 73 gym-fx and 48 doin-node consensus-focused tests passing,
+including duration, repository revision and command/output hashes.
+
 ### 4.3 `HERMES-AUDIT-DIGEST-003` (tier 1)
 
 A dedicated read-only Hermes audit identity, per spec constraints: input

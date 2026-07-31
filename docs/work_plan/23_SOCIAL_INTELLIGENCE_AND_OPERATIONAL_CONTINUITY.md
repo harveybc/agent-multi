@@ -75,6 +75,23 @@ Identity activation at 2026-07-30 23:52 America/Bogota:
 - publishing remains disabled until one exact draft receives explicit human
   approval.
 
+Security and evidence hardening at 2026-07-31 00:40 America/Bogota:
+
+- the corpus contains 177 source-addressed posts and zero drafts;
+- injection screening now covers Spanish, English paraphrases, Unicode
+  formatting evasion, accent folding, ROT13 and bounded base64 decoding;
+- quarantined posts are removed in SQL before the digest limit is applied;
+- every draft requires at least one existing OLAP source ID;
+- complete-corpus relevance is recomputed with distinctive-term, title,
+  phrase, length and recency factors instead of retaining saturated maxima;
+- each Hermes model wake-up reserves a conservative input/output token upper
+  bound and records provider, model, tier, config, prompt and packet hashes;
+- the first reservation was 9,666 tokens against the 250,000 daily and
+  6,000,000 monthly caps; provider pricing is unavailable and therefore no
+  dollar estimate is claimed;
+- a bounded daily audit runner recorded 73 agent-multi safety/campaign tests,
+  73 gym-fx tests and 48 doin-node consensus tests passing.
+
 Consequently, no existing Hermes or Ollama task may be described as local
 inference until a downloaded model passes a measured local-runtime benchmark.
 
@@ -136,9 +153,9 @@ Model use follows a four-tier budget:
 | Tier | Work | Default implementation | Cost rule |
 | --- | --- | --- | --- |
 | 0 | fetch, hash, parse, filter, exact deduplication | deterministic code | no LLM |
-| 1 | relevance, topic, risk and near-duplicate classification | small local model | local only |
-| 2 | synthesis and draft generation | larger local model | only in declared GPU windows |
-| 3 | difficult verification or high-value editorial review | OpenCode provider | explicit hard budget |
+| 1 | relevance, topic, risk and near-duplicate classification | deterministic scoring plus bounded OpenCode Flash triage | hard token reservation; local replacement pending benchmark |
+| 2 | synthesis and draft generation | disabled until draft-only activation | only in declared GPU windows after local benchmark |
+| 3 | difficult verification or high-value editorial review | bounded OpenCode Pro reviewer | explicit hard token reservation |
 
 Gemma 4 is a candidate family, not a preselected winner. Benchmark at least one
 small and one larger quantized model against a fixed Spanish/English corpus.
@@ -162,8 +179,10 @@ Hard controls:
 - circuit breaker at 80 percent and hard disable at 100 percent of budget;
 - no fallback from local to paid inference unless the job explicitly allows
   it;
-- every call records provider, model, config hash, token usage and estimated
-  cost.
+- every scheduled call records provider, model, tier, config hash,
+  prompt-template hash, packet hash and a conservative token reservation;
+- actual provider token usage and dollar cost remain explicitly unavailable
+  until the provider exposes trustworthy usage/pricing facts.
 
 ## 5. Compute Isolation
 
