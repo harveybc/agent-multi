@@ -42,6 +42,7 @@ explored by Satoshi at full token cost.
 
 | ID | Front | State | Task | Trigger | Hermes pre-collect |
 | --- | --- | --- | --- | --- | --- |
+| AT-F1-011 | F1 | **scheduled (next)** | Equal-height fork classification for AUD-F1-20260730-005: compare block 9 across branches for unique accepted transactions, read the `ForkChoiceRule` tie-break, re-sample after finalization advances. Read-only; proposes no chain mutation (details 4.4) | now, while the fork is observable | snapshot tip/anchor fields (already collected) |
 | AT-F1-001 | F1 | scheduled | Protected-entry v2 eligibility/bracket contract verification (details 4.1) | next 24-48 h | test-suite outputs, champion metric JSON |
 | AT-F2-002 | F2 | scheduled | Broker-boundary fail-closed and secret-redaction audit (details 4.2) | next 72 h | OLAP schema dumps, adapter config hashes |
 | AT-F1-003 | F1 | scheduled (event) | Champion archive and job-0 to job-1 transition verification (details 4.3) | job-0 convergence event | supervisor history JSON, artifact hashes |
@@ -113,6 +114,29 @@ workers before job-1 start.
 
 Token class: medium-low if the supervisor history JSON is pre-collected.
 Output: `AUDIT_CHAMPION_ARCHIVE_<date>.md`.
+
+### 4.4 AT-F1-011: Equal-height fork classification (read-only)
+
+Objective: classify AUD-F1-20260730-005 without touching the chain, and give
+Musashi the evidence he stated was missing before any repair decision.
+
+Checks:
+
+1. Retrieve block 9 from Dragon (tip `603dfe1a…`) and from a majority node
+   (tip `4b4f06a1…`); compare generator identity, transaction IDs and types.
+2. Determine whether either branch carries transactions absent from the other,
+   specifically `optimae_accepted` or `candidate_evaluated`. A Dragon-only
+   accepted transaction escalates the finding to S2.
+3. Read the `ForkChoiceRule` deterministic tie-break in `doin-core` and
+   evaluate which of the two tip hashes it should select at equal height.
+4. Re-sample tips after finalization advances past height 9. A fork that
+   dissolves at finalization is benign convergence latency, and the finding
+   closes as `false_positive` or `accepted_risk` with a monitor.
+
+Explicit non-goals: no chain repair, no worker restart, no reorganization, no
+recommendation to mutate state. Output is classification evidence only.
+
+Token class: low-medium. Output: `AUDIT_FORK_CLASSIFICATION_<date>.md`.
 
 ## 5. Scheduling Notes
 
