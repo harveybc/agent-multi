@@ -778,6 +778,8 @@ cannot select, early-stop, optimize or promote future candidates.
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
 | `AUDIT-SNAPSHOT-COLLECTOR-001` | Codex | `agent-multi` | verified_live_three_hosts | Six-hour deterministic redacted packet with 11-repository provenance, campaign lineage/ETA, three-host/four-GPU telemetry, broker/watchdog evidence, section hashes/deltas and 28-snapshot retention | Codex |
+| `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
+| `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P18 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
 
 Claude packet:
 
@@ -844,6 +846,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 20. Run the next change-triggered audit from the deterministic snapshot
     contract, independently reproduce material findings, and keep both role
     recovery prompts current as architecture and runtime contracts change.
+21. Execute the P5/P1 citation verification pass, then keep the permanent
+    academic queue moving through future-work extraction, P6+ prior-art
+    collision tests, replication design and quarterly registry retirement.
 
 ## 5. Current Risks
 

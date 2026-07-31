@@ -30,6 +30,28 @@ Satoshi on 2026-07-30 22:44 COT; see `../AUDIT_DELTA_2026_07_30_02.md`
 section 1. The `clientId 7` sub-hypothesis in AUD-F2-20260730-004 is withdrawn
 as not reproduced.
 
+### 1b. Post-fix verification and academic audit, 2026-07-31 (Satoshi)
+
+Post-fix verification (`../AUDIT_POST_FIX_VERIFICATION_2026_07_31.md`):
+006/007/008/013 → **verified_closed** (code + 16-test authorized run);
+009 → open S3 accepted; 010 → open S3 narrowed (inventory pending, AT-QUAL-024);
+011 → **rejected_as_written, withdrawn** (all six cited suites verified to
+exist; residue is specific unautomated scenarios, S4); 012 → open S4 accepted.
+Fork check: `deferred_no_new_boundary` (gen 2 at 19/20, finalized still 2).
+
+New findings from the academic audit
+(`../AUDIT_ACADEMIC_PUBLICATION_PROGRAM_2026_07_31.md`):
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-GEN-20260731-014 | S3 | open | Unregistered participant "Arendt" appears as independent corroborator in the closure chain; no versioned role definition anywhere in the authority model | Musashi + Harvey |
+| AUD-GEN-20260731-015 | S3 | open | Dual-role conflict: auditor is now academic lead and P5 is a paper about the auditor's own system; proposed controls: enumeration-rule incident corpus, Musashi raw-timestamp verification, external review before P5 preprint, in-paper conflict disclosure | Harvey (accept) + Musashi (doc amendment) |
+| AUD-ACAD-20260731-016 | S3 | open | P1 vocabulary implies Byzantine/adversarial guarantees while evidence is cooperative crash-fault with signed identities; scope threat model before drafting | Satoshi (framing) + Musashi (code verification) |
+| AUD-ACAD-20260731-017 | S4 | open | No `papers/<id>/` scaffold or `claims.csv` exists; claim-to-evidence contract unenforceable once drafting starts | Musashi |
+
+Paper states: P1 evidence_incomplete, P2 evidence_incomplete, P3 outline,
+P4 evidence_incomplete, P5 evidence_incomplete. None evidence_ready.
+
 ### 1a. Technical-lead triage, 2026-07-31
 
 These state changes preserve the original report history and supersede the

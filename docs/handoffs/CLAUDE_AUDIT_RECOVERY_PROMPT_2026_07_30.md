@@ -1,7 +1,7 @@
 # Satoshi Audit-Agent Recovery Prompt
 
 Date: 2026-07-31
-Recovery version: 1.4.0
+Recovery version: 1.5.0
 Companion to: `CLAUDE_CONTINUOUS_AUDIT_AGENT_SPEC_2026_07_30.md` (the role
 authority; this file never overrides it)
 
@@ -67,6 +67,52 @@ For academic work, load document 25 and the dedicated dated academic handoff;
 do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
+
+As of 2026-07-31 ~02:15 America/Bogota (Musashi governance response):
+
+- Musashi accepted findings 014-017 with a stricter P1 correction: identity
+  signing primitives exist, but network messages are not signed and the active
+  research profile can accept candidate results without independent
+  verification. Read
+  `../audits/CODEX_GOVERNANCE_ACADEMIC_AND_INNOVATION_RESPONSE_2026_07_31.md`.
+- Arendt's unregistered designation was removed; P5 enumeration/raw-timestamp/
+  external-review controls are in document 25; P1-P5 scaffolds and a structural
+  validator now exist.
+- The finite P1-P5 roadmap is supplemented by document 26 and the P6-P18
+  research registry. Satoshi has a permanent collision-test, future-work,
+  replication and retirement queue; P6+ entries are hypotheses, not novelty
+  claims.
+- The generation-3 boundary occurred. Four workers are evaluating distinct
+  candidates on one plan/population. A Dragon tip differs at unfinalized
+  height 10 while finalized height/hash 3 agree. Classification is
+  `expected_unfinalized_equal_height_competition_pending_convergence`; no
+  chain mutation is authorized.
+- Next dedicated packet:
+  `SATOSHI_GOVERNANCE_CLOSURE_AND_INNOVATION_CHALLENGE_2026_07_31.md`.
+  S0/S1 findings and the read-only fork check preempt academic research.
+
+Earlier state:
+
+As of 2026-07-31 ~02:00 America/Bogota (post-fix verification + academic audit
+session):
+
+- **Role addendum:** commit `e94e9344` appoints Satoshi academic research lead
+  (doc 25); auditor independence tensions recorded as open findings 014/015 —
+  do not treat the academic role as expanding audit authority.
+- Post-fix: findings 006/007/008/013 verified_closed; 011 withdrawn as
+  written (my error — six cited suites exist); 009/010/012 open at reduced
+  severities. Test-evidence packet live (73/73/48 passed, hashed).
+- Fork: `deferred_no_new_boundary` at gen 2 19/20, finalized height 2;
+  AT-F1-011 fires at the generation boundary.
+- Campaign: 59/480 candidates, fleet 1.73 cand/h, ~10 days remaining.
+- IBKR: adapter healthy, TWS not listening (`waiting_for_tws`) — user action.
+- Academic: P1/P2/P4/P5 evidence_incomplete, P3 outline/deferred; deliverables
+  in `docs/publications/`; next academic task AT-ACADEMIC-031 (ledger
+  verification, P5+P1 rows). New findings 014 (Arendt unregistered),
+  015 (P5 self-audit conflict), 016 (P1 threat-model scoping), 017 (no papers/
+  scaffold).
+
+Earlier state (2026-07-31 ~00:30):
 
 Academic preservation was added as a cross-cutting front on 2026-07-31. The
 five-paper program is in
