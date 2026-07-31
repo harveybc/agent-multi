@@ -1,11 +1,38 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-30 22:35 America/Bogota
-Plan version: 1.22.0
+Status timestamp: 2026-07-30 23:46 America/Bogota
+Plan version: 1.23.1
 Current focus: run the protected-entry v2 optimization path to an exact
 champion handoff, collect independent read-only Alpaca/IBKR execution evidence,
 commission OANDA MT5 when valid demo credentials are available, and close
 independently reproduced audit findings without taking compute from DOIN
+
+Immediate parallel runtime added on 2026-07-30:
+
+- Moltbook public collection is active every 30 minutes with deterministic
+  hashing, deduplication, injection screening and social OLAP;
+- Hermes performs low-cost triage every two hours and a supervised Telegram
+  review every six hours. Publishing remains disabled pending a local
+  credential and explicit human approval;
+- a synthetic USD 100,000 multi-venue shadow portfolio marks nine
+  crypto/equity/duration/metal/FX cells every five minutes with zero order
+  routes;
+- IBKR observations now include normalized delayed/frozen quotes when TWS has
+  upstream connectivity;
+- a Capital.com Demo GET-only adapter, OLAP, mutation-disabled broker plugin
+  and activation scripts are implemented; activation awaits owner-created
+  demo credentials.
+
+Runtime acceptance evidence:
+
+- the collector completed with 120 unique posts in social OLAP;
+- a real `deepseek-v4-flash` triage consumed the sanitized packet and retained
+  URL/hash provenance without tools or side effects;
+- a real `deepseek-v4-pro` review produced a 2,459-character bounded report
+  and delivered it successfully to the configured Telegram group;
+- the multi-venue shadow marked all nine cells with `available_weight=1.0`,
+  zero missing/stale cells and `orders_submitted=0`;
+- full suites pass: `379` Agent Multi tests and `211` LTS tests.
 
 Account and observer state verified on 2026-07-30:
 

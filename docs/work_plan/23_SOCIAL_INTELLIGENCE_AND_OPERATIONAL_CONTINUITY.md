@@ -36,6 +36,34 @@ Verified on Omega on 2026-07-30:
 - no local Gemma weights and no active OpenClaw installation were found;
 - one existing Hermes job performs the LTS paper-shadow business review.
 
+Implemented and activated on Omega on 2026-07-30:
+
+- a deterministic Moltbook collector runs every 30 minutes with a 512 MiB
+  memory ceiling, 50 percent CPU ceiling and no GPU dependency;
+- verified collections stored 120 unique posts in the social
+  SQLite OLAP; every post carries source, content and raw-response hashes;
+- exact duplicate suppression and deterministic prompt-injection screening
+  run before any model sees social content;
+- a low-cost `deepseek-v4-flash` Hermes job triages sanitized evidence every
+  two hours without Telegram delivery;
+- a supervising `deepseek-v4-pro` job reviews the triage every six hours and
+  delivers its bounded report to Telegram;
+- both jobs prohibit tools beyond the nonprivileged `todo` set and prohibit
+  publishing, trading, risk changes, campaign changes and model promotion;
+- the public collector does not require a credential. Moltbook identity and
+  publishing remain unavailable until the owner imports or registers a key
+  locally.
+
+Acceptance run at 2026-07-30 23:43 America/Bogota:
+
+- the low-cost job consumed a real sanitized 30-item packet and retained 25
+  source-backed items;
+- the senior job independently reviewed the evidence, stayed below the
+  Telegram message limit at 2,459 characters and delivered successfully;
+- the installer resolves the explicit Telegram destination from the local
+  Hermes environment. No chat ID, bot token or Moltbook key is written to the
+  repository.
+
 Consequently, no existing Hermes or Ollama task may be described as local
 inference until a downloaded model passes a measured local-runtime benchmark.
 
@@ -255,19 +283,19 @@ or place orders.
 - Materialize JSON schemas for sources, claims, drafts and model calls.
 - Add deterministic fixtures for malicious posts and citation failures.
 
-### S1: read-only intelligence
+### S1: read-only intelligence - active
 
 - Implement collectors, hashing, normalized OLAP and exact deduplication.
 - Deliver one daily Telegram digest with links and no autonomous posts.
 - Measure source yield for seven days.
 
-### S2: local model bake-off
+### S2: local model bake-off - pending
 
 - Install candidate local weights on one noncritical execution path.
 - Run the fixed benchmark corpus and coexistence/resource tests.
 - Select Tier 1 and Tier 2 models from evidence.
 
-### S3: draft participation
+### S3: draft participation - implementation ready, activation pending
 
 - Generate citation-backed Moltbook drafts.
 - Record human edits, acceptance and rejection as training/evaluation facts.
@@ -303,7 +331,18 @@ or place orders.
 
 ## 12. Immediate Decision
 
-Do not install a large local model or activate Moltbook publishing while the
-MT5 commissioning and current DOIN work own the machines. The next safe
-increment is S0 followed by a deterministic S1 collector and Telegram digest.
-Local model selection begins only after a measured resource window exists.
+S0 and the CPU-only S1 path are active without taking a GPU from DOIN.
+Publishing remains approval-gated and disabled until a Moltbook credential is
+stored locally, identity ownership is verified and the owner explicitly
+approves one source-backed draft. The temporary Tier-1 route is the low-cost
+OpenCode `deepseek-v4-flash` endpoint; it must not be mislabeled as local.
+Local model selection remains an evidence-based S2 task after a measured
+resource window exists.
+
+Runtime commands:
+
+```bash
+systemctl --user status agent-multi-social-collector.timer
+python tools/social_intelligence.py \
+  --config examples/config/social_intelligence/moltbook_observe_v1.json status
+```

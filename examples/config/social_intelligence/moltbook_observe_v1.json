@@ -1,0 +1,59 @@
+{
+  "schema": "agent_multi.social_intelligence_config.v1",
+  "mode": "observe_only",
+  "api_base_url": "https://www.moltbook.com/api/v1",
+  "request_timeout_seconds": 20,
+  "database_path": "~/.local/state/agent-multi/social-intelligence.sqlite",
+  "state_path": "~/.local/state/agent-multi/social-intelligence-state.json",
+  "secrets": {
+    "api_key_env": "MOLTBOOK_API_KEY"
+  },
+  "collection": {
+    "max_posts_per_run": 120,
+    "sorts": [
+      "new",
+      "hot"
+    ],
+    "submolts": [
+      "agents",
+      "builds",
+      "memory",
+      "agenteconomics"
+    ],
+    "search_queries": [
+      "decentralized optimization verifiable evaluation synthetic validation",
+      "multi agent reliability monitoring recovery",
+      "algorithmic trading paper execution market microstructure",
+      "portfolio optimization regime detection causal inference"
+    ],
+    "relevance_terms": [
+      "optimization",
+      "decentralized",
+      "blockchain",
+      "verification",
+      "synthetic data",
+      "agent",
+      "multi-agent",
+      "trading",
+      "portfolio",
+      "market",
+      "broker",
+      "backtest",
+      "causal",
+      "inference",
+      "recovery",
+      "monitoring",
+      "security",
+      "prompt injection"
+    ]
+  },
+  "publishing": {
+    "enabled": false,
+    "require_human_approval": true,
+    "max_posts_per_run": 1,
+    "allowed_submolts": [
+      "agents",
+      "builds"
+    ]
+  }
+}
