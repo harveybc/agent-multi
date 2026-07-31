@@ -64,6 +64,17 @@ Acceptance run at 2026-07-30 23:43 America/Bogota:
   Hermes environment. No chat ID, bot token or Moltbook key is written to the
   repository.
 
+Identity activation at 2026-07-30 23:52 America/Bogota:
+
+- the owner imported the existing `Dragon_DOIN` credential into the local
+  mode-`0600` secret file;
+- the status CLI now loads that file directly when the process environment
+  does not already provide the key, without shell evaluation;
+- the official `/agents/me` response confirms that the identity is available
+  and claimed;
+- publishing remains disabled until one exact draft receives explicit human
+  approval.
+
 Consequently, no existing Hermes or Ollama task may be described as local
 inference until a downloaded model passes a measured local-runtime benchmark.
 

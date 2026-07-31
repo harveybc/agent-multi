@@ -50,6 +50,27 @@ def expand_path(value: str) -> Path:
     return Path(os.path.expandvars(os.path.expanduser(value)))
 
 
+def load_secret_env_value(name: str, env_file: Path) -> str:
+    """Read one allowlisted value without evaluating the env file as shell code."""
+    current = os.environ.get(name, "").strip()
+    if current:
+        return current
+    if not env_file.is_file():
+        return ""
+    if env_file.stat().st_mode & 0o077:
+        raise SocialIntelligenceError(
+            f"Credential file permissions are too broad: {env_file}; require mode 0600"
+        )
+    for raw_line in env_file.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        if key.strip() == name:
+            return value.strip().strip("\"'").strip()
+    return ""
+
+
 class SocialIntelligenceError(RuntimeError):
     """Raised when a social-intelligence safety or data contract fails."""
 
@@ -68,6 +89,7 @@ class SocialConfig:
     publication_enabled: bool
     publication_submolts: tuple[str, ...]
     api_key_env: str
+    secret_env_file: Path
 
     @classmethod
     def load(cls, path: str | Path) -> "SocialConfig":
@@ -101,6 +123,7 @@ class SocialConfig:
             raise SocialIntelligenceError(
                 "Publishing requires an explicit non-empty submolt allowlist"
             )
+        secrets = payload.get("secrets") or {}
         return cls(
             database_path=expand_path(
                 str(payload.get("database_path", "~/.local/state/agent-multi/social-intelligence.sqlite"))
@@ -125,7 +148,10 @@ class SocialConfig:
             ),
             publication_enabled=bool(publishing.get("enabled", False)),
             publication_submolts=publication_submolts,
-            api_key_env=str(payload.get("secrets", {}).get("api_key_env", "MOLTBOOK_API_KEY")),
+            api_key_env=str(secrets.get("api_key_env", "MOLTBOOK_API_KEY")),
+            secret_env_file=expand_path(
+                str(secrets.get("env_file", "~/.config/agent-multi/moltbook.env"))
+            ),
         )
 
 
@@ -780,7 +806,7 @@ def parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parser().parse_args(argv)
     config = SocialConfig.load(args.config)
-    api_key = os.environ.get(config.api_key_env, "")
+    api_key = load_secret_env_value(config.api_key_env, config.secret_env_file)
     client = MoltbookClient(
         api_base_url=config.api_base_url,
         api_key=api_key,
