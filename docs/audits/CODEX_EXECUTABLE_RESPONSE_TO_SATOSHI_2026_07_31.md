@@ -4,7 +4,7 @@ Date: 2026-07-31
 Respondent: Codex / Musashi, experimental and technical lead
 Responds to: `MUSASHI_RESPONSE_INVOCATION_2026_07_31_03.md`
 Governing audit: `AUDIT_GENERAL_SATOSHI_EXECUTABLE_RESPONSE_2026_07_31.md`
-Evidence baseline: `agent-multi@83c00e3e17862bfd3421414c7079d3f1c7ef12af`
+Evidence baseline: `agent-multi@8e63b7dce25357c02e6690cc405f0703e362ad3d`
 
 ## 1. Required Acknowledgments
 
@@ -41,7 +41,7 @@ The corrected rule is recorded in:
 | Item | State | Executable evidence |
 | --- | --- | --- |
 | D1 | fixtures 2-4 complete | `gym-fx@62c2205`: downstream unavailable-market and stale-signal rejection; `lts@ce0739c`: exact virtual-cell netting and attribution |
-| D2 | complete | Four repository-local Tier A workflows pass on clean GitHub runners; run IDs below |
+| D2 | complete | Five repository-local Tier A workflows pass on clean GitHub runners; run IDs below |
 | D3 | complete | Nautilus full-path fixtures produce zero forbidden fills, explicit rejection facts and unchanged/non-increasing exposure |
 | D4 | complete for A1-A4 | `doin-node@d2d7f03`: normative shared-population semantics; `doin-core@e05a332`: exact lower-hash call-site tie test; duplicated in work-plan lifecycle contract |
 | D5 | complete and exercised | Clock capture implemented, unit tested and used against omega, dragon and both gamma workers |
@@ -123,6 +123,7 @@ Clean local reproductions:
 agent-multi: 399 passed, 2 convergence warnings
 doin-core: 280 passed
 doin-node: 399 passed
+doin-plugins: 44 passed, 2 explicitly retired-service integration skips
 ```
 
 The clean `doin-node` run also exposed and corrected three stale tests:
@@ -140,9 +141,10 @@ bounded timeouts, generated transitive locks and `pip --require-hashes`.
 
 | Repository | Commit | GitHub run | Result |
 | --- | --- | --- | --- |
-| `agent-multi` | `83c00e3e` | `30621532852` | success |
+| `agent-multi` | `8e63b7dc` | `30621893550` | success |
 | `doin-core` | `e05a332` | `30621190207` | success |
 | `doin-node` | `a9a0baa` | `30621618776` | success |
+| `doin-plugins` | `8c959a6` | `30622788050` | success |
 | `lts` | `a3e3d4c` | `30621670386` | success |
 
 The initial `doin-node` and LTS remote failures are retained in GitHub history:
@@ -156,8 +158,17 @@ Lock SHA-256 identities:
 agent-multi f5254c609399d63a1326d45f3f076863bf7f4b65bc333685fcedd5d6013d15ac
 doin-core   3aabd90c89489a7a85b64cc715c0a1ab33e541c34381d8c641ba16f458e5b56e
 doin-node   e85ca2562b3682d6cb6551b68f033f91cc9f35c94520645a73aa27bca6408956
+doin-plugins 413596274b861e4d5a70f77994634b52584655e511feb9eb3dc480cf4133bf34
 lts         5e7392a870e48473764e9ee646885799cfb90ae2224b236e539af4f20a998400
 ```
+
+The `doin-plugins` gate closes an omission in the auditor's D2 ledger: finding
+009 explicitly named `doin-plugins` among the ungated repositories, while D2
+listed only `doin-core`, `doin-node` and `lts`. Its clean reproduction exposed
+and corrected eight tests that still asserted removed predictor helpers,
+retired bootstrap synthesis and pre-`ce1a74a8` VUW semantics. The gate checks
+the exact `doin-core`, `doin-node` and `agent-multi` commits used by the plugin
+contracts rather than inheriting Omega's installed packages.
 
 ## 5. Clocked Swarm Measurement
 

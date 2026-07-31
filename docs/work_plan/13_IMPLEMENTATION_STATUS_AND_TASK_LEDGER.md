@@ -778,7 +778,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
 | `AUDIT-SNAPSHOT-COLLECTOR-001` | Codex | `agent-multi` | verified_live_three_hosts | Six-hour deterministic redacted packet with 11-repository provenance, campaign lineage/ETA, three-host/four-GPU telemetry, broker/watchdog evidence, section hashes/deltas and 28-snapshot retention | Codex |
-| `TIER-A-CI-001` | Codex | `agent-multi`, `doin-core`, `doin-node`, `lts` | clean_local_reproduction_pending_remote_runs | SHA-pinned workflows, least privilege, generated dependency hashes, `--require-hashes`, exact cross-repository commits and bounded contract suites | Codex |
+| `TIER-A-CI-001` | Codex | `agent-multi`, `doin-core`, `doin-node`, `doin-plugins`, `lts` | verified_clean_remote_runners | SHA-pinned workflows, least privilege, generated dependency hashes, `--require-hashes`, exact cross-repository commits and bounded contract suites; clean GitHub runs `30621893550`, `30621190207`, `30621618776`, `30622788050`, `30621670386` | Codex |
 | `AT-QUAL-024` | Codex + Satoshi verification | `agent-multi`, `gym-fx`, `lts` | invariants_4_9_10_complete | End-to-end unavailable-market no-fill, stale-signal non-expansion and exact virtual-cell net-target identity; remaining invariant fixtures retain their published order | Codex |
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
@@ -846,10 +846,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
 19. Provision the continuity VPS from code, restore encrypted state in a clean
     drill and verify credential revocation before treating it as operational.
-20. Verify the new repository-local Tier A workflows on clean GitHub runners,
-    then run the next change-triggered audit from the deterministic snapshot
-    contract. Independently reproduce material findings and keep both role
-    recovery prompts current as architecture and runtime contracts change.
+20. Preserve the five verified repository-local Tier A gates and run the next
+    change-triggered audit from the deterministic snapshot contract.
+    Independently reproduce material findings and keep both role recovery
+    prompts current as architecture and runtime contracts change.
 21. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
@@ -863,8 +863,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 - Current canonical sections intentionally allow plugin-specific dictionaries;
   role-specific typed submodels will be added only after the first vertical
   slice freezes their real fields.
-- `doin-node` still has three independently confirmed baseline test failures:
-  one GossipSub mesh-capacity failure and two stale VUW zero-weight assertions.
+- The former `doin-node` GossipSub and VUW baseline failures and eight stale
+  `doin-plugins` assertions are corrected and protected by clean remote gates;
+  future contract changes must update implementation and assertions together.
 - Controlled flooding is now connection-bounded after the first four-island
   run exposed an FD leak; the live descriptor/socket soak remains a mandatory
   deployment gate for future topology changes.
