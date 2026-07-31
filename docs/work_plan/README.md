@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue Paper commissioning active; bounded social-intelligence track specified
-Plan version: 1.19.0
+Status: E0-E4 complete; protected-entry v2 campaign prepared; multi-venue Paper commissioning active; bounded social-intelligence and independent-audit tracks specified
+Plan version: 1.20.0
 Date: 2026-07-30
 Primary implementation repository: `agent-multi`
 
@@ -77,6 +77,7 @@ trading domain.
 | [21 OANDA Practice execution lab](21_OANDA_PRACTICE_EXECUTION_REALITY_LAB.md) | Broker-observation track, OLAP-backed asset selection, protected canaries, day/week metrics, and activation gates |
 | [22 Multi-venue paper execution](22_MULTI_VENUE_PAPER_EXECUTION_AND_SOCIAL_TRADING.md) | OANDA MT5, Alpaca Paper, IBKR Paper, global LTS ledger, venue routing, account status, and social-trading boundary |
 | [23 Social intelligence and continuity](23_SOCIAL_INTELLIGENCE_AND_OPERATIONAL_CONTINUITY.md) | Hermes/Moltbook research, local-model cost routing, social OLAP, bounded publishing, DOIN domain discovery, and recoverable operations |
+| [24 Independent audit and continuous improvement](24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md) | Claude audit authority, cross-front checks, cadence, evidence, Hermes boundary, findings, and Codex role recovery |
 
 ## Repository Ownership Summary
 
@@ -114,6 +115,11 @@ parallelizable task packets when that reduces delivery time. Delegation never
 transfers architectural authority or acceptance responsibility. Claude output
 is treated as an untrusted contribution until its diff, assumptions, tests and
 runtime behavior pass the independent review protocol in document 12.
+
+A separate Claude conversation may operate as the read-mostly independent
+auditor defined in document 24. It can challenge Codex and propose corrections,
+but it cannot orchestrate runtime, alter architecture, direct Hermes, operate
+brokers or close its own material findings.
 
 ## Non-Negotiable Experimental Rules
 
@@ -190,6 +196,9 @@ adding value.
 12. Add the social-intelligence track without competing with optimization:
     deterministic collection, Telegram review, measured local-model bake-off,
     then bounded publication and a clean VPS continuity drill.
+13. Run change-driven independent audits across all three fronts, with Codex
+    reproducing findings and maintaining a versioned technical-lead recovery
+    prompt.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

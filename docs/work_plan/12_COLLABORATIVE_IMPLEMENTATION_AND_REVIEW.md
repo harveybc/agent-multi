@@ -18,6 +18,12 @@ The collaboration is asymmetric by design:
 
 Claude is a capacity multiplier, not a second source of architectural truth.
 
+This document governs delegated implementation. A separate read-mostly Claude
+audit role is defined in
+`24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md`. The same Claude
+conversation should not audit and independently accept its own production-code
+changes.
+
 ## 2. Decision Rights
 
 | Decision | Owner | Claude participation |
@@ -278,6 +284,34 @@ Risk is determined by behavioral blast radius, not by line count.
   outputs.
 - Version schemas, examples, migrations, compact manifests and reproducible
   analysis code.
+
+## 9. Continuous Audit Handoff
+
+The dedicated audit-agent prompt is:
+
+```text
+docs/handoffs/CLAUDE_CONTINUOUS_AUDIT_AGENT_SPEC_2026_07_30.md
+```
+
+The durable Codex technical-lead recovery prompt is:
+
+```text
+docs/handoffs/CODEX_TECHNICAL_LEAD_RECOVERY_PROMPT_2026_07_30.md
+```
+
+The auditor may inspect delegated work, identify a defect and recommend a
+bounded correction packet. It does not implement that correction in its audit
+workspace unless Codex explicitly changes modes and issues a task packet with a
+base commit, allowed files and tests.
+
+For material changes, preserve three distinct records:
+
+1. the audit finding and evidence;
+2. the implementation task and diff;
+3. Codex's independent reproduction and closure evidence.
+
+This separation prevents a single model response from acting as requirement,
+implementation and acceptance.
 - Commit and push only after Codex review unless the user explicitly requests a
   different workflow.
 
