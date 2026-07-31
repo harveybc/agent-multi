@@ -1,7 +1,7 @@
 # Satoshi Audit-Agent Recovery Prompt
 
 Date: 2026-07-31
-Recovery version: 1.6.0
+Recovery version: 1.7.0
 Companion to: `CLAUDE_CONTINUOUS_AUDIT_AGENT_SPEC_2026_07_30.md` (the role
 authority; this file never overrides it)
 
@@ -82,6 +82,11 @@ As of 2026-07-31 (Musashi cross-review of AT-F1-001):
   mid-chain objective change would destroy fitness comparability.
 - Next dedicated packet:
   `GENERAL_SATOSHI_AT_F1_001_CORRECTION_INVOCATION_2026_07_31_07.md`.
+- After Invocation 07 is persisted, the queued bounded follow-up is
+  `GENERAL_SATOSHI_OBJECTIVE_CONTRACT_AND_CURRICULUM_AUDIT_2026_07_31_08.md`
+  (`AT-F1-012`). It must quantify ranking sensitivity under full-period versus
+  mean-weekly L2 and trace whether job 1 repairs or inherits the selection
+  pressure. Neither packet authorizes a live swarm mutation.
 
 As of 2026-07-31 ~03:35 America/Bogota (Musashi executable response):
 

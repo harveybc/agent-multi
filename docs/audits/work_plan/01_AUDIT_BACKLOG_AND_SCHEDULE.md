@@ -1,6 +1,6 @@
 # 01. Audit Backlog and Schedule
 
-Version: 1.3.0
+Version: 1.4.0
 Date: 2026-07-31
 Owner: Satoshi
 Reviewer: Musashi
@@ -44,8 +44,9 @@ explored by Satoshi at full token cost.
 
 | ID | Front | State | Task | Trigger | Hermes pre-collect |
 | --- | --- | --- | --- | --- | --- |
-| AT-F1-011 | F1 | **scheduled (next)** | Equal-height fork classification for AUD-F1-20260730-005: compare block 9 across branches for unique accepted transactions, read the `ForkChoiceRule` tie-break, re-sample after finalization advances. Read-only; proposes no chain mutation (details 4.4) | now, while the fork is observable | snapshot tip/anchor fields (already collected) |
+| AT-F1-011 | F1 | **reported (owner disposition pending)** | Equal-height fork classification for AUD-F1-20260730-005: the height-9 competition resolved after finalization advanced; finalized anchors and claims/population remained coherent. Satoshi recommended closing the original finding and tracking recurrence under finding 020 | Harvey or independent disposition of finding 005 | classification evidence is in `AUDIT_MUSASHI_GOVERNANCE_INNOVATION_RESPONSE_2026_07_31.md` |
 | AT-F1-001 | F1 | **reported (finding open)** | Protected-entry v2 eligibility/bracket contract verification (details 4.1); cross-review rejected the PASS because full-period RAP was certified as weekly RAP | Harvey metric-contract decision, then correction addendum | block-8 split metrics and artifact hash independently reproduced |
+| AT-F1-012 | F1 | **scheduled (after Invocation 07)** | Measure candidate-ranking sensitivity to full-period versus mean-weekly L2 and trace whether the queued curriculum repairs or inherits that bias (details 4.5) | immediately after the AT-F1-001 correction is persisted | accepted candidate metric vectors and job-1 materializer/config paths |
 | AT-F2-002 | F2 | scheduled | Broker-boundary fail-closed and secret-redaction audit (details 4.2) | next 72 h | OLAP schema dumps, adapter config hashes |
 | AT-F1-003 | F1 | scheduled (event) | Champion archive and job-0 to job-1 transition verification (details 4.3) | job-0 convergence event | supervisor history JSON, artifact hashes |
 | AT-GEN-010 | GEN | scheduled | Doc-drift delta sweep: doc 13 refresh vs runtime; verify open findings still reproduce | every 24 h delta session | git log delta, snapshot diff |
@@ -173,6 +174,30 @@ Explicit non-goals: no chain repair, no worker restart, no reorganization, no
 recommendation to mutate state. Output is classification evidence only.
 
 Token class: low-medium. Output: `AUDIT_FORK_CLASSIFICATION_<date>.md`.
+
+### 4.5 AT-F1-012: Objective-contract and curriculum audit (read-only)
+
+Objective: quantify whether the full-period L2 used by the active job selects
+different candidates from a mean-weekly-normalized L2, then trace whether the
+queued curriculum successor corrects or inherits that selection pressure.
+
+Checks:
+
+1. Reconstruct both objective scalars for every accepted candidate with enough
+   atomic train-tail and validation evidence; never impute missing rows.
+2. Compare ranks with Spearman/Kendall, top-1/top-5 overlap, sign changes,
+   eligibility changes and current-champion disposition.
+3. Trace job-1 handoff and materialization through executable code and config,
+   including genomes, weights, elites, fitness, weekly folds and difficulty.
+4. Give Harvey a falsifiable decision matrix for unchanged completion,
+   boundary-only replacement or retaining the current objective.
+5. Classify the academic consequence without asserting novelty.
+
+Explicit non-goals: no swarm mutation, restart, replacement campaign,
+fitness-code edit or queued-config edit. Invocation 07 must complete first.
+
+Token class: medium. Output:
+`AUDIT_OBJECTIVE_CONTRACT_AND_CURRICULUM_2026_07_31.md` plus a row-level CSV.
 
 ## 5. Scheduling Notes
 
