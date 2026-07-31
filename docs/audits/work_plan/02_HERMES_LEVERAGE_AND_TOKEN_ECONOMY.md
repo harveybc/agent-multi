@@ -1,6 +1,6 @@
 # 02. Hermes Leverage and Token Economy
 
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-07-30
 Owner: Satoshi
 Reviewer: Musashi
@@ -58,10 +58,11 @@ the audit gets its own identity and budget.
 | Contradiction analysis, contract verification, findings | Satoshi | 2 |
 | Weekly cross-front reasoning, incident root cause | Satoshi | 3 |
 
-## 4. Draft Task-Packet Requests for Musashi
+## 4. Tier Implementation Tasks
 
-These are requests, not implementations. Each needs a document-12 packet with
-base commit, allowed files and tests before anyone builds it.
+These tasks retain their stable IDs. Their current implementation state is
+recorded in each subsection; an implemented lower tier does not expand Hermes
+authority.
 
 ### 4.1 `AUDIT-SNAPSHOT-COLLECTOR-001` (tier 0)
 
@@ -72,6 +73,14 @@ cadence and on demand. Read-only: git plumbing, existing HTTP GET APIs,
 `nvidia-smi`, `ps`, bounded `journalctl`. Redaction: account fingerprints
 only, no tokens, no raw IDs, no personal paths beyond the workspace. Retention:
 last 28 snapshots. No LLM involved.
+
+Status 2026-07-30: implemented and live on Omega at
+`agent-multi@6915c487`. The timer runs every six hours with bounded jitter and
+retains 28 JSON/Markdown pairs outside Git. The first systemd run collected all
+three hosts and four GPUs, campaign/runtime lineage, 11-repository provenance,
+broker observer state and watchdog state in 20,937 bytes. It uses no LLM and
+has `CPUQuota=20%`, `MemoryMax=256M`, read-only home/system protection and one
+explicit writable state directory.
 
 ### 4.2 `AUDIT-TEST-EVIDENCE-002` (tier 0)
 
@@ -92,14 +101,14 @@ invocation suggested: yes/no + reason" as advice to humans, never as a command.
 
 ### 4.4 Sequencing
 
-4.1 first (it alone removes most Satoshi collection cost), then 4.2, then 4.3.
-Until 4.1 exists, the interim procedure in section 5 applies.
+4.1 is complete. Implement 4.2 next without competing with active candidates,
+then consider 4.3 only after the deterministic packets are stable.
 
-## 5. Interim Procedure (before packets are implemented)
+## 5. Current Procedure
 
-- Satoshi self-collects at session start, but only via the fixed bounded
-  command set in file 03 section 4 (a few hundred tokens), never by
-  re-exploring repositories or re-reading the work-plan corpus.
+- Satoshi reads the newest `latest.json` packet first. The bounded manual
+  commands in file 03 section 4 are fallback evidence only when the timer is
+  stale or an anomaly requires independent reproduction.
 - The user may paste a Hermes/watchdog Telegram summary into the session as a
   cheap snapshot substitute; Satoshi treats it as tier-1 input (untrusted,
   verify anomalies only).

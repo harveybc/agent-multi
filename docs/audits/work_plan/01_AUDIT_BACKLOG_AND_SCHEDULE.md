@@ -53,7 +53,7 @@ explored by Satoshi at full token cost.
 | AT-F3-008 | F3 | proposed | Social S0/S1 pre-activation review: allowlist, injection fixtures, budget caps, publishing disabled | before S1 activation | spec/config diff |
 | AT-GEN-008 | GEN | proposed | Continuity evidence: evidence-pool snapshot hashes exist and verify; backup retention matches doc 13 section 6 | monthly slot | hash listing, `quick_check` results |
 | AT-GEN-009 | GEN | proposed | Weekly recovery-prompt reviews (both Musashi's and Satoshi's) against architecture changes | weekly slot | git delta of docs |
-| AT-F2-009 | F2 | proposed | Dragon/Gamma linger + SSH-bridge dependency check; MT5 VM state; Alpaca scheduling mechanism | first session with remote read access | remote health snapshot |
+| AT-F2-009 | F2 | proposed (machine telemetry materialized) | Dragon/Gamma linger + SSH-bridge dependency check; MT5 VM state; Alpaca scheduling mechanism | first session requiring process-level remote evidence | deterministic machine packet plus bounded process verification |
 
 ## 4. Detailed Specs for Scheduled Tasks
 

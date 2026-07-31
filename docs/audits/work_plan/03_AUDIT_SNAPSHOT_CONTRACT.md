@@ -1,6 +1,6 @@
 # 03. Audit Snapshot Contract
 
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-07-30
 Owner: Satoshi
 Reviewer: Musashi
@@ -9,8 +9,18 @@ Reviewer: Musashi
 
 One compact, redacted, hash-stamped evidence packet replaces open-ended
 exploration at the start of every Satoshi session. It is produced by the
-tier-0 collector (file 02 section 4.1) or, until that exists, by the interim
-command set in section 4 below.
+tier-0 collector implemented at `agent-multi@6915c487`. The interim command
+set in section 4 is now a fallback or independent-reproduction path.
+
+Runtime:
+
+```text
+tool: tools/audit_snapshot_collector.py
+timer: agent-multi-audit-snapshot.timer
+state: ~/.local/state/agent-multi/audit-snapshots/
+cadence: six hours plus on demand
+retention: 28 JSON/Markdown pairs
+```
 
 ## 2. Required Sections
 
@@ -46,8 +56,12 @@ audit_snapshot.v1
   against primary sources before writing a finding on them.
 - A missing section is recorded as missing, never silently filled.
 - Snapshots stay out of Git; reports reference their sha256 and local path.
+- `meta.snapshot_sha256` is the canonical JSON SHA-256 after replacing that
+  field with JSON `null`; this removes the self-reference ambiguity.
+- The collector rejects concurrent runs, writes atomically and emits section
+  hashes plus changed-section names against the prior `latest.json`.
 
-## 4. Interim Manual Collection (bounded, until the collector exists)
+## 4. Manual Fallback and Independent Reproduction
 
 The fixed command set, all read-only:
 

@@ -1,6 +1,6 @@
 # 04. Open Findings Register
 
-Version: 1.1.0
+Version: 1.2.0
 Date: 2026-07-30
 Owner: Satoshi (state updates); closure of S0-S2 requires an independent
 verifier (normally Musashi) per `../README.md`.
@@ -27,10 +27,13 @@ None.
 | Ref | Observed | Verify in |
 | --- | --- | --- |
 | OBS-20260730-A | Job-0 record `started_at` is 2026-07-29T07:16:30Z (02:16 COT) but the Omega node process start implies ~18:18 COT the same day, a ~16 h gap with `restart_count=0`. Likely the job record marks plan materialization while workers launched after the deployment sequence, but unverified. | `worker_events` table, next delta session |
-| OBS-20260730-C | The campaign supervisor API carries no per-worker machine telemetry (GPU temp/util, RAM, swap). Remote host health is inferred from absence of watchdog alerts rather than measured in the audit path. | Snapshot collector packet (file 02 section 4.1) |
-
 Resolved observation: `OBS-20260730-B` was the symptom that became
 `AUD-F2-20260730-004`; the finding is now verified closed.
+
+Resolved observation: `OBS-20260730-C` is covered by the live tier-0 collector
+at `agent-multi@6915c487`. Its first systemd packet directly recorded all three
+hosts, four GPUs, utilization/temperature/memory, RAM, swap, disk and campaign
+cgroup OOM counters.
 
 ## 3. Verified Non-Findings (do not reopen without new evidence)
 
