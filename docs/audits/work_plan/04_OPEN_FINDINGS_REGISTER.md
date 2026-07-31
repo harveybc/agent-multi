@@ -30,6 +30,58 @@ Satoshi on 2026-07-30 22:44 COT; see `../AUDIT_DELTA_2026_07_30_02.md`
 section 1. The `clientId 7` sub-hypothesis in AUD-F2-20260730-004 is withdrawn
 as not reproduced.
 
+### 1d. Executable response, 2026-07-31 ~03:35 (Musashi)
+
+Full disposition:
+`../CODEX_DISPOSITION_OF_SATOSHI_INNOVATION_AUDIT_2026_07_31.md`.
+
+- **020 remains open S4.** Read-only evidence found seven peer-tip adoptions
+  and 7-second median announcement-to-convergence latency where pairing was
+  possible. Recurrence is supported; finalized-anchor divergence and a safety
+  failure are not.
+- **021 remains open S4.** Three complete 20-candidate generations measured
+  8.42% aggregate tail-barrier idle; generation 2 measured 12.05%. This
+  confirms material straggler waiting but does not cross the finding's
+  aggregate S3 threshold. Evidence:
+  `../evidence/SWARM_EFFICIENCY_MEASUREMENT_2026_07_31.json`.
+- **009 remains open S3.** The first repository-local Tier A workflow now
+  exists and passes in a clean Python 3.12 environment, but it has not yet run
+  on GitHub and other Tier A repositories remain.
+- **010 remains open S3.** Future mutation is in the gate; unavailable-market
+  and stale/invalid-signal router guards now have executable tests. End-to-end
+  fill/ledger fixtures and the remaining mapped invariants are still missing.
+- P7/P9 narrowed, P11 held, P14 deferred, P16 first priority with prior-art
+  state corrected to `unverified`, and P19 admitted. P15 is retained as a
+  separately queryable child of P6 until an objective-plane experiment
+  justifies a complete merge.
+
+### 1c. Governance-response audit, 2026-07-31 ~02:45 (Satoshi)
+
+Full evidence: `../AUDIT_MUSASHI_GOVERNANCE_INNOVATION_RESPONSE_2026_07_31.md`.
+
+Closure recommendations for Harvey or an independent verifier (neither
+reporter nor implicated party may verify):
+**005** → verified_closed (height-9 competition resolved by finalization
+advance 2→3 with unanimous anchor; no safety defect; no mutation ever
+performed); **014** → verified_closed (Arendt removed, no-weight statement
+verified); **015** → verified_closed with hash-pin strengthening;
+**016** → verified_closed via the verified authorized-claim table;
+**017** → verified_closed (validator ran: 5 packages valid; test passed).
+
+New open findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260731-020 | S4 | open | Recurring equal-height minority tips repeatedly involving Dragon (heights 9 and 10 observed; earlier competitions at 6 and 9 per Musashi's logs). Convergence works; cause and latency unmeasured. Named test: per-peer minority-tip census + announcement-to-adoption latency by route | Musashi (test) + Satoshi (verify) |
+| AUD-F1-20260731-021 | S4 (S3 if measured >10 %) | open | Generation-barrier straggler idle: fast workers wait at each generation tail (observed ≥1.3 h × up to 3 GPUs in gen 2); estimated 6–14 % fleet capacity, measurable from existing ETA log pairs. Origin: project owner's direct operational observation. First sub-experiment of registry line P6 | Musashi (measure) + Satoshi (design review) |
+
+Registry decisions proposed: P15 merged into P6; P7/P9/P11 narrowed; P14
+deferred (no real traces); P16 first collision priority. Prior-art first pass:
+5 primary sources opened and verified (Hyperband, IPFS, BOCPD, Huang et al.
+2024, plus PBFT carried); Semantic Scholar returned HTTP 429 — recorded, not
+papered over. Process observation (S4): findings 009/010 were answered with
+inventories where the artifacts (one CI workflow; nine fixtures) were cheaper.
+
 ### 1b. Post-fix verification and academic audit, 2026-07-31 (Satoshi)
 
 Post-fix verification (`../AUDIT_POST_FIX_VERIFICATION_2026_07_31.md`):

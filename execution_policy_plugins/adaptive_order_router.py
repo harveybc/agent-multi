@@ -142,11 +142,40 @@ class Plugin:
         context: Mapping[str, Any] | ExecutionContext,
         urgency: float | None = None,
         confidence: float | None = None,
+        market_available: bool = True,
+        signal_valid: bool = True,
+        signal_age_seconds: float | None = None,
+        max_signal_age_seconds: float | None = None,
     ) -> ExecutionDirective | None:
         """Return an account-independent entry directive or ``None`` for hold."""
+        if not isinstance(market_available, bool):
+            raise ValueError("market_available must be a boolean")
+        if not isinstance(signal_valid, bool):
+            raise ValueError("signal_valid must be a boolean")
         exposure = _finite("target_exposure", target_exposure)
         if exposure < -1.0 or exposure > 1.0:
             raise ValueError("target_exposure must be in [-1, 1]")
+        stale = False
+        if signal_age_seconds is not None:
+            age = _finite("signal_age_seconds", signal_age_seconds, minimum=0.0)
+            if max_signal_age_seconds is None:
+                raise ValueError(
+                    "max_signal_age_seconds is required with signal_age_seconds"
+                )
+            maximum_age = _finite(
+                "max_signal_age_seconds",
+                max_signal_age_seconds,
+                minimum=0.0,
+            )
+            stale = age > maximum_age
+        elif max_signal_age_seconds is not None:
+            _finite(
+                "max_signal_age_seconds",
+                max_signal_age_seconds,
+                minimum=0.0,
+            )
+        if not market_available or not signal_valid or stale:
+            return None
         deadband = float(self.params["execution_deadband"])
         if abs(exposure) <= deadband:
             return None
