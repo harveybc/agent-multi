@@ -118,10 +118,11 @@ transfers architectural authority or acceptance responsibility. Claude output
 is treated as an untrusted contribution until its diff, assumptions, tests and
 runtime behavior pass the independent review protocol in document 12.
 
-A separate Claude conversation may operate as the read-mostly independent
-auditor defined in document 24. It can challenge Codex and propose corrections,
-but it cannot orchestrate runtime, alter architecture, direct Hermes, operate
-brokers or close its own material findings.
+A separate Claude conversation operates as the read-mostly independent
+operational auditor defined in document 24 and as the academic research lead
+defined in document 25. It can challenge Codex and propose corrections, but it
+cannot orchestrate runtime, alter architecture, direct Hermes, operate brokers,
+approve its own material claims or authorize publication.
 
 ## Non-Negotiable Experimental Rules
 

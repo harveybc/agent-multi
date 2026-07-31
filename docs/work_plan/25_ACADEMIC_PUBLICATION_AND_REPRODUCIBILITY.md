@@ -27,12 +27,25 @@ Human and review responsibilities are:
 | Role | Responsibility |
 | --- | --- |
 | Harvey | Human author, domain owner, final claim/submission/licensing authority |
-| Codex ("Musashi") | Technical evidence owner, implementation reviewer, artifact and reproducibility integrator |
-| Claude ("Satoshi") | Independent literature, novelty, claim and validity auditor |
+| Claude ("Satoshi") | Academic research lead: literature program, research questions, novelty analysis, paper architecture, scholarly drafting and reviewer simulation |
+| Codex ("Musashi") | Experimental and technical lead: implementation, experiment design, artifact integrity, reproducibility execution and technical claim verification |
 
 AI systems are tools and reviewers, not authors. Harvey retains responsibility
 for every submitted claim. AI-generated text, figures, code or analysis must be
 disclosed according to the target venue's current policy.
+
+Academic and technical authority use cross-review:
+
+- Satoshi leads literature search, contribution framing, paper decomposition,
+  manuscript structure, venue analysis and academic quality.
+- Musashi leads executable hypotheses, experimental implementation, data/code
+  lineage, metric reconstruction and reproducibility packages.
+- Musashi verifies the technical and evidentiary content of Satoshi's proposed
+  claims.
+- Satoshi reviews the novelty, validity, baselines and scholarly framing of
+  Musashi's experiments.
+- Neither agent may approve its own material claim. Harvey resolves priorities
+  and authorizes release or submission.
 
 ## 2. Non-Negotiable Scholarly Rules
 
@@ -50,8 +63,9 @@ disclosed according to the target venue's current policy.
 7. Simulated and paper results cannot be presented as expected live profit.
 8. Related work is searched systematically. Every cited source is opened and
    checked; search snippets and citation counts are discovery aids only.
-9. Satoshi may reject a claim or citation. It cannot manufacture evidence,
-   decide authorship or submit a manuscript.
+9. Satoshi may reject or revise a claim, citation or paper structure within
+   the academic program. It cannot manufacture evidence, decide authorship or
+   submit a manuscript.
 10. A paper may remain `outline`, `evidence_incomplete` or
     `negative_result`. Academic-looking prose never upgrades its state.
 
@@ -407,8 +421,9 @@ idea
   -> correction and maintenance
 ```
 
-No stage transition is automatic. The evidence owner and independent auditor
-record separate decisions; Harvey authorizes public release and submission.
+No stage transition is automatic. Satoshi records academic readiness, Musashi
+records technical/reproducibility readiness, and neither substitutes for the
+other. Harvey authorizes public release and submission.
 
 ## 9. Authoritative Publication Guidance
 

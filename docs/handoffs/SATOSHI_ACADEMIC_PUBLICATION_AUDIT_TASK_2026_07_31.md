@@ -1,24 +1,33 @@
-# Satoshi Academic Publication Audit Task
+# Satoshi Academic Research Leadership and Publication Audit Task
 
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-07-31
 Owner: Harvey
-Technical lead and acceptance owner: Codex ("Musashi")
-Independent auditor: Claude ("Satoshi")
+Academic research lead: Claude ("Satoshi")
+Experimental and technical lead: Codex ("Musashi")
+Human author and release authority: Harvey
 
 ## Mission
 
-Act as a senior researcher and exacting peer reviewer across distributed
-systems, machine learning, evolutionary computation, quantitative finance,
-reproducible research and software systems.
+Act as the academic research lead and an exacting peer reviewer across
+distributed systems, machine learning, evolutionary computation, quantitative
+finance, reproducible research and software systems.
 
 Audit:
 
 `docs/work_plan/25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md`
 
-Your task is to make the proposed papers refereeable, falsifiable,
-reproducible and useful. Do not produce academic-looking prose unsupported by
-evidence.
+You own the scholarly program: related-work strategy, falsifiable research
+questions, contribution boundaries, paper decomposition, manuscript
+architecture, venue-family analysis and reviewer simulation. Make the proposed
+papers refereeable, reproducible and useful. Do not produce academic-looking
+prose unsupported by evidence.
+
+Musashi owns experimental implementation, artifact integrity and technical
+reproduction. Challenge that work academically, but do not replace missing
+runtime evidence with prose. Musashi independently verifies technical claims
+you propose; you independently review novelty and validity claims arising from
+his experiments.
 
 ## Required First Output
 
@@ -52,6 +61,20 @@ paper_id,topic,canonical_title,authors,year,venue,doi,arxiv_id,url,source_type,c
 Seed at most 12 high-value sources per paper. Quality and direct relevance are
 more important than volume.
 
+Also create:
+
+`docs/publications/ACADEMIC_RESEARCH_ROADMAP_2026_07_31.md`
+
+This roadmap must state:
+
+- the recommended order of P1-P5;
+- papers to merge, split, defer or reject;
+- decisive missing experiments and their information value;
+- a publication dependency graph;
+- proposed arXiv categories and venue families;
+- which tasks belong to Satoshi, Musashi and Harvey;
+- the next bounded academic task after this audit.
+
 ## Citation Rules
 
 - Search current scholarly indexes and authoritative primary sources.
@@ -82,14 +105,15 @@ You may:
 - read work-plan, architecture, code, tests and audit documents;
 - read public scholarly sources and official documentation;
 - inspect redacted artifact manifests and aggregate experiment evidence;
-- write only the required academic audit report and citation-ledger seed.
+- write only the required academic audit report, citation-ledger seed and
+  academic research roadmap.
 
 You may not:
 
 - edit production code, campaigns, broker state or architecture;
 - call paid broad APIs or expose credentials/licensed raw data;
 - submit to arXiv or any venue;
-- decide authorship;
+- decide authorship or submit on Harvey's behalf;
 - present AI systems as authors;
 - make novelty claims without a documented search;
 - close your own material findings.
@@ -109,6 +133,8 @@ You may not:
 The audit is acceptable only if:
 
 - all P1-P5 receive an explicit evidence state;
+- the research roadmap assigns academic leadership to Satoshi and
+  experimental/reproducibility implementation to Musashi;
 - no bibliographic field is invented;
 - claim overlap and missing experiments are identified;
 - baselines, ablations and threats are concrete;
