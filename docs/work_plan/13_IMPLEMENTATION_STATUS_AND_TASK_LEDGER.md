@@ -1,11 +1,11 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-07-30
-Plan version: 1.19.0
+Plan version: 1.20.0
 Current focus: preserve the protected-entry v2 optimization path, commission
 the independent multi-venue paper execution-reality track, and specify the
-bounded social-intelligence/operational-continuity track without taking compute
-from DOIN
+bounded social-intelligence/operational-continuity and independent-audit tracks
+without taking compute from DOIN
 
 Account state reported on 2026-07-29:
 
@@ -721,6 +721,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | specified_accounts_ready_for_preflight | LTS global ledger, OANDA MT5 EA bridge, Alpaca Paper, IBKR Paper, capability snapshots, protected canaries and consolidated OLAP | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | specified_not_activated | Hermes-routed low-cost research, social OLAP, Telegram review, bounded Moltbook publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
+| `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | specified_baseline_pending | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
 
 Claude packet:
 
@@ -779,6 +780,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
 19. Provision the continuity VPS from code, restore encrypted state in a clean
     drill and verify credential revocation before treating it as operational.
+20. Run the read-only `AUDIT-BOOTSTRAP-001` Claude baseline, independently
+    reproduce material findings, and keep the Codex recovery prompt current as
+    architecture and runtime contracts change.
 
 ## 5. Current Risks
 
