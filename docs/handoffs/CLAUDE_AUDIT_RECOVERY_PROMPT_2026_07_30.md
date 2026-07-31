@@ -1,7 +1,7 @@
 # Satoshi Audit-Agent Recovery Prompt
 
 Date: 2026-07-30
-Recovery version: 1.1.0
+Recovery version: 1.2.0
 Companion to: `CLAUDE_CONTINUOUS_AUDIT_AGENT_SPEC_2026_07_30.md` (the role
 authority; this file never overrides it)
 
@@ -110,17 +110,16 @@ Earlier baseline (2026-07-30 ~21:00):
   gamma-5090) on one lineage, seed 2703, stage 1/4, generation 2; supervisor
   API :8795, node API :8470 on Omega; zero alerts at last check.
 - Findings from the bootstrap/status reports were closed by Musashi after
-  direct reproduction; see the register and closure report. Observation
-  `OBS-20260730-C` remains pending because campaign supervisor evidence does
-  not yet include per-worker GPU/RAM/swap telemetry.
+  direct reproduction; see the register and closure report.
 - Scheduled tasks: AT-F1-001 (v2 contract verification, next), AT-F2-002
   (broker boundary), AT-F1-003 (champion archive, event-driven at job-0
   convergence), AT-GEN-010 every delta session.
-- Hermes delegation packets (snapshot collector, test-evidence runner, audit
-  digest identity) are drafted but NOT implemented; interim manual collection
-  applies.
-- Not yet verified by the auditor: Dragon/Gamma machine telemetry in the
-  snapshot path and first authenticated MT5 bridge heartbeat.
+- The deterministic snapshot collector is implemented at
+  `agent-multi@6915c487` and runs every six hours. Read
+  `~/.local/state/agent-multi/audit-snapshots/latest.json` before any manual
+  collection. The bounded test-evidence runner and optional Hermes digest are
+  not implemented.
+- Not yet verified by the auditor: first authenticated MT5 bridge heartbeat.
 
 ## FIRST ACTIONS AFTER CONTEXT LOSS
 

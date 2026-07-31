@@ -1,7 +1,7 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-30 22:25 America/Bogota
-Plan version: 1.21.0
+Status timestamp: 2026-07-30 22:35 America/Bogota
+Plan version: 1.22.0
 Current focus: run the protected-entry v2 optimization path to an exact
 champion handoff, collect independent read-only Alpaca/IBKR execution evidence,
 commission OANDA MT5 when valid demo credentials are available, and close
@@ -750,6 +750,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | specified_not_activated | Hermes-routed low-cost research, social OLAP, Telegram review, bounded Moltbook publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
+| `AUDIT-SNAPSHOT-COLLECTOR-001` | Codex | `agent-multi` | verified_live_three_hosts | Six-hour deterministic redacted packet with 11-repository provenance, campaign lineage/ETA, three-host/four-GPU telemetry, broker/watchdog evidence, section hashes/deltas and 28-snapshot retention | Codex |
 
 Claude packet:
 

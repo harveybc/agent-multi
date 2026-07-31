@@ -86,12 +86,14 @@ reported a different unfinalized tip at the same height. This closure does not
 classify or repair that warning; stronger evidence is required before any chain
 mutation.
 
-## Remaining Observation
+## Audit Infrastructure Follow-Up
 
-`OBS-20260730-C` remains open: the compact audit path does not yet collect
-per-worker GPU utilization/temperature, RAM and swap. Existing operational
-watchdogs continue to own alerts, but the next audit snapshot should ingest
-their sanitized machine evidence instead of inferring health from silence.
+`OBS-20260730-C` was resolved by `agent-multi@6915c487`. The deterministic
+collector and six-hour user timer now record all three hosts, four GPUs,
+utilization/temperature/memory, RAM, swap, disk and campaign cgroup OOM
+counters. The first systemd packet was 20,937 bytes, below the 32 KiB target,
+and contained neither the local home path nor tested secret markers. Operational
+watchdogs continue to own alerts; the packet is read-only audit input.
 
 ## Safety Result
 
