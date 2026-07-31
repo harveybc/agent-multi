@@ -21,6 +21,7 @@ User-reported state, updated 2026-07-30:
 | IBKR | Individual Margin | created and verified | equities/ETF, FX and broad multi-asset paper execution |
 | OANDA | Global Markets live | compliance review pending | future CFD venue after approval |
 | OANDA | Global Markets MT5 demo | credentials remain user-owned inside MT5 | FX and available crypto-CFD execution calibration |
+| Capital.com | Demo API | adapter ready; account/API key pending | GET-only crypto, FX, index and CFD capability fallback |
 
 Runtime evidence on Omega:
 
@@ -39,6 +40,16 @@ Runtime evidence on Omega:
 - the consolidated watchdog reports functional observer freshness, endpoint
   health, missing data, unexpected exposure and venue availability through
   Telegram.
+- a no-order multi-venue shadow portfolio now marks one synthetic USD 100,000
+  NAV every five minutes from normalized Alpaca and IBKR quotes. Its initial
+  allocation contains BTC, ETH, SOL, SPY, TLT, GLD, EURUSD, USDJPY and AUDUSD;
+  missing/stale cells remain visible and never authorize an order;
+- Alpaca contributes current crypto quotes. IBKR quote capture now requests
+  delayed/frozen data after qualifying the contracts and records mark price,
+  spread and market-data type in OLAP;
+- the Capital.com Demo adapter is implemented with one mandatory
+  authentication POST followed exclusively by allowlisted GET requests. Its
+  broker plugin rejects every mutation.
 
 MT5 host decision:
 
@@ -85,6 +96,11 @@ OANDA MT5 EA   Alpaca API    IBKR API/TWS
 LTS computes target exposure before venue selection. The router chooses only
 among venues whose latest capability snapshot satisfies the asset, direction,
 order, protection, precision, market-state and capital requirements.
+
+The active shadow marker does not yet compute model-driven target exposure. It
+is an operational and market-data reality baseline that proves cross-venue
+clocking, source freshness, common NAV arithmetic and consolidated monitoring
+without risking broker state.
 
 ## 4. Global Ledger and Routing Rules
 
@@ -216,6 +232,10 @@ Run one synthetic portfolio NAV across all adapters. Record intended versus
 routed exposure, implementation shortfall, costs, rejected opportunity,
 protection state, venue concentration and execution-adjusted weekly metrics.
 
+The first static buy-and-hold marking baseline for M4 is active. Model intent,
+routing simulation and implementation-shortfall attribution are subsequent
+increments, not silently inferred from the static baseline.
+
 ### M5: Live decision
 
 No account receives real capital automatically. A live pilot requires explicit
@@ -256,17 +276,19 @@ The current Individual accounts validate our own portfolio only.
 
 ## 12. Immediate Inputs and Next Actions
 
-1. Keep the verified Alpaca and IBKR Paper observers on Omega in read-only
-   mode and complete their independent 24-hour observation windows.
-2. Resolve the OANDA Global Markets demo account/server through the official
+1. Keep Alpaca, IBKR and the consolidated shadow marker active on Omega and
+   complete their independent observation windows.
+2. Create a Capital.com Demo account/API key and activate its GET-only
+   observer as a crypto/FX/CFD fallback; do not enable an order route.
+3. Resolve the OANDA Global Markets demo account/server through the official
    account/support path. Retain credentials inside MT5, never in Git or chat.
-3. After authenticated OANDA demo login, compile the tracked EA with zero
+4. After authenticated OANDA demo login, compile the tracked EA with zero
    errors, allowlist only `http://192.168.122.1:8766`, attach the EA to one
    chart and verify signed heartbeat/snapshot OLAP facts.
-4. Treat the MT5 bridge as active only when heartbeat freshness, broker
+5. Treat the MT5 bridge as active only when heartbeat freshness, broker
    connection, account fingerprint and unexpected-exposure alerts are visible
    in deterministic monitoring.
-5. Review all 24-hour read-only evidence before enabling any minimum-size
+6. Review all 24-hour read-only evidence before enabling any minimum-size
    protected canary.
 
 ## 13. Hermes and Telegram Operations
@@ -309,5 +331,7 @@ Telegram updates.
   https://www.interactivebrokers.com/campus/glossary-terms/paper-trading-account/
 - IBKR Trading Web API:
   https://www.interactivebrokers.com/campus/ibkr-api-page/web-api-trading/
+- Capital.com Open API:
+  https://open-api.capital.com/
 - Microsoft Windows 11 x64 ISO:
   https://www.microsoft.com/software-download/windows11
