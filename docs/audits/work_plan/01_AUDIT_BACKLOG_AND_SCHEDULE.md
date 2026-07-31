@@ -56,6 +56,37 @@ explored by Satoshi at full token cost.
 | AT-GEN-009 | GEN | proposed | Weekly recovery-prompt reviews (both Musashi's and Satoshi's) against architecture changes | weekly slot | git delta of docs |
 | AT-F2-009 | F2 | proposed (machine telemetry materialized) | Dragon/Gamma linger + SSH-bridge dependency check; MT5 VM state; Alpaca scheduling mechanism | first session requiring process-level remote evidence | deterministic machine packet plus bounded process verification |
 
+## 3b. Continuous Deepening Program (added 2026-07-31)
+
+Per user direction, all three fronts receive continuous and increasingly deep
+coverage. Repository quality bars follow **exposure tiering**, not uniform
+ceremony (framework in `../AUDIT_QUALITY_SECURITY_TESTING_2026_07_31.md`
+section 2):
+
+- **Tier A (public/adversarial):** `doin-core`, `doin-node`, `doin-plugins`,
+  `lts` — CI mandatory, adversarial/property tests, dependency provenance,
+  threat model, security review before public/multi-user exposure.
+- **Tier B (trust-critical internal):** `agent-multi`, `prediction_provider`,
+  `financial-data` — CI, leakage/cutoff, invariants, boundary integration.
+- **Tier C (libraries):** `trading-contracts`, `gym-fx`, `heuristic-strategy` —
+  CI, unit plus property/contract fixtures, compatibility tests.
+
+| ID | Front | Depth | Task | Prerequisite |
+| --- | --- | --- | --- | --- |
+| `AT-SEC-020` | F1 | deep | `doin-core` crypto/trust primitives: identity, signing, hashing, commit-reveal, replay, quorum assumptions | none |
+| `AT-SEC-021` | F1 | deep | `doin-node` untrusted-peer input: validation, bounds, dedup identity, fork handling, resource exhaustion | none |
+| `AT-SEC-022` | F2 | deep | `lts` credential/redaction/order-authority review; prove no path bypasses risk and reconciliation | none |
+| `AT-SEC-025` | F3 | deep | Moltbook adversarial fixtures: multilingual injection, citation forgery, crowd-out | after 006/008 fixes |
+| `AT-F3-013` | F3 | medium | Hermes-side model call: provider, budget, and whether the packet is the only prompt input | none |
+| `AT-QUAL-023` | all | medium | Verify CI adoption and the leakage mutation gate | AUD-GEN-...-009 fix |
+| `AT-QUAL-024` | all | medium | Verify the ten document 09 invariants | AUD-GEN-...-010 fix |
+| `AT-QUAL-026` | all | light | Dependency/SBOM verification for Tier A | AUD-GEN-...-012 fix |
+
+Rotation honouring the 72-hour front-coverage rule: F1 deep security
+(`AT-SEC-020`, `AT-SEC-021`) → F2 (`AT-SEC-022`) → F3 (`AT-SEC-025`), with
+quality-verification tasks interleaved as their prerequisites land. This
+complements, and does not replace, the operational tasks in section 3.
+
 ## 4. Detailed Specs for Scheduled Tasks
 
 ### 4.1 AT-F1-001: Protected-entry v2 contract verification

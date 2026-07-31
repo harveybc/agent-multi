@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import subprocess
 import sys
@@ -109,20 +110,55 @@ def _install_hermes(repo: Path) -> None:
     scripts_dir = Path.home() / ".hermes/scripts"
     scripts_dir.mkdir(parents=True, exist_ok=True)
     source_context = repo / "tools/social_intelligence_hermes_context.py"
-    wrapper = scripts_dir / "agent_multi_social_intelligence_context.py"
-    wrapper.write_text(
-        f"""#!/usr/bin/env python3
+    config = repo / "examples/config/social_intelligence/moltbook_observe_v1.json"
+
+    def write_wrapper(
+        name: str,
+        *,
+        tier: str,
+        provider: str,
+        model: str,
+        prompt: str,
+    ) -> Path:
+        wrapper = scripts_dir / name
+        prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        wrapper.write_text(
+            f"""#!/usr/bin/env python3
 import subprocess
 raise SystemExit(subprocess.run(
     [{str(Path.home() / "anaconda3/envs/trading-stack/bin/python")!r},
-     {str(source_context)!r}],
+     {str(source_context)!r},
+     "--config", {str(config)!r},
+     "--tier", {tier!r},
+     "--provider", {provider!r},
+     "--model", {model!r},
+     "--prompt-template-sha256", {prompt_sha256!r}],
     check=False,
 ).returncode)
 """,
-        encoding="utf-8",
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o755)
+        return wrapper
+
+    triage_script = str(
+        write_wrapper(
+            "agent_multi_social_triage_context.py",
+            tier="triage",
+            provider="opencode-go",
+            model="deepseek-v4-flash",
+            prompt=TRIAGE_PROMPT,
+        )
     )
-    wrapper.chmod(0o755)
-    script = str(wrapper)
+    review_script = str(
+        write_wrapper(
+            "agent_multi_social_review_context.py",
+            tier="review",
+            provider="opencode-go",
+            model="deepseek-v4-pro",
+            prompt=REVIEW_PROMPT,
+        )
+    )
     telegram_target = _telegram_delivery_target()
     helper = f"""
 import json
@@ -133,7 +169,6 @@ from cron.jobs import create_job, load_jobs, update_job
 
 existing = {{job.get("name"): job for job in load_jobs()}}
 common = {{
-    "script": {script!r},
     "enabled_toolsets": ["todo"],
     "workdir": None,
     "enabled": True,
@@ -143,6 +178,7 @@ common = {{
 }}
 triage_values = {{
     **common,
+    "script": {triage_script!r},
     "prompt": {TRIAGE_PROMPT!r},
     "schedule": "every 2h",
     "deliver": "local",
@@ -156,11 +192,12 @@ else:
     triage = create_job(
         prompt={TRIAGE_PROMPT!r}, schedule="every 2h", name={TRIAGE_NAME!r},
         deliver="local", model="deepseek-v4-flash", provider="opencode-go",
-        base_url="https://opencode.ai/zen/go/v1", script={script!r},
+        base_url="https://opencode.ai/zen/go/v1", script={triage_script!r},
         enabled_toolsets=["todo"],
     )
 review_values = {{
     **common,
+    "script": {review_script!r},
     "prompt": {REVIEW_PROMPT!r},
     "schedule": "every 6h",
     "deliver": {telegram_target!r},
@@ -175,7 +212,7 @@ else:
     review = create_job(
         prompt={REVIEW_PROMPT!r}, schedule="every 6h", name={REVIEW_NAME!r},
         deliver={telegram_target!r}, model="deepseek-v4-pro", provider="opencode-go",
-        base_url="https://opencode.ai/zen/go/v1", script={script!r},
+        base_url="https://opencode.ai/zen/go/v1", script={review_script!r},
         context_from=[triage["id"]], enabled_toolsets=["todo"],
     )
 print(json.dumps({{"triage": triage["id"], "review": review["id"]}}))
