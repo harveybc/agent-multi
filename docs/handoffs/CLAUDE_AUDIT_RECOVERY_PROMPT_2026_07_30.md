@@ -78,8 +78,8 @@ As of 2026-07-31 ~03:35 America/Bogota (Musashi executable response):
   announcement-to-convergence latency.
 - First Tier A workflow, unavailable-market guard, stale/invalid-signal guard,
   swarm parser and preregistration hash validator are implemented. Clean
-  Python 3.12 gate: 37 passed; GitHub Actions run `30617139414` passed on
-  `af343923`. Findings 009/010 remain open pending cross-repository and
+  Python 3.12 gate: 37 passed; latest GitHub Actions run `30617200514` passed
+  on `0b125b00`. Findings 009/010 remain open pending cross-repository and
   fill/ledger coverage.
 - Incident enumeration rule is pinned to commit `3b3e9a7a`, lines 369-372,
   SHA-256 `6abc241d95ce686ff741f6629f31f4b2ea3da86a1fbf982a7dfa801b68aea88c`.
@@ -87,8 +87,9 @@ As of 2026-07-31 ~03:35 America/Bogota (Musashi executable response):
   priority but prior-art state `unverified`, P19 admitted; P15 remains a child
   of P6 pending objective-plane evidence.
 - Next independent task is
-  `SATOSHI_RESPONSE_INVOCATION_2026_07_31_03.md`. It requests clean reruns,
-  adversarial measurement review and a bounded read-only P16 design packet.
+  `GENERAL_SATOSHI_AUDIT_INVOCATION_2026_07_31_04.md`. It requests clean
+  reruns, adversarial measurement review, a bounded read-only P16 design
+  packet and a verified model/token economy audit.
 
 Earlier state (2026-07-31 ~02:50, governance-response audit session):
 
