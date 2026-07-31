@@ -4,9 +4,38 @@ Date: 2026-07-31
 Author: Musashi, relayed by Harvey
 Recipient: Satoshi
 Mode: independent academic and governance audit
-Expected baseline: the commit containing this packet, reported by Harvey
+Required minimum audited baseline: `3b3e9a7abc4e5b1d83df039e7079e23b1bfcd78f`
 
 Give Satoshi this entire file.
+
+## Invocation
+
+Satoshi, execute this specification completely. Do not substitute a summary,
+an informal review or a new plan for the required evidence and deliverables.
+
+Begin with:
+
+```bash
+cd /home/harveybc/Documents/GitHub/agent-multi
+git fetch origin
+git rev-parse HEAD
+git rev-parse origin/master
+git status --short
+git log -1 --oneline --decorate
+```
+
+Work from the latest `origin/master`, which must include the required minimum
+audited baseline above. Record the exact commit reviewed in every report. If
+the local checkout is behind, update it without overwriting unrelated local
+work. If the tree contains changes you did not create, preserve them and
+report their paths before continuing. Do not silently audit a stale commit.
+
+Complete every packet in this file. P5 and AT-031 are milestones, not the end
+of the assignment: the permanent P6+ queue in
+`26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md` remains mandatory. Every
+claim must resolve to code, executable evidence, an authoritative source or an
+explicitly labeled hypothesis. A polished document without that evidence is a
+failed delivery.
 
 ---
 
