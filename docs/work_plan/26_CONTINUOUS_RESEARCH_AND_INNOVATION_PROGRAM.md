@@ -99,18 +99,19 @@ These are hypotheses to investigate, not novelty or performance claims.
 | ID | Working line | Core falsifiable question | First decisive step |
 | --- | --- | --- | --- |
 | P6 | Value-of-information swarm scheduling | Can OLAP-derived uncertainty and expected information gain allocate compute better than FIFO/fixed budgets? | Replay completed campaigns under counterfactual schedulers |
-| P7 | Decentralized champion artifact availability | Can content-addressed peer seeding plus replication/erasure policies preserve arbitrary champion versions through node loss without a central registry? | Measure availability and retrieval under scripted peer loss |
+| P7 | Verification-coupled champion lineage availability | Can content-addressed peer replication preserve and authenticate arbitrary champion versions through node loss without a central registry? | Measure retrieval, integrity and lineage verification under scripted peer loss |
 | P8 | Domain-independent proof of useful optimization | Which verifier contracts make production substantially harder than verification across plugins without domain-specific trust? | Formalize cost and soundness conditions for two non-trading plugins |
 | P9 | Causal opportunity and rush discovery | Do point-in-time events and cross-asset/on-chain context improve calibrated opportunity detection over price-only change-point baselines? | Frozen event-time pilot with placebo and temporal-shift controls |
 | P10 | Safe continual hierarchical portfolios | Can drift detection and bounded weekly adaptation improve a frozen hierarchy without increasing protected drawdown or turnover instability? | Replay with fixed, periodic and change-triggered adaptation |
-| P11 | Privacy-aware personalized social trading | Can global policies support user-specific risk constraints without exposing account state or degrading fairness? | Threat model and synthetic multi-user benchmark |
+| P11 | Privacy-aware personalized social trading | Can global policies satisfy prespecified privacy, disparity and utility bounds for user-specific risk constraints? | Freeze threat-model metrics and thresholds before any benchmark |
 | P12 | Multi-venue execution and routing | Can capability-aware routing reduce rejects/slippage while maintaining exactly-once exposure and mandatory protection? | Counterfactual replay calibrated from paper fills |
 | P13 | Adversarial cross-audit for AI engineering | Does role-separated evidence review reduce false closure and unsupported claims compared with self-review or single-agent review? | Enumerated historical audit corpus and blinded scoring protocol |
-| P14 | Decentralized inference service economics | Which allocation and reward rules yield reliable inference latency and model freshness under heterogeneous peers? | Queueing simulation plus trace replay |
-| P15 | Cost, energy and thermal-aware optimization | Can scheduling reduce energy/cost/thermal risk per accepted improvement without slowing discovery materially? | Instrument candidate-level energy and thermal facts |
+| P14 | Decentralized inference service economics | Which allocation and reward rules yield reliable inference latency and model freshness under heterogeneous peers? | Deferred until real service traces exist |
+| P15 | Cost, energy and thermal-aware optimization | Can scheduling reduce energy/cost/thermal risk per accepted improvement without slowing discovery materially? | Instrument candidate-level energy and thermal facts as a P6 child experiment |
 | P16 | Formal protocol verification | Which safety and liveness properties of claims, generations, finality and recovery survive model checking? | Small-state TLA+/PlusCal or equivalent model of one generation |
 | P17 | Byzantine and Sybil extensions | What additional authentication, membership and economic assumptions are sufficient for adversarial peers? | Explicit threat matrix and signed-message prototype |
 | P18 | Theory of proof-of-optimization | Under what conditions is an optimization improvement costly to produce, cheap to verify and resistant to replay or plagiarism? | Definitions, counterexamples and complexity bounds |
+| P19 | Functional-versus-liveness health probes | Do contract-level probes detect silent service failures earlier than heartbeat, port and process checks at acceptable false-alert cost? | Replay the IBKR incident plus bounded injected service states |
 
 ## 7. Prioritization
 
@@ -125,9 +126,13 @@ records:
 - security, legal and data risk;
 - probability that a null result remains publishable/useful.
 
-P6, P7, P9, P13 and P16 receive the first collision tests because they reuse
-existing evidence or require only bounded pilots. P17 and P18 remain H2 until
-their assumptions and formal definitions are credible.
+P16 is the first technical research priority because a bounded model can find
+protocol counterexamples without campaign mutation. P6 follows with a replay
+of the measured 8.42% aggregate tail-barrier idle in three complete
+generations. P7, P9, P13 and P19 receive bounded collision tests because they
+reuse existing evidence. P14 is deferred until real inference traces exist;
+P17 and P18 remain H2 until their assumptions and formal definitions are
+credible.
 
 ## 8. Cadence and Outputs
 

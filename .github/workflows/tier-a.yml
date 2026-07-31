@@ -1,0 +1,39 @@
+name: Tier A
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Record dependency identity
+        run: sha256sum setup.py requirements-ci.txt
+      - name: Install focused test dependencies
+        run: python -m pip install -r requirements-ci.txt
+      - name: Compile production modules
+        run: python -m compileall -q app execution_policy_plugins tools
+      - name: Run Tier A invariants
+        run: |
+          pytest -q \
+            tests/unit/test_adaptive_order_router.py \
+            tests/unit/test_analyze_swarm_efficiency.py \
+            tests/unit/test_default_optimizer_shared.py \
+            tests/unit/test_incident_corpus_manifest.py \
+            tests/unit/test_project3_portfolio_supervisor.py \
+            tests/unit/test_publication_scaffolds.py
+      - name: Validate publication packages
+        run: |
+          python tools/validate_publication_scaffolds.py
+          python tools/validate_incident_corpus_manifest.py

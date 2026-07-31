@@ -1,0 +1,47 @@
+{
+  "schema": "agent_multi.incident_corpus_manifest.v1",
+  "corpus_id": "p5-p13-audit-recovery-incidents",
+  "status": "enumeration_pending",
+  "preregistration": {
+    "source_path": "docs/work_plan/25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md",
+    "introducing_commit": "3b3e9a7abc4e5b1d83df039e7079e23b1bfcd78f",
+    "line_start": 369,
+    "line_end": 372,
+    "sha256": "6abc241d95ce686ff741f6629f31f4b2ea3da86a1fbf982a7dfa801b68aea88c",
+    "rule_text": "1. Its incident corpus is enumerated before analysis from every incident in\n   work-plan documents 13, 15, 16 and 20, every S0-S2 audit finding, and every\n   deterministic alert escalated to an incident. Exclusions require a dated\n   reason and remain visible.\n"
+  },
+  "enumerated_sources": {
+    "work_plan_documents": [
+      "docs/work_plan/13_IMPLEMENTATION_STATUS_AND_TASK_LEDGER.md",
+      "docs/work_plan/15_DISTRIBUTED_CAMPAIGN_LIFECYCLE.md",
+      "docs/work_plan/16_FLAT_FITNESS_ROOT_CAUSE_2026_07_19.md",
+      "docs/work_plan/20_PROTECTED_EXECUTION_ACTIVITY_GATE_INCIDENT_2026_07_29.md"
+    ],
+    "audit_severities": [
+      "S0",
+      "S1",
+      "S2"
+    ],
+    "deterministic_alert_rule": "Every alert formally escalated to an incident is included."
+  },
+  "incident_row_fields": [
+    "incident_id",
+    "source_document",
+    "source_anchor",
+    "occurred_at",
+    "first_detected_at",
+    "detected_by_tier",
+    "detection_latency_s",
+    "classification",
+    "recovery_completed_at",
+    "recovery_latency_s",
+    "evidence_hashes",
+    "excluded",
+    "exclusion_reason"
+  ],
+  "integrity": {
+    "hash_algorithm": "sha256",
+    "exclusions_are_append_only": true,
+    "labels_freeze_before_metric_computation": true
+  }
+}

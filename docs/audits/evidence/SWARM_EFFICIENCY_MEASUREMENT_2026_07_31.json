@@ -1,0 +1,904 @@
+{
+  "campaign_filter": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+  "evaluation_intervals": [
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 4,
+      "completed_at": "2026-07-29T06:45:39",
+      "duration_seconds": 16151.0,
+      "fitness": -0.000666,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T02:16:28",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 19,
+      "completed_at": "2026-07-29T20:46:27",
+      "duration_seconds": 8940.0,
+      "fitness": 0.000189,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T18:17:27",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 4,
+      "completed_at": "2026-07-30T03:35:31",
+      "duration_seconds": 15181.0,
+      "fitness": 0.000443,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-29T23:22:30",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 8,
+      "completed_at": "2026-07-30T06:30:50",
+      "duration_seconds": 10507.0,
+      "fitness": 0.000153,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T03:35:43",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 13,
+      "completed_at": "2026-07-30T13:05:25",
+      "duration_seconds": 23670.0,
+      "fitness": 0.000179,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T06:30:55",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 3,
+      "completed_at": "2026-07-30T17:31:50",
+      "duration_seconds": 15972.0,
+      "fitness": 0.000443,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T13:05:38",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 11,
+      "completed_at": "2026-07-30T20:18:24",
+      "duration_seconds": 9990.0,
+      "fitness": 0.000189,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T17:31:54",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 15,
+      "completed_at": "2026-07-30T23:32:10",
+      "duration_seconds": 11621.0,
+      "fitness": 0.000153,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T20:18:29",
+      "worker": "omega"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 3,
+      "completed_at": "2026-07-29T04:07:47",
+      "duration_seconds": 6683.0,
+      "fitness": -0.000328,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T02:16:24",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 5,
+      "completed_at": "2026-07-29T04:08:44",
+      "duration_seconds": 0.0,
+      "fitness": -1000000000.0,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T04:08:44",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 7,
+      "completed_at": "2026-07-29T05:54:53",
+      "duration_seconds": 6341.0,
+      "fitness": 0.000112,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T04:09:12",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 9,
+      "completed_at": "2026-07-29T07:32:07",
+      "duration_seconds": 5828.0,
+      "fitness": 0.000184,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T05:54:59",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 14,
+      "completed_at": "2026-07-29T07:32:12",
+      "duration_seconds": 0.0,
+      "fitness": -1000000000.0,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T07:32:12",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 15,
+      "completed_at": "2026-07-29T07:32:17",
+      "duration_seconds": 0.0,
+      "fitness": -1000000000.0,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T07:32:17",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 16,
+      "completed_at": "2026-07-29T09:24:25",
+      "duration_seconds": 6723.0,
+      "fitness": 0.000282,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T07:32:22",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 18,
+      "completed_at": "2026-07-29T20:23:30",
+      "duration_seconds": 7590.0,
+      "fitness": -2.2e-05,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T18:17:00",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 1,
+      "completed_at": "2026-07-30T01:34:58",
+      "duration_seconds": 7950.0,
+      "fitness": 0.000248,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-29T23:22:28",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 6,
+      "completed_at": "2026-07-30T03:45:52",
+      "duration_seconds": 7849.0,
+      "fitness": -2.2e-05,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T01:35:03",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 10,
+      "completed_at": "2026-07-30T06:50:27",
+      "duration_seconds": 11070.0,
+      "fitness": 0.000431,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T03:45:57",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 14,
+      "completed_at": "2026-07-30T08:35:34",
+      "duration_seconds": 6300.0,
+      "fitness": 0.000123,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T06:50:34",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 17,
+      "completed_at": "2026-07-30T10:04:24",
+      "duration_seconds": 5325.0,
+      "fitness": 0.000195,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T08:35:39",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 18,
+      "completed_at": "2026-07-30T12:59:11",
+      "duration_seconds": 10483.0,
+      "fitness": 0.000186,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T10:04:28",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 4,
+      "completed_at": "2026-07-30T14:56:17",
+      "duration_seconds": 6637.0,
+      "fitness": -0.000175,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T13:05:40",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 6,
+      "completed_at": "2026-07-30T16:35:14",
+      "duration_seconds": 5930.0,
+      "fitness": -0.000347,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T14:56:24",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 9,
+      "completed_at": "2026-07-30T18:21:05",
+      "duration_seconds": 6345.0,
+      "fitness": 7.4e-05,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T16:35:20",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 12,
+      "completed_at": "2026-07-30T20:20:59",
+      "duration_seconds": 7189.0,
+      "fitness": -0.000492,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T18:21:10",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 16,
+      "completed_at": "2026-07-30T22:17:26",
+      "duration_seconds": 6983.0,
+      "fitness": -0.00015,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T20:21:03",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 20,
+      "completed_at": "2026-07-31T00:08:04",
+      "duration_seconds": 6633.0,
+      "fitness": -0.000175,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T22:17:31",
+      "worker": "dragon"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 2,
+      "completed_at": "2026-07-29T04:07:49",
+      "duration_seconds": 6684.0,
+      "fitness": 0.000356,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T02:16:25",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 6,
+      "completed_at": "2026-07-29T06:38:37",
+      "duration_seconds": 8991.0,
+      "fitness": 0.000129,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T04:08:46",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 10,
+      "completed_at": "2026-07-29T06:38:43",
+      "duration_seconds": 0.0,
+      "fitness": -1000000000.0,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T06:38:43",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 11,
+      "completed_at": "2026-07-29T09:29:29",
+      "duration_seconds": 10239.0,
+      "fitness": -3e-06,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T06:38:50",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 12,
+      "completed_at": "2026-07-29T19:50:52",
+      "duration_seconds": 5632.0,
+      "fitness": 3e-06,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T18:17:00",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 20,
+      "completed_at": "2026-07-29T19:51:00",
+      "duration_seconds": 0.0,
+      "fitness": -1000000000.0,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T19:51:00",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 2,
+      "completed_at": "2026-07-30T01:17:57",
+      "duration_seconds": 6929.0,
+      "fitness": 0.000442,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-29T23:22:28",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 5,
+      "completed_at": "2026-07-30T03:43:07",
+      "duration_seconds": 8691.0,
+      "fitness": 0.000255,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T01:18:16",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 9,
+      "completed_at": "2026-07-30T05:19:58",
+      "duration_seconds": 5807.0,
+      "fitness": 0.000227,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T03:43:11",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 12,
+      "completed_at": "2026-07-30T06:55:51",
+      "duration_seconds": 5748.0,
+      "fitness": -0.000135,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T05:20:03",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 15,
+      "completed_at": "2026-07-30T10:40:20",
+      "duration_seconds": 13465.0,
+      "fitness": -0.000774,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T06:55:55",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 19,
+      "completed_at": "2026-07-30T12:36:31",
+      "duration_seconds": 6966.0,
+      "fitness": 0.000131,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T10:40:25",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 1,
+      "completed_at": "2026-07-30T15:00:47",
+      "duration_seconds": 6913.0,
+      "fitness": 0.000356,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T13:05:34",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 7,
+      "completed_at": "2026-07-30T16:49:14",
+      "duration_seconds": 6503.0,
+      "fitness": -0.000309,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T15:00:51",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 10,
+      "completed_at": "2026-07-30T18:27:43",
+      "duration_seconds": 5905.0,
+      "fitness": 0.000139,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T16:49:18",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 13,
+      "completed_at": "2026-07-30T20:26:30",
+      "duration_seconds": 7123.0,
+      "fitness": 0.000482,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T18:27:47",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 17,
+      "completed_at": "2026-07-30T22:07:00",
+      "duration_seconds": 6011.0,
+      "fitness": 3e-06,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T20:26:49",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 19,
+      "completed_at": "2026-07-31T01:58:16",
+      "duration_seconds": 13871.0,
+      "fitness": 0.000273,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T22:07:05",
+      "worker": "gamma-5070ti"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 1,
+      "completed_at": "2026-07-29T04:58:33",
+      "duration_seconds": 9728.0,
+      "fitness": -0.00072,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T02:16:25",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 8,
+      "completed_at": "2026-07-29T07:28:04",
+      "duration_seconds": 8964.0,
+      "fitness": -0.00026,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T04:58:40",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 13,
+      "completed_at": "2026-07-29T09:59:43",
+      "duration_seconds": 9093.0,
+      "fitness": -0.000412,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T07:28:10",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 17,
+      "completed_at": "2026-07-29T23:22:22",
+      "duration_seconds": 18322.0,
+      "fitness": 0.000173,
+      "generation": 0,
+      "population": 20,
+      "started_at": "2026-07-29T18:17:00",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 3,
+      "completed_at": "2026-07-30T01:55:22",
+      "duration_seconds": 9174.0,
+      "fitness": 2e-05,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-29T23:22:28",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 7,
+      "completed_at": "2026-07-30T05:13:17",
+      "duration_seconds": 11870.0,
+      "fitness": 0.000224,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T01:55:27",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 11,
+      "completed_at": "2026-07-30T08:34:59",
+      "duration_seconds": 12097.0,
+      "fitness": 0.000114,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T05:13:22",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 16,
+      "completed_at": "2026-07-30T11:11:32",
+      "duration_seconds": 9388.0,
+      "fitness": 2e-05,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T08:35:04",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 20,
+      "completed_at": "2026-07-30T12:55:25",
+      "duration_seconds": 6228.0,
+      "fitness": 8.3e-05,
+      "generation": 1,
+      "population": 20,
+      "started_at": "2026-07-30T11:11:37",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 2,
+      "completed_at": "2026-07-30T14:46:15",
+      "duration_seconds": 6039.0,
+      "fitness": 8.3e-05,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T13:05:36",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 5,
+      "completed_at": "2026-07-30T16:29:37",
+      "duration_seconds": 6198.0,
+      "fitness": 8.3e-05,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T14:46:19",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 8,
+      "completed_at": "2026-07-30T19:01:51",
+      "duration_seconds": 9130.0,
+      "fitness": -0.000187,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T16:29:41",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 14,
+      "completed_at": "2026-07-30T21:27:08",
+      "duration_seconds": 8712.0,
+      "fitness": 0.000439,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T19:01:56",
+      "worker": "gamma-5090"
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate": 18,
+      "completed_at": "2026-07-31T00:02:13",
+      "duration_seconds": 9300.0,
+      "fitness": 0.000261,
+      "generation": 2,
+      "population": 20,
+      "started_at": "2026-07-30T21:27:13",
+      "worker": "gamma-5090"
+    }
+  ],
+  "forks": {
+    "dragon": {
+      "local_tip_resolutions": 0,
+      "peer_adoptions": [
+        {
+          "announcement_to_convergence_seconds": null,
+          "converged_at": "2026-07-29T18:16:56",
+          "height": 3,
+          "local_tip": "661b34c5189a939a",
+          "route": "192.0.2.12:8470",
+          "selected_at": "2026-07-29T18:16:55",
+          "selection_to_convergence_seconds": 1.0,
+          "tip": "5218d3e0ef35422c",
+          "worker": "dragon"
+        }
+      ],
+      "unmatched_evaluation_starts": 2
+    },
+    "gamma-5070ti": {
+      "local_tip_resolutions": 3,
+      "peer_adoptions": [
+        {
+          "announcement_to_convergence_seconds": 4.0,
+          "converged_at": "2026-07-30T03:35:39",
+          "height": 7,
+          "local_tip": "cab57051533c2da1",
+          "route": "127.0.0.1:8471",
+          "selected_at": "2026-07-30T03:35:39",
+          "selection_to_convergence_seconds": 0.0,
+          "tip": "0cc7d3eb63932b70",
+          "worker": "gamma-5070ti"
+        },
+        {
+          "announcement_to_convergence_seconds": 10.0,
+          "converged_at": "2026-07-31T01:58:29",
+          "height": 10,
+          "local_tip": "ac9c1dcac46d8a6e",
+          "route": "192.0.2.10:8470",
+          "selected_at": "2026-07-31T01:58:29",
+          "selection_to_convergence_seconds": 0.0,
+          "tip": "75a5add46f551637",
+          "worker": "gamma-5070ti"
+        }
+      ],
+      "unmatched_evaluation_starts": 2
+    },
+    "gamma-5090": {
+      "local_tip_resolutions": 7,
+      "peer_adoptions": [
+        {
+          "announcement_to_convergence_seconds": 1.0,
+          "converged_at": "2026-07-29T23:22:24",
+          "height": 5,
+          "local_tip": "a7ef5712a89245aa",
+          "route": "127.0.0.1:8470",
+          "selected_at": "2026-07-29T23:22:24",
+          "selection_to_convergence_seconds": 0.0,
+          "tip": "5a7843459dd2b7d4",
+          "worker": "gamma-5090"
+        },
+        {
+          "announcement_to_convergence_seconds": 10.0,
+          "converged_at": "2026-07-31T01:58:29",
+          "height": 10,
+          "local_tip": "ac9c1dcac46d8a6e",
+          "route": "192.0.2.10:8470",
+          "selected_at": "2026-07-31T01:58:29",
+          "selection_to_convergence_seconds": 0.0,
+          "tip": "75a5add46f551637",
+          "worker": "gamma-5090"
+        }
+      ],
+      "unmatched_evaluation_starts": 2
+    },
+    "omega": {
+      "local_tip_resolutions": 1,
+      "peer_adoptions": [
+        {
+          "announcement_to_convergence_seconds": null,
+          "converged_at": "2026-07-30T01:18:19",
+          "height": 6,
+          "local_tip": "967ab448a4e8bdf3",
+          "route": "192.0.2.12:8470",
+          "selected_at": "2026-07-30T01:18:18",
+          "selection_to_convergence_seconds": 1.0,
+          "tip": "36b79b508e286619",
+          "worker": "omega"
+        },
+        {
+          "announcement_to_convergence_seconds": null,
+          "converged_at": "2026-07-30T20:26:52",
+          "height": 9,
+          "local_tip": "1f7d4df2cbbd12c4",
+          "route": "192.0.2.12:8470",
+          "selected_at": "2026-07-30T20:26:51",
+          "selection_to_convergence_seconds": 1.0,
+          "tip": "4b4f06a14156e699",
+          "worker": "omega"
+        }
+      ],
+      "unmatched_evaluation_starts": 3
+    }
+  },
+  "generated_at": "2026-07-31T03:27:23.804803-05:00",
+  "generations": [
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate_counts_by_worker": {
+        "dragon": 8,
+        "gamma-5070ti": 6,
+        "gamma-5090": 4,
+        "omega": 2
+      },
+      "candidate_evaluation_seconds": 135909.0,
+      "candidate_index_base": 1,
+      "complete": true,
+      "completed_at": "2026-07-29T23:22:22",
+      "completed_candidates": 20,
+      "duplicate_candidates": [],
+      "expected_population": 20,
+      "fleet_available_seconds": 303832.0,
+      "generation": 0,
+      "makespan_seconds": 75958.0,
+      "missing_candidates": [],
+      "non_evaluation_gap_fraction": 0.5526837199504989,
+      "non_evaluation_gap_seconds": 167923.0,
+      "started_at": "2026-07-29T02:16:24",
+      "tail_barrier_idle_by_worker_seconds": {
+        "dragon": 10732.0,
+        "gamma-5070ti": 12682.0,
+        "gamma-5090": 0.0,
+        "omega": 9355.0
+      },
+      "tail_barrier_idle_fraction": 0.10785236578108955,
+      "tail_barrier_idle_seconds": 32769.0
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate_counts_by_worker": {
+        "dragon": 6,
+        "gamma-5070ti": 6,
+        "gamma-5090": 5,
+        "omega": 3
+      },
+      "candidate_evaluation_seconds": 194698.0,
+      "candidate_index_base": 1,
+      "complete": true,
+      "completed_at": "2026-07-30T13:05:25",
+      "completed_candidates": 20,
+      "duplicate_candidates": [],
+      "expected_population": 20,
+      "fleet_available_seconds": 197508.0,
+      "generation": 1,
+      "makespan_seconds": 49377.0,
+      "missing_candidates": [],
+      "non_evaluation_gap_fraction": 0.014227271806711628,
+      "non_evaluation_gap_seconds": 2810.0,
+      "started_at": "2026-07-29T23:22:28",
+      "tail_barrier_idle_by_worker_seconds": {
+        "dragon": 374.0,
+        "gamma-5070ti": 1734.0,
+        "gamma-5090": 600.0,
+        "omega": 0.0
+      },
+      "tail_barrier_idle_fraction": 0.013710837029386152,
+      "tail_barrier_idle_seconds": 2708.0
+    },
+    {
+      "campaign": "trading-asset-policy-usdcad-4h-protected-easy-v2",
+      "candidate_counts_by_worker": {
+        "dragon": 6,
+        "gamma-5070ti": 6,
+        "gamma-5090": 5,
+        "omega": 3
+      },
+      "candidate_evaluation_seconds": 163005.0,
+      "candidate_index_base": 1,
+      "complete": true,
+      "completed_at": "2026-07-31T01:58:16",
+      "completed_candidates": 20,
+      "duplicate_candidates": [],
+      "expected_population": 20,
+      "fleet_available_seconds": 185448.0,
+      "generation": 2,
+      "makespan_seconds": 46362.0,
+      "missing_candidates": [],
+      "non_evaluation_gap_fraction": 0.1210204477805099,
+      "non_evaluation_gap_seconds": 22443.0,
+      "started_at": "2026-07-30T13:05:34",
+      "tail_barrier_idle_by_worker_seconds": {
+        "dragon": 6612.0,
+        "gamma-5070ti": 0.0,
+        "gamma-5090": 6963.0,
+        "omega": 8766.0
+      },
+      "tail_barrier_idle_fraction": 0.12047042836806005,
+      "tail_barrier_idle_seconds": 22341.0
+    }
+  ],
+  "input_logs": {
+    "dragon": {
+      "bytes": 30245337,
+      "path": "/tmp/swarm-audit-20260731-v2/dragon.log",
+      "sha256": "3f6701baca862561dd42d21aea34be08b6e0add6b9677a49afc681a34e02dfa5"
+    },
+    "gamma-5070ti": {
+      "bytes": 27600086,
+      "path": "/tmp/swarm-audit-20260731-v2/gamma-5070ti.log",
+      "sha256": "ad3301fb59854ab62cf7055a83902969dcc71b7a8d60464b5681b96e839ebd2a"
+    },
+    "gamma-5090": {
+      "bytes": 28065300,
+      "path": "/tmp/swarm-audit-20260731-v2/gamma-5090.log",
+      "sha256": "7611b2d2ff10d69a76e8dd8d1470b3fdda019a422ac9cc1efcde32b4c27abd63"
+    },
+    "omega": {
+      "bytes": 29526460,
+      "path": "/tmp/swarm-audit-20260731-v2/omega.log",
+      "sha256": "0c7691780f2f99e4596df804af3682ac84da9c6b9b45949462bd09560929dad9"
+    }
+  },
+  "schema": "agent_multi.swarm_efficiency_evidence.v1",
+  "summary": {
+    "complete_generations": 3,
+    "completed_local_evaluations": 60,
+    "median_announcement_to_convergence_seconds": 7.0,
+    "non_evaluation_gap_fraction": 0.28127457090106406,
+    "non_evaluation_gap_seconds": 193176.0,
+    "observed_generations": 3,
+    "peer_tip_adoptions": 7,
+    "tail_barrier_idle_fraction": 0.08418609527248583,
+    "tail_barrier_idle_seconds": 57818.0
+  },
+  "workers": [
+    "omega",
+    "dragon",
+    "gamma-5070ti",
+    "gamma-5090"
+  ]
+}

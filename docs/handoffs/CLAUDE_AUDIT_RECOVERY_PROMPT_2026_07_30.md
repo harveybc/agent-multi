@@ -68,7 +68,47 @@ do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
 
-As of 2026-07-31 ~02:15 America/Bogota (Musashi governance response):
+As of 2026-07-31 ~03:35 America/Bogota (Musashi executable response):
+
+- Satoshi's innovation audit is preserved and technically dispositioned in
+  `../audits/CODEX_DISPOSITION_OF_SATOSHI_INNOVATION_AUDIT_2026_07_31.md`.
+- Finding 021 is measured from four hashed log snapshots: 8.42% aggregate
+  tail-barrier idle over three complete generations; remains S4. Finding 020
+  remains S4 with seven peer-tip adoptions and 7-second median paired
+  announcement-to-convergence latency.
+- First Tier A workflow, unavailable-market guard, stale/invalid-signal guard,
+  swarm parser and preregistration hash validator are implemented. Clean
+  Python 3.12 gate: 37 passed. Findings 009/010 remain open pending GitHub and
+  fill/ledger/cross-repository coverage.
+- Incident enumeration rule is pinned to commit `3b3e9a7a`, lines 369-372,
+  SHA-256 `6abc241d95ce686ff741f6629f31f4b2ea3da86a1fbf982a7dfa801b68aea88c`.
+- Registry decisions: P7/P9 narrowed, P11 held, P14 deferred, P16 first
+  priority but prior-art state `unverified`, P19 admitted; P15 remains a child
+  of P6 pending objective-plane evidence.
+- Next independent task is
+  `SATOSHI_RESPONSE_INVOCATION_2026_07_31_03.md`. It requests clean reruns,
+  adversarial measurement review and a bounded read-only P16 design packet.
+
+Earlier state (2026-07-31 ~02:50, governance-response audit session):
+
+- The closure-and-innovation challenge packet is fully executed: report
+  `../audits/AUDIT_MUSASHI_GOVERNANCE_INNOVATION_RESPONSE_2026_07_31.md`,
+  prior-art delta CSV, continuous roadmap (ten tasks + fallback), and five
+  `papers/*/FUTURE_WORK.md` files all written; baseline `b89b23d1`.
+- Closure recommendations pending Harvey/independent verifier: 005, 014, 015,
+  016, 017 (evidence in the report; reporter/implicated parties may not
+  verify).
+- New open: 020 (Dragon recurring minority tip, S4), 021 (generation-barrier
+  straggler idle, S4, first P6 sub-experiment — origin: owner's observation).
+- Fork state: height 10, gen 3 claims {0,1,2,3}, finalized 3 unanimous;
+  height-9 competition resolved by finalization. No mutation ever.
+- Registry decisions proposed: P15→P6 merge; P7/P9/P11 narrowed; P14
+  deferred; P16 first collision priority. 5 primary sources opened/verified;
+  Semantic Scholar 429 recorded.
+- Next: AT-ACADEMIC-031 (ledger verification) unless S0/S1 or a fork-class
+  event preempts; then roadmap 032a-j in order.
+
+Earlier state (2026-07-31 ~02:15, Musashi governance response):
 
 - Musashi accepted findings 014-017 with a stricter P1 correction: identity
   signing primitives exist, but network messages are not signed and the active

@@ -84,6 +84,55 @@ def test_router_is_deterministic() -> None:
     assert router.route(**kwargs) == router.route(**kwargs)
 
 
+def test_unavailable_market_cannot_emit_an_entry_directive() -> None:
+    decision = Plugin().route(
+        target_exposure=0.9,
+        context=CONTEXT,
+        market_available=False,
+    )
+
+    assert decision is None
+    assert directive_to_action_patch(decision) == {"hold": True}
+
+
+def test_unavailable_market_does_not_hide_an_invalid_target() -> None:
+    with pytest.raises(ValueError, match="target_exposure"):
+        Plugin().route(
+            target_exposure=2.0,
+            context=CONTEXT,
+            market_available=False,
+        )
+
+
+@pytest.mark.parametrize(
+    "signal_kwargs",
+    [
+        {"signal_valid": False},
+        {"signal_age_seconds": 61.0, "max_signal_age_seconds": 60.0},
+    ],
+)
+def test_invalid_or_stale_signal_cannot_emit_an_entry_directive(
+    signal_kwargs: dict[str, object],
+) -> None:
+    decision = Plugin().route(
+        target_exposure=-1.0,
+        context=CONTEXT,
+        **signal_kwargs,
+    )
+
+    assert decision is None
+    assert directive_to_action_patch(decision) == {"hold": True}
+
+
+def test_signal_age_requires_an_explicit_freshness_limit() -> None:
+    with pytest.raises(ValueError, match="max_signal_age_seconds"):
+        Plugin().route(
+            target_exposure=0.5,
+            context=CONTEXT,
+            signal_age_seconds=1.0,
+        )
+
+
 def test_versioned_router_profile_loads_into_plugin() -> None:
     path = (
         Path(__file__).resolve().parents[2]
