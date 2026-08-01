@@ -324,9 +324,9 @@ The executable contract and exact gates are in document 28 and
 
 1. Keep Alpaca, IBKR and the consolidated shadow marker active on Omega and
    complete their independent observation windows.
-2. Complete the existing cTID with a demo trading account for Copy investor
+2. Use the active Spotware demo under the existing cTID for Copy investor
    observation and later official Open API read-only preflight; do not enable
-   custom-copy orders.
+   custom-copy orders or open another broker account.
 3. Keep OANDA MT5 credentials inside MT5, never in Git, chat, portable OLAP or
    Linux observer state.
 4. Maintain the authenticated OANDA MT5 heartbeat and snapshot stream through
