@@ -138,6 +138,33 @@ Evidence and rationale:
 | AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 
+### 1g. Social-trading reality-loop audit, 2026-08-01 (Satoshi)
+
+Full evidence: `../AUDIT_SOCIAL_TRADING_REALITY_LOOP_2026_08_01.md`.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F4-20260801-030 | S3 | implemented_pending_independent_verification | Current docs and registry agree: cTrader/eToro controls first, MQL5 Signals live-only. Owner verified cTrader Copy and submitted Open API app | Satoshi verification |
+| AUD-F4-20260801-031 | S3 | implemented_pending_independent_verification | Withdrawal-time proportional fee crystallization, gross/net flow facts, money conservation regression | Satoshi verification |
+| AUD-F4-20260801-032 | S4 | implemented_pending_independent_verification | Bounded overshoot plus notional, margin and reserve rejection | Satoshi verification |
+| AUD-F4-20260801-033 | S4 | implemented_pending_independent_verification | Minimum and maximum volume step-alignment validation | Satoshi verification |
+
+Implementation evidence: `lts@f6d8b21` and
+`../../handoffs/MUSASHI_RESPONSE_AUDIT_F4_SOCIAL_2026_08_01.md`. The
+implementation owner does not close these findings.
+
+Verified non-findings (do not reopen without new evidence): no HWM double
+charge on recovery; manager fee-immunity guards hold; deposit/withdraw HWM
+defaults correct; registry matches official sources on all five checked
+claims (MQL5 demo ban, cTrader SL/TP non-copy + equity-to-equity formula +
+demo-investor rules + fee caps); lab has zero broker/secret/network surface
+(stdlib-only, proven); `orders_submitted=0` deterministic, hashes stable;
+111 lts tests pass at `db80d97`; no platform→alpha or social→DOIN path found;
+Hermes cannot subscribe/publish/allocate/order. Recommended platform reorder
+(cTrader-investor first; MQL5 only with a live-capital decision; Darwinex
+Zero as sole virtual provider track) awaits Harvey. Legal questions flagged
+for a qualified professional — not answered technically.
+
 ### 1f. OWNER DECISION — Objective contract: Alternative A (2026-08-01)
 
 Harvey ratified **Alternative A** from the AT-F1-012 decision packet

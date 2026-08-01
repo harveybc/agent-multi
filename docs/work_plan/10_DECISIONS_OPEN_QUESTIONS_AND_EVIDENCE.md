@@ -238,6 +238,12 @@ high-water marks, flows, tracking error and protection eligibility. No social
 platform owns the canonical portfolio or customer-risk policy. Platform
 adapters report facts against this contract.
 
+Accounting v2 crystallizes the proportional accrued performance fee before a
+withdrawal is disbursed, quantizes monetary boundaries by explicit currency
+exponent, and requires instrument/FX/leverage/margin dimensions for every copy
+allocation. Scenario events are idempotent and linked by before/after state and
+SHA-256 hashes; old OLAP rows are preserved but cannot claim v2 chain validity.
+
 Commissioning proceeds by ascending risk: local no-order ledger; cTrader Copy
 and eToro virtual controls; cTrader Open API custom-copy preflight; Darwinex
 Zero virtual provider track; and only then an explicitly approved live MQL5
@@ -393,6 +399,17 @@ only trading-domain behavior.
   https://www.nber.org/papers/w8959
 
 ## 7. Change Log
+
+### Plan 1.25.0 - 2026-08-01
+
+- Closed the reproduced withdrawal fee-avoidance path with proportional
+  crystallization and a money-conservation regression.
+- Added currency quantization, instrument/FX/leverage/margin dimensions,
+  step-alignment validation and bounded minimum-volume overshoot.
+- Added idempotency keys, before/after state, append-only event hashes and
+  in-place OLAP v1-to-v2 migration with tamper detection.
+- Recorded that cTrader Copy is visible and the Open API application is
+  `submitted`; eToro Virtual controls are already owner-verified.
 
 ### Plan 1.24.0 - 2026-08-01
 

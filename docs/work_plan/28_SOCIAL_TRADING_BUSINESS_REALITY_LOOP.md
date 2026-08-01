@@ -1,7 +1,7 @@
 # 28. Social-Trading Business Reality Loop
 
-Status: architecture and local accounting vertical implemented; external
-social-platform commissioning pending
+Status: local accounting/allocation v2 verified; cTrader Copy catalogue
+available; Open API application submitted; API commissioning awaits approval
 Decision date: 2026-08-01
 
 ## 1. Decision
@@ -99,7 +99,7 @@ an LTS execution dependency.
 
 | Priority | Platform | Current role | Activation decision |
 | ---: | --- | --- | --- |
-| 1 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | Spotware demo is active; verify Copy catalogue and register Open API app; no live capital |
+| 1 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | Spotware demo and Copy catalogue are active; Open API application is `submitted`; await approval, no duplicate application or live capital |
 | 2 | eToro Virtual | Manual UX/allocation control | Owner verified target assets, Buy/Sell and CopyTrader UI; structured observation pending |
 | 3 | Darwinex Zero | Virtual strategy-provider and allocation/business track | Hold: registration charges the first recurring subscription |
 | 4 | MQL5 Signals | Future live-only signal/provider control | Demo is unsupported since MT5 build 4150; no funding authorized |
@@ -117,7 +117,7 @@ LTS owns:
 app/social_trading_lab.py
 app/social_trading_cli.py
 examples/configs/social_trading_platform_registry_v1.json
-examples/configs/social_trading_accounting_scenario_v1.json
+examples/configs/social_trading_accounting_scenario_v2.json
 tests/unit/test_social_trading_lab.py
 docs/SOCIAL_TRADING_REALITY_LAB.md
 ```
@@ -127,14 +127,20 @@ The contract implements:
 - `Decimal` unitized investor accounting;
 - flow-neutral NAV and proportional HWM adjustment;
 - performance fees only above investor net HWM;
+- proportional performance-fee crystallization on withdrawal;
+- explicit account-currency exponent and half-even event rounding;
 - prorated management fees;
 - manager fee balances;
 - equity-to-equity copy sizing;
-- lot minimum, maximum and step behavior;
+- instrument, contract-size, quote/account/provider currency conversion,
+  leverage, free-margin and reserve dimensions;
+- step-aligned lot minimum/maximum and bounded minimum-size overshoot;
 - explicit allocation/rejection/tracking-error facts;
 - fail-closed protected-entry eligibility;
 - immutable scenario and platform-registry hashes;
-- SQLite run/event OLAP with `orders_submitted=0`.
+- idempotency keys, before/after state and an append-only event hash chain;
+- in-place v1 SQLite migration and v2 run/event OLAP with
+  `orders_submitted=0`.
 
 It deliberately has no broker client, credential reader or order endpoint.
 
@@ -216,13 +222,14 @@ capital allocation is never relabeled as realized business income.
 
 ### S0: Local ledger and terms inventory
 
-Implemented. Registry and deterministic accounting scenario pass tests and
-persist no-order OLAP evidence.
+Implemented. Registry and deterministic accounting scenario v2 pass
+adversarial fee-evasion, precision, margin, overshoot, migration and tamper
+tests and persist no-order OLAP evidence.
 
 ### S1: Manual platform walkthrough
 
-- cTrader Copy free strategy from a demo investor;
-- eToro Virtual copy workflow;
+- cTrader Copy catalogue and free-strategy mechanics from a demo investor;
+- eToro Virtual target assets, Buy/Sell and CopyTrader workflow;
 - confirmation that MQL5 Signals is unavailable on non-real accounts;
 - screenshot-free structured checklist of controls, limits and resulting
   facts;
@@ -230,7 +237,8 @@ persist no-order OLAP evidence.
 
 ### S2: API and reconciliation
 
-- cTrader Open API demo authentication and capability discovery;
+- wait for the already-submitted cTrader Open API application, then perform
+  demo authentication and capability discovery;
 - read-only account, instrument, position/order and deal facts;
 - custom-copy sizing simulation with account-local SL/TP planning;
 - provider versus subscriber timing/price/exposure reconciliation;
@@ -283,13 +291,13 @@ support/incident policy and hard real-capital limits.
    watchlist when operationally convenient.
 3. Preserve OANDA MT5 demo as an independently monitored venue-reality stream;
    do not attempt MQL5 Signals or create a second MQL5 identity.
-4. Use the active Spotware demo under the existing cTID; verify Copy catalogue
-   access, then implement only the official
-   read-only Open API preflight before custom-copy orders.
-5. Materialize the owner-verified eToro Virtual facts into the structured
+4. Preserve the verified Copy-catalogue fact and monitor the existing cTrader
+   Open API application in `submitted`; after approval, implement only the
+   official read-only preflight before any custom-copy order path.
+5. Materialize the owner-verified eToro Virtual and cTrader Copy facts into the structured
    checklist. Keep Darwinex Zero on hold until its recurring membership
    receives explicit approval.
-6. Extend external social OLAP from the implemented neutral ledger; do not
+6. Extend external social OLAP from accounting/allocation v2; do not
    scrape UI data when an official export/API exists.
 7. Feed measured copy/fee/flow gaps into a versioned simulator calibration
    packet, not the active chain.

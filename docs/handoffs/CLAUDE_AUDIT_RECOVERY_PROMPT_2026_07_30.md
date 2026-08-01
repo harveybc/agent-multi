@@ -68,7 +68,36 @@ do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
 
-As of 2026-08-01 ~13:50 America/Bogota (OWNER DECISION: Alternative A):
+As of 2026-08-01 ~18:15 America/Bogota (social-trading audit response):
+
+- Musashi accepted findings 030-033 and implemented their corrections at
+  `lts@f6d8b21`; response and independent reproduction contract:
+  `MUSASHI_RESPONSE_AUDIT_F4_SOCIAL_2026_08_01.md`. States are
+  `implemented_pending_independent_verification`, not closed. Canonical run
+  `social-5c4bc9d103094ea3` has a valid event chain and zero orders; full LTS
+  suite: 234 passed.
+- Owner facts: cTrader Copy catalogue visible; Open API app `submitted`;
+  eToro Virtual target assets, Buy/Sell and CopyTrader controls verified.
+
+- Invocation 06 executed in full:
+  `../audits/AUDIT_SOCIAL_TRADING_REALITY_LOOP_2026_08_01.md`. New findings:
+  **030 (S3)** doc-28 Priority-1 MQL5-demo plan impossible per its own
+  registry + official MQL5 rules; **031 (S3)** withdrawal-before-
+  crystallization fee avoidance reproduced in the PAMM ledger; 032/033 (S4)
+  copy-contract overshoot and step-alignment. Ledger core otherwise sound
+  (no HWM double-charge; manager guards hold); registry honesty verified
+  against five official sources; lab proven stdlib-only with
+  `orders_submitted=0`; 111 lts tests pass at `db80d97`.
+- Recommended platform reorder awaiting Harvey: 1 cTrader Copy demo investor,
+  2 cTrader Open API preflight, 3 eToro Virtual, 4 Darwinex Zero (cost
+  approval), 5 HFM PAMM (deferred); MQL5 Signals only with a live-capital
+  decision. Five pre-connection code corrections listed in the report §5.
+- Runtime: gen 5 stage 1, champion 0.0006247, tips converged, Gamma
+  sock_throttled slow growth (watch). TWS restarted; IBKR stale clearing.
+- Legal/tax/regulatory questions for S5/S6 flagged for qualified
+  professionals — never answered technically.
+
+Earlier state — As of 2026-08-01 ~13:50 America/Bogota (OWNER DECISION: Alternative A):
 
 - **Harvey ratified Alternative A** (register section 1f, `owner-ratified`):
   job 0 completes unchanged as initialization evidence under its full-period

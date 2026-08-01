@@ -777,15 +777,19 @@ the pinned `trading-stack` environment.
 
 ### 2.12 Social-trading business-reality loop
 
-The 2026-08-01 LTS increment implements a provider-neutral no-order accounting
-and allocation vertical. It models decimal investor units, flow-adjusted
-high-water marks, performance and management fees, manager fee balances,
-equity-to-equity copy sizing, lot constraints, tracking error and fail-closed
-subscriber protection.
+The 2026-08-01 LTS v2 increment implements a provider-neutral no-order
+accounting and allocation vertical. It models decimal investor units,
+flow-adjusted high-water marks, withdrawal-time performance-fee
+crystallization, management fees, manager fee balances, currency quantization,
+equity-to-equity copy sizing, instrument/FX/leverage/margin dimensions,
+step-aligned lot constraints, bounded rounding overshoot, tracking error and
+fail-closed subscriber protection.
 
-The first deterministic scenario records two synthetic investors, deposits,
-a withdrawal, strategy gains/losses, fee crystallization and copy allocations
-in SQLite OLAP. It submits zero orders. The equivalent protected custom copy
+The deterministic scenario records two synthetic investors, deposits, a
+withdrawal, strategy gains/losses, fee crystallization and copy allocations in
+SQLite OLAP. Every event has an idempotency key, before/after state and an
+append-only SHA-256 chain. The v2 store migrates v1 tables in place and detects
+persisted-event tampering. It submits zero orders. The equivalent protected custom copy
 is accepted for cTrader Open API because LTS can add account-local protection,
 and rejected for native cTrader Copy because it does not replicate provider
 SL/TP levels.
@@ -794,17 +798,22 @@ The platform registry prioritizes cTrader demo/Open API and eToro Virtual,
 holds Darwinex Zero behind explicit recurring-cost approval, records MQL5
 Signals as live-only, and defers HFM PAMM. No
 external social account has been opened or funded by code. The owner has an
-active Spotware cTrader demo under the new cTID, opened eToro Virtual
-Portfolio and verified its target assets, Buy/Sell controls and CopyTrader UI,
-and deliberately held Darwinex Zero before its first subscription charge.
+active Spotware cTrader demo under the new cTID, verified that its Copy
+catalogue is available, and submitted the Open API application. Approval is
+pending. The owner also opened eToro Virtual Portfolio and verified its target
+assets, Buy/Sell controls and CopyTrader UI, and deliberately held Darwinex
+Zero before its first subscription charge.
 
-Verification: the complete LTS suite passes with 226 tests and the complete
-agent-multi suite passes with 405 tests after the current capability correction.
-The editable `trading-stack` install exposes the CLI, and persisted
-run `social-77d73720706d4a45` records zero orders with scenario hash
-`9e92fea6a3af3804d178e8fb68473acb8ab527a6116bd3d718ddca9865719b80`, registry
-hash `7e129b27862f379a01eed48c216b53e94a41e2a46481a3188a9fedf4511e3c8a` and an
-accepted protected cTrader Open API allocation.
+Verification: the complete LTS suite passes with 234 tests and the complete
+agent-multi suite passes with 405 tests. The editable
+`trading-stack` install exposes the CLI, and migrated persisted run
+`social-5c4bc9d103094ea3` records zero orders, a valid event chain with final
+anchor `1dc093638d97f99b9620efba218548a2345a9db6c91d6ad60a95620aeb197035`,
+scenario hash `c2dd2866cfa363a8e3db3922670be58e2ee72c3d413d9006074ec16847d33eef`
+and registry hash
+`4d2c82f70fe27f9b6304fe152abe4cb5317c83af827a4a693f7e8e3d9c9b0bf6`.
+It accepts the protected cTrader Open API allocation and rejects native
+cTrader Copy for `protected_entry_unavailable`.
 
 ## 3. Delegation Ledger
 
@@ -838,7 +847,7 @@ accepted protected cTrader Open API allocation.
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
 | `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_mt5_readonly_observers_active | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
-| `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | neutral_ledger_verified_external_commissioning_pending | Copy/PAMM/MAM accounting, investor HWM/fees/flows, allocation/tracking error, platform registry and protected social gates | Codex |
+| `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
@@ -918,9 +927,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 21. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
-22. Commission social trading in ascending risk order: cTrader Copy/Open API
-    demo, eToro Virtual UX control, Darwinex Zero after owner cost approval,
-    and no live MQL5 Signals or PAMM before legal/capital approval.
+22. Preserve the verified cTrader Copy/eToro Virtual controls, await the
+    already-submitted cTrader Open API approval, then execute its read-only
+    capability preflight. Hold Darwinex Zero behind owner cost approval and
+    permit no live MQL5 Signals or PAMM before legal/capital approval.
 
 ## 5. Current Risks
 
