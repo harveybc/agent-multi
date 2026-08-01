@@ -350,7 +350,8 @@ Deliverables:
 - investor units, HWM, deposits, withdrawals and fees;
 - equity-to-equity sizing, rounding, rejection and tracking-error facts;
 - fail-closed subscriber SL/TP eligibility;
-- MQL5 Signals and cTrader Copy demo controls;
+- cTrader Copy and eToro Virtual demo controls;
+- explicit MQL5 Signals live-only capability record;
 - cTrader Open API read-only/custom-copy preflight;
 - Darwinex Zero provider-track experiment after owner cost approval;
 - seven-day social shadow and after-fee investor metrics;
