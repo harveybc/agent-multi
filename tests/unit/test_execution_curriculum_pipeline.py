@@ -1,15 +1,35 @@
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 import pytest
 
+from app.canonical_config import resolve_config
+from app.config import DEFAULT_VALUES
+from examples.scripts.materialize_execution_curriculum_followup import (
+    materialize,
+)
 from pipeline_plugins.rl_pipeline_with_execution_curriculum import (
     PipelinePlugin,
     _compact_scenario_summary,
     canonical_weekly_metrics_from_trace,
 )
 from pipeline_plugins.rl_pipeline_with_validation import _selection_value
+
+
+ROOT = Path(__file__).resolve().parents[2]
+PROTECTED_CURRICULUM = (
+    ROOT
+    / "examples/config/phase_1_asset_policy/optimization"
+    / "phase_1_asset_policy_usdcad_4h_protected_curriculum_template_v2.json"
+)
+CURRICULUM = (
+    ROOT
+    / "examples/config/execution_curriculum"
+    / "project3_execution_cost_curriculum_v1.json"
+)
 
 
 def test_trace_metrics_preserve_weekly_and_annual_units() -> None:
@@ -46,6 +66,46 @@ def test_robust_weekly_fitness_is_a_valid_l1_selection_metric() -> None:
     assert _selection_value(
         {"robust_weekly_rap_fitness": 0.0025},
         selection_metric="robust_weekly_rap_fitness",
+        risk_lambda=1.0,
+    ) == pytest.approx(0.0025)
+
+
+def test_materialized_job_1_resolves_to_robust_weekly_l1_fitness(
+    tmp_path: Path,
+) -> None:
+    model = tmp_path / "champion_policy.zip"
+    model.write_bytes(b"verified job-0 champion")
+    parameters = tmp_path / "champion_parameters.json"
+    parameters.write_text(
+        json.dumps({"decoded_parameters": {"learning_rate_gene": 0.000123}}),
+        encoding="utf-8",
+    )
+    output = tmp_path / "job-1.json"
+
+    materialize(
+        base_config=PROTECTED_CURRICULUM,
+        curriculum_config=CURRICULUM,
+        output_config=output,
+        source_model_runtime_path="${ARTIFACT_ROOT}/job-0/champion_policy.zip",
+        source_model_file=model,
+        source_parameters_file=parameters,
+        template=False,
+    )
+    canonical = json.loads(output.read_text(encoding="utf-8"))
+    runtime = resolve_config(DEFAULT_VALUES, file_config=canonical).runtime
+
+    assert (
+        canonical["objectives"]["selection_metric"]
+        == "train_validation_l1_score"
+    )
+    assert canonical["training"]["selection_metric"] == "robust_weekly_rap_fitness"
+    assert runtime["selection_metric"] == "robust_weekly_rap_fitness"
+    assert _selection_value(
+        {
+            "total_return": 0.99,
+            "robust_weekly_rap_fitness": 0.0025,
+        },
+        selection_metric=runtime["selection_metric"],
         risk_lambda=1.0,
     ) == pytest.approx(0.0025)
 
