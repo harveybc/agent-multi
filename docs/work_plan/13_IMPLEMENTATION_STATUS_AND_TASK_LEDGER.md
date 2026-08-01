@@ -756,6 +756,25 @@ Imported evidence:
 The manifest declares these rows as research seeds only. Imported test evidence
 cannot select, early-stop, optimize or promote future candidates.
 
+### 2.11 Real-time feature and asset parity
+
+The 2026-08-01 increment separates causal decision feeds from execution
+venues. A machine-readable contract now registers source availability,
+runtime capabilities, execution venues, instrument aliases and 18 selected
+asset/timeframe cells. A dependency-free audit classifies each experiment as
+research, live-inference and live-execution eligible and fails closed on
+unknown sources, mappings, unintegrated feeds or missing numerical parity.
+
+The current `USDCAD@4h` job is research eligible and continues unchanged. It
+is not eligible for live inference or orders because closed bars are not yet
+integrated, runtime feature parity is untested, its active MT5 symbol has not
+been observed and a protected canary has not passed. The MT5 read-only default
+watchlist now covers the promising crypto and selected FX union; activation of
+that new default still requires EA reload and fresh snapshot evidence.
+
+Verification: 404 `agent-multi` unit tests and 5 focused LTS MT5 tests pass in
+the pinned `trading-stack` environment.
+
 ## 3. Delegation Ledger
 
 | Task ID | Owner | Repository | Status | Scope | Acceptance owner |

@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
-Plan version: 1.22.0
-Date: 2026-07-31
+Plan version: 1.23.0
+Date: 2026-08-01
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -82,6 +82,7 @@ trading domain.
 | [24 Independent audit and continuous improvement](24_INDEPENDENT_AUDIT_AND_CONTINUOUS_IMPROVEMENT.md) | Claude audit authority, cross-front checks, cadence, evidence, Hermes boundary, findings, and Codex role recovery |
 | [25 Academic publication and reproducibility](25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md) | Five-paper research program, IEEE-compatible outlines, claim/citation ledgers, evidence gates, reproducibility packages, disclosure, and later synthesis book |
 | [26 Continuous research and innovation](26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md) | Permanent discovery loop, research horizons, P6+ registry, falsification gates, cadence, and non-idle academic queue |
+| [27 Real-time feature and asset parity](27_REALTIME_FEATURE_AND_ASSET_PARITY.md) | All-source causal runtime inputs, independent execution routes, instrument mappings, promotion gates and selected live/research asset sets |
 
 ## Repository Ownership Summary
 
@@ -154,6 +155,10 @@ approve its own material claims or authorize publication.
   gate.
 - OANDA availability is discovered from the account; it is never inferred from
   a research symbol.
+- A live model may use any causally available real-time source, not only its
+  execution broker. Research, live inference and live execution remain three
+  separate fail-closed gates, with numerical feature parity required before
+  promotion.
 
 ## Initial Evidence-Backed Universe
 
@@ -196,18 +201,20 @@ adding value.
 10. In parallel with optimization, run the multi-venue execution-reality lab:
     account/instrument preflight, 24-hour read-only observation, protected
     canaries, then a seven-day consolidated portfolio shadow.
-11. Complete registry, serving, LTS parity, and controlled paper execution
+11. Materialize normalized live bars and context facts, run shared-feature
+    numerical parity, and keep every non-passing model out of live inference.
+12. Complete registry, serving, LTS parity, and controlled paper execution
     across the account-compatible venue adapters.
-12. Add the social-intelligence track without competing with optimization:
+13. Add the social-intelligence track without competing with optimization:
     deterministic collection, Telegram review, measured local-model bake-off,
     then bounded publication and a clean VPS continuity drill.
-13. Run change-driven independent audits across the three runtime fronts, with Codex
+14. Run change-driven independent audits across the three runtime fronts, with Codex
     reproducing findings and maintaining a versioned technical-lead recovery
     prompt.
-14. Preserve validated contributions through the five-paper academic program,
+15. Preserve validated contributions through the five-paper academic program,
     without allowing publication work to relabel incomplete evidence or
     interfere with protected experiments.
-15. Maintain the continuous research registry: reject prior-art collisions
+16. Maintain the continuous research registry: reject prior-art collisions
     cheaply, promote only falsifiable lines and keep Satoshi on the permanent
     bounded queue when no urgent finding or paper gate is ready.
 

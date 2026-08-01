@@ -68,7 +68,52 @@ do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
 
-As of 2026-08-01 ~02:45 America/Bogota (MT5 delta audit):
+As of 2026-08-01 ~13:50 America/Bogota (OWNER DECISION: Alternative A):
+
+- **Harvey ratified Alternative A** (register section 1f, `owner-ratified`):
+  job 0 completes unchanged as initialization evidence under its full-period
+  proxy; **job 1 is authoritative** under `robust_weekly_rap_fitness`.
+  Finding 026 verified_closed by owner decision; **AT-F1-001 closed**; C
+  retired (falsified), B expired. Open riders: Musashi relabels the job-0
+  champion at archive; **AT-F1-013** (event-driven, job-0 completion):
+  re-verify weekly top-2 candidates are in the elite warm-start set against
+  the final chain.
+- TWS back online (`ibkr_paper_offline` cleared; stale flag clearing).
+  New swarm champion 0.0006247 in gen 5 (stage 1 final generation).
+- Cost-realism check (register 1e): easy_floor costs verified positive via
+  named profile (non-finding); OBS-E doc-number fix; **OBS-F: USDCAD missing
+  from MT5 watch symbols** (the optimized asset has no live cost stream —
+  cheap EA fix); observed→scenario calibration loop designed but unbuilt
+  (proposed Musashi packet, new domain hashes at job boundaries only).
+- Remaining Harvey queue: 021 threshold, closures 005/014-017, MUS-CNT
+  severities. Next triggers: job-0 stage transitions; archive event
+  (AT-F1-013); MT5 24-h review → M3 canaries; AT-ACADEMIC-031 otherwise.
+
+Earlier state — As of 2026-08-01 ~13:30 America/Bogota (finding 029 verified_closed):
+
+- **AUD-F2-20260801-029 closed by Satoshi after independent verification** of
+  Musashi's fix (`lts@a5fe0d97`): fleet-safe `/v1/status` on Dragon, Omega
+  watchdog consumes it as authoritative; live MT5 evidence now fleet-visible
+  (heartbeat 8.6 s, read_only, demo, 2687 heartbeats, 0 pos/0 ord, 6 symbols);
+  false alarm gone; 4/4 file hashes and both test suites (101 lts, 35
+  curriculum) reproduced. Port-22022 SSH clarification accepted.
+- **Selection-metric rider implemented and verified** (`agent-multi@06de651f`):
+  conflict-proving test drives the materialized job-1 config into the
+  `robust_weekly_rap_fitness` branch — the dual-key risk from AT-F1-012 §3.3.5
+  is mechanically guarded. Job-1 repair is now verified behavior, not intent.
+- MT5 archival note (not a finding): terminal reports `trade_allowed: true`
+  on the demo while the bridge is read-only by contract; M3 canary review
+  should reconfirm the EA's command-refusal path before any order enablement.
+- Roles note: both agents now hold the rank "General" per the owner; no
+  authority change accompanies the title.
+- Still pending on Harvey: **A/B/C objective decision (time-sensitive —
+  fitness flat gens 3-4, stage-1 boundary near)**, 021 threshold, closures
+  005/014-017, MUS-CNT severities; TWS restart (IBKR stale, expected).
+- MT5 24-hour observation window is accumulating; M3 canaries stay blocked on
+  its review. Next triggers: Harvey A/B/C; stage-1 boundary; archive-time
+  elite re-verification (explicitly not pre-claimed by either agent).
+
+Earlier state — As of 2026-08-01 ~02:45 America/Bogota (MT5 delta audit):
 
 - **Fork fully converged**: one tip, one finalized anchor, zero fleet alerts
   at height 11 — strengthens the queued 005 closure. Campaign gen 4 at 17/20,

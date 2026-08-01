@@ -132,10 +132,72 @@ Evidence and rationale:
 
 | ID | Sev | State | Closure | Verifier | Date | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
+| AUD-F2-20260801-029 | S3 | **verified_closed** | Fleet-safe read-only `/v1/status` route on Dragon (redacts fingerprints/balances/tickets/HMAC); Omega consolidated watchdog treats Dragon remote status as authoritative via 0600 env config; false `mt5_bridge_missing` alarm eliminated. Implementer: Musashi. Independently verified by Satoshi: `lts@a5fe0d97` matches, all 4 claimed file SHA-256 match byte-exact, live packet 18:17Z shows heartbeat age 8.6 s / connected / read_only=true / demo / 0 positions / 0 orders / 6 symbols with no MT5 event active, `lts tests/unit: 101 passed` reproduced. Port-22022 SSH clarification accepted; watchdog evidence correctly no longer depends on interactive access. Rider bonus verified same pass: `agent-multi@06de651f` conflict-proving selection-metric test (hash match, suite 35 passed) mechanically guards job-1's weekly-robust fitness | Satoshi (reporter; implementation by the other party — S3 role separation satisfied) | 2026-08-01 | `../CODEX_RESPONSE_TO_AUDIT_DELTA_2026_08_01.md`; live watchdog packet; independent test reruns |
 | AUD-F2-20260730-004 | S2 | verified_closed | User accepted the TWS Paper disclaimer; watchdog now requires a recent authenticated reconciled session and overlapping preflights fail closed | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `lts@12d389d`; `205 passed`; successful systemd observer/watchdog run |
 | AUD-GEN-20260730-001 | S3 | verified_closed | Document 13 phase summary, ledger and immediate tasks now record the deployed four-worker v2 campaign | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
+
+### 1f. OWNER DECISION — Objective contract: Alternative A (2026-08-01)
+
+Harvey ratified **Alternative A** from the AT-F1-012 decision packet
+(`../AUDIT_OBJECTIVE_CONTRACT_AND_CURRICULUM_2026_07_31.md` §4),
+`owner-ratified`, relayed verbatim: "go with A".
+
+Effects, binding by owner authority:
+
+1. Job 0 runs to completion unchanged; its champion is **initialization
+   evidence under the declared full-period proxy objective** — never a
+   performance claim. No mid-chain mutation (both Generals' standing position,
+   now owner-confirmed).
+2. **Job 1 is the authoritative selection** under `robust_weekly_rap_fitness`
+   (weekly units, immutable scenario suite).
+3. Rider (i) — the conflict-proving selection-metric test — was already
+   implemented (`agent-multi@06de651f`) and independently verified. Satisfied.
+4. Rider (ii) — relabeling the job-0 champion "alpha handoff under
+   full-period proxy objective" in all artifacts/docs — Musashi action at or
+   before archive time.
+5. Archive-time verification — elite warm-start set must contain the weekly
+   top-2 candidates against the FINAL chain — event-driven audit task
+   (AT-F1-013, scheduled on job-0 completion; not pre-claimed).
+
+Consequent finding states:
+
+- **AUD-F1-20260731-026 (S2) → verified_closed** by owner decision: the
+  full-period/weekly conflict is resolved by decree — job-0's objective is
+  officially the documented proxy; the weekly contract governs the
+  authoritative stage, which is mechanically test-guarded. Verifier: Harvey
+  (owner), on the evidence packet both Generals produced and cross-verified.
+- **AT-F1-001 → closed**: the safety contract (floors, brackets, firewall,
+  artifact integrity) was verified and stands; the unit-contract question that
+  kept it open is resolved by the owner decision. Alternative C is formally
+  retired (falsified by measurement); Alternative B expires unexercised.
+
+### 1e. Cost-realism check prompted by the owner, 2026-08-01 (Satoshi)
+
+Owner concern: cost/spread/fee assumptions may be defaults, invalidating all
+downstream results. Checked three layers deep:
+
+- **Verified non-finding:** job-0 costs are NOT zero/defaults. The deployed
+  config selects `/environment/execution_difficulty = "easy_floor"`, resolved
+  from `examples/config/execution_curriculum/project3_execution_cost_curriculum_v1.json`:
+  commission 0.00005/side, full spread 0.0001, slippage 0.25 bps/side,
+  positive as contracted. The base `/environment/commission = 0.0` keys are
+  legacy fields overridden by the named profile (nested-truth check applied).
+- **OBS-20260801-E (S4):** doc 20 states easy_floor slippage `0.000075`; the
+  authoritative curriculum file implements 0.25 bps/side (0.000025). Same
+  sign/magnitude, different number — doc precision fix needed.
+- **OBS-20260801-F (S3-candidate):** the MT5 observation symbol set (ETH,
+  SOL, BTC, ADA, DOGE, EURJPY) **does not include USDCAD** — the asset the
+  entire fleet is optimizing has no live cost-observation stream on the active
+  venue. Proposed: add USDCAD (and the doc-21 FX universe) to the EA watch
+  list. Cheap, directly serves cost realism.
+- **Structural gap (feeds AT-F2-014 proposal):** all curriculum scenario
+  numbers are hand-declared constants; observed venue facts (Alpaca spreads,
+  MT5 snapshots, IBKR sessions) exist but nothing feeds them back into
+  scenario/nominal/stress profiles. The observed→scenario calibration loop is
+  designed (P4 item 3, doc 21 §4.4) but unimplemented. Scenario changes must
+  mint new domain hashes at job boundaries only — never mid-chain.
 
 ## 2b. Observations Pending Verification (not yet findings)
 

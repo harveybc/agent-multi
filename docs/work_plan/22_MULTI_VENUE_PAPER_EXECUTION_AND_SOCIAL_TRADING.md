@@ -7,6 +7,12 @@ one global portfolio and treats OANDA MT5, Alpaca and IBKR as replaceable
 execution venues. No terminal or broker account owns allocation, portfolio
 risk, customer policy or model selection.
 
+Decision data and execution are independent. A model may consume a causal
+source from another venue or public API, but only after symbol identity,
+cross-venue basis, latency, sessions, staleness and numerical feature parity
+pass the contract in document 27. Broker listing or a fresh quote is not enough
+to promote a research model.
+
 This track produces execution evidence, not a profit claim. Paper fills remain
 simulated and are compared with the canonical simulator and, later, tightly
 capped live evidence.
@@ -39,6 +45,11 @@ Runtime evidence on Omega:
   the tracked read-only EA posts signed heartbeats and snapshots to Dragon.
   Initial valid symbol evidence covers ETH, SOL, BTC, ADA, DOGE and EURJPY,
   with zero positions and zero orders;
+- the read-only MT5 source now defaults to the union of promising crypto and
+  selected FX cells: `SOLUSD`, `ETHUSD`, `BTCUSD`, `ADAUSD`, `DOGEUSD`,
+  `XRPUSD`, `USDCAD`, `EURJPY`, `EURUSD`, `AUDUSD`, `GBPJPY`, `USDJPY` and
+  `NZDUSD`. The running EA must be recompiled/reloaded or its Inputs changed
+  before this source default becomes runtime evidence;
 - OANDA REST-v20 is explicitly non-applicable to Global Markets. The watchdog
   therefore treats an absent REST token as an optional inactive adapter, not
   an operational incident. MT5 Demo remains the only active OGM commissioning

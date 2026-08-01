@@ -64,15 +64,18 @@ protection and reduce exposure before a later bar may reverse it.
 
 ## Difficulty and Fitness
 
-Job 0 begins at `easy_floor`, not zero cost:
+Job 0 begins under its static initialization-proxy cost contract, not zero
+cost:
 
 - commission per side: `0.00005`;
 - full spread: `0.00010`;
 - adverse slippage/fill rate: `0.000075`.
 
-Its L1 and L2 selection continues to combine return and drawdown. Job 1
-warm-starts a fresh domain and advances through easy, nominal and stress cost
-scenarios using robust mean-weekly-RAP fitness.
+These are the job-0 values and must not be silently replaced in its active
+chain. Job 1 is a new curriculum domain: its `easy_floor` starts at `0.25`
+basis points per side (`0.000025`) and advances through nominal and stress
+profiles. Its authoritative selection uses robust mean-weekly-RAP fitness.
+The two contracts serve different declared stages; neither value is a typo.
 
 ## Metric Contract
 
