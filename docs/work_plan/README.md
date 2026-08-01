@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
-Plan version: 1.23.0
+Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper and social-trading reality commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
+Plan version: 1.24.0
 Date: 2026-08-01
 Primary implementation repository: `agent-multi`
 
@@ -23,6 +23,8 @@ of the existing DOIN network. The system must support:
 - model serving through `prediction_provider`;
 - customer-specific risk and broker execution through LTS;
 - multi-venue paper/live execution through account-specific broker adapters;
+- provider-neutral copy/PAMM/MAM accounting, protected social execution and
+  after-fee investor/business evidence;
 - bounded social intelligence, source-backed technical participation and
   recoverable low-cost agent operations;
 - a reproducible IEEE-compatible paper series and later synthesis book;
@@ -83,6 +85,7 @@ trading domain.
 | [25 Academic publication and reproducibility](25_ACADEMIC_PUBLICATION_AND_REPRODUCIBILITY.md) | Five-paper research program, IEEE-compatible outlines, claim/citation ledgers, evidence gates, reproducibility packages, disclosure, and later synthesis book |
 | [26 Continuous research and innovation](26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md) | Permanent discovery loop, research horizons, P6+ registry, falsification gates, cadence, and non-idle academic queue |
 | [27 Real-time feature and asset parity](27_REALTIME_FEATURE_AND_ASSET_PARITY.md) | All-source causal runtime inputs, independent execution routes, instrument mappings, promotion gates and selected live/research asset sets |
+| [28 Social-trading business reality](28_SOCIAL_TRADING_BUSINESS_REALITY_LOOP.md) | Copy/PAMM/MAM ledger, platform matrix, provider track, protected social execution, investor metrics and live-to-research feedback loop |
 
 ## Repository Ownership Summary
 
@@ -217,6 +220,9 @@ adding value.
 16. Maintain the continuous research registry: reject prior-art collisions
     cheaply, promote only falsifiable lines and keep Satoshi on the permanent
     bounded queue when no urgent finding or paper gate is ready.
+17. Commission the social-trading reality loop in ascending risk order: local
+    ledger, MQL5/cTrader/eToro demo controls, Darwinex Zero provider track and
+    only then an explicitly approved real PAMM or public provider pilot.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

@@ -772,8 +772,31 @@ been observed and a protected canary has not passed. The MT5 read-only default
 watchlist now covers the promising crypto and selected FX union; activation of
 that new default still requires EA reload and fresh snapshot evidence.
 
-Verification: 404 `agent-multi` unit tests and 5 focused LTS MT5 tests pass in
+Verification: 405 `agent-multi` unit tests and 5 focused LTS MT5 tests pass in
 the pinned `trading-stack` environment.
+
+### 2.12 Social-trading business-reality loop
+
+The 2026-08-01 LTS increment implements a provider-neutral no-order accounting
+and allocation vertical. It models decimal investor units, flow-adjusted
+high-water marks, performance and management fees, manager fee balances,
+equity-to-equity copy sizing, lot constraints, tracking error and fail-closed
+subscriber protection.
+
+The first deterministic scenario records two synthetic investors, deposits,
+a withdrawal, strategy gains/losses, fee crystallization and copy allocations
+in SQLite OLAP. It submits zero orders. The equivalent protected copy is
+accepted for MQL5 Signals and rejected for native cTrader Copy because the
+latter does not replicate provider SL/TP levels.
+
+The platform registry prioritizes MQL5 Signals, cTrader demo/Open API,
+Darwinex Zero, eToro Virtual and HFM PAMM by distinct experimental role. No
+external social account has been opened or funded by code.
+
+Verification: 8 focused social-lab tests and the complete 225-test LTS suite
+pass. The editable `trading-stack` install exposes the CLI, and persisted run
+`social-2ed043a09e364070` records zero orders with matching scenario/registry
+hashes.
 
 ## 3. Delegation Ledger
 
@@ -807,6 +830,7 @@ the pinned `trading-stack` environment.
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
 | `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_mt5_readonly_observers_active | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
+| `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | neutral_ledger_verified_external_commissioning_pending | Copy/PAMM/MAM accounting, investor HWM/fees/flows, allocation/tracking error, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
@@ -886,6 +910,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 21. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
+22. Commission social trading in ascending risk order: MQL5 Signals protected
+    demo control, cTrader Copy/Open API demo, optional eToro Virtual UX
+    control, Darwinex Zero after owner cost approval, and no live PAMM before
+    ledger parity plus legal/capital approval.
 
 ## 5. Current Risks
 

@@ -340,6 +340,30 @@ Gate:
 - portfolio/margin limits hold;
 - operator demonstrates emergency flatten and release rollback.
 
+### Phase 11B: Social-Trading Business Reality
+
+Repositories: `lts`, `agent-multi`.
+
+Deliverables:
+
+- provider-neutral copy/PAMM/MAM accounting ledger;
+- investor units, HWM, deposits, withdrawals and fees;
+- equity-to-equity sizing, rounding, rejection and tracking-error facts;
+- fail-closed subscriber SL/TP eligibility;
+- MQL5 Signals and cTrader Copy demo controls;
+- cTrader Open API read-only/custom-copy preflight;
+- Darwinex Zero provider-track experiment after owner cost approval;
+- seven-day social shadow and after-fee investor metrics;
+- versioned feedback packets for simulator/fitness/genome correction.
+
+Gate:
+
+- platform cash flows, fees and exposure reconcile with the neutral ledger;
+- every copied entry has confirmed subscriber-side SL and TP;
+- no customer capital is pooled in a personal account;
+- external facts cannot mutate an active DOIN chain;
+- a real PAMM/public-provider pilot has explicit human and legal approval.
+
 ## 15. Phase 12: Frozen Test and Production Decision
 
 Deliverables:

@@ -184,6 +184,9 @@ offline-only model from reaching a broker.
 6. Measure 24-hour and seven-day venue basis/cost behavior for selected cells.
 7. Run shadow inference with no orders, then protected canaries per venue.
 8. Promote only passing cells into the portfolio candidate library.
+9. For social-platform experiments, intersect that library with the platform's
+   observable and protected-executable sets. Missing instruments remain
+   measured constraints; they do not retroactively change alpha selection.
 
 This work runs alongside the immutable DOIN job. It does not mutate the active
 chain or consume protected test evidence.
