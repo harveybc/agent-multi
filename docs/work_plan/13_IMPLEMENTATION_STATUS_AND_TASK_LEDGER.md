@@ -1,7 +1,7 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-30 23:46 America/Bogota
-Plan version: 1.23.1
+Status timestamp: 2026-07-31 19:20 America/Bogota
+Plan version: 1.23.2
 Current focus: run the protected-entry v2 optimization path to an exact
 champion handoff, collect independent read-only Alpaca/IBKR execution evidence,
 commission OANDA MT5 when valid demo credentials are available, and close
@@ -12,8 +12,9 @@ Immediate parallel runtime added on 2026-07-30:
 - Moltbook public collection is active every 30 minutes with deterministic
   hashing, deduplication, injection screening and social OLAP;
 - Hermes performs low-cost triage every two hours and a supervised Telegram
-  review every six hours. Publishing remains disabled pending a local
-  credential and explicit human approval;
+  review every six hours. Both jobs and all three host defaults use only
+  remote `opencode-go/deepseek-v4-flash`, with no Pro model or fallback.
+  Publishing remains disabled pending explicit human approval;
 - a synthetic USD 100,000 multi-venue shadow portfolio marks nine
   crypto/equity/duration/metal/FX cells every five minutes with zero order
   routes;
@@ -28,8 +29,12 @@ Runtime acceptance evidence:
 - the collector completed with 120 unique posts in social OLAP;
 - a real `deepseek-v4-flash` triage consumed the sanitized packet and retained
   URL/hash provenance without tools or side effects;
-- a real `deepseek-v4-pro` review produced a 2,459-character bounded report
-  and delivered it successfully to the configured Telegram group;
+- the original `deepseek-v4-pro` review produced a 2,459-character bounded
+  report; after the fleet migration, a forced `deepseek-v4-flash`
+  supervisory review also completed and delivered with no error;
+- one-shot Hermes inference succeeded on Omega, Dragon and Gamma, and the
+  active Omega Telegram gateway answered through
+  `opencode-go/deepseek-v4-flash` after the required provider opt-in;
 - the multi-venue shadow marked all nine cells with `available_weight=1.0`,
   zero missing/stale cells and `orders_submitted=0`;
 - full suites pass: `379` Agent Multi tests and `215` LTS tests.
@@ -781,7 +786,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
 | `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_observers_active_ogm_live_verified_demo_bridge_blocked | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
-| `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | specified_not_activated | Hermes-routed low-cost research, social OLAP, Telegram review, bounded Moltbook publishing and DOIN domain discovery | Codex |
+| `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
 | `AUDIT-SNAPSHOT-COLLECTOR-001` | Codex | `agent-multi` | verified_live_three_hosts | Six-hour deterministic redacted packet with 11-repository provenance, campaign lineage/ETA, three-host/four-GPU telemetry, broker/watchdog evidence, section hashes/deltas and 28-snapshot retention | Codex |
@@ -846,9 +851,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 16. Complete the consolidated LTS capital ledger and the remaining MT5 adapter
     commissioning, then review the 24-hour read-only observations before
     protected canaries.
-17. Implement social-intelligence S0/S1 only after MT5 commissioning: source
-    allowlist, deterministic collection, normalized OLAP and daily Telegram
-    review with publishing disabled.
+17. Keep the active social-intelligence S0/S1 path read-only: preserve the
+    source allowlist, deterministic collection, normalized OLAP, bounded
+    Flash-only review and approval-gated publishing while MT5 commissioning
+    continues.
 18. Benchmark local social models in a declared resource window before
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
 19. Provision the continuity VPS from code, restore encrypted state in a clean
