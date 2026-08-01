@@ -99,7 +99,7 @@ an LTS execution dependency.
 
 | Priority | Platform | Current role | Activation decision |
 | ---: | --- | --- | --- |
-| 1 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | cTID exists; create the demo trading account; no live capital |
+| 1 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | Spotware demo is active; verify Copy catalogue and register Open API app; no live capital |
 | 2 | eToro Virtual | Manual UX/allocation control | Virtual Portfolio is open; inventory and workflow observation pending |
 | 3 | Darwinex Zero | Virtual strategy-provider and allocation/business track | Hold: registration charges the first recurring subscription |
 | 4 | MQL5 Signals | Future live-only signal/provider control | Demo is unsupported since MT5 build 4150; no funding authorized |
@@ -283,8 +283,8 @@ support/incident policy and hard real-capital limits.
    watchlist when operationally convenient.
 3. Preserve OANDA MT5 demo as an independently monitored venue-reality stream;
    do not attempt MQL5 Signals or create a second MQL5 identity.
-4. Complete the already-created cTID with a demo trading account; then
-   implement only the official
+4. Use the active Spotware demo under the existing cTID; verify Copy catalogue
+   access, then implement only the official
    read-only Open API preflight before custom-copy orders.
 5. Inventory the already-open eToro Virtual Portfolio manually. Keep Darwinex
    Zero on hold until its recurring membership receives explicit approval.

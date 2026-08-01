@@ -793,9 +793,10 @@ SL/TP levels.
 The platform registry prioritizes cTrader demo/Open API and eToro Virtual,
 holds Darwinex Zero behind explicit recurring-cost approval, records MQL5
 Signals as live-only, and defers HFM PAMM. No
-external social account has been opened or funded by code. The owner has
-created a cTID, opened eToro Virtual Portfolio, and deliberately held Darwinex
-Zero before its first subscription charge.
+external social account has been opened or funded by code. The owner has an
+active Spotware cTrader demo under the new cTID, opened eToro Virtual
+Portfolio, and deliberately held Darwinex Zero before its first subscription
+charge.
 
 Verification: the complete LTS suite passes with 226 tests and the complete
 agent-multi suite passes with 405 tests after the current capability correction.
