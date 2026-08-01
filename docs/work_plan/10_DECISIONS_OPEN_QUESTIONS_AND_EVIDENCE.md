@@ -238,18 +238,20 @@ high-water marks, flows, tracking error and protection eligibility. No social
 platform owns the canonical portfolio or customer-risk policy. Platform
 adapters report facts against this contract.
 
-Commissioning proceeds by ascending risk: local no-order ledger; MQL5 Signals,
-cTrader Copy and eToro virtual controls; cTrader Open API custom-copy preflight;
-Darwinex Zero virtual provider track; and only then an explicitly approved
-real PAMM or public provider pilot. A platform is added only for a missing
+Commissioning proceeds by ascending risk: local no-order ledger; cTrader Copy
+and eToro virtual controls; cTrader Open API custom-copy preflight; Darwinex
+Zero virtual provider track; and only then an explicitly approved live MQL5
+Signals, real PAMM or public provider pilot. A platform is added only for a missing
 asset class, execution contract, social mechanic, jurisdiction or independent
 control.
 
 Every copied risk-increasing order must have SL and TP confirmed in the
 subscriber account. A platform-managed close signal or copy-level loss limit
 does not satisfy that invariant. Native cTrader Copy is therefore observation
-only; MQL5 Signals is the first protected social control, and a custom cTrader
-copier must create account-local protection.
+only, and a custom cTrader copier must create account-local protection.
+MQL5 Signals can replicate SL/TP on eligible live subscriber accounts, but
+MT5 build 4150 disabled the service on demo accounts; it is not part of the
+current no-capital commissioning path.
 
 Social/business observations can modify future simulation and optimization
 only through a versioned evidence packet and a new semantic hash. They cannot

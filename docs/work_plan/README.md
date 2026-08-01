@@ -221,8 +221,9 @@ adding value.
     cheaply, promote only falsifiable lines and keep Satoshi on the permanent
     bounded queue when no urgent finding or paper gate is ready.
 17. Commission the social-trading reality loop in ascending risk order: local
-    ledger, MQL5/cTrader/eToro demo controls, Darwinex Zero provider track and
-    only then an explicitly approved real PAMM or public provider pilot.
+    ledger, cTrader/eToro demo controls, cTrader Open API preflight, Darwinex
+    Zero after cost approval, and only then an explicitly approved live MQL5
+    Signals, real PAMM or public provider pilot.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

@@ -303,8 +303,9 @@ The current Individual accounts validate our own portfolio only.
 
 Current platform order:
 
-1. MQL5 Signals on the existing OANDA MT5 demo is the first protected
-   signal-copy control because subscriber SL/TP copying is configurable.
+1. OANDA MT5 demo remains the read-only venue-reality control. MQL5 Signals is
+   not a demo route: MetaTrader 5 build 4150 disabled Signals for non-real
+   accounts, and a live Signals experiment remains unfunded and unapproved.
 2. cTrader Copy demo is an investor/business control; its native copying does
    not copy provider SL/TP and therefore cannot receive authorized protected
    exposure. cTrader Open API is evaluated separately for a custom copier that
@@ -323,8 +324,9 @@ The executable contract and exact gates are in document 28 and
 
 1. Keep Alpaca, IBKR and the consolidated shadow marker active on Omega and
    complete their independent observation windows.
-2. Create a cTrader ID/demo for Copy investor observation and later official
-   Open API read-only preflight; do not enable custom-copy orders.
+2. Complete the existing cTID with a demo trading account for Copy investor
+   observation and later official Open API read-only preflight; do not enable
+   custom-copy orders.
 3. Keep OANDA MT5 credentials inside MT5, never in Git, chat, portable OLAP or
    Linux observer state.
 4. Maintain the authenticated OANDA MT5 heartbeat and snapshot stream through

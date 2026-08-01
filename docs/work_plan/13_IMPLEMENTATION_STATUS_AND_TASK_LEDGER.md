@@ -785,18 +785,25 @@ subscriber protection.
 
 The first deterministic scenario records two synthetic investors, deposits,
 a withdrawal, strategy gains/losses, fee crystallization and copy allocations
-in SQLite OLAP. It submits zero orders. The equivalent protected copy is
-accepted for MQL5 Signals and rejected for native cTrader Copy because the
-latter does not replicate provider SL/TP levels.
+in SQLite OLAP. It submits zero orders. The equivalent protected custom copy
+is accepted for cTrader Open API because LTS can add account-local protection,
+and rejected for native cTrader Copy because it does not replicate provider
+SL/TP levels.
 
-The platform registry prioritizes MQL5 Signals, cTrader demo/Open API,
-Darwinex Zero, eToro Virtual and HFM PAMM by distinct experimental role. No
-external social account has been opened or funded by code.
+The platform registry prioritizes cTrader demo/Open API and eToro Virtual,
+holds Darwinex Zero behind explicit recurring-cost approval, records MQL5
+Signals as live-only, and defers HFM PAMM. No
+external social account has been opened or funded by code. The owner has
+created a cTID, opened eToro Virtual Portfolio, and deliberately held Darwinex
+Zero before its first subscription charge.
 
-Verification: 8 focused social-lab tests and the complete 225-test LTS suite
-pass. The editable `trading-stack` install exposes the CLI, and persisted run
-`social-2ed043a09e364070` records zero orders with matching scenario/registry
-hashes.
+Verification: the complete LTS suite passes with 226 tests and the complete
+agent-multi suite passes with 405 tests after the current capability correction.
+The editable `trading-stack` install exposes the CLI, and persisted
+run `social-77d73720706d4a45` records zero orders with scenario hash
+`9e92fea6a3af3804d178e8fb68473acb8ab527a6116bd3d718ddca9865719b80`, registry
+hash `7e129b27862f379a01eed48c216b53e94a41e2a46481a3188a9fedf4511e3c8a` and an
+accepted protected cTrader Open API allocation.
 
 ## 3. Delegation Ledger
 
@@ -910,10 +917,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 21. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
-22. Commission social trading in ascending risk order: MQL5 Signals protected
-    demo control, cTrader Copy/Open API demo, optional eToro Virtual UX
-    control, Darwinex Zero after owner cost approval, and no live PAMM before
-    ledger parity plus legal/capital approval.
+22. Commission social trading in ascending risk order: cTrader Copy/Open API
+    demo, eToro Virtual UX control, Darwinex Zero after owner cost approval,
+    and no live MQL5 Signals or PAMM before legal/capital approval.
 
 ## 5. Current Risks
 

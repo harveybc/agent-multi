@@ -60,10 +60,11 @@ candidate because it supports official Python clients and demo accounts.
 Question: how do provider actions become subscriber exposure, and where do
 sizing, latency, leverage, missing symbols, precision and protection diverge?
 
-Immediate controls: MQL5 Signals on the active OANDA MT5 demo and cTrader Copy
-as a demo investor. MQL5 can copy SL/TP when enabled; cTrader Copy does not
-copy those protection levels, so it remains observational under the project's
-mandatory-protection rule.
+Immediate controls: cTrader Copy as a demo investor and eToro Virtual as a
+manual product control. MetaTrader 5 build 4150 disabled Signals on demo
+accounts, so the active OANDA MT5 demo remains a venue-reality stream rather
+than a Signals experiment. Native cTrader Copy does not copy provider SL/TP,
+so it remains observational under the project's mandatory-protection rule.
 
 ### PAMM/MAM reality
 
@@ -98,10 +99,10 @@ an LTS execution dependency.
 
 | Priority | Platform | Current role | Activation decision |
 | ---: | --- | --- | --- |
-| 1 | MQL5 Signals/OANDA demo | Protected signal-copy control on existing terminal | Configure free/private experiment after 24-hour MT5 read-only window |
-| 2 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | Owner creates cTrader ID/demo; no live capital |
-| 3 | Darwinex Zero | Virtual strategy-provider and allocation/business track | Owner reviews recurring price/terms/country before subscribing |
-| 4 | eToro Virtual | Manual UX/allocation control | Free account only; no automation adapter |
+| 1 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | cTID exists; create the demo trading account; no live capital |
+| 2 | eToro Virtual | Manual UX/allocation control | Virtual Portfolio is open; inventory and workflow observation pending |
+| 3 | Darwinex Zero | Virtual strategy-provider and allocation/business track | Hold: registration charges the first recurring subscription |
+| 4 | MQL5 Signals | Future live-only signal/provider control | Demo is unsupported since MT5 build 4150; no funding authorized |
 | 5 | HFM PAMM | Real pooled-capital mechanics | Deferred behind legal review, ledger parity and explicit funding limit |
 
 Additional venues enter only when they add a missing asset class, execution
@@ -220,9 +221,9 @@ persist no-order OLAP evidence.
 
 ### S1: Manual platform walkthrough
 
-- MQL5 Signals free/private provider/subscriber path;
 - cTrader Copy free strategy from a demo investor;
 - eToro Virtual copy workflow;
+- confirmation that MQL5 Signals is unavailable on non-real accounts;
 - screenshot-free structured checklist of controls, limits and resulting
   facts;
 - no credentials or personal identifiers in portable evidence.
@@ -280,11 +281,13 @@ support/incident policy and hard real-capital limits.
 1. Preserve the current DOIN campaign and paper observers unchanged.
 2. Complete the OANDA MT5 24-hour read-only evidence and reload the expanded
    watchlist when operationally convenient.
-3. Commission MQL5 Signals as the first protected social control.
-4. Ask the owner to create a cTrader ID/demo; then implement only the official
+3. Preserve OANDA MT5 demo as an independently monitored venue-reality stream;
+   do not attempt MQL5 Signals or create a second MQL5 identity.
+4. Complete the already-created cTID with a demo trading account; then
+   implement only the official
    read-only Open API preflight before custom-copy orders.
-5. Ask the owner whether to open free eToro Virtual now and whether Darwinex
-   Zero's recurring membership is approved after terms review.
+5. Inventory the already-open eToro Virtual Portfolio manually. Keep Darwinex
+   Zero on hold until its recurring membership receives explicit approval.
 6. Extend external social OLAP from the implemented neutral ledger; do not
    scrape UI data when an official export/API exists.
 7. Feed measured copy/fee/flow gaps into a versioned simulator calibration
@@ -297,6 +300,7 @@ support/incident policy and hard real-capital limits.
 - cTrader Copy investing: https://help.ctrader.com/ctrader-copy/investing-in-strategies/
 - MQL5 Signals rules: https://www.mql5.com/en/signals/rules
 - MQL5 provider agreement: https://www.mql5.com/en/signals/terms/provider
+- MT5 build 4150 release: https://www.mql5.com/en/forum/459335
 - Darwinex Zero overview: https://www.darwinexzero.com/docs/what-is-darwinex-zero
 - Darwinex Zero assets: https://www.darwinexzero.com/assets
 - eToro CopyTrader: https://www.etoro.com/en-us/copytrader/
