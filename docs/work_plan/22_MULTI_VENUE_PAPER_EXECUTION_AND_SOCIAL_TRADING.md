@@ -17,6 +17,11 @@ This track produces execution evidence, not a profit claim. Paper fills remain
 simulated and are compared with the canonical simulator and, later, tightly
 capped live evidence.
 
+The provider-neutral social accounting and commissioning sequence is defined
+in document 28 and implemented in LTS. It adds investor flows, unitized PAMM
+accounting, high-water marks, fees, copy sizing, tracking error and protection
+eligibility without granting any new order authority.
+
 ## 2. Account State
 
 User-reported and runtime-verified state, updated 2026-08-01:
@@ -296,12 +301,30 @@ The current Individual accounts validate our own portfolio only.
 - The production social-trading account/legal structure is a separate gate,
   not an assumption embedded in the paper adapter.
 
+Current platform order:
+
+1. MQL5 Signals on the existing OANDA MT5 demo is the first protected
+   signal-copy control because subscriber SL/TP copying is configurable.
+2. cTrader Copy demo is an investor/business control; its native copying does
+   not copy provider SL/TP and therefore cannot receive authorized protected
+   exposure. cTrader Open API is evaluated separately for a custom copier that
+   creates account-local protection.
+3. Darwinex Zero is the preferred virtual provider/allocation laboratory after
+   membership and country terms receive owner approval.
+4. eToro Virtual is a manual copy UX/reallocation control, not an execution
+   adapter.
+5. A real HFM or other PAMM manager is deferred behind ledger parity, legal
+   review, protected execution and an explicit funding limit.
+
+The executable contract and exact gates are in document 28 and
+`lts/docs/SOCIAL_TRADING_REALITY_LAB.md`.
+
 ## 12. Immediate Inputs and Next Actions
 
 1. Keep Alpaca, IBKR and the consolidated shadow marker active on Omega and
    complete their independent observation windows.
-2. Create a Capital.com Demo account/API key and activate its GET-only
-   observer as a crypto/FX/CFD fallback; do not enable an order route.
+2. Create a cTrader ID/demo for Copy investor observation and later official
+   Open API read-only preflight; do not enable custom-copy orders.
 3. Keep OANDA MT5 credentials inside MT5, never in Git, chat, portable OLAP or
    Linux observer state.
 4. Maintain the authenticated OANDA MT5 heartbeat and snapshot stream through
@@ -309,8 +332,10 @@ The current Individual accounts validate our own portfolio only.
    and reconnect behavior.
 5. Install QEMU guest-agent support and deterministic MT5 launch recovery
    without expanding the Windows VM into an orchestration or AI-agent host.
-6. Review all 24-hour read-only evidence before implementing and enabling any
-   minimum-size protected canary.
+6. Run the implemented no-order social accounting scenario and retain its
+   hashed OLAP evidence as the external-platform reconciliation baseline.
+7. Review all 24-hour read-only evidence before implementing and enabling any
+   minimum-size protected canary or social-copy route.
 
 ## 13. Hermes and Telegram Operations
 

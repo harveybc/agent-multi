@@ -229,6 +229,32 @@ venue. Future social trading uses a separately reviewed Advisor/Broker/OAuth
 structure; personal Individual accounts never custody or commingle customer
 funds.
 
+### ADR-022: Social trading is a neutral accounting and evidence plane
+
+Date: 2026-08-01
+
+LTS owns provider-neutral investor accounting, copy allocation, fees,
+high-water marks, flows, tracking error and protection eligibility. No social
+platform owns the canonical portfolio or customer-risk policy. Platform
+adapters report facts against this contract.
+
+Commissioning proceeds by ascending risk: local no-order ledger; MQL5 Signals,
+cTrader Copy and eToro virtual controls; cTrader Open API custom-copy preflight;
+Darwinex Zero virtual provider track; and only then an explicitly approved
+real PAMM or public provider pilot. A platform is added only for a missing
+asset class, execution contract, social mechanic, jurisdiction or independent
+control.
+
+Every copied risk-increasing order must have SL and TP confirmed in the
+subscriber account. A platform-managed close signal or copy-level loss limit
+does not satisfy that invariant. Native cTrader Copy is therefore observation
+only; MQL5 Signals is the first protected social control, and a custom cTrader
+copier must create account-local protection.
+
+Social/business observations can modify future simulation and optimization
+only through a versioned evidence packet and a new semantic hash. They cannot
+mutate an active DOIN chain.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |
@@ -245,7 +271,7 @@ funds.
 | DOIN decentralized live inference | Optional for non-urgent tasks | After latency/reliability/payment tests |
 | OANDA Global Markets universe | Discovered from MT5 account | At MT5 demo capability preflight |
 | Crypto execution venue | Compare OANDA CFD and API-native venues | After protection, shorting, fee and Colombia-eligibility preflight |
-| Social-trading legal/account structure | Personal accounts for paper validation only | Separate legal/compliance review before any customer-connected execution |
+| Social-trading legal/account structure | Neutral local ledger plus demo/virtual controls; personal accounts never hold customer funds | Separate legal/tax/compliance review before live PAMM, public provider or customer-connected execution |
 | P2P artifact backend | Evaluate trackerless BitTorrent/libtorrent versus IPFS/Kubo; no central dependency | Before multi-node trading-domain acceptance |
 | Generic DOIN metric persistence design | Tall metric fact plus catalog | Before trading domain three-node run |
 | Separate `inference_config`/`synthetic_data_config` fields | Prefer explicit subtrees with backward-compatible `optimization_config` fallback | Unified-node config loader audit in Phase 8 |
@@ -365,6 +391,18 @@ only trading-domain behavior.
   https://www.nber.org/papers/w8959
 
 ## 7. Change Log
+
+### Plan 1.24.0 - 2026-08-01
+
+- Added the provider-neutral copy/PAMM/MAM accounting plane with decimal
+  units, investor HWM, fees, flows, proportional allocation, tracking error,
+  fail-closed SL/TP eligibility and hashed SQLite OLAP evidence.
+- Ranked MQL5 Signals, cTrader, Darwinex Zero, eToro Virtual and HFM PAMM by
+  distinct experimental value instead of account count.
+- Established the live/social-to-research feedback loop and prohibited
+  platform facts from mutating an active DOIN campaign.
+- Preserved one broker-independent research universe while requiring
+  platform-observable and protected-executable intersections for exposure.
 
 ### Plan 1.16.0 - 2026-07-29
 
