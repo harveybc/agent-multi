@@ -795,8 +795,8 @@ holds Darwinex Zero behind explicit recurring-cost approval, records MQL5
 Signals as live-only, and defers HFM PAMM. No
 external social account has been opened or funded by code. The owner has an
 active Spotware cTrader demo under the new cTID, opened eToro Virtual
-Portfolio, and deliberately held Darwinex Zero before its first subscription
-charge.
+Portfolio and verified its target assets, Buy/Sell controls and CopyTrader UI,
+and deliberately held Darwinex Zero before its first subscription charge.
 
 Verification: the complete LTS suite passes with 226 tests and the complete
 agent-multi suite passes with 405 tests after the current capability correction.

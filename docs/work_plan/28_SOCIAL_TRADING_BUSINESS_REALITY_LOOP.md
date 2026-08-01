@@ -100,7 +100,7 @@ an LTS execution dependency.
 | Priority | Platform | Current role | Activation decision |
 | ---: | --- | --- | --- |
 | 1 | cTrader demo + Open API | Independent API/custom-copy and native Copy investor observation | Spotware demo is active; verify Copy catalogue and register Open API app; no live capital |
-| 2 | eToro Virtual | Manual UX/allocation control | Virtual Portfolio is open; inventory and workflow observation pending |
+| 2 | eToro Virtual | Manual UX/allocation control | Owner verified target assets, Buy/Sell and CopyTrader UI; structured observation pending |
 | 3 | Darwinex Zero | Virtual strategy-provider and allocation/business track | Hold: registration charges the first recurring subscription |
 | 4 | MQL5 Signals | Future live-only signal/provider control | Demo is unsupported since MT5 build 4150; no funding authorized |
 | 5 | HFM PAMM | Real pooled-capital mechanics | Deferred behind legal review, ledger parity and explicit funding limit |
@@ -286,8 +286,9 @@ support/incident policy and hard real-capital limits.
 4. Use the active Spotware demo under the existing cTID; verify Copy catalogue
    access, then implement only the official
    read-only Open API preflight before custom-copy orders.
-5. Inventory the already-open eToro Virtual Portfolio manually. Keep Darwinex
-   Zero on hold until its recurring membership receives explicit approval.
+5. Materialize the owner-verified eToro Virtual facts into the structured
+   checklist. Keep Darwinex Zero on hold until its recurring membership
+   receives explicit approval.
 6. Extend external social OLAP from the implemented neutral ledger; do not
    scrape UI data when an official export/API exists.
 7. Feed measured copy/fee/flow gaps into a versioned simulator calibration
