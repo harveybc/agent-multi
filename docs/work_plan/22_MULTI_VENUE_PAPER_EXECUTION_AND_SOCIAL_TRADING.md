@@ -45,7 +45,10 @@ Runtime evidence on Omega:
   path;
 - the consolidated watchdog reports functional observer freshness, endpoint
   health, missing data, unexpected exposure and venue availability through
-  Telegram.
+  Telegram. Its MT5 probe consumes Dragon's fleet-safe `/v1/status` endpoint
+  over Tailscale, so it no longer assumes that Dragon's SQLite database exists
+  on Omega. The endpoint excludes account/server fingerprints, capital values,
+  symbols, tickets and credentials;
 - a no-order multi-venue shadow portfolio now marks one synthetic USD 100,000
   NAV every five minutes from normalized Alpaca and IBKR quotes. Its initial
   allocation contains BTC, ETH, SOL, SPY, TLT, GLD, EURUSD, USDJPY and AUDUSD;
@@ -76,8 +79,8 @@ MT5 host decision:
   an independent five-minute Dragon watchdog with Telegram alerting. Automated
   bridge/watchdog tests pass. MetaEditor compiled the EA with zero errors and
   zero warnings; fresh signed heartbeat/snapshot evidence cleared the MT5
-  watchdog alert. VM autostart, bridge/watchdog enablement and user linger are
-  active on Dragon.
+  watchdog alert locally and on Omega's consolidated watchdog. VM autostart,
+  bridge/watchdog enablement and user linger are active on Dragon.
 
 Credentials, raw account IDs and recovery data must never be committed,
 included in chat, written to chain/portable OLAP or copied into tracked JSON.
