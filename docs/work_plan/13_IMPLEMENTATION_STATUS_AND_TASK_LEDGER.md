@@ -1,10 +1,10 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-07-31 19:20 America/Bogota
-Plan version: 1.23.2
+Status timestamp: 2026-08-01 02:14 America/Bogota
+Plan version: 1.23.3
 Current focus: run the protected-entry v2 optimization path to an exact
 champion handoff, collect independent read-only Alpaca/IBKR execution evidence,
-commission OANDA MT5 when valid demo credentials are available, and close
+collect the active OANDA MT5 read-only observation window, and close
 independently reproduced audit findings without taking compute from DOIN
 
 Immediate parallel runtime added on 2026-07-30:
@@ -39,7 +39,7 @@ Runtime acceptance evidence:
   zero missing/stale cells and `orders_submitted=0`;
 - full suites pass: `379` Agent Multi tests and `215` LTS tests.
 
-Account and observer state verified on 2026-07-31:
+Account and observer state verified on 2026-08-01:
 
 - Alpaca Trading API Paper is authenticated in read-only mode and observed
   every five minutes. The initial crypto universe is available; positions,
@@ -51,14 +51,16 @@ Account and observer state verified on 2026-07-31:
 - OANDA Global Markets Live was created and its MT5 login was verified against
   `OANDA_Global-Live-1`. It is not authorized for bridge commissioning or
   automated orders.
-- Windows 11 and MT5 are installed in the Dragon VM. OANDA requires an
-  independent Demo login and password for `OANDA_Global-Demo-1`; those Demo
-  credentials are still blocked on the account/support path, so no
-  authenticated MT5 heartbeat is claimed.
+- Windows 11 and MT5 build 6075 are installed in the Dragon VM. The independent
+  `OANDA_Global-Demo-1` account is authenticated, the tracked read-only EA
+  compiled with zero errors and zero warnings, and signed heartbeat/snapshot
+  facts are current in SQLite OLAP. The accepted snapshot has zero positions,
+  zero orders and six valid requested symbols.
 - The runtime watchdog no longer raises an actionable incident for absent
   REST-v20 credentials when REST is optional. This matches the permanent OGM
-  incompatibility and leaves `mt5_bridge_missing` as the truthful active OANDA
-  commissioning alert.
+  incompatibility. Fresh OANDA MT5 evidence also cleared the former
+  `mt5_bridge_missing` alert; deterministic monitoring currently reports no
+  active MT5 event.
 
 Architecture correction 2026-07-29: OANDA Global Markets is not a REST-v20
 division. The existing Practice REST client remains preserved for compatible
@@ -785,7 +787,7 @@ cannot select, early-stop, optimize or promote future candidates.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_observers_active_ogm_live_verified_demo_bridge_blocked | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
+| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_mt5_readonly_observers_active | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
 | `CONTINUOUS-AUDIT-001` | Claude audit agent + Codex verification | all active repositories, `agent-multi/docs/audits` | baseline_reviewed_corrections_verified | Read-mostly cross-front audit, stable findings, change-driven cadence, Hermes boundary and versioned Codex role recovery | Codex |
@@ -824,9 +826,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    replicated stop barrier.
 4. Let the replicated campaign materialize and start the separate protected
    easy-to-nominal-to-stress curriculum domain from that exact handoff.
-5. Complete the OANDA Global Markets demo/support path, then authenticate MT5,
-   compile the tracked EA with zero errors and require a fresh signed heartbeat
-   before claiming the bridge active.
+5. Maintain the authenticated OANDA MT5 read-only vertical through its 24-hour
+   observation window and summarize uptime, spreads, symbol coverage,
+   reconnects and unexpected exposure before protected canaries.
 6. Freeze the resulting robust alpha policy and generate its deterministic
    action trace.
 7. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
@@ -848,12 +850,11 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    activation and evaluate weekly retraining/fine-tuning.
 15. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-16. Complete the consolidated LTS capital ledger and the remaining MT5 adapter
-    commissioning, then review the 24-hour read-only observations before
-    protected canaries.
+16. Complete the consolidated LTS capital ledger and review the active MT5
+    24-hour read-only observations before protected canaries.
 17. Keep the active social-intelligence S0/S1 path read-only: preserve the
     source allowlist, deterministic collection, normalized OLAP, bounded
-    Flash-only review and approval-gated publishing while MT5 commissioning
+    Flash-only review and approval-gated publishing while MT5 observation
     continues.
 18. Benchmark local social models in a declared resource window before
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
