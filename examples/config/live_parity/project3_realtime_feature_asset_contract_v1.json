@@ -1,0 +1,516 @@
+{
+  "schema_version": "agent_multi.live_feature_asset_contract.v1",
+  "contract_id": "project3-realtime-feature-asset-contract-v1",
+  "observed_at": "2026-08-01T19:12:25Z",
+  "decision_policy": {
+    "live_capability_ready_statuses": [
+      "integrated"
+    ],
+    "live_data_ready_statuses": [
+      "observed"
+    ],
+    "live_execution_ready_statuses": [
+      "protected_canary_passed",
+      "paper_execution_approved"
+    ],
+    "research_does_not_imply_live": true,
+    "runtime_inputs_may_come_from_any_causal_source": true,
+    "venue_data_is_not_required_to_match_execution_venue": true,
+    "cross_venue_basis_calibration_required": true,
+    "missing_source_policy": "fail_closed_unless_trained_availability_mask_and_fallback_pass"
+  },
+  "availability_classes": {
+    "bar_synchronous": "Available no later than the closed decision bar and reproducible from point-in-time raw inputs.",
+    "slow_context": "Available by its real publication timestamp and joined only after that timestamp, with vintage/revision lineage.",
+    "degradable": "May be absent or stale only when the model was trained with an availability mask and a tested fallback.",
+    "research_only": "Historical or exploratory source that cannot participate in live inference or promotion."
+  },
+  "candidate_input_lanes": {
+    "own_asset_market_state": {
+      "priority": 1,
+      "availability_class": "bar_synchronous",
+      "inputs": ["closed OHLCV", "returns", "technical/statistical transforms", "causal decompositions"],
+      "decision": "active_baseline_and_required_parity_vertical"
+    },
+    "execution_microstructure": {
+      "priority": 2,
+      "availability_class": "bar_synchronous",
+      "inputs": ["bid/ask", "spread", "trades", "depth", "imbalance", "venue liquidity and session state"],
+      "decision": "collect_now_then_ablate_for_routing_and_short_horizon_cells"
+    },
+    "cross_asset_market_state": {
+      "priority": 3,
+      "availability_class": "bar_synchronous",
+      "inputs": ["BTC/ETH market state", "DXY and rates proxies", "equity/bond/metal controls", "cross-venue basis"],
+      "decision": "candidate_for_crypto_rush_fx_regime_and_portfolio_layers"
+    },
+    "crypto_derivatives_state": {
+      "priority": 4,
+      "availability_class": "slow_context",
+      "inputs": ["funding", "open interest", "basis", "liquidations"],
+      "decision": "high_value_candidate_where_point_in_time_history_and_runtime_feed_match"
+    },
+    "macro_vintage_context": {
+      "priority": 5,
+      "availability_class": "slow_context",
+      "inputs": ["rates", "yield curve", "inflation", "employment", "financial stress", "USD indices"],
+      "decision": "candidate_for_fx_portfolio_and_regime_models_using_release_vintages"
+    },
+    "scheduled_and_released_events": {
+      "priority": 6,
+      "availability_class": "slow_context",
+      "inputs": ["known schedule", "actual", "consensus", "surprise", "revision", "first-available timestamp"],
+      "decision": "schedule_only_is_research_ready; actual_consensus_requires_a_realtime_licensed_source"
+    },
+    "onchain_and_exchange_flow_context": {
+      "priority": 7,
+      "availability_class": "slow_context",
+      "inputs": ["active addresses", "transactions", "hash rate", "exchange flows", "stablecoin state"],
+      "decision": "free_point_in_time_sources_first; cancelled_paid_archives_remain_research_only"
+    },
+    "fundamental_and_filing_context": {
+      "priority": 8,
+      "availability_class": "slow_context",
+      "inputs": ["SEC filings", "earnings", "fundamental ratios", "corporate events"],
+      "decision": "relevant_to_future_equity_cells_not_current_fx_crypto_alpha"
+    },
+    "social_context": {
+      "priority": 9,
+      "availability_class": "research_only",
+      "inputs": ["source-backed social events and technical claims"],
+      "decision": "never_a_direct_live_feature_until_quality_latency_and_ablation_contracts_pass"
+    }
+  },
+  "feature_profiles": {
+    "kitchen_sink_guarded": {
+      "availability_class": "bar_synchronous",
+      "source_ids": [
+        "own_asset_ohlcv_derived"
+      ],
+      "required_capabilities": [
+        "closed_ohlcv_bars"
+      ],
+      "notes": "Current USDCAD job: OHLCV plus causal technical/statistical/wavelet/Hilbert/multitaper/EMD/fractional-difference transforms."
+    },
+    "fx_full": {
+      "availability_class": "bar_synchronous",
+      "source_ids": [
+        "own_asset_ohlcv_derived"
+      ],
+      "required_capabilities": [
+        "closed_ohlcv_bars"
+      ]
+    },
+    "tech_stat_decomp": {
+      "availability_class": "bar_synchronous",
+      "source_ids": [
+        "own_asset_ohlcv_derived"
+      ],
+      "required_capabilities": [
+        "closed_ohlcv_bars"
+      ]
+    },
+    "sota_low_cost": {
+      "availability_class": "bar_synchronous",
+      "source_ids": [
+        "own_asset_ohlcv_derived"
+      ],
+      "required_capabilities": [
+        "closed_ohlcv_bars"
+      ]
+    }
+  },
+  "sources": {
+    "own_asset_ohlcv_derived": {
+      "availability_class": "bar_synchronous",
+      "research_status": "available_point_in_time",
+      "live_status": "documented_but_not_integrated",
+      "historical_owner": "financial-data",
+      "runtime_owner": "prediction_provider_or_lts_feature_service",
+      "allowed_raw_feeds": [
+        "mt5_copyrates",
+        "alpaca_market_data",
+        "ibkr_tws_market_data",
+        "binance_websocket"
+      ],
+      "rule": "Transmit normalized raw bars and compute features with the same shared causal implementation used in research; do not reimplement transforms independently in MQL5."
+    },
+    "cross_asset_market_ohlcv": {
+      "availability_class": "bar_synchronous",
+      "research_status": "available_point_in_time",
+      "live_status": "documented_but_not_integrated",
+      "rule": "Every auxiliary instrument uses a source timestamp, closed-bar cutoff, calendar and staleness mask; cross-venue prices require basis calibration."
+    },
+    "venue_microstructure": {
+      "availability_class": "bar_synchronous",
+      "research_status": "partial",
+      "live_status": "quotes_observed_history_not_materialized",
+      "rule": "Persist raw quotes/trades/depth before deriving spread, imbalance or liquidity features; never backfill missing depth from future snapshots."
+    },
+    "crypto_derivatives_public": {
+      "availability_class": "slow_context",
+      "research_status": "available_point_in_time",
+      "live_status": "documented_but_not_integrated",
+      "rule": "Funding, open-interest, basis and liquidation facts require publication/exchange timestamps and matching historical/runtime definitions."
+    },
+    "fred_alfred_macro_vintages": {
+      "availability_class": "slow_context",
+      "research_status": "available_point_in_time",
+      "live_status": "documented_but_not_integrated",
+      "rule": "Use release/vintage availability, never the latest revised value before it was known."
+    },
+    "economic_calendar_actual_consensus": {
+      "availability_class": "research_only",
+      "research_status": "partial",
+      "live_status": "provider_not_configured",
+      "rule": "Scheduled events and actual/consensus/surprise need a licensed real-time provider and publication timestamps."
+    },
+    "crypto_onchain_public": {
+      "availability_class": "slow_context",
+      "research_status": "available",
+      "live_status": "documented_but_not_integrated",
+      "rule": "Per-metric freshness, finality, revision and provider-lag contracts are required."
+    },
+    "cryptoquant_recent_archive": {
+      "availability_class": "research_only",
+      "research_status": "recent_archive_101_days",
+      "live_status": "subscription_cancelled",
+      "rule": "Retain the 2026 archive and value probe as evidence; it cannot enter a deployable model without historical coverage and an active runtime replacement."
+    },
+    "sec_edgar_realtime": {
+      "availability_class": "slow_context",
+      "research_status": "available_point_in_time",
+      "live_status": "documented_but_not_integrated",
+      "rule": "Join filings only after dissemination time; relevant to equity cells, not FX/crypto by default."
+    },
+    "equity_fundamental_snapshots": {
+      "availability_class": "slow_context",
+      "research_status": "historical_inventory_present",
+      "live_status": "not_integrated",
+      "rule": "Fundamentals require filing/publication timestamps and revision lineage; period end is never treated as availability time."
+    },
+    "moltbook_social_observations": {
+      "availability_class": "research_only",
+      "research_status": "collection_active",
+      "live_status": "direct_model_input_prohibited",
+      "rule": "Social observations remain a hypothesis source until source quality, latency, manipulation resistance and incremental value pass explicit tests."
+    },
+    "paid_or_cancelled_sources": {
+      "availability_class": "research_only",
+      "research_status": "not_selected",
+      "live_status": "not_configured",
+      "rule": "CryptoQuant remains cancelled; Polygon/FMP/Glassnode/FXStreet/Trading Economics remain unavailable until separately approved and probed."
+    }
+  },
+  "runtime_capabilities": {
+    "closed_ohlcv_bars": {
+      "status": "not_integrated",
+      "parity_status": "not_tested",
+      "current_observation": "LTS observers persist quotes and execution/account facts; the MT5 EA does not yet transmit CopyRates bar series.",
+      "required_acceptance": [
+        "closed-bar timestamps and OHLCV persisted with source and venue",
+        "warm-up history covers the largest feature and context window",
+        "offline-versus-live feature vectors match within declared tolerance",
+        "weekend, gaps, corrections and incomplete bars are deterministic",
+        "staleness and missingness masks are part of the model contract"
+      ]
+    },
+    "top_of_book_quotes": {
+      "status": "integrated_observation_only",
+      "parity_status": "not_tested",
+      "required_acceptance": ["normalized bid/ask timestamps", "staleness tests", "venue and symbol lineage"]
+    },
+    "trade_and_depth_streams": {
+      "status": "not_integrated",
+      "parity_status": "not_tested",
+      "required_acceptance": ["sequence-gap detection", "reconnect recovery", "point-in-time derived-feature parity"]
+    },
+    "slow_context_point_in_time": {
+      "status": "not_integrated",
+      "parity_status": "not_tested",
+      "required_acceptance": ["first-available timestamp", "vintage lineage", "as-of join tests", "staleness mask"]
+    },
+    "cross_venue_basis": {
+      "status": "not_integrated",
+      "parity_status": "not_tested",
+      "required_acceptance": ["paired timestamp samples", "basis distribution by regime", "weekend/session mapping", "fallback threshold"]
+    }
+  },
+  "runtime_sources": {
+    "mt5_copyrates": {
+      "official_capability": "ticks, OHLC, tick/real volume and spread by symbol/timeframe",
+      "integration_status": "planned",
+      "current_status": "signed quote/account snapshots active on OANDA Global Demo"
+    },
+    "alpaca_market_data": {
+      "official_capability": "real-time crypto and stock trades, quotes and bars",
+      "integration_status": "quotes_only_in_current_lts_lab",
+      "current_status": "paper observer active"
+    },
+    "ibkr_tws_market_data": {
+      "official_capability": "top market data and real-time bars subject to entitlements and pacing",
+      "integration_status": "quotes_only_in_current_lts_lab",
+      "current_status": "TWS paper observer active"
+    },
+    "binance_websocket": {
+      "official_capability": "real-time trades, book ticker, depth and kline streams",
+      "integration_status": "not_integrated",
+      "current_status": "candidate independent crypto decision feed; execution-venue basis must be calibrated"
+    },
+    "fred_alfred_api": {
+      "official_capability": "macro observations with real-time and vintage periods",
+      "integration_status": "historical_only",
+      "current_status": "point-in-time archive present; runtime poller and availability SLA absent"
+    },
+    "coinmetrics_community_api": {
+      "official_capability": "public crypto network metrics",
+      "integration_status": "historical_only",
+      "current_status": "historical archive present; metric-specific runtime freshness not verified"
+    },
+    "sec_edgar_api": {
+      "official_capability": "public filing submissions and XBRL facts",
+      "integration_status": "not_integrated",
+      "current_status": "future equity-context candidate"
+    },
+    "economic_calendar_realtime_provider": {
+      "official_capability": "scheduled events, consensus, actuals and revisions",
+      "integration_status": "provider_not_selected",
+      "current_status": "historical schedule proxies exist but surprise fields lack first-available timestamps"
+    }
+  },
+  "execution_venues": {
+    "oanda_global_mt5": {
+      "status": "read_only_demo_observed",
+      "protection_status": "pending_canary",
+      "account_scope": "OANDA Global Markets MT5 demo"
+    },
+    "alpaca_paper": {
+      "status": "read_only_paper_observed",
+      "protection_status": "native_sltp_not_verified",
+      "account_scope": "Alpaca Trading API paper"
+    },
+    "ibkr_paper": {
+      "status": "read_only_paper_observed",
+      "protection_status": "bracket_submission_not_verified",
+      "account_scope": "IBKR TWS paper"
+    }
+  },
+  "instrument_mappings": {
+    "sol": {"research": "SOLUSDT", "binance_websocket": "SOLUSDT", "alpaca_market_data": "SOL/USD", "oanda_global_mt5": "SOLUSD"},
+    "btc": {"research": "BTCUSDT", "binance_websocket": "BTCUSDT", "alpaca_market_data": "BTC/USD", "oanda_global_mt5": "BTCUSD"},
+    "ada": {"research": "ADAUSDT", "binance_websocket": "ADAUSDT", "alpaca_market_data": "ADA/USD", "oanda_global_mt5": "ADAUSD"},
+    "eth": {"research": "ETHUSDT", "binance_websocket": "ETHUSDT", "alpaca_market_data": "ETH/USD", "oanda_global_mt5": "ETHUSD"},
+    "doge": {"research": "DOGEUSDT", "binance_websocket": "DOGEUSDT", "alpaca_market_data": "DOGE/USD", "oanda_global_mt5": "DOGEUSD"},
+    "xrp": {"research": "XRPUSDT", "binance_websocket": "XRPUSDT", "alpaca_market_data": "XRP/USD", "oanda_global_mt5": "XRPUSD"},
+    "usdcad": {"research": "USDCAD", "mt5_copyrates": "USDCAD", "ibkr_tws_market_data": "USD.CAD"},
+    "eurjpy": {"research": "EURJPY", "mt5_copyrates": "EURJPY", "ibkr_tws_market_data": "EUR.JPY"},
+    "eurusd": {"research": "EURUSD", "mt5_copyrates": "EURUSD", "ibkr_tws_market_data": "EUR.USD"},
+    "audusd": {"research": "AUDUSD", "mt5_copyrates": "AUDUSD", "ibkr_tws_market_data": "AUD.USD"},
+    "gbpjpy": {"research": "GBPJPY", "mt5_copyrates": "GBPJPY", "ibkr_tws_market_data": "GBP.JPY"},
+    "usdjpy": {"research": "USDJPY", "mt5_copyrates": "USDJPY", "ibkr_tws_market_data": "USD.JPY"},
+    "nzdusd": {"research": "NZDUSD", "mt5_copyrates": "NZDUSD", "ibkr_tws_market_data": "NZD.USD"},
+    "spy": {"research": "SPY", "alpaca_market_data": "SPY", "ibkr_tws_market_data": "SPY SMART"},
+    "tlt": {"research": "TLT", "alpaca_market_data": "TLT", "ibkr_tws_market_data": "TLT SMART"},
+    "gld": {"research": "GLD", "alpaca_market_data": "GLD", "ibkr_tws_market_data": "GLD SMART"}
+  },
+  "asset_cells": [
+    {
+      "asset": "solusdt",
+      "timeframe": "1h",
+      "instrument_mapping_id": "sol",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "promising_short_and_rush",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "btcusdt",
+      "timeframe": "1h",
+      "instrument_mapping_id": "btc",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "promising_short",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "adausdt",
+      "timeframe": "1h",
+      "instrument_mapping_id": "ada",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "promising_short",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "ethusdt",
+      "timeframe": "1h",
+      "instrument_mapping_id": "eth",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "promising_short_and_rush",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "dogeusdt",
+      "timeframe": "4h",
+      "instrument_mapping_id": "doge",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "full_year_comparator",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "solusdt",
+      "timeframe": "4h",
+      "instrument_mapping_id": "sol",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "strongest_full_year_and_rush",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "ethusdt",
+      "timeframe": "4h",
+      "instrument_mapping_id": "eth",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "full_year_and_rush",
+      "data_routes": ["alpaca_market_data", "mt5_copyrates", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "alpaca_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "usdcad",
+      "timeframe": "4h",
+      "instrument_mapping_id": "usdcad",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "active_doin_full_genome_job",
+      "data_routes": ["mt5_copyrates"],
+      "data_route_status": "configured_symbol_not_yet_observed",
+      "execution_routes": ["oanda_global_mt5"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "eurjpy",
+      "timeframe": "4h",
+      "instrument_mapping_id": "eurjpy",
+      "selection_set": "core_live_candidate",
+      "research_evidence": "historical_positive_comparator",
+      "data_routes": ["mt5_copyrates"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "eurusd",
+      "timeframe": "4h",
+      "instrument_mapping_id": "eurusd",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "full_year_control",
+      "data_routes": ["mt5_copyrates", "ibkr_tws_market_data"],
+      "data_route_status": "ibkr_quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "ibkr_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "audusd",
+      "timeframe": "4h",
+      "instrument_mapping_id": "audusd",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "full_year_control",
+      "data_routes": ["mt5_copyrates", "ibkr_tws_market_data"],
+      "data_route_status": "ibkr_quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "ibkr_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "xrpusdt",
+      "timeframe": "1h",
+      "instrument_mapping_id": "xrp",
+      "selection_set": "research_watchlist",
+      "research_evidence": "promising_short_alternate",
+      "data_routes": ["alpaca_market_data", "binance_websocket"],
+      "data_route_status": "quote_observed_bar_pipeline_missing",
+      "execution_routes": ["alpaca_paper"],
+      "execution_route_status": "native_sltp_not_verified"
+    },
+    {
+      "asset": "gbpjpy",
+      "timeframe": "1h",
+      "instrument_mapping_id": "gbpjpy",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "activity_comparator",
+      "data_routes": ["mt5_copyrates"],
+      "data_route_status": "configured_symbol_not_yet_observed",
+      "execution_routes": ["oanda_global_mt5"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "usdjpy",
+      "timeframe": "1h",
+      "instrument_mapping_id": "usdjpy",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "activity_comparator",
+      "data_routes": ["mt5_copyrates", "ibkr_tws_market_data"],
+      "data_route_status": "ibkr_quote_observed_bar_pipeline_missing",
+      "execution_routes": ["oanda_global_mt5", "ibkr_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "nzdusd",
+      "timeframe": "1h",
+      "instrument_mapping_id": "nzdusd",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "stable_screening_comparator",
+      "data_routes": ["mt5_copyrates"],
+      "data_route_status": "configured_symbol_not_yet_observed",
+      "execution_routes": ["oanda_global_mt5"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "spy",
+      "timeframe": "1h",
+      "instrument_mapping_id": "spy",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "portfolio_market_control",
+      "data_routes": ["alpaca_market_data", "ibkr_tws_market_data"],
+      "data_route_status": "ibkr_quote_observed_bar_pipeline_missing",
+      "execution_routes": ["alpaca_paper", "ibkr_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "tlt",
+      "timeframe": "4h",
+      "instrument_mapping_id": "tlt",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "duration_diversifier",
+      "data_routes": ["alpaca_market_data", "ibkr_tws_market_data"],
+      "data_route_status": "ibkr_quote_observed_bar_pipeline_missing",
+      "execution_routes": ["alpaca_paper", "ibkr_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    },
+    {
+      "asset": "gld",
+      "timeframe": "4h",
+      "instrument_mapping_id": "gld",
+      "selection_set": "diversification_and_execution_control",
+      "research_evidence": "metal_diversifier",
+      "data_routes": ["alpaca_market_data", "ibkr_tws_market_data"],
+      "data_route_status": "ibkr_quote_observed_bar_pipeline_missing",
+      "execution_routes": ["alpaca_paper", "ibkr_paper"],
+      "execution_route_status": "read_only_pending_protection"
+    }
+  ]
+}
