@@ -23,13 +23,23 @@ unreviewed agent inheriting legal, financial or publication authority.
 
 ## 2. Current Evidence
 
-Verified on Omega on 2026-07-30:
+Verified across Omega, Dragon and Gamma on 2026-07-31:
 
 - Hermes supports per-cron-job `provider`, `model` and `base_url` overrides;
-- Hermes can therefore route a dedicated social job to an OpenAI-compatible
-  local endpoint without changing its interactive default model;
-- the current Hermes default is `deepseek-v4-pro` through the remote
-  `opencode-go` provider;
+- every Hermes default is `deepseek-v4-flash` through the remote
+  `opencode-go` provider at `https://opencode.ai/zen/go/v1`;
+- no active Hermes configuration or cron job uses `deepseek-v4-pro`, and all
+  three hosts have an empty fallback-provider list;
+- OpenCode exposes the stable identifier `deepseek-v4-flash`, not a dated
+  `0731` model identifier or revision fingerprint. After the owner enabled the
+  provider's required China-hosted-model opt-in, direct API and Hermes calls
+  succeeded on all three hosts. The deployment therefore records the stable
+  alias and the acceptance evidence, without inventing an unverifiable model
+  revision;
+- Omega owns the only active Telegram gateway because the three hosts share
+  one bot identity. Dragon and Gamma retain independently usable Hermes
+  installations, but their gateways remain inactive to prevent competing
+  Telegram polling;
 - the current Ollama inventory contains cloud endpoints only:
   `deepseek-v4-flash:cloud`, `deepseek-v4-pro:cloud` and
   `gemma4:31b-cloud`;
@@ -46,8 +56,10 @@ Implemented and activated on Omega on 2026-07-30:
   run before any model sees social content;
 - a low-cost `deepseek-v4-flash` Hermes job triages sanitized evidence every
   two hours without Telegram delivery;
-- a supervising `deepseek-v4-pro` job reviews the triage every six hours and
-  delivers its bounded report to Telegram;
+- a second `deepseek-v4-flash` job applies the stricter supervisory review
+  prompt every six hours and delivers its bounded report to Telegram. The
+  separation is a workflow and evidence-control boundary, not a claim that
+  the reviewer uses a larger model;
 - both jobs prohibit tools beyond the nonprivileged `todo` set and prohibit
   publishing, trading, risk changes, campaign changes and model promotion;
 - the public collector does not require a credential. Moltbook identity and
@@ -91,6 +103,24 @@ Security and evidence hardening at 2026-07-31 00:40 America/Bogota:
   dollar estimate is claimed;
 - a bounded daily audit runner recorded 73 agent-multi safety/campaign tests,
   73 gym-fx tests and 48 doin-node consensus tests passing.
+
+Fleet model migration acceptance at 2026-07-31 19:20 America/Bogota:
+
+- direct OpenCode inference returned `deepseek-v4-flash` after the explicit
+  regional opt-in;
+- one-shot Hermes inference returned the expected sentinel on Omega, Dragon
+  and Gamma;
+- forced triage and supervisory-review cron runs both completed with status
+  `ok`, null execution errors and null Telegram delivery errors;
+- Omega's gateway restarted cleanly and answered a real Telegram request with
+  `opencode-go/deepseek-v4-flash`;
+- pre-migration configuration and credential files were backed up locally on
+  each host under `~/.hermes/backups/20260801T001142Z/`, with secret material
+  excluded from the repository;
+- the packaged Hermes version is `0.12.0` on all hosts. Source checkouts are
+  not yet commit-identical (`05c63259` on Omega/Gamma and `75e1339d` on
+  Dragon), so a separately tested fleet upgrade remains operational debt and
+  is not conflated with this provider migration.
 
 Consequently, no existing Hermes or Ollama task may be described as local
 inference until a downloaded model passes a measured local-runtime benchmark.
@@ -365,7 +395,10 @@ S0 and the CPU-only S1 path are active without taking a GPU from DOIN.
 Publishing remains approval-gated and disabled until a Moltbook credential is
 stored locally, identity ownership is verified and the owner explicitly
 approves one source-backed draft. The temporary Tier-1 route is the low-cost
-OpenCode `deepseek-v4-flash` endpoint; it must not be mislabeled as local.
+OpenCode `deepseek-v4-flash` endpoint for both triage and supervised review;
+it must not be mislabeled as local, and prompts sent through it are processed
+using the provider's China-hosted path enabled by the owner. No Pro model or
+fallback provider is active.
 Local model selection remains an evidence-based S2 task after a measured
 resource window exists.
 
