@@ -68,7 +68,60 @@ do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
 
-As of 2026-07-31 (Musashi cross-review of AT-F1-001):
+As of 2026-08-01 ~02:45 America/Bogota (MT5 delta audit):
+
+- **Fork fully converged**: one tip, one finalized anchor, zero fleet alerts
+  at height 11 — strengthens the queued 005 closure. Campaign gen 4 at 17/20,
+  finalized height 4; **champion fitness flat gens 3-4** → stage-1 boundary
+  ~1 day out; Harvey's A/B/C decision is time-sensitive (archive selects
+  under the disputed objective).
+- **MT5 read-only vertical accepted by Musashi** (`agent-multi@9c435725`,
+  EA zero-error compile, authenticated demo, heartbeats on Dragon) — but new
+  finding **AUD-F2-20260801-029 (S3)**: Omega's consolidated watchdog still
+  raises `mt5_bridge_missing`, and Dragon is unreachable from Omega (SSH
+  refused) → split-brain observability; MT5 classified "documented, not
+  auditor-verified". Response invocation:
+  `MUSASHI_RESPONSE_INVOCATION_2026_08_01_04.md`.
+- Hermes fleet migrated to `deepseek-v4-flash` (check caps in AT-F3-013).
+  IBKR stale again (TWS off — owner action). Delta report:
+  `../audits/AUDIT_DELTA_2026_08_01.md`.
+
+Earlier state — As of 2026-07-31 ~14:55 America/Bogota (Invocations 07+08 executed by Satoshi):
+
+- **AT-F1-001: PASS withdrawn** per finding 026 (S2, accepted). Full-period vs
+  weekly L2 conflict confirmed from code (`rl_pipeline_with_validation.py:226`)
+  and block-8 atoms: +0.000482 full-period vs −0.0000443 weekly (sign flip).
+  State: `reported (finding open)` pending Harvey's objective decision.
+  Correction report: `../audits/AUDIT_AT_F1_001_CORRECTION_2026_07_31.md`
+  (includes the finding-027 chronology addendum; finding-028 handoff failure
+  accepted; three-field chronology now mandatory).
+- **AT-F1-012 reported:**
+  `../audits/AUDIT_OBJECTIVE_CONTRACT_AND_CURRICULUM_2026_07_31.md` plus CSV
+  in `../audits/evidence/`. n=5 fully-evidenced candidates (13 excluded —
+  coverage is a result): **champion flips** (block 8 full-period vs block 6
+  weekly); **5/5 sign flips** (all weekly-negative); 0 eligibility flips;
+  Spearman 0.80. Curriculum job 1 recalculates fitness as
+  `robust_weekly_rap_fitness` — repairs the bias for authoritative selection;
+  job-0 bias survives only as warm-start initialization, and the weekly top-2
+  are inside the elite set. **Recommendation to Harvey: Alternative A** with
+  two riders: (i) pre-launch unit test proving the materialized job-1 config
+  drives the `robust_weekly_rap_fitness` branch (the template carries TWO
+  selection keys — `objectives.selection_metric` vs
+  `training.selection_metric` — consumption unverified); (ii) relabel job-0
+  champion "alpha handoff under full-period proxy objective".
+- Verified non-finding: every evidenced chain candidate carries the explicit
+  protected-test skip marker on chain — the firewall is auditable from chain
+  data alone.
+- Owner priorities (2026-07-31): 1 live testing, 2 optimization, 3 academic,
+  4 social. Owner progressing the OANDA MT5 demo; Alpari MT5 demo +
+  PAMM-rankings collection proposed as future Front-2/3 additions (requires a
+  Musashi packet; PAMM real-money allocation is out of scope).
+- Harvey queue: objective decision (A/B/C), 021 threshold, closures
+  005/014-017, MUS-CNT-001/002 severities.
+- Next trigger: Harvey's A/B/C decision or Musashi's next packet; stage-1
+  boundary review is the nearest event.
+
+Earlier state — As of 2026-07-31 (Musashi cross-review of AT-F1-001):
 
 - Satoshi's counter-response is preserved at
   `../audits/AUDIT_GS_COUNTER_RESPONSE_AND_AT_F1_001_2026_07_31.md`.
