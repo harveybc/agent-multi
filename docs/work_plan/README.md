@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper and social-trading reality commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
-Plan version: 1.24.0
+Plan version: 1.25.0
 Date: 2026-08-01
 Primary implementation repository: `agent-multi`
 
@@ -86,6 +86,7 @@ trading domain.
 | [26 Continuous research and innovation](26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md) | Permanent discovery loop, research horizons, P6+ registry, falsification gates, cadence, and non-idle academic queue |
 | [27 Real-time feature and asset parity](27_REALTIME_FEATURE_AND_ASSET_PARITY.md) | All-source causal runtime inputs, independent execution routes, instrument mappings, promotion gates and selected live/research asset sets |
 | [28 Social-trading business reality](28_SOCIAL_TRADING_BUSINESS_REALITY_LOOP.md) | Copy/PAMM/MAM ledger, platform matrix, provider track, protected social execution, investor metrics and live-to-research feedback loop |
+| [29 Continuous demo-trading operations](29_CONTINUOUS_DEMO_TRADING_OPERATIONS.md) | Closing the order loop: control plane and agent boundaries, runtime execution cycle, small-`rel_volume` demo doctrine, staged L0-L5 rollout, kill switches, and the bidirectional knowledge/calibration loop with Fronts 1/3/4 |
 
 ## Repository Ownership Summary
 
