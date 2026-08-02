@@ -138,6 +138,49 @@ Evidence and rationale:
 | AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 
+### 1h. Independent verification of the social-accounting corrections, 2026-08-01 ~19:50 (Satoshi)
+
+Per the owner's direct instruction, the correction contract at `lts@f6d8b21`
+and `agent-multi@c24b6ce8` was independently reproduced against current
+commits:
+
+- **030 → verified_closed**: doc 28 platform table corrected; owner order
+  recorded; registry-exclusion test
+  (`test_current_registry_excludes_mql5_demo_and_keeps_protected_ctrader_api`)
+  reproduced passing.
+- **031 → verified_closed**: hand-refired original attack — full withdrawal
+  now crystallizes exactly 10.00 at the configured rate; partial withdrawal
+  charges precisely the withdrawn share (5.00); retained-share profit charged
+  once later; dip-and-recover to HWM charges nothing (B2b). Conservation test
+  in suite.
+- **032 → verified_closed**: `max_overshoot_ratio` rejection verified via the
+  suite's overshoot test reproduced locally (auditor's hand harness was
+  outpaced by the contract's new required fields — a strictness win recorded
+  in Musashi's favor).
+- **033 → verified_closed**: parametrized step-alignment rejection reproduced.
+- Additional demanded verifications: **event-chain tamper detection
+  hand-proven** (valid → tampered copy → invalid) on a COPY of the DB;
+  v1→v2 migration covered by `test_olap_migrates_v1_tables_without_losing_rows`
+  (reproduced); idempotency-duplicate rejection reproduced; suites reproduced:
+  focused 17, complete lts **234 passed** (exact match), agent-multi tests/unit
+  **404 passed** (claimed 405 — one-test collection delta at newer docs HEAD;
+  immaterial, noted for precision).
+- Verifier: Satoshi (reporter); implementer: Musashi — role separation per
+  established precedent and explicit owner instruction.
+
+**New finding:**
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F4-20260801-034 | S4 | open | `social_trading_cli.py --database` creates the schema at the argument path but persists run/event rows to the default state DB — scenario isolation impossible; discovered when the auditor's scratch DB stayed empty while the default DB grew | Musashi |
+
+**Auditor disclosure:** as a consequence of 034, the auditor's verification
+runs (including run `social-c5c91977ff8b4e8d`) were unintentionally persisted
+to `~/.local/state/lts/social-trading-lab.sqlite` (9 runs total present).
+Lab-only, zero orders, no broker surface — but the writes were not intended
+and are disclosed per the auditor's own standard. Tampering was performed
+ONLY on scratch copies.
+
 ### 1g. Social-trading reality-loop audit, 2026-08-01 (Satoshi)
 
 Full evidence: `../AUDIT_SOCIAL_TRADING_REALITY_LOOP_2026_08_01.md`.

@@ -68,7 +68,28 @@ do not reload it during unrelated operational audits.
 
 ## CURRENT STATE (update at the end of every session; stale until verified)
 
-As of 2026-08-01 ~18:15 America/Bogota (social-trading audit response):
+As of 2026-08-01 ~19:55 America/Bogota (corrections independently verified):
+
+- **030-033 verified_closed** by Satoshi against `lts@f6d8b21` +
+  `agent-multi@c24b6ce8` (register 1h): withdrawal crystallization
+  hand-refired exact (10.00/5.00/no-double-charge), overshoot/step/margin
+  rejections reproduced via suite, tamper detection hand-proven on a DB copy
+  (valid→invalid), v1→v2 migration and idempotency tests reproduced; suites:
+  17 focused, **234 complete lts (exact match)**, 404 agent-multi (405
+  claimed — one-test collection delta, immaterial).
+- **New: AUD-F4-20260801-034 (S4)** — CLI `--database` writes schema to the
+  argument path but rows to the default DB; auditor's verification runs
+  therefore persisted unintentionally to the default social DB (disclosed;
+  lab-only, zero orders; tampering only on copies).
+- **Owner order is DECIDED (do not re-propose):** cTrader Copy observation →
+  Open API after Spotware approval (`submitted`) → eToro Virtual → Darwinex
+  Zero (spending NOT approved) → MQL5 live-only future → HFM PAMM deferred.
+  Owner facts: cTrader catalogue usable; eToro Virtual verified.
+- Behavior correction binding on the auditor: verify current commits before
+  any status statement; never present already-executed corrections as
+  pending.
+
+Earlier state — As of 2026-08-01 ~18:15 America/Bogota (social-trading audit response):
 
 - Musashi accepted findings 030-033 and implemented their corrections at
   `lts@f6d8b21`; response and independent reproduction contract:
