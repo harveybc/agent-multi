@@ -279,3 +279,23 @@ any recurring spend; publication steps.
   Musashi by this report's existence.
 - Handback obligations (prompt §18) are noted and will be maintained through
   dated evidence packets after each material milestone.
+
+## 11. Chronology Correction — Finding AUD-GEN-20260801-038 (appended 2026-08-02 00:24 America/Bogota)
+
+The header of this report ("Report written: 2026-08-01 23:10") and the
+subsequent audit request's "23:07-23:10 report-commit window" were wrong.
+They were self-timing estimates written into the documents before the actual
+commit, and Git chronology is authoritative:
+
+- final onboarding prompt commit `8611d116`: 2026-08-01 22:39:04 -0500;
+- first onboarding commit `a68c0625`: 2026-08-01 22:36:37 -0500;
+- this report's commit `6876fd26`: **2026-08-01 22:58:44 -0500**.
+
+Evidenced cold-start recovery interval: **19 minutes 40 seconds** from the
+final versioned prompt (22 minutes 7 seconds from the first onboarding
+commit). Token/model cost remains unavailable. The error was mine: I wrote a
+projected clock time into a header instead of recording the commit time.
+Corrective rule adopted: report headers state the evidence-observation
+window only; commit timestamps are cited from `git show` after the fact.
+This section is append-only; the original erroneous header above is
+preserved unmodified as evidence.
