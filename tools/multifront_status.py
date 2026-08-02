@@ -141,6 +141,28 @@ def _get_url(url: str, timeout: float) -> Optional[dict]:
         return None
 
 
+def _as_dict(value: Any) -> dict:
+    """Finding 037: valid JSON of unexpected shape must degrade, not raise.
+
+    Any nested section accessed with `.get()` goes through this, so a truthy
+    list/str/number in place of an object reads as an empty section and the
+    downstream field becomes explicitly unavailable.
+    """
+    return value if isinstance(value, dict) else {}
+
+
+def _direct_count(value: Any) -> Optional[int]:
+    """Parse a direct venue count; only non-negative true integers qualify.
+
+    Booleans, strings, floats and negatives carry no documented coercion
+    contract and therefore read as unavailable (finding 037), never as a
+    number invented by coercion.
+    """
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    return value if value >= 0 else None
+
+
 def collect(
     *,
     snapshot_path: Path,
@@ -167,11 +189,14 @@ def collect(
     # ── Front 1: optimization (supervisor API, observed) ──
     status = _get_url(f"{supervisor_url}/api/status", timeout)
     network = _get_url(f"{supervisor_url}/api/network", timeout)
-    if status and status.get("workers"):
-        worker = next(iter(status["workers"].values()))
-        population = worker.get("shared_population") or {}
-        candidate = worker.get("candidate") or {}
-        eta = worker.get("candidate_eta") or {}
+    if not isinstance(status, dict):
+        status = None  # truthy wrong-type payload degrades to unavailable
+    workers = _as_dict(status.get("workers")) if status else {}
+    worker = next(iter(workers.values()), None) if workers else None
+    if status and isinstance(worker, dict):
+        population = _as_dict(worker.get("shared_population"))
+        candidate = _as_dict(worker.get("candidate"))
+        eta = _as_dict(worker.get("candidate_eta"))
         register("supervisor_status", f"{supervisor_url}/api/status", status.get("updated_at"))
         fronts["f1_optimization"] = {
             "basis": "observed",
@@ -186,14 +211,18 @@ def collect(
             "candidates_per_hour_recent": {"value": eta.get("candidates_per_hour"), "unit": "candidates/hour", "horizon": "recent_window", "basis": "derived", "formula": "median of matched start/result log pairs (supervisor)"},
         }
     else:
-        unavailable.append({"field": "f1_optimization", "reason": "supervisor status unreachable or empty"})
+        unavailable.append({"field": "f1_optimization", "reason": "supervisor status unreachable, empty, or wrong type"})
 
-    if isinstance(network, dict) and network:
+    if not isinstance(network, dict):
+        network = None  # truthy wrong-type payload degrades to unavailable
+    if network:
         register("supervisor_network", f"{supervisor_url}/api/network", None)
         anchors = set()
         tips = set()
-        for participant in (network.get("participants") or {}).values():
-            for w in ((participant.get("status") or {}).get("workers") or {}).values():
+        for participant in _as_dict(network.get("participants")).values():
+            nested = _as_dict(_as_dict(_as_dict(participant).get("status")).get("workers"))
+            for w in nested.values():
+                w = _as_dict(w)
                 anchors.add((w.get("finalized_height"), str(w.get("finalized_hash"))[:12]))
                 tips.add(str(w.get("tip_hash"))[:12])
         fronts.setdefault("f1_optimization", {})["chain_coherence"] = {
@@ -214,36 +243,51 @@ def collect(
     watchdog = _load_json_file(watchdog_path)
     if isinstance(watchdog, dict) and watchdog:
         register("paper_execution_watchdog", str(watchdog_path), watchdog.get("generated_at"))
-        mt5 = watchdog.get("mt5") or {}
-        heartbeat = mt5.get("heartbeat") or {}
+        alpaca = _as_dict(watchdog.get("alpaca"))
+        ibkr = _as_dict(watchdog.get("ibkr"))
+        mt5 = _as_dict(watchdog.get("mt5"))
+        heartbeat = _as_dict(mt5.get("heartbeat"))
         # Finding 035: order/position counts come ONLY from direct venue
         # payloads. If any venue count is missing, the aggregate is
         # unavailable — never zero-by-absence. Alerts stay a separate field.
-        venue_orders: dict[str, Optional[int]] = {
-            "alpaca": ((watchdog.get("alpaca") or {}).get("detail") or {}).get("open_orders"),
-            "ibkr": ((watchdog.get("ibkr") or {}).get("latest_complete") or {}).get("open_orders"),
-            "mt5": (mt5.get("latest_snapshot") or {}).get("orders_total"),
+        # Finding 037: wrong-type sections and non-numeric counts also
+        # degrade to unavailability instead of crashing or coercing.
+        venue_orders: dict[str, Any] = {
+            "alpaca": _as_dict(alpaca.get("detail")).get("open_orders"),
+            "ibkr": _as_dict(ibkr.get("latest_complete")).get("open_orders"),
+            "mt5": _as_dict(mt5.get("latest_snapshot")).get("orders_total"),
         }
-        venue_positions: dict[str, Optional[int]] = {
-            "alpaca": ((watchdog.get("alpaca") or {}).get("detail") or {}).get("open_positions"),
-            "ibkr": ((watchdog.get("ibkr") or {}).get("latest_complete") or {}).get("open_positions"),
-            "mt5": (mt5.get("latest_snapshot") or {}).get("positions_total"),
+        venue_positions: dict[str, Any] = {
+            "alpaca": _as_dict(alpaca.get("detail")).get("open_positions"),
+            "ibkr": _as_dict(ibkr.get("latest_complete")).get("open_positions"),
+            "mt5": _as_dict(mt5.get("latest_snapshot")).get("positions_total"),
         }
 
-        def _aggregate(counts: Mapping[str, Optional[int]], label: str) -> dict[str, Any]:
+        def _aggregate(counts: Mapping[str, Any], label: str) -> dict[str, Any]:
+            parsed = {k: _direct_count(v) for k, v in counts.items()}
             missing = sorted(k for k, v in counts.items() if v is None)
-            if missing:
+            invalid = sorted(
+                k for k, v in counts.items() if v is not None and parsed[k] is None
+            )
+            if missing or invalid:
+                reasons = []
+                if missing:
+                    reasons.append(f"missing direct counts from: {', '.join(missing)}")
+                if invalid:
+                    reasons.append(
+                        f"non-numeric direct counts from: {', '.join(invalid)}"
+                    )
                 unavailable.append(
                     {
                         "field": f"f2_business_reality.{label}.aggregate",
-                        "reason": f"missing direct counts from: {', '.join(missing)}",
+                        "reason": "; ".join(reasons),
                     }
                 )
                 total: Optional[int] = None
             else:
-                total = sum(int(v) for v in counts.values() if v is not None)
+                total = sum(v for v in parsed.values() if v is not None)
             return {
-                "per_venue": dict(counts),
+                "per_venue": parsed,
                 "aggregate": total,
                 "unit": label,
                 "horizon": "instant",
@@ -254,8 +298,8 @@ def collect(
         fronts["f2_business_reality"] = {
             "basis": "observed",
             "active_events": watchdog.get("active_event_keys"),
-            "alpaca_sessions": {"value": (watchdog.get("alpaca") or {}).get("complete_sessions"), "unit": "sessions", "horizon": "cumulative", "note": "cumulative, not continuous-window"},
-            "ibkr_sessions": {"value": (watchdog.get("ibkr") or {}).get("complete_sessions"), "unit": "sessions", "horizon": "cumulative"},
+            "alpaca_sessions": {"value": alpaca.get("complete_sessions"), "unit": "sessions", "horizon": "cumulative", "note": "cumulative, not continuous-window"},
+            "ibkr_sessions": {"value": ibkr.get("complete_sessions"), "unit": "sessions", "horizon": "cumulative"},
             "mt5_heartbeat_age": {"value": heartbeat.get("age_seconds"), "unit": "seconds", "horizon": "instant"},
             "mt5_read_only": mt5.get("read_only"),
             "open_orders": _aggregate(venue_orders, "orders"),
@@ -290,7 +334,7 @@ def collect(
             "basis": "observed",
             "source": "audit_snapshot",
             "snapshot_sha256": meta.get("snapshot_sha256"),
-            "tests_packet_available": bool((snapshot.get("tests") or {}).get("available")),
+            "tests_packet_available": bool(_as_dict(snapshot.get("tests")).get("available")),
         }
     else:
         unavailable.append(
@@ -307,8 +351,25 @@ def collect(
     _SUPERVISOR_STATE_MAP = {"running": "running", "queued": "dependency_blocked"}
     queue: list[dict[str, Any]] = []
     queue_excluded: list[dict[str, Any]] = []
-    if isinstance(network, dict) and network.get("plan_jobs"):
-        for job in network["plan_jobs"]:
+    plan_jobs = network.get("plan_jobs") if network else None
+    if plan_jobs is not None and not isinstance(plan_jobs, list):
+        # Finding 037: a wrong-type plan_jobs section degrades explicitly.
+        unavailable.append(
+            {"field": "queue.f1", "reason": "plan_jobs is not a list"}
+        )
+        plan_jobs = []
+    if plan_jobs:
+        for job in plan_jobs:
+            if not isinstance(job, dict):
+                queue_excluded.append(
+                    {
+                        "id": repr(job)[:80],
+                        "front": "f1",
+                        "supervisor_status": "wrong_type",
+                        "reason": "plan job entry is not an object; recorded as history/error",
+                    }
+                )
+                continue
             job_status = str(job.get("status") or "")
             state = _SUPERVISOR_STATE_MAP.get(job_status)
             if state is None:
@@ -321,11 +382,24 @@ def collect(
                     }
                 )
                 continue
+            plan_hash = network.get("plan_hash")
+            if state in _REQUIRES_HASHES and not _valid_sha256(plan_hash):
+                # Finding 037: a malformed live hash must not make our own
+                # taxonomy validator raise; the job is excluded explicitly.
+                queue_excluded.append(
+                    {
+                        "id": str(job.get("job_id")),
+                        "front": "f1",
+                        "supervisor_status": job_status,
+                        "reason": "plan_sha256 missing or malformed; cannot enter executable queue",
+                    }
+                )
+                continue
             entry: dict[str, Any] = {
                 "id": str(job.get("job_id")),
                 "front": "f1",
                 "state": state,
-                "hashes": {"plan_sha256": network.get("plan_hash")},
+                "hashes": {"plan_sha256": plan_hash},
             }
             if state == "dependency_blocked":
                 entry["dependency"] = "job-0 champion/elite archive (fail-closed materializer)"
