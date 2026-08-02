@@ -40,6 +40,26 @@ class QueueStateError(ValueError):
     """A queue item violates the canonical taxonomy."""
 
 
+_SHA256_HEX = 64
+
+# Per-state field contract (finding 036): a field allowed in one state is
+# forbidden in every state that does not list it.
+_STATE_FIELDS: dict[str, dict[str, set[str]]] = {
+    "running": {"required": set(), "forbidden": {"dependency", "owner_blocked_reason"}},
+    "materialized": {"required": set(), "forbidden": {"dependency", "owner_blocked_reason"}},
+    "dependency_blocked": {"required": {"dependency"}, "forbidden": {"owner_blocked_reason"}},
+    "proposed": {"required": set(), "forbidden": {"dependency", "owner_blocked_reason"}},
+    "owner_blocked": {"required": {"owner_blocked_reason"}, "forbidden": {"dependency"}},
+}
+
+
+def _valid_sha256(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == _SHA256_HEX and all(
+        character in "0123456789abcdef" for character in text.lower()
+    )
+
+
 def validate_queue_item(item: Mapping[str, Any]) -> None:
     state = item.get("state")
     if state not in QUEUE_STATES:
@@ -50,18 +70,25 @@ def validate_queue_item(item: Mapping[str, Any]) -> None:
             "a queue item has exactly one canonical state; "
             f"got extra states {states_claimed!r}"
         )
-    if state == "running" and item.get("owner_blocked_reason"):
-        raise QueueStateError("running item cannot carry owner_blocked_reason")
+    contract = _STATE_FIELDS[state]
+    for field in contract["forbidden"]:
+        if item.get(field):
+            raise QueueStateError(f"{state} item cannot carry {field}")
+    for field in contract["required"]:
+        if not item.get(field):
+            raise QueueStateError(f"{state} item must carry {field}")
+    hashes = item.get("hashes") or {}
+    for key, value in hashes.items():
+        if key.endswith("_sha256") and value and not _valid_sha256(value):
+            raise QueueStateError(f"{key} is not a valid SHA-256 hex digest")
     if state in _REQUIRES_HASHES:
-        hashes = item.get("hashes") or {}
-        if not hashes.get("config_sha256") and not hashes.get("plan_sha256"):
+        if not _valid_sha256(hashes.get("config_sha256")) and not _valid_sha256(
+            hashes.get("plan_sha256")
+        ):
             raise QueueStateError(
-                f"{state} item requires config_sha256 or plan_sha256"
+                f"{state} item requires a syntactically valid "
+                "config_sha256 or plan_sha256"
             )
-    if state == "dependency_blocked" and not item.get("dependency"):
-        raise QueueStateError("dependency_blocked item must name its dependency")
-    if state == "owner_blocked" and not item.get("owner_blocked_reason"):
-        raise QueueStateError("owner_blocked item must name the owner decision")
 
 
 def validate_queue(items: list[Mapping[str, Any]]) -> None:
@@ -161,7 +188,8 @@ def collect(
     else:
         unavailable.append({"field": "f1_optimization", "reason": "supervisor status unreachable or empty"})
 
-    if network:
+    if isinstance(network, dict) and network:
+        register("supervisor_network", f"{supervisor_url}/api/network", None)
         anchors = set()
         tips = set()
         for participant in (network.get("participants") or {}).values():
@@ -170,19 +198,59 @@ def collect(
                 tips.add(str(w.get("tip_hash"))[:12])
         fronts.setdefault("f1_optimization", {})["chain_coherence"] = {
             "basis": "observed",
-            "distinct_unfinalized_tips": len(tips),
-            "distinct_finalized_anchors": sorted(
-                [list(a) for a in anchors], key=lambda x: (x[0] is None, x)
-            ),
+            "source": "supervisor_network",
+            "distinct_unfinalized_tips": {"value": len(tips), "unit": "count", "horizon": "instant"},
+            "distinct_finalized_anchors": {
+                "value": sorted(
+                    [list(a) for a in anchors], key=lambda x: (x[0] is None, x)
+                ),
+                "unit": "(block_height, hash_prefix12) pairs",
+                "horizon": "instant",
+            },
             "note": "anchor divergence must converge before archive; no mutation",
         }
 
     # ── Front 2: venues (watchdog packet, observed) ──
     watchdog = _load_json_file(watchdog_path)
-    if watchdog:
+    if isinstance(watchdog, dict) and watchdog:
         register("paper_execution_watchdog", str(watchdog_path), watchdog.get("generated_at"))
         mt5 = watchdog.get("mt5") or {}
         heartbeat = mt5.get("heartbeat") or {}
+        # Finding 035: order/position counts come ONLY from direct venue
+        # payloads. If any venue count is missing, the aggregate is
+        # unavailable — never zero-by-absence. Alerts stay a separate field.
+        venue_orders: dict[str, Optional[int]] = {
+            "alpaca": ((watchdog.get("alpaca") or {}).get("detail") or {}).get("open_orders"),
+            "ibkr": ((watchdog.get("ibkr") or {}).get("latest_complete") or {}).get("open_orders"),
+            "mt5": (mt5.get("latest_snapshot") or {}).get("orders_total"),
+        }
+        venue_positions: dict[str, Optional[int]] = {
+            "alpaca": ((watchdog.get("alpaca") or {}).get("detail") or {}).get("open_positions"),
+            "ibkr": ((watchdog.get("ibkr") or {}).get("latest_complete") or {}).get("open_positions"),
+            "mt5": (mt5.get("latest_snapshot") or {}).get("positions_total"),
+        }
+
+        def _aggregate(counts: Mapping[str, Optional[int]], label: str) -> dict[str, Any]:
+            missing = sorted(k for k, v in counts.items() if v is None)
+            if missing:
+                unavailable.append(
+                    {
+                        "field": f"f2_business_reality.{label}.aggregate",
+                        "reason": f"missing direct counts from: {', '.join(missing)}",
+                    }
+                )
+                total: Optional[int] = None
+            else:
+                total = sum(int(v) for v in counts.values() if v is not None)
+            return {
+                "per_venue": dict(counts),
+                "aggregate": total,
+                "unit": label,
+                "horizon": "instant",
+                "basis": "observed",
+                "source": "paper_execution_watchdog",
+            }
+
         fronts["f2_business_reality"] = {
             "basis": "observed",
             "active_events": watchdog.get("active_event_keys"),
@@ -190,10 +258,11 @@ def collect(
             "ibkr_sessions": {"value": (watchdog.get("ibkr") or {}).get("complete_sessions"), "unit": "sessions", "horizon": "cumulative"},
             "mt5_heartbeat_age": {"value": heartbeat.get("age_seconds"), "unit": "seconds", "horizon": "instant"},
             "mt5_read_only": mt5.get("read_only"),
-            "orders_anywhere": {"value": 0 if not watchdog.get("active_event_keys") else None, "unit": "orders", "horizon": "instant", "basis": "derived", "formula": "zero only when no exposure event is active; venue payloads carry the direct counts"},
+            "open_orders": _aggregate(venue_orders, "orders"),
+            "open_positions": _aggregate(venue_positions, "positions"),
         }
     else:
-        unavailable.append({"field": "f2_business_reality", "reason": "watchdog packet unreadable"})
+        unavailable.append({"field": "f2_business_reality", "reason": "watchdog packet unreadable or wrong type"})
 
     # ── Front 3: social (OLAP counts, observed) ──
     try:
@@ -214,28 +283,44 @@ def collect(
 
     # ── Front 4: audit/evidence (snapshot packet, observed) ──
     snapshot = _load_json_file(snapshot_path)
-    if snapshot:
-        meta = snapshot.get("meta") or {}
+    if isinstance(snapshot, dict) and isinstance(snapshot.get("meta"), dict):
+        meta = snapshot["meta"]
         register("audit_snapshot", str(snapshot_path), meta.get("generated_at"))
         fronts["f4_audit_evidence"] = {
             "basis": "observed",
+            "source": "audit_snapshot",
             "snapshot_sha256": meta.get("snapshot_sha256"),
             "tests_packet_available": bool((snapshot.get("tests") or {}).get("available")),
         }
     else:
-        unavailable.append({"field": "f4_audit_evidence", "reason": "audit snapshot unreadable"})
+        unavailable.append(
+            {
+                "field": "f4_audit_evidence",
+                "reason": "audit snapshot unreadable, wrong type, or missing meta",
+            }
+        )
 
     # ── Queue (taxonomy of section 4) ──
+    # Finding 036: only explicitly known supervisor states enter the
+    # executable queue; anything else (failed, completed, unknown) is exposed
+    # in queue_excluded, never disguised as materialized work.
+    _SUPERVISOR_STATE_MAP = {"running": "running", "queued": "dependency_blocked"}
     queue: list[dict[str, Any]] = []
-    if network and network.get("plan_jobs"):
+    queue_excluded: list[dict[str, Any]] = []
+    if isinstance(network, dict) and network.get("plan_jobs"):
         for job in network["plan_jobs"]:
             job_status = str(job.get("status") or "")
-            if job_status == "running":
-                state = "running"
-            elif job_status == "queued":
-                state = "dependency_blocked"
-            else:
-                state = "materialized"
+            state = _SUPERVISOR_STATE_MAP.get(job_status)
+            if state is None:
+                queue_excluded.append(
+                    {
+                        "id": str(job.get("job_id")),
+                        "front": "f1",
+                        "supervisor_status": job_status or "unknown",
+                        "reason": "not an executable-queue state; recorded as history/error",
+                    }
+                )
+                continue
             entry: dict[str, Any] = {
                 "id": str(job.get("job_id")),
                 "front": "f1",
@@ -271,6 +356,7 @@ def collect(
         "sources": sources,
         "fronts": fronts,
         "queue": queue,
+        "queue_excluded": queue_excluded,
         "unavailable": unavailable,
     }
 

@@ -69,6 +69,131 @@ def test_duplicate_ids_are_rejected():
         validate_queue([_base(), _base()])
 
 
+# ── Finding 036 regressions: the auditor's five counterexamples ──
+
+def test_dependency_blocked_cannot_carry_owner_reason():
+    with pytest.raises(QueueStateError):
+        validate_queue_item(
+            {"id": "j", "state": "dependency_blocked", "dependency": "x",
+             "owner_blocked_reason": "y"}
+        )
+
+
+def test_owner_blocked_cannot_carry_dependency():
+    with pytest.raises(QueueStateError):
+        validate_queue_item(
+            {"id": "j", "state": "owner_blocked", "owner_blocked_reason": "y",
+             "dependency": "x"}
+        )
+
+
+def test_running_cannot_carry_dependency():
+    with pytest.raises(QueueStateError):
+        validate_queue_item(_base(dependency="x"))
+
+
+def test_sha256_syntax_is_enforced_for_running():
+    with pytest.raises(QueueStateError):
+        validate_queue_item({"id": "j", "state": "running",
+                             "hashes": {"plan_sha256": "x"}})
+
+
+def test_sha256_syntax_is_enforced_for_materialized():
+    with pytest.raises(QueueStateError):
+        validate_queue_item({"id": "j", "state": "materialized",
+                             "hashes": {"config_sha256": "not-a-sha"}})
+
+
+def test_failed_supervisor_job_is_excluded_not_materialized(tmp_path, monkeypatch):
+    import tools.multifront_status as mfs
+    fake_network = {
+        "plan_hash": "a" * 64,
+        "plan_jobs": [
+            {"job_id": "job-ok", "status": "running"},
+            {"job_id": "job-bad", "status": "failed"},
+            {"job_id": "job-done", "status": "completed"},
+        ],
+        "participants": {},
+    }
+    monkeypatch.setattr(
+        mfs, "_get_url",
+        lambda url, timeout: fake_network if url.endswith("/api/network") else None,
+    )
+    packet = mfs.collect(
+        snapshot_path=tmp_path / "m.json",
+        watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://mock",
+        timeout=0.1,
+    )
+    queue_ids = {q["id"]: q["state"] for q in packet["queue"]}
+    excluded = {q["id"]: q["supervisor_status"] for q in packet["queue_excluded"]}
+    assert queue_ids.get("job-ok") == "running"
+    assert "job-bad" not in queue_ids and excluded["job-bad"] == "failed"
+    assert "job-done" not in queue_ids and excluded["job-done"] == "completed"
+
+
+# ── Finding 035 regressions: direct counts, never zero-by-absence ──
+
+def _watchdog_fixture(orders=(3, 2, 1), drop_venue=None):
+    packet = {
+        "generated_at": "2026-08-01T00:00:00+00:00",
+        "active_event_keys": [],
+        "alpaca": {"complete_sessions": 1,
+                   "detail": {"open_orders": orders[0], "open_positions": 0}},
+        "ibkr": {"complete_sessions": 1,
+                 "latest_complete": {"open_orders": orders[1], "open_positions": 0}},
+        "mt5": {"read_only": True, "heartbeat": {"age_seconds": 5.0},
+                "latest_snapshot": {"orders_total": orders[2], "positions_total": 0}},
+    }
+    if drop_venue:
+        packet[drop_venue] = {"complete_sessions": 1}
+    return packet
+
+
+def test_six_open_orders_are_reported_not_masked(tmp_path):
+    import json as jsonlib
+    wd = tmp_path / "wd.json"
+    wd.write_text(jsonlib.dumps(_watchdog_fixture()))
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=wd,
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+    )
+    front = packet["fronts"]["f2_business_reality"]
+    assert front["open_orders"]["aggregate"] == 6
+    assert front["open_orders"]["per_venue"] == {"alpaca": 3, "ibkr": 2, "mt5": 1}
+
+
+def test_missing_venue_count_makes_aggregate_unavailable(tmp_path):
+    import json as jsonlib
+    wd = tmp_path / "wd.json"
+    wd.write_text(jsonlib.dumps(_watchdog_fixture(drop_venue="ibkr")))
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=wd,
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+    )
+    front = packet["fronts"]["f2_business_reality"]
+    assert front["open_orders"]["aggregate"] is None
+    reasons = {entry["field"] for entry in packet["unavailable"]}
+    assert "f2_business_reality.orders.aggregate" in reasons
+
+
+# ── Finding 037 regressions: wrong-type payload honesty ──
+
+def test_wrong_type_snapshot_becomes_unavailable_not_crash(tmp_path):
+    bad = tmp_path / "snap.json"
+    bad.write_text("[{}]")
+    packet = collect(
+        snapshot_path=bad, watchdog_path=tmp_path / "m.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+    )
+    fields = {entry["field"] for entry in packet["unavailable"]}
+    assert "f4_audit_evidence" in fields
+
+
 def test_missing_sources_become_unavailable_not_invented(tmp_path):
     packet = collect(
         snapshot_path=tmp_path / "missing.json",
