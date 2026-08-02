@@ -1,9 +1,9 @@
 # 04. Open Findings Register
 
-Version: 1.3.0
-Date: 2026-07-31
-Owner: Satoshi (state updates); closure of S0-S2 requires an independent
-verifier (normally Musashi) per `../README.md`.
+Version: 1.4.0
+Date: 2026-08-01
+Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
+independent verifier per `../README.md` and dual-party findings go to Harvey.
 
 This file is the cross-session source of truth for finding state. Full finding
 stanzas live in their originating report; this register carries identity,
@@ -153,6 +153,10 @@ reconstructed instead of relying on the lost chat.
   `../../handoffs/GENERAL_SATOSHI_II_NOVICE_TECHNICAL_LEAD_PROMPT_2026_08_01.md`.
   It preserves the temporary technical-lead role without attributing memories
   to a new conversation and requires staged reconstruction before activation.
+- Prompt version 1.1.0 adds the owner-directed `Bella Flor Safety Code`:
+  defensive authorized cybersecurity only; dangerous cyber, biological,
+  chemical, weapons and physical-harm work is outside mission scope; safe
+  portions of mixed requests continue rather than causing global inactivity.
 - One predecessor dirty change remains preserved and unstaged:
   `AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md` contains only a malformed
   date-space edit in the observed diff. It was not overwritten or included in

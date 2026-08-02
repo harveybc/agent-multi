@@ -1,7 +1,7 @@
 # Musashi Temporary Auditor and Academic-Lead Recovery Prompt
 
 Date: 2026-08-01
-Version: 1.3.0
+Version: 1.4.0
 Prepared by: General Satoshi, temporary experimental and technical lead
 Activation: Harvey relays this file; `ROLE_SWAP_ACTIVE` begins on delivery
 Cold-start rule: do NOT consult your prior technical-lead conversation as
@@ -257,3 +257,8 @@ first likely test. Fight well — evidence first, always.
 - Snapshot at 22:31 COT: generation 7 at 10/20; campaign 150/480; four workers
   share finalized height 8/hash; direct venue counts all zero; social 98 runs,
   1819 posts and 0 drafts. Refresh rather than reusing.
+- The successor prompt was upgraded to version 1.1.0 with the owner-directed
+  `Bella Flor Safety Code`: defensive authorized cybersecurity only; no
+  offensive cyber activity, dangerous biological/chemical work, weapons or
+  physical-harm assistance; mixed requests continue through their safe
+  component instead of paralyzing the mission.
