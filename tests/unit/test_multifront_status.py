@@ -302,6 +302,50 @@ def test_malformed_live_plan_hash_excludes_job_not_raises(tmp_path, monkeypatch)
     assert any("malformed" in r for r in reasons)
 
 
+def test_l0_runner_heartbeat_and_ledger_are_exposed(tmp_path):
+    import json as jsonlib
+    import sqlite3 as sqlite3lib
+    hb = tmp_path / "heartbeat.json"
+    hb.write_text(jsonlib.dumps({
+        "at": "2026-08-02T21:00:00+00:00", "outcome": "would_be_order",
+        "halt_state": "none", "capability_evidence": "synthetic_fixture",
+        "network_submissions_session": 0,
+    }))
+    db = tmp_path / "l0.sqlite"
+    con = sqlite3lib.connect(str(db))
+    con.execute("CREATE TABLE decisions (idempotency_key TEXT, outcome TEXT)")
+    con.execute("INSERT INTO decisions VALUES ('k1', 'would_be_order')")
+    con.execute("CREATE TABLE lifecycle_events (seq INTEGER)")
+    con.execute("INSERT INTO lifecycle_events VALUES (1)")
+    con.commit()
+    con.close()
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+        l0_heartbeat_path=hb, l0_db_path=db,
+    )
+    l0 = packet["fronts"]["f2_business_reality"]["l0_demo_execution"]
+    assert l0["last_outcome"] == "would_be_order"
+    assert l0["network_submissions"]["value"] == 0
+    assert l0["capability_evidence"] == "synthetic_fixture"
+    assert l0["ledger"]["value"]["would_be_orders"] == 1
+    names = {source["name"] for source in packet["sources"]}
+    assert "l0_demo_execution" in names
+
+
+def test_missing_l0_heartbeat_degrades_explicitly(tmp_path):
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+        l0_heartbeat_path=tmp_path / "absent.json",
+        l0_db_path=tmp_path / "absent.sqlite",
+    )
+    fields = {entry["field"] for entry in packet["unavailable"]}
+    assert "f2_business_reality.l0_demo_execution" in fields
+
+
 def test_missing_sources_become_unavailable_not_invented(tmp_path):
     packet = collect(
         snapshot_path=tmp_path / "missing.json",
@@ -309,6 +353,8 @@ def test_missing_sources_become_unavailable_not_invented(tmp_path):
         social_db_path=tmp_path / "missing.sqlite",
         supervisor_url="http://127.0.0.1:1",  # unreachable
         timeout=0.2,
+        l0_heartbeat_path=tmp_path / "missing-hb.json",
+        l0_db_path=tmp_path / "missing-l0.sqlite",
     )
     missing_fields = {entry["field"] for entry in packet["unavailable"]}
     assert "f1_optimization" in missing_fields
