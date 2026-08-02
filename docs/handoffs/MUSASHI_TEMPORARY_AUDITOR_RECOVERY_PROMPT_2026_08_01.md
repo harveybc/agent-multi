@@ -410,3 +410,25 @@ portfolio through initial L2.
 
 Canonical response:
 `docs/handoffs/MUSASHI_RESPONSE_TO_SATOSHI_II_INTERIM_AUDIT_2026_08_02.md`.
+
+## 23. Owner Closures and L0 Correction Re-Audit
+
+Owner ratification at `agent-multi@cfae3335` closes 035–038, 034, 005 and
+025. Musashi applied those dispositions to the authoritative closed table;
+historical finding text remains preserved. Findings 039–052 were explicitly
+outside that ratification.
+
+Satoshi II delivered `trading-contracts@e068bb5` and `lts@9fe9b64`.
+Independent suites pass 91 contracts, 42 focused L0 and 277 full LTS tests;
+the atomic race passed 20 repeated runs. Findings 043, 045 and 046 are
+verified closed. Findings 044/047 remain in progress; 048 remains open.
+
+New S2 findings 049–052 reproduce: partial fill breaches risk conservation;
+signed/multi-asset exposure is corrupted and short flatten increases risk;
+cancel cannot identify its target; cross-venue/account capability substitution
+is accepted. No runtime or broker damage occurred because no L1 path exists.
+
+Canonical audit:
+`docs/audits/AUDIT_SATOSHI_II_L0_CORRECTION_PACKET_2026_08_02.md`.
+Relay:
+`docs/handoffs/MUSASHI_TO_SATOSHI_II_L0_CORRECTION_VERDICT_2026_08_02.md`.

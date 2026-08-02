@@ -107,6 +107,12 @@ State update, 2026-08-02:
   failure. Findings 047-048 track missing risk-reducing outputs and the absent
   continuous runner/deployment packet. Re-audit only after exact fixtures and
   an integrated running L0 are returned.
+- Correction packet `trading-contracts@e068bb5` / `lts@9fe9b64` closes exact
+  defects 043, 045 and 046. `AT-F2-040` remains
+  **changes_required_before_deployment**: partial-fill conservation,
+  signed/multi-asset exposure, cancel target identity and capability binding
+  fail under findings 049–052. Add the execution state-machine invariant
+  suite before runner deployment.
 
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 

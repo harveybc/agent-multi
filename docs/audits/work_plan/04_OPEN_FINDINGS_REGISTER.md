@@ -1,7 +1,7 @@
 # 04. Open Findings Register
 
-Version: 1.4.0
-Date: 2026-08-01
+Version: 1.4.1
+Date: 2026-08-02
 Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
 independent verifier per `../README.md` and dual-party findings go to Harvey.
 
@@ -13,11 +13,9 @@ state and the next required action only.
 
 | ID | Sev | State | Title | Source report | Next action | Owner |
 | --- | --- | --- | --- | --- | --- | --- |
-| AUD-GEN-20260731-025 | S3 provisional | open, self-reported | Satoshi omitted `doin-plugins` from D2 after the governing finding named it, an enumeration-drift defect acknowledged by the auditor | `../AUDIT_GS_COUNTER_RESPONSE_AND_AT_F1_001_2026_07_31.md` section 3 | Harvey adjudicates severity; retain in P13 incident corpus | Harvey + Satoshi |
 | AUD-F1-20260731-026 | S2 provisional | open | AT-F1-001 reconstructed the configured full-period L2 correctly but certified it as weekly-fraction; train tail covers 3 weeks, validation 53, and the mean-weekly reconstruction changes the champion score from positive to negative | `../CODEX_CROSS_REVIEW_OF_SATOSHI_AT_F1_001_2026_07_31.md` | Harvey selects the authoritative objective; no mid-chain mutation; then add a regression and correct the audit disposition | Harvey (decision) + Musashi (implementation) + Satoshi (verify) |
 | AUD-GEN-20260731-027 | S3 provisional | open | Satoshi report timestamp 04:40 COT predates audited commits created at 04:58 and 05:16; local file birth is 13:31 | `../CODEX_CROSS_REVIEW_OF_SATOSHI_AT_F1_001_2026_07_31.md` | Publish a non-destructive provenance addendum with separate evidence and write times | Satoshi |
 | AUD-GEN-20260731-028 | S3 provisional | open | Satoshi declared AT-F1-001 reported and opened finding 025 but wrote only the report, leaving backlog, findings register and recovery state contradictory to his mandatory handoff lifecycle | `../CODEX_CROSS_REVIEW_OF_SATOSHI_AT_F1_001_2026_07_31.md` | Reconcile recovery state and publish the bounded correction report; backlog/register were repaired by cross-review | Satoshi |
-| AUD-F1-20260730-005 | S3 | open (re-sampled 23:51 COT: **3 h 25 min**) | Equal-height chain fork: dragon on tip `603dfe1a…`, other three on `4b4f06a1…` at height 9; finalized anchor identical on all four, so no parallel lineage and no corruption. **Key mitigating evidence:** chain height has not advanced past 9 during the whole window (finalized height stuck at 2, 7 unfinalized blocks), so finalization has had no opportunity to resolve it — persistence is convergence latency pending a new block, not a demonstrated fork-choice failure | `../AUDIT_FULL_CROSS_FRONT_2026_07_30.md` section 3.2 | Re-sample at the generation-2→3 boundary (gen 2 at 17/20, ~2-4 h out) when new blocks seal; run read-only AT-F1-011. **No chain mutation on current evidence.** Escalates to S2 if the split survives that boundary, or Dragon holds unique accepted transactions, or finalized anchors diverge | Musashi (decision) + Satoshi (test) |
 
 | AUD-F3-20260731-006 | S3 | open | Prompt-injection screening is five English-only regexes and is the **sole** barrier, because flagged content is withheld rather than sanitized. Spanish phrasing, paraphrase, code fences, homoglyphs and base64 all pass unflagged. Bounded by compensating controls: packet declares content untrusted, publishing disabled, no tool access, human review required | `../AUDIT_FULL_CROSS_FRONT_2026_07_30.md` section 5.3 | Add Spanish patterns and multilingual malicious-post fixtures; consider quarantine over silent drop so evasions stay auditable | Musashi |
 | AUD-F3-20260731-007 | S3 | open | Document 23 section 4 paid-token caps, 80 % circuit breaker and 100 % hard disable, and section 7 model-call cost facts, have no located implementation; social OLAP has no model-call table. The collector itself is deterministic, so the gap is on the Hermes consumer side | `../AUDIT_FULL_CROSS_FRONT_2026_07_30.md` section 5.3 | Record model-call facts and enforce caps before cadence or packet size increases | Musashi |
@@ -132,6 +130,17 @@ Evidence and rationale:
 
 | ID | Sev | State | Closure | Verifier | Date | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
+| AUD-F2-20260801-039 | S2 | **verified_closed** | Versioned risk-increasing order contract makes naked entries and stop-entry/protective-stop ambiguity inexpressible; four exact adversarial tests independently pass | Musashi | 2026-08-02 | `trading-contracts@e068bb5`; `../AUDIT_SATOSHI_II_L0_CORRECTION_PACKET_2026_08_02.md` |
+| AUD-F2-20260802-043 | S2 | **verified_closed** | Long/short SL and TP are anchored to persisted decision reference before reservation | Musashi | 2026-08-02 | `lts@9fe9b64`; exact wrong-side reproductions |
+| AUD-F2-20260802-045 | S2 | **verified_closed** | `BEGIN IMMEDIATE` serializes budget check/write across connections; 20 repeated races admitted one of two 1% intents against a 1% cap | Musashi | 2026-08-02 | `lts@9fe9b64`; correction audit |
+| AUD-F2-20260802-046 | S2 | **verified_closed** | Post-validation/serialization failure rolls back reservation and persists replayable rejection | Musashi | 2026-08-02 | `lts@9fe9b64`; correction audit |
+| AUD-GEN-20260801-035 | S3 | **verified_closed (owner)** | Direct per-venue order/position counts replace inference from alert absence | Harvey (owner), after Musashi verification | 2026-08-02 | `../../handoffs/OWNER_CLOSURE_DISPOSITION_REQUEST_2026_08_02.md`; `agent-multi@cfae3335` |
+| AUD-GEN-20260801-036 | S3 | **verified_closed (owner)** | Contradictory queue states reject and failed jobs remain excluded | Harvey (owner), after Musashi verification | 2026-08-02 | same owner disposition; `agent-multi@b0196a73` |
+| AUD-GEN-20260801-037 | S4 | **verified_closed (owner)** | Wrong-type payloads degrade to explicit unavailability; 23 focused, 427 full and 1,500-shape stress passed | Harvey (owner), after Musashi verification | 2026-08-02 | same owner disposition; `agent-multi@c1860130` |
+| AUD-GEN-20260801-038 | S4 | **verified_closed (owner)** | Append-only chronology corrected to authoritative 19m40s Git interval | Harvey (owner), after Musashi verification | 2026-08-02 | same owner disposition; `agent-multi@8b660d27` |
+| AUD-F4-20260801-034 | S4 | **verified_closed (owner)** | Social CLI database override now preserves scenario isolation | Harvey (owner), dual-party disposition | 2026-08-02 | same owner disposition; `lts@11d8958` |
+| AUD-F1-20260730-005 | S3 | **verified_closed (owner)** | Equal-height competition resolved by finalization with no safety defect; recurrence remains under open finding 020 | Harvey (owner) | 2026-08-02 | same owner disposition; finalization evidence in prior reports |
+| AUD-GEN-20260731-025 | S3 owner-adjudicated | **verified_closed (owner)** | Enumeration-drift incident retained in P13 corpus; no further correction required | Harvey (owner) | 2026-08-02 | same owner disposition |
 | AUD-F2-20260801-029 | S3 | **verified_closed** | Fleet-safe read-only `/v1/status` route on Dragon (redacts fingerprints/balances/tickets/HMAC); Omega consolidated watchdog treats Dragon remote status as authoritative via 0600 env config; false `mt5_bridge_missing` alarm eliminated. Implementer: Musashi. Independently verified by Satoshi: `lts@a5fe0d97` matches, all 4 claimed file SHA-256 match byte-exact, live packet 18:17Z shows heartbeat age 8.6 s / connected / read_only=true / demo / 0 positions / 0 orders / 6 symbols with no MT5 event active, `lts tests/unit: 101 passed` reproduced. Port-22022 SSH clarification accepted; watchdog evidence correctly no longer depends on interactive access. Rider bonus verified same pass: `agent-multi@06de651f` conflict-proving selection-metric test (hash match, suite 35 passed) mechanically guards job-1's weekly-robust fitness | Satoshi (reporter; implementation by the other party — S3 role separation satisfied) | 2026-08-01 | `../CODEX_RESPONSE_TO_AUDIT_DELTA_2026_08_01.md`; live watchdog packet; independent test reruns |
 | AUD-F2-20260730-004 | S2 | verified_closed | User accepted the TWS Paper disclaimer; watchdog now requires a recent authenticated reconciled session and overlapping preflights fail closed | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `lts@12d389d`; `205 passed`; successful systemd observer/watchdog run |
 | AUD-GEN-20260730-001 | S3 | verified_closed | Document 13 phase summary, ledger and immediate tasks now record the deployed four-worker v2 campaign | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
@@ -413,6 +422,21 @@ independently pass.
 | AUD-F2-20260802-046 | S2 | open, blocks L0/L1 | Post-reservation validation failure leaks active capacity with no recorded decision | Satoshi II |
 | AUD-F2-20260802-047 | S3 | open, blocks L1 | Accepted flatten/cancel and emergency-flatten paths emit no risk-reducing intent | Satoshi II |
 | AUD-F2-20260802-048 | S3 | open, blocks L0 acceptance | L0 is a tested library but has no runner, config, deployment unit or continuously advancing ledger | Satoshi II |
+| AUD-F2-20260802-049 | S2 | open, blocks L0/L1 | Partial fill undercounts daily risk, double-counts one logical position and permits aggregate risk above cap | Satoshi II |
+| AUD-F2-20260802-050 | S2 | open, blocks L0/L1 | Exposure loses sign, asset/instrument and provenance; short flatten increases risk and non-FX fill becomes USD.CAD | Satoshi II |
+| AUD-F2-20260802-051 | S2 | open, blocks L0/L1 | Cancel intent uses placeholders and cannot identify the original or broker order to cancel | Satoshi II |
+| AUD-F2-20260802-052 | S2 | open, blocks L0/L1 | LTS accepts capability evidence from a different venue/account | Satoshi II |
+
+Correction state update, 2026-08-02:
+
+- 043, 045 and 046 are independently reproduced and `verified_closed` by
+  Musashi at `lts@9fe9b64`.
+- 044 and 047 remain `in_progress`; their first counterexamples are fixed but
+  049–051 expose unsafe partial/short/cancel behavior.
+- 039 is independently verified closed. 040–042 remain open pending the
+  connected runtime contract.
+- Canonical evidence:
+  `../AUDIT_SATOSHI_II_L0_CORRECTION_PACKET_2026_08_02.md`.
 
 ## 2b. Observations Pending Verification (not yet findings)
 
