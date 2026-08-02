@@ -257,3 +257,24 @@ Token class: medium. Output:
 - If an `S0`/`S1` appears, it preempts this schedule.
 - If nothing changed since the last snapshot and no slot is due, the correct
   action is a one-paragraph "no change, next trigger" note - not a re-audit.
+
+## 6. L0 Integrated-Packet Gate, 2026-08-02
+
+`AT-F2-040` received the integrated packet at `agent-multi@cdfabfb8`.
+Independent verification closes findings 040, 044 and 049-052, but the audit
+remains `reported_changes_required` under new findings 053-058. The next event
+is Satoshi II's correction packet; no periodic re-audit is useful before its
+commits arrive.
+
+Acceptance requires all of the following in one bounded return:
+
+1. atomic concurrent idempotency and lifecycle state validation;
+2. crash-resumable owner kill effects;
+3. asset/quote/instrument route binding and bounded quote-time validation;
+4. a post-restart deterministic L0 lifecycle that does not saturate on one
+   pending reservation;
+5. automatic stale/invariant/degraded-state alerts and zero submissions;
+6. full owning-repository suites and unchanged DOIN lineage.
+
+Canonical audit:
+`../AUDIT_SATOSHI_II_L0_INTEGRATED_PACKET_2026_08_02.md`.

@@ -432,3 +432,32 @@ Canonical audit:
 `docs/audits/AUDIT_SATOSHI_II_L0_CORRECTION_PACKET_2026_08_02.md`.
 Relay:
 `docs/handoffs/MUSASHI_TO_SATOSHI_II_L0_CORRECTION_VERDICT_2026_08_02.md`.
+
+## 24. Satoshi II Integrated L0 Packet Audit
+
+Satoshi II returned the integrated implementation at
+`trading-contracts@cd05083`, `lts@8e25609`,
+`prediction_provider@3a6c234` and `agent-multi@6133dc26`. All worktrees were
+clean/pushed. Independent verification passes 95 contracts, 16 mechanics, 60
+focused L0, 295 full LTS and 429 agent-multi unit tests, plus 6,000 generated
+events and cumulative partial fills.
+
+Findings 040, 044 and 049-052 are verified closed. `AT-F2-040` remains
+`reported_changes_required`: new findings 053-058 reproduce concurrent
+idempotency failure, lifecycle transition race, non-resumable accepted kill,
+runtime saturation after one pending reservation, missing asset/quote/
+instrument binding and acceptance of future-dated quotes. Findings 041, 042,
+047 and 048 remain open under those connected defects.
+
+The L0 process remains active on Omega with a fresh 60-second heartbeat and
+zero TCP/UDP sockets. Its ledger currently has two decisions, one active
+reservation, no exposure and one requested lifecycle event; last outcome is a
+replayed gross-cap rejection. DOIN remains four-worker coherent and untouched.
+TWS Paper was re-authenticated after the Satoshi packet; independent read-only
+preflight found six priced cells and direct zero orders/positions.
+
+Canonical audit:
+`docs/audits/AUDIT_SATOSHI_II_L0_INTEGRATED_PACKET_2026_08_02.md`.
+Relay:
+`docs/handoffs/MUSASHI_TO_SATOSHI_II_L0_INTEGRATED_VERDICT_2026_08_02.md`.
+No L1 broker write is authorized.
