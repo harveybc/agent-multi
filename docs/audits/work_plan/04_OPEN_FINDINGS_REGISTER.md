@@ -138,6 +138,22 @@ Evidence and rationale:
 | AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 
+### 1j. Six-improvements first packet, 2026-08-01 ~21:45 (Musashi)
+
+Full evidence: `../AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md`.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-GEN-20260801-035 | S3 | open | Empty alert set can falsely report zero orders despite positive direct venue counts | Satoshi |
+| AUD-GEN-20260801-036 | S3 | open | Queue validator accepts contradictory semantics and maps failed jobs to materialized | Satoshi |
+| AUD-GEN-20260801-037 | S4 | open | Network provenance and partial/wrong-type payload honesty are incomplete | Satoshi |
+
+Verified non-findings: the live packet materially agreed with independent
+source reads; live queue states were coherent; 9 focused and 414 full tests
+passed; all checks were read-only or temporary-fixture based. Criteria 1 and
+4 are `reported_changes_required`, not accepted. Criteria 2/3/5/6 retain their
+declared partial states and were not prematurely audited.
+
 ### 1i. Temporary-role auditor session, 2026-08-01 ~21:25 (Musashi)
 
 Role state: `ROLE_SWAP_ACTIVE`. Runtime was observed through GET-only campaign
