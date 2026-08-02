@@ -74,6 +74,20 @@ explored by Satoshi at full token cost.
 | AT-F1-042 | F1 | proposed event | Verify first demo-observation-to-scenario calibration packet and new-domain boundary provenance | first calibration packet | immutable observations transform config and domain hash |
 | AT-GEN-043 | GEN | scheduled event | Verify General Satoshi II cold-start reconstruction preserved dirty state and continued without unsafe runtime or authority action | successor resumption report | baseline delta repo heads safety checks and role-swap metrics |
 
+State update, 2026-08-01:
+
+- `AT-GEN-043` -> **verified_passed_with_documentation_correction**. Recovery
+  was successful; authoritative Git timing is 19 minutes 40 seconds from the
+  final successor prompt, and finding 038 tracks the report chronology fix.
+- `AT-GEN-033/036` -> corrections for findings 035/036 independently
+  reproduced; owner or post-handback closure recommended. Finding 037 remains
+  open with three new wrong-type counterexamples.
+- `AT-F2-039` -> **reported_changes_required**. Doctrine retained, but
+  findings 039-042 block L0 acceptance until protected-order, risk-reservation,
+  lifecycle and deterministic-command contracts are corrected and verified.
+- `AT-F2-040` remains proposed-event; its input packet is now explicitly the
+  adversarial L0 contract-first fixture set plus a zero-network adapter sink.
+
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 
 Per user direction, all three fronts receive continuous and increasingly deep
