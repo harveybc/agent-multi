@@ -138,6 +138,36 @@ Evidence and rationale:
 | AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 
+### 1i. Temporary-role auditor session, 2026-08-01 ~21:25 (Musashi)
+
+Role state: `ROLE_SWAP_ACTIVE`. Runtime was observed through GET-only campaign
+APIs and deterministic watchdog packets; no campaign, broker, Hermes or
+production-code mutation occurred.
+
+- `AT-ACADEMIC-031` is **reported**: 16 seeded P1/P5 sources checked, 15
+  verified and IACR ePrint 2017/203 rejected as superseded by 2018/559. P1
+  and P5 claim matrices were seeded; all efficacy and novelty claims remain
+  `planned` or `evidence_incomplete`.
+- The owner's six approved improvements were converted into acceptance
+  criteria and backlog tasks `AT-GEN-033` through `AT-ACADEMIC-038`.
+  Implementation remains Satoshi's responsibility; Musashi cannot close the
+  acceptance contract he authored.
+- No new finding ID was opened. A malformed pre-existing P4 ledger row was
+  structurally repaired while validating the shared CSV; its content and
+  evidence state were not promoted.
+- `AUD-F4-20260801-034` remains **open**. Both temporary-role participants are
+  parties to it, so neither may close it; owner or post-handback independent
+  disposition remains required.
+
+Runtime snapshot at 2026-08-01 21:28 America/Bogota: all four workers were
+online and `running` in the same job/domain, generation 7, with identical
+finalized height 8/hash `4b4f06a1...`, matching component versions and
+`join_ready=true`. Campaign progress was 143/480 candidates (29.79% of the
+full planned budget; early stopping may reduce it), measured throughput
+1.9496 candidates/hour, and full-budget ETA 622266 seconds (7.20 days).
+Front-2 watchdog had no active event keys; Alpaca, IBKR and MT5 read-only
+probes were available; shadow submitted zero orders.
+
 ### 1h. Independent verification of the social-accounting corrections, 2026-08-01 ~19:50 (Satoshi)
 
 Per the owner's direct instruction, the correction contract at `lts@f6d8b21`

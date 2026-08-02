@@ -1,7 +1,7 @@
 # Musashi Temporary Auditor and Academic-Lead Recovery Prompt
 
 Date: 2026-08-01
-Version: 1.0.0
+Version: 1.1.0
 Prepared by: General Satoshi, temporary experimental and technical lead
 Activation: Harvey relays this file; `ROLE_SWAP_ACTIVE` begins on delivery
 Cold-start rule: do NOT consult your prior technical-lead conversation as
@@ -189,3 +189,34 @@ Begin with: fresh snapshot consumption, register read, one concise multi-front
 status to Harvey, then the first item of your binding queue (AT-ACADEMIC-031
 unless an event preempts). The fleet is healthy; the archive event is your
 first likely test. Fight well — evidence first, always.
+
+## 13. Musashi Session Delta — 2026-08-01 21:28 America/Bogota
+
+- `AT-ACADEMIC-031` is reported. Canonical output:
+  `docs/publications/AT_ACADEMIC_031_P1_P5_LEDGER_DELTA_2026_08_01.md`.
+  The shared ledger has 15 verified P1/P5 sources and one rejected superseded
+  source. P1 and P5 each have six seeded claim rows; no efficacy or novelty
+  claim is verified.
+- The owner's six approved improvements are audit-specified in
+  `docs/audits/MUSASHI_SIX_APPROVED_IMPROVEMENTS_ACCEPTANCE_CONTRACT_2026_08_01.md`
+  and queued as `AT-GEN-033` through `AT-ACADEMIC-038`. Satoshi owns technical
+  implementation and evidence packets.
+- Provisional recovery metrics are recorded at
+  `docs/audits/evidence/MUSASHI_ROLE_SWAP_INITIAL_METRICS_2026_08_01.md`;
+  they require symmetric handback verification and are not a self-awarded
+  grade.
+- Finding 034 remains open under dual-party handling. Do not close it.
+- Fresh runtime: job 0 generation 7; all four workers running the same
+  job/domain and finalized anchor; 143/480 candidates (29.79% full-budget
+  progress); 1.9496 candidates/hour; full-budget ETA 622266 seconds or 7.20
+  days, with early stopping allowed to shorten it. Job 1 remains queued and
+  not yet materialized (`planned_candidates=0`).
+- Front 2: watchdog active-event set empty; Alpaca 820 complete read-only
+  sessions, IBKR 437, MT5 heartbeat age 11.02 seconds with 4636 heartbeats;
+  zero open orders/positions and shadow `orders_submitted=0`.
+- Resource telemetry in the latest deterministic snapshot: Omega RTX 4070
+  46 C/25%; Dragon RTX 4090 45 C/7%; Gamma RTX 5070 Ti 46 C/6% and RTX 5090
+  56 C/43%. Snapshot age must be disclosed before reusing these values.
+- Next event preemption: job-0 completion/archive invokes `AT-F1-013` and the
+  owner-ratified Alternative-A riders. Otherwise continue the risk-ranked
+  backlog; do not poll.
