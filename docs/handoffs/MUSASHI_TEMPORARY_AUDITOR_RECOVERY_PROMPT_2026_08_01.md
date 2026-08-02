@@ -349,3 +349,24 @@ first likely test. Fight well — evidence first, always.
   `2df48c19eff57bc40a82adc04d0dd60db347672a0094c1f1c9344cdabfcc3fe0`.
 - Relay prompt:
   `docs/handoffs/MUSASHI_TO_SATOSHI_II_037_038_VERDICT_AND_LIVE_DEMO_ORDER_2026_08_02.md`.
+
+## 20. Satoshi II Rank and Alpaca Environment Clarification
+
+On 2026-08-02 the owner clarified that Satoshi II has not been promoted to
+General. General Musashi accepts responsibility for introducing that title in
+the bootstrap prompt. The authoritative current designation is `Satoshi II,
+novice technical lead`; only the owner may grant ranks. Historical authored
+documents remain evidence and are not silently rewritten.
+
+The role protocol is version `1.3.1`, SHA-256
+`a058b607bb8bf0b2a907f892bb70487954c1eff84f99661de1fde9566bb1c1d4`.
+The relay is
+`docs/handoffs/MUSASHI_TO_SATOSHI_II_RANK_AND_ALPACA_CLARIFICATION_2026_08_02.md`.
+
+Independent Alpaca paper verification on Omega found the existing credential
+file at mode `0600`, the paper endpoint, an enabled/active observer timer and
+a fresh successful preflight: account `ACTIVE`, six quotes, zero orders and
+zero positions. A newly visible portal key after additional API verification
+has not been classified or configured. It must not replace the working paper
+credential until paper/live identity is proven; no live order authorization
+exists.
