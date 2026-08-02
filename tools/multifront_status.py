@@ -169,6 +169,9 @@ def collect(
     watchdog_path: Path,
     social_db_path: Path,
     supervisor_url: str,
+    l0_heartbeat_path: Path = Path.home()
+    / ".local/state/lts/demo-execution-l0/heartbeat.json",
+    l0_db_path: Path = Path.home() / ".local/state/lts/demo-execution-l0.sqlite",
     timeout: float = 6.0,
 ) -> dict[str, Any]:
     sources: list[dict[str, Any]] = []
@@ -307,6 +310,52 @@ def collect(
         }
     else:
         unavailable.append({"field": "f2_business_reality", "reason": "watchdog packet unreadable or wrong type"})
+
+    # ── Front 2b: L0 demo-execution runner (heartbeat + ledger, observed) ──
+    l0_heartbeat = _load_json_file(l0_heartbeat_path)
+    if isinstance(l0_heartbeat, dict) and l0_heartbeat:
+        register("l0_demo_execution", str(l0_heartbeat_path), l0_heartbeat.get("at"))
+        l0_counts: dict[str, Any] = {}
+        try:
+            l0_con = sqlite3.connect(f"file:{l0_db_path}?mode=ro", uri=True)
+            l0_counts = {
+                "decisions": l0_con.execute(
+                    "SELECT COUNT(*) FROM decisions"
+                ).fetchone()[0],
+                "would_be_orders": l0_con.execute(
+                    "SELECT COUNT(*) FROM decisions WHERE outcome LIKE 'would_be%'"
+                ).fetchone()[0],
+                "lifecycle_events": l0_con.execute(
+                    "SELECT COUNT(*) FROM lifecycle_events"
+                ).fetchone()[0],
+            }
+            l0_con.close()
+        except sqlite3.Error:
+            unavailable.append(
+                {"field": "f2_business_reality.l0_demo_execution.ledger",
+                 "reason": "L0 ledger unreadable"}
+            )
+        fronts.setdefault("f2_business_reality", {})["l0_demo_execution"] = {
+            "basis": "observed",
+            "source": "l0_demo_execution",
+            "heartbeat_age": {"value": _age_seconds(l0_heartbeat.get("at")),
+                              "unit": "seconds", "horizon": "instant"},
+            "last_outcome": l0_heartbeat.get("outcome"),
+            "halt_state": l0_heartbeat.get("halt_state"),
+            "capability_evidence": l0_heartbeat.get("capability_evidence"),
+            "network_submissions": {
+                "value": l0_heartbeat.get("network_submissions_session"),
+                "unit": "submissions", "horizon": "runner_session",
+                "note": "structurally zero: the sink has no network path",
+            },
+            "ledger": {"value": l0_counts or None, "unit": "rows",
+                       "horizon": "cumulative"},
+        }
+    else:
+        unavailable.append(
+            {"field": "f2_business_reality.l0_demo_execution",
+             "reason": "L0 runner heartbeat missing or wrong type"}
+        )
 
     # ── Front 3: social (OLAP counts, observed) ──
     try:
