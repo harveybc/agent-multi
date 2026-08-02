@@ -160,3 +160,27 @@ artifact as a **mechanics** vehicle, labeled as such, never as an alpha claim).
   (L4), and calibration-provenance verification (`AT-F2-035`, already
   registered).
 - Findings that block a stage advance are hard blockers, not advisories.
+
+## 9. Interim Architecture Rulings (2026-08-02)
+
+These technical-audit rulings govern the current implementation unless the
+owner overrides them:
+
+1. L0/L1 may consume an installed, provider-owned deterministic mechanics
+   policy in-process. LTS remains sole order authority; golden service parity
+   is mandatory before continuous L2.
+2. Gross notional remains constrained to `(0, 1]` through initial L2. Never
+   clip a larger value; leverage requires a versioned L3 contract.
+3. Capability evidence is classified in the contract as `live_observed`,
+   `recorded_observed` or `synthetic_fixture`. Synthetic/recorded facts can
+   exercise mechanics but cannot establish current venue readiness.
+4. Order and position/exposure lifecycles are separate. The order transition
+   table must cover fill-before-ack, partial/cancel races, cancel-pending
+   expiry, repeated unknown evidence and bracket-child execution before
+   persistence is accepted.
+5. An unknown acknowledgement blocks all new portfolio risk through initial
+   L2. Any later account-scoped relaxation requires worst-case reservation,
+   proven isolation and adversarial tests.
+
+Canonical rationale and exact gates:
+`../handoffs/MUSASHI_RESPONSE_TO_SATOSHI_II_INTERIM_AUDIT_2026_08_02.md`.

@@ -388,3 +388,25 @@ Canonical audit:
 Relay:
 `docs/handoffs/MUSASHI_TO_SATOSHI_II_L0_IMPLEMENTATION_REVIEW_2026_08_02.md`.
 No L1 write is authorized.
+
+## 22. Interim L0 Request Verification and Five Rulings
+
+Satoshi II submitted `agent-multi@7e3baab7`, a documentation-only child of
+Musashi's L0 delta audit. No implementation or runtime was mutated by that
+request. Independent checks pass 84 trading-contract tests, 25 focused L0
+tests, 260 full LTS tests and all four schema hashes.
+
+The request's atomic-reservation claim remains falsified by finding 045, and
+its author incorrectly retained the ungranted General title despite inheriting
+the rank-correction commit. Historical text remains unchanged; future work
+must use `Satoshi II, novice technical lead`.
+
+Rulings: in-process provider-owned mechanics policy accepted through L1 with
+service parity required before L2; gross fraction <=100% accepted through
+initial L2; capability provenance must be contract-level and synthetic facts
+cannot support readiness; lifecycle table requires asynchronous-transition
+and position-state corrections; unknown acknowledgement blocks the whole
+portfolio through initial L2.
+
+Canonical response:
+`docs/handoffs/MUSASHI_RESPONSE_TO_SATOSHI_II_INTERIM_AUDIT_2026_08_02.md`.
