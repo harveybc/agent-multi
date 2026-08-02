@@ -1,9 +1,10 @@
 # 01. Audit Backlog and Schedule
 
-Version: 1.4.0
-Date: 2026-07-31
-Owner: Satoshi
-Reviewer: Musashi
+Version: 1.5.0
+Date: 2026-08-01
+Owner: Musashi (temporary auditor during `ROLE_SWAP_ACTIVE`)
+Technical counterpart: Satoshi (temporary technical lead)
+Final authority: Harvey
 
 ## 1. Task Identity and States
 
@@ -59,8 +60,14 @@ explored by Satoshi at full token cost.
 | AT-GEN-009 | GEN | proposed | Weekly recovery-prompt reviews (both Musashi's and Satoshi's) against architecture changes | weekly slot | git delta of docs |
 | AT-F2-009 | F2 | proposed (machine telemetry materialized) | Dragon/Gamma linger + SSH-bridge dependency check; MT5 VM state; Alpaca scheduling mechanism | first session requiring process-level remote evidence | deterministic machine packet plus bounded process verification |
 | AT-ACADEMIC-030 | GEN | reported | Audit the five-paper publication program, seed a related-work ledger and classify evidence readiness | complete; awaiting cross-review disposition | paper artifact manifests and publication-plan diff |
-| AT-ACADEMIC-031 | GEN | scheduled | Verify the seeded P5/P1 primary sources and seed their claim/evidence matrices | after S0/S1 and AT-F1-011 | primary-source ledger delta |
+| AT-ACADEMIC-031 | GEN | **reported** | Verified 16 seeded P5/P1 records: 15 verified and one superseded source rejected; seeded claim/evidence matrices without promoting efficacy or novelty claims | complete; independent disposition of academic artifacts remains external to their author | `../../publications/AT_ACADEMIC_031_P1_P5_LEDGER_DELTA_2026_08_01.md` |
 | AT-ACADEMIC-032 | GEN | scheduled permanent | Audit Musashi's governance response, P1 scope and P6+ continuous-research program; then maintain future-work, collision-test, replication and retirement queue | dedicated 2026-07-31 handoff, then weekly/quarterly cadence | dated innovation audit, prior-art delta, future-work files |
+| AT-GEN-033 | GEN | owner-ratified proposed | Verify the machine-readable consolidated multi-front status contract for completeness provenance freshness and consistent units | Satoshi implementation evidence packet | contract fixture and independent reconstruction |
+| AT-GEN-034 | GEN | owner-ratified proposed | Verify the critical-path graph and that CPU-safe preparation overlaps GPU optimization without campaign interference | Satoshi implementation evidence packet | graph schema plus runtime non-interference evidence |
+| AT-F2-035 | F2 | owner-ratified proposed | Verify live evidence calibration for spreads sessions reconnects and runtime-feature parity with immutable job-boundary provenance | first calibration materialization | observation-to-scenario lineage and domain hashes |
+| AT-GEN-036 | GEN | owner-ratified proposed | Verify queue-state taxonomy prevents running materialized dependency-blocked proposed and owner-blocked work from being conflated | Satoshi implementation evidence packet | state-machine tests and contradictory-state fixtures |
+| AT-GEN-037 | GEN | owner-ratified proposed | Measure role-swap recovery time discrepancies lost artifacts unsupported claims unsafe actions and token cost | handback checkpoint | symmetric handback packet and metric reconstruction |
+| AT-ACADEMIC-038 | GEN | owner-ratified proposed permanent | Verify event-driven audit triggers and use no-delta capacity for citation and academic work without runtime polling | next cadence implementation and academic cycle | trigger log cost accounting and publication deltas |
 
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 
