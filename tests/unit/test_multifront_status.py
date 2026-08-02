@@ -194,6 +194,114 @@ def test_wrong_type_snapshot_becomes_unavailable_not_crash(tmp_path):
     assert "f4_audit_evidence" in fields
 
 
+def test_truthy_list_supervisor_status_degrades_not_crash(tmp_path, monkeypatch):
+    """Musashi reproduction 1: truthy-list /api/status -> AttributeError."""
+    import tools.multifront_status as mfs
+    monkeypatch.setattr(
+        mfs, "_get_url",
+        lambda url, timeout: [{"workers": {}}] if url.endswith("/api/status") else None,
+    )
+    packet = mfs.collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://mock", timeout=0.1,
+    )
+    fields = {entry["field"] for entry in packet["unavailable"]}
+    assert "f1_optimization" in fields
+
+
+def test_non_numeric_direct_count_degrades_not_crash(tmp_path):
+    """Musashi reproduction 2: non-numeric direct count -> ValueError."""
+    import json as jsonlib
+    fixture = _watchdog_fixture()
+    fixture["alpaca"]["detail"]["open_orders"] = "three"
+    fixture["mt5"]["latest_snapshot"]["orders_total"] = True
+    wd = tmp_path / "wd.json"
+    wd.write_text(jsonlib.dumps(fixture))
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=wd,
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+    )
+    front = packet["fronts"]["f2_business_reality"]
+    assert front["open_orders"]["aggregate"] is None
+    assert front["open_orders"]["per_venue"]["alpaca"] is None
+    assert front["open_orders"]["per_venue"]["mt5"] is None  # bool is not a count
+    reasons = {
+        e["field"]: e["reason"] for e in packet["unavailable"]
+    }
+    assert "non-numeric" in reasons["f2_business_reality.orders.aggregate"]
+
+
+def test_wrong_type_plan_job_is_excluded_not_crash(tmp_path, monkeypatch):
+    """Musashi reproduction 3: string plan-job element -> AttributeError."""
+    import tools.multifront_status as mfs
+    fake_network = {
+        "plan_hash": "a" * 64,
+        "plan_jobs": ["not-a-job-object", {"job_id": "job-ok", "status": "running"}],
+        "participants": {},
+    }
+    monkeypatch.setattr(
+        mfs, "_get_url",
+        lambda url, timeout: fake_network if url.endswith("/api/network") else None,
+    )
+    packet = mfs.collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://mock", timeout=0.1,
+    )
+    queue_ids = {q["id"] for q in packet["queue"]}
+    assert "job-ok" in queue_ids
+    excluded = {q["supervisor_status"] for q in packet["queue_excluded"]}
+    assert "wrong_type" in excluded
+
+
+def test_truthy_wrong_type_venue_section_degrades_not_crash(tmp_path):
+    """Musashi-demanded fourth regression: truthy non-dict venue section."""
+    import json as jsonlib
+    fixture = _watchdog_fixture()
+    fixture["alpaca"] = ["truthy", "list"]
+    fixture["mt5"]["latest_snapshot"] = "truthy-string"
+    wd = tmp_path / "wd.json"
+    wd.write_text(jsonlib.dumps(fixture))
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=wd,
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+    )
+    front = packet["fronts"]["f2_business_reality"]
+    assert front["open_orders"]["aggregate"] is None
+    assert front["open_orders"]["per_venue"]["alpaca"] is None
+    assert front["open_orders"]["per_venue"]["mt5"] is None
+    fields = {e["field"] for e in packet["unavailable"]}
+    assert "f2_business_reality.orders.aggregate" in fields
+    assert "f2_business_reality.positions.aggregate" in fields
+
+
+def test_malformed_live_plan_hash_excludes_job_not_raises(tmp_path, monkeypatch):
+    """A running supervisor job with a malformed plan hash cannot make our
+    own taxonomy validator raise inside collect()."""
+    import tools.multifront_status as mfs
+    fake_network = {
+        "plan_hash": "not-a-sha",
+        "plan_jobs": [{"job_id": "job-ok", "status": "running"}],
+        "participants": {},
+    }
+    monkeypatch.setattr(
+        mfs, "_get_url",
+        lambda url, timeout: fake_network if url.endswith("/api/network") else None,
+    )
+    packet = mfs.collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://mock", timeout=0.1,
+    )
+    queue_ids = {q["id"] for q in packet["queue"]}
+    assert "job-ok" not in queue_ids
+    reasons = {q["reason"] for q in packet["queue_excluded"]}
+    assert any("malformed" in r for r in reasons)
+
+
 def test_missing_sources_become_unavailable_not_invented(tmp_path):
     packet = collect(
         snapshot_path=tmp_path / "missing.json",
