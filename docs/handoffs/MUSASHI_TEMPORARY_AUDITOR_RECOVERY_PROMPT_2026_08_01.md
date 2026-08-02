@@ -289,3 +289,23 @@ first likely test. Fight well — evidence first, always.
   and positions all zero.
 - Intended relay to Satoshi II:
   `docs/handoffs/MUSASHI_TO_SATOSHI_II_AUDIT_RESPONSE_2026_08_01.md`.
+
+## 17. Owner Correction: Live-Demo Implementation Must Start Now
+
+- The owner rejected any interpretation in which Satoshi II stops at audit
+  corrections, interface maps or adversarial fixtures. Active demo live
+  trading is the deliverable because its lifecycle evidence supplies the
+  business knowledge required by every other front.
+- The response handoff now carries a binding clarification: implement the
+  complete L0 vertical immediately and run it continuously against real demo
+  feeds through a zero-network sink. L0 zero-submit is a safety gate, not the
+  end state.
+- Do not wait for DOIN completion. Use a hash-verified available artifact or
+  deterministic policy labeled `mechanics_only_not_alpha_claim`.
+- After L0 passes, Satoshi II must return an exact IBKR Paper-first L1 canary
+  authorization packet. On the owner's exact activation phrase, execute the
+  protected sequential canaries and proceed to continuous L2 operation rather
+  than another planning cycle.
+- Mandatory SL+TP, deterministic authority, atomic risk reservation,
+  lifecycle reconciliation and OLAP provenance remain non-negotiable. No LLM
+  may decide or submit orders.
