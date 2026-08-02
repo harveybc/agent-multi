@@ -88,6 +88,19 @@ State update, 2026-08-01:
 - `AT-F2-040` remains proposed-event; its input packet is now explicitly the
   adversarial L0 contract-first fixture set plus a zero-network adapter sink.
 
+State update, 2026-08-02:
+
+- 037 correction and 038 append-only chronology are independently verified;
+  formal closure remains owner/post-handback because the verifier authored
+  the findings.
+- `AT-F2-040` is now **awaiting_integrated_L0_implementation_packet**. Its
+  input must combine the no-duplication map, v2 contracts, adversarial
+  fixtures, zero-network adapter sink, OLAP facts and a continuously running
+  live-feed shadow process. A fixture-only or map-only return is insufficient.
+- Current Front-2 blocker for IBKR-first direct capability evidence:
+  `ibkr_observer_stale` plus `ibkr_paper_offline`. Venue-neutral L0 work and
+  MT5/Alpaca live-feed operation must continue while TWS Paper is restored.
+
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 
 Per user direction, all three fronts receive continuous and increasingly deep

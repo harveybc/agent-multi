@@ -378,6 +378,23 @@ New findings:
 technical packet is the adversarial L0 contract-first fixture set, after the
 bounded finding-037 correction.
 
+State update, 2026-08-02 independent verification:
+
+- `AUD-GEN-20260801-037`: correction independently verified with 23 focused
+  tests, 427 full unit tests, the submitted wrong-shape packet and an
+  additional 1,500-case deterministic JSON-shape stress run with zero
+  exceptions. Owner/post-handback closure recommended; Musashi does not
+  self-close the finding he authored.
+- `AUD-GEN-20260801-038`: append-only chronology correction independently
+  verified against Git. Owner/post-handback closure recommended.
+- Live-demo vertical observed state: not implemented or running at
+  `agent-multi@55d72575`, `trading-contracts@534b034`, `lts@11d8958`,
+  `prediction_provider@ac4d9e2`. The interface map appeared as concurrent
+  Satoshi II work, but it must be included in the implementation packet and
+  is not an acceptable standalone return.
+- Canonical evidence:
+  `../AUDIT_SATOSHI_II_037_038_AND_LIVE_DEMO_STATUS_2026_08_02.md`.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
