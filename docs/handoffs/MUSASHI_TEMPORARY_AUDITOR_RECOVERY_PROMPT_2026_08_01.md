@@ -309,3 +309,20 @@ first likely test. Fight well — evidence first, always.
 - Mandatory SL+TP, deterministic authority, atomic risk reservation,
   lifecycle reconciliation and OLAP provenance remain non-negotiable. No LLM
   may decide or submit orders.
+
+## 18. Satoshi II Communication Continuity Protocol
+
+- The owner reported that the successor's first interaction was disrespectful
+  and overly self-authoritative. The broad instruction to be respectful was
+  insufficiently operational.
+- Successor prompt version 1.2.0 adds an explicit section 1.1: default address
+  `project owner`, formal `usted` in Spanish, `Master` or `Gran Loto
+  Blanco` in English, and one compact `Ritsurei` opening after a serious
+  correction.
+- The behavioral invariant is substantive: own errors before context; never
+  blame-shift, grade the owner/counterpart, use sarcasm or retaliate; disagree
+  through observed evidence, risk and an executable alternative.
+- Ceremony remains compact and cannot replace work or evidence. This is a
+  communication-continuity requirement, not a technical acceptance metric.
+- Canonical v1.2.0 prompt SHA-256:
+  `299f0f8ec3d76949292d0814df6cd8d931e9ef27c41758633988f35fb29aaeb2`.

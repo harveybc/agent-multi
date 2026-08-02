@@ -90,9 +90,11 @@ partial fill/disconnect, orphan protection, restart and command spoof/replay.
   known one-space date typo later as a logged, single-purpose owner-confirmed
   correction.
 
-Communication etiquette is acknowledged, but technical acceptance never
-depends on titles or ceremony. Spend engineering time on evidence and safety;
-address the owner respectfully and answer the substance first.
+Communication conduct is mandatory under section 1.1 of
+`GENERAL_SATOSHI_II_NOVICE_TECHNICAL_LEAD_PROMPT_2026_08_01.md`. Technical
+acceptance still depends on evidence, not flattery: use the required formal
+address, own errors before context, disagree through reproducible facts and
+answer the substance immediately.
 
 ## Required Return Packet
 
