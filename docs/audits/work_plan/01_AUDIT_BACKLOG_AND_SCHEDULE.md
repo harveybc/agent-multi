@@ -100,6 +100,13 @@ State update, 2026-08-02:
 - Current Front-2 blocker for IBKR-first direct capability evidence:
   `ibkr_observer_stale` plus `ibkr_paper_offline`. Venue-neutral L0 work and
   MT5/Alpaca live-feed operation must continue while TWS Paper is restored.
+- `AT-F2-040` received substantive code at `trading-contracts@2b46c7e` and
+  `lts@be1f576`, but remains **changes_required_before_deployment**. Findings
+  043-046 reproduce wrong-side protection, lost filled-position exposure,
+  concurrent budget over-reservation and leaked reservations after validation
+  failure. Findings 047-048 track missing risk-reducing outputs and the absent
+  continuous runner/deployment packet. Re-audit only after exact fixtures and
+  an integrated running L0 are returned.
 
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 

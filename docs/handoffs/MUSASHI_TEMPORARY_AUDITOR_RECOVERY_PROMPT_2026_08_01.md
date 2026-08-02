@@ -370,3 +370,21 @@ zero positions. A newly visible portal key after additional API verification
 has not been classified or configured. It must not replace the working paper
 credential until paper/live identity is proven; no live order authorization
 exists.
+
+## 21. Satoshi II L0 Implementation Delta Audit
+
+Satoshi II delivered `trading-contracts@2b46c7e` and `lts@be1f576`. The work
+is substantial and the submitted suites independently pass (84 contracts,
+145 LTS unit tests), but adversarial review opened findings 043–048.
+
+Four reproduced S2 defects block deployment: wrong-side market SL/TP is
+accepted; a filled open position disappears from risk totals; two concurrent
+1% reservations persist 2% against a 1% cap; and validation after reservation
+leaks capacity with no decision. Risk-reducing owner/emergency actions are
+declarative only, and no runner/config/systemd continuous L0 exists.
+
+Canonical audit:
+`docs/audits/AUDIT_SATOSHI_II_L0_IMPLEMENTATION_DELTA_2026_08_02.md`.
+Relay:
+`docs/handoffs/MUSASHI_TO_SATOSHI_II_L0_IMPLEMENTATION_REVIEW_2026_08_02.md`.
+No L1 write is authorized.

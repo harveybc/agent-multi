@@ -395,6 +395,25 @@ State update, 2026-08-02 independent verification:
 - Canonical evidence:
   `../AUDIT_SATOSHI_II_037_038_AND_LIVE_DEMO_STATUS_2026_08_02.md`.
 
+### 1i. Satoshi II L0 implementation delta, 2026-08-02 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_II_L0_IMPLEMENTATION_DELTA_2026_08_02.md`
+
+Positive evidence: versioned v2 contracts and the zero-network LTS library
+are substantive and pushed; 84 trading-contract tests and 145 LTS unit tests
+independently pass.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260802-043 | S2 | open, blocks L0/L1 | Market order accepts wrong-side SL/TP because protection is not anchored to decision reference price | Satoshi II |
+| AUD-F2-20260802-044 | S2 | open, blocks L0/L1 | Filled open exposure disappears from gross/margin/position totals and bypasses max positions | Satoshi II |
+| AUD-F2-20260802-045 | S2 | open, blocks L0/L1 | Check-then-reserve spans transactions; concurrent intents exceeded a 1% cap with 2% persisted risk | Satoshi II |
+| AUD-F2-20260802-046 | S2 | open, blocks L0/L1 | Post-reservation validation failure leaks active capacity with no recorded decision | Satoshi II |
+| AUD-F2-20260802-047 | S3 | open, blocks L1 | Accepted flatten/cancel and emergency-flatten paths emit no risk-reducing intent | Satoshi II |
+| AUD-F2-20260802-048 | S3 | open, blocks L0 acceptance | L0 is a tested library but has no runner, config, deployment unit or continuously advancing ledger | Satoshi II |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
