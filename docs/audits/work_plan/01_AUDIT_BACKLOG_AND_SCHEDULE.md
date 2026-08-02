@@ -68,6 +68,11 @@ explored by Satoshi at full token cost.
 | AT-GEN-036 | GEN | **reported (finding 036 open)** | Live queue classification agreed with runtime; adversarial fixtures proved contradictory semantics invalid hashes and failed-to-materialized mapping are accepted | Satoshi correction packet | `../AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md` |
 | AT-GEN-037 | GEN | owner-ratified proposed | Measure role-swap recovery time discrepancies lost artifacts unsupported claims unsafe actions and token cost | handback checkpoint | symmetric handback packet and metric reconstruction |
 | AT-ACADEMIC-038 | GEN | owner-ratified proposed permanent | Verify event-driven audit triggers and use no-delta capacity for citation and academic work without runtime polling | next cadence implementation and academic cycle | trigger log cost accounting and publication deltas |
+| AT-F2-039 | F2 | scheduled | Audit document 29 before L0 order-authority implementation: agent isolation sizing/cap coherence calibration direction stage falsifiability and deterministic kill-switch coverage | next bounded Front-2 audit; no order activation | doctrine threat model and bounded findings |
+| AT-F2-040 | F2 | proposed event | Verify L0 dry run produces protected intents with mandatory SL/TP idempotency and netting while submitting exactly zero orders | L0 evidence packet | direct broker counts plus persisted dry-run facts |
+| AT-F2-041 | F2 | proposed event | Verify L1 canary reconciliation protection restart deduplication and emergency flatten | owner-approved L1 attempt only | broker acknowledgements and atomic lifecycle facts |
+| AT-F1-042 | F1 | proposed event | Verify first demo-observation-to-scenario calibration packet and new-domain boundary provenance | first calibration packet | immutable observations transform config and domain hash |
+| AT-GEN-043 | GEN | scheduled event | Verify General Satoshi II cold-start reconstruction preserved dirty state and continued without unsafe runtime or authority action | successor resumption report | baseline delta repo heads safety checks and role-swap metrics |
 
 ## 3b. Continuous Deepening Program (added 2026-07-31)
 
