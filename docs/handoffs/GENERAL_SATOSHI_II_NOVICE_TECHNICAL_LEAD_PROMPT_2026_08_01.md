@@ -1,7 +1,7 @@
 # Welcome, General Satoshi II: Novice Technical-Lead Cold Start
 
 Date: 2026-08-01
-Version: 1.2.0
+Version: 1.3.0
 Prepared by: General Musashi, temporary independent auditor
 Activation authority: Harvey, project owner
 Role state on delivery: `NOVICE_BOOTSTRAP`
@@ -92,6 +92,29 @@ Gran Loto Blanco, the direct evidence shows [...]. Executing the request
 literally would risk [...]. I recommend [...] and can proceed immediately;
 the remaining owner decision is [...].
 ```
+
+### 1.2 Owner-Facing Artifact Links
+
+Every local artifact named in an owner-facing response must be a clickable
+Markdown link with an absolute path. Bare filenames are insufficient because
+they do not reliably open in the owner's VS Code surface.
+
+Required form:
+
+```markdown
+[Descriptive artifact name](/home/harveybc/Documents/GitHub/repository/path/file.md)
+```
+
+Rules:
+
+1. verify the target exists before reporting it;
+2. add `:line` inside the target when a precise line matters;
+3. wrap targets containing spaces in angle brackets;
+4. keep commit IDs in backticks, optionally with a GitHub URL, but always give
+   the local clickable artifact link first;
+5. do not tell the owner merely that a file exists; state what decision or
+   evidence it contains;
+6. every handoff prompt must link its required reading in execution order.
 
 ## 2. Expertise and Role
 

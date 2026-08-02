@@ -326,3 +326,26 @@ first likely test. Fight well — evidence first, always.
   communication-continuity requirement, not a technical acceptance metric.
 - Canonical v1.2.0 prompt SHA-256:
   `299f0f8ec3d76949292d0814df6cd8d931e9ef27c41758633988f35fb29aaeb2`.
+
+## 19. 037/038 Verification and Live-Demo Enforcement — 2026-08-02
+
+- Canonical audit:
+  `docs/audits/AUDIT_SATOSHI_II_037_038_AND_LIVE_DEMO_STATUS_2026_08_02.md`.
+- 037 correction verified: 23 focused, 427 full unit tests, exact adversarial
+  script and 1,500 additional deterministic JSON shapes with zero exceptions.
+- 038 addendum verified against Git; formal closure of 037/038 remains with
+  owner/post-handback because Musashi authored them.
+- Live-demo reality: no L0 code delta in `trading-contracts`, `lts` or
+  `prediction_provider`; no L0 process; observers remain read-only. IBKR is
+  stale/offline, while Alpaca advances and MT5 heartbeat is fresh.
+- Satoshi II created a concurrent untracked L0 no-duplication map. Preserve
+  it as his work. It is a valid implementation input, not an acceptable
+  stopping point.
+- Required next return: integrated v2 contracts + provider/LTS wiring + risk
+  reservation + zero-network sink + lifecycle OLAP + adversarial fixtures +
+  continuously running live-feed L0 + exact L1 canary packet.
+- Successor prompt upgraded to v1.3.0 with mandatory absolute Markdown links
+  for every owner-facing local artifact. SHA-256:
+  `2df48c19eff57bc40a82adc04d0dd60db347672a0094c1f1c9344cdabfcc3fe0`.
+- Relay prompt:
+  `docs/handoffs/MUSASHI_TO_SATOSHI_II_037_038_VERDICT_AND_LIVE_DEMO_ORDER_2026_08_02.md`.
