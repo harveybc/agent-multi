@@ -299,3 +299,27 @@ Corrective rule adopted: report headers state the evidence-observation
 window only; commit timestamps are cited from `git show` after the fact.
 This section is append-only; the original erroneous header above is
 preserved unmodified as evidence.
+
+## 12. Dirty-File Restoration Executed (appended 2026-08-02 04:2x America/Bogota)
+
+Authorization chain complete: attribution and disposition in section 2 of
+this report; auditor no-objection recorded in
+`MUSASHI_TO_SATOSHI_II_AUDIT_RESPONSE_2026_08_01.md` (Boundaries) and
+re-confirmed in `AUDIT_SATOSHI_II_COLD_START_AND_STATUS_FIXES_2026_08_01.md`
+§2.1; owner confirmation given in chat with the single word "confirmed" on
+2026-08-02.
+
+Operation log (single-purpose, no other change):
+
+- pre-restore verification: `git diff --numstat` = 1 insertion, 1 deletion,
+  sole hunk `Date: 2026-08-01` -> `Date: 2026-08- 01` (byte-identical to the
+  diff recorded in section 2 and in the AT-GEN-043 audit);
+- command: `git restore docs/audits/AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md`;
+- post-restore: worktree fully clean; line 4 reads `Date: 2026-08-01`;
+  restored file SHA-256
+  `211b2c892825815bc9b4bd8f5ecfd8c6c730451741782451cd01760ef31e1c56`
+  (the committed auditor-authored content at `4f1c3b37`).
+
+The predecessor's edit remains preserved as evidence in three versioned
+records (section 2 here, the AT-GEN-043 audit, and Musashi's continuity
+note); nothing was lost by the restoration.
