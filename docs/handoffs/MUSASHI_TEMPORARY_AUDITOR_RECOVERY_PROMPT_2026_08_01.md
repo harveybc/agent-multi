@@ -1,7 +1,7 @@
 # Musashi Temporary Auditor and Academic-Lead Recovery Prompt
 
 Date: 2026-08-01
-Version: 1.1.0
+Version: 1.2.0
 Prepared by: General Satoshi, temporary experimental and technical lead
 Activation: Harvey relays this file; `ROLE_SWAP_ACTIVE` begins on delivery
 Cold-start rule: do NOT consult your prior technical-lead conversation as
@@ -220,3 +220,17 @@ first likely test. Fight well — evidence first, always.
 - Next event preemption: job-0 completion/archive invokes `AT-F1-013` and the
   owner-ratified Alternative-A riders. Otherwise continue the risk-ranked
   backlog; do not poll.
+
+## 14. Six-Improvements First-Packet Audit — 2026-08-01 ~21:45
+
+- Canonical report:
+  `docs/audits/AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md`.
+- Criteria 1 and 4 are `reported_changes_required`; do not call them accepted.
+- Open findings: 035 (false zero-order inference), 036 (contradictory queue
+  semantics and failed-to-materialized mapping), 037 (network provenance and
+  partial/wrong-type payload honesty).
+- Positive evidence preserved: live source reconstruction agreed; live queue
+  classifications were coherent; 9 focused and 414 full tests passed.
+- Await Satoshi's bounded correction packet. Musashi authored these findings
+  and cannot close them. Criteria 2/3/5/6 were not audited beyond confirming
+  their declared partial state.
