@@ -81,8 +81,9 @@ partial fill/disconnect, orphan protection, restart and command spoof/replay.
 ## Boundaries
 
 - Do not mutate or restart the active DOIN campaign.
-- Do not enable any broker write path or submit any order.
-- Do not activate L1. That remains an explicit owner gate.
+- During L0, do not enable any broker write path or submit any order.
+- Do not activate L1 until the owner gives the exact authorization phrase for
+  the fully specified demo canary packet.
 - Do not put an LLM, Hermes or social model in any execution/control path.
 - Do not self-close findings.
 - Preserve unrelated dirty work. There is no audit objection to restoring the
@@ -116,3 +117,91 @@ and independently verified.
 Proceed carefully. The strongest part of your first packet was not its
 ceremony; it was that you reconstructed the system without disturbing it.
 Keep that discipline.
+
+## Owner Clarification: Active Demo Trading Is the Deliverable
+
+Added 2026-08-01 after direct owner correction. This section is binding for
+the technical-lead assignment and supersedes any interpretation that the work
+ends with planning, contracts or isolated fixtures.
+
+The owner requires **active demo live trading to develop and validate the
+integration of the complete system**. Begin implementation now. Do not wait
+for the current DOIN job, the final portfolio optimizer, another planning
+round or another audit cycle before building the vertical.
+
+The phrase "no broker write path" in the L0 boundary means **no submission
+during the L0 build and dry-run proof**. It does not mean stop after L0. The
+required destination is L1 protected demo canaries followed by L2 continuous
+demo operation, under the staged safety gates below.
+
+### Active Implementation Track
+
+Run this as the main technical-lead track, with the small finding-037 fix as a
+bounded preliminary correction rather than a reason to delay the vertical.
+
+1. **Build the complete L0 vertical, not only its tests:** hash-verified model
+   or explicitly labeled mechanics policy -> prediction provider ->
+   `AssetIntent` -> portfolio/risk allocator -> protected `OrderIntent` ->
+   venue-adapter serialization -> `ExecutionReport` -> reconciliation ->
+   order-lifecycle OLAP -> watchdog/Telegram facts.
+2. **Deploy L0 continuously against live demo feeds:** consume the actual
+   IBKR Paper, Alpaca Paper and OANDA MT5 demo observations; produce and
+   persist real-time would-be decisions and protected order payloads through
+   a zero-network sink. Prove `submitted_count=0` from the venue payloads and
+   from the sink, while exercising the same serialization/risk path L1 uses.
+3. **Use an available hash-verified artifact or deterministic mechanics
+   policy now:** do not wait for job-0 completion. Label it
+   `mechanics_only_not_alpha_claim`. Replace it through the normal promotion
+   boundary when the authoritative artifact exists.
+4. **Implement one execution adapter first:** IBKR Paper remains the first
+   candidate because the observed account supports paper trading, shorting
+   and native bracket semantics. Reproduce capability facts at implementation
+   time; do not assume them from documentation. MT5 and Alpaca remain observed
+   and feed calibration while their write eligibility is evaluated.
+5. **Produce an owner-ready L1 canary authorization packet immediately after
+   L0 evidence passes:** exact venue/account fingerprint, symbol, sequential
+   long then flat/reconciled then short, entry type, units, stop-loss,
+   take-profit, risk-at-stop fraction, gross/margin/daily-loss caps, execution
+   window, kill/flatten behavior and a single exact activation phrase.
+6. **After the owner gives that exact activation phrase:** enable only the
+   declared demo canary, verify broker-side SL+TP before considering entry
+   protected, reconcile restart/idempotency/emergency flatten, then report the
+   complete lifecycle facts.
+7. **Advance to L2 instead of stopping after the canary:** one frozen
+   mechanics/model cell trades continuously at its bar clock with small demo
+   risk, mandatory protection, daily auto-hold and complete OLAP evidence.
+   Continue until the time-and-event coverage gate is satisfied, then expand
+   to multi-cell L3 by a separate owner-approved boundary.
+
+### Knowledge Loop That Must Run With Trading
+
+Every L1/L2 order lifecycle must materialize immutable facts for:
+
+- intended versus acknowledged versus filled quantity and price;
+- broker-confirmed SL/TP identifiers, prices and covered quantity;
+- spread, slippage, commission, financing, conversion and latency;
+- rejection, partial-fill, cancellation, expiry, disconnect and restart;
+- account equity/margin and portfolio risk reservations before and after;
+- model/artifact/config/data/capability hashes and decision timestamps;
+- simulation-versus-demo residuals stratified by venue, asset, order type,
+  size, session and regime.
+
+Those facts feed new cost/constraint calibration packets at future immutable
+optimization boundaries. They may not rank alpha or leak protected-test
+outcomes.
+
+### What You Must Return Before Stopping
+
+Do not return only a design document. Return:
+
+1. working L0 code and tests across the owning repositories;
+2. a continuously running L0 shadow process consuming live demo feeds;
+3. persisted protected would-be intents and lifecycle/decision facts;
+4. direct proof of zero submissions during L0;
+5. the exact L1 owner-authorization packet;
+6. commands for deployment/restart/recovery on the selected host;
+7. fresh multi-front status showing the live-demo integration state;
+8. no interruption or lineage mutation of the active DOIN swarm.
+
+The audit findings define the safety properties of this implementation; they
+are not permission to remain idle. The business-learning loop starts now.
