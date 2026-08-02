@@ -138,6 +138,35 @@ Evidence and rationale:
 | AUD-F1-20260730-002 | S4 | verified_closed | Document 13 records measured fleet throughput, the 10-14 day full-budget range and an end-of-stage-1 duration/evidence decision point | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 | AUD-GEN-20260730-003 | S4 | verified_closed | Musashi recovery prompt v1.1.0 includes docs 08/11/14/16 and refreshes the runtime warning | Musashi | 2026-07-30 | `../CODEX_AUDIT_FINDING_CLOSURE_2026_07_30.md`; `agent-multi@2617f4cc` |
 
+### 1k. Counterpart-session continuity event, 2026-08-01 ~22:35 (Musashi)
+
+Owner reported that the prior Satoshi conversation was deleted after a
+security problem. No versioned evidence establishes the root cause, so no new
+security finding is asserted from the report alone. Repository continuity was
+reconstructed instead of relying on the lost chat.
+
+- The predecessor completed corrections 035-037 at `b0196a73`, wrote the
+  bounded response at `49dcb20d`, added continuous demo-trading doctrine in
+  work-plan document 29 at `92e9c756`, and issued its audit addendum at
+  `fa5342a0` before loss.
+- A successor cold-start specification was created at
+  `../../handoffs/GENERAL_SATOSHI_II_NOVICE_TECHNICAL_LEAD_PROMPT_2026_08_01.md`.
+  It preserves the temporary technical-lead role without attributing memories
+  to a new conversation and requires staged reconstruction before activation.
+- One predecessor dirty change remains preserved and unstaged:
+  `AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md` contains only a malformed
+  date-space edit in the observed diff. It was not overwritten or included in
+  this continuity work.
+- Fresh read-only status at 22:31 America/Bogota: all four DOIN workers were
+  online in the same job/domain/generation 7 and finalized anchor; 150/480
+  full-budget candidates complete; venue direct counts were zero orders and
+  zero positions; no consolidated unavailable fields.
+
+Role state remains `ROLE_SWAP_ACTIVE`, with counterpart activation pending
+delivery and completion of `NOVICE_BOOTSTRAP`. Findings 035-037 remain
+implemented pending Musashi verification; doctrine audit `AT-F2-039` remains
+proposed and unexecuted.
+
 ### 1j. Six-improvements first packet, 2026-08-01 ~21:45 (Musashi)
 
 Full evidence: `../AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md`.

@@ -1,7 +1,7 @@
 # Musashi Temporary Auditor and Academic-Lead Recovery Prompt
 
 Date: 2026-08-01
-Version: 1.2.0
+Version: 1.3.0
 Prepared by: General Satoshi, temporary experimental and technical lead
 Activation: Harvey relays this file; `ROLE_SWAP_ACTIVE` begins on delivery
 Cold-start rule: do NOT consult your prior technical-lead conversation as
@@ -234,3 +234,26 @@ first likely test. Fight well — evidence first, always.
 - Await Satoshi's bounded correction packet. Musashi authored these findings
   and cannot close them. Criteria 2/3/5/6 were not audited beyond confirming
   their declared partial state.
+
+## 15. Satoshi-Successor Continuity — 2026-08-01 ~22:35
+
+- The prior Satoshi conversation is unavailable after an owner-reported
+  security problem. Root cause is not evidenced; do not speculate or open a
+  security finding from wording alone.
+- The predecessor's last repository sequence is `b0196a73` (035-037 fixes),
+  `49dcb20d` (bounded response), `92e9c756` (continuous demo-trading doctrine)
+  and `fa5342a0` (audit addendum).
+- Successor prompt:
+  `docs/handoffs/GENERAL_SATOSHI_II_NOVICE_TECHNICAL_LEAD_PROMPT_2026_08_01.md`.
+  The new conversation is General Satoshi II and begins at
+  `NOVICE_BOOTSTRAP`; it must reconstruct state before becoming active.
+- Preserve the unstaged malformed date edit in
+  `docs/audits/AUDIT_SIX_IMPROVEMENTS_FIRST_PACKET_2026_08_01.md`; it predates
+  successor-prompt work and was not authored or dispositioned by Musashi.
+- Findings 035-037 still require Musashi independent verification. Document
+  29 doctrine still requires the proposed `AT-F2-039` audit before L0 order-
+  authority implementation is accepted. L0 permits only provable zero-submit
+  dry-run work; L1 is an explicit owner gate.
+- Snapshot at 22:31 COT: generation 7 at 10/20; campaign 150/480; four workers
+  share finalized height 8/hash; direct venue counts all zero; social 98 runs,
+  1819 posts and 0 drafts. Refresh rather than reusing.
