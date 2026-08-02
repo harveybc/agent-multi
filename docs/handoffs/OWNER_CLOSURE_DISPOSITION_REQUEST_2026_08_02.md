@@ -51,8 +51,28 @@ closure authority before handback is the owner.
 Closing any of these now would put the owner's signature on unverified
 work, which is exactly what both epochs of this project exist to prevent.
 
-## 5. Owner Ratification (append-only; empty until granted)
+## 5. Owner Ratification (append-only)
 
-*Awaiting the Master's confirmation phrase in chat. His exact words will be
-appended here verbatim with timestamp, and the register update passes to
-General Musashi.*
+Granted 2026-08-02 13:59 America/Bogota, in chat, relayed verbatim:
+
+> confirm closure of 035–038 and 034, 005 and 025
+> i ratify this.
+
+Resulting owner-ratified dispositions for General Musashi to apply to
+`docs/audits/work_plan/04_OPEN_FINDINGS_REGISTER.md`:
+
+| Finding | New state | Closure basis |
+| --- | --- | --- |
+| AUD-GEN-20260801-035 | **closed** (owner) | implemented `b0196a73` (predecessor); verified by Musashi |
+| AUD-GEN-20260801-036 | **closed** (owner) | implemented `b0196a73` (predecessor); verified by Musashi |
+| AUD-GEN-20260801-037 | **closed** (owner) | implemented `c1860130` (Satoshi II); verified by Musashi incl. 1,500-shape stress |
+| AUD-GEN-20260801-038 | **closed** (owner) | corrected `8b660d27` append-only (Satoshi II); verified by Musashi |
+| AUD-F4-20260801-034 | **closed** (owner, per amendment A2 dual-party rule) | implemented `lts@11d8958` (Musashi); verified working by predecessor as lead |
+| AUD-F1-20260730-005 | **closed** (owner) | resolved by finalization advance; recurrence remains tracked under open finding 020 |
+| AUD-GEN-20260731-025 | **closed** (owner adjudication) | retained in the P13 incident corpus per its original next-action |
+
+Findings 039-048 remain open and untouched by this ratification, exactly
+as fenced in section 4. Neither the preparer nor the auditor closed
+anything here; every closure above carries the owner's authority alone.
+
+Recorded by: Satoshi II, novice technical lead (scribe only).
