@@ -1,6 +1,6 @@
 # 04. Open Findings Register
 
-Version: 1.4.1
+Version: 1.4.2
 Date: 2026-08-02
 Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
 independent verifier per `../README.md` and dual-party findings go to Harvey.
@@ -134,6 +134,12 @@ Evidence and rationale:
 | AUD-F2-20260802-043 | S2 | **verified_closed** | Long/short SL and TP are anchored to persisted decision reference before reservation | Musashi | 2026-08-02 | `lts@9fe9b64`; exact wrong-side reproductions |
 | AUD-F2-20260802-045 | S2 | **verified_closed** | `BEGIN IMMEDIATE` serializes budget check/write across connections; 20 repeated races admitted one of two 1% intents against a 1% cap | Musashi | 2026-08-02 | `lts@9fe9b64`; correction audit |
 | AUD-F2-20260802-046 | S2 | **verified_closed** | Post-validation/serialization failure rolls back reservation and persists replayable rejection | Musashi | 2026-08-02 | `lts@9fe9b64`; correction audit |
+| AUD-F2-20260801-040 | S3 | **verified_closed** | Separate risk/gross/margin/day-loss dimensions and atomic reservation accounting independently pass directed, concurrent and generated-event checks | Musashi | 2026-08-02 | `trading-contracts@e068bb5`; `lts@6af0300`; `../AUDIT_SATOSHI_II_L0_INTEGRATED_PACKET_2026_08_02.md` |
+| AUD-F2-20260802-044 | S2 | **verified_closed** | Persisted exposure lifecycle remains in aggregate risk and position totals independently of terminal order state | Musashi | 2026-08-02 | `lts@6af0300`; 6,000 generated events |
+| AUD-F2-20260802-049 | S2 | **verified_closed** | Immutable originals conserve day risk and one logical position across cumulative partial fills | Musashi | 2026-08-02 | `lts@6af0300`; exact reproduction plus 25/50/75/100% audit |
+| AUD-F2-20260802-050 | S2 | **verified_closed** | Signed multi-asset exposure identity and short flatten direction persist from immutable decisions | Musashi | 2026-08-02 | `lts@6af0300`; directed and generated-event audit |
+| AUD-F2-20260802-051 | S2 | **verified_closed** | Cancel and flatten intents carry exact target order-intent identity | Musashi | 2026-08-02 | `trading-contracts@cd05083`; `lts@6af0300` |
+| AUD-F2-20260802-052 | S2 | **verified_closed** | Venue, account fingerprint and environment capability substitution now rejects | Musashi | 2026-08-02 | `lts@6af0300`; exact cross-venue/account reproductions |
 | AUD-GEN-20260801-035 | S3 | **verified_closed (owner)** | Direct per-venue order/position counts replace inference from alert absence | Harvey (owner), after Musashi verification | 2026-08-02 | `../../handoffs/OWNER_CLOSURE_DISPOSITION_REQUEST_2026_08_02.md`; `agent-multi@cfae3335` |
 | AUD-GEN-20260801-036 | S3 | **verified_closed (owner)** | Contradictory queue states reject and failed jobs remain excluded | Harvey (owner), after Musashi verification | 2026-08-02 | same owner disposition; `agent-multi@b0196a73` |
 | AUD-GEN-20260801-037 | S4 | **verified_closed (owner)** | Wrong-type payloads degrade to explicit unavailability; 23 focused, 427 full and 1,500-shape stress passed | Harvey (owner), after Musashi verification | 2026-08-02 | same owner disposition; `agent-multi@c1860130` |
@@ -437,6 +443,34 @@ Correction state update, 2026-08-02:
   connected runtime contract.
 - Canonical evidence:
   `../AUDIT_SATOSHI_II_L0_CORRECTION_PACKET_2026_08_02.md`.
+
+### 1l. Satoshi II integrated L0 runtime audit, 2026-08-02 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_II_L0_INTEGRATED_PACKET_2026_08_02.md`
+
+Independent suites pass 95 contracts, 16 provider-mechanics, 60 focused L0,
+295 full LTS and 429 agent-multi unit tests. An additional 6,000 generated
+events and cumulative 25/50/75/100% fills preserve the submitted invariants.
+Findings 040, 044 and 049-052 are verified closed.
+
+The deployed process is genuinely alive and zero-network, but its first active
+reservation permanently consumes the gross cap; it then replays a rejection
+instead of exercising lifecycle mechanics. `AT-F2-040` remains
+`reported_changes_required`.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260802-053 | S2 | open, blocks L0/L1 | Concurrent identical intents race outside the atomic unit; one crashes on the decision primary key instead of replaying | Satoshi II |
+| AUD-F2-20260802-054 | S2 | open, blocks L0/L1 | Lifecycle previous-state validation occurs before the transaction; concurrent reports produced `requested -> filled -> accepted` | Satoshi II |
+| AUD-F2-20260802-055 | S2 | open, blocks L1 | Owner kill is persisted accepted before effects; a crash makes same-nonce retry reject without resuming flatten/cancel | Satoshi II |
+| AUD-F2-20260802-056 | S3 | open, blocks L0 | Continuous L0 saturates after one pending reservation and does not continuously evaluate persisted invariants or alert on its degraded state | Satoshi II |
+| AUD-F2-20260802-057 | S2 | open, blocks L1/L2 | No route binding connects policy asset, quote symbol and venue instrument; BTC intent against ETH quote/instrument was accepted | Satoshi II |
+| AUD-F2-20260802-058 | S3 | open, blocks L1/L2 | Future-dated quotes have negative age and are accepted as fresh; quote geometry lacks an explicit validation gate | Satoshi II |
+
+Findings 041, 042, 047 and 048 remain open under the connected failures 054,
+055 and 056. No L1 broker write is authorized.
 
 ## 2b. Observations Pending Verification (not yet findings)
 
