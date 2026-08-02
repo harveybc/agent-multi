@@ -348,6 +348,36 @@ downstream results. Checked three layers deep:
   designed (P4 item 3, doc 21 §4.4) but unimplemented. Scenario changes must
   mint new domain hashes at job boundaries only — never mid-chain.
 
+### 1h. Satoshi II cold start and continuous-demo doctrine, 2026-08-01 (Musashi)
+
+Full evidence:
+
+- `../AUDIT_SATOSHI_II_COLD_START_AND_STATUS_FIXES_2026_08_01.md`
+- `../AUDIT_CONTINUOUS_DEMO_TRADING_DOCTRINE_2026_08_01.md`
+
+State updates for prior findings:
+
+| ID | State update | Evidence |
+| --- | --- | --- |
+| AUD-GEN-20260801-035 | correction independently reproduced; owner/post-handback closure recommended | direct per-venue reconstruction plus 18 focused tests |
+| AUD-GEN-20260801-036 | correction independently reproduced; owner/post-handback closure recommended | original counterexamples reject; failed/completed jobs excluded |
+| AUD-GEN-20260801-037 | remains open; correction incomplete | truthy wrong-type status, non-numeric direct count and wrong-type plan-job still crash |
+
+New findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-GEN-20260801-038 | S4 | open | Satoshi II report write time and claimed commit window conflict with authoritative Git commit time; append-only chronology correction required | Satoshi II |
+| AUD-F2-20260801-039 | S2 | open, blocks L0 acceptance | `OrderIntent.v1` accepts risk-increasing entries without SL/TP and overloads `stop_price` between entry trigger and protection | Satoshi II |
+| AUD-F2-20260801-040 | S3 | open, blocks L0 acceptance | `rel_volume` conflates notional, margin and loss-at-stop; no atomic aggregate loss reservation contract | Satoshi II |
+| AUD-F2-20260801-041 | S3 | open, blocks L0 acceptance | Execution lifecycle cannot unambiguously represent partial fills, unknown acknowledgements, cancellation and per-leg bracket protection | Satoshi II |
+| AUD-F2-20260801-042 | S3 | open, blocks L0 acceptance | Telegram hold/kill path is not yet required to bypass Hermes/LLM inference through a deterministic authenticated command surface | Satoshi II |
+
+`AT-GEN-043` passed with the chronology correction above. `AT-F2-039` is
+`reported_changes_required`; no broker write path was enabled. The assigned
+technical packet is the adversarial L0 contract-first fixture set, after the
+bounded finding-037 correction.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

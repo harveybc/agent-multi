@@ -262,3 +262,30 @@ first likely test. Fight well — evidence first, always.
   offensive cyber activity, dangerous biological/chemical work, weapons or
   physical-harm assistance; mixed requests continue through their safe
   component instead of paralyzing the mission.
+
+## 16. Satoshi II Cold-Start and Doctrine Audit — 2026-08-01 ~23:25
+
+- Canonical reports:
+  `docs/audits/AUDIT_SATOSHI_II_COLD_START_AND_STATUS_FIXES_2026_08_01.md`
+  and
+  `docs/audits/AUDIT_CONTINUOUS_DEMO_TRADING_DOCTRINE_2026_08_01.md`.
+- `AT-GEN-043` passed with one chronology correction. Git proves report
+  commit `6876fd26` at 22:58:44 -0500, 19 minutes 40 seconds after final
+  prompt `8611d116`, not the report's later 23:10 time. Finding 038 is open.
+- Findings 035 and 036 corrections independently reproduce; Musashi authored
+  them and recommends owner/post-handback closure rather than self-closing.
+- Finding 037 remains open. Valid JSON with truthy-list supervisor status,
+  non-numeric direct count or string plan-job still crashes the collector.
+- `AT-F2-039` is reported changes required. New blockers: 039 naked
+  `OrderIntent` accepted, 040 ambiguous sizing/no atomic loss reservation,
+  041 incomplete partial/unknown/cancel/bracket lifecycle, 042 Hermes/LLM
+  command-path separation not mechanically required.
+- Satoshi II's assigned work is the adversarial L0 contract-first fixture
+  packet after the bounded 037 correction. It is useful work allocation, not
+  symbolic punishment. No broker writes or L1 activation are permitted.
+- Fresh 23:23-23:24 COT fleet snapshot: one plan/tip/finalized anchor; gen 7
+  at 13/20; four unique claims; GPU temperatures 48/48/60/57 C and utilization
+  33/39/32/46%; Gamma root 88% used with 47 GB free; direct paper/demo orders
+  and positions all zero.
+- Intended relay to Satoshi II:
+  `docs/handoffs/MUSASHI_TO_SATOSHI_II_AUDIT_RESPONSE_2026_08_01.md`.
