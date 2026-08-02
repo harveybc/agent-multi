@@ -184,3 +184,23 @@ owner overrides them:
 
 Canonical rationale and exact gates:
 `../handoffs/MUSASHI_RESPONSE_TO_SATOSHI_II_INTERIM_AUDIT_2026_08_02.md`.
+
+## 10. Stateful Execution Invariant Gate
+
+Before the continuous L0 runner is deployed, a deterministic generated-event
+suite exercises long and short positions across multiple assets and venues,
+partial fills, duplicate events, cancel/fill races, restart and reconciliation.
+After every event it asserts:
+
+1. signed exposure is conserved and flatten moves it toward zero;
+2. open exposure plus remaining reservation conserves worst-case risk;
+3. one logical position is counted once despite a partially open entry;
+4. asset, instrument, venue, account and capability provenance never change;
+5. every cancel names one existing order and is idempotent;
+6. replay changes no balance, reservation, exposure or lifecycle state twice;
+7. capability venue/account/environment exactly match the target service.
+
+These invariants are acceptance gates, not only tests. The running L0 health
+packet evaluates their persisted-ledger equivalents continuously. This packet
+also supplies a concrete Front-2 contribution toward audit finding 010's
+missing property/metamorphic layer.
