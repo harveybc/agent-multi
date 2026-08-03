@@ -1,0 +1,98 @@
+{
+ "account_fingerprint": "9f9f5111f7b27a78",
+ "capability_evidence": "live_observed",
+ "contracts": [
+  {
+   "available": true,
+   "canonical_asset": "audusd",
+   "con_id": 14433401,
+   "currency": "USD",
+   "documented_bracket_support": true,
+   "exchange": "IDEALPRO",
+   "local_symbol": "AUD.USD",
+   "native_sl_tp_verified": false,
+   "observed_at": "2026-08-03T01:55:25.519230+00:00",
+   "protected_execution_eligible": false,
+   "security_type": "CASH",
+   "symbol": "AUDUSD"
+  },
+  {
+   "available": true,
+   "canonical_asset": "eurusd",
+   "con_id": 12087792,
+   "currency": "USD",
+   "documented_bracket_support": true,
+   "exchange": "IDEALPRO",
+   "local_symbol": "EUR.USD",
+   "native_sl_tp_verified": false,
+   "observed_at": "2026-08-03T01:55:25.519210+00:00",
+   "protected_execution_eligible": false,
+   "security_type": "CASH",
+   "symbol": "EURUSD"
+  },
+  {
+   "available": true,
+   "canonical_asset": "gld",
+   "con_id": 51529211,
+   "currency": "USD",
+   "documented_bracket_support": true,
+   "exchange": "SMART",
+   "local_symbol": "GLD",
+   "native_sl_tp_verified": false,
+   "observed_at": "2026-08-03T01:55:25.519197+00:00",
+   "protected_execution_eligible": false,
+   "security_type": "STK",
+   "symbol": "GLD"
+  },
+  {
+   "available": true,
+   "canonical_asset": "spy",
+   "con_id": 756733,
+   "currency": "USD",
+   "documented_bracket_support": true,
+   "exchange": "SMART",
+   "local_symbol": "SPY",
+   "native_sl_tp_verified": false,
+   "observed_at": "2026-08-03T01:55:25.519134+00:00",
+   "protected_execution_eligible": false,
+   "security_type": "STK",
+   "symbol": "SPY"
+  },
+  {
+   "available": true,
+   "canonical_asset": "tlt",
+   "con_id": 15547841,
+   "currency": "USD",
+   "documented_bracket_support": true,
+   "exchange": "SMART",
+   "local_symbol": "TLT",
+   "native_sl_tp_verified": false,
+   "observed_at": "2026-08-03T01:55:25.519180+00:00",
+   "protected_execution_eligible": false,
+   "security_type": "STK",
+   "symbol": "TLT"
+  },
+  {
+   "available": true,
+   "canonical_asset": "usdjpy",
+   "con_id": 15016059,
+   "currency": "JPY",
+   "documented_bracket_support": true,
+   "exchange": "IDEALPRO",
+   "local_symbol": "USD.JPY",
+   "native_sl_tp_verified": false,
+   "observed_at": "2026-08-03T01:55:25.519221+00:00",
+   "protected_execution_eligible": false,
+   "security_type": "CASH",
+   "symbol": "USDJPY"
+  }
+ ],
+ "honest_gaps": [
+  "native_sl_tp_verified is false on every contract: bracket support is documented, not demonstrated on this account; demonstration is the L1 canary's own acceptance criterion",
+  "min size, size step, price increment and margin rate are not yet captured by the read-only lab; contract-grade BrokerCapabilitySnapshot blocked on that lab increment"
+ ],
+ "schema": "lts.ibkr_live_capability_evidence.v1",
+ "session_id": "preflight-05360fb4b4824d10",
+ "session_started_at": "2026-08-03T01:55:25.515165+00:00",
+ "venue": "ibkr_paper"
+}
