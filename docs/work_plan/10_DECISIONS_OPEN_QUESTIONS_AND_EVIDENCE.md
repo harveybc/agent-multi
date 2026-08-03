@@ -43,6 +43,11 @@ a narrow auditable preflight.
 
 DOIN candidates, provider inference and agent policies emit recommendations or
 intents. LTS applies customer and broker constraints, executes and reconciles.
+No MCP server or general-purpose language-model agent may connect to a broker
+account, receive broker credentials/private account facts, construct orders or
+call broker order APIs, including against Paper/demo accounts. Broker-facing
+observation and execution remain explicit reviewed LTS adapters behind the
+same capability, journal, reconciliation and activation controls.
 
 ### ADR-007: Continuous optimization, controlled deployment
 

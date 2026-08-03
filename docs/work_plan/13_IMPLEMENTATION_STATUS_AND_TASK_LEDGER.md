@@ -858,6 +858,8 @@ cTrader Copy for `protected_entry_unavailable`.
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
 | `SOLVENCY-CURRICULUM-001` | Lieutenant Satoshi II + Musashi verification | `gym-fx`, `agent-multi` | research_admitted_instrumentation_blocked | P20 train-only solvency curriculum; first expose termination causes, then compare hard reset, penalized chronological continuation and randomized-start controls under immutable realistic validation | Harvey |
+| `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
+| `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 
 Claude packet:
 
@@ -881,6 +883,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    then implement and independently verify the real client in zero-submit
    Milestone F with a fresh connected read-only preflight. Do not enable an
    order before that review and a separate owner activation.
+   The MCP tooling research does not delay this path: build the internal
+   SQLite evidence MCP only after F0 is green or while it awaits review, and
+   trial Context7 only if F1 leaves a named `ib_async` question unresolved.
 2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
    job. At the end of stage 1, record the declared duration decision point and
    continue automatically unless evidence, safety or lineage invariants fail.

@@ -98,6 +98,9 @@ Test:
 - Tokens and account IDs are secret-store/environment references.
 - No credentials in config, logs, OLAP, chain, checkpoints or screenshots.
 - LTS is the only real-order authority.
+- Brokerage-account MCP servers are prohibited on project machines, including
+  for Paper/demo. General-purpose agents receive no broker credentials,
+  private account access or order API surface.
 - Paper/live environments and credentials are separate per venue.
 - Artifact and deployment manifests are signed/hash-verified.
 - Provider and LTS authenticate requests and authorize model channels.
