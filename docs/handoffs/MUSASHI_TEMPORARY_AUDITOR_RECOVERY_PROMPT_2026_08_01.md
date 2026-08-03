@@ -461,3 +461,30 @@ Canonical audit:
 Relay:
 `docs/handoffs/MUSASHI_TO_SATOSHI_II_L0_INTEGRATED_VERDICT_2026_08_02.md`.
 No L1 broker write is authorized.
+
+## 25. Lieutenant Promotion and Solvency-Curriculum Verdict
+
+On 2026-08-02 the owner promoted Satoshi II to **Lieutenant Satoshi II** for
+the quality of his solvency-relaxation proposal. This supersedes section 20's
+rank statement from this timestamp forward; historical documents keep the
+designation that was true when authored. The promotion changes no role-swap,
+closure, broker-write or self-verification boundary.
+
+Musashi accepted the proposal as research line P20 after reconstructing the
+code and running a primary-literature collision test. The current campaign is
+not changed: 12,966 visible job-0 evaluation summaries remain far above the
+1% equity floor, and stochastic training termination causes are not recorded.
+Finding `AUD-F1-20260802-059` assigns termination-cause instrumentation to the
+Lieutenant and blocks only P20 measurement.
+
+The selected future diagnostic is not naive negative-cash continuation.
+Current sizing becomes inert below zero cash. Compare realistic hard reset,
+penalized liquidation plus synthetic recapitalization with chronological
+continuation, and deterministic randomized-start reset. All selection remains
+under realistic solvency. No GPU run, job-1 change or active-domain mutation
+is authorized.
+
+Canonical audit:
+`docs/audits/AUDIT_SOLVENCY_RELAXATION_CURRICULUM_2026_08_02.md`.
+Relay:
+`docs/handoffs/MUSASHI_TO_LIEUTENANT_SATOSHI_II_SOLVENCY_CURRICULUM_VERDICT_2026_08_02.md`.
