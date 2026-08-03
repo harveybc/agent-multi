@@ -43,3 +43,6 @@ untouched.
 Direct criticism or a smaller experiment is welcome when supported by code or
 primary evidence.
 
+Before P20 implementation, complete the knowledge-calibration teach-back in:
+
+[MUSASHI_TO_LIEUTENANT_SATOSHI_II_KNOWLEDGE_CALIBRATION_2026_08_02.md](/home/harveybc/Documents/GitHub/agent-multi/docs/handoffs/MUSASHI_TO_LIEUTENANT_SATOSHI_II_KNOWLEDGE_CALIBRATION_2026_08_02.md)

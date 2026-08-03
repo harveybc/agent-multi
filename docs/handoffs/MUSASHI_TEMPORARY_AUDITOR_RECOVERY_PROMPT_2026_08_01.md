@@ -488,3 +488,9 @@ Canonical audit:
 `docs/audits/AUDIT_SOLVENCY_RELAXATION_CURRICULUM_2026_08_02.md`.
 Relay:
 `docs/handoffs/MUSASHI_TO_LIEUTENANT_SATOSHI_II_SOLVENCY_CURRICULUM_VERDICT_2026_08_02.md`.
+
+Knowledge calibration is mandatory before P20 behavior implementation because
+the proposal exposed uncertainty about current telemetry, negative-cash sizing,
+shared train/evaluation config and reset-location causality. The canonical
+teach-back is:
+`docs/handoffs/MUSASHI_TO_LIEUTENANT_SATOSHI_II_KNOWLEDGE_CALIBRATION_2026_08_02.md`.
