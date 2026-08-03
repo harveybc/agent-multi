@@ -242,6 +242,11 @@ an order:
 | IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | runner active; first short bracket and recovery cycle recorded; flat pending next closed H4 bar | TWS parent + TP + SL, exact identity verification |
 | OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | bridge and runner active; blocked at zero bars while the old read-only EA remains attached | new EA submits one market request containing both SL and TP |
 
+The Dragon Windows VM transfer CD is `D:\` with volume label
+`LTS_MT5_BRIDGE`. It contains `LtsMt5ModelBridge.mq5` and
+`INSTALL_LTS_MT5_MODEL_BRIDGE.md` from `lts@8b67235`; the optical-media change
+is live and persistent across VM restarts.
+
 Each runner hot-reloads an atomic selected-model manifest and verifies model,
 artifact, configuration, asset and timeframe hashes. A changed selection does
 not inherit an old position: LTS drains the old route, records ending broker
