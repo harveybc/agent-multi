@@ -298,6 +298,9 @@ def collect(
                 "source": "paper_execution_watchdog",
             }
 
+        alpaca_detail = _as_dict(alpaca.get("detail"))
+        ibkr_latest = _as_dict(ibkr.get("latest_complete"))
+        mt5_snapshot = _as_dict(mt5.get("latest_snapshot"))
         fronts["f2_business_reality"] = {
             "basis": "observed",
             "active_events": watchdog.get("active_event_keys"),
@@ -307,6 +310,38 @@ def collect(
             "mt5_read_only": mt5.get("read_only"),
             "open_orders": _aggregate(venue_orders, "orders"),
             "open_positions": _aggregate(venue_positions, "positions"),
+            # Owner order 2026-08-02: per-account stats for every live
+            # trading account. Identity is fingerprint-only and balances are
+            # deliberately excluded from this portable packet (doc 09 §5).
+            "accounts": {
+                "alpaca_paper": {
+                    "account_fingerprint": alpaca_detail.get("account_fingerprint"),
+                    "environment": alpaca_detail.get("environment"),
+                    "status": alpaca_detail.get("account_status"),
+                    "shorting_enabled": alpaca_detail.get("account_shorting_enabled"),
+                    "protected_execution_eligible": alpaca_detail.get("protected_execution_eligible"),
+                    "quotes_received": {"value": alpaca_detail.get("quotes_received"), "unit": "quotes", "horizon": "cumulative"},
+                    "orders_submitted": {"value": alpaca_detail.get("orders_submitted"), "unit": "orders", "horizon": "cumulative"},
+                    "mode": "read_only",
+                },
+                "ibkr_paper": {
+                    "last_session_id": ibkr_latest.get("session_id"),
+                    "last_reconciliation_at": ibkr_latest.get("reconciliation_observed_at"),
+                    "open_orders": ibkr_latest.get("open_orders"),
+                    "open_positions": ibkr_latest.get("open_positions"),
+                    "mode": "read_only",
+                },
+                "oanda_mt5_demo": {
+                    "environment": heartbeat.get("environment"),
+                    "connected": heartbeat.get("connected"),
+                    "terminal_build": heartbeat.get("terminal_build"),
+                    "trade_allowed_by_terminal": heartbeat.get("trade_allowed"),
+                    "symbols_total": mt5_snapshot.get("symbols_total"),
+                    "heartbeats": {"value": _as_dict(mt5.get("counts")).get("heartbeats"), "unit": "heartbeats", "horizon": "cumulative"},
+                    "mode": "read_only",
+                },
+                "note": "balances excluded by redaction policy; write mode exists on no account",
+            },
         }
     else:
         unavailable.append({"field": "f2_business_reality", "reason": "watchdog packet unreadable or wrong type"})
