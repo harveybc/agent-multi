@@ -1,7 +1,7 @@
 # 04. Open Findings Register
 
-Version: 1.4.2
-Date: 2026-08-02
+Version: 1.5.0
+Date: 2026-08-03
 Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
 independent verifier per `../README.md` and dual-party findings go to Harvey.
 
@@ -523,6 +523,26 @@ These findings do not block the IBKR Paper L1 path. The protection gate is
 amended for owner ratification: the first minimum-size bracket canary is the
 native-protection verification instrument, with complete parent/SL/TP group
 transmission and deterministic flatten/hold on any ambiguous evidence.
+
+### 1o. IBKR Paper L1 adapter audit, 2026-08-03 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_II_IBKR_L1_ADAPTER_2026_08_03.md`
+- `../evidence/IBKR_L1_ADAPTER_REPRO_2026_08_03.py`
+
+The bracket translator and read-only preflight are retained. IBKR Paper L1 is
+not activated: the audited submission path performs no broker call and the
+adapter is not integrated into the accepted L0 runtime.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260803-063 | S2 | open, blocks IBKR L1 | `submit_bracket()` reports submitted after counters without calling the broker | Satoshi III successor technical lead |
+| AUD-F2-20260803-064 | S2 | open, blocks IBKR L1 | Repository phrase plus arbitrary local token is self-authorization; no durable owner-issued capability or atomic token ledger exists | Satoshi III successor technical lead |
+| AUD-F2-20260803-065 | S2 | open, blocks IBKR L1 | Cancelled/rejected/wrong-type/wrong-price protection can verify as protected; cancel/flatten/hold is only a string | Satoshi III successor technical lead |
+| AUD-F2-20260803-066 | S2 | open, blocks IBKR L1 | L1 adapter is absent from the accepted L0 risk, outbox, lifecycle, runner and OLAP path | Satoshi III successor technical lead |
+| AUD-F2-20260803-067 | S3 | open, blocks IBKR L1 | L1 profile admits arbitrary venue/host and non-positive limits; declared quantity/distance/spread fields are unused | Satoshi III successor technical lead |
+| AUD-F2-20260803-068 | S4 | open, does not independently block L1 | Account evidence compares single-hash identity with double-hashed account-set identity and raises a false discrepancy | Satoshi III successor technical lead |
 
 ## 2b. Observations Pending Verification (not yet findings)
 
