@@ -226,9 +226,10 @@ EA that polls signed LTS commands through `WebRequest`, validates and submits
 orders with native MT5 APIs, and reports `OnTradeTransaction` events. MT5 does
 not allocate the portfolio.
 
-Alpaca Trading API Paper is an API-native crypto observation and long-only
-control venue. It is ineligible for production crypto routing until native
-server-side SL and TP protection satisfying the common contract is proven.
+Alpaca Trading API Paper is the API-native US-equity/ETF control venue. Its
+selected SPY route uses native server-side GTC brackets with both SL and TP.
+Alpaca crypto remains ineligible for this execution contract because its API
+does not provide the same native bracket protection.
 IBKR Individual Margin Paper is the initial equities/ETF and broad multi-asset
 venue. Future social trading uses a separately reviewed Advisor/Broker/OAuth
 structure; personal Individual accounts never custody or commingle customer

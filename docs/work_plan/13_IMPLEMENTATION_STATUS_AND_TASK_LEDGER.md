@@ -1,11 +1,12 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-08-03 America/Bogota
-Plan version: 1.24.0
+Plan version: 1.25.0
 Current focus: keep the protected-entry v2 optimization path running to an
-exact champion handoff; correct IBKR L1 findings 069-074 before implementing
-the real zero-submit client; continue independent read-only venue evidence;
-and close independently reproduced findings without taking compute from DOIN
+exact champion handoff; operate selected-model Alpaca and IBKR Paper runners
+continuously with mandatory native SL/TP; commission the MT5 execution EA on
+OANDA Demo; and preserve independently auditable venue and model provenance
+without taking compute from DOIN
 
 Immediate parallel runtime added on 2026-07-30:
 
@@ -74,6 +75,30 @@ observers with restart-safe SQLite OLAP, account-identity redaction and
 deterministic Telegram monitoring. Watchdog health now requires recent
 authenticated observer/reconciliation facts; a reachable IBKR TCP port is
 diagnostic evidence only. No protected canary or broker order is enabled.
+
+Runtime update 2026-08-03: the preceding paragraph is retained as historical
+state. The owner subsequently authorized small, continuous Paper/Demo
+execution controlled only by hash-bound selected-model manifests:
+
+- Alpaca Paper runs `SPY@1d` with `spy-daily-linear-live-v1`; it is flat after
+  consuming the latest closed daily-bar signal and awaits a new signal.
+- IBKR Paper runs `USD.CAD@4h` with `usdcad-4h-linear-live-v1`. The first
+  20,000-unit short bracket filled with native TP and SL. Fail-closed recovery
+  later flattened it after a reconnect exposed missing completed-parent
+  evidence. `lts@cffdc13` reconstructs that direct fact by joining completed
+  orders and executions on permanent order id. The account is flat and the
+  next bracket uses 25,000 units, avoiding the IDEALPRO odd-lot route while
+  remaining under a 0.00625% stop-risk ceiling.
+- OANDA MT5 Demo has its bridge backend and ETHUSD H4 selected-model runner
+  active on Dragon. It remains at zero bars and zero commands until the owner
+  replaces the attached read-only EA with `LtsMt5ModelBridge.mq5`.
+- all three runners write atomic heartbeats, hot-reload verified manifests,
+  drain an old model before replacement, and seed the replacement session
+  from actual post-close broker cash/equity. No Live account is authorized.
+- `lts@8b67235` keeps the IBKR runner alive in a fail-closed
+  `waiting_for_quote` state during TWS market-data contention, canonicalizes
+  terminal cumulative fills within numeric tolerance, and labels future L0
+  evidence with its actual venue. The full LTS suite passes `530` tests.
 
 Decision 2026-07-29: the v1 USDCAD swarm is invalid for champion selection.
 One annual validation trade was sufficient to pass its gate, allowing a
@@ -846,7 +871,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead | `lts`, `agent-multi` | l1_a_e_verified_f0_corrections_required | Accepted zero-network L0 unchanged; IBKR L1 corrections 063-068 and Milestones A-E independently reproduced at `lts@be6019a4` (164 focused, 467 full). Independent counterexamples opened 069-074: post-ack protection loss, unbounded flatten reversal, invisible partial fills, weakened restart identity, zero-call crash stall and flatten lifecycle bypass. Runner remains disabled; Milestone F and every broker write remain blocked | Satoshi III corrects F0; Musashi verifies; Harvey alone may later activate Paper canary |
+| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | selected_model_paper_active_mt5_ea_pending | Findings 069-074 corrected and independently reproduced; Alpaca SPY and IBKR USDCAD selected-model runners active with mandatory native SL/TP, model-hash verification, atomic heartbeats and restart-safe lifecycle. First IBKR Paper bracket/recovery cycle recorded; reconnect defect 075, quote-liveness defect 076, fill-canonicalization defect 077 and evidence-label defect 078 corrected through `lts@8b67235`, pending independent verification. MT5 backend active but old read-only EA still blocks bars and commands | Satoshi III independently verifies 075-078 and continuity contract; Harvey installs MT5 execution EA; no Live activation |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
@@ -878,14 +903,12 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Keep Alpaca and IBKR read-only observers and their functional-freshness
-   watchdog active. Correct IBKR L1 findings 069-074 under work package F0,
-   then implement and independently verify the real client in zero-submit
-   Milestone F with a fresh connected read-only preflight. Do not enable an
-   order before that review and a separate owner activation.
-   The MCP tooling research does not delay this path: build the internal
-   SQLite evidence MCP only after F0 is green or while it awaits review, and
-   trial Context7 only if F1 leaves a named `ib_async` question unresolved.
+1. Keep Alpaca SPY and IBKR USDCAD Paper selected-model runners active and
+   verify their direct broker facts and atomic heartbeats. Independently audit
+   reconnect correction 075 at `lts@cffdc13`. Replace the Dragon MT5 read-only
+   EA with `LtsMt5ModelBridge.mq5`, then require a fresh ETHUSD H4 model signal,
+   command acknowledgement and direct native SL/TP evidence. No Live account
+   or capital is authorized. The MCP tooling work must not delay this path.
 2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
    job. At the end of stage 1, record the declared duration decision point and
    continue automatically unless evidence, safety or lineage invariants fail.

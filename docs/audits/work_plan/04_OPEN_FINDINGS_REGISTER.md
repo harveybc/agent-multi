@@ -558,12 +558,21 @@ IBKR L1 because the integrated path exposed the following new findings:
 
 | ID | Sev | State | Title | Owner |
 | --- | --- | --- | --- | --- |
-| AUD-F2-20260803-069 | S2 | open, blocks IBKR L1 | Protection can disappear after initial acknowledgement; parent fill is accepted using synthetic planned SL/TP legs without current broker verification | Satoshi III |
-| AUD-F2-20260803-070 | S2 | open, blocks IBKR L1 | Flatten trusts outbox delta/current account and can increase or reverse direct broker exposure before reconciliation | Satoshi III |
-| AUD-F2-20260803-071 | S2 | open, blocks IBKR L1 | Partial fills create broker exposure invisible to L0 because fill sync requires terminal `Filled` and assumes full requested quantity | Satoshi III |
-| AUD-F2-20260803-072 | S2 | open, blocks IBKR L1 | Restart rebuilds a mutable bracket and drops capability `contract_con_id`, weakening acknowledgement identity | Satoshi III |
-| AUD-F2-20260803-073 | S3 | open, blocks IBKR L1 | Crash after capability/effect commit but before first call remains `journaled_pending` forever and stalls the canary | Satoshi III |
-| AUD-F2-20260803-074 | S3 | open, blocks IBKR L1 | L1 flatten appends lifecycle directly because accepted L0 protection semantics are not intent-class-aware | Satoshi III |
+| AUD-F2-20260803-069 | S2 | independently_verified_pending_owner_closure | Protection can disappear after initial acknowledgement; parent fill is accepted using synthetic planned SL/TP legs without current broker verification | owner closure |
+| AUD-F2-20260803-070 | S2 | independently_verified_pending_owner_closure | Flatten trusts outbox delta/current account and can increase or reverse direct broker exposure before reconciliation | owner closure |
+| AUD-F2-20260803-071 | S2 | independently_verified_pending_owner_closure | Partial fills create broker exposure invisible to L0 because fill sync requires terminal `Filled` and assumes full requested quantity | owner closure |
+| AUD-F2-20260803-072 | S2 | independently_verified_pending_owner_closure | Restart rebuilds a mutable bracket and drops capability `contract_con_id`, weakening acknowledgement identity | owner closure |
+| AUD-F2-20260803-073 | S3 | independently_verified_pending_owner_closure | Crash after capability/effect commit but before first call remains `journaled_pending` forever and stalls the canary | owner closure |
+| AUD-F2-20260803-074 | S3 | independently_verified_pending_owner_closure | L1 flatten appends lifecycle directly because accepted L0 protection semantics are not intent-class-aware | owner closure |
+
+### 1q. Selected-model Paper continuity audit, 2026-08-03
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260803-075 | S3 | implemented_pending_independent_verification | After TWS reconnect, a filled parent disappeared from open-order facts although its completed-order and execution facts remained available; exact bracket verification therefore invoked fail-closed recovery. `lts@cffdc13` joins completed orders to executions strictly by permanent order id and reconstructs only directly evidenced completed parents. | Satoshi III verifies; owner closes |
+| AUD-F2-20260803-076 | S4 | implemented_pending_independent_verification | Temporary TWS quote unavailability (`10197`, competing market-data session) made the continuous Paper runner exit and enter a systemd restart loop. `lts@8b67235` records `waiting_for_quote`, submits zero orders, keeps monitoring and retries without process churn. | Satoshi III verifies; owner closes |
+| AUD-F2-20260803-077 | S3 | implemented_pending_independent_verification | A cumulative fill within floating-point tolerance of the requested quantity could be classified terminal while retaining a non-exact `filled_units`, violating the execution contract and stalling reconciliation. `lts@8b67235` canonicalizes the terminal amount and rejects negative cumulative facts. | Satoshi III verifies; owner closes |
+| AUD-F2-20260803-078 | S4 | implemented_pending_independent_verification | The venue-neutral L0 serializer labeled Alpaca evidence as `ibkr_paper.bracket.v1`. `lts@5cc606f` binds future protected-intent evidence to the actual venue; historical append-only payloads remain unchanged. | Satoshi III verifies; owner closes |
 
 ## 2b. Observations Pending Verification (not yet findings)
 
