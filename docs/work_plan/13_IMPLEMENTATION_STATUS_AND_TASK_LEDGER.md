@@ -92,6 +92,11 @@ execution controlled only by hash-bound selected-model manifests:
 - OANDA MT5 Demo has its bridge backend and ETHUSD H4 selected-model runner
   active on Dragon. It remains at zero bars and zero commands until the owner
   replaces the attached read-only EA with `LtsMt5ModelBridge.mq5`.
+- Dragon now persistently attaches optical media
+  `/home/harveybc/VirtualMachines/lts-mt5-bridge-8b67235.iso` to the Windows
+  VM as `D:\` with volume label `LTS_MT5_BRIDGE`. It contains the exact EA and
+  install guide from `lts@8b67235`; ISO SHA-256 is
+  `706dac4d759554c405d92ec0e3b936427c565f3880a22fed1c9c3579882fd3b1`.
 - all three runners write atomic heartbeats, hot-reload verified manifests,
   drain an old model before replacement, and seed the replacement session
   from actual post-close broker cash/equity. No Live account is authorized.
