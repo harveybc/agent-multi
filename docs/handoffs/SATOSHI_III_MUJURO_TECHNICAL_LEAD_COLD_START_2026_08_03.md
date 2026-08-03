@@ -142,6 +142,11 @@ campaign mutation authorities or model-promotion authorities.
 
 Read each file from disk before editing code:
 
+Before item 1, read and apply the
+[Codebase Memory MCP operating specification](/home/harveybc/Documents/GitHub/agent-multi/docs/handoffs/CODEBASE_MEMORY_MCP_OPERATING_SPEC_2026_08_03.md).
+Use its graph-first discovery workflow for code, while reading every document,
+configuration and runtime artifact in this list directly from disk.
+
 1. [Role-swap protocol](/home/harveybc/Documents/GitHub/agent-multi/docs/handoffs/TEMPORARY_MUSASHI_SATOSHI_ROLE_SWAP_PROTOCOL_2026_08_01.md)
 2. [Prior successor cold start](/home/harveybc/Documents/GitHub/agent-multi/docs/handoffs/GENERAL_SATOSHI_II_NOVICE_TECHNICAL_LEAD_PROMPT_2026_08_01.md)
 3. [Current work-plan index](/home/harveybc/Documents/GitHub/agent-multi/docs/work_plan/README.md)
