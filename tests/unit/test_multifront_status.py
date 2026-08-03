@@ -302,6 +302,43 @@ def test_malformed_live_plan_hash_excludes_job_not_raises(tmp_path, monkeypatch)
     assert any("malformed" in r for r in reasons)
 
 
+def test_per_account_stats_are_exposed_without_balances(tmp_path):
+    import json as jsonlib
+    fixture = _watchdog_fixture()
+    fixture["alpaca"]["detail"].update({
+        "account_fingerprint": "fp-alp", "environment": "paper",
+        "account_status": "ACTIVE", "account_shorting_enabled": True,
+        "protected_execution_eligible": False, "quotes_received": 42,
+        "orders_submitted": 0, "balance": 99999.0,  # must NOT surface
+    })
+    fixture["mt5"].update({
+        "heartbeat": {"age_seconds": 5.0, "environment": "demo",
+                      "connected": True, "terminal_build": 6090,
+                      "trade_allowed": True},
+        "counts": {"heartbeats": 5113},
+    })
+    wd = tmp_path / "wd.json"
+    wd.write_text(jsonlib.dumps(fixture))
+    packet = collect(
+        snapshot_path=tmp_path / "m.json", watchdog_path=wd,
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+        l0_heartbeat_path=tmp_path / "no-hb.json",
+        l0_db_path=tmp_path / "no-l0.sqlite",
+    )
+    accounts = packet["fronts"]["f2_business_reality"]["accounts"]
+    assert accounts["alpaca_paper"]["account_fingerprint"] == "fp-alp"
+    assert accounts["alpaca_paper"]["quotes_received"]["value"] == 42
+    assert accounts["oanda_mt5_demo"]["environment"] == "demo"
+    assert accounts["ibkr_paper"]["mode"] == "read_only"
+    assert "99999" not in json_dumps_all(accounts)  # injected balance stays out
+
+
+def json_dumps_all(value):
+    import json as jsonlib
+    return jsonlib.dumps(value)
+
+
 def test_l0_runner_heartbeat_and_ledger_are_exposed(tmp_path):
     import json as jsonlib
     import sqlite3 as sqlite3lib
