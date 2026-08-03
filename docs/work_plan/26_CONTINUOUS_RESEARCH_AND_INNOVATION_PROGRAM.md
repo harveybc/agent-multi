@@ -112,6 +112,7 @@ These are hypotheses to investigate, not novelty or performance claims.
 | P17 | Byzantine and Sybil extensions | What additional authentication, membership and economic assumptions are sufficient for adversarial peers? | Explicit threat matrix and signed-message prototype |
 | P18 | Theory of proof-of-optimization | Under what conditions is an optimization improvement costly to produce, cheap to verify and resistant to replay or plagiarism? | Definitions, counterexamples and complexity bounds |
 | P19 | Functional-versus-liveness health probes | Do contract-level probes detect silent service failures earlier than heartbeat, port and process checks at acceptable false-alert cost? | Replay the IBKR incident plus bounded injected service states |
+| P20 | Solvency-relaxed chronological RL curriculum | Does train-only liquidation, penalized recapitalization and chronological continuation improve realistic-validation learning versus hard bankruptcy reset or randomized-start reset? | Instrument termination causes, then run one paired-seed CPU A/B/C without changing job 0 or job 1 |
 
 ## 7. Prioritization
 
@@ -132,7 +133,11 @@ of the measured 8.42% aggregate tail-barrier idle in three complete
 generations. P7, P9, P13 and P19 receive bounded collision tests because they
 reuse existing evidence. P14 is deferred until real inference traces exist;
 P17 and P18 remain H2 until their assumptions and formal definitions are
-credible.
+credible. P20 is admitted from the owner's historical NEAT observation after
+a primary-literature collision test; its broad curriculum mechanism is prior
+art, while the narrower chronological insolvency design remains a falsifiable
+candidate contribution. It cannot consume campaign GPUs or alter a
+materialized domain before termination telemetry and the CPU pilot exist.
 
 ## 8. Cadence and Outputs
 

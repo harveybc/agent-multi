@@ -472,6 +472,26 @@ instead of exercising lifecycle mechanics. `AT-F2-040` remains
 Findings 041, 042, 047 and 048 remain open under the connected failures 054,
 055 and 056. No L1 broker write is authorized.
 
+### 1m. Solvency-relaxation curriculum collision test, 2026-08-02 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_SOLVENCY_RELAXATION_CURRICULUM_2026_08_02.md`
+
+The owner's historical NEAT observation is accepted as a credible research
+prior and registered as P20. It does not alter job 0 or job 1: 12,966 visible
+current-campaign evaluation summaries remain far above the inherited 1%
+equity floor, while stochastic training termination causes are unobservable.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260802-059 | S4 | open, blocks P20 measurement only | `gym-fx` collapses insolvency and natural data exhaustion into one boolean; training/candidate/OLAP evidence cannot measure termination cause | Lieutenant Satoshi II |
+
+The approved diagnostic design compares realistic hard reset, penalized
+liquidation-plus-recapitalization with chronological continuation, and a
+deterministic randomized-start control. Every arm is selected under realistic
+solvency. No GPU run or campaign mutation is authorized by this registration.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

@@ -856,7 +856,8 @@ cTrader Copy for `protected_entry_unavailable`.
 | `AT-QUAL-024` | Codex + Satoshi verification | `agent-multi`, `gym-fx`, `lts` | invariants_4_9_10_complete | End-to-end unavailable-market no-fill, stale-signal non-expansion and exact virtual-cell net-target identity; remaining invariant fixtures retain their published order | Codex |
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
-| `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P18 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
+| `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
+| `SOLVENCY-CURRICULUM-001` | Lieutenant Satoshi II + Musashi verification | `gym-fx`, `agent-multi` | research_admitted_instrumentation_blocked | P20 train-only solvency curriculum; first expose termination causes, then compare hard reset, penalized chronological continuation and randomized-start controls under immutable realistic validation | Harvey |
 
 Claude packet:
 
