@@ -492,6 +492,38 @@ liquidation-plus-recapitalization with chronological continuation, and a
 deterministic randomized-start control. Every arm is selected under realistic
 solvency. No GPU run or campaign mutation is authorized by this registration.
 
+### 1n. L0 acceptance and MT5 AT-F2-006, 2026-08-02 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_L0_ACCEPTANCE_AND_MT5_AT_F2_006_2026_08_02.md`
+
+State changes independently verified against Satoshi II's implementation:
+
+- 053-058 -> `verified_closed`;
+- connected findings 041, 042, 047 and 048 -> `verified_closed`;
+- `AT-F2-040` -> `verified_passed`;
+- the post-packet settled-exposure retry defect fixed at `lts@77bf02e` is
+  classified S4 and `verified_closed` in the same independent pass.
+
+Evidence includes 68 focused and 303 full LTS tests, 95 contract tests, 16
+provider-mechanics tests, 431 agent-multi tests, direct read-only ledger
+reconstruction, valid lifecycle hash-chain verification and a controlled
+service restart with no duplicate effects or network submissions.
+
+New MT5 write-readiness findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260802-060 | S2 | open, blocks MT5 L1 only | Reviewed and deployed MT5 EA is read-only, has no command path, and running EX5/source provenance is not attested | Lieutenant Satoshi II |
+| AUD-F2-20260802-061 | S2 | open, blocks MT5 L1 only | Deployed MT5 account-fingerprint allowlist is empty and therefore fail-open | Lieutenant Satoshi II |
+| AUD-F2-20260802-062 | S3 | open, blocks MT5 L1 only | MT5 bridge reads unbounded request bodies before authentication | Lieutenant Satoshi II |
+
+These findings do not block the IBKR Paper L1 path. The protection gate is
+amended for owner ratification: the first minimum-size bracket canary is the
+native-protection verification instrument, with complete parent/SL/TP group
+transmission and deterministic flatten/hold on any ambiguous evidence.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

@@ -53,7 +53,7 @@ explored by Satoshi at full token cost.
 | AT-GEN-010 | GEN | scheduled | Doc-drift delta sweep: doc 13 refresh vs runtime; verify open findings still reproduce | every 24 h delta session | git log delta, snapshot diff |
 | AT-F1-004 | F1 | proposed | Reconstruct weekly/annual return and RAP for the current champion from atomic OLAP facts; confirm no unit mixing on dashboard | after first stable champion | OLAP extract |
 | AT-F1-005 | F1 | proposed | Dataset/manifest SHA verification across all four workers vs versioned manifest | with AT-F1-001 or remote access | per-host hash listing |
-| AT-F2-006 | F2 | proposed | MT5 EA source security review: HMAC, nonce persistence, timestamp window, demo-only, firewall allowlist | before EA attach/canaries | EA source snapshot |
+| AT-F2-006 | F2 | **reported_changes_required** | MT5 read-only bridge passes HMAC, nonce, timestamp and demo/read-only checks, but no write EA exists; deployed account allowlist is empty and request bodies are unbounded (findings 060-062) | Satoshi correction/implementation packet | `../AUDIT_L0_ACCEPTANCE_AND_MT5_AT_F2_006_2026_08_02.md` |
 | AT-F1-007 | F1 | proposed | L1 contract spot-check: patience 60/floor 40/best-checkpoint restore actually wired; `epoch_timesteps` derivation recorded | 72 h rotation | resolved config extract |
 | AT-F3-008 | F3 | proposed | Social S0/S1 pre-activation review: allowlist, injection fixtures, budget caps, publishing disabled | before S1 activation | spec/config diff |
 | AT-GEN-008 | GEN | proposed | Continuity evidence: evidence-pool snapshot hashes exist and verify; backup retention matches doc 13 section 6 | monthly slot | hash listing, `quick_check` results |
@@ -69,7 +69,7 @@ explored by Satoshi at full token cost.
 | AT-GEN-037 | GEN | owner-ratified proposed | Measure role-swap recovery time discrepancies lost artifacts unsupported claims unsafe actions and token cost | handback checkpoint | symmetric handback packet and metric reconstruction |
 | AT-ACADEMIC-038 | GEN | owner-ratified proposed permanent | Verify event-driven audit triggers and use no-delta capacity for citation and academic work without runtime polling | next cadence implementation and academic cycle | trigger log cost accounting and publication deltas |
 | AT-F2-039 | F2 | scheduled | Audit document 29 before L0 order-authority implementation: agent isolation sizing/cap coherence calibration direction stage falsifiability and deterministic kill-switch coverage | next bounded Front-2 audit; no order activation | doctrine threat model and bounded findings |
-| AT-F2-040 | F2 | proposed event | Verify L0 dry run produces protected intents with mandatory SL/TP idempotency and netting while submitting exactly zero orders | L0 evidence packet | direct broker counts plus persisted dry-run facts |
+| AT-F2-040 | F2 | **verified_passed** | L0 produces protected intents with mandatory SL/TP, atomic idempotency, route binding, crash recovery and valid lifecycle facts while submitting exactly zero orders | complete; proceed to IBKR L1 implementation | `../AUDIT_L0_ACCEPTANCE_AND_MT5_AT_F2_006_2026_08_02.md` |
 | AT-F2-041 | F2 | proposed event | Verify L1 canary reconciliation protection restart deduplication and emergency flatten | owner-approved L1 attempt only | broker acknowledgements and atomic lifecycle facts |
 | AT-F1-042 | F1 | proposed event | Verify first demo-observation-to-scenario calibration packet and new-domain boundary provenance | first calibration packet | immutable observations transform config and domain hash |
 | AT-GEN-043 | GEN | scheduled event | Verify General Satoshi II cold-start reconstruction preserved dirty state and continued without unsafe runtime or authority action | successor resumption report | baseline delta repo heads safety checks and role-swap metrics |
@@ -278,3 +278,16 @@ Acceptance requires all of the following in one bounded return:
 
 Canonical audit:
 `../AUDIT_SATOSHI_II_L0_INTEGRATED_PACKET_2026_08_02.md`.
+
+## 7. L0 Acceptance and L1 Priority, 2026-08-02
+
+Corrections 053-058 were independently reproduced at `lts@77bf02e` with 68
+focused and 303 full LTS tests, 95 contract tests, 16 provider-mechanics tests
+and 431 agent-multi tests. The live ledger contains three legal protected
+lifecycles, signed long/short exposure, a valid hash chain and restart-safe
+idempotency with zero submissions. `AT-F2-040` is `verified_passed`.
+
+The next critical-path task is the IBKR Paper L1 write adapter and protected
+canary packet. `AT-F2-006` was also executed: MT5 remains valid read-only
+evidence but findings 060-062 block MT5 write activation. P20 is below this
+Front-2 sequence.

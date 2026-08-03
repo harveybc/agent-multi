@@ -402,3 +402,21 @@ def test_missing_sources_become_unavailable_not_invented(tmp_path):
     assert states <= QUEUE_STATES
     # nothing invented: fronts that failed carry no fabricated values
     assert "f2_business_reality" not in packet["fronts"]
+
+
+def test_l1_queue_names_the_current_execution_dependency(tmp_path):
+    packet = collect(
+        snapshot_path=tmp_path / "missing.json",
+        watchdog_path=tmp_path / "missing2.json",
+        social_db_path=tmp_path / "missing.sqlite",
+        supervisor_url="http://127.0.0.1:1",
+        timeout=0.1,
+        l0_heartbeat_path=tmp_path / "missing-hb.json",
+        l0_db_path=tmp_path / "missing-l0.sqlite",
+    )
+    l1 = next(item for item in packet["queue"]
+              if item["id"] == "ibkr-paper-l1-canary")
+    assert l1["state"] == "dependency_blocked"
+    assert "IBKR write adapter" in l1["dependency"]
+    assert "owner single-use activation" in l1["dependency"]
+    assert "24-hour" not in l1["dependency"]

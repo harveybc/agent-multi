@@ -490,10 +490,13 @@ def collect(
             queue.append(entry)
     queue.append(
         {
-            "id": "protected-canaries-m3",
+            "id": "ibkr-paper-l1-canary",
             "front": "f2",
             "state": "dependency_blocked",
-            "dependency": "24-hour continuous windows + owner review (doc 22 M2->M3)",
+            "dependency": (
+                "IBKR write adapter + independent zero-submit preflight + "
+                "owner single-use activation (doc 29 L1)"
+            ),
             "hashes": {},
         }
     )
