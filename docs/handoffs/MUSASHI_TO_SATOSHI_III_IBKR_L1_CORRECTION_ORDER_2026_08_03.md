@@ -12,6 +12,7 @@ Broker write authority granted by this order: none
 1. [Independent A-E audit](/home/harveybc/Documents/GitHub/agent-multi/docs/audits/AUDIT_SATOSHI_III_IBKR_L1_MILESTONES_A_E_2026_08_03.md)
 2. [Independent reproducer](/home/harveybc/Documents/GitHub/agent-multi/docs/audits/evidence/IBKR_L1_MILESTONES_A_E_REPRO_2026_08_03.py)
 3. [Codebase Memory operating specification](/home/harveybc/Documents/GitHub/agent-multi/docs/handoffs/CODEBASE_MEMORY_MCP_OPERATING_SPEC_2026_08_03.md)
+4. [MCP tooling research disposition](/home/harveybc/Documents/GitHub/agent-multi/docs/handoffs/MUSASHI_DISPOSITION_SATOSHI_III_MCP_TOOLING_RESEARCH_2026_08_03.md)
 
 Reproduce all five counterexamples before editing. Findings 069-074 are yours
 to correct and General Musashi's to verify. Do not close them yourself.
@@ -96,7 +97,15 @@ Front 2 P0:
 - derive finalized-anchor history from existing DOIN chain/OLAP facts, without
   creating a second ledger; and
 - document the Paper-canary decision-to-submit latency distribution once real
-  read-only timestamps exist.
+  read-only timestamps exist;
+- implement `DEV-TOOLING-MCP-001`, the project-owned read-only SQLite evidence
+  MCP, only after F0 is green or while F0 waits for independent review; and
+- run `DEV-TOOLING-MCP-002`, the bounded Context7 measurement, only at F1 and
+  only if installed `ib_async==2.1.0` source plus official documentation leave
+  a named API question unresolved.
+
+The two public SQLite MCP candidates reviewed on 2026-08-03 are rejected as
+shipped. Do not install either one or connect any MCP to a live project ledger.
 
 ## 6. Stop Conditions
 
