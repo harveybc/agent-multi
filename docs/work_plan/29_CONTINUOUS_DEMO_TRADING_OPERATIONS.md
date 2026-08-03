@@ -1,15 +1,16 @@
 # 29. Continuous Demo-Trading Operations and the Knowledge Loop
 
-Status: L0 independently accepted; IBKR Paper L1 implementation is P0
-Version: 1.1.0
-Date: 2026-08-01
+Status: continuous selected-model Paper/Demo execution active on Alpaca and IBKR; MT5 awaits execution-EA attachment
+Version: 1.2.0
+Date: 2026-08-03
 Author: Satoshi (temporary technical lead), on the owner's direction
 Owner decision required at: L1 activation, and each subsequent stage gate
 
 ## 1. The Gap This Document Closes
 
-Observed 2026-08-01 (`reproduced`): across Alpaca Paper, IBKR Paper, OANDA
-MT5 demo and the multi-venue shadow, **zero orders have ever been submitted**.
+Observed 2026-08-01 (`reproduced`): at that timestamp, across Alpaca Paper,
+IBKR Paper, OANDA MT5 demo and the multi-venue shadow, **zero orders had been
+submitted**.
 Only `lts/app/oanda_practice_lab.py` contains a canary path, and it targets a
 REST-v20 division this account cannot use. `prediction_provider` has no LTS
 wiring; nothing consumes a champion artifact to produce a live signal.
@@ -127,7 +128,7 @@ provenance → proposed scenario profile → **new domain hash at a job boundary
 gated and boundary-aligned. Together these two arcs are the owner's
 continuous-improvement cycle, made explicit.
 
-## 7. Immediate Executable Work (L0)
+## 7. Original L0 Dependency Order (completed)
 
 Dependency-ordered; all CPU-side, none touching the DOIN campaign:
 
@@ -228,3 +229,41 @@ verification instrument without relaxing mandatory SL+TP:
 
 This amendment requires owner ratification before activation. It changes the
 evidence ordering, not the mandatory-protection rule.
+
+## 12. Runtime Update: Selected-Model Multi-Venue Hands (2026-08-03)
+
+The owner authorized continuous small-size Paper/Demo execution. Current
+routes are deterministic and hash-bound; no LLM or Hermes process can create
+an order:
+
+| Venue | Selected route | Runtime state | Native protection |
+| --- | --- | --- | --- |
+| Alpaca Paper | `SPY@1d` / `spy-daily-linear-live-v1` | runner active; prior closed-bar signal consumed; flat pending next closed daily bar | one GTC native bracket with SL and TP |
+| IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | runner active; first short bracket and recovery cycle recorded; flat pending next closed H4 bar | TWS parent + TP + SL, exact identity verification |
+| OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | bridge and runner active; blocked at zero bars while the old read-only EA remains attached | new EA submits one market request containing both SL and TP |
+
+Each runner hot-reloads an atomic selected-model manifest and verifies model,
+artifact, configuration, asset and timeframe hashes. A changed selection does
+not inherit an old position: LTS drains the old route, records ending broker
+cash/equity, then starts the new model session from those actual post-close
+balances. An invalid replacement manifest keeps monitoring existing exposure
+but cannot add risk.
+
+The first real IBKR Paper cycle submitted one 20,000-unit short bracket. TWS
+accepted and filled the parent, retaining both GTC protection children. A
+restart then exposed a direct-fact reconstruction defect: the completed parent
+disappeared from open-order facts, so fail-closed recovery cancelled both
+children and flattened the position. The resulting Paper cost remains in the
+account and OLAP. `lts@cffdc13` joins `reqCompletedOrders` and execution facts
+strictly by permanent order id, preserving direct parent evidence after
+reconnect. The route minimum is now 25,000 units to avoid IDEALPRO odd-lot
+routing; stop risk remains capped at 0.00625% of Paper equity.
+
+Operational heartbeats are atomic and local for all three runners. Current
+files are:
+
+- `~/.local/state/lts/alpaca-model-runner-heartbeat.json`
+- `~/.local/state/lts/ibkr-model-runner-heartbeat.json`
+- `~/.local/state/lts/mt5-model-runner-heartbeat.json` on Dragon
+
+No Live account or real capital is authorized by this update.
