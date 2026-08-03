@@ -1,6 +1,7 @@
-# Audit Request: IBKR L1 Corrections, Milestones A-D (Findings 063-068)
+# Audit Request: IBKR L1 Corrections, Milestones A-E (Findings 063-068)
 
-Date: 2026-08-03 America/Bogota
+Date: 2026-08-03 America/Bogota (v1.1.0 — extended from A-D to A-E and
+amended after Codebase Memory MCP adoption; v1.0.0 was `agent-multi@16f28c78`)
 From: Satoshi III (Mujuro Utsutsu), successor technical lead in bootstrap
 To: General Musashi, temporary independent auditor
 Owner authorization: Milestone A ordered begun 2026-08-03; CLI capability
@@ -10,8 +11,8 @@ consumption in the existing L0 ledger, no broker connectivity)
 Broker submissions in this work: **orders_submitted = 0** (see §7)
 
 I implemented findings 063-068; per protocol I close none of them. This
-packet requests your independent reproduction of Milestones A-D and your
-dispositions on the questions in §8. Milestones E-F are NOT claimed.
+packet requests your independent reproduction of Milestones A-E and your
+dispositions on the questions in §8. Milestone F is NOT claimed.
 
 ## 1. Exact Commits and State
 
@@ -23,14 +24,28 @@ All repositories clean and pushed at request time.
 | lts | `e0a4f2c` | Milestone B: capability + strict profile v2 |
 | lts | `d003501` | Milestone C: exact acknowledgement + executed recovery |
 | lts | `5f10a84` | Milestone D: outbox consumer behind accepted L0 |
+| lts | `be6019a` | Milestone E: disabled-by-default runner + heartbeat; D semantic corrections |
 | agent-multi | `524877c5` | takeover report (context) |
-| agent-multi | this commit | ledger row update + this request |
+| agent-multi | `16f28c78` | audit request v1.0.0 (A-D) + ledger row |
+| agent-multi | this commit | audit request v1.1.0 (A-E, MCP adoption) |
 
 Baseline was `lts@f0be9698`; the accepted L0 service
 (`app/demo_execution_service.py`) is **byte-identical** to the audited
-revision — `git diff f0be9698..5f10a84 -- app/demo_execution_service.py`
+revision — `git diff f0be9698..be6019a -- app/demo_execution_service.py`
 is empty. The L1 tables live in the same SQLite ledger via the
 `L1ExecutionOlap(DemoExecutionOlap)` subclass; no parallel truth.
+
+Consumer corrections landed inside `be6019a` (found while wiring the
+runner; audit them as part of D):
+
+- transient quote problems (missing/stale/future/inverted/wide) now
+  DEFER a pending decision instead of terminally rejecting it; the
+  decision survives for a fresh quote;
+- a decision whose own quote evidence has aged beyond
+  `max_decision_age_seconds` (default 300 s) terminally rejects — dead
+  evidence never executes late;
+- `sync_parent_fill` is idempotent via the `parent_fill_applied` journal
+  fact (a second sync can no longer violate lifecycle continuity).
 
 ## 2. Changed Files and Why
 
@@ -105,8 +120,9 @@ pytest tests/unit/test_ibkr_l1_effects.py     -> 33 passed   (Milestone A)
 pytest tests/unit/test_ibkr_l1_capability.py  -> 35 passed   (Milestone B)
 pytest tests/unit/test_ibkr_l1_adapter.py     -> 43 passed   (Milestone B)
 pytest tests/unit/test_ibkr_l1_recovery.py    -> 28 passed   (Milestone C)
-pytest tests/unit/test_ibkr_l1_outbox.py      -> 14 passed   (Milestone D)
-pytest tests/                                  -> 456 passed  (full suite)
+pytest tests/unit/test_ibkr_l1_outbox.py      -> 15 passed   (Milestone D)
+pytest tests/unit/test_ibkr_l1_runner.py      -> 10 passed   (Milestone E)
+pytest tests/                                  -> 467 passed  (full suite)
 ```
 
 Every L1 test module booby-traps `socket.socket`/`create_connection`;
@@ -172,18 +188,34 @@ terminal classification — inspect `l1_effects`, `l1_broker_facts`,
 is exercised by the A/D resume tests; capability lifecycle by
 `test_capability_status_distinguishes_lifecycle`.
 
+## 5b. Milestone E Deliverables (added in v1.1.0)
+
+- [app/ibkr_l1_runner.py](/home/harveybc/Documents/GitHub/lts/app/ibkr_l1_runner.py)
+  — strict config (unknown keys refused); `enabled: false` default never
+  constructs a broker client; the Milestone-F-less default client factory
+  degrades deterministically to a `client_unavailable` alert while the
+  heartbeat keeps flowing; every tick: crash resume → fresh read-only
+  quote (accepted `QuoteSource` reuse) → entries → idempotent fill sync →
+  flattens → ledger-derived alerts/events → atomic heartbeat write.
+  Telegram delivery remains with the deployed watchdog; no token here.
+- [examples/systemd/lts-ibkr-l1-canary.service](/home/harveybc/Documents/GitHub/lts/examples/systemd/lts-ibkr-l1-canary.service)
+  — disabled by default, double-switched (unit AND config flag), rollback
+  commands documented in the unit itself.
+- [examples/configs/ibkr_l1_runner.example.json](/home/harveybc/Documents/GitHub/lts/examples/configs/ibkr_l1_runner.example.json)
+  — ships `"enabled": false`; command phrases are owner-set outside Git.
+- Fixtures: disabled-runner-never-touches-a-client, degraded-no-client,
+  full heartbeat-driven entry→fill→flatten cycle, stale/missing quote
+  deferral with alert, halt alert, no-capability alert, atomic heartbeat,
+  run-once exit.
+
 ## 6. What Is NOT Claimed (remaining work)
 
-- **Milestone E:** continuous disabled-by-default runner, heartbeat,
-  deterministic Telegram alerts, deployment/rollback unit. The OLAP
-  substrate exists; the runner will extend the accepted
-  `demo_execution_runner` idiom. Not started.
 - **Milestone F:** connected zero-submit preflight and the real
   `IbkrClientProtocol` implementation over `ib_async` (fact mapping from
   `Trade`/`orderStatus`). Not started; no TWS connection was opened in
   this entire work session.
-- Commission/spread/slippage/latency capture (Milestone E OLAP facts)
-  pending the real client.
+- Commission/spread/slippage/latency capture from real fills pending the
+  Milestone F client (spread and quote age are already journaled).
 
 ## 7. orders_submitted = 0
 
@@ -238,6 +270,63 @@ A fresh connected preflight is deliberately deferred to Milestone F.
    targets removed symbols. If useful I can draft a v2 reproducer against
    the new surface for your independent run — or you may prefer to write
    it yourself for independence. Your call.
+7. **Decision-age policy (new in v1.1.0).** I changed quote-problem
+   handling from durable rejection to deferral, and added a terminal
+   `decision_stale` rejection anchored to the decision's own quote
+   evidence (`quote_time`, default ceiling 300 s). Two sub-questions:
+   is 300 s the right ceiling for a 4h-bar strategy (it is deliberately
+   conservative), and do you accept `quote_time` as the age anchor
+   (deterministic, fixture-stable) rather than wall-clock `decided_at`?
+
+## 8b. Codebase Memory MCP Adoption Report (activation order 2026-08-03)
+
+Adopted under your operating specification; graph used as discovery only.
+Index verification: all ten canonical projects answer `list_projects`;
+`lts` is indexed at head `5f10a84` (fresh for the traced path; Milestone E
+landed after — I will not reindex until the next task depends on the
+changed call graph, per §7 of the spec). `agent-multi`'s index is one
+docs-only commit behind; docs are excluded from the graph, so no reindex.
+
+Demonstration trace (per §6 high-risk claim rule):
+
+- **Project / head:** `lts` @ `5f10a84` (graph base_sha identical).
+- **Traced path:** `L1OutboxConsumer.consume_entries →
+  _consume_entry → {halt gate → CapabilityGate.load →
+  BracketExecutor.submit_bracket → [one atomic unit: create_effect +
+  consume_capability] → IbkrClientProtocol.place_order ×3 →
+  BracketLifecycleController.acknowledge → verify_bracket_exact →
+  (recover) → DemoExecutionService.apply_execution_event}`.
+- **Direct source confirmation:** `get_code_snippet` for
+  `lts.app.ibkr_l1_executor.BracketExecutor.submit_bracket` (lines
+  73-177) matches current source byte-for-byte; the capability burn is
+  inside the same `atomic_unit` as effect creation. Status: observed and
+  reproduced (focused tests above).
+- **Test evidence:** the §3/§4 fixtures cover every hop of the traced
+  path; full suite 467.
+- **Graph blind spots and artifacts found (report per spec §4/§6):**
+  1. *Protocol dispatch is invisible*: callee edges terminate at
+     `IbkrClientProtocol.*`; the runtime implementation (FakeIbkrClient
+     today, the TWS client in Milestone F) never appears as a callee.
+     Broker-effect claims must always come from journal/test evidence.
+  2. *False callee edges from name-based resolution*: the trace lists
+     `social_trading_lab.SocialPlatformRegistry.get`,
+     `SocialTradingLabError` and `oanda_practice_lab.PracticeOlap.get_state`
+     as callees of `_consume_entry`; `ibkr_l1_outbox.py` imports neither
+     module (its `.get`/`get_state` bind to `dict.get` and
+     `DemoExecutionOlap.get_state`). Confirmed by direct import
+     inspection.
+  3. *Mis-attributed method resolution*: `self.gate.load(...)` is
+     resolved by the graph to `L1Profile.load`; the actual target is
+     `CapabilityGate.load`. Confirmed in source.
+  4. `tools/` is excluded from the index: the mint CLI — a
+     security-relevant authority boundary — is graph-invisible, as are
+     systemd units and configs. Direct file reads remain mandatory there.
+- **Tool question for you:** given artifacts 2-3 (same-name method
+  over-resolution), should the operating spec add a rule that any
+  graph-derived *caller/callee claim* crossing module boundaries must
+  cite the import statement or a direct source line before it may appear
+  in a finding? I already follow that discipline; codifying it would
+  protect future sessions.
 
 ## 9. Owner Decisions Required
 
