@@ -1,7 +1,7 @@
 # 29. Continuous Demo-Trading Operations and the Knowledge Loop
 
-Status: doctrine and staged plan; no order path enabled
-Version: 1.0.0
+Status: L0 independently accepted; IBKR Paper L1 implementation is P0
+Version: 1.1.0
 Date: 2026-08-01
 Author: Satoshi (temporary technical lead), on the owner's direction
 Owner decision required at: L1 activation, and each subsequent stage gate
@@ -96,6 +96,13 @@ distorting; large enough that fills, fees and financing are real.
 | **L3** *(multi-cell + venue routing)* | 3+ cells, capability-aware routing, virtual-sleeve netting proven, weekly rebalance | Netting identity holds (invariant 10), routing decisions logged with rejected alternatives |
 | **L4** *(model rotation)* | Champion promotion into the live channel at a boundary, previous release retained for instant rollback | One clean rotation with no position discontinuity; rollback rehearsed |
 | **L5** *(live decision)* | Separate owner/legal/capital decision — out of scope here | — |
+
+State update, 2026-08-02: L0 is independently accepted with three complete
+protected synthetic lifecycles over live demo quotes and exactly zero network
+submissions. The next task is not another shadow phase: it is the IBKR Paper
+adapter, zero-submit connected preflight and owner-authorized minimum-size
+long/short canary pair. MT5 remains observation-only until findings 060-062
+and its separate execution EA are corrected.
 
 ## 6. Knowledge Extraction → Feedback (the point of all of it)
 
@@ -204,3 +211,20 @@ These invariants are acceptance gates, not only tests. The running L0 health
 packet evaluates their persisted-ledger equivalents continuously. This packet
 also supplies a concrete Front-2 contribution toward audit finding 010's
 missing property/metamorphic layer.
+
+## 11. First-Canary Protection Verification Amendment
+
+Read-only observation cannot prove that a broker will accept both protective
+children. The first minimum-size IBKR Paper canary therefore serves as the
+verification instrument without relaxing mandatory SL+TP:
+
+1. construct parent, take-profit and stop-loss before submission;
+2. send parent and take-profit with `Transmit=false`;
+3. send stop-loss last with `Transmit=true` to transmit the group;
+4. require direct broker acknowledgement of all three orders;
+5. cancel/flatten and enter global hold on any missing, rejected or ambiguous
+   protection state;
+6. reconcile and flatten the long canary before beginning the short canary.
+
+This amendment requires owner ratification before activation. It changes the
+evidence ordering, not the mandatory-protection rule.
