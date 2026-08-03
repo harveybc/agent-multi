@@ -1,11 +1,11 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-08-01 02:14 America/Bogota
-Plan version: 1.23.3
-Current focus: run the protected-entry v2 optimization path to an exact
-champion handoff, collect independent read-only Alpaca/IBKR execution evidence,
-collect the active OANDA MT5 read-only observation window, and close
-independently reproduced audit findings without taking compute from DOIN
+Status timestamp: 2026-08-03 America/Bogota
+Plan version: 1.24.0
+Current focus: keep the protected-entry v2 optimization path running to an
+exact champion handoff; correct IBKR L1 findings 069-074 before implementing
+the real zero-submit client; continue independent read-only venue evidence;
+and close independently reproduced findings without taking compute from DOIN
 
 Immediate parallel runtime added on 2026-07-30:
 
@@ -846,7 +846,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead | `lts`, `agent-multi` | l1_milestones_a_d_implemented_awaiting_audit | Accepted zero-network L0 unchanged; IBKR L1 corrections for 063-068 implemented in `lts@0c51844..5f10a84`: exact fake-broker effects contract, owner-issued single-use capability (TTY mint CLI, fixed protected store, one bracket per capability, burn atomic in the L0 ledger), exact acknowledgement plus executed hold/cancel/flatten recovery, and the decisions-table outbox consumer enforcing long→flat→short→flat; runner/heartbeat/alerts (E) and connected zero-submit preflight (F) remain; full lts suite 456 green, zero sockets in tests | Musashi independent verification; Harvey activates |
+| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead | `lts`, `agent-multi` | l1_a_e_verified_f0_corrections_required | Accepted zero-network L0 unchanged; IBKR L1 corrections 063-068 and Milestones A-E independently reproduced at `lts@be6019a4` (164 focused, 467 full). Independent counterexamples opened 069-074: post-ack protection loss, unbounded flatten reversal, invisible partial fills, weakened restart identity, zero-call crash stall and flatten lifecycle bypass. Runner remains disabled; Milestone F and every broker write remain blocked | Satoshi III corrects F0; Musashi verifies; Harvey alone may later activate Paper canary |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
@@ -877,10 +877,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 ## 4. Immediate Next Tasks
 
 1. Keep Alpaca and IBKR read-only observers and their functional-freshness
-   watchdog active. Correct IBKR L1 findings 063-068, then independently
-   verify the real effects runner with fake-broker lifecycle tests and a fresh
-   connected zero-submit preflight. Do not enable an order before that review
-   and a separate owner activation.
+   watchdog active. Correct IBKR L1 findings 069-074 under work package F0,
+   then implement and independently verify the real client in zero-submit
+   Milestone F with a fresh connected read-only preflight. Do not enable an
+   order before that review and a separate owner activation.
 2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
    job. At the end of stage 1, record the declared duration decision point and
    continue automatically unless evidence, safety or lineage invariants fail.

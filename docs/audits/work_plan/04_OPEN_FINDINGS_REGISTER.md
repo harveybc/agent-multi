@@ -1,6 +1,6 @@
 # 04. Open Findings Register
 
-Version: 1.5.0
+Version: 1.6.0
 Date: 2026-08-03
 Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
 independent verifier per `../README.md` and dual-party findings go to Harvey.
@@ -543,6 +543,27 @@ adapter is not integrated into the accepted L0 runtime.
 | AUD-F2-20260803-066 | S2 | open, blocks IBKR L1 | L1 adapter is absent from the accepted L0 risk, outbox, lifecycle, runner and OLAP path | Satoshi III successor technical lead |
 | AUD-F2-20260803-067 | S3 | open, blocks IBKR L1 | L1 profile admits arbitrary venue/host and non-positive limits; declared quantity/distance/spread fields are unused | Satoshi III successor technical lead |
 | AUD-F2-20260803-068 | S4 | open, does not independently block L1 | Account evidence compares single-hash identity with double-hashed account-set identity and raises a false discrepancy | Satoshi III successor technical lead |
+
+### 1p. IBKR Paper L1 Milestones A-E independent audit, 2026-08-03
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_IBKR_L1_MILESTONES_A_E_2026_08_03.md`
+- `../evidence/IBKR_L1_MILESTONES_A_E_REPRO_2026_08_03.py`
+
+Corrections 063-068 reproduced: 164 focused and 467 full LTS tests pass.
+They are implemented and independently verified against their original defect
+statements, pending the role-swap closure protocol. This does not authorize
+IBKR L1 because the integrated path exposed the following new findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260803-069 | S2 | open, blocks IBKR L1 | Protection can disappear after initial acknowledgement; parent fill is accepted using synthetic planned SL/TP legs without current broker verification | Satoshi III |
+| AUD-F2-20260803-070 | S2 | open, blocks IBKR L1 | Flatten trusts outbox delta/current account and can increase or reverse direct broker exposure before reconciliation | Satoshi III |
+| AUD-F2-20260803-071 | S2 | open, blocks IBKR L1 | Partial fills create broker exposure invisible to L0 because fill sync requires terminal `Filled` and assumes full requested quantity | Satoshi III |
+| AUD-F2-20260803-072 | S2 | open, blocks IBKR L1 | Restart rebuilds a mutable bracket and drops capability `contract_con_id`, weakening acknowledgement identity | Satoshi III |
+| AUD-F2-20260803-073 | S3 | open, blocks IBKR L1 | Crash after capability/effect commit but before first call remains `journaled_pending` forever and stalls the canary | Satoshi III |
+| AUD-F2-20260803-074 | S3 | open, blocks IBKR L1 | L1 flatten appends lifecycle directly because accepted L0 protection semantics are not intent-class-aware | Satoshi III |
 
 ## 2b. Observations Pending Verification (not yet findings)
 
