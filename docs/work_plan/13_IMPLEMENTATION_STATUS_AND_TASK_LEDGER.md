@@ -846,7 +846,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Codex | `lts`, `agent-multi` | alpaca_ibkr_mt5_readonly_observers_active | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, capability snapshots, protected canaries and consolidated OLAP | Codex |
+| `MULTI-VENUE-PAPER-001` | Codex + successor technical lead | `lts`, `agent-multi` | l0_accepted_ibkr_l1_corrections_required | LTS global ledger, authenticated Alpaca/IBKR read-only observers, OANDA MT5 EA bridge, accepted zero-network L0; IBKR bracket translator/preflight retained while findings 063-068 block the real effects runner and protected canary | Successor technical lead + Musashi verification; Harvey activates |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
@@ -877,8 +877,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 ## 4. Immediate Next Tasks
 
 1. Keep Alpaca and IBKR read-only observers and their functional-freshness
-   watchdog active until each has at least 24 hours of continuous evidence. Do
-   not enable orders before capability review.
+   watchdog active. Correct IBKR L1 findings 063-068, then independently
+   verify the real effects runner with fake-broker lifecycle tests and a fresh
+   connected zero-submit preflight. Do not enable an order before that review
+   and a separate owner activation.
 2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
    job. At the end of stage 1, record the declared duration decision point and
    continue automatically unless evidence, safety or lineage invariants fail.
