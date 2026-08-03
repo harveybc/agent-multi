@@ -93,17 +93,18 @@ execution controlled only by hash-bound selected-model manifests:
   active on Dragon. It remains at zero bars and zero commands until the owner
   replaces the attached read-only EA with `LtsMt5ModelBridge.mq5`.
 - Dragon now persistently attaches optical media
-  `/home/harveybc/VirtualMachines/lts-mt5-bridge-8b67235.iso` to the Windows
+  `/home/harveybc/VirtualMachines/lts-mt5-bridge-ebdfec5.iso` to the Windows
   VM as `D:\` with volume label `LTS_MT5_BRIDGE`. It contains the exact EA and
-  install guide from `lts@8b67235`; ISO SHA-256 is
-  `706dac4d759554c405d92ec0e3b936427c565f3880a22fed1c9c3579882fd3b1`.
+  install guide from `lts@ebdfec5`; ISO SHA-256 is
+  `0aec27ecd25d172aa244a5de18ade18cea2e56150ede15852f1b2d35c4d1bb27`.
 - all three runners write atomic heartbeats, hot-reload verified manifests,
   drain an old model before replacement, and seed the replacement session
   from actual post-close broker cash/equity. No Live account is authorized.
-- `lts@8b67235` keeps the IBKR runner alive in a fail-closed
+- `lts@ebdfec5` keeps the IBKR runner alive in a fail-closed
   `waiting_for_quote` state during TWS market-data contention, canonicalizes
-  terminal cumulative fills within numeric tolerance, and labels future L0
-  evidence with its actual venue. The full LTS suite passes `530` tests.
+  terminal cumulative fills within numeric tolerance, labels future L0
+  evidence with its actual venue, and repairs the MT5 bar-JSON concatenation
+  compile error. The full LTS suite passes `531` tests.
 
 Decision 2026-07-29: the v1 USDCAD swarm is invalid for champion selection.
 One annual validation trade was sufficient to pass its gate, allowing a
