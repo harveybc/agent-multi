@@ -1,0 +1,46 @@
+{
+ "account": {
+  "environment": "paper",
+  "fingerprint": "0123456789abcdef",
+  "type_prefix": "DU"
+ },
+ "account_summary_tags": [
+  "AvailableFunds",
+  "BuyingPower",
+  "FullInitMarginReq",
+  "NetLiquidation"
+ ],
+ "connection": {
+  "client_id": 91,
+  "host": "127.0.0.1",
+  "ib_async": "2.1.0",
+  "port": 7497,
+  "readonly": true
+ },
+ "contract": {
+  "con_id": 12087792,
+  "exchange": "IDEALPRO",
+  "local_symbol": "EUR.USD",
+  "min_size": 0.01,
+  "min_tick": 5e-05,
+  "security_type": "CASH",
+  "size_increment": 0.01,
+  "suggested_size_increment": 0.01
+ },
+ "direct_state": {
+  "open_orders": 0,
+  "open_positions": 0,
+  "trades": 0
+ },
+ "market_state": {
+  "trading_hours_sample": "20260802:1715-20260803:1700"
+ },
+ "notes": [
+  "read-only connection; no order object was constructed against this session",
+  "USD.CAD remains unobserved on this account: EUR.USD selected per auditor order 4",
+  "account fingerprint differs from the 2026-08-02 session (9f9f5111...); the L1 profile binds to the fingerprint observed here and the adapter refuses any mismatch at connect time"
+ ],
+ "observed_at": "2026-08-03T06:00:28.951023+00:00",
+ "schema": "lts.ibkr_l1_zero_submit_preflight.v1",
+ "submissions": 0
+}
