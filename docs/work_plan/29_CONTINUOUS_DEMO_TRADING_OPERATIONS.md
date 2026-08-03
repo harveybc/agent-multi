@@ -244,7 +244,7 @@ an order:
 
 The Dragon Windows VM transfer CD is `D:\` with volume label
 `LTS_MT5_BRIDGE`. It contains `LtsMt5ModelBridge.mq5` and
-`INSTALL_LTS_MT5_MODEL_BRIDGE.md` from `lts@8b67235`; the optical-media change
+`INSTALL_LTS_MT5_MODEL_BRIDGE.md` from `lts@ebdfec5`; the optical-media change
 is live and persistent across VM restarts.
 
 Each runner hot-reloads an atomic selected-model manifest and verifies model,
