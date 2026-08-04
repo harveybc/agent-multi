@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper and social-trading reality commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
-Plan version: 1.25.0
-Date: 2026-08-01
+Plan version: 1.26.0
+Date: 2026-08-03
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -89,6 +89,7 @@ trading domain.
 | [29 Continuous demo-trading operations](29_CONTINUOUS_DEMO_TRADING_OPERATIONS.md) | Closing the order loop: control plane and agent boundaries, runtime execution cycle, small-`rel_volume` demo doctrine, staged L0-L5 rollout, kill switches, and the bidirectional knowledge/calibration loop with Fronts 1/3/4 |
 | [30 Front 5 multidomain program](30_FRONT5_MULTIDOMAIN_PROGRAM.md) | Evidence-gated expansion of DOIN beyond trading after the active fronts satisfy their resource and safety gates |
 | [31 OKF, GBrain and Hermes knowledge continuity](31_OKF_GBRAIN_HERMES_KNOWLEDGE_CONTINUITY.md) | Portable OKF knowledge, rebuildable local GBrain retrieval, Hermes cold-start recovery, cron verification and strict separation from runtime authority |
+| [32 Champion succession and regime research](32_CHAMPION_SUCCESSION_AND_REGIME_RESEARCH.md) | Exact-seat Paper/Demo succession, independent promotion evidence, synchronized replay, difficulty ablation and causal regime-specialist research |
 
 ## Repository Ownership Summary
 
@@ -231,6 +232,10 @@ adding value.
     three-venue audit: Git remains canonical, GBrain remains disposable,
     Hermes remains non-authoritative, and fleet rollout requires cold-start,
     cron, stale-state, failure and resource evidence.
+19. Operate exact-seat champion succession without idle Paper/Demo gaps: use
+    an independent promotion panel, paired block-bootstrap gate, seven-day
+    runtime shadow, flat-boundary drain/reseed and pre/post notice. Execute the
+    regime track only as sequential jobs in the canonical DOIN campaign queue.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
