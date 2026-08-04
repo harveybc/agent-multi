@@ -168,15 +168,16 @@ Lock-and-Exit settings so the scheduled logoff becomes a restart.
    code path, no manual SQLite). Runner redeployed; live state now
    `replayed_signal` with zero new submissions. The four Paper
    round-trip costs remain in the account as evidence.
-2. **IBKR L0 exposure row not closed by recovery.** Effect
-   `l1e-f4993c2dda8cdc2a` is `terminal_flat` and the broker is flat, but
-   exposure `exp-oi2-rsv-f4993c2dda8cdc2a` (USD.CAD −25,000) remains
-   `open`. Same class your `bc974d5` fixed for Alpaca; the IBKR
-   recovery-flatten path lacks the idempotent L0 closure. Consequence:
-   the continuity monitor honestly reports `exposure_state=unresolved`,
-   so a TWS loss right now pages P0 instead of P1 — conservative, not
-   dangerous. Not fixed this window (order-path change deserving your
-   review); recommend an explicit finding.
+2. **IBKR L0 exposure row not closed by recovery — FIXED post-packet.**
+   Effect `l1e-f4993c2dda8cdc2a` went `terminal_flat` with the broker
+   flat, but exposure `exp-oi2-rsv-f4993c2dda8cdc2a` (USD.CAD −25,000)
+   stayed `open`, consuming `max_concurrent_positions` — it would have
+   blocked the seat's first post-resume entry. `lts@83cc286` adds
+   `reconcile_terminal_exposures` (the `bc974d5` analog): closure +
+   reservation release only under terminal effect AND direct-evidence
+   flat route position; 6 adversarial tests; verified live — the row
+   closed at 2026-08-04T22:06:22Z on the runner's first tick after
+   redeploy. Please verify the repair alongside §6.1.
 3. **TWS API cache poisoning after 1100/1102** (evidence note, §4 item
    3): reconciliation should prefer executions/server-side queries over
    the open-order/position cache after a connectivity blip.
