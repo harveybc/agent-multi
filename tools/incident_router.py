@@ -176,6 +176,26 @@ def pending_recoveries(conn, config, now: datetime) -> list[dict]:
     return due
 
 
+def pending_recovery_forwards(conn) -> list[dict]:
+    """Non-owner hosts: locally-resolved incidents whose state was handed
+    to the owner (any notification/forward) but whose resolution has not
+    been forwarded yet. Resolution sync is independent of the recovery
+    MESSAGE policy — the owner ledger must never keep paging a condition
+    its source host has proven recovered."""
+    rows = conn.execute(
+        "SELECT * FROM incidents WHERE state='resolved'"
+        " AND notification_count > 0").fetchall()
+    due = []
+    for row in rows:
+        sent = conn.execute(
+            "SELECT 1 FROM incident_events WHERE incident_id=?"
+            " AND kind='recovery_forwarded' LIMIT 1",
+            (row["incident_id"],)).fetchone()
+        if sent is None:
+            due.append(dict(row))
+    return due
+
+
 def digest_due(conn, config, now: datetime) -> list[dict] | None:
     """Return unresolved P3 incidents once per UTC day after digest hour."""
     if now.hour < int(config.get("digest_hour_utc", 12)):
@@ -326,31 +346,52 @@ def run_pass(conn, config: dict, *, hostname: str, now: datetime,
                                     "incident_id": incident["incident_id"],
                                     "error": str(exc)[:200]})
 
-    for incident in pending_recoveries(conn, config, now):
-        message = format_recovery(incident)
-        if dry_run:
-            actions.append({"action": "would_notify_recovery",
-                            "incident_id": incident["incident_id"]})
-            continue
-        try:
-            if is_owner:
+    if is_owner:
+        for incident in pending_recoveries(conn, config, now):
+            message = format_recovery(incident)
+            if dry_run:
+                actions.append({"action": "would_notify_recovery",
+                                "incident_id": incident["incident_id"]})
+                continue
+            try:
                 transport(message, config)
-            else:
+            except Exception as exc:
+                actions.append({"action": "recovery_delivery_failed",
+                                "incident_id": incident["incident_id"],
+                                "error": str(exc)[:200]})
+                continue
+            with conn:
+                conn.execute(
+                    "INSERT INTO incident_events(incident_id, at, kind,"
+                    " detail_json) VALUES(?,?,?,?)",
+                    (incident["incident_id"], ledger.iso(now),
+                     "recovery_notified", json.dumps({"host": hostname})),
+                )
+            actions.append({"action": "recovery_notified",
+                            "incident_id": incident["incident_id"]})
+    else:
+        # Resolution sync to the owner: every severity, exactly once.
+        for incident in pending_recovery_forwards(conn):
+            if dry_run:
+                actions.append({"action": "would_forward_recovery",
+                                "incident_id": incident["incident_id"]})
+                continue
+            try:
                 recovery_forwarder(incident, config)
-        except Exception as exc:
-            actions.append({"action": "recovery_delivery_failed",
-                            "incident_id": incident["incident_id"],
-                            "error": str(exc)[:200]})
-            continue
-        with conn:
-            conn.execute(
-                "INSERT INTO incident_events(incident_id, at, kind,"
-                " detail_json) VALUES(?,?,?,?)",
-                (incident["incident_id"], ledger.iso(now),
-                 "recovery_notified", json.dumps({"host": hostname})),
-            )
-        actions.append({"action": "recovery_notified",
-                        "incident_id": incident["incident_id"]})
+            except Exception as exc:
+                actions.append({"action": "recovery_delivery_failed",
+                                "incident_id": incident["incident_id"],
+                                "error": str(exc)[:200]})
+                continue
+            with conn:
+                conn.execute(
+                    "INSERT INTO incident_events(incident_id, at, kind,"
+                    " detail_json) VALUES(?,?,?,?)",
+                    (incident["incident_id"], ledger.iso(now),
+                     "recovery_forwarded", json.dumps({"host": hostname})),
+                )
+            actions.append({"action": "recovery_forwarded",
+                            "incident_id": incident["incident_id"]})
 
     if is_owner:
         digest_rows = digest_due(conn, config, now)

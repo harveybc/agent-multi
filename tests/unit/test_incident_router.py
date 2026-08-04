@@ -280,3 +280,25 @@ def test_activation_message_is_redacted_and_actionable(tmp_path):
     assert "DU9999999" not in message
     assert "authenticate TWS Paper" in message
     assert "incident: INC-" in message
+
+
+def test_nonowner_forwards_recovery_for_every_severity(tmp_path):
+    """Resolution sync is independent of the recovery-message policy: a
+    P2 resolved on a worker must resolve on the owner too, exactly once
+    (found live during fleet acceptance on 2026-08-04)."""
+    conn = _conn(tmp_path)
+    _observe(conn, severity="P2", event_code="fleet_p2", machine="dragon")
+    _pass(conn, hostname="dragon", now=NOW)          # forwarded (handoff)
+    _recover(conn, event_code="fleet_p2", machine="dragon",
+             now=NOW + timedelta(minutes=5))
+    forwards = []
+    actions, transport = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(minutes=6),
+        recovery_forwarder=lambda i, c: forwards.append(i["incident_id"]))
+    assert [a["action"] for a in actions] == ["recovery_forwarded"]
+    assert len(forwards) == 1
+    assert transport.messages == []                  # no Telegram for P2
+    actions, _ = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(minutes=7),
+        recovery_forwarder=lambda i, c: forwards.append(i["incident_id"]))
+    assert actions == []                             # exactly once
