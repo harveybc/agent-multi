@@ -346,7 +346,18 @@ def main() -> int:
             if args.dry_run:
                 print(text)
             else:
-                send_telegram(text)
+                import incident_emit
+                code_names = {"gpu_count": "gpu_count",
+                              "nvidia_smi": "gpu_monitoring_failure"}
+                pairs = list(zip(sent_keys, messages))
+                failures = incident_emit.emit_watchdog_messages(
+                    source="gpu_temperature_watchdog", pairs=pairs,
+                    machine=args.machine, severity="P2",
+                    code_map=lambda key: code_names.get(
+                        key, incident_emit.sanitize_code(key)))
+                if failures:
+                    raise RuntimeError(
+                        f"{failures} incident emission(s) failed")
                 for key in sent_keys:
                     state["events"][key]["last_sent_at"] = now
                 state["last_notification_at"] = now

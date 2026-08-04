@@ -306,7 +306,25 @@ def main() -> int:
             if args.dry_run:
                 print(text)
             else:
-                send_telegram(text)
+                import incident_emit
+                if recovered:
+                    ok = incident_emit.recover_incident(
+                        source="memory_pressure_watchdog",
+                        event_code="memory_pressure",
+                        machine=args.machine,
+                        evidence={"summary": text.splitlines()[0][:200],
+                                  "severity": severity})
+                else:
+                    ok = incident_emit.observe_incident(
+                        source="memory_pressure_watchdog",
+                        event_code="memory_pressure", severity="P2",
+                        machine=args.machine,
+                        summary=text.splitlines()[0][:200],
+                        payload={"detail": text[:1500],
+                                 "pressure": severity,
+                                 "reasons": reasons})
+                if not ok:
+                    raise RuntimeError("incident emission failed")
                 state["last_notification_at"] = now
         else:
             print(

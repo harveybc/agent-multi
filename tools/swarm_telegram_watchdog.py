@@ -787,7 +787,33 @@ def main(argv: list[str] | None = None) -> int:
             if args.dry_run:
                 print(text)
             else:
-                send_telegram(text)
+                import incident_emit
+                failures = 0
+                # Completed jobs are routine progress, not incidents: they
+                # enter the ledger history (observe P3 + immediate direct
+                # recovery) and never page (owner decision 3, 2026-08-04).
+                completion_texts = messages[:len(completion_keys)]
+                for key, note in zip(completion_keys, completion_texts):
+                    ok = incident_emit.observe_incident(
+                        source="swarm_watchdog", event_code="job_completed",
+                        severity="P3", machine=node_id,
+                        affected_object=key,
+                        summary=note.splitlines()[0][:200],
+                        payload={"detail": note[:1500]})
+                    ok = ok and incident_emit.recover_incident(
+                        source="swarm_watchdog", event_code="job_completed",
+                        machine=node_id, affected_object=key,
+                        evidence={"summary": "completion recorded"})
+                    failures += 0 if ok else 1
+                event_texts = messages[len(completion_keys):]
+                event_pairs = list(zip(
+                    sent_event_keys + recovered_event_keys, event_texts))
+                failures += incident_emit.emit_watchdog_messages(
+                    source="swarm_watchdog", pairs=event_pairs,
+                    machine=node_id, severity="P2", front="front1")
+                if failures:
+                    raise RuntimeError(
+                        f"{failures} incident emission(s) failed")
                 for key in completion_keys:
                     completions[key]["notified_at"] = now
                 for key in sent_event_keys:
