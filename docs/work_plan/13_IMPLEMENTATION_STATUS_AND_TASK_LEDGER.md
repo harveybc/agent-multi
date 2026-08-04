@@ -1,7 +1,7 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-08-03 America/Bogota
-Plan version: 1.27.0
+Plan version: 1.28.0
 Current focus: keep the protected-entry v2 optimization path running to an
 exact champion handoff; operate selected-model Alpaca, IBKR Paper and MT5 Demo
 runners continuously with mandatory native SL/TP; and preserve independently
@@ -910,6 +910,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
+| `CHAMPION-SUCCESSION-001` | Satoshi III + Musashi verification | `agent-multi`, `lts`, OLAP views | doctrine_v1_1_pending_independent_verification | Exact-seat succession, independent promotion panel, paired block-bootstrap gate, synchronized replay, no-idle Paper/Demo switch and causal sequential regime track | Harvey |
 
 Claude packet:
 
@@ -990,6 +991,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     local/read-only, prove Hermes interactive and cron retrieval, benchmark
     cold-start quality/resources and prove file-based recovery with GBrain
     unavailable before any fleet deployment.
+24. Materialize document 32's succession evidence schema and deterministic
+    gate without changing an active seat or DOIN chain; independently verify
+    its statistical family, flat-boundary drain/reseed and no-idle failure
+    behavior before the first automated same-seat Paper/Demo succession.
 
 ## 5. Current Risks
 

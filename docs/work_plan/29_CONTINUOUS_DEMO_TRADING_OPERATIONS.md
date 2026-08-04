@@ -2,10 +2,11 @@
 
 Status: continuous selected-model Paper/Demo execution active on Alpaca,
 IBKR and OANDA MT5 Demo; all three write paths have direct broker evidence
-Version: 1.4.0
+Version: 1.5.0
 Date: 2026-08-03
 Author: Satoshi (temporary technical lead), on the owner's direction
-Owner decision required at: L1 activation, and each subsequent stage gate
+Owner decision required at: first venue/asset/route/order-family activation,
+any risk-envelope increase, and any future Live-capital activation
 
 ## 1. The Gap This Document Closes
 
@@ -44,7 +45,10 @@ nothing because we never traded is the only unacceptable outcome.
 5. Protected-test information never enters selection, routing or promotion.
 6. No mid-position model switch. Channel changes occur only at declared
    boundaries with flat or explicitly carried exposure.
-7. Every stage advance requires the owner's explicit go.
+7. First capability activation and every risk increase require the owner's
+   explicit go. Routine same-seat Paper/Demo champion succession follows the
+   deterministic gate and pre/post-notice contract in document 32; it never
+   bypasses the controls above.
 
 ## 3. Control Plane: Who May Change What
 
@@ -88,7 +92,13 @@ gross exposure (≤ 10 % initially), position count (≤ 3 concurrent) and daily
 loss (≤ 2 % → auto-hold). Small enough that a total loss teaches without
 distorting; large enough that fills, fees and financing are real.
 
-## 5. Staged Rollout (each gate = owner go)
+## 5. Staged Rollout
+
+The owner explicitly approves the first activation of each capability and any
+risk increase. Once L4 is authorized for an exact seat and unchanged risk
+envelope, routine model succession is automatic under document 32's
+deterministic evidence gate plus pre/post notification. This prevents idle
+Paper/Demo seats without granting an agent order or promotion authority.
 
 | Stage | Content | Exit criteria |
 | --- | --- | --- |

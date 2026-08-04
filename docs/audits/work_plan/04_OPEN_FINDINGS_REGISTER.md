@@ -581,6 +581,33 @@ IBKR L1 because the integrated path exposed the following new findings:
 | AUD-F2-20260803-084 | S3 | implemented_pending_independent_verification | An Alpaca effect could reach `terminal_flat` without applying accepted/filled/closed lifecycle facts to L0, leaving an active reservation after the broker was flat and rejecting the next valid signal as `max_concurrent_positions`. `lts@bc974d5` reconstructs immutable effect identity, reconciles cumulative broker fills and terminal state idempotently, and retries only the signal blocked by that stale terminal reservation. | Independent auditor reproduces exact fixture and runtime repair; owner closes |
 | AUD-F2-20260803-085 | S3 | implemented_pending_independent_verification | The consolidated watchdog treated authorized Alpaca/IBKR exposure as unexpected, and the read-only IBKR observer saw only its own client's orders rather than both protection children. `lts@6daf85e` requests all open API-client orders and requires fresh account-, environment-, instrument- and model-bound writable heartbeats plus direct count/protection reconciliation. | Independent auditor verifies 544-test suite and zero-alert live packet; owner closes |
 
+### 1r. Succession/regime audit and P0/K0 disposition, 2026-08-03 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_CHAMPION_SUCCESSION_AND_REGIME_RESEARCH_2026_08_03.md`
+- `../../work_plan/32_CHAMPION_SUCCESSION_AND_REGIME_RESEARCH.md` v1.1.0
+
+P0 state changes are appended without rewriting section 1q:
+
+- 075-078 and 080-085 -> `independently_verified_pending_owner_closure`;
+- 079 -> `implemented_pending_vm_compile_verification`; direct Dragon status
+  confirms the corrected v2 bridge is connected and write-enabled, but the
+  exact MetaEditor zero-error/zero-warning output remains independently
+  unavailable;
+- Dragon's MT5 bridge and model runner are `systemd --user` services. A
+  system-scope lookup is not downtime evidence.
+
+K0 is accepted as `proceed_with_revisions`; K1 may start, K2 remains gated.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260803-086 | S3 | corrected_pending_independent_verification | Sharpe-specific deflation was applied by analogy to RAP without a defined estimator | Satoshi III verifies |
+| AUD-F1-20260803-087 | S3 | corrected_pending_independent_verification | Regime headroom could use hindsight labels and did not prove an actionable causal router | Satoshi III verifies |
+| AUD-F2-20260803-088 | S3 | corrected_pending_independent_verification | Seven-day tenure conflated operational compatibility with statistical superiority | Satoshi III verifies |
+| AUD-F1-20260803-089 | S3 | corrected_pending_independent_verification | Parallel R1 DOIN domains violated the canonical one-swarm/one-chain sequence | Satoshi III verifies |
+| AUD-GEN-20260803-090 | S4 | corrected_pending_independent_verification | Regime references were imprecise and the AIMS ensemble-HMM paper year was wrong | Satoshi III verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
