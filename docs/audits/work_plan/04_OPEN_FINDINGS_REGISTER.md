@@ -661,11 +661,14 @@ must not run the current resume CLI.
 | AUD-F2-20260804-101 | S3 | open, blocks Alpaca continuity acceptance | Daily order-budget exhaustion is an exception/restart condition rather than a durable decision outcome | Satoshi III implements; Musashi verifies |
 | AUD-F2-20260804-102 | S2 | independently_verified_pending_owner_closure | One Alpaca bar produced four protected Paper round trips through fresh retry identities; fixes at `a9b9d41`/`9a8d568` prevent recurrence | owner closes |
 | AUD-F2-20260804-103 | S3 | open, blocks retry acceptance | IBKR construction backoff retries every exception, including fatal config/account/security/programming defects | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-104 | S3 | open, blocks continuous MT5 Demo trading | MT5 stop closed the broker position, but L0 retained an active reservation and only a `requested` lifecycle; all later due bars reject `max_concurrent_positions` | Satoshi III implements; Musashi verifies |
 
 The delivery scores 56.7/100 under the preregistered rubric and is not
 accepted. Complete suites pass, Project 3 is terminalized, DOIN is untouched,
-and current MT5 refusal is backed by one real protected Demo position. Those
-strengths are retained while the correction/business-evidence order executes.
+and MT5 produced one real protected Demo round trip. A later direct-account
+snapshot corrected the initial interpretation: the broker is flat and finding
+104 tracks the stale L0 capacity. Those strengths are retained while the
+correction/business-evidence order executes.
 
 ## 2b. Observations Pending Verification (not yet findings)
 

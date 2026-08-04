@@ -107,3 +107,27 @@ The bounded work order is:
 Satoshi must return one correction/evidence packet. Musashi re-runs every
 counterexample and the owner alone disposes findings or authorizes the first
 post-recovery IBKR Paper risk.
+
+## 7. Append-Only Runtime Correction, 2026-08-04 14:35 America/Bogota
+
+The statement in section 3 that MT5's current refusal was backed by one
+currently open protected position is withdrawn. It was derived incorrectly by
+taking `MAX(position_snapshots.snapshot_id)` without joining it to the current
+account snapshot.
+
+Fresh direct facts show the actual sequence:
+
+- one 0.01 `ETHUSD` short opened at 2026-08-03 23:47:14 UTC with native SL and
+  TP;
+- its stop executed at 2026-08-04 12:38:14 UTC;
+- current account snapshot 5036 reports zero positions, zero orders and a
+  balance of 9,999.76 USD;
+- reservation `rsv-610092ed3f4cbcc6` remains `active` and its lifecycle has
+  only `requested`, so every later due bar is rejected as
+  `max_concurrent_positions` despite the account being flat.
+
+This opens `AUD-F2-20260804-104`: MT5 broker close events are collected but not
+reconciled into L0 lifecycle/reservation state. It is the direct reason no new
+MT5 trade has occurred. The historical trade remains valid evidence; the
+system must repair the lifecycle idempotently rather than delete or manually
+alter SQLite rows.

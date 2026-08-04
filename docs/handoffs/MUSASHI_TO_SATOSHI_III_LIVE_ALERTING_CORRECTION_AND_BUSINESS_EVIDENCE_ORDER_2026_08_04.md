@@ -126,12 +126,16 @@ same bar/model/account lineage and zero submission. The runner remains alive;
 the incident policy distinguishes expected budget hold from infrastructure
 failure.
 
-### B5. MT5 current protected position
+### B5. MT5 completed protected position and stale L0 reservation
 
-The refusal is currently legitimate: direct evidence shows one 0.01 ETHUSD
-short with native SL and TP. Reconcile the successful execution command to a
-complete lifecycle/receipt, monitor its protection and let the model/risk
-contract close it. Do not bypass the cap or manually close solely for audit.
+Append-only correction after fresh direct-account evidence: the 0.01 ETHUSD
+short opened with native SL/TP and closed at its stop. The current account is
+flat, but reservation `rsv-610092ed3f4cbcc6` remains active and its lifecycle
+contains only `requested`. Reconcile collected MT5 deal/history events into
+accepted/filled/closed L0 facts idempotently, release the reservation, and let
+the next genuinely due model bar proceed. Do not bypass the cap, delete rows or
+manually edit SQLite. Add duplicate event, restart, out-of-order event,
+partial-close, full-close and foreign-ticket fixtures for finding 104.
 
 ## 4. Priority C: Deliver the Business-Reality Loop
 
