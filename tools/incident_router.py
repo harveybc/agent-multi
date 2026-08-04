@@ -32,6 +32,7 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 import socket
 import subprocess
 import sys
@@ -219,52 +220,57 @@ def mark_digest_sent(conn, now: datetime) -> None:
     conn.commit()
 
 
-def forward_to_owner(incident: dict, config: dict) -> None:
-    """Re-emit one incident observation into the owner's ledger over SSH."""
+def _ssh_forward(config: dict, remote_tokens: list[str],
+                 stdin_text: str | None, label: str) -> None:
+    """Run one remote incident-ledger invocation over SSH.
+
+    SSH joins client argv with spaces and the forced-command shim
+    shlex-splits SSH_ORIGINAL_COMMAND, so every remote token must be
+    shell-quoted client-side or JSON arguments shatter in transit."""
     owner = config["notification_owner"]
-    script = str(Path(config["forward_repo_path"]) / "tools"
-                 / "incident_ledger.py")
+    command_text = " ".join(shlex.quote(token) for token in remote_tokens)
     command = ["ssh", *config.get("forward_ssh_options", []), owner,
-               "python3", script, "observe",
-               "--source", incident["source"],
-               "--front", incident["front"],
-               "--machine", incident["venue_or_machine"],
-               "--event-code", incident["event_code"],
-               "--object", incident["affected_object"],
-               "--severity", incident["severity"],
-               "--evidence-at", incident["source_evidence_at"],
-               "--payload-stdin"]
-    result = subprocess.run(
-        command, input=incident["payload_json"], capture_output=True,
-        text=True, timeout=30,
-    )
+               command_text]
+    result = subprocess.run(command, input=stdin_text, capture_output=True,
+                            text=True, timeout=30)
     if result.returncode != 0:
         raise RuntimeError(
-            f"forward to {owner} failed: {result.stderr.strip()[:200]}")
+            f"{label} to {owner} failed: {result.stderr.strip()[:200]}")
+
+
+def forward_to_owner(incident: dict, config: dict) -> None:
+    """Re-emit one incident observation into the owner's ledger over SSH."""
+    script = str(Path(config["forward_repo_path"]) / "tools"
+                 / "incident_ledger.py")
+    _ssh_forward(config, [
+        "python3", script, "observe",
+        "--source", incident["source"],
+        "--front", incident["front"],
+        "--machine", incident["venue_or_machine"],
+        "--event-code", incident["event_code"],
+        "--object", incident["affected_object"],
+        "--severity", incident["severity"],
+        "--evidence-at", incident["source_evidence_at"],
+        "--payload-stdin",
+    ], incident["payload_json"], "forward")
 
 
 def forward_recovery_to_owner(incident: dict, config: dict) -> None:
-    owner = config["notification_owner"]
     script = str(Path(config["forward_repo_path"]) / "tools"
                  / "incident_ledger.py")
     evidence = json.dumps({
         "forwarded_resolution_of": incident["incident_id"],
         "resolution_evidence_hash": incident["resolution_evidence_hash"],
     })
-    command = ["ssh", *config.get("forward_ssh_options", []), owner,
-               "python3", script, "recover",
-               "--source", incident["source"],
-               "--front", incident["front"],
-               "--machine", incident["venue_or_machine"],
-               "--event-code", incident["event_code"],
-               "--object", incident["affected_object"],
-               "--evidence-json", evidence]
-    result = subprocess.run(command, capture_output=True, text=True,
-                            timeout=30)
-    if result.returncode != 0:
-        raise RuntimeError(
-            f"recovery forward to {owner} failed:"
-            f" {result.stderr.strip()[:200]}")
+    _ssh_forward(config, [
+        "python3", script, "recover",
+        "--source", incident["source"],
+        "--front", incident["front"],
+        "--machine", incident["venue_or_machine"],
+        "--event-code", incident["event_code"],
+        "--object", incident["affected_object"],
+        "--evidence-json", evidence,
+    ], None, "recovery forward")
 
 
 def failover_exceeded(conn, incident: dict, config: dict,
