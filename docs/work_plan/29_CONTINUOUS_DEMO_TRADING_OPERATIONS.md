@@ -1,9 +1,10 @@
 # 29. Continuous Demo-Trading Operations and the Knowledge Loop
 
-Status: continuous selected-model Paper/Demo execution active on Alpaca,
-IBKR and OANDA MT5 Demo; all three write paths have direct broker evidence
-Version: 1.5.0
-Date: 2026-08-03
+Status: three selected-model Paper/Demo write paths commissioned; Alpaca and
+OANDA MT5 active; IBKR continuity incident awaiting TWS reauthentication and
+fresh broker reconciliation
+Version: 1.6.0
+Date: 2026-08-04
 Author: Satoshi (temporary technical lead), on the owner's direction
 Owner decision required at: first venue/asset/route/order-family activation,
 any risk-envelope increase, and any future Live-capital activation
@@ -330,3 +331,28 @@ protection reconciliation agree.
 Verification: `544` complete LTS tests pass on Omega; direct broker inspection
 matches the account-bound runtime facts; the consolidated watchdog reports
 zero active events. No Live account or real capital is authorized.
+
+## 14. Owner Priority: Alert-Quiet Business-Reality Operations (2026-08-04)
+
+The owner elevated active Paper/Demo execution continuity and business-evidence
+collection above every other operational front. Telegram is now an exception
+channel: one durable incident ledger and one fleet notification router replace
+independent watchdog sends, routine health messages and unchanged reminders.
+Acknowledged incidents remain active in the ledger but stop paging; only direct
+source recovery resolves them.
+
+The first implementation target is recurrent TWS Paper disappearance. Loss of
+TWS with unresolved exposure is a P0 incident and must be reported within one
+minute; a proven-flat outage is P1. The monitor combines process, API,
+functional-heartbeat and direct broker-reconciliation evidence. Port
+reachability alone remains insufficient.
+
+Project 3 E0-E4 is terminal at 16,019 archived jobs and must no longer appear
+as active work in Hermes or Telegram. Its OLAP, artifacts and backups remain
+preserved. All three selected-model Paper/Demo runners continue recording due
+bar decisions, including HOLD, with complete model/data/config lineage. Their
+broker lifecycles feed a reproducible live-versus-simulation descriptive loop;
+profit is observed, not used as an activation gate.
+
+The binding implementation and pre-audit acceptance contract is
+`../handoffs/MUSASHI_TO_SATOSHI_III_LIVE_ALERTING_AND_BUSINESS_EVIDENCE_ORDER_2026_08_04.md`.
