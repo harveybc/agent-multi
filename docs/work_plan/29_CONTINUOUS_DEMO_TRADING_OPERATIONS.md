@@ -250,9 +250,9 @@ an order:
 
 | Venue | Selected route | Runtime state | Native protection |
 | --- | --- | --- | --- |
-| Alpaca Paper | `SPY@1d` / `spy-daily-linear-live-v1` | runner active; current SELL-one SPY bracket accepted and queued while the equity market is closed | one GTC native bracket with TP `749.79` and SL `761.15` |
-| IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | runner active; current 25,000-unit short filled and reconciled | TWS parent + TP `1.40021` + SL `1.40653`, exact identity verification |
-| OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | execution EA, bridge and runner active; one protected short position open | one market request containing both native SL and TP |
+| Alpaca Paper | `SPY@1d` / `spy-daily-linear-live-v1` | runner active and broker-flat; a stale L0 reservation currently refuses later due bars pending idempotent reconciliation | one GTC native bracket with mandatory native TP and SL |
+| IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | TWS and runner active and broker-flat; the safety hold refuses new risk pending authenticated resume and L0 reconciliation corrections | TWS parent plus native TP and SL, exact identity verification |
+| OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | execution EA, bridge and runner active and broker-flat; one protected round trip completed, but its stale L0 reservation currently refuses later due bars | one market request containing both native SL and TP |
 
 The current Dragon transfer image is
 `/home/harveybc/VirtualMachines/lts-mt5-bridge-5aeea9c.iso`, SHA-256
@@ -291,11 +291,13 @@ Direct venue facts, not probe labels, establish the current state:
 
 - **MT5 Demo:** command `mt5-6a7ad0965909ce321b44831db49cc94e5993c764`
   succeeded with MT5 retcode `10009`, order `40217543` and deal `41053668`.
-  The current broker snapshot contains one `ETHUSD` short of `0.01` at
-  `1856.95`, native SL `1880.42`, native TP `1824.56`, and no pending order.
-  After restarting both Dragon Linux services, the same ticket and protection
-  remained, command counts stayed one failed/one succeeded, and no duplicate
-  order appeared.
+  It opened one `ETHUSD` short of `0.01` at `1856.95` with native SL
+  `1880.42` and TP `1824.56`. The broker executed the stop on 2026-08-04 at
+  `1881.00`; direct current-account facts then showed zero positions and zero
+  orders. Restart verification while the position was open retained the same
+  ticket and protection and produced no duplicate order. The remaining defect
+  is internal lifecycle reconciliation: the historical position is closed at
+  the broker while its L0 reservation remains active.
 - **Alpaca Paper:** the persistent runner is write-enabled and its selected
   SPY model submitted bracket `1468bd23-6762-468e-812f-8144de31e7c6`:
   SELL one SPY, GTC, status `accepted`, with held broker-native TP `749.79`
