@@ -895,8 +895,8 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | three_venues_commissioned_ibkr_continuity_incident | Alpaca SPY, IBKR USDCAD and MT5 ETHUSD have independently evidenced write-capable selected-model paths with mandatory native SL/TP and model/account lineage. Alpaca and MT5 are active; recurrent TWS disappearance currently blocks fresh IBKR truth and requires reauthentication plus direct broker reconciliation before new risk | Verify current reconciliation, continuous due-bar decisions and findings 079-085; no Live activation |
-| `LIVE-OPS-ALERT-001` | Satoshi III successor technical lead | `agent-multi`, `lts`, optionally `trading-contracts` | owner_ordered_in_progress | Replace fragmented Telegram delivery with one durable prioritized incident ledger/router; capture TWS exits and reconcile current IBKR truth; terminalize Project 3 status; maintain continuous hash-bound three-venue decisions; materialize descriptive live-versus-simulation business evidence | Musashi independently reproduces alert, failover, acknowledgement, broker-lineage and OLAP evidence; owner retains activation/closure authority |
+| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | three_venues_active_ibkr_held_corrections_ordered | Alpaca SPY, IBKR USDCAD and MT5 ETHUSD have write-capable selected-model paths with mandatory native SL/TP. TWS is online and broker-flat, but IBKR remains held pending a corrected owner-authenticated resume. MT5 has one real protected 0.01 ETHUSD Demo short. Alpaca exactly-once history requires retained verification. | Complete findings 093-103, normalized due-bar facts, L0-only succession and live/sim comparison; no Live activation |
+| `LIVE-OPS-ALERT-001` | Satoshi III successor technical lead | `agent-multi`, `lts`, optionally `trading-contracts` | audit_rejected_corrections_ordered | Durable incident ledger/router and Project 3 terminal record are deployed, but JSON redaction, forwarded producer identity, recovery evidence and end-to-end delivery receipt fail audit. Business status also contradicts execution truth. | Execute `MUSASHI_TO_SATOSHI_III_LIVE_ALERTING_CORRECTION_AND_BUSINESS_EVIDENCE_ORDER_2026_08_04.md`; Musashi independently reproduces; owner retains activation/closure authority |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
@@ -930,69 +930,78 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Keep all three selected-model Paper/Demo runners active. Reconcile every
+1. Execute the 2026-08-04 live-alerting correction and business-evidence
+   order: preserve IBKR `halt=hold`, repair the resume race/authentication,
+   structural secret sanitization, producer-bound recovery and end-to-end
+   Telegram receipt before accepting the alert surface.
+2. Keep all three selected-model Paper/Demo runners active. Reconcile every
    broker position and order to its account-bound writable heartbeat and L0/L1
-   lifecycle, preserve native SL/TP, and independently audit corrections
-   075-085. No Live account or capital is authorized.
-2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
+   lifecycle, preserve native SL/TP, and materialize one lineage-bound decision
+   fact per due bar. No Live account or capital is authorized.
+3. Build the deterministic live-versus-simulation replay and rolling 24-hour/
+   7-day evidence product before calling the business-reality task complete.
+4. Implement no-idle champion succession through L0/L1 only, preserving the
+   exact post-close Paper/Demo balance; remove direct broker calls from model
+   switch paths.
+5. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
    job. At the end of stage 1, record the declared duration decision point and
    continue automatically unless evidence, safety or lineage invariants fail.
-3. On job-0 convergence, archive and independently load its exact champion
+6. On job-0 convergence, archive and independently load its exact champion
    model, decoded JSON, metric evidence and hashes before crossing the
    replicated stop barrier.
-4. Let the replicated campaign materialize and start the separate protected
+7. Let the replicated campaign materialize and start the separate protected
    easy-to-nominal-to-stress curriculum domain from that exact handoff.
-5. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
+8. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
    uptime, spreads, fills, protection, symbol coverage, reconnects and
    reconciliation deviations in rolling 24-hour windows.
-6. Freeze the resulting robust alpha policy and generate its deterministic
+9. Freeze the resulting robust alpha policy and generate its deterministic
    action trace.
-7. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
+10. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
-8. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
+11. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
    auxiliaries, then optimize the deterministic router with Nautilus.
-9. Train the shared entry/exit policy and require improvement over market-only
+12. Train the shared entry/exit policy and require improvement over market-only
    and deterministic-router controls under identical alpha streams.
-10. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+13. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
    GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
-11. Execute one coordinated DOIN campaign per selected asset, using every
+14. Execute one coordinated DOIN campaign per selected asset, using every
    available worker on one chain at a time.
-12. Confirm frozen winners across three seeds and build the per-asset champion
+15. Confirm frozen winners across three seeds and build the per-asset champion
    library before portfolio optimization.
-13. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+16. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-14. Optimize the static portfolio, then add calibrated multi-horizon rush/event
+17. Optimize the static portfolio, then add calibrated multi-horizon rush/event
    activation and evaluate weekly retraining/fine-tuning.
-15. Implement and fault-test the decentralized artifact plane before a
+18. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-16. Complete the consolidated LTS capital ledger and compare all three active
+19. Complete the consolidated LTS capital ledger and compare all three active
     protected-execution routes against their simulator cost and fill priors.
-17. Keep the active social-intelligence S0/S1 path read-only: preserve the
+20. Keep the active social-intelligence S0/S1 path read-only: preserve the
     source allowlist, deterministic collection, normalized OLAP, bounded
     Flash-only review and approval-gated publishing while MT5 observation
     continues.
-18. Benchmark local social models in a declared resource window before
+21. Benchmark local social models in a declared resource window before
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
-19. Provision the continuity VPS from code, restore encrypted state in a clean
+22. Provision the continuity VPS from code, restore encrypted state in a clean
     drill and verify credential revocation before treating it as operational.
-20. Preserve the five verified repository-local Tier A gates and run the next
+23. Preserve the five verified repository-local Tier A gates and run the next
     change-triggered audit from the deterministic snapshot contract.
     Independently reproduce material findings and keep both role recovery
     prompts current as architecture and runtime contracts change.
-21. Execute the P5/P1 citation verification pass, then keep the permanent
+24. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
-22. Preserve the verified cTrader Copy/eToro Virtual controls, await the
+25. Preserve the verified cTrader Copy/eToro Virtual controls, await the
     already-submitted cTrader Open API approval, then execute its read-only
     capability preflight. Hold Darwinex Zero behind owner cost approval and
     permit no live MQL5 Signals or PAMM before legal/capital approval.
-23. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
+26. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
     validate a compact OKF bundle, manually review and pin GBrain, keep it
     local/read-only, prove Hermes interactive and cron retrieval, benchmark
     cold-start quality/resources and prove file-based recovery with GBrain
     unavailable before any fleet deployment.
-24. Materialize document 32's succession evidence schema and deterministic
+27. Materialize document 32's succession evidence schema and deterministic
     gate without changing an active seat or DOIN chain; independently verify
     its statistical family, flat-boundary drain/reseed and no-idle failure
     behavior before the first automated same-seat Paper/Demo succession.

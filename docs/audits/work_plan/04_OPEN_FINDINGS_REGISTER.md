@@ -636,6 +636,37 @@ no active P0/P1 cause and an explicit owner-issued capability. It must update
 the ledger atomically, preserve an audit trail and fail closed on every missing
 fact. Manual SQLite edits are prohibited.
 
+### 1t. Live alerting and business-evidence delivery audit, 2026-08-04
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_LIVE_ALERTING_AND_BUSINESS_EVIDENCE_2026_08_04.md`
+- `../evidence/SATOSHI_III_LIVE_ALERTING_REPRO_2026_08_04.py`
+
+Finding 091 is corrected and independently verified pending owner closure.
+Finding 092 remains open: the replacement resume path is not accepted because
+093 and 094 defeat its new-hold and owner-authorization contracts. The owner
+must not run the current resume CLI.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260804-093 | S2 | open, blocks IBKR Paper resume | Resume checks safety state before its transaction; a later `kill` is overwritten by `halt=none` | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-094 | S2 | open, blocks IBKR Paper resume | Public phrase, unsigned JSON and PTY checks do not authenticate the human owner | Satoshi III implements; Musashi verifies; owner provisions human boundary |
+| AUD-GEN-20260804-095 | S2 | open, blocks alert acceptance | Secret-shaped values in ordinary/nested JSON bypass regex redaction and can reach SQLite/Telegram | Satoshi III implements; Musashi verifies |
+| AUD-GEN-20260804-096 | S2 | open, blocks alert acceptance | Forwarding keys are not host/source-bound and arbitrary non-empty recovery evidence resolves incidents | Satoshi III implements; Musashi verifies |
+| AUD-GEN-20260804-097 | S2 | open, blocks alert failover acceptance | Worker treats SSH ingestion as Telegram delivery, leaving owner router/transport as an unobserved single point of failure | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-098 | S3 | open, blocks business-evidence acceptance | Consolidated status reports read-only/zero-order facts contradicted by current writable heartbeats and Paper history | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-099 | S3 | open, blocks IBKR accounting acceptance | Broker effect is terminal-flat but its L0 exposure remains open | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-100 | S3 | open, blocks unattended reconciliation | TWS cache remained contradictory after 1100/1102 without an explicit authoritative-source convergence contract | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-101 | S3 | open, blocks Alpaca continuity acceptance | Daily order-budget exhaustion is an exception/restart condition rather than a durable decision outcome | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-102 | S2 | independently_verified_pending_owner_closure | One Alpaca bar produced four protected Paper round trips through fresh retry identities; fixes at `a9b9d41`/`9a8d568` prevent recurrence | owner closes |
+| AUD-F2-20260804-103 | S3 | open, blocks retry acceptance | IBKR construction backoff retries every exception, including fatal config/account/security/programming defects | Satoshi III implements; Musashi verifies |
+
+The delivery scores 56.7/100 under the preregistered rubric and is not
+accepted. Complete suites pass, Project 3 is terminalized, DOIN is untouched,
+and current MT5 refusal is backed by one real protected Demo position. Those
+strengths are retained while the correction/business-evidence order executes.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
