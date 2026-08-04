@@ -108,10 +108,11 @@ execution controlled only by hash-bound selected-model manifests:
 
 Writable runtime update 2026-08-03:
 
-- the MT5 execution EA is compiled, attached and processing signed commands;
-  one `ETHUSD` short of `0.01` is open under model
-  `ethusdt-4h-linear-live-v1`, with broker-native SL `1880.42` and TP
-  `1824.56`;
+- the MT5 execution EA is compiled, attached and processing signed commands.
+  Model `ethusdt-4h-linear-live-v1` completed one protected `ETHUSD` short of
+  `0.01`: entry `1856.95`, broker-native SL `1880.42`, TP `1824.56`, and stop
+  fill `1881.00`. The broker is now flat; a stale L0 reservation/lifecycle is
+  the explicit blocker for subsequent due bars;
 - direct Alpaca and TWS facts independently confirm that their selected-model
   write paths submitted protected Paper brackets. Both are currently flat
   because their latest hash-bound signals were already consumed, not because
@@ -944,64 +945,82 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    exact post-close Paper/Demo balance; remove direct broker calls from model
    switch paths.
 5. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
-   job. At the end of stage 1, record the declared duration decision point and
-   continue automatically unless evidence, safety or lineage invariants fail.
-6. On job-0 convergence, archive and independently load its exact champion
-   model, decoded JSON, metric evidence and hashes before crossing the
-   replicated stop barrier.
-7. Let the replicated campaign materialize and start the separate protected
-   easy-to-nominal-to-stress curriculum domain from that exact handoff.
-8. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
+   job while the owner is away. Do not interrupt an in-flight candidate. At
+   the owner's return, and only after the three Paper/Demo ledgers reconcile
+   with direct broker facts, take a replicated generation-boundary checkpoint
+   and pause this campaign without deleting its chain, population or artifacts.
+6. Archive and independently reload the current `USDCAD@4h` chain state,
+   champion model, decoded JSON, metrics and hashes before any campaign switch.
+   The queued USDCAD curriculum remains resumable rather than being silently
+   replaced or launched in parallel.
+7. Materialize one coordinated `ETHUSD@4h` curriculum campaign for all four
+   workers. Freeze the live `ethusdt-4h-linear-live-v1` artifact
+   (`539f946071a1870672c2d2c1ce7b1ce0f0d4b4317a15b2d082b59b32c98d10bf`)
+   as the live and simulation baseline. It is a supervised linear direction
+   model, so solvency is optimized in the trading policy that consumes its
+   causal output, not falsely attributed to the classifier itself.
+8. Run the ETH policy as one immutable curriculum contract with two required
+   sequential phases: `easy_no_margin_call` training followed by
+   `normal_realistic` training. Normal starts from a copy of the easy champion;
+   the easy artifact remains immutable and independently loadable. Selection,
+   validation and protected tests use realistic solvency and costs in both
+   phases. `hard_pessimistic` is optional, starts from a copy of the normal
+   champion, and can never overwrite or demote the normal artifact.
+9. Persist stage-entry and stage-exit artifacts, decoded genomes, hashes,
+   population state and same-scale weekly/annual return, RAP, drawdown,
+   activity, ruin and live-divergence metrics in DOIN/OLAP. This makes the
+   incremental effect of easy-to-normal training measurable without a reset.
+10. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
    uptime, spreads, fills, protection, symbol coverage, reconnects and
    reconciliation deviations in rolling 24-hour windows.
-9. Freeze the resulting robust alpha policy and generate its deterministic
+11. Freeze the resulting robust alpha policy and generate its deterministic
    action trace.
-10. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
+12. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
-11. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
+13. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
    auxiliaries, then optimize the deterministic router with Nautilus.
-12. Train the shared entry/exit policy and require improvement over market-only
+14. Train the shared entry/exit policy and require improvement over market-only
    and deterministic-router controls under identical alpha streams.
-13. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+15. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
    GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
-14. Execute one coordinated DOIN campaign per selected asset, using every
+16. Execute one coordinated DOIN campaign per selected asset, using every
    available worker on one chain at a time.
-15. Confirm frozen winners across three seeds and build the per-asset champion
+17. Confirm frozen winners across three seeds and build the per-asset champion
    library before portfolio optimization.
-16. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+18. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-17. Optimize the static portfolio, then add calibrated multi-horizon rush/event
+19. Optimize the static portfolio, then add calibrated multi-horizon rush/event
    activation and evaluate weekly retraining/fine-tuning.
-18. Implement and fault-test the decentralized artifact plane before a
+20. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-19. Complete the consolidated LTS capital ledger and compare all three active
+21. Complete the consolidated LTS capital ledger and compare all three active
     protected-execution routes against their simulator cost and fill priors.
-20. Keep the active social-intelligence S0/S1 path read-only: preserve the
+22. Keep the active social-intelligence S0/S1 path read-only: preserve the
     source allowlist, deterministic collection, normalized OLAP, bounded
     Flash-only review and approval-gated publishing while MT5 observation
     continues.
-21. Benchmark local social models in a declared resource window before
+23. Benchmark local social models in a declared resource window before
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
-22. Provision the continuity VPS from code, restore encrypted state in a clean
+24. Provision the continuity VPS from code, restore encrypted state in a clean
     drill and verify credential revocation before treating it as operational.
-23. Preserve the five verified repository-local Tier A gates and run the next
+25. Preserve the five verified repository-local Tier A gates and run the next
     change-triggered audit from the deterministic snapshot contract.
     Independently reproduce material findings and keep both role recovery
     prompts current as architecture and runtime contracts change.
-24. Execute the P5/P1 citation verification pass, then keep the permanent
+26. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
-25. Preserve the verified cTrader Copy/eToro Virtual controls, await the
+27. Preserve the verified cTrader Copy/eToro Virtual controls, await the
     already-submitted cTrader Open API approval, then execute its read-only
     capability preflight. Hold Darwinex Zero behind owner cost approval and
     permit no live MQL5 Signals or PAMM before legal/capital approval.
-26. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
+28. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
     validate a compact OKF bundle, manually review and pin GBrain, keep it
     local/read-only, prove Hermes interactive and cron retrieval, benchmark
     cold-start quality/resources and prove file-based recovery with GBrain
     unavailable before any fleet deployment.
-27. Materialize document 32's succession evidence schema and deterministic
+29. Materialize document 32's succession evidence schema and deterministic
     gate without changing an active seat or DOIN chain; independently verify
     its statistical family, flat-boundary drain/reseed and no-idle failure
     behavior before the first automated same-seat Paper/Demo succession.
