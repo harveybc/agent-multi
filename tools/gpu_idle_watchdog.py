@@ -241,12 +241,25 @@ def main(argv: list[str] | None = None) -> int:
             if args.dry_run:
                 print(message)
             else:
-                send_telegram(message)
+                import incident_emit
+                if not incident_emit.observe_incident(
+                        source="gpu_idle_watchdog",
+                        event_code="swarm_gpus_idle", severity="P2",
+                        summary=message.splitlines()[0][:200],
+                        payload={"detail": message[:1500],
+                                 "idle_streak": streak}):
+                    raise RuntimeError("incident emission failed")
         elif recovery:
             if args.dry_run:
                 print(recovery)
             else:
-                send_telegram(recovery)
+                import incident_emit
+                if not incident_emit.recover_incident(
+                        source="gpu_idle_watchdog",
+                        event_code="swarm_gpus_idle",
+                        evidence={"summary": recovery.splitlines()[0][:200],
+                                  "idle_streak": streak}):
+                    raise RuntimeError("incident recovery emission failed")
         else:
             status = "IDLE" if idle else "ACTIVE"
             print(
