@@ -24,37 +24,34 @@ eligibility without granting any new order authority.
 
 ## 2. Account State
 
-User-reported and runtime-verified state, updated 2026-08-01:
+User-reported and runtime-verified state, updated 2026-08-03:
 
 | Venue | Account | State | Intended paper role |
 | --- | --- | --- | --- |
 | Alpaca | Trading API | created and verified | API-native crypto observation and long-only control |
 | IBKR | Individual Margin | created and verified | equities/ETF, FX and broad multi-asset paper execution |
 | OANDA | Global Markets live | created; MT5 Live login verified; automation prohibited | future tightly capped CFD venue only after an independent live-activation decision |
-| OANDA | Global Markets MT5 demo | authenticated read-only EA and bridge active | FX and available crypto-CFD execution calibration |
+| OANDA | Global Markets MT5 demo | authenticated writable EA, bridge and model runner active | protected FX/crypto-CFD demo execution calibration |
 | Capital.com | Demo API | adapter ready; account/API key pending | GET-only crypto, FX, index and CFD capability fallback |
 
-Runtime evidence on Omega:
+Runtime evidence (commissioning history plus current state):
 
-- Alpaca Paper read-only preflight is authenticated and runs every five
-  minutes; six crypto quote cells are available and exposure is zero;
+- Alpaca Paper retains an authenticated read-only preflight every five
+  minutes, while the separate selected-model runner is write-capable. Its SPY
+  bracket path has direct broker fill/protection evidence and is currently flat;
 - IBKR Paper adapter, OLAP and five-minute observer are authenticated against
-  local TWS Paper port `7497`; all six initial contracts qualified with zero
-  positions and zero orders. The post-recovery verification recorded more than
-  240 completed sessions;
+  local TWS Paper port `7497`; the separate selected-model runner connects with
+  `readonly=False`, has direct USD.CAD bracket/fill/recovery evidence and is
+  currently flat;
 - IBKR watchdog health requires a recent completed authenticated session with
   reconciliation facts. TCP reachability is retained only as a separate
   diagnostic;
-- the OANDA Global Markets MT5 Windows VM has Windows 11 and MT5 build 6075
-  installed. The independent `OANDA_Global-Demo-1` account is authenticated;
-  the tracked read-only EA posts signed heartbeats and snapshots to Dragon.
-  Initial valid symbol evidence covers ETH, SOL, BTC, ADA, DOGE and EURJPY,
-  with zero positions and zero orders;
-- the read-only MT5 source now defaults to the union of promising crypto and
-  selected FX cells: `SOLUSD`, `ETHUSD`, `BTCUSD`, `ADAUSD`, `DOGEUSD`,
-  `XRPUSD`, `USDCAD`, `EURJPY`, `EURUSD`, `AUDUSD`, `GBPJPY`, `USDJPY` and
-  `NZDUSD`. The running EA must be recompiled/reloaded or its Inputs changed
-  before this source default becomes runtime evidence;
+- the OANDA Global Markets MT5 Windows VM has Windows 11 and MT5 build 6090.
+  The independent `OANDA_Global-Demo-1` account is authenticated; the writable
+  v2 EA posts signed heartbeats, snapshots, bars and transactions to Dragon;
+- MT5 currently executes `ETHUSD@4h`. One model-controlled `0.01` short is
+  open with native SL and TP and reconciles exactly to its successful signed
+  command; eight symbols are present in the latest snapshot;
 - OANDA REST-v20 is explicitly non-applicable to Global Markets. The watchdog
   therefore treats an absent REST token as an optional inactive adapter, not
   an operational incident. MT5 Demo remains the only active OGM commissioning
@@ -90,12 +87,12 @@ MT5 host decision:
   UEFI/Secure Boot and TPM 2.0. Windows 11 is installed and activated, and MT5
   is installed. A MetaQuotes/MQL5 community demo identity is not accepted as
   OANDA Global Markets execution evidence.
-- LTS now contains the authenticated read-only bridge, SQLite OLAP, fail-closed
+- LTS now contains the authenticated execution bridge, SQLite OLAP, fail-closed
   broker plugin, MT5 EA source, user service, restricted-firewall script and
   an independent five-minute Dragon watchdog with Telegram alerting. Automated
   bridge/watchdog tests pass. MetaEditor compiled the EA with zero errors and
-  zero warnings; fresh signed heartbeat/snapshot evidence cleared the MT5
-  watchdog alert locally and on Omega's consolidated watchdog. VM autostart,
+  zero warnings; fresh signed heartbeat/snapshot/command evidence cleared the
+  MT5 watchdog locally and on Omega's consolidated watchdog. VM autostart,
   bridge/watchdog enablement and user linger are active on Dragon.
 
 Credentials, raw account IDs and recovery data must never be committed,
@@ -165,7 +162,7 @@ Client-side polling alone is not accepted as the stop-loss mechanism.
 OANDA Global Markets uses MT5 rather than REST v20. Commissioning is split into
 two explicit capabilities.
 
-Read-only capability, implemented first:
+Read-only capability, retained as the historical first stage:
 
 - the EA refuses non-demo accounts and any configuration with read-only
   disabled;
@@ -178,7 +175,7 @@ Read-only capability, implemented first:
 - the command endpoint always returns no command and every broker mutation
   fails closed.
 
-Protected execution capability, disabled until M3:
+Protected execution capability, active on OANDA MT5 Demo:
 
 - `OnTimer` polls an allowlisted signed LTS endpoint for commands;
 - command envelopes include nonce, expiry, idempotency and account fingerprint;
@@ -303,7 +300,8 @@ The current Individual accounts validate our own portfolio only.
 
 Current platform order:
 
-1. OANDA MT5 demo remains the read-only venue-reality control. MQL5 Signals is
+1. OANDA MT5 demo is the active protected-execution venue-reality control.
+   MQL5 Signals is
    not a demo route: MetaTrader 5 build 4150 disabled Signals for non-real
    accounts, and a live Signals experiment remains unfunded and unapproved.
 2. cTrader Copy demo is an investor/business control; its native copying does
@@ -329,15 +327,15 @@ The executable contract and exact gates are in document 28 and
    custom-copy orders or open another broker account.
 3. Keep OANDA MT5 credentials inside MT5, never in Git, chat, portable OLAP or
    Linux observer state.
-4. Maintain the authenticated OANDA MT5 heartbeat and snapshot stream through
-   the 24-hour observation window; quantify uptime, spreads, symbol coverage
-   and reconnect behavior.
+4. Maintain the authenticated writable OANDA MT5 heartbeat, snapshot, command
+   and transaction stream; quantify uptime, spreads, fills, protection,
+   symbol coverage and reconnect behavior.
 5. Install QEMU guest-agent support and deterministic MT5 launch recovery
    without expanding the Windows VM into an orchestration or AI-agent host.
 6. Run the implemented no-order social accounting scenario and retain its
    hashed OLAP evidence as the external-platform reconciliation baseline.
-7. Review all 24-hour read-only evidence before implementing and enabling any
-   minimum-size protected canary or social-copy route.
+7. Review each 24-hour protected-execution window and feed only measured
+   feasibility, cost and failure facts back into versioned offline scenarios.
 
 ## 13. Hermes and Telegram Operations
 
@@ -346,7 +344,8 @@ execution controller.
 
 - five-minute watchdog: stale observers, broker/API failures, missing quotes,
   reconciliation exposure and venue availability, including stale or
-  disconnected MT5 and any unexpected MT5 position/order;
+  disconnected MT5 and any position/order not reconciled to a successful
+  protected model command;
 - event discussion: one-hour and four-hour moves are surfaced for inspection,
   never converted directly into orders or queued optimization;
 - 12-hour DeepSeek review: receives a sanitized evidence packet and reports

@@ -1,7 +1,8 @@
 # 29. Continuous Demo-Trading Operations and the Knowledge Loop
 
-Status: continuous selected-model Paper/Demo execution active on Alpaca and IBKR; MT5 awaits execution-EA attachment
-Version: 1.2.0
+Status: continuous selected-model Paper/Demo execution active on Alpaca,
+IBKR and OANDA MT5 Demo; all three write paths have direct broker evidence
+Version: 1.3.0
 Date: 2026-08-03
 Author: Satoshi (temporary technical lead), on the owner's direction
 Owner decision required at: L1 activation, and each subsequent stage gate
@@ -240,12 +241,12 @@ an order:
 | --- | --- | --- | --- |
 | Alpaca Paper | `SPY@1d` / `spy-daily-linear-live-v1` | runner active; prior closed-bar signal consumed; flat pending next closed daily bar | one GTC native bracket with SL and TP |
 | IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | runner active; first short bracket and recovery cycle recorded; flat pending next closed H4 bar | TWS parent + TP + SL, exact identity verification |
-| OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | bridge and runner active; blocked at zero bars while the old read-only EA remains attached | new EA submits one market request containing both SL and TP |
+| OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | execution EA, bridge and runner active; one protected short position open | one market request containing both native SL and TP |
 
-The Dragon Windows VM transfer CD is `D:\` with volume label
-`LTS_MT5_BRIDGE`. It contains `LtsMt5ModelBridge.mq5` and
-`INSTALL_LTS_MT5_MODEL_BRIDGE.md` from `lts@ebdfec5`; the optical-media change
-is live and persistent across VM restarts.
+The current Dragon transfer image is
+`/home/harveybc/VirtualMachines/lts-mt5-bridge-5aeea9c.iso`, SHA-256
+`514e63eea20dc4997de48056f118f2b47d08b747e9ffa8d2e945cdf94b105048`.
+MetaEditor compiled the execution EA with zero errors and zero warnings.
 
 Each runner hot-reloads an atomic selected-model manifest and verifies model,
 artifact, configuration, asset and timeframe hashes. A changed selection does
@@ -272,3 +273,42 @@ files are:
 - `~/.local/state/lts/mt5-model-runner-heartbeat.json` on Dragon
 
 No Live account or real capital is authorized by this update.
+
+## 13. Writable Runtime Verification (2026-08-03)
+
+Direct venue facts, not probe labels, establish the current state:
+
+- **MT5 Demo:** command `mt5-6a7ad0965909ce321b44831db49cc94e5993c764`
+  succeeded with MT5 retcode `10009`, order `40217543` and deal `41053668`.
+  The current broker snapshot contains one `ETHUSD` short of `0.01` at
+  `1856.95`, native SL `1880.42`, native TP `1824.56`, and no pending order.
+  After restarting both Dragon Linux services, the same ticket and protection
+  remained, command counts stayed one failed/one succeeded, and no duplicate
+  order appeared.
+- **Alpaca Paper:** the persistent runner is write-enabled and its selected
+  SPY model previously submitted bracket `de169d45-ffdb-4478-a9ce-98bb04724036`:
+  SELL one SPY filled at `758.15`, with broker-native TP `750.49` and SL
+  `761.86`. The account is currently flat at equity/cash `99999.74`; the
+  current daily signal is an idempotent replay and the equity market is
+  closed, so no duplicate order is legal.
+- **IBKR Paper:** the persistent TWS client connects with `readonly=False`.
+  Direct TWS completed-order and execution facts show the model SELL of
+  20,000 USD.CAD at `1.40435`, its TP/SL children, and the recovery BUY of
+  20,000 at `1.40475`. The account is currently flat. The next fresh H4 signal
+  uses the corrected 25,000-unit route; replaying the consumed signal is
+  prohibited.
+
+The periodic Alpaca and IBKR preflight sessions intentionally connect
+read-only. Their `read_only` labels describe those inspectors only, not the
+persistent model runners. Flat exposure is a valid controlled state; continuous
+trading means the services remain live and process each new hash-bound bar once,
+not that they manufacture duplicate orders while a signal is unchanged.
+
+`lts@44bb639` also replaces the obsolete MT5 read-only exposure alarm with
+ticket-level reconciliation against successful model commands. It compares
+symbol, side, volume, SL and TP and remains fail-closed for altered or foreign
+positions. The consolidated watchdog now reports zero active events with the
+open MT5 position explicitly `all_authorized=true`.
+
+Verification: `538` complete LTS tests pass on Omega; `25` focused MT5 and
+watchdog tests pass on Dragon. No Live account or real capital is authorized.

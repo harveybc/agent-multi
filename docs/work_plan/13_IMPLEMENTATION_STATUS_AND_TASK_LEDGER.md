@@ -1,11 +1,11 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-08-03 America/Bogota
-Plan version: 1.25.0
+Plan version: 1.26.0
 Current focus: keep the protected-entry v2 optimization path running to an
-exact champion handoff; operate selected-model Alpaca and IBKR Paper runners
-continuously with mandatory native SL/TP; commission the MT5 execution EA on
-OANDA Demo; and preserve independently auditable venue and model provenance
+exact champion handoff; operate selected-model Alpaca, IBKR Paper and MT5 Demo
+runners continuously with mandatory native SL/TP; and preserve independently
+auditable venue and model provenance
 without taking compute from DOIN
 
 Immediate parallel runtime added on 2026-07-30:
@@ -105,6 +105,24 @@ execution controlled only by hash-bound selected-model manifests:
   terminal cumulative fills within numeric tolerance, labels future L0
   evidence with its actual venue, and repairs the MT5 bar-JSON concatenation
   compile error. The full LTS suite passes `531` tests.
+
+Writable runtime update 2026-08-03:
+
+- the MT5 execution EA is compiled, attached and processing signed commands;
+  one `ETHUSD` short of `0.01` is open under model
+  `ethusdt-4h-linear-live-v1`, with broker-native SL `1880.42` and TP
+  `1824.56`;
+- direct Alpaca and TWS facts independently confirm that their selected-model
+  write paths submitted protected Paper brackets. Both are currently flat
+  because their latest hash-bound signals were already consumed, not because
+  either runner is read-only;
+- `lts@44bb639` reconciles MT5 exposure to the successful command ticket and
+  exact protected geometry. A controlled bridge/model-service restart retained
+  the same position and produced no duplicate order; the consolidated watchdog
+  has zero active events;
+- the full LTS suite passes `538` tests on Omega and the focused MT5/watchdog
+  suite passes `25` tests on Dragon. No Live account or real capital is
+  authorized.
 
 Decision 2026-07-29: the v1 USDCAD swarm is invalid for champion selection.
 One annual validation trade was sufficient to pass its gate, allowing a
@@ -877,7 +895,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | selected_model_paper_active_mt5_ea_pending | Findings 069-074 corrected and independently reproduced; Alpaca SPY and IBKR USDCAD selected-model runners active with mandatory native SL/TP, model-hash verification, atomic heartbeats and restart-safe lifecycle. First IBKR Paper bracket/recovery cycle recorded; reconnect defect 075, quote-liveness defect 076, fill-canonicalization defect 077 and evidence-label defect 078 corrected through `lts@8b67235`, pending independent verification. MT5 backend active but old read-only EA still blocks bars and commands | Satoshi III independently verifies 075-078 and continuity contract; Harvey installs MT5 execution EA; no Live activation |
+| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | selected_model_protected_execution_active_three_venues | Alpaca SPY, IBKR USDCAD and MT5 ETHUSD selected-model runners are active and write-capable with mandatory native SL/TP, model-hash verification, atomic heartbeats and restart-safe lifecycle. Each venue has direct broker order evidence; MT5 currently holds one reconciled protected Demo short while Alpaca/IBKR are flat pending fresh bars | Satoshi III independently verifies findings 079-083 and the three-venue runtime packet; no Live activation |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
