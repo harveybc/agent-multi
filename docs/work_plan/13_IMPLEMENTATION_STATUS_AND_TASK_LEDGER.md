@@ -1,7 +1,7 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-08-03 America/Bogota
-Plan version: 1.26.0
+Plan version: 1.27.0
 Current focus: keep the protected-entry v2 optimization path running to an
 exact champion handoff; operate selected-model Alpaca, IBKR Paper and MT5 Demo
 runners continuously with mandatory native SL/TP; and preserve independently
@@ -895,7 +895,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | selected_model_protected_execution_active_three_venues | Alpaca SPY, IBKR USDCAD and MT5 ETHUSD selected-model runners are active and write-capable with mandatory native SL/TP, model-hash verification, atomic heartbeats and restart-safe lifecycle. Each venue has direct broker order evidence; MT5 currently holds one reconciled protected Demo short while Alpaca/IBKR are flat pending fresh bars | Satoshi III independently verifies findings 079-083 and the three-venue runtime packet; no Live activation |
+| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | selected_model_protected_execution_active_three_venues | Alpaca SPY, IBKR USDCAD and MT5 ETHUSD selected-model runners are active and write-capable with mandatory native SL/TP, model-hash verification, account-bound heartbeats and restart-safe lifecycle. MT5 and IBKR hold reconciled protected shorts; Alpaca has one broker-accepted protected GTC short entry queued while the equity market is closed | Independently verify findings 079-085 and the three-venue runtime packet; no Live activation |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
@@ -927,12 +927,10 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 
 ## 4. Immediate Next Tasks
 
-1. Keep Alpaca SPY and IBKR USDCAD Paper selected-model runners active and
-   verify their direct broker facts and atomic heartbeats. Independently audit
-   reconnect correction 075 at `lts@cffdc13`. Replace the Dragon MT5 read-only
-   EA with `LtsMt5ModelBridge.mq5`, then require a fresh ETHUSD H4 model signal,
-   command acknowledgement and direct native SL/TP evidence. No Live account
-   or capital is authorized. The MCP tooling work must not delay this path.
+1. Keep all three selected-model Paper/Demo runners active. Reconcile every
+   broker position and order to its account-bound writable heartbeat and L0/L1
+   lifecycle, preserve native SL/TP, and independently audit corrections
+   075-085. No Live account or capital is authorized.
 2. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
    job. At the end of stage 1, record the declared duration decision point and
    continue automatically unless evidence, safety or lineage invariants fail.
@@ -941,9 +939,9 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    replicated stop barrier.
 4. Let the replicated campaign materialize and start the separate protected
    easy-to-nominal-to-stress curriculum domain from that exact handoff.
-5. Maintain the authenticated OANDA MT5 read-only vertical through its 24-hour
-   observation window and summarize uptime, spreads, symbol coverage,
-   reconnects and unexpected exposure before protected canaries.
+5. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
+   uptime, spreads, fills, protection, symbol coverage, reconnects and
+   reconciliation deviations in rolling 24-hour windows.
 6. Freeze the resulting robust alpha policy and generate its deterministic
    action trace.
 7. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
@@ -965,8 +963,8 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    activation and evaluate weekly retraining/fine-tuning.
 15. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-16. Complete the consolidated LTS capital ledger and review the active MT5
-    24-hour read-only observations before protected canaries.
+16. Complete the consolidated LTS capital ledger and compare all three active
+    protected-execution routes against their simulator cost and fill priors.
 17. Keep the active social-intelligence S0/S1 path read-only: preserve the
     source allowlist, deterministic collection, normalized OLAP, bounded
     Flash-only review and approval-gated publishing while MT5 observation

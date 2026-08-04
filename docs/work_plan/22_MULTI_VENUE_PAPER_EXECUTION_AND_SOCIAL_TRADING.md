@@ -38,11 +38,13 @@ Runtime evidence (commissioning history plus current state):
 
 - Alpaca Paper retains an authenticated read-only preflight every five
   minutes, while the separate selected-model runner is write-capable. Its SPY
-  bracket path has direct broker fill/protection evidence and is currently flat;
+  bracket path has direct broker fill/protection evidence. The current SELL-one
+  GTC bracket is accepted and queued with native TP and SL while the US equity
+  market is closed;
 - IBKR Paper adapter, OLAP and five-minute observer are authenticated against
   local TWS Paper port `7497`; the separate selected-model runner connects with
   `readonly=False`, has direct USD.CAD bracket/fill/recovery evidence and is
-  currently flat;
+  currently short 25,000 USD.CAD with both GTC protection children active;
 - IBKR watchdog health requires a recent completed authenticated session with
   reconciliation facts. TCP reachability is retained only as a separate
   diagnostic;
@@ -58,7 +60,9 @@ Runtime evidence (commissioning history plus current state):
   path;
 - the consolidated watchdog reports functional observer freshness, endpoint
   health, missing data, unexpected exposure and venue availability through
-  Telegram. Its MT5 probe consumes Dragon's fleet-safe `/v1/status` endpoint
+  Telegram. Writable Alpaca and IBKR exposure must match fresh account-bound
+  model-runner heartbeats and direct broker counts; MT5 exposure must match a
+  successful signed command. Its MT5 probe consumes Dragon's fleet-safe `/v1/status` endpoint
   over Tailscale, so it no longer assumes that Dragon's SQLite database exists
   on Omega. The endpoint excludes account/server fingerprints, capital values,
   symbols, tickets and credentials;

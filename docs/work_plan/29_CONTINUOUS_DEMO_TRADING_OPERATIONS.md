@@ -2,7 +2,7 @@
 
 Status: continuous selected-model Paper/Demo execution active on Alpaca,
 IBKR and OANDA MT5 Demo; all three write paths have direct broker evidence
-Version: 1.3.0
+Version: 1.4.0
 Date: 2026-08-03
 Author: Satoshi (temporary technical lead), on the owner's direction
 Owner decision required at: L1 activation, and each subsequent stage gate
@@ -239,8 +239,8 @@ an order:
 
 | Venue | Selected route | Runtime state | Native protection |
 | --- | --- | --- | --- |
-| Alpaca Paper | `SPY@1d` / `spy-daily-linear-live-v1` | runner active; prior closed-bar signal consumed; flat pending next closed daily bar | one GTC native bracket with SL and TP |
-| IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | runner active; first short bracket and recovery cycle recorded; flat pending next closed H4 bar | TWS parent + TP + SL, exact identity verification |
+| Alpaca Paper | `SPY@1d` / `spy-daily-linear-live-v1` | runner active; current SELL-one SPY bracket accepted and queued while the equity market is closed | one GTC native bracket with TP `749.79` and SL `761.15` |
+| IBKR Paper | `USD.CAD@4h` / `usdcad-4h-linear-live-v1` | runner active; current 25,000-unit short filled and reconciled | TWS parent + TP `1.40021` + SL `1.40653`, exact identity verification |
 | OANDA MT5 Demo | `ETHUSD@4h` / `ethusdt-4h-linear-live-v1` | execution EA, bridge and runner active; one protected short position open | one market request containing both native SL and TP |
 
 The current Dragon transfer image is
@@ -286,17 +286,14 @@ Direct venue facts, not probe labels, establish the current state:
   remained, command counts stayed one failed/one succeeded, and no duplicate
   order appeared.
 - **Alpaca Paper:** the persistent runner is write-enabled and its selected
-  SPY model previously submitted bracket `de169d45-ffdb-4478-a9ce-98bb04724036`:
-  SELL one SPY filled at `758.15`, with broker-native TP `750.49` and SL
-  `761.86`. The account is currently flat at equity/cash `99999.74`; the
-  current daily signal is an idempotent replay and the equity market is
-  closed, so no duplicate order is legal.
+  SPY model submitted bracket `1468bd23-6762-468e-812f-8144de31e7c6`:
+  SELL one SPY, GTC, status `accepted`, with held broker-native TP `749.79`
+  and SL `761.15`. It is not yet filled because the equity market is closed;
+  the account has zero positions and equity `99999.74`.
 - **IBKR Paper:** the persistent TWS client connects with `readonly=False`.
-  Direct TWS completed-order and execution facts show the model SELL of
-  20,000 USD.CAD at `1.40435`, its TP/SL children, and the recovery BUY of
-  20,000 at `1.40475`. The account is currently flat. The next fresh H4 signal
-  uses the corrected 25,000-unit route; replaying the consumed signal is
-  prohibited.
+  Direct TWS facts show a current SELL position of 25,000 USD.CAD at average
+  cost `1.4045076351`, conId `15016062`; TP order `687` is `Submitted` at
+  `1.40021` and SL order `688` is `PreSubmitted` at `1.40653`.
 
 The periodic Alpaca and IBKR preflight sessions intentionally connect
 read-only. Their `read_only` labels describe those inspectors only, not the
@@ -310,5 +307,16 @@ symbol, side, volume, SL and TP and remains fail-closed for altered or foreign
 positions. The consolidated watchdog now reports zero active events with the
 open MT5 position explicitly `all_authorized=true`.
 
-Verification: `538` complete LTS tests pass on Omega; `25` focused MT5 and
-watchdog tests pass on Dragon. No Live account or real capital is authorized.
+`lts@bc974d5` repairs Alpaca's broker-to-L0 lifecycle reconciliation. A prior
+terminal broker effect had left its reservation active after the account was
+flat, incorrectly rejecting the next daily signal. The repair consumes or
+releases terminal capacity from direct broker facts, closes historical L0
+exposure idempotently, and retries only the signal blocked by that exact stale
+state. `lts@6daf85e` then binds Alpaca and IBKR runtime heartbeats to Paper
+environment, account fingerprint, instrument and model, asks IBKR for all
+open API-client orders, and accepts exposure only when direct counts and
+protection reconciliation agree.
+
+Verification: `544` complete LTS tests pass on Omega; direct broker inspection
+matches the account-bound runtime facts; the consolidated watchdog reports
+zero active events. No Live account or real capital is authorized.
