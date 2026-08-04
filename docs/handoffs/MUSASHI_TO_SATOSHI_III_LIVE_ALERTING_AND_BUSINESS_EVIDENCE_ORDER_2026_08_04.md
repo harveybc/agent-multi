@@ -359,7 +359,56 @@ verify notification behavior and compare the reports with direct OLAP and
 broker facts. Owner action remains limited to authentication, explicit risk
 changes and closure/activation decisions.
 
-## 9. Existing Documents to Read Before Editing
+## 9. Urgent Addendum: IBKR Recovery Must Be Able to Resume Safely
+
+This addendum is binding for this delivery and follows direct verification on
+2026-08-04. TWS Paper is reachable again, direct broker facts show zero
+positions and zero open orders, and the ambiguous effect reconciled to
+`terminal_flat`. The L0 ledger nevertheless remains at `halt=hold` and rejects
+the current due-bar decision.
+
+Do not describe the existing owner-command path as capable of clearing this
+hold. It is not: configuration permits only `hold`, `kill`, `flatten_all` and
+`cancel_pending`; `resume` is explicitly rejected; `apply_owner_command()` has
+no state-clearing branch; and the deployed IBKR profile has no command phrase.
+
+Implement and deploy a dedicated `resume_after_reconciliation` operation with
+all of the following properties:
+
+1. it is Paper/Demo-only and cannot be invoked by a model, LLM, Hermes,
+   Telegram text or ordinary runner inference;
+2. it consumes a short-lived, nonce-bound owner capability exactly once;
+3. it binds the exact venue, environment, account fingerprint, instrument and
+   incident/recovery identity;
+4. immediately before the state transition it obtains fresh direct broker
+   evidence proving zero positions and zero open orders for that account;
+5. it requires every affected effect to be terminal and rejects any unknown,
+   pending, unreconciled or foreign evidence;
+6. it refuses while the originating P0/P1 condition remains active;
+7. capability burn, evidence hashes, previous state and `halt -> none`
+   transition commit atomically to the durable ledger;
+8. retry after success is idempotent and cannot clear a later unrelated hold;
+9. crash before commit leaves the hold; crash after commit resumes from the
+   committed state without consuming another capability;
+10. the consolidated status and incident router report the transition and its
+    evidence without exposing raw account identifiers or secrets.
+
+Add adversarial tests for stale/empty/wrong-account evidence, open orders,
+nonzero positions, unknown effects, active incident, replayed nonce, expired
+capability, concurrent resume attempts, crash at every transaction boundary,
+and a new hold racing the resume. Run the complete LTS suite and a Paper runtime
+acceptance in which the owner authorizes only this bounded transition. Do not
+clear production state by direct SQLite manipulation.
+
+In the same packet correct `AUD-F2-20260804-091`: connection refusal at runner
+construction must enter an advancing degraded heartbeat loop with bounded
+backoff, one incident identity and zero broker submissions, then reconnect and
+reconcile automatically when TWS returns.
+
+These corrections precede any claim that IBKR is continuously trading. A
+healthy process that remains permanently held is safe but not operational.
+
+## 10. Existing Documents to Read Before Editing
 
 Read in this order:
 
