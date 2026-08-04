@@ -7,7 +7,7 @@
   "flap_reopen_window_seconds": 3600,
   "notification_owner": "omega",
   "fleet_hosts": ["omega", "dragon", "gamma"],
-  "forward_ssh_options": ["-o", "BatchMode=yes", "-o", "ConnectTimeout=10"],
+  "forward_ssh_options": ["-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "-i", "~/.ssh/id_ed25519_incident"],
   "forward_repo_path": "/home/harveybc/Documents/GitHub/agent-multi",
   "failover_after_seconds": {"P0": 600, "P1": 1800, "P2": 7200, "P3": 86400},
   "severity_policy": {
