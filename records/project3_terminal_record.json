@@ -1,0 +1,49 @@
+{
+  "schema": "agent_multi.project_terminal_record.v1",
+  "version": "1.0.0",
+  "project": "project3",
+  "title": "Project 3 E0-E4 asset-policy evidence program",
+  "state": "terminal",
+  "declared_terminal_by": "owner",
+  "declared_terminal_at": "2026-08-04T00:00:00+00:00",
+  "completed_jobs": 16019,
+  "job_window": {
+    "first_job_created_at": "2026-07-25T18:40:20+00:00",
+    "last_job_created_at": "2026-07-27T04:28:29+00:00"
+  },
+  "olap": {
+    "path": "~/.local/state/agent-multi/evidence-pool-20260725/evidence.sqlite",
+    "jobs_table": "jobs",
+    "expected_job_count": 16019
+  },
+  "final_backup": {
+    "backup_id": "project3-evidence-20260727T192130547397Z-ae7caa31",
+    "created_at": "2026-07-27T19:21:30.547397+00:00",
+    "manifest_schema": "project3.evidence.backup.v1",
+    "snapshot_filename": "project3_evidence.sqlite",
+    "snapshot_sha256": "73c46d56c24de8d85e75f7dd621718a5ac6ff4eb0250a3a100eb9acced7887ca",
+    "snapshot_size_bytes": 1015513088,
+    "backups_dir": "~/.local/state/agent-multi/evidence-pool-20260725/backups"
+  },
+  "artifact_roots": [
+    "~/.local/state/agent-multi/evidence-pool-20260725"
+  ],
+  "scheduling_inventory": {
+    "verified_at": "2026-08-04T18:40:00+00:00",
+    "omega_units_disabled": [
+      "project3-event-daemon.service",
+      "project3-evidence-backup.timer",
+      "project3-evidence-pool-api.service",
+      "project3-evidence-scheduler.service",
+      "project3-evidence-worker-omega.service",
+      "project3-portfolio-supervisor-runner.service",
+      "project3-stage31-supervisor.service"
+    ],
+    "dragon_project3_units": 0,
+    "gamma_project3_units": 0,
+    "crontab_project3_entries": {"omega": 0, "dragon": 0, "gamma": 0},
+    "hermes_project3_jobs": {"omega": 0, "dragon": 0, "gamma": 0}
+  },
+  "paging_policy": "Project 3 pages only for integrity loss of its retained evidence (OLAP, final backup, artifact roots). Completion, health and progress never page and never appear as active work.",
+  "context_rule": "Any memory, session prose or semantic recollection describing Project 3 as running is stale. Current runtime facts and this record outrank them; Project 3 must be reported as complete with 16,019 archived jobs."
+}
