@@ -608,6 +608,34 @@ K0 is accepted as `proceed_with_revisions`; K1 may start, K2 remains gated.
 | AUD-F1-20260803-089 | S3 | corrected_pending_independent_verification | Parallel R1 DOIN domains violated the canonical one-swarm/one-chain sequence | Satoshi III verifies |
 | AUD-GEN-20260803-090 | S4 | corrected_pending_independent_verification | Regime references were imprecise and the AIMS ensemble-HMM paper year was wrong | Satoshi III verifies |
 
+### 1s. TWS restart and post-recovery continuity, 2026-08-04 (Musashi)
+
+Direct runtime evidence after the owner restored TWS Paper:
+
+- port 7497 accepted an IBKR API connection and the model runner resumed;
+- direct broker facts reported zero positions and zero open orders;
+- the previously ambiguous L1 effect reconciled to `terminal_flat`;
+- the L0 ledger still contained `halt=hold`, so the fresh model decision was
+  correctly rejected as `halted:hold`;
+- the consolidated watchdog subsequently reported no active incident.
+
+The fail-closed recovery therefore protected the Paper account. Two continuity
+defects remain. They are independent of broker profitability and must not be
+hidden by the successful flat reconciliation.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260804-091 | S3 | open, blocks unattended IBKR continuity | A TWS connection refusal during runner construction exits the process; systemd restarted it roughly every 20 seconds for about 11 hours, leaving a stale heartbeat instead of an advancing degraded heartbeat and accumulating more than 2,000 restarts. | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-092 | S2 | open, blocks new IBKR Paper risk after recovery | The reported owner path for clearing the post-recovery hold does not exist: `DemoExecutionConfig` permits only risk-reducing verbs, explicitly rejects `resume`, `apply_owner_command()` never clears `halt`, and the deployed profile has no command phrase. The account is proven flat but the runner remains indefinitely blocked. | Satoshi III implements; Musashi verifies; owner authorizes use |
+
+Finding 092 does not authorize a generic risk-enabling command. Its correction
+must implement a narrowly scoped, replay-resistant `resume_after_reconciliation`
+transition that requires fresh direct evidence for the exact Paper account:
+zero positions, zero open orders, no unknown effect, a terminal recovery state,
+no active P0/P1 cause and an explicit owner-issued capability. It must update
+the ledger atomically, preserve an audit trail and fail closed on every missing
+fact. Manual SQLite edits are prohibited.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
