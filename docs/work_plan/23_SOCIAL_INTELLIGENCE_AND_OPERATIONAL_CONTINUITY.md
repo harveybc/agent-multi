@@ -409,3 +409,23 @@ systemctl --user status agent-multi-social-collector.timer
 python tools/social_intelligence.py \
   --config examples/config/social_intelligence/moltbook_observe_v1.json status
 ```
+
+## 13. Structured Knowledge Continuity
+
+The owner approved a bounded OKF/GBrain/Hermes pilot. Its complete contract is
+[document 31](31_OKF_GBRAIN_HERMES_KNOWLEDGE_CONTINUITY.md).
+
+The continuity rule is deliberately asymmetric:
+
+- reviewed OKF knowledge in Git is portable and recoverable;
+- GBrain is a local, disposable retrieval projection;
+- `codebase-memory-mcp` remains the code graph;
+- OLAP, blockchain and direct broker observations retain ownership of runtime
+  facts; and
+- Hermes may retrieve and draft, but cannot trade, promote, publish, close
+  findings or rewrite canonical knowledge autonomously.
+
+The first deployment is Omega-only, read-only and loopback/stdio. Automatic
+enrichment and dream cycles remain disabled. A real Hermes cron invocation,
+not merely an interactive MCP listing, must prove tool availability before the
+pilot can be described as operational.
