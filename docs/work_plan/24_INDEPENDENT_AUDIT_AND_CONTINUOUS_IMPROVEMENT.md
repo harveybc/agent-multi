@@ -143,7 +143,24 @@ independent closure evidence.
 - Status answers include anomalies and missing evidence instead of hiding them.
 - Retention removes redundant bulk without deleting unique lineage.
 
-### 3.9 Academic contribution and reproducibility
+### 3.9 Agent knowledge and retrieval integrity
+
+- Git/OKF, GBrain, `codebase-memory-mcp`, OLAP, blockchain and direct broker
+  evidence have distinct, documented ownership.
+- A derived graph or generated summary never overrides canonical source or
+  independently reproduced runtime evidence.
+- Every safety-relevant knowledge answer carries source, status, verification
+  and freshness evidence.
+- Contradictions and stale concepts are surfaced; synthesis cannot silently
+  erase them.
+- GBrain and its index are disposable, reconstructible and unnecessary for
+  trading, campaign progress, audit recovery and finding closure.
+- Hermes MCP availability is verified in actual cron execution, not inferred
+  from interactive configuration.
+- Social input cannot enter reviewed knowledge without deterministic
+  screening and explicit provenance.
+
+### 3.10 Academic contribution and reproducibility
 
 - Each contribution is distinguished from prior art by a documented search.
 - Research questions and claims are falsifiable.
@@ -431,6 +448,9 @@ The report format and lifecycle are defined in `docs/audits/README.md`.
 - Codex independently verifies every accepted `S0` through `S2` finding.
 - Each front is audited at least every 72 hours during active development.
 - The Codex recovery prompt passes a weekly context-loss tabletop review.
+- The fixed OKF/GBrain cold-start corpus passes all safety-critical questions,
+  and the same recovery remains possible from canonical files while GBrain is
+  stopped or deleted.
 - Audit overhead does not materially reduce DOIN throughput or delay broker
   observation.
 - Findings produce regressions, monitors, decisions or explicit accepted risk,

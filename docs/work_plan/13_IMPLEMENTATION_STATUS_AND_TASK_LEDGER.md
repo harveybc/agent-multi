@@ -909,6 +909,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SOLVENCY-CURRICULUM-001` | Lieutenant Satoshi II + Musashi verification | `gym-fx`, `agent-multi` | research_admitted_instrumentation_blocked | P20 train-only solvency curriculum; first expose termination causes, then compare hard reset, penalized chronological continuation and randomized-start controls under immutable realistic validation | Harvey |
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
+| `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
 
 Claude packet:
 
@@ -984,6 +985,11 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     already-submitted cTrader Open API approval, then execute its read-only
     capability preflight. Hold Darwinex Zero behind owner cost approval and
     permit no live MQL5 Signals or PAMM before legal/capital approval.
+23. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
+    validate a compact OKF bundle, manually review and pin GBrain, keep it
+    local/read-only, prove Hermes interactive and cron retrieval, benchmark
+    cold-start quality/resources and prove file-based recovery with GBrain
+    unavailable before any fleet deployment.
 
 ## 5. Current Risks
 

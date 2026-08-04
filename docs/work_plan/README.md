@@ -87,6 +87,8 @@ trading domain.
 | [27 Real-time feature and asset parity](27_REALTIME_FEATURE_AND_ASSET_PARITY.md) | All-source causal runtime inputs, independent execution routes, instrument mappings, promotion gates and selected live/research asset sets |
 | [28 Social-trading business reality](28_SOCIAL_TRADING_BUSINESS_REALITY_LOOP.md) | Copy/PAMM/MAM ledger, platform matrix, provider track, protected social execution, investor metrics and live-to-research feedback loop |
 | [29 Continuous demo-trading operations](29_CONTINUOUS_DEMO_TRADING_OPERATIONS.md) | Closing the order loop: control plane and agent boundaries, runtime execution cycle, small-`rel_volume` demo doctrine, staged L0-L5 rollout, kill switches, and the bidirectional knowledge/calibration loop with Fronts 1/3/4 |
+| [30 Front 5 multidomain program](30_FRONT5_MULTIDOMAIN_PROGRAM.md) | Evidence-gated expansion of DOIN beyond trading after the active fronts satisfy their resource and safety gates |
+| [31 OKF, GBrain and Hermes knowledge continuity](31_OKF_GBRAIN_HERMES_KNOWLEDGE_CONTINUITY.md) | Portable OKF knowledge, rebuildable local GBrain retrieval, Hermes cold-start recovery, cron verification and strict separation from runtime authority |
 
 ## Repository Ownership Summary
 
@@ -225,6 +227,10 @@ adding value.
     ledger, cTrader/eToro demo controls, cTrader Open API preflight, Darwinex
     Zero after cost approval, and only then an explicitly approved live MQL5
     Signals, real PAMM or public provider pilot.
+18. Pilot the OKF/GBrain/Hermes continuity layer on Omega after the active
+    three-venue audit: Git remains canonical, GBrain remains disposable,
+    Hermes remains non-authoritative, and fleet rollout requires cold-start,
+    cron, stale-state, failure and resource evidence.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
