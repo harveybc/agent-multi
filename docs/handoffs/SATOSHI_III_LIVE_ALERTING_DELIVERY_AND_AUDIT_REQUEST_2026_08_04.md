@@ -302,3 +302,54 @@ structurally. Reported once for the record; not repeated here.
   the next bounded window.
 
 *Ritsurei.* — Satoshi III (Mujuro Utsutsu)
+
+## 13. Overnight Runtime Evidence (2026-08-05 addendum, sampled 01:25 UTC)
+
+This addendum finalizes the packet as the formal audit request. Updated
+heads: `lts@c00f8a5` (main), `agent-multi@dc4bb372`; suites at head:
+**lts 591 passed**, agent-multi 483 passed.
+
+1. **Owner resume executed (addendum §9 runtime acceptance).** At
+   21:57:55 UTC the owner minted and consumed one resume capability
+   bound to `l1e-f4993c2dda8cdc2a`. Verified in the durable ledger:
+   `halt=none`, `resume_evidence` + `halt_cleared` facts with matching
+   evidence hash `31ef9db8…`, capability row `consumed`, transition
+   recorded in the incident ledger as `ibkr_hold_cleared` (P3,
+   observed+resolved). The tools needed two live corrections first
+   (`lts@bc4970a`): working-directory-independent instructions and the
+   continuous-Paper profile schema instead of the L1 canary profile.
+2. **Real TWS restart caught by the monitor.** The owner enabled daily
+   Auto restart (the §4 corrective); the resulting TWS restart at
+   ~21:00 UTC produced incident `INC-20260804210045-a723a5a9`: ONE
+   activation, resolution by direct evidence at 21:15, ONE recovery
+   message. The "real TWS offline/recovery event present in the
+   incident ledger with bounded message counts" acceptance row is now
+   satisfied by a genuine event.
+3. **First fully-autonomous post-resume protected lifecycle.** At the
+   2026-08-04T20:00Z bar's due window (00:00:41 UTC) the selected model
+   decided SHORT: SELL 25,000 USD.CAD MARKET with atomic bracket
+   TP 1.40247 / SL 1.40881, `intent_class=risk_increasing`, effect
+   `l1e-d40d00c1ef40cda1` → **acknowledged** with both protective
+   children verified broker-side; `position_reconciled
+   {observed_units: -25000}` every minute since; exposure row opened
+   correctly (and the prior ghost row stayed closed). Acceptance rows
+   8, 9 and 11 now carry fresh direct evidence.
+4. **Live false positive found, bounded, fixed, self-resolved.**
+   `decision_clock_stale` paged ONCE at 00:02 UTC and then collapsed 73
+   further observations into the same incident (the dedup working as
+   designed in production). Root cause: a monitoring-state heartbeat
+   has no inference block and the missing timeframe fail-closed into
+   staleness. Fixed at `lts@c00f8a5` (+2 regression tests); the
+   monitor's next pass resolved the incident with direct evidence and
+   one recovery message at 01:22 UTC. Ledger active count: zero.
+5. **Extended soak.** ~6.7 h of router+monitor operation produced five
+   Telegram messages total (synthetic P1 activation+recovery, fleet P2
+   activation, clock-stale P1 activation+recovery), zero floods, zero
+   duplicate decisions, zero foreign exposure, zero unexplained runner
+   churn; DOIN campaign untouched throughout.
+
+Owner actions from §12 are complete (Auto restart enabled; resume
+executed). Remaining requests to Musashi are unchanged: verify, dispose
+findings §6.1-6.5 (6.2 now fixed at `lts@83cc286`), and rule on the §10
+incomplete scope so the live-vs-sim loop and per-bar decision-fact
+contract form the next bounded window.
