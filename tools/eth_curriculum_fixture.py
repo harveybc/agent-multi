@@ -74,7 +74,10 @@ def _base_config(out_dir: Path, arm: str, *, epoch_timesteps: int,
     config["l1_min_checkpoint_timesteps"] = 1
     config["easy_max_epochs"] = max_epochs
     config["easy_patience"] = max_epochs
-    config["evaluate_test_split"] = True
+    # AUD-F1-20260805-114: the mechanism fixture must never evaluate
+    # the test split; 2025 is DISCLOSED for curriculum work and a later
+    # untouched period is required for any final protected comparison.
+    config["evaluate_test_split"] = False
     config["selection_metric"] = "lexicographic_weekly_v1"
     config["selection_min_trades"] = 0          # mechanism fixture only
     config["save_model"] = str(out_dir / arm / "model.zip")
@@ -87,10 +90,14 @@ def _raw(summary: dict) -> dict:
             if summary.get(key) is not None}
 
 
+_ALLOWED_SPLITS = ("train", "train_tail", "validation")
+
+
 def _splits_raw(result: dict) -> dict:
+    """Train/train-tail/validation ONLY (AUD-F1-20260805-114)."""
     splits = result.get("splits") or {}
     return {name: _raw(summary) for name, summary in splits.items()
-            if isinstance(summary, dict)}
+            if isinstance(summary, dict) and name in _ALLOWED_SPLITS}
 
 
 def run_arm(arm: str, out_dir: Path, *, epoch_timesteps: int,
@@ -155,7 +162,13 @@ def main() -> int:
         "budget": {"epoch_timesteps": args.epoch_timesteps,
                    "max_epochs": args.max_epochs},
         "note": ("mechanism fixture only — never a champion claim;"
-                 " raw same-scale metrics per split"),
+                 " raw same-scale metrics per split;"
+                 " splits limited to train/train_tail/validation"),
+        "protected_test_policy": (
+            "2025 is DISCLOSED for the curriculum comparison as of"
+            " 2026-08-05 and is not evaluated here; a later untouched"
+            " period is required for a genuinely protected final"
+            " comparison"),
         "arms": {},
     }
     for arm in args.arms.split(","):
@@ -170,8 +183,24 @@ def main() -> int:
             json.dumps(report, indent=1, sort_keys=True, default=str),
             encoding="utf-8")
         print(f"[fixture] arm {arm} done -> {report_path}", flush=True)
-    print(json.dumps({"report": str(args.output_dir
-                                    / "fixture_report.json")}))
+    report_path = args.output_dir / "fixture_report.json"
+    manifest = {
+        "schema": "agent_multi.eth_curriculum_fixture_manifest.v1",
+        "report_sha256": hashlib.sha256(
+            report_path.read_bytes()).hexdigest(),
+        "artifacts": {
+            str(path.relative_to(args.output_dir)): hashlib.sha256(
+                path.read_bytes()).hexdigest()
+            for path in sorted(args.output_dir.rglob("*.zip"))
+        },
+    }
+    manifest_path = args.output_dir / "fixture_manifest.json"
+    manifest_path.write_text(
+        json.dumps(manifest, indent=1, sort_keys=True) + "\n",
+        encoding="utf-8")
+    print(json.dumps({"report": str(report_path),
+                      "manifest": str(manifest_path),
+                      "report_sha256": manifest["report_sha256"]}))
     return 0
 
 
