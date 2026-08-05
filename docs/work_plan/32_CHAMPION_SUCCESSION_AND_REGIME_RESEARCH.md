@@ -125,7 +125,7 @@ or places the seat on hold. It never forces a switch.
 
 ## Part II - Difficulty Curriculum
 
-Every model artifact carries an immutable stage tag:
+Every model artifact carries an immutable curriculum tag:
 
 1. `easy_no_margin_call`: training dynamics may relax early insolvency
    termination while all losses remain in fitness;
@@ -140,9 +140,13 @@ tail, promotion panel, validation, protected test and every Paper/Demo/Live
 route always use realistic solvency, fees and protection. No job-0/job-1 or
 active-chain mutation is authorized here.
 
-The measured question is whether curriculum stage changes independent-panel
-RAP, safety and sim-to-Paper divergence. Harder training is not assumed to be
-better.
+For the owner-activated ETH campaign, phases 1 and 2 execute inside every outer
+genome stage and candidate: easy learning first, then continued normal training
+from the learned weights before realistic selection and advancement. A matched
+normal-only DOIN domain provides the causal control. The measured question is
+whether this changes raw weekly return, drawdown, safety and sim-to-Paper
+divergence. Harder training is not assumed to be better, and no opaque composite
+may be presented as a business return.
 
 ## Part III - Regime-Specialist Track
 
