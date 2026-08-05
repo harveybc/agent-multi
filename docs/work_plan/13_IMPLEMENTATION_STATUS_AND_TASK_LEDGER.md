@@ -908,7 +908,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | corrections_in_progress_local_paired_ab_running | Train-only loss-conserving continuation and easy-to-normal weight transfer pass locally; the first ETH swarm is invalid because objective, rejection, artifact-namespace and fork contracts failed audit 108-116. Supervisors remain disabled. Four distinct GPUs now run paired-seed N/E/EN local comparisons under `ETH_CURRICULUM_LOCAL_AB_RUNTIME_2026_08_05.md` while Satoshi completes the new-domain smoke corrections and current-stack champion-to-Demo parity. | Harvey |
+| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | easy_activity_fix_verified_local_pending_deploy | The first ETH swarm remains invalid under audit 108-116. The four local N/E/EN fixtures were stopped and classified invalid after a zero-trade easy contract exposed findings 117-118. The corrected v2 contract uses zero deadband, strictly positive easy costs and fail-closed activity eligibility; seed-2711 produced 883 easy trades and 122 realistic-validation trades with protected SL/TP entries and clean full suites. Rejected chains remain disabled pending corrected new-domain smoke. | Harvey |
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -959,19 +959,23 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    smoke. Require one tip, distinct claims, no accepted failure sentinel,
    loadable ETH artifacts and zero residual worker processes after pause.
    Keep the full supervisors disabled until independent acceptance.
-8. After smoke acceptance, run ETH-EN and then matched ETH-N sequentially with
+8. Independently verify findings 117-118 and require the corrected smoke to
+   show non-hold actions, submitted protected entries, closed trades and zero
+   protected-entry rejections before any four-GPU launch. A zero-trade easy
+   artifact is a failed candidate, never an eligible neutral result.
+9. After smoke acceptance, run ETH-EN and then matched ETH-N sequentially with
    identical data, seeds, population and normal validation. Easy artifacts
    remain immutable, replay state resets at the dynamics boundary, and the
    disclosed 2025 period cannot select candidates or curriculum arms.
-9. Build the missing raw-bar-to-current-SAC observation provider, prove
+10. Build the missing raw-bar-to-current-SAC observation provider, prove
    two-source feature/action parity and wire the selected SAC policy into the
    production MT5 ETHUSD H4 runner. The existing linear model remains a shadow
    control. A champion claim requires a model-originated mandatory-SL/TP Demo
    lifecycle with model/config/input/decision hashes.
-10. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
+11. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
    uptime, spreads, fills, protection, symbol coverage, reconnects and
    reconciliation deviations in rolling 24-hour windows.
-11. Freeze the resulting robust alpha policy and generate its deterministic
+12. Freeze the resulting robust alpha policy and generate its deterministic
    action trace.
 12. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.

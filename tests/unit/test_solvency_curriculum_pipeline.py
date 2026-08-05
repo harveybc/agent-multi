@@ -66,10 +66,20 @@ class FakeEnv:
     def step(self, _action):
         self.steps += 1
         done = self.steps >= 3
+        trades = int(self.config.get("_fake_trades", 1))
         info = {"economic_equity": 9000.0 - self.steps,
                 "recapitalization_debt": 100.0,
                 "recapitalization_count": 1,
                 "would_margin_call_count": 1,
+                "trades": trades,
+                "action_diagnostics": {
+                    "non_hold_actions": 3 if trades else 0,
+                },
+                "execution_diagnostics": {
+                    "entry_actions_seen": 1 if trades else 0,
+                    "entry_orders_submitted": 1 if trades else 0,
+                    "protected_entry_rejections": 0,
+                },
                 "termination_cause": "data_end" if done else None}
         return {"obs": self.steps}, 0.0, done, False, info
 
@@ -130,6 +140,12 @@ def test_easy_phase_runs_first_then_normal_warm_start(harness):
     assert easy_envs, "easy phase must construct easy envs"
     assert all(env.config.get("env_mode") == "training"
                for env in easy_envs)
+    assert all(env.config["continuous_action_threshold"] == 0.0
+               for env in easy_envs)
+    assert all(env.config["commission"] == pytest.approx(0.00005)
+               for env in easy_envs)
+    assert all(env.config["full_spread_rate"] == pytest.approx(0.0001)
+               for env in easy_envs)
 
     # The normal phase went through the PARENT pipeline with normal
     # dynamics and a warm start bound to the post_easy artifact hash.
@@ -147,6 +163,8 @@ def test_easy_phase_runs_first_then_normal_warm_start(harness):
     meta = json.loads(Path(
         normal_config["warm_start_model"] + ".meta.json").read_text())
     assert meta["history"][0]["would_margin_call_count"] == 1
+    assert meta["history"][0]["activity_eligible"] is True
+    assert meta["activity_contract"]["minimum_trades"] == 1
     assert meta["easy_budget_epochs"] == 3
 
 
@@ -166,6 +184,50 @@ def test_easy_early_stop_respects_budget(harness):
     # declared budget of 5.
     assert meta["easy_epochs_run"] == 2
     assert meta["easy_epochs_run"] < meta["easy_budget_epochs"]
+    # The checkpoint is from the first eligible/best epoch, not the final
+    # patience epoch.
+    assert Path(parent_calls[0]["config"]["warm_start_model"]).read_text() == (
+        "fresh+10"
+    )
+
+
+def test_easy_phase_rejects_zero_trade_policy_and_saves_no_artifact(harness):
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    config = _config(tmp_path)
+    config["_fake_trades"] = 0
+    with pytest.raises(RuntimeError, match="no activity-eligible checkpoint"):
+        pipeline.run_pipeline(
+            config=config, env_plugin=None, agent_plugin=FakeAgent(),
+            mode="train",
+        )
+    assert not parent_calls
+    assert not Path(
+        str(tmp_path / "candidate" / "model") + ".post_easy.zip"
+    ).exists()
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("easy_continuous_action_threshold", -0.1),
+        ("easy_commission_fraction_per_side", 0.0),
+        ("easy_full_spread_rate", 0.0),
+        ("easy_slippage_bps_per_side", 0.0),
+        ("easy_min_trades", 0),
+    ],
+)
+def test_easy_contract_rejects_invalid_activity_or_costs(
+    harness, key, value
+):
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    config = _config(tmp_path)
+    config[key] = value
+    with pytest.raises(ValueError):
+        pipeline.run_pipeline(
+            config=config, env_plugin=None, agent_plugin=FakeAgent(),
+            mode="train",
+        )
+    assert not parent_calls
 
 
 def test_non_train_modes_pass_through_forced_normal(harness):
