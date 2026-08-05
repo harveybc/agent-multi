@@ -13,7 +13,7 @@
  },
  "asset_policy": {
   "action_space_mode": "continuous",
-  "continuous_action_threshold": 0.18798110300070983,
+  "continuous_action_threshold": 0.1,
   "plugin": "project3_sac_actor_critic_agent",
   "project3_strict": true,
   "window_size": 42
