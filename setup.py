@@ -26,6 +26,7 @@ setup(
         "pipeline.plugins": [
             "rl_pipeline=pipeline_plugins.rl_pipeline:PipelinePlugin",
             "rl_pipeline_with_validation=pipeline_plugins.rl_pipeline_with_validation:PipelinePlugin",
+            "rl_pipeline_with_solvency_curriculum=pipeline_plugins.rl_pipeline_with_solvency_curriculum:PipelinePlugin",
             "rl_pipeline_with_execution_curriculum=pipeline_plugins.rl_pipeline_with_execution_curriculum:PipelinePlugin",
         ],
         "execution_policy.plugins": [
