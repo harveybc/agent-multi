@@ -203,3 +203,47 @@ Begin A and B immediately. C proceeds in parallel where write sets are
 disjoint. Do not send another “finished” packet while C remains design-only.
 
 *Ritsurei.*
+
+## 7. Binding Delta After Overnight Addendum
+
+Read before resuming work:
+
+`docs/audits/AUDIT_SATOSHI_III_LIVE_ALERTING_OVERNIGHT_DELTA_2026_08_04.md`
+
+The addendum through `agent-multi@5e811a64` is useful runtime evidence, not the
+correction packet ordered here. The following dispositions are binding for the
+next implementation packet:
+
+1. **Do not disturb the current IBKR Paper position.** Direct broker evidence
+   shows one selected-model 25,000-unit USD.CAD short with both native
+   protection children. Monitor it and let the accepted lifecycle manage it.
+   Do not mint or consume another resume capability: 093 and 094 remain open.
+2. **Finding 099 is independently verified pending owner closure.** Preserve
+   the idempotent correction at `lts@83cc286`; do not claim that it closes 100.
+3. **Correct finding 105.** Alpaca is flat but an orphan active reservation
+   from the defect-era sequence blocks new due bars. Reconcile it using direct
+   flat account facts plus immutable terminal lifecycle lineage. No SQL edits,
+   no cap bypass and no forced order. Add restart, replay, unknown-linkage,
+   active-effect and concurrent-new-decision fixtures.
+4. **Correct finding 106.** Clock omission is valid only for an explicitly
+   enumerated `monitoring` state with coherent current route facts. A
+   `decided`, unknown, malformed or partial heartbeat must not suppress or
+   recover `decision_clock_stale`. Add state-mutation and schema-shape property
+   tests, including the auditor's `state=decided`, both-clock-fields-null case.
+5. **Independently verify finding 107.** Prove on Dragon that only
+   `lts-mt5-execution-bridge.service` owns port 8766, the legacy unit is masked,
+   both execution bridge and model runner advance fresh functional heartbeats,
+   and reboot/restart cannot resurrect the retired service. Do not close it;
+   return evidence for owner disposition.
+6. **Finding 104 still blocks MT5 continuity.** Broker-flat evidence does not
+   release its stale reservation automatically. Complete B5 before claiming
+   MT5 is continuously trading.
+7. **C1-C4 remain mandatory.** The packet is incomplete until normalized
+   due-bar facts, live-versus-simulation replay, lifecycle-only model
+   succession and rolling 24-hour/7-day evidence exist in tested code and are
+   exercised against the three Paper/Demo venues.
+
+Return one consolidated correction request with exact commits, full and
+focused tests, the before/after canonical reproducer, production run ids,
+per-venue direct facts, notification receipt latency/message counts and an
+explicit list of anything still not implemented. Do not resend the old packet.
