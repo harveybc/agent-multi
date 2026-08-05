@@ -908,7 +908,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi` | owner_activated_eth_implementation | ETH train-only solvency curriculum: instrument causes, implement loss-conserving chronological continuation, then run stage-integrated `easy -> normal` and a matched `normal-only` DOIN control under immutable realistic validation | Harvey |
+| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | implementation_verified_campaign_rejected_disabled | Train-only loss-conserving continuation and easy-to-normal weight transfer pass locally; the first ETH swarm is invalid because objective, rejection, artifact-namespace and fork contracts failed audit 108-116. Supervisors are disabled pending a new-domain four-worker smoke and current-stack champion-to-Demo parity. | Harvey |
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -947,35 +947,27 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 4. Implement no-idle champion succession through L0/L1 only, preserving the
    exact post-close Paper/Demo balance; remove direct broker calls from model
    switch paths.
-5. Continue the active four-worker `USDCAD@4h` easy non-zero-cost full-genome
-   job while the owner is away. Do not interrupt an in-flight candidate. At
-   the owner's return, and only after the three Paper/Demo ledgers reconcile
-   with direct broker facts, take a replicated generation-boundary checkpoint
-   and pause this campaign without deleting its chain, population or artifacts.
-6. Archive and independently reload the current `USDCAD@4h` chain state,
-   champion model, decoded JSON, metrics and hashes before any campaign switch.
-   The queued USDCAD curriculum remains resumable rather than being silently
-   replaced or launched in parallel.
-7. Materialize one coordinated `ETHUSD@4h` curriculum campaign for all four
-   workers. Freeze the current `ethusdt-4h-linear-live-v1` artifact
-   (`539f946071a1870672c2d2c1ce7b1ce0f0d4b4317a15b2d082b59b32c98d10bf`)
-   as a shadow/simulation control, not execution authority. It is a supervised
-   linear direction model and is not the requested SAC/DOIN champion. Paper/Demo
-   execution must move to a parity-verified SAC artifact and then to each newer
-   stage-integrated ETH champion.
-8. Integrate two train phases inside every outer optimization stage and every
-   candidate: `easy_chronological_continuation` first, then continued training
-   from the learned weights under `normal_realistic` before selection and stage
-   advancement. The easy artifact remains immutable and independently loadable;
-   SAC replay state is reset or mode-filtered at the dynamics boundary so easy
-   transitions cannot contaminate normal updates. Selection, validation and
-   protected tests always use realistic solvency and costs. Run a matched
-   `normal-only` ETH DOIN domain with the same data, seeds, population and budget
-   after the stage-integrated arm; do not mix their chains or champions.
-9. Persist stage-entry and stage-exit artifacts, decoded genomes, hashes,
-   population state and same-scale weekly/annual return, RAP, drawdown,
-   activity, ruin and live-divergence metrics in DOIN/OLAP. This makes the
-   incremental effect of easy-to-normal training measurable without a reset.
+5. Preserve the paused USDCAD archive and the rejected ETH diagnostic chain.
+   Do not resume either as the corrected ETH campaign and do not permit ETH
+   outputs to touch historical USDCAD artifact roots.
+6. Execute findings 108-116 through
+   `MUSASHI_TO_SATOSHI_III_ETH_CURRICULUM_CORRECTION_ORDER_2026_08_05.md`:
+   one authoritative lexicographic comparator, rejected-error semantics,
+   executable genomes, ETH-only artifact identity, deterministic fork
+   convergence and a verified all-worker pause operation.
+7. Run a new-domain local candidate and then a four-worker one-generation
+   smoke. Require one tip, distinct claims, no accepted failure sentinel,
+   loadable ETH artifacts and zero residual worker processes after pause.
+   Keep the full supervisors disabled until independent acceptance.
+8. After smoke acceptance, run ETH-EN and then matched ETH-N sequentially with
+   identical data, seeds, population and normal validation. Easy artifacts
+   remain immutable, replay state resets at the dynamics boundary, and the
+   disclosed 2025 period cannot select candidates or curriculum arms.
+9. Build the missing raw-bar-to-current-SAC observation provider, prove
+   two-source feature/action parity and wire the selected SAC policy into the
+   production MT5 ETHUSD H4 runner. The existing linear model remains a shadow
+   control. A champion claim requires a model-originated mandatory-SL/TP Demo
+   lifecycle with model/config/input/decision hashes.
 10. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
    uptime, spreads, fills, protection, symbol coverage, reconnects and
    reconciliation deviations in rolling 24-hour windows.

@@ -474,3 +474,32 @@ The deterministic router is implemented. Auxiliary execution models and the
 shared learned entry/exit policy are planned components blocked on the
 execution-fidelity gate and frozen alpha handoff; they are not represented as
 already completed code.
+
+## 16. ETH Solvency-Curriculum Audit State (2026-08-05)
+
+The train-only `easy_chronological_continuation` environment and the
+`post_easy -> normal_realistic` weight continuation pass focused and complete
+local suites. The first distributed ETH-EN campaign does not pass acceptance.
+It was stopped and disabled after independent audit found:
+
+- internal checkpointing still used the former risk-adjusted composite;
+- the configured outer lexicographic metric was unimplemented;
+- the transport scalar could reverse the declared ordered tuple;
+- evaluation failures remained champion-eligible and one `-1e9` failure was
+  accepted on-chain;
+- optimizer artifacts retained USDCAD identities and paths; and
+- four workers remained on three equal-height tips while fork repair raised an
+  exception.
+
+Canonical audit and correction order:
+
+```text
+docs/audits/AUDIT_SATOSHI_III_ETH_CHAMPION_STAGE_CURRICULUM_2026_08_05.md
+docs/handoffs/MUSASHI_TO_SATOSHI_III_ETH_CURRICULUM_CORRECTION_ORDER_2026_08_05.md
+```
+
+The archived chain is diagnostic evidence, not a resumable scientific run.
+The next executable step is a new-domain local candidate followed by a
+four-worker, one-generation smoke. Full ETH-EN/ETH-N optimization and SAC Demo
+authority remain blocked until that smoke independently proves objective,
+rejection, artifact, convergence, pause and raw-feature parity contracts.
