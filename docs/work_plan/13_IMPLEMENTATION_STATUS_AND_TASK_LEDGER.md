@@ -908,7 +908,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | Lieutenant Satoshi II + Musashi verification | `gym-fx`, `agent-multi` | research_admitted_instrumentation_blocked | P20 train-only solvency curriculum; first expose termination causes, then compare hard reset, penalized chronological continuation and randomized-start controls under immutable realistic validation | Harvey |
+| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi` | owner_activated_eth_implementation | ETH train-only solvency curriculum: instrument causes, implement loss-conserving chronological continuation, then run stage-integrated `easy -> normal` and a matched `normal-only` DOIN control under immutable realistic validation | Harvey |
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -957,18 +957,21 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    The queued USDCAD curriculum remains resumable rather than being silently
    replaced or launched in parallel.
 7. Materialize one coordinated `ETHUSD@4h` curriculum campaign for all four
-   workers. Freeze the live `ethusdt-4h-linear-live-v1` artifact
+   workers. Freeze the current `ethusdt-4h-linear-live-v1` artifact
    (`539f946071a1870672c2d2c1ce7b1ce0f0d4b4317a15b2d082b59b32c98d10bf`)
-   as the live and simulation baseline. It is a supervised linear direction
-   model, so solvency is optimized in the trading policy that consumes its
-   causal output, not falsely attributed to the classifier itself.
-8. Run the ETH policy as one immutable curriculum contract with two required
-   sequential phases: `easy_no_margin_call` training followed by
-   `normal_realistic` training. Normal starts from a copy of the easy champion;
-   the easy artifact remains immutable and independently loadable. Selection,
-   validation and protected tests use realistic solvency and costs in both
-   phases. `hard_pessimistic` is optional, starts from a copy of the normal
-   champion, and can never overwrite or demote the normal artifact.
+   as a shadow/simulation control, not execution authority. It is a supervised
+   linear direction model and is not the requested SAC/DOIN champion. Paper/Demo
+   execution must move to a parity-verified SAC artifact and then to each newer
+   stage-integrated ETH champion.
+8. Integrate two train phases inside every outer optimization stage and every
+   candidate: `easy_chronological_continuation` first, then continued training
+   from the learned weights under `normal_realistic` before selection and stage
+   advancement. The easy artifact remains immutable and independently loadable;
+   SAC replay state is reset or mode-filtered at the dynamics boundary so easy
+   transitions cannot contaminate normal updates. Selection, validation and
+   protected tests always use realistic solvency and costs. Run a matched
+   `normal-only` ETH DOIN domain with the same data, seeds, population and budget
+   after the stage-integrated arm; do not mix their chains or champions.
 9. Persist stage-entry and stage-exit artifacts, decoded genomes, hashes,
    population state and same-scale weekly/annual return, RAP, drawdown,
    activity, ruin and live-divergence metrics in DOIN/OLAP. This makes the

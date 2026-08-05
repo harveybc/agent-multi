@@ -97,26 +97,30 @@ realistic margin-call termination repeatedly killed candidates before they
 learned, while train-only continuation produced policies that later survived
 realistic margin, fees and rates.
 
-It is not active in job 0 or job 1. The active campaign inherits a 1% equity
-floor, but 12,966 visible evaluation summaries remain between 99.71% and
-100.78% of initial capital. Stochastic training termination causes are not
-currently observable, so no campaign change is justified.
+It is not active in the paused/resumable USDCAD job 0 or job 1. On 2026-08-05
+the owner activated it for the new ETH campaign and superseded the earlier
+instrumentation-blocked priority. The active implementation must expose
+termination causes before producing ETH curriculum evidence; that dependency is
+part of the authorized work rather than a reason to postpone it.
 
-P20 admission requires this sequence:
+The ETH implementation requires this sequence:
 
 1. distinguish `data_end`, `min_equity`, external stop and safety termination
    in `gym-fx` and propagate split/mode aggregates to candidate OLAP evidence;
 2. keep separate train-only and evaluation solvency contracts;
-3. compare realistic termination against (a) forced liquidation, full loss
-   penalty, synthetic recapitalization and chronological continuation and (b)
-   deterministic randomized-start resets;
+3. implement forced liquidation, full loss accounting, explicit
+   recapitalization debt and chronological continuation so training remains
+   active after would-be ruin without manufacturing equity;
 4. select every arm under the unchanged realistic train-tail/validation suite;
-5. mint a new domain/hash only if paired multi-seed evidence changes the
-   decision.
+5. run matched `normal-only` and stage-integrated `easy -> normal` DOIN domains
+   with identical data, seeds, initial population and budget, each with its own
+   domain/genesis and no cross-arm champion migration.
 
-Naively allowing negative cash is not the selected implementation: current
+Naively allowing negative cash is not the implementation: current
 relative-volume sizing falls to zero when cash is negative, creating inert
-states rather than continued trading. Live/demo solvency is never relaxed.
+states rather than continued trading. The implementation therefore separates
+economic equity/debt from deterministically recapitalized operational training
+capital. Live/demo solvency is never relaxed.
 The canonical design and collision test are in
 `docs/audits/AUDIT_SOLVENCY_RELAXATION_CURRICULUM_2026_08_02.md`.
 
