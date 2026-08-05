@@ -16,6 +16,7 @@ import argparse
 import hashlib
 import json
 import sqlite3
+import time as _time
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -163,6 +164,68 @@ def _direct_count(value: Any) -> Optional[int]:
     return value if value >= 0 else None
 
 
+def _venue_execution_truth(
+    heartbeat_path: Path, olap_path: Path, now: float
+) -> dict[str, Any]:
+    """Findings 098/102: venue truth derives from the CURRENT execution
+    heartbeat plus the accepted lifecycle OLAP — never old read-only
+    preflight labels. Cumulative Paper history is preserved as counts."""
+    truth: dict[str, Any] = {"mode": "unknown"}
+    heartbeat = _load_json_file(heartbeat_path)
+    if isinstance(heartbeat, dict) and heartbeat:
+        observed = heartbeat.get("observed_at")
+        age = None
+        try:
+            age = round(now - datetime.fromisoformat(
+                str(observed)).timestamp(), 1)
+        except (TypeError, ValueError):
+            pass
+        read_only = heartbeat.get("read_only")
+        truth.update({
+            "mode": ("write_enabled" if read_only is False
+                     else "read_only" if read_only is True else "unknown"),
+            "environment": heartbeat.get("environment"),
+            "account_fingerprint": heartbeat.get("account_fingerprint"),
+            "heartbeat_state": heartbeat.get("state"),
+            "heartbeat_age_seconds": age,
+            "model_id": (heartbeat.get("model_id")
+                         or _as_dict(heartbeat.get("inference")).get(
+                             "model_id")),
+        })
+    else:
+        truth["mode_reason"] = "heartbeat unreadable"
+    try:
+        con = sqlite3.connect(f"file:{olap_path}?mode=ro", uri=True)
+        try:
+            decisions = dict(con.execute(
+                "SELECT outcome, COUNT(*) FROM decisions GROUP BY outcome"))
+            last = con.execute(
+                "SELECT outcome, reason FROM decisions"
+                " ORDER BY decided_at DESC LIMIT 1").fetchone()
+            truth.update({
+                "decisions_cumulative": decisions,
+                "last_decision": (
+                    {"outcome": last[0], "reason": last[1]}
+                    if last else None),
+                "lifecycles_cumulative": con.execute(
+                    "SELECT COUNT(*) FROM l1_effects").fetchone()[0],
+                "open_exposures": con.execute(
+                    "SELECT COUNT(*) FROM exposures WHERE state='open'"
+                ).fetchone()[0],
+                "sessions_cumulative": con.execute(
+                    "SELECT COUNT(*) FROM live_model_sessions"
+                ).fetchone()[0],
+                "halt": (con.execute(
+                    "SELECT value FROM service_state WHERE key='halt'"
+                ).fetchone() or [None])[0],
+            })
+        finally:
+            con.close()
+    except sqlite3.Error:
+        truth["olap_reason"] = "execution OLAP unreadable"
+    return truth
+
+
 def collect(
     *,
     snapshot_path: Path,
@@ -172,6 +235,7 @@ def collect(
     l0_heartbeat_path: Path = Path.home()
     / ".local/state/lts/demo-execution-l0/heartbeat.json",
     l0_db_path: Path = Path.home() / ".local/state/lts/demo-execution-l0.sqlite",
+    execution_state_dir: Path = Path.home() / ".local/state/lts",
     timeout: float = 6.0,
 ) -> dict[str, Any]:
     sources: list[dict[str, Any]] = []
@@ -310,37 +374,53 @@ def collect(
             "mt5_read_only": mt5.get("read_only"),
             "open_orders": _aggregate(venue_orders, "orders"),
             "open_positions": _aggregate(venue_positions, "positions"),
-            # Owner order 2026-08-02: per-account stats for every live
-            # trading account. Identity is fingerprint-only and balances are
-            # deliberately excluded from this portable packet (doc 09 §5).
+            # Findings 098/102: per-account truth derives from current
+            # execution heartbeats plus accepted lifecycle OLAP, never old
+            # read-only preflight labels. Identity stays fingerprint-only
+            # and balances are excluded (doc 09 §5); the old preflight
+            # inspectors remain visible as observer_* context only.
             "accounts": {
                 "alpaca_paper": {
-                    "account_fingerprint": alpaca_detail.get("account_fingerprint"),
-                    "environment": alpaca_detail.get("environment"),
-                    "status": alpaca_detail.get("account_status"),
-                    "shorting_enabled": alpaca_detail.get("account_shorting_enabled"),
-                    "protected_execution_eligible": alpaca_detail.get("protected_execution_eligible"),
-                    "quotes_received": {"value": alpaca_detail.get("quotes_received"), "unit": "quotes", "horizon": "cumulative"},
-                    "orders_submitted": {"value": alpaca_detail.get("orders_submitted"), "unit": "orders", "horizon": "cumulative"},
-                    "mode": "read_only",
+                    **_venue_execution_truth(
+                        execution_state_dir
+                        / "alpaca-model-runner-heartbeat.json",
+                        execution_state_dir
+                        / "alpaca-model-execution.sqlite",
+                        _time.time()),
+                    "observer_status": alpaca_detail.get("account_status"),
+                    "observer_quotes_received": {"value": alpaca_detail.get("quotes_received"), "unit": "quotes", "horizon": "cumulative"},
                 },
                 "ibkr_paper": {
-                    "last_session_id": ibkr_latest.get("session_id"),
-                    "last_reconciliation_at": ibkr_latest.get("reconciliation_observed_at"),
-                    "open_orders": ibkr_latest.get("open_orders"),
-                    "open_positions": ibkr_latest.get("open_positions"),
-                    "mode": "read_only",
+                    **_venue_execution_truth(
+                        execution_state_dir
+                        / "ibkr-model-runner-heartbeat.json",
+                        execution_state_dir
+                        / "ibkr-model-execution.sqlite",
+                        _time.time()),
+                    "observer_last_session_id": ibkr_latest.get("session_id"),
+                    "observer_last_reconciliation_at": ibkr_latest.get("reconciliation_observed_at"),
                 },
                 "oanda_mt5_demo": {
                     "environment": heartbeat.get("environment"),
                     "connected": heartbeat.get("connected"),
                     "terminal_build": heartbeat.get("terminal_build"),
                     "trade_allowed_by_terminal": heartbeat.get("trade_allowed"),
+                    "mode": ("write_enabled"
+                             if heartbeat.get("read_only") is False
+                             or mt5.get("read_only") is False
+                             else "read_only"
+                             if heartbeat.get("read_only") is True
+                             else "unknown"),
+                    "execution_enabled": (heartbeat.get("execution_enabled")
+                                          if heartbeat.get("execution_enabled")
+                                          is not None
+                                          else mt5.get("execution_enabled")),
                     "symbols_total": mt5_snapshot.get("symbols_total"),
                     "heartbeats": {"value": _as_dict(mt5.get("counts")).get("heartbeats"), "unit": "heartbeats", "horizon": "cumulative"},
-                    "mode": "read_only",
                 },
-                "note": "balances excluded by redaction policy; write mode exists on no account",
+                "note": "balances excluded by redaction policy; mode derived"
+                        " from current execution heartbeats and lifecycle"
+                        " OLAP (finding 098)",
             },
         }
     else:
