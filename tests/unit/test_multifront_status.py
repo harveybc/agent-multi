@@ -319,18 +319,33 @@ def test_per_account_stats_are_exposed_without_balances(tmp_path):
     })
     wd = tmp_path / "wd.json"
     wd.write_text(jsonlib.dumps(fixture))
+    execution_dir = tmp_path / "exec-state"
+    execution_dir.mkdir()
+    (execution_dir / "alpaca-model-runner-heartbeat.json").write_text(
+        jsonlib.dumps({
+            "observed_at": "2026-08-05T03:00:00+00:00",
+            "state": "monitoring", "read_only": False,
+            "environment": "paper", "account_fingerprint": "fp-alp-exec",
+            "model_id": "spy-daily-linear-live-v1",
+        }))
     packet = collect(
         snapshot_path=tmp_path / "m.json", watchdog_path=wd,
         social_db_path=tmp_path / "m.sqlite",
         supervisor_url="http://127.0.0.1:1", timeout=0.1,
         l0_heartbeat_path=tmp_path / "no-hb.json",
         l0_db_path=tmp_path / "no-l0.sqlite",
+        execution_state_dir=execution_dir,
     )
     accounts = packet["fronts"]["f2_business_reality"]["accounts"]
-    assert accounts["alpaca_paper"]["account_fingerprint"] == "fp-alp"
-    assert accounts["alpaca_paper"]["quotes_received"]["value"] == 42
+    # Finding 098: identity and mode come from the EXECUTION heartbeat,
+    # not the old preflight labels (which survive as observer_* context).
+    assert accounts["alpaca_paper"]["account_fingerprint"] == "fp-alp-exec"
+    assert accounts["alpaca_paper"]["mode"] == "write_enabled"
+    assert accounts["alpaca_paper"]["observer_quotes_received"]["value"] == 42
     assert accounts["oanda_mt5_demo"]["environment"] == "demo"
-    assert accounts["ibkr_paper"]["mode"] == "read_only"
+    # No execution heartbeat for IBKR in this fixture: unknown, never a
+    # fabricated read-only label.
+    assert accounts["ibkr_paper"]["mode"] == "unknown"
     assert "99999" not in json_dumps_all(accounts)  # injected balance stays out
 
 
