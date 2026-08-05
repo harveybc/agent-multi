@@ -830,16 +830,11 @@
      "scaling_history_bars",
      "feature_clip",
      "context_hours",
-     "feature_group__emd",
-     "feature_group__fracdiff",
-     "feature_group__hilbert",
-     "feature_group__multitaper",
      "feature_group__oscillators",
      "feature_group__returns_momentum",
      "feature_group__statistics",
      "feature_group__trend",
-     "feature_group__volatility",
-     "feature_group__wavelet"
+     "feature_group__volatility"
     ],
     "patience": 4
    },

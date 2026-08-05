@@ -31,8 +31,8 @@ ARMS = {
         "domain_id": "trading-asset-policy-eth-4h-en-v1",
         "purpose": "eth_stage_integrated_easy_normal_curriculum_optimization",
         "domain_semantic_hash": (
-            "0889df14bee83e75ef0b587d93a652e89dbc366c9d514948d14e1e6d04a8"
-            "6224"),
+            "3a90e61d2381ec201c71832f66089559c1196d4d45fd8841b9f103029fd5"
+            "995e"),
         "config_dir": "examples/trading/phase_2_eth_en_curriculum_v1",
     },
     "n": {
@@ -40,8 +40,8 @@ ARMS = {
         "domain_id": "trading-asset-policy-eth-4h-n-v1",
         "purpose": "eth_normal_only_control_optimization",
         "domain_semantic_hash": (
-            "bec65b357b3abbe7f70cc05e3b66635196c271f7174e628703cc078e56ba"
-            "c53e"),
+            "6459f2c45984de7f6674e02fad0b53df6e0516e53e3c7a0ebef3a3ee41b6"
+            "8efb"),
         "config_dir": "examples/trading/phase_2_eth_n_normal_v1",
     },
 }

@@ -136,6 +136,13 @@ def build(arm: str) -> dict:
         if isinstance(section, dict):
             for gene in dropped_genes:
                 section.pop(gene, None)
+    stages = optimization.get("optimization_stages")
+    if isinstance(stages, list):
+        for stage in stages:
+            params = stage.get("params")
+            if isinstance(params, list):
+                stage["params"] = [
+                    p for p in params if p not in dropped_genes]
 
     training = config["training"]
     training["selection_min_trades"] = int(

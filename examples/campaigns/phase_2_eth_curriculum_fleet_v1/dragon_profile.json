@@ -2,7 +2,7 @@
  "schema_version": "agent_multi.doin_campaign_profile.v1",
  "node_id": "dragon",
  "plan_file": "campaign_plan.json",
- "expected_plan_hash": "b64d49d712f5bd1bd91fba2117b18f5156aef69aca6b83fefb89472141034327",
+ "expected_plan_hash": "8caf051c0c216423e87ee1f4b731d5dfb5dd4f56bf799f4f875115b1a837673b",
  "state_dir": "~/.local/state/agent-multi/doin-campaigns/phase-2-eth-curriculum-fleet-v1/dragon",
  "listen_host": "0.0.0.0",
  "listen_port": 8795,
