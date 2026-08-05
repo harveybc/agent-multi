@@ -670,6 +670,37 @@ snapshot corrected the initial interpretation: the broker is flat and finding
 104 tracks the stale L0 capacity. Those strengths are retained while the
 correction/business-evidence order executes.
 
+### 1u. Live alerting overnight delta, 2026-08-04 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_LIVE_ALERTING_OVERNIGHT_DELTA_2026_08_04.md`
+- `../evidence/SATOSHI_III_OVERNIGHT_DELTA_REPRO_2026_08_04.py`
+
+The addendum through `agent-multi@5e811a64` is not the ordered correction
+packet. The canonical reproducer still breaks 093, 095 and 096; 094 is also
+unchanged. Direct runtime evidence independently verifies correction 099:
+`lts@83cc286` closed the prior ghost exposure through the accepted lifecycle
+API while preserving the new acknowledged, protected IBKR Paper position.
+Finding 099 is now `independently_verified_pending_owner_closure`; finding 100
+remains open because direct-flat authority still depends on the TWS client
+cache.
+
+Current direct venue facts:
+
+- IBKR Paper: one selected-model USD.CAD short, 25,000 units, with matching
+  native TP and SL children; fresh monitoring heartbeat;
+- Alpaca Paper: broker flat, but one orphan active reservation blocks the next
+  eligible bar;
+- MT5 Demo: broker flat and bridge healthy, but reservation 104 remains active
+  with only a `requested` lifecycle event.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F2-20260804-105 | S3 | open, blocks continuous Alpaca Paper trading | Broker is flat and defect-era effects are terminal, but an orphan active L0 reservation without active exposure/effect still consumes the single-position capacity | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-106 | S3 | open, blocks TWS clock-alert acceptance | A fresh heartbeat with both clock fields absent is accepted as clock-healthy without validating the runner state; malformed `decided` evidence can suppress/recover the alert | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260804-107 | S3 | corrected_pending_independent_verification | Retired MT5 read-only unit remained enabled and restart-looped against the execution bridge port; `lts@29d6f6c`/`76b2afc` retire and mask it | Satoshi III verifies; owner closes |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

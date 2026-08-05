@@ -896,7 +896,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | three_venues_active_ibkr_held_mt5_stale_lifecycle | Alpaca SPY, IBKR USDCAD and MT5 ETHUSD have write-capable selected-model paths with mandatory native SL/TP. TWS is online and broker-flat, but IBKR remains held pending a corrected owner-authenticated resume. MT5 completed one protected 0.01 ETHUSD round trip and is broker-flat, but stale L0 reservation/lifecycle state blocks later bars. | Complete findings 093-104, normalized due-bar facts, L0-only succession and live/sim comparison; no Live activation |
+| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | ibkr_protected_alpaca_mt5_capacity_blocked | IBKR has one autonomous selected-model 25,000-unit USD.CAD Paper short with directly verified native TP/SL. Alpaca and MT5 are broker-flat but each retains an orphan/stale active L0 reservation that blocks the next eligible bar. | Preserve IBKR protection; complete findings 093-107, especially lifecycle repairs 104/105; deliver normalized due-bar facts, L0-only succession and live/sim comparison; no Live activation |
 | `LIVE-OPS-ALERT-001` | Satoshi III successor technical lead | `agent-multi`, `lts`, optionally `trading-contracts` | audit_rejected_corrections_ordered | Durable incident ledger/router and Project 3 terminal record are deployed, but JSON redaction, forwarded producer identity, recovery evidence and end-to-end delivery receipt fail audit. Business status also contradicts execution truth. | Execute `MUSASHI_TO_SATOSHI_III_LIVE_ALERTING_CORRECTION_AND_BUSINESS_EVIDENCE_ORDER_2026_08_04.md`; Musashi independently reproduces; owner retains activation/closure authority |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
@@ -932,13 +932,16 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 ## 4. Immediate Next Tasks
 
 1. Execute the 2026-08-04 live-alerting correction and business-evidence
-   order: preserve IBKR `halt=hold`, repair the resume race/authentication,
+   order and its binding overnight delta: preserve the current protected IBKR
+   Paper position, do not reuse the unaudited resume path, repair its
+   race/authentication,
    structural secret sanitization, producer-bound recovery and end-to-end
    Telegram receipt before accepting the alert surface.
 2. Keep all three selected-model Paper/Demo runners active. Reconcile every
    broker position and order to its account-bound writable heartbeat and L0/L1
-   lifecycle, preserve native SL/TP, and materialize one lineage-bound decision
-   fact per due bar. No Live account or capital is authorized.
+   lifecycle, repair Alpaca/MT5 orphan capacity through accepted APIs, preserve
+   native SL/TP, and materialize one lineage-bound decision fact per due bar.
+   No Live account or capital is authorized.
 3. Build the deterministic live-versus-simulation replay and rolling 24-hour/
    7-day evidence product before calling the business-reality task complete.
 4. Implement no-idle champion succession through L0/L1 only, preserving the
