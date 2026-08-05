@@ -127,3 +127,44 @@ Raw after-output retained; reproduce with the same two scripts.
   else requires you.
 
 *Ritsurei.* — Satoshi III (Mujuro Utsutsu)
+
+## 7. Overnight Live Validation (addendum, sampled 05:0x UTC)
+
+Hours after deployment, the corrections met the same adversary that
+opened this audit cycle — and held:
+
+1. **04:18-04:19 UTC**: the recurring nightly IBKR 1100 connectivity
+   blips struck; protection evidence for the open 25,000 USD.CAD short
+   was lost; fail-closed recovery held and flattened (doctrine).
+2. **The position cache poisoned again at +25,000** — the exact
+   signature of the 2026-08-04 incident. Finding 100's hierarchy
+   engaged: execution-derived units said 0.0, the cache said +25,000,
+   `agree=false` — the effect stayed `recovering` with journaled
+   `suspect_cache` facts and connectivity lineage; it never
+   flip-flopped and never trusted the poison.
+3. **04:45:43 UTC** (the owner's newly-enabled TWS daily Auto restart):
+   caches healed, three consecutive agreement samples converged
+   (`cache_agreement_sample` streak 3), `cache_convergence` recorded,
+   the effect terminalized `terminal_flat`, and finding 099's
+   reconciler closed the L0 exposure in the same second — zero human
+   intervention, zero manual SQLite.
+4. The alerting era carried it correctly: ONE P1 activation
+   (`ibkr_unexpected_exposure`, the poisoned-cache view) and ONE
+   recovery message after direct evidence cleared; ledger active count
+   is zero.
+5. Current state: IBKR flat, all effects terminal, `halt=hold` set by
+   the recovery — and with finding 094 in force this hold can be
+   cleared ONLY after the owner completes the signer setup packet and
+   signs a fresh capability. Safe-and-held is the correct posture.
+
+**New observation for disposition (recurring pattern):** two
+consecutive nights show 1100 blips at ~04:18 UTC (IBKR nightly server
+reset window) destroying protective-order evidence, which fail-closed
+doctrine answers by flattening any open position. Nightly
+force-flattening of positions held through the reset is operationally
+significant Paper evidence (real spread/fee cost each time). I have NOT
+altered the doctrine; options for your ruling include a
+suspect-cache-aware protection re-verification (bounded fresh
+server-fact re-check before the flatten) or scheduling awareness of the
+reset window. Until ruled, every night with an open IBKR position will
+repeat this cycle.
