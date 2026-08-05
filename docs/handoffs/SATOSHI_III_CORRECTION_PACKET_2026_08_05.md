@@ -183,3 +183,19 @@ a corrected-probe pass by the same producer emitted the recovery
 the local status URL permanently, preserving Dragon's partition-time
 local coverage. The unit's retired NAME and single-vs-dual-producer
 ownership remain yours to disposition; nothing was disabled.
+
+### 7.2 Finding 094 runtime acceptance: complete (06:57 UTC)
+
+The owner completed the signer setup (root-owned pin verified: root,
+0644) and exercised the FULL corrected resume path in production:
+mint → detached Ed25519 signature under the owner passphrase →
+root-pin verification → in-transaction fail-closed core (093) → fresh
+flat broker evidence → `halt: hold -> none`, capability burned once,
+facts journaled, transition recorded in the incident ledger.
+
+The boundary proved itself the hard way first: the desktop ssh-agent
+refused the signing extension (bypassed with SSH_AUTH_SOCK=), and the
+owner initially LOST the key passphrase — no agent, and not even the
+owner, could pass without it; recovery required the documented rotation
+path (new key + sudo re-pin), exactly as designed. The bounded
+transition was authorized by the owner alone; I executed nothing.
