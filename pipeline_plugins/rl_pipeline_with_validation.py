@@ -270,6 +270,19 @@ def _selection_pair_details(
         selection_metric=selection_metric,
         risk_lambda=risk_lambda,
     )
+    if str(selection_metric or "").strip().lower() == _lex.METRIC_NAME:
+        # §9 / AUD-F1-20260805-108: the lexicographic contract selects on
+        # VALIDATION only. Averaging order keys or subtracting a gap
+        # penalty would break the proven ordering, so the checkpoint
+        # score IS the validation order key.
+        return {
+            "train_tail_selection_score": train_tail_score,
+            "validation_selection_score": val_score,
+            "train_validation_selection_mean_score": val_score,
+            "train_validation_selection_gap": 0.0,
+            "train_validation_selection_gap_penalty": 0.0,
+            "train_validation_selection_score": val_score,
+        }
     mean_score = 0.5 * (train_tail_score + val_score)
     gap = abs(train_tail_score - val_score)
     gap_penalty = float(gap_penalty_beta) * gap
