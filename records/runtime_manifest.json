@@ -1,0 +1,94 @@
+{
+ "generated_at": "2026-08-05T03:10:31+00:00",
+ "hosts": {
+  "dragon": {
+   "notes": [
+    "legacy lts-mt5-bridge.service masked (107)",
+    "legacy lts-mt5-bridge-watchdog.timer still enabled - flagged for disposition"
+   ],
+   "observed": {
+    "agent-multi": "fe5cc94b",
+    "lts": "978f698"
+   },
+   "services": {
+    "incident_router (cron)": {
+     "cadence": "*/1",
+     "env": "/usr/bin/python3",
+     "repo": "agent-multi"
+    },
+    "lts-mt5-execution-bridge.service": {
+     "env": "trading-stack",
+     "repo": "lts"
+    },
+    "lts-mt5-model-runner.service": {
+     "env": "trading-stack",
+     "repo": "lts"
+    },
+    "watchdog crons x6": {
+     "env": "/usr/bin/python3",
+     "repo": "agent-multi"
+    }
+   }
+  },
+  "gamma": {
+   "notes": [
+    "gamma runs no lts service; lts checkout not required"
+   ],
+   "observed": {
+    "agent-multi": "fe5cc94b"
+   },
+   "services": {
+    "incident_router (cron)": {
+     "cadence": "*/1",
+     "env": "/usr/bin/python3",
+     "repo": "agent-multi"
+    },
+    "watchdog crons x6": {
+     "env": "/usr/bin/python3",
+     "repo": "agent-multi"
+    }
+   }
+  },
+  "omega": {
+   "observed": {
+    "agent-multi": "fe5cc94b",
+    "lts": "978f698"
+   },
+   "services": {
+    "incident_router (cron)": {
+     "cadence": "*/1",
+     "env": "/usr/bin/python3",
+     "repo": "agent-multi"
+    },
+    "lts-alpaca-model-runner.service": {
+     "env": "trading-stack",
+     "repo": "lts"
+    },
+    "lts-ibkr-model-runner.service": {
+     "env": "trading-stack",
+     "repo": "lts"
+    },
+    "lts-paper-execution-watchdog.timer": {
+     "env": "trading-stack",
+     "repo": "lts"
+    },
+    "lts-tws-continuity-monitor.timer": {
+     "cadence": "60s",
+     "env": "trading-stack",
+     "repo": "lts"
+    },
+    "watchdog crons x4": {
+     "env": "/usr/bin/python3",
+     "repo": "agent-multi"
+    }
+   }
+  }
+ },
+ "required": {
+  "agent-multi": "fe5cc94b",
+  "lts": "978f698"
+ },
+ "schema": "agent_multi.runtime_manifest.v1",
+ "test_environment": "conda env trading-stack (python 3.12); /usr/bin/python3 for cron tools",
+ "version": "1.0.0"
+}
