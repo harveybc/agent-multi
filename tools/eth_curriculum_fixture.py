@@ -48,6 +48,7 @@ RAW_METRICS = (
     "initial_cash", "final_equity", "total_return", "mean_weekly_return",
     "annualized_return", "max_drawdown_fraction", "max_drawdown_pct",
     "trades_total", "trades_won", "trades_lost", "episode_length",
+    "action_diagnostics", "execution_diagnostics", "no_trade_diagnosis",
 )
 
 
@@ -79,7 +80,8 @@ def _base_config(out_dir: Path, arm: str, *, epoch_timesteps: int,
     # untouched period is required for any final protected comparison.
     config["evaluate_test_split"] = False
     config["selection_metric"] = "lexicographic_weekly_v1"
-    config["selection_min_trades"] = 0          # mechanism fixture only
+    config["selection_min_trades"] = 12
+    config["easy_min_trades"] = 12
     config["save_model"] = str(out_dir / arm / "model.zip")
     config["quiet_mode"] = True
     return config
@@ -130,6 +132,9 @@ def run_arm(arm: str, out_dir: Path, *, epoch_timesteps: int,
             mode="train")
     else:
         raise SystemExit(f"unknown arm {arm!r}")
+    post_easy = result.get("post_easy") or (
+        (result.get("curriculum") or {}).get("post_easy")
+    )
     return {
         "arm": arm,
         "splits_raw": _splits_raw(result),
@@ -137,6 +142,7 @@ def run_arm(arm: str, out_dir: Path, *, epoch_timesteps: int,
             (result.get("splits") or {}).get("validation", {})
             .get("selection_contract")),
         "curriculum": result.get("curriculum"),
+        "post_easy": post_easy,
         "best_model_path": result.get("best_model_path"),
     }
 

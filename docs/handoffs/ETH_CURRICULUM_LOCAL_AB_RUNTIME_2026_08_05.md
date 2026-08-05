@@ -57,3 +57,25 @@ equity. Report paired deltas for `easy-normal - normal` and `easy - normal`,
 completion/failure counts, wall time and artifact hashes. Satoshi may use this
 evidence while correcting the campaign, but the full swarm remains gated on
 Musashi's independent smoke audit.
+
+## 2026-08-05 17:19 COT Incident Disposition
+
+All four paired runs were stopped or allowed to terminate without promotion.
+They are `aborted_invalid_zero_trade_contract`, not scientific A/B evidence.
+The first completed/partial reports showed zero trades in both normal and easy
+arms. Direct diagnostics established that the deterministic policy output stayed
+inside the unchanged `0.1` deadband, while the fixture's temporary
+`selection_min_trades=0` incorrectly made inactivity eligible.
+
+Two implementation defects were then isolated and corrected:
+
+1. the solvency easy phase changed only margin-call dynamics and did not apply
+   an easy action/cost contract or require activity;
+2. `gym-fx` used `threshold or 0.33`, so an explicit zero deadband was silently
+   replaced by `0.33`.
+
+The historical seed directories remain preserved as negative evidence. They
+must not be resumed, merged, compared as curriculum outcomes or used to seed a
+campaign. Replacement work must use the v2 easy activity contract and the
+smoke evidence in
+`docs/audits/evidence/ETH_EASY_ACTIVITY_SMOKE_2026_08_05.json`.

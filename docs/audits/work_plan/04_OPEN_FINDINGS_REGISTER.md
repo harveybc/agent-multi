@@ -726,6 +726,15 @@ resumable scientific work.
 | AUD-F1-20260805-114 | S3 | open, blocks curriculum evidence acceptance | Three-arm mechanism fixture exposes protected-test outcomes and its claimed result packet is not preserved/addressable | Satoshi III implements; Musashi verifies |
 | AUD-F1-20260805-115 | S3 | open, blocks unattended campaign operations | Supervisor service stop leaves compute workers alive; direct TERM/INT did not interrupt active candidates | Satoshi III implements; Musashi verifies |
 | AUD-F2-20260805-116 | S3 | open, blocks claimed full-suite acceptance | LTS rolling-evidence test uses wall-clock lifecycle creation against a fixed `as_of` and fails after that timestamp | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-117 | S1 | corrected_pending_independent_verification; blocks ETH curriculum restart | The easy phase changed solvency only, accepted zero activity, selected early-stop checkpoints by flat economic equity and exported a post-easy artifact even when no action reached the strategy | Musashi implemented emergency correction; independent technical lead verifies |
+| AUD-F1-20260805-118 | S2 | corrected_pending_independent_verification; blocks any zero-deadband curriculum | `gym-fx` interpreted configured `continuous_action_threshold=0.0` as `0.33`, preventing the intended no-deadband easy action mapping | Musashi implemented emergency correction; independent technical lead verifies |
+
+Findings 117-118 were reproduced from seed 2703 before correction. The
+replacement seed-2711 smoke produced 883 easy-training trades, 895 submitted
+protected entries, zero protected-entry rejections and 122 realistic-validation
+trades. Suites: `gym-fx` 84 passed; `agent-multi` 526 passed. This evidence
+permits deployment for a corrected smoke but does not close either finding and
+does not authorize resuming the rejected chain from findings 108-116.
 
 ## 2b. Observations Pending Verification (not yet findings)
 

@@ -44,7 +44,70 @@ class PipelinePlugin(ValidationPipelinePlugin):
         "easy_max_epochs": 4,             # declared maximum budget
         "easy_patience": 2,               # early stop (budget control only)
         "easy_min_delta": 0.0,
+        # Easy removes the action deadband and uses the existing strictly
+        # positive easy-floor execution costs. Normal evaluation restores
+        # the candidate's original threshold and cost contract.
+        "easy_continuous_action_threshold": 0.0,
+        "easy_commission_fraction_per_side": 0.00005,
+        "easy_full_spread_rate": 0.0001,
+        "easy_slippage_bps_per_side": 0.25,
+        "easy_min_trades": 1,
     }
+
+    plugin_debug_vars = [
+        *ValidationPipelinePlugin.plugin_debug_vars,
+        "easy_epoch_timesteps", "easy_max_epochs", "easy_patience",
+        "easy_min_delta", "easy_continuous_action_threshold",
+        "easy_commission_fraction_per_side", "easy_full_spread_rate",
+        "easy_slippage_bps_per_side", "easy_min_trades",
+    ]
+
+    def _easy_training_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        easy = dict(config)
+        threshold = float(easy.get(
+            "easy_continuous_action_threshold",
+            self.params["easy_continuous_action_threshold"],
+        ))
+        commission = float(easy.get(
+            "easy_commission_fraction_per_side",
+            self.params["easy_commission_fraction_per_side"],
+        ))
+        full_spread = float(easy.get(
+            "easy_full_spread_rate", self.params["easy_full_spread_rate"]
+        ))
+        slippage_bps = float(easy.get(
+            "easy_slippage_bps_per_side",
+            self.params["easy_slippage_bps_per_side"],
+        ))
+        minimum_trades = int(easy.get(
+            "easy_min_trades", self.params["easy_min_trades"]
+        ))
+        if not math.isfinite(threshold) or not 0.0 <= threshold < 1.0:
+            raise ValueError(
+                "easy_continuous_action_threshold must be finite in [0, 1)"
+            )
+        if (
+            not all(math.isfinite(value) for value in (
+                commission, full_spread, slippage_bps
+            ))
+            or min(commission, full_spread, slippage_bps) <= 0.0
+        ):
+            raise ValueError(
+                "easy execution costs must all be finite and strictly positive"
+            )
+        if minimum_trades < 1:
+            raise ValueError("easy_min_trades must be >= 1")
+
+        easy.update({
+            "solvency_mode": EASY_MODE,
+            "env_mode": "training",
+            "continuous_action_threshold": threshold,
+            "commission": commission,
+            "full_spread_rate": full_spread,
+            "slippage": full_spread / 2.0 + slippage_bps / 10_000.0,
+            "easy_min_trades": minimum_trades,
+        })
+        return easy
 
     # ------------------------------------------------------------------
     def _easy_probe(
@@ -70,6 +133,12 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 action, _state = model.predict(obs, deterministic=True)
                 obs, _reward, terminated, truncated, last_info = env.step(
                     action)
+            action_diagnostics = dict(
+                last_info.get("action_diagnostics") or {}
+            )
+            execution_diagnostics = dict(
+                last_info.get("execution_diagnostics") or {}
+            )
             return {
                 "economic_equity": float(
                     last_info.get("economic_equity", float("nan"))),
@@ -80,6 +149,25 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "would_margin_call_count": int(
                     last_info.get("would_margin_call_count", 0)),
                 "termination_cause": last_info.get("termination_cause"),
+                "trades_total": int(last_info.get("trades", 0) or 0),
+                "non_hold_actions": int(
+                    action_diagnostics.get("non_hold_actions", 0) or 0
+                ),
+                "entry_actions_seen": int(
+                    execution_diagnostics.get("entry_actions_seen", 0) or 0
+                ),
+                "entry_orders_submitted": int(
+                    execution_diagnostics.get(
+                        "entry_orders_submitted", 0
+                    ) or 0
+                ),
+                "protected_entry_rejections": int(
+                    execution_diagnostics.get(
+                        "protected_entry_rejections", 0
+                    ) or 0
+                ),
+                "action_diagnostics": action_diagnostics,
+                "execution_diagnostics": execution_diagnostics,
             }
         finally:
             try:
@@ -95,9 +183,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
         agent_plugin,
     ) -> Dict[str, Any]:
         """Phase 1: train under easy dynamics, save post_easy immutably."""
-        easy_config = dict(config)
-        easy_config["solvency_mode"] = EASY_MODE
-        easy_config["env_mode"] = "training"
+        easy_config = self._easy_training_config(config)
         env_plugin_name = easy_config.get("env_plugin", "gym_fx_env")
         paths = self._split_csv(easy_config)
         _plug, easy_env = self._make_split_env(
@@ -116,9 +202,17 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "easy_min_delta", self.params["easy_min_delta"]))
             seed = int(easy_config.get("eval_seed",
                                        self.params["eval_seed"]))
+            minimum_trades = int(easy_config["easy_min_trades"])
             best = -math.inf
+            best_epoch = None
             waited = 0
             history = []
+            save_model = str(config.get("save_model")
+                             or "./agent_model.zip")
+            post_easy_path = Path(save_model).with_suffix("")
+            post_easy_path = post_easy_path.parent / (
+                post_easy_path.name + ".post_easy.zip")
+            post_easy_path.parent.mkdir(parents=True, exist_ok=True)
             for epoch in range(1, max_epochs + 1):
                 model.learn(total_timesteps=epoch_ts,
                             reset_num_timesteps=False)
@@ -126,32 +220,61 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     env_plugin_name, easy_config, paths["train"],
                     agent_plugin, model, seed)
                 probe["epoch"] = epoch
+                probe["activity_eligible"] = bool(
+                    probe["trades_total"] >= minimum_trades
+                    and probe["non_hold_actions"] > 0
+                    and probe["entry_actions_seen"] > 0
+                    and probe["entry_orders_submitted"] > 0
+                    and probe["protected_entry_rejections"] == 0
+                )
                 history.append(probe)
                 score = probe["economic_equity"]
-                if math.isfinite(score) and score > best + min_delta:
+                if (
+                    probe["activity_eligible"]
+                    and math.isfinite(score)
+                    and score > best + min_delta
+                ):
                     best = score
+                    best_epoch = epoch
                     waited = 0
-                else:
+                    agent_plugin.save(model, str(post_easy_path))
+                elif best_epoch is not None:
                     waited += 1
-                if waited >= patience:
+                if best_epoch is not None and waited >= patience:
                     break
 
-            save_model = str(config.get("save_model")
-                             or "./agent_model.zip")
-            post_easy_path = Path(save_model).with_suffix("")
-            post_easy_path = post_easy_path.parent / (
-                post_easy_path.name + ".post_easy.zip")
-            post_easy_path.parent.mkdir(parents=True, exist_ok=True)
-            agent_plugin.save(model, str(post_easy_path))
+            if best_epoch is None or not post_easy_path.exists():
+                raise RuntimeError(
+                    "easy curriculum produced no activity-eligible checkpoint: "
+                    f"required trades>={minimum_trades}, non-hold actions, "
+                    "entry actions, submitted protected entries, and zero "
+                    "protected-entry rejections"
+                )
             post_easy_sha = _verify_artifact_sha256(post_easy_path, None)
             meta = {
-                "schema": "agent_multi.solvency_curriculum.post_easy.v1",
+                "schema": "agent_multi.solvency_curriculum.post_easy.v2",
                 "artifact": str(post_easy_path),
                 "artifact_sha256": post_easy_sha,
                 "solvency_mode": EASY_MODE,
+                "best_easy_epoch": best_epoch,
                 "easy_epochs_run": len(history),
                 "easy_budget_epochs": max_epochs,
                 "easy_epoch_timesteps": epoch_ts,
+                "activity_contract": {
+                    "minimum_trades": minimum_trades,
+                    "requires_non_hold_action": True,
+                    "requires_entry_action": True,
+                    "requires_submitted_entry": True,
+                    "maximum_protected_entry_rejections": 0,
+                },
+                "easy_difficulty": {
+                    "continuous_action_threshold": easy_config[
+                        "continuous_action_threshold"
+                    ],
+                    "commission_fraction_per_side": easy_config["commission"],
+                    "full_spread_rate": easy_config["full_spread_rate"],
+                    "slippage_rate_per_side": easy_config["slippage"],
+                },
                 "history": history,
             }
             meta_path = Path(str(post_easy_path) + ".meta.json")

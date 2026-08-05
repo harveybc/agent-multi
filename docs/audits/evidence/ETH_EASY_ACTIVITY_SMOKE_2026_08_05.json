@@ -1,0 +1,52 @@
+{
+  "schema": "agent_multi.audit.eth_easy_activity_smoke.v1",
+  "generated_at": "2026-08-05T17:19:22-05:00",
+  "classification": "mechanism_smoke_not_champion",
+  "seed": 2711,
+  "budget": {
+    "epoch_timesteps": 4000,
+    "max_epochs": 2
+  },
+  "easy_contract": {
+    "continuous_action_threshold": 0.0,
+    "commission_fraction_per_side": 0.00005,
+    "full_spread_rate": 0.0001,
+    "slippage_rate_per_side": 0.000075,
+    "minimum_trades": 12,
+    "mandatory_protected_entries": true
+  },
+  "easy_training_best_epoch": 2,
+  "easy_training": {
+    "economic_equity": 10867.11921060883,
+    "trades_total": 883,
+    "non_hold_actions": 13700,
+    "entry_actions_seen": 13699,
+    "entry_orders_submitted": 895,
+    "protected_entry_rejections": 0,
+    "protected_market_entries": 2,
+    "protected_limit_entries": 893,
+    "activity_eligible": true
+  },
+  "normal_validation": {
+    "trades_total": 122,
+    "total_return": 0.0290307832781167,
+    "mean_weekly_return": 0.0005506169455669608,
+    "annualized_return": 0.028983828290668256,
+    "max_drawdown_fraction": 0.028380334115246167,
+    "final_equity": 10290.307832781167,
+    "entry_orders_submitted": 123,
+    "protected_entry_rejections": 0,
+    "selection_eligible": true
+  },
+  "artifacts": {
+    "local_model_path": "~/.local/state/agent-multi/eth-easy-zero-trade-fix-smoke-20260805-v2/easy/model.post_easy.zip",
+    "model_sha256": "502b6171d5b31b1fa0fc19c20be483f880cce5ca91b78de8e14cac3a27ebf63b",
+    "model_size_bytes": 33719598,
+    "local_report_path": "~/.local/state/agent-multi/eth-easy-zero-trade-fix-smoke-20260805-v2/fixture_report.json",
+    "report_sha256": "754229f6e6d7ccd5ce772ba101bfbe119b6220d9c1077bbdf6b6742878553f93"
+  },
+  "tests": {
+    "gym_fx": "84 passed",
+    "agent_multi": "526 passed"
+  }
+}
