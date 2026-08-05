@@ -41,6 +41,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
+from . import _lexicographic_selection as _lex
 from . import _return_trace as _trace_mod
 from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import validate_observation_contract
@@ -225,6 +226,17 @@ def _update_l1_checkpoint_state(
 
 def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lambda: float) -> float:
     metric = str(selection_metric or "total_return").strip().lower()
+    if metric == _lex.METRIC_NAME:
+        # ETH order §9: transparent constrained/lexicographic contract on
+        # validation. The scalar returned here is DEAP transport ONLY;
+        # the persisted ordered tuple in the summary is authoritative and
+        # nothing here may be displayed as return or profit.
+        contract = _lex.evaluate_selection_contract(
+            summary,
+            min_trades=int(summary.get("_selection_min_trades", 0)),
+        )
+        summary["selection_contract"] = contract
+        return float(contract["transport_scalar"])
     if metric in {
         "robust_weekly_rap_fitness",
         "robust_weekly_rap",
@@ -623,6 +635,8 @@ class PipelinePlugin:
                     config.get("continuous_action_threshold")
                 ),
             )
+            summary["_selection_min_trades"] = int(
+                config.get("selection_min_trades", 0))
             trace_rows = summary.get("_return_trace_rows")
             if trace_rows:
                 weekly_metrics = canonical_weekly_metrics_from_trace(
