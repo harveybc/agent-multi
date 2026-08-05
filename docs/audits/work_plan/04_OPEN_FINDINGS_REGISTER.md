@@ -701,6 +701,32 @@ Current direct venue facts:
 | AUD-F2-20260804-106 | S3 | open, blocks TWS clock-alert acceptance | A fresh heartbeat with both clock fields absent is accepted as clock-healthy without validating the runner state; malformed `decided` evidence can suppress/recover the alert | Satoshi III implements; Musashi verifies |
 | AUD-F2-20260804-107 | S3 | corrected_pending_independent_verification | Retired MT5 read-only unit remained enabled and restart-looped against the execution bridge port; `lts@29d6f6c`/`76b2afc` retire and mask it | Satoshi III verifies; owner closes |
 
+### 1v. ETH champion/stage-curriculum audit, 2026-08-05 (Musashi)
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_ETH_CHAMPION_STAGE_CURRICULUM_2026_08_05.md`
+- `../evidence/SATOSHI_III_ETH_CURRICULUM_REPRO_2026_08_05.py`
+- `../../handoffs/MUSASHI_TO_SATOSHI_III_ETH_CURRICULUM_CORRECTION_ORDER_2026_08_05.md`
+
+The delivery is rejected. The ETH campaign was stopped and disabled on all
+three hosts after direct evidence showed an impossible objective contract,
+failed candidates accepted as champions, cross-asset artifact paths and three
+same-height chain tips. The invalid run is preserved as evidence and is not
+resumable scientific work.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260805-108 | S1 | open, blocks any ETH campaign restart | Runtime trains/checkpoints with `risk_adjusted_return` while the outer `lexicographic_weekly_v1` objective is unimplemented and raises after training | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-109 | S1 | open, blocks any optimization domain | Plugin evaluation failures return finite worst fitness without rejection and can become champions/accepted blocks | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-110 | S1 | open, blocks ETH artifact materialization | ETH optimizer outputs still target historical USDCAD paths and conflict with the campaign handoff namespace | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-111 | S2 | open, blocks distributed smoke/full campaign | Four workers persisted on three equal-height tips; fork resolution raised `IndexError` during a peer rollback/fetch race | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-112 | S2 | open, blocks candidate/champion selection | Weighted transport scalar reverses the declared authoritative lexicographic order | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-113 | S3 | open, blocks GPU smoke acceptance | Genome emits forbidden `preprocessing_mode=none` candidates with no repair rule | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-114 | S3 | open, blocks curriculum evidence acceptance | Three-arm mechanism fixture exposes protected-test outcomes and its claimed result packet is not preserved/addressable | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-115 | S3 | open, blocks unattended campaign operations | Supervisor service stop leaves compute workers alive; direct TERM/INT did not interrupt active candidates | Satoshi III implements; Musashi verifies |
+| AUD-F2-20260805-116 | S3 | open, blocks claimed full-suite acceptance | LTS rolling-evidence test uses wall-clock lifecycle creation against a fixed `as_of` and fails after that timestamp | Satoshi III implements; Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
