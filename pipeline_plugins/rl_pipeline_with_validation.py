@@ -601,7 +601,12 @@ class PipelinePlugin:
         Critical: never reuse the training env for evaluation — that pollutes
         SAC's replay buffer with terminal/post-reset transitions and freezes
         the actor weights from epoch 2 onward.
+
+        WP-C guard: evaluation is structurally ``normal_realistic`` — no
+        split evaluation can ever run under relaxed solvency dynamics,
+        regardless of the training configuration.
         """
+        config = {**config, "solvency_mode": "normal_realistic"}
         plug, env = self._make_split_env(env_plugin_name, config, csv_path, agent_plugin)
         try:
             split_label = _normalize_split_label(split_name)
