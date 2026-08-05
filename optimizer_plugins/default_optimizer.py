@@ -12,6 +12,7 @@ import base64
 import csv
 import hashlib
 import json
+import math
 import os
 import random
 import tempfile as _tempfile
@@ -1260,7 +1261,7 @@ class Plugin:
             print(f"[optimizer] candidate failed: {exc}")
             if tmp_model:
                 _safe_unlink(tmp_model)
-            return -1e9, {"evaluation_error": str(exc)}
+            return _rejected_result("evaluation_error", str(exc))
 
         if split == "val" and tmp_model is not None:
             val_config = dict(run_config)
@@ -1280,9 +1281,13 @@ class Plugin:
             except Exception as exc:
                 print(f"[optimizer] val eval failed: {exc}")
                 _safe_unlink(tmp_model)
-                return -1e9, {"evaluation_error": str(exc)}
+                return _rejected_result(
+                    "validation_evaluation_error", str(exc))
 
-        from app.metrics import compute_optimization_fitness
+        from app.metrics import (
+            SelectionIneligibleError,
+            compute_optimization_fitness,
+        )
 
         metrics = _metric_payload(summary)
         metrics.update(
@@ -1308,14 +1313,31 @@ class Plugin:
             )
             if reason
         ]
+        fitness = REJECTED_FITNESS
+        if not rejection_reasons:
+            # AUD-F1-20260805-109: every objective failure becomes an
+            # explicit rejection — never a bare comparable sentinel.
+            try:
+                fitness = compute_optimization_fitness(
+                    summary, run_config, agent_plugin
+                )
+            except SelectionIneligibleError as exc:
+                rejection_reasons.extend(exc.reasons)
+            except Exception as exc:
+                rejection_reasons.append(
+                    f"objective_resolution_error: {exc}"
+                )
+            else:
+                if not math.isfinite(float(fitness)):
+                    rejection_reasons.append(
+                        f"non_finite_fitness: {fitness!r}"
+                    )
+        if rejection_reasons:
+            fitness = REJECTED_FITNESS
+            metrics["candidate_rejected"] = True
         metrics["candidate_rejected_reasons"] = rejection_reasons
         metrics["candidate_rejected_reason"] = (
             rejection_reasons[0] if rejection_reasons else None
-        )
-        fitness = (
-            -1e9
-            if rejection_reasons
-            else compute_optimization_fitness(summary, run_config, agent_plugin)
         )
         metrics["fitness"] = float(fitness)
         metrics["optimization_metric"] = str(
@@ -1330,7 +1352,8 @@ class Plugin:
             except OSError as exc:
                 if require_model:
                     _safe_unlink(tmp_model)
-                    return -1e9, {"evaluation_error": f"model artifact missing: {exc}"}
+                    return _rejected_result(
+                        "model_artifact_missing", str(exc))
             else:
                 metrics["_model_b64"] = base64.b64encode(model_bytes).decode("ascii")
                 metrics["model_artifact_sha256"] = hashlib.sha256(model_bytes).hexdigest()
@@ -1364,6 +1387,30 @@ class Plugin:
         """Expose optimizer-specific decoding evidence without changing fitness."""
         del candidate_params, run_config, config
         return {}
+
+
+# AUD-F1-20260805-109: the numeric floor carried by rejected candidates.
+# It exists ONLY so legacy float plumbing has a value to move; rejection
+# authority is the candidate_rejected(+_reason) schema, and no champion
+# or selection branch may treat this number as an eligible fitness.
+REJECTED_FITNESS = -1.0e9
+
+
+def _rejected_result(
+    reason_type: str, detail: str, **extra: Any
+) -> Tuple[float, Dict[str, Any]]:
+    """One rejected-result schema for every optimizer-boundary failure."""
+    reason = f"{reason_type}: {detail}" if detail else reason_type
+    payload: Dict[str, Any] = {
+        "candidate_rejected": True,
+        "candidate_rejected_reason": reason,
+        "candidate_rejected_reasons": [reason],
+        "rejection_type": reason_type,
+        "evaluation_error": detail or reason_type,
+        "fitness": REJECTED_FITNESS,
+    }
+    payload.update(extra)
+    return REJECTED_FITNESS, payload
 
 
 def _metric_payload(summary: Dict[str, Any]) -> Dict[str, Any]:

@@ -50,6 +50,8 @@ def compute_optimization_fitness(
         total_return = _number(summary, "total_return")
         drawdown = _drawdown_fraction(summary)
         return total_return - float(config.get("risk_lambda", 1.0)) * drawdown
+    if name == "lexicographic_weekly_v1":
+        return _lexicographic_weekly_v1(summary, config)
 
     custom = config.get("optimization_metric_callable")
     if callable(custom):
@@ -79,3 +81,52 @@ def _drawdown_fraction(summary: Mapping[str, Any]) -> float:
     if summary.get("max_drawdown") is not None:
         return abs(float(summary["max_drawdown"]))
     return 0.0
+
+
+class SelectionIneligibleError(ValueError):
+    """The candidate failed the selection contract's eligibility gates.
+
+    Raised instead of returning any finite sentinel so the optimizer
+    boundary maps the candidate to the rejected-result schema
+    (AUD-F1-20260805-109): an ineligible candidate must never carry a
+    comparable fitness.
+    """
+
+    def __init__(self, reasons: list[str]) -> None:
+        super().__init__(
+            "candidate ineligible under lexicographic_weekly_v1: "
+            + "; ".join(reasons)
+        )
+        self.reasons = list(reasons)
+
+
+def _lexicographic_weekly_v1(
+    summary: Mapping[str, Any], config: Mapping[str, Any]
+) -> float:
+    """Authoritative §9 objective (AUD-F1-20260805-108/112).
+
+    Returns the order KEY from the preregistered quantized packing —
+    scalar comparison IS quantized-tuple comparison by construction.
+    The key is never a return/profit figure. Ineligibility raises
+    :class:`SelectionIneligibleError` (mapped to candidate rejection at
+    the optimizer boundary), never a finite worst sentinel.
+    """
+    from pipeline_plugins._lexicographic_selection import (
+        evaluate_selection_contract,
+    )
+
+    splits = summary.get("splits")
+    validation = (
+        splits.get("validation")
+        if isinstance(splits, Mapping) and isinstance(
+            splits.get("validation"), Mapping)
+        else None
+    )
+    basis: Mapping[str, Any] = validation if validation else summary
+    contract = evaluate_selection_contract(
+        dict(basis),
+        min_trades=int(config.get("selection_min_trades", 0) or 0),
+    )
+    if not contract["eligible"]:
+        raise SelectionIneligibleError(contract["ineligible_reasons"])
+    return float(contract["transport_scalar"])
