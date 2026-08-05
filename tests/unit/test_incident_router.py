@@ -302,3 +302,21 @@ def test_nonowner_forwards_recovery_for_every_severity(tmp_path):
         conn, hostname="dragon", now=NOW + timedelta(minutes=7),
         recovery_forwarder=lambda i, c: forwards.append(i["incident_id"]))
     assert actions == []                             # exactly once
+
+
+def test_no_canary_survives_into_telegram_text(tmp_path):
+    """Finding 095 end-to-end: a secret-shaped payload observed into the
+    ledger never reaches the formatted Telegram message."""
+    conn = _conn(tmp_path)
+    canary = "CANARY-5b1c-not-a-real-secret"
+    ledger.observe(
+        conn, CONFIG, source="monitor", front="front2", machine="omega",
+        event_code="leaky_event", severity="P0", affected_object="-",
+        payload={"api_key": canary, "summary": "incident with secrets",
+                 "nested": {"token": canary},
+                 "operator_action": "act"},
+        source_evidence_at=ledger.iso(NOW), now=NOW)
+    _, transport = _pass(conn, now=NOW)
+    assert len(transport.messages) == 1
+    assert canary not in transport.messages[0]
+    assert "incident with secrets" in transport.messages[0]
