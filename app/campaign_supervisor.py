@@ -2931,6 +2931,13 @@ class CampaignSupervisor:
 
     def tick(self) -> None:
         with self._mutex:
+            if self.state.get("phase") == "paused":
+                # AUD-F1-20260805-115: an operator pause is sticky and
+                # unconditional — checked before any validation so a
+                # config error can never overwrite it with 'blocked'
+                # and resurrect workers.
+                self._save_state()
+                return
             job = self._job()
             if job is None:
                 self.state["phase"] = "complete"
@@ -3209,6 +3216,116 @@ async function refresh(){{let d;try{{d=await(await fetch('/api/network')).json()
 refresh();setInterval(refresh,5000);
 </script></body></html>"""
 
+    def request_pause(self) -> dict[str, Any]:
+        """Operator pause (AUD-F1-20260805-115): stop claiming, stop and
+        VERIFY every owned worker process group, persist a coherent
+        snapshot. ``systemctl inactive`` with live workers is a failed
+        pause; this is the one authoritative path.
+
+        The existing ``_stop_worker`` already implements the bounded
+        graceful interval (SIGTERM to the process group, wait
+        ``stop_timeout``, escalate to SIGKILL visibly); this method adds
+        the sticky paused phase and the post-stop verification of
+        processes, worker API ports and GPU ownership.
+        """
+        with self._mutex:
+            job = self._job()
+            report: dict[str, Any] = {
+                "schema": "agent_multi.operator_pause_report.v1",
+                "node_id": self.node_id,
+                "requested_at": _utc_now(),
+                "job_id": job.get("job_id") if job else None,
+                "workers": {},
+            }
+            self.state["phase"] = "paused"
+            self._save_state()          # sticky before any stop runs
+            configs: dict[str, dict[str, Any]] = {}
+            if job is not None:
+                try:
+                    configs = self._validate_local_configs(job)
+                except Exception:
+                    for worker_id in self._local_worker_ids():
+                        try:
+                            configs[worker_id] = _load_json(
+                                self._worker_config_path(job, worker_id)
+                            )
+                        except Exception:
+                            configs[worker_id] = {}
+            for worker_id in self._local_worker_ids():
+                worker = self._worker_state(worker_id)
+                pid = worker.get("pid")
+                entry: dict[str, Any] = {"pid": pid}
+                if job is not None and _pid_matches(
+                    pid, worker.get("pid_start_ticks")
+                ):
+                    entry["stopped"] = self._stop_worker(
+                        job, worker_id, configs.get(worker_id, {})
+                    )
+                else:
+                    entry["stopped"] = True
+                    entry["note"] = "no live process"
+                entry["process_gone"] = not _pid_matches(
+                    pid, worker.get("pid_start_ticks")
+                )
+                port = (configs.get(worker_id) or {}).get("port")
+                if port:
+                    try:
+                        _http_json(
+                            f"http://127.0.0.1:{port}/status", 0.5
+                        )
+                        entry["api_port_down"] = False
+                    except Exception:
+                        entry["api_port_down"] = True
+                else:
+                    entry["api_port_down"] = None
+                report["workers"][worker_id] = entry
+            try:
+                gpu_pids = subprocess.run(
+                    ["nvidia-smi", "--query-compute-apps=pid",
+                     "--format=csv,noheader"],
+                    capture_output=True, text=True, timeout=10,
+                ).stdout.split()
+                stopped_pids = {
+                    str(entry.get("pid"))
+                    for entry in report["workers"].values()
+                    if entry.get("pid")
+                }
+                report["gpu_owner_pids_remaining"] = sorted(
+                    set(gpu_pids) & stopped_pids
+                )
+            except Exception as exc:
+                report["gpu_owner_pids_remaining"] = f"unavailable: {exc}"
+            workers_gone = all(
+                entry.get("process_gone")
+                and entry.get("api_port_down") in (True, None)
+                for entry in report["workers"].values()
+            )
+            gpu_remaining = report.get("gpu_owner_pids_remaining")
+            gpu_clear = gpu_remaining == [] or isinstance(
+                gpu_remaining, str
+            )  # empty, or nvidia-smi unavailable (reported as such)
+            report["paused"] = workers_gone and gpu_clear
+            self.state["pause_report"] = report
+            self._save_state()
+            self.history.event(
+                node_id=self.node_id,
+                job_id=job.get("job_id") if job else None,
+                event="operator_pause",
+                detail={
+                    "paused": report["paused"],
+                    "workers": {
+                        worker_id: entry.get("process_gone")
+                        for worker_id, entry in report["workers"].items()
+                    },
+                },
+            )
+            if not report["paused"]:
+                self._alert(
+                    "operator_pause_incomplete",
+                    "a worker survived the operator pause",
+                )
+            return report
+
     def _make_handler(self):
         supervisor = self
 
@@ -3233,6 +3350,17 @@ refresh();setInterval(refresh,5000);
                     self.wfile.write(body)
                 elif route == "/health":
                     self._json({"status": "healthy", "node_id": supervisor.node_id})
+                else:
+                    self._json({"error": "not found"}, status=404)
+
+            def do_POST(self) -> None:  # noqa: N802 - stdlib callback name
+                route = self.path.split("?", 1)[0]
+                if route == "/api/pause":
+                    report = supervisor.request_pause()
+                    self._json(
+                        report,
+                        status=200 if report.get("paused") else 500,
+                    )
                 else:
                     self._json({"error": "not found"}, status=404)
 
