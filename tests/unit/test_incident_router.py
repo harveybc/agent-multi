@@ -28,8 +28,8 @@ CONFIG = {
     "max_evidence_age_seconds": 86400,
     "flap_reopen_window_seconds": 3600,
     "notification_owner": "omega",
-    "failover_after_seconds": {"P0": 600, "P1": 1800, "P2": 7200,
-                               "P3": 86400},
+    "receipt_deadline_seconds": {"P0": 60, "P1": 120, "P2": 900,
+                                 "P3": 86400},
     "severity_policy": {
         "P0": {"first_within_seconds": 60, "reminders_seconds": [900],
                "repeat_seconds": 3600},
@@ -84,12 +84,15 @@ def _recover(conn, *, event_code="tws_unavailable", now=NOW,
 
 
 def _pass(conn, *, hostname="omega", now=NOW, transport=None,
-          forwarder=None, recovery_forwarder=None):
+          forwarder=None, recovery_forwarder=None, receipt=None):
     transport = transport if transport is not None else Capture()
+    receipt_query = receipt if callable(receipt) else (
+        lambda i, c: receipt)
     actions = router.run_pass(
         conn, CONFIG, hostname=hostname, now=now, transport=transport,
         forwarder=forwarder or (lambda i, c: None),
-        recovery_forwarder=recovery_forwarder or (lambda i, c: None))
+        recovery_forwarder=recovery_forwarder or (lambda i, c: None),
+        receipt_query=receipt_query)
     return actions, transport
 
 
@@ -229,50 +232,6 @@ def test_router_restart_preserves_history_and_sends_nothing_new(tmp_path):
     assert persisted["notification_count"] == 1
 
 
-def test_nonowner_forwards_and_fails_over_bounded(tmp_path):
-    conn = _conn(tmp_path)
-    _observe(conn, machine="dragon")
-    calls = []
-
-    def good_forward(incident, config):
-        calls.append(incident["incident_id"])
-
-    def bad_forward(incident, config):
-        raise RuntimeError("owner unreachable")
-
-    # Healthy: forward, no local telegram.
-    actions, transport = _pass(conn, hostname="dragon", now=NOW,
-                               forwarder=good_forward)
-    assert [a["action"] for a in actions] == ["forwarded"]
-    assert transport.messages == []
-    assert len(calls) == 1
-
-    # Owner becomes unreachable: the first failed forward starts the
-    # failure streak but sends no local duplicate yet.
-    first_failure = NOW + timedelta(minutes=16)
-    actions, transport = _pass(conn, hostname="dragon", now=first_failure,
-                               forwarder=bad_forward)
-    assert [a["action"] for a in actions] == ["forward_failed"]
-    assert transport.messages == []
-
-    # Streak past the P0 failover budget (600 s): exactly one bounded
-    # local duplicate, carrying the same incident id.
-    past_budget = first_failure + timedelta(minutes=11)
-    actions, transport = _pass(conn, hostname="dragon", now=past_budget,
-                               forwarder=bad_forward)
-    assert [a["action"] for a in actions] == ["failover_notified"]
-    assert len(transport.messages) == 1
-    incident_id = ledger.open_incidents(conn)[0]["incident_id"]
-    assert incident_id in transport.messages[0]
-
-    # Owner recovery afterwards: the next due cycle forwards again and
-    # nothing already notified is replayed.
-    _, transport = _pass(conn, hostname="dragon",
-                         now=past_budget + timedelta(minutes=5),
-                         forwarder=good_forward)
-    assert transport.messages == []
-
-
 def test_activation_message_is_redacted_and_actionable(tmp_path):
     conn = _conn(tmp_path)
     _observe(conn, payload={
@@ -325,3 +284,116 @@ def test_no_canary_survives_into_telegram_text(tmp_path):
     assert len(transport.messages) == 1
     assert canary not in transport.messages[0]
     assert "incident with secrets" in transport.messages[0]
+
+
+def _receipt(delivered_at=None, channel="telegram", message_hash="mh"):
+    return {"delivered_at": delivered_at, "channel": channel,
+            "message_hash": message_hash}
+
+
+def test_receipt_scenario_owner_healthy(tmp_path):
+    """097(a): forward, then confirm from the owner's end-to-end receipt;
+    no local Telegram, no failover, notified only via receipt."""
+    conn = _conn(tmp_path)
+    _observe(conn, machine="dragon")
+    actions, transport = _pass(conn, hostname="dragon", now=NOW,
+                               receipt=None)
+    assert [a["action"] for a in actions] == ["forwarded"]
+    assert transport.messages == []
+    delivered = ledger.iso(NOW + timedelta(seconds=20))
+    actions, transport = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(seconds=30),
+        receipt=_receipt(delivered_at=delivered))
+    assert [a["action"] for a in actions] == ["receipt_confirmed"]
+    assert transport.messages == []
+    row = ledger.open_incidents(conn)[0]
+    assert row["notification_count"] == 1
+    assert row["last_notified_at"] == delivered
+
+
+def test_receipt_scenario_ssh_up_router_down(tmp_path):
+    """097(b/c): forwards succeed (or Telegram is down on the owner) but
+    no receipt ever arrives — the worker fails over at the P0 deadline
+    with the same incident id."""
+    conn = _conn(tmp_path)
+    _observe(conn, machine="dragon")
+    actions, transport = _pass(conn, hostname="dragon", now=NOW,
+                               receipt=None)
+    assert transport.messages == []                 # not yet overdue... 
+    # 61 s after first observation with no receipt: P0 deadline exceeded.
+    actions, transport = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(seconds=61),
+        receipt=_receipt(delivered_at=None))
+    assert "failover_notified" in [a["action"] for a in actions]
+    assert len(transport.messages) == 1
+    incident_id = ledger.open_incidents(conn)[0]["incident_id"]
+    assert incident_id in transport.messages[0]
+
+
+def test_receipt_scenario_owner_unreachable(tmp_path):
+    """097(d): forward fails AND the receipt query is unknown — failover
+    still fires at the deadline; before it, no local message."""
+    conn = _conn(tmp_path)
+    _observe(conn, machine="dragon")
+
+    def bad_forward(incident, config):
+        raise RuntimeError("owner unreachable")
+
+    actions, transport = _pass(conn, hostname="dragon", now=NOW,
+                               forwarder=bad_forward, receipt=None)
+    assert [a["action"] for a in actions] == ["forward_failed"]
+    assert transport.messages == []
+    actions, transport = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(seconds=90),
+        forwarder=bad_forward, receipt=None)
+    assert "failover_notified" in [a["action"] for a in actions]
+    assert len(transport.messages) == 1
+
+
+def test_receipt_scenario_delayed_receipt_prevents_failover(tmp_path):
+    """097(e): a receipt arriving before the deadline prevents failover."""
+    conn = _conn(tmp_path)
+    _observe(conn, machine="dragon")
+    _pass(conn, hostname="dragon", now=NOW, receipt=None)
+    delivered = ledger.iso(NOW + timedelta(seconds=45))
+    actions, transport = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(seconds=55),
+        receipt=_receipt(delivered_at=delivered))
+    assert [a["action"] for a in actions] == ["receipt_confirmed"]
+    assert transport.messages == []
+    # Long after: due again per policy, but the deadline clock restarts
+    # from the confirmed delivery + reminder interval.
+    actions, transport = _pass(
+        conn, hostname="dragon",
+        now=NOW + timedelta(seconds=45 + 900 + 30),
+        receipt=_receipt(delivered_at=delivered))
+    assert "failover_notified" not in [a["action"] for a in actions]
+    assert transport.messages == []
+
+
+def test_receipt_scenario_recovery_race(tmp_path):
+    """097(f): an incident resolved locally while its receipt is pending
+    forwards its resolution and never fails over."""
+    conn = _conn(tmp_path)
+    _observe(conn, machine="dragon")
+    _pass(conn, hostname="dragon", now=NOW, receipt=None)
+    _recover(conn, machine="dragon", now=NOW + timedelta(seconds=30))
+    forwards = []
+    actions, transport = _pass(
+        conn, hostname="dragon", now=NOW + timedelta(seconds=90),
+        receipt=None,
+        recovery_forwarder=lambda i, c: forwards.append(i["incident_id"]))
+    assert [a["action"] for a in actions] == ["recovery_forwarded"]
+    assert transport.messages == []
+    assert len(forwards) == 1
+
+
+def test_worker_never_marks_notified_on_forward(tmp_path):
+    """097 core assertion: SSH ingestion is not delivery."""
+    conn = _conn(tmp_path)
+    _observe(conn, machine="dragon")
+    _pass(conn, hostname="dragon", now=NOW, receipt=None)
+    row = ledger.open_incidents(conn)[0]
+    assert row["notification_count"] == 0
+    assert row["last_notified_at"] is None
+    assert row["state"] == "pending"
