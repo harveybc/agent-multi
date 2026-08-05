@@ -376,6 +376,71 @@ def observe(conn: sqlite3.Connection, config: dict, *, source: str,
     ).fetchone())
 
 
+RECOVERY_EVIDENCE_SCHEMA = "agent_multi.incident_recovery_evidence.v1"
+_RECOVERY_REQUIRED = ("schema", "observed_at", "producer",
+                      "incident_fingerprint", "state")
+_RECOVERY_ALLOWED = set(_RECOVERY_REQUIRED) | {"detail"}
+
+
+def _validate_recovery_evidence(evidence: dict, config: dict, *,
+                                fingerprint: str, source: str,
+                                now: datetime) -> datetime:
+    """Finding 096: recovery evidence is a versioned, bound document —
+    never an arbitrary non-empty object. Returns the parsed observation
+    time; every failure refuses."""
+    if not isinstance(evidence, dict) or not evidence:
+        raise Refusal("recovery requires a non-empty evidence JSON object")
+    if evidence.get("schema") != RECOVERY_EVIDENCE_SCHEMA:
+        raise Refusal(
+            f"recovery evidence schema must be {RECOVERY_EVIDENCE_SCHEMA!r}")
+    missing = [key for key in _RECOVERY_REQUIRED if key not in evidence]
+    if missing:
+        raise Refusal(f"recovery evidence missing keys: {missing}")
+    unknown = sorted(set(evidence) - _RECOVERY_ALLOWED)
+    if unknown:
+        raise Refusal(f"recovery evidence has unknown keys: {unknown}")
+    observed_at = parse_iso(str(evidence["observed_at"]), "observed_at")
+    skew = float(config.get("max_future_skew_seconds", 120))
+    if (observed_at - now).total_seconds() > skew:
+        raise Refusal("recovery evidence observed_at is in the future"
+                      f" beyond {skew:.0f}s skew")
+    max_age = float(config.get("max_evidence_age_seconds", 86400))
+    if (now - observed_at).total_seconds() > max_age:
+        raise Refusal(
+            f"recovery evidence is older than {max_age:.0f}s — stale")
+    if evidence["producer"] != source:
+        raise Refusal(
+            "recovery evidence producer does not match the incident source"
+            " — a producer may recover only its own incidents")
+    if evidence["incident_fingerprint"] != fingerprint:
+        raise Refusal(
+            "recovery evidence is bound to a different incident"
+            " fingerprint")
+    state = evidence["state"]
+    if not isinstance(state, dict) or not state:
+        raise Refusal("recovery evidence state must be a non-empty object"
+                      " of direct facts")
+    return observed_at
+
+
+def build_recovery_evidence(*, source: str, front: str, machine: str,
+                            event_code: str, affected_object: str = "-",
+                            state: dict, observed_at: str | None = None,
+                            detail: str | None = None) -> dict:
+    """Producer helper: one canonical way to build conformant evidence."""
+    document = {
+        "schema": RECOVERY_EVIDENCE_SCHEMA,
+        "observed_at": observed_at or iso(utcnow()),
+        "producer": source,
+        "incident_fingerprint": fingerprint_of(
+            source, front, machine, event_code, affected_object),
+        "state": state,
+    }
+    if detail is not None:
+        document["detail"] = detail
+    return document
+
+
 def recover(conn: sqlite3.Connection, config: dict, *, source: str,
             front: str, machine: str, event_code: str,
             affected_object: str, evidence: dict,
@@ -384,20 +449,27 @@ def recover(conn: sqlite3.Connection, config: dict, *, source: str,
 
     Returns the resolved row, or None when no open incident exists (a
     recovery for a healthy identity is a no-op, never an error: producers
-    report recovery unconditionally on a healthy pass).
+    report recovery unconditionally on a healthy pass). The evidence must
+    conform to the versioned recovery schema, be fresh, monotonic and
+    bound to this incident's fingerprint and producer (finding 096).
     """
     now = now or utcnow()
     _validate_identity(source, front, machine, event_code, affected_object)
-    if not isinstance(evidence, dict) or not evidence:
-        raise Refusal("recovery requires a non-empty evidence JSON object")
     fingerprint = fingerprint_of(source, front, machine, event_code,
                                  affected_object)
+    observed_at = _validate_recovery_evidence(
+        evidence, config, fingerprint=fingerprint, source=source, now=now)
     row = conn.execute(
         "SELECT * FROM incidents WHERE fingerprint=? AND state != 'resolved'",
         (fingerprint,),
     ).fetchone()
     if row is None:
         return None
+    incident_evidence_at = datetime.fromisoformat(row["source_evidence_at"])
+    if observed_at < incident_evidence_at:
+        raise Refusal(
+            "recovery evidence predates the incident's last direct"
+            " evidence — monotonicity refused")
     evidence_text = json.dumps(sanitize_structure(evidence), sort_keys=True)
     evidence_hash = hashlib.sha256(evidence_text.encode("utf-8")).hexdigest()
     conn.execute(
@@ -539,7 +611,12 @@ def main() -> int:
 
     sub = commands.add_parser("recover")
     identity_args(sub)
-    sub.add_argument("--evidence-json", required=True)
+    group = sub.add_mutually_exclusive_group(required=True)
+    group.add_argument("--evidence-json",
+                       help="full conformant recovery-evidence document")
+    group.add_argument("--state-json",
+                       help="direct state facts; the CLI builds the"
+                       " bound evidence document around them")
 
     sub = commands.add_parser("status")
     sub.add_argument("--active", action="store_true")
@@ -591,7 +668,16 @@ def main() -> int:
                               "occurrence_count": row["occurrence_count"]}))
         elif args.command == "recover":
             try:
-                evidence = json.loads(args.evidence_json)
+                if args.state_json is not None:
+                    state = json.loads(args.state_json)
+                    if not isinstance(state, dict):
+                        raise Refusal("--state-json must be a JSON object")
+                    evidence = build_recovery_evidence(
+                        source=args.source, front=args.front,
+                        machine=args.machine, event_code=args.event_code,
+                        affected_object=args.affected_object, state=state)
+                else:
+                    evidence = json.loads(args.evidence_json)
             except json.JSONDecodeError as exc:
                 raise Refusal(f"evidence is not valid JSON: {exc}")
             row = recover(
