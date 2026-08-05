@@ -68,6 +68,53 @@ REDACTION_PATTERNS = (
     re.compile(r"(?i)\b(api[_-]?key|secret|token|password|passphrase)\s*[:=]\s*\S+"),
 )
 
+# Finding 095: key-name classes whose VALUES are redacted at any depth of a
+# structured object, regardless of the value's shape or encoding.
+SECRET_KEY_CLASSES = re.compile(
+    r"(?i)^(?:.*[_\-.])?"
+    r"(secret|token|password|passphrase|api[_\-]?key|private[_\-]?key|"
+    r"account[_\-]?id|credential)s?(?:[_\-.].*)?$"
+)
+_MAX_SANITIZE_DEPTH = 24
+
+
+def sanitize_structure(value, depth: int = 0):
+    """Recursively sanitize a structured object BEFORE serialization.
+
+    Any dict key matching a secret/token/password/passphrase/api-key/
+    private-key/account-id/credential class has its value replaced at any
+    depth (mixed case included); strings additionally pass bounded
+    value-pattern redaction, and a string that itself parses as a JSON
+    object/array is sanitized structurally and re-serialized so quoted
+    JSON cannot smuggle a secret-shaped value through."""
+    if depth > _MAX_SANITIZE_DEPTH:
+        return "[REDACTED-DEPTH]"
+    if isinstance(value, dict):
+        sanitized = {}
+        for key, item in value.items():
+            if isinstance(key, str) and SECRET_KEY_CLASSES.match(key):
+                sanitized[key] = "[REDACTED]"
+            else:
+                sanitized[key] = sanitize_structure(item, depth + 1)
+        return sanitized
+    if isinstance(value, (list, tuple)):
+        return [sanitize_structure(item, depth + 1) for item in value]
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped[:1] in "{[" and len(stripped) <= 100_000:
+            try:
+                parsed = json.loads(stripped)
+            except (json.JSONDecodeError, RecursionError):
+                parsed = None
+            if isinstance(parsed, (dict, list)):
+                return json.dumps(
+                    sanitize_structure(parsed, depth + 1), sort_keys=True)
+        text = value
+        for pattern in REDACTION_PATTERNS:
+            text = pattern.sub("[REDACTED]", text)
+        return text
+    return value
+
 _TABLES = """
 CREATE TABLE IF NOT EXISTS ledger_meta (
     key TEXT PRIMARY KEY,
@@ -146,9 +193,11 @@ def load_config(path: Path | None) -> dict:
 
 
 def redact(text: str) -> str:
-    for pattern in REDACTION_PATTERNS:
-        text = pattern.sub("[REDACTED]", text)
-    return text
+    """String-level entry point: structural sanitization for JSON-shaped
+    text (finding 095) plus bounded value-pattern redaction."""
+    result = sanitize_structure(text)
+    return result if isinstance(result, str) else json.dumps(
+        result, sort_keys=True)
 
 
 def fingerprint_of(source: str, front: str, machine: str,
@@ -186,7 +235,7 @@ def _journal(conn: sqlite3.Connection, incident_id: str, kind: str,
         "INSERT INTO incident_events(incident_id, at, kind, detail_json)"
         " VALUES(?,?,?,?)",
         (incident_id, iso(at or utcnow()), kind,
-         json.dumps(detail, sort_keys=True)),
+         json.dumps(sanitize_structure(detail), sort_keys=True)),
     )
 
 
@@ -234,7 +283,7 @@ def observe(conn: sqlite3.Connection, config: dict, *, source: str,
             f" {max_age:.0f}s — stale evidence is a refusal, re-observe first"
         )
 
-    payload_text = redact(json.dumps(payload, sort_keys=True))
+    payload_text = json.dumps(sanitize_structure(payload), sort_keys=True)
     payload_hash = hashlib.sha256(payload_text.encode("utf-8")).hexdigest()
     fingerprint = fingerprint_of(source, front, machine, event_code,
                                  affected_object)
@@ -349,7 +398,7 @@ def recover(conn: sqlite3.Connection, config: dict, *, source: str,
     ).fetchone()
     if row is None:
         return None
-    evidence_text = redact(json.dumps(evidence, sort_keys=True))
+    evidence_text = json.dumps(sanitize_structure(evidence), sort_keys=True)
     evidence_hash = hashlib.sha256(evidence_text.encode("utf-8")).hexdigest()
     conn.execute(
         "UPDATE incidents SET state='resolved', resolved_at=?,"

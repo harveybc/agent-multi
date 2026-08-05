@@ -232,3 +232,72 @@ def test_restart_preserves_counts_ack_and_history(tmp_path):
     events = [r["kind"] for r in reopened.execute(
         "SELECT kind FROM incident_events ORDER BY seq")]
     assert events == ["observed", "notified", "acknowledged"]
+
+
+def test_structural_sanitization_key_classes_at_any_depth(tmp_path):
+    """Finding 095 (auditor counterexample): normal JSON keys like
+    'secret', 'api_key', 'password' and nested 'token' must never reach
+    SQLite or Telegram text unchanged — including quoted-JSON strings,
+    mixed case and encoded values under secret-class keys."""
+    conn = _conn(tmp_path)
+    canary = "CANARY-9f3e-not-a-real-secret"
+    row = _observe(conn, payload={
+        "api_key": canary + "-a",
+        "Password": canary + "-b",
+        "nested": {"TOKEN": canary + "-c",
+                   "deeper": [{"private-key": canary + "-d"}]},
+        "quoted": json.dumps({"secret": canary + "-e",
+                              "passphrase": canary + "-f"}),
+        "account_id": canary + "-g",
+        "credentials": "base64:" + canary + "-h",
+        "kept": "ordinary operational text",
+    })
+    stored = row["payload_json"]
+    assert canary not in stored
+    assert "ordinary operational text" in stored
+    # Journal details are sanitized too.
+    events = conn.execute(
+        "SELECT detail_json FROM incident_events").fetchall()
+    assert all(canary not in event["detail_json"] for event in events)
+
+
+def test_auditor_reproducer_json_string_redaction():
+    """redact() on a JSON-shaped STRING sanitizes structurally: the
+    auditor's exact case must come back changed with no test values."""
+    source = json.dumps({
+        "api_key": "PKTESTVALUE",
+        "nested": {"token": "not-a-real-token"},
+        "password": "not-a-real-password",
+        "secret": "not-a-real-secret",
+    }, sort_keys=True)
+    redacted = ledger.redact(source)
+    assert redacted != source
+    assert "not-a-real-secret" not in redacted
+    assert "not-a-real-token" not in redacted
+    assert "PKTESTVALUE" not in redacted
+    assert "nested" in redacted                    # structure preserved
+
+
+def test_sanitizer_preserves_operational_keys():
+    clean = ledger.sanitize_structure({
+        "account_fingerprint": "0123456789abcdef",
+        "incident_id": "INC-1", "payload_hash": "abc",
+        "notification_count": 3, "restart_delta": 5,
+        "reservation_id": "rsv-1", "summary": "TWS down",
+    })
+    assert clean["account_fingerprint"] == "0123456789abcdef"
+    assert clean["reservation_id"] == "rsv-1"
+    assert clean["summary"] == "TWS down"
+
+
+def test_recovery_evidence_is_sanitized(tmp_path):
+    conn = _conn(tmp_path)
+    _observe(conn)
+    canary = "CANARY-77aa-not-a-real-secret"
+    _recover(conn, evidence={"direct": "port up",
+                             "session_token": canary})
+    events = conn.execute(
+        "SELECT detail_json FROM incident_events WHERE kind='resolved'"
+    ).fetchall()
+    assert events
+    assert all(canary not in event["detail_json"] for event in events)

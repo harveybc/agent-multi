@@ -338,7 +338,7 @@ def run_pass(conn, config: dict, *, hostname: str, now: datetime,
                         " detail_json) VALUES(?,?,?,?)",
                         (incident["incident_id"], ledger.iso(now),
                          "forward_failed",
-                         json.dumps({"error": str(exc)[:200]})),
+                         json.dumps({"error": ledger.redact(str(exc))[:200]})),
                     )
                 if failover_exceeded(conn, incident, config, now):
                     transport(message, config)
@@ -350,7 +350,7 @@ def run_pass(conn, config: dict, *, hostname: str, now: datetime,
                 else:
                     actions.append({"action": "forward_failed",
                                     "incident_id": incident["incident_id"],
-                                    "error": str(exc)[:200]})
+                                    "error": ledger.redact(str(exc))[:200]})
 
     if is_owner:
         for incident in pending_recoveries(conn, config, now):
@@ -364,7 +364,7 @@ def run_pass(conn, config: dict, *, hostname: str, now: datetime,
             except Exception as exc:
                 actions.append({"action": "recovery_delivery_failed",
                                 "incident_id": incident["incident_id"],
-                                "error": str(exc)[:200]})
+                                "error": ledger.redact(str(exc))[:200]})
                 continue
             with conn:
                 conn.execute(
@@ -387,7 +387,7 @@ def run_pass(conn, config: dict, *, hostname: str, now: datetime,
             except Exception as exc:
                 actions.append({"action": "recovery_delivery_failed",
                                 "incident_id": incident["incident_id"],
-                                "error": str(exc)[:200]})
+                                "error": ledger.redact(str(exc))[:200]})
                 continue
             with conn:
                 conn.execute(
