@@ -48,13 +48,18 @@ def _observe(conn, *, severity="P1", event_code="tws_unavailable",
 
 def _recover(conn, *, event_code="tws_unavailable", now=NOW,
              machine="omega", source="tws_continuity_monitor",
-             affected_object="-", evidence=None):
-    if evidence is None:
-        evidence = {"direct": "fresh broker facts"}
+             affected_object="-", evidence=None, raw_evidence=None):
+    if raw_evidence is None:
+        raw_evidence = ledger.build_recovery_evidence(
+            source=source, front="front2", machine=machine,
+            event_code=event_code, affected_object=affected_object,
+            state=evidence or {"direct": "fresh broker facts"},
+            observed_at=ledger.iso(now),
+        )
     return ledger.recover(
         conn, CONFIG, source=source, front="front2", machine=machine,
         event_code=event_code, affected_object=affected_object,
-        evidence=evidence, now=now,
+        evidence=raw_evidence, now=now,
     )
 
 
@@ -140,7 +145,7 @@ def test_recovery_requires_evidence(tmp_path):
     conn = _conn(tmp_path)
     _observe(conn)
     with pytest.raises(ledger.Refusal):
-        _recover(conn, evidence={})
+        _recover(conn, raw_evidence={})
     assert _recover(conn, event_code="never_observed") is None
 
 
@@ -301,3 +306,63 @@ def test_recovery_evidence_is_sanitized(tmp_path):
     ).fetchall()
     assert events
     assert all(canary not in event["detail_json"] for event in events)
+
+
+def test_auditor_unbound_recovery_evidence_refuses(tmp_path):
+    """Finding 096, auditor counterexample: {'ok': true} must never
+    resolve an incident."""
+    conn = _conn(tmp_path)
+    row = _observe(conn, severity="P0")
+    with pytest.raises(ledger.Refusal, match="schema"):
+        _recover(conn, raw_evidence={"ok": True})
+    assert ledger.open_incidents(conn)[0]["state"] == row["state"]
+
+
+def test_recovery_evidence_bindings_refuse(tmp_path):
+    conn = _conn(tmp_path)
+    _observe(conn)
+    good = ledger.build_recovery_evidence(
+        source="tws_continuity_monitor", front="front2", machine="omega",
+        event_code="tws_unavailable", affected_object="-",
+        state={"direct": "healthy"}, observed_at=ledger.iso(NOW))
+
+    wrong_producer = dict(good, producer="someone_else")
+    with pytest.raises(ledger.Refusal, match="producer"):
+        _recover(conn, raw_evidence=wrong_producer)
+
+    wrong_fingerprint = dict(good, incident_fingerprint="0" * 16)
+    with pytest.raises(ledger.Refusal, match="fingerprint"):
+        _recover(conn, raw_evidence=wrong_fingerprint)
+
+    stale = dict(good, observed_at=ledger.iso(NOW - timedelta(days=2)))
+    with pytest.raises(ledger.Refusal, match="stale"):
+        _recover(conn, raw_evidence=stale, now=NOW)
+
+    future = dict(good, observed_at=ledger.iso(NOW + timedelta(hours=1)))
+    with pytest.raises(ledger.Refusal, match="future"):
+        _recover(conn, raw_evidence=future, now=NOW)
+
+    empty_state = dict(good, state={})
+    with pytest.raises(ledger.Refusal, match="non-empty"):
+        _recover(conn, raw_evidence=empty_state)
+
+    surprise = dict(good, surprise=1)
+    with pytest.raises(ledger.Refusal, match="unknown keys"):
+        _recover(conn, raw_evidence=surprise)
+
+    assert ledger.open_incidents(conn)          # still open throughout
+    assert _recover(conn, raw_evidence=good)["state"] == "resolved"
+
+
+def test_recovery_monotonicity_refuses(tmp_path):
+    """Recovery evidence observed BEFORE the incident's last direct
+    evidence cannot resolve it."""
+    conn = _conn(tmp_path)
+    _observe(conn, now=NOW, evidence_at=NOW)
+    older = ledger.build_recovery_evidence(
+        source="tws_continuity_monitor", front="front2", machine="omega",
+        event_code="tws_unavailable", affected_object="-",
+        state={"direct": "healthy"},
+        observed_at=ledger.iso(NOW - timedelta(minutes=5)))
+    with pytest.raises(ledger.Refusal, match="monotonicity"):
+        _recover(conn, raw_evidence=older, now=NOW)

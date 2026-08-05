@@ -77,12 +77,17 @@ def recover_incident(*, source: str, event_code: str,
                      db_override: Path | None = None) -> bool:
     try:
         config, conn = _open(config_path, db_override)
+        bound_machine = machine or socket.gethostname()
+        code = sanitize_code(event_code)
+        document = ledger.build_recovery_evidence(
+            source=source, front=front, machine=bound_machine,
+            event_code=code, affected_object=affected_object,
+            state=evidence or {"summary": "source recovered"},
+        )
         ledger.recover(
             conn, config, source=source, front=front,
-            machine=machine or socket.gethostname(),
-            event_code=sanitize_code(event_code),
-            affected_object=affected_object,
-            evidence=evidence or {"summary": "source recovered"},
+            machine=bound_machine, event_code=code,
+            affected_object=affected_object, evidence=document,
         )
         return True
     except Exception as exc:

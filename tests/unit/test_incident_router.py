@@ -72,10 +72,15 @@ def _observe(conn, *, severity="P0", event_code="tws_unavailable",
 
 def _recover(conn, *, event_code="tws_unavailable", now=NOW,
              machine="omega"):
+    document = ledger.build_recovery_evidence(
+        source="monitor", front="front2", machine=machine,
+        event_code=event_code, affected_object="-",
+        state={"direct": "port and broker reconciled"},
+        observed_at=ledger.iso(now))
     return ledger.recover(
         conn, CONFIG, source="monitor", front="front2", machine=machine,
         event_code=event_code, affected_object="-",
-        evidence={"direct": "port and broker reconciled"}, now=now)
+        evidence=document, now=now)
 
 
 def _pass(conn, *, hostname="omega", now=NOW, transport=None,

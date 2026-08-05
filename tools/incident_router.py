@@ -258,10 +258,18 @@ def forward_to_owner(incident: dict, config: dict) -> None:
 def forward_recovery_to_owner(incident: dict, config: dict) -> None:
     script = str(Path(config["forward_repo_path"]) / "tools"
                  / "incident_ledger.py")
-    evidence = json.dumps({
-        "forwarded_resolution_of": incident["incident_id"],
-        "resolution_evidence_hash": incident["resolution_evidence_hash"],
-    })
+    document = ledger.build_recovery_evidence(
+        source=incident["source"], front=incident["front"],
+        machine=incident["venue_or_machine"],
+        event_code=incident["event_code"],
+        affected_object=incident["affected_object"],
+        observed_at=incident["resolved_at"],
+        state={
+            "forwarded_resolution_of": incident["incident_id"],
+            "resolution_evidence_hash":
+                incident["resolution_evidence_hash"],
+        },
+    )
     _ssh_forward(config, [
         "python3", script, "recover",
         "--source", incident["source"],
@@ -269,7 +277,7 @@ def forward_recovery_to_owner(incident: dict, config: dict) -> None:
         "--machine", incident["venue_or_machine"],
         "--event-code", incident["event_code"],
         "--object", incident["affected_object"],
-        "--evidence-json", evidence,
+        "--evidence-json", json.dumps(document, sort_keys=True),
     ], None, "recovery forward")
 
 
