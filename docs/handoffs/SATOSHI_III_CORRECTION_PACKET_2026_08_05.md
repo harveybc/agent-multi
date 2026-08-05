@@ -168,3 +168,18 @@ suspect-cache-aware protection re-verification (bounded fresh
 server-fact re-check before the flatten) or scheduling awareness of the
 reset window. Until ruled, every night with an open IBKR position will
 repeat this cycle.
+
+### 7.1 Dragon watchdog false-positive: found live, cured at source
+
+The §5.4 residual proved consequential: the legacy
+`lts-mt5-bridge-watchdog.timer` on Dragon runs the paper watchdog
+`--mt5-only` WITHOUT a status URL, so its probe lacks
+`exposure_reconciliation` and flags EVERY legitimate MT5 position as
+unexpected — it paged one false P1 two minutes after the seat's first
+protected post-repair entry (0.01 ETHUSD short @1864.95, native SL
+1884.69 / TP 1828.70, command-bound, C1 fact recorded). Cure applied:
+a corrected-probe pass by the same producer emitted the recovery
+(resolution forwarded; ledger clean), and a systemd drop-in now pins
+the local status URL permanently, preserving Dragon's partition-time
+local coverage. The unit's retired NAME and single-vs-dual-producer
+ownership remain yours to disposition; nothing was disabled.
