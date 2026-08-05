@@ -144,7 +144,41 @@ def build(arm: str) -> dict:
                 stage["params"] = [
                     p for p in params if p not in dropped_genes]
 
+    config["experiment"]["name"] = f"phase_2_eth_{arm}_curriculum_v2"
+    # Dead template baggage; carries foreign sample paths (fails the
+    # WP1 token scan) and describes no runtime behaviour.
+    config["experiment"].pop("legacy_flat", None)
+
+    # AUD-F1-20260805-110: every optimizer output lives below the ETH
+    # arm root; nothing may reference the USDCAD namespace.
+    arm_root = f"${{ARTIFACT_ROOT}}/eth_curriculum_v2/{arm}"
+    for key in ("optimization_candidate_history",
+                "optimization_champion_model_file",
+                "optimization_parameters_file",
+                "optimization_resume_file",
+                "optimization_statistics"):
+        value = optimization.get(key)
+        if isinstance(value, str):
+            optimization[key] = (
+                arm_root + "/" + value.rsplit("/", 1)[-1])
+
+    # AUD-F1-20260805-113: preprocessing_mode 'none' is forbidden while
+    # the observation contract requires a feature-aware preprocessor and
+    # no content-hashed precomputed causal feature contract exists.
+    for gene in optimization.get("mixed_genome_schema", []):
+        if gene.get("name") == "preprocessing_mode":
+            gene["choices"] = [
+                c for c in gene["choices"] if c != "none"]
+    optimization["mixed_genome_repair_rules"] = [
+        {"rule": "forbid_value", "gene": "preprocessing_mode",
+         "value": "none",
+         "reason": ("feature-aware observation contract has no"
+                    " precomputed causal feature contract"),
+         "repair": "resample_categorical"},
+    ]
+
     training = config["training"]
+    training["selection_metric"] = "lexicographic_weekly_v1"
     training["selection_min_trades"] = int(
         (optimization.get("optimization_min_trades_by_split") or {})
         .get("validation", 12))
@@ -169,7 +203,7 @@ def build(arm: str) -> dict:
         asset_policy["continuous_action_threshold"] = (
             eth["continuous_action_threshold"])
 
-    root = f"${{ARTIFACT_ROOT}}/eth_curriculum/{arm}"
+    root = f"${{ARTIFACT_ROOT}}/eth_curriculum_v2/{arm}"
     artifacts = config.get("artifacts", {})
     for key, value in list(artifacts.items()):
         if isinstance(value, str):
@@ -179,15 +213,126 @@ def build(arm: str) -> dict:
     return config
 
 
+FOREIGN_TOKENS = ("usdcad", "eurusd", "gbpusd", "audusd", "usdjpy",
+                  "btcusdt", "solusdt", "adausdt", "protected_easy")
+
+ALLOWED_ARM_DIFF_PREFIXES = (
+    "/artifacts/", "/experiment/curriculum_arm", "/experiment/name",
+    "/experiment/description", "/optimization/optimization_candidate_history",
+    "/optimization/optimization_champion_model_file",
+    "/optimization/optimization_parameters_file",
+    "/optimization/optimization_resume_file",
+    "/optimization/optimization_statistics",
+    "/training/solvency_curriculum_enabled", "/training/easy_max_epochs",
+    "/training/easy_patience", "/training/pipeline_plugin",
+)
+
+
+def _flatten(obj, prefix=""):
+    out = {}
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            out.update(_flatten(value, f"{prefix}/{key}"))
+    elif isinstance(obj, list):
+        out[prefix] = json.dumps(obj, sort_keys=True)
+    else:
+        out[prefix] = obj
+    return out
+
+
+def validate(config: dict, arm: str) -> None:
+    """WP1 fail-closed assertions (AUD-F1-20260805-108/110/113)."""
+    arm_root = f"${{ARTIFACT_ROOT}}/eth_curriculum_v2/{arm}"
+    flat = _flatten(config)
+
+    for path_key, value in flat.items():
+        if not isinstance(value, str):
+            continue
+        lowered = value.lower()
+        for token in FOREIGN_TOKENS:
+            if token in lowered:
+                raise SystemExit(
+                    f"foreign asset token {token!r} at {path_key}:"
+                    f" {value!r}")
+
+    import sys
+    sys.path.insert(0, str(REPO))
+    from app.canonical_config import resolve_config
+    from app.metrics import compute_optimization_fitness
+    runtime = resolve_config({}, file_config=config).runtime
+    for key in ("selection_metric", "optimization_metric"):
+        if runtime.get(key) != "lexicographic_weekly_v1":
+            raise SystemExit(
+                f"runtime {key}={runtime.get(key)!r} !="
+                " lexicographic_weekly_v1")
+    probe = {"mean_weekly_return": 0.001, "max_drawdown_fraction": 0.1,
+             "total_return": 0.05,
+             "trades_total": int(runtime.get("selection_min_trades", 0))
+             + 1}
+    fitness = compute_optimization_fitness(probe, runtime, object())
+    if not fitness > 0:
+        raise SystemExit("configured objective did not resolve")
+
+    optimization = config["optimization"]
+    for key in ("optimization_candidate_history",
+                "optimization_champion_model_file",
+                "optimization_parameters_file",
+                "optimization_resume_file",
+                "optimization_statistics"):
+        if not str(optimization.get(key, "")).startswith(arm_root):
+            raise SystemExit(
+                f"{key} escapes the {arm} arm root:"
+                f" {optimization.get(key)!r}")
+    # save_config/save_log are per-candidate working sidecars written
+    # inside each candidate's own run directory; a shared arm-root path
+    # would collide concurrent candidates. Everything else must live
+    # under the arm root.
+    per_candidate_sidecars = {"save_config", "save_log"}
+    for key, value in (config.get("artifacts") or {}).items():
+        if not isinstance(value, str):
+            continue
+        if key in per_candidate_sidecars and value.startswith("./"):
+            continue
+        if not value.startswith(arm_root):
+            raise SystemExit(
+                f"artifacts.{key} escapes the {arm} arm root: {value!r}")
+    if config["experiment"]["name"] != f"phase_2_eth_{arm}_curriculum_v2":
+        raise SystemExit("experiment identity is not the ETH arm")
+    if config["data"]["asset"] != "ETHUSD":
+        raise SystemExit("data.asset is not ETHUSD")
+
+    for gene in optimization.get("mixed_genome_schema", []):
+        if gene.get("name") == "preprocessing_mode" and                 "none" in gene.get("choices", []):
+            raise SystemExit("preprocessing_mode still offers 'none'")
+    if not optimization.get("mixed_genome_repair_rules"):
+        raise SystemExit("mixed_genome_repair_rules is empty")
+
+
+def check_arm_pairing(en: dict, n: dict) -> None:
+    flat_en, flat_n = _flatten(en), _flatten(n)
+    diffs = [key for key in sorted(set(flat_en) | set(flat_n))
+             if flat_en.get(key) != flat_n.get(key)]
+    illegal = [key for key in diffs
+               if not any(key.startswith(p)
+                          for p in ALLOWED_ARM_DIFF_PREFIXES)]
+    if illegal:
+        raise SystemExit(f"arms differ outside declared identity: {illegal}")
+
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    configs = {}
     for arm in ("en", "n"):
         config = build(arm)
-        path = OUT_DIR / f"phase_2_eth_{arm}_v1.json"
+        validate(config, arm)
+        configs[arm] = config
+        path = OUT_DIR / f"phase_2_eth_{arm}_v2.json"
         text = json.dumps(config, indent=1, sort_keys=True) + "\n"
         path.write_text(text, encoding="utf-8")
         digest = hashlib.sha256(text.encode()).hexdigest()
         print(f"{path.name}: sha256 {digest}")
+    check_arm_pairing(configs["en"], configs["n"])
+    print("arm pairing verified: differences limited to declared identity")
     return 0
 
 
