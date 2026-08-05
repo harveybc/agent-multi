@@ -184,7 +184,7 @@ the local status URL permanently, preserving Dragon's partition-time
 local coverage. The unit's retired NAME and single-vs-dual-producer
 ownership remain yours to disposition; nothing was disabled.
 
-### 7.2 Finding 094 runtime acceptance: complete (06:57 UTC)
+### 7.2 Finding 094 runtime acceptance: complete (06:48 UTC)
 
 The owner completed the signer setup (root-owned pin verified: root,
 0644) and exercised the FULL corrected resume path in production:
