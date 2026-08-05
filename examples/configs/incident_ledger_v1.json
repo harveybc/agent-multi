@@ -1,29 +1,69 @@
 {
   "schema": "agent_multi.incident_config.v1",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "ledger_db": "~/.local/state/agent-multi/incident-ledger/incidents.sqlite",
   "max_future_skew_seconds": 120,
   "max_evidence_age_seconds": 86400,
   "flap_reopen_window_seconds": 3600,
   "notification_owner": "omega",
-  "fleet_hosts": ["omega", "dragon", "gamma"],
-  "forward_ssh_options": ["-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "-i", "~/.ssh/id_ed25519_incident"],
+  "fleet_hosts": [
+    "omega",
+    "dragon",
+    "gamma"
+  ],
+  "forward_ssh_options": [
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=10",
+    "-i",
+    "~/.ssh/id_ed25519_incident"
+  ],
   "forward_repo_path": "/home/harveybc/Documents/GitHub/agent-multi",
-  "failover_after_seconds": {"P0": 600, "P1": 1800, "P2": 7200, "P3": 86400},
   "severity_policy": {
-    "P0": {"first_within_seconds": 60, "reminders_seconds": [900], "repeat_seconds": 3600},
-    "P1": {"first_within_seconds": 120, "reminders_seconds": [], "repeat_seconds": 7200},
-    "P2": {"first_within_seconds": 0, "reminders_seconds": [], "repeat_seconds": 21600},
-    "P3": {"first_within_seconds": null, "reminders_seconds": [], "repeat_seconds": null}
+    "P0": {
+      "first_within_seconds": 60,
+      "reminders_seconds": [
+        900
+      ],
+      "repeat_seconds": 3600
+    },
+    "P1": {
+      "first_within_seconds": 120,
+      "reminders_seconds": [],
+      "repeat_seconds": 7200
+    },
+    "P2": {
+      "first_within_seconds": 0,
+      "reminders_seconds": [],
+      "repeat_seconds": 21600
+    },
+    "P3": {
+      "first_within_seconds": null,
+      "reminders_seconds": [],
+      "repeat_seconds": null
+    }
   },
   "digest_hour_utc": 12,
-  "recovery_message_severities": ["P0", "P1"],
+  "recovery_message_severities": [
+    "P0",
+    "P1"
+  ],
   "telegram_env_files": [
     "~/.hermes/.env",
     "~/Documents/GitHub/financial-data/_metadata/.env"
   ],
   "telegram_token_env": "TELEGRAM_BOT_TOKEN",
   "telegram_chat_env": "OPS_TELEGRAM_CHAT_ID",
-  "telegram_chat_env_fallbacks": ["PROJECT3_TELEGRAM_CHAT_ID", "TELEGRAM_HOME_CHANNEL"],
-  "message_max_chars": 3500
+  "telegram_chat_env_fallbacks": [
+    "PROJECT3_TELEGRAM_CHAT_ID",
+    "TELEGRAM_HOME_CHANNEL"
+  ],
+  "message_max_chars": 3500,
+  "receipt_deadline_seconds": {
+    "P0": 60,
+    "P1": 120,
+    "P2": 900,
+    "P3": 86400
+  }
 }

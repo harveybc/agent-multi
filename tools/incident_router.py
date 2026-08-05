@@ -38,7 +38,7 @@ import subprocess
 import sys
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -184,8 +184,10 @@ def pending_recovery_forwards(conn) -> list[dict]:
     MESSAGE policy — the owner ledger must never keep paging a condition
     its source host has proven recovered."""
     rows = conn.execute(
-        "SELECT * FROM incidents WHERE state='resolved'"
-        " AND notification_count > 0").fetchall()
+        "SELECT i.* FROM incidents i WHERE i.state='resolved'"
+        " AND (i.notification_count > 0 OR EXISTS ("
+        "   SELECT 1 FROM incident_events e WHERE e.incident_id="
+        "   i.incident_id AND e.kind='forwarded'))").fetchall()
     due = []
     for row in rows:
         sent = conn.execute(
@@ -281,33 +283,59 @@ def forward_recovery_to_owner(incident: dict, config: dict) -> None:
     ], None, "recovery forward")
 
 
-def failover_exceeded(conn, incident: dict, config: dict,
-                      now: datetime) -> bool:
-    """True when forwarding to the owner has failed continuously for the
-    severity's failover budget. The streak resets on any successful
-    handoff or delivery (journal kind ``notified``)."""
-    budget = float(config["failover_after_seconds"][incident["severity"]])
-    last_handoff = conn.execute(
-        "SELECT MAX(at) AS at FROM incident_events"
-        " WHERE incident_id=? AND kind='notified'",
-        (incident["incident_id"],),
-    ).fetchone()["at"]
-    query = ("SELECT MIN(at) AS at FROM incident_events"
-             " WHERE incident_id=? AND kind='forward_failed'")
-    params: list = [incident["incident_id"]]
-    if last_handoff is not None:
-        query += " AND at > ?"
-        params.append(last_handoff)
-    streak_start = conn.execute(query, params).fetchone()["at"]
-    if streak_start is None:
-        return False
-    since = (now - datetime.fromisoformat(streak_start)).total_seconds()
-    return since >= budget
+def receipt_overdue(incident: dict, config: dict, now: datetime) -> bool:
+    """Finding 097: SSH ingestion is not delivery. A worker fails over to
+    direct Telegram only when no end-to-end receipt has arrived within the
+    severity's receipt deadline measured from the moment the notification
+    became due (first observation, or the policy interval after the last
+    confirmed delivery)."""
+    deadline = float(
+        config["receipt_deadline_seconds"][incident["severity"]])
+    policy = config["severity_policy"][incident["severity"]]
+    last = incident["last_notified_at"]
+    if last is None:
+        due_at = datetime.fromisoformat(incident["first_observed_at"])
+    else:
+        reminders = list(policy.get("reminders_seconds", []))
+        count = incident["notification_count"]
+        if count - 1 < len(reminders):
+            interval = float(reminders[count - 1])
+        else:
+            repeat = policy.get("repeat_seconds")
+            if repeat is None:
+                return False
+            interval = float(repeat)
+        due_at = datetime.fromisoformat(last) + timedelta(seconds=interval)
+    return (now - due_at).total_seconds() >= deadline
+
+
+def query_receipt_from_owner(incident: dict, config: dict) -> dict | None:
+    """Ask the owner's ledger for the end-to-end delivery receipt over the
+    bound forwarding key. None means unknown (owner unreachable)."""
+    owner = config["notification_owner"]
+    script = str(Path(config["forward_repo_path"]) / "tools"
+                 / "incident_ledger.py")
+    command_text = " ".join(shlex.quote(token) for token in [
+        "python3", script, "receipt",
+        "--fingerprint", incident["fingerprint"],
+        "--machine", incident["venue_or_machine"],
+    ])
+    try:
+        result = subprocess.run(
+            ["ssh", *config.get("forward_ssh_options", []), owner,
+             command_text],
+            capture_output=True, text=True, timeout=30)
+        if result.returncode != 0:
+            return None
+        receipt = json.loads(result.stdout.strip() or "null")
+        return receipt if isinstance(receipt, dict) else None
+    except Exception:
+        return None
 
 
 def run_pass(conn, config: dict, *, hostname: str, now: datetime,
              transport, forwarder, recovery_forwarder,
-             dry_run: bool = False) -> list[dict]:
+             receipt_query=None, dry_run: bool = False) -> list[dict]:
     """One router pass. Returns the action log (for tests and --dry-run)."""
     actions: list[dict] = []
     is_owner = hostname == config["notification_owner"]
@@ -331,34 +359,56 @@ def run_pass(conn, config: dict, *, hostname: str, now: datetime,
                                  message_hash, now)
             actions.append({"action": "notified",
                             "incident_id": incident["incident_id"]})
-        else:
-            try:
-                forwarder(incident, config)
-                ledger.mark_notified(conn, incident["incident_id"],
-                                     f"forwarded:{config['notification_owner']}",
-                                     message_hash, now)
-                actions.append({"action": "forwarded",
+            continue
+
+        # Finding 097: a worker records delivery ONLY from an end-to-end
+        # owner receipt, never from a successful SSH forward.
+        receipt = (receipt_query or query_receipt_from_owner)(
+            incident, config)
+        delivered_at = (receipt or {}).get("delivered_at")
+        if delivered_at:
+            last = incident["last_notified_at"]
+            if last is None or datetime.fromisoformat(
+                    delivered_at) > datetime.fromisoformat(last):
+                ledger.mark_notified(
+                    conn, incident["incident_id"],
+                    f"receipt:{(receipt or {}).get('channel')}",
+                    str((receipt or {}).get("message_hash")),
+                    datetime.fromisoformat(delivered_at))
+                actions.append({"action": "receipt_confirmed",
                                 "incident_id": incident["incident_id"]})
-            except Exception as exc:
-                with conn:
-                    conn.execute(
-                        "INSERT INTO incident_events(incident_id, at, kind,"
-                        " detail_json) VALUES(?,?,?,?)",
-                        (incident["incident_id"], ledger.iso(now),
-                         "forward_failed",
-                         json.dumps({"error": ledger.redact(str(exc))[:200]})),
-                    )
-                if failover_exceeded(conn, incident, config, now):
-                    transport(message, config)
-                    ledger.mark_notified(conn, incident["incident_id"],
-                                         "telegram-failover", message_hash,
-                                         now)
-                    actions.append({"action": "failover_notified",
-                                    "incident_id": incident["incident_id"]})
-                else:
-                    actions.append({"action": "forward_failed",
-                                    "incident_id": incident["incident_id"],
-                                    "error": ledger.redact(str(exc))[:200]})
+                continue
+
+        try:
+            forwarder(incident, config)
+            with conn:
+                conn.execute(
+                    "INSERT INTO incident_events(incident_id, at, kind,"
+                    " detail_json) VALUES(?,?,?,?)",
+                    (incident["incident_id"], ledger.iso(now), "forwarded",
+                     json.dumps({"owner": config["notification_owner"]})),
+                )
+            actions.append({"action": "forwarded",
+                            "incident_id": incident["incident_id"]})
+        except Exception as exc:
+            with conn:
+                conn.execute(
+                    "INSERT INTO incident_events(incident_id, at, kind,"
+                    " detail_json) VALUES(?,?,?,?)",
+                    (incident["incident_id"], ledger.iso(now),
+                     "forward_failed",
+                     json.dumps({"error": ledger.redact(str(exc))[:200]})),
+                )
+            actions.append({"action": "forward_failed",
+                            "incident_id": incident["incident_id"],
+                            "error": ledger.redact(str(exc))[:200]})
+
+        if receipt_overdue(incident, config, now):
+            transport(message, config)
+            ledger.mark_notified(conn, incident["incident_id"],
+                                 "telegram-failover", message_hash, now)
+            actions.append({"action": "failover_notified",
+                            "incident_id": incident["incident_id"]})
 
     if is_owner:
         for incident in pending_recoveries(conn, config, now):

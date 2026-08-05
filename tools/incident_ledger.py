@@ -555,6 +555,48 @@ def mark_notified(conn: sqlite3.Connection, incident_id: str,
     conn.commit()
 
 
+def delivery_receipt(conn: sqlite3.Connection, fingerprint: str,
+                     machine: str) -> dict:
+    """Finding 097: end-to-end delivery receipt for one incident identity.
+
+    Returns the latest Telegram delivery for the newest incident with this
+    fingerprint, or ``delivered_at: None``. The machine binding must match
+    the incident's — a worker key can query receipts only for incidents it
+    owns (the forced-command shim pins ``machine``)."""
+    row = conn.execute(
+        "SELECT * FROM incidents WHERE fingerprint=?"
+        " ORDER BY first_observed_at DESC LIMIT 1",
+        (fingerprint,),
+    ).fetchone()
+    if row is None:
+        return {"fingerprint": fingerprint, "delivered_at": None,
+                "reason": "unknown_incident"}
+    if row["venue_or_machine"] != machine:
+        raise Refusal(
+            "receipt refused: incident belongs to a different machine")
+    event = conn.execute(
+        "SELECT at, detail_json FROM incident_events WHERE incident_id=?"
+        " AND kind='notified' ORDER BY seq DESC LIMIT 1",
+        (row["incident_id"],),
+    ).fetchone()
+    delivered_at, channel, message_hash = None, None, None
+    if event is not None:
+        detail = json.loads(event["detail_json"])
+        if str(detail.get("channel", "")).startswith("telegram"):
+            delivered_at = event["at"]
+            channel = detail.get("channel")
+            message_hash = detail.get("message_hash")
+    return {
+        "fingerprint": fingerprint,
+        "incident_id": row["incident_id"],
+        "state": row["state"],
+        "delivered_at": delivered_at,
+        "channel": channel,
+        "message_hash": message_hash,
+        "notification_count": row["notification_count"],
+    }
+
+
 def open_incidents(conn: sqlite3.Connection,
                    severities: list[str] | None = None) -> list[dict]:
     query = "SELECT * FROM incidents WHERE state != 'resolved'"
@@ -640,6 +682,10 @@ def main() -> int:
     sub.add_argument("--incident", default=None)
     sub.add_argument("--json", action="store_true")
 
+    sub = commands.add_parser("receipt")
+    sub.add_argument("--fingerprint", required=True)
+    sub.add_argument("--machine", required=True)
+
     args = parser.parse_args()
     try:
         config = load_config(args.config)
@@ -723,6 +769,9 @@ def main() -> int:
             row = unacknowledge(conn, args.incident_id)
             print(json.dumps({"incident_id": row["incident_id"],
                               "state": row["state"]}))
+        elif args.command == "receipt":
+            print(json.dumps(delivery_receipt(
+                conn, args.fingerprint, args.machine), sort_keys=True))
         elif args.command == "history":
             query = "SELECT * FROM incident_events"
             clauses, params = [], []
