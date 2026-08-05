@@ -148,8 +148,18 @@ def build(arm: str) -> dict:
         training["solvency_curriculum_enabled"] = True
         training["easy_max_epochs"] = 4
         training["easy_patience"] = 2
+        training["pipeline_plugin"] = "rl_pipeline_with_solvency_curriculum"
     else:
         training["solvency_curriculum_enabled"] = False
+        training["pipeline_plugin"] = "rl_pipeline_with_validation"
+    optimization["plugin"] = "project3_full_genome_optimizer"
+
+    # Canonical runtime keys must agree across sections: the action
+    # threshold appears in both asset_policy and environment.
+    asset_policy = config.get("asset_policy", {})
+    if "continuous_action_threshold" in eth:
+        asset_policy["continuous_action_threshold"] = (
+            eth["continuous_action_threshold"])
 
     root = f"${{ARTIFACT_ROOT}}/eth_curriculum/{arm}"
     artifacts = config.get("artifacts", {})
