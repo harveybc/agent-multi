@@ -34,6 +34,7 @@
  "data": {
   "asset": "ETHUSD",
   "data_profile": "eth_tech_stat_model_ready",
+  "dataset_manifest_file": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.manifest.json",
   "date_column": "DATE_TIME",
   "feature_binary_columns": [
    "ema_cross_10_50",

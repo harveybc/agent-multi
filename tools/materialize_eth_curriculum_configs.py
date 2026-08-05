@@ -64,7 +64,8 @@ def build(arm: str) -> dict:
     data["date_column"] = "DATE_TIME"
     data["feature_list"] = features
     data["feature_binary_columns"] = binary
-    data.pop("dataset_manifest_file", None)
+    data["dataset_manifest_file"] = DATA_FILE.replace(
+        ".csv", ".manifest.json")
     data["data_profile"] = "eth_tech_stat_model_ready"
     data.update(SPLITS)
 
