@@ -109,10 +109,25 @@ def _bind_identity(sup: CampaignSupervisor) -> None:
             "genesis_hash": "genesis-abc",
             "population_fingerprint": "popfp-xyz",
         },
-        "component_versions": {"agent-multi": "test"},
+        "component_versions": sup._component_versions(),
     }
     worker = sup._worker_state("omega")
     worker["tip_hash"] = "tip-1"
+    worker["chain_height"] = 5
+    worker["api_url"] = "http://127.0.0.1:1"
+
+
+def _observe(sup: CampaignSupervisor, *, genesis="genesis-abc",
+             popfp="popfp-xyz", domain="pause-test-domain",
+             tip="tip-1", height=5) -> None:
+    worker = sup._worker_state("omega")
+    worker.update({
+        "status": "running",
+        "bootstrap_evidence": {"genesis_hash": genesis,
+                               "population_fingerprint": popfp},
+        "shared_population": {"domain_id": domain},
+        "tip_hash": tip, "chain_height": height,
+        "api_url": "http://127.0.0.1:1"})
 
 
 def test_pause_stops_and_verifies_worker_group(supervisor):
@@ -283,14 +298,7 @@ def test_rejoin_proof_requires_matching_lineage(supervisor):
     _bind_identity(supervisor)
     pause = supervisor.request_pause()
     supervisor.request_resume(pause["binding_hash"])
-    worker = supervisor._worker_state("omega")
-    worker["status"] = "running"
-    worker["bootstrap_evidence"] = {
-        "genesis_hash": "genesis-abc",
-        "population_fingerprint": "popfp-xyz"}
-    worker["shared_population"] = {"domain_id": "pause-test-domain",
-                                   "generation": 3}
-    worker["tip_hash"] = "tip-1"
+    _observe(supervisor)                 # same tip: ancestry trivial
     report = supervisor.verify_rejoin()
     assert report["rejoin_proven"] is True
     assert report["resumed"] is True
@@ -302,11 +310,7 @@ def test_rejoin_on_foreign_chain_is_refuted_and_repaused(supervisor):
     _bind_identity(supervisor)
     pause = supervisor.request_pause()
     supervisor.request_resume(pause["binding_hash"])
-    worker = supervisor._worker_state("omega")
-    worker["status"] = "running"
-    worker["bootstrap_evidence"] = {
-        "genesis_hash": "genesis-OTHER",       # foreign chain
-        "population_fingerprint": "popfp-xyz"}
+    _observe(supervisor, genesis="genesis-OTHER")   # foreign chain
     report = supervisor.verify_rejoin()
     assert report["rejoin_proven"] is False
     assert report["resumed"] is False
@@ -413,3 +417,69 @@ def test_drift_block_set_for_managed_process(supervisor, monkeypatch):
     block = supervisor.state.get("profile_drift_block")
     assert block and block["configured"] == "/other/profile.json"
     assert supervisor._launch_blocked_reason() is not None
+
+
+
+def test_component_revision_drift_refuses_resume(supervisor,
+                                                 monkeypatch):
+    """AUD-F1-20260806-135: a changed component revision is campaign
+    identity drift, not a resumable state."""
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    assert pause["paused"] is True
+    monkeypatch.setattr(
+        supervisor, "_component_versions",
+        lambda: {"agent-multi": "DIFFERENT", "gym-fx": "x"})
+    report = supervisor.request_resume(pause["binding_hash"])
+    assert report["resumed"] is False
+    assert report["reason"] == "campaign identity drift"
+    assert "component_versions" in report["drift"]
+
+
+def test_inexact_rejoin_foreign_tip_is_refuted(supervisor, monkeypatch):
+    """Musashi reproducer `inexact_rejoin`: same genesis and gen-0
+    population but an unrelated tip must NOT prove rejoin."""
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor, tip="foreign-tip-with-no-ancestor-proof",
+             height=9)
+
+    import app.campaign_supervisor as sup_mod
+    monkeypatch.setattr(
+        sup_mod, "_http_json",
+        lambda url, timeout: {"hash": "some-other-branch-block"})
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is not True
+    assert any("tip ancestry" in c
+               for c in report.get("rejoin_contradictions", []))
+    assert supervisor.state["phase"] == "paused"
+
+
+def test_descendant_tip_proves_rejoin(supervisor, monkeypatch):
+    """A chain that ADVANCED past the bound tip still proves descent
+    when the bound tip remains at its index."""
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor, tip="new-tip-after-more-blocks", height=9)
+
+    import app.campaign_supervisor as sup_mod
+    monkeypatch.setattr(
+        sup_mod, "_http_json",
+        lambda url, timeout: {"hash": "tip-1"})   # bound tip still there
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is True
+    proof = report["observed_lineage"]["omega"]["tip_ancestry"]
+    assert proof["mode"] == "descends_from_bound_tip"
+
+
+def test_rollback_below_bound_tip_is_contradiction(supervisor):
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor, tip="short-chain-tip", height=2)  # rolled back
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is not True
+    assert any("rolled back or replaced" in c
+               for c in report.get("rejoin_contradictions", []))

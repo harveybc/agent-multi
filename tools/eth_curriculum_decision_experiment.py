@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -70,7 +71,8 @@ RAW_METRICS = (
 )
 
 
-RUNNER_VERSION = "eth_curriculum_decision_experiment.v3"
+RUNNER_VERSION = "eth_curriculum_decision_experiment.v4"
+ARM_RECORD_SCHEMA = "agent_multi.arm_record.v4"
 
 
 def _execution_id(arm: str, seed: int, anchor: Path, *,
@@ -96,6 +98,93 @@ def _execution_id(arm: str, seed: int, anchor: Path, *,
     return hashlib.sha256(json.dumps(
         identity, sort_keys=True, separators=(",", ":"),
         default=str).encode()).hexdigest()
+
+
+REQUIRED_FINITE_METRICS = ("mean_weekly_return", "total_return",
+                           "max_drawdown_fraction")
+
+
+def validate_arm_record(record: dict, arm: str) -> list:
+    """One complete-record validator shared by reuse and aggregation
+    (AUD-F1-20260806-136/137). Verifies structure AND the filesystem:
+    every declared artifact must exist with its recorded hash."""
+    problems = []
+    if record.get("schema") != ARM_RECORD_SCHEMA:
+        problems.append(
+            f"record schema {record.get('schema')!r} !="
+            f" {ARM_RECORD_SCHEMA!r}")
+    for key in ("execution_id", "resolved_config_sha256",
+                "return_trace_sha256", "margin_telemetry",
+                "code_revisions_before", "code_revisions_after"):
+        if not record.get(key):
+            problems.append(f"missing {key}")
+    if record.get("code_revisions_before") != record.get(
+            "code_revisions_after"):
+        problems.append(
+            "code revisions changed DURING the arm:"
+            f" {record.get('code_revisions_before')} ->"
+            f" {record.get('code_revisions_after')}")
+    validation = (record.get("splits_raw") or {}).get("validation") or {}
+    for key in REQUIRED_FINITE_METRICS:
+        if not _finite_number(validation.get(key)):
+            problems.append(f"validation {key} missing/non-finite")
+    artifacts = record.get("artifacts") or {}
+    expected_labels = {"best_checkpoint", "terminal"} if arm != "E4" \
+        else {"post_easy"}
+    for label in expected_labels:
+        ref = artifacts.get(label)
+        if not isinstance(ref, dict):
+            problems.append(f"artifact {label} missing")
+            continue
+        for field in ("path", "sha256", "replica_path",
+                      "load_proven"):
+            if ref.get(field) in (None, ""):
+                problems.append(f"artifact {label} missing {field}")
+        path = Path(str(ref.get("path") or ""))
+        if not path.is_file():
+            problems.append(f"artifact {label} not retrievable: {path}")
+        elif _sha(path) != ref.get("sha256"):
+            problems.append(f"artifact {label} hash mismatch on disk")
+        replica = Path(str(ref.get("replica_path") or ""))
+        if not replica.is_file():
+            problems.append(
+                f"artifact {label} replica missing: {replica}")
+        elif _sha(replica) != ref.get("sha256"):
+            problems.append(f"artifact {label} replica hash mismatch")
+    if arm != "E4":
+        terminal = ((record.get("best_checkpoint_vs_terminal") or {})
+                    .get("terminal_evaluation") or {})
+        terminal_val = (terminal.get("splits_raw") or {}).get(
+            "validation") or {}
+        if not terminal.get("artifact_sha256"):
+            problems.append("terminal evaluation has no artifact hash")
+        if not terminal.get("artifact_path"):
+            problems.append("terminal evaluation has no retrieval path")
+        for key in REQUIRED_FINITE_METRICS:
+            if not _finite_number(terminal_val.get(key)):
+                problems.append(f"terminal {key} missing/non-finite")
+    return problems
+
+
+def _publish_artifact(path: Path, out_dir: Path, label: str) -> dict:
+    """Typed, hashed, retrievable, replicated and load-proven (136)."""
+    from stable_baselines3 import SAC
+    durable = out_dir / f"{label}.zip"
+    if path.resolve() != durable.resolve():
+        shutil.copy2(path, durable)
+    replica_dir = out_dir / "replica"
+    replica_dir.mkdir(parents=True, exist_ok=True)
+    replica = replica_dir / f"{label}.zip"
+    shutil.copy2(durable, replica)
+    digest = _sha(durable)
+    SAC.load(str(durable), device="cpu")          # load proof
+    return {
+        "path": str(durable.resolve()),
+        "replica_path": str(replica.resolve()),
+        "sha256": digest,
+        "replica_sha256": _sha(replica),
+        "load_proven": True,
+    }
 
 
 def _finite_number(value) -> bool:
@@ -225,8 +314,17 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
                 f"arm {arm} seed {seed}: existing record is corrupt"
                 f" ({exc}); refusing to overwrite or reuse — move it"
                 " aside explicitly")
-        if record.get("execution_id") == execution_id and \
-                record.get("splits_raw"):
+        if record.get("execution_id") == execution_id:
+            # AUD-F1-20260806-136: a matching id is NOT completeness.
+            # The same validator the aggregator uses must pass, and
+            # every referenced artifact must exist with its recorded
+            # hash, before any reuse.
+            problems = validate_arm_record(record, arm)
+            if problems:
+                raise RuntimeError(
+                    f"arm {arm} seed {seed}: record matches the"
+                    f" execution id but is INCOMPLETE: {problems};"
+                    " refusing reuse — archive it and rerun")
             print(f"[decision] seed={seed} arm={arm} already complete"
                   f" under execution_id {execution_id[:16]} — reusing",
                   flush=True)
@@ -242,6 +340,10 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
     config["warm_start_model"] = str(anchor)
     config["warm_start_model_sha256"] = _sha(anchor)
     agent = _agent_plugin(agent_name)
+    # AUD-F1-20260806-137: a long sequential run can cross a code
+    # revision; capture it on BOTH sides of the arm and fail if it moved.
+    code_revisions_before = {repo: _git_rev(repo) for repo in
+                             ("agent-multi", "gym-fx", "doin-plugins")}
     started = datetime.now(timezone.utc)
 
     if arm == "N14":
@@ -287,6 +389,7 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
     # artifact FAILS the arm — no note is ever written that facts do not
     # prove.
     terminal_eval = None
+    published: dict = {}
     if arm != "E4":                      # E4 is inference-only diagnostic
         artifacts = result.get("artifacts") or {}
         terminal_ref = artifacts.get("terminal") or {}
@@ -323,8 +426,19 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
             raise RuntimeError(
                 f"arm {arm} seed {seed}: terminal evaluation produced"
                 " no finite validation metrics; the arm FAILS")
+        published = {
+            "best_checkpoint": _publish_artifact(
+                best_path, out_dir, "best_checkpoint"),
+            "terminal": _publish_artifact(
+                terminal_path, out_dir, "terminal"),
+        }
+        published["terminal"]["num_timesteps"] = terminal_ref.get(
+            "num_timesteps")
         terminal_eval = {
-            "artifact_sha256": terminal_ref["sha256"],
+            "artifact_sha256": published["terminal"]["sha256"],
+            "artifact_path": published["terminal"]["path"],
+            "artifact_replica_path": published["terminal"][
+                "replica_path"],
             "num_timesteps": terminal_ref.get("num_timesteps"),
             "splits_raw": terminal_splits,
             "selection_contract": (
@@ -335,12 +449,16 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
     resolved_text = json.dumps(config, indent=1, sort_keys=True,
                                default=str)
     resolved_path.write_text(resolved_text, encoding="utf-8")
-    model_path = Path(config["save_model"])
     weights = {}
-    for label, path in (("final", model_path),
-                        ("post_easy", out_dir / "model.post_easy.zip")):
-        if path.exists():
-            weights[label] = {"path": str(path), "sha256": _sha(path)}
+    if arm == "E4":
+        post_easy = out_dir / "model.post_easy.zip"
+        if not post_easy.is_file():
+            raise RuntimeError(
+                f"arm E4 seed {seed}: post_easy artifact missing")
+        weights["post_easy"] = _publish_artifact(
+            post_easy, out_dir, "post_easy")
+    else:
+        weights = published
     margin_telemetry = {}
     for split, summary in (result.get("splits") or {}).items():
         if not isinstance(summary, dict) or split not in ALLOWED_SPLITS:
@@ -357,9 +475,13 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
                         "recapitalization_debt", "solvency_mode")
         }
 
+    code_revisions_after = {repo: _git_rev(repo) for repo in
+                            ("agent-multi", "gym-fx", "doin-plugins")}
     record = {
-        "schema": "agent_multi.arm_record.v3",
+        "schema": ARM_RECORD_SCHEMA,
         "execution_id": execution_id,
+        "code_revisions_before": code_revisions_before,
+        "code_revisions_after": code_revisions_after,
         "runner_version": RUNNER_VERSION,
         "arm": arm,
         "seed": seed,
@@ -387,6 +509,11 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
         "return_trace_sha256": _hash_traces(
             Path(config["return_trace_dir"])),
     }
+    problems = validate_arm_record(record, arm)
+    if problems:
+        raise RuntimeError(
+            f"arm {arm} seed {seed}: produced an INCOMPLETE record:"
+            f" {problems}")
     (out_dir / "arm_record.json").write_text(
         json.dumps(record, indent=1, sort_keys=True, default=str),
         encoding="utf-8")
@@ -428,6 +555,9 @@ def main() -> int:
         "lineage": {repo: _git_rev(repo) for repo in
                     ("agent-multi", "gym-fx", "doin-node",
                      "doin-plugins", "trading-contracts")},
+        "packet_identity_note": (
+            "each arm record carries code_revisions_before/after; the"
+            " aggregator binds this packet lineage to every arm"),
         "note": ("LOCAL-ONLY paired decision packet; order key is"
                  " transport evidence only; 2025 disclosed period"
                  " disabled and absent"),

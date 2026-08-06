@@ -437,33 +437,57 @@ class Plugin(DefaultOptimizer):
                         f"repair rule {index}: unknown repair"
                         f" {repair!r}"
                     )
-                # AUD-F1-20260806-132: the rule must bind to a REAL
-                # categorical gene of the typed schema, and a resample
-                # repair must have at least one allowed replacement.
+                # AUD-F1-20260806-138: validation must FAIL CLOSED. A
+                # missing typed schema is an error (not a pass), the
+                # gene must exist and be categorical with unique
+                # choices, and the forbidden value must be a DECLARED
+                # member — otherwise a typo becomes a valid inert rule.
                 schema = (config or {}).get("mixed_genome_schema")
-                if isinstance(schema, list):
-                    gene_spec = next(
-                        (g for g in schema
-                         if g.get("name") == gene_name), None)
-                    if gene_spec is None:
-                        raise ValueError(
-                            f"repair rule {index}: gene {gene_name!r}"
-                            " does not exist in the typed schema"
-                        )
-                    if str(gene_spec.get("kind")) != "categorical":
-                        raise ValueError(
-                            f"repair rule {index}: gene {gene_name!r}"
-                            " is not categorical"
-                            f" (kind={gene_spec.get('kind')!r})"
-                        )
-                    if repair == "resample_categorical" and not [
-                        c for c in gene_spec.get("choices", [])
-                        if c != rule["value"]
-                    ]:
-                        raise ValueError(
-                            f"repair rule {index}: gene {gene_name!r}"
-                            " has no allowed replacement choice"
-                        )
+                if not isinstance(schema, list) or not schema:
+                    raise ValueError(
+                        f"repair rule {index}: a typed"
+                        " mixed_genome_schema is required to validate"
+                        f" gene {gene_name!r}; none was provided"
+                    )
+                gene_spec = next(
+                    (g for g in schema
+                     if g.get("name") == gene_name), None)
+                if gene_spec is None:
+                    raise ValueError(
+                        f"repair rule {index}: gene {gene_name!r}"
+                        " does not exist in the typed schema"
+                    )
+                if str(gene_spec.get("kind")) != "categorical":
+                    raise ValueError(
+                        f"repair rule {index}: gene {gene_name!r}"
+                        " is not categorical"
+                        f" (kind={gene_spec.get('kind')!r})"
+                    )
+                choices = gene_spec.get("choices")
+                if not isinstance(choices, list) or not choices:
+                    raise ValueError(
+                        f"repair rule {index}: gene {gene_name!r}"
+                        " declares no choices"
+                    )
+                if len(choices) != len({str(c) for c in choices}):
+                    raise ValueError(
+                        f"repair rule {index}: gene {gene_name!r}"
+                        f" has duplicate choices {choices!r}"
+                    )
+                if rule["value"] not in choices:
+                    raise ValueError(
+                        f"repair rule {index}: forbidden value"
+                        f" {rule['value']!r} is not a declared choice"
+                        f" of {gene_name!r} ({choices!r}); an inert"
+                        " rule is a silent failure"
+                    )
+                if repair == "resample_categorical" and not [
+                    c for c in choices if c != rule["value"]
+                ]:
+                    raise ValueError(
+                        f"repair rule {index}: gene {gene_name!r}"
+                        " has no allowed replacement choice"
+                    )
                 continue
             if kind is not None:
                 raise ValueError(

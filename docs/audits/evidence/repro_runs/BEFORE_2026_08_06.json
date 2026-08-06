@@ -1,0 +1,86 @@
+{
+  "all_counterexamples_reproduced": true,
+  "duplicate_seed_empty_identity_promotion": {
+    "all_packet_identity_fields_empty": true,
+    "physical_packet_count": 5,
+    "promotion_eligible": true,
+    "reported_seeds": [
+      101,
+      202,
+      303,
+      404
+    ],
+    "reproduced": true
+  },
+  "incomplete_authority_join": {
+    "authority_returned": true,
+    "heartbeat_fresh": false,
+    "inference_and_parity_ineligible": true,
+    "model_config_input_all_mismatch": true,
+    "reproduced": true
+  },
+  "incomplete_exact_reuse": {
+    "missing_artifacts_reused": true,
+    "missing_trace_hashes_reused": true,
+    "reproduced": true
+  },
+  "inexact_rejoin": {
+    "accepted_tip": "foreign-tip-with-no-ancestor-proof",
+    "bound_tip": "bound-tip",
+    "component_revision_changed": true,
+    "rejoin_proven": true,
+    "reproduced": true,
+    "tip_ancestry_proof_present": false
+  },
+  "network_used": false,
+  "repair_validation_fail_open": {
+    "accepted_forbidden_value_outside_declared_domain": true,
+    "accepted_without_typed_schema": true,
+    "reproduced": true
+  },
+  "rt_identity_and_split_collision": {
+    "explicit_dates_with_dormant_train_years": {
+      "test_years": 1,
+      "train_end": "2023-12-31T23:59:59",
+      "train_start": "2017-09-28T04:00:00",
+      "train_years": 4
+    },
+    "reproduced": true,
+    "run_id": "bf9792ad1c35126c",
+    "unbound_inputs": {
+      "base_contract_sha256": [
+        "old",
+        "new"
+      ],
+      "code_revision": [
+        "old",
+        "new"
+      ],
+      "device": [
+        "cpu",
+        "cuda"
+      ],
+      "initial_steps": [
+        1000,
+        20000
+      ]
+    }
+  },
+  "runtime_mutated": false,
+  "schema": "agent_multi.satoshi_iii_128_134_repro.v1",
+  "terminal_reference_gap": {
+    "record_artifact_labels": [
+      "final"
+    ],
+    "reproduced": true,
+    "terminal_hash_present": true,
+    "terminal_retrieval_path_present": false
+  },
+  "warmup_in_interval_score": {
+    "deployment_interval_bars": 1,
+    "intended_next_interval_return": 0.10000000000000009,
+    "reported_return": -0.12,
+    "reproduced": true,
+    "scored_bars": 5
+  }
+}
