@@ -579,3 +579,27 @@ def test_new_process_generation_is_required_evidence(supervisor):
     assert report["rejoin_proven"] is True
     proof = report["observed_lineage"]["omega"]
     assert proof["process_generation"] != [4242, 777]
+
+
+def test_pause_reaps_children_before_the_gpu_check(supervisor,
+                                                   monkeypatch):
+    """Defect found executing the owner-ordered pause: a DEFUNCT child
+    still listed by nvidia-smi made a successful pause report as
+    failed. The pause must reap its own children first."""
+    import app.campaign_supervisor as sup_mod
+    reaped = []
+    monkeypatch.setattr(sup_mod, "_reap_child",
+                        lambda pid: reaped.append(pid))
+
+    class _Probe:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    monkeypatch.setattr(sup_mod.subprocess, "run",
+                        lambda *a, **k: _Probe())
+    worker = supervisor._worker_state("omega")
+    worker["pid"] = 424242
+    report = supervisor.request_pause()
+    assert 424242 in reaped, "children must be reaped before the probe"
+    assert report["paused"] is True

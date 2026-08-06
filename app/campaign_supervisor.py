@@ -3368,6 +3368,16 @@ refresh();setInterval(refresh,5000);
                 else:
                     entry["api_port_down"] = None
                 report["workers"][worker_id] = entry
+            # Defect found while executing the owner-ordered pause:
+            # a stopped worker can linger as a DEFUNCT (zombie) process
+            # that nvidia-smi still lists, and the paused supervisor no
+            # longer ticks, so nothing reaps it. Reap our children here
+            # before the GPU check instead of failing a pause that in
+            # fact succeeded.
+            for entry in report["workers"].values():
+                pid = entry.get("pid")
+                if pid:
+                    _reap_child(int(pid))
             try:
                 probe = subprocess.run(
                     ["nvidia-smi", "--query-compute-apps=pid",
