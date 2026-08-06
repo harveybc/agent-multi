@@ -485,10 +485,13 @@ def run(args) -> int:
             "SELECT model_after_sha256 FROM rt_intervals_v2"
             " WHERE record_id=?", (record_id,)).fetchone()
         if committed:
-            # Exactly-once replay (finding 146): the row and the state
-            # are one transaction, so a committed origin ALWAYS has its
-            # state; restore carried equity and model path from it.
-            if pointer.get("after_sha256") != committed[0]:
+            # Exactly-once replay (finding 146): row and state are one
+            # transaction, so a committed origin is never re-applied.
+            # The state row describes the LAST committed origin, so the
+            # hash cross-check applies to that origin only; earlier
+            # origins are simply skipped.
+            if index == pointer.get("last_origin_index") and \
+                    pointer.get("after_sha256") != committed[0]:
                 raise SystemExit(
                     f"origin {index}: OLAP after-hash {committed[0][:12]}"
                     f" != state {str(pointer.get('after_sha256'))[:12]}"
