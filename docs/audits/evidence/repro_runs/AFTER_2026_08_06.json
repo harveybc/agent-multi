@@ -1,0 +1,91 @@
+{
+ "all_corrected": true,
+ "cases": {
+  "duplicate_seed_empty_identity_promotion": {
+   "detail": {
+    "all_packet_identity_fields_empty": true,
+    "physical_packet_count": 5,
+    "promotion_eligible": null,
+    "reported_seeds": null,
+    "reproduced": false
+   },
+   "probe": "ran",
+   "still_reproduced": false
+  },
+  "incomplete_authority_join": {
+   "exception": "AttributeError: module 'controller_inventory_current' has no attribute '_join_manifest'",
+   "probe": "raised_fail_closed",
+   "still_reproduced": false,
+   "trace_tail": "AttributeError: module 'controller_inventory_current' has no attribute '_join_manifest'"
+  },
+  "incomplete_exact_reuse": {
+   "exception": "RuntimeError: arm N14 seed 101: record matches the execution id but is INCOMPLETE: [\"record schema 'agent_multi.arm_record.v3' != 'agent_multi.arm_record.v4'\", 'missing resolved_config_sha256', 'missing return_trace_sha256', 'missing margin_telemetry', 'missing code_revisions_before', 'missing code_",
+   "probe": "raised_fail_closed",
+   "still_reproduced": false,
+   "trace_tail": "RuntimeError: arm N14 seed 101: record matches the execution id but is INCOMPLETE: [\"record schema 'agent_multi.arm_record.v3' != 'agent_multi.arm_record.v4'\", 'missing resolved_config_sha256', 'missi"
+  },
+  "inexact_rejoin": {
+   "detail": {
+    "accepted_tip": "foreign-tip-with-no-ancestor-proof",
+    "bound_tip": "bound-tip",
+    "component_revision_changed": true,
+    "rejoin_proven": null,
+    "reproduced": false,
+    "tip_ancestry_proof_present": false
+   },
+   "probe": "ran",
+   "still_reproduced": false
+  },
+  "repair_validation_fail_open": {
+   "exception": "ValueError: repair rule 0: a typed mixed_genome_schema is required to validate gene 'preprocessing_mode'; none was provided",
+   "probe": "raised_fail_closed",
+   "still_reproduced": false,
+   "trace_tail": "ValueError: repair rule 0: a typed mixed_genome_schema is required to validate gene 'preprocessing_mode'; none was provided"
+  },
+  "rt_identity_and_split_collision": {
+   "detail": {
+    "explicit_dates_with_dormant_train_years": {
+     "test_years": null,
+     "train_end": "2023-12-31T23:59:59",
+     "train_start": "2017-09-28T04:00:00",
+     "train_years": null
+    },
+    "reproduced": false,
+    "run_id": "1cdad12813810e46",
+    "unbound_inputs": {
+     "base_contract_sha256": [
+      "old",
+      "new"
+     ],
+     "code_revision": [
+      "old",
+      "new"
+     ],
+     "device": [
+      "cpu",
+      "cuda"
+     ],
+     "initial_steps": [
+      1000,
+      20000
+     ]
+    }
+   },
+   "probe": "ran",
+   "still_reproduced": false
+  },
+  "terminal_reference_gap": {
+   "exception": "ValueError: Error: the file /tmp/tmppo4ol9br/terminal_reference_gap/seed101/N14/best_checkpoint.zip wasn't a zip-file",
+   "probe": "raised_fail_closed",
+   "still_reproduced": false,
+   "trace_tail": "ValueError: Error: the file /tmp/tmppo4ol9br/terminal_reference_gap/seed101/N14/best_checkpoint.zip wasn't a zip-file"
+  },
+  "warmup_in_interval_score": {
+   "exception": "AttributeError: module 'tools.rolling_origin_adaptation' has no attribute '_score_interval'",
+   "probe": "raised_fail_closed",
+   "still_reproduced": false,
+   "trace_tail": "AttributeError: module 'tools.rolling_origin_adaptation' has no attribute '_score_interval'. Did you mean: 'score_interval'?"
+  }
+ },
+ "schema": "agent_multi.after_correction_probe.v1"
+}

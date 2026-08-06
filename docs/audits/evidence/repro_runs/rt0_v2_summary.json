@@ -1,0 +1,44 @@
+{
+ "deadline_guard": {
+  "p95_within_budget": true,
+  "rule": "p95 end-to-end latency <= (2/3) * cadence AND >= 20 updates AND zero deadline misses AND zero unreconciled handovers",
+  "satisfied": false,
+  "status": "owner_amended_2026_08_06",
+  "sufficient_updates": false,
+  "updates_observed": 3,
+  "zero_deadline_misses": true
+ },
+ "deadline_misses": 0,
+ "deadline_seconds": 43200,
+ "identity": {
+  "block_days": 28,
+  "block_id": "2024-02-01+28d",
+  "block_start": "2024-02-01",
+  "cadence_bars": 3,
+  "code_revisions": {
+   "agent-multi": "b0ea817b600cd47194ba120e7435199c6d7019f0",
+   "gym-fx": "9a084acf897fca6ed73b0e6a48297369ed6cb25a",
+   "predictor": "14a1077f9c799940bdc24479d68e1402684cb473"
+  },
+  "control_mode": "adaptive",
+  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "device": "cuda",
+  "initial_steps": 2000,
+  "lookback": "1y",
+  "observation_manifest_sha256": "e6703957e9653add49a7adae4b9c80fa5bd81bdb5d8a81ead3d013dedd07c6a1",
+  "phase": "RT0",
+  "resolved_config_sha256": "be363fd66ce8e6ed2761d7bb7390b3522c3231a9bb919c5a11ec1f3c7fabe2ba",
+  "runner_version": "rolling_origin_adaptation.v2",
+  "schema_version": "agent_multi.rt_adaptation.v2",
+  "seed": 101,
+  "update_steps": 500,
+  "warmup_bars": 256
+ },
+ "latency_definition": "bar close -> durable, load-validated, replicated, activation-ready artifact (owner-amended budget)",
+ "note": "RT0 measures runtime feasibility only; profit/risk promotion requires RT1-A paired multi-block evidence with frozen controls",
+ "origins_committed": 3,
+ "run_id": "bb554fd40465f6af",
+ "schema": "agent_multi.rt_adaptation_summary.v2",
+ "update_latency_p50": 5.075514733092859,
+ "update_latency_p95": 26.54265243501868
+}

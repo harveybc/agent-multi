@@ -46,6 +46,8 @@ DATA_SHA256 = ("1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435"
                "ebe440f")
 ETH_BASE = (REPO / "examples/results/"
             "project3_ethusdt_4h_sac_train_val_test_v2/config_out.json")
+OBSERVATION_MANIFEST = (
+    REPO / "docs/work_plan/34_ETH_DATA_OBSERVATION_MANIFEST.md")
 # AUD-F1-20260806-126: the base contract is PINNED. An unpinned base
 # would let the A/B silently change semantics between seeds/hosts.
 ETH_BASE_SHA256 = ("5df24c0d78a89613041406213692af5f180f4af3c220ac69792a"
@@ -91,6 +93,9 @@ def _execution_id(arm: str, seed: int, anchor: Path, *,
         "epoch_timesteps": epoch_timesteps,
         "arm_budgets": {"N14": 14, "EN4_10": [4, 10], "E4": 4},
         "metric_schema": "lexicographic_weekly_v1",
+        "observation_manifest_sha256": (
+            hashlib.sha256(OBSERVATION_MANIFEST.read_bytes()).hexdigest()
+            if OBSERVATION_MANIFEST.exists() else "unavailable"),
         "runner_version": RUNNER_VERSION,
         "lineage": {repo: _git_rev(repo) for repo in
                     ("agent-multi", "gym-fx")},
@@ -215,6 +220,14 @@ def _git_rev(repo: str) -> str:
 def _base_config(out_dir: Path, arm: str, seed: int, *,
                  epoch_timesteps: int) -> dict:
     config = json.loads(ETH_BASE.read_text())
+    # AUD-F1-20260806-142: the dormant year shorthand contradicts the
+    # explicit dates (train_years=4 vs ~6.25 actual years) and must not
+    # survive in the EXECUTABLE decision config.
+    for field in ("train_years", "val_years", "test_years"):
+        config.pop(field, None)
+    config["split_contract_note"] = (
+        "explicit train/validation/test dates govern; year-count"
+        " shorthand removed")
     config.update(SPLITS)
     config["input_data_file"] = DATA_FILE
     config["env_mode"] = "training"
