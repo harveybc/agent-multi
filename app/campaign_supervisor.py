@@ -1234,6 +1234,15 @@ class CampaignSupervisor:
         worker = self._worker_state(worker_id)
         if _pid_matches(worker.get("pid"), worker.get("pid_start_ticks")):
             return
+        blocked = self._launch_blocked_reason()
+        if blocked is not None:
+            # AUD-F1-20260806-123: refuse to start/adopt while a sticky
+            # block holds; an alert alone let a restart adopt the wrong
+            # profile's domain.
+            worker["launch_ready"] = False
+            worker["launch_reason"] = blocked
+            self._alert("worker_launch_blocked", blocked)
+            return
         discovered = _find_doin_process(Path(config["path"]))
         if discovered:
             worker.update({
@@ -1667,6 +1676,12 @@ class CampaignSupervisor:
             "plan_id": self.plan.get("plan_id"),
             "plan_hash": self.plan_hash,
             "phase": state.get("phase"),
+            # AUD-F1-20260806-122/123: pause/resume proof state and any
+            # sticky launch block are first-class status facts.
+            "pause_report": state.get("pause_report"),
+            "resume_report": state.get("resume_report"),
+            "resume_pending": bool(state.get("resume_pending")),
+            "profile_drift_block": state.get("profile_drift_block"),
             "job_index": job_index,
             "job_id": job.get("job_id") if job else None,
             "domain_id": job.get("domain_id") if job else None,
@@ -2932,6 +2947,8 @@ class CampaignSupervisor:
     def tick(self) -> None:
         with self._mutex:
             self.check_profile_drift()
+            if self.state.get("resume_pending"):
+                self.verify_rejoin()
             if self.state.get("phase") == "paused":
                 # AUD-F1-20260805-115: an operator pause is sticky and
                 # unconditional — checked before any validation so a
@@ -3310,11 +3327,21 @@ refresh();setInterval(refresh,5000);
                     entry["api_port_down"] = None
                 report["workers"][worker_id] = entry
             try:
-                gpu_pids = subprocess.run(
+                probe = subprocess.run(
                     ["nvidia-smi", "--query-compute-apps=pid",
                      "--format=csv,noheader"],
                     capture_output=True, text=True, timeout=10,
-                ).stdout.split()
+                )
+                # AUD-F1-20260806-124: a nonzero exit is UNAVAILABLE
+                # evidence, whatever stdout contains. An empty stdout
+                # with exit 0 is genuine "no compute apps"; an empty
+                # stdout with a nonzero exit is a failed probe and must
+                # never read as GPU-clear.
+                if probe.returncode != 0:
+                    raise RuntimeError(
+                        f"nvidia-smi exit {probe.returncode}:"
+                        f" {(probe.stderr or '').strip()[:120]}")
+                gpu_pids = probe.stdout.split()
                 stopped_pids = {
                     str(entry.get("pid"))
                     for entry in report["workers"].values()
@@ -3323,8 +3350,13 @@ refresh();setInterval(refresh,5000);
                 report["gpu_owner_pids_remaining"] = sorted(
                     set(gpu_pids) & stopped_pids
                 )
+                report["gpu_probe"] = {
+                    "returncode": 0,
+                    "compute_app_pids": sorted(gpu_pids),
+                }
             except Exception as exc:
                 report["gpu_owner_pids_remaining"] = f"unavailable: {exc}"
+                report["gpu_probe"] = {"error": str(exc)[:200]}
             workers_gone = all(
                 entry.get("process_gone")
                 and entry.get("api_port_down") in (True, None)
@@ -3384,7 +3416,8 @@ refresh();setInterval(refresh,5000);
                 and self.state.get("phase") != "paused"
                 and prior.get("binding_hash") == binding_hash
             ):
-                return prior            # idempotent repeat
+                # Idempotent repeat: re-verify rather than re-assert.
+                return self.verify_rejoin() or prior
             if self.state.get("phase") != "paused":
                 report["resumed"] = False
                 report["reason"] = (
@@ -3422,52 +3455,210 @@ refresh();setInterval(refresh,5000);
                 self._alert(
                     "resume_refused_drift", json.dumps(drift)[:200])
                 return report
+            # AUD-F1-20260806-122: acceptance is NOT resumption. The
+            # workers must rejoin and then PROVE the bound lineage from
+            # their own reported chain facts before any success claim.
             restored_phase = "starting"
             self.state["phase"] = restored_phase
-            self.state["resume_report"] = None
-            report["resumed"] = True
+            report["resume_accepted"] = True
+            report["rejoin_proven"] = False
+            report["resumed"] = False       # until proof lands
             report["binding_hash"] = binding_hash
             report["restored_phase"] = restored_phase
             report["bound_domain"] = stored.get("domain_id")
             report["bound_genesis"] = stored.get("genesis_hash")
+            report["bound_population_fingerprint"] = stored.get(
+                "population_fingerprint")
+            report["pending_reason"] = (
+                "workers must rejoin and report the bound domain,"
+                " genesis and population fingerprint before this"
+                " resume may be called successful")
+            self.state["resume_pending"] = {
+                "binding_hash": binding_hash,
+                "accepted_at": _utc_now(),
+                "binding": stored,
+            }
             self.state["resume_report"] = report
             self._save_state()
             self.history.event(
                 node_id=self.node_id,
                 job_id=stored.get("job_id"),
-                event="operator_resume",
+                event="operator_resume_accepted",
                 detail={"binding_hash": binding_hash,
                         "domain_id": stored.get("domain_id"),
                         "genesis_hash": stored.get("genesis_hash")},
             )
             return report
 
+    def verify_rejoin(self) -> dict[str, Any] | None:
+        """Prove (or refute) that resumed workers rejoined the bound
+        chain (AUD-F1-20260806-122).
+
+        Called from the tick loop while a resume is pending. Evidence
+        is the workers' OWN reported lineage — domain, genesis block,
+        generation-zero population fingerprint — compared against the
+        identity bound at pause time. A contradiction returns the
+        supervisor to the paused state rather than continuing on a
+        foreign chain; missing evidence keeps the resume PENDING and is
+        never read as success.
+        """
+        pending = self.state.get("resume_pending")
+        if not pending:
+            return None
+        binding = pending.get("binding") or {}
+        report = self.state.get("resume_report") or {}
+        observed: dict[str, Any] = {}
+        contradictions: list[str] = []
+        missing: list[str] = []
+        for worker_id in self._local_worker_ids():
+            worker = self._worker_state(worker_id)
+            evidence = worker.get("bootstrap_evidence") or {}
+            shared = worker.get("shared_population") or {}
+            fact = {
+                "domain_id": (worker.get("shared_population") or {}).get(
+                    "domain_id") or worker.get("domain_id"),
+                "genesis_hash": evidence.get("genesis_hash"),
+                "population_fingerprint": evidence.get(
+                    "population_fingerprint"),
+                "tip_hash": worker.get("tip_hash"),
+                "chain_height": worker.get("chain_height"),
+                "generation": shared.get("generation"),
+            }
+            observed[worker_id] = fact
+            if worker.get("status") != "running":
+                missing.append(f"{worker_id} is not running")
+                continue
+            for key in ("genesis_hash", "population_fingerprint"):
+                bound_value = binding.get(key)
+                seen = fact.get(key)
+                if not bound_value:
+                    continue            # nothing bound to compare
+                if not seen:
+                    missing.append(f"{worker_id} has no {key} yet")
+                elif str(seen) != str(bound_value):
+                    contradictions.append(
+                        f"{worker_id} {key}={seen} != bound"
+                        f" {bound_value}")
+            bound_domain = binding.get("domain_id")
+            if bound_domain and fact.get("domain_id") and str(
+                    fact["domain_id"]) != str(bound_domain):
+                contradictions.append(
+                    f"{worker_id} domain={fact['domain_id']} != bound"
+                    f" {bound_domain}")
+
+        if contradictions:
+            self.state["phase"] = "paused"
+            self.state.pop("resume_pending", None)
+            report.update({
+                "resumed": False,
+                "rejoin_proven": False,
+                "rejoin_contradictions": contradictions,
+                "observed_lineage": observed,
+            })
+            self.state["resume_report"] = report
+            self._alert("resume_lineage_mismatch",
+                        "; ".join(contradictions)[:300])
+            self.history.event(
+                node_id=self.node_id,
+                job_id=binding.get("job_id"),
+                event="operator_resume_refuted",
+                detail={"contradictions": contradictions},
+            )
+            self._save_state()
+            return report
+        if missing:
+            report["rejoin_pending_reason"] = "; ".join(missing)[:300]
+            report["observed_lineage"] = observed
+            self.state["resume_report"] = report
+            self._save_state()
+            return report
+
+        report.update({
+            "resumed": True,
+            "rejoin_proven": True,
+            "proven_at": _utc_now(),
+            "observed_lineage": observed,
+            "rejoin_proof": {
+                "domain_id": binding.get("domain_id"),
+                "genesis_hash": binding.get("genesis_hash"),
+                "population_fingerprint": binding.get(
+                    "population_fingerprint"),
+                "worker_tips": {
+                    worker_id: fact.get("tip_hash")
+                    for worker_id, fact in observed.items()
+                },
+            },
+        })
+        report.pop("rejoin_pending_reason", None)
+        self.state["resume_report"] = report
+        self.state.pop("resume_pending", None)
+        self._clear_alert("resume_lineage_mismatch")
+        self.history.event(
+            node_id=self.node_id,
+            job_id=binding.get("job_id"),
+            event="operator_resume_proven",
+            detail=report["rejoin_proof"],
+        )
+        self._save_state()
+        return report
+
     def check_profile_drift(self) -> None:
-        """AUD-F1-20260805-119: compare the systemd ExecStart profile
-        with the loaded one every tick; drift is a high-priority alert."""
+        """AUD-F1-20260805-119 / -123: compare the systemd ExecStart
+        profile with the loaded one every tick. Drift is a STICKY
+        LAUNCH BLOCK, not merely an alert: while it holds, no worker
+        may be started or restarted, because a restart would adopt the
+        other profile's domain.
+        """
         try:
-            shown = subprocess.run(
+            probe = subprocess.run(
                 ["systemctl", "--user", "show",
-                 "doin-campaign-supervisor.service", "-p", "ExecStart"],
+                 "doin-campaign-supervisor.service",
+                 "-p", "ExecStart", "-p", "MainPID"],
                 capture_output=True, text=True, timeout=10,
-            ).stdout
+            )
         except Exception:
             return                      # no systemd here (tests, CI)
-        if "--profile" not in shown:
+        if probe.returncode != 0 or "--profile" not in probe.stdout:
             return
-        configured = shown.split("--profile", 1)[1].split()[0].strip(
-            " ;\n\"'")
+        # The comparison is only meaningful for the process the unit
+        # actually manages. A manually launched supervisor (tests, ad
+        # hoc runs) must not be blocked by the unit's own ExecStart.
+        main_pid = ""
+        for line in probe.stdout.splitlines():
+            if line.startswith("MainPID="):
+                main_pid = line.split("=", 1)[1].strip()
+        if main_pid != str(os.getpid()):
+            return
+        configured = probe.stdout.split("--profile", 1)[1].split()[0]
+        configured = configured.strip(" ;\n\"'")
         try:
             configured_real = str(Path(configured).resolve())
         except OSError:
             configured_real = configured
         if configured_real and configured_real != str(self.profile_path):
-            self._alert(
-                "profile_drift",
+            detail = (
                 f"systemd ExecStart profile {configured_real} !="
-                f" loaded {self.profile_path}; restart is BLOCKED"
-                " until reconciled",
-            )
+                f" loaded {self.profile_path}; worker launch is BLOCKED"
+                " until reconciled")
+            self.state["profile_drift_block"] = {
+                "configured": configured_real,
+                "loaded": str(self.profile_path),
+                "since": self.state.get(
+                    "profile_drift_block", {}).get("since") or _utc_now(),
+            }
+            self._alert("profile_drift", detail)
+        elif self.state.get("profile_drift_block"):
+            self.state.pop("profile_drift_block", None)
+            self._clear_alert("profile_drift")
+
+    def _launch_blocked_reason(self) -> str | None:
+        """Sticky reasons that forbid starting/restarting any worker."""
+        block = self.state.get("profile_drift_block")
+        if block:
+            return (
+                f"profile drift: systemd runs {block.get('configured')}"
+                f" while this supervisor loaded {block.get('loaded')}")
+        return None
 
     def _make_handler(self):
         supervisor = self
@@ -3496,8 +3687,27 @@ refresh();setInterval(refresh,5000);
                 else:
                     self._json({"error": "not found"}, status=404)
 
+            def _mutation_allowed(self) -> bool:
+                """AUD-F1-20260806-122: fleet mutation is LOOPBACK ONLY.
+
+                A remote operator reaches it through SSH to the host's
+                own loopback, so a network peer can never pause, resume
+                or otherwise mutate this campaign.
+                """
+                client = (self.client_address or ("",))[0]
+                if client in ("127.0.0.1", "::1", "::ffff:127.0.0.1"):
+                    return True
+                self._json({
+                    "error": "mutation endpoints are loopback-only",
+                    "client": client,
+                }, status=403)
+                return False
+
             def do_POST(self) -> None:  # noqa: N802 - stdlib callback name
                 route = self.path.split("?", 1)[0]
+                if route in ("/api/pause", "/api/resume") and not \
+                        self._mutation_allowed():
+                    return
                 if route == "/api/pause":
                     report = supervisor.request_pause()
                     self._json(

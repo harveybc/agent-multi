@@ -208,21 +208,111 @@ def test_resume_refuses_profile_drift(supervisor):
     assert "profile_sha256" in report["drift"]
 
 
-def test_resume_roundtrip_and_idempotency(supervisor):
+def test_resume_acceptance_is_not_resumption(supervisor):
+    """AUD-F1-20260806-122: acceptance must not claim success before the
+    workers prove they rejoined the bound chain."""
     pause = supervisor.request_pause()
     assert pause["paused"] is True
     assert pause["pause_binding"]["plan_hash"] == supervisor.plan_hash
     report = supervisor.request_resume(pause["binding_hash"])
-    assert report["resumed"] is True
+    assert report["resume_accepted"] is True
+    assert report["resumed"] is False
+    assert report["rejoin_proven"] is False
     assert supervisor.state["phase"] == "starting"
-    again = supervisor.request_resume(pause["binding_hash"])
-    assert again["resumed"] is True    # idempotent repeat, no restart
-    events = [
-        row for row in supervisor.history.campaigns()
-    ]
+    assert supervisor.state.get("resume_pending")
     persisted = json.loads(
         (Path(supervisor.state_dir) / "state.json").read_text())
-    assert persisted["resume_report"]["resumed"] is True
+    assert persisted["resume_report"]["resumed"] is False
+
+
+def test_rejoin_proof_requires_matching_lineage(supervisor):
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    binding = supervisor.state["resume_pending"]["binding"]
+    binding["genesis_hash"] = "genesis-abc"
+    binding["population_fingerprint"] = "popfp-xyz"
+    binding["domain_id"] = "pause-test-domain"
+    worker = supervisor._worker_state("omega")
+    worker["status"] = "running"
+    worker["bootstrap_evidence"] = {
+        "genesis_hash": "genesis-abc",
+        "population_fingerprint": "popfp-xyz"}
+    worker["shared_population"] = {"domain_id": "pause-test-domain",
+                                   "generation": 3}
+    worker["tip_hash"] = "tip-1"
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is True
+    assert report["resumed"] is True
+    assert report["rejoin_proof"]["genesis_hash"] == "genesis-abc"
+    assert not supervisor.state.get("resume_pending")
+
+
+def test_rejoin_on_foreign_chain_is_refuted_and_repaused(supervisor):
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    binding = supervisor.state["resume_pending"]["binding"]
+    binding["genesis_hash"] = "genesis-abc"
+    binding["population_fingerprint"] = "popfp-xyz"
+    worker = supervisor._worker_state("omega")
+    worker["status"] = "running"
+    worker["bootstrap_evidence"] = {
+        "genesis_hash": "genesis-OTHER",       # foreign chain
+        "population_fingerprint": "popfp-xyz"}
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is False
+    assert report["resumed"] is False
+    assert any("genesis_hash" in c
+               for c in report["rejoin_contradictions"])
+    assert supervisor.state["phase"] == "paused"
+    codes = [a.get("code") for a in supervisor.state.get("alerts", [])]
+    assert "resume_lineage_mismatch" in codes
+
+
+def test_missing_lineage_keeps_resume_pending(supervisor):
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    binding = supervisor.state["resume_pending"]["binding"]
+    binding["genesis_hash"] = "genesis-abc"
+    worker = supervisor._worker_state("omega")
+    worker["status"] = "running"
+    worker["bootstrap_evidence"] = {}        # no evidence yet
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is not True
+    assert report["resumed"] is not True
+    assert "rejoin_pending_reason" in report
+    assert supervisor.state.get("resume_pending")
+
+
+def test_profile_drift_blocks_worker_launch(supervisor):
+    supervisor.state["profile_drift_block"] = {
+        "configured": "/other/profile.json",
+        "loaded": str(supervisor.profile_path), "since": "now"}
+    job = supervisor.plan["jobs"][0]
+    supervisor._start_or_adopt_worker(job, "omega", {"path": "/nope"})
+    worker = supervisor._worker_state("omega")
+    assert worker.get("launch_ready") is False
+    assert "profile drift" in worker.get("launch_reason", "")
+    assert worker.get("pid") in (None, 0)
+    codes = [a.get("code") for a in supervisor.state.get("alerts", [])]
+    assert "worker_launch_blocked" in codes
+
+
+def test_gpu_probe_nonzero_exit_fails_pause(supervisor, monkeypatch):
+    """AUD-F1-20260806-124: nonzero exit with EMPTY stdout must not read
+    as GPU-clear."""
+    import app.campaign_supervisor as sup_mod
+
+    class _Probe:
+        returncode = 9
+        stdout = ""
+        stderr = "NVML init failed"
+
+    monkeypatch.setattr(sup_mod.subprocess, "run",
+                        lambda *a, **k: _Probe())
+    report = supervisor.request_pause()
+    assert report["paused"] is False
+    assert "gpu verification unavailable" in report["failure_reason"]
+    assert "exit 9" in report["gpu_probe"]["error"]
 
 
 def test_resume_refused_over_unverified_pause(supervisor, monkeypatch):
@@ -238,3 +328,39 @@ def test_resume_refused_over_unverified_pause(supervisor, monkeypatch):
         assert "unverified" in report["reason"]
     finally:
         os.killpg(process.pid, signal.SIGKILL)
+
+
+def test_drift_check_ignores_unmanaged_process(supervisor, monkeypatch):
+    """A manually launched supervisor must not be blocked by the systemd
+    unit's ExecStart; only the unit's own MainPID is compared."""
+    import app.campaign_supervisor as sup_mod
+
+    class _Probe:
+        returncode = 0
+        stdout = ("ExecStart={ path=/x ; argv[]=/x -m app.campaign_supervisor"
+                  " --profile /other/profile.json ; }\nMainPID=999999\n")
+        stderr = ""
+
+    monkeypatch.setattr(sup_mod.subprocess, "run",
+                        lambda *a, **k: _Probe())
+    supervisor.check_profile_drift()
+    assert not supervisor.state.get("profile_drift_block")
+
+
+def test_drift_block_set_for_managed_process(supervisor, monkeypatch):
+    import os
+    import app.campaign_supervisor as sup_mod
+
+    class _Probe:
+        returncode = 0
+        stdout = ("ExecStart={ argv[]=/x -m app.campaign_supervisor"
+                  " --profile /other/profile.json ; }\n"
+                  f"MainPID={os.getpid()}\n")
+        stderr = ""
+
+    monkeypatch.setattr(sup_mod.subprocess, "run",
+                        lambda *a, **k: _Probe())
+    supervisor.check_profile_drift()
+    block = supervisor.state.get("profile_drift_block")
+    assert block and block["configured"] == "/other/profile.json"
+    assert supervisor._launch_blocked_reason() is not None

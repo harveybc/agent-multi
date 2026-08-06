@@ -13,16 +13,28 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
-import urllib.request
 from pathlib import Path
 
+# AUD-F1-20260806-122: supervisor mutation endpoints are loopback-only.
+# The fleet command therefore reaches each node through SSH and posts
+# to that host's OWN loopback; no network peer can mutate a campaign.
+SSH_HOST = {"omega": None, "dragon": "dragon", "gamma": "gamma"}
 
-def _post_pause(url: str, timeout: float) -> dict:
-    request = urllib.request.Request(
-        url.rstrip("/") + "/api/pause", method="POST", data=b"{}")
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read())
+
+def _post_pause(node_id: str, port: int, timeout: float) -> dict:
+    curl = ["curl", "-s", "--max-time", str(int(timeout)), "-X", "POST",
+            f"http://127.0.0.1:{port}/api/pause"]
+    host = SSH_HOST.get(node_id, node_id)
+    command = curl if host is None else [
+        "ssh", "-o", "BatchMode=yes", host, " ".join(curl)]
+    done = subprocess.run(command, capture_output=True, text=True,
+                          timeout=timeout + 30)
+    if not done.stdout.strip():
+        raise RuntimeError(
+            f"empty response ({done.stderr.strip()[:120]})")
+    return json.loads(done.stdout)
 
 
 def main() -> int:
@@ -30,6 +42,7 @@ def main() -> int:
     parser.add_argument("--profile", type=Path, required=True,
                         help="any node's supervisor profile (plan source)")
     parser.add_argument("--timeout", type=float, default=120.0)
+    parser.add_argument("--port", type=int, default=8795)
     args = parser.parse_args()
 
     profile = json.loads(args.profile.read_text())
@@ -42,9 +55,8 @@ def main() -> int:
     summary = {}
     for participant in plan["participants"]:
         node_id = participant["node_id"]
-        url = participant["supervisor_url"]
         try:
-            report = _post_pause(url, args.timeout)
+            report = _post_pause(node_id, args.port, args.timeout)
         except Exception as exc:
             summary[node_id] = {
                 "paused": False,
