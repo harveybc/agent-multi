@@ -110,9 +110,18 @@ def _raw(summary: dict) -> dict:
 
 def _splits_raw(result: dict) -> dict:
     splits = result.get("splits") or {}
-    for name in splits:
-        assert name in ALLOWED_SPLITS or name == "train_tail", (
-            f"forbidden split {name!r} in result")
+    for name, summary in splits.items():
+        if name in ALLOWED_SPLITS or name == "train_tail":
+            continue
+        if name == "test" and isinstance(summary, dict):
+            # A pure skip marker proves the split was DISABLED; any
+            # metric content is a contract violation.
+            assert summary.get("evaluation_skipped") is True, (
+                "test split was evaluated — contract violated")
+            assert not any(k in summary for k in RAW_METRICS), (
+                "test split carries metric data — contract violated")
+            continue
+        raise AssertionError(f"forbidden split {name!r} in result")
     return {name: _raw(summary) for name, summary in splits.items()
             if isinstance(summary, dict) and name in ALLOWED_SPLITS}
 
