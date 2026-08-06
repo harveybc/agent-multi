@@ -872,6 +872,42 @@ chain and all four GPUs are working, but the runtime predates activity patience
 and all four current candidates remain zero-trade after 1,002-1,353 epochs.
 Continuing or pausing that preserved run is an owner decision.
 
+### 1ab. Corrections 143-150 acceptance audit, 2026-08-06
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_143_150_CORRECTIONS_2026_08_06.md`
+- `../evidence/SATOSHI_III_143_150_ACCEPTANCE_REPRO_2026_08_06.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_143_158_CORRECTION_ORDER_2026_08_06.md`
+
+Append-only dispositions: 143 and 146 are independently verified pending owner
+closure. Corrections 144, 145 and 147-150 remain open. RT1-A and smoke remain
+blocked.
+
+| Prior finding | Appended state | Basis / remaining work |
+| --- | --- | --- |
+| 143 | independently_verified_pending_owner_closure | typed probe outcomes and deliberate stale-harness fixtures reproduced |
+| 144 | open | real load/cross-binding fixed; 151 proves replica authority remains self-asserted |
+| 145 | open | warm-up/exact-h fixed; 152 disproves close quantity, costs and flat proof |
+| 146 | independently_verified_pending_owner_closure | atomic SQLite row/state and post-artifact replay reproduced |
+| 147 | open | 153 resets uninterrupted succession; 158 accepts an unproven anchor |
+| 148 | open | 154 drops persisted latency history after restart; handover facts inherit 152 |
+| 149 | open | 155 proves untracked executable source is reported clean |
+| 150 | open | timeout fixed; 156 accepts same-second evidence with unchanged PID generation |
+
+New findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260806-151 | S3 | open, blocks artifact promotion | Replica authority is a caller-supplied string over a local copy | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-152 | S2 | open, blocks RT0/RT1 metrics | Handover treats direction as units, omits costs and hardcodes flat without execution | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-153 | S2 | open, blocks adaptation | Consecutive origins in one process do not inherit the preceding adapted model | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-154 | S3 | open, blocks cadence deadline | Restarted summary computes p95 from only the new process session | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-155 | S3 | open, blocks exact experiment identity | Untracked executable source is excluded from cleanliness/digest | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-156 | S3 | open, blocks unattended rejoin | Same-second observation with unchanged PID generation proves rejoin | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-157 | S2 | open, blocks RT1-A comparison | Every declared RT1-A cadence omits its final complete block interval | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-158 | S2 | open, blocks performance RT | Bare compatible SAC ZIP can claim mature champion-anchor status | General Satoshi III implements after R3; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

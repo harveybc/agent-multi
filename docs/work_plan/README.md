@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; ETH anchored `full-v2` coordinated while the easy/normal decision harness is corrected; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
-Plan version: 1.30.0
+Status: E0-E4 complete; ETH anchored `full-v2` preserved pending zero-activity disposition; RT1-A materialized but blocked on exact succession/handover evidence; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
+Plan version: 1.31.0
 Date: 2026-08-06
 Primary implementation repository: `agent-multi`
 
@@ -197,8 +197,8 @@ adding value.
 3. Keep the current anchored ETH `full-v2` domain on one chain while correcting
    the decision harness, exact-chain interruption controls and bounded
    activity-ineligible patience without mutating the active evaluation semantics.
-4. After findings 113, 122-132 and 135-150 pass independent verification,
-   execute the
+4. After the N/E-specific blockers pass independent verification (113,
+   122-139, 142-144, 150-151 and 156), execute the
    four-seed equal-compute `N14` versus `EN4_10` calibration,
    retaining `E4` as diagnostic. Use it to admit and bound curriculum genes; do
    not treat this one schedule comparison as the mature-stack final choice.
@@ -214,7 +214,9 @@ adding value.
    it cannot trade or mutate account state; every scored interval has exactly
    its declared number of bars; model handover closes/reconciles protected
    exposure with explicit costs and carries the post-close balance. RT1-A is
-   currently materialized but explicitly not executable after the v2 audit.
+   currently materialized but explicitly not executable after the v3 audit.
+   Findings 145-149, 152-155 and 157-158 must pass first; they do not delay
+   the preceding component domains unless they expose a shared contract defect.
    Finalize RT2 only after
    all admitted interface-changing lines and measured numeric bounds, before
    joint integration.
