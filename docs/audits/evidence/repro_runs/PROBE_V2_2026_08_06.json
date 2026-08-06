@@ -1,0 +1,57 @@
+{
+ "all_pass": true,
+ "cases": {
+  "136_missing_artifact_is_rejected": {
+   "observed": "[\"artifact best_checkpoint failed to load: ValueError: Error: the file /tmp/tmpndv90avy/terminal.zip wasn't a zip-file\", 'artifact best_checkpoint replica authority None is not a SECOND host/storage a",
+   "outcome": "postcondition_pass",
+   "postcondition": "a nonexistent artifact path is REJECTED"
+  },
+  "136_unloadable_bytes_are_rejected": {
+   "observed": "[\"artifact best_checkpoint failed to load: ValueError: Error: the file /tmp/tmpndv90avy/terminal.zip wasn't a zip-file\", 'artifact best_checkpoint replica authority None is not a SECOND host/storage a",
+   "outcome": "postcondition_pass",
+   "postcondition": "a non-ZIP artifact with a matching hash is REJECTED"
+  },
+  "138_forbidden_value_outside_domain_refused": {
+   "exception": "ValueError: repair rule 0: forbidden value 'nonexistent' is not a declared choice of 'preprocessing_mode' (['none', 'rolling_zscore']); an inert rule is a silent failure",
+   "outcome": "expected_refusal"
+  },
+  "138_missing_typed_schema_refused": {
+   "exception": "ValueError: repair rule 0: a typed mixed_genome_schema is required to validate gene 'preprocessing_mode'; none was provided",
+   "outcome": "expected_refusal"
+  },
+  "139_stale_heartbeat_denied_authority": {
+   "observed": "{'evidence_host': 'dragon', 'evidence_paths': {'heartbeat': '~/.local/state/lts/mt5-model-runner-heartbeat.json', 'manifest_root': '~/.local/share/prediction-provider/live'}, 'evidence_time': '2026-08",
+   "outcome": "postcondition_pass",
+   "postcondition": "stale heartbeat cannot be authoritative and says why"
+  },
+  "140_warmup_excluded_from_score": {
+   "observed": "{'interval_return': 0.10000000000000009, 'equity_before': 88.0, 'equity_at_interval_end': 96.80000000000001, 'equity_after': 96.80000000000001, 'handover': {'open_position_units': 0.0, 'close_price': ",
+   "outcome": "postcondition_pass",
+   "postcondition": "interval return is +10% and exactly one bar is scored"
+  },
+  "142_decision_config_has_no_year_shorthand": {
+   "observed": "{'env_plugin': 'gym_fx_env', 'env_mode': 'training', 'input_data_file': '/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv', 'price_column': 'C",
+   "outcome": "postcondition_pass",
+   "postcondition": "year shorthand absent while explicit dates remain"
+  },
+  "142_rt_config_has_no_year_shorthand": {
+   "observed": "{'env_plugin': 'gym_fx_env', 'env_mode': 'training', 'input_data_file': '/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv', 'price_column': 'C",
+   "outcome": "postcondition_pass",
+   "postcondition": "train/val/test_years absent from the executable RT config"
+  },
+  "143_old_harness_would_have_lied": {
+   "conclusion": "the retired harness converts a stale symbol and a bad fixture into passes; it is retired from any acceptance role",
+   "malformed_fixture": "raised_fail_closed -> counted as CORRECTED",
+   "outcome": "postcondition_pass",
+   "renamed_symbol": "raised_fail_closed -> counted as CORRECTED"
+  },
+  "145_interval_deltas_and_flat_handover": {
+   "observed": "{'interval_return': 0.008910891089108919, 'equity_before': 101.0, 'equity_at_interval_end': 102.0, 'equity_after': 101.9, 'handover': {'open_position_units': 2.0, 'close_price': 50.0, 'closing_cost': ",
+   "outcome": "postcondition_pass",
+   "postcondition": "exactly h bars, delta activity, explicit charged flat close"
+  }
+ },
+ "failures": {},
+ "network_used": false,
+ "schema": "agent_multi.correction_probe.v2"
+}

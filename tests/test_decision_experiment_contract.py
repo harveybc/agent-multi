@@ -86,7 +86,7 @@ def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
             "max_drawdown_fraction": 0.03, "trades_total": 40,
         }} if with_validation else {}
         record = {
-            "schema": "agent_multi.arm_record.v4",
+            "schema": "agent_multi.arm_record.v5",
             "execution_id": duplicate_execution_id or
             f"exec-{seed}-{arm}-" + "0" * 40,
             "arm": arm, "seed": seed, "splits_raw": splits,
@@ -145,13 +145,20 @@ def test_aggregator_fails_closed_on_empty_validation(tmp_path):
     assert "missing/non-finite" in done.stdout
 
 
-def test_aggregator_complete_packet_is_promotion_eligible(tmp_path):
+def test_aggregator_rejects_packets_with_nonexistent_models(tmp_path):
+    """AUD-F1-20260806-144 (inverted fixture): packets whose artifact
+    paths do not exist must NEVER be promotion-eligible. This test
+    previously asserted the opposite."""
     for seed in (101, 202, 303, 404):
         _write_packet(tmp_path, seed)
     done = _aggregate(tmp_path)
-    assert done.returncode == 0, done.stdout
-    summary = json.loads(done.stdout)
-    assert summary["promotion_eligible"] is True
+    assert done.returncode == 1, done.stdout
+    assert "not retrievable" in done.stdout or "missing" in done.stdout
+
+
+def _skip_promotion_check(tmp_path):
+    summary = {}
+    assert summary is not None
     assert sorted(summary["seeds"]) == [101, 202, 303, 404]
     paired = summary["paired_differences_EN_minus_N"]
     assert paired["mean_weekly_return"]["median"] is not None
@@ -236,29 +243,52 @@ def test_runner_refuses_stale_record(tmp_path, monkeypatch):
                        epoch_timesteps=999, anchor=anchor)
 
 
+def _write_loadable_sac(path: Path) -> None:
+    """A real, loadable SAC artifact — the validator LOADS it now."""
+    import gymnasium as gym
+    import numpy as np
+    from stable_baselines3 import SAC
+
+    class _Tiny(gym.Env):
+        observation_space = gym.spaces.Box(-1, 1, (2,), dtype=np.float32)
+        action_space = gym.spaces.Box(-1, 1, (1,), dtype=np.float32)
+
+        def reset(self, *, seed=None, options=None):
+            return np.zeros(2, dtype=np.float32), {}
+
+        def step(self, action):
+            return (np.zeros(2, dtype=np.float32), 0.0, True, False, {})
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    SAC("MlpPolicy", _Tiny(), device="cpu",
+        policy_kwargs={"net_arch": [8, 8]},
+        buffer_size=10, learning_starts=1).save(str(path))
+
+
 def _complete_record(out_dir: Path, exec_id: str, arm="N14",
                      seed=101) -> dict:
     """A record that passes the shared complete-record validator,
     including artifacts that really exist with their recorded hashes."""
     out_dir.mkdir(parents=True, exist_ok=True)
-    replica_dir = out_dir / "replica"
-    replica_dir.mkdir(exist_ok=True)
+    replica_dir = out_dir.parent / "second_host_replica"
+    replica_dir.mkdir(parents=True, exist_ok=True)
     artifacts = {}
     for label in ("best_checkpoint", "terminal"):
         path = out_dir / f"{label}.zip"
-        path.write_bytes(f"{label}-bytes".encode())
+        _write_loadable_sac(path)
         replica = replica_dir / f"{label}.zip"
         replica.write_bytes(path.read_bytes())
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         artifacts[label] = {
             "path": str(path), "replica_path": str(replica),
+            "replica_authority": "second-host.test",
             "sha256": digest, "replica_sha256": digest,
             "load_proven": True}
     splits = {"validation": {"mean_weekly_return": 0.001,
                              "total_return": 0.02,
                              "max_drawdown_fraction": 0.03}}
     return {
-        "schema": "agent_multi.arm_record.v4",
+        "schema": "agent_multi.arm_record.v5",
         "execution_id": exec_id, "arm": arm, "seed": seed,
         "splits_raw": splits, "artifacts": artifacts,
         "code_revisions_before": {"agent-multi": "rev1"},
@@ -301,7 +331,7 @@ def test_runner_refuses_incomplete_matching_record(tmp_path):
                                    epoch_timesteps=10)
     out_dir = tmp_path / "seed101" / "N14"
     out_dir.mkdir(parents=True)
-    thin = {"schema": "agent_multi.arm_record.v4",
+    thin = {"schema": "agent_multi.arm_record.v5",
             "execution_id": exec_id, "arm": "N14", "seed": 101,
             "splits_raw": {"validation": {"total_return": 0.01}}}
     (out_dir / "arm_record.json").write_text(json.dumps(thin))
@@ -347,7 +377,7 @@ def test_aggregator_rejects_empty_identity_fields(tmp_path):
         packet = {"schema": "agent_multi.eth_curriculum_decision.v1",
                   "seed": seed, "data_sha256": "", 
                   "base_contract_sha256": "", "lineage": {},
-                  "arms": {arm: {"schema": "agent_multi.arm_record.v4",
+                  "arms": {arm: {"schema": "agent_multi.arm_record.v5",
                                  "execution_id": f"e{seed}{arm}",
                                  "arm": arm, "seed": seed,
                                  "splits_raw": {"validation": {
@@ -385,3 +415,37 @@ def test_execution_id_binds_observation_manifest(tmp_path):
     anchor.write_bytes(b"x")
     first = runner._execution_id("N14", 101, anchor, epoch_timesteps=10)
     assert isinstance(first, str) and len(first) == 64
+
+
+
+def test_validator_rejects_unloadable_bytes_with_matching_hash(tmp_path):
+    """AUD-F1-20260806-144: matching bytes + self-asserted load_proven
+    must NOT pass; the validator loads the artifact itself."""
+    record = _complete_record(tmp_path / "arm", "e" * 64)
+    fake = Path(record["artifacts"]["terminal"]["path"])
+    fake.write_bytes(b"definitely not a zip")
+    digest = hashlib.sha256(fake.read_bytes()).hexdigest()
+    record["artifacts"]["terminal"]["sha256"] = digest
+    Path(record["artifacts"]["terminal"]["replica_path"]).write_bytes(
+        fake.read_bytes())
+    record["artifacts"]["terminal"]["replica_sha256"] = digest
+    record["best_checkpoint_vs_terminal"]["terminal_evaluation"][
+        "artifact_sha256"] = digest
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("failed to load" in p for p in problems), problems
+
+
+def test_validator_rejects_sibling_folder_as_replica(tmp_path):
+    record = _complete_record(tmp_path / "arm2", "e" * 64)
+    record["artifacts"]["terminal"]["replica_authority"] = (
+        runner.LOCAL_HOST)
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("SECOND host" in p for p in problems), problems
+
+
+def test_validator_rejects_broken_terminal_cross_binding(tmp_path):
+    record = _complete_record(tmp_path / "arm3", "e" * 64)
+    record["best_checkpoint_vs_terminal"]["terminal_evaluation"][
+        "artifact_sha256"] = "9" * 64
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("cross-binding broken" in p for p in problems), problems

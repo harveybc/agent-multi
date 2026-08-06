@@ -164,6 +164,33 @@ def _duration_statistics(samples: list[float]) -> dict[str, Any]:
     }
 
 
+def _observed_after(observed_at: str, accepted_at: str) -> bool:
+    """True when a worker observation is at least as new as the resume
+    acceptance (AUD-F1-20260806-150).
+
+    Timestamps are second-granular, so equality within the acceptance
+    second counts as fresh; a cached pre-pause observation is orders of
+    magnitude older and is always rejected. Anything unparseable is
+    treated as NOT fresh (fail closed).
+    """
+    from datetime import datetime as _dt
+    try:
+        return _dt.fromisoformat(observed_at) >= _dt.fromisoformat(
+            accepted_at)
+    except (TypeError, ValueError):
+        return False
+
+
+def _iso_plus(timestamp: str, seconds: float) -> str:
+    """ISO timestamp shifted forward, used for bounded rejoin windows."""
+    from datetime import datetime as _dt, timedelta as _td
+    try:
+        base = _dt.fromisoformat(timestamp)
+    except ValueError:
+        base = _dt.now(timezone.utc)
+    return (base + _td(seconds=float(seconds))).isoformat()
+
+
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -3518,11 +3545,22 @@ refresh();setInterval(refresh,5000);
                 "workers must rejoin and report the bound domain,"
                 " genesis and population fingerprint before this"
                 " resume may be called successful")
+            accepted_at = _utc_now()
+            # AUD-F1-20260806-150: a pending rejoin is BOUNDED. Every
+            # worker observation must be newer than this instant, and
+            # the pending state expires into a stable refusal.
+            deadline_seconds = float(self.profile.get(
+                "rejoin_deadline_seconds", 900.0))
             self.state["resume_pending"] = {
                 "binding_hash": binding_hash,
-                "accepted_at": _utc_now(),
+                "accepted_at": accepted_at,
+                "deadline_seconds": deadline_seconds,
+                "deadline_at": _iso_plus(accepted_at, deadline_seconds),
                 "binding": stored,
             }
+            report["accepted_at"] = accepted_at
+            report["rejoin_deadline_at"] = self.state[
+                "resume_pending"]["deadline_at"]
             self.state["resume_report"] = report
             self._save_state()
             self.history.event(
@@ -3617,6 +3655,9 @@ refresh();setInterval(refresh,5000);
         observed: dict[str, Any] = {}
         contradictions: list[str] = []
         missing: list[str] = []
+        accepted_at = str(pending.get("accepted_at") or "")
+        deadline_at = str(pending.get("deadline_at") or "")
+        expired = bool(deadline_at) and _utc_now() > deadline_at
         for worker_id in self._local_worker_ids():
             worker = self._worker_state(worker_id)
             evidence = worker.get("bootstrap_evidence") or {}
@@ -3634,6 +3675,22 @@ refresh();setInterval(refresh,5000);
             observed[worker_id] = fact
             if worker.get("status") != "running":
                 missing.append(f"{worker_id} is not running")
+                continue
+            # AUD-F1-20260806-150: a cached pre-pause observation must
+            # never satisfy the proof; it has to be OBSERVED after the
+            # resume was accepted.
+            observed_at = str(worker.get("status_observed_at")
+                              or worker.get("last_seen") or "")
+            fact["observed_at"] = observed_at
+            if not observed_at:
+                missing.append(
+                    f"{worker_id} has no observation timestamp")
+                continue
+            if accepted_at and not _observed_after(observed_at,
+                                                   accepted_at):
+                missing.append(
+                    f"{worker_id} evidence is STALE (observed"
+                    f" {observed_at} < resume accepted {accepted_at})")
                 continue
             # AUD-F1-20260806-128: bound AND observed identity must both
             # be complete; a missing value on either side is never
@@ -3690,7 +3747,32 @@ refresh();setInterval(refresh,5000);
             self._save_state()
             return report
         if missing:
+            if expired:
+                # Bounded pending state: at expiry return to a stable
+                # paused/refused state and alert ONCE.
+                self.state["phase"] = "paused"
+                self.state.pop("resume_pending", None)
+                report.update({
+                    "resumed": False, "rejoin_proven": False,
+                    "rejoin_timed_out": True,
+                    "rejoin_deadline_at": deadline_at,
+                    "rejoin_pending_reason": "; ".join(missing)[:300],
+                    "observed_lineage": observed,
+                })
+                self.state["resume_report"] = report
+                self._alert(
+                    "resume_deadline_expired",
+                    f"rejoin unproven by {deadline_at}: "
+                    + "; ".join(missing)[:200])
+                self.history.event(
+                    node_id=self.node_id,
+                    job_id=binding.get("job_id"),
+                    event="operator_resume_timed_out",
+                    detail={"missing": missing[:5]})
+                self._save_state()
+                return report
             report["rejoin_pending_reason"] = "; ".join(missing)[:300]
+            report["rejoin_deadline_at"] = deadline_at
             report["observed_lineage"] = observed
             self.state["resume_report"] = report
             self._save_state()
