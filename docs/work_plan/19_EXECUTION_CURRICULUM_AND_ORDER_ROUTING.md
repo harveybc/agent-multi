@@ -167,6 +167,21 @@ GPU-verification and same-chain-resume findings 119/121 pass independent
 preflight. Results authorize at most ETH/SAC; a second SAC asset and a separate
 model family require reduced transfer checks before system-wide adoption.
 
+The 2026-08-06 preflight accepted this experimental design but did not
+authorize execution. Findings 122-126 require a real operator boundary,
+post-rejoin chain proof, blocking profile guard, fail-closed GPU verification,
+best-plus-terminal evaluation, explicit margin/termination telemetry, a pinned
+base contract, strict four-seed aggregation and a verified two-host artifact
+manifest. The running `full-v2` chain is not paused until those corrections
+pass independent reproduction.
+
+Direct logs also opened finding 127: after warm-up, trade-gate failures do not
+consume patience, allowing collapsed policies to run all 2,000 epochs. The
+correction uses a separate bounded activity patience and is a semantic change.
+Consequently `full-v2` is preserved at pause, while the post-decision full
+campaign starts on a fresh domain with the selected curriculum and corrected
+patience behavior; no mixed-semantics continuation is permitted.
+
 ## 4. Immutable Validation Suite
 
 Each checkpoint is evaluated under the same ordered cost scenarios. The suite

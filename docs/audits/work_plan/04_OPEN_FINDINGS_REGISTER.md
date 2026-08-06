@@ -765,6 +765,26 @@ New findings:
 | AUD-F1-20260805-120 | S3 | open, blocks curriculum generalization | One-seed/two-epoch unequal-compute fixture with zero margin events cannot decide normal vs easy-normal rollout | Satoshi III executes paired packet; Musashi verifies; owner decides rollout |
 | AUD-F1-20260805-121 | S3 | open, blocks temporary A/B interruption | Operator pause is sticky with no supported same-chain resume, and unavailable GPU telemetry is accepted as clear | Satoshi III implements; Musashi verifies |
 
+### 1x. ETH curriculum decision preflight audit, 2026-08-06
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_ETH_DECISION_PREFLIGHT_2026_08_06.md`
+- `../../handoffs/MUSASHI_TO_SATOSHI_III_ETH_DECISION_PREFLIGHT_CORRECTION_ORDER_2026_08_06.md`
+
+The N14/EN4_10/E4 four-seed design is accepted, but execution is withheld.
+`full-v2` remains running and untouched. Prior findings 113/114/115/119/121
+remain partially corrected and open.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260806-122 | S2 | open, blocks temporary A/B interruption | Resume authenticates no operator, verifies only plan/profile drift and reports success before proving rejoin to the bound chain/population | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260806-123 | S2 | open, blocks profile switching/restart | Profile drift emits an alert without blocking worker launch; installer fails open when active status is unavailable or pause is unverified | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260806-124 | S3 | open, blocks verified pause | Nonzero `nvidia-smi` with empty stdout is accepted as GPU-clear | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260806-125 | S3 | open, blocks curriculum decision evidence | Packet lacks terminal-weight evaluation and cannot distinguish zero margin events from absent telemetry | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260806-126 | S3 | open, blocks four-GPU decision execution | Base contract is unpinned; runner/aggregator lack tests, completeness gates, idempotent orchestration and implemented replica verification | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260806-127 | S2 | open, blocks efficient full campaign restart | Activity-ineligible epochs never consume patience; four no-trade candidates can run all 2,000 epochs while the log mislabels the state as step warm-up | Satoshi III implements; Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
