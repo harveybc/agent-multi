@@ -1,0 +1,52 @@
+{
+  "schema_version": "agent_multi.doin_campaign_plan.v1",
+  "plan_id": "phase-2-eth-anchored-full-fleet-v2",
+  "$doc": "Fresh full ETH domain after the full-v1 entropy-mode load defect. All four workers share this one population and chain. The valid v1 smoke and rejected full-v1 chain remain immutable evidence.",
+  "participants": [
+    {
+      "node_id": "omega",
+      "supervisor_url": "http://192.0.2.10:8795",
+      "workers": [
+        "omega"
+      ]
+    },
+    {
+      "node_id": "dragon",
+      "supervisor_url": "http://192.0.2.11:8795",
+      "workers": [
+        "dragon"
+      ]
+    },
+    {
+      "node_id": "gamma",
+      "supervisor_url": "http://192.0.2.12:8795",
+      "workers": [
+        "gamma-5070ti",
+        "gamma-5090"
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "ordinal": 0,
+      "job_id": "eth-4h-anchored-full-sac-shared-v2",
+      "domain_id": "trading-asset-policy-eth-4h-anchored-full-v2",
+      "purpose": "eth_anchored_easy_normal_optimization_with_weight_only_warm_start",
+      "higher_is_better": true,
+      "domain_semantic_hash": "a422e828098708d6fe6ea97a3de6a5f6f1f7518eb3aaf193c632121b8548a077",
+      "artifact_handoff": {
+        "elite_count": 5,
+        "model_path": "/home/harveybc/.local/share/agent-multi/eth_anchored/full_v2/champion_policy.zip",
+        "parameters_path": "/home/harveybc/.local/share/agent-multi/eth_anchored/full_v2/champion_parameters.json",
+        "manifest_path": "/home/harveybc/.local/share/agent-multi/eth_anchored/full_v2/champion_manifest.json",
+        "elite_manifest_path": "/home/harveybc/.local/share/agent-multi/eth_anchored/full_v2/elite_manifest.json"
+      },
+      "worker_configs": {
+        "omega": "examples/trading/phase_2_eth_anchored_full_v2/omega_node.json",
+        "dragon": "examples/trading/phase_2_eth_anchored_full_v2/dragon_node.json",
+        "gamma-5070ti": "examples/trading/phase_2_eth_anchored_full_v2/gamma_5070ti_node.json",
+        "gamma-5090": "examples/trading/phase_2_eth_anchored_full_v2/gamma_5090_node.json"
+      }
+    }
+  ]
+}
