@@ -306,6 +306,10 @@ def validate(config: dict, arm: str) -> None:
             raise SystemExit("preprocessing_mode still offers 'none'")
     if not optimization.get("mixed_genome_repair_rules"):
         raise SystemExit("mixed_genome_repair_rules is empty")
+    from optimizer_plugins.project3_full_genome_optimizer import (
+        Plugin as _GenomePlugin)
+    _GenomePlugin.validate_repair_rules(
+        optimization["mixed_genome_repair_rules"], config)
 
 
 def check_arm_pairing(en: dict, n: dict) -> None:
