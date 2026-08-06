@@ -1,0 +1,10 @@
+{
+ "artifacts": {
+  "easy/model.post_easy.zip": "fb3e842c8ff1f6b62dab69cd38e470bf4c1cdcf9e78cadbf4775f56a328f0c27",
+  "easy_normal/model.post_easy.zip": "c6674bef216b09735a9c45b8b5831e759c1697d21b114aee8c2b4efaaa392756",
+  "easy_normal/model.zip": "2a712d4f57f9ef83608a2359188171f3ab450cdc363b752db2bb81550df43f34",
+  "normal/model.zip": "84fd51d1824cd699f958d8b44d122a66baad23217e7e4d736c1e5ac3df702ef0"
+ },
+ "report_sha256": "80baee82f1fe7c8a5ae4d7d12fbbcf41b0ff9a1c070a5875e6c2163512401617",
+ "schema": "agent_multi.eth_curriculum_fixture_manifest.v1"
+}
