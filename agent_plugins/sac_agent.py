@@ -313,6 +313,38 @@ class Plugin:
         self._require_continuous(env)
         return SAC.load(path, env=env)
 
+    def load_for_training(self, path: str, env, config: Dict[str, Any]):
+        """Load weights while applying the candidate's training genes.
+
+        ``SAC.load`` normally restores optimizer hyperparameters from the ZIP.
+        That behavior is right for inference but would make warm-started DOIN
+        chromosomes observationally different while training identically.
+        ``custom_objects`` replaces the declared SB3 constructor values before
+        model setup without changing policy/observation architecture.
+        """
+        from stable_baselines3 import SAC
+
+        self._require_continuous(env)
+        allowed = (
+            "learning_rate",
+            "buffer_size",
+            "learning_starts",
+            "batch_size",
+            "tau",
+            "gamma",
+            "train_freq",
+            "gradient_steps",
+            "ent_coef",
+            "target_update_interval",
+            "target_entropy",
+        )
+        overrides = {
+            key: config[key]
+            for key in allowed
+            if key in config and config[key] is not None
+        }
+        return SAC.load(path, env=env, custom_objects=overrides)
+
     def load_with_observation_expansion(
         self,
         path: str,
