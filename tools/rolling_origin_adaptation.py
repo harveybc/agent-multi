@@ -64,6 +64,7 @@ BAR_SECONDS = 4 * 3600
 # Bar-aligned cadences only. 1 bar (4 h) is a feasibility stress case.
 ALLOWED_CADENCES = (1, 2, 3, 6, 18, 42)
 WARMUP_BARS = 256                    # rolling scaling context, NEVER scored
+HANDOVER_BARS = 5                    # bars reserved for the flat close
 # Dormant year shorthand contradicts explicit dates (finding 142).
 DORMANT_SPLIT_FIELDS = ("train_years", "val_years", "test_years")
 
@@ -453,6 +454,30 @@ def load_anchor_manifest(anchor_path: str) -> dict:
     return manifest
 
 
+def _find_flatten(env):
+    """Locate the simulator close through the wrapper chain.
+
+    The agent plugin wraps the gym-fx env (flatten/monitor wrappers), so
+    the close path lives on an inner env, not on the outermost object.
+    """
+    seen = set()
+    current = env
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        candidate = getattr(current, "flatten_step", None)
+        if callable(candidate):
+            return candidate
+        for attribute in ("env", "unwrapped"):
+            nxt = getattr(current, attribute, None)
+            if nxt is not None and id(nxt) not in seen:
+                current = nxt
+                break
+        else:
+            envs = getattr(current, "envs", None)
+            current = envs[0] if envs else None
+    return None
+
+
 def execute_handover(env, samples) -> dict:
     """Close open exposure through the simulator and PROVE flatness.
 
@@ -472,8 +497,8 @@ def execute_handover(env, samples) -> dict:
         "trades": last.get("trades"),
         "commission_paid": last.get("commission_paid"),
     }
-    flatten = getattr(env, "flatten_step", None)
-    if not callable(flatten):
+    flatten = _find_flatten(env)
+    if flatten is None:
         return {"flat_proven": False,
                 "reason": ("environment exposes no flatten_step; the"
                            " simulator close path is unavailable")}
@@ -754,8 +779,13 @@ def run(args) -> int:
         model_age_bars = 0
 
         # ---------- 3. score the NEXT interval (warm-up excluded) ----
+        # The handover executes on the bars AFTER the scored interval:
+        # a close submitted on the last interval bar fills on the next
+        # one. The slice therefore carries HANDOVER_BARS extra bars;
+        # scoring still uses exactly `cadence_bars` (finding 152).
         eval_csv = _slice_csv(
-            df, origin - WARMUP_BARS, origin + args.cadence_bars,
+            df, origin - WARMUP_BARS,
+            min(len(df), origin + args.cadence_bars + HANDOVER_BARS),
             out_dir / "slices" / f"eval_{index}.csv")
         handover_requested_at = datetime.now(timezone.utc).isoformat()
         eval_env = _build_env(
