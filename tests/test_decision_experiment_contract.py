@@ -368,3 +368,20 @@ def test_aggregator_rejects_per_arm_code_drift(tmp_path):
     done = _aggregate(tmp_path)
     assert done.returncode == 1
     assert "code revisions CHANGED" in done.stdout
+
+def test_executable_decision_config_has_no_dormant_year_fields():
+    """AUD-F1-20260806-142: the EXECUTABLE decision config must not
+    carry train_years/test_years beside the explicit dates."""
+    config = runner._base_config(Path("/tmp"), "N14", 101,
+                                 epoch_timesteps=100)
+    for field in ("train_years", "val_years", "test_years"):
+        assert field not in config, field
+    assert config["train_start"] == "2017-09-28T04:00:00"
+    assert "split_contract_note" in config
+
+
+def test_execution_id_binds_observation_manifest(tmp_path):
+    anchor = tmp_path / "a.zip"
+    anchor.write_bytes(b"x")
+    first = runner._execution_id("N14", 101, anchor, epoch_timesteps=10)
+    assert isinstance(first, str) and len(first) == 64
