@@ -468,6 +468,7 @@
   "mixed_genome_schema": [
    {
     "choices": [
+     "none",
      "rolling_zscore",
      "expanding_zscore"
     ],

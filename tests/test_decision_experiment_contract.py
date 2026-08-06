@@ -66,8 +66,9 @@ def test_base_config_disables_protected_split():
 
 def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
                   with_validation=True, lineage="L1",
-                  duplicate_execution_id=None, schema_ok=True):
-    seed_dir = root / f"seed{seed}"
+                  duplicate_execution_id=None, schema_ok=True,
+                  code_drift=False, subdir=None):
+    seed_dir = root / (subdir or f"seed{seed}")
     seed_dir.mkdir(parents=True, exist_ok=True)
     packet = {
         "schema": ("agent_multi.eth_curriculum_decision.v1"
@@ -85,10 +86,13 @@ def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
             "max_drawdown_fraction": 0.03, "trades_total": 40,
         }} if with_validation else {}
         record = {
-            "schema": "agent_multi.arm_record.v3",
+            "schema": "agent_multi.arm_record.v4",
             "execution_id": duplicate_execution_id or
             f"exec-{seed}-{arm}-" + "0" * 40,
             "arm": arm, "seed": seed, "splits_raw": splits,
+            "code_revisions_before": {"agent-multi": lineage},
+            "code_revisions_after": {
+                "agent-multi": ("DRIFTED" if code_drift else lineage)},
             "margin_telemetry": {"validation": {
                 "would_margin_call_count": "unavailable"}},
             "return_trace_sha256": {"t.csv": "a" * 64},
@@ -99,6 +103,7 @@ def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
             record["best_checkpoint_vs_terminal"] = {
                 "terminal_evaluation": {
                     "artifact_sha256": "f" * 64,
+                    "artifact_path": str(seed_dir / f"{arm}_term.zip"),
                     "splits_raw": splits,
                 }}
         packet["arms"][arm] = record
@@ -231,16 +236,51 @@ def test_runner_refuses_stale_record(tmp_path, monkeypatch):
                        epoch_timesteps=999, anchor=anchor)
 
 
-def test_runner_reuses_only_matching_execution_id(tmp_path, monkeypatch):
+def _complete_record(out_dir: Path, exec_id: str, arm="N14",
+                     seed=101) -> dict:
+    """A record that passes the shared complete-record validator,
+    including artifacts that really exist with their recorded hashes."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    replica_dir = out_dir / "replica"
+    replica_dir.mkdir(exist_ok=True)
+    artifacts = {}
+    for label in ("best_checkpoint", "terminal"):
+        path = out_dir / f"{label}.zip"
+        path.write_bytes(f"{label}-bytes".encode())
+        replica = replica_dir / f"{label}.zip"
+        replica.write_bytes(path.read_bytes())
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        artifacts[label] = {
+            "path": str(path), "replica_path": str(replica),
+            "sha256": digest, "replica_sha256": digest,
+            "load_proven": True}
+    splits = {"validation": {"mean_weekly_return": 0.001,
+                             "total_return": 0.02,
+                             "max_drawdown_fraction": 0.03}}
+    return {
+        "schema": "agent_multi.arm_record.v4",
+        "execution_id": exec_id, "arm": arm, "seed": seed,
+        "splits_raw": splits, "artifacts": artifacts,
+        "code_revisions_before": {"agent-multi": "rev1"},
+        "code_revisions_after": {"agent-multi": "rev1"},
+        "margin_telemetry": {"validation": {"x": "unavailable"}},
+        "return_trace_sha256": {"t.csv": "a" * 64},
+        "resolved_config_sha256": "c" * 64,
+        "best_checkpoint_vs_terminal": {"terminal_evaluation": {
+            "artifact_sha256": artifacts["terminal"]["sha256"],
+            "artifact_path": artifacts["terminal"]["path"],
+            "splits_raw": splits}},
+    }
+
+
+def test_runner_reuses_only_complete_matching_record(tmp_path,
+                                                     monkeypatch):
     anchor = tmp_path / "anchor.zip"
     anchor.write_bytes(b"anchor-bytes")
     exec_id = runner._execution_id("N14", 101, anchor,
                                    epoch_timesteps=10)
     out_dir = tmp_path / "seed101" / "N14"
-    out_dir.mkdir(parents=True)
-    record = {"schema": "agent_multi.arm_record.v3",
-              "execution_id": exec_id, "arm": "N14", "seed": 101,
-              "splits_raw": {"validation": {"total_return": 0.01}}}
+    record = _complete_record(out_dir, exec_id)
     (out_dir / "arm_record.json").write_text(json.dumps(record))
 
     def _explode(*args, **kwargs):
@@ -250,3 +290,81 @@ def test_runner_reuses_only_matching_execution_id(tmp_path, monkeypatch):
     got = runner.run_arm("N14", 101, tmp_path, agent_name="x",
                          epoch_timesteps=10, anchor=anchor)
     assert got["execution_id"] == exec_id
+
+
+def test_runner_refuses_incomplete_matching_record(tmp_path):
+    """Musashi reproducer `incomplete_exact_reuse`: a matching id with
+    missing artifacts/traces must NOT be reused."""
+    anchor = tmp_path / "anchor.zip"
+    anchor.write_bytes(b"anchor-bytes")
+    exec_id = runner._execution_id("N14", 101, anchor,
+                                   epoch_timesteps=10)
+    out_dir = tmp_path / "seed101" / "N14"
+    out_dir.mkdir(parents=True)
+    thin = {"schema": "agent_multi.arm_record.v4",
+            "execution_id": exec_id, "arm": "N14", "seed": 101,
+            "splits_raw": {"validation": {"total_return": 0.01}}}
+    (out_dir / "arm_record.json").write_text(json.dumps(thin))
+    with pytest.raises(RuntimeError, match="INCOMPLETE"):
+        runner.run_arm("N14", 101, tmp_path, agent_name="x",
+                       epoch_timesteps=10, anchor=anchor)
+
+
+def test_complete_record_validator_catches_missing_replica(tmp_path):
+    exec_id = "e" * 64
+    record = _complete_record(tmp_path / "arm", exec_id)
+    Path(record["artifacts"]["terminal"]["replica_path"]).unlink()
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("replica missing" in p for p in problems)
+
+
+def test_complete_record_validator_catches_code_drift(tmp_path):
+    record = _complete_record(tmp_path / "arm2", "e" * 64)
+    record["code_revisions_after"] = {"agent-multi": "OTHER"}
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("code revisions changed" in p.lower() for p in problems)
+
+
+
+def test_aggregator_rejects_duplicate_physical_packets(tmp_path):
+    """Reproducer `duplicate_seed_empty_identity_promotion` (a): a
+    second physical packet for a seed must be rejected, not silently
+    overwrite the first."""
+    for seed in (101, 202, 303, 404):
+        _write_packet(tmp_path, seed)
+    _write_packet(tmp_path, 404, subdir="seed404_rerun")
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "multiple physical packets" in done.stdout
+
+
+def test_aggregator_rejects_empty_identity_fields(tmp_path):
+    """Reproducer (b): empty data/base/lineage are not a 'common'
+    identity; they are an invalid one."""
+    for seed in (101, 202, 303, 404):
+        seed_dir = tmp_path / f"seed{seed}"
+        seed_dir.mkdir(parents=True)
+        packet = {"schema": "agent_multi.eth_curriculum_decision.v1",
+                  "seed": seed, "data_sha256": "", 
+                  "base_contract_sha256": "", "lineage": {},
+                  "arms": {arm: {"schema": "agent_multi.arm_record.v4",
+                                 "execution_id": f"e{seed}{arm}",
+                                 "arm": arm, "seed": seed,
+                                 "splits_raw": {"validation": {
+                                     "mean_weekly_return": 0.001,
+                                     "total_return": 0.01,
+                                     "max_drawdown_fraction": 0.02}}}
+                           for arm in ("N14", "EN4_10", "E4")}}
+        (seed_dir / "seed_packet.json").write_text(json.dumps(packet))
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "64-hex digest" in done.stdout
+    assert "lineage" in done.stdout
+
+
+def test_aggregator_rejects_per_arm_code_drift(tmp_path):
+    for seed in (101, 202, 303, 404):
+        _write_packet(tmp_path, seed, code_drift=(seed == 303))
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "code revisions CHANGED" in done.stdout

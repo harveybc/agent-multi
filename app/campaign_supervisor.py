@@ -3259,11 +3259,22 @@ refresh();setInterval(refresh,5000);
             # BEFORE stopping so resume can refuse any drift.
             coordination = self.state.get("coordination") or {}
             lineage = coordination.get("canonical_lineage") or {}
-            worker_tips = {
-                worker_id: (self._worker_state(worker_id) or {}).get(
-                    "tip_hash")
-                for worker_id in self._local_worker_ids()
-            }
+            # AUD-F1-20260806-135: bind the tip INDEX with the hash so
+            # resume can prove descent, not merely equality of the
+            # initial identifiers.
+            worker_tips = {}
+            for worker_id in self._local_worker_ids():
+                state = self._worker_state(worker_id) or {}
+                height = state.get("chain_height")
+                worker_tips[worker_id] = {
+                    "tip_hash": state.get("tip_hash"),
+                    "chain_height": height,
+                    "tip_index": (int(height) - 1
+                                  if isinstance(height, int) and height
+                                  else None),
+                    "finalized_height": state.get("finalized_height"),
+                    "finalized_hash": state.get("finalized_hash"),
+                }
             binding = {
                 "plan_hash": self.plan_hash,
                 "profile_sha256": _sha256_file(self.profile_path),
@@ -3444,12 +3455,16 @@ refresh();setInterval(refresh,5000);
             # proof of the same chain; it is an unresumable pause.
             missing_identity = [
                 key for key in ("domain_id", "genesis_hash",
-                                "population_fingerprint")
+                                "population_fingerprint",
+                                "domain_semantic_hash",
+                                "component_versions")
                 if not stored.get(key)
             ]
             worker_tips = stored.get("worker_tips") or {}
             for worker_id in self._local_worker_ids():
-                if not worker_tips.get(worker_id):
+                bound_tip = worker_tips.get(worker_id)
+                if not isinstance(bound_tip, dict) or not bound_tip.get(
+                        "tip_hash"):
                     missing_identity.append(f"worker_tips[{worker_id}]")
             if missing_identity:
                 report["resumed"] = False
@@ -3462,9 +3477,16 @@ refresh();setInterval(refresh,5000);
                     "resume_refused_incomplete_binding",
                     ", ".join(missing_identity)[:200])
                 return report
+            # AUD-F1-20260806-135: component revisions and the semantic
+            # domain hash are part of campaign identity; a changed code
+            # revision is drift, not a resumable state.
+            coordination_now = self.state.get("coordination") or {}
             current = {
                 "plan_hash": self.plan_hash,
                 "profile_sha256": _sha256_file(self.profile_path),
+                "component_versions": self._component_versions(),
+                "domain_semantic_hash": coordination_now.get(
+                    "domain_semantic_hash"),
             }
             drift = {
                 key: {"bound": stored.get(key), "current": value}
@@ -3512,6 +3534,68 @@ refresh();setInterval(refresh,5000);
                         "genesis_hash": stored.get("genesis_hash")},
             )
             return report
+
+    def _verify_tip_ancestry(
+        self, worker_id: str, worker: dict[str, Any],
+        bound_tip: Any,
+    ) -> dict[str, Any]:
+        """Prove the observed chain DESCENDS from the bound tip (135).
+
+        Equality of genesis and generation-zero population only proves a
+        shared origin; a divergent branch shares both. Descent is proven
+        by asking the worker for the block at the bound tip's index and
+        requiring its hash to equal the bound tip hash — the bound tip
+        must still be on the observed chain. Unavailable evidence is
+        UNPROVEN (pending), never proof.
+        """
+        if not isinstance(bound_tip, dict) or not bound_tip.get(
+                "tip_hash"):
+            return {"proven": False, "contradiction": True,
+                    "reason": "no bound tip recorded for this worker"}
+        bound_hash = str(bound_tip["tip_hash"])
+        observed_hash = worker.get("tip_hash")
+        observed_height = worker.get("chain_height")
+        if observed_hash and str(observed_hash) == bound_hash:
+            return {"proven": True, "mode": "tip_unchanged",
+                    "bound_tip": bound_hash}
+        bound_index = bound_tip.get("tip_index")
+        if bound_index is None and isinstance(
+                bound_tip.get("chain_height"), int):
+            bound_index = int(bound_tip["chain_height"]) - 1
+        if bound_index is None:
+            return {"proven": False, "contradiction": False,
+                    "reason": "bound tip has no index to check descent"}
+        if isinstance(observed_height, int) and observed_height <= int(
+                bound_index):
+            return {
+                "proven": False, "contradiction": True,
+                "reason": (
+                    f"observed height {observed_height} cannot contain"
+                    f" bound tip index {bound_index} — the chain was"
+                    " rolled back or replaced")}
+        api_url = worker.get("api_url")
+        if not api_url:
+            return {"proven": False, "contradiction": False,
+                    "reason": "worker API url not yet known"}
+        try:
+            block = _http_json(
+                f"{api_url}/chain/block/{int(bound_index)}",
+                max(self.peer_timeout, 10.0))
+        except Exception as exc:
+            return {"proven": False, "contradiction": False,
+                    "reason": f"block fetch unavailable: {exc}"}
+        seen = str(block.get("hash") or "")
+        if seen == bound_hash:
+            return {"proven": True, "mode": "descends_from_bound_tip",
+                    "bound_tip": bound_hash,
+                    "bound_index": int(bound_index),
+                    "observed_tip": observed_hash}
+        return {
+            "proven": False, "contradiction": True,
+            "reason": (
+                f"block {bound_index} on the observed chain is {seen}"
+                f" != bound tip {bound_hash}; this is a DIFFERENT"
+                " branch, not a continuation")}
 
     def verify_rejoin(self) -> dict[str, Any] | None:
         """Prove (or refute) that resumed workers rejoined the bound
@@ -3571,6 +3655,19 @@ refresh();setInterval(refresh,5000);
                     contradictions.append(
                         f"{worker_id} {key}={seen} != bound"
                         f" {bound_value}")
+            ancestry = self._verify_tip_ancestry(
+                worker_id, worker, (binding.get("worker_tips") or {}).get(
+                    worker_id))
+            fact["tip_ancestry"] = ancestry
+            if ancestry.get("proven") is True:
+                pass
+            elif ancestry.get("contradiction"):
+                contradictions.append(
+                    f"{worker_id} tip ancestry: {ancestry['reason']}")
+            else:
+                missing.append(
+                    f"{worker_id} tip ancestry unproven:"
+                    f" {ancestry.get('reason')}")
 
         if contradictions:
             self.state["phase"] = "paused"

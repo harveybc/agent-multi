@@ -23,7 +23,13 @@ EXPECTED_ARMS = ("N14", "EN4_10", "E4")
 REQUIRED_FINITE = ("mean_weekly_return", "total_return",
                    "max_drawdown_fraction")
 PACKET_SCHEMA = "agent_multi.eth_curriculum_decision.v1"
-RECORD_SCHEMA = "agent_multi.arm_record.v3"
+RECORD_SCHEMA = "agent_multi.arm_record.v4"
+
+
+def _is_hex64(value) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(
+        c in "0123456789abcdefABCDEF" for c in text)
 
 
 def _finite(value) -> bool:
@@ -46,10 +52,25 @@ def _validate_packets(seeds: dict, expect_seeds) -> list:
             problems.append(
                 f"seed {seed}: packet schema"
                 f" {packet.get('schema')!r} != {PACKET_SCHEMA!r}")
-        identities[seed] = (packet.get("data_sha256"),
-                            packet.get("base_contract_sha256"),
-                            json.dumps(packet.get("lineage"),
-                                       sort_keys=True))
+        data_sha = packet.get("data_sha256")
+        base_sha = packet.get("base_contract_sha256")
+        lineage = packet.get("lineage")
+        # AUD-F1-20260806-137: empty/malformed identity is NOT a
+        # matching identity. Hashes must be 64-hex and lineage non-empty.
+        if not _is_hex64(data_sha):
+            problems.append(
+                f"seed {seed}: data_sha256 {data_sha!r} is not a"
+                " 64-hex digest")
+        if not _is_hex64(base_sha):
+            problems.append(
+                f"seed {seed}: base_contract_sha256 {base_sha!r} is not"
+                " a 64-hex digest")
+        if not isinstance(lineage, dict) or not lineage or not all(
+                str(v).strip() for v in lineage.values()):
+            problems.append(
+                f"seed {seed}: lineage {lineage!r} is empty or invalid")
+        identities[seed] = (data_sha, base_sha,
+                            json.dumps(lineage, sort_keys=True))
         arms = sorted((packet.get("arms") or {}))
         if arms != sorted(EXPECTED_ARMS):
             problems.append(
@@ -97,6 +118,23 @@ def _validate_packets(seeds: dict, expect_seeds) -> list:
                 problems.append(f"{where}: no return-trace hashes")
             if not record.get("resolved_config_sha256"):
                 problems.append(f"{where}: no resolved-config hash")
+            before = record.get("code_revisions_before")
+            after = record.get("code_revisions_after")
+            if not before or not after:
+                problems.append(
+                    f"{where}: missing per-arm code revisions")
+            elif before != after:
+                problems.append(
+                    f"{where}: code revisions CHANGED during the arm")
+            elif isinstance(lineage, dict):
+                shared = {k: v for k, v in (after or {}).items()
+                          if k in lineage}
+                mismatched = {k: (v, lineage[k]) for k, v in
+                              shared.items() if v != lineage[k]}
+                if mismatched:
+                    problems.append(
+                        f"{where}: arm lineage {mismatched} does not"
+                        " match the packet lineage")
     if len(set(identities.values())) > 1:
         problems.append(
             "packets carry DIFFERENT data/base/lineage identities:"
@@ -116,10 +154,28 @@ def main() -> int:
     args = parser.parse_args()
 
     seeds = {}
+    packet_paths = {}
+    duplicates = []
     for packet_path in sorted(
-            args.output_root.glob("seed*/seed_packet.json")):
+            args.output_root.rglob("seed_packet.json")):
         packet = json.loads(packet_path.read_text())
-        seeds[packet["seed"]] = packet
+        seed = packet.get("seed")
+        # AUD-F1-20260806-137: a second PHYSICAL packet for the same
+        # seed must be rejected, never silently overwrite the first.
+        if seed in seeds:
+            duplicates.append(
+                f"seed {seed} has multiple physical packets:"
+                f" {packet_paths[seed]} and {packet_path}")
+            continue
+        seeds[seed] = packet
+        packet_paths[seed] = str(packet_path)
+    if duplicates and not args.allow_partial:
+        print(json.dumps({
+            "aggregated": False,
+            "reason": "duplicate physical seed packets",
+            "problems": duplicates,
+        }, indent=1))
+        return 1
 
     # AUD-F1-20260806-130/131: versioned packet schema + common
     # experiment identity + finite decision metrics + complete evidence.

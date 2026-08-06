@@ -165,10 +165,13 @@ def build(arm: str) -> dict:
     # AUD-F1-20260805-113: preprocessing_mode 'none' is forbidden while
     # the observation contract requires a feature-aware preprocessor and
     # no content-hashed precomputed causal feature contract exists.
+    # AUD-F1-20260806-138: the forbidden value must remain a DECLARED
+    # choice, otherwise the repair rule is inert. 'none' stays in the
+    # domain and the executable rule forbids/repairs it at decode.
     for gene in optimization.get("mixed_genome_schema", []):
         if gene.get("name") == "preprocessing_mode":
-            gene["choices"] = [
-                c for c in gene["choices"] if c != "none"]
+            if "none" not in gene["choices"]:
+                gene["choices"] = ["none"] + list(gene["choices"])
     optimization["mixed_genome_repair_rules"] = [
         {"rule": "forbid_value", "gene": "preprocessing_mode",
          "value": "none",
@@ -310,15 +313,32 @@ def validate(config: dict, arm: str) -> None:
     if config["data"]["asset"] != "ETHUSD":
         raise SystemExit("data.asset is not ETHUSD")
 
-    for gene in optimization.get("mixed_genome_schema", []):
-        if gene.get("name") == "preprocessing_mode" and                 "none" in gene.get("choices", []):
-            raise SystemExit("preprocessing_mode still offers 'none'")
+    # AUD-F1-20260805-113 + AUD-F1-20260806-138: the forbidden value
+    # stays DECLARED (so the typed rule is valid and meaningful) and is
+    # made non-generable by an EXECUTABLE forbid_value rule enforced at
+    # the decode boundary. Assert the rule exists and actually repairs.
+    gene = next((g for g in optimization.get("mixed_genome_schema", [])
+                 if g.get("name") == "preprocessing_mode"), None)
+    if gene is None:
+        raise SystemExit("preprocessing_mode gene is missing")
+    rule = next((r for r in optimization.get(
+        "mixed_genome_repair_rules", [])
+        if r.get("rule") == "forbid_value"
+        and r.get("gene") == "preprocessing_mode"), None)
+    if rule is None or rule.get("value") != "none":
+        raise SystemExit(
+            "no executable forbid_value rule for preprocessing_mode")
     if not optimization.get("mixed_genome_repair_rules"):
         raise SystemExit("mixed_genome_repair_rules is empty")
     from optimizer_plugins.project3_full_genome_optimizer import (
         Plugin as _GenomePlugin)
     _GenomePlugin.validate_repair_rules(
         optimization["mixed_genome_repair_rules"], optimization)
+    probe = {"preprocessing_mode": "none"}
+    _GenomePlugin._apply_repair_rules({}, probe, optimization)
+    if probe["preprocessing_mode"] == "none":
+        raise SystemExit(
+            "forbid_value rule did not repair 'none' — inert rule")
 
 
 def check_arm_pairing(en: dict, n: dict) -> None:

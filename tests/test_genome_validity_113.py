@@ -22,7 +22,7 @@ RULES = [{"rule": "forbid_value", "gene": "preprocessing_mode",
           "value": "none", "repair": "resample_categorical",
           "reason": "no precomputed causal feature contract"}]
 SCHEMA = [{"name": "preprocessing_mode", "kind": "categorical",
-           "choices": ["rolling_zscore", "expanding_zscore"],
+           "choices": ["none", "rolling_zscore", "expanding_zscore"],
            "target": "feature_scaling"}]
 
 
@@ -31,11 +31,21 @@ def _config(rules=RULES, schema=SCHEMA):
             "mixed_genome_schema": schema}
 
 
-def test_fresh_genomes_never_offer_none():
+def test_forbidden_value_is_declared_but_never_generable():
+    """AUD-F1-20260806-138: the forbidden value must remain a DECLARED
+    choice (else the rule is inert), and the executable rule must make
+    it non-generable at the decode boundary."""
     config = json.loads(EN_V2.read_text())
-    gene = next(g for g in config["optimization"]["mixed_genome_schema"]
+    opt = config["optimization"]
+    gene = next(g for g in opt["mixed_genome_schema"]
                 if g["name"] == "preprocessing_mode")
-    assert "none" not in gene["choices"]
+    assert "none" in gene["choices"], "rule would be inert"
+    Plugin.validate_repair_rules(opt["mixed_genome_repair_rules"], opt)
+    decoded = {"preprocessing_mode": "none"}
+    run_config = {}
+    Plugin._apply_repair_rules(run_config, decoded, opt)
+    assert decoded["preprocessing_mode"] != "none"
+    assert run_config["_genome_repairs"][0]["forbidden"] == "none"
 
 
 def test_injected_legacy_genome_is_repaired_before_env():
@@ -143,11 +153,11 @@ def test_repair_draw_is_choice_order_invariant():
     declaration order of choices."""
     decoded_template = {"preprocessing_mode": "none", "other_gene": 7}
     schema_a = [{"name": "preprocessing_mode", "kind": "categorical",
-                 "choices": ["rolling_zscore", "expanding_zscore",
-                             "minmax"],
+                 "choices": ["none", "rolling_zscore",
+                             "expanding_zscore", "minmax"],
                  "target": "feature_scaling"}]
     schema_b = [{"name": "preprocessing_mode", "kind": "categorical",
-                 "choices": ["minmax", "expanding_zscore",
+                 "choices": ["minmax", "expanding_zscore", "none",
                              "rolling_zscore"],
                  "target": "feature_scaling"}]
     picks = []
@@ -169,8 +179,8 @@ def test_repair_draw_distribution_sanity():
     """Across many candidate identities the draw must not collapse to
     one choice (the first-allowed bias this replaces)."""
     schema = [{"name": "preprocessing_mode", "kind": "categorical",
-               "choices": ["rolling_zscore", "expanding_zscore",
-                           "minmax"],
+               "choices": ["none", "rolling_zscore",
+                           "expanding_zscore", "minmax"],
                "target": "feature_scaling"}]
     counts = {}
     for i in range(300):
@@ -180,3 +190,30 @@ def test_repair_draw_distribution_sanity():
             decoded["preprocessing_mode"], 0) + 1
     assert len(counts) == 3, f"draw collapsed: {counts}"
     assert all(count > 50 for count in counts.values()), counts
+
+
+
+def test_missing_typed_schema_is_an_error_not_a_pass():
+    """Musashi reproducer `repair_validation_fail_open` (a): a rule
+    without a typed schema must FAIL, not be accepted."""
+    with pytest.raises(ValueError, match="typed"):
+        Plugin.validate_repair_rules(RULES, {})
+    with pytest.raises(ValueError, match="typed"):
+        Plugin.validate_repair_rules(
+            RULES, {"mixed_genome_schema": []})
+
+
+def test_forbidden_value_outside_domain_is_rejected():
+    """Reproducer `repair_validation_fail_open` (b): a typo'd forbidden
+    value would be a valid but INERT rule; it must be rejected."""
+    rules = [dict(RULES[0], value="nonexistent_mode")]
+    with pytest.raises(ValueError, match="not a declared choice"):
+        Plugin.validate_repair_rules(rules, _config(rules))
+
+
+def test_duplicate_choices_are_rejected():
+    schema = [{"name": "preprocessing_mode", "kind": "categorical",
+               "choices": ["none", "rolling_zscore", "rolling_zscore"],
+               "target": "feature_scaling"}]
+    with pytest.raises(ValueError, match="duplicate choices"):
+        Plugin.validate_repair_rules(RULES, _config(schema=schema))
