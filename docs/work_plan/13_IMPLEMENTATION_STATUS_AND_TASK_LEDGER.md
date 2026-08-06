@@ -1,11 +1,11 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-08-06 America/Bogota
-Plan version: 1.30.0
+Plan version: 1.31.0
 Current focus: preserve the anchored ETH `full-v2` chain while the owner decides
 whether to execute its prepared pause/archive operation; its four current
 candidates run the pre-activity-bound revision and remain zero-trade despite
-active GPUs. Correct findings 136 and 140-150 before any RT1 run. Retraining
+active GPUs. Correct findings 136, 140-145 and 147-158 before any RT1 run. Retraining
 cadence evidence must adapt a load-proven mature ETH champion, use
 observation-only warm-up and preserve costed account state at every handover,
 while selected-model Paper/Demo execution continues with mandatory native SL/TP
@@ -912,7 +912,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
 | `SOLVENCY-CURRICULUM-001` | General Satoshi III + General Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | full_v2_coherent_zero_activity_owner_pause_decision | The corrected smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. The active `full-v2` chain is coherent but runs the older `5437a31` revision: its four current candidates have millions of steps and zero train, train-tail or validation trades. It is operationally busy but decision-ineligible. Preserve it until the owner explicitly authorizes the prepared pause/archive label `ZERO_ACTIVITY_INELIGIBLE_RUNTIME_5437a31`; never silently resume it as valid calibration evidence. | Harvey |
 | `ETH-RESEARCH-TRANSFER-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `financial-data`, `lts` | hierarchical_doin_roadmap_integrated_not_started | Document 33 makes ETH the complete research reference. The N/EN packet calibrates curriculum bounds; dedicated DOIN domains optimize decompositions/features, encoders, SAC, event adapters, auxiliary heads and synthetic pretraining; a restricted joint domain co-optimizes confirmed interactions and final curriculum. The transferable global search contract remains separate from ETH-specific values before per-asset campaigns and portfolio optimization. | Harvey |
-| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | rt1_materialized_not_authorized_findings_140_149 | RT1-A has 128 unique semantic cells covering 8/12/24/168 h x 1y/expanding x four blocks x two seeds x adaptive/frozen, but it must not run yet. The runner still trades during warm-up, scores `h+1` facts, discards open exposure at handover, has a SQLite/JSON crash window, measures fresh random SAC rather than adaptation of a mature champion, lacks measured handover deadlines and omits dirty-source identity. RT cadence follows the mature-topology R3 champion and uses exact costed flat handovers. | Harvey selects final cadence after verified evidence |
+| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | rt1_materialized_not_authorized_findings_145_158 | RT1-A has 128 unique semantic cells covering 8/12/24/168 h x 1y/expanding x four blocks x two seeds x adaptive/frozen, but it must not run. Warm-up now holds and exact-h scoring works; SQLite restart authority is corrected. Remaining blockers reset the model between uninterrupted origins, accept an unproven anchor, calculate closing costs from direction rather than size, assert flat without execution, lose historical p95 after restart, omit the final interval of every RT1-A cadence and leave source/rejoin identity incomplete. RT cadence follows the mature-topology R3 champion and uses simulator-executed, costed, reconciled flat handovers. | Harvey selects final cadence after verified evidence |
 | `DEV-TOOLING-MCP-001` | General Satoshi III + General Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | General Satoshi III + General Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | General Satoshi III + General Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -971,22 +971,20 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    under a runtime that predates bounded activity; GPU utilization alone does
    not make their results eligible. Preserve every chain artifact and do not
    resume it as decision-bearing evidence after archival.
-10. Preserve independently verified corrections 135, 137, 138, 139 and 142.
-    Correct findings 136 and 143-150: real shared artifact loading and
-    cross-binding, observation-only warm-up, exact interval cardinality,
-    costed flat handovers, transactional restart authority, champion-bound
-    adaptation identity, measured deadlines, clean-source identity and bounded
-    fresh post-rejoin evidence.
-11. After the corrected component/research path reaches the mature R3 ETH
-    champion, run RT0 from that exact content-addressed artifact. Only then may
-    the already-materialized 128-cell RT1-A grid execute; conditional RT1-B and
-    RT2 remain evidence-driven and unratified. Do not spend the RT sweep on
-    random SAC initialization or an unstable pre-topology model.
-12. Execute document 33's hierarchical DOIN program before cross-asset
-    replication. Build the typed no-default parameter registry; run separate
-    component domains for causal/decomposition inputs, representations,
-    SAC dynamics, conditional event/auxiliary paths and synthetic pretraining;
-    retain diverse elites; then run the restricted joint integration domain.
+10. Preserve independently verified corrections 135, 137, 138, 139, 142, 143
+    and 146. Correct the N/E-specific artifact/rejoin blockers 136, 144, 150,
+    151 and 156, accept smoke 123/124/127, then execute the four-seed
+    N14/EN4_10/E4 calibration without waiting on RT-only mechanics.
+11. Execute document 33's hierarchical DOIN component program through the
+    mature R3 ETH champion before cross-asset replication: typed no-default
+    registry, causal/decomposition inputs, representations, SAC dynamics,
+    conditional event/auxiliary paths and synthetic pretraining. Preserve
+    champions and diverse elites.
+12. Correct RT findings 140-141, 145, 147-149, 152-155 and 157-158 in parallel,
+    but execute performance RT0 only from the mature R3 artifact. Only then may
+    the materialized 128-cell RT1-A grid run; conditional RT1-B and RT2 remain
+    evidence-driven and unratified. Never spend the cadence sweep on random SAC
+    initialization or an unstable pre-topology model.
 13. Build the missing raw-bar-to-current-SAC observation provider, prove
     two-source feature/action parity and wire the selected SAC policy into the
     production MT5 ETHUSD H4 runner. The existing linear model remains a shadow

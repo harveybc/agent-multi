@@ -576,7 +576,7 @@ handover reconciliation without measuring it.
 Consequently:
 
 - RT1-A remains `MATERIALIZED_NOT_EXECUTED`;
-- RT mechanics are corrected under findings 143-150;
+- RT mechanics continue under findings 151-158 after the 143/146 corrections;
 - performance execution remains after R3, using its load-proven hash-bound
   champion/config/observation contract;
 - every boundary must score exactly h bars and execute an explicit flat,
@@ -586,3 +586,30 @@ Consequently:
 
 Canonical audit:
 `../audits/AUDIT_SATOSHI_III_135_142_ACCEPTANCE_2026_08_06.md`.
+
+## 11. RT v3 Correction Audit (2026-08-06)
+
+The third delivery fixes two important foundations: acceptance probes now have
+typed outcomes, and SQLite commits each interval with its authoritative restart
+state. Forced-hold warm-up and exact-h sample cardinality also work.
+
+Performance execution remains blocked because independent CPU execution found:
+
+- uninterrupted origin 1 did not inherit origin 0's adapted weights;
+- the flat handover uses directional position as units, omits spread/slippage
+  and asserts reconciliation without a simulator close;
+- a bare compatible fresh SAC can be called a mature anchor;
+- restarted p95 excludes latencies from earlier process sessions;
+- every RT1-A cadence omits its final complete interval, including one of four
+  weeks for the weekly arm;
+- replica authority and untracked-source identity remain self-asserted; and
+- same-second evidence with an unchanged PID generation proves rejoin.
+
+Corrections 151-158 therefore precede any RT1-A execution. The next mechanics
+fixture must contain at least three uninterrupted origins plus a restart and
+prove exact model-hash succession, simulator-executed costed flat handovers,
+all-row latency statistics, mature champion provenance and complete block
+coverage.
+
+Canonical audit:
+`../audits/AUDIT_SATOSHI_III_143_150_CORRECTIONS_2026_08_06.md`.
