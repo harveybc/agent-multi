@@ -897,6 +897,7 @@
   "selection_metric": "lexicographic_weekly_v1",
   "selection_min_trades": 12,
   "solvency_curriculum_enabled": false,
+  "split_contract_note": "explicit train/validation/test dates in data.* govern; no year-count shorthand exists in this contract",
   "target_entropy": "auto",
   "target_update_interval": 1,
   "tau": 0.001547040562484868,

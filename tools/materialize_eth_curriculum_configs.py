@@ -178,6 +178,15 @@ def build(arm: str) -> dict:
     ]
 
     training = config["training"]
+    # AUD-F1-20260806-134: explicit split dates govern; the dormant
+    # year-count fields would contradict them (train_years=4 vs ~6.25
+    # actual years) and are REMOVED rather than left misleading.
+    for key in ("train_years", "val_years", "test_years"):
+        training.pop(key, None)
+        config.get("data", {}).pop(key, None)
+    training["split_contract_note"] = (
+        "explicit train/validation/test dates in data.* govern; no"
+        " year-count shorthand exists in this contract")
     training["selection_metric"] = "lexicographic_weekly_v1"
     training["selection_min_trades"] = int(
         (optimization.get("optimization_min_trades_by_split") or {})
