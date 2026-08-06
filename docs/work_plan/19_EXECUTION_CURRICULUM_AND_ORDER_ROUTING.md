@@ -182,6 +182,34 @@ Consequently `full-v2` is preserved at pause, while the post-decision full
 campaign starts on a fresh domain with the selected curriculum and corrected
 patience behavior; no mixed-semantics continuation is permitted.
 
+### 3.3 Retraining cadence is a second decision-bearing schedule
+
+The easy/normal solvency curriculum governs how one policy learns. The
+deployment retraining cadence governs how often a frozen model/feature contract
+adapts to new causal data. These are separate axes and neither is fixed by a
+package default.
+
+For ETH 4-hour bars, compare 8, 12, 24, 72 and 168 hours; four hours is a
+feasibility stress case. Six hours is excluded because it is not aligned to
+closed 4-hour bars. Separate fast fixed-contract weight/replay updates from
+slower DOIN structural reoptimization and champion succession.
+
+The cadence program is ordered:
+
+1. RT0 measures update runtime, resources, deadline misses and safe handover on
+   one frozen 28-day block; it cannot select by return;
+2. RT1 uses four non-overlapping 28-day blocks and strict rolling-origin
+   test-then-train evidence;
+3. RT2 optimizes adaptation schedule and bounded update behavior with DOIN
+   after the SAC topology domain and every admitted interface-changing line,
+   but before restricted joint integration; and
+4. RT3 freezes the schedule before prospective Paper/live-shadow confirmation.
+
+Every simulated or Paper/Demo succession stops new risk, reconciles protected
+exposure, records exact post-close balance, activates a content-bound artifact
+and resumes. No retraining event may silently reset account equity, carry an
+unreconciled position into a different model or relax mandatory SL/TP.
+
 ## 4. Immutable Validation Suite
 
 Each checkpoint is evaluated under the same ordered cost scenarios. The suite

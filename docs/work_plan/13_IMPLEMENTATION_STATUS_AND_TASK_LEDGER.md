@@ -1,12 +1,12 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-08-03 America/Bogota
-Plan version: 1.28.0
-Current focus: keep the protected-entry v2 optimization path running to an
-exact champion handoff; operate selected-model Alpaca, IBKR Paper and MT5 Demo
-runners continuously with mandatory native SL/TP; and preserve independently
-auditable venue and model provenance
-without taking compute from DOIN
+Status timestamp: 2026-08-06 America/Bogota
+Plan version: 1.29.0
+Current focus: keep the anchored ETH `full-v2` diagnostic campaign untouched;
+correct the J0/J4 decision harness; execute exact N14/EN4_10/E4 evidence only
+after independent acceptance; and add a bar-aligned rolling-origin adaptation
+program before the restricted ETH integration domain, while selected-model
+Paper/Demo execution continues with mandatory native SL/TP
 
 Immediate parallel runtime added on 2026-07-30:
 
@@ -910,6 +910,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
 | `SOLVENCY-CURRICULUM-001` | General Satoshi III + General Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_running_ab_preflight_corrections | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models and remains active on one chain. The N14/EN4_10/E4 four-seed design is accepted as curriculum calibration, but execution waits for findings 122-127: exact-chain post-rejoin proof, profile/GPU fail-closed controls, best-plus-terminal metrics, explicit margin telemetry, idempotent replicated four-GPU evidence and bounded no-trade patience. Finding 127 changes evaluation semantics, so every later component or integration campaign receives a fresh domain rather than mixing code into `full-v2`; no single post-A/B campaign is presumed final. | Harvey |
 | `ETH-RESEARCH-TRANSFER-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `financial-data`, `lts` | hierarchical_doin_roadmap_integrated_not_started | Document 33 makes ETH the complete research reference. The N/EN packet calibrates curriculum bounds; dedicated DOIN domains optimize decompositions/features, encoders, SAC, event adapters, auxiliary heads and synthetic pretraining; a restricted joint domain co-optimizes confirmed interactions and final curriculum. The transferable global search contract remains separate from ETH-specific values before per-asset campaigns and portfolio optimization. | Harvey |
+| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | audit_open_rt0_rt2_assigned | Separate fixed-contract adaptation from slow structural DOIN. RT0 screens bar-aligned 8/12/24/72/168 h deadline feasibility on one 28-day block; RT1 uses four non-overlapping blocks with test-then-train ordering; RT2 optimizes cadence/lookback/update/replay/freeze/handover after SAC topology and before joint integration. One month cannot promote profit/risk. Exact ETH data: 13,699 train, 2,196 validation, 2,190 disclosed test bars; 83 features, 32-bar input, 256-bar scaler, 2,724 values. | Harvey selects final cadence after verified evidence |
 | `DEV-TOOLING-MCP-001` | General Satoshi III + General Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | General Satoshi III + General Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | General Satoshi III + General Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -963,74 +964,82 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    Satoshi executes J0-J1 of the consolidated ETH decision/research order.
    Treat any accepted failure sentinel, duplicate claim, component mismatch,
    competing terminal tip or warm-start load error as an immediate stop.
-9. After findings 113 and 122-127 pass independent verification, execute the
+9. After findings 113 and 122-132 pass independent verification, execute the
    four-seed equal-compute N14/EN4_10/E4 calibration. Preserve best and terminal
    weights, exact raw metrics and two artifact copies. Use the result to admit
    and bound fixed-total-compute curriculum genes; it is not the final schedule.
-10. Execute document 33's hierarchical DOIN program before cross-asset
+10. Correct and independently verify findings 128-134. Do not accept missing
+    lineage as a rejoin, stale arm records as idempotence, malformed packets as
+    promotion evidence, or an Omega-local model-id heuristic as fleet controller
+    provenance.
+11. Publish the exact ETH data/observation contract and execute RT0/RT1 without
+    mutating the active swarm. Materialize the RT2 adaptation-schedule DOIN
+    domain after SAC topology optimization and before restricted integration;
+    keep 12 hours as a candidate rather than a default.
+12. Execute document 33's hierarchical DOIN program before cross-asset
     replication. Build the typed no-default parameter registry; run separate
     component domains for causal/decomposition inputs, representations,
     SAC dynamics, conditional event/auxiliary paths and synthetic pretraining;
     retain diverse elites; then run the restricted joint integration domain.
-11. Build the missing raw-bar-to-current-SAC observation provider, prove
-   two-source feature/action parity and wire the selected SAC policy into the
-   production MT5 ETHUSD H4 runner. The existing linear model remains a shadow
-   control. A champion claim requires a model-originated mandatory-SL/TP Demo
-   lifecycle with model/config/input/decision hashes.
-12. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
+13. Build the missing raw-bar-to-current-SAC observation provider, prove
+    two-source feature/action parity and wire the selected SAC policy into the
+    production MT5 ETHUSD H4 runner. The existing linear model remains a shadow
+    control. A champion claim requires a model-originated mandatory-SL/TP Demo
+    lifecycle with model/config/input/decision hashes.
+14. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
    uptime, spreads, fills, protection, symbol coverage, reconnects and
    reconciliation deviations in rolling 24-hour windows.
-13. Confirm the integrated ETH winner against matched normal-only and neighboring
+15. Confirm the integrated ETH winner against matched normal-only and neighboring
    easy-normal schedules over four seeds. Freeze its robust alpha policy,
    component artifacts, full parameter registry, elites and action trace.
-14. Prove the global search contract transfers to one representative second
+16. Prove the global search contract transfers to one representative second
    asset, then run one coordinated DOIN campaign for every owner-selected asset.
    Optimize asset-specific values rather than copying ETH defaults; preserve
    every loadable champion and resolved genome before portfolio optimization.
-15. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
+17. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
-16. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
+18. Train/calibrate fill-time, adverse-selection, short-path and event-hazard
    auxiliaries, then optimize the deterministic router with Nautilus.
-17. Train the shared entry/exit policy and require improvement over market-only
+19. Train the shared entry/exit policy and require improvement over market-only
    and deterministic-router controls under identical alpha streams.
-18. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
+20. Materialize the E2-favored market/macro bundles before queuing BTC-perp,
    GBPJPY, NZDUSD and USDJPY; never publish placeholder source genes.
-19. Confirm frozen winners across three seeds and complete the per-asset champion
+21. Confirm frozen winners across three seeds and complete the per-asset champion
    library before portfolio optimization.
-20. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
+22. Expand the verified Nautilus single-cell Gym bridge into the portfolio-native
    multi-asset observation/action contract without creating account state
    outside Nautilus.
-21. Optimize the static portfolio, then add calibrated multi-horizon rush/event
+23. Optimize the static portfolio, then add calibrated multi-horizon rush/event
    activation and evaluate weekly retraining/fine-tuning.
-22. Implement and fault-test the decentralized artifact plane before a
+24. Implement and fault-test the decentralized artifact plane before a
    multi-node trading-domain acceptance run.
-23. Complete the consolidated LTS capital ledger and compare all three active
+25. Complete the consolidated LTS capital ledger and compare all three active
     protected-execution routes against their simulator cost and fill priors.
-24. Keep the active social-intelligence S0/S1 path read-only: preserve the
+26. Keep the active social-intelligence S0/S1 path read-only: preserve the
     source allowlist, deterministic collection, normalized OLAP, bounded
     Flash-only review and approval-gated publishing while MT5 observation
     continues.
-25. Benchmark local social models in a declared resource window before
+27. Benchmark local social models in a declared resource window before
     installing them fleet-wide; never steal unmeasured GPU capacity from DOIN.
-26. Provision the continuity VPS from code, restore encrypted state in a clean
+28. Provision the continuity VPS from code, restore encrypted state in a clean
     drill and verify credential revocation before treating it as operational.
-27. Preserve the five verified repository-local Tier A gates and run the next
+29. Preserve the five verified repository-local Tier A gates and run the next
     change-triggered audit from the deterministic snapshot contract.
     Independently reproduce material findings and keep both role recovery
     prompts current as architecture and runtime contracts change.
-28. Execute the P5/P1 citation verification pass, then keep the permanent
+30. Execute the P5/P1 citation verification pass, then keep the permanent
     academic queue moving through future-work extraction, P6+ prior-art
     collision tests, replication design and quarterly registry retirement.
-29. Preserve the verified cTrader Copy/eToro Virtual controls, await the
+31. Preserve the verified cTrader Copy/eToro Virtual controls, await the
     already-submitted cTrader Open API approval, then execute its read-only
     capability preflight. Hold Darwinex Zero behind owner cost approval and
     permit no live MQL5 Signals or PAMM before legal/capital approval.
-30. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
+32. After the three-venue writable audit, execute document 31 K0-K4 on Omega:
     validate a compact OKF bundle, manually review and pin GBrain, keep it
     local/read-only, prove Hermes interactive and cron retrieval, benchmark
     cold-start quality/resources and prove file-based recovery with GBrain
     unavailable before any fleet deployment.
-31. Materialize document 32's succession evidence schema and deterministic
+33. Materialize document 32's succession evidence schema and deterministic
     gate without changing an active seat or DOIN chain; independently verify
     its statistical family, flat-boundary drain/reseed and no-idle failure
     behavior before the first automated same-seat Paper/Demo succession.

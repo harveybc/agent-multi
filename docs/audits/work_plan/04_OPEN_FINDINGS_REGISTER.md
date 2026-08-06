@@ -1,6 +1,6 @@
 # 04. Open Findings Register
 
-Version: 1.6.0
+Version: 1.7.0
 Date: 2026-08-03
 Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
 independent verifier per `../README.md` and dual-party findings go to Harvey.
@@ -784,6 +784,28 @@ remain partially corrected and open.
 | AUD-F1-20260806-125 | S3 | open, blocks curriculum decision evidence | Packet lacks terminal-weight evaluation and cannot distinguish zero margin events from absent telemetry | Satoshi III implements; Musashi verifies |
 | AUD-F1-20260806-126 | S3 | open, blocks four-GPU decision execution | Base contract is unpinned; runner/aggregator lack tests, completeness gates, idempotent orchestration and implemented replica verification | Satoshi III implements; Musashi verifies |
 | AUD-F1-20260806-127 | S2 | open, blocks efficient full campaign restart | Activity-ineligible epochs never consume patience; four no-trade candidates can run all 2,000 epochs while the log mislabels the state as step warm-up | Satoshi III implements; Musashi verifies |
+
+### 1y. J0/J4 and retraining-frequency audit, 2026-08-06
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_J0_J4_AND_RETRAINING_FREQUENCY_2026_08_06.md`
+- `../evidence/SATOSHI_III_J0_J4_RETRAINING_REPRO_2026_08_06.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_J0_J4_RETRAINING_CORRECTION_ORDER_2026_08_06.md`
+
+Corrections 123, 124 and 127 pass focused mechanical tests but still require a
+bounded runtime smoke. Corrections 113, 122, 125 and 126 are not accepted. The
+active `full-v2` domain remains untouched while the correction order executes.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260806-128 | S2 | open, blocks any campaign rejoin | Empty bound and observed chain identity can return `rejoin_proven=true` and resume successfully | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-129 | S2 | open, blocks N/EN/E decision | Real pipeline reloads best weights without preserving terminal policy; runner can claim both were evaluated while terminal evidence is absent | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-130 | S2 | open, blocks four-seed orchestration | Existing arm record is reused without binding data, code, base contract, resolved config, budget, anchor or artifacts | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-131 | S2 | open, blocks curriculum promotion | Malformed, lineage-incompatible packets with no finite decision metrics can aggregate as promotion-eligible | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-132 | S3 | open, blocks genome-repair acceptance | Repair accepts nonexistent genes and deterministically selects the first allowed categorical value, creating an ordering prior | General Satoshi III implements; General Musashi verifies |
+| AUD-F2-20260806-133 | S3 | open, blocks exact-controller inventory | J4 is Omega-local, classifies by model-id substring and hard-codes SAC authority false instead of joining exact manifest hashes | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-134 | S2 | open, blocks adaptation-contract freeze | Static annual validation and unevidenced 32/256 windows do not establish the next-interval/week retraining business contract | General Satoshi III implements RT0-RT2; General Musashi verifies; owner selects cadence |
 
 ## 2b. Observations Pending Verification (not yet findings)
 
