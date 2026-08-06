@@ -31,9 +31,12 @@ ANCHOR_MODEL = REPO / "examples/models/eth_4h_sac_current_stack_anchor_v1.zip"
 ANCHOR_MANIFEST = ANCHOR_MODEL.with_suffix(".manifest.json")
 CONFIG_DIR = REPO / "examples/config/phase_2_eth_anchored/optimization"
 CAMPAIGN_DIR = REPO / "examples/campaigns/phase_2_eth_anchored_fleet_v1"
+RECOVERY_CAMPAIGN_DIR = (
+    REPO / "examples/campaigns/phase_2_eth_anchored_full_fleet_v2"
+)
 TEMPLATE_DIR = DOIN_REPO / "examples/trading/phase_2_eth_en_curriculum_v1"
 PLAN_ID = "phase-2-eth-anchored-fleet-v1"
-STATE_ROOT = f"~/.local/state/agent-multi/doin-campaigns/{PLAN_ID}"
+RECOVERY_PLAN_ID = "phase-2-eth-anchored-full-fleet-v2"
 ARTIFACT_ROOT = "/home/harveybc/.local/share/agent-multi/eth_anchored"
 PYTHON = "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
 DOIN_ROOT = "/home/harveybc/Documents/GitHub/doin-node"
@@ -134,7 +137,9 @@ def _anchored_schema(source_schema: list[dict[str, Any]]) -> list[dict[str, Any]
     return schema
 
 
-def build_config(*, smoke: bool) -> dict[str, Any]:
+def build_config(
+    *, smoke: bool, revision: int = 1, artifact_arm: str | None = None
+) -> dict[str, Any]:
     if not ANCHOR_MODEL.exists():
         raise FileNotFoundError(f"tracked ETH anchor is missing: {ANCHOR_MODEL}")
     source = _load(SOURCE_CONFIG)
@@ -142,9 +147,10 @@ def build_config(*, smoke: bool) -> dict[str, Any]:
     anchor_hash = _sha256(ANCHOR_MODEL)
     config = copy.deepcopy(source)
     arm = "smoke" if smoke else "full"
+    arm_tag = artifact_arm or arm
     experiment = config["experiment"]
     experiment.update({
-        "name": f"phase_2_eth_anchored_{arm}_v1",
+        "name": f"phase_2_eth_anchored_{arm}_v{revision}",
         "curriculum_arm": "anchored_easy_normal",
         "role": "champion_anchored_model_execution_optimization",
         "description": (
@@ -327,7 +333,7 @@ def build_config(*, smoke: bool) -> dict[str, Any]:
             ],
         })
 
-    artifact_root = f"{ARTIFACT_ROOT}/{arm}"
+    artifact_root = f"{ARTIFACT_ROOT}/{arm_tag}"
     config["artifacts"].update({
         "artifact_root": artifact_root,
         "optimizer_output_file": f"{artifact_root}/optimizer_output.json",
@@ -358,13 +364,17 @@ def build_config(*, smoke: bool) -> dict[str, Any]:
     return config
 
 
-def _build_profile(node_id: str, plan_hash: str) -> dict[str, Any]:
+def _build_profile(
+    node_id: str, plan_hash: str, *, plan_id: str = PLAN_ID
+) -> dict[str, Any]:
     return {
         "schema_version": "agent_multi.doin_campaign_profile.v1",
         "node_id": node_id,
         "plan_file": "campaign_plan.json",
         "expected_plan_hash": plan_hash,
-        "state_dir": f"{STATE_ROOT}/{node_id}",
+        "state_dir": (
+            f"~/.local/state/agent-multi/doin-campaigns/{plan_id}/{node_id}"
+        ),
         "listen_host": "0.0.0.0",
         "listen_port": 8795,
         "poll_seconds": 5,
@@ -460,10 +470,94 @@ def materialize_all() -> dict[str, Any]:
     return {"plan_hash": plan_hash, "jobs": jobs}
 
 
+def materialize_recovery_full_v2() -> dict[str, Any]:
+    """Create a fresh full domain after rejecting the incompatible v1 run."""
+    manifest = _load(ANCHOR_MANIFEST)
+    if manifest["artifact_sha256"] != _sha256(ANCHOR_MODEL):
+        raise ValueError("ETH anchor manifest hash does not match artifact")
+
+    config = build_config(
+        smoke=False,
+        revision=2,
+        artifact_arm="full_v2",
+    )
+    config_path = CONFIG_DIR / "phase_2_eth_anchored_full_v2.json"
+    _write(config_path, config)
+    domain_id = "trading-asset-policy-eth-4h-anchored-full-v2"
+    node_dir_name = "phase_2_eth_anchored_full_v2"
+    node_dir = DOIN_REPO / "examples/trading" / node_dir_name
+    materialize(
+        template_dir=TEMPLATE_DIR,
+        output_dir=node_dir,
+        canonical_config=config_path,
+        load_config=str(config_path),
+        domain_id=domain_id,
+        campaign_slug="eth-anchored-full-v2",
+    )
+    semantic_hash = _domain_semantic_hash(_load(node_dir / "omega_node.json"))
+    artifact_root = f"{ARTIFACT_ROOT}/full_v2"
+    job = {
+        "ordinal": 0,
+        "job_id": "eth-4h-anchored-full-sac-shared-v2",
+        "domain_id": domain_id,
+        "purpose": (
+            "eth_anchored_easy_normal_optimization_with_weight_only_"
+            "warm_start"
+        ),
+        "higher_is_better": True,
+        "domain_semantic_hash": semantic_hash,
+        "artifact_handoff": {
+            "elite_count": 5,
+            "model_path": f"{artifact_root}/champion_policy.zip",
+            "parameters_path": f"{artifact_root}/champion_parameters.json",
+            "manifest_path": f"{artifact_root}/champion_manifest.json",
+            "elite_manifest_path": f"{artifact_root}/elite_manifest.json",
+        },
+        "worker_configs": {
+            worker: f"examples/trading/{node_dir_name}/{NODE_FILE[worker]}"
+            for worker in NODE_FILE
+        },
+    }
+    plan = {
+        "schema_version": "agent_multi.doin_campaign_plan.v1",
+        "plan_id": RECOVERY_PLAN_ID,
+        "$doc": (
+            "Fresh full ETH domain after the full-v1 entropy-mode load defect. "
+            "All four workers share this one population and chain. The valid "
+            "v1 smoke and rejected full-v1 chain remain immutable evidence."
+        ),
+        "participants": PARTICIPANTS,
+        "jobs": [job],
+    }
+    _write(RECOVERY_CAMPAIGN_DIR / "campaign_plan.json", plan)
+    plan_hash = hashlib.sha256(
+        _canonical_json(plan).encode("utf-8")
+    ).hexdigest()
+    for node_id in NODE_WORKERS:
+        _write(
+            RECOVERY_CAMPAIGN_DIR / f"{node_id}_profile.json",
+            _build_profile(
+                node_id,
+                plan_hash,
+                plan_id=RECOVERY_PLAN_ID,
+            ),
+        )
+    return {"plan_hash": plan_hash, "jobs": [job]}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.parse_args()
-    result = materialize_all()
+    parser.add_argument(
+        "--full-v2-only",
+        action="store_true",
+        help="materialize only the clean full-v2 recovery domain",
+    )
+    args = parser.parse_args()
+    result = (
+        materialize_recovery_full_v2()
+        if args.full_v2_only
+        else materialize_all()
+    )
     print(json.dumps(result, indent=2))
     return 0
 

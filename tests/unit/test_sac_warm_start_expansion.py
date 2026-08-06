@@ -57,21 +57,52 @@ def test_expansion_rejects_unexplained_shape_change() -> None:
         )
 
 
-def test_training_load_applies_candidate_hyperparameters(monkeypatch) -> None:
+def test_training_load_builds_candidate_then_transfers_policy(monkeypatch) -> None:
     from stable_baselines3 import SAC
 
-    captured = {}
+    class FakeTensor:
+        shape = (1,)
 
-    def fake_load(path, *, env, custom_objects):
-        captured.update({
-            "path": path,
-            "env": env,
-            "custom_objects": custom_objects,
-        })
-        return "loaded"
+        class Data:
+            @staticmethod
+            def copy_(_value):
+                return None
+
+        data = Data()
+
+    class FakePolicy:
+        def __init__(self, state):
+            self.state = state
+            self.loaded = None
+
+        def state_dict(self):
+            return self.state
+
+        def load_state_dict(self, state, strict):
+            self.loaded = (state, strict)
+
+    class FakeModel:
+        def __init__(self, state, *, ent_coef, automatic):
+            self.policy = FakePolicy(state)
+            self.ent_coef = ent_coef
+            self.ent_coef_optimizer = object() if automatic else None
+            self.log_ent_coef = FakeTensor() if automatic else None
+
+    source = FakeModel({"weight": "champion"}, ent_coef=0.2, automatic=False)
+    target = FakeModel({"weight": "random"}, ent_coef="auto_0.2", automatic=True)
+    captured = {"build_config": None}
+
+    def fake_load(path, *, device):
+        captured.update({"path": path, "device": device})
+        return source
 
     plugin = Plugin()
     monkeypatch.setattr(plugin, "_require_continuous", lambda _env: None)
+    monkeypatch.setattr(
+        plugin,
+        "build",
+        lambda _env, config: captured.update({"build_config": config}) or target,
+    )
     monkeypatch.setattr(SAC, "load", fake_load)
     env = object()
     result = plugin.load_for_training(
@@ -86,12 +117,61 @@ def test_training_load_applies_candidate_hyperparameters(monkeypatch) -> None:
         },
     )
 
-    assert result == "loaded"
+    assert result is target
     assert captured["path"] == "anchor.zip"
-    assert captured["env"] is env
-    assert captured["custom_objects"] == {
-        "learning_rate": 1e-4,
-        "batch_size": 512,
-        "gamma": 0.97,
-        "tau": 0.003,
+    assert captured["build_config"]["learning_rate"] == 1e-4
+    assert captured["build_config"]["batch_size"] == 512
+    assert captured["build_config"]["ent_coef"] == "auto_0.2"
+    assert target.policy.loaded == ({"weight": "champion"}, True)
+    assert result.warm_start_transfer_evidence["optimizer_state_transferred"] is False
+
+
+def test_fixed_entropy_anchor_can_warm_start_automatic_entropy(tmp_path) -> None:
+    import gymnasium as gym
+    from stable_baselines3 import SAC
+
+    env = gym.make("Pendulum-v1")
+    source = SAC(
+        "MlpPolicy",
+        env,
+        ent_coef=0.2,
+        policy_kwargs={"net_arch": [8]},
+        buffer_size=100,
+        learning_starts=1,
+        batch_size=8,
+        verbose=0,
+    )
+    source_path = tmp_path / "fixed_entropy_sac"
+    source.save(source_path)
+
+    plugin = Plugin()
+    target = plugin.load_for_training(
+        str(source_path),
+        env,
+        {
+            "ent_coef": "auto",
+            "net_arch": [8],
+            "buffer_size": 100,
+            "learning_starts": 1,
+            "batch_size": 8,
+            "device": "cpu",
+        },
+    )
+
+    assert target.ent_coef == "auto_0.2"
+    assert target.ent_coef_optimizer is not None
+    source_state = source.policy.state_dict()
+    target_state = target.policy.state_dict()
+    for key in source_state:
+        torch.testing.assert_close(
+            source_state[key].detach().cpu(),
+            target_state[key].detach().cpu(),
+        )
+    assert target.warm_start_transfer_evidence == {
+        "source_model": str(source_path.resolve()),
+        "source_entropy_mode": "fixed",
+        "target_entropy_mode": "automatic",
+        "optimizer_state_transferred": False,
+        "policy_state_transferred": True,
     }
+    env.close()
