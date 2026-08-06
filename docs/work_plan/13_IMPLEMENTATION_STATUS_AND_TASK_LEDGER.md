@@ -896,8 +896,8 @@ cTrader Copy for `protected_entry_unavailable`.
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
-| `MULTI-VENUE-PAPER-001` | Satoshi III successor technical lead + Musashi | `lts`, `prediction_provider`, `agent-multi` | ibkr_protected_alpaca_mt5_capacity_blocked | IBKR has one autonomous selected-model 25,000-unit USD.CAD Paper short with directly verified native TP/SL. Alpaca and MT5 are broker-flat but each retains an orphan/stale active L0 reservation that blocks the next eligible bar. | Preserve IBKR protection; complete findings 093-107, especially lifecycle repairs 104/105; deliver normalized due-bar facts, L0-only succession and live/sim comparison; no Live activation |
-| `LIVE-OPS-ALERT-001` | Satoshi III successor technical lead | `agent-multi`, `lts`, optionally `trading-contracts` | audit_rejected_corrections_ordered | Durable incident ledger/router and Project 3 terminal record are deployed, but JSON redaction, forwarded producer identity, recovery evidence and end-to-end delivery receipt fail audit. Business status also contradicts execution truth. | Execute `MUSASHI_TO_SATOSHI_III_LIVE_ALERTING_CORRECTION_AND_BUSINESS_EVIDENCE_ORDER_2026_08_04.md`; Musashi independently reproduces; owner retains activation/closure authority |
+| `MULTI-VENUE-PAPER-001` | General Satoshi III technical lead + General Musashi verification | `lts`, `prediction_provider`, `agent-multi` | ibkr_protected_alpaca_mt5_capacity_blocked | IBKR has one autonomous selected-model 25,000-unit USD.CAD Paper short with directly verified native TP/SL. Alpaca and MT5 are broker-flat but each retains an orphan/stale active L0 reservation that blocks the next eligible bar. | Preserve IBKR protection; complete findings 093-107, especially lifecycle repairs 104/105; deliver normalized due-bar facts, L0-only succession and live/sim comparison; no Live activation |
+| `LIVE-OPS-ALERT-001` | General Satoshi III technical lead + General Musashi verification | `agent-multi`, `lts`, optionally `trading-contracts` | audit_rejected_corrections_ordered | Durable incident ledger/router and Project 3 terminal record are deployed, but JSON redaction, forwarded producer identity, recovery evidence and end-to-end delivery receipt fail audit. Business status also contradicts execution truth. | Execute `MUSASHI_TO_SATOSHI_III_LIVE_ALERTING_CORRECTION_AND_BUSINESS_EVIDENCE_ORDER_2026_08_04.md`; Musashi independently reproduces; owner retains activation/closure authority |
 | `SOCIAL-TRADING-LAB-001` | Codex | `lts`, `agent-multi` | accounting_v2_verified_ctrader_api_submitted | Copy/PAMM/MAM accounting, withdrawal fee crystallization, currency quantization, instrument/margin-aware allocation, idempotent hash-chained OLAP, platform registry and protected social gates | Codex |
 | `SOCIAL-INTEL-001` | Codex | `agent-multi`, future narrow social adapter | active_readonly_flash_fleet | Deterministic social collection, OLAP, Flash-only Hermes triage/review, Telegram delivery, approval-gated publishing and DOIN domain discovery | Codex |
 | `CONTINUITY-001` | Codex + designated human maintainers | deployment repositories | specified_not_implemented | Reproducible VPS services, encrypted backups, revocation, restore drills and least-privilege human recovery | Codex |
@@ -908,12 +908,12 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_running_ab_preflight_corrections | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models and remains active on one chain. The N14/EN4_10/E4 four-seed design is accepted, but execution waits for findings 122-127: exact-chain post-rejoin proof, profile/GPU fail-closed controls, best-plus-terminal metrics, explicit margin telemetry, idempotent replicated four-GPU evidence and bounded no-trade patience. Finding 127 changes evaluation semantics, so the post-A/B full campaign uses a fresh domain rather than mixing code into `full-v2`. | Harvey |
-| `ETH-RESEARCH-TRANSFER-001` | Satoshi III + Musashi verification | `agent-multi`, `gym-fx`, `financial-data`, `lts` | roadmap_integrated_execution_not_started | Document 33 makes ETH the complete research reference: decide curriculum, run bounded feature/model/training pilots, jointly reconfirm winners, freeze the full stack, prove one-asset transfer, optimize the selected per-asset library, then enter portfolio optimization. Optional lines have kill/defer rules and cannot remain open indefinitely. | Harvey |
-| `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
-| `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
-| `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
-| `CHAMPION-SUCCESSION-001` | Satoshi III + Musashi verification | `agent-multi`, `lts`, OLAP views | doctrine_v1_1_pending_independent_verification | Exact-seat succession, independent promotion panel, paired block-bootstrap gate, synchronized replay, no-idle Paper/Demo switch and causal sequential regime track | Harvey |
+| `SOLVENCY-CURRICULUM-001` | General Satoshi III + General Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_running_ab_preflight_corrections | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models and remains active on one chain. The N14/EN4_10/E4 four-seed design is accepted as curriculum calibration, but execution waits for findings 122-127: exact-chain post-rejoin proof, profile/GPU fail-closed controls, best-plus-terminal metrics, explicit margin telemetry, idempotent replicated four-GPU evidence and bounded no-trade patience. Finding 127 changes evaluation semantics, so every later component or integration campaign receives a fresh domain rather than mixing code into `full-v2`; no single post-A/B campaign is presumed final. | Harvey |
+| `ETH-RESEARCH-TRANSFER-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `financial-data`, `lts` | hierarchical_doin_roadmap_integrated_not_started | Document 33 makes ETH the complete research reference. The N/EN packet calibrates curriculum bounds; dedicated DOIN domains optimize decompositions/features, encoders, SAC, event adapters, auxiliary heads and synthetic pretraining; a restricted joint domain co-optimizes confirmed interactions and final curriculum. The transferable global search contract remains separate from ETH-specific values before per-asset campaigns and portfolio optimization. | Harvey |
+| `DEV-TOOLING-MCP-001` | General Satoshi III + General Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
+| `DEV-TOOLING-MCP-002` | General Satoshi III + General Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
+| `KNOWLEDGE-CONTINUITY-001` | General Satoshi III + General Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
+| `CHAMPION-SUCCESSION-001` | General Satoshi III + General Musashi verification | `agent-multi`, `lts`, OLAP views | doctrine_v1_1_pending_independent_verification | Exact-seat succession, independent promotion panel, paired block-bootstrap gate, synchronized replay, no-idle Paper/Demo switch and causal sequential regime track | Harvey |
 
 Claude packet:
 
@@ -964,14 +964,14 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    Treat any accepted failure sentinel, duplicate claim, component mismatch,
    competing terminal tip or warm-start load error as an immediate stop.
 9. After findings 113 and 122-127 pass independent verification, execute the
-   four-seed equal-compute N14/EN4_10/E4 comparison. Preserve best and terminal
-   weights, exact raw metrics and two artifact copies. Freeze the winner as the
-   research baseline; do not launch the long ETH optimization yet.
-10. Execute document 33's bounded ETH research program before cross-asset
-    replication: simple causal calendar/decomposition pilots, SAC entropy/reward/
-    replay diagnostics, conditional TSFM/SSL/auxiliary tests and bounded
-    synthetic-regime evidence. Jointly reconfirm winners, then freeze one mature
-    ETH stack; apply explicit kill/defer rules to non-winners.
+   four-seed equal-compute N14/EN4_10/E4 calibration. Preserve best and terminal
+   weights, exact raw metrics and two artifact copies. Use the result to admit
+   and bound fixed-total-compute curriculum genes; it is not the final schedule.
+10. Execute document 33's hierarchical DOIN program before cross-asset
+    replication. Build the typed no-default parameter registry; run separate
+    component domains for causal/decomposition inputs, representations,
+    SAC dynamics, conditional event/auxiliary paths and synthetic pretraining;
+    retain diverse elites; then run the restricted joint integration domain.
 11. Build the missing raw-bar-to-current-SAC observation provider, prove
    two-source feature/action parity and wire the selected SAC policy into the
    production MT5 ETHUSD H4 runner. The existing linear model remains a shadow
@@ -980,12 +980,13 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 12. Maintain the authenticated writable OANDA MT5 Demo vertical and summarize
    uptime, spreads, fills, protection, symbol coverage, reconnects and
    reconciliation deviations in rolling 24-hour windows.
-13. After the bounded ETH research and joint confirmation, launch one fresh full
-   ETH domain with the final contract and corrected activity patience. Freeze its
-   robust alpha policy and deterministic action trace.
-14. Prove the optimized frozen stack transfers to one representative second asset, then
-   run one coordinated DOIN campaign for every owner-selected asset before
-   portfolio optimization. Preserve every loadable champion and resolved genome.
+13. Confirm the integrated ETH winner against matched normal-only and neighboring
+   easy-normal schedules over four seeds. Freeze its robust alpha policy,
+   component artifacts, full parameter registry, elites and action trace.
+14. Prove the global search contract transfers to one representative second
+   asset, then run one coordinated DOIN campaign for every owner-selected asset.
+   Optimize asset-specific values rather than copying ETH defaults; preserve
+   every loadable champion and resolved genome before portfolio optimization.
 15. Audit quote/L1/L2 and point-in-time calendar-vintage coverage; materialize
    only the execution claims supported by the available fidelity.
 16. Train/calibrate fill-time, adverse-selection, short-path and event-hazard

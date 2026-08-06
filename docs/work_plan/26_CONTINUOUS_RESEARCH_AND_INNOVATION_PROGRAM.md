@@ -143,30 +143,33 @@ candidate contribution. It cannot consume campaign GPUs or alter a
 materialized domain before termination telemetry and the CPU pilot exist.
 
 For the active ETH program, owner priority temporarily places P20-P23 and the
-P9/P12 live-data children ahead of unrelated H1 work. The curriculum decision is
-first. Accepted research variants are confirmed and frozen on ETH before
-cross-asset optimization. P23 receives one bounded feasibility decision but may
-not hold the stack open after its kill/defer condition. Portfolio P10 begins
-only after the owner-selected per-asset library is complete.
+P9/P12 live-data children ahead of unrelated H1 work. The initial curriculum
+packet calibrates gene admission/bounds. Every admitted component with material
+parameters receives a locally runnable optimizer and dedicated DOIN domain;
+defaults cannot freeze as evidence. A restricted joint domain performs final
+interaction and curriculum optimization. P23 receives one bounded feasibility
+decision but may not hold the stack open after its kill/defer condition.
+Portfolio P10 begins only after the owner-selected per-asset library is complete.
 
 ## 7.1 ETH-to-Portfolio Integration (2026-08-06)
 
 Document 33 is the active execution ordering for P9, P10, P12 and P20-P23:
 
 ```text
-curriculum decision
-  -> bounded ETH feature/learning/representation/synthetic pilots
-  -> joint confirmation and mature ETH contract freeze
-  -> one final full ETH optimization and reference champion
+curriculum calibration and gene-bound evidence
+  -> dedicated ETH component DOIN domains and diverse elites
+  -> restricted joint integration and final curriculum optimization
+  -> four-seed confirmation and ETH reference release
   -> representative second-asset transfer
-  -> selected per-asset DOIN campaigns and champion library
+  -> asset-specific DOIN campaigns under the global search contract
   -> portfolio optimization
 ```
 
-This order deliberately pays the model/data/preprocessing research cost once on
-ETH before multi-day per-asset campaigns. A cross-asset transfer failure can
-change the shared contract only through one bounded correction and reconfirmation;
-it cannot create silent bespoke pipelines that make portfolio cells incomparable.
+This order deliberately discovers component families and justified gene ranges
+on ETH before multi-day per-asset campaigns. It does not freeze ETH-specific
+values as universal defaults. A cross-asset transfer failure can change the
+shared contract only through one bounded correction and reconfirmation; it cannot
+create silent bespoke pipelines that make portfolio cells incomparable.
 
 ## 8. Cadence and Outputs
 

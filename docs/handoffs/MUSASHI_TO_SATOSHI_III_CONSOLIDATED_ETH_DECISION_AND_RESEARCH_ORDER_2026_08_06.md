@@ -2,12 +2,19 @@
 
 Date: 2026-08-06 America/Bogota
 From: General Musashi, independent auditor and experimental reviewer
-To: Satoshi III, temporary technical lead
-Owner intent: decide easy versus normal correctly, keep useful compute moving,
-prove exact-model Demo behavior, mature the complete ETH stack, optimize the
-selected per-asset library with that frozen stack, and then optimize the portfolio
+To: General Satoshi III, temporary technical lead
+Owner intent: calibrate easy versus normal correctly, keep useful compute moving,
+prove exact-model Demo behavior, mature and jointly optimize the complete ETH
+stack, optimize the selected per-asset library under its validated search
+contract, and then optimize the portfolio
 Runtime authority: none beyond existing owner-approved services and explicit
 acceptance gates
+
+Owner promotion (2026-08-06): Satoshi III is promoted to **General Satoshi III**
+for the quality of the research-roadmap proposal and technical-lead work. The
+rank changes address and recognition, not governance: General Satoshi implements
+and submits evidence; General Musashi independently reproduces and audits;
+neither General closes their own material finding or overrides the owner.
 
 ## 1. Role and Standard
 
@@ -18,9 +25,14 @@ a decision. Treat missing evidence as unavailable, never zero or success. Do not
 redesign DOIN, mutate an active chain, touch Live capital, bypass native SL/TP,
 or place an LLM/Hermes process in any order-authority path.
 
-Your proposal contains strong ideas. It is not executable as written. This
-order incorporates the accepted parts, corrects its stale runtime claims and
-reorders it around the owner's actual delivery priorities.
+Never freeze a decision-bearing library default. Every material parameter must
+be a hard invariant, evidence-fixed, a typed gene with justified bounds, or
+explicitly excluded by a recorded experiment. Every component optimizer must
+run locally without DOIN before its existing plugin boundary distributes it.
+
+Your proposal contains strong ideas and is intentionally a research proposal,
+not an execution contract. This order incorporates the accepted parts, corrects
+its stale runtime claims and reorders it around the owner's delivery priorities.
 
 Read these files in order:
 
@@ -77,6 +89,12 @@ does not weaken any correction or acceptance criterion in it.
     selected optimized per-asset library. Optional ideas are killed or deferred
     explicitly before freeze rather than skipped silently or allowed to expand
     forever.
+12. N14/EN4_10 is a curriculum calibration, not the final schedule. Dedicated
+    component and integration DOIN domains may optimize fixed-budget curriculum
+    genes, and the mature stack receives a final matched curriculum confirmation.
+13. Autoencoders, decomposition components, SAC topology, event adapters,
+    auxiliary heads and synthetic pretraining have independent tunable genes.
+    A hand-configured component cannot be rejected against an optimized baseline.
 
 ### 2.3 Rejected as current claims
 
@@ -86,6 +104,30 @@ does not weaken any correction or acceptance criterion in it.
 - "Diffusion models dominate" as a project-wide basis for selecting a generator.
 - The 3.5-4.5 hour per-seed ETA until a measured model separates fixed
   evaluation time from training-step time.
+
+### 2.4 General Satoshi's required critical review
+
+The promotion carries a duty to challenge this order before J3 freezes its
+interfaces. Return a concise technical dissent/correction section even if the
+conclusion is agreement. It must address:
+
+1. which proposed domains are separable and which interactions require a merged
+   or nested evaluation;
+2. which gene bounds/choices have direct project evidence, which need a cheap
+   range screen, and which remain unjustified;
+3. conditional-gene validity, repair bias and identifiability risks;
+4. where component eligibility metrics could select a representation that harms
+   downstream trading utility;
+5. expected candidate cost, campaign count and fleet time as measured ranges,
+   without false precision;
+6. leakage, non-stationarity, multiple-comparison and overfitting risks introduced
+   by repeated component search; and
+7. any simpler ordering that preserves the owner's requirement while reaching a
+   portfolio-ready per-asset library sooner.
+
+Do not provide ceremonial agreement. Cite code, current artifacts, OLAP facts or
+primary literature for each requested modification. General Musashi will audit
+the critique and amend the plan when the evidence warrants it.
 
 ## 3. Ordered Job Queue
 
@@ -125,7 +167,7 @@ After J0 tests pass locally:
 
 No performance conclusion is permitted from J1.
 
-### J2 - P0 four-seed ETH decision
+### J2 - P0 four-seed ETH curriculum calibration
 
 Only after J0-J1 acceptance:
 
@@ -135,20 +177,33 @@ Only after J0-J1 acceptance:
 4. preserve best and terminal artifacts, raw traces and telemetry;
 5. collect to Omega and replicate to Dragon;
 6. aggregate fail-closed; and
-7. submit the owner decision packet.
+7. submit the calibration packet defining whether easy training remains an
+   admitted family and the justified bounds for later curriculum genes.
 
 Do not launch optional GPU research during J2. Include live elapsed-time ETA and
 completed/current/remaining arm counts in status.
 
-### J3 - P0 curriculum-winner research baseline
+J2 does not freeze the mature-stack curriculum. It provides an experimental
+provisional schedule and keeps normal-only as the control.
 
-After the owner decision:
+### J3 - P0 component-domain and parameter-registry framework
 
-- freeze the paired winner and both best/terminal evidence views;
+Before any component campaign:
+
+- inventory every decision-bearing parameter across data, transforms, encoders,
+  SAC, curriculum, action/risk and synthetic pretraining;
+- classify each as invariant, evidence-fixed, optimized gene or excluded;
+- record type, units, choices/bounds, provenance, activation condition and repair
+  rule;
+- implement local standalone component optimizers and thin DOIN adapters;
+- enforce fixed total training compute when `easy_epochs` changes;
+- preserve champion plus five diverse elites and all component/downstream OLAP
+  facts; and
 - archive `full-v2` as diagnostic lineage rather than changing its semantics;
-- do not launch a multi-day full DOIN campaign on the still-incomplete stack;
-- move the GPUs directly into the first accepted bounded ETH research pilot; and
-- preserve no-idle transition, artifact and lineage evidence.
+- preserve no-idle transitions between component domains.
+
+Package defaults may initialize a mechanical smoke only. Any unresolved default
+blocks component freeze.
 
 ### J4 - P1 exact-model Demo and live/sim evidence, CPU/live, start alongside J0
 
@@ -184,43 +239,85 @@ From existing logs and artifacts, produce:
 Classify each `nan`, zero and missing value. Do not propose a replay algorithm
 until the measured defect is stated.
 
-### J6 - P1 mature and freeze the ETH reference stack
+### J6 - P1 causal-input and decomposition DOIN domains
 
-After J2 decides the curriculum, execute R1-R5 in their bounded order on ETH.
-Each line starts with the cheapest feasibility packet; only a credible signal
-earns four paired seeds. Reconfirm all adopted changes jointly against the
-unmodified curriculum winner. Freeze the complete data/feature/model/training/
-action/cost/metric contract only after every admitted line is accepted, rejected
-or explicitly deferred under its preregistered rule.
+Optimize simple calendar features and each admitted decomposition family
+separately. Genes include source-feature masks, transform family, basis/order,
+causal windows, levels/bands, component masks, lags, normalization and warm-up.
+Every feature passes future-append invariance and train-only-fit checks. Select by
+downstream realistic-normal SAC utility, not transform reconstruction quality.
 
-### J7 - P1 final full ETH optimization
+### J7 - P1 representation and autoencoder DOIN domains
 
-After J6 freezes the contract, materialize one fresh ETH domain with corrected
-activity patience. Launch all four workers on one genesis, shared pool and chain.
-Preserve the loadable champion, genome, raw metrics, action trace, contract hashes
-and inference smoke. This is the first long ETH optimization after the A/B;
-diagnostic and research pilots are not resume sources.
+Optimize encoder family, context, depth, width, latent dimension, mask ratio,
+loss/weights, optimizer, learning rate, regularization and freeze/fine-tune mode.
+Use representation quality and anti-collapse as eligibility; use downstream
+realistic-normal control utility as fitness. Compare optimized encoders with an
+equally tuned no-encoder control.
 
-### J8 - P1 second-asset transfer packet
+### J8 - P1 SAC topology and learning-dynamics DOIN domain
 
-After J7 freezes the optimized ETH cell, rank candidate second assets using
-existing data coverage, validation evidence, real-time feature availability,
-venue support and diversification. Propose one asset and one alternate with a
-raw evidence table.
-After owner acknowledgment, run the reduced paired transfer packet. A material
-failure permits one bounded cross-asset correction to the shared stack, not a
-new bespoke architecture for every asset.
+Optimize actor/critic topology, learning rates, batch/buffer size, gamma, tau,
+training cadence, gradient steps, reward scale, entropy mode/target and any
+admitted replay family with its own parameters. Conditional inactive genes may
+not inherit hidden package defaults.
 
-### J9 - P1 selected per-asset library
+### J9 - P2 event-context and TSFM adapter DOIN domain, conditional
 
-Apply the accepted J6/J8 stack to the complete owner-selected asset list. Run one
-coordinated DOIN campaign at a time with all workers on one chain. Preserve each
-cell's loadable weights, resolved genome, metrics, traces and lineage. Report
-completed/current/remaining cells and ETA for the entire library.
+Only after simple point-in-time calendar features show headroom. Optimize event
+families, release-gated surprise/decay, context, frozen encoder/forecast output,
+adapter dimension and fusion. Pin pretrained model bytes; do not select a TSFM by
+generic leaderboard rank.
 
-### J10 - P1 portfolio optimization
+### J10 - P2 auxiliary-control-head DOIN domains, conditional
 
-Only after J9 is complete or the owner explicitly narrows the universe:
+Optimize target family, horizon, head topology, auxiliary loss/weight and
+gradient-sharing for latent self-prediction and causal-component heads in
+separate domains. Promotion requires downstream control value and no harmful
+gradient interference.
+
+### J11 - P2 synthetic-regime DOIN domains, conditional
+
+Run transparent generator baselines first. A generator-fidelity domain may
+optimize generator parameters; a separate downstream domain optimizes
+synthetic/real ratio, pretraining placement/duration and real fine-tuning. Real
+data alone performs selection/validation. Apply the preregistered kill/defer rule
+if the feasibility result is weak or ambiguous.
+
+### J12 - P1 restricted joint ETH integration DOIN domain
+
+Build a bounded genome only from confirmed component families, sensitivity-
+supported genes/ranges, diverse elites and fixed-budget curriculum genes. Include
+`easy_epochs=0` as normal-only and derive normal epochs from the fixed total.
+Warm-start from component elites and co-optimize interactions. Do not reopen
+rejected genes or all historical ranges.
+
+### J13 - P1 final curriculum confirmation and ETH release
+
+Confirm the integrated winner against matched normal-only and nearest
+easy-normal schedules over four paired seeds and equal total compute. Freeze the
+loadable component/policy artifacts, ETH genome and elites, full parameter
+registry, raw metrics, traces, hashes and inference smoke. Separate the global
+search contract from ETH-specific values and weights.
+
+### J14 - P1 second-asset transfer packet
+
+Rank one second asset and alternate by data, validation, real-time availability,
+venue support and diversification. Use the frozen global gene schema and ranges,
+initialize from ETH elites, then let DOIN optimize masks, windows, topology,
+hyperparameters, curriculum and risk for that asset. Permit one bounded shared-
+contract correction on material transfer failure.
+
+### J15 - P1 selected per-asset library
+
+Run one coordinated per-asset DOIN campaign at a time, all workers on one chain.
+Do not copy ETH-specific hyperparameters blindly. Preserve every cell's loadable
+weights, resolved genome, metrics, traces and lineage. Report
+completed/current/remaining assets and whole-library ETA.
+
+### J16 - P1 portfolio optimization
+
+Only after J15 is complete or the owner explicitly narrows the universe:
 
 - verify the Nautilus multi-asset replay contract;
 - implement synchronized target exposures and account-level constraints;
@@ -229,56 +326,8 @@ Only after J9 is complete or the owner explicitly narrows the universe:
 - persist portfolio decisions and component model hashes; and
 - produce a Paper/Demo shadow plan without granting new venue authority.
 
-Portfolio code may receive fixture-based unit tests before J10. Do not spend
+Portfolio code may receive fixture-based unit tests before J16. Do not spend
 per-asset GPU budget or describe that as starting portfolio optimization.
-
-### R1 - P2 causal feature pilots
-
-Prepare independent, CPU-first packets for:
-
-1. structured point-in-time calendar features;
-2. wavelet features;
-3. multitaper/spectral features;
-4. causal Hilbert features;
-5. fractional differencing; and
-6. EMD only if it passes the strict boundary-stability test.
-
-Every family needs future-append invariance, train-only fitting, feature
-availability and runtime parity evidence. Run one cheap seed per family; only a
-credible signal earns four paired seeds.
-
-### R2 - P2 SAC dynamics experiment
-
-Use J5 to choose the smallest experiment. Preference order:
-
-1. reward-scale/automatic-entropy correction;
-2. target entropy/floor range;
-3. recency or actor-aware replay against uniform replay;
-4. ordinary PER only as a named control.
-
-Implement no custom replay before reproducing a published actor-critic baseline
-with property and conservation tests.
-
-### R3 - P3 event TSFM benchmark
-
-Run only if R1's simple calendar baseline shows useful headroom. Compare frozen
-encoders under exact causal inputs, hashes, latency, memory and observation
-dimension. A generic forecasting leaderboard cannot select the trading feature
-extractor.
-
-### R4 - P3 auxiliary/SSL pilots
-
-Test latent self-prediction, causal decomposition targets and SSL embeddings as
-separate one-seed pilots, each with collapse/interference telemetry. Escalate at
-most one promising variant at a time to paired confirmation.
-
-### R5 - P4 synthetic regime research
-
-Start with moving-block bootstrap, regime-conditioned resampling and transparent
-volatility/state models. Compare any diffusion candidate only after those
-baselines. Real-only validation and memorization/fidelity tests are mandatory.
-This line must receive a bounded ETH decision before J6 freeze, but a failed or
-ambiguous pilot is rejected/deferred and cannot hold J6 indefinitely.
 
 ## 4. Required Status Contract
 
@@ -306,6 +355,10 @@ Return one packet containing:
 - fresh direct `full-v2` snapshot with UTC timestamps;
 - J4 controller inventory and first parity coverage table;
 - J5 diagnostic schema plus any evidence already derivable without mutation;
+- J3 parameter-registry schema with every known decision-bearing value classified;
+- local optimizer and thin DOIN-adapter interface map for J6-J12;
+- proposed component-domain boundaries, genome schemas and bound-provenance sources;
+- the section 2.4 critical review, including concrete proposed amendments;
 - explicit jobs not started and why;
 - revised ETA method with measured components; and
 - repository cleanliness/push state.

@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; ETH anchored `full-v2` coordinated while the easy/normal decision harness is corrected; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
-Plan version: 1.27.0
+Plan version: 1.28.0
 Date: 2026-08-06
 Primary implementation repository: `agent-multi`
 
@@ -191,22 +191,27 @@ adding value.
 3. Keep the current anchored ETH `full-v2` domain on one chain while correcting
    the decision harness, exact-chain interruption controls and bounded
    activity-ineligible patience without mutating the active evaluation semantics.
-4. Execute the four-seed equal-compute `N14` versus `EN4_10` decision, retaining
-   `E4` as a diagnostic, and select from raw realistic-normal outcomes.
-5. Freeze the curriculum winner as a fixed research baseline; preserve the
-   current `full-v2` chain as diagnostic lineage and do not pay for a full ETH
-   optimization while the input/model contract is still changing.
-6. Use ETH as the complete reference laboratory: run bounded causal-feature,
-   calendar, SAC-dynamics, representation and synthetic-regime pilots; promote
-   only paired winners and explicitly kill or defer weak lines.
-7. Jointly reconfirm adopted improvements and freeze the complete ETH data,
-   preprocessing, model, training, action, cost, metric and artifact contract.
-8. Run one final full ETH DOIN optimization on the mature frozen stack and
-   preserve its loadable champion, genome, traces, metrics and lineage.
+4. Execute the four-seed equal-compute `N14` versus `EN4_10` calibration,
+   retaining `E4` as diagnostic. Use it to admit and bound curriculum genes; do
+   not treat this one schedule comparison as the mature-stack final choice.
+5. Materialize the complete typed parameter registry. No decision-bearing
+   package default may freeze: it is invariant, evidence-fixed, optimized as a
+   gene or experimentally excluded.
+6. Use ETH as the complete reference laboratory. Run sequential DOIN component
+   domains for causal/decomposition inputs, encoders/autoencoders, SAC topology
+   and dynamics, conditional event/TSFM adapters, auxiliary heads and bounded
+   synthetic pretraining.
+7. Preserve each component champion plus diverse elites, then run a restricted
+   joint ETH integration DOIN domain over only confirmed genes and ranges,
+   including fixed-total-compute curriculum allocation.
+8. Confirm the integrated winner against normal-only and neighboring
+   easy-normal schedules over four paired seeds; freeze the ETH release and the
+   separate transferable search contract.
 9. Prove transfer on one representative second asset, permitting only one
    bounded shared-contract correction rather than bespoke per-asset redesign.
 10. Repeat one coordinated DOIN Level 2 campaign per owner-selected asset,
-   sequentially, with all workers sharing one chain and candidate pool.
+    sequentially, optimizing asset-specific masks, topology, hyperparameters,
+    curriculum and risk within the evidence-supported global contract.
 11. Freeze the complete per-asset cell library, including weights, genome,
     metrics, traces and lineage, before portfolio optimization.
 12. Optimize static portfolio allocation from the frozen library, then add

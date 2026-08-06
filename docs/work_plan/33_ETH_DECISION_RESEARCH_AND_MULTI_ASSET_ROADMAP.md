@@ -1,11 +1,13 @@
 # 33. ETH Decision, Research, and Multi-Asset Roadmap
 
 Status: active
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-06
-Owner priority: decide the ETH easy/normal curriculum, mature the complete ETH
-stack, transfer the frozen winner to all selected assets, and only then optimize
-the portfolio
+Owner priority: calibrate ETH easy/normal training, mature and jointly optimize
+the complete ETH stack, transfer the validated search contract to all selected
+assets, and only then optimize the portfolio
+Technical lead: General Satoshi III (owner promotion, 2026-08-06)
+Independent auditor: General Musashi
 
 ## 1. Purpose
 
@@ -69,7 +71,38 @@ A result may change the frozen model, data or curriculum contract only after:
 Mechanical tests, CPU diagnostics and one-seed feasibility pilots do not require
 four seeds. They cannot promote a contract or make a general performance claim.
 
-### 3.2 Metrics
+### 3.2 No unoptimized decision-bearing defaults
+
+Every parameter that can materially change observations, representation,
+learning, actions, risk or selection must have exactly one recorded status:
+
+1. fixed by a hard business/safety invariant;
+2. fixed by prior project evidence with an immutable citation;
+3. exposed as a typed optimization gene with evidence-based bounds; or
+4. excluded after a bounded ablation or infeasibility result.
+
+Library defaults may initialize a pilot, but they never justify a frozen value.
+Every component domain publishes a parameter registry containing type, units,
+bounds/choices, bound provenance, conditional activation, repair rules and final
+disposition. Unknown or inactive parameters fail closed rather than silently
+falling back to a package default.
+
+Component optimization is hierarchical, not one enormous first genome:
+
+```text
+contract/causality proof
+  -> cheap local range/feasibility screen
+  -> dedicated DOIN component domain
+  -> downstream realistic-normal confirmation
+  -> diverse elite set and sensitivity-supported bounds
+  -> restricted joint integration domain
+```
+
+Every optimizer must remain runnable locally without DOIN. Its plugin extends
+that local optimizer with migration, lineage and distributed evaluation; it does
+not place component logic inside `doin-node`.
+
+### 3.3 Metrics
 
 Every decision table reports, at minimum:
 
@@ -88,7 +121,7 @@ the experiment changes one mechanism. The report additionally includes the
 Pareto frontier over weekly return and maximum drawdown and a risk-bounded raw
 table. Those diagnostics do not silently change the active objective.
 
-### 3.3 Leakage and calibration
+### 3.4 Leakage and calibration
 
 - Every online feature must be invariant at time `t` to appending rows after
   `t`, including fitted preprocessing state.
@@ -111,7 +144,7 @@ mutation, actual post-rejoin chain proof, a pinned A/B contract, complete best
 and terminal evidence, idempotent four-GPU orchestration, two verified copies,
 strict aggregation and bounded activity-ineligible patience.
 
-### D1. Execute the ETH curriculum decision
+### D1. Execute the ETH curriculum calibration
 
 Run exactly four paired seeds with these arms:
 
@@ -120,15 +153,24 @@ Run exactly four paired seeds with these arms:
 - `E4`: diagnostic easy-only arm, never a deployable winner by itself.
 
 Use 20,000 timesteps per epoch, shared per-seed anchors, realistic-normal
-validation and no early stopping. The decision is based on paired raw outcomes,
-not a pooled average that can hide seed disagreement.
+validation and no early stopping. The result establishes whether solvency
+relaxation deserves entry into the optimization genome and calibrates its search
+bounds. It is not the final curriculum choice for the mature stack because later
+components can interact with the learning schedule.
 
-### D2. Freeze the curriculum winner as the research baseline
+### D2. Materialize the provisional research baseline
 
-After the owner chooses the curriculum from the complete packet, freeze its
-best-checkpoint and terminal evidence as the research baseline. Do not start a
-multi-day full DOIN campaign yet. Use the fixed-genome/paired harness to resolve
-the remaining input, preprocessing and learning-stack research first.
+Preserve N14, EN4_10 and E4 evidence. Select a provisional schedule for component
+search from the complete paired packet, but retain normal-only as the mandatory
+control. The provisional value is experimentally chosen, not a library default.
+Do not start a broad full-stack DOIN campaign yet.
+
+Every dedicated component domain keeps total training compute fixed. Where the
+component plausibly interacts with curriculum, expose `easy_epochs` (including
+zero) and derive `normal_epochs = total_epochs - easy_epochs`; never let a
+candidate buy fitness by consuming more total epochs. Easy-only remains
+diagnostic because promotion always requires normal-realistic training or
+fine-tuning and normal-realistic validation.
 
 Do not hot-patch or resume `full-v2` under changed evaluation semantics.
 Preserve it as diagnostic lineage. Its GPUs move directly into the first bounded
@@ -155,34 +197,57 @@ Estimate execution costs on a calibration window, freeze a versioned profile,
 then assess it on a later holdout. Daily reports are descriptive; weekly reports
 remain descriptive until sample requirements are met.
 
-### D4. Freeze the mature ETH reference stack
+### D4. Execute hierarchical ETH component domains
 
-The curriculum winner is the starting point, not automatically the final
-per-asset template. Complete the bounded ETH research sequence in section 5.
-Each line begins with the cheapest decisive pilot and only credible signals earn
-four-seed confirmation. Adopted improvements are jointly reconfirmed against the
-unmodified curriculum winner before the ETH contract freezes.
+Complete the component sequence in section 5. A component with tunable topology,
+feature selection, preprocessing or learning parameters receives a dedicated
+DOIN domain after its cheap contract screen. Its final fitness is always
+downstream realistic-normal trading validation; reconstruction, forecast or
+generator scores are eligibility/diagnostic facts, never substitutes for control
+utility.
 
-Freeze only after every admitted ETH line is one of:
+Each domain archives the champion plus up to five strong, behaviorally diverse
+elites. The next domain consumes those artifacts and evidence-supported ranges,
+not one winner treated as unquestionable truth. OLAP records every genome,
+component metric, downstream metric, resource fact and lineage.
 
-- accepted on complete paired evidence;
-- rejected by its preregistered kill condition;
-- explicitly deferred because its required data is unavailable; or
-- retained as research that does not alter the per-asset input/model contract.
+### D5. Run restricted joint ETH integration and final curriculum optimization
 
-The frozen reference stack includes data, feature/preprocessing, architecture,
-training curriculum, action/order, cost, metric and artifact contracts. This is
-the reusable template for the expensive per-asset campaigns.
+After the component domains, create one integration genome containing only:
 
-### D5. Run the final full ETH optimization once
+- component families that passed downstream confirmation;
+- feature/component masks and parameters with measured sensitivity;
+- compatible encoder/policy topology genes and evidence-supported ranges;
+- SAC learning/replay genes retained by their dedicated domain; and
+- fixed-budget curriculum genes, including normal-only as `easy_epochs=0`.
 
-Materialize a fresh semantic domain with the D4 contract and corrected activity
-patience. Run all workers on one genesis, shared pool and chain. The accepted ETH
-release contains the loadable policy artifact, winning genome, preprocessing and
-feature contract, data/config/code hashes, complete metric vector, deterministic
-action trace and inference smoke. No earlier diagnostic chain is a resume source.
+Warm-start the integration population from the diverse component elites. Do not
+reopen every rejected gene or take the Cartesian product of all historical
+ranges. The integration DOIN campaign co-optimizes interactions that isolated
+domains cannot identify while keeping the search space bounded.
 
-### D6. Transfer to one representative second asset
+The winning curriculum is therefore selected near the end, jointly with the
+mature stack, rather than assumed from N14/EN4_10. Confirm the integrated winner
+against matched normal-only and nearest easy-normal controls over four seeds
+before release.
+
+### D6. Freeze the ETH reference release and transferable search contract
+
+The accepted ETH release contains loadable component and policy artifacts,
+winning/elite genomes, complete parameter registry, preprocessing and feature
+contracts, data/config/code hashes, raw metric vectors, deterministic action
+trace and inference smoke.
+
+Separate two things explicitly:
+
+- **frozen global contract:** causality, interfaces, safety, available component
+  families, gene schema and evidence-supported bounds;
+- **ETH-specific solution:** selected masks, topology, hyperparameters,
+  curriculum allocation, risk geometry and trained weights.
+
+The ETH-specific values are not copied blindly to every asset.
+
+### D7. Transfer to one representative second asset
 
 Before claiming SAC-wide behavior, run a reduced decision packet on one second
 asset chosen from the evidence-backed universe using:
@@ -193,25 +258,28 @@ asset chosen from the evidence-backed universe using:
 - distinct market behavior from ETH; and
 - expected portfolio diversification value.
 
-The reduced packet tests transfer of the complete frozen ETH stack. It does not
-repeat every rejected research option and does not require the second asset to
-beat ETH in standalone return. A material transfer failure returns to D4 once
-with a bounded cross-asset correction; it does not start asset-by-asset redesign.
+The reduced packet tests transfer of the frozen search contract and initializes
+from ETH elites. DOIN optimizes per-asset masks, windows, topology,
+hyperparameters, curriculum allocation and risk geometry within the justified
+ranges. It does not repeat rejected component research and does not require the
+second asset to beat ETH in standalone return. A material transfer failure
+returns to D5 once with a bounded shared-contract correction; it does not start
+silent asset-by-asset architecture drift.
 
-### D7. Optimize and freeze the selected per-asset library
+### D8. Optimize and freeze the selected per-asset library
 
-Apply the D4 contract to each selected asset using one coordinated DOIN campaign
-at a time and all available workers on the same chain. Preserve champion weights,
-genome, metrics, traces and complete lineage for every cell. A cell may be kept
-as a diversification control even when standalone return is weaker, but it must
-pass activity, safety, data and artifact gates.
+Apply the D6 search contract to each selected asset using one coordinated DOIN
+campaign at a time and all available workers on the same chain. Preserve
+champion weights, genome, metrics, traces and complete lineage for every cell. A
+cell may be kept as a diversification control even when standalone return is
+weaker, but it must pass activity, safety, data and artifact gates.
 
 Do not enter portfolio optimization until the owner-selected library is complete
 or the owner explicitly narrows the universe based on the per-asset evidence.
 
-### D8. Optimize the portfolio
+### D9. Optimize the portfolio
 
-Portfolio work begins with the frozen D7 library. Use frozen cells and the
+Portfolio work begins with the frozen D8 library. Use frozen cells and the
 existing Nautilus multi-asset replay path to implement:
 
 1. a two-asset synchronized observation and target-exposure contract;
@@ -241,69 +309,106 @@ optimization phase.
   collapse. Separate fixed coefficient, automatic tuning, missing telemetry,
   reward scale and actual policy-entropy behavior.
 
-### R1. Causal input expansion - separate families
+### R1. Causal inputs and decomposition DOIN domains
 
 Do not combine calendar and decomposition features into one first campaign.
-Build and screen these contracts independently:
+Build and screen these contracts independently, then optimize each admitted
+family through its own domain:
 
 1. simple structured calendar surprise/importance/decay features;
-2. each causal decomposition family, with future-append invariance tests;
-3. a combined contract only if one or more independent families show stable
+2. wavelet family, basis, causal window, depth/bands and component mask;
+3. multitaper window, bandwidth, band definitions and component mask;
+4. causal Hilbert source, FIR order/window, phase/amplitude outputs and lags;
+5. fractional-differencing order, threshold, window and source mask;
+6. EMD family and component mask only after strict boundary-stability tests; and
+7. a combined contract only if one or more independent families show stable
    marginal value.
 
 Feature selection reports stability across seeds and resamples. One GA genome
-dropping or keeping a group is not sufficient evidence by itself.
+dropping or keeping a group is not sufficient evidence by itself. Every family
+optimizes source-feature selection, transform parameters, component selection,
+normalization and warm-up behavior; no transform is applied to a price/feature
+source merely because it is conventional.
 
-### R2. SAC learning dynamics - before expensive encoders
+### R2. Representation and autoencoder DOIN domains
+
+Representation candidates are locally runnable plugins and expose typed genes
+for encoder family, causal context, depth, width, latent dimension, masking,
+loss family/weights, optimizer, learning rate, regularization and frozen versus
+fine-tuned use. Use a two-level evaluation:
+
+1. train-only representation eligibility: anti-collapse, reconstruction or
+   self-prediction facts and resource limits;
+2. downstream SAC utility under the same realistic-normal validation contract.
+
+An encoder with excellent reconstruction and weak control utility is rejected.
+Optimize autoencoder/SSL parameters with DOIN; do not compare one hand-configured
+encoder against an optimized no-encoder baseline.
+
+### R3. SAC topology and learning-dynamics DOIN domain
 
 After R0 identifies the failure mode, compare the smallest relevant changes:
 
-1. reward-scale and automatic entropy targets/ranges;
-2. replay recency or actor-aware prioritization only if uniform replay remains a
-   measured bottleneck;
-3. a published actor-critic replay baseline before a custom implementation.
+1. actor/critic depth and width, activation and feature-extractor coupling;
+2. learning rates, batch/buffer size, gamma, tau, train frequency and gradient
+   steps under bounded resource constraints;
+3. reward scale and automatic entropy mode/target/range;
+4. replay recency or actor-aware prioritization only if uniform replay remains a
+   measured bottleneck; and
+5. a published actor-critic replay baseline before a custom implementation.
 
 Vanilla TD-error PER is not presumed beneficial for SAC. Actor-critic studies
 report mixed or adverse behavior, so this line needs its own bounded evidence.
+Inactive conditional genes must not leak package defaults into candidate builds.
 
-### R3. Time-series foundation model event context - conditional
+### R4. Event-context and TSFM adapter DOIN domain - conditional
 
 First establish that the cheap point-in-time calendar baseline in R1 has
 headroom. Then benchmark frozen candidate encoders on the exact dataset and
 latency contract. Chronos-2, Moirai-family and other candidates are options, not
 preselected winners. Pin model bytes and licenses, measure causal availability,
 embedding dimension, latency, memory and incremental value over the simple
-baseline.
+baseline. Optimize event families, surprise normalization, decay, context,
+encoder/forecast output selection, adapter dimension, fusion and freeze/fine-tune
+policy. Pretrained weights are fixed only by an immutable artifact hash; adapter
+and usage parameters are not left at defaults.
 
-### R4. Auxiliary and self-supervised representations - conditional
+### R5. Auxiliary-control heads DOIN domain - conditional
 
-Test latent self-prediction, causal-component auxiliary heads and frozen SSL
-embeddings as separate arms. Each starts with one cheap feasibility seed. Only a
-credible signal earns four paired seeds. Record representation rank/variance,
-gradient interference and the additional optimization dimensions.
+Test latent self-prediction and causal-component auxiliary heads as separate
+families. Optimize target family, horizon, head topology, loss, loss weight and
+gradient-sharing strategy. Each starts with one cheap feasibility seed. Only a
+credible downstream signal earns a dedicated DOIN domain and four-seed
+confirmation. Record representation rank/variance, gradient interference and
+the additional optimization dimensions.
 
-### R5. Synthetic regimes - independent high-risk line
+### R6. Synthetic-regime generator and pretraining DOIN domains
 
-Before freezing D4, give synthetic regimes a bounded feasibility decision.
+Before D5 integration, give synthetic regimes a bounded feasibility decision.
 Compare simple transparent generators such as moving-block bootstrap,
 regime-conditioned resampling and fitted volatility/state baselines before a
 diffusion model. Any neural generator must pass memorization, diversity,
 stylized-fact and real-only downstream utility tests. Synthetic samples may
-train or pretrain; they never select or validate a model. A failed or ambiguous
-pilot closes/defer this line and cannot hold the entire program indefinitely.
+train or pretrain; they never select or validate a model.
+
+Generator parameters may be optimized in a fidelity domain, but promotion uses
+a second downstream domain that optimizes synthetic/real ratio, curriculum
+placement, pretraining duration and real-data fine-tuning. A failed or ambiguous
+pilot closes/defers this line and cannot hold the entire program indefinitely.
 
 ## 6. Corrected Ordering
 
 ```text
-critical: D0 -> D1 -> D2 -> bounded ETH R1-R5 -> D4 -> D5 -> D6 -> D7 -> D8
+critical: D0 -> D1 -> D2 -> D4/R1-R6 -> D5 -> D6 -> D7 -> D8 -> D9
                     \-> D3 runs continuously and calibrates later simulations
 
 parallel CPU: R0 -> R1 feasibility
-ordered ETH GPU after D1: R2 -> conditional R3/R4/R5
+sequential DOIN: R1 -> R2 -> R3 -> conditional R4/R5/R6 -> D5 integration
 ```
 
-The fleet has one GPU owner at a time. During D1 and D2, optional GPU research
-waits. CPU-only research and live evidence collection continue.
+The fleet has one GPU campaign owner at a time. Each accepted component domain
+uses all workers on one chain before the next component domain starts. CPU-only
+research and live evidence collection continue in parallel.
 
 ## 7. Stop and Promotion Rules
 
@@ -313,10 +418,12 @@ waits. CPU-only research and live evidence collection continue.
   defect explains the result and one bounded correction is preregistered.
 - Promote an option only on complete paired evidence and report its incremental
   GPU-hour cost.
-- Do not launch D5 while an admitted interface-changing ETH line
+- Do not launch D5 integration while an admitted interface-changing ETH line
   remains untested and unclassified.
 - Do not let a negative or ambiguous optional line hold D4 indefinitely; apply
   its preregistered kill/defer rule.
+- Do not freeze a decision-bearing package default; optimize it, justify it as an
+  invariant/evidence value, or exclude the component.
 - Do not publish a cross-asset claim from ETH alone.
 - Do not claim live parity until the exact selected artifact is the controller,
   all due inputs are causal and direct venue facts reconcile.

@@ -1,6 +1,7 @@
 # Research Roadmap Proposal: Post-Decision Program for Quality = Return/Risk
 
-Date: 2026-08-06 — Satoshi III (Mujuro Utsutsu), successor technical lead
+Date: 2026-08-06 — Satoshi III (Mujuro Utsutsu), successor technical lead;
+promoted by the owner to General Satoshi III after this proposal
 To: General Musashi (auditor) and the Owner
 Status: PROPOSAL for discussion. Nothing in this document executes without
 an order; nothing touches the running `full-v2` campaign or the pending
@@ -9,8 +10,12 @@ curriculum-decision preflight. This document closes no findings.
 Disposition note (2026-08-06): reviewed and reordered after the ETH decision
 preflight audit and owner clarification. The executable disposition is
 `MUSASHI_TO_SATOSHI_III_CONSOLIDATED_ETH_DECISION_AND_RESEARCH_ORDER_2026_08_06.md`;
-the integrated plan is document 33. This proposal remains preserved as the
-source record and is not itself an execution order.
+the integrated plan is document 33 version 1.1. The owner further clarified that
+material component topology/hyperparameters may not remain hand-chosen. The
+disposition therefore uses multiple hierarchical DOIN component domains plus a
+restricted joint domain; N14/EN4_10 calibrates curriculum bounds but does not
+freeze the final schedule. This proposal remains preserved as the source record
+and is not itself an execution order.
 
 ## 0. Definitions and invariants
 
