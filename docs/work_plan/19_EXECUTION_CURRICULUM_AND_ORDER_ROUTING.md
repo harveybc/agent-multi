@@ -535,13 +535,19 @@ already completed code.
 
 ## 15.1 ETH Reference Stack Before Multi-Asset Campaigns (2026-08-06)
 
-ETH is the reference laboratory for the complete per-asset stack. The accepted
-easy/normal curriculum decision is followed by bounded ETH experiments for
-causal inputs, point-in-time event context, SAC learning dynamics,
-representations and synthetic-regime pretraining. Each option starts with the
-cheapest decisive pilot; only a credible signal receives paired four-seed
-confirmation. Weak or unavailable lines are rejected or deferred under a
-predeclared rule rather than left open indefinitely.
+ETH is the reference laboratory for the complete per-asset stack. The first
+easy/normal comparison calibrates whether solvency relaxation enters later
+search and bounds its genes; it does not freeze the final schedule. Dedicated
+DOIN domains then optimize causal/decomposition inputs, point-in-time event
+context, representations/autoencoders, SAC topology and learning dynamics,
+auxiliary heads and bounded synthetic pretraining. Weak or unavailable lines are
+rejected or deferred under a predeclared rule rather than left open indefinitely.
+
+No decision-bearing package default may freeze. Each material value is a hard
+invariant, evidence-fixed, a typed gene with justified bounds, or experimentally
+excluded. Component optimizers remain locally runnable and expose only thin DOIN
+adapters. They select by downstream realistic-normal trading utility; internal
+reconstruction, forecast or generator metrics are eligibility/diagnostic facts.
 
 After adopted variants are jointly reconfirmed, the following interface freezes
 as one reusable per-asset template:
@@ -549,19 +555,23 @@ as one reusable per-asset template:
 - source and point-in-time availability contract;
 - feature order, preprocessing and observation shape;
 - model architecture and learning dynamics;
-- easy/normal curriculum and activity patience;
+- fixed-total-compute curriculum gene schema and activity patience;
 - action, order, protection and cost semantics;
 - selection, raw metric and artifact contract; and
 - live inference/parity evidence schema.
 
-Only after this mature template is frozen does one fresh full ETH optimization
-run on all workers. Its accepted champion becomes the reference cell. That cell
-and contract are then transferred to a representative second asset. A
-material transfer failure permits one bounded shared-contract correction before
-the template is applied to the owner-selected universe. Per-asset DOIN campaigns
-then run sequentially with all workers on one chain. Portfolio optimization
-starts after the selected library contains loadable champion weights, resolved
-genomes, complete metrics, traces and lineage for every included cell.
+Each component domain preserves a champion and diverse elites. A restricted
+joint ETH domain then co-optimizes only confirmed genes/ranges and fixed-budget
+curriculum allocation. Its winner is confirmed against matched normal-only and
+neighboring easy-normal schedules before release.
+
+The transferable artifact is the global causality/interface/safety contract,
+component families, gene schema and justified ranges. ETH-specific masks,
+topology, hyperparameters, curriculum, risk geometry and weights remain the ETH
+solution and are not copied blindly. A representative second asset validates the
+search contract, then per-asset DOIN campaigns optimize their own values. The
+portfolio starts after the selected library contains loadable champion weights,
+resolved genomes, complete metrics, traces and lineage for every included cell.
 
 Portfolio simulator code may be unit-tested earlier with deterministic fixtures.
 That is infrastructure verification, not portfolio optimization and not a reason
