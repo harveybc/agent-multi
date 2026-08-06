@@ -11,7 +11,7 @@ Broker submissions: zero
 ## 1. Verdict
 
 The packet is **not accepted yet**. It contains useful corrections, and the
-real pipeline now does produce distinct best and terminal SAC files, but seven
+real pipeline now does produce distinct best and terminal SAC files, but eight
 contract gaps still defeat the claims needed for campaign rejoin, curriculum
 promotion, exact live-controller inventory and rolling-origin adaptation.
 
