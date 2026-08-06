@@ -1,7 +1,7 @@
 # 33. ETH Decision, Research, and Multi-Asset Roadmap
 
 Status: active
-Version: 1.1.0
+Version: 1.2.0
 Date: 2026-08-06
 Owner priority: calibrate ETH easy/normal training, mature and jointly optimize
 the complete ETH stack, transfer the validated search contract to all selected
@@ -31,6 +31,7 @@ The executable assignment and precedence rules are in:
 
 ```text
 docs/handoffs/MUSASHI_TO_SATOSHI_III_CONSOLIDATED_ETH_DECISION_AND_RESEARCH_ORDER_2026_08_06.md
+docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_J0_J4_RETRAINING_CORRECTION_ORDER_2026_08_06.md
 ```
 
 ## 2. Corrected Current State
@@ -133,16 +134,57 @@ table. Those diagnostics do not silently change the active objective.
 - Live downtime and missing decisions are explicit coverage failures, not rows
   removed because they are inconvenient.
 
+### 3.5 Exact current ETH data and observation contract
+
+The current 4-hour ETH decision runner consumes the immutable dataset SHA-256
+`1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f`.
+It contains 18,085 rows: 13,699 training bars from 2017-09-28 04:00 through
+2023-12-31, 2,196 validation bars in 2024, and 2,190 disclosed 2025 test bars.
+The N14/EN4_10/E4 packet keeps the 2025 period disabled.
+
+The current observation has 83 features over 32 bars, plus the 32-price and
+32-return windows and four agent-state values: 2,724 flattened values. The
+32-bar context spans 128 hours; rolling scaling over 256 bars spans 1,024 hours.
+The explicit date split overrides the dormant base-config `train_years=4` with
+approximately 6.25 years of unique training history. Materializers must remove
+that contradiction or declare the override in their resolved contract.
+
+These values are **currently used**, not thereby evidence-selected. Window,
+scaling and lookback parameters remain subject to the no-default registry until
+comparative evidence freezes or excludes them.
+
+### 3.6 Adaptation and structural-optimization clocks
+
+The business has two distinct clocks:
+
+1. fixed-contract weight/replay adaptation using newly available causal bars;
+2. slower DOIN structural optimization of features, preprocessing, topology,
+   hyperparameters, curriculum or succession candidates.
+
+Do not claim that the complete distributed structural search fits inside a
+6- or 12-hour deployment interval until measured candidate and campaign
+latencies prove it. Fast adaptation may fit; RT0 measures it. Cadence is encoded
+in closed bars. For the current 4-hour source, screen 2/3/6/18/42 bars
+(8/12/24/72/168 hours), with one bar/4 hours as a feasibility stress case.
+Six hours is not bar-aligned and is excluded unless a causal one-hour input
+contract is later selected.
+
+Selection is rolling-origin and prequential: at origin `t`, score the next
+interval before its rows can enter adaptation. Ordered next-interval and weekly
+series govern selection; a complete-year static score remains a baseline, not
+the final deployment objective.
+
 ## 4. Critical Delivery Track
 
 ### D0. Correct and verify the decision harness
 
-Close or independently verify findings 113 and 122-127 without mutating the
+Close or independently verify findings 113 and 122-134 without mutating the
 active domain. Required outcomes include exact repair-rule validation,
 fail-closed GPU/pause evidence, blocked profile drift, authenticated loopback
 mutation, actual post-rejoin chain proof, a pinned A/B contract, complete best
 and terminal evidence, idempotent four-GPU orchestration, two verified copies,
-strict aggregation and bounded activity-ineligible patience.
+strict aggregation, bounded activity-ineligible patience, host-aware exact
+controller provenance and a versioned adaptation contract.
 
 ### D1. Execute the ETH curriculum calibration
 
@@ -396,14 +438,51 @@ a second downstream domain that optimizes synthetic/real ratio, curriculum
 placement, pretraining duration and real-data fine-tuning. A failed or ambiguous
 pilot closes/defers this line and cannot hold the entire program indefinitely.
 
+### R7. Retraining/fine-tuning cadence and handover DOIN domain
+
+Start RT0/RT1 after R3 fixes the SAC topology/learning contract. Finalize RT2
+after every admitted interface-changing R4/R5/R6 line and before D5 joint
+integration, so cadence is not optimized against a representation that is then
+replaced.
+
+1. **RT0 runtime feasibility:** one frozen 28-day 2024 block, one seed, fixed
+   SAC/config, 8/12/24/72/168-hour cadences, one- and two-year lookbacks. A
+   4-hour arm is admitted only when the measured update path can finish safely.
+   Record p50/p95 latency, deadline misses, GPU/RAM/VRAM/temperature, new bars,
+   model age, rollback and handover facts. This stage cannot promote by return.
+2. **RT1 performance screen:** four preregistered non-overlapping 28-day 2024
+   blocks, two paired seeds, 1y/2y/4y or expanding lookbacks, and strict
+   test-then-train ordering. It estimates robustness across calendar regimes
+   without spending a complete DOIN campaign on every combination.
+3. **RT2 dedicated DOIN domain:** optimize bar-aligned cadence, rolling versus
+   expanding lookback, warm/reset/bounded-refit mode, update budget per new bar,
+   replay retention/recency, encoder freeze/fine-tune and bounded activation
+   policy. Use one-block/one-seed, four-block/two-seed and full-2024/four-seed
+   successive fidelity under a fixed compute/deadline contract.
+4. **RT3 frozen confirmation:** freeze schedule and adaptation parameters, then
+   evaluate prequentially. The repeatedly inspected 2025 period is a disclosed
+   secondary benchmark; prospective 2026 Paper/live-shadow evidence is the
+   clean final confirmation source.
+
+A 28-day pilot proves orchestration, leakage controls and deadline feasibility;
+it cannot alone choose profit/risk. The proposed operational deadline budget is
+p95 update latency no greater than two thirds of cadence with zero unreconciled
+handover, pending owner ratification.
+
+Every model handover preserves account continuity: stop new risk, close and
+reconcile protected exposure, record exact post-close balance, activate the
+hash-bound successor, and resume. Mandatory SL/TP and Paper/Demo-only authority
+remain unchanged.
+
 ## 6. Corrected Ordering
 
 ```text
-critical: D0 -> D1 -> D2 -> D4/R1-R6 -> D5 -> D6 -> D7 -> D8 -> D9
+critical: D0 -> D1 -> D2 -> D4/R1-R7 -> D5 -> D6 -> D7 -> D8 -> D9
                     \-> D3 runs continuously and calibrates later simulations
 
 parallel CPU: R0 -> R1 feasibility
-sequential DOIN: R1 -> R2 -> R3 -> conditional R4/R5/R6 -> D5 integration
+sequential DOIN: R1 -> R2 -> R3 -> R7 RT0/RT1 + conditional R4/R5/R6
+                 -> R7 RT2 -> D5 integration
 ```
 
 The fleet has one GPU campaign owner at a time. Each accepted component domain
