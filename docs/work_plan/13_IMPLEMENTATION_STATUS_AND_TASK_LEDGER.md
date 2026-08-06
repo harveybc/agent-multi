@@ -910,7 +910,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
 | `SOLVENCY-CURRICULUM-001` | General Satoshi III + General Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_running_ab_preflight_corrections | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models and remains active on one chain. The N14/EN4_10/E4 four-seed design is accepted as curriculum calibration, but execution waits for findings 122-127: exact-chain post-rejoin proof, profile/GPU fail-closed controls, best-plus-terminal metrics, explicit margin telemetry, idempotent replicated four-GPU evidence and bounded no-trade patience. Finding 127 changes evaluation semantics, so every later component or integration campaign receives a fresh domain rather than mixing code into `full-v2`; no single post-A/B campaign is presumed final. | Harvey |
 | `ETH-RESEARCH-TRANSFER-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `financial-data`, `lts` | hierarchical_doin_roadmap_integrated_not_started | Document 33 makes ETH the complete research reference. The N/EN packet calibrates curriculum bounds; dedicated DOIN domains optimize decompositions/features, encoders, SAC, event adapters, auxiliary heads and synthetic pretraining; a restricted joint domain co-optimizes confirmed interactions and final curriculum. The transferable global search contract remains separate from ETH-specific values before per-asset campaigns and portfolio optimization. | Harvey |
-| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | audit_open_rt0_rt2_assigned | Separate fixed-contract adaptation from slow structural DOIN. RT0 screens bar-aligned 8/12/24/72/168 h deadline feasibility on one 28-day block; RT1 uses four non-overlapping blocks with test-then-train ordering; RT2 optimizes cadence/lookback/update/replay/freeze/handover after SAC topology and before joint integration. One month cannot promote profit/risk. Exact ETH data: 13,699 train, 2,196 validation, 2,190 disclosed test bars; 83 features, 32-bar input, 256-bar scaler, 2,724 values. | Harvey selects final cadence after verified evidence |
+| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | correction_required_140_142 | Separate fixed-contract adaptation from slow structural DOIN. First RT0 rejected: warm-up was scored, account continuity reset and restart identity was incomplete. Corrected RT1-A screens 8/12/24/168 h x 1y/expanding over four blocks/two seeds plus frozen controls; RT1-B conditionally adds 72 h and 2y/4y. RT2 numeric bounds remain unratified. | Harvey selects final cadence after verified evidence |
 | `DEV-TOOLING-MCP-001` | General Satoshi III + General Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | General Satoshi III + General Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | General Satoshi III + General Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -964,18 +964,18 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    Satoshi executes J0-J1 of the consolidated ETH decision/research order.
    Treat any accepted failure sentinel, duplicate claim, component mismatch,
    competing terminal tip or warm-start load error as an immediate stop.
-9. After findings 113 and 122-132 pass independent verification, execute the
+9. After findings 113, 122-132 and 135-142 pass independent verification, execute the
    four-seed equal-compute N14/EN4_10/E4 calibration. Preserve best and terminal
    weights, exact raw metrics and two artifact copies. Use the result to admit
    and bound fixed-total-compute curriculum genes; it is not the final schedule.
-10. Correct and independently verify findings 128-134. Do not accept missing
-    lineage as a rejoin, stale arm records as idempotence, malformed packets as
-    promotion evidence, or an Omega-local model-id heuristic as fleet controller
-    provenance.
-11. Publish the exact ETH data/observation contract and execute RT0/RT1 without
-    mutating the active swarm. Materialize the RT2 adaptation-schedule DOIN
-    domain after SAC topology optimization and before restricted integration;
-    keep 12 hours as a candidate rather than a default.
+10. Correct and independently verify findings 135-139. Require tip ancestry and
+    component lineage for rejoin, self-contained best/terminal artifacts,
+    strict physical packet uniqueness, typed repair domains and a complete
+    fresh manifest/heartbeat controller join.
+11. Correct findings 140-142 before rerunning RT0. Then execute amended RT1-A
+    and conditional RT1-B without mutating the active swarm. Materialize RT2
+    after SAC topology optimization and before restricted integration; keep
+    every cadence and numeric bound provisional until evidence selects it.
 12. Execute document 33's hierarchical DOIN program before cross-asset
     replication. Build the typed no-default parameter registry; run separate
     component domains for causal/decomposition inputs, representations,

@@ -197,7 +197,8 @@ adding value.
 3. Keep the current anchored ETH `full-v2` domain on one chain while correcting
    the decision harness, exact-chain interruption controls and bounded
    activity-ineligible patience without mutating the active evaluation semantics.
-4. After findings 113 and 122-132 pass independent verification, execute the
+4. After findings 113, 122-132 and 135-142 pass independent verification,
+   execute the
    four-seed equal-compute `N14` versus `EN4_10` calibration,
    retaining `E4` as diagnostic. Use it to admit and bound curriculum genes; do
    not treat this one schedule comparison as the mature-stack final choice.
@@ -208,11 +209,11 @@ adding value.
    domains for causal/decomposition inputs, encoders/autoencoders, SAC topology
    and dynamics, conditional event/TSFM adapters, auxiliary heads and bounded
    synthetic pretraining.
-7. After the SAC topology/learning domain, execute RT0/RT1 rolling-origin
-   cadence screens. Finalize the RT2 adaptation-schedule DOIN domain after all
-   admitted interface-changing component lines and before joint integration.
-   Select next-interval and weekly behavior under an explicit compute/deadline
-   contract; preserve exact post-close account continuity at every handover.
+7. After the SAC topology/learning domain, execute the corrected RT0 and the
+   sequential RT1-A/RT1-B cadence screen. Warm-up never contributes to score;
+   account/effect continuity persists inside each block. Finalize RT2 only after
+   all admitted interface-changing lines and measured numeric bounds, before
+   joint integration.
 8. Preserve each component champion plus diverse elites, then run a restricted
    joint ETH integration DOIN domain over only confirmed genes and ranges,
    including fixed-total-compute curriculum allocation.

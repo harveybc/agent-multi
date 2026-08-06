@@ -807,6 +807,30 @@ active `full-v2` domain remains untouched while the correction order executes.
 | AUD-F2-20260806-133 | S3 | open, blocks exact-controller inventory | J4 is Omega-local, classifies by model-id substring and hard-codes SAC authority false instead of joining exact manifest hashes | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260806-134 | S2 | open, blocks adaptation-contract freeze | Static annual validation and unevidenced 32/256 windows do not establish the next-interval/week retraining business contract | General Satoshi III implements RT0-RT2; General Musashi verifies; owner selects cadence |
 
+### 1z. Corrections 128-134 and RT1 ruling, 2026-08-06
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_128_134_CORRECTIONS_AND_RT1_RULING_2026_08_06.md`
+- `../evidence/SATOSHI_III_128_134_CORRECTION_REPRO_2026_08_06.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_128_142_CORRECTION_ORDER_2026_08_06.md`
+
+The independent reproducer reports every new counterexample reproduced with
+zero network and no runtime mutation. Corrections 128-133 are partial; finding
+134's descriptive manifest is retained, but its RT0/RT1 evidence is rejected.
+The active `full-v2` campaign remains running and untouched.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260806-135 | S2 | open, blocks campaign rejoin | Rejoin ignores bound component/domain revisions and proves no ancestry from the pre-pause tips | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-136 | S2 | open, blocks N/EN/E decision | Exact-id arm reuse accepts incomplete evidence and terminal weights are not retrievable/replicated from the arm artifact manifest | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-137 | S2 | open, blocks curriculum promotion | Duplicate physical seed packets are silently overwritten; empty common identity and per-arm lineage drift can promote | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-138 | S3 | open, blocks genome repair acceptance | Repair validation accepts an absent typed schema and a forbidden value outside the declared categorical domain | General Satoshi III implements; General Musashi verifies |
+| AUD-F2-20260806-139 | S2 | open, blocks exact live-controller authority | J4 grants SAC authority without freshness, model/config/input parity, inference eligibility or observation parity | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-140 | S2 | open, blocks RT0/RT1 | Rolling-origin scoring includes 256 warm-up bars and resets account equity/effects at every origin | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-141 | S2 | open, blocks restart-safe adaptation | RT identity omits decision inputs and mutable checkpoint/OLAP writes can double-adapt after a crash; supplied evidence is stale under unchanged runner version | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-142 | S3 | open, blocks exact data contract | The executable decision runner retains contradictory `train_years=4`/`test_years=1` beside explicit dates | General Satoshi III implements; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

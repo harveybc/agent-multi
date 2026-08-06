@@ -662,3 +662,17 @@ Its four workers must continuously match plan hash, semantic domain hash,
 dataset hash, seed, genesis, population fingerprint and component revisions.
 The `full-v2` artifact root is separate from both the accepted smoke and the
 rejected `full-v1` run.
+
+### 16.2 Rolling-origin correction gate (2026-08-06)
+
+No adaptation cadence is currently accepted. The first RT0 implementation
+mixed the 256-bar scaling warm-up into deployment metrics, reset account equity
+at every origin and lacked atomic model/OLAP restart state. RT0/RT1 therefore
+remain blocked by findings 140-142.
+
+The corrected runner must score exactly `(t,t+h]`, carry post-close account and
+effect state through each block, preserve immutable before/after model hashes,
+and measure latency through validation, replication and activation readiness.
+RT1 uses the sequential design in work-plan document 33; RT2 numeric genes are
+bounded only after that evidence. Live Paper/Demo handovers remain next-flat or
+explicitly protected, and native SL/TP is never relaxed by an ML curriculum.
