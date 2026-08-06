@@ -1,12 +1,14 @@
 # 13. Implementation Status and Task Ledger
 
 Status timestamp: 2026-08-06 America/Bogota
-Plan version: 1.29.0
-Current focus: keep the anchored ETH `full-v2` diagnostic campaign untouched;
-correct the J0/J4 decision harness; execute exact N14/EN4_10/E4 evidence only
-after independent acceptance; and add a bar-aligned rolling-origin adaptation
-program before the restricted ETH integration domain, while selected-model
-Paper/Demo execution continues with mandatory native SL/TP
+Plan version: 1.30.0
+Current focus: preserve the anchored ETH `full-v2` chain while the owner decides
+whether to execute its prepared pause/archive operation; its four current
+candidates run the pre-activity-bound revision and remain zero-trade despite
+active GPUs. Correct findings 136 and 140-150 before any RT1 run. Retraining
+cadence evidence must adapt a load-proven mature ETH champion, use
+observation-only warm-up and preserve costed account state at every handover,
+while selected-model Paper/Demo execution continues with mandatory native SL/TP
 
 Immediate parallel runtime added on 2026-07-30:
 
@@ -892,7 +894,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `ORDER-ROUTER-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | verified_local_blocked_on_policy | Account-independent adaptive market/limit/stop router, urgency contract, native GTD execution, expiry and cancel/market fallback | Codex |
 | `EXEC-STATE-001` | Codex | `agent-multi`, `financial-data`, `gym-fx` | specified_blocked_on_alpha_and_data_gate | Point-in-time execution-fidelity manifest plus calibrated fill-time, adverse-selection, short-path and event-hazard auxiliaries | Codex |
 | `EXEC-POLICY-001` | Codex | `agent-multi`, `gym-fx`, `trading-contracts` | specified_blocked_on_exec_state | Shared causal encoder with entry/exit heads, deterministic risk overrides and market-only/router control comparison | Codex |
-| `ACTIVITY-GATE-002` | Codex | `agent-multi` | deployed_four_worker_running | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate | Codex |
+| `ACTIVITY-GATE-002` | Codex | `agent-multi` | corrected_head_not_in_active_full_v2_runtime | Split-specific activity eligibility at L1 and optimizer boundaries; annual validation minimum 12 without profit gate. The active `full-v2` workers still run `agent-multi@5437a31`, which predates the bounded-activity correction, and all four current candidates are zero-trade. | Codex |
 | `PROTECTED-ORDERS-002` | Codex | `gym-fx`, `agent-multi` | deployed_four_worker_running | Mandatory SL/TP market/limit/stop brackets, adaptive routing genes, fail-closed plugin errors and risk-reducing reversal handling | Codex |
 | `WEEKLY-METRICS-002` | Codex | `agent-multi` | deployed_four_worker_running | Equity-trace mean weekly/annual return and RAP for base and curriculum pipelines with explicit units/methods | Codex |
 | `OANDA-PRACTICE-001` | Codex | `lts`, `financial-data`, `agent-multi` | verified_local_blocked_for_ogm | REST-v20 Practice capability/quote/transaction observer; retained for compatible account divisions, not OANDA Global Markets | Codex |
@@ -908,9 +910,9 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | General Satoshi III + General Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_running_ab_preflight_corrections | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models and remains active on one chain. The N14/EN4_10/E4 four-seed design is accepted as curriculum calibration, but execution waits for findings 122-127: exact-chain post-rejoin proof, profile/GPU fail-closed controls, best-plus-terminal metrics, explicit margin telemetry, idempotent replicated four-GPU evidence and bounded no-trade patience. Finding 127 changes evaluation semantics, so every later component or integration campaign receives a fresh domain rather than mixing code into `full-v2`; no single post-A/B campaign is presumed final. | Harvey |
+| `SOLVENCY-CURRICULUM-001` | General Satoshi III + General Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | full_v2_coherent_zero_activity_owner_pause_decision | The corrected smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. The active `full-v2` chain is coherent but runs the older `5437a31` revision: its four current candidates have millions of steps and zero train, train-tail or validation trades. It is operationally busy but decision-ineligible. Preserve it until the owner explicitly authorizes the prepared pause/archive label `ZERO_ACTIVITY_INELIGIBLE_RUNTIME_5437a31`; never silently resume it as valid calibration evidence. | Harvey |
 | `ETH-RESEARCH-TRANSFER-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `financial-data`, `lts` | hierarchical_doin_roadmap_integrated_not_started | Document 33 makes ETH the complete research reference. The N/EN packet calibrates curriculum bounds; dedicated DOIN domains optimize decompositions/features, encoders, SAC, event adapters, auxiliary heads and synthetic pretraining; a restricted joint domain co-optimizes confirmed interactions and final curriculum. The transferable global search contract remains separate from ETH-specific values before per-asset campaigns and portfolio optimization. | Harvey |
-| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | correction_required_140_142 | Separate fixed-contract adaptation from slow structural DOIN. First RT0 rejected: warm-up was scored, account continuity reset and restart identity was incomplete. Corrected RT1-A screens 8/12/24/168 h x 1y/expanding over four blocks/two seeds plus frozen controls; RT1-B conditionally adds 72 h and 2y/4y. RT2 numeric bounds remain unratified. | Harvey selects final cadence after verified evidence |
+| `RETRAINING-CADENCE-001` | General Satoshi III + General Musashi verification | `agent-multi`, `gym-fx`, `lts`, `financial-data` | rt1_materialized_not_authorized_findings_140_149 | RT1-A has 128 unique semantic cells covering 8/12/24/168 h x 1y/expanding x four blocks x two seeds x adaptive/frozen, but it must not run yet. The runner still trades during warm-up, scores `h+1` facts, discards open exposure at handover, has a SQLite/JSON crash window, measures fresh random SAC rather than adaptation of a mature champion, lacks measured handover deadlines and omits dirty-source identity. RT cadence follows the mature-topology R3 champion and uses exact costed flat handovers. | Harvey selects final cadence after verified evidence |
 | `DEV-TOOLING-MCP-001` | General Satoshi III + General Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | General Satoshi III + General Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | General Satoshi III + General Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -964,18 +966,22 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    Satoshi executes J0-J1 of the consolidated ETH decision/research order.
    Treat any accepted failure sentinel, duplicate claim, component mismatch,
    competing terminal tip or warm-start load error as an immediate stop.
-9. After findings 113, 122-132 and 135-142 pass independent verification, execute the
-   four-seed equal-compute N14/EN4_10/E4 calibration. Preserve best and terminal
-   weights, exact raw metrics and two artifact copies. Use the result to admit
-   and bound fixed-total-compute curriculum genes; it is not the final schedule.
-10. Correct and independently verify findings 135-139. Require tip ancestry and
-    component lineage for rejoin, self-contained best/terminal artifacts,
-    strict physical packet uniqueness, typed repair domains and a complete
-    fresh manifest/heartbeat controller join.
-11. Correct findings 140-142 before rerunning RT0. Then execute amended RT1-A
-    and conditional RT1-B without mutating the active swarm. Materialize RT2
-    after SAC topology optimization and before restricted integration; keep
-    every cadence and numeric bound provisional until evidence selects it.
+9. Obtain the owner's explicit decision on the prepared `full-v2` pause/archive
+   packet. The chain is coherent, but the four active candidates are zero-trade
+   under a runtime that predates bounded activity; GPU utilization alone does
+   not make their results eligible. Preserve every chain artifact and do not
+   resume it as decision-bearing evidence after archival.
+10. Preserve independently verified corrections 135, 137, 138, 139 and 142.
+    Correct findings 136 and 143-150: real shared artifact loading and
+    cross-binding, observation-only warm-up, exact interval cardinality,
+    costed flat handovers, transactional restart authority, champion-bound
+    adaptation identity, measured deadlines, clean-source identity and bounded
+    fresh post-rejoin evidence.
+11. After the corrected component/research path reaches the mature R3 ETH
+    champion, run RT0 from that exact content-addressed artifact. Only then may
+    the already-materialized 128-cell RT1-A grid execute; conditional RT1-B and
+    RT2 remain evidence-driven and unratified. Do not spend the RT sweep on
+    random SAC initialization or an unstable pre-topology model.
 12. Execute document 33's hierarchical DOIN program before cross-asset
     replication. Build the typed no-default parameter registry; run separate
     component domains for causal/decomposition inputs, representations,

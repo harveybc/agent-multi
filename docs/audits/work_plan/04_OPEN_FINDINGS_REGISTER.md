@@ -831,6 +831,47 @@ The active `full-v2` campaign remains running and untouched.
 | AUD-F1-20260806-141 | S2 | open, blocks restart-safe adaptation | RT identity omits decision inputs and mutable checkpoint/OLAP writes can double-adapt after a crash; supplied evidence is stale under unchanged runner version | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260806-142 | S3 | open, blocks exact data contract | The executable decision runner retains contradictory `train_years=4`/`test_years=1` beside explicit dates | General Satoshi III implements; General Musashi verifies |
 
+### 1aa. Corrections 135-142 acceptance audit, 2026-08-06
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_135_142_ACCEPTANCE_2026_08_06.md`
+- `../evidence/SATOSHI_III_135_142_ACCEPTANCE_REPRO_2026_08_06.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_135_150_VERDICT_AND_CORRECTION_ORDER_2026_08_06.md`
+
+Append-only dispositions: 135, 137, 138, 139 and 142 are independently
+verified for their named corrections and await owner closure. Findings 136,
+140 and 141 remain open. RT1-A is materialized but execution remains forbidden.
+
+| Prior finding | Appended state | Basis / remaining work |
+| --- | --- | --- |
+| 135 | independently_verified_pending_owner_closure | component/domain drift and exact bound-tip ancestry pass; new 150 tracks freshness/deadline |
+| 136 | open | 144 proves promotion still accepts nonexistent/unloadable artifacts |
+| 137 | independently_verified_pending_owner_closure | duplicate physical packets, malformed identity and per-arm lineage drift rejected |
+| 138 | independently_verified_pending_owner_closure | typed schema and executable provenance-bearing repair verified |
+| 139 | independently_verified_pending_owner_closure | exact authority join verified mechanically; deployment remains one-seat conditional |
+| 140 | open | 145 proves active warm-up trading, h+1 scoring and disappearing exposure |
+| 141 | open | 146-149 defeat crash, subject, handover-guard and source-identity contracts |
+| 142 | independently_verified_pending_owner_closure | contradictory year fields absent from executable configs |
+
+New findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260806-143 | S3 | open, blocks acceptance-evidence trust | Generic exception handling marks stale APIs and malformed fixtures as corrected | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-144 | S2 | open, blocks N/EN/E promotion | Runner trusts asserted load proof and mismatched terminal references; aggregator promotes nonexistent artifacts | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-145 | S2 | open, blocks RT0/RT1 | Warm-up actively trades, three-bar cadence scores four facts and open exposure disappears at origin boundaries | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-146 | S2 | open, blocks restart-safe adaptation | Crash after SQLite commit and before pointer replace skips an origin while retaining stale model/account state | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-147 | S2 | open, blocks RT1 execution | Runner initializes fresh SAC instead of adapting a hash-bound mature ETH champion and is sequenced before R3 | General Satoshi III implements after R3; General Musashi verifies |
+| AUD-F1-20260806-148 | S3 | open, blocks deadline acceptance | Deadline rule names zero unreconciled handovers but records/checks no handover fact | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-149 | S3 | open, blocks exact experiment identity | Git HEAD identity ignores uncommitted source state | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260806-150 | S3 | open, blocks unattended rejoin | Rejoin ancestry has no post-resume freshness requirement or bounded pending timeout | General Satoshi III implements; General Musashi verifies |
+
+Runtime observation, not a new chain finding: active `full-v2` is one coherent
+chain and all four GPUs are working, but the runtime predates activity patience
+and all four current candidates remain zero-trade after 1,002-1,353 epochs.
+Continuing or pausing that preserved run is an owner decision.
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

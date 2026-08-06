@@ -557,3 +557,32 @@ state. Numeric RT2 bounds remain unratified until this evidence exists.
 
 Canonical audit:
 `../audits/AUDIT_SATOSHI_III_128_134_CORRECTIONS_AND_RT1_RULING_2026_08_06.md`.
+
+## 10. RT v2 Acceptance Result (2026-08-06)
+
+The second RT delivery is still not decision-bearing. Independent execution
+against the real ETH/gym-fx path showed that removing 256 equity samples from
+the metric does not make warm-up contextual: the policy trades during warm-up,
+changes account equity and enters the scored interval with an unrecorded open
+position. A three-bar cadence emits four scored facts, and the next origin
+inherits only a cash number while the position and closing cost disappear.
+
+The restart claim also fails at the exact SQLite-commit/JSON-pointer crash
+boundary. RT identity has no starting policy artifact and origin zero builds a
+fresh SAC, so the materialized grid would test random initialization rather
+than cadence adaptation of a mature ETH champion. The deadline rule names
+handover reconciliation without measuring it.
+
+Consequently:
+
+- RT1-A remains `MATERIALIZED_NOT_EXECUTED`;
+- RT mechanics are corrected under findings 143-150;
+- performance execution remains after R3, using its load-proven hash-bound
+  champion/config/observation contract;
+- every boundary must score exactly h bars and execute an explicit flat,
+  costed, reconciled model handover using the post-close balance; and
+- authoritative restart state moves into the same SQLite transaction as the
+  interval row, while JSON becomes a derived export.
+
+Canonical audit:
+`../audits/AUDIT_SATOSHI_III_135_142_ACCEPTANCE_2026_08_06.md`.
