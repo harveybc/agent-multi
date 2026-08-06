@@ -5,7 +5,7 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-from agent_plugins.sac_agent import _transfer_expanded_policy_state
+from agent_plugins.sac_agent import Plugin, _transfer_expanded_policy_state
 
 
 def test_actor_observation_columns_expand_neutrally() -> None:
@@ -55,3 +55,43 @@ def test_expansion_rejects_unexplained_shape_change() -> None:
             target_observation_dim=9,
             action_dim=1,
         )
+
+
+def test_training_load_applies_candidate_hyperparameters(monkeypatch) -> None:
+    from stable_baselines3 import SAC
+
+    captured = {}
+
+    def fake_load(path, *, env, custom_objects):
+        captured.update({
+            "path": path,
+            "env": env,
+            "custom_objects": custom_objects,
+        })
+        return "loaded"
+
+    plugin = Plugin()
+    monkeypatch.setattr(plugin, "_require_continuous", lambda _env: None)
+    monkeypatch.setattr(SAC, "load", fake_load)
+    env = object()
+    result = plugin.load_for_training(
+        "anchor.zip",
+        env,
+        {
+            "learning_rate": 1e-4,
+            "batch_size": 512,
+            "gamma": 0.97,
+            "tau": 0.003,
+            "net_arch": [512, 256],
+        },
+    )
+
+    assert result == "loaded"
+    assert captured["path"] == "anchor.zip"
+    assert captured["env"] is env
+    assert captured["custom_objects"] == {
+        "learning_rate": 1e-4,
+        "batch_size": 512,
+        "gamma": 0.97,
+        "tau": 0.003,
+    }

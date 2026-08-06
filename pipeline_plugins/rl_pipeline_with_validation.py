@@ -224,6 +224,24 @@ def _update_l1_checkpoint_state(
     return best_composite, no_improve + 1, False
 
 
+def _checkpoint_is_eligible(
+    *,
+    num_timesteps: int,
+    minimum_timesteps: int,
+    trade_gate_passed: bool,
+) -> bool:
+    """Require both trained weights and observable trading activity.
+
+    A no-trade rollout can carry a finite (penalized) scalar and would
+    otherwise become the first checkpoint merely because ``-inf`` has not
+    been replaced yet.  Such a checkpoint is not usable by the portfolio or
+    by the next curriculum phase.
+    """
+    return bool(
+        int(num_timesteps) >= int(minimum_timesteps) and trade_gate_passed
+    )
+
+
 def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lambda: float) -> float:
     metric = str(selection_metric or "total_return").strip().lower()
     if metric == _lex.METRIC_NAME:
@@ -822,7 +840,17 @@ class PipelinePlugin:
                             config,
                         )
                     else:
-                        model = agent_plugin.load(str(warm_start_path), train_env)
+                        training_loader = getattr(
+                            agent_plugin, "load_for_training", None
+                        )
+                        if callable(training_loader):
+                            model = training_loader(
+                                str(warm_start_path), train_env, config
+                            )
+                        else:
+                            model = agent_plugin.load(
+                                str(warm_start_path), train_env
+                            )
                     try:
                         model.set_env(train_env)
                     except Exception:
@@ -879,6 +907,115 @@ class PipelinePlugin:
                 Path(best_model_path).parent.mkdir(parents=True, exist_ok=True)
 
                 history: List[Dict[str, Any]] = []
+
+                # A supplied warm start is already a trained artifact.  Earn
+                # its place by evaluating it under the current NORMAL split
+                # contract before the first update, then retain it as the
+                # floor that subsequent epochs must beat.  This prevents an
+                # active curriculum handoff from being replaced by an epoch-1
+                # policy that collapsed to HOLD everywhere.
+                if warm_start_model and bool(
+                    config.get("warm_start_baseline_checkpoint_enabled", True)
+                ):
+                    baseline_train_tail = self._eval_on_split(
+                        env_plugin_name,
+                        config,
+                        paths.get("train_tail", paths["train"]),
+                        agent_plugin,
+                        model,
+                        seed,
+                        "train_tail_epoch",
+                    )
+                    baseline_val = self._eval_on_split(
+                        env_plugin_name,
+                        config,
+                        paths["val"],
+                        agent_plugin,
+                        model,
+                        seed,
+                        "validation_epoch",
+                    )
+                    baseline_selection_metric = str(
+                        config.get(
+                            "selection_metric", self.params["selection_metric"]
+                        )
+                    )
+                    baseline_risk_lambda = float(
+                        config.get(
+                            "risk_penalty_lambda",
+                            self.params["risk_penalty_lambda"],
+                        )
+                    )
+                    baseline_gap_beta = float(
+                        config.get(
+                            "l1_generalization_gap_penalty_beta",
+                            self.params[
+                                "l1_generalization_gap_penalty_beta"
+                            ],
+                        )
+                    )
+                    for summary in (baseline_train_tail, baseline_val):
+                        _annotate_risk_adjusted(summary, baseline_risk_lambda)
+                    baseline_min_trades = int(
+                        config.get(
+                            "early_stop_min_trades",
+                            self.params["early_stop_min_trades"],
+                        )
+                    )
+                    baseline_train_tail_min = config.get(
+                        "early_stop_min_train_tail_trades",
+                        self.params["early_stop_min_train_tail_trades"],
+                    )
+                    baseline_validation_min = config.get(
+                        "early_stop_min_validation_trades",
+                        self.params["early_stop_min_validation_trades"],
+                    )
+                    (
+                        baseline_composite,
+                        baseline_raw,
+                        baseline_trade_gate,
+                        _baseline_train_tail_return,
+                        _baseline_val_return,
+                        baseline_train_tail_trades,
+                        baseline_val_trades,
+                    ) = _early_stop_composite(
+                        baseline_train_tail,
+                        baseline_val,
+                        min_trades=baseline_min_trades,
+                        min_train_tail_trades=(
+                            baseline_min_trades
+                            if baseline_train_tail_min is None
+                            else int(baseline_train_tail_min)
+                        ),
+                        min_validation_trades=(
+                            baseline_min_trades
+                            if baseline_validation_min is None
+                            else int(baseline_validation_min)
+                        ),
+                        no_trade_penalty=float(
+                            config.get(
+                                "early_stop_no_trade_penalty",
+                                self.params["early_stop_no_trade_penalty"],
+                            )
+                        ),
+                        selection_metric=baseline_selection_metric,
+                        risk_lambda=baseline_risk_lambda,
+                        gap_penalty_beta=baseline_gap_beta,
+                    )
+                    history.append({
+                        "epoch": 0,
+                        "checkpoint_source": "warm_start_normal_baseline",
+                        "selection_metric": baseline_selection_metric,
+                        "composite_raw": baseline_raw,
+                        "composite": baseline_composite,
+                        "early_stop_trade_gate_passed": baseline_trade_gate,
+                        "train_tail_trades": baseline_train_tail_trades,
+                        "val_trades": baseline_val_trades,
+                    })
+                    if baseline_trade_gate:
+                        agent_plugin.save(model, best_model_path)
+                        best_composite = baseline_composite
+                        best_checkpoint_saved = True
 
                 if not config.get("quiet_mode"):
                     print(
@@ -1014,7 +1151,11 @@ class PipelinePlugin:
                         gap_penalty_beta=l1_gap_beta,
                     )
 
-                    checkpoint_eligible = nts_after >= l1_min_checkpoint_timesteps
+                    checkpoint_eligible = _checkpoint_is_eligible(
+                        num_timesteps=nts_after,
+                        minimum_timesteps=l1_min_checkpoint_timesteps,
+                        trade_gate_passed=trade_gate_passed,
+                    )
                     patience_eligible = (
                         checkpoint_eligible
                         and epoch >= l1_patience_start_epoch
@@ -1155,9 +1296,11 @@ class PipelinePlugin:
 
                 if not best_checkpoint_saved:
                     raise RuntimeError(
-                        "training ended before an L1 checkpoint became eligible: "
+                        "training ended before an activity-eligible L1 "
+                        "checkpoint became available: "
                         f"num_timesteps={int(getattr(model, 'num_timesteps', 0))}, "
-                        f"l1_min_checkpoint_timesteps={l1_min_checkpoint_timesteps}"
+                        f"l1_min_checkpoint_timesteps={l1_min_checkpoint_timesteps}; "
+                        "train-tail and validation trade gates must both pass"
                     )
 
                 # Reload best model for final evaluation.

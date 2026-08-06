@@ -189,7 +189,32 @@ class PipelinePlugin(ValidationPipelinePlugin):
         _plug, easy_env = self._make_split_env(
             env_plugin_name, easy_config, paths["train"], agent_plugin)
         try:
-            model = agent_plugin.build(easy_env, easy_config)
+            warm_start_model = easy_config.get("warm_start_model")
+            if warm_start_model:
+                warm_start_path = Path(str(warm_start_model))
+                if not warm_start_path.exists():
+                    raise FileNotFoundError(
+                        f"warm_start_model not found: {warm_start_path}"
+                    )
+                _verify_artifact_sha256(
+                    warm_start_path,
+                    easy_config.get("warm_start_model_sha256"),
+                )
+                training_loader = getattr(
+                    agent_plugin, "load_for_training", None
+                )
+                if callable(training_loader):
+                    model = training_loader(
+                        str(warm_start_path), easy_env, easy_config
+                    )
+                else:
+                    model = agent_plugin.load(str(warm_start_path), easy_env)
+                try:
+                    model.set_env(easy_env)
+                except Exception:
+                    pass
+            else:
+                model = agent_plugin.build(easy_env, easy_config)
             epoch_ts = int(
                 easy_config.get("easy_epoch_timesteps")
                 or easy_config.get("epoch_timesteps",
@@ -213,19 +238,79 @@ class PipelinePlugin(ValidationPipelinePlugin):
             post_easy_path = post_easy_path.parent / (
                 post_easy_path.name + ".post_easy.zip")
             post_easy_path.parent.mkdir(parents=True, exist_ok=True)
-            for epoch in range(1, max_epochs + 1):
-                model.learn(total_timesteps=epoch_ts,
-                            reset_num_timesteps=False)
+
+            def evaluate_checkpoint(epoch: int, source: str) -> None:
+                nonlocal best, best_epoch, waited
                 probe = self._easy_probe(
                     env_plugin_name, easy_config, paths["train"],
                     agent_plugin, model, seed)
                 probe["epoch"] = epoch
-                probe["activity_eligible"] = bool(
+                probe["checkpoint_source"] = source
+                probe["easy_activity_eligible"] = bool(
                     probe["trades_total"] >= minimum_trades
                     and probe["non_hold_actions"] > 0
                     and probe["entry_actions_seen"] > 0
                     and probe["entry_orders_submitted"] > 0
                     and probe["protected_entry_rejections"] == 0
+                )
+                normal_config = dict(config)
+                normal_config["solvency_mode"] = NORMAL_MODE
+                normal_train_tail = self._eval_on_split(
+                    env_plugin_name,
+                    normal_config,
+                    paths.get("train_tail", paths["train"]),
+                    agent_plugin,
+                    model,
+                    seed,
+                    "train_tail_epoch",
+                )
+                normal_validation = self._eval_on_split(
+                    env_plugin_name,
+                    normal_config,
+                    paths["val"],
+                    agent_plugin,
+                    model,
+                    seed,
+                    "validation_epoch",
+                )
+                normal_default_min = int(normal_config.get(
+                    "early_stop_min_trades", 1
+                ))
+                configured_train_tail_min = normal_config.get(
+                    "early_stop_min_train_tail_trades"
+                )
+                configured_validation_min = normal_config.get(
+                    "early_stop_min_validation_trades"
+                )
+                normal_min_train_tail = int(
+                    normal_default_min
+                    if configured_train_tail_min is None
+                    else configured_train_tail_min
+                )
+                normal_min_validation = int(
+                    normal_default_min
+                    if configured_validation_min is None
+                    else configured_validation_min
+                )
+                normal_train_tail_trades = int(
+                    normal_train_tail.get("trades_total", 0) or 0
+                )
+                normal_validation_trades = int(
+                    normal_validation.get("trades_total", 0) or 0
+                )
+                probe["normal_handoff_probe"] = {
+                    "train_tail_trades": normal_train_tail_trades,
+                    "validation_trades": normal_validation_trades,
+                    "minimum_train_tail_trades": normal_min_train_tail,
+                    "minimum_validation_trades": normal_min_validation,
+                }
+                probe["normal_handoff_eligible"] = bool(
+                    normal_train_tail_trades >= normal_min_train_tail
+                    and normal_validation_trades >= normal_min_validation
+                )
+                probe["activity_eligible"] = bool(
+                    probe["easy_activity_eligible"]
+                    and probe["normal_handoff_eligible"]
                 )
                 history.append(probe)
                 score = probe["economic_equity"]
@@ -240,19 +325,29 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     agent_plugin.save(model, str(post_easy_path))
                 elif best_epoch is not None:
                     waited += 1
+
+            if warm_start_model:
+                evaluate_checkpoint(0, "warm_start_baseline")
+
+            for epoch in range(1, max_epochs + 1):
+                model.learn(total_timesteps=epoch_ts,
+                            reset_num_timesteps=False)
+                evaluate_checkpoint(epoch, "easy_training_epoch")
                 if best_epoch is not None and waited >= patience:
                     break
 
             if best_epoch is None or not post_easy_path.exists():
                 raise RuntimeError(
-                    "easy curriculum produced no activity-eligible checkpoint: "
+                    "easy curriculum produced no easy-and-normal activity-"
+                    "eligible checkpoint: "
                     f"required trades>={minimum_trades}, non-hold actions, "
                     "entry actions, submitted protected entries, and zero "
-                    "protected-entry rejections"
+                    "protected-entry rejections in easy; train-tail and "
+                    "validation trade gates must also pass in normal"
                 )
             post_easy_sha = _verify_artifact_sha256(post_easy_path, None)
             meta = {
-                "schema": "agent_multi.solvency_curriculum.post_easy.v2",
+                "schema": "agent_multi.solvency_curriculum.post_easy.v3",
                 "artifact": str(post_easy_path),
                 "artifact_sha256": post_easy_sha,
                 "solvency_mode": EASY_MODE,
@@ -266,6 +361,8 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "requires_entry_action": True,
                     "requires_submitted_entry": True,
                     "maximum_protected_entry_rejections": 0,
+                    "requires_normal_handoff_train_tail_activity": True,
+                    "requires_normal_handoff_validation_activity": True,
                 },
                 "easy_difficulty": {
                     "continuous_action_threshold": easy_config[

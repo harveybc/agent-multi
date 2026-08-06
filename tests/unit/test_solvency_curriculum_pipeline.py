@@ -17,6 +17,9 @@ from pipeline_plugins.rl_pipeline_with_solvency_curriculum import (
     PipelinePlugin as CurriculumPipeline,
 )
 from pipeline_plugins import rl_pipeline_with_validation as parent_mod
+from pipeline_plugins.rl_pipeline_with_validation import (
+    _checkpoint_is_eligible,
+)
 
 
 class FakeModel:
@@ -38,6 +41,7 @@ class FakeAgent:
     def __init__(self):
         self.saved = {}
         self.loads = []
+        self.training_loads = []
 
     def build(self, _env, _config):
         return FakeModel()
@@ -52,6 +56,10 @@ class FakeAgent:
         model = FakeModel(weights=Path(path).read_text())
         model.replay_buffer_transitions = 0
         return model
+
+    def load_for_training(self, path, env, config):
+        self.training_loads.append({"path": str(path), "config": dict(config)})
+        return self.load(path, env)
 
 
 class FakeEnv:
@@ -112,6 +120,16 @@ def harness(tmp_path, monkeypatch):
 
     monkeypatch.setattr(pipeline, "_split_csv", fake_split_csv)
     monkeypatch.setattr(pipeline, "_make_split_env", fake_make_split_env)
+
+    def fake_eval_on_split(
+        _name, config, _csv_path, _agent, _model, _seed, _split_name
+    ):
+        trades = int(config.get(
+            "_fake_normal_trades", config.get("_fake_trades", 1)
+        ))
+        return {"trades_total": trades, "total_return": 0.0}
+
+    monkeypatch.setattr(pipeline, "_eval_on_split", fake_eval_on_split)
     monkeypatch.setattr(parent_mod.PipelinePlugin, "run_pipeline",
                         fake_parent_run)
     return pipeline, made_envs, parent_calls, tmp_path
@@ -195,7 +213,7 @@ def test_easy_phase_rejects_zero_trade_policy_and_saves_no_artifact(harness):
     pipeline, _made_envs, parent_calls, tmp_path = harness
     config = _config(tmp_path)
     config["_fake_trades"] = 0
-    with pytest.raises(RuntimeError, match="no activity-eligible checkpoint"):
+    with pytest.raises(RuntimeError, match="no easy-and-normal activity"):
         pipeline.run_pipeline(
             config=config, env_plugin=None, agent_plugin=FakeAgent(),
             mode="train",
@@ -204,6 +222,67 @@ def test_easy_phase_rejects_zero_trade_policy_and_saves_no_artifact(harness):
     assert not Path(
         str(tmp_path / "candidate" / "model") + ".post_easy.zip"
     ).exists()
+
+
+def test_easy_phase_rejects_policy_that_collapses_at_normal_handoff(harness):
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    config = _config(tmp_path)
+    config["_fake_trades"] = 3
+    config["_fake_normal_trades"] = 0
+    with pytest.raises(RuntimeError, match="no easy-and-normal activity"):
+        pipeline.run_pipeline(
+            config=config,
+            env_plugin=None,
+            agent_plugin=FakeAgent(),
+            mode="train",
+        )
+    assert not parent_calls
+
+
+def test_easy_phase_loads_and_preserves_active_warm_start_baseline(harness):
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    anchor = tmp_path / "anchor.zip"
+    anchor.write_text("active-anchor")
+    config = _config(tmp_path)
+    config.update({
+        "warm_start_model": str(anchor),
+        "easy_max_epochs": 2,
+        "easy_patience": 1,
+    })
+    agent = FakeAgent()
+    pipeline.run_pipeline(
+        config=config,
+        env_plugin=None,
+        agent_plugin=agent,
+        mode="train",
+    )
+
+    post_easy = Path(parent_calls[0]["config"]["warm_start_model"])
+    meta = json.loads(Path(str(post_easy) + ".meta.json").read_text())
+    assert agent.loads[0] == str(anchor)
+    assert agent.training_loads[0]["path"] == str(anchor)
+    assert post_easy.read_text() == "active-anchor"
+    assert meta["best_easy_epoch"] == 0
+    assert meta["history"][0]["checkpoint_source"] == "warm_start_baseline"
+    assert meta["history"][0]["normal_handoff_eligible"] is True
+
+
+def test_checkpoint_eligibility_requires_timesteps_and_trading_activity():
+    assert _checkpoint_is_eligible(
+        num_timesteps=101,
+        minimum_timesteps=101,
+        trade_gate_passed=True,
+    )
+    assert not _checkpoint_is_eligible(
+        num_timesteps=100,
+        minimum_timesteps=101,
+        trade_gate_passed=True,
+    )
+    assert not _checkpoint_is_eligible(
+        num_timesteps=101,
+        minimum_timesteps=101,
+        trade_gate_passed=False,
+    )
 
 
 @pytest.mark.parametrize(

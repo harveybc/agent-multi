@@ -1,0 +1,27 @@
+{
+  "schema": "agent_multi.eth_current_stack_anchor.v1",
+  "artifact_file": "eth_4h_sac_current_stack_anchor_v1.zip",
+  "artifact_sha256": "4579e6f09a9cf1272664479217f6dbaafd74004421cab8e7571da037fb86e80a",
+  "agent_plugin": "project3_sac_actor_critic_agent",
+  "asset": "ETHUSD",
+  "timeframe": "4h",
+  "observation_elements": 2724,
+  "window_size": 32,
+  "feature_count": 83,
+  "feature_scaling": "rolling_zscore",
+  "feature_scaling_window": 256,
+  "feature_clip": 10,
+  "include_price_window": true,
+  "include_agent_state": true,
+  "net_arch": [256, 256],
+  "use_sde": false,
+  "selection_status": "active_current_stack_warm_start_anchor",
+  "normal_validation_reproduction": {
+    "period_start": "2024-01-01T00:00:00",
+    "period_end": "2024-12-31T23:59:59",
+    "trades_total": 61,
+    "total_return": 0.024761,
+    "final_equity": 10247.61
+  },
+  "note": "Warm-start anchor for model/execution optimization. It is not represented as the final DOIN champion."
+}

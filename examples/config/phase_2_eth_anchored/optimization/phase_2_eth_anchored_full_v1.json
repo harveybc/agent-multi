@@ -1,0 +1,682 @@
+{
+  "artifacts": {
+    "artifact_root": "/home/harveybc/.local/share/agent-multi/eth_anchored/full",
+    "config_manifest_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/config_manifest.json",
+    "load_model": null,
+    "optimizer_output_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/optimizer_output.json",
+    "resolved_config_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/resolved_config.json",
+    "results_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/results.json",
+    "return_trace_dir": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/return_traces",
+    "save_config": "./config_out.json",
+    "save_log": "./debug_out.json",
+    "save_model": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/final_policy.zip"
+  },
+  "asset_policy": {
+    "action_space_mode": "continuous",
+    "continuous_action_threshold": 0.1,
+    "plugin": "project3_sac_actor_critic_agent",
+    "project3_strict": true,
+    "window_size": 32
+  },
+  "code": {
+    "contract_versions": {
+      "full_genome_config": "agent_multi.project3_full_genome_config.v1",
+      "metrics": "trading.metrics.v1",
+      "optimizer_resume": "agent_multi.optimization_resume.v1",
+      "trading": "trading_experiment.v1"
+    },
+    "repositories": {}
+  },
+  "context_encoder": {
+    "enabled": false,
+    "profile": "none_v1"
+  },
+  "data": {
+    "asset": "ETHUSD",
+    "data_profile": "eth_tech_stat_model_ready",
+    "dataset_manifest_file": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.manifest.json",
+    "date_column": "DATE_TIME",
+    "feature_binary_columns": [
+      "ema_cross_10_50",
+      "ema_cross_20_100",
+      "vol_regime_high",
+      "vol_regime_low"
+    ],
+    "feature_list": [
+      "return_1",
+      "log_return_1",
+      "return_5",
+      "log_return_5",
+      "return_10",
+      "log_return_10",
+      "return_20",
+      "log_return_20",
+      "return_60",
+      "log_return_60",
+      "sma_10",
+      "ema_10",
+      "close_sma_ratio_10",
+      "sma_20",
+      "ema_20",
+      "close_sma_ratio_20",
+      "sma_50",
+      "ema_50",
+      "close_sma_ratio_50",
+      "sma_100",
+      "ema_100",
+      "close_sma_ratio_100",
+      "sma_200",
+      "ema_200",
+      "close_sma_ratio_200",
+      "macd",
+      "macd_signal",
+      "macd_hist",
+      "rsi_7",
+      "rsi_14",
+      "rsi_21",
+      "stoch_k",
+      "stoch_d",
+      "williams_r_14",
+      "cci_14",
+      "roc_10",
+      "roc_20",
+      "roc_60",
+      "mom_10",
+      "mom_20",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "bb_pct_b",
+      "bb_width",
+      "atr_14",
+      "natr_14",
+      "hist_vol_10",
+      "hist_vol_20",
+      "hist_vol_60",
+      "ema_cross_10_50",
+      "ema_cross_20_100",
+      "trend_slope_50",
+      "trend_strength_50",
+      "obv",
+      "obv_delta_20",
+      "volume_sma_10",
+      "volume_sma_20",
+      "volume_ratio_20",
+      "vwap_60",
+      "mfi_14",
+      "statistical__log_return_1",
+      "roll_mean_ret_20",
+      "roll_std_ret_20",
+      "roll_skew_ret_20",
+      "roll_kurt_ret_20",
+      "roll_mean_ret_60",
+      "roll_std_ret_60",
+      "roll_skew_ret_60",
+      "roll_kurt_ret_60",
+      "roll_mean_ret_252",
+      "roll_std_ret_252",
+      "roll_skew_ret_252",
+      "roll_kurt_ret_252",
+      "realized_var_12",
+      "realized_var_48",
+      "autocorr_lag1_100",
+      "autocorr_lag5_100",
+      "sqret_autocorr_lag1_100",
+      "vol_regime_high",
+      "vol_regime_low",
+      "hurst_proxy_200",
+      "zscore_close_100"
+    ],
+    "features_preset": "kitchen_sink_guarded",
+    "headers": true,
+    "input_data_file": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "input_data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "min_split_rows": 200,
+    "price_column": "CLOSE",
+    "test_end": "2025-12-31T23:59:59",
+    "test_start": "2025-01-01T00:00:00",
+    "timeframe": "4h",
+    "train_end": "2023-12-31T23:59:59",
+    "train_start": "2017-09-28T04:00:00",
+    "validation_end": "2024-12-31T23:59:59",
+    "validation_start": "2024-01-01T00:00:00"
+  },
+  "deployment": {
+    "channel": "research_component",
+    "lifecycle": "not_for_live_orders",
+    "promotion_gate": "full_genome_three_seed_confirmation_required"
+  },
+  "environment": {
+    "atr_period": 14,
+    "breakout_lookback": 12,
+    "broker_plugin": "default_broker",
+    "commission": 0.0002,
+    "continuous_action_threshold": 0.1,
+    "data_feed_plugin": "default_data_feed",
+    "entry_order_mode": "adaptive",
+    "env_mode": "training",
+    "feature_binary_columns": [
+      "ema_cross_10_50",
+      "ema_cross_20_100",
+      "vol_regime_high",
+      "vol_regime_low"
+    ],
+    "feature_clip": 10,
+    "feature_columns": [
+      "return_1",
+      "log_return_1",
+      "return_5",
+      "log_return_5",
+      "return_10",
+      "log_return_10",
+      "return_20",
+      "log_return_20",
+      "return_60",
+      "log_return_60",
+      "sma_10",
+      "ema_10",
+      "close_sma_ratio_10",
+      "sma_20",
+      "ema_20",
+      "close_sma_ratio_20",
+      "sma_50",
+      "ema_50",
+      "close_sma_ratio_50",
+      "sma_100",
+      "ema_100",
+      "close_sma_ratio_100",
+      "sma_200",
+      "ema_200",
+      "close_sma_ratio_200",
+      "macd",
+      "macd_signal",
+      "macd_hist",
+      "rsi_7",
+      "rsi_14",
+      "rsi_21",
+      "stoch_k",
+      "stoch_d",
+      "williams_r_14",
+      "cci_14",
+      "roc_10",
+      "roc_20",
+      "roc_60",
+      "mom_10",
+      "mom_20",
+      "bb_upper",
+      "bb_middle",
+      "bb_lower",
+      "bb_pct_b",
+      "bb_width",
+      "atr_14",
+      "natr_14",
+      "hist_vol_10",
+      "hist_vol_20",
+      "hist_vol_60",
+      "ema_cross_10_50",
+      "ema_cross_20_100",
+      "trend_slope_50",
+      "trend_strength_50",
+      "obv",
+      "obv_delta_20",
+      "volume_sma_10",
+      "volume_sma_20",
+      "volume_ratio_20",
+      "vwap_60",
+      "mfi_14",
+      "statistical__log_return_1",
+      "roll_mean_ret_20",
+      "roll_std_ret_20",
+      "roll_skew_ret_20",
+      "roll_kurt_ret_20",
+      "roll_mean_ret_60",
+      "roll_std_ret_60",
+      "roll_skew_ret_60",
+      "roll_kurt_ret_60",
+      "roll_mean_ret_252",
+      "roll_std_ret_252",
+      "roll_skew_ret_252",
+      "roll_kurt_ret_252",
+      "realized_var_12",
+      "realized_var_48",
+      "autocorr_lag1_100",
+      "autocorr_lag5_100",
+      "sqret_autocorr_lag1_100",
+      "vol_regime_high",
+      "vol_regime_low",
+      "hurst_proxy_200",
+      "zscore_close_100"
+    ],
+    "feature_scaling": "rolling_zscore",
+    "feature_scaling_window": 256,
+    "full_spread_rate": 0.0001,
+    "headers": true,
+    "include_agent_state": true,
+    "include_price_window": true,
+    "initial_cash": 10000.0,
+    "leverage": 1.0,
+    "limit_offset_atr_multiple": 0.05,
+    "limit_offset_spread_multiple": 0.5,
+    "market_max_spread_bps": 4.0,
+    "market_urgency_threshold": 0.75,
+    "max_rows": null,
+    "metrics_plugin": "trading_metrics",
+    "plugin": "gym_fx_env",
+    "position_size": 0.01,
+    "precomputed_causal_features": false,
+    "precomputed_feature_contract_sha256": "98a3cc732a9a61143ce2d778cc1aab2312b289d350217b374df3784ccbe159f4",
+    "preprocessor_plugin": "feature_window_preprocessor",
+    "rel_volume": 0.05,
+    "require_feature_aware_preprocessor": false,
+    "require_protected_entries": true,
+    "reward_plugin": "pnl_reward",
+    "simulation_engine": "backtrader",
+    "slippage": 0.0,
+    "solvency_mode": "normal_realistic",
+    "stop_breakout_threshold": 0.65,
+    "stop_offset_atr_multiple": 0.05,
+    "stop_offset_spread_multiple": 0.5,
+    "strategy_plugin": "direct_atr_sltp",
+    "window_size": 32
+  },
+  "experiment": {
+    "curriculum_arm": "anchored_easy_normal",
+    "description": "ETH easy->normal optimization warm-started from the verified current-stack active policy; observation and network shape fixed",
+    "mode": "train",
+    "name": "phase_2_eth_anchored_full_v1",
+    "phase": "D1_FULL_GENOME_PER_ASSET",
+    "quiet_mode": false,
+    "role": "champion_anchored_model_execution_optimization",
+    "scientific_scope": "full_fidelity_per_asset_optimization",
+    "legacy_flat": {
+      "include_price_window": true
+    }
+  },
+  "lifecycle_policy": {
+    "plugin": "direct_atr_sltp"
+  },
+  "objectives": {
+    "primary_report_metrics": [
+      "mean_weekly_return",
+      "max_drawdown_fraction",
+      "total_return",
+      "annualized_return",
+      "trades_total"
+    ],
+    "proxy_metrics_prohibited_in_owner_reports": [
+      "train_validation_l1_score"
+    ],
+    "selection_metric": "lexicographic_weekly_v1",
+    "selection_uses_test": false
+  },
+  "olap": {
+    "enabled": true,
+    "experiment_dimension": "asset_timeframe_policy",
+    "metric_schema": "trading.metrics.v1"
+  },
+  "optimization": {
+    "enabled": true,
+    "full_fidelity_protocol": true,
+    "ga_cxpb": 0.5,
+    "ga_eval_timesteps": 3208000,
+    "ga_fitness_dd_lambda": 1.0,
+    "ga_fitness_split": "train",
+    "ga_generations": 18,
+    "ga_mutpb": 0.25,
+    "ga_n_jobs": 1,
+    "ga_population": 20,
+    "ga_seed": 2703,
+    "higher_is_better": true,
+    "initial_candidate_decoded": {
+      "learning_rate_gene": 0.0001,
+      "batch_size_gene": 256,
+      "buffer_size_gene": 200000,
+      "learning_starts_gene": 1000,
+      "gamma_gene": 0.99,
+      "tau_gene": 0.005,
+      "train_freq_gene": 1,
+      "gradient_steps_gene": 1,
+      "entropy_gene": 0.2,
+      "action_threshold_gene": 0.1,
+      "relative_volume_gene": 0.05,
+      "stop_loss_atr_gene": 2.0,
+      "take_profit_atr_gene": 3.0,
+      "entry_order_mode_gene": "adaptive",
+      "market_urgency_threshold_gene": 0.75,
+      "market_max_spread_bps_gene": 4.0,
+      "stop_breakout_threshold_gene": 0.65,
+      "limit_offset_atr_gene": 0.05,
+      "stop_offset_atr_gene": 0.05
+    },
+    "metric": "lexicographic_weekly_v1",
+    "metric_missing_policy": "fail",
+    "metric_schema": "trading.metrics.v1",
+    "mixed_genome_max_observation_elements": 4096,
+    "mixed_genome_max_replay_observation_values": 300000000,
+    "mixed_genome_schema": [
+      {
+        "high": 0.001,
+        "kind": "log_float",
+        "low": 1e-05,
+        "name": "learning_rate_gene",
+        "target": "learning_rate"
+      },
+      {
+        "choices": [
+          128,
+          256,
+          512
+        ],
+        "kind": "categorical",
+        "name": "batch_size_gene",
+        "target": "batch_size"
+      },
+      {
+        "choices": [
+          100000,
+          200000,
+          500000
+        ],
+        "kind": "categorical",
+        "name": "buffer_size_gene",
+        "target": "buffer_size"
+      },
+      {
+        "choices": [
+          1000,
+          2000,
+          5000,
+          10000
+        ],
+        "kind": "categorical",
+        "name": "learning_starts_gene",
+        "target": "learning_starts"
+      },
+      {
+        "high": 0.9995,
+        "kind": "float",
+        "low": 0.94,
+        "name": "gamma_gene",
+        "target": "gamma"
+      },
+      {
+        "high": 0.02,
+        "kind": "log_float",
+        "low": 0.0005,
+        "name": "tau_gene",
+        "target": "tau"
+      },
+      {
+        "choices": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "kind": "categorical",
+        "name": "train_freq_gene",
+        "target": "train_freq"
+      },
+      {
+        "choices": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "kind": "categorical",
+        "name": "gradient_steps_gene",
+        "target": "gradient_steps"
+      },
+      {
+        "choices": [
+          "auto",
+          0.01,
+          0.05,
+          0.1,
+          0.2
+        ],
+        "kind": "categorical",
+        "name": "entropy_gene",
+        "target": "ent_coef"
+      },
+      {
+        "high": 0.4,
+        "kind": "float",
+        "low": 0.03,
+        "name": "action_threshold_gene",
+        "target": "continuous_action_threshold"
+      },
+      {
+        "high": 0.25,
+        "kind": "float",
+        "low": 0.01,
+        "name": "relative_volume_gene",
+        "target": "rel_volume"
+      },
+      {
+        "high": 5.0,
+        "kind": "float",
+        "low": 0.75,
+        "name": "stop_loss_atr_gene",
+        "target": "k_sl"
+      },
+      {
+        "high": 8.0,
+        "kind": "float",
+        "low": 1.0,
+        "name": "take_profit_atr_gene",
+        "target": "k_tp"
+      },
+      {
+        "choices": [
+          "adaptive",
+          "market",
+          "limit",
+          "stop"
+        ],
+        "kind": "categorical",
+        "name": "entry_order_mode_gene",
+        "target": "entry_order_mode"
+      },
+      {
+        "high": 0.9,
+        "kind": "float",
+        "low": 0.55,
+        "name": "market_urgency_threshold_gene",
+        "target": "market_urgency_threshold"
+      },
+      {
+        "choices": [
+          1.0,
+          2.0,
+          4.0,
+          8.0
+        ],
+        "kind": "categorical",
+        "name": "market_max_spread_bps_gene",
+        "target": "market_max_spread_bps"
+      },
+      {
+        "high": 0.85,
+        "kind": "float",
+        "low": 0.35,
+        "name": "stop_breakout_threshold_gene",
+        "target": "stop_breakout_threshold"
+      },
+      {
+        "high": 0.25,
+        "kind": "float",
+        "low": 0.01,
+        "name": "limit_offset_atr_gene",
+        "target": "limit_offset_atr_multiple"
+      },
+      {
+        "high": 0.25,
+        "kind": "float",
+        "low": 0.01,
+        "name": "stop_offset_atr_gene",
+        "target": "stop_offset_atr_multiple"
+      }
+    ],
+    "optimization_action_collapse_min_steps": 64,
+    "optimization_action_collapse_splits": [
+      "validation"
+    ],
+    "optimization_candidate_history": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/candidate_history.csv",
+    "optimization_capture_model_artifact": true,
+    "optimization_champion_model_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/champion_policy.zip",
+    "optimization_max_dominant_action_rate": 0.999,
+    "optimization_metric": "lexicographic_weekly_v1",
+    "optimization_min_action_std": 1e-05,
+    "optimization_min_trades_by_split": {
+      "train_tail": 0,
+      "validation": 12
+    },
+    "optimization_parameters_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/champion_parameters.json",
+    "optimization_patience": 5,
+    "optimization_pause_on_resume": false,
+    "optimization_reject_action_collapse": true,
+    "optimization_reject_insufficient_activity": true,
+    "optimization_require_model_artifact": true,
+    "optimization_resume": false,
+    "optimization_resume_file": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/optimization_resume.json",
+    "optimization_run_final_pipeline": false,
+    "optimization_stages": [
+      {
+        "name": "model_training",
+        "params": [
+          "learning_rate_gene",
+          "batch_size_gene",
+          "buffer_size_gene",
+          "learning_starts_gene",
+          "gamma_gene",
+          "tau_gene",
+          "train_freq_gene",
+          "gradient_steps_gene",
+          "entropy_gene"
+        ],
+        "generations": 8,
+        "patience": 5
+      },
+      {
+        "name": "execution_risk",
+        "params": [
+          "action_threshold_gene",
+          "relative_volume_gene",
+          "stop_loss_atr_gene",
+          "take_profit_atr_gene",
+          "entry_order_mode_gene",
+          "market_urgency_threshold_gene",
+          "market_max_spread_bps_gene",
+          "stop_breakout_threshold_gene",
+          "limit_offset_atr_gene",
+          "stop_offset_atr_gene"
+        ],
+        "generations": 4,
+        "patience": 3
+      },
+      {
+        "name": "joint_refinement",
+        "params": "all",
+        "generations": 6,
+        "patience": 5
+      }
+    ],
+    "optimization_statistics": "/home/harveybc/.local/share/agent-multi/eth_anchored/full/optimization_stats.json",
+    "plugin": "project3_full_genome_optimizer",
+    "mixed_genome_fixed_observation_contract": {
+      "anchor_sha256": "4579e6f09a9cf1272664479217f6dbaafd74004421cab8e7571da037fb86e80a",
+      "window_size": 32,
+      "feature_count": 83,
+      "feature_scaling": "rolling_zscore",
+      "feature_scaling_window": 256,
+      "net_arch": [
+        256,
+        256
+      ]
+    }
+  },
+  "portfolio": {
+    "enabled": false,
+    "role": "single_asset_component"
+  },
+  "predictions": {
+    "enabled": false,
+    "provider": "none"
+  },
+  "risk": {
+    "atr_period": 14,
+    "commission": 0.0002,
+    "initial_cash": 10000.0,
+    "k_sl": 2.0,
+    "k_tp": 3.0,
+    "leverage": 1.0,
+    "max_order_volume": 100.0,
+    "min_order_volume": 0.0,
+    "position_size": 0.01,
+    "rel_volume": 0.05,
+    "size_mode": "notional",
+    "slippage": 7.5e-05
+  },
+  "rush_detector": {
+    "enabled": false,
+    "profile": "deferred_until_asset_policy_gate"
+  },
+  "schema_version": "trading_experiment.v1",
+  "training": {
+    "agent_verbose": 0,
+    "batch_size": 256,
+    "buffer_size": 200000,
+    "device": "cuda",
+    "early_stop_min_trades": 0,
+    "early_stop_min_train_tail_trades": 0,
+    "early_stop_min_validation_trades": 12,
+    "early_stop_no_trade_penalty": 1000000.0,
+    "early_stop_train_tail_days": 7,
+    "easy_max_epochs": 4,
+    "easy_patience": 2,
+    "ent_coef": 0.2,
+    "epoch_timesteps": 8000,
+    "eval_episodes": 1,
+    "eval_seed": 2703,
+    "evaluate_test_split": false,
+    "gamma": 0.99,
+    "gradient_steps": 1,
+    "l1_generalization_gap_penalty_beta": 0.25,
+    "l1_min_checkpoint_timesteps": 5001,
+    "l1_min_delta": 1e-05,
+    "l1_patience": 60,
+    "l1_patience_start_epoch": 40,
+    "learning_rate": 0.0001,
+    "learning_starts": 1000,
+    "max_epochs": 2000,
+    "net_arch": [
+      256,
+      256
+    ],
+    "pipeline_plugin": "rl_pipeline_with_solvency_curriculum",
+    "risk_penalty_lambda": 1.0,
+    "selection_metric": "lexicographic_weekly_v1",
+    "selection_min_trades": 12,
+    "solvency_curriculum_enabled": true,
+    "target_entropy": "auto",
+    "target_update_interval": 1,
+    "tau": 0.005,
+    "total_timesteps": 10000,
+    "train_freq": 1,
+    "train_seed": 2703,
+    "use_sde": false,
+    "warm_start_model": "/home/harveybc/Documents/GitHub/agent-multi/examples/models/eth_4h_sac_current_stack_anchor_v1.zip",
+    "warm_start_model_sha256": "4579e6f09a9cf1272664479217f6dbaafd74004421cab8e7571da037fb86e80a",
+    "warm_start_expand_observation_space": false,
+    "warm_start_baseline_checkpoint_enabled": true,
+    "easy_min_trades": 12
+  },
+  "walk_forward": {
+    "enabled": false,
+    "promotion_requires_weekly_walk_forward": true,
+    "selection_uses_test": false,
+    "weekly_retraining": false
+  }
+}
