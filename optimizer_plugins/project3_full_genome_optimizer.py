@@ -353,16 +353,31 @@ class Plugin(DefaultOptimizer):
                     )
                 gene_spec = next(
                     (g for g in schema if g.get("name") == gene), None)
-                allowed = [
-                    c for c in (gene_spec or {}).get("choices", [])
-                    if c != forbidden
-                ]
+                allowed = sorted(
+                    (c for c in (gene_spec or {}).get("choices", [])
+                     if c != forbidden),
+                    key=str,
+                )
                 if not allowed:
                     raise ValueError(
                         f"forbid_value repair for {gene!r} has no"
                         " allowed replacement choice"
                     )
-                replacement = allowed[0]   # deterministic
+                # AUD-F1-20260806-132: a deterministic SEEDED UNIFORM
+                # draw over the sorted allowed choices, seeded from the
+                # immutable candidate identity (the decoded genome
+                # itself). First-allowed selection was an ordering-
+                # dependent evolutionary prior; this draw is invariant
+                # to choice declaration order and uniform across
+                # candidate identities.
+                identity = json.dumps(
+                    {"gene": gene, "decoded": {
+                        str(k): decoded[k] for k in sorted(decoded)}},
+                    sort_keys=True, separators=(",", ":"), default=str)
+                draw_seed = int.from_bytes(
+                    hashlib.sha256(identity.encode()).digest()[:8],
+                    "big")
+                replacement = allowed[draw_seed % len(allowed)]
                 decoded[gene] = replacement
                 target = str((gene_spec or {}).get("target") or "").strip()
                 if target:
@@ -370,7 +385,13 @@ class Plugin(DefaultOptimizer):
                 repairs = run_config.setdefault("_genome_repairs", [])
                 repairs.append({
                     "gene": gene, "forbidden": forbidden,
+                    "original_value": forbidden,
+                    "allowed_choices": list(allowed),
                     "replacement": replacement,
+                    "rule": "forbid_value",
+                    "seed_derivation": (
+                        "sha256(gene+sorted-decoded-genome)[:8] mod"
+                        f" {len(allowed)} -> index"),
                     "reason": rule.get("reason"),
                 })
                 continue
@@ -399,7 +420,8 @@ class Plugin(DefaultOptimizer):
                 )
             kind = rule.get("rule")
             if kind == "forbid_value":
-                if not str(rule.get("gene") or "").strip():
+                gene_name = str(rule.get("gene") or "").strip()
+                if not gene_name:
                     raise ValueError(
                         f"repair rule {index}: forbid_value requires"
                         " 'gene'"
@@ -415,6 +437,33 @@ class Plugin(DefaultOptimizer):
                         f"repair rule {index}: unknown repair"
                         f" {repair!r}"
                     )
+                # AUD-F1-20260806-132: the rule must bind to a REAL
+                # categorical gene of the typed schema, and a resample
+                # repair must have at least one allowed replacement.
+                schema = (config or {}).get("mixed_genome_schema")
+                if isinstance(schema, list):
+                    gene_spec = next(
+                        (g for g in schema
+                         if g.get("name") == gene_name), None)
+                    if gene_spec is None:
+                        raise ValueError(
+                            f"repair rule {index}: gene {gene_name!r}"
+                            " does not exist in the typed schema"
+                        )
+                    if str(gene_spec.get("kind")) != "categorical":
+                        raise ValueError(
+                            f"repair rule {index}: gene {gene_name!r}"
+                            " is not categorical"
+                            f" (kind={gene_spec.get('kind')!r})"
+                        )
+                    if repair == "resample_categorical" and not [
+                        c for c in gene_spec.get("choices", [])
+                        if c != rule["value"]
+                    ]:
+                        raise ValueError(
+                            f"repair rule {index}: gene {gene_name!r}"
+                            " has no allowed replacement choice"
+                        )
                 continue
             if kind is not None:
                 raise ValueError(

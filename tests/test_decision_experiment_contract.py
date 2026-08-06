@@ -65,21 +65,43 @@ def test_base_config_disables_protected_split():
 
 
 def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
-                  with_validation=True):
+                  with_validation=True, lineage="L1",
+                  duplicate_execution_id=None, schema_ok=True):
     seed_dir = root / f"seed{seed}"
     seed_dir.mkdir(parents=True, exist_ok=True)
-    packet = {"seed": seed, "arms": {}}
+    packet = {
+        "schema": ("agent_multi.eth_curriculum_decision.v1"
+                   if schema_ok else "bogus.v0"),
+        "seed": seed,
+        "data_sha256": "d" * 64,
+        "base_contract_sha256": "b" * 64,
+        "lineage": {"agent-multi": lineage},
+        "arms": {},
+    }
     for index, arm in enumerate(arms):
         splits = {"validation": {
             "mean_weekly_return": 0.001 * (index + 1),
             "annualized_return": 0.05, "total_return": 0.02,
             "max_drawdown_fraction": 0.03, "trades_total": 40,
         }} if with_validation else {}
-        packet["arms"][arm] = {
+        record = {
+            "schema": "agent_multi.arm_record.v3",
+            "execution_id": duplicate_execution_id or
+            f"exec-{seed}-{arm}-" + "0" * 40,
             "arm": arm, "seed": seed, "splits_raw": splits,
             "margin_telemetry": {"validation": {
                 "would_margin_call_count": "unavailable"}},
+            "return_trace_sha256": {"t.csv": "a" * 64},
+            "resolved_config_sha256": "c" * 64,
+            "artifacts": {"final": {"path": "x", "sha256": "e" * 64}},
         }
+        if arm != "E4":
+            record["best_checkpoint_vs_terminal"] = {
+                "terminal_evaluation": {
+                    "artifact_sha256": "f" * 64,
+                    "splits_raw": splits,
+                }}
+        packet["arms"][arm] = record
     (seed_dir / "seed_packet.json").write_text(json.dumps(packet))
 
 
@@ -115,7 +137,7 @@ def test_aggregator_fails_closed_on_empty_validation(tmp_path):
                       with_validation=seed != 303)
     done = _aggregate(tmp_path)
     assert done.returncode == 1
-    assert "validation evidence" in done.stdout
+    assert "missing/non-finite" in done.stdout
 
 
 def test_aggregator_complete_packet_is_promotion_eligible(tmp_path):
@@ -141,18 +163,90 @@ def test_partial_packet_is_marked_not_promotable(tmp_path):
     assert summary["complete"] is False
 
 
-def test_runner_arm_is_idempotent(tmp_path, monkeypatch):
-    """A completed arm is reused, never recomputed (finding 126)."""
+
+
+
+def test_aggregator_rejects_garbage_validation(tmp_path):
+    """Musashi reproducer `empty_packet_promotion` as regression:
+    validation={"garbage": 1} must never be promotion-eligible."""
+    for seed in (101, 202, 303, 404):
+        seed_dir = tmp_path / f"seed{seed}"
+        seed_dir.mkdir(parents=True)
+        packet = {"schema": "agent_multi.eth_curriculum_decision.v1",
+                  "seed": seed, "data_sha256": "d" * 64,
+                  "base_contract_sha256": "b" * 64,
+                  "lineage": {"agent-multi": f"rev{seed}"},
+                  "arms": {arm: {"schema": "agent_multi.arm_record.v3",
+                                 "execution_id": f"e{seed}{arm}",
+                                 "arm": arm, "seed": seed,
+                                 "splits_raw": {"validation":
+                                                {"garbage": 1}}}
+                           for arm in ("N14", "EN4_10", "E4")}}
+        (seed_dir / "seed_packet.json").write_text(json.dumps(packet))
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "missing/non-finite" in done.stdout
+    assert "DIFFERENT data/base/lineage" in done.stdout
+
+
+def test_aggregator_rejects_duplicate_execution_ids(tmp_path):
+    for seed in (101, 202, 303, 404):
+        _write_packet(tmp_path, seed,
+                      duplicate_execution_id="same-id-" + "0" * 40)
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "duplicate execution_id" in done.stdout
+
+
+def test_aggregator_rejects_mixed_lineage(tmp_path):
+    for seed in (101, 202, 303, 404):
+        _write_packet(tmp_path, seed, lineage=f"rev-{seed}")
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "DIFFERENT data/base/lineage" in done.stdout
+
+
+def test_aggregator_rejects_wrong_schema(tmp_path):
+    for seed in (101, 202, 303, 404):
+        _write_packet(tmp_path, seed, schema_ok=seed != 202)
+    done = _aggregate(tmp_path)
+    assert done.returncode == 1
+    assert "packet schema" in done.stdout
+
+
+def test_runner_refuses_stale_record(tmp_path, monkeypatch):
+    """Musashi reproducer `stale_arm_reuse` as regression: a changed
+    budget/anchor must fail explicitly, never silently reuse."""
     out_dir = tmp_path / "seed101" / "N14"
     out_dir.mkdir(parents=True)
-    record = {"arm": "N14", "seed": 101,
+    record = {"schema": "agent_multi.arm_record.v3",
+              "execution_id": "old-identity",
+              "arm": "N14", "seed": 101,
+              "splits_raw": {"validation": {"total_return": 0.01}}}
+    (out_dir / "arm_record.json").write_text(json.dumps(record))
+    anchor = tmp_path / "anchor.zip"
+    anchor.write_bytes(b"anchor-bytes")
+    with pytest.raises(RuntimeError, match="refusing stale reuse"):
+        runner.run_arm("N14", 101, tmp_path, agent_name="x",
+                       epoch_timesteps=999, anchor=anchor)
+
+
+def test_runner_reuses_only_matching_execution_id(tmp_path, monkeypatch):
+    anchor = tmp_path / "anchor.zip"
+    anchor.write_bytes(b"anchor-bytes")
+    exec_id = runner._execution_id("N14", 101, anchor,
+                                   epoch_timesteps=10)
+    out_dir = tmp_path / "seed101" / "N14"
+    out_dir.mkdir(parents=True)
+    record = {"schema": "agent_multi.arm_record.v3",
+              "execution_id": exec_id, "arm": "N14", "seed": 101,
               "splits_raw": {"validation": {"total_return": 0.01}}}
     (out_dir / "arm_record.json").write_text(json.dumps(record))
 
     def _explode(*args, **kwargs):
-        raise AssertionError("completed arm was recomputed")
+        raise AssertionError("matching record was recomputed")
 
     monkeypatch.setattr(runner, "_agent_plugin", _explode)
     got = runner.run_arm("N14", 101, tmp_path, agent_name="x",
-                         epoch_timesteps=10, anchor=Path("/nonexistent"))
-    assert got["splits_raw"]["validation"]["total_return"] == 0.01
+                         epoch_timesteps=10, anchor=anchor)
+    assert got["execution_id"] == exec_id

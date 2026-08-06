@@ -70,6 +70,42 @@ RAW_METRICS = (
 )
 
 
+RUNNER_VERSION = "eth_curriculum_decision_experiment.v3"
+
+
+def _execution_id(arm: str, seed: int, anchor: Path, *,
+                  epoch_timesteps: int) -> str:
+    """Content address of one arm execution (AUD-F1-20260806-130):
+    arm, seed, shared anchor bytes, dataset hash, pinned base contract,
+    split contract, budget, metric schema, code lineage and runner
+    version. Any change produces a different id."""
+    identity = {
+        "arm": arm,
+        "seed": seed,
+        "anchor_sha256": _sha(anchor) if anchor.is_file() else None,
+        "data_sha256": DATA_SHA256,
+        "base_contract_sha256": ETH_BASE_SHA256,
+        "splits": SPLITS,
+        "epoch_timesteps": epoch_timesteps,
+        "arm_budgets": {"N14": 14, "EN4_10": [4, 10], "E4": 4},
+        "metric_schema": "lexicographic_weekly_v1",
+        "runner_version": RUNNER_VERSION,
+        "lineage": {repo: _git_rev(repo) for repo in
+                    ("agent-multi", "gym-fx")},
+    }
+    return hashlib.sha256(json.dumps(
+        identity, sort_keys=True, separators=(",", ":"),
+        default=str).encode()).hexdigest()
+
+
+def _finite_number(value) -> bool:
+    try:
+        import math
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
 def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -174,20 +210,33 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
 
     out_dir = out_root / f"seed{seed}" / arm
     out_dir.mkdir(parents=True, exist_ok=True)
-    # AUD-F1-20260806-126: idempotent orchestration — a completed arm is
-    # never recomputed, so an interrupted four-GPU run resumes exactly
-    # instead of duplicating or corrupting evidence.
+    # AUD-F1-20260806-130: idempotence requires a CONTENT-ADDRESSED
+    # execution identity, not a filename plus seed. Reuse is legal only
+    # for a byte-compatible complete record; any mismatch fails
+    # explicitly so stale evidence can never masquerade as current.
+    execution_id = _execution_id(arm, seed, anchor,
+                                 epoch_timesteps=epoch_timesteps)
     existing = out_dir / "arm_record.json"
     if existing.exists():
         try:
             record = json.loads(existing.read_text())
-            if record.get("arm") == arm and record.get("seed") == seed \
-                    and record.get("splits_raw"):
-                print(f"[decision] seed={seed} arm={arm} already"
-                      f" complete — reusing evidence", flush=True)
-                return record
-        except json.JSONDecodeError:
-            pass
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                f"arm {arm} seed {seed}: existing record is corrupt"
+                f" ({exc}); refusing to overwrite or reuse — move it"
+                " aside explicitly")
+        if record.get("execution_id") == execution_id and \
+                record.get("splits_raw"):
+            print(f"[decision] seed={seed} arm={arm} already complete"
+                  f" under execution_id {execution_id[:16]} — reusing",
+                  flush=True)
+            return record
+        raise RuntimeError(
+            f"arm {arm} seed {seed}: existing record has execution_id"
+            f" {str(record.get('execution_id'))[:16]} != current"
+            f" {execution_id[:16]} (contract, budget, anchor, data or"
+            " code changed); refusing stale reuse — archive the old"
+            " directory before rerunning")
     config = _base_config(out_dir, arm, seed,
                           epoch_timesteps=epoch_timesteps)
     config["warm_start_model"] = str(anchor)
@@ -232,44 +281,56 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
 
     finished = datetime.now(timezone.utc)
 
-    # AUD-F1-20260806-125: evaluate and preserve TERMINAL weights too.
-    # Best-checkpoint selection can silently return the shared anchor
-    # when training degrades validation in every arm, which would
-    # manufacture a null result; the terminal policy is the honest
-    # counterpart and both are reported raw.
+    # AUD-F1-20260806-129: both weight sets are REQUIRED evidence for a
+    # training arm. The pipeline now emits typed artifact references
+    # (best_checkpoint + terminal, each hashed); a missing or unloadable
+    # artifact FAILS the arm — no note is ever written that facts do not
+    # prove.
     terminal_eval = None
-    terminal_path = out_dir / "model.terminal.zip"
-    try:
-        model = result.get("model") or result.get("best_model")
-        if model is not None and hasattr(model, "save"):
-            model.save(str(terminal_path))
-    except Exception:
-        pass
-    if not terminal_path.exists():
-        produced = result.get("terminal_model_path")
-        if produced and Path(produced).exists():
-            terminal_path = Path(produced)
-    if terminal_path.exists():
+    if arm != "E4":                      # E4 is inference-only diagnostic
+        artifacts = result.get("artifacts") or {}
+        terminal_ref = artifacts.get("terminal") or {}
+        best_ref = artifacts.get("best_checkpoint") or {}
+        terminal_path = Path(terminal_ref.get("path") or "")
+        best_path = Path(best_ref.get("path") or "")
+        if not terminal_path.is_file() or not best_path.is_file():
+            raise RuntimeError(
+                f"arm {arm} seed {seed}: pipeline did not preserve both"
+                f" artifacts (best={best_path}, terminal="
+                f"{terminal_path}); the arm FAILS")
+        for label, path, ref in (("best", best_path, best_ref),
+                                 ("terminal", terminal_path,
+                                  terminal_ref)):
+            actual = _sha(path)
+            if actual != ref.get("sha256"):
+                raise RuntimeError(
+                    f"arm {arm} seed {seed}: {label} artifact hash"
+                    f" {actual} != recorded {ref.get('sha256')}")
         eval_config = dict(config)
         eval_config["load_model"] = str(terminal_path)
         eval_config["solvency_mode"] = "normal_realistic"
         eval_config["return_trace_dir"] = str(
             out_dir / "return_traces_terminal")
-        try:
-            terminal_result = ValidationPipeline(
-                eval_config).run_pipeline(
-                config=eval_config, env_plugin=None,
-                agent_plugin=_agent_plugin(agent_name),
-                mode="inference")
-            terminal_eval = {
-                "artifact_sha256": _sha(terminal_path),
-                "splits_raw": _splits_raw(terminal_result),
-                "selection_contract": (
-                    (terminal_result.get("splits") or {}).get(
-                        "validation", {}).get("selection_contract")),
-            }
-        except Exception as exc:
-            terminal_eval = {"error": str(exc)[:300]}
+        terminal_result = ValidationPipeline(eval_config).run_pipeline(
+            config=eval_config, env_plugin=None,
+            agent_plugin=_agent_plugin(agent_name), mode="inference")
+        terminal_splits = _splits_raw(terminal_result)
+        validation = terminal_splits.get("validation") or {}
+        if not validation or any(
+            not _finite_number(validation.get(key))
+            for key in ("total_return", "mean_weekly_return")
+        ):
+            raise RuntimeError(
+                f"arm {arm} seed {seed}: terminal evaluation produced"
+                " no finite validation metrics; the arm FAILS")
+        terminal_eval = {
+            "artifact_sha256": terminal_ref["sha256"],
+            "num_timesteps": terminal_ref.get("num_timesteps"),
+            "splits_raw": terminal_splits,
+            "selection_contract": (
+                (terminal_result.get("splits") or {}).get(
+                    "validation", {}).get("selection_contract")),
+        }
     resolved_path = out_dir / "resolved_config.json"
     resolved_text = json.dumps(config, indent=1, sort_keys=True,
                                default=str)
@@ -297,13 +358,19 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
         }
 
     record = {
+        "schema": "agent_multi.arm_record.v3",
+        "execution_id": execution_id,
+        "runner_version": RUNNER_VERSION,
         "arm": arm,
         "seed": seed,
         "best_checkpoint_vs_terminal": {
             "terminal_evaluation": terminal_eval,
-            "note": ("both weight sets evaluated raw under identical"
-                     " realistic-normal validation; neither is a"
-                     " selection change"),
+            "note": (
+                "both weight sets evaluated raw under identical"
+                " realistic-normal validation; neither is a selection"
+                " change" if terminal_eval else
+                "inference-only diagnostic arm: no terminal training"
+                " weights exist by design"),
         },
         "margin_telemetry": margin_telemetry,
         "wall_time_seconds": (finished - started).total_seconds(),
