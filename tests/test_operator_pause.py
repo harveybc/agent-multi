@@ -97,6 +97,24 @@ def _register(sup: CampaignSupervisor, process: subprocess.Popen) -> None:
     worker["owns_process_group"] = True
 
 
+
+
+def _bind_identity(sup: CampaignSupervisor) -> None:
+    """Give the supervisor a COMPLETE campaign identity so the pause
+    binding is resumable (finding 128 requires completeness)."""
+    sup.state["coordination"] = {
+        "domain_id": "pause-test-domain",
+        "domain_semantic_hash": "sem-1",
+        "canonical_lineage": {
+            "genesis_hash": "genesis-abc",
+            "population_fingerprint": "popfp-xyz",
+        },
+        "component_versions": {"agent-multi": "test"},
+    }
+    worker = sup._worker_state("omega")
+    worker["tip_hash"] = "tip-1"
+
+
 def test_pause_stops_and_verifies_worker_group(supervisor):
     process = _spawn_fake_worker()
     _register(supervisor, process)
@@ -187,6 +205,7 @@ def test_resume_requires_paused_state(supervisor):
 
 
 def test_resume_rejects_wrong_binding_hash(supervisor):
+    _bind_identity(supervisor)
     pause = supervisor.request_pause()
     assert pause["paused"] is True
     report = supervisor.request_resume("f" * 64)
@@ -196,6 +215,7 @@ def test_resume_rejects_wrong_binding_hash(supervisor):
 
 
 def test_resume_refuses_profile_drift(supervisor):
+    _bind_identity(supervisor)
     pause = supervisor.request_pause()
     assert pause["paused"] is True
     profile = Path(supervisor.profile_path)
@@ -208,9 +228,43 @@ def test_resume_refuses_profile_drift(supervisor):
     assert "profile_sha256" in report["drift"]
 
 
+def test_incomplete_binding_is_not_resumable(supervisor):
+    """AUD-F1-20260806-128: a pause whose bound identity is incomplete
+    must refuse resume outright — absence is never wildcard equality."""
+    pause = supervisor.request_pause()   # fixture has NO identity
+    assert pause["paused"] is True
+    report = supervisor.request_resume(pause["binding_hash"])
+    assert report["resumed"] is False
+    assert "INCOMPLETE" in report["reason"]
+    assert supervisor.state["phase"] == "paused"
+    codes = [a.get("code") for a in supervisor.state.get("alerts", [])]
+    assert "resume_refused_incomplete_binding" in codes
+
+
+def test_empty_lineage_never_proves_rejoin(supervisor):
+    """Musashi reproducer `empty_lineage_rejoin` as regression: even if
+    an incomplete binding slipped into a pending resume, a worker with
+    no chain evidence must never yield rejoin_proven=true."""
+    supervisor.state["resume_pending"] = {
+        "binding_hash": "x" * 64,
+        "binding": {"domain_id": None, "genesis_hash": None,
+                    "population_fingerprint": None},
+    }
+    supervisor.state["resume_report"] = {"binding_hash": "x" * 64}
+    worker = supervisor._worker_state("omega")
+    worker.update({"status": "running", "bootstrap_evidence": {},
+                   "shared_population": {}})
+    result = supervisor.verify_rejoin() or {}
+    assert result.get("rejoin_proven") is not True
+    assert result.get("resumed") is not True
+    assert result.get("rejoin_contradictions")
+    assert supervisor.state["phase"] == "paused"
+
+
 def test_resume_acceptance_is_not_resumption(supervisor):
     """AUD-F1-20260806-122: acceptance must not claim success before the
     workers prove they rejoined the bound chain."""
+    _bind_identity(supervisor)
     pause = supervisor.request_pause()
     assert pause["paused"] is True
     assert pause["pause_binding"]["plan_hash"] == supervisor.plan_hash
@@ -226,12 +280,9 @@ def test_resume_acceptance_is_not_resumption(supervisor):
 
 
 def test_rejoin_proof_requires_matching_lineage(supervisor):
+    _bind_identity(supervisor)
     pause = supervisor.request_pause()
     supervisor.request_resume(pause["binding_hash"])
-    binding = supervisor.state["resume_pending"]["binding"]
-    binding["genesis_hash"] = "genesis-abc"
-    binding["population_fingerprint"] = "popfp-xyz"
-    binding["domain_id"] = "pause-test-domain"
     worker = supervisor._worker_state("omega")
     worker["status"] = "running"
     worker["bootstrap_evidence"] = {
@@ -248,11 +299,9 @@ def test_rejoin_proof_requires_matching_lineage(supervisor):
 
 
 def test_rejoin_on_foreign_chain_is_refuted_and_repaused(supervisor):
+    _bind_identity(supervisor)
     pause = supervisor.request_pause()
     supervisor.request_resume(pause["binding_hash"])
-    binding = supervisor.state["resume_pending"]["binding"]
-    binding["genesis_hash"] = "genesis-abc"
-    binding["population_fingerprint"] = "popfp-xyz"
     worker = supervisor._worker_state("omega")
     worker["status"] = "running"
     worker["bootstrap_evidence"] = {
@@ -269,10 +318,9 @@ def test_rejoin_on_foreign_chain_is_refuted_and_repaused(supervisor):
 
 
 def test_missing_lineage_keeps_resume_pending(supervisor):
+    _bind_identity(supervisor)
     pause = supervisor.request_pause()
     supervisor.request_resume(pause["binding_hash"])
-    binding = supervisor.state["resume_pending"]["binding"]
-    binding["genesis_hash"] = "genesis-abc"
     worker = supervisor._worker_state("omega")
     worker["status"] = "running"
     worker["bootstrap_evidence"] = {}        # no evidence yet
@@ -316,6 +364,7 @@ def test_gpu_probe_nonzero_exit_fails_pause(supervisor, monkeypatch):
 
 
 def test_resume_refused_over_unverified_pause(supervisor, monkeypatch):
+    _bind_identity(supervisor)
     monkeypatch.setattr(
         supervisor, "_stop_worker", lambda *a, **k: False)
     process = _spawn_fake_worker()

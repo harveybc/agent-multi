@@ -3439,6 +3439,29 @@ refresh();setInterval(refresh,5000);
                 report["resumed"] = False
                 report["reason"] = "binding hash mismatch: not authorized"
                 return report
+            # AUD-F1-20260806-128: a pause record is resumable only when
+            # the bound identity is COMPLETE. Absence of identity is not
+            # proof of the same chain; it is an unresumable pause.
+            missing_identity = [
+                key for key in ("domain_id", "genesis_hash",
+                                "population_fingerprint")
+                if not stored.get(key)
+            ]
+            worker_tips = stored.get("worker_tips") or {}
+            for worker_id in self._local_worker_ids():
+                if not worker_tips.get(worker_id):
+                    missing_identity.append(f"worker_tips[{worker_id}]")
+            if missing_identity:
+                report["resumed"] = False
+                report["reason"] = (
+                    "pause binding is INCOMPLETE and therefore not"
+                    f" resumable; missing: {missing_identity}."
+                    " Recover manually with operator evidence; wildcard"
+                    " equality is never accepted")
+                self._alert(
+                    "resume_refused_incomplete_binding",
+                    ", ".join(missing_identity)[:200])
+                return report
             current = {
                 "plan_hash": self.plan_hash,
                 "profile_sha256": _sha256_file(self.profile_path),
@@ -3528,23 +3551,26 @@ refresh();setInterval(refresh,5000);
             if worker.get("status") != "running":
                 missing.append(f"{worker_id} is not running")
                 continue
-            for key in ("genesis_hash", "population_fingerprint"):
+            # AUD-F1-20260806-128: bound AND observed identity must both
+            # be complete; a missing value on either side is never
+            # wildcard equality. A missing bound value is an outright
+            # contradiction (the resume gate should have refused it); a
+            # missing observed value keeps the rejoin PENDING.
+            for key in ("domain_id", "genesis_hash",
+                        "population_fingerprint"):
                 bound_value = binding.get(key)
                 seen = fact.get(key)
                 if not bound_value:
-                    continue            # nothing bound to compare
+                    contradictions.append(
+                        f"binding has no {key}; incomplete identity is"
+                        " not resumable")
+                    continue
                 if not seen:
                     missing.append(f"{worker_id} has no {key} yet")
                 elif str(seen) != str(bound_value):
                     contradictions.append(
                         f"{worker_id} {key}={seen} != bound"
                         f" {bound_value}")
-            bound_domain = binding.get("domain_id")
-            if bound_domain and fact.get("domain_id") and str(
-                    fact["domain_id"]) != str(bound_domain):
-                contradictions.append(
-                    f"{worker_id} domain={fact['domain_id']} != bound"
-                    f" {bound_domain}")
 
         if contradictions:
             self.state["phase"] = "paused"

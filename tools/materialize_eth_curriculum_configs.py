@@ -309,7 +309,7 @@ def validate(config: dict, arm: str) -> None:
     from optimizer_plugins.project3_full_genome_optimizer import (
         Plugin as _GenomePlugin)
     _GenomePlugin.validate_repair_rules(
-        optimization["mixed_genome_repair_rules"], config)
+        optimization["mixed_genome_repair_rules"], optimization)
 
 
 def check_arm_pairing(en: dict, n: dict) -> None:

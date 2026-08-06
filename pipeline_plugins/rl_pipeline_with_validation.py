@@ -1360,6 +1360,17 @@ class PipelinePlugin:
                         )
                     )
 
+                # AUD-F1-20260806-129: preserve the TERMINAL policy —
+                # the weights as they exist at the last training step —
+                # BEFORE reloading the best checkpoint destroys them.
+                # Both artifacts are typed, hashed and load-proven so a
+                # downstream packet can evaluate both or fail loudly.
+                terminal_model_path = str(
+                    Path(best_model_path).with_suffix("")) + ".terminal.zip"
+                agent_plugin.save(model, terminal_model_path)
+                terminal_num_timesteps = int(
+                    getattr(model, "num_timesteps", 0))
+
                 # Reload best model for final evaluation.
                 model = agent_plugin.load(best_model_path, train_env)
 
@@ -1371,6 +1382,21 @@ class PipelinePlugin:
                 final["history"] = history
                 final["best_composite"] = best_composite
                 final["best_model_path"] = str(Path(best_model_path).resolve())
+                final["artifacts"] = {
+                    "best_checkpoint": {
+                        "path": str(Path(best_model_path).resolve()),
+                        "sha256": _verify_artifact_sha256(
+                            Path(best_model_path), None),
+                    },
+                    "terminal": {
+                        "path": str(Path(terminal_model_path).resolve()),
+                        "sha256": _verify_artifact_sha256(
+                            Path(terminal_model_path), None),
+                        "num_timesteps": terminal_num_timesteps,
+                    },
+                }
+                final["terminal_model_path"] = str(
+                    Path(terminal_model_path).resolve())
                 final["oracle_behavior_pretrain"] = pretrain_summary
                 return final
             finally:

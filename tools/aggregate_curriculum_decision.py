@@ -18,6 +18,92 @@ KEYS = ("mean_weekly_return", "annualized_return", "total_return",
 EXPECTED_ARMS = ("N14", "EN4_10", "E4")
 
 
+
+
+REQUIRED_FINITE = ("mean_weekly_return", "total_return",
+                   "max_drawdown_fraction")
+PACKET_SCHEMA = "agent_multi.eth_curriculum_decision.v1"
+RECORD_SCHEMA = "agent_multi.arm_record.v3"
+
+
+def _finite(value) -> bool:
+    try:
+        import math
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _validate_packets(seeds: dict, expect_seeds) -> list:
+    problems = []
+    if sorted(seeds) != sorted(expect_seeds):
+        problems.append(
+            f"seeds {sorted(seeds)} != expected {sorted(expect_seeds)}")
+    identities = {}
+    execution_ids = set()
+    for seed, packet in sorted(seeds.items()):
+        if packet.get("schema") != PACKET_SCHEMA:
+            problems.append(
+                f"seed {seed}: packet schema"
+                f" {packet.get('schema')!r} != {PACKET_SCHEMA!r}")
+        identities[seed] = (packet.get("data_sha256"),
+                            packet.get("base_contract_sha256"),
+                            json.dumps(packet.get("lineage"),
+                                       sort_keys=True))
+        arms = sorted((packet.get("arms") or {}))
+        if arms != sorted(EXPECTED_ARMS):
+            problems.append(
+                f"seed {seed} arms {arms} != {sorted(EXPECTED_ARMS)}")
+        for arm, record in (packet.get("arms") or {}).items():
+            where = f"seed {seed} arm {arm}"
+            if record.get("schema") != RECORD_SCHEMA:
+                problems.append(
+                    f"{where}: record schema"
+                    f" {record.get('schema')!r} != {RECORD_SCHEMA!r}")
+            execution_id = record.get("execution_id")
+            if not execution_id:
+                problems.append(f"{where}: no execution_id")
+            elif execution_id in execution_ids:
+                problems.append(
+                    f"{where}: duplicate execution_id {execution_id[:16]}")
+            else:
+                execution_ids.add(execution_id)
+            validation = (record.get("splits_raw") or {}).get(
+                "validation") or {}
+            for key in REQUIRED_FINITE:
+                if not _finite(validation.get(key)):
+                    problems.append(
+                        f"{where}: validation {key} missing/non-finite")
+            if arm != "E4":
+                terminal = ((record.get("best_checkpoint_vs_terminal")
+                             or {}).get("terminal_evaluation") or {})
+                terminal_val = (terminal.get("splits_raw") or {}).get(
+                    "validation") or {}
+                if not terminal.get("artifact_sha256"):
+                    problems.append(
+                        f"{where}: no terminal artifact hash")
+                for key in REQUIRED_FINITE:
+                    if not _finite(terminal_val.get(key)):
+                        problems.append(
+                            f"{where}: terminal {key}"
+                            " missing/non-finite")
+                artifacts = record.get("artifacts") or {}
+                if not artifacts.get("final", artifacts.get("best")):
+                    if not artifacts:
+                        problems.append(f"{where}: no artifacts map")
+            if not record.get("margin_telemetry"):
+                problems.append(f"{where}: no margin telemetry")
+            if not record.get("return_trace_sha256"):
+                problems.append(f"{where}: no return-trace hashes")
+            if not record.get("resolved_config_sha256"):
+                problems.append(f"{where}: no resolved-config hash")
+    if len(set(identities.values())) > 1:
+        problems.append(
+            "packets carry DIFFERENT data/base/lineage identities:"
+            f" {sorted(set(identities.values()))[:2]}...")
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--output-root", type=Path, required=True)
@@ -35,32 +121,15 @@ def main() -> int:
         packet = json.loads(packet_path.read_text())
         seeds[packet["seed"]] = packet
 
-    # AUD-F1-20260806-126: STRICT completeness. A campaign-level claim
-    # requires exactly the declared seeds and arms, each present exactly
-    # once. Anything else fails closed rather than publishing a partial
-    # table that reads like a decision.
+    # AUD-F1-20260806-130/131: versioned packet schema + common
+    # experiment identity + finite decision metrics + complete evidence.
+    # A truthy mapping is NOT completeness.
     if not args.allow_partial:
-        missing = []
-        if sorted(seeds) != sorted(args.expect_seeds):
-            missing.append(
-                f"seeds {sorted(seeds)} != expected"
-                f" {sorted(args.expect_seeds)}")
-        for seed, packet in sorted(seeds.items()):
-            arms = sorted((packet.get("arms") or {}))
-            if arms != sorted(EXPECTED_ARMS):
-                missing.append(
-                    f"seed {seed} arms {arms} != {sorted(EXPECTED_ARMS)}")
-            for arm, record in (packet.get("arms") or {}).items():
-                validation = (record.get("splits_raw") or {}).get(
-                    "validation")
-                if not validation:
-                    missing.append(
-                        f"seed {seed} arm {arm} has no validation"
-                        " evidence")
+        missing = _validate_packets(seeds, args.expect_seeds)
         if missing:
             print(json.dumps({
                 "aggregated": False,
-                "reason": "incomplete decision packet",
+                "reason": "incomplete or invalid decision packet",
                 "problems": missing,
             }, indent=1))
             return 1

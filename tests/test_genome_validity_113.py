@@ -110,3 +110,73 @@ def test_v2_config_rules_validate_and_execute():
     decoded = {"preprocessing_mode": "none"}
     Plugin._apply_repair_rules(run_config, decoded, opt)
     assert decoded["preprocessing_mode"] != "none"
+
+
+def test_rule_for_nonexistent_gene_fails():
+    """AUD-F1-20260806-132: a repair rule must bind to a real gene."""
+    with pytest.raises(ValueError, match="does not exist"):
+        Plugin.validate_repair_rules(
+            [{"rule": "forbid_value", "gene": "ghost_gene",
+              "value": "x", "repair": "resample_categorical"}],
+            _config())
+
+
+def test_rule_for_non_categorical_gene_fails():
+    schema = [{"name": "learning_rate_gene", "kind": "continuous",
+               "low": 0.0, "high": 1.0}]
+    with pytest.raises(ValueError, match="not categorical"):
+        Plugin.validate_repair_rules(
+            [{"rule": "forbid_value", "gene": "learning_rate_gene",
+              "value": 0.5, "repair": "resample_categorical"}],
+            _config(schema=schema))
+
+
+def test_resample_without_replacement_fails_at_validation():
+    schema = [{"name": "preprocessing_mode", "kind": "categorical",
+               "choices": ["none"], "target": "feature_scaling"}]
+    with pytest.raises(ValueError, match="no allowed replacement"):
+        Plugin.validate_repair_rules(RULES, _config(schema=schema))
+
+
+def test_repair_draw_is_choice_order_invariant():
+    """AUD-F1-20260806-132: the seeded draw must not depend on the
+    declaration order of choices."""
+    decoded_template = {"preprocessing_mode": "none", "other_gene": 7}
+    schema_a = [{"name": "preprocessing_mode", "kind": "categorical",
+                 "choices": ["rolling_zscore", "expanding_zscore",
+                             "minmax"],
+                 "target": "feature_scaling"}]
+    schema_b = [{"name": "preprocessing_mode", "kind": "categorical",
+                 "choices": ["minmax", "expanding_zscore",
+                             "rolling_zscore"],
+                 "target": "feature_scaling"}]
+    picks = []
+    for schema in (schema_a, schema_b):
+        decoded = dict(decoded_template)
+        run_config = {}
+        Plugin._apply_repair_rules(run_config, decoded,
+                                   _config(schema=schema))
+        picks.append(decoded["preprocessing_mode"])
+        repair = run_config["_genome_repairs"][0]
+        assert repair["allowed_choices"] == sorted(
+            ["rolling_zscore", "expanding_zscore", "minmax"])
+        assert "seed_derivation" in repair
+        assert repair["original_value"] == "none"
+    assert picks[0] == picks[1], "draw depended on declaration order"
+
+
+def test_repair_draw_distribution_sanity():
+    """Across many candidate identities the draw must not collapse to
+    one choice (the first-allowed bias this replaces)."""
+    schema = [{"name": "preprocessing_mode", "kind": "categorical",
+               "choices": ["rolling_zscore", "expanding_zscore",
+                           "minmax"],
+               "target": "feature_scaling"}]
+    counts = {}
+    for i in range(300):
+        decoded = {"preprocessing_mode": "none", "candidate_index": i}
+        Plugin._apply_repair_rules({}, decoded, _config(schema=schema))
+        counts[decoded["preprocessing_mode"]] = counts.get(
+            decoded["preprocessing_mode"], 0) + 1
+    assert len(counts) == 3, f"draw collapsed: {counts}"
+    assert all(count > 50 for count in counts.values()), counts
