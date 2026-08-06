@@ -23,7 +23,20 @@ EXPECTED_ARMS = ("N14", "EN4_10", "E4")
 REQUIRED_FINITE = ("mean_weekly_return", "total_return",
                    "max_drawdown_fraction")
 PACKET_SCHEMA = "agent_multi.eth_curriculum_decision.v1"
-RECORD_SCHEMA = "agent_multi.arm_record.v4"
+RECORD_SCHEMA = "agent_multi.arm_record.v5"
+
+
+def _shared_validator(record: dict, arm: str) -> list:
+    """The runner's validator, imported lazily so the aggregator stays
+    usable without the training stack when only structure matters."""
+    try:
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from tools.eth_curriculum_decision_experiment import (
+            validate_arm_record)
+    except Exception as exc:                       # noqa: BLE001
+        return [f"shared validator unavailable: {exc}"]
+    return validate_arm_record(record, arm)
 
 
 def _is_hex64(value) -> bool:
@@ -89,6 +102,13 @@ def _validate_packets(seeds: dict, expect_seeds) -> list:
                     f"{where}: duplicate execution_id {execution_id[:16]}")
             else:
                 execution_ids.add(execution_id)
+            # AUD-F1-20260806-144: the aggregator runs the SAME
+            # complete-record validator as the runner — including the
+            # filesystem and artifact-load checks. A packet can no
+            # longer promote records whose models do not exist or do
+            # not load.
+            for problem in _shared_validator(record, arm):
+                problems.append(f"{where}: {problem}")
             validation = (record.get("splits_raw") or {}).get(
                 "validation") or {}
             for key in REQUIRED_FINITE:

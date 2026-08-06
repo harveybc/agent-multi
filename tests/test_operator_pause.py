@@ -119,9 +119,11 @@ def _bind_identity(sup: CampaignSupervisor) -> None:
 
 def _observe(sup: CampaignSupervisor, *, genesis="genesis-abc",
              popfp="popfp-xyz", domain="pause-test-domain",
-             tip="tip-1", height=5) -> None:
+             tip="tip-1", height=5, observed_at=None) -> None:
+    from app.campaign_supervisor import _utc_now
     worker = sup._worker_state("omega")
     worker.update({
+        "last_seen": observed_at or _utc_now(),
         "status": "running",
         "bootstrap_evidence": {"genesis_hash": genesis,
                                "population_fingerprint": popfp},
@@ -260,15 +262,17 @@ def test_empty_lineage_never_proves_rejoin(supervisor):
     """Musashi reproducer `empty_lineage_rejoin` as regression: even if
     an incomplete binding slipped into a pending resume, a worker with
     no chain evidence must never yield rejoin_proven=true."""
+    from app.campaign_supervisor import _utc_now
     supervisor.state["resume_pending"] = {
         "binding_hash": "x" * 64,
+        "accepted_at": "2000-01-01T00:00:00+00:00",
         "binding": {"domain_id": None, "genesis_hash": None,
                     "population_fingerprint": None},
     }
     supervisor.state["resume_report"] = {"binding_hash": "x" * 64}
     worker = supervisor._worker_state("omega")
     worker.update({"status": "running", "bootstrap_evidence": {},
-                   "shared_population": {}})
+                   "shared_population": {}, "last_seen": _utc_now()})
     result = supervisor.verify_rejoin() or {}
     assert result.get("rejoin_proven") is not True
     assert result.get("resumed") is not True
@@ -483,3 +487,59 @@ def test_rollback_below_bound_tip_is_contradiction(supervisor):
     assert report["rejoin_proven"] is not True
     assert any("rolled back or replaced" in c
                for c in report.get("rejoin_contradictions", []))
+
+
+
+def test_stale_cached_observation_never_proves_rejoin(supervisor):
+    """AUD-F1-20260806-150: an observation older than the accepted
+    resume is a CACHE, not proof."""
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    accepted = supervisor.request_resume(pause["binding_hash"])
+    assert accepted["resume_accepted"] is True
+    _observe(supervisor, observed_at="2000-01-01T00:00:00+00:00")
+    report = supervisor.verify_rejoin()
+    assert report.get("rejoin_proven") is not True
+    assert "STALE" in report["rejoin_pending_reason"]
+    assert supervisor.state.get("resume_pending")
+
+
+def test_missing_observation_timestamp_keeps_pending(supervisor):
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor)
+    supervisor._worker_state("omega")["last_seen"] = None
+    report = supervisor.verify_rejoin()
+    assert report.get("rejoin_proven") is not True
+    assert "no observation timestamp" in report["rejoin_pending_reason"]
+
+
+def test_rejoin_deadline_expiry_returns_to_paused_and_alerts(
+        supervisor, monkeypatch):
+    """At expiry the supervisor must settle into a stable paused state
+    and alert once — not stay pending forever."""
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    accepted = supervisor.request_resume(pause["binding_hash"])
+    assert accepted["rejoin_deadline_at"]
+    pending = supervisor.state["resume_pending"]
+    pending["deadline_at"] = "2000-01-01T00:00:00+00:00"   # expired
+    supervisor._worker_state("omega")["status"] = "starting"
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_timed_out"] is True
+    assert report["resumed"] is False
+    assert supervisor.state["phase"] == "paused"
+    assert not supervisor.state.get("resume_pending")
+    codes = [a.get("code") for a in supervisor.state.get("alerts", [])]
+    assert "resume_deadline_expired" in codes
+
+
+def test_fresh_observation_after_acceptance_can_prove(supervisor,
+                                                      monkeypatch):
+    _bind_identity(supervisor)
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor)                       # fresh by construction
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is True

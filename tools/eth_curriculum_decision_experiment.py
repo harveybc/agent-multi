@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -74,7 +75,8 @@ RAW_METRICS = (
 
 
 RUNNER_VERSION = "eth_curriculum_decision_experiment.v4"
-ARM_RECORD_SCHEMA = "agent_multi.arm_record.v4"
+ARM_RECORD_SCHEMA = "agent_multi.arm_record.v5"
+LOCAL_HOST = os.uname().nodename
 
 
 def _execution_id(arm: str, seed: int, anchor: Path, *,
@@ -150,12 +152,29 @@ def validate_arm_record(record: dict, arm: str) -> list:
             problems.append(f"artifact {label} not retrievable: {path}")
         elif _sha(path) != ref.get("sha256"):
             problems.append(f"artifact {label} hash mismatch on disk")
+        else:
+            # AUD-F1-20260806-144: never trust a packet-supplied
+            # `load_proven` boolean — LOAD the artifact here.
+            try:
+                from stable_baselines3 import SAC
+                SAC.load(str(path), device="cpu")
+            except Exception as exc:
+                problems.append(
+                    f"artifact {label} failed to load: "
+                    f"{type(exc).__name__}: {str(exc)[:120]}")
         replica = Path(str(ref.get("replica_path") or ""))
         if not replica.is_file():
             problems.append(
                 f"artifact {label} replica missing: {replica}")
         elif _sha(replica) != ref.get("sha256"):
             problems.append(f"artifact {label} replica hash mismatch")
+        else:
+            authority = ref.get("replica_authority")
+            if not authority or authority == LOCAL_HOST:
+                problems.append(
+                    f"artifact {label} replica authority"
+                    f" {authority!r} is not a SECOND host/storage"
+                    " authority; a sibling folder is not a replica")
     if arm != "E4":
         terminal = ((record.get("best_checkpoint_vs_terminal") or {})
                     .get("terminal_evaluation") or {})
@@ -165,6 +184,18 @@ def validate_arm_record(record: dict, arm: str) -> list:
             problems.append("terminal evaluation has no artifact hash")
         if not terminal.get("artifact_path"):
             problems.append("terminal evaluation has no retrieval path")
+        terminal_ref = (record.get("artifacts") or {}).get("terminal") \
+            or {}
+        if terminal.get("artifact_sha256") != terminal_ref.get(
+                "sha256"):
+            problems.append(
+                "terminal evaluation hash is not the artifacts.terminal"
+                " hash (cross-binding broken)")
+        if str(terminal.get("artifact_path")) != str(
+                terminal_ref.get("path")):
+            problems.append(
+                "terminal evaluation path is not the artifacts.terminal"
+                " path (cross-binding broken)")
         for key in REQUIRED_FINITE_METRICS:
             if not _finite_number(terminal_val.get(key)):
                 problems.append(f"terminal {key} missing/non-finite")
@@ -177,15 +208,24 @@ def _publish_artifact(path: Path, out_dir: Path, label: str) -> dict:
     durable = out_dir / f"{label}.zip"
     if path.resolve() != durable.resolve():
         shutil.copy2(path, durable)
-    replica_dir = out_dir / "replica"
+    # AUD-F1-20260806-144: a sibling folder is NOT a replica. The
+    # replica must live on a declared second host/storage authority and
+    # its hash must be observed there.
+    replica_root = Path(os.environ.get(
+        "AGENT_MULTI_REPLICA_ROOT",
+        str(Path.home() / ".local/share/agent-multi/replica")))
+    authority = os.environ.get("AGENT_MULTI_REPLICA_AUTHORITY", "")
+    replica_dir = replica_root / out_dir.name
     replica_dir.mkdir(parents=True, exist_ok=True)
     replica = replica_dir / f"{label}.zip"
     shutil.copy2(durable, replica)
     digest = _sha(durable)
-    SAC.load(str(durable), device="cpu")          # load proof
+    SAC.load(str(durable), device="cpu")          # load proof, primary
+    SAC.load(str(replica), device="cpu")          # load proof, replica
     return {
         "path": str(durable.resolve()),
         "replica_path": str(replica.resolve()),
+        "replica_authority": authority or LOCAL_HOST,
         "sha256": digest,
         "replica_sha256": _sha(replica),
         "load_proven": True,

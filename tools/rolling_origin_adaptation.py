@@ -125,36 +125,77 @@ def base_config() -> dict:
     return config
 
 
-def score_interval(equity_series, *, warmup_bars: int,
-                   starting_equity: float | None = None) -> dict:
-    """Score ONLY the deployment interval (AUD-F1-20260806-140).
+def score_interval(samples, *, warmup_bars: int, cadence_bars: int,
+                   starting_equity: float | None = None,
+                   commission: float = 0.0) -> dict:
+    """Score EXACTLY the deployment interval (140/145).
 
-    ``equity_series`` is the full per-step equity of the rollout,
-    including warm-up context. Metrics begin at index ``warmup_bars``;
-    the equity carried in from the previous origin (``starting_equity``)
-    is the baseline when supplied, so the block's account continuity is
-    preserved rather than reset to the config's initial cash.
+    ``samples`` is the ordered per-step fact list of the rollout, each
+    entry carrying at least ``equity``; warm-up entries are context
+    only. Corrections in this version:
+
+    - warm-up entries are dropped BEFORE any metric, and the warm-up
+      steps are executed as forced holds so they cannot trade at all;
+    - exactly ``cadence_bars`` decision bars are scored (`h`, never
+      `h+1`); a terminal duplicate fact is discarded;
+    - activity is an interval DELTA (trades/commission at the end minus
+      at the warm-up boundary), never a cumulative total;
+    - the handover is explicit: any exposure open at the end of the
+      interval is closed at the last price and charged the configured
+      commission, and the post-close balance is what carries forward.
     """
-    scored = list(equity_series)[warmup_bars:]
-    if not scored:
-        return {"unavailable": "no scored bars after warm-up",
-                "scored_bars": 0}
+    if warmup_bars < 0 or cadence_bars <= 0:
+        return {"unavailable": "invalid warm-up/cadence"}
+    scored = list(samples)[warmup_bars:]
+    if len(scored) < cadence_bars:
+        return {"unavailable":
+                f"only {len(scored)} scored samples for h="
+                f"{cadence_bars}", "scored_bars": len(scored)}
+    scored = scored[:cadence_bars]                 # exactly h bars
+    boundary = (list(samples)[warmup_bars - 1] if warmup_bars > 0
+                else {"trades": 0, "commission_paid": 0.0})
+
+    equities = [float(s["equity"]) for s in scored]
     baseline = (float(starting_equity) if starting_equity is not None
-                else float(scored[0]))
-    final = float(scored[-1])
+                else equities[0])
+    last = scored[-1]
+    final_equity = equities[-1]
+
+    # ---- explicit flat handover -------------------------------------
+    position = float(last.get("position", 0.0) or 0.0)
+    price = float(last.get("price", 0.0) or 0.0)
+    closing_cost = abs(position) * price * float(commission)
+    post_close_equity = final_equity - closing_cost
+
     peak = baseline
     max_dd = 0.0
-    for value in scored:
-        peak = max(peak, float(value))
+    for value in equities:
+        peak = max(peak, value)
         if peak > 0:
-            max_dd = max(max_dd, (peak - float(value)) / peak)
+            max_dd = max(max_dd, (peak - value) / peak)
+
+    def _delta(key: str) -> float:
+        return (float(last.get(key, 0) or 0)
+                - float(boundary.get(key, 0) or 0))
+
     return {
-        "interval_return": (final / baseline - 1.0) if baseline else None,
+        "interval_return": (
+            (post_close_equity / baseline - 1.0) if baseline else None),
         "equity_before": baseline,
-        "equity_after": final,
+        "equity_at_interval_end": final_equity,
+        "equity_after": post_close_equity,
+        "handover": {
+            "open_position_units": position,
+            "close_price": price,
+            "closing_cost": closing_cost,
+            "flat_after_handover": True,
+            "mode": "explicit_flat_close_at_configured_commission",
+        },
         "max_drawdown_fraction": max_dd,
         "scored_bars": len(scored),
         "warmup_bars_excluded": warmup_bars,
+        "interval_trades": _delta("trades"),
+        "interval_commission": _delta("commission_paid"),
     }
 
 
@@ -177,12 +218,29 @@ def _olap(path: Path) -> sqlite3.Connection:
             new_bars INTEGER, update_steps INTEGER,
             peak_rss_mb REAL, gpu_json TEXT,
             model_before_sha256 TEXT, model_after_sha256 TEXT,
-            replica_verified INTEGER, created_at TEXT
+            replica_verified INTEGER,
+            interval_commission REAL, handover_json TEXT,
+            handover_requested_at TEXT, handover_flat_proven_at TEXT,
+            artifact_ready_at TEXT, activated_at TEXT,
+            unreconciled_handovers INTEGER, activation_delay_bars REAL,
+            rollback_status TEXT, warmup_traded INTEGER,
+            anchor_sha256 TEXT, source_tree_digest TEXT,
+            created_at TEXT
         )""")
     con.execute("""
         CREATE TABLE IF NOT EXISTS rt_runs_v2 (
             run_id TEXT PRIMARY KEY, schema_version TEXT,
             identity_json TEXT, created_at TEXT
+        )""")
+    # AUD-F1-20260806-146: the AUTHORITATIVE current state lives in
+    # SQLite and is written in the SAME transaction as the interval
+    # row. JSON is a derived, read-only export — never the authority.
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS rt_state_v2 (
+            run_id TEXT PRIMARY KEY,
+            last_origin_index INTEGER,
+            model_after_path TEXT, model_after_sha256 TEXT,
+            carried_equity REAL, updated_at TEXT
         )""")
     con.commit()
     return con
@@ -220,20 +278,78 @@ def _build_env(config: dict, csv_path: Path, *,
     return env
 
 
-def _rollout(model, env) -> dict:
+def _rollout(model, env, *, warmup_bars: int,
+             cadence_bars: int) -> dict:
+    """Roll out warm-up as FORCED HOLDS, then h decision bars (145).
+
+    A forced hold is action 0.0, which the environment maps below the
+    action threshold to "hold" — no order is submitted, no position is
+    created, no fee is charged and no activity is counted. The policy
+    only acts on the scored interval.
+    """
+    import numpy as np
+
     obs, _ = env.reset()
-    equities, trades = [], 0
-    while True:
-        action, _ = model.predict(obs, deterministic=True)
+    samples: list[dict] = []
+    hold = np.zeros(env.action_space.shape, dtype=np.float32)
+    total = warmup_bars + cadence_bars
+    for step in range(total):
+        in_warmup = step < warmup_bars
+        if in_warmup:
+            action = hold
+        else:
+            action, _ = model.predict(obs, deterministic=True)
         obs, _reward, terminated, truncated, info = env.step(action)
-        if isinstance(info, dict):
-            equity = info.get("economic_equity", info.get("equity"))
-            if equity is not None:
-                equities.append(float(equity))
-            trades = int(info.get("trades_total", trades) or trades)
+        if isinstance(info, dict) and info.get("equity") is not None:
+            samples.append({
+                "equity": float(
+                    info.get("economic_equity", info["equity"])),
+                "position": info.get("position", 0.0),
+                "price": info.get("price", 0.0),
+                "trades": info.get("trades", 0),
+                "commission_paid": info.get("commission_paid", 0.0),
+                "warmup": in_warmup,
+            })
         if terminated or truncated:
             break
-    return {"equities": equities, "trades": trades}
+    warmup_facts = [s for s in samples if s["warmup"]]
+    return {
+        "samples": samples,
+        "warmup_traded": any(
+            float(s.get("trades", 0) or 0) > 0 for s in warmup_facts),
+        "warmup_commission": max(
+            [float(s.get("commission_paid", 0) or 0)
+             for s in warmup_facts] or [0.0]),
+    }
+
+
+def source_tree_digest(repos=("agent-multi", "gym-fx")) -> dict:
+    """AUD-F1-20260806-149: Git HEAD alone hides uncommitted changes.
+
+    Records HEAD plus a digest of the tracked working tree; a dirty
+    tree is reported explicitly and makes the run diagnostic-only.
+    """
+    facts = {}
+    for repo in repos:
+        root = f"/home/harveybc/Documents/GitHub/{repo}"
+        head = _git_rev(repo)
+        diff = subprocess.run(
+            ["git", "-C", root, "diff", "HEAD"],
+            capture_output=True, text=True).stdout
+        status = subprocess.run(
+            ["git", "-C", root, "status", "--porcelain",
+             "--untracked-files=no"],
+            capture_output=True, text=True).stdout.strip()
+        facts[repo] = {
+            "head": head,
+            "clean": status == "",
+            "dirty_diff_sha256": (
+                hashlib.sha256(diff.encode()).hexdigest()
+                if status else None),
+        }
+    facts["all_clean"] = all(
+        v["clean"] for v in facts.values() if isinstance(v, dict))
+    return facts
 
 
 def run_identity(args, config: dict) -> dict:
@@ -258,6 +374,11 @@ def run_identity(args, config: dict) -> dict:
             if OBSERVATION_MANIFEST.exists() else "unavailable"),
         "resolved_config_sha256": _sha_json(config),
         "code_revisions": _code_revisions(),
+        "source_tree": source_tree_digest(),
+        "anchor_sha256": (
+            _sha_file(Path(args.anchor_model))
+            if getattr(args, "anchor_model", None) else None),
+        "anchor_path": getattr(args, "anchor_model", None),
         "warmup_bars": WARMUP_BARS,
     }
 
@@ -287,6 +408,14 @@ def run(args) -> int:
     assert block_start - WARMUP_BARS >= 0, "insufficient warm-up history"
 
     identity = run_identity(args, config)
+    if not identity["source_tree"]["all_clean"] and not \
+            args.allow_dirty_tree:
+        raise SystemExit(
+            "decision-bearing RT runs require CLEAN tracked worktrees"
+            " (finding 149); pass --allow-dirty-tree for a diagnostic"
+            " run, which is ineligible for promotion")
+    identity["promotion_eligible"] = bool(
+        identity["source_tree"]["all_clean"] and args.anchor_model)
     run_id = _sha_json(identity)[:16]
     out_dir = args.output_root / f"{args.phase}_{run_id}"
     checkpoints = out_dir / "checkpoints"
@@ -309,11 +438,28 @@ def run(args) -> int:
             " --allow-legacy-sibling once the v1 rows are archived).")
 
     from stable_baselines3 import SAC
-    pointer_path = out_dir / "current_state.json"
-    pointer = (json.loads(pointer_path.read_text())
-               if pointer_path.exists() else
-               {"origins_committed": [], "after_sha256": None,
-                "after_path": None, "carried_equity": None})
+    pointer_path = out_dir / "current_state.json"   # derived export
+    state_row = con.execute(
+        "SELECT last_origin_index, model_after_path,"
+        " model_after_sha256, carried_equity FROM rt_state_v2"
+        " WHERE run_id=?", (run_id,)).fetchone()
+    pointer = {
+        "last_origin_index": state_row[0] if state_row else None,
+        "after_path": state_row[1] if state_row else None,
+        "after_sha256": state_row[2] if state_row else None,
+        "carried_equity": state_row[3] if state_row else None,
+    }
+    if pointer["after_path"]:
+        # Verify every artifact byte before continuing (WP4).
+        restored = Path(pointer["after_path"])
+        if not restored.is_file():
+            raise SystemExit(
+                f"recorded state points at a missing artifact:"
+                f" {restored}")
+        if _sha_file(restored) != pointer["after_sha256"]:
+            raise SystemExit(
+                "recorded state artifact hash mismatch; refusing to"
+                " continue on ambiguous state")
 
     def lookback_start(origin: int) -> int:
         if args.lookback == "expanding":
@@ -339,15 +485,17 @@ def run(args) -> int:
             "SELECT model_after_sha256 FROM rt_intervals_v2"
             " WHERE record_id=?", (record_id,)).fetchone()
         if committed:
-            # Idempotent replay (finding 141): the recorded after-state
-            # must equal the pointer; the update is NEVER re-applied.
-            if pointer.get("after_sha256") not in (None, committed[0]):
+            # Exactly-once replay (finding 146): the row and the state
+            # are one transaction, so a committed origin ALWAYS has its
+            # state; restore carried equity and model path from it.
+            if pointer.get("after_sha256") != committed[0]:
                 raise SystemExit(
                     f"origin {index}: OLAP after-hash {committed[0][:12]}"
-                    f" != pointer {str(pointer.get('after_sha256'))[:12]}"
+                    f" != state {str(pointer.get('after_sha256'))[:12]}"
                     " — refusing to continue on ambiguous state")
-            print(f"[rt] origin {index} already committed — replay skip",
-                  flush=True)
+            carried_equity = pointer.get("carried_equity")
+            print(f"[rt] origin {index} already committed — replay skip"
+                  f" (carried equity {carried_equity})", flush=True)
             model_age_bars += args.cadence_bars
             continue
 
@@ -367,7 +515,16 @@ def run(args) -> int:
         if before_path is not None:
             model = SAC.load(str(before_path), env=fit_env,
                              device=args.device)
-        else:
+        elif args.anchor_model:
+            # AUD-F1-20260806-147: adaptation is measured FROM a mature
+            # champion/anchor, never from a fresh random SAC.
+            anchor = Path(args.anchor_model)
+            model = SAC.load(str(anchor), env=fit_env,
+                             device=args.device)   # load proof
+            before_immutable = checkpoints / f"origin{index}_before.zip"
+            model.save(str(before_immutable))
+            before_path = before_immutable
+        elif args.allow_fresh_init:
             model = SAC("MlpPolicy", fit_env, seed=args.seed,
                         device=args.device,
                         policy_kwargs={"net_arch": [256, 256]})
@@ -376,6 +533,12 @@ def run(args) -> int:
             before_immutable = checkpoints / f"origin{index}_before.zip"
             model.save(str(before_immutable))
             before_path = before_immutable
+        else:
+            raise SystemExit(
+                "no --anchor-model given: a performance RT run must"
+                " adapt a mature champion, not a fresh random SAC"
+                " (finding 147). Pass --allow-fresh-init ONLY for a"
+                " mechanics fixture, which cannot select a cadence.")
 
         # ---------- 2. adaptation (or frozen control) ----------
         adapted = False
@@ -385,7 +548,11 @@ def run(args) -> int:
                         progress_bar=False)
             adapted = True
         after_path = checkpoints / f"origin{index}_after.zip"
+        if os.environ.get("RT_CRASH_BEFORE_ARTIFACT") == str(index):
+            raise SystemExit("injected crash BEFORE artifact write")
         model.save(str(after_path))
+        if os.environ.get("RT_CRASH_AFTER_ARTIFACT") == str(index):
+            raise SystemExit("injected crash AFTER artifact write")
         fit_env.close()
         after_sha = _sha_file(after_path)
 
@@ -404,19 +571,29 @@ def run(args) -> int:
         eval_csv = _slice_csv(
             df, origin - WARMUP_BARS, origin + args.cadence_bars,
             out_dir / "slices" / f"eval_{index}.csv")
+        handover_requested_at = datetime.now(timezone.utc).isoformat()
         eval_env = _build_env(
             {**config, "eval_seed": args.seed}, eval_csv,
             starting_cash=carried_equity)
-        rollout = _rollout(model, eval_env)
+        rollout = _rollout(model, eval_env, warmup_bars=WARMUP_BARS,
+                           cadence_bars=args.cadence_bars)
         eval_env.close()
+        if rollout["warmup_traded"]:
+            raise SystemExit(
+                f"origin {index}: warm-up placed trades — the forced"
+                " hold contract is broken (finding 145)")
         score = score_interval(
-            rollout["equities"], warmup_bars=WARMUP_BARS,
-            starting_equity=carried_equity)
+            rollout["samples"], warmup_bars=WARMUP_BARS,
+            cadence_bars=args.cadence_bars,
+            starting_equity=carried_equity,
+            commission=float(config.get("commission", 0.0)))
         if "unavailable" in score:
             raise SystemExit(
                 f"origin {index}: {score['unavailable']}")
+        handover_flat_proven_at = datetime.now(timezone.utc).isoformat()
 
         # ---------- 4. atomic commit: OLAP row + state pointer -------
+        artifact_ready_at = datetime.now(timezone.utc).isoformat()
         record = {
             "record_id": record_id, "schema_version": SCHEMA_VERSION,
             "run_id": run_id, "phase": args.phase,
@@ -429,7 +606,7 @@ def run(args) -> int:
             "scored_bars": score["scored_bars"],
             "warmup_bars_excluded": score["warmup_bars_excluded"],
             "interval_return": score["interval_return"],
-            "interval_trades": rollout["trades"],
+            "interval_trades": score["interval_trades"],
             "interval_max_drawdown_fraction": score[
                 "max_drawdown_fraction"],
             "equity_before": score["equity_before"],
@@ -447,21 +624,58 @@ def run(args) -> int:
             "model_before_sha256": _sha_file(before_path),
             "model_after_sha256": after_sha,
             "replica_verified": replica_verified,
+            "interval_commission": score["interval_commission"],
+            "handover_json": json.dumps(score["handover"]),
+            "handover_requested_at": handover_requested_at,
+            "handover_flat_proven_at": handover_flat_proven_at,
+            "artifact_ready_at": artifact_ready_at,
+            "activated_at": datetime.now(timezone.utc).isoformat(),
+            # AUD-F1-20260806-148: an unreconciled handover is one where
+            # the interval ended with exposure that was not closed and
+            # charged. The explicit flat close makes this measurable.
+            "unreconciled_handovers": int(
+                not score["handover"]["flat_after_handover"]),
+            "activation_delay_bars": (
+                latency_seconds / BAR_SECONDS),
+            "rollback_status": "none",
+            "warmup_traded": int(rollout["warmup_traded"]),
+            "anchor_sha256": identity.get("anchor_sha256"),
+            "source_tree_digest": _sha_json(identity["source_tree"]),
             "created_at": datetime.now(timezone.utc).isoformat(),
         }
-        con.execute(
-            f"INSERT INTO rt_intervals_v2 ({','.join(record)})"
-            f" VALUES ({','.join('?' * len(record))})",
-            list(record.values()))
-        con.commit()
+        # AUD-F1-20260806-146: ONE transaction contains both the
+        # interval row and the authoritative state. A crash before the
+        # commit leaves neither; after it leaves both. JSON is exported
+        # afterwards as a derived, read-only view.
+        with con:
+            con.execute(
+                f"INSERT INTO rt_intervals_v2 ({','.join(record)})"
+                f" VALUES ({','.join('?' * len(record))})",
+                list(record.values()))
+            con.execute(
+                "INSERT INTO rt_state_v2 (run_id, last_origin_index,"
+                " model_after_path, model_after_sha256,"
+                " carried_equity, updated_at)"
+                " VALUES (?,?,?,?,?,?)"
+                " ON CONFLICT(run_id) DO UPDATE SET"
+                " last_origin_index=excluded.last_origin_index,"
+                " model_after_path=excluded.model_after_path,"
+                " model_after_sha256=excluded.model_after_sha256,"
+                " carried_equity=excluded.carried_equity,"
+                " updated_at=excluded.updated_at",
+                (run_id, index, str(after_path), after_sha,
+                 score["equity_after"],
+                 datetime.now(timezone.utc).isoformat()))
+        if os.environ.get("RT_CRASH_AFTER_COMMIT") == str(index):
+            raise SystemExit("injected crash AFTER SQL commit")
         carried_equity = score["equity_after"]
-        pointer = {
-            "origins_committed": pointer["origins_committed"] + [index],
-            "after_sha256": after_sha,
-            "after_path": str(after_path),
+        _atomic_write(pointer_path, {          # derived export only
+            "authority": "rt_state_v2 table in the OLAP database",
+            "last_origin_index": index,
+            "model_after_path": str(after_path),
+            "model_after_sha256": after_sha,
             "carried_equity": carried_equity,
-        }
-        _atomic_write(pointer_path, pointer)
+        })
         print(json.dumps({k: record[k] for k in (
             "origin_index", "scored_bars", "interval_return",
             "equity_before", "equity_after",
@@ -480,6 +694,13 @@ def run(args) -> int:
     misses = int(con.execute(
         "SELECT COALESCE(SUM(deadline_miss),0) FROM rt_intervals_v2"
         " WHERE run_id=?", (run_id,)).fetchone()[0])
+    unreconciled = int(con.execute(
+        "SELECT COALESCE(SUM(unreconciled_handovers),0) FROM"
+        " rt_intervals_v2 WHERE run_id=?", (run_id,)).fetchone()[0])
+    handover_rows = int(con.execute(
+        "SELECT COUNT(*) FROM rt_intervals_v2 WHERE run_id=? AND"
+        " handover_flat_proven_at IS NOT NULL", (run_id,)
+    ).fetchone()[0])
     updates = int(con.execute(
         "SELECT COUNT(*) FROM rt_intervals_v2 WHERE run_id=?",
         (run_id,)).fetchone()[0])
@@ -496,17 +717,28 @@ def run(args) -> int:
         "deadline_guard": {
             "rule": ("p95 end-to-end latency <= (2/3) * cadence AND"
                      " >= 20 updates AND zero deadline misses AND zero"
-                     " unreconciled handovers"),
+                     " unreconciled handovers, each MEASURED"),
             "p95_within_budget": (
                 p95 is not None and p95 <= cadence_seconds * 2 / 3),
             "updates_observed": updates,
             "sufficient_updates": updates >= 20,
+            "deadline_misses": misses,
             "zero_deadline_misses": misses == 0,
+            # AUD-F1-20260806-148: reconciliation is now MEASURED, not
+            # asserted. Every origin must carry a proven flat handover.
+            "unreconciled_handovers": unreconciled,
+            "handover_evidence_rows": handover_rows,
+            "reconciliation_evidence_complete": (
+                handover_rows == updates and updates > 0),
+            "zero_unreconciled_handovers": unreconciled == 0,
             "satisfied": (
                 p95 is not None and p95 <= cadence_seconds * 2 / 3
-                and updates >= 20 and misses == 0),
+                and updates >= 20 and misses == 0
+                and unreconciled == 0 and handover_rows == updates
+                and updates > 0),
             "status": "owner_amended_2026_08_06",
         },
+        "promotion_eligible": identity.get("promotion_eligible", False),
         "note": ("RT0 measures runtime feasibility only; profit/risk"
                  " promotion requires RT1-A paired multi-block"
                  " evidence with frozen controls"),
@@ -536,6 +768,16 @@ def main() -> int:
                         help="frozen = paired no-update control arm")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--allow-legacy-sibling", action="store_true")
+    parser.add_argument(
+        "--anchor-model",
+        help="load-proven mature champion to adapt (finding 147)")
+    parser.add_argument(
+        "--allow-fresh-init", action="store_true",
+        help="mechanics fixture only; cannot select a cadence")
+    parser.add_argument(
+        "--allow-dirty-tree", action="store_true",
+        help="diagnostic run on a dirty worktree; ineligible for"
+             " promotion (finding 149)")
     return run(parser.parse_args())
 
 
