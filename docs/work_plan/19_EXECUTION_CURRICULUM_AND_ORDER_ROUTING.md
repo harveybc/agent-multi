@@ -533,6 +533,40 @@ shared learned entry/exit policy are planned components blocked on the
 execution-fidelity gate and frozen alpha handoff; they are not represented as
 already completed code.
 
+## 15.1 ETH Reference Stack Before Multi-Asset Campaigns (2026-08-06)
+
+ETH is the reference laboratory for the complete per-asset stack. The accepted
+easy/normal curriculum decision is followed by bounded ETH experiments for
+causal inputs, point-in-time event context, SAC learning dynamics,
+representations and synthetic-regime pretraining. Each option starts with the
+cheapest decisive pilot; only a credible signal receives paired four-seed
+confirmation. Weak or unavailable lines are rejected or deferred under a
+predeclared rule rather than left open indefinitely.
+
+After adopted variants are jointly reconfirmed, the following interface freezes
+as one reusable per-asset template:
+
+- source and point-in-time availability contract;
+- feature order, preprocessing and observation shape;
+- model architecture and learning dynamics;
+- easy/normal curriculum and activity patience;
+- action, order, protection and cost semantics;
+- selection, raw metric and artifact contract; and
+- live inference/parity evidence schema.
+
+Only after this mature template is frozen does one fresh full ETH optimization
+run on all workers. Its accepted champion becomes the reference cell. That cell
+and contract are then transferred to a representative second asset. A
+material transfer failure permits one bounded shared-contract correction before
+the template is applied to the owner-selected universe. Per-asset DOIN campaigns
+then run sequentially with all workers on one chain. Portfolio optimization
+starts after the selected library contains loadable champion weights, resolved
+genomes, complete metrics, traces and lineage for every included cell.
+
+Portfolio simulator code may be unit-tested earlier with deterministic fixtures.
+That is infrastructure verification, not portfolio optimization and not a reason
+to divert campaign GPUs from the ETH or per-asset sequence.
+
 ## 16. ETH Solvency-Curriculum Audit State (2026-08-05)
 
 The train-only `easy_chronological_continuation` environment and the

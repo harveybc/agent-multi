@@ -6,6 +6,12 @@ Status: PROPOSAL for discussion. Nothing in this document executes without
 an order; nothing touches the running `full-v2` campaign or the pending
 curriculum-decision preflight. This document closes no findings.
 
+Disposition note (2026-08-06): reviewed and reordered after the ETH decision
+preflight audit and owner clarification. The executable disposition is
+`MUSASHI_TO_SATOSHI_III_CONSOLIDATED_ETH_DECISION_AND_RESEARCH_ORDER_2026_08_06.md`;
+the integrated plan is document 33. This proposal remains preserved as the
+source record and is not itself an execution order.
+
 ## 0. Definitions and invariants
 
 - **Quality** means the audited selection contract: eligibility gates →

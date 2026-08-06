@@ -113,6 +113,9 @@ These are hypotheses to investigate, not novelty or performance claims.
 | P18 | Theory of proof-of-optimization | Under what conditions is an optimization improvement costly to produce, cheap to verify and resistant to replay or plagiarism? | Definitions, counterexamples and complexity bounds |
 | P19 | Functional-versus-liveness health probes | Do contract-level probes detect silent service failures earlier than heartbeat, port and process checks at acceptable false-alert cost? | Replay the IBKR incident plus bounded injected service states |
 | P20 | Solvency-relaxed chronological RL curriculum | Does train-only liquidation, penalized recapitalization and chronological continuation improve realistic-validation learning versus hard bankruptcy reset or randomized-start reset? | Instrument termination causes, then run one paired-seed CPU A/B/C without changing job 0 or job 1 |
+| P21 | Causal representation stack for trading control | Which point-in-time calendar, causal decomposition, TSFM and self-supervised feature families add stable marginal control value beyond the frozen technical baseline? | Independent one-family ETH pilots with future-append invariance and stability reports |
+| P22 | SAC entropy, reward and replay stability | Are the observed inactivity/entropy symptoms caused by reward scale, coefficient mode, missing telemetry or replay distribution, and which smallest correction improves realistic validation? | Reconstruct complete training trajectories before one bounded paired intervention |
+| P23 | Regime-controlled synthetic pretraining | Can transparent or learned regime generators improve real-only ETH validation without memorization or generator-artifact dependence? | Compare moving-block/regime-resampling baselines before any diffusion implementation |
 
 ## 7. Prioritization
 
@@ -138,6 +141,32 @@ a primary-literature collision test; its broad curriculum mechanism is prior
 art, while the narrower chronological insolvency design remains a falsifiable
 candidate contribution. It cannot consume campaign GPUs or alter a
 materialized domain before termination telemetry and the CPU pilot exist.
+
+For the active ETH program, owner priority temporarily places P20-P23 and the
+P9/P12 live-data children ahead of unrelated H1 work. The curriculum decision is
+first. Accepted research variants are confirmed and frozen on ETH before
+cross-asset optimization. P23 receives one bounded feasibility decision but may
+not hold the stack open after its kill/defer condition. Portfolio P10 begins
+only after the owner-selected per-asset library is complete.
+
+## 7.1 ETH-to-Portfolio Integration (2026-08-06)
+
+Document 33 is the active execution ordering for P9, P10, P12 and P20-P23:
+
+```text
+curriculum decision
+  -> bounded ETH feature/learning/representation/synthetic pilots
+  -> joint confirmation and mature ETH contract freeze
+  -> one final full ETH optimization and reference champion
+  -> representative second-asset transfer
+  -> selected per-asset DOIN campaigns and champion library
+  -> portfolio optimization
+```
+
+This order deliberately pays the model/data/preprocessing research cost once on
+ETH before multi-day per-asset campaigns. A cross-asset transfer failure can
+change the shared contract only through one bounded correction and reconfirmation;
+it cannot create silent bespoke pipelines that make portfolio cells incomparable.
 
 ## 8. Cadence and Outputs
 
