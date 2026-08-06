@@ -3290,8 +3290,11 @@ refresh();setInterval(refresh,5000);
             # resume can prove descent, not merely equality of the
             # initial identifiers.
             worker_tips = {}
+            worker_generations = {}
             for worker_id in self._local_worker_ids():
                 state = self._worker_state(worker_id) or {}
+                worker_generations[worker_id] = [
+                    state.get("pid"), state.get("pid_start_ticks")]
                 height = state.get("chain_height")
                 worker_tips[worker_id] = {
                     "tip_hash": state.get("tip_hash"),
@@ -3315,6 +3318,7 @@ refresh();setInterval(refresh,5000);
                 "component_versions": coordination.get(
                     "component_versions"),
                 "worker_tips": worker_tips,
+                "worker_generations": worker_generations,
                 "paused_phase_was": self.state.get("phase"),
             }
             binding_hash = _sha256_json(binding)
@@ -3656,6 +3660,8 @@ refresh();setInterval(refresh,5000);
         contradictions: list[str] = []
         missing: list[str] = []
         accepted_at = str(pending.get("accepted_at") or "")
+        pre_pause_generations = (binding.get("worker_generations")
+                                 or {})
         deadline_at = str(pending.get("deadline_at") or "")
         expired = bool(deadline_at) and _utc_now() > deadline_at
         for worker_id in self._local_worker_ids():
@@ -3682,6 +3688,26 @@ refresh();setInterval(refresh,5000);
             observed_at = str(worker.get("status_observed_at")
                               or worker.get("last_seen") or "")
             fact["observed_at"] = observed_at
+            # AUD-F1-20260806-156: second-granular timestamps make
+            # equality worthless as freshness. The decisive evidence is
+            # a NEW process generation (pid + start ticks) observed
+            # after the pause bound the old one.
+            generation = (worker.get("pid"),
+                          worker.get("pid_start_ticks"))
+            fact["process_generation"] = list(generation)
+            bound_generation = (pre_pause_generations or {}).get(
+                worker_id)
+            if generation == (None, None):
+                missing.append(
+                    f"{worker_id} has no process generation yet")
+                continue
+            if bound_generation and list(generation) == list(
+                    bound_generation):
+                missing.append(
+                    f"{worker_id} still reports the PRE-PAUSE process"
+                    f" generation {generation}; a resumed worker must"
+                    " be a NEW process")
+                continue
             if not observed_at:
                 missing.append(
                     f"{worker_id} has no observation timestamp")

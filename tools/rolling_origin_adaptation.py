@@ -110,6 +110,26 @@ def _gpu_probe() -> dict:
         return {"unavailable": str(exc)[:120]}
 
 
+def block_origins(block_start: int, block_bars: int,
+                  cadence_bars: int) -> tuple[list[int], int]:
+    """Half-open intervals whose union is exactly the declared block.
+
+    AUD-F1-20260806-157: the previous range stopped one interval short,
+    so a 28-day block evaluated 83/84 eight-hour intervals and only 3/4
+    weekly intervals — a cadence-dependent bias against long cadences.
+    Every interval satisfies ``interval_end <= block_end`` with no gap
+    and no overlap; any non-divisible remainder is returned explicitly
+    rather than silently dropped.
+    """
+    if cadence_bars <= 0:
+        raise ValueError("cadence must be positive")
+    count = block_bars // cadence_bars
+    remainder = block_bars - count * cadence_bars
+    origins = [block_start + index * cadence_bars
+               for index in range(count)]
+    return origins, remainder
+
+
 def base_config() -> dict:
     """Executable base config with the dormant year shorthand REMOVED
     (finding 142) so it cannot contradict the explicit dates."""
@@ -127,7 +147,7 @@ def base_config() -> dict:
 
 def score_interval(samples, *, warmup_bars: int, cadence_bars: int,
                    starting_equity: float | None = None,
-                   commission: float = 0.0) -> dict:
+                   handover: dict | None = None) -> dict:
     """Score EXACTLY the deployment interval (140/145).
 
     ``samples`` is the ordered per-step fact list of the rollout, each
@@ -161,11 +181,18 @@ def score_interval(samples, *, warmup_bars: int, cadence_bars: int,
     last = scored[-1]
     final_equity = equities[-1]
 
-    # ---- explicit flat handover -------------------------------------
-    position = float(last.get("position", 0.0) or 0.0)
-    price = float(last.get("price", 0.0) or 0.0)
-    closing_cost = abs(position) * price * float(commission)
-    post_close_equity = final_equity - closing_cost
+    # ---- explicit flat handover (152) -------------------------------
+    # The close is EXECUTED by the simulator and its facts are passed in
+    # by the caller; this function never invents a cost from a direction
+    # flag. `handover` is required for a training interval.
+    if handover is None:
+        return {"unavailable":
+                "no simulator handover facts supplied; refusing to"
+                " assert a flat close (finding 152)"}
+    if handover.get("flat_proven") is not True:
+        return {"unavailable":
+                f"handover not proven flat: {handover.get('reason')}"}
+    post_close_equity = float(handover["post_close_equity"])
 
     peak = baseline
     max_dd = 0.0
@@ -184,13 +211,7 @@ def score_interval(samples, *, warmup_bars: int, cadence_bars: int,
         "equity_before": baseline,
         "equity_at_interval_end": final_equity,
         "equity_after": post_close_equity,
-        "handover": {
-            "open_position_units": position,
-            "close_price": price,
-            "closing_cost": closing_cost,
-            "flat_after_handover": True,
-            "mode": "explicit_flat_close_at_configured_commission",
-        },
+        "handover": handover,
         "max_drawdown_fraction": max_dd,
         "scored_bars": len(scored),
         "warmup_bars_excluded": warmup_bars,
@@ -225,6 +246,7 @@ def _olap(path: Path) -> sqlite3.Connection:
             unreconciled_handovers INTEGER, activation_delay_bars REAL,
             rollback_status TEXT, warmup_traded INTEGER,
             anchor_sha256 TEXT, source_tree_digest TEXT,
+            expected_before_sha256 TEXT, succession_ok INTEGER,
             created_at TEXT
         )""")
     con.execute("""
@@ -336,20 +358,158 @@ def source_tree_digest(repos=("agent-multi", "gym-fx")) -> dict:
         diff = subprocess.run(
             ["git", "-C", root, "diff", "HEAD"],
             capture_output=True, text=True).stdout
+        # AUD-F1-20260806-155: untracked files are STILL source. An
+        # untracked .py or .json changes what Python executes, so it
+        # binds into identity and makes the tree unclean.
         status = subprocess.run(
             ["git", "-C", root, "status", "--porcelain",
-             "--untracked-files=no"],
+             "--untracked-files=all"],
             capture_output=True, text=True).stdout.strip()
+        untracked = [line[3:] for line in status.splitlines()
+                     if line.startswith("??")]
+        relevant = [name for name in untracked
+                    if name.endswith((".py", ".json", ".yaml", ".yml",
+                                      ".toml", ".cfg", ".ini"))]
+        untracked_digest = None
+        if relevant:
+            digest = hashlib.sha256()
+            for name in sorted(relevant):
+                digest.update(name.encode())
+                try:
+                    digest.update(
+                        (Path(root) / name).read_bytes())
+                except OSError:
+                    digest.update(b"<unreadable>")
+            untracked_digest = digest.hexdigest()
         facts[repo] = {
             "head": head,
             "clean": status == "",
             "dirty_diff_sha256": (
                 hashlib.sha256(diff.encode()).hexdigest()
                 if status else None),
+            "untracked_relevant": sorted(relevant),
+            "untracked_content_sha256": untracked_digest,
         }
     facts["all_clean"] = all(
         v["clean"] for v in facts.values() if isinstance(v, dict))
     return facts
+
+
+ANCHOR_MANIFEST_SCHEMA = "agent_multi.champion_anchor_manifest.v1"
+ANCHOR_REQUIRED = (
+    "schema", "artifact_sha256", "resolved_genome_sha256",
+    "observation_manifest_sha256", "preprocessing_sha256",
+    "data_sha256", "source_revisions", "selection_evidence",
+    "promotion_eligible")
+
+
+def load_anchor_manifest(anchor_path: str) -> dict:
+    """A bare compatible SAC ZIP is NOT an anchor (158).
+
+    A performance run's starting model must carry a versioned champion
+    manifest beside it (`<artifact>.anchor.json`) binding the artifact
+    hash, resolved genome, observation/preprocessing/data contracts,
+    source revisions, the selection evidence that made it a champion
+    and an explicit promotion-eligibility decision. Anything missing
+    refuses the run.
+    """
+    artifact = Path(anchor_path)
+    if not artifact.is_file():
+        raise SystemExit(f"anchor artifact not found: {artifact}")
+    manifest_path = artifact.with_suffix(artifact.suffix
+                                         + ".anchor.json")
+    if not manifest_path.is_file():
+        raise SystemExit(
+            f"anchor {artifact.name} has NO champion manifest at"
+            f" {manifest_path.name}; a compatible SAC file is not a"
+            " mature anchor (finding 158)")
+    try:
+        manifest = json.loads(manifest_path.read_text())
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"anchor manifest unreadable: {exc}")
+    missing = [key for key in ANCHOR_REQUIRED if not manifest.get(key)]
+    if missing:
+        raise SystemExit(
+            f"anchor manifest is incomplete: missing {missing}")
+    if manifest["schema"] != ANCHOR_MANIFEST_SCHEMA:
+        raise SystemExit(
+            f"anchor manifest schema {manifest['schema']!r} !="
+            f" {ANCHOR_MANIFEST_SCHEMA!r}")
+    actual = _sha_file(artifact)
+    if manifest["artifact_sha256"] != actual:
+        raise SystemExit(
+            f"anchor manifest hash {manifest['artifact_sha256'][:12]}"
+            f" != artifact {actual[:12]}")
+    if manifest["promotion_eligible"] is not True:
+        raise SystemExit(
+            "anchor manifest declares promotion_eligible=false; it is"
+            " not a mature champion")
+    if manifest["data_sha256"] != DATA_SHA256:
+        raise SystemExit(
+            "anchor was trained on a different dataset than this RT"
+            " run's frozen contract")
+    manifest["manifest_path"] = str(manifest_path)
+    manifest["manifest_sha256"] = _sha_file(manifest_path)
+    return manifest
+
+
+def execute_handover(env, samples) -> dict:
+    """Close open exposure through the simulator and PROVE flatness.
+
+    AUD-F1-20260806-152. The previous version multiplied the direction
+    flag {-1,0,1} by price and commission — a 100x error at
+    position_size=0.01 — and then asserted `flat_after_handover=true`.
+    Now the close runs through the environment's own action-3 path
+    (cancel resting orders, close position, real configured costs), and
+    flatness must be PROVEN by post-close simulator facts. Unavailable
+    evidence refuses the origin instead of assuming success.
+    """
+    last = samples[-1] if samples else {}
+    before = {
+        "position_units": last.get("position_units"),
+        "open_order_count": last.get("open_order_count"),
+        "equity": last.get("equity"),
+        "trades": last.get("trades"),
+        "commission_paid": last.get("commission_paid"),
+    }
+    flatten = getattr(env, "flatten_step", None)
+    if not callable(flatten):
+        return {"flat_proven": False,
+                "reason": ("environment exposes no flatten_step; the"
+                           " simulator close path is unavailable")}
+    try:
+        info = flatten()
+    except Exception as exc:                       # noqa: BLE001
+        return {"flat_proven": False,
+                "reason": f"close failed: {type(exc).__name__}: {exc}"}
+    units_after = info.get("position_units")
+    orders_after = info.get("open_order_count")
+    equity_after = info.get("economic_equity", info.get("equity"))
+    if units_after is None or orders_after is None or \
+            equity_after is None:
+        return {"flat_proven": False,
+                "reason": ("post-close facts unavailable"
+                           f" (units={units_after},"
+                           f" orders={orders_after},"
+                           f" equity={equity_after})")}
+    if abs(float(units_after)) > 1e-12 or int(orders_after) != 0:
+        return {"flat_proven": False,
+                "reason": (f"account NOT flat after close:"
+                           f" units={units_after},"
+                           f" open_orders={orders_after}")}
+    commission_before = float(before.get("commission_paid") or 0.0)
+    commission_after = float(info.get("commission_paid") or 0.0)
+    return {
+        "flat_proven": True,
+        "mode": "simulator_executed_close_action_3",
+        "position_units_before": before.get("position_units"),
+        "position_units_after": float(units_after),
+        "open_orders_after": int(orders_after),
+        "equity_before_close": before.get("equity"),
+        "post_close_equity": float(equity_after),
+        "closing_cost": commission_after - commission_before,
+        "trades_after_close": info.get("trades"),
+    }
 
 
 def run_identity(args, config: dict) -> dict:
@@ -379,6 +539,12 @@ def run_identity(args, config: dict) -> dict:
             _sha_file(Path(args.anchor_model))
             if getattr(args, "anchor_model", None) else None),
         "anchor_path": getattr(args, "anchor_model", None),
+        "anchor_manifest_sha256": (
+            getattr(args, "_anchor_manifest", {}) or {}
+        ).get("manifest_sha256"),
+        "anchor_genome_sha256": (
+            getattr(args, "_anchor_manifest", {}) or {}
+        ).get("resolved_genome_sha256"),
         "warmup_bars": WARMUP_BARS,
     }
 
@@ -407,6 +573,12 @@ def run(args) -> int:
         "block would cross into the disclosed 2025 period")
     assert block_start - WARMUP_BARS >= 0, "insufficient warm-up history"
 
+    # AUD-F1-20260806-158: validate the anchor's championship BEFORE
+    # anything else, so an incompatible or unproven anchor cannot even
+    # produce a run identity.
+    args._anchor_manifest = (
+        load_anchor_manifest(args.anchor_model)
+        if getattr(args, "anchor_model", None) else None)
     identity = run_identity(args, config)
     if not identity["source_tree"]["all_clean"] and not \
             args.allow_dirty_tree:
@@ -467,9 +639,14 @@ def run(args) -> int:
         years = int(args.lookback.rstrip("y"))
         return max(0, origin - years * 365 * BARS_PER_DAY)
 
-    origins = list(range(block_start,
-                         block_start + block_bars - args.cadence_bars,
-                         args.cadence_bars))
+    origins, remainder_bars = block_origins(
+        block_start, block_bars, args.cadence_bars)
+    if remainder_bars and not args.allow_partial_remainder:
+        raise SystemExit(
+            f"block of {block_bars} bars is not divisible by cadence"
+            f" {args.cadence_bars} ({remainder_bars} bars remain);"
+            " pass --allow-partial-remainder to DROP the remainder"
+            " explicitly (finding 157)")
     if args.max_origins:
         origins = origins[:args.max_origins]
 
@@ -504,9 +681,15 @@ def run(args) -> int:
 
         # ---------- 1. incumbent state (before) ----------
         before_path = None
+        expected_before_sha = pointer.get("after_sha256")
         if pointer.get("after_path") and Path(
                 pointer["after_path"]).is_file():
             before_path = Path(pointer["after_path"])
+            if _sha_file(before_path) != expected_before_sha:
+                raise SystemExit(
+                    f"origin {index}: inherited model hash does not"
+                    " match the recorded after-state; refusing to"
+                    " continue on a broken succession chain")
 
         # Latency clock starts at the interval's DATA CLOSE (owner-
         # amended budget: bar close -> activation-ready artifact).
@@ -580,16 +763,21 @@ def run(args) -> int:
             starting_cash=carried_equity)
         rollout = _rollout(model, eval_env, warmup_bars=WARMUP_BARS,
                            cadence_bars=args.cadence_bars)
-        eval_env.close()
         if rollout["warmup_traded"]:
+            eval_env.close()
             raise SystemExit(
                 f"origin {index}: warm-up placed trades — the forced"
                 " hold contract is broken (finding 145)")
+        # AUD-F1-20260806-152: EXECUTE the close through the simulator's
+        # own risk-reducing path and PROVE the account is flat from its
+        # facts; never compute a cost from a direction flag.
+        handover = execute_handover(eval_env, rollout["samples"])
+        eval_env.close()
         score = score_interval(
             rollout["samples"], warmup_bars=WARMUP_BARS,
             cadence_bars=args.cadence_bars,
             starting_equity=carried_equity,
-            commission=float(config.get("commission", 0.0)))
+            handover=handover)
         if "unavailable" in score:
             raise SystemExit(
                 f"origin {index}: {score['unavailable']}")
@@ -625,6 +813,10 @@ def run(args) -> int:
                 resource.RUSAGE_SELF).ru_maxrss / 1024.0,
             "gpu_json": json.dumps(_gpu_probe()),
             "model_before_sha256": _sha_file(before_path),
+            "expected_before_sha256": expected_before_sha,
+            "succession_ok": int(
+                expected_before_sha is None
+                or _sha_file(before_path) == expected_before_sha),
             "model_after_sha256": after_sha,
             "replica_verified": replica_verified,
             "interval_commission": score["interval_commission"],
@@ -637,7 +829,7 @@ def run(args) -> int:
             # the interval ended with exposure that was not closed and
             # charged. The explicit flat close makes this measurable.
             "unreconciled_handovers": int(
-                not score["handover"]["flat_after_handover"]),
+                score["handover"].get("flat_proven") is not True),
             "activation_delay_bars": (
                 latency_seconds / BAR_SECONDS),
             "rollback_status": "none",
@@ -671,7 +863,16 @@ def run(args) -> int:
                  datetime.now(timezone.utc).isoformat()))
         if os.environ.get("RT_CRASH_AFTER_COMMIT") == str(index):
             raise SystemExit("injected crash AFTER SQL commit")
+        # AUD-F1-20260806-153: the in-memory authority MUST advance
+        # after each commit, or the next origin silently restarts from
+        # the anchor instead of inheriting the adapted model.
         carried_equity = score["equity_after"]
+        pointer = {
+            "last_origin_index": index,
+            "after_path": str(after_path),
+            "after_sha256": after_sha,
+            "carried_equity": carried_equity,
+        }
         _atomic_write(pointer_path, {          # derived export only
             "authority": "rt_state_v2 table in the OLAP database",
             "last_origin_index": index,
@@ -684,7 +885,14 @@ def run(args) -> int:
             "equity_before", "equity_after",
             "update_latency_seconds", "deadline_miss")}), flush=True)
 
-    ordered = sorted(latencies)
+    # AUD-F1-20260806-154: percentiles come from EVERY committed row of
+    # this run, so a restart cannot discard earlier observations and
+    # falsely satisfy the deadline budget.
+    ordered = [row[0] for row in con.execute(
+        "SELECT update_latency_seconds FROM rt_intervals_v2"
+        " WHERE run_id=? AND update_latency_seconds IS NOT NULL"
+        " ORDER BY update_latency_seconds", (run_id,))]
+    process_local = sorted(latencies)
 
     def _pct(q: float):
         if not ordered:
@@ -715,6 +923,9 @@ def run(args) -> int:
             "bar close -> durable, load-validated, replicated,"
             " activation-ready artifact (owner-amended budget)"),
         "update_latency_p50": p50, "update_latency_p95": p95,
+        "latency_sample_size": len(ordered),
+        "latency_source": "all committed OLAP rows for this run_id",
+        "process_local_samples": len(process_local),
         "deadline_seconds": cadence_seconds,
         "deadline_misses": misses,
         "deadline_guard": {

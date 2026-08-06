@@ -282,6 +282,12 @@ def _complete_record(out_dir: Path, exec_id: str, arm="N14",
         artifacts[label] = {
             "path": str(path), "replica_path": str(replica),
             "replica_authority": "second-host.test",
+            "replica_observation": {
+                "verifier_host": "second-host.test",
+                "verifier": "ssh://second-host.test",
+                "remote_path": str(replica),
+                "observed_sha256": digest,
+                "observed_at": "2026-08-06T00:00:00+00:00"},
             "sha256": digest, "replica_sha256": digest,
             "load_proven": True}
     splits = {"validation": {"mean_weekly_return": 0.001,
@@ -435,12 +441,30 @@ def test_validator_rejects_unloadable_bytes_with_matching_hash(tmp_path):
     assert any("failed to load" in p for p in problems), problems
 
 
-def test_validator_rejects_sibling_folder_as_replica(tmp_path):
+def test_validator_rejects_locally_verified_replica(tmp_path):
+    """AUD-F1-20260806-151: a local path plus the word 'dragon' is not
+    a second authority; the OBSERVER must be another host."""
     record = _complete_record(tmp_path / "arm2", "e" * 64)
-    record["artifacts"]["terminal"]["replica_authority"] = (
-        runner.LOCAL_HOST)
+    record["artifacts"]["terminal"]["replica_observation"][
+        "verifier_host"] = runner.LOCAL_HOST
     problems = runner.validate_arm_record(record, "N14")
-    assert any("SECOND host" in p for p in problems), problems
+    assert any("verified by THIS" in p for p in problems), problems
+
+
+def test_validator_rejects_replica_without_observation(tmp_path):
+    record = _complete_record(tmp_path / "arm2b", "e" * 64)
+    record["artifacts"]["terminal"].pop("replica_observation")
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("no independent" in p for p in problems), problems
+
+
+def test_validator_rejects_replica_observation_hash_disagreement(
+        tmp_path):
+    record = _complete_record(tmp_path / "arm2c", "e" * 64)
+    record["artifacts"]["terminal"]["replica_observation"][
+        "observed_sha256"] = "0" * 64
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("disagrees" in p for p in problems), problems
 
 
 def test_validator_rejects_broken_terminal_cross_binding(tmp_path):

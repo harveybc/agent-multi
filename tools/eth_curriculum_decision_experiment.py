@@ -169,12 +169,28 @@ def validate_arm_record(record: dict, arm: str) -> list:
         elif _sha(replica) != ref.get("sha256"):
             problems.append(f"artifact {label} replica hash mismatch")
         else:
-            authority = ref.get("replica_authority")
-            if not authority or authority == LOCAL_HOST:
+            # AUD-F1-20260806-151: caller-supplied text is not evidence.
+            # The replica must carry an INDEPENDENT observation: the
+            # verifying host, the remote path, the hash that host
+            # observed, when it observed it, and who verified.
+            observation = ref.get("replica_observation") or {}
+            required = ("verifier_host", "remote_path",
+                        "observed_sha256", "observed_at", "verifier")
+            missing_fields = [key for key in required
+                              if not observation.get(key)]
+            if missing_fields:
                 problems.append(
-                    f"artifact {label} replica authority"
-                    f" {authority!r} is not a SECOND host/storage"
-                    " authority; a sibling folder is not a replica")
+                    f"artifact {label} replica has no independent"
+                    f" observation (missing {missing_fields})")
+            elif observation["verifier_host"] == LOCAL_HOST:
+                problems.append(
+                    f"artifact {label} replica was verified by THIS"
+                    f" host ({LOCAL_HOST}); a local path plus a remote"
+                    " name is not a second authority")
+            elif observation["observed_sha256"] != ref.get("sha256"):
+                problems.append(
+                    f"artifact {label} replica observation hash"
+                    " disagrees with the recorded artifact hash")
     if arm != "E4":
         terminal = ((record.get("best_checkpoint_vs_terminal") or {})
                     .get("terminal_evaluation") or {})
@@ -202,6 +218,44 @@ def validate_arm_record(record: dict, arm: str) -> list:
     return problems
 
 
+def _replicate_to_remote(path: Path, label: str,
+                         authority: str | None) -> dict:
+    """Copy to a declared second host and record ITS observation."""
+    if not authority:
+        return {"unavailable": (
+            "AGENT_MULTI_REPLICA_AUTHORITY is not set; no second host"
+            " to replicate to")}
+    remote_root = os.environ.get(
+        "AGENT_MULTI_REPLICA_ROOT",
+        "~/.local/share/agent-multi/replica")
+    remote_dir = f"{remote_root}/{path.parent.name}"
+    remote_path = f"{remote_dir}/{label}.zip"
+    try:
+        subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", authority,
+             f"mkdir -p {remote_dir}"], check=True, timeout=60)
+        subprocess.run(
+            ["rsync", "-a", str(path),
+             f"{authority}:{remote_path}"], check=True, timeout=600)
+        observed = subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", authority,
+             f"sha256sum {remote_path}"],
+            capture_output=True, text=True, check=True, timeout=120)
+        remote_host = subprocess.run(
+            ["ssh", "-o", "BatchMode=yes", authority, "hostname"],
+            capture_output=True, text=True, check=True,
+            timeout=60).stdout.strip()
+    except Exception as exc:                       # noqa: BLE001
+        return {"unavailable": f"{type(exc).__name__}: {str(exc)[:160]}"}
+    return {
+        "verifier_host": remote_host,
+        "verifier": f"ssh://{authority}",
+        "remote_path": remote_path,
+        "observed_sha256": observed.stdout.split()[0],
+        "observed_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
 def _publish_artifact(path: Path, out_dir: Path, label: str) -> dict:
     """Typed, hashed, retrievable, replicated and load-proven (136)."""
     from stable_baselines3 import SAC
@@ -217,17 +271,17 @@ def _publish_artifact(path: Path, out_dir: Path, label: str) -> dict:
     authority = os.environ.get("AGENT_MULTI_REPLICA_AUTHORITY", "")
     replica_dir = replica_root / out_dir.name
     replica_dir.mkdir(parents=True, exist_ok=True)
-    replica = replica_dir / f"{label}.zip"
-    shutil.copy2(durable, replica)
     digest = _sha(durable)
     SAC.load(str(durable), device="cpu")          # load proof, primary
-    SAC.load(str(replica), device="cpu")          # load proof, replica
+    # AUD-F1-20260806-151: copy to the SECOND host and have THAT host
+    # hash the bytes it received. No remote authority -> no replica.
+    observation = _replicate_to_remote(durable, label, authority)
     return {
         "path": str(durable.resolve()),
-        "replica_path": str(replica.resolve()),
-        "replica_authority": authority or LOCAL_HOST,
+        "replica_path": observation.get("remote_path"),
+        "replica_authority": authority or None,
+        "replica_observation": observation,
         "sha256": digest,
-        "replica_sha256": _sha(replica),
         "load_proven": True,
     }
 
