@@ -15,11 +15,18 @@ from pathlib import Path
 
 KEYS = ("mean_weekly_return", "annualized_return", "total_return",
         "max_drawdown_fraction", "trades_total")
+EXPECTED_ARMS = ("N14", "EN4_10", "E4")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--expect-seeds", type=int, nargs="+",
+                        default=[101, 202, 303, 404])
+    parser.add_argument(
+        "--allow-partial", action="store_true",
+        help="diagnostic only; the packet is then marked partial and "
+             "cannot support a promotion claim")
     args = parser.parse_args()
 
     seeds = {}
@@ -27,6 +34,36 @@ def main() -> int:
             args.output_root.glob("seed*/seed_packet.json")):
         packet = json.loads(packet_path.read_text())
         seeds[packet["seed"]] = packet
+
+    # AUD-F1-20260806-126: STRICT completeness. A campaign-level claim
+    # requires exactly the declared seeds and arms, each present exactly
+    # once. Anything else fails closed rather than publishing a partial
+    # table that reads like a decision.
+    if not args.allow_partial:
+        missing = []
+        if sorted(seeds) != sorted(args.expect_seeds):
+            missing.append(
+                f"seeds {sorted(seeds)} != expected"
+                f" {sorted(args.expect_seeds)}")
+        for seed, packet in sorted(seeds.items()):
+            arms = sorted((packet.get("arms") or {}))
+            if arms != sorted(EXPECTED_ARMS):
+                missing.append(
+                    f"seed {seed} arms {arms} != {sorted(EXPECTED_ARMS)}")
+            for arm, record in (packet.get("arms") or {}).items():
+                validation = (record.get("splits_raw") or {}).get(
+                    "validation")
+                if not validation:
+                    missing.append(
+                        f"seed {seed} arm {arm} has no validation"
+                        " evidence")
+        if missing:
+            print(json.dumps({
+                "aggregated": False,
+                "reason": "incomplete decision packet",
+                "problems": missing,
+            }, indent=1))
+            return 1
 
     rows = []
     paired = {key: [] for key in KEYS}
@@ -36,6 +73,14 @@ def main() -> int:
             validation = (record.get("splits_raw") or {}).get(
                 "validation") or {}
             row[arm] = {key: validation.get(key) for key in KEYS}
+            terminal = ((record.get("best_checkpoint_vs_terminal") or {})
+                        .get("terminal_evaluation") or {})
+            terminal_val = (terminal.get("splits_raw") or {}).get(
+                "validation") or {}
+            row[f"{arm}__terminal"] = {
+                key: terminal_val.get(key) for key in KEYS}
+            row[f"{arm}__margin_telemetry"] = (
+                record.get("margin_telemetry") or {}).get("validation")
         rows.append(row)
         en = row.get("EN4_10") or {}
         n = row.get("N14") or {}
@@ -48,6 +93,10 @@ def main() -> int:
 
     summary = {
         "schema": "agent_multi.eth_curriculum_decision_summary.v1",
+        "complete": not args.allow_partial,
+        "promotion_eligible": (
+            not args.allow_partial
+            and sorted(seeds) == sorted(args.expect_seeds)),
         "seeds": sorted(seeds),
         "per_seed_validation_raw": rows,
         "paired_differences_EN_minus_N": {

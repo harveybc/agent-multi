@@ -45,6 +45,10 @@ DATA_SHA256 = ("1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435"
                "ebe440f")
 ETH_BASE = (REPO / "examples/results/"
             "project3_ethusdt_4h_sac_train_val_test_v2/config_out.json")
+# AUD-F1-20260806-126: the base contract is PINNED. An unpinned base
+# would let the A/B silently change semantics between seeds/hosts.
+ETH_BASE_SHA256 = ("5df24c0d78a89613041406213692af5f180f4af3c220ac69792a"
+                   "60db8ca70e18")
 SPLITS = {
     "train_start": "2017-09-28T04:00:00",
     "train_end": "2023-12-31T23:59:59",
@@ -170,6 +174,20 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
 
     out_dir = out_root / f"seed{seed}" / arm
     out_dir.mkdir(parents=True, exist_ok=True)
+    # AUD-F1-20260806-126: idempotent orchestration — a completed arm is
+    # never recomputed, so an interrupted four-GPU run resumes exactly
+    # instead of duplicating or corrupting evidence.
+    existing = out_dir / "arm_record.json"
+    if existing.exists():
+        try:
+            record = json.loads(existing.read_text())
+            if record.get("arm") == arm and record.get("seed") == seed \
+                    and record.get("splits_raw"):
+                print(f"[decision] seed={seed} arm={arm} already"
+                      f" complete — reusing evidence", flush=True)
+                return record
+        except json.JSONDecodeError:
+            pass
     config = _base_config(out_dir, arm, seed,
                           epoch_timesteps=epoch_timesteps)
     config["warm_start_model"] = str(anchor)
@@ -213,6 +231,45 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
         raise SystemExit(f"unknown arm {arm!r}")
 
     finished = datetime.now(timezone.utc)
+
+    # AUD-F1-20260806-125: evaluate and preserve TERMINAL weights too.
+    # Best-checkpoint selection can silently return the shared anchor
+    # when training degrades validation in every arm, which would
+    # manufacture a null result; the terminal policy is the honest
+    # counterpart and both are reported raw.
+    terminal_eval = None
+    terminal_path = out_dir / "model.terminal.zip"
+    try:
+        model = result.get("model") or result.get("best_model")
+        if model is not None and hasattr(model, "save"):
+            model.save(str(terminal_path))
+    except Exception:
+        pass
+    if not terminal_path.exists():
+        produced = result.get("terminal_model_path")
+        if produced and Path(produced).exists():
+            terminal_path = Path(produced)
+    if terminal_path.exists():
+        eval_config = dict(config)
+        eval_config["load_model"] = str(terminal_path)
+        eval_config["solvency_mode"] = "normal_realistic"
+        eval_config["return_trace_dir"] = str(
+            out_dir / "return_traces_terminal")
+        try:
+            terminal_result = ValidationPipeline(
+                eval_config).run_pipeline(
+                config=eval_config, env_plugin=None,
+                agent_plugin=_agent_plugin(agent_name),
+                mode="inference")
+            terminal_eval = {
+                "artifact_sha256": _sha(terminal_path),
+                "splits_raw": _splits_raw(terminal_result),
+                "selection_contract": (
+                    (terminal_result.get("splits") or {}).get(
+                        "validation", {}).get("selection_contract")),
+            }
+        except Exception as exc:
+            terminal_eval = {"error": str(exc)[:300]}
     resolved_path = out_dir / "resolved_config.json"
     resolved_text = json.dumps(config, indent=1, sort_keys=True,
                                default=str)
@@ -223,9 +280,32 @@ def run_arm(arm: str, seed: int, out_root: Path, *, agent_name: str,
                         ("post_easy", out_dir / "model.post_easy.zip")):
         if path.exists():
             weights[label] = {"path": str(path), "sha256": _sha(path)}
+    margin_telemetry = {}
+    for split, summary in (result.get("splits") or {}).items():
+        if not isinstance(summary, dict) or split not in ALLOWED_SPLITS:
+            continue
+        # AUD-F1-20260806-125: a missing counter is UNAVAILABLE, never
+        # "zero margin events". The distinction decides whether an
+        # observed EN/N difference can be attributed to solvency
+        # relaxation at all.
+        margin_telemetry[split] = {
+            key: ("unavailable" if summary.get(key) is None
+                  else summary.get(key))
+            for key in ("would_margin_call_count", "termination_cause",
+                        "recapitalization_count",
+                        "recapitalization_debt", "solvency_mode")
+        }
+
     record = {
         "arm": arm,
         "seed": seed,
+        "best_checkpoint_vs_terminal": {
+            "terminal_evaluation": terminal_eval,
+            "note": ("both weight sets evaluated raw under identical"
+                     " realistic-normal validation; neither is a"
+                     " selection change"),
+        },
+        "margin_telemetry": margin_telemetry,
         "wall_time_seconds": (finished - started).total_seconds(),
         "resolved_config_sha256": hashlib.sha256(
             resolved_text.encode()).hexdigest(),
@@ -260,6 +340,9 @@ def main() -> int:
     assert hashlib.sha256(
         Path(DATA_FILE).read_bytes()).hexdigest() == DATA_SHA256, (
         "dataset sha mismatch — frozen contract violated")
+    base_sha = hashlib.sha256(ETH_BASE.read_bytes()).hexdigest()
+    assert base_sha == ETH_BASE_SHA256, (
+        f"base contract sha {base_sha} != pinned {ETH_BASE_SHA256}")
 
     out_root = args.output_root
     seed_dir = out_root / f"seed{args.seed}"
@@ -274,6 +357,7 @@ def main() -> int:
         "seed": args.seed,
         "epoch_timesteps": args.epoch_timesteps,
         "data_sha256": DATA_SHA256,
+        "base_contract_sha256": ETH_BASE_SHA256,
         "lineage": {repo: _git_rev(repo) for repo in
                     ("agent-multi", "gym-fx", "doin-node",
                      "doin-plugins", "trading-contracts")},
