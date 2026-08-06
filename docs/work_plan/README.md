@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; ETH anchored `full-v2` coordinated while the easy/normal decision harness is corrected; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
-Plan version: 1.29.0
+Plan version: 1.30.0
 Date: 2026-08-06
 Primary implementation repository: `agent-multi`
 
@@ -197,7 +197,7 @@ adding value.
 3. Keep the current anchored ETH `full-v2` domain on one chain while correcting
    the decision harness, exact-chain interruption controls and bounded
    activity-ineligible patience without mutating the active evaluation semantics.
-4. After findings 113, 122-132 and 135-142 pass independent verification,
+4. After findings 113, 122-132 and 135-150 pass independent verification,
    execute the
    four-seed equal-compute `N14` versus `EN4_10` calibration,
    retaining `E4` as diagnostic. Use it to admit and bound curriculum genes; do
@@ -211,7 +211,11 @@ adding value.
    synthetic pretraining.
 7. After the SAC topology/learning domain, execute the corrected RT0 and the
    sequential RT1-A/RT1-B cadence screen. Warm-up never contributes to score;
-   account/effect continuity persists inside each block. Finalize RT2 only after
+   it cannot trade or mutate account state; every scored interval has exactly
+   its declared number of bars; model handover closes/reconciles protected
+   exposure with explicit costs and carries the post-close balance. RT1-A is
+   currently materialized but explicitly not executable after the v2 audit.
+   Finalize RT2 only after
    all admitted interface-changing lines and measured numeric bounds, before
    joint integration.
 8. Preserve each component champion plus diverse elites, then run a restricted
