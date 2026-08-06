@@ -908,7 +908,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | corrected_v2_four_gpu_local_ab_running | The first ETH swarm remains invalid under audit 108-116. The original local fixtures were classified invalid after findings 117-118. The corrected v2 contract uses zero deadband, strictly positive easy costs and fail-closed activity eligibility; seed-2711 produced 883 easy trades and 122 realistic-validation trades with protected SL/TP entries. Seeds 2712-2715 now run `easy,easy_normal,normal` across all four GPUs under `ETH_CURRICULUM_LOCAL_AB_V2_RUNTIME_2026_08_05.md`; rejected chains remain disabled pending corrected DOIN smoke. | Harvey |
+| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_four_worker_running | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. The first full domain was stopped after two fixed-to-auto entropy load errors. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models; all four workers share the new domain at exact fleet revisions. | Harvey |
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -947,23 +947,21 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
 4. Implement no-idle champion succession through L0/L1 only, preserving the
    exact post-close Paper/Demo balance; remove direct broker calls from model
    switch paths.
-5. Preserve the paused USDCAD archive and the rejected ETH diagnostic chain.
-   Do not resume either as the corrected ETH campaign and do not permit ETH
-   outputs to touch historical USDCAD artifact roots.
-6. Execute findings 108-116 through
+5. Preserve the paused USDCAD archive, the rejected original ETH diagnostic
+   chain and the rejected anchored `full-v1` chain. Do not resume any of them
+   as the corrected ETH campaign and do not permit ETH outputs to touch
+   historical USDCAD artifact roots.
+6. Preserve the completed four-candidate anchored smoke and its exact model,
+   parameter and chain hashes as the acceptance seed for `full-v2`.
+7. Execute findings 108-116 through
    `MUSASHI_TO_SATOSHI_III_ETH_CURRICULUM_CORRECTION_ORDER_2026_08_05.md`:
    one authoritative lexicographic comparator, rejected-error semantics,
    executable genomes, ETH-only artifact identity, deterministic fork
    convergence and a verified all-worker pause operation.
-7. Run a new-domain local candidate and then a four-worker one-generation
-   smoke. Require one tip, distinct claims, no accepted failure sentinel,
-   loadable ETH artifacts and zero residual worker processes after pause.
-   Keep the full supervisors disabled until independent acceptance.
-8. Independently verify findings 117-118 and require the corrected smoke to
-   show non-hold actions, submitted protected entries, closed trades and zero
-   protected-entry rejections before any four-GPU launch. A zero-trade easy
-   artifact is a failed candidate, never an eligible neutral result.
-9. After smoke acceptance, run ETH-EN and then matched ETH-N sequentially with
+8. Keep `phase-2-eth-anchored-full-fleet-v2` running as one shared chain.
+   Treat any accepted failure sentinel, duplicate claim, component mismatch,
+   competing terminal tip or warm-start load error as an immediate stop.
+9. After the anchored full run, execute the matched ETH-N control with
    identical data, seeds, population and normal validation. Easy artifacts
    remain immutable, replay state resets at the dynamics boundary, and the
    disclosed 2025 period cannot select candidates or curriculum arms.

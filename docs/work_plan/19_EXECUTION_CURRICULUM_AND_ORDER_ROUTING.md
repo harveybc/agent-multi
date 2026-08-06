@@ -503,3 +503,32 @@ The next executable step is a new-domain local candidate followed by a
 four-worker, one-generation smoke. Full ETH-EN/ETH-N optimization and SAC Demo
 authority remain blocked until that smoke independently proves objective,
 rejection, artifact, convergence, pause and raw-feature parity contracts.
+
+### 16.1 Corrected anchored execution (2026-08-05)
+
+The corrected current-stack ETH smoke is complete. All four workers used one
+seed, genesis and shared population; each claimed one of four distinct
+candidates. The terminal equal-height branches converged to tip
+`13fbfbe5369f06d1d8562db1e62bec3f96ac894c66a6028c412f8b51e09d74d3`
+after block transfer was given a dedicated 120-second timeout. The winning
+candidate produced 17 normal-validation trades, +0.9695% total return and
+5.0750% maximum drawdown. Its loadable SB3 artifact is 33,705,132 bytes with
+SHA-256 `4da5de5eaa2e7455130ea36b1a7d14f65007d9ea3b4d5ad8d556a0879a6e4230`.
+
+The first full anchored domain was then rejected after two of twenty
+candidates exposed an SB3 fixed-to-automatic entropy restoration defect
+(`policy.optimizer`). That chain remains immutable evidence and is not a
+resume source. The correction builds SAC from each candidate's decoded genes
+and transfers the champion policy state without stale optimizer moments.
+
+The executable campaign is now the fresh single-job domain:
+
+```text
+examples/campaigns/phase_2_eth_anchored_full_fleet_v2/
+examples/config/phase_2_eth_anchored/optimization/phase_2_eth_anchored_full_v2.json
+```
+
+Its four workers must continuously match plan hash, semantic domain hash,
+dataset hash, seed, genesis, population fingerprint and component revisions.
+The `full-v2` artifact root is separate from both the accepted smoke and the
+rejected `full-v1` run.
