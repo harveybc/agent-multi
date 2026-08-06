@@ -736,6 +736,35 @@ trades. Suites: `gym-fx` 84 passed; `agent-multi` 526 passed. This evidence
 permits deployment for a corrected smoke but does not close either finding and
 does not authorize resuming the rejected chain from findings 108-116.
 
+### 1w. ETH correction delivery and curriculum decision audit, 2026-08-05
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_ETH_CORRECTION_DELIVERY_2026_08_05.md`
+- `../../handoffs/MUSASHI_TO_SATOSHI_III_ETH_CURRICULUM_DECISION_ORDER_2026_08_05.md`
+
+State transitions are append-only; section 1v remains the original history.
+
+| Finding | Appended state | Basis / remaining work |
+| --- | --- | --- |
+| 108 | independently_verified_pending_owner_closure | objective resolves and current runtime uses `lexicographic_weekly_v1` |
+| 109 | independently_verified_pending_owner_closure | plugin and DOIN independently reject failures/sentinels/non-finite results |
+| 110 | independently_verified_pending_owner_closure | deterministic ETH-only arm roots and current ETH-only runtime namespace |
+| 111 | independently_verified_pending_owner_closure | fork tests plus one exact live four-worker tip; large block sync extended at `doin-node@9eba394` |
+| 112 | corrected_pending_owner_bound_ratification | exact bounded mixed-radix tuple order verified; bounds remain an owner decision |
+| 113 | partially_corrected_open | `none` removed from choices, but declared `forbid_value` rule is unsupported by the runtime interpreter |
+| 114 | partially_corrected_open | test disabled and report hash committed; resolved configs, return traces and retrievable artifacts remain absent |
+| 115 | partially_corrected_open | stop/escalation works; unavailable GPU evidence passes and no same-chain resume operation exists |
+| 116 | independently_verified_pending_owner_closure | current complete LTS suite passes with deterministic timestamps |
+
+New findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260805-119 | S2 | open, blocks unattended profile switching | An active campaign's systemd profile can be overwritten; a restart in the observed interval could launch/adopt the wrong domain | Satoshi III implements; Musashi verifies |
+| AUD-F1-20260805-120 | S3 | open, blocks curriculum generalization | One-seed/two-epoch unequal-compute fixture with zero margin events cannot decide normal vs easy-normal rollout | Satoshi III executes paired packet; Musashi verifies; owner decides rollout |
+| AUD-F1-20260805-121 | S3 | open, blocks temporary A/B interruption | Operator pause is sticky with no supported same-chain resume, and unavailable GPU telemetry is accepted as clear | Satoshi III implements; Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
