@@ -530,3 +530,30 @@ The roadmap's literature is hypothesis support, not expected performance:
 Incomplete DOI fragments and unverified 2026 claims in the proposal cannot
 support implementation priority until the academic track resolves them to
 primary sources.
+
+## 9. RT Implementation Audit and Sequential Screen (2026-08-06)
+
+The first RT runner is not decision-bearing. Independent reproduction showed
+that it scores its 256-bar warm-up as part of the next interval, resets equity
+to 10,000 at each origin, and can reuse a run identity after initialization,
+device, base-contract or code changes. Its current OLAP cannot answer the
+business question and must not launch RT1.
+
+After corrections 140-142 pass, the bounded screen is:
+
+- RT1-A: `{2,3,6,42}` 4-hour bars x `{1y, expanding}` x four fixed
+  non-overlapping 28-day blocks x two paired seeds, plus one frozen/no-update
+  control in every block;
+- RT1-B: add 18 bars and 2y/4y rolling lookbacks only for the best two cadence
+  regions or when a boundary winner, non-monotone curve or interaction appears;
+- warm-up supplies context but contributes no score;
+- each block begins from a paired account state and preserves account balance,
+  effects and handover costs across its origins; and
+- update compute per new bar and the end-to-end deadline contract remain fixed.
+
+The p95 two-thirds deadline is proposed only for end-to-end readiness from data
+cutoff through durable artifact, validation, replica and activation-ready
+state. Numeric RT2 bounds remain unratified until this evidence exists.
+
+Canonical audit:
+`../audits/AUDIT_SATOSHI_III_128_134_CORRECTIONS_AND_RT1_RULING_2026_08_06.md`.
