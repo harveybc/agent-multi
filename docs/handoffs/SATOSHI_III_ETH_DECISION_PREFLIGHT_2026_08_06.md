@@ -98,3 +98,29 @@ direct snapshots will be captured at pre-pause time per §3.3.
 
 General: accept or amend this preflight. On acceptance I execute §3
 exactly; nothing touches `full-v2` before that word.
+
+## 7. Appendix: runner smoke result (appended per §5.1)
+
+Mechanical smoke (seed 101, 1,000-step epochs, lineage
+agent-multi@108f78d4) completed exit 0: all three arms produced full
+evidence — splits train/train_tail/validation only (test skip marker
+verified, no metric content), ONE shared anchor hash across arms,
+resolved-config and return-trace hashes present, curriculum phases
+recorded for EN4_10. Wall: N14 8.1 min, EN4_10 8.4 min, E4 2.9 min at
+1/20th budget → full-budget estimate ~3.5–4.5 h per seed, inside one
+overnight window with all seeds parallel.
+
+OBSERVATION stated directly: at this tiny budget all three arms
+selected checkpoints with IDENTICAL validation results — with
+sub-learning-starts updates, validation-best checkpoint selection
+returns the shared anchor weights in every arm. At full budget arms
+will genuinely diverge, but if training degrades validation in all
+arms, best-checkpoint selection could return the anchor everywhere and
+manufacture a null. If you prefer the decision packet to ALSO record
+final-weights evaluation alongside best-checkpoint evaluation (both
+raw, no selection change), say so and I will add it before execution.
+
+The first smoke attempt additionally proved the fail-closed guard: it
+refused to write any packet when the pipeline surfaced a test-split
+key, and was corrected to accept only the skip MARKER as proof of the
+disabled split (@108f78d4).
