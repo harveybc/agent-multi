@@ -322,19 +322,114 @@ class Plugin(DefaultOptimizer):
         decoded: dict[str, Any],
         config: dict[str, Any],
     ) -> None:
+        """Typed, executable repair rules (AUD-F1-20260805-113).
+
+        Two rule kinds exist; anything else fails loudly so a cosmetic
+        declaration can never masquerade as enforcement:
+
+        - conditional patch: ``{"if": {...}, "set": {...}}``
+        - forbidden value:   ``{"rule": "forbid_value", "gene": g,
+          "value": v, "repair": "resample_categorical" | "reject"}``
+
+        This runs at the decode boundary, which every genome origin
+        (fresh generation, resume, migration, network-champion import)
+        passes BEFORE environment or GPU construction.
+        """
         rules = config.get("mixed_genome_repair_rules") or []
-        if not isinstance(rules, list):
-            raise ValueError("mixed_genome_repair_rules must be a list")
-        for index, rule in enumerate(rules):
-            if not isinstance(rule, dict):
-                raise ValueError(f"mixed_genome_repair_rules[{index}] must be an object")
+        Plugin.validate_repair_rules(rules, config)
+        schema = config.get("mixed_genome_schema") or []
+        for rule in rules:
+            kind = rule.get("rule")
+            if kind == "forbid_value":
+                gene = str(rule["gene"])
+                forbidden = rule["value"]
+                if decoded.get(gene) != forbidden:
+                    continue
+                repair = str(rule.get("repair") or "reject")
+                if repair == "reject":
+                    raise ValueError(
+                        f"genome carries forbidden value"
+                        f" {gene}={forbidden!r}: {rule.get('reason')}"
+                    )
+                gene_spec = next(
+                    (g for g in schema if g.get("name") == gene), None)
+                allowed = [
+                    c for c in (gene_spec or {}).get("choices", [])
+                    if c != forbidden
+                ]
+                if not allowed:
+                    raise ValueError(
+                        f"forbid_value repair for {gene!r} has no"
+                        " allowed replacement choice"
+                    )
+                replacement = allowed[0]   # deterministic
+                decoded[gene] = replacement
+                target = str((gene_spec or {}).get("target") or "").strip()
+                if target:
+                    _set_path(run_config, target, replacement)
+                repairs = run_config.setdefault("_genome_repairs", [])
+                repairs.append({
+                    "gene": gene, "forbidden": forbidden,
+                    "replacement": replacement,
+                    "reason": rule.get("reason"),
+                })
+                continue
             condition = rule.get("if")
             if not Plugin._condition_matches(condition, decoded):
                 continue
             patch = rule.get("set") or {}
-            if not isinstance(patch, dict):
-                raise ValueError(f"mixed genome repair rule {index} set must be an object")
             Plugin._apply_patch(run_config, patch)
+
+    @staticmethod
+    def validate_repair_rules(
+        rules: Any, config: dict[str, Any] | None = None
+    ) -> None:
+        """Fail-closed schema validation for repair rules.
+
+        Unknown kinds and empty cosmetic rules fail materialization AND
+        runtime; a rule that validates is a rule that executes.
+        """
+        if not isinstance(rules, list):
+            raise ValueError("mixed_genome_repair_rules must be a list")
+        for index, rule in enumerate(rules):
+            if not isinstance(rule, dict) or not rule:
+                raise ValueError(
+                    f"mixed_genome_repair_rules[{index}] must be a"
+                    " non-empty object"
+                )
+            kind = rule.get("rule")
+            if kind == "forbid_value":
+                if not str(rule.get("gene") or "").strip():
+                    raise ValueError(
+                        f"repair rule {index}: forbid_value requires"
+                        " 'gene'"
+                    )
+                if "value" not in rule:
+                    raise ValueError(
+                        f"repair rule {index}: forbid_value requires"
+                        " 'value'"
+                    )
+                repair = str(rule.get("repair") or "reject")
+                if repair not in {"resample_categorical", "reject"}:
+                    raise ValueError(
+                        f"repair rule {index}: unknown repair"
+                        f" {repair!r}"
+                    )
+                continue
+            if kind is not None:
+                raise ValueError(
+                    f"repair rule {index}: unknown rule kind {kind!r}"
+                )
+            if "if" not in rule or "set" not in rule:
+                raise ValueError(
+                    f"repair rule {index}: conditional rule requires"
+                    " 'if' and 'set'"
+                )
+            if not isinstance(rule.get("set"), dict) or not rule["set"]:
+                raise ValueError(
+                    f"repair rule {index}: 'set' must be a non-empty"
+                    " object"
+                )
 
     @staticmethod
     def _apply_resource_repairs(
