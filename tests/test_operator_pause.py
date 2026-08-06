@@ -124,6 +124,8 @@ def _observe(sup: CampaignSupervisor, *, genesis="genesis-abc",
     worker = sup._worker_state("omega")
     worker.update({
         "last_seen": observed_at or _utc_now(),
+        # a resumed worker is a NEW process (finding 156)
+        "pid": 999001, "pid_start_ticks": 555001,
         "status": "running",
         "bootstrap_evidence": {"genesis_hash": genesis,
                                "population_fingerprint": popfp},
@@ -272,7 +274,8 @@ def test_empty_lineage_never_proves_rejoin(supervisor):
     supervisor.state["resume_report"] = {"binding_hash": "x" * 64}
     worker = supervisor._worker_state("omega")
     worker.update({"status": "running", "bootstrap_evidence": {},
-                   "shared_population": {}, "last_seen": _utc_now()})
+                   "shared_population": {}, "last_seen": _utc_now(),
+                   "pid": 999001, "pid_start_ticks": 555001})
     result = supervisor.verify_rejoin() or {}
     assert result.get("rejoin_proven") is not True
     assert result.get("resumed") is not True
@@ -543,3 +546,36 @@ def test_fresh_observation_after_acceptance_can_prove(supervisor,
     _observe(supervisor)                       # fresh by construction
     report = supervisor.verify_rejoin()
     assert report["rejoin_proven"] is True
+
+
+
+def test_same_second_same_pid_generation_never_proves_rejoin(
+        supervisor):
+    """Musashi reproducer `150_same_second_and_pid_generation`: an
+    observation in the acceptance second from the SAME process
+    generation is a cache, not a rejoin."""
+    _bind_identity(supervisor)
+    worker = supervisor._worker_state("omega")
+    worker["pid"], worker["pid_start_ticks"] = 4242, 777
+    pause = supervisor.request_pause()
+    accepted = supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor, observed_at=accepted["accepted_at"])
+    # restore the PRE-PAUSE generation: same process, no restart
+    worker["pid"], worker["pid_start_ticks"] = 4242, 777
+    report = supervisor.verify_rejoin()
+    assert report.get("rejoin_proven") is not True
+    assert any("PRE-PAUSE process generation" in r for r in
+               [report.get("rejoin_pending_reason", "")])
+
+
+def test_new_process_generation_is_required_evidence(supervisor):
+    _bind_identity(supervisor)
+    worker = supervisor._worker_state("omega")
+    worker["pid"], worker["pid_start_ticks"] = 4242, 777
+    pause = supervisor.request_pause()
+    supervisor.request_resume(pause["binding_hash"])
+    _observe(supervisor)                 # sets a NEW generation
+    report = supervisor.verify_rejoin()
+    assert report["rejoin_proven"] is True
+    proof = report["observed_lineage"]["omega"]
+    assert proof["process_generation"] != [4242, 777]

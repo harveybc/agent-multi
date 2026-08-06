@@ -1,0 +1,90 @@
+{
+ "143_typed_probe": {
+  "supplied_probe_completed": true,
+  "typed_outcomes_present": true
+ },
+ "144_replica_authority_spoof": {
+  "accepted": true,
+  "primary_and_replica_same_local_temp_root": true,
+  "reproduced": true,
+  "self_asserted_replica_authority": "dragon",
+  "validator_problems": []
+ },
+ "145_handover_cost_and_proof": {
+  "commission_only_at_configured_size": 0.004,
+  "configured_position_size": 0.01,
+  "env_position_semantics": "direction_only_-1_0_1",
+  "flat_proven_is_hardcoded": true,
+  "reproduced": true,
+  "runner_closing_cost": 0.4,
+  "spread_and_slippage_charged": false
+ },
+ "146_sqlite_state": {
+  "accepted": true,
+  "intervals_and_state_present": true
+ },
+ "147_anchor_provenance": {
+  "anchor_loads": true,
+  "anchor_sha256": "301011acee15e68b27c65c6f3ee0135e47e608039f34aff95fbc1be9caacf4bc",
+  "maturity_or_origin_manifest_bound": false,
+  "promotion_gate_is_only_clean_tree_plus_path": true,
+  "reproduced": true
+ },
+ "147_in_process_model_chain": {
+  "max_policy_weight_delta": 0.009587720036506653,
+  "origin0_after_sha256": "178358ab276c7aa8dca105a3a435c96056f8ed36a367ac5ca7678cb481511d39",
+  "origin1_before_sha256": "301011acee15e68b27c65c6f3ee0135e47e608039f34aff95fbc1be9caacf4bc",
+  "reproduced": true
+ },
+ "148_restart_latency_window": {
+  "expected_all_origin_p95": 3.287665741983801,
+  "persisted_latencies": [
+   3.287665741983801,
+   2.1976658910280094,
+   3.079798983060755
+  ],
+  "reported_post_restart_p95": 3.079798983060755,
+  "reproduced": true
+ },
+ "149_untracked_source_identity": {
+  "git_reports_untracked": true,
+  "identity_diff_omits_fixture": true,
+  "identity_status_omits_fixture": true,
+  "reproduced": true
+ },
+ "150_same_second_and_pid_generation": {
+  "accepted_at": "2026-08-06T21:47:19+00:00",
+  "observation_at_same_second": "2026-08-06T21:47:19+00:00",
+  "rejoin_proven": true,
+  "reproduced": true,
+  "unchanged_pid_generation": true
+ },
+ "157_block_coverage": {
+  "cadences": {
+   "2": {
+    "bars_omitted": 2,
+    "expected_intervals": 84,
+    "observed_intervals": 83
+   },
+   "3": {
+    "bars_omitted": 3,
+    "expected_intervals": 56,
+    "observed_intervals": 55
+   },
+   "42": {
+    "bars_omitted": 42,
+    "expected_intervals": 4,
+    "observed_intervals": 3
+   },
+   "6": {
+    "bars_omitted": 6,
+    "expected_intervals": 28,
+    "observed_intervals": 27
+   }
+  },
+  "reproduced": true
+ },
+ "network_used": false,
+ "runtime_mutated": false,
+ "schema": "agent_multi.musashi_acceptance_143_150.v1"
+}

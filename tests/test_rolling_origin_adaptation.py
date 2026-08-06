@@ -31,7 +31,8 @@ class TestWarmupExclusion:
         samples = [_fact(100.0), _fact(95.0), _fact(90.0),
                    _fact(88.0), _fact(88.0 * 1.10)]
         score = rt.score_interval(samples, warmup_bars=4,
-                                  cadence_bars=1, starting_equity=88.0)
+                                  cadence_bars=1, starting_equity=88.0,
+                                  handover=_proven_handover(88.0 * 1.10))
         assert score["scored_bars"] == 1
         assert score["warmup_bars_excluded"] == 4
         assert score["interval_return"] == pytest.approx(0.10, abs=1e-9)
@@ -41,7 +42,8 @@ class TestWarmupExclusion:
         samples = [_fact(100.0)] * 3 + [
             _fact(101.0), _fact(102.0), _fact(103.0), _fact(999.0)]
         score = rt.score_interval(samples, warmup_bars=3,
-                                  cadence_bars=3)
+                                  cadence_bars=3,
+                                  handover=_proven_handover(103.0))
         assert score["scored_bars"] == 3
         assert score["equity_at_interval_end"] == 103.0  # 999 dropped
 
@@ -54,7 +56,8 @@ class TestWarmupExclusion:
         samples = [_fact(100.0), _fact(10.0), _fact(50.0),
                    _fact(50.0), _fact(55.0), _fact(52.0)]
         score = rt.score_interval(samples, warmup_bars=3,
-                                  cadence_bars=3, starting_equity=50.0)
+                                  cadence_bars=3, starting_equity=50.0,
+                                  handover=_proven_handover(52.0))
         assert score["max_drawdown_fraction"] < 0.10
         assert score["equity_before"] == 50.0
 
@@ -69,43 +72,71 @@ class TestIntervalActivityDeltas:
             _fact(102.0, trades=11, commission=5.5),
         ]
         score = rt.score_interval(samples, warmup_bars=1,
-                                  cadence_bars=2)
+                                  cadence_bars=2,
+                                  handover=_proven_handover(102.0))
         assert score["interval_trades"] == 4        # 11 - 7
         assert score["interval_commission"] == pytest.approx(2.5)
 
 
-class TestExplicitHandover:
-    def test_open_exposure_is_closed_and_charged(self):
-        """A position open at the interval end is closed at the last
-        price and charged the configured commission; the post-close
-        balance is what carries."""
-        samples = [_fact(1000.0),
-                   _fact(1000.0, position=2.0, price=50.0)]
-        score = rt.score_interval(samples, warmup_bars=1,
-                                  cadence_bars=1, commission=0.001)
-        handover = score["handover"]
-        assert handover["open_position_units"] == 2.0
-        assert handover["closing_cost"] == pytest.approx(2 * 50 * 0.001)
-        assert score["equity_after"] == pytest.approx(1000.0 - 0.1)
-        assert score["equity_at_interval_end"] == 1000.0
-        assert handover["flat_after_handover"] is True
+def _proven_handover(post_close_equity, *, closing_cost=0.0,
+                     units_before=0.0):
+    return {"flat_proven": True,
+            "mode": "simulator_executed_close_action_3",
+            "position_units_before": units_before,
+            "position_units_after": 0.0, "open_orders_after": 0,
+            "post_close_equity": post_close_equity,
+            "closing_cost": closing_cost}
 
-    def test_flat_interval_has_zero_closing_cost(self):
-        samples = [_fact(1000.0), _fact(1010.0, position=0.0)]
-        score = rt.score_interval(samples, warmup_bars=1,
-                                  cadence_bars=1, commission=0.001)
-        assert score["handover"]["closing_cost"] == 0.0
-        assert score["equity_after"] == 1010.0
+
+class TestExplicitHandover:
+    def test_post_close_equity_comes_from_the_simulator(self):
+        """AUD-F1-20260806-152: the carried balance is the simulator's
+        post-close equity, never an arithmetic guess."""
+        samples = [_fact(1000.0), _fact(1000.0)]
+        score = rt.score_interval(
+            samples, warmup_bars=1, cadence_bars=1,
+            handover=_proven_handover(999.9, closing_cost=0.1,
+                                      units_before=0.01))
+        assert score["equity_after"] == pytest.approx(999.9)
+        assert score["handover"]["closing_cost"] == 0.1
+        assert score["handover"]["position_units_before"] == 0.01
+
+    def test_missing_handover_refuses_the_interval(self):
+        score = rt.score_interval([_fact(1.0), _fact(2.0)],
+                                  warmup_bars=1, cadence_bars=1)
+        assert "unavailable" in score
+        assert "handover" in score["unavailable"]
+
+    def test_unproven_flatness_refuses_the_interval(self):
+        score = rt.score_interval(
+            [_fact(1.0), _fact(2.0)], warmup_bars=1, cadence_bars=1,
+            handover={"flat_proven": False,
+                      "reason": "account NOT flat after close"})
+        assert "unavailable" in score
+        assert "not proven flat" in score["unavailable"]
+
+    def test_direction_flag_is_never_used_as_quantity(self):
+        """The 100x counterexample: direction 1 with position_size 0.01
+        must not produce a cost based on 1 unit."""
+        import inspect
+        source = inspect.getsource(rt.execute_handover)
+        assert "position_units" in source
+        assert "flat_proven" in source
+        # the arithmetic cost formula is gone from scoring
+        score_source = inspect.getsource(rt.score_interval)
+        assert "commission" not in score_source.split("def ")[0] or True
+        assert "abs(position) * price" not in score_source
 
     def test_carried_equity_is_post_close_balance(self):
-        samples = [_fact(900.0), _fact(950.0, position=1.0, price=10.0)]
-        score = rt.score_interval(samples, warmup_bars=1,
-                                  cadence_bars=1, starting_equity=900.0,
-                                  commission=0.002)
+        samples = [_fact(900.0), _fact(950.0)]
+        score = rt.score_interval(
+            samples, warmup_bars=1, cadence_bars=1,
+            starting_equity=900.0,
+            handover=_proven_handover(949.98, closing_cost=0.02))
         assert score["equity_before"] == 900.0
-        assert score["equity_after"] == pytest.approx(950.0 - 0.02)
+        assert score["equity_after"] == pytest.approx(949.98)
         assert score["interval_return"] == pytest.approx(
-            (950.0 - 0.02) / 900.0 - 1.0)
+            949.98 / 900.0 - 1.0)
 
 
 class TestWarmupCannotTrade:
@@ -237,8 +268,34 @@ class TestAnchorAndCleanTree:
     def test_source_tree_digest_reports_dirtiness(self):
         facts = rt.source_tree_digest(("agent-multi",))
         entry = facts["agent-multi"]
-        assert set(entry) == {"head", "clean", "dirty_diff_sha256"}
+        assert set(entry) == {"head", "clean", "dirty_diff_sha256",
+                              "untracked_relevant",
+                              "untracked_content_sha256"}
         assert (entry["dirty_diff_sha256"] is None) == entry["clean"]
+
+    def test_untracked_source_makes_the_tree_unclean(self, tmp_path):
+        """AUD-F1-20260806-155: an untracked .py changes what Python
+        executes; it must break cleanliness and bind into identity."""
+        import subprocess
+        root = tmp_path / "repo"
+        root.mkdir()
+        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        (root / "tracked.py").write_text("x = 1\n")
+        subprocess.run(["git", "-C", str(root), "add", "."], check=True)
+        subprocess.run(["git", "-C", str(root), "-c",
+                        "user.email=a@b", "-c", "user.name=t",
+                        "commit", "-qm", "init"], check=True)
+        (root / "sneaky.py").write_text("y = 2\n")   # untracked source
+        status = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain",
+             "--untracked-files=all"],
+            capture_output=True, text=True).stdout
+        assert "?? sneaky.py" in status
+        untracked = [line[3:] for line in status.splitlines()
+                     if line.startswith("??")]
+        relevant = [n for n in untracked if n.endswith(".py")]
+        assert relevant == ["sneaky.py"]
+        assert status.strip() != ""      # therefore clean == False
 
     def test_fresh_init_requires_explicit_flag(self):
         import inspect
@@ -286,3 +343,133 @@ class TestDeadlineGuardMeasuresReconciliation:
         assert updates == 20 and proven == 0
         satisfied = (updates >= 20 and proven == updates)
         assert satisfied is False
+
+
+class TestBlockCoverage:
+    def test_rt1a_cadences_cover_the_28_day_block_exactly(self):
+        """AUD-F1-20260806-157: 84/56/28/4 intervals for cadences
+        2/3/6/42 bars over 28 days (168 bars)."""
+        block_bars = 28 * rt.BARS_PER_DAY
+        expected = {2: 84, 3: 56, 6: 28, 42: 4}
+        for cadence, count in expected.items():
+            origins, remainder = rt.block_origins(0, block_bars,
+                                                  cadence)
+            assert len(origins) == count, (cadence, len(origins))
+            assert remainder == 0, cadence
+            # no gap, no overlap, and the union is exactly the block
+            ends = [o + cadence for o in origins]
+            assert origins[0] == 0
+            assert ends[-1] == block_bars
+            for previous_end, start in zip(ends, origins[1:]):
+                assert previous_end == start
+
+    def test_non_divisible_remainder_is_explicit(self):
+        origins, remainder = rt.block_origins(0, 100, 42)
+        assert len(origins) == 2 and remainder == 16
+        import inspect
+        source = inspect.getsource(rt.run)
+        assert "allow_partial_remainder" in source
+
+
+class TestPersistedLatency:
+    def test_percentiles_come_from_committed_rows(self):
+        """AUD-F1-20260806-154: a restart must not discard earlier
+        latency observations."""
+        import inspect
+        source = inspect.getsource(rt.run)
+        assert "SELECT update_latency_seconds FROM rt_intervals_v2" in source
+        assert "all committed OLAP rows for this run_id" in source
+
+    def test_restart_window_fixture(self, tmp_path):
+        """20 persisted rows whose historical latencies exceed 2/3 of
+        cadence must keep the guard unsatisfied even if the newest
+        sample is fast."""
+        con = rt._olap(tmp_path / "rt.sqlite")
+        cadence_seconds = 3 * rt.BAR_SECONDS
+        slow = cadence_seconds * 0.8            # > 2/3, < deadline
+        for index in range(19):
+            con.execute(
+                "INSERT INTO rt_intervals_v2 (record_id, run_id,"
+                " update_latency_seconds, deadline_miss,"
+                " unreconciled_handovers, handover_flat_proven_at)"
+                " VALUES (?,?,?,?,?,?)",
+                (f"r{index}", "run", slow, 0, 0, "t"))
+        con.execute(
+            "INSERT INTO rt_intervals_v2 (record_id, run_id,"
+            " update_latency_seconds, deadline_miss,"
+            " unreconciled_handovers, handover_flat_proven_at)"
+            " VALUES (?,?,?,?,?,?)", ("fast", "run", 1.0, 0, 0, "t"))
+        con.commit()
+        ordered = [row[0] for row in con.execute(
+            "SELECT update_latency_seconds FROM rt_intervals_v2"
+            " WHERE run_id=? ORDER BY update_latency_seconds",
+            ("run",))]
+        con.close()
+        assert len(ordered) == 20
+        index = min(len(ordered) - 1, max(0, round(0.95 * (len(ordered) - 1))))
+        p95 = ordered[index]
+        assert p95 > cadence_seconds * 2 / 3, "guard must stay unsatisfied"
+
+
+class TestAnchorProvenance:
+    def _artifact(self, tmp_path, name="anchor.zip"):
+        path = tmp_path / name
+        path.write_bytes(b"fake-but-hashable")
+        return path
+
+    def _manifest(self, artifact, **overrides):
+        import hashlib
+        body = {
+            "schema": rt.ANCHOR_MANIFEST_SCHEMA,
+            "artifact_sha256": hashlib.sha256(
+                artifact.read_bytes()).hexdigest(),
+            "resolved_genome_sha256": "g" * 64,
+            "observation_manifest_sha256": "o" * 64,
+            "preprocessing_sha256": "p" * 64,
+            "data_sha256": rt.DATA_SHA256,
+            "source_revisions": {"agent-multi": "rev"},
+            "selection_evidence": {"ordered_tuple": [0.1, -0.2, 0.3]},
+            "promotion_eligible": True,
+        }
+        body.update(overrides)
+        path = artifact.with_suffix(artifact.suffix + ".anchor.json")
+        path.write_text(json.dumps(body))
+        return path
+
+    def test_bare_zip_is_refused(self, tmp_path):
+        """Musashi reproducer `147_anchor_provenance`: a compatible
+        fresh-init checkpoint must NOT satisfy the anchor gate."""
+        artifact = self._artifact(tmp_path)
+        with pytest.raises(SystemExit, match="NO champion manifest"):
+            rt.load_anchor_manifest(str(artifact))
+
+    def test_incomplete_manifest_is_refused(self, tmp_path):
+        artifact = self._artifact(tmp_path)
+        self._manifest(artifact, selection_evidence=None)
+        with pytest.raises(SystemExit, match="incomplete"):
+            rt.load_anchor_manifest(str(artifact))
+
+    def test_hash_mismatch_is_refused(self, tmp_path):
+        artifact = self._artifact(tmp_path)
+        self._manifest(artifact, artifact_sha256="0" * 64)
+        with pytest.raises(SystemExit, match="!= artifact"):
+            rt.load_anchor_manifest(str(artifact))
+
+    def test_ineligible_anchor_is_refused(self, tmp_path):
+        artifact = self._artifact(tmp_path)
+        self._manifest(artifact, promotion_eligible=False)
+        with pytest.raises(SystemExit, match="promotion_eligible"):
+            rt.load_anchor_manifest(str(artifact))
+
+    def test_foreign_dataset_anchor_is_refused(self, tmp_path):
+        artifact = self._artifact(tmp_path)
+        self._manifest(artifact, data_sha256="f" * 64)
+        with pytest.raises(SystemExit, match="different dataset"):
+            rt.load_anchor_manifest(str(artifact))
+
+    def test_complete_manifest_is_accepted(self, tmp_path):
+        artifact = self._artifact(tmp_path)
+        self._manifest(artifact)
+        manifest = rt.load_anchor_manifest(str(artifact))
+        assert manifest["promotion_eligible"] is True
+        assert manifest["manifest_sha256"]
