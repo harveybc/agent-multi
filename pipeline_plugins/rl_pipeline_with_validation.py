@@ -900,6 +900,20 @@ class PipelinePlugin:
                 l2_patience = config.get("optimization_patience", "-")
                 l2_counter = config.get("_l2_counter", "-")
 
+                # AUD-F1-20260806-127: bounded budget for epochs that
+                # produce no eligible trading activity, tracked apart
+                # from improvement patience.
+                activity_patience = int(config.get(
+                    "l1_activity_patience",
+                    self.params.get("l1_activity_patience", 40)))
+                activity_patience_start_epoch = max(1, int(config.get(
+                    "l1_activity_patience_start_epoch",
+                    self.params.get(
+                        "l1_activity_patience_start_epoch",
+                        l1_patience_start_epoch))))
+                activity_ineligible_streak = 0
+                activity_stop_reason: str | None = None
+
                 best_composite = -math.inf
                 no_improve = 0
                 best_checkpoint_saved = False
@@ -1160,6 +1174,18 @@ class PipelinePlugin:
                         checkpoint_eligible
                         and epoch >= l1_patience_start_epoch
                     )
+                    # AUD-F1-20260806-127: activity-ineligible epochs
+                    # consume their OWN bounded budget. They are never
+                    # charged to improvement patience — doing so would
+                    # reward a candidate for emitting trivial trades to
+                    # survive, which is selection pressure toward noise.
+                    # A candidate that cannot become active after the
+                    # warm-up is terminated and rejected, not run to the
+                    # hard epoch cap.
+                    if checkpoint_eligible:
+                        activity_ineligible_streak = 0
+                    elif epoch >= activity_patience_start_epoch:
+                        activity_ineligible_streak += 1
                     best_composite, no_improve, improved = _update_l1_checkpoint_state(
                         composite=composite,
                         best_composite=best_composite,
@@ -1234,15 +1260,22 @@ class PipelinePlugin:
                         "val_balance": _safe_float(val_summary.get("final_equity")),
                     })
 
-                    l1_status = (
-                        f"{no_improve}/{l1_patience}"
-                        if patience_eligible
-                        else (
-                            f"epoch-warmup<{l1_patience_start_epoch}"
-                            if checkpoint_eligible
-                            else f"step-warmup<{l1_min_checkpoint_timesteps}"
-                        )
-                    )
+                    # AUD-F1-20260806-127: the label must distinguish
+                    # "still warming up" from "produced no eligible
+                    # trading activity", which are different states.
+                    if patience_eligible:
+                        l1_status = f"{no_improve}/{l1_patience}"
+                    elif checkpoint_eligible:
+                        l1_status = (
+                            f"epoch-warmup<{l1_patience_start_epoch}")
+                    elif int(nts_after) < int(
+                            l1_min_checkpoint_timesteps):
+                        l1_status = (
+                            f"step-warmup<{l1_min_checkpoint_timesteps}")
+                    else:
+                        l1_status = (
+                            f"no-activity {activity_ineligible_streak}"
+                            f"/{activity_patience}")
                     checkpoint_status = (
                         "(IMPROVED, model saved)"
                         if improved
@@ -1294,6 +1327,26 @@ class PipelinePlugin:
                         )
                         break
 
+                    # AUD-F1-20260806-127: stop burning GPU on a
+                    # candidate that never becomes activity-eligible.
+                    if (
+                        activity_patience > 0
+                        and activity_ineligible_streak >= activity_patience
+                    ):
+                        activity_stop_reason = (
+                            f"activity-ineligible for"
+                            f" {activity_ineligible_streak} consecutive"
+                            f" epochs after epoch"
+                            f" {activity_patience_start_epoch}"
+                            f" (budget={activity_patience}); the trade"
+                            " gate never passed, so no eligible"
+                            " checkpoint can exist"
+                        )
+                        print(
+                            f"[train] ACTIVITY STOP at epoch {epoch}:"
+                            f" {activity_stop_reason}", flush=True)
+                        break
+
                 if not best_checkpoint_saved:
                     raise RuntimeError(
                         "training ended before an activity-eligible L1 "
@@ -1301,6 +1354,10 @@ class PipelinePlugin:
                         f"num_timesteps={int(getattr(model, 'num_timesteps', 0))}, "
                         f"l1_min_checkpoint_timesteps={l1_min_checkpoint_timesteps}; "
                         "train-tail and validation trade gates must both pass"
+                        + (
+                            f"; {activity_stop_reason}"
+                            if activity_stop_reason else ""
+                        )
                     )
 
                 # Reload best model for final evaluation.

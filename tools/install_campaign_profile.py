@@ -53,20 +53,33 @@ def main() -> int:
         ["systemctl", "--user", "is-active",
          "doin-campaign-supervisor.service"],
         capture_output=True, text=True).stdout.strip()
-    status = _supervisor_state(args.port) if active == "active" else None
-    if status is not None and status.get("phase") not in (
-            "paused", "complete"):
+    refusal: str | None = None
+    if active == "active":
+        status = _supervisor_state(args.port)
+        if status is None:
+            # AUD-F1-20260806-123: unavailable status is NOT permission.
+            refusal = (
+                "supervisor unit is active but its status is"
+                " UNREACHABLE; unavailable evidence is never treated as"
+                " a verified pause")
+        elif status.get("phase") not in ("paused", "complete"):
+            refusal = (
+                f"supervisor is ACTIVE on plan {status.get('plan_id')!r}"
+                f" phase {status.get('phase')!r}; profile installation"
+                " requires a verified pause")
+        elif status.get("phase") == "paused" and (
+                status.get("pause_report") or {}).get("paused") is not True:
+            refusal = (
+                "supervisor reports phase 'paused' without a VERIFIED"
+                " pause report; refusing profile installation")
+    elif active not in ("inactive", "failed", "unknown", ""):
+        refusal = f"unrecognized unit state {active!r}; refusing"
+    if refusal is not None:
         if not args.force:
-            print(json.dumps({
-                "installed": False,
-                "reason": (
-                    f"supervisor is ACTIVE on plan"
-                    f" {status.get('plan_id')!r} phase"
-                    f" {status.get('phase')!r}; profile installation"
-                    " requires a verified pause (finding 119)"),
-            }, indent=1))
+            print(json.dumps({"installed": False, "reason": refusal},
+                             indent=1))
             return 1
-        print("WARNING: --force bypassed the active-campaign guard",
+        print(f"WARNING: --force bypassed the guard ({refusal})",
               file=sys.stderr)
 
     content = (
