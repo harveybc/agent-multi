@@ -1,0 +1,52 @@
+{
+ "schema_version": "agent_multi.doin_campaign_plan.v1",
+ "plan_id": "phase-2-eth-smoke-v1",
+ "$doc": "WP7 smoke campaign: fresh genesis, one ETH-EN smoke job, population 4, one generation. Never the contaminated chain; full swarm remains disabled until Musashi accepts this packet.",
+ "participants": [
+  {
+   "node_id": "omega",
+   "supervisor_url": "http://100.99.54.79:8795",
+   "workers": [
+    "omega"
+   ]
+  },
+  {
+   "node_id": "dragon",
+   "supervisor_url": "http://100.110.215.85:8795",
+   "workers": [
+    "dragon"
+   ]
+  },
+  {
+   "node_id": "gamma",
+   "supervisor_url": "http://100.107.204.49:8795",
+   "workers": [
+    "gamma-5070ti",
+    "gamma-5090"
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "ordinal": 0,
+   "job_id": "eth-4h-en-smoke-v1",
+   "domain_id": "trading-asset-policy-eth-4h-en-smoke-v1",
+   "purpose": "wp7_smoke_mechanism_proof",
+   "higher_is_better": true,
+   "domain_semantic_hash": "f8061c4f2ec5d5afaffc23a337890de9014ec54769b5f9451b4891f961d97dd5",
+   "artifact_handoff": {
+    "elite_count": 1,
+    "model_path": "/home/harveybc/.local/share/agent-multi/eth_smoke_v1/en/champion_policy.zip",
+    "parameters_path": "/home/harveybc/.local/share/agent-multi/eth_smoke_v1/en/champion_parameters.json",
+    "manifest_path": "/home/harveybc/.local/share/agent-multi/eth_smoke_v1/en/champion_manifest.json",
+    "elite_manifest_path": "/home/harveybc/.local/share/agent-multi/eth_smoke_v1/en/elite_manifest.json"
+   },
+   "worker_configs": {
+    "omega": "examples/trading/phase_2_eth_en_smoke_v1/omega_node.json",
+    "dragon": "examples/trading/phase_2_eth_en_smoke_v1/dragon_node.json",
+    "gamma-5070ti": "examples/trading/phase_2_eth_en_smoke_v1/gamma_5070ti_node.json",
+    "gamma-5090": "examples/trading/phase_2_eth_en_smoke_v1/gamma_5090_node.json"
+   }
+  }
+ ]
+}
