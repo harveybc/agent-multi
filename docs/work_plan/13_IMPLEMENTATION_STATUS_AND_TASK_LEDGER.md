@@ -908,7 +908,7 @@ cTrader Copy for `protected_entry_unavailable`.
 | `SWARM-CLOCK-EVIDENCE-001` | Codex | `agent-multi` | verified_four_workers | Per-worker UTC sample, collector-midpoint offset and round-trip latency recorded in each clocked swarm measurement | Codex |
 | `ACADEMIC-PACKAGES-001` | Codex + Satoshi cross-review | `agent-multi` | scaffold_verified_pending_independent_review | P1-P5 IEEE-compatible source packages, claim ledgers, artifact manifests, conflict controls and structural validator | Harvey |
 | `CONTINUOUS-RESEARCH-001` | Satoshi + Codex cross-review | `agent-multi` | initial_registry_materialized | Permanent discovery-to-program loop, H0-H2 research portfolio, P6-P20 hypotheses, prior-art collision gates and non-idle academic queue | Harvey |
-| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_four_worker_running | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. The first full domain was stopped after two fixed-to-auto entropy load errors. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models; all four workers share the new domain at exact fleet revisions. | Harvey |
+| `SOLVENCY-CURRICULUM-001` | Satoshi III + Musashi verification | `gym-fx`, `agent-multi`, `doin-node`, `lts` | anchored_full_v2_running_ab_decision_priority | The corrected current-stack smoke completed 4/4 distinct claims on one chain and preserved a loadable 33.7 MB champion artifact; normal validation recorded 17 trades, +0.9695% return and 5.0750% maximum drawdown. A 45 MB champion block exposed the 30-second sync limit, corrected by `doin-node@9eba394`. The first full domain was stopped after two fixed-to-auto entropy load errors. Fresh `full-v2` uses policy-weight transfer into candidate-built SAC models; all four workers share the new domain at exact fleet revisions. The one-seed fixture did not separate easy from easy-normal and had zero margin events, so the four-seed equal-compute N14/EN4_10/E4 packet now precedes curriculum generalization. | Harvey |
 | `DEV-TOOLING-MCP-001` | Satoshi III + Musashi verification | `agent-multi`, development tooling only | specified_after_f0 | Project-owned local read-only SQLite evidence MCP with fixed aliases, SQLite authorizer, resource bounds, no network and synthetic/copy-only acceptance; both public candidates rejected as shipped | Harvey |
 | `DEV-TOOLING-MCP-002` | Satoshi III + Musashi verification | development tooling only | conditional_at_f1 | Bounded Context7 measurement for public `ib_async==2.1.0` symbols only; installed source and official docs remain authoritative; no internal identifiers or broker/account facts leave Omega | Harvey |
 | `KNOWLEDGE-CONTINUITY-001` | Satoshi III + Musashi verification | `agent-multi`, local development tooling | owner_approved_k0_pending | OKF v0.2 Git bundle, disposable Omega-local GBrain index, Hermes interactive/cron recovery tests, stale-state detection and no-authority failure drill | Harvey |
@@ -958,13 +958,17 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
    one authoritative lexicographic comparator, rejected-error semantics,
    executable genomes, ETH-only artifact identity, deterministic fork
    convergence and a verified all-worker pause operation.
-8. Keep `phase-2-eth-anchored-full-fleet-v2` running as one shared chain.
+8. Keep `phase-2-eth-anchored-full-fleet-v2` running as one shared chain while
+   Satoshi prepares the paired curriculum packet and reversible fleet switch.
    Treat any accepted failure sentinel, duplicate claim, component mismatch,
    competing terminal tip or warm-start load error as an immediate stop.
-9. After the anchored full run, execute the matched ETH-N control with
-   identical data, seeds, population and normal validation. Easy artifacts
-   remain immutable, replay state resets at the dynamics boundary, and the
-   disclosed 2025 period cannot select candidates or curriculum arms.
+9. Before spending the full campaign budget or generalizing to other models,
+   execute the four-seed equal-compute N14/EN4_10/E4 comparison specified in
+   `MUSASHI_TO_SATOSHI_III_ETH_CURRICULUM_DECISION_ORDER_2026_08_05.md`.
+   Pause only after findings 113/114/115/119/121 pass preflight; preserve and
+   resume the exact same chain if EN is retained. Easy artifacts remain
+   immutable, replay state resets at the dynamics boundary, and the disclosed
+   2025 period cannot select candidates or curriculum arms.
 10. Build the missing raw-bar-to-current-SAC observation provider, prove
    two-source feature/action parity and wire the selected SAC policy into the
    production MT5 ETHUSD H4 runner. The existing linear model remains a shadow

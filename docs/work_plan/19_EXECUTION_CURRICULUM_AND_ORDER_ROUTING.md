@@ -1,7 +1,8 @@
 # 19. Execution Curriculum, State Models, and Adaptive Order Policy
 
-Status: protected-entry v2 implementation and local preflight verified;
-coordinated deployment pending exact-revision synchronization
+Status: corrected ETH easy-normal smoke verified and four-worker `full-v2`
+running; paired normal/easy/easy-normal decision packet is the next compute
+priority before curriculum generalization
 Decision date: 2026-07-29
 
 ## 1. Objective
@@ -123,6 +124,48 @@ economic equity/debt from deterministically recapitalized operational training
 capital. Live/demo solvency is never relaxed.
 The canonical design and collision test are in
 `docs/audits/AUDIT_SOLVENCY_RELAXATION_CURRICULUM_2026_08_02.md`.
+
+### 3.2 Current ETH decision state (2026-08-05)
+
+The corrected anchored smoke completed four distinct claims on one chain and
+preserved a loadable champion artifact. The active
+`trading-asset-policy-eth-4h-anchored-full-v2` campaign is an easy-to-normal
+arm and currently has one shared population/tip across four GPUs.
+
+The committed one-seed mechanism fixture is not sufficient to generalize the
+curriculum. Under realistic 2024 validation, normal-only returned +0.02754%
+mean weekly and +1.41384% total with 3.62981% maximum drawdown. Easy-only and
+easy-to-normal both returned +0.01111% mean weekly and +0.55662% total with
+2.67410% maximum drawdown; their selected policy payloads were identical and
+no easy episode crossed a would-margin-call boundary.
+
+Therefore the next decision packet uses four fresh paired seeds and equal
+training compute:
+
+```text
+N14:     14 normal epochs
+EN4_10:   4 easy epochs -> 10 normal epochs
+E4:       4 easy epochs -> normal-condition inference diagnostic
+```
+
+All arms keep the same ETH/SAC anchor, genome, data, causal observation,
+execution policy, validation and seed, with 20,000 timesteps per training
+epoch. Each GPU owns one seed and runs every arm sequentially. Selection uses
+the complete validation lexicographic tuple; reports retain raw weekly/annual/
+total return, drawdown, activity, action, order, termination, entropy, compute,
+trace and artifact evidence. The disclosed 2025 period remains disabled.
+
+The primary decision is N14 versus EN4_10. E4 diagnoses whether learned easy
+behavior survives realistic conditions. If no margin event occurs, the packet
+must state that solvency relaxation itself remains untested and may run a
+separate non-promotional stress probe. Any easy effect is then ablated across
+solvency, costs and action deadband before broad rollout.
+
+The active DOIN campaign stays productive while the experiment and reversible
+pause/resume tooling are prepared. It is paused only after profile-drift,
+GPU-verification and same-chain-resume findings 119/121 pass independent
+preflight. Results authorize at most ETH/SAC; a second SAC asset and a separate
+model family require reduced transfer checks before system-wide adoption.
 
 ## 4. Immutable Validation Suite
 
