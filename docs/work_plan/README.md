@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; protected-entry v2 campaign running; multi-venue Paper and social-trading reality commissioning active; social-intelligence, independent-audit, academic-preservation and continuous-innovation tracks active
-Plan version: 1.26.0
-Date: 2026-08-03
+Status: E0-E4 complete; ETH anchored `full-v2` coordinated while the easy/normal decision harness is corrected; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
+Plan version: 1.27.0
+Date: 2026-08-06
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -90,6 +90,7 @@ trading domain.
 | [30 Front 5 multidomain program](30_FRONT5_MULTIDOMAIN_PROGRAM.md) | Evidence-gated expansion of DOIN beyond trading after the active fronts satisfy their resource and safety gates |
 | [31 OKF, GBrain and Hermes knowledge continuity](31_OKF_GBRAIN_HERMES_KNOWLEDGE_CONTINUITY.md) | Portable OKF knowledge, rebuildable local GBrain retrieval, Hermes cold-start recovery, cron verification and strict separation from runtime authority |
 | [32 Champion succession and regime research](32_CHAMPION_SUCCESSION_AND_REGIME_RESEARCH.md) | Exact-seat Paper/Demo succession, independent promotion evidence, synchronized replay, difficulty ablation and causal regime-specialist research |
+| [33 ETH decision, research and multi-asset roadmap](33_ETH_DECISION_RESEARCH_AND_MULTI_ASSET_ROADMAP.md) | Easy/normal decision, mature ETH reference stack, bounded research, cross-asset transfer, per-asset champion library and portfolio entry order |
 
 ## Repository Ownership Summary
 
@@ -187,52 +188,57 @@ adding value.
 1. E0-E3 evidence screening: complete.
 2. E4 fixed-SAC integration baselines and load-tested warm-start artifacts:
    complete. These are not optimized per-asset champions.
-3. Run the immutable protected-entry v2 full-genome job under `easy_floor`
-   non-zero costs. Optimize data, preprocessing, model, risk geometry and
-   market/limit/stop/adaptive routing while enforcing annual activity.
-4. Archive the exact eligible champion and diverse elites, then warm-start a
-   distinct easy-to-nominal-to-stress curriculum domain selected by robust
-   weekly RAP.
-5. Repeat one coordinated DOIN Level 2 campaign per asset, sequentially, with
-   all workers sharing one chain and candidate pool.
-6. Freeze each alpha/execution champion and pass an execution-data fidelity
-   gate before learning higher-fidelity order placement.
-7. Train calibrated fill-time, adverse-selection, short-path and event-hazard
-   auxiliaries; retain protected market-only and deterministic routing as
-   mandatory controls.
-8. Freeze the optimized per-asset cell library and optimize static portfolio
-   allocation using those artifacts.
-9. Add probabilistic rush activation and causal event conditioning, then
-   compare weekly retraining/fine-tuning after the static portfolio vertical is
-   operational.
-10. In parallel with optimization, run the multi-venue execution-reality lab:
+3. Keep the current anchored ETH `full-v2` domain on one chain while correcting
+   the decision harness, exact-chain interruption controls and bounded
+   activity-ineligible patience without mutating the active evaluation semantics.
+4. Execute the four-seed equal-compute `N14` versus `EN4_10` decision, retaining
+   `E4` as a diagnostic, and select from raw realistic-normal outcomes.
+5. Freeze the curriculum winner as a fixed research baseline; preserve the
+   current `full-v2` chain as diagnostic lineage and do not pay for a full ETH
+   optimization while the input/model contract is still changing.
+6. Use ETH as the complete reference laboratory: run bounded causal-feature,
+   calendar, SAC-dynamics, representation and synthetic-regime pilots; promote
+   only paired winners and explicitly kill or defer weak lines.
+7. Jointly reconfirm adopted improvements and freeze the complete ETH data,
+   preprocessing, model, training, action, cost, metric and artifact contract.
+8. Run one final full ETH DOIN optimization on the mature frozen stack and
+   preserve its loadable champion, genome, traces, metrics and lineage.
+9. Prove transfer on one representative second asset, permitting only one
+   bounded shared-contract correction rather than bespoke per-asset redesign.
+10. Repeat one coordinated DOIN Level 2 campaign per owner-selected asset,
+   sequentially, with all workers sharing one chain and candidate pool.
+11. Freeze the complete per-asset cell library, including weights, genome,
+    metrics, traces and lineage, before portfolio optimization.
+12. Optimize static portfolio allocation from the frozen library, then add
+    probabilistic rush activation and compare weekly retraining/fine-tuning.
+13. In parallel with optimization, run the multi-venue execution-reality lab:
     account/instrument preflight, 24-hour read-only observation, protected
     canaries, then a seven-day consolidated portfolio shadow.
-11. Materialize normalized live bars and context facts, run shared-feature
+14. Materialize normalized live bars and context facts, run shared-feature
     numerical parity, and keep every non-passing model out of live inference.
-12. Complete registry, serving, LTS parity, and controlled paper execution
+15. Complete registry, serving, LTS parity, and controlled paper execution
     across the account-compatible venue adapters.
-13. Add the social-intelligence track without competing with optimization:
+16. Add the social-intelligence track without competing with optimization:
     deterministic collection, Telegram review, measured local-model bake-off,
     then bounded publication and a clean VPS continuity drill.
-14. Run change-driven independent audits across the three runtime fronts, with Codex
+17. Run change-driven independent audits across the three runtime fronts, with Codex
     reproducing findings and maintaining a versioned technical-lead recovery
     prompt.
-15. Preserve validated contributions through the five-paper academic program,
+18. Preserve validated contributions through the five-paper academic program,
     without allowing publication work to relabel incomplete evidence or
     interfere with protected experiments.
-16. Maintain the continuous research registry: reject prior-art collisions
+19. Maintain the continuous research registry: reject prior-art collisions
     cheaply, promote only falsifiable lines and keep Satoshi on the permanent
     bounded queue when no urgent finding or paper gate is ready.
-17. Commission the social-trading reality loop in ascending risk order: local
+20. Commission the social-trading reality loop in ascending risk order: local
     ledger, cTrader/eToro demo controls, cTrader Open API preflight, Darwinex
     Zero after cost approval, and only then an explicitly approved live MQL5
     Signals, real PAMM or public provider pilot.
-18. Pilot the OKF/GBrain/Hermes continuity layer on Omega after the active
+21. Pilot the OKF/GBrain/Hermes continuity layer on Omega after the active
     three-venue audit: Git remains canonical, GBrain remains disposable,
     Hermes remains non-authoritative, and fleet rollout requires cold-start,
     cron, stale-state, failure and resource evidence.
-19. Operate exact-seat champion succession without idle Paper/Demo gaps: use
+22. Operate exact-seat champion succession without idle Paper/Demo gaps: use
     an independent promotion panel, paired block-bootstrap gate, seven-day
     runtime shadow, flat-boundary drain/reseed and pre/post notice. Execute the
     regime track only as sequential jobs in the canonical DOIN campaign queue.
