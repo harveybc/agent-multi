@@ -164,3 +164,77 @@ def test_surviving_worker_is_a_failed_pause(supervisor, monkeypatch):
         assert "operator_pause_incomplete" in codes
     finally:
         os.killpg(process.pid, signal.SIGKILL)
+
+
+def test_gpu_verification_unavailable_fails_pause(supervisor, monkeypatch):
+    """AUD-F1-20260805-121: missing nvidia-smi evidence is a FAILED
+    pause, never success."""
+    import app.campaign_supervisor as sup_mod
+
+    def broken_run(*args, **kwargs):
+        raise FileNotFoundError("nvidia-smi not found")
+
+    monkeypatch.setattr(sup_mod.subprocess, "run", broken_run)
+    report = supervisor.request_pause()
+    assert report["paused"] is False
+    assert "gpu verification unavailable" in report["failure_reason"]
+
+
+def test_resume_requires_paused_state(supervisor):
+    report = supervisor.request_resume("0" * 64)
+    assert report["resumed"] is False
+    assert "paused state" in report["reason"]
+
+
+def test_resume_rejects_wrong_binding_hash(supervisor):
+    pause = supervisor.request_pause()
+    assert pause["paused"] is True
+    report = supervisor.request_resume("f" * 64)
+    assert report["resumed"] is False
+    assert "not authorized" in report["reason"]
+    assert supervisor.state["phase"] == "paused"
+
+
+def test_resume_refuses_profile_drift(supervisor):
+    pause = supervisor.request_pause()
+    assert pause["paused"] is True
+    profile = Path(supervisor.profile_path)
+    data = json.loads(profile.read_text())
+    data["poll_seconds"] = 99          # drift the profile on disk
+    profile.write_text(json.dumps(data))
+    report = supervisor.request_resume(pause["binding_hash"])
+    assert report["resumed"] is False
+    assert report["reason"] == "campaign identity drift"
+    assert "profile_sha256" in report["drift"]
+
+
+def test_resume_roundtrip_and_idempotency(supervisor):
+    pause = supervisor.request_pause()
+    assert pause["paused"] is True
+    assert pause["pause_binding"]["plan_hash"] == supervisor.plan_hash
+    report = supervisor.request_resume(pause["binding_hash"])
+    assert report["resumed"] is True
+    assert supervisor.state["phase"] == "starting"
+    again = supervisor.request_resume(pause["binding_hash"])
+    assert again["resumed"] is True    # idempotent repeat, no restart
+    events = [
+        row for row in supervisor.history.campaigns()
+    ]
+    persisted = json.loads(
+        (Path(supervisor.state_dir) / "state.json").read_text())
+    assert persisted["resume_report"]["resumed"] is True
+
+
+def test_resume_refused_over_unverified_pause(supervisor, monkeypatch):
+    monkeypatch.setattr(
+        supervisor, "_stop_worker", lambda *a, **k: False)
+    process = _spawn_fake_worker()
+    _register(supervisor, process)
+    try:
+        pause = supervisor.request_pause()
+        assert pause["paused"] is False
+        report = supervisor.request_resume(pause["binding_hash"])
+        assert report["resumed"] is False
+        assert "unverified" in report["reason"]
+    finally:
+        os.killpg(process.pid, signal.SIGKILL)

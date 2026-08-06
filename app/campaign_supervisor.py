@@ -2931,6 +2931,7 @@ class CampaignSupervisor:
 
     def tick(self) -> None:
         with self._mutex:
+            self.check_profile_drift()
             if self.state.get("phase") == "paused":
                 # AUD-F1-20260805-115: an operator pause is sticky and
                 # unconditional — checked before any validation so a
@@ -3237,6 +3238,35 @@ refresh();setInterval(refresh,5000);
                 "job_id": job.get("job_id") if job else None,
                 "workers": {},
             }
+            # AUD-F1-20260805-121 §3.1: bind the exact campaign identity
+            # BEFORE stopping so resume can refuse any drift.
+            coordination = self.state.get("coordination") or {}
+            lineage = coordination.get("canonical_lineage") or {}
+            worker_tips = {
+                worker_id: (self._worker_state(worker_id) or {}).get(
+                    "tip_hash")
+                for worker_id in self._local_worker_ids()
+            }
+            binding = {
+                "plan_hash": self.plan_hash,
+                "profile_sha256": _sha256_file(self.profile_path),
+                "job_id": job.get("job_id") if job else None,
+                "domain_id": coordination.get("domain_id"),
+                "domain_semantic_hash": coordination.get(
+                    "domain_semantic_hash"),
+                "genesis_hash": lineage.get("genesis_hash"),
+                "population_fingerprint": lineage.get(
+                    "population_fingerprint"),
+                "component_versions": coordination.get(
+                    "component_versions"),
+                "worker_tips": worker_tips,
+                "paused_phase_was": self.state.get("phase"),
+            }
+            binding_hash = _sha256_json(binding)
+            report["pause_binding"] = binding
+            report["binding_hash"] = binding_hash
+            self.state["pause_binding"] = binding
+            self.state["pause_binding_hash"] = binding_hash
             self.state["phase"] = "paused"
             self._save_state()          # sticky before any stop runs
             configs: dict[str, dict[str, Any]] = {}
@@ -3301,10 +3331,13 @@ refresh();setInterval(refresh,5000);
                 for entry in report["workers"].values()
             )
             gpu_remaining = report.get("gpu_owner_pids_remaining")
-            gpu_clear = gpu_remaining == [] or isinstance(
-                gpu_remaining, str
-            )  # empty, or nvidia-smi unavailable (reported as such)
+            # AUD-F1-20260805-121: unavailable GPU telemetry is FAILED
+            # verification, never success.
+            gpu_clear = gpu_remaining == []
             report["paused"] = workers_gone and gpu_clear
+            if isinstance(gpu_remaining, str):
+                report["failure_reason"] = (
+                    "gpu verification unavailable: " + gpu_remaining)
             self.state["pause_report"] = report
             self._save_state()
             self.history.event(
@@ -3325,6 +3358,116 @@ refresh();setInterval(refresh,5000);
                     "a worker survived the operator pause",
                 )
             return report
+
+    def request_resume(self, binding_hash: str) -> dict[str, Any]:
+        """Authenticated, idempotent same-chain resume (finding 121).
+
+        Legal only from a VERIFIED paused state; the caller must present
+        the pause report's binding hash (capability-style proof of the
+        pause evidence). The stored campaign identity — plan, profile,
+        domain, genesis, population fingerprint, component revisions —
+        must match exactly; any drift refuses. Rejoining never creates
+        genesis: the workers' preserved data dirs carry the chain, and
+        the normal startup barrier re-adopts it.
+        """
+        with self._mutex:
+            report: dict[str, Any] = {
+                "schema": "agent_multi.operator_resume_report.v1",
+                "node_id": self.node_id,
+                "requested_at": _utc_now(),
+            }
+            stored = self.state.get("pause_binding")
+            stored_hash = str(self.state.get("pause_binding_hash") or "")
+            prior = self.state.get("resume_report")
+            if (
+                prior
+                and self.state.get("phase") != "paused"
+                and prior.get("binding_hash") == binding_hash
+            ):
+                return prior            # idempotent repeat
+            if self.state.get("phase") != "paused":
+                report["resumed"] = False
+                report["reason"] = (
+                    f"resume is legal only from a verified paused state"
+                    f" (phase={self.state.get('phase')!r})")
+                return report
+            pause_report = self.state.get("pause_report") or {}
+            if pause_report.get("paused") is not True:
+                report["resumed"] = False
+                report["reason"] = (
+                    "the recorded pause was not verified complete;"
+                    " refuse to resume over an unverified stop")
+                return report
+            if not stored or not stored_hash:
+                report["resumed"] = False
+                report["reason"] = "no pause binding recorded"
+                return report
+            if binding_hash != stored_hash:
+                report["resumed"] = False
+                report["reason"] = "binding hash mismatch: not authorized"
+                return report
+            current = {
+                "plan_hash": self.plan_hash,
+                "profile_sha256": _sha256_file(self.profile_path),
+            }
+            drift = {
+                key: {"bound": stored.get(key), "current": value}
+                for key, value in current.items()
+                if stored.get(key) != value
+            }
+            if drift:
+                report["resumed"] = False
+                report["reason"] = "campaign identity drift"
+                report["drift"] = drift
+                self._alert(
+                    "resume_refused_drift", json.dumps(drift)[:200])
+                return report
+            restored_phase = "starting"
+            self.state["phase"] = restored_phase
+            self.state["resume_report"] = None
+            report["resumed"] = True
+            report["binding_hash"] = binding_hash
+            report["restored_phase"] = restored_phase
+            report["bound_domain"] = stored.get("domain_id")
+            report["bound_genesis"] = stored.get("genesis_hash")
+            self.state["resume_report"] = report
+            self._save_state()
+            self.history.event(
+                node_id=self.node_id,
+                job_id=stored.get("job_id"),
+                event="operator_resume",
+                detail={"binding_hash": binding_hash,
+                        "domain_id": stored.get("domain_id"),
+                        "genesis_hash": stored.get("genesis_hash")},
+            )
+            return report
+
+    def check_profile_drift(self) -> None:
+        """AUD-F1-20260805-119: compare the systemd ExecStart profile
+        with the loaded one every tick; drift is a high-priority alert."""
+        try:
+            shown = subprocess.run(
+                ["systemctl", "--user", "show",
+                 "doin-campaign-supervisor.service", "-p", "ExecStart"],
+                capture_output=True, text=True, timeout=10,
+            ).stdout
+        except Exception:
+            return                      # no systemd here (tests, CI)
+        if "--profile" not in shown:
+            return
+        configured = shown.split("--profile", 1)[1].split()[0].strip(
+            " ;\n\"'")
+        try:
+            configured_real = str(Path(configured).resolve())
+        except OSError:
+            configured_real = configured
+        if configured_real and configured_real != str(self.profile_path):
+            self._alert(
+                "profile_drift",
+                f"systemd ExecStart profile {configured_real} !="
+                f" loaded {self.profile_path}; restart is BLOCKED"
+                " until reconciled",
+            )
 
     def _make_handler(self):
         supervisor = self
@@ -3360,6 +3503,19 @@ refresh();setInterval(refresh,5000);
                     self._json(
                         report,
                         status=200 if report.get("paused") else 500,
+                    )
+                elif route == "/api/resume":
+                    length = int(self.headers.get("Content-Length") or 0)
+                    try:
+                        body = json.loads(
+                            self.rfile.read(length) or b"{}")
+                    except json.JSONDecodeError:
+                        body = {}
+                    report = supervisor.request_resume(
+                        str(body.get("binding_hash") or ""))
+                    self._json(
+                        report,
+                        status=200 if report.get("resumed") else 403,
                     )
                 else:
                     self._json({"error": "not found"}, status=404)
