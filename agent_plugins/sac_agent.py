@@ -314,36 +314,48 @@ class Plugin:
         return SAC.load(path, env=env)
 
     def load_for_training(self, path: str, env, config: Dict[str, Any]):
-        """Load weights while applying the candidate's training genes.
+        """Warm-start weights in a model built from the candidate's genes.
 
-        ``SAC.load`` normally restores optimizer hyperparameters from the ZIP.
-        That behavior is right for inference but would make warm-started DOIN
-        chromosomes observationally different while training identically.
-        ``custom_objects`` replaces the declared SB3 constructor values before
-        model setup without changing policy/observation architecture.
+        Reusing ``SAC.load(..., custom_objects=...)`` is unsafe when a
+        candidate changes entropy mode: Stable-Baselines may try to restore an
+        optimizer that the source archive never had.  A warm start promises
+        trained weights, not stale optimizer moments, so construct the target
+        model from the candidate and transfer the complete policy state.
         """
         from stable_baselines3 import SAC
 
         self._require_continuous(env)
-        allowed = (
-            "learning_rate",
-            "buffer_size",
-            "learning_starts",
-            "batch_size",
-            "tau",
-            "gamma",
-            "train_freq",
-            "gradient_steps",
-            "ent_coef",
-            "target_update_interval",
-            "target_entropy",
-        )
-        overrides = {
-            key: config[key]
-            for key in allowed
-            if key in config and config[key] is not None
+        resolved = self._resolve(config)
+        source = SAC.load(path, device=str(resolved["device"]))
+        target_config = dict(config)
+        requested_entropy = target_config.get("ent_coef", resolved["ent_coef"])
+        if requested_entropy == "auto" and not isinstance(source.ent_coef, str):
+            target_config["ent_coef"] = f"auto_{float(source.ent_coef):g}"
+
+        target = self.build(env, target_config)
+        target.policy.load_state_dict(source.policy.state_dict(), strict=True)
+        if (
+            getattr(source, "log_ent_coef", None) is not None
+            and getattr(target, "log_ent_coef", None) is not None
+            and source.log_ent_coef.shape == target.log_ent_coef.shape
+        ):
+            target.log_ent_coef.data.copy_(source.log_ent_coef.data)
+        target.warm_start_transfer_evidence = {
+            "source_model": str(Path(path).resolve()),
+            "source_entropy_mode": (
+                "automatic"
+                if getattr(source, "ent_coef_optimizer", None) is not None
+                else "fixed"
+            ),
+            "target_entropy_mode": (
+                "automatic"
+                if getattr(target, "ent_coef_optimizer", None) is not None
+                else "fixed"
+            ),
+            "optimizer_state_transferred": False,
+            "policy_state_transferred": True,
         }
-        return SAC.load(path, env=env, custom_objects=overrides)
+        return target
 
     def load_with_observation_expansion(
         self,

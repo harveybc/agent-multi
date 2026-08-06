@@ -8,6 +8,7 @@ from app.campaign_supervisor import _domain_semantic_hash
 from tools.materialize_eth_anchored_campaign import (
     ANCHOR_MODEL,
     build_config,
+    materialize_recovery_full_v2,
 )
 
 
@@ -68,3 +69,16 @@ def test_all_four_workers_share_one_semantic_domain_per_job():
             config = json.loads((DOIN_ROOT / relative).read_text(encoding="utf-8"))
             hashes.add(_domain_semantic_hash(config))
         assert hashes == {job["domain_semantic_hash"]}
+
+
+def test_full_v2_recovery_plan_has_one_fresh_shared_domain():
+    result = materialize_recovery_full_v2()
+    assert len(result["jobs"]) == 1
+    job = result["jobs"][0]
+    assert job["ordinal"] == 0
+    assert job["domain_id"].endswith("full-v2")
+    hashes = set()
+    for relative in job["worker_configs"].values():
+        config = json.loads((DOIN_ROOT / relative).read_text(encoding="utf-8"))
+        hashes.add(_domain_semantic_hash(config))
+    assert hashes == {job["domain_semantic_hash"]}
