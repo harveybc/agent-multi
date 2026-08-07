@@ -16,6 +16,51 @@ from typing import Any, Dict, List, Tuple
 from ._progress_callback import make_progress_callback
 
 
+def _file_sha256(path: Path) -> str:
+    import hashlib
+
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _policy_tensor_hash(policy) -> str:
+    """Deterministic digest of every parameter tensor in state-dict
+    order. Two policies hash equal iff their tensors are byte-equal."""
+    import hashlib
+
+    digest = hashlib.sha256()
+    for name, tensor in sorted(policy.state_dict().items()):
+        digest.update(name.encode())
+        digest.update(tensor.detach().cpu().numpy().tobytes())
+    return digest.hexdigest()
+
+
+def _policy_component_distances(source_policy, target_policy) -> Dict[str, float]:
+    """Mean absolute difference per SAC component (actor / critic /
+    critic_target). Zero everywhere proves an exact transfer."""
+    source_state = source_policy.state_dict()
+    target_state = target_policy.state_dict()
+    sums: Dict[str, float] = {}
+    counts: Dict[str, int] = {}
+    for name, source_tensor in source_state.items():
+        component = name.split(".")[0]
+        diff = (
+            (source_tensor.detach().cpu() - target_state[name].detach().cpu())
+            .abs()
+            .sum()
+            .item()
+        )
+        sums[component] = sums.get(component, 0.0) + diff
+        counts[component] = counts.get(component, 0) + source_tensor.numel()
+    return {
+        component: (sums[component] / counts[component] if counts[component] else 0.0)
+        for component in sums
+    }
+
+
 def _transfer_expanded_policy_state(
     source_state,
     target_state,
@@ -333,6 +378,8 @@ class Plugin:
             target_config["ent_coef"] = f"auto_{float(source.ent_coef):g}"
 
         target = self.build(env, target_config)
+        source_policy_hash = _policy_tensor_hash(source.policy)
+        target_hash_before = _policy_tensor_hash(target.policy)
         target.policy.load_state_dict(source.policy.state_dict(), strict=True)
         if (
             getattr(source, "log_ent_coef", None) is not None
@@ -340,19 +387,60 @@ class Plugin:
             and source.log_ent_coef.shape == target.log_ent_coef.shape
         ):
             target.log_ent_coef.data.copy_(source.log_ent_coef.data)
+        # M0 boundary evidence (SAC inner-curriculum order §7): the
+        # transfer must be provable from facts, not asserted — tensor
+        # hash equality after the copy, component distances, and the
+        # exact optimizer learning rates the fine-tune will actually use.
+        target_hash_after = _policy_tensor_hash(target.policy)
         target.warm_start_transfer_evidence = {
             "source_model": str(Path(path).resolve()),
+            "source_artifact_sha256": _file_sha256(
+                Path(path) if Path(path).exists()
+                else Path(str(path) + ".zip")
+            ),
+            "source_policy_tensor_hash": source_policy_hash,
+            "target_policy_tensor_hash_before_transfer": target_hash_before,
+            "target_policy_tensor_hash_after_transfer": target_hash_after,
+            "policy_hash_matches_source_after_transfer": (
+                target_hash_after == source_policy_hash
+            ),
+            "component_l1_distances_after_transfer": (
+                _policy_component_distances(source.policy, target.policy)
+            ),
             "source_entropy_mode": (
                 "automatic"
                 if getattr(source, "ent_coef_optimizer", None) is not None
                 else "fixed"
+            ),
+            "source_entropy_value": (
+                None if isinstance(source.ent_coef, str)
+                else float(source.ent_coef)
             ),
             "target_entropy_mode": (
                 "automatic"
                 if getattr(target, "ent_coef_optimizer", None) is not None
                 else "fixed"
             ),
+            "target_entropy_value": (
+                None if isinstance(target.ent_coef, str)
+                else float(target.ent_coef)
+            ),
+            "target_actor_optimizer_lr": float(
+                target.actor.optimizer.param_groups[0]["lr"]
+            ),
+            "target_critic_optimizer_lr": float(
+                target.critic.optimizer.param_groups[0]["lr"]
+            ),
             "optimizer_state_transferred": False,
+            "replay_transitions_transferred": 0,
+            "replay_size_at_boundary": int(
+                getattr(
+                    getattr(target, "replay_buffer", None), "size",
+                    lambda: 0,
+                )()
+                if getattr(target, "replay_buffer", None) is not None
+                else 0
+            ),
             "policy_state_transferred": True,
         }
         return target

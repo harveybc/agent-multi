@@ -57,7 +57,7 @@ def test_expansion_rejects_unexplained_shape_change() -> None:
         )
 
 
-def test_training_load_builds_candidate_then_transfers_policy(monkeypatch) -> None:
+def test_training_load_builds_candidate_then_transfers_policy(monkeypatch, tmp_path) -> None:
     from stable_baselines3 import SAC
 
     class FakeTensor:
@@ -80,6 +80,13 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch) -> No
 
         def load_state_dict(self, state, strict):
             self.loaded = (state, strict)
+            # mimic a real transfer so the boundary-evidence hash sees
+            # the source tensors on the target afterwards
+            self.state = dict(state)
+
+    class FakeOptimizerOwner:
+        class optimizer:  # noqa: N801 - mimic SB3 attribute shape
+            param_groups = [{"lr": 1e-4}]
 
     class FakeModel:
         def __init__(self, state, *, ent_coef, automatic):
@@ -87,9 +94,15 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch) -> No
             self.ent_coef = ent_coef
             self.ent_coef_optimizer = object() if automatic else None
             self.log_ent_coef = FakeTensor() if automatic else None
+            self.actor = FakeOptimizerOwner()
+            self.critic = FakeOptimizerOwner()
+            self.replay_buffer = None
 
-    source = FakeModel({"weight": "champion"}, ent_coef=0.2, automatic=False)
-    target = FakeModel({"weight": "random"}, ent_coef="auto_0.2", automatic=True)
+    champion = {"actor.weight": torch.ones(2)}
+    source = FakeModel(champion, ent_coef=0.2, automatic=False)
+    target = FakeModel(
+        {"actor.weight": torch.zeros(2)}, ent_coef="auto_0.2", automatic=True
+    )
     captured = {"build_config": None}
 
     def fake_load(path, *, device):
@@ -105,8 +118,10 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch) -> No
     )
     monkeypatch.setattr(SAC, "load", fake_load)
     env = object()
+    anchor_path = tmp_path / "anchor.zip"
+    anchor_path.write_bytes(b"fake anchor bytes")
     result = plugin.load_for_training(
-        "anchor.zip",
+        str(anchor_path),
         env,
         {
             "learning_rate": 1e-4,
@@ -118,12 +133,17 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch) -> No
     )
 
     assert result is target
-    assert captured["path"] == "anchor.zip"
+    assert captured["path"].endswith("anchor.zip")
     assert captured["build_config"]["learning_rate"] == 1e-4
     assert captured["build_config"]["batch_size"] == 512
     assert captured["build_config"]["ent_coef"] == "auto_0.2"
-    assert target.policy.loaded == ({"weight": "champion"}, True)
-    assert result.warm_start_transfer_evidence["optimizer_state_transferred"] is False
+    loaded_state, loaded_strict = target.policy.loaded
+    assert loaded_strict is True
+    torch.testing.assert_close(loaded_state["actor.weight"], champion["actor.weight"])
+    evidence = result.warm_start_transfer_evidence
+    assert evidence["optimizer_state_transferred"] is False
+    assert evidence["policy_hash_matches_source_after_transfer"] is True
+    assert evidence["replay_transitions_transferred"] == 0
 
 
 def test_fixed_entropy_anchor_can_warm_start_automatic_entropy(tmp_path) -> None:
@@ -167,11 +187,24 @@ def test_fixed_entropy_anchor_can_warm_start_automatic_entropy(tmp_path) -> None
             source_state[key].detach().cpu(),
             target_state[key].detach().cpu(),
         )
-    assert target.warm_start_transfer_evidence == {
-        "source_model": str(source_path.resolve()),
-        "source_entropy_mode": "fixed",
-        "target_entropy_mode": "automatic",
-        "optimizer_state_transferred": False,
-        "policy_state_transferred": True,
-    }
+    evidence = target.warm_start_transfer_evidence
+    assert evidence["source_model"] == str(source_path.resolve())
+    assert evidence["source_entropy_mode"] == "fixed"
+    assert evidence["target_entropy_mode"] == "automatic"
+    assert evidence["optimizer_state_transferred"] is False
+    assert evidence["policy_state_transferred"] is True
+    # M0 boundary proofs on a REAL SAC: tensor-hash equality, zero
+    # component distances, fresh empty replay, and the exact optimizer
+    # learning rates the fine-tune will use.
+    assert evidence["policy_hash_matches_source_after_transfer"] is True
+    for component, distance in evidence[
+        "component_l1_distances_after_transfer"
+    ].items():
+        assert distance == 0.0, component
+    assert evidence["replay_transitions_transferred"] == 0
+    assert evidence["replay_size_at_boundary"] == 0
+    assert evidence["target_actor_optimizer_lr"] > 0
+    assert evidence["target_critic_optimizer_lr"] > 0
+    assert evidence["source_entropy_value"] == 0.2
+    assert len(evidence["source_artifact_sha256"]) == 64
     env.close()
