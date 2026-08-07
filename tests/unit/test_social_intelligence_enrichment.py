@@ -148,6 +148,24 @@ def test_response_requires_exact_ids_and_numeric_scores(tmp_path):
         base.close()
 
 
+def test_generated_summary_and_rationale_are_bounded_deterministically(tmp_path):
+    config = _config(tmp_path)
+    base = SocialOlap(config.database_path)
+    try:
+        post = _post("p1", score=0.8)
+        base.ingest(post, post["score"])
+        base.connection.commit()
+        packet = EnrichmentStore(base).prepare_batch(EnrichmentConfig())
+        response = _response(packet)
+        response["items"][0]["summary"] = "s" * 300
+        response["items"][0]["rationale"] = "r" * 260
+        item = validate_response(response, packet)[0]
+        assert item["summary"] == "s" * 240
+        assert item["rationale"] == "r" * 240
+    finally:
+        base.close()
+
+
 def test_ingestion_is_atomic_and_updates_review_state(tmp_path):
     config = _config(tmp_path)
     base = SocialOlap(config.database_path)
