@@ -1,0 +1,68 @@
+[
+  {
+    "cell": null,
+    "code": "F811",
+    "end_location": {
+      "column": 20,
+      "row": 8
+    },
+    "filename": "/home/harveybc/Documents/GitHub/agent-multi/app/data_handler.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 9
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove definition: `pd`"
+    },
+    "location": {
+      "column": 18,
+      "row": 8
+    },
+    "message": "Redefinition of unused `pd` from line 1",
+    "noqa_row": 8,
+    "url": "https://docs.astral.sh/ruff/rules/redefined-while-unused"
+  },
+  {
+    "cell": null,
+    "code": "F811",
+    "end_location": {
+      "column": 28,
+      "row": 9
+    },
+    "filename": "/home/harveybc/Documents/GitHub/agent-multi/app/data_handler.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "",
+          "end_location": {
+            "column": 1,
+            "row": 10
+          },
+          "location": {
+            "column": 1,
+            "row": 9
+          }
+        }
+      ],
+      "message": "Remove definition: `Optional`"
+    },
+    "location": {
+      "column": 20,
+      "row": 9
+    },
+    "message": "Redefinition of unused `Optional` from line 2",
+    "noqa_row": 9,
+    "url": "https://docs.astral.sh/ruff/rules/redefined-while-unused"
+  }
+]

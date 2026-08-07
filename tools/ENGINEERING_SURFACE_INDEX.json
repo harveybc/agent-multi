@@ -1,0 +1,2746 @@
+{
+ "facts": {
+  "declarations_sha256": "372ef0f4ad318f30913f3d9e3b2a89992984333b50cf302914c48911b1022e9c",
+  "entry_point_comparison": {
+   "drift": [],
+   "installed_only": []
+  },
+  "installed_metadata": {
+   "outcome": "OK",
+   "reason": null
+  },
+  "plugins": {
+   "agent.plugins": {
+    "buy_hold_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.buy_hold_agent:Plugin",
+      "source_target": "agent_plugins.buy_hold_agent:Plugin"
+     }
+    },
+    "dqn_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.dqn_agent:Plugin",
+      "source_target": "agent_plugins.dqn_agent:Plugin"
+     }
+    },
+    "momentum_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.momentum_agent:Plugin",
+      "source_target": "agent_plugins.momentum_agent:Plugin"
+     }
+    },
+    "no_trade_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.no_trade_agent:Plugin",
+      "source_target": "agent_plugins.no_trade_agent:Plugin"
+     }
+    },
+    "ppo_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.ppo_agent:Plugin",
+      "source_target": "agent_plugins.ppo_agent:Plugin"
+     }
+    },
+    "project3_sac_actor_critic_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.project3_sac_actor_critic_agent:Plugin",
+      "source_target": "agent_plugins.project3_sac_actor_critic_agent:Plugin"
+     }
+    },
+    "random_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.random_agent:Plugin",
+      "source_target": "agent_plugins.random_agent:Plugin"
+     }
+    },
+    "reversal_agent": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.reversal_agent:Plugin",
+      "source_target": "agent_plugins.reversal_agent:Plugin"
+     }
+    },
+    "sac_agent": {
+     "declared": {
+      "config_keys": [
+       "agent_plugin"
+      ],
+      "note": "agent_plugin -> asset_policy.plugin per _SECTION_KEYS",
+      "protocol": "IMPLICIT"
+     },
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "agent_plugins.sac_agent:Plugin",
+      "source_target": "agent_plugins.sac_agent:Plugin"
+     }
+    }
+   },
+   "console_scripts": {
+    "agent-multi": {
+     "declared": {
+      "config_keys": [],
+      "note": "primary experiment entry point (app.main)",
+      "protocol": "argparse CLI"
+     },
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "app.main:main",
+      "source_target": "app.main:main"
+     }
+    },
+    "doin-campaign-supervisor": {
+     "declared": {
+      "config_keys": [],
+      "note": "campaign supervisor daemon (port 8795)",
+      "protocol": "argparse CLI"
+     },
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "app.campaign_supervisor:main",
+      "source_target": "app.campaign_supervisor:main"
+     }
+    }
+   },
+   "env.plugins": {
+    "gym_fx_env": {
+     "declared": {
+      "config_keys": [
+       "env_plugin"
+      ],
+      "note": "config key mapping discovered from app/canonical_config.py _SECTION_KEYS: env_plugin -> environment.plugin",
+      "protocol": "IMPLICIT"
+     },
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "env_plugins.gym_fx_env:Plugin",
+      "source_target": "env_plugins.gym_fx_env:Plugin"
+     }
+    }
+   },
+   "execution_policy.plugins": {
+    "adaptive_order_router": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "execution_policy_plugins.adaptive_order_router:Plugin",
+      "source_target": "execution_policy_plugins.adaptive_order_router:Plugin"
+     }
+    }
+   },
+   "optimizer.plugins": {
+    "default_optimizer": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "optimizer_plugins.default_optimizer:Plugin",
+      "source_target": "optimizer_plugins.default_optimizer:Plugin"
+     }
+    },
+    "project3_full_genome_optimizer": {
+     "declared": {
+      "config_keys": [
+       "optimizer_plugin"
+      ],
+      "note": "optimizer_plugin -> optimization.plugin per _SECTION_KEYS",
+      "protocol": "IMPLICIT"
+     },
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "optimizer_plugins.project3_full_genome_optimizer:Plugin",
+      "source_target": "optimizer_plugins.project3_full_genome_optimizer:Plugin"
+     }
+    }
+   },
+   "pipeline.plugins": {
+    "rl_pipeline": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "pipeline_plugins.rl_pipeline:PipelinePlugin",
+      "source_target": "pipeline_plugins.rl_pipeline:PipelinePlugin"
+     }
+    },
+    "rl_pipeline_with_execution_curriculum": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "pipeline_plugins.rl_pipeline_with_execution_curriculum:PipelinePlugin",
+      "source_target": "pipeline_plugins.rl_pipeline_with_execution_curriculum:PipelinePlugin"
+     }
+    },
+    "rl_pipeline_with_solvency_curriculum": {
+     "declared": "UNCLASSIFIED",
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "pipeline_plugins.rl_pipeline_with_solvency_curriculum:PipelinePlugin",
+      "source_target": "pipeline_plugins.rl_pipeline_with_solvency_curriculum:PipelinePlugin"
+     }
+    },
+    "rl_pipeline_with_validation": {
+     "declared": {
+      "config_keys": [
+       "pipeline_plugin"
+      ],
+      "note": "pipeline_plugin -> training.pipeline_plugin per _SECTION_KEYS",
+      "protocol": "IMPLICIT"
+     },
+     "discovered": {
+      "import_target_exists": true,
+      "installed_target": "pipeline_plugins.rl_pipeline_with_validation:PipelinePlugin",
+      "source_target": "pipeline_plugins.rl_pipeline_with_validation:PipelinePlugin"
+     }
+    }
+   }
+  },
+  "repo": "agent-multi",
+  "structural_problems": [],
+  "tools": {
+   "aggregate_curriculum_decision.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Aggregate validated curriculum-decision arm records into the decision table; shares the arm validator with the runner"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--allow-partial",
+      "--expect-seeds",
+      "--output-root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "math",
+      "pathlib",
+      "statistics",
+      "sys",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/aggregate_curriculum_decision.py",
+     "sha256": "d4dc65f0eb24bc96eb584d96ae9fa8d5ac1fd7b59845a37a8139ff8bce765b32"
+    }
+   },
+   "aggregate_p4_runs.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--log_root",
+      "--out_csv",
+      "--out_md"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "json",
+      "pathlib",
+      "statistics",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/aggregate_p4_runs.py",
+     "sha256": "4803547b59552dd580fe2325c2ea0d32535ebf903fedbba6c5d9b8db6f74963b"
+    }
+   },
+   "analyze_swarm_efficiency.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--campaign",
+      "--clock-host",
+      "--log",
+      "--output-json",
+      "--output-md"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "collections",
+      "dataclasses",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "subprocess",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/analyze_swarm_efficiency.py",
+     "sha256": "6087c5c9ecbdb748e5d504f5434b56b1aab634f3b6d06e374c778483bccb61d0"
+    }
+   },
+   "audit_brackets.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--steps",
+      "config"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "os",
+      "pathlib",
+      "statistics",
+      "subprocess",
+      "tempfile"
+     ],
+     "parse_error": null,
+     "path": "tools/audit_brackets.py",
+     "sha256": "c2219b97e04224a531a8eabe900e0faea3082fb77f47f59eb9381b6852c892e9"
+    }
+   },
+   "audit_snapshot_collector.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Collect read-only audit snapshots of fleet/campaign state"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--machine",
+      "--network-url",
+      "--output-dir",
+      "--paper-watchdog",
+      "--retention",
+      "--state-root",
+      "--test-evidence",
+      "--workspace-root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "datetime",
+      "fcntl",
+      "hashlib",
+      "json",
+      "pathlib",
+      "socket",
+      "sqlite3",
+      "subprocess",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/audit_snapshot_collector.py",
+     "sha256": "7aa243b8663fed3c48210fcca9dd11125557cf2f69465f912136ea281025a923"
+    }
+   },
+   "audit_test_evidence.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--output-dir",
+      "--python",
+      "--status-url",
+      "--suite-timeout-seconds",
+      "--workspace-root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "subprocess",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/audit_test_evidence.py",
+     "sha256": "6578d0d53c1cc75b44ebe40d7b7ccccb27b02f1dc73bd4ea71a9cbd544567a44"
+    }
+   },
+   "auto_orchestrator.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--no-finalize",
+      "--once",
+      "--poll"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "json",
+      "os",
+      "pathlib",
+      "shlex",
+      "subprocess",
+      "sys",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/auto_orchestrator.py",
+     "sha256": "3390f94b6c25251c4008688dd2303def0cbdeeb63cc7c18d04e905e5d5131acc"
+    }
+   },
+   "check_sizing.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "json",
+      "pathlib",
+      "strategy_plugins",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/check_sizing.py",
+     "sha256": "c01fe7fa6b17a49a6ef164b921f62a44b3959278cdd500451a2d397c4995788f"
+    }
+   },
+   "compute_baselines.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--assets",
+      "--n_seeds",
+      "--out_dir"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "math",
+      "numpy",
+      "pandas",
+      "pathlib",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/compute_baselines.py",
+     "sha256": "8495d693d702574c2265f0d8ea0dc3f9e26a7e4af497b4c833664e5d128d211f"
+    }
+   },
+   "config_doctor.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Read-only facade over app/config_validation.py shared validators; reports typed findings, never mutates, never authorizes"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--output",
+      "configs"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "app",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/config_doctor.py",
+     "sha256": "5cdb13f5a65d91634b0426d74688ca804428619d4a3022a06648ba63e7a9f78c"
+    }
+   },
+   "engineering_surface_index.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Generate the engineering surface index (this system); discovered facts + reviewed declarations, typed outcomes"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--declarations",
+      "--output",
+      "--runtime-python"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "ast",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "trading_contracts"
+     ],
+     "parse_error": null,
+     "path": "tools/engineering_surface_index.py",
+     "sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963"
+    }
+   },
+   "eth_curriculum_decision_experiment.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Paired N/EN/E curriculum decision arms with pinned base contract, replica observation and validated records"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--agent",
+      "--arms",
+      "--epoch-timesteps",
+      "--output-root",
+      "--seed"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib",
+      "json",
+      "math",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "shutil",
+      "stable_baselines3",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/eth_curriculum_decision_experiment.py",
+     "sha256": "c2eae759f00c98b09f84d06e1050ef80966cf12e15dc006785571e64b9369e37"
+    }
+   },
+   "eth_curriculum_fixture.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--agent",
+      "--arms",
+      "--epoch-timesteps",
+      "--max-epochs",
+      "--output-dir",
+      "--seed"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib",
+      "json",
+      "pathlib",
+      "pipeline_plugins",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/eth_curriculum_fixture.py",
+     "sha256": "44d4f08f38d510825c70c4a0cc2fd9d9856ef8fb65c2b637201c3f522d27904f"
+    }
+   },
+   "fleet_status_context.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--dry-run",
+      "--output",
+      "--records-dir"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/fleet_status_context.py",
+     "sha256": "305ab94e0df2a9bf9b27ac2656ebf726d28ba5ba8fd2980d4881d3560ff7dc4a"
+    }
+   },
+   "generate_sac_golden_parity.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--artifact",
+      "--output",
+      "--seed",
+      "--steps"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib",
+      "json",
+      "numpy",
+      "pathlib",
+      "pipeline_plugins",
+      "stable_baselines3",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/generate_sac_golden_parity.py",
+     "sha256": "541b89567e7f2de123d36483f6fed6e90f575d11182e90c14e5765a95f918157"
+    }
+   },
+   "gpu_idle_watchdog.py": {
+    "declared": {
+     "authority_class": "watchdog",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Alert when campaign GPUs sit idle while a campaign claims them"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--confirm-checks",
+      "--dry-run",
+      "--repeat-minutes",
+      "--state-file",
+      "--test-alert"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/gpu_idle_watchdog.py",
+     "sha256": "5cc186d69645baa03a5dfc2b047725176a3ea9f394498a4fbcb4b66e27bfa0fa"
+    }
+   },
+   "gpu_temperature_watchdog.py": {
+    "declared": {
+     "authority_class": "watchdog",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Alert on GPU temperature threshold breaches"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--dry-run",
+      "--expected-gpus",
+      "--machine",
+      "--recovery-threshold",
+      "--repeat-minutes",
+      "--state-file",
+      "--test-alert",
+      "--threshold"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/gpu_temperature_watchdog.py",
+     "sha256": "419b9dc766480b835e81a66c64630564beb837a9e8ef36fb726a3c33b17f1bb6"
+    }
+   },
+   "import_project3_shortlist.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--generated-at",
+      "--output",
+      "--proposed-selection",
+      "--selection-report",
+      "--shortlist",
+      "--source-repo"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/import_project3_shortlist.py",
+     "sha256": "b3ad84cb5d82bb94c7501ff7f9ca42e30996d6c9c3d7d1706452c213dca85cd5"
+    }
+   },
+   "incident_emit.py": {
+    "declared": {
+     "authority_class": "incident_pipeline",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Emit a single structured incident into the ledger from scripts/watchdogs"
+    },
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": false,
+     "has_main_guard": false,
+     "imports": [
+      "__future__",
+      "datetime",
+      "incident_ledger",
+      "json",
+      "pathlib",
+      "re",
+      "socket",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/incident_emit.py",
+     "sha256": "0e5c69a387cc7f421be335b78535a09adff0f062b178e27b293abae4cb018674"
+    }
+   },
+   "incident_forward_shim.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--allowed-fronts",
+      "--allowed-machine",
+      "--allowed-sources"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "os",
+      "pathlib",
+      "shlex",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/incident_forward_shim.py",
+     "sha256": "92724b1a59644c616204270d6027d503a7bfb399c49bca3bfcbebcf7b4efbdd3"
+    }
+   },
+   "incident_ledger.py": {
+    "declared": {
+     "authority_class": "incident_pipeline",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Append-only incident ledger (live-alerting era, deployed fleet-wide 2026-08-04)"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--active",
+      "--actor",
+      "--config",
+      "--db",
+      "--event-code",
+      "--evidence-at",
+      "--evidence-json",
+      "--fingerprint",
+      "--front",
+      "--incident",
+      "--json",
+      "--machine",
+      "--object",
+      "--observed-at",
+      "--payload-json",
+      "--payload-stdin",
+      "--reason",
+      "--severity",
+      "--since",
+      "--source",
+      "--state-json",
+      "incident_id"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sqlite3",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/incident_ledger.py",
+     "sha256": "2b171ae9c00c52d7087c34ad1a01cdb16526f2dd8d735a0025f9a4530d48b802"
+    }
+   },
+   "incident_router.py": {
+    "declared": {
+     "authority_class": "incident_pipeline",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Route ledger incidents to notification channels with severity policy"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--config",
+      "--db",
+      "--dry-run",
+      "--hostname",
+      "--now"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "incident_ledger",
+      "json",
+      "os",
+      "pathlib",
+      "shlex",
+      "socket",
+      "subprocess",
+      "sys",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/incident_router.py",
+     "sha256": "4c960a94df002cd38041363c7fb158e13e0468e5b574c8088332ea8046588efa"
+    }
+   },
+   "install_campaign_profile.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--force",
+      "--port",
+      "--profile"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/install_campaign_profile.py",
+     "sha256": "6d41bb7a061d5e1d3f336d5151878e04c612f54e9eb23ed4c9641532b96199a8"
+    }
+   },
+   "materialize_eth_anchored_campaign.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--full-v2-only"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "app",
+      "argparse",
+      "copy",
+      "examples",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/materialize_eth_anchored_campaign.py",
+     "sha256": "e56b21b8e5eaed8d31c45b15c300e55a6749c93640780efbfc2344c534470f13"
+    }
+   },
+   "materialize_eth_campaign_plan.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "hashlib",
+      "json",
+      "pathlib"
+     ],
+     "parse_error": null,
+     "path": "tools/materialize_eth_campaign_plan.py",
+     "sha256": "f8e680c12ff40d2b2d0649dcede8465e740b28934ba6221737d085fe6e4a4b8b"
+    }
+   },
+   "materialize_eth_curriculum_configs.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "campaign_frozen",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Materialize corrected ETH curriculum arm configs from the phase-1 base (findings 108-116 corrections)"
+    },
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "app",
+      "copy",
+      "hashlib",
+      "json",
+      "optimizer_plugins",
+      "pathlib",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/materialize_eth_curriculum_configs.py",
+     "sha256": "a3a368f4375180eccdfaa1e89d04059a19af1bef05db8a1efb3f254b6a37a6f1"
+    }
+   },
+   "materialize_eth_smoke_campaign.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "app",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/materialize_eth_smoke_campaign.py",
+     "sha256": "e7e78cab241cc865246e4bffcaeebe0777b17f8a672031fc2448d8a2b16eb7ed"
+    }
+   },
+   "materialize_rt1a_grid.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "campaign_frozen",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Materialize the RT1-A reduced factorial grid (owner-ratified arms); MATERIALIZED_NOT_EXECUTED until gates are met"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--initial-steps",
+      "--output",
+      "--update-steps"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib"
+     ],
+     "parse_error": null,
+     "path": "tools/materialize_rt1a_grid.py",
+     "sha256": "444b6fbadbcfd6288872fbb1d0a78becc2dcdb00b05634043d024f4d8a920597"
+    }
+   },
+   "memory_pressure_watchdog.py": {
+    "declared": {
+     "authority_class": "watchdog",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Alert on host memory pressure"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--critical-available-gib",
+      "--critical-service-gib",
+      "--dry-run",
+      "--machine",
+      "--repeat-minutes",
+      "--service",
+      "--state-file",
+      "--test-alert",
+      "--warning-available-gib",
+      "--warning-service-gib"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/memory_pressure_watchdog.py",
+     "sha256": "c3bfefb7366221f97a63570382e87d8efd83a4e106b0dc318890ace03924798a"
+    }
+   },
+   "multifront_status.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Consolidated machine-readable multi-front status contract (owner-approved improvements 1 and 4, 2026-08-01)"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--output",
+      "--snapshot",
+      "--social-db",
+      "--supervisor-url",
+      "--watchdog"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sqlite3",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/multifront_status.py",
+     "sha256": "507f35f36b19cb01e0c440bb1114de9ee97c216cd2ca267c20b4b92e1e941bb3"
+    }
+   },
+   "okf_validate.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--as-of",
+      "--bundle",
+      "--check-manifest",
+      "--repo-root",
+      "--write-manifest"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "pathlib",
+      "re",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/okf_validate.py",
+     "sha256": "3ce3d3946335bdccf60464c585bc6ba4c9431f8f4446e896c1f4d48651dc5122"
+    }
+   },
+   "p5_eval_holdout.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--log_root",
+      "--pattern",
+      "--skip-if-exists"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "csv",
+      "json",
+      "pathlib",
+      "statistics",
+      "subprocess",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/p5_eval_holdout.py",
+     "sha256": "70dbfc66805b1924933b8b8bed6dc461e2046dde6843a2cd0cd196e45247bd8e"
+    }
+   },
+   "p5_rank.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--csv",
+      "--log_root",
+      "--min_seeds",
+      "--top"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "math",
+      "pathlib",
+      "statistics",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/p5_rank.py",
+     "sha256": "7918f6dc33473153e02607b512ec216efe81331bda9945fd3c8e36985fd50d80"
+    }
+   },
+   "pause_doin_fleet.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Pause the DOIN fleet with binding hashes, GPU-owner verification and per-node pause reports"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--port",
+      "--profile",
+      "--timeout"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/pause_doin_fleet.py",
+     "sha256": "2f1473564dbb67f40b879a541f97e31c8b1e2b365442d9e62736f838f18856e3"
+    }
+   },
+   "prepare_project2_data.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--all",
+      "--compute_features",
+      "--features",
+      "--manifest",
+      "--normalize",
+      "--source"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "numpy",
+      "pandas",
+      "pathlib",
+      "sklearn",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/prepare_project2_data.py",
+     "sha256": "e4fd1d23db28d6259080beec9050020376934e8ccbfd1352d8fd66231dd9ba26"
+    }
+   },
+   "project3_asset_policy_training.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": false,
+     "has_main_guard": false,
+     "imports": [
+      "__future__",
+      "app",
+      "base64",
+      "copy",
+      "hashlib",
+      "json",
+      "numpy",
+      "os",
+      "pandas",
+      "pathlib",
+      "project3_evidence_metrics",
+      "project3_evidence_screen",
+      "subprocess",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_asset_policy_training.py",
+     "sha256": "64496d444342f76fccd29045c9459b9593b766469a4c69621fe25b258e6545f4"
+    }
+   },
+   "project3_event_token_transformer.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": false,
+     "has_main_guard": false,
+     "imports": [
+      "__future__",
+      "math",
+      "numpy",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_event_token_transformer.py",
+     "sha256": "1cbd941e5a779e29180f179bd18f695496c637f12a96af8b4ab83321daf2a968"
+    }
+   },
+   "project3_evidence_backup.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--destination-dir",
+      "--retention-count",
+      "--source-db"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "shutil",
+      "sqlite3",
+      "typing",
+      "uuid"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_backup.py",
+     "sha256": "d4c7fee5f78ad2a3469738a81140bbd5d404fa7b8843f018c629180384ba6825"
+    }
+   },
+   "project3_evidence_metrics.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": false,
+     "has_main_guard": false,
+     "imports": [
+      "__future__",
+      "dataclasses",
+      "math",
+      "numpy",
+      "pandas",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_metrics.py",
+     "sha256": "a6bb6c4303602da88e4ecbb5a01c833563b129d4c2f88b91f819414f1cad995d"
+    }
+   },
+   "project3_evidence_plan.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--campaign-id",
+      "--data-root",
+      "--output"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "project3_evidence_screen",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_plan.py",
+     "sha256": "d78accf8821de3f697b4bdda45a2ffc2173659ab3b370901efedbffc1343a36f"
+    }
+   },
+   "project3_evidence_pool.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--job-id",
+      "--machine-id",
+      "--plan",
+      "--reason",
+      "--result",
+      "--stage"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "base64",
+      "binascii",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "project3_evidence_metrics",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_pool.py",
+     "sha256": "2e70fe4bcd5faeeb196ff1ef2830a838f4d35df8d403807b44a5efebcd7a73a7"
+    }
+   },
+   "project3_evidence_pool_api.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--host",
+      "--port",
+      "--token",
+      "--token-file"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "gzip",
+      "hashlib",
+      "http",
+      "json",
+      "pathlib",
+      "project3_evidence_pool",
+      "project3_evidence_screen",
+      "sys",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_pool_api.py",
+     "sha256": "5af45f4e32ca5de9876e2db7a422548cb9c222fcf5aa6587023c2594396e80d7"
+    }
+   },
+   "project3_evidence_scheduler.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--materialized-plan",
+      "--once",
+      "--poll-seconds"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "itertools",
+      "json",
+      "pathlib",
+      "project3_evidence_pool",
+      "project3_evidence_screen",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_scheduler.py",
+     "sha256": "c8cd09a9e96a69ea5d30b23f97c1f54455f40dda8d6031b76c6c10f6dae82f26"
+    }
+   },
+   "project3_evidence_screen.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--config",
+      "--output",
+      "--task-type"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "gc",
+      "hashlib",
+      "json",
+      "math",
+      "numpy",
+      "pandas",
+      "pathlib",
+      "project3_asset_policy_training",
+      "project3_evidence_metrics",
+      "scipy",
+      "sklearn",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_screen.py",
+     "sha256": "944fdd93e62574d29a9e6a0d5782f596653d66d983fd705f6e79d61ec9077e74"
+    }
+   },
+   "project3_evidence_worker.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--api-url",
+      "--cache-root",
+      "--heartbeat-seconds",
+      "--machine-id",
+      "--max-cache-gb",
+      "--max-jobs",
+      "--poll-seconds",
+      "--token",
+      "--token-file"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "collections",
+      "concurrent",
+      "gzip",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "project3_evidence_screen",
+      "psutil",
+      "socket",
+      "subprocess",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_evidence_worker.py",
+     "sha256": "aca3ed431a0fc6989bb32cc38e3ab2fda9996c1d38cef1ea6479b84eaf7236a3"
+    }
+   },
+   "project3_full_genome_config.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--artifact-root",
+      "--asset",
+      "--data-root",
+      "--db",
+      "--output",
+      "--smoke",
+      "--timeframe"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "csv",
+      "json",
+      "math",
+      "pandas",
+      "pathlib",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_full_genome_config.py",
+     "sha256": "21311e2080004de304fe5c36051206e5828543f2ec774c433d295af8640112cf"
+    }
+   },
+   "project3_live_parity_audit.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--experiment-config",
+      "--live-contract",
+      "--require"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "app",
+      "argparse",
+      "json",
+      "pathlib",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_live_parity_audit.py",
+     "sha256": "768c4f93110a11b088ecd457be7914b495a8398e29a454b2e3ed48658229ef06"
+    }
+   },
+   "project3_no_trade_preflight.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--config",
+      "--hold-bars",
+      "--max-steps",
+      "--min-trades",
+      "--output"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "env_plugins",
+      "json",
+      "pathlib",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_no_trade_preflight.py",
+     "sha256": "ed0fbbda99293763eea3d967e394dd163d9252920f569c7fdb5920bc13069df1"
+    }
+   },
+   "project3_oracle_behavior_labels.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--max-subjobs-per-job",
+      "--min-completed-weeks",
+      "--output-dir",
+      "--top-n"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "json",
+      "pathlib",
+      "project3_weekly_dashboard",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_oracle_behavior_labels.py",
+     "sha256": "c8557c152f06fb2acacb8f3639fd24ffb0dca0faa67cee6162f14c5a99a3afe7"
+    }
+   },
+   "project3_phase4_protocol_dry_run.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--dry-run-validate-protocol",
+      "--out-dir",
+      "--protocol-packet",
+      "--reference-config",
+      "--seeds"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "dataclasses",
+      "datetime",
+      "hashlib",
+      "json",
+      "os",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_phase4_protocol_dry_run.py",
+     "sha256": "d66d1aa7e6b236ae3f68a8b3a1684e031135a08093f5ee899e0924c599646bd3"
+    }
+   },
+   "project3_portfolio_supervisor.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--activation-min-signal",
+      "--allow-failed-trade-gate",
+      "--db",
+      "--drawdown-lookback-weeks",
+      "--lookback-weeks",
+      "--max-asset-weight",
+      "--max-assets",
+      "--max-cluster-weight",
+      "--max-cost-to-gross-edge",
+      "--max-drawdown-threshold",
+      "--max-weight",
+      "--method",
+      "--min-action-entropy",
+      "--min-observations",
+      "--min-signal",
+      "--min-test-start",
+      "--min-train-tail-trades",
+      "--min-validation-trades",
+      "--output-dir",
+      "--portfolio-vol-target",
+      "--require-no-broker-violations",
+      "--require-no-friday-violations",
+      "--risk-floor",
+      "--run-id",
+      "--score-floor",
+      "--turnover-penalty-bps",
+      "--write-db"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "dataclasses",
+      "datetime",
+      "json",
+      "math",
+      "numpy",
+      "pathlib",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_portfolio_supervisor.py",
+     "sha256": "008e2994a735edb31f48ed5eeeecdea724a37c9d58d99c400bf2b49035c34044"
+    }
+   },
+   "project3_portfolio_supervisor_runner.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--activation-min-signal",
+      "--allow-failed-trade-gate",
+      "--db",
+      "--drawdown-lookback-weeks",
+      "--lookback-weeks",
+      "--max-asset-weight",
+      "--max-assets",
+      "--max-cluster-weight",
+      "--max-cost-to-gross-edge",
+      "--max-drawdown-threshold",
+      "--max-weight",
+      "--method",
+      "--min-action-entropy",
+      "--min-observations",
+      "--min-signal",
+      "--min-test-start",
+      "--min-train-tail-trades",
+      "--min-validation-trades",
+      "--once",
+      "--output-dir",
+      "--portfolio-vol-target",
+      "--require-no-broker-violations",
+      "--require-no-friday-violations",
+      "--risk-floor",
+      "--run-prefix",
+      "--sleep-sec",
+      "--sqlite-timeout-sec",
+      "--turnover-penalty-bps",
+      "--write-db"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "project3_portfolio_supervisor",
+      "sqlite3",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_portfolio_supervisor_runner.py",
+     "sha256": "f1d395f3bb5805a0b24246acf1649524dbd657a5718a76776190e95242cbebbe"
+    }
+   },
+   "project3_smoke_ethusdt_4h_sac.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--device",
+      "--feature_aware",
+      "--total_timesteps"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "app",
+      "argparse",
+      "json",
+      "pathlib",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_smoke_ethusdt_4h_sac.py",
+     "sha256": "de35d32f74e47d24f3edeb22d86ea20bf5788ea40dd913b7cffb9113e3a31f29"
+    }
+   },
+   "project3_stage3x_sac_smoke_direct_orchestrator.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--acceptance-json",
+      "--daemon",
+      "--force-init",
+      "--init",
+      "--launch-dir",
+      "--once",
+      "--plan-root",
+      "--poll",
+      "--status"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "shlex",
+      "subprocess",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_stage3x_sac_smoke_direct_orchestrator.py",
+     "sha256": "b0beafaff207d2dcfcf99da1a2c365edd941fc0d36397244e395d929c8253702"
+    }
+   },
+   "project3_stage3x_sac_smoke_plan.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--cost-scenario",
+      "--cost-scenarios",
+      "--dry-run",
+      "--output-dir",
+      "--require-market-state-profile",
+      "--seeds",
+      "--selected-contracts",
+      "--selected-market-state-profiles",
+      "--top-n",
+      "--validate-only"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "csv",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "re",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_stage3x_sac_smoke_plan.py",
+     "sha256": "30b7179112d472935248d8ed31cb354c5bdce6a80990f8a88299a5365752dc0b"
+    }
+   },
+   "project3_stageb_run_plan.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--allow-cost-scenario-override",
+      "--allow-missing-data",
+      "--allow-too-few-seeds-for-smoke-test",
+      "--baselines",
+      "--candidate-id",
+      "--cost-scenarios",
+      "--dry-run-validate-only",
+      "--output-dir",
+      "--reference-config",
+      "--seeds"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "csv",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_stageb_run_plan.py",
+     "sha256": "b41763387e41b7cb2fc45661e93ee44c8e991acf978a39bc7e898f8407726dd4"
+    }
+   },
+   "project3_terminal_verify.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--no-emit",
+      "--record",
+      "--skip-rehash"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "hashlib",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "sqlite3",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_terminal_verify.py",
+     "sha256": "264b8eb6d01c320157ecb321134f80d587d69c7839b6ba489cff2d6cbbb3077c"
+    }
+   },
+   "project3_weekly_adaptive_scheduler.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--apply",
+      "--daemon",
+      "--db",
+      "--defer-status",
+      "--keep-top-per-asset-timeframe",
+      "--l2-floor",
+      "--l2-std-penalty",
+      "--l2-worst-loss-penalty",
+      "--lcb-floor",
+      "--mean-floor",
+      "--min-probe-weeks",
+      "--phase",
+      "--probe-quota",
+      "--promote-deferred",
+      "--promote-quota",
+      "--promote-when-active-lte",
+      "--sleep-sec"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "collections",
+      "dataclasses",
+      "datetime",
+      "json",
+      "math",
+      "pathlib",
+      "project3_weekly_pool",
+      "sqlite3",
+      "sys",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_adaptive_scheduler.py",
+     "sha256": "bc1e19723ae2a7b63aee57d98295ff36a0583e0ad818fa2907472f9fb1a3bdfd"
+    }
+   },
+   "project3_weekly_api_worker.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--api-url",
+      "--cuda-visible-devices",
+      "--idle-cycles-before-exit",
+      "--idle-sleep-sec",
+      "--machine-id",
+      "--max-artifact-bytes",
+      "--max-subjobs",
+      "--poll-sec",
+      "--python-bin",
+      "--token",
+      "--token-file"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "base64",
+      "json",
+      "os",
+      "pathlib",
+      "project3_weekly_worker",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_api_worker.py",
+     "sha256": "cbcbcb4c8ca70b71348730ac105e56b505263f2b68d432e4d6586187e8e960ef"
+    }
+   },
+   "project3_weekly_artifact_backfill.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--apply",
+      "--db",
+      "--mark-done-from-results",
+      "--max-json-bytes",
+      "--max-log-tail-chars",
+      "--refresh-summaries",
+      "--runs-root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "project3_weekly_pool",
+      "project3_weekly_worker",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_artifact_backfill.py",
+     "sha256": "5ace7d5879aeb6c1397cb8a1957fb65780c9e88ff7be331a46643191dbafaa5a"
+    }
+   },
+   "project3_weekly_dashboard.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--host",
+      "--port"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "html",
+      "http",
+      "json",
+      "math",
+      "pathlib",
+      "sqlite3",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_dashboard.py",
+     "sha256": "d756b4df1d36430e9661aac9834e4da3bd3a7485ea6ee7c90dbbde6086202aec"
+    }
+   },
+   "project3_weekly_materialize.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--output-root",
+      "--subjob-id"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "json",
+      "math",
+      "pathlib",
+      "project3_event_token_transformer",
+      "project3_weekly_pool",
+      "random",
+      "re",
+      "sqlite3",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_materialize.py",
+     "sha256": "864b4c92dcefc3bc4e6ec6bafcb049aa435cf52a46f2749709f128e3aa82c214"
+    }
+   },
+   "project3_weekly_phase_orchestrator.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--adaptive-max-subjobs-per-job",
+      "--adaptive-min-weeks",
+      "--adaptive-seed-start",
+      "--adaptive-seed-stop",
+      "--adaptive-top-n",
+      "--db",
+      "--dry-run",
+      "--label-dir",
+      "--min-backlog",
+      "--once",
+      "--output-dir",
+      "--python-bin",
+      "--sleep-sec"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "dataclasses",
+      "datetime",
+      "json",
+      "pathlib",
+      "project3_weekly_pool",
+      "shutil",
+      "sqlite3",
+      "subprocess",
+      "sys",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_phase_orchestrator.py",
+     "sha256": "01f1e58c140eb10a8dbd3da9a9faaef82ee083764673b59f35b30ad744e72d9b"
+    }
+   },
+   "project3_weekly_pool.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--error",
+      "--gpu-summary",
+      "--machine-id",
+      "--message",
+      "--plan",
+      "--result-json",
+      "--status",
+      "--subjob-id"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "json",
+      "pathlib",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_pool.py",
+     "sha256": "7f972cd1f66b0a62a401a4396bb9e2a2e474a8b7a2a7545bd9a20ab263407999"
+    }
+   },
+   "project3_weekly_pool_api.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--db",
+      "--host",
+      "--max-file-bytes",
+      "--output-root",
+      "--port",
+      "--token",
+      "--token-file"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "base64",
+      "hashlib",
+      "http",
+      "json",
+      "pathlib",
+      "project3_weekly_materialize",
+      "project3_weekly_pool",
+      "sys",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_pool_api.py",
+     "sha256": "8cd2706f31eb0a04d4bd393c8d6658f70bbeb60ea4451edf6f9aa490a51a6920"
+    }
+   },
+   "project3_weekly_pool_backup.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--backup-root",
+      "--copy-to",
+      "--db",
+      "--keep-sqlite",
+      "--label"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "gzip",
+      "hashlib",
+      "json",
+      "pathlib",
+      "shutil",
+      "sqlite3",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_pool_backup.py",
+     "sha256": "39fecf83b8bc5594f544afff9e49e120d26c271a55702ff517a3de7ed66a0c2e"
+    }
+   },
+   "project3_weekly_prune_artifacts.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--context-embedding-csv",
+      "--db",
+      "--execute",
+      "--logs",
+      "--return-traces",
+      "--runs-root",
+      "--skip-active",
+      "--skip-run-dir",
+      "--training-progress"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "collections",
+      "datetime",
+      "json",
+      "pathlib",
+      "sqlite3"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_prune_artifacts.py",
+     "sha256": "27205ffc8f44514584710b612fb471e76ac84ca7e0eae912cd94785c37f7ef74"
+    }
+   },
+   "project3_weekly_supervisor.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--cuda-visible-devices",
+      "--dashboard-host",
+      "--dashboard-port",
+      "--dashboard-unit",
+      "--db",
+      "--machine-id",
+      "--output-root",
+      "--phase-label-dir",
+      "--phase-min-backlog",
+      "--phase-orchestrator-enabled",
+      "--phase-orchestrator-unit",
+      "--phase-plan-dir",
+      "--phase-sleep-sec",
+      "--python-bin",
+      "--stale-running-minutes",
+      "--supervisor-sleep-sec",
+      "--worker-idle-sleep-sec",
+      "--worker-poll-sec",
+      "--worker-unit"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "json",
+      "pathlib",
+      "project3_weekly_pool",
+      "socket",
+      "sqlite3",
+      "subprocess",
+      "sys",
+      "time"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_supervisor.py",
+     "sha256": "f28b933da996ea27b106a246725bd3652a51579c32701020acc62dbca6ddc0e0"
+    }
+   },
+   "project3_weekly_worker.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--cuda-visible-devices",
+      "--db",
+      "--idle-cycles-before-exit",
+      "--idle-sleep-sec",
+      "--machine-id",
+      "--max-subjobs",
+      "--output-root",
+      "--poll-sec",
+      "--python-bin"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "math",
+      "os",
+      "pathlib",
+      "project3_weekly_materialize",
+      "project3_weekly_pool",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/project3_weekly_worker.py",
+     "sha256": "e453aa0fbf8cb613332ebaf855b09ab8e1858efa16207ab2e1fc057b31a9ffb4"
+    }
+   },
+   "replicate_decision_evidence.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Replicate decision evidence to the declared remote authority with independent remote observation (finding 151 semantics)"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--output-root",
+      "--replica-host",
+      "--replica-root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess"
+     ],
+     "parse_error": null,
+     "path": "tools/replicate_decision_evidence.py",
+     "sha256": "6617573f47ef8a0a775b06e4edeb9183ed2eb9bdb4348fc15160a08ddee1401f"
+    }
+   },
+   "resume_doin_fleet.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Resume a paused DOIN fleet against recorded pause bindings with rejoin proof"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--pause-report",
+      "--port",
+      "--profile",
+      "--proof-timeout",
+      "--timeout"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "subprocess",
+      "time"
+     ],
+     "parse_error": null,
+     "path": "tools/resume_doin_fleet.py",
+     "sha256": "278523e3f8c0301cb63a20e8a7c70b687bd328911fc8fb7844d219de0e655432"
+    }
+   },
+   "rolling_origin_adaptation.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "RT rolling-origin/prequential adaptation runner: test-then-train intervals, simulator-executed handover, single-transaction SQLite state, exactly-once replay"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--allow-dirty-tree",
+      "--allow-fresh-init",
+      "--allow-legacy-sibling",
+      "--anchor-model",
+      "--block-days",
+      "--block-start",
+      "--cadence-bars",
+      "--control-mode",
+      "--device",
+      "--initial-steps",
+      "--lookback",
+      "--max-origins",
+      "--output-root",
+      "--phase",
+      "--seed",
+      "--update-first-origin",
+      "--update-steps"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib",
+      "json",
+      "numpy",
+      "os",
+      "pandas",
+      "pathlib",
+      "pipeline_plugins",
+      "resource",
+      "shutil",
+      "sqlite3",
+      "stable_baselines3",
+      "subprocess",
+      "sys",
+      "time"
+     ],
+     "parse_error": null,
+     "path": "tools/rolling_origin_adaptation.py",
+     "sha256": "36922fdff1be92552c289e9da300409c1e5b8b87166a65f569f55e637f11187c"
+    }
+   },
+   "seed_sweep.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--config",
+      "--log_root",
+      "--run_tag",
+      "--seeds"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "copy",
+      "datetime",
+      "json",
+      "os",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/seed_sweep.py",
+     "sha256": "5de00addd0995b8e7c936a09ce2c71e42d2a02613067de56a8a4f0ed4a4811b9"
+    }
+   },
+   "smoke_run.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--learning_starts",
+      "--n_steps",
+      "--steps",
+      "config"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tempfile"
+     ],
+     "parse_error": null,
+     "path": "tools/smoke_run.py",
+     "sha256": "c335aad09f34ae125ec625060dd79c9a180e5f2dc9c8f28fcb8a83f173bc9da7"
+    }
+   },
+   "smoke_test_agent.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "app",
+      "env_plugins",
+      "json",
+      "math",
+      "pathlib",
+      "pipeline_plugins",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/smoke_test_agent.py",
+     "sha256": "9f149ffcd5322edc1b7ed41246dc585e71dfad6534556b90998fdfcf8183d6c1"
+    }
+   },
+   "social_intelligence.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--answer",
+      "--approved-by",
+      "--config",
+      "--content-file",
+      "--hours",
+      "--limit",
+      "--source-id",
+      "--submolt",
+      "--title",
+      "draft_id"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "base64",
+      "codecs",
+      "dataclasses",
+      "datetime",
+      "hashlib",
+      "json",
+      "math",
+      "os",
+      "pathlib",
+      "re",
+      "sqlite3",
+      "sys",
+      "typing",
+      "unicodedata",
+      "urllib",
+      "uuid"
+     ],
+     "parse_error": null,
+     "path": "tools/social_intelligence.py",
+     "sha256": "78760b595211de8e896e39f0077e0acd42e3901f0b0b48e293039524bf05aefa"
+    }
+   },
+   "social_intelligence_hermes_context.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--config",
+      "--hours",
+      "--limit",
+      "--model",
+      "--prompt-template-sha256",
+      "--provider",
+      "--tier"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "social_intelligence"
+     ],
+     "parse_error": null,
+     "path": "tools/social_intelligence_hermes_context.py",
+     "sha256": "70fe42a5458afbf60d7d7c8cf3598635e5e0edff14d4369f7d3bb90d909a99e6"
+    }
+   },
+   "swarm_telegram_watchdog.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--dry-run",
+      "--machine",
+      "--profile",
+      "--repeat-minutes",
+      "--stale-minutes",
+      "--stall-minutes",
+      "--state-file",
+      "--test-alert"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "collections",
+      "datetime",
+      "fcntl",
+      "hashlib",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "time",
+      "typing",
+      "urllib"
+     ],
+     "parse_error": null,
+     "path": "tools/swarm_telegram_watchdog.py",
+     "sha256": "1eedd341cd6449d19e456f436b5267cfdb79de004e11e12324f775af11135bc7"
+    }
+   },
+   "update_registry.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--index",
+      "--run_dir",
+      "--scan_root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "hashlib",
+      "json",
+      "pathlib",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/update_registry.py",
+     "sha256": "cbe34b7529366bd1775b12c910626cba367c0b1afe59c585e95f7211c6022e58"
+    }
+   },
+   "validate_incident_corpus_manifest.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--manifest"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/validate_incident_corpus_manifest.py",
+     "sha256": "f8d0eedcff24f5c559c40c0240036311127d11179d66da35667c42e9d94d97cb"
+    }
+   },
+   "validate_publication_scaffolds.py": {
+    "declared": "UNCLASSIFIED",
+    "discovered": {
+     "argparse_arguments": [
+      "--root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "json",
+      "pathlib"
+     ],
+     "parse_error": null,
+     "path": "tools/validate_publication_scaffolds.py",
+     "sha256": "049bb7848c65889f21708833dabaef1896c3a96ee290f5a915baf8e74e90c934"
+    }
+   }
+  },
+  "unclassified_new_executables": []
+ },
+ "facts_hash": "sha256:94f09ca146ac02a91c1c7507d03f2f6140820146fc6b4255a2e4bcaffd1585ff",
+ "provenance": {
+  "arguments": {
+   "declarations": "/home/harveybc/Documents/GitHub/agent-multi/tools/TOOL_DECLARATIONS.json",
+   "output": "/home/harveybc/Documents/GitHub/agent-multi/tools/ENGINEERING_SURFACE_INDEX.json",
+   "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
+  },
+  "environment_identity": {
+   "generator_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+   "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
+  },
+  "finished_utc": "2026-08-07T01:16:06.512252+00:00",
+  "generator": "engineering_surface_index.v1",
+  "generator_sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963",
+  "repo_head": "c3f92f652a602c9c504705b507df13487ad41b71",
+  "started_utc": "2026-08-07T01:16:06.099277+00:00",
+  "worktree_dirty": true
+ },
+ "schema": "engineering_surface_index.v1",
+ "typed_outcome": "OK"
+}

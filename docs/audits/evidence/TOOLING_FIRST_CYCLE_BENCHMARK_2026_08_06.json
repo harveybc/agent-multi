@@ -1,0 +1,99 @@
+{
+ "schema": "tooling_benchmark.v1",
+ "ran_at_utc": "2026-08-07T01:20:57.760271+00:00",
+ "index_facts_hash": "sha256:94f09ca146ac02a91c1c7507d03f2f6140820146fc6b4255a2e4bcaffd1585ff",
+ "questions": [
+  {
+   "id": "Q1",
+   "topic": "tools+mutability",
+   "question": "Which tools are declared mutating campaign operations?",
+   "answer_from_index": [
+    "materialize_eth_curriculum_configs.py",
+    "materialize_rt1a_grid.py",
+    "pause_doin_fleet.py",
+    "resume_doin_fleet.py"
+   ],
+   "independent_verification": [
+    "materialize_eth_curriculum_configs.py",
+    "materialize_rt1a_grid.py",
+    "pause_doin_fleet.py",
+    "resume_doin_fleet.py"
+   ],
+   "agreement": true,
+   "seconds": 0.0
+  },
+  {
+   "id": "Q2",
+   "topic": "plugin-groups",
+   "question": "How many entries does each agent-multi plugin group declare, and does installed metadata agree?",
+   "answer_from_index": {
+    "agent.plugins": 9,
+    "console_scripts": 2,
+    "env.plugins": 1,
+    "execution_policy.plugins": 1,
+    "optimizer.plugins": 2,
+    "pipeline.plugins": 4
+   },
+   "independent_verification": {
+    "env.plugins": 1,
+    "agent.plugins": 9,
+    "pipeline.plugins": 4,
+    "execution_policy.plugins": 1,
+    "optimizer.plugins": 2
+   },
+   "agreement": true,
+   "seconds": 0.094
+  },
+  {
+   "id": "Q3",
+   "topic": "lifecycle",
+   "question": "Which tools are campaign_frozen?",
+   "answer_from_index": [
+    "materialize_eth_curriculum_configs.py",
+    "materialize_rt1a_grid.py"
+   ],
+   "independent_verification": [
+    "materialize_eth_curriculum_configs.py",
+    "materialize_rt1a_grid.py"
+   ],
+   "agreement": true,
+   "seconds": 0.0
+  },
+  {
+   "id": "Q4",
+   "topic": "cli-surface",
+   "question": "What arguments does config_doctor.py accept?",
+   "answer_from_index": [
+    "--output",
+    "configs"
+   ],
+   "independent_verification": [
+    "--output",
+    "configs"
+   ],
+   "agreement": true,
+   "seconds": 0.003
+  },
+  {
+   "id": "Q5",
+   "topic": "environment-drift",
+   "question": "Does installed metadata drift from source for env.plugins?",
+   "answer_from_index": {
+    "drift_total": 0
+   },
+   "independent_verification": {
+    "env.plugins_drift": []
+   },
+   "agreement": true,
+   "seconds": 0.059
+  }
+ ],
+ "summary": {
+  "agreements": 5,
+  "disagreements": 0,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "unavailable": 0,
+  "note": "doctor confusion matrix reported separately in DOCTOR_RUN_RUNTIME_ENV.json: 3/3 defective BLOCK with exactly the expected rule sets, 3/3 clean PASS, 1 validator false positive found and corrected during development (legacy_flat pin echo), 0 suppressions"
+ }
+}

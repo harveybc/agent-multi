@@ -1,0 +1,75 @@
+{
+ "agent_multi_head": "c3f92f652a602c9c504705b507df13487ad41b71",
+ "disclosure": "five findings map to THREE defective documents: findings 108/110/113 were all present in one historical file. The corpus is balanced at 3 defective / 3 clean documents covering 5 defect classes. CORPUS-BUILD ERROR, DISCLOSED: the first clean-control selection used the v1 files at HEAD, which still carry the 108/110/113 patterns (corrections live in the v2 materializer products, not in the v1 examples). Caught during corpus verification before any validator was written; the v1-at-HEAD file is byte-identical to the a3422da3 defective fixture. This mislabeling event is itself a T-6 benchmark datum: the doctor must flag v1-at-HEAD as defective.",
+ "files": {
+  "bad_108_110_113_eth_en_v1__a3422da3.json": {
+   "defect_classes": [
+    "metric_contradiction",
+    "foreign_asset_namespace",
+    "genome_forbidden_candidates_no_repair"
+   ],
+   "findings": [
+    "AUD-F1-20260805-108",
+    "AUD-F1-20260805-110",
+    "AUD-F1-20260805-113"
+   ],
+   "note": "one historical file exhibits three audited defect classes; frozen verbatim from the revision the 2026-08-05 audit examined",
+   "provenance": "git show a3422da3:examples/config/phase_2_eth_curriculum/optimization/phase_2_eth_en_v1.json",
+   "role": "defective",
+   "sha256": "0280c003b2a08403846fa269b48fbdad77cafdbcc3411436a0e27b35f5bc2f5b"
+  },
+  "bad_126_unpinned_resolved_base__108f78d4.json": {
+   "defect_classes": [
+    "unpinned_required_references"
+   ],
+   "findings": [
+    "AUD-F1-20260806-126"
+   ],
+   "note": "resolved document carries NO base_config_sha256/input_data_sha256 binding \u2014 the audited unpinned state",
+   "provenance": "deterministic replication of _base_config() exactly as defined at agent-multi@108f78d4 (tools/eth_curriculum_decision_experiment.py), seed=0, epoch_timesteps=20000, OUT_DIR placeholder; base config_out.json verified sha256=5df24c0d... before replication",
+   "role": "defective",
+   "sha256": "4145784beb504c58a5475a1f7d7b8e94212d4f75ab50c81464c05f8cc74c7b09"
+  },
+  "bad_142_dormant_year_fields__b0ea817b.json": {
+   "defect_classes": [
+    "dormant_contradictory_split_fields"
+   ],
+   "findings": [
+    "AUD-F1-20260806-142"
+   ],
+   "note": "",
+   "provenance": "deterministic replication of _base_config() exactly as defined at agent-multi@b0ea817b, same parameters; pins present (126 already fixed) but train_years=4/test_years=1 survive beside explicit dates spanning ~6.25y",
+   "role": "defective",
+   "sha256": "255fb517598df7da38b66e416c2c53335894f47443804b0f8b905818b1deb8b6"
+  },
+  "clean_eth_en_v2__HEAD.json": {
+   "defect_classes": [],
+   "findings": [],
+   "note": "",
+   "provenance": "examples/config/phase_2_eth_curriculum/optimization/phase_2_eth_en_v2.json at HEAD \u2014 the CORRECTED materializer product (metrics aligned, eth_curriculum_v2 namespace, executable repair rule)",
+   "role": "clean_control",
+   "sha256": "729845700f3badf76f8b0ef3c52d25df27737981ec52406cdab49f9d984677de"
+  },
+  "clean_eth_n_v2__HEAD.json": {
+   "defect_classes": [],
+   "findings": [],
+   "note": "",
+   "provenance": "examples/config/phase_2_eth_curriculum/optimization/phase_2_eth_n_v2.json at HEAD \u2014 corrected materializer product",
+   "role": "clean_control",
+   "sha256": "04acbc40d492e803faa4005d006b32d752d1f5f84e73121acc0fc8d29854bee9"
+  },
+  "clean_resolved_base__HEAD.json": {
+   "defect_classes": [],
+   "findings": [],
+   "note": "",
+   "provenance": "deterministic replication of _base_config() at current HEAD (year fields popped, split_contract_note present, pins present)",
+   "role": "clean_control",
+   "sha256": "39961ad57717b4ef74600830ef870296a11d879c92aa21ee6bd562167b0a045e"
+  }
+ },
+ "frozen_at_utc": "2026-08-07T01:02:58.139327+00:00",
+ "purpose": "P0.3 of MUSASHI_DISPOSITION_SATOSHI_III_DETERMINISTIC_TOOLING_2026_08_06: frozen defective configs behind findings 108/110/113/126/142 plus balanced clean controls; fixtures must never be rewritten to make the doctor pass",
+ "schema": "config_corpus_manifest.v1",
+ "trading_contracts_head": "cd050834406c68d14cde72986b99e5db34425e4e",
+ "worktree_dirty_at_freeze": true
+}
