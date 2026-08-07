@@ -28,8 +28,8 @@ Return exactly one JSON object and no Markdown. It must use this schema:
       "risk": 0.0,
       "response_worthiness": 0.0,
       "recommended_action": "ignore|archive|investigate|reply_candidate|experiment_candidate",
-      "summary": "at most 240 characters, factual and source-bounded",
-      "rationale": "at most 240 characters"
+      "summary": "at most 220 characters, factual and source-bounded",
+      "rationale": "at most 220 characters"
     }
   ]
 }

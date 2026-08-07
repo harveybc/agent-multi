@@ -399,6 +399,16 @@ def _bounded_text(value: Any, name: str, maximum: int, *, allow_empty: bool = Fa
     return text
 
 
+def _bounded_generated_text(value: Any, name: str, maximum: int) -> str:
+    """Normalize non-authoritative model prose without weakening its schema."""
+    if not isinstance(value, str):
+        raise SocialIntelligenceError(f"{name} must be text")
+    text = value.strip()
+    if not text:
+        raise SocialIntelligenceError(f"{name} cannot be empty")
+    return text if len(text) <= maximum else text[:maximum].rstrip()
+
+
 def _score(value: Any, name: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise SocialIntelligenceError(f"{name} must be numeric")
@@ -474,8 +484,12 @@ def validate_response(
                 "risk": _score(raw.get("risk"), "risk"),
                 "response_worthiness": _score(raw.get("response_worthiness"), "response_worthiness"),
                 "recommended_action": action,
-                "summary": _bounded_text(raw.get("summary"), "summary", 240),
-                "rationale": _bounded_text(raw.get("rationale"), "rationale", 240),
+                "summary": _bounded_generated_text(
+                    raw.get("summary"), "summary", 240
+                ),
+                "rationale": _bounded_generated_text(
+                    raw.get("rationale"), "rationale", 240
+                ),
             }
         )
     return validated
