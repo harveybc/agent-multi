@@ -1,10 +1,18 @@
 # 35. Deterministic Tooling Opportunity Map
 
-Status: proposal — v1.0.0, 2026-08-06
+Status: proposal — v2.0.0, 2026-08-06 — REVISED after self-review,
+submitted to General Musashi for verdict before ANY adoption or build.
 Author: General Satoshi III · For: Owner and General Musashi
 Purpose: replace repetitive agent reading/derivation with deterministic
 tools, and adopt existing packages instead of reimplementing
 architecture. Grounded in what this correction campaign actually cost.
+
+v2 changes: self-critique section (§0b) added; scope cut from 8 built
+tools + 12 adoptions to 3 + 3 NOW, the rest explicitly DEFERRED or
+WITHDRAWN; the overcounted sha256 claim corrected (15 tools define
+their own helper, not 43 — 43 merely reference the string); every
+"would have prevented finding X" counterfactual downgraded to "would
+have made X less likely"; environment-isolation rule added (§0c).
 
 ## 0. The honest premise, including its danger
 
@@ -19,6 +27,66 @@ So every tool proposed here must ship with: typed outcomes (never a
 bare boolean), fail-closed defaults, its own tests, a version string in
 its output, and no authority to conclude — only to **report facts**.
 
+## 0b. Self-critique of v1 (defects I found in my own proposal)
+
+1. **v1 contradicted its own evidence.** My documented failure was NOT
+   a missing tool — it was not using tools that already existed
+   (`multifront_status.py`, the indexed codebase graph). v1's answer
+   was to build MORE tools, including `fleet-report`, a new wrapper
+   around the very tool I ignored. A new wrapper does not cure
+   non-use; a catalogue and discipline do. `fleet-report` is
+   **withdrawn**; `multifront_status.py` gets documented in the
+   catalogue instead.
+2. **Twenty new components is itself a failure surface.** 8 tools + 12
+   adoptions each need tests, versioning, and independent audit. The
+   token cost of Musashi auditing twenty components exceeds the near-
+   term token savings. v2 cuts to 3 built + 3 adopted NOW.
+3. **I overcounted the duplication evidence.** 43 tools *mention*
+   sha256; only **15** define their own hashing helper. The case for
+   `evidence-lib` survives at 15, but v1 stated the larger number as
+   fact. Corrected.
+4. **"Would have prevented finding X" was counterfactual advocacy.**
+   A contract dump only prevents the 100× error if its semantics
+   annotation is *correct* — which requires exactly the understanding
+   that failed. Every such claim is downgraded to "would have made X
+   less likely by moving the fact from N inferences to 1 declaration."
+5. **`contract-dump` as designed could become a lie generator.** If
+   generated from annotations, it can drift from the code and then
+   fails identically every time with an air of authority — the §0
+   danger, built by me. Redesigned: it must derive from **runtime
+   introspection** (instantiate the env, step it, report the actual
+   `info` keys and spaces) plus a CI test asserting dump == runtime.
+   That is more work than v1's "1 session" estimate, which was
+   optimistic. Moved out of the NOW set.
+6. **Third-party adoption is a supply-chain and reproducibility
+   risk v1 understated.** The evidence chain today depends on stdlib +
+   git + SQLite — fully auditable. Putting `dvc` inside the
+   replica-authority path would replace ~40 audited lines with a large
+   external system Musashi cannot cheaply verify, days after he issued
+   finding 151 against that exact surface. `dvc`, `great_expectations`,
+   `evidently`, `optuna`, `omegaconf` are **deferred or withdrawn**
+   from any evidence-bearing path.
+7. **Mass-refactoring 15 audited tools onto `evidence-lib` churns
+   verified code.** v2 rule: `evidence-lib` is mandatory for NEW code;
+   existing tools migrate only when touched for another reason; tools
+   referenced by accepted audit packets are never retroactively edited.
+8. **v1 had no acceptance criteria.** v2 adds §6b: each NOW item ships
+   with a measurable claim Musashi can verify or refute.
+9. **Process defect: I committed and pushed v1 as if approved.** It
+   was a proposal, and its tone was advocacy. This revision and the
+   accompanying review request to Musashi are the correction.
+
+## 0c. Environment isolation rule (new, non-negotiable)
+
+Nothing is installed into the `trading-stack` runtime environment.
+That env pins numpy 2.5.1 / pandas 3.0.3 / torch 2.13.0+cu130; a
+tooling dependency that drags a transitive upgrade could silently
+change numerical results and invalidate every baseline. All adopted
+dev tools live in a separate `tooling` venv with a hash-locked
+requirements file; anything that must run inside `trading-stack`
+(e.g. `hypothesis` in tests — already installed there) is adopted
+only after an explicit dependency-freeze check.
+
 ## 1. Evidence: what the agents actually spent tokens on
 
 Measured from this campaign, not guessed:
@@ -31,7 +99,7 @@ Measured from this campaign, not guessed:
 | "Is this config self-consistent?" | discovered at **runtime failure** (`continuous_action_threshold` collision, `dataset_manifest_file`, dormant `train_years`) | each cost a failed launch or an audit finding |
 | Fleet status | hand-written `curl | python -c` one-liners, ~8 times | `tools/multifront_status.py` and `fleet_status_context.py` **already existed and I did not use them** |
 | RT OLAP inspection | hand-written sqlite queries, ~6 times | inconsistent columns each time |
-| Dataset facts (rows/splits/hash) | recomputed ad hoc in 3 places | 43 tools independently implement `sha256` |
+| Dataset facts (rows/splits/hash) | recomputed ad hoc in 3 places | 15 tools define their own hashing helper (43 reference sha256) |
 | API drift in probes | `_score_interval` → `score_interval` broke a probe silently | became finding 143 |
 
 **The largest single waste found:** ten repositories are already
@@ -40,124 +108,135 @@ edges; lts 3,224 / 17,116; gym-fx 454 / 2,375 …) — a deterministic
 structural query surface that I used almost not at all, preferring
 grep. That is a discipline failure, not a missing tool.
 
-## 2. Tools to BUILD (small, fail-closed, agent-facing)
+## 2. Tools to BUILD
 
-Priority order by (tokens saved × defect risk removed) ÷ effort.
+### NOW (3 — pending Musashi's verdict, none started)
 
-### P0-1 `contract-dump` — one command, all runtime contracts
-Emits JSON: env observation/action spaces and every `info` key with its
-semantics, plugin entry points per group with declared params and
-defaults, pipeline/optimizer/agent plugin names, and the selection
-metric branches implemented in `app/metrics`.
-*Replaces:* every "what does X expose?" grep chain.
-*Would have prevented:* finding 152 (direction vs quantity) if the dump
-declared units.
-*Effort:* 1 session. *Consumers:* both generals, every campaign.
+**N-1 `tool-index`** — `tools/INDEX.json`: name, one-line purpose,
+inputs, outputs, read-only or mutating, owner; generated from
+docstrings, validated by a test that fails when a tool lacks an entry.
+*Fixes the actual root cause of this campaign's waste* (existing tools
+went unused because nothing catalogued them). Cheapest item; also the
+prerequisite for deciding future builds honestly, because it exposes
+what already exists. Read-only; zero runtime risk.
 
-### P0-2 `config-doctor` — refuse a bad config before the fleet burns
-Resolves a canonical config and reports: runtime key collisions across
-sections, dormant/contradictory fields (`train_years` vs explicit
-dates), metrics that no implementation resolves, foreign asset tokens,
-missing manifest references, genome/stage inconsistencies (a stage
-param that no gene declares), and repair rules that cannot execute.
-*Replaces:* the launch-crash discovery loop.
-*Would have prevented:* findings 108, 110, 113, 126, 142 — five audit
-findings from one class of defect.
-*Effort:* 1–2 sessions; most checks already exist scattered in
-`materialize_eth_curriculum_configs.py` and want extracting.
+**N-2 `evidence-lib`** — one module for content hashing, canonical
+JSON, git HEAD + dirty/untracked source digest, manifest emit/verify.
+Mandatory for NEW code only; existing tools migrate opportunistically;
+tools cited by accepted audit packets are never retroactively edited.
+*Risk removed:* the same identity computed two different ways — the
+pattern behind findings 130/141/149/151.
 
-### P0-3 `evidence-lib` — one implementation of the boring primitives
-A tiny module (not 43 copies): content hashing, canonical JSON, git
-HEAD + dirty/untracked source digest, artifact load-proof, replica
-observation, manifest emit/verify.
-*Replaces:* duplicated `sha256`/identity code across 43 tools.
-*Risk removed:* the same identity computed two different ways in two
-tools — exactly how findings 130/141/149/151 arose.
+**N-3 `config-doctor`** — resolves a canonical config and reports:
+runtime key collisions across sections, dormant/contradictory fields,
+metrics no implementation resolves, foreign asset tokens, missing
+manifest references, genome/stage inconsistencies, repair rules that
+cannot execute. Read-only, typed findings, never mutates the config.
+*Track record argument:* findings 108, 110, 113, 126, 142 are five
+members of this one defect class; a checker would have made each less
+likely. Most checks already exist scattered in
+`materialize_eth_curriculum_configs.py` and want extracting — this is
+consolidation more than construction.
 
-### P1-4 `fleet-report` — the status contract, canonical
-Wrap the existing `multifront_status.py` into one CLI with stable JSON:
-per-worker chain/tip/generation/claim, GPU temp/util, candidate epoch/
-steps/trades, code revisions, alerts, and the §4 status-contract fields
-Musashi mandates.
-*Replaces:* hand-written one-liners; also fixes the **discoverability**
-failure by being the single documented entry point.
+### DEFERRED (build only after the NOW set proves itself)
 
-### P1-5 `rt-report` — OLAP queries with a fixed schema
-Per-run interval table, succession-chain check, handover reconciliation,
-persisted p50/p95, coverage completeness. Read-only.
-*Replaces:* ad-hoc sqlite; guarantees every packet quotes the same
-numbers.
+- **D-1 `contract-dump`** — runtime-introspected (instantiate the env,
+  step it, emit actual spaces/`info` keys with units), with a CI test
+  asserting dump == runtime. Deferred because the annotation-based v1
+  design was a lie-generator risk (§0b-5) and the honest design is
+  more work.
+- **D-2 `rt-report`** — read-only OLAP reporter (interval table,
+  succession-chain check, persisted p50/p95, coverage). Wanted before
+  the next RT packet so both generals quote identical numbers.
+- **D-3 `causality-check`** — future-append invariance, train-only
+  fit, warm-up sufficiency. Required by roadmap R1 **before any
+  wave-2 feature work begins**; deferred only until that work is
+  actually scheduled.
+- **D-4 `probe-lib`** — extract `correction_probe_v2`'s four typed
+  outcomes into a shared module. Low risk, but touching the probe
+  Musashi just verified should wait for his consent.
 
-### P1-6 `causality-check` — the leakage gate as a command
-Given a feature builder and a dataset: future-append invariance
-(value at `t` unchanged when rows after `t` are appended), train-only
-fit verification, warm-up sufficiency, NaN/inf and monotonicity.
-*Replaces:* ad-hoc checks; **required** by roadmap R1 before any
-decomposition/calendar feature is admitted. This is the highest-value
-new tool for the research track.
+### WITHDRAWN
 
-### P1-7 `probe-lib` — typed counterexample harness
-Extract `correction_probe_v2`'s four outcomes
-(`postcondition_pass`/`expected_refusal`/`fixture_error`/
-`harness_error`) into a shared module both generals import.
-*Prevents:* a repeat of finding 143 in either direction.
-
-### P2-8 `tool-index` — machine-readable catalogue
-`tools/INDEX.json`: name, one-line purpose, inputs, outputs, read-only
-or mutating, owner. Generated from docstrings, validated in CI.
-*Replaces:* an agent rediscovering that a tool already exists (my
-concrete failure this campaign).
+- **`fleet-report`** — a new wrapper around `multifront_status.py`,
+  which already exists and which I failed to use. The cure is the
+  catalogue (N-1), not another tool (§0b-1).
 
 ## 3. Packages to ADOPT instead of implementing
 
-Your instinct is right: do not rebuild what exists.
+All adoptions obey §0c: separate hash-locked `tooling` venv, nothing
+enters `trading-stack` or any evidence-bearing runtime path.
 
-| Need | Adopt | Why it beats our own code |
+### NOW (3 — all dev/test-time, read-only, outside the evidence chain)
+
+| Need | Adopt | Why |
 |---|---|---|
-| **API-drift detection** | `griffe check` | Deterministically diffs the public API between two revisions. Finding 143 (renamed `_score_interval`) would have been caught mechanically. Cheapest high-value adoption on this list. |
-| **Dataframe/data contracts** | `pandera` (schema) or `great_expectations` | Declarative column types, ranges, monotonic index, uniqueness — replaces hand-rolled dataset verification and gives failure *reasons*. |
-| **Property-based tests** | `hypothesis` (**already installed**) | Musashi repeatedly demands property tests; we hand-write example tables. Hypothesis generates the adversarial cases for order-preservation, coverage cardinality, fee conservation. |
-| **Static checks** | `ruff` + `mypy` | Catches the unused/renamed/None-flow classes of defect before an audit does. |
-| **Config composition/validation** | `pydantic` (**installed**) + `omegaconf` | Typed config models make the collision/dormant-field class structurally impossible rather than detected. |
-| **Artifact/data versioning + replica** | `dvc` | Content-addressed artifacts with declared remotes and verified pushes — precisely the finding-151 replica-authority problem, solved by a mature tool instead of my rsync+ssh hash. |
-| **Time-series foundation models** | `chronos-forecasting`, `timesfm`, `uni2ts` (Moirai) | Roadmap option B. Frozen encoders as feature extractors; never reimplement the architecture. |
-| **Forecast/eval utilities** | `utilsforecast`, `statsforecast` | Rolling-origin/prequential evaluation primitives and baselines — RT1 already needs them; also gives cheap transparent baselines for R6. |
-| **Drift/regime monitoring** | `evidently` | The OOD/regime detector I proposed for the frozen champion, without writing it. |
-| **Hyperparameter search primitives** | `optuna` | Not to replace DOIN, but its samplers/pruners are useful for the *cheap local screens* (my §4.7 dissent) where DEAP is overkill. |
-| **CLI/JSON plumbing** | `sqlite-utils`, `jq` (**installed**), `yq` | Replaces hand-written sqlite/JSON glue in reports. |
-| **Symbol/structure queries** | the **already-indexed codebase-memory graph** | Ten repos indexed; `search_graph`/`get_code_snippet`/`trace_path` answer "where is X, who calls it" without reading files. Zero adoption cost — pure discipline. |
+| **API-drift detection** | `griffe check` | Deterministically diffs the public API between two revisions; the finding-143 class (probe calling a renamed symbol) becomes mechanically detectable. Dev-time only, reads code, writes nothing. |
+| **Property-based tests** | `hypothesis` (**already installed** in trading-stack) | Musashi repeatedly demands property tests; we hand-write example tables. Zero new dependency. |
+| **Static checks** | `ruff` (+ `mypy` later) | Catches unused/renamed/None-flow defects before an audit does. Dev-time only. |
 
-## 4. Per-front opportunities
+### DEFERRED (real value, but each adds a dependency or a decision)
 
-**Data/preprocessing** — `causality-check` (P1-6) plus `pandera`
+- `pandera` — dataset schemas in tests; adopt with the first
+  dataset-manifest work, after a dependency-freeze check.
+- `pydantic` config models — makes the collision class structurally
+  impossible, but migrating configs mid-campaign is churn; adopt at
+  the next natural config-schema change. (`omegaconf` withdrawn —
+  a second config system is its own failure point.)
+- `utilsforecast`/`statsforecast` — rolling-origin baselines for R6;
+  adopt when RT1 analysis actually starts.
+- `sqlite-utils` — convenience only; adopt with D-2 if at all.
+- TSFM packages (`chronos-forecasting`, `timesfm`, `uni2ts`) — only
+  when roadmap option B is ratified; never reimplement, exactly as
+  the owner directs.
+- `evidently` — only when the live drift-monitoring window opens.
+
+### WITHDRAWN
+
+- **`dvc` in the replica path** — would replace ~40 audited stdlib
+  lines with a large third-party system inside the very surface
+  Musashi just audited (finding 151). Wrong direction for
+  auditability (§0b-6). May be revisited for bulk *dataset*
+  versioning only, never for decision evidence.
+- **`great_expectations`** — heavy; `pandera` covers the need.
+- **`optuna`** — a second optimizer beside DOIN invites divergence
+  and confusion; the cheap-screen need can be met with plain grids.
+- **`yq`** — marginal; `jq` (installed) suffices.
+
+### Zero-cost, pure discipline (no verdict needed — already available)
+
+The **codebase-memory graph** already indexes ten repos
+(`search_graph`/`get_code_snippet`/`trace_path`). My commitment,
+effective immediately: structural code questions go to the graph
+first, `grep` second. This is the single largest token saving found
+and it requires building nothing.
+
+## 4. Per-front opportunities (long view — nothing here is scheduled)
+
+**Data/preprocessing** — `causality-check` (D-3) plus `pandera`
 schemas per dataset; a `dataset-manifest` generator so row counts,
 splits, hashes and warm-up are emitted once and quoted everywhere.
 
 **Feature engineering** — a deterministic **feature registry**: name →
-builder → causal window → warm-up → parameters → provenance. Makes the
-decomposition families (wavelet/multitaper/Hilbert/fracdiff) admissible
-by construction and lets the GA reference registry ids rather than free
-strings.
+builder → causal window → warm-up → parameters → provenance, so the
+GA references registry ids rather than free strings.
 
-**Models/training** — `contract-dump` for observation/action spaces;
+**Models/training** — `contract-dump` (D-1, runtime-introspected);
 `griffe` in CI so a signature change breaks a test rather than a
-probe; artifact manifests (the finding-158 anchor manifest) generated
-by a tool at champion time rather than hand-written later.
+probe; anchor manifests (finding 158) generated by a tool at champion
+time rather than hand-written later.
 
-**Optimization/DOIN** — `config-doctor` before any campaign launch; a
-`genome-lint` (subset) proving every stage param is a declared gene,
-every repair rule executable, every conditional gene masked; a
-`campaign-preflight` that runs the whole gate list Musashi keeps
-finding violations in.
+**Optimization/DOIN** — `config-doctor` (N-3) before any campaign
+launch; later a `genome-lint` and `campaign-preflight` if N-3 proves
+the pattern works.
 
 **Live/execution** — `controller_inventory` already exists (keep it);
-add `parity-report` joining due-bar decisions to simulation with fixed
-columns; `evidently` for the divergence trend.
+a `parity-report` joining due-bar decisions to simulation is future
+work for the parity track.
 
-**Audit/evidence** — `evidence-lib` + `probe-lib` + `rt-report`, so a
+**Audit/evidence** — `evidence-lib` (N-2) + eventually D-2/D-4, so a
 packet is *generated* from facts instead of transcribed by an agent.
-This also narrows the gap between what I claim and what Musashi
-reproduces.
+This narrows the gap between what I claim and what Musashi reproduces.
 
 ## 5. What I would NOT automate
 
@@ -169,14 +248,33 @@ reproduces.
 - **Anything that would let "GPU busy" or "tests passed" stand in for
   evidence** — the zero-activity campaign is the cautionary tale.
 
-## 6. Suggested sequencing (cheap first, all CPU)
+## 6. Sequencing
 
-1. Adopt `griffe`, `ruff`, `pandera`, `hypothesis` (installed) — days.
-2. Build `evidence-lib`, then `config-doctor` and `contract-dump`.
-3. Build `fleet-report`, `rt-report`, `tool-index`.
-4. Build `causality-check` before wave-2 feature work begins.
-5. Adopt `dvc` when the replica requirement becomes operational.
-6. Adopt TSFM packages only when roadmap option B starts.
+1. **Nothing until Musashi's verdict on this document.**
+2. If approved: `tool-index` (N-1) first — it is also the audit of
+   what exists; then `evidence-lib` (N-2), `config-doctor` (N-3), and
+   the three NOW adoptions into the isolated `tooling` venv.
+3. The DEFERRED sets are re-proposed individually, each with the §6b
+   evidence from the NOW set, at their trigger points.
+
+## 6b. Acceptance criteria (measurable, refutable)
+
+- **N-1**: every file in `tools/` has an INDEX entry; a test fails on
+  omission; in the next campaign packet, zero instances of a
+  hand-rewritten equivalent of an already-catalogued tool.
+- **N-2**: zero NEW tools defining a private hashing/identity helper
+  after adoption (baseline today: 15); enforced by a lint test.
+- **N-3**: run against the five historical configs behind findings
+  108/110/113/126/142 — it must flag all five defect classes; run
+  against the current champion configs — every flag it raises must be
+  either a true defect or a documented false-positive with a
+  suppression annotation. False-positive rate is reported, not hidden.
+- **Adoptions**: `griffe check` runs in CI between HEAD and the last
+  audited revision and its report is attached to the next packet;
+  `ruff` runs clean or with a committed, justified ignore list.
+- **Global**: the next correction campaign's packet reports how many
+  facts were quoted from tool output vs re-derived by an agent — the
+  measure your instinct predicts should move.
 
 None of this touches the paused fleet, the frozen contracts, or any
 open finding. It is CPU-only work whose whole purpose is that the next
