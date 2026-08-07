@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; ETH anchored `full-v2` preserved pending zero-activity disposition; RT1-A materialized but blocked on exact succession/handover evidence; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
-Plan version: 1.31.0
+Plan version: 1.31.1
 Date: 2026-08-06
 Primary implementation repository: `agent-multi`
 
@@ -91,6 +91,8 @@ trading domain.
 | [31 OKF, GBrain and Hermes knowledge continuity](31_OKF_GBRAIN_HERMES_KNOWLEDGE_CONTINUITY.md) | Portable OKF knowledge, rebuildable local GBrain retrieval, Hermes cold-start recovery, cron verification and strict separation from runtime authority |
 | [32 Champion succession and regime research](32_CHAMPION_SUCCESSION_AND_REGIME_RESEARCH.md) | Exact-seat Paper/Demo succession, independent promotion evidence, synchronized replay, difficulty ablation and causal regime-specialist research |
 | [33 ETH decision, research and multi-asset roadmap](33_ETH_DECISION_RESEARCH_AND_MULTI_ASSET_ROADMAP.md) | Easy/normal decision, mature ETH reference stack, bounded research, cross-asset transfer, per-asset champion library and portfolio entry order |
+| [34 ETH data and observation manifest](34_ETH_DATA_OBSERVATION_MANIFEST.md) | Exact ETH dataset, split, warm-up, observation, preprocessing, model and evaluation facts used by the decision program |
+| [35 Deterministic tooling opportunity map](35_DETERMINISTIC_TOOLING_OPPORTUNITY_MAP.md) | Evidence-backed tooling candidates, self-critique, reuse policy, isolation boundary and measurable adoption criteria |
 
 ## Repository Ownership Summary
 
@@ -266,6 +268,11 @@ adding value.
     an independent promotion panel, paired block-bootstrap gate, seven-day
     runtime shadow, flat-boundary drain/reseed and pre/post notice. Execute the
     regime track only as sequential jobs in the canonical DOIN campaign queue.
+24. Pilot deterministic engineering reuse only under the bounded Musashi
+    disposition: an `agent-multi` tool/plugin surface index, shared executable
+    config validators with a read-only doctor facade, and pinned non-mutating
+    Ruff checks. Measure correctness and disagreement before expanding to other
+    repositories or adding another dependency.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
