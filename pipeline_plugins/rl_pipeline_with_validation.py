@@ -242,6 +242,25 @@ def _checkpoint_is_eligible(
     )
 
 
+# The complete set of selection metrics _selection_value implements.
+# This module OWNS the invariant; app/config_validation.py observes it
+# through runtime_implemented_metrics() and must never restate it. Any
+# branch added below must be added here, and vice versa — the surface
+# test in tests/test_config_validation.py holds the two together.
+IMPLEMENTED_SELECTION_METRICS = frozenset(
+    {
+        _lex.METRIC_NAME,
+        "robust_weekly_rap_fitness",
+        "robust_weekly_rap",
+        "execution_curriculum_robust_fitness",
+        "risk_adjusted_return",
+        "risk_adjusted_total_return",
+        "rap",
+        "total_return",
+    }
+)
+
+
 def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lambda: float) -> float:
     metric = str(selection_metric or "total_return").strip().lower()
     if metric == _lex.METRIC_NAME:

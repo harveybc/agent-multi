@@ -32,6 +32,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
+from app import config_validation
+
 
 STATE_SCHEMA = "agent_multi.doin_campaign_state.v1"
 PLAN_SCHEMA = "agent_multi.doin_campaign_plan.v1"
@@ -986,6 +988,16 @@ class CampaignSupervisor:
         if not overlay_path.is_absolute():
             overlay_path = agent_root / overlay_path
         canonical = _load_json(canonical_path.resolve())
+        # P2 launch seam (Musashi tooling disposition 2026-08-06): the same
+        # shared validators the doctor CLI reports with REFUSE the launch
+        # here on BLOCK or required-UNAVAILABLE. There is no per-launch
+        # sign-off and no conversational override; a blocked config is
+        # corrected in a new revision.
+        config_validation.preflight_or_raise(
+            canonical,
+            implemented_metrics=config_validation.runtime_implemented_metrics(),
+            context=f"worker canonical config {canonical_path.name}",
+        )
         overlay = _load_json(overlay_path.resolve())
         roots = overlay.get("roots") or {}
         data = canonical.get("data") or {}

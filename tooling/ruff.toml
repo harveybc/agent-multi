@@ -1,0 +1,11 @@
+# Bounded first-cycle ruff adoption (P3 of the Musashi tooling
+# disposition, 2026-08-06). Correctness/syntax rules ONLY; preview
+# disabled; --fix is forbidden in CI and evidence generation; formatting
+# is out of scope. Rule expansion happens through a separate reviewed
+# diff. The recorded baseline (ruff_baseline.json) is the accepted
+# historical state — new code is held to these rules, old code is not
+# mass-edited.
+preview = false
+
+[lint]
+select = ["E9", "F63", "F7", "F82", "F811"]

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from pathlib import Path
+from statistics import fmean
 from typing import Any, Dict, Mapping
 
 from env_plugins.execution_cost_curriculum import load_curriculum

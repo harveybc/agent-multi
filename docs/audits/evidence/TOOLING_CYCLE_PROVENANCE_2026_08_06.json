@@ -1,0 +1,52 @@
+{
+ "schema": "tooling_cycle_provenance.v1",
+ "recorded_utc": "2026-08-07T01:21:46.149466+00:00",
+ "pilot_repo": "agent-multi",
+ "repo_heads": {
+  "agent-multi": "c3f92f652a602c9c504705b507df13487ad41b71",
+  "trading-contracts": "cd050834406c68d14cde72986b99e5db34425e4e"
+ },
+ "worktree_dirty_files": [
+  "M app/campaign_supervisor.py",
+  " M pipeline_plugins/rl_pipeline_with_execution_curriculum.py",
+  " M pipeline_plugins/rl_pipeline_with_validation.py",
+  "?? app/config_validation.py",
+  "?? docs/audits/evidence/TOOLING_FIRST_CYCLE_BENCHMARK_2026_08_06.json",
+  "?? docs/audits/evidence/config_corpus/CORPUS_MANIFEST.json",
+  "?? docs/audits/evidence/config_corpus/DOCTOR_RUN_RUNTIME_ENV.json",
+  "?? docs/audits/evidence/config_corpus/DOCTOR_RUN_TOOLING_ENV.json",
+  "?? docs/audits/evidence/config_corpus/bad_108_110_113_eth_en_v1__a3422da3.json",
+  "?? docs/audits/evidence/config_corpus/bad_126_unpinned_resolved_base__108f78d4.json",
+  "?? docs/audits/evidence/config_corpus/bad_142_dormant_year_fields__b0ea817b.json",
+  "?? docs/audits/evidence/config_corpus/clean_eth_en_v2__HEAD.json",
+  "?? docs/audits/evidence/config_corpus/clean_eth_n_v2__HEAD.json",
+  "?? docs/audits/evidence/config_corpus/clean_resolved_base__HEAD.json",
+  "?? docs/work_plan/36_IDENTITY_DOMAIN_DESIGN_N2_2026_08_06.md",
+  "?? tests/test_config_validation.py",
+  "?? tests/test_engineering_surface_index.py",
+  "?? tooling/.gitignore",
+  "?? tooling/requirements-tooling.lock",
+  "?? tooling/ruff.toml",
+  "?? tooling/ruff_baseline.json",
+  "?? tools/ENGINEERING_SURFACE_INDEX.json",
+  "?? tools/TOOL_DECLARATIONS.json",
+  "?? tools/config_doctor.py",
+  "?? tools/engineering_surface_index.py"
+ ],
+ "codebase_memory_index": {
+  "agent-multi": {
+   "indexed_head": "b191666dea8405f54b94859321c99194bfa40775",
+   "note": "index lags working HEAD by the doc-only commits 9e8b6fcf/bfcaf866 plus this cycle's uncommitted work at query time; every load-bearing claim in this cycle was verified against source directly, per the operating spec"
+  },
+  "trading-contracts": {
+   "indexed_head": "cd050834406c68d14cde72986b99e5db34425e4e",
+   "note": "matches reviewed baseline"
+  }
+ },
+ "tooling_lock_sha256": "a5ff92f4e36ef1791d4b2e343d14185df55d44daa30ca9e484f385a4144f5f9d",
+ "ruff_pin": "ruff==0.13.1 --hash=sha256:b0f70202996055b555d3d74b626406476cc692f37b13bac8828acff058c9966a",
+ "environments": {
+  "runtime": "/home/harveybc/anaconda3/envs/trading-stack/bin/python (numpy 2.5.1, pandas 3.0.3, torch 2.13.0+cu130 \u2014 untouched, nothing installed)",
+  "tooling": "tooling/venv (ruff 0.13.1 only, hash-locked)"
+ }
+}

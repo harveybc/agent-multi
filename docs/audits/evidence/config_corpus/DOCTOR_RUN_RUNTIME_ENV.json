@@ -1,0 +1,487 @@
+{
+ "overall": "BLOCK",
+ "provenance": {
+  "doctor_sha256": "5cdb13f5a65d91634b0426d74688ca804428619d4a3022a06648ba63e7a9f78c",
+  "environment_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+  "finished_utc": "2026-08-07T01:20:15.836841+00:00",
+  "implemented_metrics_available": true,
+  "repo_head": "c3f92f652a602c9c504705b507df13487ad41b71",
+  "started_utc": "2026-08-07T01:20:15.552589+00:00",
+  "validators_sha256": "258dfb7bab3d253a1d8fe5089ad27bd09f98240df499b0fe2c91f01546e9fe1e",
+  "worktree_dirty": true
+ },
+ "reports": {
+  "docs/audits/evidence/config_corpus/bad_108_110_113_eth_en_v1__a3422da3.json": {
+   "blocking": [
+    "metric_consistency",
+    "asset_namespace",
+    "genome_choice_repair"
+   ],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/bad_108_110_113_eth_en_v1__a3422da3.json",
+    "sha256": "0280c003b2a08403846fa269b48fbdad77cafdbcc3411436a0e27b35f5bc2f5b"
+   },
+   "overall": "BLOCK",
+   "results": [
+    {
+     "detail": "the document declares contradictory selection metrics: lexicographic_weekly_v1, risk_adjusted_return",
+     "evidence": {
+      "declared": {
+       "objectives.selection_metric": "lexicographic_weekly_v1",
+       "optimization.metric": "lexicographic_weekly_v1",
+       "optimization.optimization_metric": "lexicographic_weekly_v1",
+       "training.selection_metric": "risk_adjusted_return"
+      }
+     },
+     "outcome": "BLOCK",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "every declared metric is implemented",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1",
+       "risk_adjusted_return"
+      ]
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "6 references carry a foreign asset token (configured families: ['eth'])",
+     "evidence": {
+      "foreign": [
+       {
+        "path": "experiment.name",
+        "token": "usdcad",
+        "value": "phase_1_asset_policy_usdcad_4h_protected_easy_v2"
+       },
+       {
+        "path": "optimization.optimization_candidate_history",
+        "token": "usdcad",
+        "value": "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/candidate_history.csv"
+       },
+       {
+        "path": "optimization.optimization_champion_model_file",
+        "token": "usdcad",
+        "value": "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/champion_policy.zip"
+       },
+       {
+        "path": "optimization.optimization_parameters_file",
+        "token": "usdcad",
+        "value": "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/optimization_parameters.json"
+       },
+       {
+        "path": "optimization.optimization_resume_file",
+        "token": "usdcad",
+        "value": "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/optimization_resume.json"
+       },
+       {
+        "path": "optimization.optimization_statistics",
+        "token": "usdcad",
+        "value": "${ARTIFACT_ROOT}/protected_easy/usdcad_4h/optimization_stats.json"
+       }
+      ]
+     },
+     "outcome": "BLOCK",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "preprocessing_mode offers 'none' but no repair rule covers it; the genome will emit deterministically invalid candidates",
+     "evidence": {
+      "hazardous_genes": [
+       "optimization.mixed_genome_schema[0]"
+      ],
+      "repair_rules_declared": 0
+     },
+     "outcome": "BLOCK",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "every dataset reference is content-bound",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "no dormant year/date contradiction",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": []
+  },
+  "docs/audits/evidence/config_corpus/bad_126_unpinned_resolved_base__108f78d4.json": {
+   "blocking": [
+    "pinned_references",
+    "dormant_year_fields"
+   ],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/bad_126_unpinned_resolved_base__108f78d4.json",
+    "sha256": "4145784beb504c58a5475a1f7d7b8e94212d4f75ab50c81464c05f8cc74c7b09"
+   },
+   "overall": "BLOCK",
+   "results": [
+    {
+     "detail": "all declared metrics agree",
+     "evidence": {
+      "declared": {
+       "selection_metric": "lexicographic_weekly_v1"
+      }
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "every declared metric is implemented",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1"
+      ]
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "all references stay inside ['eth']",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "no hazardous categorical choice found",
+     "evidence": {
+      "genes": 0
+     },
+     "outcome": "PASS",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "dataset references without a content binding: input_data_file",
+     "evidence": {
+      "unpinned": [
+       "input_data_file"
+      ]
+     },
+     "outcome": "BLOCK",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "year-count shorthand coexists with explicit split dates at <root>; the shorthand is dormant and contradictory",
+     "evidence": {
+      "dates": [
+       "test_end",
+       "test_start",
+       "train_end",
+       "train_start",
+       "validation_end",
+       "validation_start"
+      ],
+      "years": {
+       "test_years": 1,
+       "train_years": 4,
+       "val_years": 1
+      }
+     },
+     "outcome": "BLOCK",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": []
+  },
+  "docs/audits/evidence/config_corpus/bad_142_dormant_year_fields__b0ea817b.json": {
+   "blocking": [
+    "dormant_year_fields"
+   ],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/bad_142_dormant_year_fields__b0ea817b.json",
+    "sha256": "255fb517598df7da38b66e416c2c53335894f47443804b0f8b905818b1deb8b6"
+   },
+   "overall": "BLOCK",
+   "results": [
+    {
+     "detail": "all declared metrics agree",
+     "evidence": {
+      "declared": {
+       "selection_metric": "lexicographic_weekly_v1"
+      }
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "every declared metric is implemented",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1"
+      ]
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "all references stay inside ['eth']",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "no hazardous categorical choice found",
+     "evidence": {
+      "genes": 0
+     },
+     "outcome": "PASS",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "every dataset reference is content-bound",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "year-count shorthand coexists with explicit split dates at <root>; the shorthand is dormant and contradictory",
+     "evidence": {
+      "dates": [
+       "test_end",
+       "test_start",
+       "train_end",
+       "train_start",
+       "validation_end",
+       "validation_start"
+      ],
+      "years": {
+       "test_years": 1,
+       "train_years": 4,
+       "val_years": 1
+      }
+     },
+     "outcome": "BLOCK",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": []
+  },
+  "docs/audits/evidence/config_corpus/clean_eth_en_v2__HEAD.json": {
+   "blocking": [],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/clean_eth_en_v2__HEAD.json",
+    "sha256": "729845700f3badf76f8b0ef3c52d25df27737981ec52406cdab49f9d984677de"
+   },
+   "overall": "PASS",
+   "results": [
+    {
+     "detail": "all declared metrics agree",
+     "evidence": {
+      "declared": {
+       "objectives.selection_metric": "lexicographic_weekly_v1",
+       "optimization.metric": "lexicographic_weekly_v1",
+       "optimization.optimization_metric": "lexicographic_weekly_v1",
+       "training.selection_metric": "lexicographic_weekly_v1"
+      }
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "every declared metric is implemented",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1"
+      ]
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "all references stay inside ['eth']",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "hazardous choice is covered by a declared repair rule",
+     "evidence": {
+      "covering_rules": 1
+     },
+     "outcome": "PASS",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "every dataset reference is content-bound",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "no dormant year/date contradiction",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": []
+  },
+  "docs/audits/evidence/config_corpus/clean_eth_n_v2__HEAD.json": {
+   "blocking": [],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/clean_eth_n_v2__HEAD.json",
+    "sha256": "04acbc40d492e803faa4005d006b32d752d1f5f84e73121acc0fc8d29854bee9"
+   },
+   "overall": "PASS",
+   "results": [
+    {
+     "detail": "all declared metrics agree",
+     "evidence": {
+      "declared": {
+       "objectives.selection_metric": "lexicographic_weekly_v1",
+       "optimization.metric": "lexicographic_weekly_v1",
+       "optimization.optimization_metric": "lexicographic_weekly_v1",
+       "training.selection_metric": "lexicographic_weekly_v1"
+      }
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "every declared metric is implemented",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1"
+      ]
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "all references stay inside ['eth']",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "hazardous choice is covered by a declared repair rule",
+     "evidence": {
+      "covering_rules": 1
+     },
+     "outcome": "PASS",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "every dataset reference is content-bound",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "no dormant year/date contradiction",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": []
+  },
+  "docs/audits/evidence/config_corpus/clean_resolved_base__HEAD.json": {
+   "blocking": [],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/clean_resolved_base__HEAD.json",
+    "sha256": "39961ad57717b4ef74600830ef870296a11d879c92aa21ee6bd562167b0a045e"
+   },
+   "overall": "PASS",
+   "results": [
+    {
+     "detail": "all declared metrics agree",
+     "evidence": {
+      "declared": {
+       "selection_metric": "lexicographic_weekly_v1"
+      }
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "every declared metric is implemented",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1"
+      ]
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "all references stay inside ['eth']",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "no hazardous categorical choice found",
+     "evidence": {
+      "genes": 0
+     },
+     "outcome": "PASS",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "every dataset reference is content-bound",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "no dormant year/date contradiction",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": []
+  }
+ },
+ "schema": "config_doctor.v1"
+}

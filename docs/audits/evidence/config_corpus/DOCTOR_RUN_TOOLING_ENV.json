@@ -1,0 +1,85 @@
+{
+ "overall": "UNAVAILABLE",
+ "provenance": {
+  "doctor_sha256": "5cdb13f5a65d91634b0426d74688ca804428619d4a3022a06648ba63e7a9f78c",
+  "environment_python": "/usr/bin/python3",
+  "finished_utc": "2026-08-07T01:20:23.501295+00:00",
+  "implemented_metrics_available": false,
+  "repo_head": "c3f92f652a602c9c504705b507df13487ad41b71",
+  "started_utc": "2026-08-07T01:20:23.468629+00:00",
+  "validators_sha256": "258dfb7bab3d253a1d8fe5089ad27bd09f98240df499b0fe2c91f01546e9fe1e",
+  "worktree_dirty": true
+ },
+ "reports": {
+  "docs/audits/evidence/config_corpus/clean_eth_en_v2__HEAD.json": {
+   "blocking": [],
+   "input": {
+    "path": "docs/audits/evidence/config_corpus/clean_eth_en_v2__HEAD.json",
+    "sha256": "729845700f3badf76f8b0ef3c52d25df27737981ec52406cdab49f9d984677de"
+   },
+   "overall": "UNAVAILABLE",
+   "results": [
+    {
+     "detail": "all declared metrics agree",
+     "evidence": {
+      "declared": {
+       "objectives.selection_metric": "lexicographic_weekly_v1",
+       "optimization.metric": "lexicographic_weekly_v1",
+       "optimization.optimization_metric": "lexicographic_weekly_v1",
+       "training.selection_metric": "lexicographic_weekly_v1"
+      }
+     },
+     "outcome": "PASS",
+     "rule_id": "metric_consistency"
+    },
+    {
+     "detail": "the implemented-metric set is only observable in the runtime environment; this environment cannot import the pipeline",
+     "evidence": {
+      "declared": [
+       "lexicographic_weekly_v1"
+      ]
+     },
+     "outcome": "UNAVAILABLE",
+     "rule_id": "metric_resolvable"
+    },
+    {
+     "detail": "all references stay inside ['eth']",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "asset_namespace"
+    },
+    {
+     "detail": "hazardous choice is covered by a declared repair rule",
+     "evidence": {
+      "covering_rules": 1
+     },
+     "outcome": "PASS",
+     "rule_id": "genome_choice_repair"
+    },
+    {
+     "detail": "every dataset reference is content-bound",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "pinned_references"
+    },
+    {
+     "detail": "no dormant year/date contradiction",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "dormant_year_fields"
+    },
+    {
+     "detail": "split windows are ordered",
+     "evidence": {},
+     "outcome": "PASS",
+     "rule_id": "split_overlap"
+    }
+   ],
+   "schema": "config_validation_report.v1",
+   "unavailable_required": [
+    "metric_resolvable"
+   ]
+  }
+ },
+ "schema": "config_doctor.v1"
+}
