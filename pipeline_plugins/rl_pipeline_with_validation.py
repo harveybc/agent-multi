@@ -1475,6 +1475,10 @@ class PipelinePlugin:
                 final["terminal_model_path"] = str(
                     Path(terminal_model_path).resolve())
                 final["oracle_behavior_pretrain"] = pretrain_summary
+                # M0 order §7: the warm-start boundary evidence lives on
+                # the model object; export it or it dies with the model.
+                final["warm_start_transfer_evidence"] = getattr(
+                    model, "warm_start_transfer_evidence", None)
                 return final
             finally:
                 try:

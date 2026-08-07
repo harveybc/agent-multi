@@ -124,6 +124,11 @@ def run_m0_arm(arm: str, seed: int, out_root: Path, *,
     config["warm_start_model_sha256"] = d1._sha(anchor)
     config["l1_patience"] = 10_000            # no early stopping (§8.1)
     config["easy_patience"] = 10_000
+    # D1 set this field to its arm epoch count; it only feeds the
+    # progress annotation (no execution_cost_curriculum contract exists
+    # in the D1/M0 configs — order §3.3) and its validator requires >=2.
+    config["execution_cost_curriculum_epochs"] = max(
+        2, int(spec["normal_epochs"]))
     agent = d1._agent_plugin(agent_name)
     code_before = {repo: d1._git_rev(repo)
                    for repo in ("agent-multi", "gym-fx", "doin-plugins")}
@@ -152,7 +157,7 @@ def run_m0_arm(arm: str, seed: int, out_root: Path, *,
             f"code revisions moved during arm {arm}: {code_before} ->"
             f" {code_after}")
 
-    history = result.get("epoch_history") or []
+    history = result.get("history") or []
     last = history[-1] if history else {}
     anchor_sha = config["warm_start_model_sha256"]
     terminal_path = result.get("terminal_model_path")
@@ -162,11 +167,32 @@ def run_m0_arm(arm: str, seed: int, out_root: Path, *,
     best_path = result.get("best_model_path")
     best_sha = (d1._sha(Path(best_path))
                 if best_path and Path(best_path).is_file() else None)
-    terminal_eval = result.get("terminal_evaluation") or {}
     updates = last.get("gradient_updates_total")
 
-    terminal_val_trades = ((terminal_eval.get("splits_raw") or {})
-                           .get("validation") or {}).get("trades_total")
+    # Terminal weights evaluated RAW under normal validation — the D1
+    # discipline: terminal_usable is never inferred from the selected
+    # best checkpoint (the anchor-fallback lesson).
+    terminal_eval: dict = {}
+    terminal_val_trades = None
+    if terminal_path and Path(terminal_path).is_file():
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            PipelinePlugin as ValidationPipeline)
+        eval_config = dict(config)
+        eval_config["load_model"] = str(terminal_path)
+        eval_config["solvency_mode"] = "normal_realistic"
+        eval_config["return_trace_dir"] = str(
+            out_dir / "return_traces_terminal")
+        terminal_result = ValidationPipeline(eval_config).run_pipeline(
+            config=eval_config, env_plugin=None, agent_plugin=agent,
+            mode="inference")
+        terminal_splits = d1._splits_raw(terminal_result)
+        terminal_eval = {
+            "artifact_sha256": terminal_sha,
+            "artifact_path": str(terminal_path),
+            "splits_raw": terminal_splits,
+        }
+        terminal_val_trades = (
+            (terminal_splits.get("validation") or {}).get("trades_total"))
     decision_facts = {
         "activity_survived_normal": (
             None if terminal_val_trades is None
@@ -205,6 +231,7 @@ def run_m0_arm(arm: str, seed: int, out_root: Path, *,
         "started_utc": started.isoformat(),
         "finished_utc": finished.isoformat(),
         "epoch_history": history,
+        "terminal_evaluation": terminal_eval,
         "boundary_transfer_evidence": result.get(
             "warm_start_transfer_evidence"),
         "decision_facts": decision_facts,
