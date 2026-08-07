@@ -1,6 +1,6 @@
 {
   "schema": "tool_declarations.v1",
-  "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
+  "note": "REVIEWED semantic declarations \u2014 the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
   "tools": {
     "engineering_surface_index.py": {
       "purpose": "Generate the engineering surface index (this system); discovered facts + reviewed declarations, typed outcomes",
@@ -148,6 +148,27 @@
       "mutability": "read_only",
       "authority_class": "discovery",
       "owner": "General Satoshi III"
+    },
+    "eth_sac_training_diagnostics.py": {
+      "purpose": "WP0 read-only D1 training-collapse diagnostics collector; typed absences, never zero",
+      "lifecycle": "supported",
+      "mutability": "read_only",
+      "authority_class": "discovery",
+      "owner": "General Satoshi III"
+    },
+    "eth_sac_inner_curriculum_screen.py": {
+      "purpose": "M0 mechanism screen runner: one seed, four frozen arms, reuses validated D1 helpers",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "evidence_producer",
+      "owner": "General Satoshi III"
+    },
+    "aggregate_eth_sac_inner_curriculum.py": {
+      "purpose": "M0 survival aggregation (3/4 rule) + frozen interpretation table selecting exactly one successor branch",
+      "lifecycle": "supported",
+      "mutability": "read_only",
+      "authority_class": "evidence_producer",
+      "owner": "General Satoshi III"
     }
   },
   "plugins": {
@@ -163,22 +184,30 @@
     },
     "env.plugins/gym_fx_env": {
       "protocol": "IMPLICIT",
-      "config_keys": ["env_plugin"],
+      "config_keys": [
+        "env_plugin"
+      ],
       "note": "config key mapping discovered from app/canonical_config.py _SECTION_KEYS: env_plugin -> environment.plugin"
     },
     "agent.plugins/sac_agent": {
       "protocol": "IMPLICIT",
-      "config_keys": ["agent_plugin"],
+      "config_keys": [
+        "agent_plugin"
+      ],
       "note": "agent_plugin -> asset_policy.plugin per _SECTION_KEYS"
     },
     "pipeline.plugins/rl_pipeline_with_validation": {
       "protocol": "IMPLICIT",
-      "config_keys": ["pipeline_plugin"],
+      "config_keys": [
+        "pipeline_plugin"
+      ],
       "note": "pipeline_plugin -> training.pipeline_plugin per _SECTION_KEYS"
     },
     "optimizer.plugins/project3_full_genome_optimizer": {
       "protocol": "IMPLICIT",
-      "config_keys": ["optimizer_plugin"],
+      "config_keys": [
+        "optimizer_plugin"
+      ],
       "note": "optimizer_plugin -> optimization.plugin per _SECTION_KEYS"
     }
   },
