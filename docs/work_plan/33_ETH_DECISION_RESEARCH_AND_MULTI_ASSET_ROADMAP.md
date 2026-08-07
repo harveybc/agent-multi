@@ -613,3 +613,27 @@ coverage.
 
 Canonical audit:
 `../audits/AUDIT_SATOSHI_III_143_150_CORRECTIONS_2026_08_06.md`.
+
+## 12. D1 Active Fleet and No-Idle Continuity (2026-08-07)
+
+D1 is active under `eth_curriculum_decision_20260807_v2` with one exact GPU
+UUID per seed: Omega/101, Dragon/202, Gamma-5070Ti/303 and Gamma-5090/404.
+Each seed runs `N14`, `EN4_10`, then `E4`; seeds are concurrent and arms are
+sequential. The abandoned `full-v2` chain is diagnostic-only and no
+`full-v3` continuation is authorized.
+
+Operational rule: a waiting signature, report or audit ceremony is never a
+reason to leave available GPUs idle. Before a running job ends, the next
+parameterized job must be materialized far enough to start after its required
+result is known. If that is impossible, a bounded useful diagnostic job is
+queued explicitly. Safety and experiment identity remain fail-closed, but a
+block must create an alert and an executable recovery task, not silent idle.
+
+Current D1 workers have local one-minute guardians. If a process disappears
+before its complete seed packet exists, the host starts an idempotent recovery
+service with the same output root, seed, budget, GPU UUID and replica
+authority. Completed arm records are reused only after their hashes and
+artifacts validate. Duplicate workers remain forbidden.
+
+Canonical audit:
+`../audits/AUDIT_SATOSHI_III_151_158_AND_ETH_NO_IDLE_RECOVERY_2026_08_07.md`.
