@@ -1070,7 +1070,19 @@ class PipelinePlugin:
                     except Exception:
                         critic = float("nan")
                     try:
-                        ent = float(m.log_ent_coef.detach().exp().item()) if hasattr(m, "log_ent_coef") else float("nan")
+                        # AUD (M0 order §6 Q4): D1 recorded NaN here for
+                        # every epoch because log_ent_coef exists only in
+                        # automatic entropy mode. A FIXED coefficient is
+                        # a direct fact and must be recorded as such.
+                        if getattr(m, "log_ent_coef", None) is not None:
+                            ent = float(m.log_ent_coef.detach().exp().item())
+                        else:
+                            raw_coef = getattr(m, "ent_coef", None)
+                            ent = (
+                                float(raw_coef)
+                                if isinstance(raw_coef, (int, float))
+                                else float("nan")
+                            )
                     except Exception:
                         ent = float("nan")
                     return actor, critic, ent
@@ -1262,6 +1274,52 @@ class PipelinePlugin:
                         "policy_critic_l1_after": c_a,
                         "policy_critic_delta": c_a - c_b,
                         "ent_coef": e_a,
+                        # M0 order §7: per-epoch training telemetry. The
+                        # eval rollouts already measure raw/thresholded
+                        # action behavior; copy the validation-side facts
+                        # into the durable history instead of losing
+                        # them, and record the SB3 counters/losses that
+                        # D1 never captured. Absent facts stay None —
+                        # never zero.
+                        "replay_buffer_size": (
+                            int(model.replay_buffer.size())
+                            if getattr(model, "replay_buffer", None)
+                            is not None else None
+                        ),
+                        "gradient_updates_total": (
+                            int(getattr(model, "_n_updates"))
+                            if hasattr(model, "_n_updates") else None
+                        ),
+                        "actor_loss": _safe_float_or_none(
+                            getattr(model, "logger", None)
+                            and model.logger.name_to_value.get(
+                                "train/actor_loss")),
+                        "critic_loss": _safe_float_or_none(
+                            getattr(model, "logger", None)
+                            and model.logger.name_to_value.get(
+                                "train/critic_loss")),
+                        "ent_coef_loss": _safe_float_or_none(
+                            getattr(model, "logger", None)
+                            and model.logger.name_to_value.get(
+                                "train/ent_coef_loss")),
+                        "val_action_raw_mean": _safe_float_or_none(
+                            val_summary.get("action_raw_mean")),
+                        "val_action_raw_std": _safe_float_or_none(
+                            val_summary.get("action_raw_std")),
+                        "val_action_raw_min": _safe_float_or_none(
+                            val_summary.get("action_raw_min")),
+                        "val_action_raw_max": _safe_float_or_none(
+                            val_summary.get("action_raw_max")),
+                        "val_action_non_hold_rate": _safe_float_or_none(
+                            val_summary.get("action_non_hold_rate")),
+                        "val_action_dominant_rate": _safe_float_or_none(
+                            val_summary.get("action_dominant_rate")),
+                        "val_action_deadband_rate": _safe_float_or_none(
+                            val_summary.get("action_deadband_rate")),
+                        "val_entry_orders_submitted": val_summary.get(
+                            "execution_entry_orders_submitted"),
+                        "val_no_trade_diagnosis": val_summary.get(
+                            "no_trade_diagnosis"),
                         "train_trades": int(_safe_float(train_summary.get("trades_total")) or 0),
                         "train_win_pct": _win_pct(train_summary),
                         "train_sharpe": _safe_float(train_summary.get("sharpe_ratio")),
