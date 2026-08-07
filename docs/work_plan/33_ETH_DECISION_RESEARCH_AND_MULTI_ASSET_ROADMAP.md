@@ -613,3 +613,49 @@ coverage.
 
 Canonical audit:
 `../audits/AUDIT_SATOSHI_III_143_150_CORRECTIONS_2026_08_06.md`.
+
+## 12. D1 Four-Seed Result and D2 Disposition (2026-08-07)
+
+The bounded D1 fleet run completed all 12 arm executions: seeds
+`101/202/303/404`, each with `N14`, `EN4_10` and diagnostic `E4`. All 20
+published model artifacts were independently re-hashed on their declared
+replica authority. The complete fail-closed aggregate is:
+
+```text
+~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/
+  fleet_manifest.json
+  decision_summary.json
+```
+
+The selected-checkpoint result is a tie, not a curriculum gain. For seeds 101
+and 404, every arm reports +0.0513556% mean weekly return, +2.71308% total
+return, +2.70870% annualized return, 2.66335% maximum drawdown and 136 trades on
+the same 2024 validation contract. For seeds 202 and 303, every arm reports
+-0.0393064% mean weekly return, -2.11683% total return, -2.11349% annualized
+return, 3.77031% maximum drawdown and 130 trades. Consequently every paired
+`EN4_10 - N14` raw difference is exactly zero.
+
+That equality is explained by artifact behavior, not by equivalent successful
+learning. The selected `N14` and `EN4_10` checkpoint remained the unchanged
+warm-start anchor in every seed. Every one of the 14 post-anchor normal epochs
+in `N14` and every one of the 10 normal epochs in `EN4_10` failed the activity
+gate; all eight terminal normal-trained artifacts produced zero validation
+trades and zero return. `E4` retained 130-136 validation trades after its easy
+phase but did not improve the anchor's raw metrics. Margin/recapitalization
+telemetry remained unavailable, so this packet does not show that relaxed
+solvency, specifically, caused the retained behavior.
+
+D2 therefore does not admit a claimed easy-to-normal advantage. Normal-only
+remains the mandatory control and `easy_epochs` remains an experimental gene,
+including zero, rather than a frozen schedule. Before R1/R2 feature or
+representation domains can spend downstream-control compute, R0/R3 must isolate
+the measured SAC normal-update activity collapse using existing traces and a
+bounded learning-dynamics screen. A new broad full-stack campaign or a resume of
+`full-v2` is not evidence-compatible with this result.
+
+One collection defect was found without invalidating the executions: Git's
+host-specific abbreviation length recorded the identical `agent-multi` commit
+as `46ce057` and `46ce057b`. `agent-multi@38643550` now records full SHAs and
+allows historical abbreviations to canonicalize only against the complete SHA
+captured by the ready fleet preflight. Raw packets and artifacts were not
+modified.
