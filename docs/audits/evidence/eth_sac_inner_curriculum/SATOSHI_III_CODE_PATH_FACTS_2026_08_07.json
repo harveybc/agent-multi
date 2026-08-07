@@ -1,0 +1,83 @@
+{
+ "schema": "agent_multi.sac_inner_curriculum_knowledge_check.v1",
+ "author": "General Satoshi III",
+ "date": "2026-08-07",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_III_SAC_INNER_CURRICULUM_ORDER_2026_08_07.md section 5",
+ "facts": {
+  "easy_weights_trained_and_saved": {
+   "answer": "pipeline_plugins/rl_pipeline_with_solvency_curriculum.py:_train_easy_phase (lines ~178-260): loads the shared anchor via agent_plugin.load_for_training (sha-verified against warm_start_model_sha256), trains SAC weights under the easy config from _easy_training_config, and saves '<save_model>.post_easy.zip' immutably beside the save path.",
+   "source_refs": ["pipeline_plugins/rl_pipeline_with_solvency_curriculum.py:178-260"]
+  },
+  "normal_sac_reconstruction": {
+   "answer": "rl_pipeline_with_solvency_curriculum.run_pipeline sets normal_config['warm_start_model']=post_easy path (+sha) and delegates to rl_pipeline_with_validation.run_pipeline; the warm start goes through agent_plugins/sac_agent.py:load_for_training (line 316): a NEW SAC is constructed from the normal candidate config and source.policy.state_dict() is loaded strict=True into it.",
+   "source_refs": ["pipeline_plugins/rl_pipeline_with_solvency_curriculum.py:run_pipeline (delegation block)", "agent_plugins/sac_agent.py:316-356"]
+  },
+  "what_survives_the_boundary": {
+   "actor": "survives (inside policy.state_dict, strict=True load)",
+   "critic": "survives (SB3 SAC policy state contains critic)",
+   "target_critics": "survive (critic_target tensors are part of policy state_dict)",
+   "entropy_state": "mode-dependent transfer: load_for_training records source/target entropy modes; D1 used FIXED ent_coef=0.2 so no entropy optimizer existed on either side; the auto-vs-fixed guard exists because SAC.load with custom_objects is unsafe across entropy-mode changes",
+   "optimizer_moments": "DO NOT survive: 'optimizer_state_transferred': False is recorded explicitly (sac_agent.py:355); fresh Adam moments on the normal side",
+   "replay": "does NOT survive: the boundary comment in run_pipeline states the normal learner gets a FRESH replay buffer; easy transitions never enter normal updates",
+   "source_refs": ["agent_plugins/sac_agent.py:316-356", "pipeline_plugins/rl_pipeline_with_solvency_curriculum.py:run_pipeline boundary comment"]
+  },
+  "d1_normal_learning_rate_and_entropy_mode": {
+   "answer": "learning_rate=1e-4, ent_coef=0.2 FIXED (not 'auto'), batch_size=256, buffer_size=200000, learning_starts=1000, gamma=0.99, tau=0.005, train_freq=1, gradient_steps=1, continuous_action_threshold=0.1",
+   "verified_against": "examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json (sha256 5df24c0d78a89613...)"
+  },
+  "execution_cost_wrapper_active_in_d1": {
+   "answer": "NO. The pinned D1 base config contains ZERO execution_cost keys and pipeline_plugin=rl_pipeline_with_validation (the decision arms wrapped it with the solvency pipeline); no execution_cost_curriculum contract exists in the D1 config, so D1 is a binary easy/normal contract exactly as the order states.",
+   "verified_by": "key scan of the pinned config_out.json: [k for k in c if 'execution' in k or 'cost_curric' in k] == []"
+  },
+  "why_selected_checkpoint_can_equal_anchor_while_terminal_inactive": {
+   "answer": "rl_pipeline_with_validation keeps a best-checkpoint history across epochs; the warm-start anchor's own evaluation (epoch-0/initial candidate) carries validation trades>0 from its original training, while every POST-anchor epoch fails the activity gate (trade_gate FAIL -> ineligible composite). Best-checkpoint selection therefore falls back to the anchor artifact, and the TERMINAL (last-epoch) weights are inactive. The selected 'best' is then indistinguishable from no learning unless terminal weights/hashes are inspected separately - which is why terminal_usable must never be inferred from best-checkpoint success.",
+   "source_refs": [
+    "rl_pipeline_with_validation.py:227-242 _checkpoint_is_eligible: num_timesteps >= l1_min_checkpoint_timesteps AND trade_gate_passed",
+    "rl_pipeline_with_validation.py:381-384 trade_gate_passed = train_tail_trades >= train_tail_min AND val_trades >= validation_min (composite penalized otherwise, line 385)",
+    "rl_pipeline_with_validation.py:1040-1051 THE ANCHOR-FALLBACK MECHANISM: before any training epoch the warm-start model itself is evaluated as checkpoint_source='warm_start_normal_baseline'; if baseline_trade_gate passes, the ANCHOR is saved to best_model_path (1048-1051, best_checkpoint_saved=True)",
+    "rl_pipeline_with_validation.py:1187-1218 per-epoch eligibility application; _update_l1_checkpoint_state (213-224) refuses ineligible epochs; improved -> save (1216-1218)",
+    "rl_pipeline_with_validation.py:1369-1381 if NOTHING was ever eligible (not even the baseline) the run raises RuntimeError instead of publishing",
+    "rl_pipeline_with_validation.py:1383-1390 terminal weights preserved separately as .terminal.zip BEFORE best reload (AUD-F1-20260806-129)"
+   ],
+   "trace_status": "RESOLVED with exact lines 2026-08-07 (Musashi M0-focus note item 1)"
+  },
+  "raw_action_collapse_vs_threshold_rejection_facts": {
+   "answer": "distinguishing facts: (a) RAW policy output mean/std/min/max on fixed validation observations - if |raw| dispersion collapses toward 0 the policy itself collapsed; (b) thresholded action rate: bridge maps |raw| < continuous_action_threshold(=0.1) to HOLD, so raw dispersion > 0.1 with zero entries indicates threshold/order-path suppression, not policy collapse; (c) order submission/rejection counts (protected submissions vs rejections) separate order-path rejection from hold decisions. WP0 must report (a)+(b)+(c) per epoch; WP1 instruments them at the boundary.",
+   "source_refs": ["gym-fx/app/bt_bridge.py: continuous action threshold handling", "config: continuous_action_threshold=0.1"]
+  },
+  "direct_zero_margin_events_vs_unavailable": {
+   "answer": "gym-fx/app/bt_bridge.py maintains would_margin_call_events (line 59, reset line 85) and _continue_after_would_margin_call (line 230) records events with cause='would_margin_call' when easy-mode continuation replaces termination. DIRECT ZERO = the list exists in the run's diagnostics and is empty (len 0 observed). UNAVAILABLE = the diagnostics were never exported into the arm record (D1 case: margin/recapitalization telemetry absent from packets). The collector must type these differently and never coerce absence to 0.",
+   "source_refs": ["gym-fx/app/bt_bridge.py:59,85,207,230-240"]
+  }
+ },
+ "bridge_exported_diagnostics": {
+  "per_step_info_keys_env_make_info": {
+   "source_ref": "gym-fx/app/env.py:860-877",
+   "keys": ["equity", "position", "position_units", "open_order_count", "price", "bar_index", "total_bars", "trades", "commission_paid", "raw_action_value", "coerced_action", "action_diagnostics (dict, env.py:923+)", "execution_diagnostics (dict copied from bridge)"]
+  },
+  "per_step_reward_info_extension": {
+   "source_ref": "gym-fx/app/env.py:395-407",
+   "keys": ["base_reward", "force_close_reward_penalty", "pnl", "operational_pnl", "trade_cost", "solvency_mode", "economic_equity", "recapitalization_debt", "recapitalization_count", "would_margin_call_count", "termination_cause"]
+  },
+  "execution_diagnostics_families": {
+   "source_ref": "gym-fx/app/bt_bridge.py:87-100+",
+   "keys": ["entry_actions_seen", "entry_orders_submitted", "blocked_session_filter", "blocked_atr_warmup", "blocked_non_positive_atr", "blocked_non_positive_size", "blocked_non_positive_price", "default_orders_submitted", "plugin_apply_errors", "protected_entry_rejections", "protected_market_entries", "protected_limit_entries", "protected_stop_entries", "..."]
+  },
+  "raw_vs_thresholded_distinction_is_direct": "raw_action_value and coerced_action are BOTH exported per step (env.py:874-875), so raw-collapse vs threshold-suppression is decidable from existing exports when a trace was recorded",
+  "honest_absences": {
+   "would_margin_call_event_details": "only the COUNT reaches info (env.py:404-405); per-event equity/debt details stay internal to the bridge (bt_bridge.py:240-268) -> source_unavailable unless WP1 exports them",
+   "sac_losses_and_observed_lr": "actor/critic/entropy losses and optimizer-observed LR are SB3-side, never exported by the bridge and not recorded by D1 -> not_instrumented",
+   "raw_action_stats_on_fixed_validation_observations": "not collected in D1 -> not_instrumented; WP1 adds them at the boundary and per epoch"
+  },
+  "trace_status": "RESOLVED with exact lines 2026-08-07 (Musashi M0-focus note item 2)"
+ },
+ "remaining_traces_before_wp1_edit": [],
+ "functions_inspected_this_check": [
+  "rl_pipeline_with_solvency_curriculum._train_easy_phase",
+  "rl_pipeline_with_solvency_curriculum.run_pipeline (boundary block)",
+  "rl_pipeline_with_solvency_curriculum._easy_training_config (signature)",
+  "sac_agent.load_for_training",
+  "bt_bridge.would_margin_call_events/_continue_after_would_margin_call (hook sites)",
+  "pinned D1 base config (hyperparameters + cost-key scan)"
+ ]
+}
