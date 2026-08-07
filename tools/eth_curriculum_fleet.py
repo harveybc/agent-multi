@@ -25,7 +25,7 @@ RUNNER = REPO / "tools/eth_curriculum_decision_experiment.py"
 AGGREGATOR = REPO / "tools/aggregate_curriculum_decision.py"
 DEFAULT_ROOT = Path(
     "/home/harveybc/.local/share/agent-multi/"
-    "eth_curriculum_decision_20260807_v1"
+    "eth_curriculum_decision_20260807_v2"
 )
 REPOS = ("agent-multi", "gym-fx", "doin-node", "doin-core",
          "doin-plugins", "trading-contracts")
@@ -41,7 +41,7 @@ class Worker:
 
     @property
     def unit(self) -> str:
-        return f"eth-curriculum-seed{self.seed}-v1.service"
+        return f"eth-curriculum-seed{self.seed}-v2.service"
 
 
 WORKERS = (
@@ -156,15 +156,24 @@ def preflight(output_root: Path) -> dict:
 def start(output_root: Path) -> dict:
     preflight_packet = preflight(output_root)
     launched = []
+    selected_gpu_uuids = {}
     errors = []
     for worker in WORKERS:
         seed_dir = output_root / f"seed{worker.seed}"
         _remote(worker, ["mkdir", "-p", str(seed_dir)])
+        gpu_row = preflight_packet["facts"][worker.name]["gpu"][
+            worker.gpu_index]
+        gpu_uuid = gpu_row.split(",")[1].strip()
+        if not gpu_uuid.startswith("GPU-"):
+            raise RuntimeError(
+                f"{worker.name}: invalid selected GPU UUID {gpu_uuid!r}")
+        selected_gpu_uuids[worker.name] = gpu_uuid
         command = [
             "systemd-run", "--user", f"--unit={worker.unit}",
             "--collect", "--property=Type=exec", "--property=Restart=no",
             f"--working-directory={REPO}",
-            f"--setenv=CUDA_VISIBLE_DEVICES={worker.gpu_index}",
+            "--setenv=CUDA_DEVICE_ORDER=PCI_BUS_ID",
+            f"--setenv=CUDA_VISIBLE_DEVICES={gpu_uuid}",
             "--setenv=PYTHONUNBUFFERED=1",
             ("--setenv=AGENT_MULTI_REPLICA_AUTHORITY="
              f"{worker.replica_authority}"),
@@ -191,6 +200,7 @@ def start(output_root: Path) -> dict:
         "launched_at": datetime.now(timezone.utc).isoformat(),
         "output_root": str(output_root),
         "preflight_sha256": _sha(output_root / "fleet_preflight.json"),
+        "selected_gpu_uuids": selected_gpu_uuids,
         "launched": launched,
         "errors": errors,
     }
@@ -217,6 +227,13 @@ def status(output_root: Path) -> dict:
         ], check=False)
         gpu_rows = [line.strip() for line in gpu.stdout.splitlines()
                     if line.strip()]
+        compute = _remote(worker, [
+            "nvidia-smi",
+            "--query-compute-apps=gpu_uuid,pid,process_name,used_memory",
+            "--format=csv,noheader,nounits",
+        ], check=False)
+        compute_rows = [line.strip() for line in compute.stdout.splitlines()
+                        if line.strip()]
         logs = _remote(worker, [
             "journalctl", "--user", "-u", worker.unit,
             "-n", "60", "--no-pager", "-o", "cat"
@@ -228,6 +245,17 @@ def status(output_root: Path) -> dict:
                 current_arm = line.strip()
             if "[decision]" in line and " done" in line:
                 completed += 1
+        assigned_gpu = (gpu_rows[worker.gpu_index]
+                        if worker.gpu_index < len(gpu_rows)
+                        else "unavailable")
+        assigned_uuid = (assigned_gpu.split(",")[1].strip()
+                         if assigned_gpu != "unavailable" else None)
+        main_pid = values[2] if len(values) > 2 else "unknown"
+        pid_on_assigned_gpu = any(
+            row.split(",")[0].strip() == assigned_uuid
+            and row.split(",")[1].strip() == main_pid
+            for row in compute_rows if len(row.split(",")) >= 2
+        )
         rows.append({
             "worker": worker.name,
             "seed": worker.seed,
@@ -235,11 +263,12 @@ def status(output_root: Path) -> dict:
             "service": {
                 "active_state": values[0] if len(values) > 0 else "unknown",
                 "sub_state": values[1] if len(values) > 1 else "unknown",
-                "main_pid": values[2] if len(values) > 2 else "unknown",
+                "main_pid": main_pid,
                 "exec_main_status": values[3] if len(values) > 3 else "unknown",
             },
-            "gpu": (gpu_rows[worker.gpu_index]
-                    if worker.gpu_index < len(gpu_rows) else "unavailable"),
+            "gpu": assigned_gpu,
+            "compute_processes": compute_rows,
+            "pid_on_assigned_gpu": pid_on_assigned_gpu,
             "completed_arms": completed,
             "current_arm": current_arm,
             "latest_log": logs.stdout.splitlines()[-1:][0]
