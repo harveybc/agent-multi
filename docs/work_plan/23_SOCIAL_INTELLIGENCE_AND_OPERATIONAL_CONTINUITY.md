@@ -429,3 +429,70 @@ The first deployment is Omega-only, read-only and loopback/stdio. Automatic
 enrichment and dream cycles remain disabled. A real Hermes cron invocation,
 not merely an interactive MCP listing, must prove tool availability before the
 pilot can be described as operational.
+
+## 14. Durable Hermes Enrichment Loop (2026-08-07)
+
+The original Hermes social jobs produced large transient reports and consumed
+model-call reservations, but did not persist their classifications or claims
+into OLAP. At the correction boundary the database contained 6,216 posts, 125
+digest runs and 119 model-call reservations while every post remained
+`unreviewed`. The old triage and review cron jobs were paused. The review
+wrapper also selected `deepseek-v4-pro`, contrary to the declared Flash-only
+route, and is no longer an active execution path.
+
+The replacement is a closed, inspectable pipeline:
+
+```text
+Moltbook collector -> deterministic screen -> bounded Hermes Flash batch
+  -> strict JSON validation -> atomic SQLite ingestion -> human review queue
+```
+
+The deterministic screen is intentionally cheap and reversible:
+
+- posts below the configured relevance threshold become
+  `screened_low_relevance` but are not deleted;
+- posts containing tool-use, secret-extraction or instruction-override
+  patterns become `quarantined` and are never sent to the model;
+- safe posts above the threshold remain eligible for typed enrichment;
+- changing the threshold permits later rescoring without recollection.
+
+Each accepted enrichment stores the source-post hash, model/provider,
+prompt hash, token reservation, topic, entities, explicit claims, target
+fronts, relevance, novelty, confidence, actionability, operational risk,
+response-worthiness, recommended action, summary and rationale. The supported
+actions are `archive`, `investigate`, `experiment_candidate`,
+`reply_candidate` and `ignore`. The OLAP view
+`social_insight_candidates_olap` exposes these facts without rereading model
+prose.
+
+The hourly worker uses `deepseek-v4-flash` through OpenCode Go, processes at
+most eight posts per run and has a 1 GiB memory limit, reduced CPU priority and
+no GPU access. Model output must match the exact requested post IDs and schema;
+an invalid batch is rejected atomically. Publication, replies, DMs, trading
+actions and campaign mutations remain impossible from this path.
+
+The initial real acceptance run processed 12 posts:
+
+- 5,483 deterministically screened as low relevance;
+- 50 quarantined before any model call;
+- 12 enriched and persisted;
+- 8 classified `archive`, 3 `investigate` and 1 `experiment_candidate`;
+- 671 eligible posts remained in the backlog at the observation boundary;
+- no item exceeded response-worthiness 0.65, so no Telegram notification or
+  reply draft was created.
+
+The notification rule is signal-only: Hermes may wake a human review path only
+for a newly persisted candidate above the configured threshold. It must not
+send heartbeat, empty-digest or repeated-candidate messages. Any future reply
+still requires source inspection and explicit human approval.
+
+Runtime commands:
+
+```bash
+systemctl --user status agent-multi-social-enrichment.timer
+python tools/social_intelligence_enrichment.py \
+  --config examples/config/social_intelligence/moltbook_observe_v1.json status
+python tools/social_intelligence_enrichment.py \
+  --config examples/config/social_intelligence/moltbook_observe_v1.json digest \
+  --minimum-response-worthiness 0.65
+```
