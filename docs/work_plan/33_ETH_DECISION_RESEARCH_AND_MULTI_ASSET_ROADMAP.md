@@ -659,3 +659,30 @@ as `46ce057` and `46ce057b`. `agent-multi@38643550` now records full SHAs and
 allows historical abbreviations to canonicalize only against the complete SHA
 captured by the ready fleet preflight. Raw packets and artifacts were not
 modified.
+
+## 13. D1 Follow-up: SAC Inner-Curriculum Mechanism Screen
+
+The binding execution order for the D1 follow-up is:
+
+`../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_SAC_INNER_CURRICULUM_ORDER_2026_08_07.md`.
+
+This is a bounded lower-level SAC experiment, not another broad DOIN campaign.
+Easy dynamics already run inside SAC; the immediate question is whether the
+easy-to-normal handoff loses the learned behavior because normal continuation
+reconstructs the learner with a fresh replay buffer, fresh optimizer state and
+an abrupt dynamics change. The order first instruments that boundary and then
+compares four equal-compute, four-seed arms: normal-only, unchanged-rate
+easy-to-normal, and two reduced normal fine-tuning rates.
+
+No positive-return screen is permitted. The first decision is mechanism
+survival: a terminal policy must remain active under normal-realistic
+validation, differ from its anchor, contain applied normal updates, remain
+loadable and preserve protected execution. Only a mechanism that survives in
+at least three of four paired seeds may enter the longer M1 confirmation. A
+failed screen branches immediately into the pre-materialized R0/R3 collapse
+diagnostic so the fleet does not wait for a new planning cycle.
+
+This order does not authorize edits to `doin-node`, `doin-core` or
+`doin-plugins`, does not authorize test-period evaluation and does not resume
+the superseded `full-v2` chain. Any later DOIN domain exposes only controls
+whose behavior this local screen has measured.
