@@ -1,6 +1,6 @@
 {
  "facts": {
-  "declarations_sha256": "372ef0f4ad318f30913f3d9e3b2a89992984333b50cf302914c48911b1022e9c",
+  "declarations_sha256": "e49550b42dab92907e97d583f357ee416ac75571b51fbd2410e655e32b09a531",
   "entry_point_comparison": {
    "drift": [],
    "installed_only": []
@@ -238,7 +238,7 @@
      ],
      "parse_error": null,
      "path": "tools/aggregate_curriculum_decision.py",
-     "sha256": "d4dc65f0eb24bc96eb584d96ae9fa8d5ac1fd7b59845a37a8139ff8bce765b32"
+     "sha256": "3ab924f0eab9a132c4272891ed6a659650300434a76139b0a1691de31e2f1a58"
     }
    },
    "aggregate_p4_runs.py": {
@@ -556,6 +556,7 @@
       "os",
       "pathlib",
       "pipeline_plugins",
+      "re",
       "shutil",
       "stable_baselines3",
       "subprocess",
@@ -563,7 +564,7 @@
      ],
      "parse_error": null,
      "path": "tools/eth_curriculum_decision_experiment.py",
-     "sha256": "c2eae759f00c98b09f84d06e1050ef80966cf12e15dc006785571e64b9369e37"
+     "sha256": "9b176ffccb6fe0ee4e42d200382e736824298ff7f9c23565111f28e155effbf7"
     }
    },
    "eth_curriculum_fixture.py": {
@@ -593,6 +594,39 @@
      "parse_error": null,
      "path": "tools/eth_curriculum_fixture.py",
      "sha256": "44d4f08f38d510825c70c4a0cc2fd9d9856ef8fb65c2b637201c3f522d27904f"
+    }
+   },
+   "eth_curriculum_fleet.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Musashi",
+     "purpose": "Preflight, launch, monitor, collect and independently re-verify the four-GPU ETH curriculum decision experiment"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--output-root",
+      "command"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "dataclasses",
+      "datetime",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "shlex",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/eth_curriculum_fleet.py",
+     "sha256": "927b27aa9f635ac3e7f82cb40468788dac464bdf298d626c0cc2a96ce382594f"
     }
    },
    "fleet_status_context.py": {
@@ -2438,6 +2472,7 @@
       "--cadence-bars",
       "--control-mode",
       "--device",
+      "--handover-bars",
       "--initial-steps",
       "--lookback",
       "--max-origins",
@@ -2471,7 +2506,7 @@
      ],
      "parse_error": null,
      "path": "tools/rolling_origin_adaptation.py",
-     "sha256": "36922fdff1be92552c289e9da300409c1e5b8b87166a65f569f55e637f11187c"
+     "sha256": "f34ae3f4bcdeebf0a9f95ad8f6f241789364059e1344f4d96aa305b428175ba1"
     }
    },
    "seed_sweep.py": {
@@ -2723,22 +2758,22 @@
   },
   "unclassified_new_executables": []
  },
- "facts_hash": "sha256:94f09ca146ac02a91c1c7507d03f2f6140820146fc6b4255a2e4bcaffd1585ff",
+ "facts_hash": "sha256:1c76ab864239b982b0121a5e622ab82c9ebf49fd9f22f0ad347f572fb481fe02",
  "provenance": {
   "arguments": {
    "declarations": "/home/harveybc/Documents/GitHub/agent-multi/tools/TOOL_DECLARATIONS.json",
-   "output": "/home/harveybc/Documents/GitHub/agent-multi/tools/ENGINEERING_SURFACE_INDEX.json",
+   "output": "tools/ENGINEERING_SURFACE_INDEX.json",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
   "environment_identity": {
    "generator_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
-  "finished_utc": "2026-08-07T01:16:06.512252+00:00",
+  "finished_utc": "2026-08-07T08:34:35.724413+00:00",
   "generator": "engineering_surface_index.v1",
   "generator_sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963",
-  "repo_head": "c3f92f652a602c9c504705b507df13487ad41b71",
-  "started_utc": "2026-08-07T01:16:06.099277+00:00",
+  "repo_head": "96d42b8bd99905559a12497cbb8593479b1767dd",
+  "started_utc": "2026-08-07T08:34:35.273661+00:00",
   "worktree_dirty": true
  },
  "schema": "engineering_surface_index.v1",

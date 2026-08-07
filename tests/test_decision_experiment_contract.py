@@ -86,7 +86,7 @@ def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
             "max_drawdown_fraction": 0.03, "trades_total": 40,
         }} if with_validation else {}
         record = {
-            "schema": "agent_multi.arm_record.v5",
+            "schema": runner.ARM_RECORD_SCHEMA,
             "execution_id": duplicate_execution_id or
             f"exec-{seed}-{arm}-" + "0" * 40,
             "arm": arm, "seed": seed, "splits_raw": splits,
@@ -294,7 +294,7 @@ def _complete_record(out_dir: Path, exec_id: str, arm="N14",
                              "total_return": 0.02,
                              "max_drawdown_fraction": 0.03}}
     return {
-        "schema": "agent_multi.arm_record.v5",
+        "schema": runner.ARM_RECORD_SCHEMA,
         "execution_id": exec_id, "arm": arm, "seed": seed,
         "splits_raw": splits, "artifacts": artifacts,
         "code_revisions_before": {"agent-multi": "rev1"},
@@ -337,7 +337,7 @@ def test_runner_refuses_incomplete_matching_record(tmp_path):
                                    epoch_timesteps=10)
     out_dir = tmp_path / "seed101" / "N14"
     out_dir.mkdir(parents=True)
-    thin = {"schema": "agent_multi.arm_record.v5",
+    thin = {"schema": runner.ARM_RECORD_SCHEMA,
             "execution_id": exec_id, "arm": "N14", "seed": 101,
             "splits_raw": {"validation": {"total_return": 0.01}}}
     (out_dir / "arm_record.json").write_text(json.dumps(thin))
@@ -349,9 +349,55 @@ def test_runner_refuses_incomplete_matching_record(tmp_path):
 def test_complete_record_validator_catches_missing_replica(tmp_path):
     exec_id = "e" * 64
     record = _complete_record(tmp_path / "arm", exec_id)
-    Path(record["artifacts"]["terminal"]["replica_path"]).unlink()
+    record["artifacts"]["terminal"]["replica_observation"] = {}
     problems = runner.validate_arm_record(record, "N14")
-    assert any("replica missing" in p for p in problems)
+    assert any("no independent observation" in p for p in problems)
+
+
+def test_complete_record_accepts_remote_path_not_mounted_locally(tmp_path):
+    """A genuine SSH replica is not expected to be mounted locally."""
+    record = _complete_record(tmp_path / "remote", "e" * 64)
+    for ref in record["artifacts"].values():
+        remote = f"~/.local/share/agent-multi/replica/{Path(ref['path']).name}"
+        ref["replica_path"] = remote
+        ref["replica_observation"]["remote_path"] = remote
+    assert runner.validate_arm_record(record, "N14") == []
+
+
+def test_complete_record_rejects_unbound_remote_observation(tmp_path):
+    record = _complete_record(tmp_path / "unbound", "e" * 64)
+    record["artifacts"]["terminal"]["replica_observation"][
+        "remote_path"] = "/different/artifact.zip"
+    problems = runner.validate_arm_record(record, "N14")
+    assert any("not bound to replica_path" in p for p in problems)
+
+
+def test_remote_replica_namespace_separates_seed_and_arm(
+        tmp_path, monkeypatch):
+    path = tmp_path / "artifact.zip"
+    path.write_bytes(b"weights")
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def fake_run(argv, **kwargs):
+        command = argv[-1]
+        if command == "hostname":
+            return subprocess.CompletedProcess(argv, 0, "dragon\n", "")
+        if command.startswith("sha256sum"):
+            return subprocess.CompletedProcess(
+                argv, 0, f"{digest}  artifact.zip\n", "")
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+    first = runner._replicate_to_remote(
+        path, "terminal", "dragon",
+        replica_namespace=("run-a", "seed101", "N14"))
+    second = runner._replicate_to_remote(
+        path, "terminal", "dragon",
+        replica_namespace=("run-a", "seed202", "EN4_10"))
+
+    assert first["remote_path"] != second["remote_path"]
+    assert "/run-a/seed101/N14/" in first["remote_path"]
+    assert "/run-a/seed202/EN4_10/" in second["remote_path"]
 
 
 def test_complete_record_validator_catches_code_drift(tmp_path):
@@ -383,7 +429,7 @@ def test_aggregator_rejects_empty_identity_fields(tmp_path):
         packet = {"schema": "agent_multi.eth_curriculum_decision.v1",
                   "seed": seed, "data_sha256": "", 
                   "base_contract_sha256": "", "lineage": {},
-                  "arms": {arm: {"schema": "agent_multi.arm_record.v5",
+                  "arms": {arm: {"schema": runner.ARM_RECORD_SCHEMA,
                                  "execution_id": f"e{seed}{arm}",
                                  "arm": arm, "seed": seed,
                                  "splits_raw": {"validation": {
