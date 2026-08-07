@@ -320,7 +320,7 @@ def _agent_plugin(name: str):
 def _git_rev(repo: str) -> str:
     return subprocess.run(
         ["git", "-C", f"/home/harveybc/Documents/GitHub/{repo}",
-         "rev-parse", "--short", "HEAD"],
+         "rev-parse", "HEAD"],
         capture_output=True, text=True).stdout.strip()
 
 

@@ -53,8 +53,38 @@ def _finite(value) -> bool:
         return False
 
 
-def _validate_packets(seeds: dict, expect_seeds) -> list:
+def _is_git_revision(value) -> bool:
+    text = str(value or "")
+    return 7 <= len(text) <= 40 and all(
+        c in "0123456789abcdefABCDEF" for c in text)
+
+
+def _canonical_lineage(lineage: dict, expected_revisions: dict,
+                       *, where: str) -> tuple[dict, list]:
+    """Resolve recorded abbreviations only against preflight full SHAs."""
+    canonical = {}
     problems = []
+    for repo, revision in (lineage or {}).items():
+        revision = str(revision)
+        expected = expected_revisions.get(repo)
+        if expected is None:
+            canonical[repo] = revision
+            continue
+        if (not _is_git_revision(revision)
+                or not str(expected).startswith(revision)):
+            problems.append(
+                f"{where}: {repo} revision {revision!r} does not match"
+                f" preflight {expected!r}")
+            canonical[repo] = revision
+            continue
+        canonical[repo] = expected
+    return canonical, problems
+
+
+def _validate_packets(seeds: dict, expect_seeds,
+                      expected_revisions: dict | None = None) -> list:
+    problems = []
+    expected_revisions = expected_revisions or {}
     if sorted(seeds) != sorted(expect_seeds):
         problems.append(
             f"seeds {sorted(seeds)} != expected {sorted(expect_seeds)}")
@@ -82,8 +112,13 @@ def _validate_packets(seeds: dict, expect_seeds) -> list:
                 str(v).strip() for v in lineage.values()):
             problems.append(
                 f"seed {seed}: lineage {lineage!r} is empty or invalid")
-        identities[seed] = (data_sha, base_sha,
-                            json.dumps(lineage, sort_keys=True))
+        canonical_lineage, lineage_problems = _canonical_lineage(
+            lineage if isinstance(lineage, dict) else {},
+            expected_revisions, where=f"seed {seed} lineage")
+        problems.extend(lineage_problems)
+        identities[seed] = (
+            data_sha, base_sha,
+            json.dumps(canonical_lineage, sort_keys=True))
         arms = sorted((packet.get("arms") or {}))
         if arms != sorted(EXPECTED_ARMS):
             problems.append(
@@ -149,8 +184,19 @@ def _validate_packets(seeds: dict, expect_seeds) -> list:
             elif isinstance(lineage, dict):
                 shared = {k: v for k, v in (after or {}).items()
                           if k in lineage}
-                mismatched = {k: (v, lineage[k]) for k, v in
-                              shared.items() if v != lineage[k]}
+                mismatched = {}
+                for key, value in shared.items():
+                    expected = expected_revisions.get(key)
+                    if expected is not None:
+                        same = (
+                            _is_git_revision(value)
+                            and _is_git_revision(lineage[key])
+                            and str(expected).startswith(str(value))
+                            and str(expected).startswith(str(lineage[key])))
+                    else:
+                        same = value == lineage[key]
+                    if not same:
+                        mismatched[key] = (value, lineage[key])
                 if mismatched:
                     problems.append(
                         f"{where}: arm lineage {mismatched} does not"
@@ -189,6 +235,27 @@ def main() -> int:
             continue
         seeds[seed] = packet
         packet_paths[seed] = str(packet_path)
+
+    expected_revisions = {}
+    preflight_path = args.output_root / "fleet_preflight.json"
+    if preflight_path.is_file():
+        preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
+        revisions = preflight.get("revisions") or {}
+        if (preflight.get("schema") !=
+                "agent_multi.eth_curriculum_fleet_preflight.v1"
+                or preflight.get("ready") is not True
+                or not isinstance(revisions, dict)
+                or not revisions
+                or not all(len(str(value)) == 40
+                           and _is_git_revision(value)
+                           for value in revisions.values())):
+            print(json.dumps({
+                "aggregated": False,
+                "reason": "invalid fleet preflight identity",
+                "problems": [str(preflight_path)],
+            }, indent=1))
+            return 1
+        expected_revisions = revisions
     if duplicates and not args.allow_partial:
         print(json.dumps({
             "aggregated": False,
@@ -201,7 +268,8 @@ def main() -> int:
     # experiment identity + finite decision metrics + complete evidence.
     # A truthy mapping is NOT completeness.
     if not args.allow_partial:
-        missing = _validate_packets(seeds, args.expect_seeds)
+        missing = _validate_packets(
+            seeds, args.expect_seeds, expected_revisions)
         if missing:
             print(json.dumps({
                 "aggregated": False,

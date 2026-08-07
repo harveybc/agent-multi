@@ -18,6 +18,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 import tools.eth_curriculum_decision_experiment as runner  # noqa: E402
+import tools.aggregate_curriculum_decision as aggregator  # noqa: E402
 
 AGGREGATOR = REPO / "tools/aggregate_curriculum_decision.py"
 
@@ -86,7 +87,7 @@ def _write_packet(root: Path, seed: int, arms=("N14", "EN4_10", "E4"),
             "max_drawdown_fraction": 0.03, "trades_total": 40,
         }} if with_validation else {}
         record = {
-            "schema": runner.ARM_RECORD_SCHEMA,
+            "schema": aggregator.RECORD_SCHEMA,
             "execution_id": duplicate_execution_id or
             f"exec-{seed}-{arm}-" + "0" * 40,
             "arm": arm, "seed": seed, "splits_raw": splits,
@@ -216,6 +217,55 @@ def test_aggregator_rejects_mixed_lineage(tmp_path):
     done = _aggregate(tmp_path)
     assert done.returncode == 1
     assert "DIFFERENT data/base/lineage" in done.stdout
+
+
+def test_aggregator_canonicalizes_abbreviations_against_preflight(
+        tmp_path, monkeypatch):
+    full_revision = "46ce057b2dafe712ca098e99dd19cec5bc8f4628"
+    for seed in (101, 202, 303, 404):
+        abbreviation = full_revision[:8] if seed == 101 else full_revision[:7]
+        _write_packet(tmp_path, seed, lineage=abbreviation)
+    monkeypatch.setattr(aggregator, "_shared_validator",
+                        lambda _record, _arm: [])
+    packets = {
+        seed: json.loads((tmp_path / f"seed{seed}" /
+                          "seed_packet.json").read_text())
+        for seed in (101, 202, 303, 404)
+    }
+
+    problems = aggregator._validate_packets(
+        packets, (101, 202, 303, 404),
+        {"agent-multi": full_revision})
+
+    assert problems == []
+
+
+def test_aggregator_rejects_abbreviation_not_in_preflight(
+        tmp_path, monkeypatch):
+    full_revision = "46ce057b2dafe712ca098e99dd19cec5bc8f4628"
+    for seed in (101, 202, 303, 404):
+        _write_packet(tmp_path, seed, lineage=full_revision[:7])
+    packet_path = tmp_path / "seed404" / "seed_packet.json"
+    packet = json.loads(packet_path.read_text())
+    packet["lineage"]["agent-multi"] = "deadbee"
+    for record in packet["arms"].values():
+        record["code_revisions_before"]["agent-multi"] = "deadbee"
+        record["code_revisions_after"]["agent-multi"] = "deadbee"
+    packet_path.write_text(json.dumps(packet))
+    monkeypatch.setattr(aggregator, "_shared_validator",
+                        lambda _record, _arm: [])
+    packets = {
+        seed: json.loads((tmp_path / f"seed{seed}" /
+                          "seed_packet.json").read_text())
+        for seed in (101, 202, 303, 404)
+    }
+
+    problems = aggregator._validate_packets(
+        packets, (101, 202, 303, 404),
+        {"agent-multi": full_revision})
+
+    assert any("does not match preflight" in problem
+               for problem in problems)
 
 
 def test_aggregator_rejects_wrong_schema(tmp_path):
