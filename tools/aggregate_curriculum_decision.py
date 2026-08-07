@@ -23,7 +23,7 @@ EXPECTED_ARMS = ("N14", "EN4_10", "E4")
 REQUIRED_FINITE = ("mean_weekly_return", "total_return",
                    "max_drawdown_fraction")
 PACKET_SCHEMA = "agent_multi.eth_curriculum_decision.v1"
-RECORD_SCHEMA = "agent_multi.arm_record.v5"
+RECORD_SCHEMA = "agent_multi.arm_record.v6"
 
 
 def _shared_validator(record: dict, arm: str) -> list:

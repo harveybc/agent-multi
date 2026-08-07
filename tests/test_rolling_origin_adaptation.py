@@ -175,7 +175,8 @@ class TestRunIdentity:
         base = dict(phase="RT0", cadence_bars=3, lookback="1y", seed=101,
                     block_start="2024-02-01", block_days=28,
                     initial_steps=1000, update_steps=500, device="cpu",
-                    control_mode="adaptive")
+                    control_mode="adaptive",
+                    handover_bars=rt.DEFAULT_HANDOVER_BARS)
         base.update(overrides)
         return type("Args", (), base)()
 
@@ -190,6 +191,7 @@ class TestRunIdentity:
                              ("update_steps", 4000),
                              ("control_mode", "frozen"),
                              ("lookback", "expanding"),
+                             ("handover_bars", 7),
                              ("cadence_bars", 6),
                              ("seed", 202)):
             other = rt.run_identity(self._args(**{field: value}), config)
@@ -200,7 +202,8 @@ class TestRunIdentity:
             rt.run_identity(self._args(), mutated)) != base_id
         for key in ("resolved_config_sha256", "code_revisions",
                     "data_sha256", "observation_manifest_sha256",
-                    "initial_steps", "device", "control_mode"):
+                    "initial_steps", "device", "control_mode",
+                    "handover_bars"):
             assert key in reference
 
     def test_schema_and_runner_version_are_v2(self):

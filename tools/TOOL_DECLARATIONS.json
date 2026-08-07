@@ -58,6 +58,13 @@
       "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
     },
+    "eth_curriculum_fleet.py": {
+      "purpose": "Preflight, launch, monitor, collect and independently re-verify the four-GPU ETH curriculum decision experiment",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "campaign_operation",
+      "owner": "General Musashi"
+    },
     "aggregate_curriculum_decision.py": {
       "purpose": "Aggregate validated curriculum-decision arm records into the decision table; shares the arm validator with the runner",
       "lifecycle": "supported",

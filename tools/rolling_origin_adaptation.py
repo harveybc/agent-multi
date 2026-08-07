@@ -64,7 +64,12 @@ BAR_SECONDS = 4 * 3600
 # Bar-aligned cadences only. 1 bar (4 h) is a feasibility stress case.
 ALLOWED_CADENCES = (1, 2, 3, 6, 18, 42)
 WARMUP_BARS = 256                    # rolling scaling context, NEVER scored
-HANDOVER_BARS = 5                    # bars reserved for the flat close
+# Bars reserved for the flat close to fill. OWNER ORDER 2026-08-07: no
+# eyeballed constants on evidence-bearing parameters — this is now a
+# CLI parameter (--handover-bars) bound into run identity, with the
+# ACTUAL bars the close consumed measured per origin (bars_to_flat) so
+# the reserve is chosen from evidence, per venue, never by feel.
+DEFAULT_HANDOVER_BARS = 5
 # Dormant year shorthand contradicts explicit dates (finding 142).
 DORMANT_SPLIT_FIELDS = ("train_years", "val_years", "test_years")
 
@@ -553,6 +558,7 @@ def run_identity(args, config: dict) -> dict:
         "update_steps": args.update_steps,
         "device": args.device,
         "control_mode": args.control_mode,
+        "handover_bars": args.handover_bars,
         "data_sha256": DATA_SHA256,
         "observation_manifest_sha256": (
             _sha_file(OBSERVATION_MANIFEST)
@@ -781,11 +787,11 @@ def run(args) -> int:
         # ---------- 3. score the NEXT interval (warm-up excluded) ----
         # The handover executes on the bars AFTER the scored interval:
         # a close submitted on the last interval bar fills on the next
-        # one. The slice therefore carries HANDOVER_BARS extra bars;
+        # one. The slice therefore carries the reserved handover bars;
         # scoring still uses exactly `cadence_bars` (finding 152).
         eval_csv = _slice_csv(
             df, origin - WARMUP_BARS,
-            min(len(df), origin + args.cadence_bars + HANDOVER_BARS),
+            min(len(df), origin + args.cadence_bars + args.handover_bars),
             out_dir / "slices" / f"eval_{index}.csv")
         handover_requested_at = datetime.now(timezone.utc).isoformat()
         eval_env = _build_env(
@@ -1010,6 +1016,12 @@ def main() -> int:
     parser.add_argument("--control-mode", default="adaptive",
                         choices=("adaptive", "frozen"),
                         help="frozen = paired no-update control arm")
+    parser.add_argument(
+        "--handover-bars", type=int, default=DEFAULT_HANDOVER_BARS,
+        help="bars reserved for the flat close to fill; bound into run"
+             " identity; the ACTUAL bars consumed are measured per"
+             " origin (bars_to_flat) so this reserve is chosen from a"
+             " sweep, never by feel (owner order 2026-08-07)")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--allow-legacy-sibling", action="store_true")
     parser.add_argument(
@@ -1022,7 +1034,10 @@ def main() -> int:
         "--allow-dirty-tree", action="store_true",
         help="diagnostic run on a dirty worktree; ineligible for"
              " promotion (finding 149)")
-    return run(parser.parse_args())
+    args = parser.parse_args()
+    if args.handover_bars < 1:
+        parser.error("--handover-bars must be at least 1")
+    return run(args)
 
 
 if __name__ == "__main__":

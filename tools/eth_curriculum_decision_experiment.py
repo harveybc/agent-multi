@@ -30,6 +30,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -74,8 +75,8 @@ RAW_METRICS = (
 )
 
 
-RUNNER_VERSION = "eth_curriculum_decision_experiment.v4"
-ARM_RECORD_SCHEMA = "agent_multi.arm_record.v5"
+RUNNER_VERSION = "eth_curriculum_decision_experiment.v5"
+ARM_RECORD_SCHEMA = "agent_multi.arm_record.v6"
 LOCAL_HOST = os.uname().nodename
 
 
@@ -144,7 +145,7 @@ def validate_arm_record(record: dict, arm: str) -> list:
             problems.append(f"artifact {label} missing")
             continue
         for field in ("path", "sha256", "replica_path",
-                      "load_proven"):
+                      "replica_authority", "load_proven"):
             if ref.get(field) in (None, ""):
                 problems.append(f"artifact {label} missing {field}")
         path = Path(str(ref.get("path") or ""))
@@ -162,35 +163,34 @@ def validate_arm_record(record: dict, arm: str) -> list:
                 problems.append(
                     f"artifact {label} failed to load: "
                     f"{type(exc).__name__}: {str(exc)[:120]}")
-        replica = Path(str(ref.get("replica_path") or ""))
-        if not replica.is_file():
+        # AUD-F1-20260807-159: a remote replica path is not a local
+        # filesystem path. Requiring Path(remote_path).is_file() on the
+        # producer made every genuine second-host replica fail after a
+        # long arm completed. Validate the independently observed remote
+        # fact and its bindings here; the fleet collector re-probes it
+        # over SSH before accepting the final packet.
+        observation = ref.get("replica_observation") or {}
+        required = ("verifier_host", "remote_path",
+                    "observed_sha256", "observed_at", "verifier")
+        missing_fields = [key for key in required
+                          if not observation.get(key)]
+        if missing_fields:
             problems.append(
-                f"artifact {label} replica missing: {replica}")
-        elif _sha(replica) != ref.get("sha256"):
-            problems.append(f"artifact {label} replica hash mismatch")
-        else:
-            # AUD-F1-20260806-151: caller-supplied text is not evidence.
-            # The replica must carry an INDEPENDENT observation: the
-            # verifying host, the remote path, the hash that host
-            # observed, when it observed it, and who verified.
-            observation = ref.get("replica_observation") or {}
-            required = ("verifier_host", "remote_path",
-                        "observed_sha256", "observed_at", "verifier")
-            missing_fields = [key for key in required
-                              if not observation.get(key)]
-            if missing_fields:
-                problems.append(
-                    f"artifact {label} replica has no independent"
-                    f" observation (missing {missing_fields})")
-            elif observation["verifier_host"] == LOCAL_HOST:
-                problems.append(
-                    f"artifact {label} replica was verified by THIS"
-                    f" host ({LOCAL_HOST}); a local path plus a remote"
-                    " name is not a second authority")
-            elif observation["observed_sha256"] != ref.get("sha256"):
-                problems.append(
-                    f"artifact {label} replica observation hash"
-                    " disagrees with the recorded artifact hash")
+                f"artifact {label} replica has no independent"
+                f" observation (missing {missing_fields})")
+        elif observation["verifier_host"] == LOCAL_HOST:
+            problems.append(
+                f"artifact {label} replica was verified by THIS"
+                f" host ({LOCAL_HOST}); a local path plus a remote"
+                " name is not a second authority")
+        elif observation["remote_path"] != ref.get("replica_path"):
+            problems.append(
+                f"artifact {label} replica observation path is not"
+                " bound to replica_path")
+        elif observation["observed_sha256"] != ref.get("sha256"):
+            problems.append(
+                f"artifact {label} replica observation hash"
+                " disagrees with the recorded artifact hash")
     if arm != "E4":
         terminal = ((record.get("best_checkpoint_vs_terminal") or {})
                     .get("terminal_evaluation") or {})
@@ -218,8 +218,17 @@ def validate_arm_record(record: dict, arm: str) -> list:
     return problems
 
 
+def _safe_component(value: str) -> str:
+    """Return a shell- and path-safe evidence namespace component."""
+    cleaned = re.sub(r"[^A-Za-z0-9_.-]+", "_", value).strip("._")
+    if not cleaned:
+        raise ValueError(f"unsafe empty replica path component: {value!r}")
+    return cleaned
+
+
 def _replicate_to_remote(path: Path, label: str,
-                         authority: str | None) -> dict:
+                         authority: str | None, *,
+                         replica_namespace: tuple[str, str, str]) -> dict:
     """Copy to a declared second host and record ITS observation."""
     if not authority:
         return {"unavailable": (
@@ -227,13 +236,16 @@ def _replicate_to_remote(path: Path, label: str,
             " to replicate to")}
     remote_root = os.environ.get(
         "AGENT_MULTI_REPLICA_ROOT",
-        "~/.local/share/agent-multi/replica")
-    remote_dir = f"{remote_root}/{path.parent.name}"
+        "~/.local/share/agent-multi/replica").rstrip("/")
+    run_name, seed_name, arm_name = (
+        _safe_component(part) for part in replica_namespace)
+    remote_dir = (
+        f"{remote_root}/{run_name}/{seed_name}/{arm_name}")
     remote_path = f"{remote_dir}/{label}.zip"
     try:
         subprocess.run(
             ["ssh", "-o", "BatchMode=yes", authority,
-             f"mkdir -p {remote_dir}"], check=True, timeout=60)
+             f"mkdir -p -- {remote_dir}"], check=True, timeout=60)
         subprocess.run(
             ["rsync", "-a", str(path),
              f"{authority}:{remote_path}"], check=True, timeout=600)
@@ -265,17 +277,18 @@ def _publish_artifact(path: Path, out_dir: Path, label: str) -> dict:
     # AUD-F1-20260806-144: a sibling folder is NOT a replica. The
     # replica must live on a declared second host/storage authority and
     # its hash must be observed there.
-    replica_root = Path(os.environ.get(
-        "AGENT_MULTI_REPLICA_ROOT",
-        str(Path.home() / ".local/share/agent-multi/replica")))
     authority = os.environ.get("AGENT_MULTI_REPLICA_AUTHORITY", "")
-    replica_dir = replica_root / out_dir.name
-    replica_dir.mkdir(parents=True, exist_ok=True)
     digest = _sha(durable)
     SAC.load(str(durable), device="cpu")          # load proof, primary
     # AUD-F1-20260806-151: copy to the SECOND host and have THAT host
     # hash the bytes it received. No remote authority -> no replica.
-    observation = _replicate_to_remote(durable, label, authority)
+    observation = _replicate_to_remote(
+        durable, label, authority,
+        replica_namespace=(
+            out_dir.parents[1].name,
+            out_dir.parent.name,
+            out_dir.name,
+        ))
     return {
         "path": str(durable.resolve()),
         "replica_path": observation.get("remote_path"),
