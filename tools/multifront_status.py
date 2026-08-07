@@ -478,6 +478,52 @@ def collect(
         posts = con.execute("SELECT COUNT(*) FROM posts").fetchone()[0]
         runs = con.execute("SELECT COUNT(*) FROM collection_runs").fetchone()[0]
         drafts = con.execute("SELECT COUNT(*) FROM drafts").fetchone()[0]
+        review_states = dict(
+            con.execute(
+                "SELECT review_state,COUNT(*) FROM posts GROUP BY review_state"
+            ).fetchall()
+        )
+        tables = {
+            row[0]
+            for row in con.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        enrichment = {
+            "available": "post_enrichments" in tables,
+            "enriched_total": 0,
+            "eligible_backlog_remaining": None,
+            "actions": {},
+            "runs_by_status": {},
+        }
+        if enrichment["available"]:
+            enrichment["enriched_total"] = con.execute(
+                "SELECT COUNT(*) FROM post_enrichments"
+            ).fetchone()[0]
+            enrichment["eligible_backlog_remaining"] = con.execute(
+                """
+                SELECT COUNT(*) FROM posts p
+                LEFT JOIN post_enrichments e USING(external_id)
+                WHERE e.external_id IS NULL AND p.injection_flags_json='[]'
+                  AND p.relevance_score>=0.25
+                """
+            ).fetchone()[0]
+            enrichment["actions"] = dict(
+                con.execute(
+                    """
+                    SELECT recommended_action,COUNT(*) FROM post_enrichments
+                    GROUP BY recommended_action
+                    """
+                ).fetchall()
+            )
+            enrichment["runs_by_status"] = dict(
+                con.execute(
+                    """
+                    SELECT status,COUNT(*) FROM social_enrichment_runs
+                    GROUP BY status
+                    """
+                ).fetchall()
+            )
         con.close()
         register("social_intelligence_olap", str(social_db_path), None)
         fronts["f3_social"] = {
@@ -485,6 +531,8 @@ def collect(
             "collection_runs": {"value": runs, "unit": "runs", "horizon": "cumulative"},
             "posts_collected": {"value": posts, "unit": "posts", "horizon": "cumulative"},
             "drafts": {"value": drafts, "unit": "drafts", "horizon": "cumulative", "note": "publishing gated on human approval"},
+            "review_states": review_states,
+            "enrichment": enrichment,
         }
     except sqlite3.Error:
         unavailable.append({"field": "f3_social", "reason": "social OLAP unreadable"})

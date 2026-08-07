@@ -60,6 +60,10 @@
       "review": {
         "max_input_tokens": 12000,
         "reserved_output_tokens": 3000
+      },
+      "enrichment": {
+        "max_input_tokens": 6000,
+        "reserved_output_tokens": 2500
       }
     }
   },

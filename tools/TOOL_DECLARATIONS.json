@@ -23,6 +23,13 @@
       "authority_class": "discovery",
       "owner": "General Satoshi III"
     },
+    "social_intelligence_enrichment.py": {
+      "purpose": "Bounded Hermes enrichment of untrusted social posts into typed, source-linked OLAP facts and human-review candidates",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "evidence_producer",
+      "owner": "General Musashi"
+    },
     "fleet_status_context.py": {
       "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)",
       "lifecycle": "supported",
