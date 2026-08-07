@@ -161,6 +161,16 @@ must state that solvency relaxation itself remains untested and may run a
 separate non-promotional stress probe. Any easy effect is then ablated across
 solvency, costs and action deadband before broad rollout.
 
+The four-seed run completed on 2026-08-07. Selected-checkpoint `EN4_10 - N14`
+differences were zero for weekly, annualized and total return, drawdown and
+trades in every seed because both arms retained the warm-start anchor. This was
+not successful equal learning: all terminal normal-trained artifacts made zero
+validation trades, whereas diagnostic E4 retained the anchor's 130-136 trades
+without improving its raw metrics. Solvency telemetry was unavailable. The
+next valid action is therefore the R0/R3 normal-update collapse diagnosis and a
+bounded learning-dynamics screen; easy training remains an optional fixed-total-
+compute gene with zero admitted, not a promoted default.
+
 The active DOIN campaign stays productive while the experiment and reversible
 pause/resume tooling are prepared. It is paused only after profile-drift,
 GPU-verification and same-chain-resume findings 119/121 pass independent
