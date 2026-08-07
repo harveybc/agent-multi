@@ -107,6 +107,23 @@ class PipelinePlugin(ValidationPipelinePlugin):
             "slippage": full_spread / 2.0 + slippage_bps / 10_000.0,
             "easy_min_trades": minimum_trades,
         })
+        # M0 order §8.1: the easy phase keeps its own learning rate while
+        # the NORMAL fine-tune rate varies per arm. Without this
+        # override, a reduced normal LR would silently also slow the
+        # easy phase and confound the mechanism screen.
+        easy_lr = easy.get("easy_learning_rate")
+        if easy_lr is not None:
+            if isinstance(easy_lr, bool) or not isinstance(
+                easy_lr, (int, float)
+            ):
+                raise ValueError("easy_learning_rate must be a number")
+            easy_lr = float(easy_lr)
+            if not math.isfinite(easy_lr) or easy_lr <= 0.0:
+                raise ValueError(
+                    "easy_learning_rate must be finite and strictly"
+                    " positive"
+                )
+            easy["learning_rate"] = easy_lr
         return easy
 
     # ------------------------------------------------------------------

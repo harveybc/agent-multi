@@ -1,0 +1,32 @@
+{
+ "schema": "agent_multi.m0_inner_curriculum_contract.v1",
+ "$doc": "FROZEN M0 mechanism-screen contract (MUSASHI SAC inner-curriculum order 2026-08-07 §8.1). Tests ONLY: (1) does easy pretraining change survival vs equal-compute normal-only; (2) does a lower normal fine-tune LR prevent first-epoch activity collapse. Everything else stays D1-identical. No positive-profit gate exists at M0.",
+ "epoch_timesteps": 20000,
+ "total_updates_per_arm": 40000,
+ "easy_learning_rate": 0.0001,
+ "validation_contract": "normal_realistic 2024 validation, unchanged from D1; 2025 disabled and forbidden",
+ "arms": {
+  "N2_LR1": {"easy_epochs": 0, "normal_epochs": 2, "normal_learning_rate": 0.0001},
+  "E1_N1_LR1": {"easy_epochs": 1, "normal_epochs": 1, "normal_learning_rate": 0.0001},
+  "E1_N1_LR03": {"easy_epochs": 1, "normal_epochs": 1, "normal_learning_rate": 0.00003},
+  "E1_N1_LR01": {"easy_epochs": 1, "normal_epochs": 1, "normal_learning_rate": 0.00001}
+ },
+ "anchors": {
+  "101": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip", "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"},
+  "202": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip", "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"},
+  "303": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip", "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"},
+  "404": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip", "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"}
+ },
+ "workers": {
+  "101": "omega", "202": "dragon", "303": "gamma-5070ti", "404": "gamma-5090"
+ },
+ "replica_topology": {
+  "omega": "dragon",
+  "dragon": "gamma-replica",
+  "gamma-5070ti": "dragon-replica",
+  "gamma-5090": "dragon-replica"
+ },
+ "output_root": "~/.local/share/agent-multi/eth_sac_inner_curriculum_m0_20260807_v1",
+ "survival_rule": "same arm in >=3/4 seeds: terminal val trades>0, non-hold raw actions with nonzero dispersion, protected entry and no unprotected entry, no eval error, loadable terminal, terminal weights differ from anchor, normal gradient updates occurred, facts from normal validation",
+ "forbidden": ["replay retention", "actor freezing", "synthetic data", "feature changes", "autoencoders", "alternate objectives", "2025 evaluation", "positive-profit gate"]
+}
