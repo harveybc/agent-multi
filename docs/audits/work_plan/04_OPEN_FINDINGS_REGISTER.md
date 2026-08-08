@@ -908,6 +908,28 @@ New findings:
 | AUD-F1-20260806-157 | S2 | open, blocks RT1-A comparison | Every declared RT1-A cadence omits its final complete block interval | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260806-158 | S2 | open, blocks performance RT | Bare compatible SAC ZIP can claim mature champion-anchor status | General Satoshi III implements after R3; General Musashi verifies |
 
+### 1ac. M0/M1/M0-X independent audit, 2026-08-08
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_M0_M1_M0X_2026_08_08.md`
+- `../evidence/SATOSHI_III_M0_M0X_REPRO_2026_08_08.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_M0_M1_M0X_CORRECTION_ORDER_2026_08_08.md`
+
+M0 raw artifacts and metrics are preserved, but `mechanism_pass` is withdrawn
+as easy-curriculum evidence: all 12 declared easy arms handed unchanged epoch-0
+anchor weights into normal training. Current M1/M0-X contracts are blocked;
+unrelated valid fleet work remains authorized and must not be idled.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260808-159 | S2 | open, blocks M0 successor/M1/R3 | All 12 easy arms hand unchanged epoch-0 anchors into normal training while aggregation attributes survival to easy | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-160 | S2 | open, blocks model-change evidence | ZIP hash inequality is accepted as proof of changed policy weights | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-161 | S2 | open, blocks M1 causal interpretation | N14 versus E4_N10 confounds easy dynamics with replay/optimizer/model reconstruction at the phase boundary | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-162 | S2 | open, blocks M0-X | Generic runner labels USDCAD while unconditionally materializing ETH data/base/observation config | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-163 | S2 | open, blocks M1/M0-X launch | V2 has no executable aggregator/exact decision semantics and execution/output identities collide across variants | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-164 | S3 | open, blocks durable acceptance | V2 schema does not enforce factorial/system lineage and reported replicas omit model artifacts | General Satoshi III implements; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
