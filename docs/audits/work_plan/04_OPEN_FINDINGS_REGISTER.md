@@ -930,6 +930,7 @@ unrelated valid fleet work remains authorized and must not be idled.
 | AUD-F1-20260808-162 | S2 | open, blocks M0-X | Generic runner labels USDCAD while unconditionally materializing ETH data/base/observation config | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260808-163 | S2 | open, blocks M1/M0-X launch | V2 has no executable aggregator/exact decision semantics and execution/output identities collide across variants | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260808-164 | S3 | open, blocks durable acceptance | V2 schema does not enforce factorial/system lineage and reported replicas omit model artifacts | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-165 | S2 | open, blocks M0-X inference | Proposed USDCAD system has only 1,604 4h training rows and no exact multi-year date/regime contract | General Satoshi III materializes sufficient data/anchor after M1; General Musashi verifies |
 
 ## 2b. Observations Pending Verification (not yet findings)
 

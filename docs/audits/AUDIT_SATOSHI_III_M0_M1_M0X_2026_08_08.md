@@ -152,6 +152,21 @@ Source: `tools/eth_sac_inner_curriculum_screen.py:52-103`;
 `tools/aggregate_eth_sac_inner_curriculum.py:321-362`;
 `docs/audits/evidence/eth_sac_inner_curriculum/USDCAD_SEED2703_ANCHOR_MANIFEST.json`.
 
+### AUD-F1-20260808-165 - S2 - Proposed M0-X evidence horizon is insufficient
+
+The proposed USDCAD system manifest declares only 1,604 training rows at 4h,
+plus 1,609 validation and 1,589 test rows. It supplies no exact date bounds in
+the immutable manifest. That does not establish the owner-required multi-year
+training history or sufficient regime coverage for a cross-system mechanism
+decision. A short run can still prove mechanics; it cannot falsify transfer.
+
+M0-X is blocked until USDCAD (or a replacement second asset) has at least four
+complete chronological training years at 4h, one full validation year and a
+separate sealed test year, with exact row/date/hash and regime-coverage facts.
+For data at 1h or finer, the owner's absolute minimum is one complete training
+year, although the longer matched history remains preferred. No synthetic
+padding or overlap may satisfy the requirement.
+
 ## 3. Evidence Preserved
 
 - 16/16 terminal SAC archives load locally.
