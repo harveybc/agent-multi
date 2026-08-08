@@ -915,6 +915,7 @@ Canonical evidence:
 - `../AUDIT_SATOSHI_III_M0_M1_M0X_2026_08_08.md`
 - `../evidence/SATOSHI_III_M0_M0X_REPRO_2026_08_08.py`
 - `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_M0_M1_M0X_CORRECTION_ORDER_2026_08_08.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_EMERGENCY_M0_M1_REPAIR_SPEC_2026_08_08.md`
 
 M0 raw artifacts and metrics are preserved, but `mechanism_pass` is withdrawn
 as easy-curriculum evidence: all 12 declared easy arms handed unchanged epoch-0

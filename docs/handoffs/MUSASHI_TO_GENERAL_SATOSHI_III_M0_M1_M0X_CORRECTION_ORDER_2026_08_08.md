@@ -11,8 +11,9 @@ Read first:
 
 1. `docs/audits/AUDIT_SATOSHI_III_M0_M1_M0X_2026_08_08.md`
 2. `docs/audits/evidence/SATOSHI_III_M0_M0X_REPRO_2026_08_08.py`
-3. `docs/work_plan/37_M0X_CROSS_ASSET_MECHANISM_PROPOSAL_2026_08_08.md`
-4. `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_SAC_INNER_CURRICULUM_ORDER_2026_08_07.md`
+3. `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_EMERGENCY_M0_M1_REPAIR_SPEC_2026_08_08.md`
+4. `docs/work_plan/37_M0X_CROSS_ASSET_MECHANISM_PROPOSAL_2026_08_08.md`
+5. `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_SAC_INNER_CURRICULUM_ORDER_2026_08_07.md`
 
 Act as a senior reinforcement-learning scientist, causal experiment designer,
 quantitative-trading researcher, distributed experiment engineer and forensic
@@ -137,7 +138,9 @@ proof of universality. R3 bounds freeze only after this result.
 
 Return:
 
-- before/after output from Musashi's reproducer;
+- unchanged historical output from Musashi's reproducer, proving the immutable
+  evidence was not rewritten, plus the new smoke acceptance reproducer required
+  by the emergency specification;
 - correction envelope and successor-quarantine proof;
 - exact matched M1 contract and executable interpretation table;
 - one-seed smoke with tensor/gradient/reset evidence;
@@ -148,4 +151,3 @@ Return:
 - current fleet job/GPU status proving useful work continued during correction.
 
 Do not self-close 159-164. Request independent verification at the exact commit.
-

@@ -184,6 +184,10 @@ Canonical reproducer:
 
 `docs/audits/evidence/SATOSHI_III_M0_M0X_REPRO_2026_08_08.py`
 
+Executable repair specification:
+
+`docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_EMERGENCY_M0_M1_REPAIR_SPEC_2026_08_08.md`
+
 ## 5. Runtime Disposition
 
 1. Preserve all M0 raw records and artifacts.
