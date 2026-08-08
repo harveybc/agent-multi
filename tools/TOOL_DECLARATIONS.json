@@ -169,6 +169,13 @@
       "mutability": "read_only",
       "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
+    },
+    "quarantine_inner_curriculum_successor.py": {
+      "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "campaign_operation",
+      "owner": "General Satoshi III"
     }
   },
   "plugins": {
