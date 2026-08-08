@@ -324,26 +324,41 @@ def replicate_evidence(root: Path, contract: dict) -> dict:
     discipline; namespaced by experiment/seed/arm — no collisions)."""
     from tools.eth_curriculum_decision_experiment import _replicate_to_remote
 
+    # The contract topology names replica SEATS. From the collector
+    # (omega) only the physical host aliases exist, so seats resolve to
+    # hosts while PRESERVING the independence intent: the replica always
+    # lands on a different physical machine than its producer.
+    seat_to_host = {"dragon": "dragon", "gamma-replica": "gamma",
+                    "dragon-replica": "dragon"}
     observations = {}
     for seed in SEEDS:
         worker = contract["workers"][str(seed)]
-        authority = contract["replica_topology"][worker]
+        authority = seat_to_host[contract["replica_topology"][worker]]
         source = root / f"seed{seed}" / "m0_seed_packet.json"
-        label = f"eth_sac_inner_curriculum_m0/seed{seed}/m0_seed_packet.json"
-        observations[label] = _replicate_to_remote(source, label, authority)
+        label = "m0_seed_packet.json"
+        observations[f"eth_sac_inner_curriculum_m0/seed{seed}/packet"] = (
+            _replicate_to_remote(
+                source, label, authority,
+                replica_namespace=("eth_sac_inner_curriculum_m0",
+                                   f"seed{seed}", "packet")))
         for arm in ARMS:
             source = root / f"seed{seed}" / arm / "m0_arm_record.json"
-            label = (f"eth_sac_inner_curriculum_m0/seed{seed}/{arm}/"
-                     "m0_arm_record.json")
-            observations[label] = _replicate_to_remote(
-                source, label, authority)
+            label = "m0_arm_record.json"
+            observations[
+                f"eth_sac_inner_curriculum_m0/seed{seed}/{arm}"] = (
+                _replicate_to_remote(
+                    source, label, authority,
+                    replica_namespace=("eth_sac_inner_curriculum_m0",
+                                       f"seed{seed}", arm)))
     manifest_path = root / "m0_fleet_manifest.json"
     if manifest_path.is_file():
-        observations["eth_sac_inner_curriculum_m0/m0_fleet_manifest.json"] = (
+        observations["eth_sac_inner_curriculum_m0/fleet/manifest"] = (
             _replicate_to_remote(
                 manifest_path,
-                "eth_sac_inner_curriculum_m0/m0_fleet_manifest.json",
-                contract["replica_topology"]["omega"]))
+                "m0_fleet_manifest.json",
+                contract["replica_topology"]["omega"],
+                replica_namespace=("eth_sac_inner_curriculum_m0",
+                                   "fleet", "manifest")))
     return observations
 
 
