@@ -1,0 +1,499 @@
+{
+ "archive_sha_counterexample": {
+  "archive_sha_changed": true,
+  "original_sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+  "policy_distance": {
+   "changed_tensors": 0,
+   "max_abs_delta": 0.0,
+   "same_keys": true,
+   "sum_abs_delta": 0.0,
+   "tensor_count": 32,
+   "weights_identical": true
+  },
+  "resaved_sha256": "688dc1913e6c4cb8fc8a60d2126f845c49f44f578bf290b5da51566bb8888b96"
+ },
+ "audited_head": "99bb7fff9c78999fee6ed9b5d5060a7860d61dae",
+ "contract_evidence": {
+  "aggregator_arms": [
+   "N2_LR1",
+   "E1_N1_LR1",
+   "E1_N1_LR03",
+   "E1_N1_LR01"
+  ],
+  "aggregator_contract_path": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/examples/config/phase_3_eth_sac_dynamics/m0_contract.json",
+  "aggregator_is_m0_v1_only": true,
+  "common_arm_execution_id_both_variants": "05e76e747463f1439874ab31c2d8a70947f3d3ebd96f73fc3dc8ef4807d3e158",
+  "execution_identity_has_no_contract_argument": true,
+  "m0x_declared_asset": "USDCAD",
+  "m1_variant_output_roots_equal": true,
+  "malformed_one_cell_factorial_accepted": true,
+  "run_m0_arm_calls_eth_base_config": true,
+  "runner_base_asset_is_eth": true,
+  "runner_base_contract": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json",
+  "runner_base_data_file": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+  "winner_multiplier_arm_mismatch_accepted": true
+ },
+ "easy_handoffs": [
+  {
+   "arm": "E1_N1_LR1",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 101,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 101,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 101,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 202,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 202,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 202,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 303,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 303,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 303,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 404,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 404,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "best_easy_epoch": 0,
+   "easy_budget_epochs": 1,
+   "post_easy_vs_anchor": {
+    "changed_tensors": 0,
+    "max_abs_delta": 0.0,
+    "same_keys": true,
+    "sum_abs_delta": 0.0,
+    "tensor_count": 32,
+    "weights_identical": true
+   },
+   "recorded_post_easy_activity": null,
+   "seed": 404,
+   "trained_easy_activity_eligible": [
+    true
+   ],
+   "trained_normal_handoff_eligible": [
+    false
+   ]
+  }
+ ],
+ "network_used": false,
+ "reproduced": {
+  "all_12_easy_handoffs_are_epoch_zero": true,
+  "all_12_easy_handoffs_equal_anchor_weights": true,
+  "all_12_records_omit_post_easy_activity": true,
+  "all_16_terminal_policies_really_changed": true,
+  "archive_sha_can_change_without_policy_change": true,
+  "m0x_runner_is_still_eth_bound": true,
+  "v2_aggregator_is_absent": true,
+  "v2_factorial_shape_is_not_enforced": true,
+  "v2_winner_binding_is_not_enforced": true
+ },
+ "runtime_mutated": false,
+ "schema": "agent_multi.audit.m0_m0x_reproduction.v1",
+ "terminal_weights": [
+  {
+   "arm": "N2_LR1",
+   "seed": 101,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.6287649273872375,
+    "same_keys": true,
+    "sum_abs_delta": 53320.39824634418,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "seed": 101,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.337982714176178,
+    "same_keys": true,
+    "sum_abs_delta": 35662.54448628239,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "seed": 101,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.1252765655517578,
+    "same_keys": true,
+    "sum_abs_delta": 17809.739103871398,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "seed": 101,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.068750761449337,
+    "same_keys": true,
+    "sum_abs_delta": 9893.373720667325,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "N2_LR1",
+   "seed": 202,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.41722896695137024,
+    "same_keys": true,
+    "sum_abs_delta": 38364.53080961108,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "seed": 202,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.23746173083782196,
+    "same_keys": true,
+    "sum_abs_delta": 25832.058686703444,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "seed": 202,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.10637884587049484,
+    "same_keys": true,
+    "sum_abs_delta": 14485.345665745437,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "seed": 202,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.06272116303443909,
+    "same_keys": true,
+    "sum_abs_delta": 9437.10749787651,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "N2_LR1",
+   "seed": 303,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.5446009635925293,
+    "same_keys": true,
+    "sum_abs_delta": 44262.380349528044,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "seed": 303,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.3134148120880127,
+    "same_keys": true,
+    "sum_abs_delta": 29528.343078341335,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "seed": 303,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.11770423501729965,
+    "same_keys": true,
+    "sum_abs_delta": 15754.766734674573,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "seed": 303,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.05788573622703552,
+    "same_keys": true,
+    "sum_abs_delta": 9450.498033255339,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "N2_LR1",
+   "seed": 404,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.4625992774963379,
+    "same_keys": true,
+    "sum_abs_delta": 45264.614384742454,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR1",
+   "seed": 404,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.2789139151573181,
+    "same_keys": true,
+    "sum_abs_delta": 31097.562962306663,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR03",
+   "seed": 404,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.13631600141525269,
+    "same_keys": true,
+    "sum_abs_delta": 15963.013654216658,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  },
+  {
+   "arm": "E1_N1_LR01",
+   "seed": 404,
+   "terminal_vs_anchor": {
+    "changed_tensors": 32,
+    "max_abs_delta": 0.07322956621646881,
+    "same_keys": true,
+    "sum_abs_delta": 9848.585589105729,
+    "tensor_count": 32,
+    "weights_identical": false
+   }
+  }
+ ],
+ "training_started": false
+}
