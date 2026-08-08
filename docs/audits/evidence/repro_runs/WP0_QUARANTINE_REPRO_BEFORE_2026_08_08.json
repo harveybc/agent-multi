@@ -1,0 +1,76 @@
+{
+  "network_used": false,
+  "runtime_mutation": false,
+  "runtime_observation": {
+    "bindings_match": true,
+    "computed_bindings": {
+      "m0_aggregation_sha256": "245a328a7219a00a7f69853bf16143510d502e69e88d95fa719aac84b196158f",
+      "m0_final_table_csv_sha256": "20767034bf32ba2d541f7f6d40f4b5efaf63cc6879561a518648c2e71999b816",
+      "m0_fleet_manifest_sha256": "61acd513378d8e99be03175b523dfdeb3b8b83473e8d766a493bedb96373f989",
+      "retired_successor_sha256": "aba67a2a8716c51972305dc8275aa0303fced4a713433a7fbf55a13a0529101e",
+      "successor_supersession_sha256": "447387cceeba56e6fc95882c0d178eef12478d1a0380f9ed8c0e13487b552f2a"
+    },
+    "containment_verified": true,
+    "envelope_present": true,
+    "launch_eligible": false,
+    "recorded_bindings": {
+      "m0_aggregation_sha256": "245a328a7219a00a7f69853bf16143510d502e69e88d95fa719aac84b196158f",
+      "m0_final_table_csv_sha256": "20767034bf32ba2d541f7f6d40f4b5efaf63cc6879561a518648c2e71999b816",
+      "m0_fleet_manifest_sha256": "61acd513378d8e99be03175b523dfdeb3b8b83473e8d766a493bedb96373f989",
+      "retired_successor_sha256": "aba67a2a8716c51972305dc8275aa0303fced4a713433a7fbf55a13a0529101e",
+      "successor_supersession_sha256": "447387cceeba56e6fc95882c0d178eef12478d1a0380f9ed8c0e13487b552f2a"
+    },
+    "retired_present": true,
+    "runtime_root": "/home/harveybc/.local/share/agent-multi/eth_sac_inner_curriculum_m0_20260807_v1",
+    "schema": "agent_multi.inner_curriculum_successor_supersession.v1",
+    "target_present": true
+  },
+  "scenarios": {
+    "malformed_supersession_accepted": {
+      "launch_eligible_after": true,
+      "reproduced": true,
+      "result": {
+        "bytes_changed": 0,
+        "outcome": "ALREADY_QUARANTINED",
+        "retired_original_present": false,
+        "retired_original_sha256": null,
+        "supersession_sha256": "00cf974663caaa4a6695edd19ec576319d7b69422027d0b22d0c33175304aaac"
+      }
+    },
+    "missing_canonical_evidence_accepted": {
+      "historical_evidence_immutable": true,
+      "missing_bindings": [
+        "m0_aggregation_sha256",
+        "m0_final_table_csv_sha256",
+        "m0_fleet_manifest_sha256"
+      ],
+      "reproduced": true,
+      "result_outcome": "QUARANTINED"
+    },
+    "missing_envelope_retry_accepted": {
+      "envelope_present_after_retry": false,
+      "first_outcome": "QUARANTINED",
+      "reproduced": true,
+      "second": {
+        "bytes_changed": 0,
+        "outcome": "ALREADY_QUARANTINED",
+        "retired_original_present": true,
+        "retired_original_sha256": "3f56f912524cfd4f84a8a2ed181cafa7ec78339cbdd0e9dd3226271cbf5b1c55",
+        "supersession_sha256": "900ba99f08274d0ee7194d31da26ebef90f608892d4aae6a90e18d2cd65c95af"
+      }
+    },
+    "sqlite_claim_ignored": {
+      "inspection": {
+        "claimed": false,
+        "ledgers_missing": [],
+        "ledgers_scanned": [
+          "/tmp/tmpa4totmd0/real_ledger_format"
+        ],
+        "references": []
+      },
+      "reproduced": true,
+      "sqlite_contains_successor": true
+    }
+  },
+  "schema": "agent_multi.audit.satoshi_iii_wp0_quarantine_repro.v1"
+}

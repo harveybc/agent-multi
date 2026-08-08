@@ -1,0 +1,112 @@
+{
+  "network_used": false,
+  "runtime_mutation": false,
+  "runtime_observation": {
+    "bindings_match": true,
+    "computed_bindings": {
+      "m0_aggregation_sha256": "245a328a7219a00a7f69853bf16143510d502e69e88d95fa719aac84b196158f",
+      "m0_final_table_csv_sha256": "20767034bf32ba2d541f7f6d40f4b5efaf63cc6879561a518648c2e71999b816",
+      "m0_fleet_manifest_sha256": "61acd513378d8e99be03175b523dfdeb3b8b83473e8d766a493bedb96373f989",
+      "retired_successor_sha256": "aba67a2a8716c51972305dc8275aa0303fced4a713433a7fbf55a13a0529101e",
+      "successor_supersession_sha256": "447387cceeba56e6fc95882c0d178eef12478d1a0380f9ed8c0e13487b552f2a"
+    },
+    "containment_verified": true,
+    "envelope_present": true,
+    "launch_eligible": false,
+    "recorded_bindings": {
+      "m0_aggregation_sha256": "245a328a7219a00a7f69853bf16143510d502e69e88d95fa719aac84b196158f",
+      "m0_final_table_csv_sha256": "20767034bf32ba2d541f7f6d40f4b5efaf63cc6879561a518648c2e71999b816",
+      "m0_fleet_manifest_sha256": "61acd513378d8e99be03175b523dfdeb3b8b83473e8d766a493bedb96373f989",
+      "retired_successor_sha256": "aba67a2a8716c51972305dc8275aa0303fced4a713433a7fbf55a13a0529101e",
+      "successor_supersession_sha256": "447387cceeba56e6fc95882c0d178eef12478d1a0380f9ed8c0e13487b552f2a"
+    },
+    "retired_present": true,
+    "runtime_root": "/home/harveybc/.local/share/agent-multi/eth_sac_inner_curriculum_m0_20260807_v1",
+    "schema": "agent_multi.inner_curriculum_successor_supersession.v1",
+    "target_present": true
+  },
+  "scenarios": {
+    "malformed_supersession_accepted": {
+      "launch_eligible_after": false,
+      "reproduced": false,
+      "result": {
+        "consumer_inspection_claimed": false,
+        "envelope_path": "/tmp/tmp3l230esa/malformed_already/m0_correction_envelope_v1.json",
+        "envelope_sha256": "25582f9c7c630b9df78dd9e29ff675e124e3fbd4b8ea69d51d4fa0d0101bb208",
+        "historical_evidence_immutable": "unavailable",
+        "outcome": "QUARANTINED_EVIDENCE_INCOMPLETE",
+        "retired_path": "/tmp/tmp3l230esa/malformed_already/queue/retired/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/m0_successor_mechanism_pass.json",
+        "supersession_sha256": "0d58cabdf9b4b9bec25956ff5a156e113eba1a8e567c9e0e8c4b695c527243b6",
+        "validation_problems": [
+          "retired original missing",
+          "canonical evidence missing: m0_aggregation.json",
+          "canonical evidence missing: m0_final_table.csv",
+          "canonical evidence missing: m0_fleet_manifest.json",
+          "retired original missing",
+          "envelope carries a null binding"
+        ]
+      }
+    },
+    "missing_canonical_evidence_accepted": {
+      "historical_evidence_immutable": "unavailable",
+      "missing_bindings": [
+        "m0_aggregation_sha256",
+        "m0_final_table_csv_sha256",
+        "m0_fleet_manifest_sha256"
+      ],
+      "reproduced": false,
+      "result_outcome": "QUARANTINED_EVIDENCE_INCOMPLETE"
+    },
+    "missing_envelope_retry_accepted": {
+      "envelope_present_after_retry": true,
+      "first_outcome": "QUARANTINED",
+      "reproduced": false,
+      "second": {
+        "consumer_inspection_claimed": false,
+        "envelope_path": "/tmp/tmptc1xebrc/missing_envelope_on_retry/m0_correction_envelope_v1.json",
+        "envelope_sha256": "7bab3193484670b085741528b68da81c4e53e9250d2f4dfa62885db8014f096a",
+        "outcome": "QUARANTINED",
+        "retired_path": "/tmp/tmptc1xebrc/missing_envelope_on_retry/queue/retired/3f56f912524cfd4f84a8a2ed181cafa7ec78339cbdd0e9dd3226271cbf5b1c55/m0_successor_mechanism_pass.json",
+        "supersession_sha256": "f09f18566d538e41fd907e5cdb5aacddf3908ff516f83f4f9ab2168cd2cb24d8",
+        "validation_problems": []
+      }
+    },
+    "sqlite_claim_ignored": {
+      "inspection": {
+        "claimed": true,
+        "code_level": {
+          "executable_consumers": [],
+          "no_executable_consumer": true,
+          "producer_and_self_excluded": true,
+          "revision": "b0c37b3c18e4fe7a92d36707d72ae637e9eb6ee5",
+          "search_needles": [
+            "m0_successor_mechanism_pass.json",
+            "agent_multi.m0_successor_job.v1"
+          ]
+        },
+        "roots_fully_scanned": [
+          "/tmp/tmprsc4y5x1/real_ledger_format"
+        ],
+        "roots_missing": [],
+        "sources": [
+          {
+            "format": "sqlite",
+            "inspected": [
+              {
+                "columns": "ALL (generic full scan)",
+                "table": "events"
+              }
+            ],
+            "outcome": "reference_found",
+            "parse_error": null,
+            "path": "/tmp/tmprsc4y5x1/real_ledger_format/campaign_history.sqlite",
+            "sha256": "a61a9fca4b42d8808bff3613a54e483a493a1eb9f691e34b585da6b584eac568"
+          }
+        ]
+      },
+      "reproduced": false,
+      "sqlite_contains_successor": true
+    }
+  },
+  "schema": "agent_multi.audit.satoshi_iii_wp0_quarantine_repro.v1"
+}
