@@ -14,7 +14,7 @@ Before editing:
 
 ```bash
 git fetch origin audit/m0-m0x-20260808
-git cherry-pick 043d9f3cd5a3b48785ae4b3504af0722f46a0873
+git cherry-pick 99bb7fff9c78999fee6ed9b5d5060a7860d61dae..origin/audit/m0-m0x-20260808
 ```
 
 Read, in order:
