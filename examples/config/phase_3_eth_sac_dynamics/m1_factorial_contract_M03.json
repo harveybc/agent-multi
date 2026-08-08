@@ -1,0 +1,80 @@
+{
+ "schema": "agent_multi.inner_curriculum_screen_contract.v2",
+ "$doc": "M1 confirmation as a 2x2 FACTORIAL (Musashi correction to the original \u00a710 design): M0 lacked a normal-only reduced-LR arm, so easy's causal contribution is unproven \u2014 the benefit could be entirely the LR. This factorial measures the easy main effect, the LR main effect and their interaction under equal compute. launch_eligible stays false until Musashi's M0 audit selects the winner multiplier.",
+ "experiment": "m1_factorial",
+ "asset": "ETHUSD",
+ "epoch_timesteps": 20000,
+ "total_epochs_per_arm": 14,
+ "baseline_learning_rate": 0.0001,
+ "easy_lr_multiplier": 1.0,
+ "winner_multiplier": 0.3,
+ "winner_label": "M03",
+ "launch_eligible": false,
+ "arms": {
+  "N14_M10": {
+   "easy_epochs": 0,
+   "normal_epochs": 14,
+   "normal_lr_multiplier": 1.0
+  },
+  "E4_N10_M10": {
+   "easy_epochs": 4,
+   "normal_epochs": 10,
+   "normal_lr_multiplier": 1.0
+  },
+  "N14_M03": {
+   "easy_epochs": 0,
+   "normal_epochs": 14,
+   "normal_lr_multiplier": 0.3
+  },
+  "E4_N10_M03": {
+   "easy_epochs": 4,
+   "normal_epochs": 10,
+   "normal_lr_multiplier": 0.3
+  }
+ },
+ "anchors": {
+  "101": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+   "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"
+  },
+  "202": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip",
+   "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"
+  },
+  "303": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip",
+   "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"
+  },
+  "404": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip",
+   "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"
+  }
+ },
+ "workers": {
+  "101": "omega",
+  "202": "dragon",
+  "303": "gamma-5070ti",
+  "404": "gamma-5090"
+ },
+ "replica_topology": {
+  "omega": "dragon",
+  "dragon": "gamma-replica",
+  "gamma-5070ti": "dragon-replica",
+  "gamma-5090": "dragon-replica"
+ },
+ "output_root": "~/.local/share/agent-multi/eth_sac_inner_curriculum_m1_factorial_v1",
+ "validation_contract": "normal_realistic 2024 validation, unchanged; 2025 forbidden",
+ "interpretation": {
+  "easy_contributes": "E4_N10 at winner mult survives where N14 at winner mult fails (or is materially worse) in >=3/4 seeds",
+  "lr_only": "N14 at winner mult survives comparably to E4_N10 at winner mult: attribute nothing to easy",
+  "interaction": "compare all four cells; a full-LR cell surviving would contradict M0 and demands investigation",
+  "INCONCLUSIVE": "mixed cells meeting no rule, any unverifiable record, or anchor-fallback contamination: no gene freezing, escalate to Musashi"
+ },
+ "forbidden": [
+  "2025 evaluation",
+  "positive-profit gate",
+  "replay retention",
+  "actor freezing",
+  "changing any factor beyond schedule and normal LR multiplier"
+ ]
+}

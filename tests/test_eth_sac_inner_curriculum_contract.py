@@ -151,3 +151,89 @@ class TestEasyLearningRateOverride:
         with pytest.raises(ValueError):
             pipeline._easy_training_config(
                 {"easy_learning_rate": bad})
+
+
+class TestGenericContractV2:
+    """Musashi doc-37 corrections: multipliers over the anchor's own
+    baseline, per-asset instances of ONE generic schema, INCONCLUSIVE
+    present, and launch gating until the winner is audit-selected."""
+
+    CFG = REPO / "examples/config/phase_3_eth_sac_dynamics"
+
+    @pytest.mark.parametrize("name", [
+        "m1_factorial_contract_M03.json",
+        "m1_factorial_contract_M01.json",
+        "m0x_usdcad_contract_M03.json",
+        "m0x_usdcad_contract_M01.json",
+    ])
+    def test_instances_validate_and_resolve_multipliers(self, name):
+        contract = load_contract(self.CFG / name)
+        baseline = contract["baseline_learning_rate"]
+        for arm, spec in contract["arms"].items():
+            assert spec["normal_learning_rate"] == pytest.approx(
+                baseline * spec["normal_lr_multiplier"]), arm
+        assert contract["easy_learning_rate"] == pytest.approx(
+            baseline * contract["easy_lr_multiplier"])
+
+    @pytest.mark.parametrize("name", [
+        "m1_factorial_contract_M03.json",
+        "m0x_usdcad_contract_M03.json",
+    ])
+    def test_factorial_is_two_by_two_equal_compute(self, name):
+        contract = load_contract(self.CFG / name)
+        arms = contract["arms"]
+        assert len(arms) == 4
+        schedules = {(s["easy_epochs"], s["normal_epochs"]) for s in arms.values()}
+        multipliers = {s["normal_lr_multiplier"] for s in arms.values()}
+        assert len(schedules) == 2 and len(multipliers) == 2
+        total = contract["total_epochs_per_arm"]
+        for spec in arms.values():
+            assert spec["easy_epochs"] + spec["normal_epochs"] == total
+
+    @pytest.mark.parametrize("name", [
+        "m1_factorial_contract_M03.json",
+        "m0x_usdcad_contract_M01.json",
+    ])
+    def test_inconclusive_outcome_declared(self, name):
+        contract = json.loads((self.CFG / name).read_text())
+        assert "INCONCLUSIVE" in contract["interpretation"]
+
+    def test_usdcad_uses_its_own_baseline_not_eths(self):
+        contract = load_contract(self.CFG / "m0x_usdcad_contract_M03.json")
+        assert contract["baseline_learning_rate"] == pytest.approx(3.559e-4, rel=1e-3)
+        assert contract["baseline_learning_rate"] != pytest.approx(1e-4)
+
+    def test_usdcad_declares_single_anchor_limitation(self):
+        contract = json.loads(
+            (self.CFG / "m0x_usdcad_contract_M03.json").read_text())
+        assert contract["single_anchor_limitation"]
+        shas = {a["sha256"] for a in contract["anchors"].values()}
+        assert len(shas) == 1
+        assert contract["anchor_manifest"]
+
+    def test_non_launch_eligible_contract_is_blocked(self):
+        contract = load_contract(self.CFG / "m1_factorial_contract_M03.json")
+        assert contract["_launch_blocked_reason"]
+
+    def test_v2_refusals_before_model_construction(self):
+        from tools.eth_sac_inner_curriculum_screen import validate_contract_v2
+
+        base = json.loads(
+            (self.CFG / "m1_factorial_contract_M03.json").read_text())
+        bad = json.loads(json.dumps(base))
+        bad["arms"]["N14_M10"]["normal_lr_multiplier"] = True
+        with pytest.raises(ValueError, match="must be a number"):
+            validate_contract_v2(bad)
+        bad = json.loads(json.dumps(base))
+        bad["arms"]["N14_M10"]["normal_epochs"] = 13
+        with pytest.raises(ValueError, match="unequal compute"):
+            validate_contract_v2(bad)
+        bad = json.loads(json.dumps(base))
+        bad["baseline_learning_rate"] = float("nan")
+        with pytest.raises(ValueError, match="finite and positive"):
+            validate_contract_v2(bad)
+
+    def test_frozen_m0_v1_contract_still_loads_unchanged(self):
+        contract = load_contract()
+        assert "_launch_blocked_reason" not in contract
+        assert set(contract["arms"]) == set(M0_ARM_ORDER)

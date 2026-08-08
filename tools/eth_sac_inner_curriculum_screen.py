@@ -35,12 +35,72 @@ CONTRACT_PATH = REPO / "examples/config/phase_3_eth_sac_dynamics/m0_contract.jso
 M0_ARM_ORDER = ("N2_LR1", "E1_N1_LR1", "E1_N1_LR03", "E1_N1_LR01")
 
 
+SCHEMA_V2 = "agent_multi.inner_curriculum_screen_contract.v2"
+
+
 def load_contract(path: Path = CONTRACT_PATH) -> dict:
     contract = json.loads(path.read_text())
     contract["_contract_sha256"] = hashlib.sha256(
         path.read_bytes()).hexdigest()
-    validate_contract(contract)
+    if contract.get("schema") == SCHEMA_V2:
+        validate_contract_v2(contract)
+    else:
+        validate_contract(contract)
     return contract
+
+
+def validate_contract_v2(contract: dict) -> None:
+    """Generic per-asset screen contract (Musashi doc-37 correction 5).
+
+    v2 speaks LR MULTIPLIERS over the anchor's own baseline training
+    rate (correction 1): an absolute rate copied across assets silently
+    changes meaning when anchors were trained at different rates
+    (ETH 1e-4 vs USDCAD 3.559e-4). The loader resolves absolute rates
+    so the run path stays identical. Same typed refusals BEFORE model
+    construction: bool-as-number, NaN, nonpositive, negative epochs and
+    unequal compute all refuse.
+    """
+    epoch = int(contract["epoch_timesteps"])
+    total_epochs = int(contract["total_epochs_per_arm"])
+    if epoch <= 0 or total_epochs <= 0:
+        raise ValueError("epoch budgets must be positive")
+
+    def _positive_number(value, label):
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError(f"{label} must be a number")
+        value = float(value)
+        if not math.isfinite(value) or value <= 0.0:
+            raise ValueError(f"{label} must be finite and positive")
+        return value
+
+    baseline = _positive_number(
+        contract["baseline_learning_rate"], "baseline_learning_rate")
+    easy_mult = _positive_number(
+        contract["easy_lr_multiplier"], "easy_lr_multiplier")
+    contract["easy_learning_rate"] = baseline * easy_mult
+    arms = contract["arms"]
+    if not arms:
+        raise ValueError("contract declares no arms")
+    for name, spec in arms.items():
+        easy = spec["easy_epochs"]
+        normal = spec["normal_epochs"]
+        for value, label in ((easy, "easy_epochs"), (normal, "normal_epochs")):
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise ValueError(f"{name}.{label} must be an integer")
+            if value < 0:
+                raise ValueError(f"{name}.{label} must not be negative")
+        mult = _positive_number(
+            spec["normal_lr_multiplier"], f"{name}.normal_lr_multiplier")
+        spec["normal_learning_rate"] = baseline * mult
+        if (easy + normal) != total_epochs:
+            raise ValueError(
+                f"{name}: unequal compute — {easy}+{normal} epochs"
+                f" != {total_epochs}")
+    contract["total_updates_per_arm"] = total_epochs * epoch
+    if contract.get("launch_eligible") is not True:
+        contract["_launch_blocked_reason"] = (
+            "contract instance is not launch_eligible (winner multiplier"
+            " pending audit selection)")
 
 
 def validate_contract(contract: dict) -> None:
@@ -248,16 +308,25 @@ def main() -> int:
                         choices=(101, 202, 303, 404))
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--agent", default="sac_agent")
-    parser.add_argument("--arms", nargs="*", default=list(M0_ARM_ORDER))
+    parser.add_argument("--contract", type=Path, default=CONTRACT_PATH,
+                        help="frozen screen contract (v1 M0 or generic"
+                             " v2 per-asset instance)")
+    parser.add_argument("--arms", nargs="*", default=None)
     args = parser.parse_args()
 
-    contract = load_contract()
-    unknown = set(args.arms) - set(M0_ARM_ORDER)
+    contract = load_contract(args.contract)
+    if contract.get("_launch_blocked_reason"):
+        print(json.dumps({"error": contract["_launch_blocked_reason"]}))
+        return 2
+    arm_order = list(contract["arms"])
+    requested = args.arms if args.arms is not None else arm_order
+    unknown = set(requested) - set(arm_order)
     if unknown:
         print(json.dumps({"error": f"unknown arms: {sorted(unknown)}"}))
         return 2
+    args.arms = requested
     results = {}
-    for arm in M0_ARM_ORDER:
+    for arm in arm_order:
         if arm not in args.arms:
             continue
         record = run_m0_arm(arm, args.seed, args.output_root,

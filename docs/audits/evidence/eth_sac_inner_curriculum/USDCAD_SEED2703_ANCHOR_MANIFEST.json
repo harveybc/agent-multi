@@ -1,0 +1,34 @@
+{
+ "schema": "agent_multi.screen_anchor_manifest.v1",
+ "immutable": true,
+ "created_utc": "2026-08-08",
+ "artifact": {
+  "path": "/home/harveybc/.local/share/agent-multi/evidence-e4/long_horizon__usdcad__4h__seed2703/gamma-5070ti/champion_policy.zip",
+  "sha256": "f40dfca173283e0fee61c094289ca0540927c867881b3ace2109f3ab36ffaa19",
+  "size_bytes": 3560609
+ },
+ "lineage": {
+  "origin": "evidence-e4 long-horizon USDCAD 4h campaign, seed 2703, gamma-5070ti worker",
+  "resolved_config": "sibling resolved_config.json (canonical schema trading_experiment.v1)",
+  "dataset_manifest": "sibling policy_dataset_manifest.json",
+  "dataset_sha256_prefix": "98a3cc732a9a6114",
+  "baseline_learning_rate": 0.00035593553866490607,
+  "entropy_mode": "auto",
+  "asset": "USDCAD",
+  "timeframe": "4h",
+  "observation_columns": 48,
+  "window_size": 1,
+  "split_rows": {"train": 1604, "validation": 1609, "test": 1589}
+ },
+ "activity": {
+  "source": "Musashi independent audit 2026-08-08 (relayed by owner): 15 validation trades, total return -0.0720%, Sharpe -1.69",
+  "status": "sufficient_for_activity_measurement_not_profit",
+  "reproof_required_at_launch_gate": true,
+  "note": "these figures are the auditor's measurement, not mine; the M0-X precondition gate must re-load the artifact and re-measure validation activity before any arm may run"
+ },
+ "limitations": {
+  "single_anchor_reused_across_all_seeds": true,
+  "declaration": "unlike ETH M0 (four per-seed anchors), USDCAD has ONE verified active anchor; the four screen seeds vary training/eval stochasticity only, so seed-level variation measures fine-tune stochasticity, NOT anchor diversity. The full_genome/usdcad_4h smoke champion produced zero trades and is REJECTED as an anchor.",
+  "system_differences_vs_eth": "48 features vs 83; window 1 vs 32; 1604 train rows vs 13699; entropy auto vs fixed 0.2 — M0-X measures transfer between two complete systems and can at best conclude 'not falsified in a second system', never 'universal mechanism'"
+ }
+}

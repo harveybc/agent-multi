@@ -1,0 +1,86 @@
+{
+ "schema": "agent_multi.inner_curriculum_screen_contract.v2",
+ "$doc": "M0-X: cross-system replication probe on USDCAD 4h (doc 37 v2). Multipliers over the ANCHOR'S OWN baseline LR 3.559e-4 (Musashi correction 1); single verified anchor seed2703 reused across all four seeds \u2014 declared limitation; the smoke champion is REJECTED (zero trades). Runs only AFTER M1 resolves easy causality; if M1 says lr_only, M0-X conclusions attribute nothing to easy. Outcome set includes INCONCLUSIVE; a replication concludes 'not falsified in a second system', never 'universal mechanism'.",
+ "experiment": "m0x_usdcad",
+ "asset": "USDCAD",
+ "epoch_timesteps": 20000,
+ "total_epochs_per_arm": 2,
+ "baseline_learning_rate": 0.00035593553866490607,
+ "easy_lr_multiplier": 1.0,
+ "winner_multiplier": 0.1,
+ "winner_label": "M01",
+ "launch_eligible": false,
+ "anchor_manifest": "docs/audits/evidence/eth_sac_inner_curriculum/USDCAD_SEED2703_ANCHOR_MANIFEST.json",
+ "precondition_gate": {
+  "anchor_load_proof": true,
+  "anchor_validation_activity_reproof": "must re-measure >0 validation trades before any arm",
+  "dataset_manifest_hash_check": true,
+  "no_test_year_leak_mirror": true
+ },
+ "arms": {
+  "N2_M10": {
+   "easy_epochs": 0,
+   "normal_epochs": 2,
+   "normal_lr_multiplier": 1.0
+  },
+  "E1_N1_M10": {
+   "easy_epochs": 1,
+   "normal_epochs": 1,
+   "normal_lr_multiplier": 1.0
+  },
+  "N2_M01": {
+   "easy_epochs": 0,
+   "normal_epochs": 2,
+   "normal_lr_multiplier": 0.1
+  },
+  "E1_N1_M01": {
+   "easy_epochs": 1,
+   "normal_epochs": 1,
+   "normal_lr_multiplier": 0.1
+  }
+ },
+ "anchors": {
+  "101": {
+   "path": "/home/harveybc/.local/share/agent-multi/evidence-e4/long_horizon__usdcad__4h__seed2703/gamma-5070ti/champion_policy.zip",
+   "sha256": "f40dfca173283e0fee61c094289ca0540927c867881b3ace2109f3ab36ffaa19"
+  },
+  "202": {
+   "path": "/home/harveybc/.local/share/agent-multi/evidence-e4/long_horizon__usdcad__4h__seed2703/gamma-5070ti/champion_policy.zip",
+   "sha256": "f40dfca173283e0fee61c094289ca0540927c867881b3ace2109f3ab36ffaa19"
+  },
+  "303": {
+   "path": "/home/harveybc/.local/share/agent-multi/evidence-e4/long_horizon__usdcad__4h__seed2703/gamma-5070ti/champion_policy.zip",
+   "sha256": "f40dfca173283e0fee61c094289ca0540927c867881b3ace2109f3ab36ffaa19"
+  },
+  "404": {
+   "path": "/home/harveybc/.local/share/agent-multi/evidence-e4/long_horizon__usdcad__4h__seed2703/gamma-5070ti/champion_policy.zip",
+   "sha256": "f40dfca173283e0fee61c094289ca0540927c867881b3ace2109f3ab36ffaa19"
+  }
+ },
+ "single_anchor_limitation": "one verified anchor for all seeds; seed variation measures fine-tune stochasticity, not anchor diversity",
+ "workers": {
+  "101": "omega",
+  "202": "dragon",
+  "303": "gamma-5070ti",
+  "404": "gamma-5090"
+ },
+ "replica_topology": {
+  "omega": "dragon",
+  "dragon": "gamma-replica",
+  "gamma-5070ti": "dragon-replica",
+  "gamma-5090": "dragon-replica"
+ },
+ "output_root": "~/.local/share/agent-multi/sac_inner_curriculum_m0x_usdcad_v1",
+ "validation_contract": "USDCAD's own frozen splits from the anchor lineage; its test split forbidden",
+ "interpretation": {
+  "not_falsified": "the M1-established pattern repeats on USDCAD in >=3/4 seeds",
+  "conditioned": "the pattern fails on USDCAD: mechanism is system-conditioned; R3 bounds become per-asset",
+  "INCONCLUSIVE": "gate failures, unverifiable records, anchor activity below reproof threshold, or mixed cells meeting no rule: no conclusion, escalate"
+ },
+ "forbidden": [
+  "test-year evaluation",
+  "positive-profit gate",
+  "attributing anything to easy if M1 concluded lr_only",
+  "calling any outcome 'universal mechanism'"
+ ]
+}
