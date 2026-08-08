@@ -141,6 +141,13 @@ Only after Checkpoint C passes may the complete four-seed/four-cell M1 launch.
 The full M1 launch does not require another owner phrase; the passed checkpoint
 and this order provide the authority.
 
+The smoke produces no scientific or performance decision. Full M1 must retain
+the exact ETH evidence contract: 13,699 4h training bars spanning 2017-09-28
+through 2023-12-31, all 2,196 validation bars from 2024, four seeds, four matched
+cells and 280,000 interactions per cell/seed. The 2025 test remains sealed.
+Shortening any of those quantities requires a new owner order, not technical-lead
+discretion.
+
 ## 6. No Substitutions
 
 The following substitutions are explicitly forbidden:
@@ -153,6 +160,8 @@ The following substitutions are explicitly forbidden:
 | direct activity facts | absence of alert or default zero |
 | exact ETH/USDCAD manifest | shared ETH helper with changed asset label |
 | executable outcome table | prose such as "materially" or "comparably" |
+| full M1 evidence run | smoke metrics or shortened data/budget |
+| cross-asset mechanism test | current 1,604-row USDCAD training contract |
 | immutable supersession | rewriting or deleting M0 evidence |
 | independent audit | self-declared closure |
 

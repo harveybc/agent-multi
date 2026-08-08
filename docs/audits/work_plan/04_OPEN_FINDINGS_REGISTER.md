@@ -930,6 +930,28 @@ unrelated valid fleet work remains authorized and must not be idled.
 | AUD-F1-20260808-162 | S2 | open, blocks M0-X | Generic runner labels USDCAD while unconditionally materializing ETH data/base/observation config | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260808-163 | S2 | open, blocks M1/M0-X launch | V2 has no executable aggregator/exact decision semantics and execution/output identities collide across variants | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260808-164 | S3 | open, blocks durable acceptance | V2 schema does not enforce factorial/system lineage and reported replicas omit model artifacts | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-165 | S2 | open, blocks M0-X inference | Proposed USDCAD system has only 1,604 4h training rows and no exact multi-year date/regime contract | General Satoshi III materializes sufficient data/anchor after M1; General Musashi verifies |
+
+### 1ad. Satoshi III WP0 quarantine acceptance audit, 2026-08-08
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_WP0_QUARANTINE_2026_08_08.md`
+- `../evidence/SATOSHI_III_WP0_QUARANTINE_REPRO_2026_08_08.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_WP0_QUARANTINE_CORRECTION_ORDER_2026_08_08.md`
+
+The real invalid M0 successor is launch-ineligible, byte-preserved under its
+content-addressed retired path, and its five envelope hashes independently
+match. That accepts only finding 159's runtime-containment subcriterion. WP0
+remains unaccepted because its negative-consumer and recovery proofs fail
+adversarial cases. Unrelated valid fleet work remains authorized.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260808-166 | S3 | open, blocks WP0 acceptance | Consumer inspection reports whole roots scanned while ignoring SQLite, JSONL, CSV and logs | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-167 | S2 | open, blocks WP0 acceptance | Schema-only idempotency returns success for launch-eligible/corrupt supersession and missing envelope | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-168 | S3 | open, blocks WP0 acceptance | Missing aggregation/table/manifest bindings are written as null while evidence is certified immutable | General Satoshi III implements; General Musashi verifies |
+| AUD-GEN-20260808-169 | S3 | open, blocks clean suite/WP0 acceptance | New mutating quarantine executable is absent from the reviewed engineering-surface declaration | General Satoshi III implements; General Musashi verifies |
 
 ## 2b. Observations Pending Verification (not yet findings)
 

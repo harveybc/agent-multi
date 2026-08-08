@@ -347,6 +347,30 @@ complete four-seed/four-cell M1 on the four GPUs. This bounded acceptance is not
 permission to leave otherwise available machines idle: keep unrelated valid
 pool work active until the M1 launch barrier is ready.
 
+### Full M1 evidence run
+
+The `1 + 1` smoke is mechanics-only and is excluded by schema from every
+performance aggregation. It cannot decide easy, LR, profitability or R3.
+
+The full M1 decision run uses the established ETH contract without shortening:
+
+```text
+timeframe: 4h
+dataset rows: 18,085
+train: 13,699 bars, 2017-09-28 04:00 through 2023-12-31
+validation: 2,196 bars, calendar 2024
+sealed test: 2,190 bars, calendar 2025, forbidden for selection
+seeds: 101, 202, 303, 404
+primary cells: 4
+budget: 14 x 20,000 = 280,000 environment interactions per cell/seed
+aggregate primary budget: 4,480,000 environment interactions
+```
+
+Wall-clock duration is not an evidence criterion. Four GPUs make a valid
+experiment finish faster; they do not permit reducing its chronological data,
+seeds, cells or interaction budget. The aggregator must reject smoke schemas
+and any shortened production cell.
+
 ## 9. WP6 - M0-X Only After M1
 
 Do not execute M0-X in this repair packet. Materialize it only after M1's typed
@@ -359,6 +383,23 @@ outcome:
 
 USDCAD must use its own exact manifest and re-prove anchor activity. One shared
 anchor means seeds measure fine-tuning stochasticity, not anchor diversity.
+
+The currently proposed USDCAD anchor system is not sufficient for a mechanism
+decision: it declares only 1,604 training bars at 4h and lacks exact date bounds.
+Before M0-X, materialize a new second-system contract with:
+
+- at least four complete chronological training years for 4h data;
+- one complete untouched validation year;
+- one separate sealed test year;
+- exact timestamps, row counts and hashes;
+- documented bull/bear, high/low-volatility and trending/ranging coverage; and
+- a mature active anchor trained under that exact data/observation contract.
+
+For a 1h-or-finer alternative, one complete training year is the owner's hard
+minimum, with a longer matched history preferred. Do not pad, duplicate,
+interpolate across closures or reuse an anchor trained on the short contract.
+If USDCAD data cannot satisfy this promptly, select another sufficiently
+different asset with adequate data; do not lower the evidence requirement.
 
 ## 10. Evidence and Return Standard
 
