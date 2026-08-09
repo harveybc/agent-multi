@@ -17,22 +17,25 @@ CUDA_VISIBLE_DEVICES=GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326 \
   > "$LOGDIR/seed101.log" 2>&1 &
 echo "  pid $!"
 
-echo "== dragon seed 202 (RTX 4090)"
-ssh dragon "mkdir -p $LOGDIR && cd $REPO_REMOTE && \
-  nohup $PY tools/l1_factorial_screen.py --seed 202 \
-  > $LOGDIR/seed202.log 2>&1 & echo \"  pid \$!\""
+# Remote launches: nohup alone is not enough — without </dev/null on
+# stdin and full detachment the remote background process keeps the ssh
+# channel open and the dispatch script hangs (observed on gamma,
+# 2026-08-09). Each launch fully detaches and the pid is captured from
+# a file, not from the racing shell.
+remote_launch() {
+  local host="$1" seed="$2" cuda="$3"
+  echo "== $host seed $seed"
+  ssh -o BatchMode=yes "$host" "mkdir -p $LOGDIR && cd $REPO_REMOTE && \
+    ${cuda:+CUDA_VISIBLE_DEVICES=$cuda} \
+    nohup $PY tools/l1_factorial_screen.py --seed $seed \
+    > $LOGDIR/seed$seed.log 2>&1 < /dev/null & \
+    echo \$! > $LOGDIR/seed$seed.pid; cat $LOGDIR/seed$seed.pid" \
+    < /dev/null
+}
 
-echo "== gamma seed 303 (RTX 5070 Ti, UUID-bound)"
-ssh gamma "mkdir -p $LOGDIR && cd $REPO_REMOTE && \
-  CUDA_VISIBLE_DEVICES=GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519 \
-  nohup $PY tools/l1_factorial_screen.py --seed 303 \
-  > $LOGDIR/seed303.log 2>&1 & echo \"  pid \$!\""
-
-echo "== gamma seed 404 (RTX 5090, UUID-bound)"
-ssh gamma "cd $REPO_REMOTE && \
-  CUDA_VISIBLE_DEVICES=GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8 \
-  nohup $PY tools/l1_factorial_screen.py --seed 404 \
-  > $LOGDIR/seed404.log 2>&1 & echo \"  pid \$!\""
+remote_launch dragon 202 ""
+remote_launch gamma 303 GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519
+remote_launch gamma 404 GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8
 
 echo "== dispatched; verify:"
 echo "nvidia-smi + tail $LOGDIR/seed*.log"
