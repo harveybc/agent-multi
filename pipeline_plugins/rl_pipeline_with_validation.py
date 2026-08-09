@@ -42,6 +42,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
 from . import _lexicographic_selection as _lex
+from . import _paired_generalization as _paired
 from . import _return_trace as _trace_mod
 from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import validate_observation_contract
@@ -250,6 +251,7 @@ def _checkpoint_is_eligible(
 IMPLEMENTED_SELECTION_METRICS = frozenset(
     {
         _lex.METRIC_NAME,
+        _paired.METRIC_NAME,
         "robust_weekly_rap_fitness",
         "robust_weekly_rap",
         "execution_curriculum_robust_fitness",
@@ -274,6 +276,13 @@ def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lam
         )
         summary["selection_contract"] = contract
         return float(contract["transport_scalar"])
+    if metric == _paired.METRIC_NAME:
+        value = _safe_float(summary.get(_paired.UTILITY_KEY))
+        if math.isnan(value):
+            raise ValueError(
+                "paired_generalization_weekly_v1 requires a finite"
+                " robust weekly utility per split; none present")
+        return value
     if metric in {
         "robust_weekly_rap_fitness",
         "robust_weekly_rap",
@@ -522,12 +531,27 @@ class PipelinePlugin:
                 contract, out_dir,
                 mode=str(config.get("nested_split_mode", "l1")))
             config["nested_split_manifest"] = manifest["manifest_path"]
+            # Doc 38 §5: a nested decision config must use the paired
+            # comparator; the validation-only lexicographic branch is
+            # structurally out of reach for it.
+            metric = str(config.get("selection_metric") or "").strip().lower()
+            if metric != _paired.METRIC_NAME:
+                raise ValueError(
+                    "nested_split_contract requires selection_metric="
+                    f"{_paired.METRIC_NAME!r}; got {metric!r} — the"
+                    " legacy validation-only branch is forbidden for"
+                    " nested decision configs")
             roles = manifest["roles"]
             paths = {
                 "train": roles["fit_train"]["csv"],
                 "train_monitor": roles["train_monitor"]["csv"],
                 "validation": roles["inner_validation"]["csv"],
                 "outer_validation": roles["outer_validation"]["csv"],
+                # loop-compatibility aliases: the in-sample member of
+                # the L1 pair is the 2022 monitor year (never a tail
+                # sliver), and 'val' is inner validation 2023.
+                "train_tail": roles["train_monitor"]["csv"],
+                "val": roles["inner_validation"]["csv"],
             }
             if roles["sealed_test"].get("status") == "MATERIALIZED":
                 paths["test"] = roles["sealed_test"]["csv"]

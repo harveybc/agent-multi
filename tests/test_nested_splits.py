@@ -273,10 +273,32 @@ class TestPipelineHook:
             "nested_split_contract": str(CONTRACT_PATH),
             "nested_split_dir": str(tmp_path / "splits"),
             "save_model": str(tmp_path / "model.zip"),
+            "selection_metric": "paired_generalization_weekly_v1",
         }
         paths = pipeline._split_csv(config)
         assert set(paths) == {"train", "train_monitor", "validation",
-                              "outer_validation"}
+                              "outer_validation", "train_tail", "val"}
         assert "test" not in paths          # sealed outside release mode
+        # loop-compat aliases pair monitor (in-sample) with inner (val)
+        assert paths["train_tail"] == paths["train_monitor"]
+        assert paths["val"] == paths["validation"]
         assert Path(paths["validation"]).is_file()
         assert config["nested_split_manifest"]
+
+    @needs_eth
+    def test_nested_config_refuses_legacy_validation_only_metric(
+        self, tmp_path
+    ):
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            PipelinePlugin,
+        )
+
+        pipeline = PipelinePlugin({})
+        config = {
+            "nested_split_contract": str(CONTRACT_PATH),
+            "nested_split_dir": str(tmp_path / "splits"),
+            "save_model": str(tmp_path / "model.zip"),
+            "selection_metric": "lexicographic_weekly_v1",
+        }
+        with pytest.raises(ValueError, match="validation-only branch"):
+            pipeline._split_csv(config)

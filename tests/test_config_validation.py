@@ -199,7 +199,8 @@ class TestMetricSurfaceOwnership:
         surface = pipeline.IMPLEMENTED_SELECTION_METRICS
         assert "lexicographic_weekly_v1" in surface
         source = inspect.getsource(pipeline._selection_value)
-        for metric in surface - {"lexicographic_weekly_v1", "total_return"}:
+        for metric in surface - {"lexicographic_weekly_v1", "total_return",
+                          "paired_generalization_weekly_v1"}:
             assert f'"{metric}"' in source, (
                 f"declared metric {metric!r} has no branch in _selection_value"
             )
