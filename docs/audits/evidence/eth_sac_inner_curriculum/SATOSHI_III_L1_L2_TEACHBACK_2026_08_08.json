@@ -1,0 +1,32 @@
+{
+ "schema": "agent_multi.l1_l2_execution_order_teachback.v1",
+ "author": "General Satoshi III",
+ "date": "2026-08-08",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_III_L1_L2_CURRICULUM_FEATURE_SELECTION_EXECUTION_ORDER_2026_08_08.md section 2",
+ "answers": {
+  "why_l1_l2_compatible_but_isolated_first": "L1 curriculum acts on gradient training of ONE candidate: it changes policy weights, replay contents and optimizer state. L2 curriculum acts on evolution of config GENOMES: initialization, active genes, mutation/crossover, promotion and generation stopping. They operate on different objects, so they can coexist; but an L1 curriculum changes the evaluation landscape every L2 candidate is scored on, so their effects interact. Attribution therefore requires isolation at the level where each mechanism acts: L1 factorial with fixed genome first, then L2 arms under the frozen L1 recipe, then one bounded 2x2 interaction. The owner's concern that doing incremental at L1 might preclude L2 is resolved by this sequencing: nothing precludes coexistence, only unattributed mixing.",
+  "exact_nested_rows": {
+   "fit_train": {"range": "2017-09-28T04:00 <= t < 2023-01-01", "rows": 11509, "authority": "gradient updates only"},
+   "train_monitor": {"range": "calendar 2022, SUBSET of fit_train (the last complete fit year, never seven days)", "rows": "materializer derives exact count from the pinned file", "authority": "in-sample side of L1 paired stopping"},
+   "inner_validation": {"range": "calendar 2023", "rows": 2190, "authority": "L1 stopping pair member, no fitting"},
+   "outer_validation": {"range": "calendar 2024", "rows": 2196, "authority": "L2 selection/confirmation, no fitting"},
+   "sealed_test": {"range": "calendar 2025", "rows": 2190, "authority": "disabled until the single release refit"},
+   "checksum": "11509 + 2190 + 2196 + 2190 = 18085 = total pinned rows (sha 1b447c66...); prose values are assertions the materializer must verify, not inputs"
+  },
+  "why_2025_inaccessible": "Anything monitored gets overfitted — the owner's own NEAT lesson (validation-only early stopping eventually overfit the validation set). If 2025 were touchable during development it would silently become another validation split and its release evidence would be worthless. It opens exactly once, for ONE frozen candidate after L1/L2/FS configuration freeze and the single-origin release refit (fit through 2023, monitor 2023, validate 2024); no result from 2025 may send work back into selection.",
+  "why_n14_en4_10_retained_but_non_decisional": "They are preserved mechanism-screen/mechanics evidence: they established real facts (first-epoch activity collapse, reduced-LR retention from the anchor) but cannot decide the curriculum question because they disabled early stopping, fixed phase lengths a priori (14/4+10), and in M0 the easy treatment never actually reached normal training (epoch-0 anchor handoff, findings 159). They stay byte-for-byte immutable in their evidence class; the new decision runs get a NEW domain/plan id and never append to their chains.",
+  "why_lexicographic_keys_cannot_be_averaged": "lexicographic_weekly_v1 emits a packed integer ORDER KEY: quantized metric components concatenated by priority for DEAP transport. It is ordinal, not cardinal — equal differences in the key do not represent equal differences in utility, and averaging two keys arithmetically mixes digits across lexicographic fields, producing a number that ranks NEITHER split's reality. Pairing requires computing the same common-scale robust weekly utility per split and then mean minus beta*|gap| (paired_generalization_weekly_v1), with the key kept only as a display-forbidden transport artifact.",
+  "fs0_fs1_fs2_difference": {
+   "FS0": "fixed control: the current 83-feature observation with exact ordered list/hash and no hidden drops — the attribution baseline",
+   "FS1": "L2-INHERITED selection: hierarchical mask GENOME (source-family gate -> feature-family gate -> optional feature bit) with mandatory agent/risk/protection state, sparse fs_neat_nohidden-style initialization (one seeded eligible market feature plus its ancestor gates per genome, deterministic seeds), add/drop mutation with repair guaranteeing >=1 market feature, causal zero-masking AFTER scaling with stable observation shape; selection pressure comes from evolution across genomes",
+   "FS2": "L1-LEARNABLE selection: a separate SAC agent plugin (sac_sparse_feature_gate_agent) with a feature-wise gate shared across lookback positions, hard-concrete/L0-style reparameterizable regularization with explicit coefficient/schedule, deterministic frozen thresholded mask at inference, artifact round-trip reproducing gates and actions; selection pressure comes from gradients within one candidate",
+   "combination": "FS1+FS2 runs only if each individually improves outer validation"
+  },
+  "what_doin_stages_inherit_and_not": "Stages inherit TYPED CONFIG GENES only — hyperparameters, masks and (after WP9) stage-local cxpb/mutpb/numeric scale/categorical probability/min-max generations/patience/diversity floor, with explicit evidence-selected values (unknown fields fail in the new domain; historical domains keep legacy behavior). Stage advances re-evaluate carried elites when difficulty or evidence semantics change. They do NOT inherit SAC weights or topology: Lamarckian weight inheritance between DEAP genomes is explicitly deferred until observation/topology compatibility and optimizer/replay-state semantics are proven as an independent line.",
+  "actions_without_fresh_owner_phrase": {
+   "standing_authorization": ["implement and test every doc-38 contract", "run mechanics smokes", "execute L1, L2, FS and conditional interaction jobs in the declared order", "start the next pre-approved job after objective acceptance evidence", "use all workers on one coordinated DOIN chain for distributed jobs"],
+   "owner_still_required_for": ["real capital", "secrets", "paid/legal commitments", "destructive history changes", "opening the sealed 2025 test", "changes to mission or mandatory risk/protection invariants"],
+   "audit_semantics": "independent review verifies evidence; it never suspends the fleet — while one package awaits review, the next compatible non-contaminating job runs"
+  }
+ }
+}
