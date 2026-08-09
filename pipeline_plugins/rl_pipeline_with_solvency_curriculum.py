@@ -202,7 +202,22 @@ class PipelinePlugin(ValidationPipelinePlugin):
         agent_plugin,
     ) -> Dict[str, Any]:
         """Phase 1: train under easy dynamics, save post_easy immutably."""
-        easy_config = self._easy_training_config(config)
+        phase1_mode = str(config.get("phase1_mode", EASY_MODE))
+        if phase1_mode == NORMAL_MODE:
+            # matched-boundary NORMAL phase 1 (doc 38 §5.3): identical
+            # phase structure, selection and handoff machinery; only the
+            # solvency dynamics differ from the easy arm.
+            easy_config = dict(config)
+            easy_config["solvency_mode"] = NORMAL_MODE
+            easy_config["env_mode"] = "training"
+            phase1_lr = easy_config.get("phase1_learning_rate",
+                                        easy_config.get("easy_learning_rate"))
+            if phase1_lr is not None:
+                easy_config["learning_rate"] = float(phase1_lr)
+        elif phase1_mode == EASY_MODE:
+            easy_config = self._easy_training_config(config)
+        else:
+            raise ValueError(f"unknown phase1_mode {phase1_mode!r}")
         env_plugin_name = easy_config.get("env_plugin", "gym_fx_env")
         paths = self._split_csv(easy_config)
         _plug, easy_env = self._make_split_env(
@@ -466,6 +481,25 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 config=passthrough, env_plugin=env_plugin,
                 agent_plugin=agent_plugin, mode=mode)
 
+        ledger = config.get("total_max_passes")
+        if ledger is not None:
+            total_max = int(ledger)
+            phase1 = int(config.get("easy_max_epochs", 0))
+            phase2 = int(config.get("max_epochs", 0))
+            fraction = float(config.get("phase1_max_fraction", 0.5))
+            normal_min = int(config.get("normal_phase_min_passes", 1))
+            if phase1 + phase2 > total_max:
+                raise ValueError(
+                    f"two-phase budget exceeds total_max_passes:"
+                    f" {phase1}+{phase2} > {total_max}")
+            if phase1 > int(fraction * total_max):
+                raise ValueError(
+                    f"phase-1 budget {phase1} exceeds phase1_max_fraction"
+                    f" {fraction} of {total_max}")
+            if phase2 < normal_min:
+                raise ValueError(
+                    f"normal phase {phase2} below normal_phase_min_passes"
+                    f" {normal_min}")
         post_easy = self._train_easy_phase(
             config=config, env_plugin=env_plugin,
             agent_plugin=agent_plugin)

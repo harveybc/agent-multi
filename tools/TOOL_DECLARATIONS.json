@@ -176,6 +176,13 @@
       "mutability": "mutating",
       "authority_class": "campaign_operation",
       "owner": "General Satoshi III"
+    },
+    "l1_factorial_screen.py": {
+      "purpose": "L1 matched factorial runner: four v3 cells per seed, mode-aware phase 1, paired stopping, nested chronology; smoke profile is mechanics-only",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "evidence_producer",
+      "owner": "General Satoshi III"
     }
   },
   "plugins": {
