@@ -506,6 +506,32 @@ class PipelinePlugin:
 
     # ------------------------------------------------------------------
     def _split_csv(self, config: Dict[str, Any]) -> Dict[str, str]:
+        # WP1 (doc 38 §3): nested-contract configs delegate to the ONE
+        # typed split implementation; this method never grows nested
+        # date parsing of its own. Legacy configs keep the path below.
+        contract_path = config.get("nested_split_contract")
+        if contract_path:
+            from . import _nested_splits
+
+            contract = _nested_splits.load_contract(Path(contract_path))
+            out_dir = Path(
+                config.get("nested_split_dir")
+                or Path(config.get("save_model", "./agent_model.zip"))
+                .resolve().parent / "nested_splits")
+            manifest = _nested_splits.materialize_nested_splits(
+                contract, out_dir,
+                mode=str(config.get("nested_split_mode", "l1")))
+            config["nested_split_manifest"] = manifest["manifest_path"]
+            roles = manifest["roles"]
+            paths = {
+                "train": roles["fit_train"]["csv"],
+                "train_monitor": roles["train_monitor"]["csv"],
+                "validation": roles["inner_validation"]["csv"],
+                "outer_validation": roles["outer_validation"]["csv"],
+            }
+            if roles["sealed_test"].get("status") == "MATERIALIZED":
+                paths["test"] = roles["sealed_test"]["csv"]
+            return paths
         src = config["input_data_file"]
         date_col = config.get("date_column", "DATE_TIME")
         df = pd.read_csv(src)
