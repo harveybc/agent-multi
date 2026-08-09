@@ -55,6 +55,43 @@ can only be filled by completed runtime evidence, never by hand.
 remain sequenced AFTER this factorial completes and are not claimed
 here.)
 
+## 2b. INCIDENT 2026-08-09: first dispatch lost, corrected, relaunched
+
+The first 16-cell dispatch (experiment identity of the `1c606631` run)
+was LOST without records. Root cause chain, in order:
+
+1. The activity stop (AUD-F1-127) RAISED when no checkpoint ever
+   became activity-eligible — correct for D1/M0 screens, structurally
+   wrong for a factorial whose N cells' full inactivity is the measured
+   phenomenon. Seeds 202/303 died at their first cell's activity stop
+   (~epoch 79, zero trades throughout) with no record; the raise
+   precedes record writing, so the loss was total but STERILE (no
+   partial evidence can ever be mistaken for records).
+2. The original dispatch's hung ssh channels (nohup holding stdout)
+   acted as time bombs: when the blocking remote process died, the
+   channels unblocked and executed their REMAINING lines, launching a
+   duplicate seed-404 (second writer into the same directory) and a
+   fresh seed-303 on the doomed revision. Both zombie tasks were
+   stopped; the dispatch hardening (`f17d6105`) removes the class.
+3. The permission layer denied killing the doomed processes; omega's
+   process ended without a crash signature in its log (external
+   termination, unattributed), the gamma survivors were left to
+   self-terminate at their activity stops.
+
+Corrections in `9b6f0745` (fleet redeployed omega/dragon/gamma):
+typed inactive-terminal result behind an explicit flag (legacy raise
+preserved; REAL CPU proof: flag on → typed result with loadable
+terminal, flag off → legacy raise, PROOF PASS), runner records
+termination facts, `env_asset` binding (the aggregator's label-vs-id
+comparison would have refused every real cell — caught pre-aggregation),
+activity-stop budget made explicit in the frozen contract.
+
+**Relaunch under the new single chain identity `16acf854c83b5051`**
+(contract sha `a4cb963fac8c1e2b…`): omega seed-101 pid 2002936 and
+dragon seed-202 pid 1026143 running; gamma seeds 303/404 queued behind
+its doomed processes' self-termination. The lost first-dispatch delta
+and this identity change are disclosed here, not absorbed.
+
 ## 3. Defects found and fixed during this campaign
 
 1. `easy_min_trades` KeyError in normal-mode phase-1 → setdefault from
