@@ -1,29 +1,82 @@
 {
  "schema": "agent_multi.l1_factorial_contract.v3",
- "$doc": "L1 decision factorial (doc 38 §5.3, continuation order §8.2): phase-1 dynamics {normal, easy} x phase-2 LR multiplier {1.0, 0.3}, matched boundary, paired stopping, nested chronology. Smoke profile = 1+1 epochs, evidence_class=mechanics_smoke, decision_eligible=false.",
+ "$doc": "L1 decision factorial (doc 38 \u00a75.3, continuation order \u00a78.2): phase-1 dynamics {normal, easy} x phase-2 LR multiplier {1.0, 0.3}, matched boundary, paired stopping, nested chronology. Smoke profile = 1+1 epochs, evidence_class=mechanics_smoke, decision_eligible=false.",
  "experiment": "l1_matched_factorial",
  "asset": "ETHUSD",
  "nested_split_contract": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
  "selection_metric": "paired_generalization_weekly_v1",
  "l1_gap_penalty_beta": 0.25,
  "baseline_learning_rate": 0.0001,
- "stopping": {"max_epochs": 2000, "l1_patience": 60, "l1_patience_start_epoch": 40, "total_max_passes": 2000, "phase1_max_fraction": 0.3, "normal_phase_min_passes": 10},
- "decision_budget": {"phase1_epochs": 4, "phase2_max_epochs": 1996},
- "smoke_budget": {"phase1_epochs": 1, "phase2_max_epochs": 1, "epoch_timesteps": 600},
- "cells": {
-  "L1_N_M10": {"phase1_mode": "normal_realistic", "phase2_lr_multiplier": 1.0},
-  "L1_E_M10": {"phase1_mode": "easy_chronological_continuation", "phase2_lr_multiplier": 1.0},
-  "L1_N_M03": {"phase1_mode": "normal_realistic", "phase2_lr_multiplier": 0.3},
-  "L1_E_M03": {"phase1_mode": "easy_chronological_continuation", "phase2_lr_multiplier": 0.3}
+ "stopping": {
+  "max_epochs": 2000,
+  "l1_patience": 60,
+  "l1_patience_start_epoch": 40,
+  "total_max_passes": 2000,
+  "phase1_max_fraction": 0.3,
+  "normal_phase_min_passes": 10
  },
- "seeds": [101, 202, 303, 404],
- "workers": {"101": "omega", "202": "dragon", "303": "gamma-5070ti", "404": "gamma-5090"},
- "gpu_uuids": {"101": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326", "303": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519", "404": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"},
+ "decision_budget": {
+  "phase1_epochs": 4,
+  "phase2_max_epochs": 1996
+ },
+ "smoke_budget": {
+  "phase1_epochs": 1,
+  "phase2_max_epochs": 1,
+  "epoch_timesteps": 600,
+  "learning_starts": 100
+ },
+ "cells": {
+  "L1_N_M10": {
+   "phase1_mode": "normal_realistic",
+   "phase2_lr_multiplier": 1.0
+  },
+  "L1_E_M10": {
+   "phase1_mode": "easy_chronological_continuation",
+   "phase2_lr_multiplier": 1.0
+  },
+  "L1_N_M03": {
+   "phase1_mode": "normal_realistic",
+   "phase2_lr_multiplier": 0.3
+  },
+  "L1_E_M03": {
+   "phase1_mode": "easy_chronological_continuation",
+   "phase2_lr_multiplier": 0.3
+  }
+ },
+ "seeds": [
+  101,
+  202,
+  303,
+  404
+ ],
+ "workers": {
+  "101": "omega",
+  "202": "dragon",
+  "303": "gamma-5070ti",
+  "404": "gamma-5090"
+ },
+ "gpu_uuids": {
+  "101": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326",
+  "303": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519",
+  "404": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"
+ },
  "anchors": {
-  "101": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip", "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"},
-  "202": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip", "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"},
-  "303": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip", "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"},
-  "404": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip", "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"}
+  "101": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+   "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"
+  },
+  "202": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip",
+   "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"
+  },
+  "303": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip",
+   "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"
+  },
+  "404": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip",
+   "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"
+  }
  },
  "output_root": "~/.local/share/agent-multi/l1_matched_factorial_20260809_v1",
  "code_identity_expected": "5322d42a"

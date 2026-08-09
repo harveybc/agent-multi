@@ -99,6 +99,8 @@ def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
         "warm_start_model": str(anchor),
         "warm_start_model_sha256": actual,
         "evaluate_test_split": False,
+        "learning_starts": int(budget.get(
+            "learning_starts", 1000)),
         "execution_cost_curriculum_epochs": max(
             2, int(budget["phase2_max_epochs"])),
     })
