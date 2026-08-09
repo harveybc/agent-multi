@@ -277,12 +277,12 @@ def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lam
         summary["selection_contract"] = contract
         return float(contract["transport_scalar"])
     if metric == _paired.METRIC_NAME:
-        value = _safe_float(summary.get(_paired.UTILITY_KEY))
-        if math.isnan(value):
+        value, source = _paired._split_utility(summary)
+        if value is None:
             raise ValueError(
                 "paired_generalization_weekly_v1 requires a finite"
-                " robust weekly utility per split; none present")
-        return value
+                " common-scale weekly utility per split; none present")
+        return float(value)
     if metric in {
         "robust_weekly_rap_fitness",
         "robust_weekly_rap",
