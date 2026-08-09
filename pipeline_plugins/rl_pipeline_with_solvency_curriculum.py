@@ -214,6 +214,9 @@ class PipelinePlugin(ValidationPipelinePlugin):
                                         easy_config.get("easy_learning_rate"))
             if phase1_lr is not None:
                 easy_config["learning_rate"] = float(phase1_lr)
+            easy_config["easy_min_trades"] = int(
+                easy_config.get("easy_min_trades",
+                                self.params["easy_min_trades"]))
         elif phase1_mode == EASY_MODE:
             easy_config = self._easy_training_config(config)
         else:
