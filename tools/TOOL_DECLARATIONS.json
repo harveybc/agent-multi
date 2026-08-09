@@ -190,6 +190,13 @@
       "mutability": "read_only",
       "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
+    },
+    "bootstrap_test_fixtures.py": {
+      "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "discovery",
+      "owner": "General Satoshi III"
     }
   },
   "plugins": {
