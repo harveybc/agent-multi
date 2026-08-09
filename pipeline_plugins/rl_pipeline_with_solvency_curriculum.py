@@ -28,6 +28,8 @@ import math
 from pathlib import Path
 from typing import Any, Dict
 
+from agent_plugins.sac_agent import _policy_tensor_hash
+from pipeline_plugins import _paired_generalization as _paired
 from pipeline_plugins.rl_pipeline_with_validation import (
     PipelinePlugin as ValidationPipelinePlugin,
     _verify_artifact_sha256,
@@ -232,6 +234,9 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     pass
             else:
                 model = agent_plugin.build(easy_env, easy_config)
+            # AUD-F1-20260808-160: weight change is proved from the
+            # canonical policy tensor digest, never from archive bytes.
+            anchor_tensor_sha = _policy_tensor_hash(model.policy)
             epoch_ts = int(
                 easy_config.get("easy_epoch_timesteps")
                 or easy_config.get("epoch_timesteps",
@@ -321,22 +326,42 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "minimum_train_tail_trades": normal_min_train_tail,
                     "minimum_validation_trades": normal_min_validation,
                 }
-                probe["normal_handoff_eligible"] = bool(
+                probe["normal_handoff_probe_telemetry_only"] = True
+                # AUD-F1-20260808-159: the normal probe is TELEMETRY.
+                # It never gates whether the easy treatment exists.
+                probe["normal_handoff_eligible_telemetry"] = bool(
                     normal_train_tail_trades >= normal_min_train_tail
                     and normal_validation_trades >= normal_min_validation
                 )
-                probe["activity_eligible"] = bool(
-                    probe["easy_activity_eligible"]
-                    and probe["normal_handoff_eligible"]
-                )
+                # checkpoint A: easy utility on the monitor year;
+                # checkpoint B: normal-realistic inner validation
+                easy_monitor = self._eval_on_split(
+                    env_plugin_name, easy_config,
+                    paths.get("train_tail", paths["train"]),
+                    agent_plugin, model, seed, "easy_monitor_epoch")
+                paired = _paired.paired_generalization_weekly_v1(
+                    easy_monitor, normal_validation,
+                    beta=float(easy_config.get(
+                        "l1_gap_penalty_beta", 0.25)),
+                    label_a="easy_train_monitor",
+                    label_b="normal_inner_validation",
+                    candidate_id=f"easy_epoch_{epoch}")
+                probe["paired_selection"] = {
+                    "eligible": paired["eligible"],
+                    "paired_score": paired["paired_score"],
+                    "reasons": paired["ineligibility_reasons"],
+                }
+                probe["handoff_eligible"] = epoch > 0
                 history.append(probe)
-                score = probe["economic_equity"]
+                # epoch 0 is baseline telemetry and is STRUCTURALLY
+                # ineligible as a treatment handoff (order §7.5)
                 if (
-                    probe["activity_eligible"]
-                    and math.isfinite(score)
-                    and score > best + min_delta
+                    epoch > 0
+                    and paired["eligible"]
+                    and paired["paired_score"] is not None
+                    and paired["paired_score"] > best + min_delta
                 ):
-                    best = score
+                    best = paired["paired_score"]
                     best_epoch = epoch
                     waited = 0
                     agent_plugin.save(model, str(post_easy_path))
@@ -353,18 +378,40 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 if best_epoch is not None and waited >= patience:
                     break
 
-            if best_epoch is None or not post_easy_path.exists():
+            trained_epochs = [row for row in history
+                              if row.get("epoch", 0) > 0]
+            if not trained_epochs:
                 raise RuntimeError(
-                    "easy curriculum produced no easy-and-normal activity-"
-                    "eligible checkpoint: "
-                    f"required trades>={minimum_trades}, non-hold actions, "
-                    "entry actions, submitted protected entries, and zero "
-                    "protected-entry rejections in easy; train-tail and "
-                    "validation trade gates must also pass in normal"
-                )
+                    "phase 1 trained zero epochs; a declared phase-1 arm"
+                    " cannot hand off (invariant 1)")
+            selection_basis = "paired_comparator_best_trained_epoch"
+            if best_epoch is None or not post_easy_path.exists():
+                # invariant 3: a failed/inactive phase-1 result is still
+                # handed off and measured — the TERMINAL trained epoch,
+                # never the anchor.
+                best_epoch = trained_epochs[-1]["epoch"]
+                selection_basis = "terminal_trained_epoch_fallback"
+                agent_plugin.save(model, str(post_easy_path))
+            updates_after = int(getattr(model, "_n_updates", 0) or 0)
+            if updates_after <= 0:
+                raise RuntimeError(
+                    "phase 1 applied zero gradient updates; refusing a"
+                    " sham handoff")
+            terminal_tensor_sha = _policy_tensor_hash(model.policy)
+            if terminal_tensor_sha == anchor_tensor_sha:
+                raise RuntimeError(
+                    "phase-1 final policy is tensor-identical to the"
+                    " anchor; archive-byte difference is not weight"
+                    " change (AUD-F1-20260808-160)")
             post_easy_sha = _verify_artifact_sha256(post_easy_path, None)
             meta = {
-                "schema": "agent_multi.solvency_curriculum.post_easy.v3",
+                "schema": "agent_multi.solvency_curriculum.post_easy.v4",
+                "anchor_policy_tensor_sha256": anchor_tensor_sha,
+                "phase1_terminal_policy_tensor_sha256": terminal_tensor_sha,
+                "phase1_gradient_updates": updates_after,
+                "selection_basis": selection_basis,
+                "epoch0_structurally_ineligible": True,
+                "normal_probe_is_telemetry_only": True,
                 "artifact": str(post_easy_path),
                 "artifact_sha256": post_easy_sha,
                 "solvency_mode": EASY_MODE,

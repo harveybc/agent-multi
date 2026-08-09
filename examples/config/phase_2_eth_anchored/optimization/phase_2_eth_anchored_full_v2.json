@@ -668,7 +668,7 @@
     "train_freq": 1,
     "train_seed": 2703,
     "use_sde": false,
-    "warm_start_model": "/home/harveybc/Documents/GitHub/agent-multi/examples/models/eth_4h_sac_current_stack_anchor_v1.zip",
+    "warm_start_model": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/examples/models/eth_4h_sac_current_stack_anchor_v1.zip",
     "warm_start_model_sha256": "4579e6f09a9cf1272664479217f6dbaafd74004421cab8e7571da037fb86e80a",
     "warm_start_expand_observation_space": false,
     "warm_start_baseline_checkpoint_enabled": true,

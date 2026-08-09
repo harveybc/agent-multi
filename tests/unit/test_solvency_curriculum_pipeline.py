@@ -22,15 +22,34 @@ from pipeline_plugins.rl_pipeline_with_validation import (
 )
 
 
+class _FakePolicy:
+    """Real-tensor policy so canonical tensor digests are honest."""
+
+    def __init__(self):
+        import torch
+
+        self._tensor = torch.zeros(4)
+
+    def state_dict(self):
+        return {"actor.weight": self._tensor.clone()}
+
+    def perturb(self):
+        self._tensor += 1.0
+
+
 class FakeModel:
     def __init__(self, weights="fresh"):
         self.weights = weights
         self.learned_timesteps = 0
         self.replay_buffer_transitions = 0
+        self.policy = _FakePolicy()
+        self._n_updates = 0
 
     def learn(self, total_timesteps, reset_num_timesteps=False):
         self.learned_timesteps += total_timesteps
         self.replay_buffer_transitions += total_timesteps
+        self._n_updates += total_timesteps
+        self.policy.perturb()
         self.weights = f"{self.weights}+{total_timesteps}"
 
     def predict(self, _obs, deterministic=True):
@@ -181,7 +200,7 @@ def test_easy_phase_runs_first_then_normal_warm_start(harness):
     meta = json.loads(Path(
         normal_config["warm_start_model"] + ".meta.json").read_text())
     assert meta["history"][0]["would_margin_call_count"] == 1
-    assert meta["history"][0]["activity_eligible"] is True
+    assert meta["history"][0]["easy_activity_eligible"] is True
     assert meta["activity_contract"]["minimum_trades"] == 1
     assert meta["easy_budget_epochs"] == 3
 
@@ -197,49 +216,62 @@ def test_easy_early_stop_respects_budget(harness):
     meta = json.loads(Path(
         parent_calls[0]["config"]["warm_start_model"]
         + ".meta.json").read_text())
-    # FakeEnv economic equity is constant across probes: the first probe
-    # sets best, the second exhausts patience=1 — early stop before the
-    # declared budget of 5.
-    assert meta["easy_epochs_run"] == 2
-    assert meta["easy_epochs_run"] < meta["easy_budget_epochs"]
-    # The checkpoint is from the first eligible/best epoch, not the final
-    # patience epoch.
+    # Fake summaries carry no common-scale weekly utility, so no paired
+    # checkpoint is ever ELIGIBLE: patience cannot fire (ineligible
+    # checkpoints never touch improvement patience) and the phase runs
+    # its full declared budget, then hands off the TERMINAL trained
+    # epoch — never the anchor (invariant 3).
+    assert meta["easy_epochs_run"] == 5      # no warm start: 5 trained
+    assert meta["selection_basis"] == "terminal_trained_epoch_fallback"
     assert Path(parent_calls[0]["config"]["warm_start_model"]).read_text() == (
-        "fresh+10"
+        "fresh+10+10+10+10+10"
     )
 
 
-def test_easy_phase_rejects_zero_trade_policy_and_saves_no_artifact(harness):
+def test_inactive_phase1_still_hands_off_terminal_never_anchor(harness):
+    """Invariant 3 (repair spec §2): a failed/inactive phase-1 result is
+    still handed off and MEASURED. The old contract rejected the run and
+    saved nothing; that behavior hid the treatment."""
     pipeline, _made_envs, parent_calls, tmp_path = harness
     config = _config(tmp_path)
     config["_fake_trades"] = 0
-    with pytest.raises(RuntimeError, match="no easy-and-normal activity"):
-        pipeline.run_pipeline(
-            config=config, env_plugin=None, agent_plugin=FakeAgent(),
-            mode="train",
-        )
-    assert not parent_calls
-    assert not Path(
-        str(tmp_path / "candidate" / "model") + ".post_easy.zip"
-    ).exists()
+    pipeline.run_pipeline(
+        config=config, env_plugin=None, agent_plugin=FakeAgent(),
+        mode="train",
+    )
+    assert parent_calls, "normal phase must still run"
+    post_easy = Path(parent_calls[0]["config"]["warm_start_model"])
+    assert post_easy.exists()
+    meta = json.loads(Path(str(post_easy) + ".meta.json").read_text())
+    assert meta["selection_basis"] == "terminal_trained_epoch_fallback"
+    assert meta["epoch0_structurally_ineligible"] is True
 
 
-def test_easy_phase_rejects_policy_that_collapses_at_normal_handoff(harness):
+def test_normal_probe_collapse_is_telemetry_not_a_gate(harness):
+    """AUD-F1-20260808-159: the normal probe never decides whether the
+    easy treatment exists. A collapsed normal probe is recorded as
+    telemetry and the trained epoch is handed off anyway."""
     pipeline, _made_envs, parent_calls, tmp_path = harness
     config = _config(tmp_path)
     config["_fake_trades"] = 3
     config["_fake_normal_trades"] = 0
-    with pytest.raises(RuntimeError, match="no easy-and-normal activity"):
-        pipeline.run_pipeline(
-            config=config,
-            env_plugin=None,
-            agent_plugin=FakeAgent(),
-            mode="train",
-        )
-    assert not parent_calls
+    pipeline.run_pipeline(
+        config=config,
+        env_plugin=None,
+        agent_plugin=FakeAgent(),
+        mode="train",
+    )
+    assert parent_calls
+    meta = json.loads(Path(
+        parent_calls[0]["config"]["warm_start_model"]
+        + ".meta.json").read_text())
+    assert meta["normal_probe_is_telemetry_only"] is True
+    trained = [row for row in meta["history"] if row["epoch"] > 0]
+    assert all(row["normal_handoff_eligible_telemetry"] is False
+               for row in trained)
 
 
-def test_easy_phase_loads_and_preserves_active_warm_start_baseline(harness):
+def test_epoch_zero_anchor_baseline_is_structurally_ineligible(harness):
     pipeline, _made_envs, parent_calls, tmp_path = harness
     anchor = tmp_path / "anchor.zip"
     anchor.write_text("active-anchor")
@@ -261,10 +293,15 @@ def test_easy_phase_loads_and_preserves_active_warm_start_baseline(harness):
     meta = json.loads(Path(str(post_easy) + ".meta.json").read_text())
     assert agent.loads[0] == str(anchor)
     assert agent.training_loads[0]["path"] == str(anchor)
-    assert post_easy.read_text() == "active-anchor"
-    assert meta["best_easy_epoch"] == 0
+    # AUD-F1-20260808-159 regression: the ACTIVE anchor baseline may be
+    # logged as telemetry, but it can never be the handoff — the
+    # artifact must be a TRAINED epoch, tensor-distinct from the anchor.
+    assert post_easy.read_text() != "active-anchor"
+    assert meta["best_easy_epoch"] > 0
     assert meta["history"][0]["checkpoint_source"] == "warm_start_baseline"
-    assert meta["history"][0]["normal_handoff_eligible"] is True
+    assert meta["history"][0]["handoff_eligible"] is False
+    assert meta["anchor_policy_tensor_sha256"] != \
+        meta["phase1_terminal_policy_tensor_sha256"]
 
 
 def test_checkpoint_eligibility_requires_timesteps_and_trading_activity():
