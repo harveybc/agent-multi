@@ -201,10 +201,14 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
             reasons.append("asset/data mismatch: evidence data_file_hash "
                            "differs from the pinned nested-split source")
         asset = str(evidence.get("asset") or "")
-        expected_asset = str(contract.get("asset") or "")
+        # The contract's "asset" is a display label ("ETHUSD");
+        # "env_asset" is the environment's asset id the evidence
+        # actually records. Comparing the label refused every real
+        # cell — caught 2026-08-09 before first real aggregation.
+        expected_asset = str(contract.get("env_asset") or "")
         if expected_asset and asset != expected_asset:
             reasons.append(f"asset mismatch: evidence asset {asset!r} != "
-                           f"contract asset {expected_asset!r}")
+                           f"contract env_asset {expected_asset!r}")
     return reasons
 
 

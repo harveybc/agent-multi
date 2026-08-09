@@ -1475,7 +1475,7 @@ class PipelinePlugin:
                         break
 
                 if not best_checkpoint_saved:
-                    raise RuntimeError(
+                    stop_detail = (
                         "training ended before an activity-eligible L1 "
                         "checkpoint became available: "
                         f"num_timesteps={int(getattr(model, 'num_timesteps', 0))}, "
@@ -1486,6 +1486,52 @@ class PipelinePlugin:
                             if activity_stop_reason else ""
                         )
                     )
+                    if not bool(config.get(
+                            "inactive_terminal_is_typed_result", False)):
+                        raise RuntimeError(stop_detail)
+                    # Doc 38 / repair spec §7.1: in a matched factorial a
+                    # cell whose policy never becomes activity-eligible
+                    # is a MEASURED OUTCOME ("inactive"), not a harness
+                    # failure. Save the terminal weights, evaluate them,
+                    # and return a typed result so the cell record lands
+                    # and aggregation judges activity directly. Raising
+                    # here killed the whole seed's remaining cells
+                    # (observed: seeds 202/303, 2026-08-09).
+                    print(
+                        f"[train] INACTIVE TERMINAL RESULT: {stop_detail}",
+                        flush=True)
+                    terminal_model_path = str(
+                        Path(best_model_path).with_suffix("")
+                    ) + ".terminal.zip"
+                    agent_plugin.save(model, terminal_model_path)
+                    final = self._final_eval(
+                        agent_plugin, model, train_env,
+                        env_plugin_name, paths, config, agent_plugin,
+                    )
+                    final["mode"] = mode
+                    final["history"] = history
+                    final["best_composite"] = best_composite
+                    final["best_model_path"] = None
+                    final["activity_stopped_without_eligible_checkpoint"] = (
+                        True)
+                    final["termination_cause"] = stop_detail
+                    final["artifacts"] = {
+                        "best_checkpoint": None,
+                        "terminal": {
+                            "path": str(
+                                Path(terminal_model_path).resolve()),
+                            "sha256": _verify_artifact_sha256(
+                                Path(terminal_model_path), None),
+                            "num_timesteps": int(
+                                getattr(model, "num_timesteps", 0)),
+                        },
+                    }
+                    final["terminal_model_path"] = str(
+                        Path(terminal_model_path).resolve())
+                    final["oracle_behavior_pretrain"] = pretrain_summary
+                    final["warm_start_transfer_evidence"] = getattr(
+                        model, "warm_start_transfer_evidence", None)
+                    return final
 
                 # AUD-F1-20260806-129: preserve the TERMINAL policy —
                 # the weights as they exist at the last training step —

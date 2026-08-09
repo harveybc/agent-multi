@@ -41,7 +41,8 @@ def make_contract() -> dict:
     return {
         "schema": "agent_multi.l1_factorial_contract.v3",
         "_contract_sha256": "c" * 64,
-        "asset": "ethusdt_4h",
+        "asset": "ETHUSD",
+        "env_asset": "ethusdt_4h",
         "nested_split_contract": NESTED,
         "cells": copy.deepcopy(CELLS),
         "anchors": {str(s): {"path": f"/anchors/seed{s}.zip",

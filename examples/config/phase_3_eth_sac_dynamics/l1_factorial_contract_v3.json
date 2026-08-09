@@ -3,6 +3,7 @@
  "$doc": "L1 decision factorial (doc 38 \u00a75.3, continuation order \u00a78.2): phase-1 dynamics {normal, easy} x phase-2 LR multiplier {1.0, 0.3}, matched boundary, paired stopping, nested chronology. Smoke profile = 1+1 epochs, evidence_class=mechanics_smoke, decision_eligible=false.",
  "experiment": "l1_matched_factorial",
  "asset": "ETHUSD",
+ "env_asset": "ethusdt_4h",
  "nested_split_contract": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
  "selection_metric": "paired_generalization_weekly_v1",
  "l1_gap_penalty_beta": 0.25,
@@ -11,6 +12,8 @@
   "max_epochs": 2000,
   "l1_patience": 60,
   "l1_patience_start_epoch": 40,
+  "l1_activity_patience": 40,
+  "l1_activity_patience_start_epoch": 40,
   "total_max_passes": 2000,
   "phase1_max_fraction": 0.3,
   "normal_phase_min_passes": 10

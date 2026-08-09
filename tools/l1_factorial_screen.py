@@ -88,6 +88,10 @@ def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
         "l1_patience": int(stopping["l1_patience"]),
         "l1_patience_start_epoch": int(
             stopping["l1_patience_start_epoch"]),
+        "l1_activity_patience": int(
+            stopping.get("l1_activity_patience", 40)),
+        "l1_activity_patience_start_epoch": int(
+            stopping.get("l1_activity_patience_start_epoch", 40)),
         "total_max_passes": int(stopping["total_max_passes"]),
         "phase1_max_fraction": float(stopping["phase1_max_fraction"]),
         "normal_phase_min_passes": (
@@ -103,6 +107,10 @@ def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
             "learning_starts", 1000)),
         "execution_cost_curriculum_epochs": max(
             2, int(budget["phase2_max_epochs"])),
+        # §7.1: a never-eligible cell is a measured "inactive" outcome;
+        # the pipeline must land a typed terminal result, never raise
+        # (a raise killed seeds 202/303's remaining cells, 2026-08-09).
+        "inactive_terminal_is_typed_result": True,
     })
     agent = d1._agent_plugin(agent_name)
     code_before = {r: d1._git_rev(r) for r in ("agent-multi", "gym-fx")}
@@ -135,6 +143,10 @@ def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
         "best_model_path": result.get("best_model_path"),
         "terminal_model_path": result.get("terminal_model_path"),
         "history_len": len(result.get("history") or []),
+        "activity_stopped_without_eligible_checkpoint": bool(
+            result.get("activity_stopped_without_eligible_checkpoint",
+                       False)),
+        "termination_cause": result.get("termination_cause"),
         "boundary_transfer_evidence": result.get(
             "warm_start_transfer_evidence"),
     }
