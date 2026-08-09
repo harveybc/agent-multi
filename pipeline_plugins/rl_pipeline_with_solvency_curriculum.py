@@ -446,13 +446,16 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "requires_normal_handoff_train_tail_activity": True,
                     "requires_normal_handoff_validation_activity": True,
                 },
-                "easy_difficulty": {
-                    "continuous_action_threshold": easy_config[
-                        "continuous_action_threshold"
-                    ],
-                    "commission_fraction_per_side": easy_config["commission"],
-                    "full_spread_rate": easy_config["full_spread_rate"],
-                    "slippage_rate_per_side": easy_config["slippage"],
+                "phase1_mode": phase1_mode,
+                "phase1_difficulty": {
+                    # easy-relaxation fields; None under normal phase-1
+                    # (the candidate's own contract governs there)
+                    "continuous_action_threshold": easy_config.get(
+                        "continuous_action_threshold"),
+                    "commission_fraction_per_side": easy_config.get(
+                        "commission"),
+                    "full_spread_rate": easy_config.get("full_spread_rate"),
+                    "slippage_rate_per_side": easy_config.get("slippage"),
                 },
                 "history": history,
             }
