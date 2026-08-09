@@ -183,6 +183,13 @@
       "mutability": "mutating",
       "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
+    },
+    "aggregate_l1_factorial.py": {
+      "purpose": "Generic L1 factorial aggregation (repair spec §7.1/§7.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
+      "lifecycle": "supported",
+      "mutability": "read_only",
+      "authority_class": "evidence_producer",
+      "owner": "General Satoshi III"
     }
   },
   "plugins": {
