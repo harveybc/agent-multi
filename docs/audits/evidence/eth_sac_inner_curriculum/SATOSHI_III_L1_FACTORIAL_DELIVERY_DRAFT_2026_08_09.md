@@ -98,7 +98,12 @@ here.)
   publishes the remaining fixture dependency explicitly with typed
   outcomes (`FIXTURES_READY | FIXTURES_INCOMPLETE | BOOTSTRAP_FAILED`,
   `--check-only` for CI).
-- Proof from the clean clone at `20bb9295`: bootstrap reported
-  FIXTURES_READY (doin-node cloned at `5bd6d396`), the 13 previously
-  failing tests now pass 112/112 in their five files; full-suite count
-  from the same clean clone: FILLED-ON-COMPLETION.
+- Proof from the clean clone: bootstrap reported FIXTURES_READY
+  (doin-node cloned at `5bd6d396`), the 13 previously failing tests
+  pass 112/112 in their five files. The intermediate full run at
+  `20bb9295` failed exactly one NEW test — the engineering surface
+  index flagging the not-yet-declared bootstrap executable (finding-169
+  discipline catching its own author); declared in `ef42d110`.
+  Final full suite from the clean detached clone at `ef42d110`:
+  **842 passed, 0 failed** (31s). The suite is reproducible from
+  `git clone` + `tools/bootstrap_test_fixtures.py`.
