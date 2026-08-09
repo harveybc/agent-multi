@@ -1,8 +1,8 @@
 # 33. ETH Decision, Research, and Multi-Asset Roadmap
 
 Status: active
-Version: 1.2.0
-Date: 2026-08-06
+Version: 1.3.0
+Date: 2026-08-08
 Owner priority: calibrate ETH easy/normal training, mature and jointly optimize
 the complete ETH stack, transfer the validated search contract to all selected
 assets, and only then optimize the portfolio
@@ -188,24 +188,41 @@ controller provenance and a versioned adaptation contract.
 
 ### D1. Execute the ETH curriculum calibration
 
-Run exactly four paired seeds with these arms:
+The historical bounded calibration used exactly four paired seeds with these
+arms:
 
 - `N14`: 14 normal epochs;
 - `EN4_10`: 4 easy epochs followed by 10 normal epochs;
 - `E4`: diagnostic easy-only arm, never a deployable winner by itself.
 
 Use 20,000 timesteps per epoch, shared per-seed anchors, realistic-normal
-validation and no early stopping. The result establishes whether solvency
-relaxation deserves entry into the optimization genome and calibrates its search
-bounds. It is not the final curriculum choice for the mature stack because later
-components can interact with the learning schedule.
+validation and no early stopping. Those artifacts remain mechanism and collapse
+diagnostics. They do **not** establish whether solvency relaxation deserves
+entry into the mature optimization genome because a fixed 14-epoch allocation
+does not test the owner's train-plus-validation stopping mechanism and the
+historical easy handoff was affected by findings 159-161.
+
+The decision-bearing replacement is document 38's nested chronological program:
+
+1. `fit_train` through 2022, train-monitor 2022, inner validation 2023, outer
+   validation 2024 and sealed test 2025;
+2. high L1 epoch safety ceilings with paired train-monitor/inner-validation
+   early stopping;
+3. a matched four-cell normal/easy x normal-LR factorial over four seeds;
+4. a frozen-L1 L2 normal-only versus staged-easy-normal comparison; and
+5. a bounded 2x2 interaction only if an isolated axis survives.
+
+No smoke or fixed-epoch diagnostic may be aggregated into that decision. The
+full replacement launch is standing owner-authorized once its executable tests
+and mechanics smoke pass; it does not wait for another owner phrase.
 
 ### D2. Materialize the provisional research baseline
 
-Preserve N14, EN4_10 and E4 evidence. Select a provisional schedule for component
-search from the complete paired packet, but retain normal-only as the mandatory
-control. The provisional value is experimentally chosen, not a library default.
-Do not start a broad full-stack DOIN campaign yet.
+Preserve N14, EN4_10, E4 and M0 evidence. Select a provisional schedule for
+component search only from document 38's complete L1 packet, retaining
+normal-only as the mandatory control. The provisional value is experimentally
+chosen, not a library default. Do not start a broad full-stack DOIN campaign
+before the isolated L1 and feature-selection mechanisms have decision evidence.
 
 Every dedicated component domain keeps total training compute fixed. Where the
 component plausibly interacts with curriculum, expose `easy_epochs` (including

@@ -1,14 +1,33 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-08-06 America/Bogota
-Plan version: 1.31.0
-Current focus: preserve the anchored ETH `full-v2` chain while the owner decides
-whether to execute its prepared pause/archive operation; its four current
-candidates run the pre-activity-bound revision and remain zero-trade despite
-active GPUs. Correct findings 136, 140-145 and 147-158 before any RT1 run. Retraining
-cadence evidence must adapt a load-proven mature ETH champion, use
-observation-only warm-up and preserve costed account state at every handover,
-while selected-model Paper/Demo execution continues with mandatory native SL/TP
+Status timestamp: 2026-08-08 America/Bogota
+Plan version: 1.32.0
+Current focus: preserve all historical ETH evidence, complete safe quarantine
+of the invalid M0 successor, and replace the fixed-14-epoch curriculum claim
+with document 38's nested L1/L2 and sparse-feature decision program. Findings
+159-177 govern the correction. N14/EN4_10/E4 and M0 remain diagnostics; they are
+not deleted or relabeled. Compatible CPU/GPU work continues while packages
+await independent review; no repeated owner phrase is required for the approved
+research queue. Selected-model Paper/Demo execution continues with mandatory
+native SL/TP.
+
+Immediate ETH execution sequence approved 2026-08-08:
+
+1. correct WP0 findings 166-169 without consuming the invalid successor;
+2. implement exact nested ETH splits (11,509/2,190/2,196/2,190), causal
+   non-scoring prefixes and paired generalization metrics;
+3. correct L1 normal/easy stopping and phase handoff (159-161, 170-173);
+4. run a mechanics-only smoke, then the full four-seed L1 factorial with high
+   safety ceilings and early stopping;
+5. freeze the L1 recipe and compare L2 normal-only with staged easy-normal under
+   equal candidate budgets;
+6. run the conditional curriculum 2x2 only when triggered;
+7. compare FS0 fixed inputs, FS1 inherited sparse masks and FS2 an L1 learned
+   sparse gate; and
+8. add stage-local evolution/maturation before broad component integration.
+
+The detailed implementer packet is
+`docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_L2_CURRICULUM_FEATURE_SELECTION_EXECUTION_ORDER_2026_08_08.md`.
 
 Immediate parallel runtime added on 2026-07-30:
 

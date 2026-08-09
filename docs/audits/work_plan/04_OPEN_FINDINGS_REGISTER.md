@@ -953,6 +953,30 @@ adversarial cases. Unrelated valid fleet work remains authorized.
 | AUD-F1-20260808-168 | S3 | open, blocks WP0 acceptance | Missing aggregation/table/manifest bindings are written as null while evidence is certified immutable | General Satoshi III implements; General Musashi verifies |
 | AUD-GEN-20260808-169 | S3 | open, blocks clean suite/WP0 acceptance | New mutating quarantine executable is absent from the reviewed engineering-surface declaration | General Satoshi III implements; General Musashi verifies |
 
+### 1ae. L1/L2 curriculum, stopping and feature-selection audit, 2026-08-08
+
+Canonical evidence:
+
+- `../AUDIT_L1_L2_CURRICULUM_FEATURE_SELECTION_AND_STOPPING_2026_08_08.md`
+- `../../work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_L2_CURRICULUM_FEATURE_SELECTION_EXECUTION_ORDER_2026_08_08.md`
+
+The historical fixed-epoch ETH packets remain preserved as diagnostics. They
+cannot decide the owner's train-plus-validation stopping, L1/L2 curriculum or
+online feature-selection questions. The new nested program is standing
+owner-authorized; review waiting does not authorize idle compute.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260808-170 | S2 | open, blocks decision-bearing L1 comparison | Fixed 14-epoch N/EN allocation disables the required L1 stopping experiment | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-171 | S2 | open, blocks new-domain L1 selection | Lexicographic checkpoint selection explicitly uses validation alone | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-172 | S2 | open, blocks decision-bearing L2 | Optimizer fitness/patience consumes one selected split rather than nested paired evidence | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-173 | S2 | open, blocks full-year evidence claim | Seven-day train monitor is shorter than scaling context and split warm-up shortens score years | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-174 | S3 | open, blocks online feature-selection claim | Current ETH path fixes 83 inputs and implements neither inherited sparse masks nor an L1 learned gate | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-175 | S3 | open, blocks staged-maturation claim | L2 stages freeze genes but use global mutation/crossover and no stage-local diversity contract | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260808-176 | S2 | open, blocks curriculum attribution | Current matrix cannot separate L1 curriculum, L2 curriculum and their interaction | General Satoshi III implements; General Musashi verifies |
+| AUD-GEN-20260808-177 | S3 | open, operational governance | Repeated owner-phrase gates remain in already-approved research flow and can idle the fleet | General Satoshi III removes redundant gates; General Musashi verifies runtime queue behavior |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

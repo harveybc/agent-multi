@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; ETH anchored `full-v2` preserved pending zero-activity disposition; RT1-A materialized but blocked on exact succession/handover evidence; multi-venue Paper and social-trading reality commissioning active; ETH research-to-multi-asset transfer program active
-Plan version: 1.31.1
-Date: 2026-08-06
+Status: E0-E4 complete; historical ETH M0/N14 evidence preserved; invalid M0 successor quarantined pending acceptance correction; nested L1/L2 curriculum and sparse-feature decision program active; multi-venue Paper and social-trading reality commissioning active
+Plan version: 1.32.0
+Date: 2026-08-08
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -93,6 +93,9 @@ trading domain.
 | [33 ETH decision, research and multi-asset roadmap](33_ETH_DECISION_RESEARCH_AND_MULTI_ASSET_ROADMAP.md) | Easy/normal decision, mature ETH reference stack, bounded research, cross-asset transfer, per-asset champion library and portfolio entry order |
 | [34 ETH data and observation manifest](34_ETH_DATA_OBSERVATION_MANIFEST.md) | Exact ETH dataset, split, warm-up, observation, preprocessing, model and evaluation facts used by the decision program |
 | [35 Deterministic tooling opportunity map](35_DETERMINISTIC_TOOLING_OPPORTUNITY_MAP.md) | Evidence-backed tooling candidates, self-critique, reuse policy, isolation boundary and measurable adoption criteria |
+| [36 Identity-domain design](36_IDENTITY_DOMAIN_DESIGN_N2_2026_08_06.md) | N2 identity-domain contract, typed comparisons and lineage requirements |
+| [37 M0-X mechanism falsification](37_M0X_CROSS_ASSET_MECHANISM_PROPOSAL_2026_08_08.md) | Corrected M1 attribution and conditional cross-system mechanism probe |
+| [38 NEAT lessons for L1/L2 and feature selection](38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md) | Nested stopping, isolated L1/L2 curricula, sparse inherited/learned feature selection, staged maturation and non-idle execution authority |
 
 ## Repository Ownership Summary
 
@@ -156,6 +159,10 @@ approve its own material claims or authorize publication.
   are separate clocks. A one-month pilot can prove deadlines and orchestration
   but cannot alone promote a profit/risk schedule.
 - Every result records its exact evaluation dates and observed week count.
+- Decision-bearing L1 and L2 runs use nested chronological evidence: L1
+  checkpoint stopping cannot observe L2 outer validation, and neither level can
+  observe protected test. Fixed-epoch runs remain mechanics/mechanism evidence,
+  not promoted decisions.
 - Annual metrics are calculated from an ordered annual weekly series, not by
   renaming a partial-period mean.
 - Every candidate records resolved config, data hash, code commits, seed,
@@ -196,21 +203,23 @@ adding value.
 1. E0-E3 evidence screening: complete.
 2. E4 fixed-SAC integration baselines and load-tested warm-start artifacts:
    complete. These are not optimized per-asset champions.
-3. Keep the current anchored ETH `full-v2` domain on one chain while correcting
-   the decision harness, exact-chain interruption controls and bounded
-   activity-ineligible patience without mutating the active evaluation semantics.
-4. After the N/E-specific blockers pass independent verification (113,
-   122-139, 142-144, 150-151 and 156), execute the
-   four-seed equal-compute `N14` versus `EN4_10` calibration,
-   retaining `E4` as diagnostic. Use it to admit and bound curriculum genes; do
-   not treat this one schedule comparison as the mature-stack final choice.
+3. Preserve the anchored ETH `full-v2` domain as historical lineage; do not
+   resume it under changed semantics. Complete the invalid-successor quarantine
+   and keep compatible approved queue work dispatched while corrections are
+   implemented or independently reviewed.
+4. Preserve `N14`, `EN4_10`, `E4` and M0 as historical mechanics/mechanism
+   evidence. Correct findings 159-177, then execute document 38's nested,
+   early-stopped four-seed L1 normal/easy factorial. Freeze its L1 result before
+   the matched L2 normal/staged comparison; run the bounded 2x2 only if
+   triggered. No additional owner phrase is required for this approved queue.
 5. Materialize the complete typed parameter registry. No decision-bearing
    package default may freeze: it is invariant, evidence-fixed, optimized as a
    gene or experimentally excluded.
-6. Use ETH as the complete reference laboratory. Run sequential DOIN component
-   domains for causal/decomposition inputs, encoders/autoencoders, SAC topology
-   and dynamics, conditional event/TSFM adapters, auxiliary heads and bounded
-   synthetic pretraining.
+6. Use ETH as the complete reference laboratory. After isolated curriculum
+   evidence, compare fixed FS0, inherited sparse FS1 and learnable sparse FS2,
+   then run sequential DOIN component domains for causal/decomposition inputs,
+   encoders/autoencoders, SAC topology and dynamics, conditional event/TSFM
+   adapters, auxiliary heads and bounded synthetic pretraining.
 7. After the SAC topology/learning domain, execute the corrected RT0 and the
    sequential RT1-A/RT1-B cadence screen. Warm-up never contributes to score;
    it cannot trade or mutate account state; every scored interval has exactly

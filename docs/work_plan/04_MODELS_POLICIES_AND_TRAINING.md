@@ -314,6 +314,17 @@ Gradient optimization and candidate early stopping. Monitors train/validation
 only. For deterministic heuristic policies there is no gradient L1; their
 predictor dependencies may still have L1 training.
 
+For decision-bearing per-asset research, "train/validation" is a nested
+chronological contract rather than one repeatedly reused year:
+
+- fit data receives gradient updates;
+- a sufficiently long train-monitor interval and a disjoint inner-validation
+  interval control L1 patience through `paired_generalization_weekly_v1`;
+- an outer-validation interval is invisible to L1 and controls L2 selection;
+- the protected test is invisible to both levels until release; and
+- each scored interval receives a non-trading causal context prefix so warm-up
+  cannot silently shorten the declared period.
+
 The full-fidelity per-asset protocol uses:
 
 - `max_epochs: 2000` as a safety ceiling;
@@ -323,7 +334,16 @@ The full-fidelity per-asset protocol uses:
 - best-checkpoint restoration;
 - a scale-explicit `l1_min_delta` in fractional weekly RAP units;
 - an epoch step count derived from the valid training transitions rather than
-  an unexplained constant shared by incompatible timeframes.
+  an unexplained constant shared by incompatible timeframes; and
+- separate improvement and activity-ineligible patience states.
+
+The paired stopping scalar uses the arithmetic mean of the same common-scale
+robust weekly utility on train-monitor and inner validation, minus an explicit
+generalization-gap penalty. Eligibility remains lexicographic, and all raw
+return/risk/activity vectors remain first-class evidence. Opaque lexicographic
+rank encodings are never averaged. Validation-only stopping is retained only
+for historical configurations and is not permitted in the new ETH decision
+domain.
 
 A cheaper run may be labeled as a smoke test or ranking-only fidelity. It
 cannot become a promoted per-asset champion until the same decoded candidate
@@ -334,7 +354,21 @@ training early.
 ### 10.2 L2 DOIN/DEAP optimization
 
 Evolves typed config patches. L2 patience is independent from L1 callbacks and
-uses validation fitness.
+uses a paired inner/outer chronological objective. Candidate L1 training and
+checkpoint selection cannot observe outer validation. L2 receives the frozen
+inner and outer evidence packet, applies split-specific eligibility, and stops
+generations only after a declared minimum-generation floor.
+
+L2 stages may activate/freeze different gene groups. Decision-bearing staged
+domains additionally declare stage-local crossover, mutation, numeric
+perturbation, categorical-change, diversity and patience contracts. Current
+global-only mutation behavior is historical compatibility, not evidence that a
+NEAT-like maturation schedule has been implemented.
+
+Difficulty curricula at L1 and L2 are distinct and composable. They are tested
+in isolation and then, only when triggered, in a bounded 2x2 interaction as
+defined in document 38. An easy-stage L2 score is invalidated at transition and
+cannot compete with or produce a normal-realistic champion.
 
 ### 10.3 L3 meta-optimization
 
