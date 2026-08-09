@@ -1,6 +1,6 @@
 # 34. Exact ETH Data and Observation Manifest (finding 134 / WP6)
 
-Status: active — v1.0.0, 2026-08-06
+Status: active — v1.1.0, 2026-08-08
 Owner: General Satoshi III; verifier: General Musashi
 Registry status of every value here: **currently used, NOT
 evidence-selected** unless a row says otherwise. Window/scaling/lookback
@@ -25,6 +25,25 @@ configs as of agent-multi materializer v2 (this order): explicit dates
 govern, and `training.split_contract_note` records that no year-count
 shorthand exists in the contract.
 
+### 1.1 Nested decision amendment (document 38)
+
+N14/EN4_10/E4 retain the historical split above. The replacement
+decision-bearing curriculum/feature-selection program uses:
+
+| Role | Range | Rows |
+|---|---|---:|
+| `fit_train` | 2017-09-28 04:00 through 2022-12-31 | 11,509 |
+| `train_monitor` | calendar 2022, inside `fit_train` | materialized exactly |
+| `inner_validation` | calendar 2023 | 2,190 |
+| `outer_validation` | calendar 2024 | 2,196 |
+| `sealed_test` | calendar 2025 | 2,190 |
+
+Each score split receives a causal context prefix at least as long as the
+largest observation/scaling/feature lookback. Prefix rows initialize state but
+cannot trade, mutate account state or enter metrics. Consequently the complete
+declared calendar interval is scored; warm-up is no longer deducted from the
+evidence year.
+
 ## 2. Observation contract (currently used)
 
 | Component | Value | Registry status |
@@ -44,7 +63,13 @@ computed from bars ≤ `t`; the two-source parity experiment (2026-08-05)
 showed the offline `TechStatFeatureEngine` reproduces all 83 columns
 from raw OHLCV to CSV serialization precision (~1e-8).
 
-## 3. Compute contract of the decision packet
+Document 38 now makes the feature-selection sequence executable: FS0 keeps the
+83-column control, FS1 evolves an inherited hierarchical sparse mask at L2, and
+FS2 learns a sparse feature gate inside a separate SAC L1 plugin. The first
+curriculum comparison keeps FS0 fixed for attribution. No current M1 artifact
+may be described as having online feature selection.
+
+## 3. Historical fixed-epoch compute contract
 
 | Arm | Steps per seed |
 |---|---|
@@ -55,3 +80,9 @@ from raw OHLCV to CSV serialization precision (~1e-8).
 
 Repeating epochs re-traverses the same 13,699 training bars; it never
 creates new historical observations.
+
+These values describe the preserved N14/EN4_10/E4 calibration only. They are
+not the compute contract of document 38's decision run. The replacement uses a
+2,000-epoch safety ceiling, a 40-checkpoint minimum floor, patience 60, derived
+pass-equivalent timesteps and equal maximum interaction caps; actual stopping
+is controlled by paired train-monitor/inner-validation evidence.
