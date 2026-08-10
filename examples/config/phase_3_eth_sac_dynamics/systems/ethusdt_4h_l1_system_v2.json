@@ -1,0 +1,238 @@
+{
+ "$doc": "Exact ETH USD 4h system for the L1 matched factorial. Every binding is a verified fact from the real artifacts at generation time; the materializer refuses any drift fail-closed.",
+ "anchors": {
+  "101": {
+   "action_shape": [
+    1
+   ],
+   "n_updates_at_anchor": 0,
+   "observation_shape": [
+    2724
+   ],
+   "path": "/home/harveybc/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+   "policy_tensor_sha256": "e747b893753ee6cfa9ab3f97a197b70ff7f87eeb76e500549f769de814a96e66",
+   "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"
+  },
+  "202": {
+   "action_shape": [
+    1
+   ],
+   "n_updates_at_anchor": 0,
+   "observation_shape": [
+    2724
+   ],
+   "path": "/home/harveybc/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip",
+   "policy_tensor_sha256": "b5cc755ceef3f2b44615fce8a9d41fa4ea215a3a67e304f478f933adf9119d33",
+   "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"
+  },
+  "303": {
+   "action_shape": [
+    1
+   ],
+   "n_updates_at_anchor": 0,
+   "observation_shape": [
+    2724
+   ],
+   "path": "/home/harveybc/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip",
+   "policy_tensor_sha256": "c051d15e158aa3d46d2395919825bf051fa9bd76dcb62b333deb50c740a55c77",
+   "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"
+  },
+  "404": {
+   "action_shape": [
+    1
+   ],
+   "n_updates_at_anchor": 0,
+   "observation_shape": [
+    2724
+   ],
+   "path": "/home/harveybc/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip",
+   "policy_tensor_sha256": "cc65d8a23f43a2362e3082fe9078b935a0a618f8408bcd7c2c4ba412c7b493d0",
+   "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"
+  }
+ },
+ "asset": "ETHUSD",
+ "base_config": {
+  "path": "examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json",
+  "sha256": "5df24c0d78a89613041406213692af5f180f4af3c220ac69792a60db8ca70e18"
+ },
+ "costs": {
+  "$doc": "Normal cost/solvency contract: base identity values plus the REVIEWED ETH-v2 environment settings (spread 1e-4, declared slippage 0.0, protected entries enforced, explicit min-equity = gym-fx default 1% of initial cash).",
+  "config_bindings": {
+   "commission": 0.0002,
+   "continuous_action_threshold": 0.1,
+   "full_spread_rate": 0.0001,
+   "initial_cash": 10000.0,
+   "k_sl": 2.0,
+   "k_tp": 3.0,
+   "leverage": 1.0,
+   "max_order_volume": 100.0,
+   "min_equity": 100.0,
+   "min_order_volume": 0.0,
+   "position_size": 0.01,
+   "rel_volume": 0.05,
+   "require_protected_entries": true,
+   "size_mode": "notional",
+   "slippage": 0.0
+  }
+ },
+ "data": {
+  "date_column": "DATE_TIME",
+  "path": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+  "rows": 18085,
+  "sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "time_bounds": {
+   "first": "2017-09-28 04:00:00",
+   "last": "2025-12-31 20:00:00"
+  }
+ },
+ "env_asset": "ethusdt_4h",
+ "nested_split_contract": {
+  "expected_rows": {
+   "fit_train": 11509,
+   "inner_validation": 2190,
+   "outer_validation": 2196,
+   "sealed_test": 2190,
+   "train_monitor": 2190
+  },
+  "path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+  "sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6"
+ },
+ "observation": {
+  "feature_columns": [
+   "return_1",
+   "log_return_1",
+   "return_5",
+   "log_return_5",
+   "return_10",
+   "log_return_10",
+   "return_20",
+   "log_return_20",
+   "return_60",
+   "log_return_60",
+   "sma_10",
+   "ema_10",
+   "close_sma_ratio_10",
+   "sma_20",
+   "ema_20",
+   "close_sma_ratio_20",
+   "sma_50",
+   "ema_50",
+   "close_sma_ratio_50",
+   "sma_100",
+   "ema_100",
+   "close_sma_ratio_100",
+   "sma_200",
+   "ema_200",
+   "close_sma_ratio_200",
+   "macd",
+   "macd_signal",
+   "macd_hist",
+   "rsi_7",
+   "rsi_14",
+   "rsi_21",
+   "stoch_k",
+   "stoch_d",
+   "williams_r_14",
+   "cci_14",
+   "roc_10",
+   "roc_20",
+   "roc_60",
+   "mom_10",
+   "mom_20",
+   "bb_upper",
+   "bb_middle",
+   "bb_lower",
+   "bb_pct_b",
+   "bb_width",
+   "atr_14",
+   "natr_14",
+   "hist_vol_10",
+   "hist_vol_20",
+   "hist_vol_60",
+   "ema_cross_10_50",
+   "ema_cross_20_100",
+   "trend_slope_50",
+   "trend_strength_50",
+   "obv",
+   "obv_delta_20",
+   "volume_sma_10",
+   "volume_sma_20",
+   "volume_ratio_20",
+   "vwap_60",
+   "mfi_14",
+   "statistical__log_return_1",
+   "roll_mean_ret_20",
+   "roll_std_ret_20",
+   "roll_skew_ret_20",
+   "roll_kurt_ret_20",
+   "roll_mean_ret_60",
+   "roll_std_ret_60",
+   "roll_skew_ret_60",
+   "roll_kurt_ret_60",
+   "roll_mean_ret_252",
+   "roll_std_ret_252",
+   "roll_skew_ret_252",
+   "roll_kurt_ret_252",
+   "realized_var_12",
+   "realized_var_48",
+   "autocorr_lag1_100",
+   "autocorr_lag5_100",
+   "sqret_autocorr_lag1_100",
+   "vol_regime_high",
+   "vol_regime_low",
+   "hurst_proxy_200",
+   "zscore_close_100"
+  ],
+  "feature_count": 83,
+  "feature_scaling": "rolling_zscore",
+  "feature_scaling_window": 256,
+  "flattened_shape": [
+   2724
+  ],
+  "include_agent_state": true,
+  "include_price_window": true,
+  "observation_manifest_sha256": "0aeb89f784c6dcfe65b5844c8aa96b3d3b93c227ee111af559c994a7f2983af2",
+  "window_size": 32
+ },
+ "plugins": {
+  "agent_plugin": "sac_agent",
+  "broker_plugin": "default_broker",
+  "curriculum_pipeline_plugin": "rl_pipeline_with_solvency_curriculum",
+  "data_feed_plugin": "default_data_feed",
+  "env_plugin": "gym_fx_env",
+  "metrics_plugin": "default_metrics",
+  "pipeline_plugin": "rl_pipeline_with_validation",
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "reward_plugin": "pnl_reward",
+  "strategy_plugin": "direct_atr_sltp"
+ },
+ "schema": "agent_multi.system_manifest.v1",
+ "source_identity_at_manifest": {
+  "agent-multi": {
+   "commit": "80390bf10c1c290909cec31735669d84c7bb3f4a",
+   "dirty": false,
+   "dirty_entries": [],
+   "dirty_untracked_digest": null,
+   "repo_root": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt"
+  },
+  "gym-fx": {
+   "commit": "efa491600bdc9fee10efdfbe251474d63284a28b",
+   "dirty": false,
+   "dirty_entries": [],
+   "dirty_untracked_digest": null,
+   "repo_root": "/home/harveybc/Documents/GitHub/gym-fx"
+  }
+ },
+ "splits": {
+  "dates": {
+   "test_end": "2025-12-31T23:59:59",
+   "test_start": "2025-01-01T00:00:00",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "evaluate_test_split": false
+ },
+ "system": "ethusdt_4h_l1_v1"
+}
