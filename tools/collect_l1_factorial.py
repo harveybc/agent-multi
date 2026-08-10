@@ -57,14 +57,31 @@ def default_replicate(replica_host: str, sealed_root: Path,
                     f"{replica_host}:{replica_root}/"], check=True)
 
 
+REPLICA_VERIFIER_VERSION = "l1_replica_verifier.v2"
+
+
 def default_replica_verify(replica_host: str, replica_root: Path,
-                           expectations: List[dict]) -> List[dict]:
-    """Rehash + really load every terminal on the replica host."""
+                           expectations: List[dict]) -> dict:
+    """On the REPLICA host (order §5/WP10): compute the whole-tree
+    digest over the replica root with the same algorithm as the sealed
+    source, then rehash + really load every terminal. The digest covers
+    records, results, traces and manifests — any missing or modified
+    file changes it."""
     script = (
         "import json,sys,hashlib\n"
         "from pathlib import Path\n"
-        "exp=json.loads(sys.stdin.read()); out=[]\n"
-        "for e in exp:\n"
+        "payload=json.loads(sys.stdin.read())\n"
+        "root=Path(payload['replica_root'])\n"
+        "digest=hashlib.sha256()\n"
+        "for p in sorted(root.rglob('*')):\n"
+        "    if p.is_file():\n"
+        "        digest.update(str(p.relative_to(root)).encode())\n"
+        "        digest.update(hashlib.sha256("
+        "p.read_bytes()).hexdigest().encode())\n"
+        "out={'tree_digest':digest.hexdigest(),"
+        "'verifier_version':'" + REPLICA_VERIFIER_VERSION + "',"
+        "'terminals':[]}\n"
+        "for e in payload['expectations']:\n"
         "    p=Path(e['replica_path']); r={'cell':e['cell'],"
         "'seed':e['seed']}\n"
         "    try:\n"
@@ -75,14 +92,15 @@ def default_replica_verify(replica_host: str, replica_root: Path,
         "m,'_n_updates',0))\n"
         "    except Exception as ex:\n"
         "        r['loads']=False; r['error']=f'{type(ex).__name__}:{ex}'\n"
-        "    out.append(r)\n"
+        "    out['terminals'].append(r)\n"
         "print(json.dumps(out))\n")
     proc = subprocess.run(
         ["ssh", "-o", "BatchMode=yes", replica_host,
          "/home/harveybc/anaconda3/envs/trading-stack/bin/python", "-c",
          script],
-        input=json.dumps(expectations), capture_output=True, text=True,
-        timeout=1800)
+        input=json.dumps({"replica_root": str(replica_root),
+                          "expectations": expectations}),
+        capture_output=True, text=True, timeout=3600)
     if proc.returncode != 0:
         raise RuntimeError(f"replica verify failed: "
                            f"{proc.stderr.strip()[-300:]}")
@@ -157,11 +175,17 @@ def collect(*, contract: dict, experiment_id: str, collection_root: Path,
         seen_cells[name] = str(rec_path)
         seen_cell_identities[cell_id] = name
         records[name] = record
-        # Referenced-file verification: terminal artifact must exist in
-        # the staged tree with its recorded hash.
-        terminal = record.get("terminal_model_path")
-        staged_terminal = _rebase(terminal, source_root, stage,
-                                  experiment_id)
+        # Referenced-file verification through the sealed-root path
+        # authority (finding 189): the recorded absolute source path is
+        # resolved by its experiment-relative suffix, never read as-is.
+        stage_resolver = agg.SealedPathResolver(stage.parent,
+                                                experiment_id)
+        try:
+            staged_terminal = stage_resolver.resolve(
+                record.get("terminal_model_path"))
+        except ValueError as exc:
+            refusals.append(f"{name}: terminal path unresolvable: {exc}")
+            staged_terminal = None
         if staged_terminal is None or not staged_terminal.is_file():
             refusals.append(f"{name}: staged terminal artifact missing")
         elif sysid.sha_file(staged_terminal) != \
@@ -201,48 +225,72 @@ def collect(*, contract: dict, experiment_id: str, collection_root: Path,
     os.replace(stage, sealed)
     manifest["sealed_root"] = str(sealed)
 
-    # Independent replica: copy, rehash, real load.
-    if replica_host:
-        replica_root = replica_root or Path(
-            f"/home/harveybc/.local/share/agent-multi/"
-            f"l1_replica_{experiment_id}")
-        expectations = []
-        for name, rec in sorted(records.items()):
-            staged_terminal = _rebase(rec["terminal_model_path"],
-                                      source_root, sealed, experiment_id)
-            expectations.append({
-                "cell": rec["cell"], "seed": rec["seed"],
-                "replica_path": str(replica_root /
-                                    staged_terminal.relative_to(sealed)),
-                "expected_sha256": rec["terminal_model_sha256"],
-            })
-        try:
-            replicate_fn(replica_host, sealed, replica_root)
-            results = replica_verify_fn(replica_host, replica_root,
-                                        expectations)
-        except Exception as exc:
-            manifest["outcome"] = "COLLECTION_REFUSED"
-            manifest["refusals"] = [f"replication failed: "
-                                    f"{type(exc).__name__}: {exc}"]
-            _atomic(collection_root / "collection_manifest.json", manifest)
-            return manifest
-        by_key = {(r.get("seed"), r.get("cell")): r for r in results}
-        for exp in expectations:
-            got = by_key.get((exp["seed"], exp["cell"]))
-            if not got:
-                refusals.append(f"replica verify missing seed"
-                                f"{exp['seed']}/{exp['cell']}")
-            elif got.get("sha256") != exp["expected_sha256"]:
-                refusals.append(f"replica sha mismatch seed"
-                                f"{exp['seed']}/{exp['cell']}")
-            elif got.get("loads") is not True:
-                refusals.append(f"replica load failed seed{exp['seed']}/"
-                                f"{exp['cell']}: {got.get('error')}")
-        manifest["replica"] = {"host": replica_host,
-                               "root": str(replica_root),
-                               "verification": results}
-        manifest["replica_tree_digest_expected"] = \
-            manifest["collection_tree_digest"]
+    # Independent whole-tree replica (order §5/WP10, finding 190).
+    # Without a verified replica the seal is a typed PARTIAL outcome
+    # that aggregation refuses.
+    if not replica_host:
+        manifest["outcome"] = "COLLECTION_SEALED_WITHOUT_REPLICA"
+        manifest["replica"] = None
+        manifest["refusals"] = [
+            "independent replica is mandatory before aggregation "
+            "(finding 190); re-run with --replica-host"]
+        _atomic(collection_root / "collection_manifest.json", manifest)
+        return manifest
+
+    replica_root = replica_root or Path(
+        f"/home/harveybc/.local/share/agent-multi/"
+        f"l1_replica_{experiment_id}")
+    resolver = agg.SealedPathResolver(sealed.parent, experiment_id)
+    expectations = []
+    for name, rec in sorted(records.items()):
+        staged_terminal = resolver.resolve(rec["terminal_model_path"])
+        expectations.append({
+            "cell": rec["cell"], "seed": rec["seed"],
+            "replica_path": str(replica_root /
+                                staged_terminal.relative_to(sealed)),
+            "expected_sha256": rec["terminal_model_sha256"],
+        })
+    try:
+        replicate_fn(replica_host, sealed, replica_root)
+        verification = replica_verify_fn(replica_host, replica_root,
+                                         expectations)
+    except Exception as exc:
+        manifest["outcome"] = "COLLECTION_REFUSED"
+        manifest["refusals"] = [f"replication failed: "
+                                f"{type(exc).__name__}: {exc}"]
+        _atomic(collection_root / "collection_manifest.json", manifest)
+        return manifest
+    replica_digest = verification.get("tree_digest")
+    if replica_digest != manifest["collection_tree_digest"]:
+        refusals.append(
+            f"replica tree digest {str(replica_digest)[:16]}… does not "
+            "equal the sealed source tree digest — a missing or "
+            "modified file on the replica refuses the collection")
+    terminals = verification.get("terminals") or []
+    by_key = {(r.get("seed"), r.get("cell")): r for r in terminals}
+    for exp in expectations:
+        got = by_key.get((exp["seed"], exp["cell"]))
+        if not got:
+            refusals.append(f"replica verify missing seed"
+                            f"{exp['seed']}/{exp['cell']}")
+        elif got.get("sha256") != exp["expected_sha256"]:
+            refusals.append(f"replica sha mismatch seed"
+                            f"{exp['seed']}/{exp['cell']}")
+        elif got.get("loads") is not True:
+            refusals.append(f"replica load failed seed{exp['seed']}/"
+                            f"{exp['cell']}: {got.get('error')}")
+    manifest["replica"] = {
+        "host": replica_host,
+        "root": str(replica_root),
+        "source_tree_digest": manifest["collection_tree_digest"],
+        "replica_tree_digest": replica_digest,
+        "digests_match": replica_digest ==
+        manifest["collection_tree_digest"],
+        "verified_utc": datetime.now(timezone.utc).isoformat(),
+        "verifier_version": verification.get("verifier_version"),
+        "verifier_collector_identity": manifest["collector_identity"],
+        "verification": terminals,
+    }
     if refusals:
         manifest["outcome"] = "COLLECTION_REFUSED"
         manifest["refusals"] = refusals
@@ -250,17 +298,6 @@ def collect(*, contract: dict, experiment_id: str, collection_root: Path,
         manifest["outcome"] = "COLLECTION_SEALED"
     _atomic(collection_root / "collection_manifest.json", manifest)
     return manifest
-
-
-def _rebase(path: str | None, source_root: Path, new_root: Path,
-            experiment_id: str) -> Path | None:
-    if not path:
-        return None
-    marker = f"/{experiment_id}/"
-    text = str(path)
-    if marker not in text:
-        return None
-    return new_root / text.split(marker, 1)[1]
 
 
 def _atomic(path: Path, payload: dict) -> None:
@@ -292,6 +329,16 @@ def main() -> int:
     if manifest["outcome"] != "COLLECTION_SEALED":
         return 3
     if args.aggregate:
+        # Finding 190: aggregation REFUSES without a successful
+        # whole-tree replica proof.
+        replica = manifest.get("replica") or {}
+        if not (replica.get("host") and replica.get("digests_match")
+                is True):
+            print(json.dumps({
+                "outcome": "AGGREGATION_REFUSED",
+                "reason": "no successful independent replica proof"}),
+                flush=True)
+            return 3
         # Aggregation ONLY from the sealed collection root.
         sealed_parent = Path(args.collection_root) / "sealed"
         result = agg.aggregate(sealed_parent, args.experiment_id,

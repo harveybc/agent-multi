@@ -432,7 +432,11 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "normal_probe_is_telemetry_only": True,
                 "artifact": str(post_easy_path),
                 "artifact_sha256": post_easy_sha,
-                "solvency_mode": EASY_MODE,
+                # Finding 195: the persisted mode is the mode that RAN.
+                # Normal phase-1 records say normal; only easy says easy.
+                "solvency_mode": (EASY_MODE
+                                  if phase1_mode == EASY_MODE
+                                  else NORMAL_MODE),
                 "best_easy_epoch": best_epoch,
                 "easy_epochs_run": len(history),
                 "easy_budget_epochs": max_epochs,
@@ -443,8 +447,11 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "requires_entry_action": True,
                     "requires_submitted_entry": True,
                     "maximum_protected_entry_rejections": 0,
-                    "requires_normal_handoff_train_tail_activity": True,
-                    "requires_normal_handoff_validation_activity": True,
+                    # The normal-handoff probe is telemetry ONLY (finding
+                    # 160/195); it never gates selection and these facts
+                    # must not claim otherwise.
+                    "normal_handoff_probe_is_telemetry_only": True,
+                    "normal_handoff_activity_gates_selection": False,
                 },
                 "phase1_mode": phase1_mode,
                 "phase1_difficulty": {

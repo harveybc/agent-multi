@@ -386,3 +386,38 @@ def test_parent_eval_split_forces_normal(monkeypatch):
             {"solvency_mode": "easy_chronological_continuation"},
             "x.csv", None, None, 7, "validation")
     assert captured["solvency_mode"] == "normal_realistic"
+
+
+def test_phase1_metadata_is_truthful_for_normal_mode(harness):
+    # Finding 195: normal records must say normal — never easy — and
+    # the handoff probe facts must describe telemetry, not a gate.
+    pipeline, made_envs, parent_calls, tmp_path = harness
+    agent = FakeAgent()
+    config = _config(tmp_path)
+    config["phase1_mode"] = "normal_realistic"
+    config["easy_min_trades"] = 1
+    pipeline.run_pipeline(config=config, env_plugin=None,
+                          agent_plugin=agent, mode="train")
+    meta = json.loads(Path(
+        parent_calls[0]["config"]["warm_start_model"]
+        + ".meta.json").read_text())
+    assert meta["solvency_mode"] == "normal_realistic"
+    assert meta["phase1_mode"] == "normal_realistic"
+    contract = meta["activity_contract"]
+    assert contract["normal_handoff_probe_is_telemetry_only"] is True
+    assert contract["normal_handoff_activity_gates_selection"] is False
+    assert "requires_normal_handoff_train_tail_activity" not in contract
+    assert "requires_normal_handoff_validation_activity" not in contract
+
+
+def test_phase1_metadata_is_truthful_for_easy_mode(harness):
+    pipeline, made_envs, parent_calls, tmp_path = harness
+    agent = FakeAgent()
+    pipeline.run_pipeline(config=_config(tmp_path), env_plugin=None,
+                          agent_plugin=agent, mode="train")
+    meta = json.loads(Path(
+        parent_calls[0]["config"]["warm_start_model"]
+        + ".meta.json").read_text())
+    assert meta["solvency_mode"] == "easy_chronological_continuation"
+    assert meta["activity_contract"][
+        "normal_handoff_activity_gates_selection"] is False

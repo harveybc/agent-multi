@@ -27,8 +27,11 @@ sys.path.insert(0, str(REPO))
 from pipeline_plugins import _system_config as sysid  # noqa: E402
 from tools import l1_factorial_screen as runner  # noqa: E402
 
+# v1 was generated from a dirty obsolete tree (finding 194) and stays
+# in the repo only as REJECTED evidence; v2 is generated exclusively
+# from a clean commit (the generator refuses a dirty tree).
 OUT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/systems/"
-            "ethusdt_4h_l1_system_v1.json")
+            "ethusdt_4h_l1_system_v2.json")
 
 COST_KEYS = (
     "commission", "slippage", "leverage", "initial_cash", "k_sl", "k_tp",
@@ -36,10 +39,36 @@ COST_KEYS = (
     "min_order_volume", "continuous_action_threshold",
 )
 
-PLUGIN_KEYS = (
-    "env_plugin", "agent_plugin", "pipeline_plugin", "broker_plugin",
-    "data_feed_plugin", "preprocessor_plugin", "reward_plugin",
-    "strategy_plugin", "metrics_plugin",
+# Explicit normal cost/solvency contract (order §3.3, findings 192/193).
+# Values adopted from the REVIEWED ETH-v2 environment contract
+# (examples/config/phase_2_eth_anchored/optimization/
+# phase_2_eth_anchored_full_v2.json): full spread 1e-4 carries the
+# market friction, per-side slippage is DECLARED 0.0 exactly as in that
+# reviewed environment (not silently absent), protected entries are
+# enforced, and min-equity makes the gym-fx default (1% of initial
+# cash) explicit instead of implicit. Any future deliberate difference
+# is a named experiment factor, never a silent edit here.
+NORMAL_CONTRACT = {
+    "full_spread_rate": 0.0001,
+    "slippage": 0.0,
+    "require_protected_entries": True,
+    "min_equity": 100.0,
+}
+
+# The executable plugin surface (order §3.1, finding 191): these names
+# must equal the classes that execute; the materializer refuses drift
+# and the runner takes its agent/pipeline from here. The curriculum
+# wrapper is the intentionally varying element, bound explicitly.
+EXECUTABLE_PLUGINS = {
+    "agent_plugin": "sac_agent",
+    "pipeline_plugin": "rl_pipeline_with_validation",
+    "curriculum_pipeline_plugin": "rl_pipeline_with_solvency_curriculum",
+}
+
+BASE_PLUGIN_KEYS = (
+    "env_plugin", "broker_plugin", "data_feed_plugin",
+    "preprocessor_plugin", "reward_plugin", "strategy_plugin",
+    "metrics_plugin",
 )
 
 
@@ -85,6 +114,18 @@ def anchor_facts(contract: dict) -> dict:
 def main() -> int:
     from tools import eth_curriculum_decision_experiment as d1
 
+    # Finding 194: the frozen manifest must come from a CLEAN commit.
+    for repo_name, root in (("agent-multi",
+                             sysid.resolve_repo_root(Path(__file__))),
+                            ("gym-fx", Path("/home/harveybc/Documents/"
+                                            "GitHub/gym-fx"))):
+        ident = sysid.source_tree_identity(root)
+        if ident["dirty"]:
+            raise RuntimeError(
+                f"refusing to generate the frozen manifest from a DIRTY "
+                f"{repo_name} tree (digest "
+                f"{ident['dirty_untracked_digest']}); commit first")
+
     contract = runner.load_contract()
     base_path = Path(d1.ETH_BASE)
     base_sha = sysid.sha_file(base_path)
@@ -100,7 +141,9 @@ def main() -> int:
     if nested["source_sha256"] != data["sha256"]:
         raise RuntimeError("nested split contract pins a different CSV")
 
-    obs = sysid.observation_manifest(base)
+    normal_config = dict(base)
+    normal_config.update(NORMAL_CONTRACT)
+    obs = sysid.observation_manifest(normal_config)
     anchors = anchor_facts(contract)
     shapes = {tuple(a["observation_shape"]) for a in anchors.values()}
     if len(shapes) != 1:
@@ -132,10 +175,20 @@ def main() -> int:
         },
         "observation": obs,
         "costs": {
-            "config_bindings": {k: base.get(k) for k in COST_KEYS
-                                if k in base},
+            "$doc": ("Normal cost/solvency contract: base identity "
+                     "values plus the REVIEWED ETH-v2 environment "
+                     "settings (spread 1e-4, declared slippage 0.0, "
+                     "protected entries enforced, explicit min-equity "
+                     "= gym-fx default 1% of initial cash)."),
+            "config_bindings": {
+                **{k: base.get(k) for k in COST_KEYS if k in base},
+                **NORMAL_CONTRACT,
+            },
         },
-        "plugins": {k: base.get(k) for k in PLUGIN_KEYS if k in base},
+        "plugins": {
+            **{k: base.get(k) for k in BASE_PLUGIN_KEYS if k in base},
+            **EXECUTABLE_PLUGINS,
+        },
         "anchors": anchors,
         "source_identity_at_manifest": {
             "agent-multi": sysid.source_tree_identity(

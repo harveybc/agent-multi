@@ -136,13 +136,56 @@ def observation_manifest(config: Dict[str, Any]) -> Dict[str, Any]:
         "window_size": window,
         "include_price_window": bool(config.get("include_price_window")),
         "include_agent_state": bool(config.get("include_agent_state")),
+        # Repair spec §6: preprocessing/scaling/history windows are part
+        # of the exact observation contract, not ambient defaults.
+        "feature_scaling": config.get("feature_scaling"),
+        "feature_scaling_window": config.get("feature_scaling_window"),
         "flattened_shape": None,
     }
     obs["observation_manifest_sha256"] = canonical_sha(
         {k: obs[k] for k in ("feature_columns", "feature_count",
                              "window_size", "include_price_window",
-                             "include_agent_state")})
+                             "include_agent_state", "feature_scaling",
+                             "feature_scaling_window")})
     return obs
+
+
+def validate_normal_contract(bindings: Dict[str, Any]) -> None:
+    """The normal cost/solvency contract must be COMPLETE and explicit
+    (finding 192/193): positive commission and spread, declared per-side
+    slippage, explicit min-equity, protected entries enforced. A
+    zero-spread or unprotected 'normal_realistic' profile is refused."""
+    commission = bindings.get("commission")
+    if not isinstance(commission, (int, float)) or commission <= 0:
+        raise RuntimeError("normal contract: commission missing or "
+                           "non-positive")
+    spread = bindings.get("full_spread_rate")
+    if not isinstance(spread, (int, float)) or spread <= 0:
+        raise RuntimeError("normal contract: full_spread_rate missing "
+                           "or non-positive — a zero-spread profile is "
+                           "not normal_realistic")
+    if "slippage" not in bindings:
+        raise RuntimeError("normal contract: per-side slippage must be "
+                           "DECLARED (0.0 is legal only explicitly)")
+    if bindings.get("require_protected_entries") is not True:
+        raise RuntimeError("normal contract: require_protected_entries "
+                           "must be true — no entry without SL and TP")
+    if "min_equity" not in bindings:
+        raise RuntimeError("normal contract: min_equity behavior must "
+                           "be explicit")
+
+
+def validate_manifest_provenance(system_manifest: Dict[str, Any]) -> None:
+    """A frozen manifest generated from a dirty tree is not a clean
+    immutable baseline (finding 194)."""
+    sources = system_manifest.get("source_identity_at_manifest") or {}
+    for repo_name, ident in sorted(sources.items()):
+        if isinstance(ident, dict) and ident.get("dirty"):
+            raise RuntimeError(
+                f"system manifest was generated from a DIRTY {repo_name} "
+                "tree (digest "
+                f"{ident.get('dirty_untracked_digest')}); regenerate it "
+                "from a clean commit")
 
 
 def materialize_system_config(contract: Dict[str, Any],
@@ -151,11 +194,14 @@ def materialize_system_config(contract: Dict[str, Any],
                               output_dir: Path) -> Dict[str, Any]:
     """Build one cell's exact config from the frozen manifest.
 
-    Every binding is verified before return; the caller receives the
-    config plus the identity facts (`_identity`) it must persist.
+    The manifest is AUTHORITY: cost/solvency bindings are applied into
+    the config, plugin names are validated against what will execute,
+    and every binding is verified before return; the caller receives
+    the config plus the identity facts (`_identity`) it must persist.
     """
     repo_root = resolve_repo_root(Path(__file__))
     spec = contract["cells"][cell]
+    validate_manifest_provenance(system_manifest)
 
     base_rel = system_manifest["base_config"]["path"]
     base_path = repo_root / base_rel
@@ -222,12 +268,30 @@ def materialize_system_config(contract: Dict[str, Any],
     obs["flattened_shape"] = bound_obs.get("flattened_shape")
 
     costs = system_manifest["costs"]
+    validate_normal_contract(costs["config_bindings"])
+    # The manifest is AUTHORITY for the cost/solvency contract: bindings
+    # are APPLIED, never silently inherited from the base config.
     for key, bound in costs["config_bindings"].items():
+        config[key] = bound
+
+    if "plugins" not in system_manifest or \
+            not system_manifest["plugins"]:
+        raise RuntimeError("system manifest lacks a plugins block — the "
+                           "executable surface is unbound")
+    plugins = system_manifest["plugins"]
+    for key in ("env_plugin", "strategy_plugin"):
+        bound = plugins.get(key)
         actual = config.get(key)
-        if actual != bound:
+        if bound and actual != bound:
             raise RuntimeError(
-                f"cost/margin contract drifted: config[{key!r}]="
-                f"{actual!r} != manifest {bound!r}")
+                f"plugin drift: config[{key!r}]={actual!r} != manifest "
+                f"{bound!r}")
+    for key in ("agent_plugin", "curriculum_pipeline_plugin",
+                "pipeline_plugin"):
+        if not plugins.get(key):
+            raise RuntimeError(
+                f"system manifest plugins block lacks {key!r}; the "
+                "manifest names must equal the classes that execute")
 
     anchor_entry = contract["anchors"][str(seed)]
     manifest_anchor = system_manifest["anchors"].get(str(seed))
@@ -250,6 +314,7 @@ def materialize_system_config(contract: Dict[str, Any],
         "asset_label": system_manifest.get("asset"),
         "initial_cash": float(config.get("initial_cash")),
         "cost_contract": dict(costs["config_bindings"]),
+        "plugins": dict(plugins),
         "anchor_sha256": anchor_entry["sha256"],
         "anchor_policy_tensor_sha256": manifest_anchor.get(
             "policy_tensor_sha256"),

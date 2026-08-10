@@ -19,10 +19,19 @@ template under ``examples/systemd/l1-factorial@.service`` restarts on
 failure; the flock makes a restart racing a live holder exit
 ``ALREADY_RUNNING`` instead of double-writing.
 
-Typed outcomes (stdout JSON, one line per seed run):
-  SEED_COMPLETE | ALREADY_RUNNING | ALREADY_COMPLETE |
-  REFUSED_WRONG_HOST | REFUSED_GPU_UNBOUND | REFUSED_BAD_CONTRACT |
-  SEED_FAILED
+Typed outcomes (stdout JSON, one line per seed run) and their exit
+classes (order §2/WP7, finding 188):
+
+  exit 0  SEED_COMPLETE | ALREADY_COMPLETE   clean terminal
+  exit 3  ALREADY_RUNNING                    clean no-op (SuccessExit)
+  exit 4  REFUSED_WRONG_HOST | REFUSED_GPU_UNBOUND |
+          REFUSED_BAD_CONTRACT               typed configuration
+                                             refusal; heartbeat
+                                             written; never blindly
+                                             restarted
+  exit 1  SEED_FAILED                        real failure; the ONLY
+                                             class Restart=on-failure
+                                             retries
 """
 from __future__ import annotations
 
@@ -42,8 +51,20 @@ sys.path.insert(0, str(REPO))
 
 from tools import l1_factorial_screen as runner  # noqa: E402
 
-LAUNCHER_VERSION = "l1_fleet_launcher.v1"
+LAUNCHER_VERSION = "l1_fleet_launcher.v2"
 HEARTBEAT_INTERVAL_S = 60
+
+# Exit classes are a CONTRACT shared with the systemd unit; changing a
+# code without changing the unit is a finding, not a refactor.
+EXIT_CLASS = {
+    "SEED_COMPLETE": 0,
+    "ALREADY_COMPLETE": 0,
+    "ALREADY_RUNNING": 3,
+    "REFUSED_WRONG_HOST": 4,
+    "REFUSED_GPU_UNBOUND": 4,
+    "REFUSED_BAD_CONTRACT": 4,
+    "SEED_FAILED": 1,
+}
 
 
 def _pid_start_identity(pid: int) -> str | None:
@@ -174,9 +195,6 @@ class SeedLauncher:
 
     # -- run -----------------------------------------------------------
     def run(self) -> dict:
-        refusal = self.check_assignment()
-        if refusal:
-            return refusal
         exp_id = runner.experiment_identity(self.contract, self.manifest,
                                             self.smoke)
         out_root = Path(self.contract["output_root"]).expanduser()
@@ -185,6 +203,14 @@ class SeedLauncher:
         self._heartbeat_path = (exp_dir / f"seed{self.seed}" /
                                 "launcher_heartbeat.json")
         self._heartbeat_path.parent.mkdir(parents=True, exist_ok=True)
+        refusal = self.check_assignment()
+        if refusal:
+            # A configuration refusal is VISIBLE: the heartbeat carries
+            # the typed outcome so an idle worker is never silent.
+            self._heartbeat(terminal_state=refusal["outcome"],
+                            error=refusal.get("reason"))
+            refusal["experiment_id"] = exp_id
+            return refusal
 
         seed_claim = ExclusiveClaim(
             locks / f"exclusive_claim.seed{self.seed}.lock")
@@ -243,16 +269,22 @@ def main() -> int:
     parser.add_argument("--no-gpu-check", action="store_true",
                         help="skip GPU-UUID visibility enforcement "
                              "(CPU smoke only)")
+    parser.add_argument("--contract", default=None,
+                        help="contract path override (tests)")
+    parser.add_argument("--manifest", default=None,
+                        help="system manifest path override (tests)")
     args = parser.parse_args()
-    contract = runner.load_contract()
-    manifest = runner.load_system_manifest()
+    contract = runner.load_contract(
+        Path(args.contract)) if args.contract else runner.load_contract()
+    manifest = runner.load_system_manifest(
+        Path(args.manifest)) if args.manifest \
+        else runner.load_system_manifest()
     launcher = SeedLauncher(contract=contract, manifest=manifest,
                             seed=args.seed, smoke=args.smoke,
                             enforce_gpu=not args.no_gpu_check)
     result = launcher.run()
     print(json.dumps(result, default=str), flush=True)
-    return 0 if result["outcome"] in ("SEED_COMPLETE",
-                                      "ALREADY_COMPLETE") else 2
+    return EXIT_CLASS.get(result["outcome"], 1)
 
 
 if __name__ == "__main__":

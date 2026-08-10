@@ -70,7 +70,13 @@ def make_contract() -> dict:
 
 def make_manifest() -> dict:
     return {"schema": agg.sysid.MANIFEST_SCHEMA,
-            "_manifest_sha256": MANIFEST_SHA}
+            "_manifest_sha256": MANIFEST_SHA,
+            "plugins": {
+                "agent_plugin": "sac_agent",
+                "pipeline_plugin": "rl_pipeline_with_validation",
+                "curriculum_pipeline_plugin":
+                    "rl_pipeline_with_solvency_curriculum",
+            }}
 
 
 def make_record(contract: dict, seed: int, cell: str) -> dict:
@@ -113,13 +119,17 @@ def make_record(contract: dict, seed: int, cell: str) -> dict:
         "activity_stopped_without_eligible_checkpoint": False,
         "history_len": 80,
         "subject_code_identity": copy.deepcopy(CLEAN_SUBJECT),
-        "terminal_model_path": f"/out/seed{seed}/{cell}/model.terminal.zip",
+        "attempt_dir": f"/src/{EXP}/seed{seed}/{cell}",
+        "terminal_model_path":
+            f"/src/{EXP}/seed{seed}/{cell}/model.terminal.zip",
         "terminal_model_sha256": "d2" * 32,
         "terminal_policy_tensor_sha256": "d3" * 32,
         "started_utc": "2026-08-09T00:00:00+00:00",
         "finished_utc": "2026-08-09T01:00:00+00:00",
         "curriculum": {
             "post_easy": {
+                "artifact":
+                    f"/src/{EXP}/seed{seed}/{cell}/model.post_easy.zip",
                 "artifact_sha256": "b2" * 32,
                 "phase1_terminal_policy_tensor_sha256": src_hash,
                 "phase1_gradient_updates": 500,
@@ -207,6 +217,10 @@ def build_tree(tmp_path: Path, contract: dict, *, mutate=None) -> Path:
             rec = make_record(contract, seed, cell)
             rec_dir = root / EXP / f"seed{seed}" / cell
             rec["attempt_dir"] = str(rec_dir)
+            rec["terminal_model_path"] = str(
+                rec_dir / "model.terminal.zip")
+            rec["curriculum"]["post_easy"]["artifact"] = str(
+                rec_dir / "model.post_easy.zip")
             if mutate:
                 mutate(rec, seed, cell)
             (rec_dir / "return_traces").mkdir(parents=True)

@@ -59,7 +59,13 @@ def _contract(tmp_path: Path, seed: int) -> dict:
 def _manifest() -> dict:
     return {"schema": "agent_multi.system_manifest.v1",
             "_manifest_sha256": "ab" * 32,
-            "_manifest_path": "/frozen/manifest.json"}
+            "_manifest_path": "/frozen/manifest.json",
+            "plugins": {
+                "agent_plugin": "sac_agent",
+                "pipeline_plugin": "rl_pipeline_with_validation",
+                "curriculum_pipeline_plugin":
+                    "rl_pipeline_with_solvency_curriculum",
+            }}
 
 
 def _fake_materialize(tmp_path: Path):

@@ -32,7 +32,7 @@ from pipeline_plugins import _system_config as sysid  # noqa: E402
 CONTRACT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                  "l1_factorial_contract_v3.json")
 SYSTEM_MANIFEST_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
-                        "systems/ethusdt_4h_l1_system_v1.json")
+                        "systems/ethusdt_4h_l1_system_v2.json")
 SCHEMA = "agent_multi.l1_factorial_cell_record.v2"
 GYM_FX_ROOT = Path("/home/harveybc/Documents/GitHub/gym-fx")
 
@@ -154,9 +154,26 @@ def _next_attempt_dir(cell_dir: Path, cell_id: str) -> Path:
 
 
 def run_cell(cell: str, seed: int, *, contract: dict, manifest: dict,
-             smoke: bool, agent_name: str = "sac_agent") -> dict:
+             smoke: bool, agent_name: str | None = None) -> dict:
     from pipeline_plugins.rl_pipeline_with_solvency_curriculum import (
         PipelinePlugin as CurriculumPipeline)
+
+    # Finding 191: the manifest names must equal the classes that
+    # execute. The agent comes FROM the manifest; the intentionally
+    # varying curriculum wrapper is bound explicitly and asserted.
+    plugins = manifest.get("plugins") or {}
+    if agent_name is None:
+        agent_name = plugins.get("agent_plugin")
+    if not agent_name or agent_name != plugins.get("agent_plugin"):
+        raise RuntimeError(
+            f"agent plugin {agent_name!r} does not equal the manifest "
+            f"binding {plugins.get('agent_plugin')!r}")
+    if plugins.get("curriculum_pipeline_plugin") != \
+            "rl_pipeline_with_solvency_curriculum":
+        raise RuntimeError(
+            "manifest curriculum_pipeline_plugin does not name the "
+            "executing curriculum wrapper "
+            "rl_pipeline_with_solvency_curriculum")
 
     spec = contract["cells"][cell]
     budget = contract["smoke_budget" if smoke else "decision_budget"]

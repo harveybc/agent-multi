@@ -1,17 +1,27 @@
-# Durable L1 factorial worker (order §2/WP1). Instance = seed:
+# Durable L1 factorial worker (order §2/WP1 + WP7, finding 188).
+# Instance = seed:
 #   systemctl --user enable --now l1-factorial@101.service
 #
-# Restart-on-failure cannot double-write: the launcher's exclusive
-# flock makes any instance racing a live holder exit ALREADY_RUNNING
-# (exit 2, treated here as a clean stop via SuccessExitStatus so a
-# racing restart does not loop).
+# Exit-class contract (must match EXIT_CLASS in l1_fleet_launcher.py):
+#   0  SEED_COMPLETE / ALREADY_COMPLETE  -> clean terminal
+#   3  ALREADY_RUNNING                   -> clean no-op (a racing
+#      restart against a live flock holder stops without looping)
+#   4  REFUSED_* configuration refusal   -> recorded as FAILED but
+#      never blindly retried (RestartPreventExitStatus); the launcher
+#      heartbeat carries the typed refusal
+#   1  SEED_FAILED                       -> the ONLY class that
+#      Restart=on-failure retries
 #
 # Install (per worker host):
-#   mkdir -p ~/.config/systemd/user
+#   mkdir -p ~/.config/systemd/user ~/.config/agent-multi
 #   cp examples/systemd/l1-factorial@.service ~/.config/systemd/user/
 #   systemctl --user daemon-reload
-#   L1_SMOKE=--smoke systemctl --user start l1-factorial@101   # smoke
-#   systemctl --user start l1-factorial@101                    # decision
+# Smoke profile: materialize the per-instance environment file BEFORE
+# starting (systemctl does not forward shell variables):
+#   echo 'L1_EXTRA_ARGS=--smoke' \
+#     > ~/.config/agent-multi/l1-factorial@101.env
+#   systemctl --user start l1-factorial@101
+# Decision profile: remove/empty that file, then start the unit.
 
 [Unit]
 Description=L1 matched factorial seed %i (durable launcher)
@@ -27,7 +37,8 @@ ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
     tools/l1_fleet_launcher.py --seed %i $L1_EXTRA_ARGS
 Restart=on-failure
 RestartSec=60
-SuccessExitStatus=0 2
+SuccessExitStatus=3
+RestartPreventExitStatus=4
 TimeoutStartSec=infinity
 
 [Install]

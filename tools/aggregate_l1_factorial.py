@@ -90,6 +90,66 @@ def _finite(value: Any) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# sealed-root path authority (order §4/WP9, finding 189)
+# ---------------------------------------------------------------------------
+
+class SealedPathResolver:
+    """Records are immutable and may carry absolute source-worker
+    paths. Every record-referenced path is resolved into the
+    aggregation root by its validated experiment-relative suffix; a
+    path without the experiment marker, or one escaping the root, is a
+    refusal — never a silent read elsewhere."""
+
+    def __init__(self, output_root: Path, experiment_id: str):
+        self.exp_root = (Path(output_root) / experiment_id).resolve()
+        self.marker = f"/{experiment_id}/"
+
+    def resolve(self, path: Any) -> Path:
+        text = str(path)
+        if self.marker not in text:
+            raise ValueError(
+                f"path {text!r} carries no experiment-relative suffix "
+                f"for {self.marker!r}; cannot resolve inside the root")
+        candidate = (self.exp_root /
+                     text.split(self.marker, 1)[1]).resolve()
+        if self.exp_root != candidate and \
+                self.exp_root not in candidate.parents:
+            raise ValueError(f"resolved path {candidate} escapes the "
+                             "aggregation root")
+        return candidate
+
+
+def resolve_record_paths(record: dict,
+                         resolver: SealedPathResolver
+                         ) -> Tuple[dict, List[str]]:
+    """Resolve every path a probe/rollout/metric read will touch."""
+    resolved: Dict[str, Path] = {}
+    reasons: List[str] = []
+    post_easy = (record.get("curriculum") or {}).get("post_easy") or {}
+    targets = {
+        "attempt_dir": record.get("attempt_dir"),
+        "terminal_model_path": record.get("terminal_model_path"),
+        "post_easy_artifact": post_easy.get("artifact"),
+    }
+    for name, raw in targets.items():
+        if not raw:
+            reasons.append(f"record path {name} missing")
+            continue
+        try:
+            resolved[name] = resolver.resolve(raw)
+        except ValueError as exc:
+            reasons.append(f"record path {name} unresolvable: {exc}")
+    if "attempt_dir" in resolved:
+        attempt = resolved["attempt_dir"]
+        resolved["results_json"] = attempt / "results.json"
+        resolved["evidence_json"] = (attempt / "return_traces" /
+                                     "evidence.json")
+        resolved["inner_validation_csv"] = (attempt / "nested_splits" /
+                                            "inner_validation.csv")
+    return resolved, reasons
+
+
+# ---------------------------------------------------------------------------
 # discovery — refuses duplicate physical records and mixed identities
 # ---------------------------------------------------------------------------
 
@@ -337,14 +397,14 @@ def validate_record_bindings(record: dict, *, contract: dict,
 def raw_metrics(record: dict, rollout_summary: dict | None
                 ) -> Tuple[dict, List[str]]:
     reasons: List[str] = []
-    rec_dir = Path(record["_record_path"]).parent
-    attempt = record.get("attempt_dir")
-    results_path = None
-    for base in ([Path(attempt)] if attempt else []) + [rec_dir]:
-        candidate = Path(base) / "results.json"
-        if candidate.is_file():
-            results_path = candidate
-            break
+    resolved = record.get("_resolved") or {}
+    results_path = resolved.get("results_json")
+    if results_path is not None and not Path(results_path).is_file():
+        results_path = None
+    if results_path is None:
+        # Legacy layout fallback: results.json beside the record.
+        candidate = Path(record["_record_path"]).parent / "results.json"
+        results_path = candidate if candidate.is_file() else None
     metrics: Dict[str, Any] = {"units": RAW_METRIC_UNITS}
     if results_path is None:
         reasons.append("results.json missing — raw metrics unavailable")
@@ -542,15 +602,17 @@ def decide_outcome(matrix: Dict[float, Dict[int, Dict[str, dict]]],
 # ---------------------------------------------------------------------------
 
 def terminal_disk_facts(record: dict) -> dict | None:
-    """Rehash the on-disk terminal artifact and its tensor digest —
-    BEFORE any rollout, per order §4."""
-    path = record.get("terminal_model_path")
+    """Rehash the RESOLVED on-disk terminal artifact and its tensor
+    digest — BEFORE any rollout, per order §4; reads only inside the
+    aggregation root (finding 189)."""
+    resolved = record.get("_resolved") or {}
+    path = resolved.get("terminal_model_path")
     if not path or not Path(path).is_file():
         return None
     facts = {"terminal_model_sha256": sysid.sha_file(Path(path))}
     try:
         facts["terminal_policy_tensor_sha256"] = \
-            runner._terminal_tensor_sha(path)
+            runner._terminal_tensor_sha(str(path))
     except Exception as exc:
         facts["terminal_policy_tensor_sha256"] = None
         facts["error"] = f"{type(exc).__name__}: {exc}"
@@ -563,19 +625,17 @@ def probe_terminal(record: dict, *, agent_name: str = "sac_agent") -> dict:
 
     out: Dict[str, Any] = {"loads": False}
     try:
-        rec_dir = Path(record["_record_path"]).parent
+        resolved = record.get("_resolved") or {}
         config = _eval_config(record)
         plugin = PipelinePlugin(config)
         agent = runner._agent_plugin(agent_name)
-        csv_path = str(Path(record["attempt_dir"]) / "nested_splits" /
-                       "inner_validation.csv")
+        csv_path = str(resolved["inner_validation_csv"])
         plug, env = plugin._make_split_env(
             str(config.get("env_plugin", "gym_fx_env")), config, csv_path,
             agent)
         try:
-            post_easy = (record.get("curriculum") or {}).get(
-                "post_easy") or {}
-            terminal = agent.load(str(record["terminal_model_path"]), env)
+            terminal = agent.load(
+                str(resolved["terminal_model_path"]), env)
             out["loads"] = True
             out["terminal_policy_tensor_sha256"] = _policy_tensor_hash(
                 terminal.policy)
@@ -584,7 +644,7 @@ def probe_terminal(record: dict, *, agent_name: str = "sac_agent") -> dict:
             # The boundary rebuild restarts the counter, so the
             # terminal's counter counts phase-2 updates exactly.
             out["phase2_updates_occurred"] = out["terminal_n_updates"] > 0
-            phase1 = agent.load(str(post_easy.get("artifact")), env)
+            phase1 = agent.load(str(resolved["post_easy_artifact"]), env)
             phase1_hash = _policy_tensor_hash(phase1.policy)
             boundary = record.get("boundary_transfer_evidence") or {}
             chain_ok = (phase1_hash == boundary.get(
@@ -609,9 +669,9 @@ def verification_rollout(record: dict, *,
                          agent_name: str = "sac_agent") -> dict | None:
     from pipeline_plugins.rl_pipeline_with_validation import PipelinePlugin
 
-    csv_path = Path(record["attempt_dir"]) / "nested_splits" / \
-        "inner_validation.csv"
-    if not csv_path.is_file():
+    resolved = record.get("_resolved") or {}
+    csv_path = resolved.get("inner_validation_csv")
+    if csv_path is None or not Path(csv_path).is_file():
         return None
     config = _eval_config(record)
     plugin = PipelinePlugin(config)
@@ -620,7 +680,7 @@ def verification_rollout(record: dict, *,
         str(config.get("env_plugin", "gym_fx_env")), config, str(csv_path),
         agent)
     try:
-        model = agent.load(str(record["terminal_model_path"]), env)
+        model = agent.load(str(resolved["terminal_model_path"]), env)
         summary = PipelinePlugin._rollout(
             env, agent, model, int(record["seed"]),
             asset=str(config.get("asset", "unknown_asset")),
@@ -640,12 +700,14 @@ def verification_rollout(record: dict, *,
 
 def _eval_config(record: dict) -> dict:
     """Evaluation config through the SAME system manifest — never the
-    legacy base config resolver."""
+    legacy base config resolver; output paths point at the RESOLVED
+    attempt inside the aggregation root."""
     contract = runner.load_contract()
     manifest = runner.load_system_manifest()
+    resolved = record.get("_resolved") or {}
     config = sysid.materialize_system_config(
         contract, manifest, str(record["cell"]), int(record["seed"]),
-        Path(record["attempt_dir"]))
+        Path(resolved["attempt_dir"]))
     config.pop("_identity", None)
     config["solvency_mode"] = "normal_realistic"
     config.pop("return_trace_dir", None)
@@ -673,6 +735,7 @@ def aggregate(output_root: Path, experiment_id: str, *,
     raw: Dict[str, Any] = {}
     loaded: Dict[str, dict] = {}
 
+    resolver = SealedPathResolver(output_root, experiment_id)
     for (seed, cell), rec_path in sorted(records_paths.items()):
         record = json.loads(rec_path.read_text())
         record["_record_path"] = str(rec_path)
@@ -685,19 +748,24 @@ def aggregate(output_root: Path, experiment_id: str, *,
         seed = int(record["seed"])
         cell = str(record["cell"])
         rec_path = Path(record["_record_path"])
-        evidence_path = Path(record["attempt_dir"]) / "return_traces" / \
-            "evidence.json"
-        if not evidence_path.is_file():
-            evidence_path = rec_path.parent / "return_traces" / \
+        # Finding 189: every record-referenced path is resolved into
+        # THIS aggregation root; nothing is read from recorded absolute
+        # source-worker locations.
+        resolved, path_reasons = resolve_record_paths(record, resolver)
+        record["_resolved"] = resolved
+        evidence_path = resolved.get("evidence_json")
+        if evidence_path is None or not Path(evidence_path).is_file():
+            candidate = rec_path.parent / "return_traces" / \
                 "evidence.json"
+            evidence_path = candidate if candidate.is_file() else None
         evidence = None
-        if evidence_path.is_file():
+        if evidence_path is not None:
             try:
-                evidence = json.loads(evidence_path.read_text())
+                evidence = json.loads(Path(evidence_path).read_text())
             except Exception:
                 evidence = None
         disk_facts = disk_facts_fn(record)
-        reasons = validate_record_bindings(
+        reasons = path_reasons + validate_record_bindings(
             record, contract=contract, manifest=manifest, seed=seed,
             cell=cell, experiment_id=experiment_id, evidence=evidence,
             disk_facts=disk_facts)

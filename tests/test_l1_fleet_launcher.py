@@ -37,7 +37,13 @@ def make_contract(tmp_path: Path, hostname: str = "testhost") -> dict:
 
 
 MANIFEST = {"schema": "agent_multi.system_manifest.v1",
-            "_manifest_sha256": "ab" * 32}
+            "_manifest_sha256": "ab" * 32,
+            "plugins": {
+                "agent_plugin": "sac_agent",
+                "pipeline_plugin": "rl_pipeline_with_validation",
+                "curriculum_pipeline_plugin":
+                    "rl_pipeline_with_solvency_curriculum",
+            }}
 
 
 def make_launcher(contract, *, run_cell_fn,
