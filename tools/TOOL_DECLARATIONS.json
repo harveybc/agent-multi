@@ -186,14 +186,14 @@
       "owner": "General Satoshi III"
     },
     "aggregate_l1_factorial.py": {
-      "purpose": "Generic L1 factorial aggregation (repair spec §7.1/§7.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
+      "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
       "lifecycle": "supported",
       "mutability": "read_only",
       "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
     },
     "l1_fleet_launcher.py": {
-      "purpose": "Durable idempotent L1 seed launcher (order §2/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
+      "purpose": "Durable idempotent L1 seed launcher (order \u00a72/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
       "lifecycle": "supported",
       "mutability": "mutating",
       "authority_class": "campaign_operation",
@@ -207,7 +207,7 @@
       "owner": "General Satoshi III"
     },
     "collect_l1_factorial.py": {
-      "purpose": "Content-addressed L1 collection (order §5/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
+      "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
       "lifecycle": "supported",
       "mutability": "mutating",
       "authority_class": "evidence_producer",
@@ -218,6 +218,20 @@
       "lifecycle": "supported",
       "mutability": "mutating",
       "authority_class": "discovery",
+      "owner": "General Satoshi III"
+    },
+    "social_review_packet.py": {
+      "purpose": "Materialize one bounded owner-review packet (experiment/reply/investigate candidates) from the social OLAP; proposes, never executes",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "evidence_producer",
+      "owner": "General Satoshi III"
+    },
+    "social_review_ledger.py": {
+      "purpose": "Append-only owner-review ledger: accept/defer/reject with reason; accepted experiments enter the work queue with provenance, accepted replies become drafts only",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
     }
   },

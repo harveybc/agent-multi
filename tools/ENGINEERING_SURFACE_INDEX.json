@@ -1,6 +1,6 @@
 {
  "facts": {
-  "declarations_sha256": "2f58c1443a0799d22d9ac6fc5736caaacac56b2fa0dad90c2d2add6b449c5c7a",
+  "declarations_sha256": "ac54218b8f96775aa92a181f1fdb414d7fa02f41f6141c51902d5e1882da6aac",
   "entry_point_comparison": {
    "drift": [],
    "installed_only": []
@@ -425,7 +425,7 @@
      ],
      "parse_error": null,
      "path": "tools/audit_snapshot_collector.py",
-     "sha256": "7aa243b8663fed3c48210fcca9dd11125557cf2f69465f912136ea281025a923"
+     "sha256": "c63c1517da4b8ffbcea761bbdf219b72ebf729552be2914f05b52a198dc558c0"
     }
    },
    "audit_test_evidence.py": {
@@ -2984,11 +2984,13 @@
       "--batch-size",
       "--config",
       "--excerpt-chars",
+      "--execute",
       "--hermes-bin",
       "--limit",
       "--min-relevance",
       "--min-worthiness",
       "--prompt",
+      "--run-id",
       "--timeout-seconds"
      ],
      "defines_main": true,
@@ -2997,7 +2999,9 @@
       "__future__",
       "argparse",
       "dataclasses",
+      "datetime",
       "json",
+      "math",
       "os",
       "pathlib",
       "re",
@@ -3010,7 +3014,7 @@
      ],
      "parse_error": null,
      "path": "tools/social_intelligence_enrichment.py",
-     "sha256": "3295ff31731887bf9deb3501f2294221f25e00681c375244d947a639f92a8a49"
+     "sha256": "ef41b27ccb24d1d45b8693bcef316843a3e89bc85dbb6426aa6d47e9268b1f32"
     }
    },
    "social_intelligence_hermes_context.py": {
@@ -3037,6 +3041,80 @@
      "parse_error": null,
      "path": "tools/social_intelligence_hermes_context.py",
      "sha256": "70fe42a5458afbf60d7d7c8cf3598635e5e0edff14d4369f7d3bb90d909a99e6"
+    }
+   },
+   "social_review_ledger.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Append-only owner-review ledger: accept/defer/reject with reason; accepted experiments enter the work queue with provenance, accepted replies become drafts only"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--actor",
+      "--config",
+      "--decision",
+      "--draft-content-file",
+      "--draft-submolt",
+      "--draft-title",
+      "--item",
+      "--packet",
+      "--reason",
+      "--state"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "social_intelligence",
+      "sqlite3",
+      "sys",
+      "tools",
+      "typing",
+      "uuid"
+     ],
+     "parse_error": null,
+     "path": "tools/social_review_ledger.py",
+     "sha256": "c3afb5528801c6d1fda290f73edb7193e65d60693218325c1cea03a19798e731"
+    }
+   },
+   "social_review_packet.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Materialize one bounded owner-review packet (experiment/reply/investigate candidates) from the social OLAP; proposes, never executes"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--config",
+      "--no-record",
+      "--out-json",
+      "--out-md",
+      "--top"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "json",
+      "pathlib",
+      "social_intelligence",
+      "sqlite3",
+      "tools",
+      "typing",
+      "uuid"
+     ],
+     "parse_error": null,
+     "path": "tools/social_review_packet.py",
+     "sha256": "f582066f9df57d3665552e50df3f131f69e499bb8fa2b4e1d79525d40c379858"
     }
    },
    "swarm_telegram_watchdog.py": {
@@ -3145,7 +3223,7 @@
   },
   "unclassified_new_executables": []
  },
- "facts_hash": "sha256:5358c5c3796333337a1a10160b3243d5b028fe7f028fcb396299b9417f9f828a",
+ "facts_hash": "sha256:687a1b10b5d3d2ffe7d3ea94c77adcda975b8a4608664919ec766eb5d8de9a9b",
  "provenance": {
   "arguments": {
    "declarations": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/tools/TOOL_DECLARATIONS.json",
@@ -3156,11 +3234,11 @@
    "generator_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
-  "finished_utc": "2026-08-10T07:07:12.748930+00:00",
+  "finished_utc": "2026-08-10T08:08:06.081825+00:00",
   "generator": "engineering_surface_index.v1",
   "generator_sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963",
-  "repo_head": "6c13dc79bc5e89fc199b09a6b71906e021d0872d",
-  "started_utc": "2026-08-10T07:07:12.248219+00:00",
+  "repo_head": "662e1dde5bcbcd6462a6929a9834cd8b2ef2d3f3",
+  "started_utc": "2026-08-10T08:08:05.578493+00:00",
   "worktree_dirty": true
  },
  "schema": "engineering_surface_index.v1",

@@ -5,12 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sqlite3
 import subprocess
 import uuid
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -143,6 +145,22 @@ class EnrichmentStore:
             CREATE INDEX IF NOT EXISTS post_enrichment_priority_idx
                 ON post_enrichments(recommended_action,response_worthiness DESC,
                                     actionability DESC,confidence DESC);
+            CREATE TABLE IF NOT EXISTS social_enrichment_run_attempts (
+                run_id TEXT NOT NULL REFERENCES social_enrichment_runs(run_id),
+                attempt INTEGER NOT NULL,
+                mode TEXT NOT NULL,
+                started_at TEXT NOT NULL,
+                ended_at TEXT,
+                status TEXT NOT NULL,
+                error_kind TEXT,
+                error_detail TEXT,
+                batch_id TEXT NOT NULL,
+                packet_sha256 TEXT NOT NULL,
+                response_sha256 TEXT,
+                model_call_id TEXT,
+                reserved_total_tokens INTEGER,
+                PRIMARY KEY(run_id,attempt)
+            );
             DROP VIEW IF EXISTS social_insight_candidates_olap;
             CREATE VIEW IF NOT EXISTS social_insight_candidates_olap AS
             SELECT e.external_id,p.url,p.title,p.submolt,e.topic,
@@ -155,6 +173,17 @@ class EnrichmentStore:
                   ('investigate','reply_candidate','experiment_candidate');
             """
         )
+        columns = {
+            row["name"]
+            for row in self.connection.execute(
+                "PRAGMA table_info(social_enrichment_runs)"
+            )
+        }
+        if "attempts" not in columns:
+            self.connection.execute(
+                "ALTER TABLE social_enrichment_runs "
+                "ADD COLUMN attempts INTEGER NOT NULL DEFAULT 1"
+            )
         self.connection.commit()
 
     def screen_backlog(self, min_relevance: float) -> dict[str, int]:
@@ -176,18 +205,9 @@ class EnrichmentStore:
         return {"quarantined": quarantined, "screened_low_relevance": low}
 
     def prepare_batch(self, config: EnrichmentConfig) -> dict[str, Any]:
-        rows = self.connection.execute(
-            """
-            SELECT p.external_id,p.submolt,p.title,p.content,p.url,
-                   p.content_sha256,p.relevance_score
-            FROM posts p LEFT JOIN post_enrichments e USING(external_id)
-            WHERE e.external_id IS NULL AND p.injection_flags_json='[]'
-              AND p.relevance_score>=?
-            ORDER BY p.relevance_score DESC,p.first_retrieved_at ASC,p.external_id
-            LIMIT ?
-            """,
-            (config.min_relevance, config.batch_size),
-        ).fetchall()
+        rows = self.eligible_backlog_slice(
+            min_relevance=config.min_relevance, limit=config.batch_size
+        )
         batch_id = f"social-batch-{uuid.uuid4().hex[:16]}"
         return {
             "schema": "agent_multi.social_enrichment_input.v1",
@@ -256,6 +276,66 @@ class EnrichmentStore:
             (utc_now(), error_kind[:120], run_id),
         )
         self.connection.commit()
+
+    def failed_runs(
+        self, run_ids: Sequence[str] | None = None
+    ) -> list[sqlite3.Row]:
+        query = "SELECT * FROM social_enrichment_runs WHERE status='failed'"
+        params: tuple[str, ...] = ()
+        if run_ids:
+            query += f" AND run_id IN ({','.join('?' for _ in run_ids)})"
+            params = tuple(run_ids)
+        return self.connection.execute(
+            query + " ORDER BY started_at,run_id", params
+        ).fetchall()
+
+    def record_original_attempt(self, run: Mapping[str, Any]) -> None:
+        """Backfill attempt #1 of a run into the append-only attempt journal."""
+        self.connection.execute(
+            """
+            INSERT OR IGNORE INTO social_enrichment_run_attempts(
+                run_id,attempt,mode,started_at,ended_at,status,error_kind,
+                error_detail,batch_id,packet_sha256,response_sha256,
+                model_call_id,reserved_total_tokens
+            ) VALUES (?,1,'original',?,?,?,?,NULL,?,?,?,?,NULL)
+            """,
+            (
+                run["run_id"],
+                run["started_at"],
+                run["ended_at"],
+                run["status"],
+                run["error_kind"],
+                run["batch_id"],
+                run["packet_sha256"],
+                run["response_sha256"],
+                run["model_call_id"],
+            ),
+        )
+
+    def run_attempts(self, run_id: str) -> list[sqlite3.Row]:
+        return self.connection.execute(
+            """
+            SELECT * FROM social_enrichment_run_attempts
+            WHERE run_id=? ORDER BY attempt
+            """,
+            (run_id,),
+        ).fetchall()
+
+    def eligible_backlog_slice(
+        self, *, min_relevance: float, limit: int, offset: int = 0
+    ) -> list[sqlite3.Row]:
+        return self.connection.execute(
+            """
+            SELECT p.external_id,p.submolt,p.title,p.content,p.url,
+                   p.content_sha256,p.relevance_score
+            FROM posts p LEFT JOIN post_enrichments e USING(external_id)
+            WHERE e.external_id IS NULL AND p.injection_flags_json='[]'
+              AND p.relevance_score>=?
+            ORDER BY p.relevance_score DESC,p.first_retrieved_at ASC,p.external_id
+            LIMIT ? OFFSET ?
+            """,
+            (min_relevance, limit, offset),
+        ).fetchall()
 
     def ingest(
         self,
@@ -639,6 +719,385 @@ def run_once(
         base.close()
 
 
+def plan_failed_run_retries(
+    *,
+    social_config: SocialConfig,
+    enrichment_config: EnrichmentConfig,
+    prompt_path: Path,
+    run_ids: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    """Dry-run: report exactly what a retry would do, with no model call and
+    no data mutation. Each failed run is assigned the next unenriched slice of
+    the current eligible backlog; budget effects are projected cumulatively."""
+    enrichment_config.validate()
+    prompt_text = prompt_path.read_text(encoding="utf-8")
+    tier = social_config.model_tiers.get(enrichment_config.tier) or {}
+    reserved_output = int(tier.get("reserved_output_tokens", 0))
+    max_input = int(tier.get("max_input_tokens", 0))
+    if reserved_output <= 0 or max_input <= 0:
+        raise SocialIntelligenceError(
+            f"Model tier {enrichment_config.tier} has an invalid token budget"
+        )
+    base = SocialOlap(social_config.database_path)
+    enrichment = EnrichmentStore(base)
+    try:
+        now = datetime.now(timezone.utc)
+        day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        month_start = day_start.replace(day=1)
+        daily_before, monthly_before = (
+            int(
+                base.connection.execute(
+                    """
+                    SELECT COALESCE(SUM(reserved_total_tokens),0)
+                    FROM model_call_reservations
+                    WHERE status='reserved' AND reserved_at>=?
+                    """,
+                    (start.isoformat(),),
+                ).fetchone()[0]
+            )
+            for start in (day_start, month_start)
+        )
+        backlog_total = int(
+            base.connection.execute(
+                """
+                SELECT COUNT(*) FROM posts p
+                LEFT JOIN post_enrichments e USING(external_id)
+                WHERE e.external_id IS NULL AND p.injection_flags_json='[]'
+                  AND p.relevance_score>=?
+                """,
+                (enrichment_config.min_relevance,),
+            ).fetchone()[0]
+        )
+        daily_after, monthly_after = daily_before, monthly_before
+        planned_runs: list[dict[str, Any]] = []
+        counts = {"retry_model_call": 0, "superseded": 0, "would_block": 0}
+        for offset_index, run in enumerate(enrichment.failed_runs(run_ids)):
+            rows = enrichment.eligible_backlog_slice(
+                min_relevance=enrichment_config.min_relevance,
+                limit=enrichment_config.batch_size,
+                offset=offset_index * enrichment_config.batch_size,
+            )
+            plan: dict[str, Any] = {
+                "run_id": run["run_id"],
+                "original_batch_id": run["batch_id"],
+                "original_started_at": run["started_at"],
+                "original_error_kind": run["error_kind"],
+                "original_selected_count": run["selected_count"],
+                "attempts_so_far": run["attempts"],
+                "planned_items": [
+                    {
+                        "external_id": row["external_id"],
+                        "url": row["url"],
+                        "title": row["title"][:120],
+                        "relevance_score": row["relevance_score"],
+                    }
+                    for row in rows
+                ],
+            }
+            if not rows:
+                plan["planned_outcome"] = "superseded"
+                counts["superseded"] += 1
+                planned_runs.append(plan)
+                continue
+            packet_probe = {
+                "schema": "agent_multi.social_enrichment_input.v1",
+                "batch_id": "social-batch-dryrun0000000000",
+                "items": [
+                    {
+                        "external_id": row["external_id"],
+                        "submolt": row["submolt"],
+                        "title": row["title"][:300],
+                        "content_excerpt": row["content"][
+                            : enrichment_config.excerpt_chars
+                        ],
+                        "source_url": row["url"],
+                        "content_sha256": row["content_sha256"],
+                        "deterministic_relevance": row["relevance_score"],
+                    }
+                    for row in rows
+                ],
+            }
+            input_chars = len(prompt_text) + len(canonical_json(packet_probe))
+            estimated_input = max(1, math.ceil(input_chars / 4))
+            reserved_total = estimated_input + reserved_output
+            daily_after += reserved_total
+            monthly_after += reserved_total
+            block_reason = None
+            if estimated_input > max_input:
+                block_reason = "tier_input_cap_exceeded"
+            elif daily_after > social_config.daily_reserved_token_cap:
+                block_reason = "daily_reserved_token_cap_exceeded"
+            elif monthly_after > social_config.monthly_reserved_token_cap:
+                block_reason = "monthly_reserved_token_cap_exceeded"
+            plan.update(
+                {
+                    "planned_outcome": (
+                        "would_block" if block_reason else "retry_model_call"
+                    ),
+                    "estimated_input_tokens": estimated_input,
+                    "reserved_total_tokens": reserved_total,
+                    "projected_daily_reserved_after": daily_after,
+                    "projected_monthly_reserved_after": monthly_after,
+                    "projected_block_reason": block_reason,
+                }
+            )
+            counts["would_block" if block_reason else "retry_model_call"] += 1
+            planned_runs.append(plan)
+        return {
+            "schema": "agent_multi.social_enrichment_retry_plan.v1",
+            "mode": "dry_run",
+            "generated_at": utc_now(),
+            "database_path": str(social_config.database_path),
+            "min_relevance": enrichment_config.min_relevance,
+            "batch_size": enrichment_config.batch_size,
+            "eligible_backlog_total": backlog_total,
+            "budget_before": {
+                "daily_reserved_tokens": daily_before,
+                "daily_reserved_token_cap": social_config.daily_reserved_token_cap,
+                "monthly_reserved_tokens": monthly_before,
+                "monthly_reserved_token_cap": social_config.monthly_reserved_token_cap,
+            },
+            "failed_runs_planned": len(planned_runs),
+            "planned_outcomes": counts,
+            "runs": planned_runs,
+            "policy": {
+                "model_calls_performed": 0,
+                "state_mutated": False,
+                "execution": "pending_owner_scheduler_window",
+            },
+        }
+    finally:
+        base.close()
+
+
+def retry_failed_runs(
+    *,
+    social_config: SocialConfig,
+    enrichment_config: EnrichmentConfig,
+    prompt_path: Path,
+    hermes_bin: Path,
+    run_ids: Sequence[str] | None = None,
+    runner: Any = None,
+) -> dict[str, Any]:
+    """Idempotently retry failed enrichment runs under their ORIGINAL run IDs.
+
+    Contract:
+    - the original run row (run_id, batch_id, started_at) is never rewritten;
+      each retry is one append-only row in social_enrichment_run_attempts and
+      one increment of social_enrichment_runs.attempts;
+    - the original error class stays journaled as attempt #1 (mode=original);
+    - a retry whose backlog slice is empty resolves the run as 'superseded'
+      (its work was absorbed by later complete runs) with no model call and
+      no token reservation;
+    - every model-calling retry reserves tokens through the existing
+      reserve_model_call contract before invoking Hermes; a blocked budget
+      stops the loop with a typed 'budget_blocked' attempt;
+    - post-level idempotency comes from the post_enrichments primary key,
+      so a duplicate retry can never double-ingest an enrichment.
+    """
+    enrichment_config.validate()
+    call_model = runner or invoke_hermes
+    prompt_text = prompt_path.read_text(encoding="utf-8")
+    prompt_sha = sha256_text(prompt_text)
+    base = SocialOlap(social_config.database_path)
+    enrichment = EnrichmentStore(base)
+    results: list[dict[str, Any]] = []
+    try:
+        for run in enrichment.failed_runs(run_ids):
+            run_id = run["run_id"]
+            attempt = int(run["attempts"]) + 1
+            enrichment.record_original_attempt(run)
+            packet = enrichment.prepare_batch(enrichment_config)
+            packet_json = canonical_json(packet)
+            packet_sha = sha256_text(packet_json)
+            started_at = utc_now()
+            if not packet["items"]:
+                ended = utc_now()
+                enrichment.connection.execute(
+                    """
+                    INSERT INTO social_enrichment_run_attempts(
+                        run_id,attempt,mode,started_at,ended_at,status,
+                        batch_id,packet_sha256
+                    ) VALUES (?,?,'retry',?,?,'superseded',?,?)
+                    """,
+                    (run_id, attempt, started_at, ended, packet["batch_id"], packet_sha),
+                )
+                enrichment.connection.execute(
+                    """
+                    UPDATE social_enrichment_runs
+                    SET status='superseded',ended_at=?,attempts=? WHERE run_id=?
+                    """,
+                    (ended, attempt, run_id),
+                )
+                enrichment.connection.commit()
+                results.append(
+                    {
+                        "run_id": run_id,
+                        "attempt": attempt,
+                        "outcome": "superseded",
+                        "original_error_kind": run["error_kind"],
+                    }
+                )
+                continue
+            budget = base.reserve_model_call(
+                social_config,
+                tier=enrichment_config.tier,
+                provider=enrichment_config.provider,
+                model=enrichment_config.model,
+                prompt_template_sha256=prompt_sha,
+                packet_sha256=packet_sha,
+                input_chars=len(prompt_text) + len(packet_json),
+            )
+            if budget["status"] != "reserved":
+                enrichment.connection.execute(
+                    """
+                    INSERT INTO social_enrichment_run_attempts(
+                        run_id,attempt,mode,started_at,ended_at,status,
+                        error_kind,batch_id,packet_sha256,model_call_id,
+                        reserved_total_tokens
+                    ) VALUES (?,?,'retry',?,?,'budget_blocked',?,?,?,?,?)
+                    """,
+                    (
+                        run_id,
+                        attempt,
+                        started_at,
+                        utc_now(),
+                        budget["block_reason"],
+                        packet["batch_id"],
+                        packet_sha,
+                        budget["call_id"],
+                        budget["reserved_total_tokens"],
+                    ),
+                )
+                enrichment.connection.execute(
+                    "UPDATE social_enrichment_runs SET attempts=? WHERE run_id=?",
+                    (attempt, run_id),
+                )
+                enrichment.connection.commit()
+                results.append(
+                    {
+                        "run_id": run_id,
+                        "attempt": attempt,
+                        "outcome": "budget_blocked",
+                        "block_reason": budget["block_reason"],
+                        "original_error_kind": run["error_kind"],
+                    }
+                )
+                break
+            enrichment.connection.execute(
+                """
+                INSERT INTO social_enrichment_run_attempts(
+                    run_id,attempt,mode,started_at,status,batch_id,
+                    packet_sha256,model_call_id,reserved_total_tokens
+                ) VALUES (?,?,'retry',?,'running',?,?,?,?)
+                """,
+                (
+                    run_id,
+                    attempt,
+                    started_at,
+                    packet["batch_id"],
+                    packet_sha,
+                    budget["call_id"],
+                    budget["reserved_total_tokens"],
+                ),
+            )
+            enrichment.connection.commit()
+            try:
+                raw_response = call_model(
+                    hermes_bin=hermes_bin,
+                    provider=enrichment_config.provider,
+                    model=enrichment_config.model,
+                    prompt=f"{prompt_text}\n\nINPUT PACKET JSON:\n{packet_json}",
+                    timeout_seconds=enrichment_config.timeout_seconds,
+                )
+                response_sha = sha256_text(raw_response)
+                response = parse_model_response(raw_response)
+                ingested = enrichment.ingest(
+                    run_id=run_id,
+                    packet=packet,
+                    response=response,
+                    response_sha256=response_sha,
+                    provider=enrichment_config.provider,
+                    model=enrichment_config.model,
+                    prompt_sha256=prompt_sha,
+                    packet_sha256=packet_sha,
+                )
+                enrichment.connection.execute(
+                    """
+                    UPDATE social_enrichment_run_attempts
+                    SET ended_at=?,status='complete',response_sha256=?
+                    WHERE run_id=? AND attempt=?
+                    """,
+                    (utc_now(), response_sha, run_id, attempt),
+                )
+                enrichment.connection.execute(
+                    "UPDATE social_enrichment_runs SET attempts=? WHERE run_id=?",
+                    (attempt, run_id),
+                )
+                enrichment.connection.commit()
+                results.append(
+                    {
+                        "run_id": run_id,
+                        "attempt": attempt,
+                        "outcome": "complete",
+                        "ingested": ingested,
+                        "original_error_kind": run["error_kind"],
+                    }
+                )
+            except (
+                OSError,
+                sqlite3.Error,
+                subprocess.SubprocessError,
+                SocialIntelligenceError,
+            ) as exc:
+                enrichment.connection.rollback()
+                enrichment.connection.execute(
+                    """
+                    UPDATE social_enrichment_run_attempts
+                    SET ended_at=?,status='failed',error_kind=?,error_detail=?
+                    WHERE run_id=? AND attempt=?
+                    """,
+                    (
+                        utc_now(),
+                        type(exc).__name__,
+                        str(exc)[:500],
+                        run_id,
+                        attempt,
+                    ),
+                )
+                enrichment.connection.execute(
+                    "UPDATE social_enrichment_runs SET attempts=? WHERE run_id=?",
+                    (attempt, run_id),
+                )
+                enrichment.connection.commit()
+                results.append(
+                    {
+                        "run_id": run_id,
+                        "attempt": attempt,
+                        "outcome": "failed",
+                        "error_kind": type(exc).__name__,
+                        "error": str(exc)[:500],
+                        "original_error_kind": run["error_kind"],
+                    }
+                )
+        outcomes: dict[str, int] = {}
+        for item in results:
+            outcomes[item["outcome"]] = outcomes.get(item["outcome"], 0) + 1
+        return {
+            "schema": "agent_multi.social_enrichment_retry_result.v1",
+            "mode": "execute",
+            "generated_at": utc_now(),
+            "status": "complete" if all(
+                item["outcome"] in {"complete", "superseded"} for item in results
+            ) else "partial",
+            "retried": len(results),
+            "outcomes": outcomes,
+            "runs": results,
+        }
+    finally:
+        base.close()
+
+
 def parser() -> argparse.ArgumentParser:
     value = argparse.ArgumentParser(description=__doc__)
     value.add_argument("--config", required=True, type=Path)
@@ -650,6 +1109,18 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument("--batch-size", type=int, default=8)
     run.add_argument("--excerpt-chars", type=int, default=900)
     run.add_argument("--timeout-seconds", type=float, default=240)
+    retry = sub.add_parser("retry-failed")
+    retry.add_argument("--prompt", required=True, type=Path)
+    retry.add_argument("--hermes-bin", type=Path, default=Path.home() / ".local/bin/hermes")
+    retry.add_argument("--batch-size", type=int, default=8)
+    retry.add_argument("--excerpt-chars", type=int, default=900)
+    retry.add_argument("--timeout-seconds", type=float, default=240)
+    retry.add_argument("--run-id", action="append", default=[])
+    retry.add_argument(
+        "--execute",
+        action="store_true",
+        help="Actually reserve budget and call Hermes; default is a dry-run plan",
+    )
     digest = sub.add_parser("digest")
     digest.add_argument("--limit", type=int, default=5)
     digest.add_argument("--min-worthiness", type=float, default=0.65)
@@ -672,6 +1143,28 @@ def main() -> int:
             prompt_path=args.prompt,
             hermes_bin=args.hermes_bin,
         )
+    elif args.command == "retry-failed":
+        retry_config = EnrichmentConfig(
+            min_relevance=args.min_relevance,
+            batch_size=args.batch_size,
+            excerpt_chars=args.excerpt_chars,
+            timeout_seconds=args.timeout_seconds,
+        )
+        if args.execute:
+            result = retry_failed_runs(
+                social_config=social,
+                enrichment_config=retry_config,
+                prompt_path=args.prompt,
+                hermes_bin=args.hermes_bin,
+                run_ids=args.run_id or None,
+            )
+        else:
+            result = plan_failed_run_retries(
+                social_config=social,
+                enrichment_config=retry_config,
+                prompt_path=args.prompt,
+                run_ids=args.run_id or None,
+            )
     else:
         base = SocialOlap(social.database_path)
         enrichment = EnrichmentStore(base)
@@ -687,7 +1180,7 @@ def main() -> int:
         finally:
             base.close()
     print(json.dumps(result, indent=2, sort_keys=True))
-    return 0 if result.get("status") != "failed" else 1
+    return 0 if result.get("status") not in {"failed", "partial"} else 1
 
 
 if __name__ == "__main__":
