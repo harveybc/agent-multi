@@ -17,7 +17,7 @@ from typing import Any, Iterable
 
 
 SCHEMA = "agent_multi.audit_snapshot.v1"
-COLLECTOR_VERSION = "1.0.0"
+COLLECTOR_VERSION = "1.1.0"
 DEFAULT_REPOSITORIES = (
     "agent-multi",
     "trading-contracts",
@@ -513,6 +513,69 @@ def latest_session_detail(path: Path) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
+def execution_heartbeat_facts(
+    state_root: Path,
+    heartbeat_name: str,
+    embedded: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Writable-authority facts, ONLY from execution-runner evidence.
+
+    Finding 205: observer adapters describe observation capability;
+    execution-runner heartbeats describe writable authority. The freshest
+    heartbeat file wins; the watchdog's embedded copy is the fallback.
+    An observer label can never substitute for either.
+    """
+    heartbeat = read_json(state_root / heartbeat_name)
+    source = f"heartbeat_file:{heartbeat_name}"
+    if not heartbeat and embedded:
+        heartbeat, source = embedded, "watchdog_embedded_execution_runtime"
+    read_only = heartbeat.get("read_only") if heartbeat else None
+    if not isinstance(read_only, bool):
+        return {
+            "execution_write_enabled": "unavailable",
+            "execution_source": None,
+            "execution_observed_at": None,
+            "execution_state": None,
+        }
+    return {
+        "execution_write_enabled": not read_only,
+        "execution_source": source,
+        "execution_observed_at": heartbeat.get("observed_at"),
+        "execution_state": heartbeat.get("state"),
+    }
+
+
+def authority_block(
+    *,
+    observer_read_only: Any,
+    observer_source: str | None,
+    observer_as_of: Any,
+    execution: dict[str, Any],
+) -> dict[str, Any]:
+    """Both authority views, side by side, each with its own freshness.
+
+    ``authoritative_source`` names which source answers 'can this venue
+    be written to right now'. Only execution-runner evidence may claim
+    it; when that evidence is absent the answer is 'unavailable' — the
+    observer label never fills the gap (finding 205).
+    """
+    return {
+        "observer_read_only": (
+            observer_read_only
+            if isinstance(observer_read_only, bool)
+            else "unavailable"
+        ),
+        "observer_source": observer_source,
+        "observer_as_of": observer_as_of,
+        **execution,
+        "authoritative_source": (
+            execution.get("execution_source")
+            if isinstance(execution.get("execution_write_enabled"), bool)
+            else "unavailable"
+        ),
+    }
+
+
 def compact_brokers(
     value: dict[str, Any],
     *,
@@ -526,6 +589,7 @@ def compact_brokers(
     )
     mt5 = value.get("mt5") or {}
     oanda = value.get("oanda") or {}
+    alpaca_adapter = alpaca_detail.get("adapter_version")
     return {
         "available": bool(value),
         "generated_at": value.get("generated_at"),
@@ -534,10 +598,27 @@ def compact_brokers(
             "available": bool(alpaca.get("available")),
             "complete_sessions": alpaca.get("complete_sessions"),
             "last_complete": alpaca.get("ended_at"),
-            "adapter_version": alpaca_detail.get("adapter_version"),
+            "adapter_version": alpaca_adapter,
             "environment": alpaca_detail.get("environment"),
             "account_fingerprint": alpaca_detail.get("account_fingerprint"),
-            "read_only": True,
+            "authority": authority_block(
+                observer_read_only=(
+                    True
+                    if "readonly" in str(alpaca_adapter or "")
+                    else "unavailable"
+                ),
+                observer_source=(
+                    f"observer_adapter:{alpaca_adapter}"
+                    if alpaca_adapter
+                    else None
+                ),
+                observer_as_of=alpaca.get("ended_at"),
+                execution=execution_heartbeat_facts(
+                    state_root,
+                    "alpaca-model-runner-heartbeat.json",
+                    alpaca.get("execution_runtime"),
+                ),
+            ),
             "protected_execution_eligible": bool(
                 alpaca_detail.get("protected_execution_eligible")
             ),
@@ -556,7 +637,18 @@ def compact_brokers(
             ),
             "adapter_version": ibkr_detail.get("adapter_version"),
             "account_fingerprint": ibkr_detail.get("account_fingerprint"),
-            "read_only": bool(ibkr_detail.get("read_only", True)),
+            "authority": authority_block(
+                observer_read_only=ibkr_detail.get("read_only"),
+                observer_source="observer_lab_session:ibkr-paper-lab.sqlite",
+                observer_as_of=(ibkr.get("latest_complete") or {}).get(
+                    "ended_at"
+                ),
+                execution=execution_heartbeat_facts(
+                    state_root,
+                    "ibkr-model-runner-heartbeat.json",
+                    ibkr.get("execution_runtime"),
+                ),
+            ),
             "protected_execution_eligible": bool(
                 ibkr_detail.get("protected_execution_eligible")
             ),
@@ -575,16 +667,46 @@ def compact_brokers(
             for key in ("available", "configured", "reason")
         },
         "mt5": {
-            key: mt5.get(key)
-            for key in (
-                "available",
-                "reason",
-                "last_heartbeat_at",
-                "broker_connected",
-                "open_positions",
-                "open_orders",
-            )
-            if key in mt5
+            **{
+                key: mt5.get(key)
+                for key in (
+                    "available",
+                    "reason",
+                    "last_heartbeat_at",
+                    "broker_connected",
+                    "open_positions",
+                    "open_orders",
+                )
+                if key in mt5
+            },
+            "authority": authority_block(
+                # No independent read-only MT5 observer adapter exists;
+                # the bridge status is execution-side evidence.
+                observer_read_only="unavailable",
+                observer_source=None,
+                observer_as_of=None,
+                execution=(
+                    {
+                        "execution_write_enabled": not mt5["read_only"],
+                        "execution_source": "watchdog_mt5_operational_status",
+                        "execution_observed_at": (
+                            (mt5.get("heartbeat") or {}).get("received_at")
+                        ),
+                        "execution_state": (
+                            "connected"
+                            if (mt5.get("heartbeat") or {}).get("connected")
+                            else "unknown"
+                        ),
+                    }
+                    if isinstance(mt5.get("read_only"), bool)
+                    else {
+                        "execution_write_enabled": "unavailable",
+                        "execution_source": None,
+                        "execution_observed_at": None,
+                        "execution_state": None,
+                    }
+                ),
+            ),
         },
     }
 
@@ -797,23 +919,31 @@ def markdown_summary(packet: dict[str, Any]) -> str:
         "",
         "## Brokers",
         "",
-        "| Venue | Available | Read only | Positions | Orders | Last complete |",
-        "| --- | --- | --- | ---: | ---: | --- |",
+        "| Venue | Available | Observer read-only | Execution write | Positions | Orders | Last complete |",
+        "| --- | --- | --- | --- | ---: | ---: | --- |",
     ])
     for venue in ("alpaca", "ibkr", "oanda", "mt5"):
         broker = (packet.get("brokers") or {}).get(venue) or {}
+        authority = broker.get("authority") or {}
         lines.append(
             "| "
             + " | ".join([
                 venue,
                 str(bool(broker.get("available"))),
-                str(broker.get("read_only", "N/A")),
+                str(authority.get("observer_read_only", "N/A")),
+                str(authority.get("execution_write_enabled", "N/A")),
                 str(broker.get("open_positions", "N/A")),
                 str(broker.get("open_orders", "N/A")),
                 str(broker.get("last_complete", "N/A")),
             ])
             + " |"
         )
+    lines.extend([
+        "",
+        "Observer read-only describes observation adapters; execution write "
+        "reflects the freshest execution-runner heartbeat. The two are "
+        "independent facts and neither overwrites the other (finding 205).",
+    ])
     lines.extend([
         "",
         "This packet is read-only audit input. It does not authorize campaign or "
