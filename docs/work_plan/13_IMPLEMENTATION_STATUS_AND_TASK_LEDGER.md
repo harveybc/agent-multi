@@ -1113,3 +1113,48 @@ duplicates to three final snapshots reduced that state directory from 32 GB to
 4 GB without deleting the source database, normalized OLAP facts, E4 artifacts
 or attempt history. Future evidence-service installations default to eight
 rolling snapshots.
+
+## 7. Four-Front Operating Baseline (2026-08-10 00:30 COT)
+
+This section supersedes status conclusions derived only from the historical
+campaign supervisor. Full evidence and correction order:
+
+- `../audits/AUDIT_SATOSHI_III_REPOSITORY_BLOCKCHAIN_AND_FOUR_FRONTS_2026_08_10.md`;
+- `../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_BLOCKCHAIN_AND_FOUR_FRONT_CORRECTION_ORDER_2026_08_10.md`.
+
+| Front | Observed current work | Health | Immediate program |
+| --- | --- | --- | --- |
+| F1 optimization/research | L1 decision factorial `2de49ea9225e2baf`, four active seeds/GPU bindings, first N/M10 cell | compute healthy; 0 trades at epochs 17-33, before activity-patience start; consolidated status wrong | preserve run; integrate factorial status; implement blockchain content/history verification off-runtime |
+| F2 business reality | Alpaca Paper one position/order; IBKR Paper flat on hold; MT5 Demo one authorized position | heartbeats fresh, no active watchdog event; controllers remain linear controls | reconcile owner-held IBKR; prove direct protection; finish champion artifact succession and live/sim evidence |
+| F3 social intelligence | 8,234 posts, 436 enriched, 432 backlog, 55 complete/8 failed runs | collector/enricher progressing; publishing human-gated | idempotent failed-run retry; bounded owner review and provenance-bound experiment/draft queue |
+| F4 audit/continuity | snapshots/test packets/watchdogs active | no current fleet alert; audit source and register contradictions open | repair read/write source precedence; restore findings 178-200; expose finding/closure counts |
+
+### 7.1 Blockchain Integrity Priority
+
+DOIN's block-header chaining is valid: block hashes commit to headers that
+include the preceding hash and Merkle root. It is not sufficient yet for the
+stronger historical-content claim because supplied transaction IDs are not
+recomputed and startup does not verify the complete persisted chain. Findings
+201-203 are therefore the next protocol-integrity package. No existing chain
+is rewritten; all fleet scans operate first on verified SQLite backups, and
+deployment occurs only as one exact fleet revision at a job boundary.
+
+### 7.2 Repository Presentation Status
+
+Satoshi's multi-repository presentation refresh is accepted subject to two
+residual items. GitHub exposes a non-empty description and exactly 20 topics
+for all 21 owned repositories; 19 of 20 rewritten READMEs are on default
+branches. Transfer `agent-multi@0d7c937b` as a documentation-only default-
+branch change without moving the running fleet. `predictor` remains honest but
+has eight test-collection import failures requiring a bounded maintenance
+repair. The dirty `causal-inference` tree remains untouched pending owner
+attribution.
+
+### 7.3 Standing Execution Rule
+
+Approved implementation, documentation, testing, monitoring, Paper/Demo and
+research-queue work does not acquire new ceremonial approval gates. Review
+waiting never justifies idling otherwise valid compute. Safety-critical
+deployment boundaries still hold: no Live capital, no unverified chain rollout,
+no mid-run experiment mutation, and no automatic clearing of an authenticated
+broker hold.
