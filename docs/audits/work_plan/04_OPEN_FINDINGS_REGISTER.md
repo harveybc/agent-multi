@@ -977,6 +977,51 @@ owner-authorized; review waiting does not authorize idle compute.
 | AUD-F1-20260808-176 | S2 | open, blocks curriculum attribution | Current matrix cannot separate L1 curriculum, L2 curriculum and their interaction | General Satoshi III implements; General Musashi verifies |
 | AUD-GEN-20260808-177 | S3 | open, operational governance | Repeated owner-phrase gates remain in already-approved research flow and can idle the fleet | General Satoshi III removes redundant gates; General Musashi verifies runtime queue behavior |
 
+### 1af. L1 matched-factorial delivery audit, 2026-08-09
+
+Canonical evidence lives at audit revision
+`agent-multi@cc3f02eee6320ab06e4cdfd8cd4680cdc1fbf928`:
+
+- `../AUDIT_SATOSHI_III_L1_FACTORIAL_DELIVERY_2026_08_09.md`
+- `../evidence/repro_runs/MUSASHI_L1_FACTORIAL_DELIVERY_REPRO_2026_08_09.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_FACTORIAL_CORRECTION_ORDER_2026_08_09.md`
+
+| ID | Sev | State at opening | Title |
+| --- | --- | --- | --- |
+| AUD-F1-20260809-178 | S2 | open | Corrected identity had 0/16 records and only two valid workers |
+| AUD-F1-20260809-179 | S2 | open | Dispatch lacked exclusive claims, idempotency and atomic records |
+| AUD-F1-20260809-180 | S2 | open | Missing raw metrics could still promote |
+| AUD-F1-20260809-181 | S2 | open | Decision-bearing system/config/artifact identity was absent |
+| AUD-F1-20260809-182 | S2 | open | Terminal continuity was not bound to producing records |
+| AUD-F1-20260809-183 | S2 | open | No distributed collector, sealed root or independent replica existed |
+| AUD-F1-20260809-184 | S3 | open | Code-motion guard inspected a different checkout |
+| AUD-F1-20260809-185 | S3 | open | Test bootstrap did not pin `doin-node` |
+| AUD-F1-20260809-186 | S3 | open | `INCONCLUSIVE` exited zero and return used literal initial cash |
+| AUD-GEN-20260809-187 | S3 | open | Full suite mutated tracked production fixtures |
+
+### 1ag. L1 correction-return audit, 2026-08-09
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_L1_CORRECTION_RETURN_2026_08_09.md`
+- `../evidence/repro_runs/MUSASHI_L1_CORRECTION_RETURN_REPRO_2026_08_09.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_CORRECTION_RETURN_ORDER_2026_08_09.md`
+
+Prior dispositions are append-only: 180, 182 and 184-187 are independently
+verified pending closure. Findings 178, 179, 181 and 183 remain open. No
+corrected smoke or L1 outcome exists.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260809-188 | S2 | open, blocks corrected smoke | `SEED_FAILED` exits with a code systemd treats as successful, preventing restart | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-189 | S2 | open, blocks sealed aggregation | Copied records retain remote absolute paths unusable from the sealed root | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-190 | S2 | open, blocks final packet | Replica is optional and its declared whole-tree digest is never computed or compared | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-191 | S2 | open, blocks exact experiment | Manifest plugin declarations differ from and do not govern runner execution | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-192 | S2 | open, blocks valid simulation | Normal config permits fallback to unprotected buy/sell after strategy-plugin failure | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-193 | S2 | open, blocks difficulty inference | `normal_realistic` is commission-only with zero spread/slippage and implicit solvency defaults | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-194 | S3 | open, blocks clean system provenance | Frozen exact-system manifest was generated from a dirty obsolete temporary worktree | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-195 | S3 | open, blocks trustworthy N/E evidence | Phase-1 metadata labels normal arms as easy and misstates the handoff activity contract | General Satoshi III implements; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

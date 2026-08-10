@@ -384,3 +384,20 @@ resolved hyperparameters, feature/gate artifacts, raw metrics, chronological
 weekly vectors, code/data/config hashes, resource facts and DOIN lineage; the
 scheduled comparisons have an unambiguous typed outcome; and the winning ETH
 contract can be reproduced by inference and Paper/Demo shadow parity.
+
+## 12. L1 Runtime Audit State (2026-08-09)
+
+The first L1 correction return is partially accepted: raw-metric refusal,
+terminal hashes, actual-checkout identity, pinned fixtures, nonzero
+`INCONCLUSIVE` exit and hermetic tests reproduce independently. The corrected
+smoke remains blocked by findings 188-195: failed-seed restart semantics,
+sealed-root path authority, mandatory whole-tree replica, exact executable
+plugin identity, mandatory protected entries, explicit normal costs/solvency,
+clean manifest provenance and truthful N/E metadata.
+
+The four current direct-run processes are diagnostic evidence only. They keep
+the GPUs occupied while the CPU-side correction is implemented, then are
+archived and stopped for a synchronized four-worker smoke. Their natural
+completion is not a gate because each process loops across four cells and has
+no bounded finish time. The 16-cell decision remains standing-authorized only
+after independent acceptance of the corrected smoke and evidence envelope.

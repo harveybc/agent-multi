@@ -1066,6 +1066,11 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     gate without changing an active seat or DOIN chain; independently verify
     its statistical family, flat-boundary drain/reseed and no-idle failure
     behavior before the first automated same-seat Paper/Demo succession.
+34. Correct L1 findings 188-195, archive and stop the obsolete direct runners,
+    then execute one synchronized durable-launcher smoke on all four GPUs.
+    Require source-isolated sealed aggregation plus a matching whole-tree
+    independent replica before automatically starting the authorized 16-cell
+    decision run.
 
 ## 5. Current Risks
 
