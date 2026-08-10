@@ -977,6 +977,32 @@ owner-authorized; review waiting does not authorize idle compute.
 | AUD-F1-20260808-176 | S2 | open, blocks curriculum attribution | Current matrix cannot separate L1 curriculum, L2 curriculum and their interaction | General Satoshi III implements; General Musashi verifies |
 | AUD-GEN-20260808-177 | S3 | open, operational governance | Repeated owner-phrase gates remain in already-approved research flow and can idle the fleet | General Satoshi III removes redundant gates; General Musashi verifies runtime queue behavior |
 
+### 1af. L1 matched-factorial delivery audit, 2026-08-09
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_L1_FACTORIAL_DELIVERY_2026_08_09.md`
+- `../evidence/repro_runs/MUSASHI_L1_FACTORIAL_DELIVERY_REPRO_2026_08_09.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_FACTORIAL_CORRECTION_ORDER_2026_08_09.md`
+
+The committed subject is a draft, not a final request. At the independent
+sample the corrected identity had 0/16 records and only two valid workers;
+there is no typed L1 outcome. Current Omega/Dragon work is preserved as
+diagnostic evidence, but promotion and downstream launches remain blocked.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260809-178 | S2 | open, blocks L1 outcome | Final/four-worker claim contradicts draft and runtime: corrected identity has 0/16 records and only two valid workers | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-179 | S2 | open, blocks decision dispatch | Fixed paths, no exclusive claims/idempotency and non-atomic records permit duplicate writers and overwrite incident evidence | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-180 | S2 | open, blocks promotion | Missing mandatory raw metrics are labeled absent but still permit `EASY_CONTRIBUTES` | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-181 | S2 | open, blocks exact identity | System/config/observation/budget/terminal facts are absent or unvalidated and the runner bypasses the typed system materializer | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-182 | S2 | open, blocks terminal evidence | Mutable terminal path is probed without a producing-record artifact/tensor digest | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-183 | S2 | open, blocks final packet | Per-host outputs have no collision-safe collector, sealed root or independent artifact replica | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-184 | S3 | open, blocks code-motion proof | Identity/guard inspect hard-coded canonical checkouts rather than Omega's actual executing worktree | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-185 | S3 | open, blocks reproducible suite claim | Test bootstrap clones an unpinned `doin-node` default branch | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260809-186 | S3 | open, blocks unattended advancement | `INCONCLUSIVE` exits zero and total return assumes literal initial cash 10,000 | General Satoshi III implements; General Musashi verifies |
+| AUD-GEN-20260809-187 | S3 | open, blocks hermetic suite claim | Full suite calls a production materializer and modifies five tracked campaign/config files | General Satoshi III implements; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

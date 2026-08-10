@@ -1,0 +1,48 @@
+{
+  "counterexamples": {
+    "duplicate_dispatch_guards_absent": {
+      "atomic_record_replace_present": false,
+      "completed_record_reuse_present": false,
+      "exclusive_claim_present": false,
+      "flock_present": false,
+      "reproduced": true
+    },
+    "mandatory_identity_fields_absent": {
+      "binding_refusals": [],
+      "missing_fields": [
+        "system_manifest_sha256",
+        "resolved_config_sha256",
+        "observation_manifest_sha256",
+        "terminal_model_sha256",
+        "terminal_policy_tensor_sha256",
+        "phase1_requested_epochs",
+        "phase2_requested_epochs"
+      ],
+      "reproduced": true
+    },
+    "missing_results_metrics": {
+      "actual": "EASY_CONTRIBUTES",
+      "expected": "INCONCLUSIVE",
+      "raw_metric_fact": {
+        "absent": "results.json missing or unreadable",
+        "units": {
+          "max_drawdown_pct": "percent of peak equity (results.json)",
+          "mean_weekly_return": "fraction per week (results.json)",
+          "sharpe_ratio": "dimensionless (results.json)",
+          "total_return": "fraction of initial cash (final_equity/initial-1)",
+          "trades_total": "count (closed trades, verification rollout)"
+        }
+      },
+      "refusals": [],
+      "reproduced": true
+    },
+    "tampered_subject_code_revision": {
+      "actual": "EASY_CONTRIBUTES",
+      "expected": "INCONCLUSIVE",
+      "refusals": [],
+      "reproduced": true
+    }
+  },
+  "network_used": false,
+  "schema": "agent_multi.audit.l1_factorial_delivery_repro.v1"
+}
