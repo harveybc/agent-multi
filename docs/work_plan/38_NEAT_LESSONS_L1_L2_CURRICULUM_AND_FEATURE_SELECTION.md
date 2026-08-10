@@ -384,3 +384,17 @@ resolved hyperparameters, feature/gate artifacts, raw metrics, chronological
 weekly vectors, code/data/config hashes, resource facts and DOIN lineage; the
 scheduled comparisons have an unambiguous typed outcome; and the winning ETH
 contract can be reproduced by inference and Paper/Demo shadow parity.
+
+## 12. Execution Status, 2026-08-09 Round 2
+
+The corrected L1 mechanics smoke completed 16/16 records and proved typed
+restart behavior, source-isolated path resolution, protected execution and
+loadable replica artifacts. Independent acceptance is still pending findings
+196-200: aggregation mutated the sealed input, a direct CLI bypassed replica
+authority, Gamma GPU UUIDs were not bound to the two processes, financing was
+implicit and phase-1 epoch accounting included baseline telemetry.
+
+Decision identity `dce2903ce0d25ca5` is retired before launch. The bounded
+round-2 finalization order is standing-authorized; its corrected smoke and
+then the full decision run require no new owner phrase after independent
+verification.
