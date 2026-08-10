@@ -1,0 +1,60 @@
+{
+  "counterexamples": {
+    "duplicate_dispatch_guards_absent": {
+      "atomic_record_replace_present": true,
+      "completed_record_reuse_present": true,
+      "exclusive_claim_present": true,
+      "flock_present": true,
+      "reproduced": false
+    },
+    "mandatory_identity_fields_absent": {
+      "binding_refusals": [
+        "terminal disk facts absent: artifact and tensor were not rehashed to the record"
+      ],
+      "missing_fields": [],
+      "reproduced": false
+    },
+    "missing_results_metrics": {
+      "actual": "INCONCLUSIVE",
+      "expected": "INCONCLUSIVE",
+      "raw_metric_fact": {
+        "units": {
+          "max_drawdown_pct": "percent of peak equity (results.json)",
+          "mean_weekly_return": "fraction per week (results.json)",
+          "sharpe_ratio": "dimensionless (results.json)",
+          "total_return": "fraction of bound initial cash",
+          "trades_total": "count (closed trades, verification rollout)"
+        }
+      },
+      "refusals": [
+        "seed101/L1_E_M03: raw metric trades_total absent",
+        "seed101/L1_E_M10: raw metric trades_total absent",
+        "seed101/L1_N_M03: raw metric trades_total absent",
+        "seed101/L1_N_M10: results.json missing \u2014 raw metrics unavailable",
+        "seed202/L1_E_M03: raw metric trades_total absent",
+        "seed202/L1_E_M10: raw metric trades_total absent",
+        "seed202/L1_N_M03: raw metric trades_total absent",
+        "seed202/L1_N_M10: raw metric trades_total absent"
+      ],
+      "reproduced": false
+    },
+    "tampered_subject_code_revision": {
+      "actual": "INCONCLUSIVE",
+      "expected": "INCONCLUSIVE",
+      "refusals": [
+        "identity field 'code_revisions' is not uniform across records: \"<ABSENT>\"\u00d77; {\"agent-multi\": \"adversarial-revision\", \"gym-fx\": \"adversari\u2026\u00d71",
+        "seed101/L1_E_M03: raw metric trades_total absent",
+        "seed101/L1_E_M10: raw metric trades_total absent",
+        "seed101/L1_N_M03: raw metric trades_total absent",
+        "seed101/L1_N_M10: raw metric trades_total absent",
+        "seed202/L1_E_M03: raw metric trades_total absent",
+        "seed202/L1_E_M10: raw metric trades_total absent",
+        "seed202/L1_N_M03: raw metric trades_total absent",
+        "seed202/L1_N_M10: raw metric trades_total absent"
+      ],
+      "reproduced": false
+    }
+  },
+  "network_used": false,
+  "schema": "agent_multi.audit.l1_factorial_delivery_repro.v1"
+}

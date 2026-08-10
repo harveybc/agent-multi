@@ -1,0 +1,34 @@
+# Durable L1 factorial worker (order §2/WP1). Instance = seed:
+#   systemctl --user enable --now l1-factorial@101.service
+#
+# Restart-on-failure cannot double-write: the launcher's exclusive
+# flock makes any instance racing a live holder exit ALREADY_RUNNING
+# (exit 2, treated here as a clean stop via SuccessExitStatus so a
+# racing restart does not loop).
+#
+# Install (per worker host):
+#   mkdir -p ~/.config/systemd/user
+#   cp examples/systemd/l1-factorial@.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   L1_SMOKE=--smoke systemctl --user start l1-factorial@101   # smoke
+#   systemctl --user start l1-factorial@101                    # decision
+
+[Unit]
+Description=L1 matched factorial seed %i (durable launcher)
+
+[Service]
+Type=exec
+# The launcher enforces the contract hostname + GPU-UUID assignment
+# itself; CUDA visibility is additionally pinned via the environment
+# file the operator materializes per host (see EnvironmentFile).
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+EnvironmentFile=-%h/.config/agent-multi/l1-factorial@%i.env
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
+    tools/l1_fleet_launcher.py --seed %i $L1_EXTRA_ARGS
+Restart=on-failure
+RestartSec=60
+SuccessExitStatus=0 2
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=default.target

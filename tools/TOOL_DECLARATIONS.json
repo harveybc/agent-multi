@@ -191,6 +191,20 @@
       "authority_class": "evidence_producer",
       "owner": "General Satoshi III"
     },
+    "l1_fleet_launcher.py": {
+      "purpose": "Durable idempotent L1 seed launcher (order §2/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "campaign_operation",
+      "owner": "General Satoshi III"
+    },
+    "materialize_l1_system_manifest.py": {
+      "purpose": "Generate+freeze the exact ETH L1 system manifest from real artifacts (data rows/time bounds, anchors with tensor shas, observation and cost contracts); changed bindings are a new version, never an overwrite",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "campaign_operation",
+      "owner": "General Satoshi III"
+    },
     "bootstrap_test_fixtures.py": {
       "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
       "lifecycle": "supported",

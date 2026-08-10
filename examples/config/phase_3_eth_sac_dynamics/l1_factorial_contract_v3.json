@@ -58,6 +58,16 @@
   "303": "gamma-5070ti",
   "404": "gamma-5090"
  },
+ "assignments": {
+  "101": {"hostname": "omega",
+          "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"},
+  "202": {"hostname": "dragon",
+          "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"},
+  "303": {"hostname": "gamma",
+          "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"},
+  "404": {"hostname": "gamma",
+          "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"}
+ },
  "gpu_uuids": {
   "101": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326",
   "303": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519",
