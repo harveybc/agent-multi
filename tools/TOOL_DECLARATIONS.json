@@ -17,9 +17,10 @@
       "owner": "General Satoshi III"
     },
     "multifront_status.py": {
-      "purpose": "Consolidated machine-readable multi-front status contract (owner-approved improvements 1 and 4, 2026-08-01)",
+      "purpose": "Consolidated machine-readable multi-front status contract; first-class L1 factorial Front-1 source with paused-campaign history separation (finding 204, order 2026-08-10 WP3)",
       "lifecycle": "supported",
-      "mutability": "read_only",
+      "mutability": "mixed",
+      "mutability_note": "reads run artifacts strictly read-only; writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
       "authority_class": "discovery",
       "owner": "General Satoshi III"
     },

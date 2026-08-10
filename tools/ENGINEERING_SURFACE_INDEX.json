@@ -1,6 +1,6 @@
 {
  "facts": {
-  "declarations_sha256": "b72387016242d120d658f754c9d32fba5d0d68409a90b1ddf5a54bb45575e630",
+  "declarations_sha256": "2f58c1443a0799d22d9ac6fc5736caaacac56b2fa0dad90c2d2add6b449c5c7a",
   "entry_point_comparison": {
    "drift": [],
    "installed_only": []
@@ -241,6 +241,74 @@
      "sha256": "a2fff391a5eaecffd41a85a728c3df379d5f575ba28878ef568c1b8807a3e67a"
     }
    },
+   "aggregate_eth_sac_inner_curriculum.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "M0 survival aggregation (3/4 rule) + frozen interpretation table selecting exactly one successor branch"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--load-proof",
+      "--queue-dir",
+      "--replicate",
+      "--root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "stable_baselines3",
+      "sys",
+      "tools",
+      "zipfile"
+     ],
+     "parse_error": null,
+     "path": "tools/aggregate_eth_sac_inner_curriculum.py",
+     "sha256": "41fabb91039b8cd12164038a0ca2d8bfcc69a16bab242210f727d82966073945"
+    }
+   },
+   "aggregate_l1_factorial.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--collection-root",
+      "--experiment-id"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "argparse",
+      "hashlib",
+      "json",
+      "math",
+      "pathlib",
+      "pipeline_plugins",
+      "sys",
+      "tools",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/aggregate_l1_factorial.py",
+     "sha256": "a2b075ead53742f14eedcd0caa4a6ac8c489e2feb7bb9722b0e32cb43fedf014"
+    }
+   },
    "aggregate_p4_runs.py": {
     "declared": "UNCLASSIFIED",
     "discovered": {
@@ -420,6 +488,35 @@
      "sha256": "3390f94b6c25251c4008688dd2303def0cbdeeb63cc7c18d04e905e5d5131acc"
     }
    },
+   "bootstrap_test_fixtures.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--check-only"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "hashlib",
+      "json",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/bootstrap_test_fixtures.py",
+     "sha256": "b27ece4acddf3e26f9048b60511acff28006a28cdcc159e1adea244a66c792cb"
+    }
+   },
    "check_sizing.py": {
     "declared": "UNCLASSIFIED",
     "discovered": {
@@ -436,6 +533,43 @@
      "parse_error": null,
      "path": "tools/check_sizing.py",
      "sha256": "c01fe7fa6b17a49a6ef164b921f62a44b3959278cdd500451a2d397c4995788f"
+    }
+   },
+   "collect_l1_factorial.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--aggregate",
+      "--collection-root",
+      "--experiment-id",
+      "--replica-host"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "shlex",
+      "subprocess",
+      "sys",
+      "tools",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/collect_l1_factorial.py",
+     "sha256": "d0e410fd8ac78e17ca6afaf396a0c5dc53deb940c593b0ccb66755a02c92d276"
     }
    },
    "compute_baselines.py": {
@@ -627,6 +761,72 @@
      "parse_error": null,
      "path": "tools/eth_curriculum_fleet.py",
      "sha256": "a8ac722274fa9111fa403caa4736906b647aeacef72dbe8ee8a5d24ad89c4090"
+    }
+   },
+   "eth_sac_inner_curriculum_screen.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "M0 mechanism screen runner: one seed, four frozen arms, reuses validated D1 helpers"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--agent",
+      "--arms",
+      "--contract",
+      "--output-root",
+      "--seed"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "math",
+      "pathlib",
+      "pipeline_plugins",
+      "sys",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/eth_sac_inner_curriculum_screen.py",
+     "sha256": "ef1b7ebb096af3c10f2c747d9d96295e91beeb4c72ff92809dd3262d1040b2cb"
+    }
+   },
+   "eth_sac_training_diagnostics.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "WP0 read-only D1 training-collapse diagnostics collector; typed absences, never zero"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--out-dir",
+      "--root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "datetime",
+      "hashlib",
+      "json",
+      "math",
+      "pathlib",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/eth_sac_training_diagnostics.py",
+     "sha256": "766738722a54be4c4199cd0d27463fbe1f210c3cf37358186bb68b505b3ac6f4"
     }
    },
    "fleet_status_context.py": {
@@ -968,6 +1168,79 @@
      "sha256": "6d41bb7a061d5e1d3f336d5151878e04c612f54e9eb23ed4c9641532b96199a8"
     }
    },
+   "l1_factorial_screen.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "L1 matched factorial runner: four v3 cells per seed, mode-aware phase 1, paired stopping, nested chronology; smoke profile is mechanics-only"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--cells",
+      "--seed",
+      "--smoke"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib",
+      "json",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "stable_baselines3",
+      "sys",
+      "torch"
+     ],
+     "parse_error": null,
+     "path": "tools/l1_factorial_screen.py",
+     "sha256": "2d6c3167264e71eea62ab1016207818157a00abb3fe34057d1bda21d346602df"
+    }
+   },
+   "l1_fleet_launcher.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Durable idempotent L1 seed launcher (order \u00a72/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--contract",
+      "--manifest",
+      "--no-gpu-check",
+      "--seed",
+      "--smoke"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "subprocess",
+      "sys",
+      "threading",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/l1_fleet_launcher.py",
+     "sha256": "e82e5bab29628ddefc8b1cc8124182dd3c529626631928f87a66fe93728c5905"
+    }
+   },
    "materialize_eth_anchored_campaign.py": {
     "declared": "UNCLASSIFIED",
     "discovered": {
@@ -990,7 +1263,7 @@
      ],
      "parse_error": null,
      "path": "tools/materialize_eth_anchored_campaign.py",
-     "sha256": "e56b21b8e5eaed8d31c45b15c300e55a6749c93640780efbfc2344c534470f13"
+     "sha256": "efb8fa959f9d1f694b0a4baa6dba07c698862b75693b6541d56d76601b18119a"
     }
    },
    "materialize_eth_campaign_plan.py": {
@@ -1056,6 +1329,34 @@
      "parse_error": null,
      "path": "tools/materialize_eth_smoke_campaign.py",
      "sha256": "e7e78cab241cc865246e4bffcaeebe0777b17f8a672031fc2448d8a2b16eb7ed"
+    }
+   },
+   "materialize_l1_system_manifest.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Generate+freeze the exact ETH L1 system manifest from real artifacts (data rows/time bounds, anchors with tensor shas, observation and cost contracts); changed bindings are a new version, never an overwrite"
+    },
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "csv",
+      "json",
+      "pathlib",
+      "pipeline_plugins",
+      "stable_baselines3",
+      "sys",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/materialize_l1_system_manifest.py",
+     "sha256": "3377319eac90e7baeeff4f0c8ad70c47397051f600a6a1d88ae3db2d2d80ea7f"
     }
    },
    "materialize_rt1a_grid.py": {
@@ -1135,12 +1436,18 @@
     "declared": {
      "authority_class": "discovery",
      "lifecycle": "supported",
-     "mutability": "read_only",
+     "mutability": "mixed",
+     "mutability_note": "reads run artifacts strictly read-only; writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
      "owner": "General Satoshi III",
-     "purpose": "Consolidated machine-readable multi-front status contract (owner-approved improvements 1 and 4, 2026-08-01)"
+     "purpose": "Consolidated machine-readable multi-front status contract; first-class L1 factorial Front-1 source with paused-campaign history separation (finding 204, order 2026-08-10 WP3)"
     },
     "discovered": {
      "argparse_arguments": [
+      "--l1-contract",
+      "--l1-identity",
+      "--l1-state-dir",
+      "--no-emit-alerts",
+      "--no-l1",
       "--output",
       "--snapshot",
       "--social-db",
@@ -1154,16 +1461,21 @@
       "argparse",
       "datetime",
       "hashlib",
+      "incident_emit",
       "json",
       "pathlib",
+      "re",
+      "socket",
       "sqlite3",
+      "subprocess",
+      "sys",
       "time",
       "typing",
       "urllib"
      ],
      "parse_error": null,
      "path": "tools/multifront_status.py",
-     "sha256": "2e0ef907c3c910ec47c02385508d92c30b774a835ad94d667a58399ac22efec2"
+     "sha256": "cea4a81a564c916fcbfdc8f243adc194dce5cb9a28e83d48c5cc657333934c5d"
     }
    },
    "okf_validate.py": {
@@ -2392,6 +2704,39 @@
      "sha256": "e453aa0fbf8cb613332ebaf855b09ab8e1858efa16207ab2e1fc057b31a9ffb4"
     }
    },
+   "quarantine_inner_curriculum_successor.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--root"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "fcntl",
+      "hashlib",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "sqlite3",
+      "subprocess",
+      "sys"
+     ],
+     "parse_error": null,
+     "path": "tools/quarantine_inner_curriculum_successor.py",
+     "sha256": "a212ba0109750ede8248d7a1faab92c36e212fffe6b6894281bfa07d24b2cd88"
+    }
+   },
    "replicate_decision_evidence.py": {
     "declared": {
      "authority_class": "evidence_producer",
@@ -2665,7 +3010,7 @@
      ],
      "parse_error": null,
      "path": "tools/social_intelligence_enrichment.py",
-     "sha256": "c5620890caf094e9e2ad6b88203b13dbc66674a9b51ef4d880de6c78626e5cde"
+     "sha256": "3295ff31731887bf9deb3501f2294221f25e00681c375244d947a639f92a8a49"
     }
    },
    "social_intelligence_hermes_context.py": {
@@ -2800,22 +3145,22 @@
   },
   "unclassified_new_executables": []
  },
- "facts_hash": "sha256:e03bee194b5f87e25d3455989293b6f224007ac8349233e095cf3819e2ced910",
+ "facts_hash": "sha256:5358c5c3796333337a1a10160b3243d5b028fe7f028fcb396299b9417f9f828a",
  "provenance": {
   "arguments": {
-   "declarations": "tools/TOOL_DECLARATIONS.json",
-   "output": "tools/ENGINEERING_SURFACE_INDEX.json",
+   "declarations": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/tools/TOOL_DECLARATIONS.json",
+   "output": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/tools/ENGINEERING_SURFACE_INDEX.json",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
   "environment_identity": {
    "generator_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
-  "finished_utc": "2026-08-07T15:52:54.877156+00:00",
+  "finished_utc": "2026-08-10T07:07:12.748930+00:00",
   "generator": "engineering_surface_index.v1",
   "generator_sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963",
-  "repo_head": "4856c2d2b1ef25be46fb3288268901a132960a34",
-  "started_utc": "2026-08-07T15:52:54.443134+00:00",
+  "repo_head": "6c13dc79bc5e89fc199b09a6b71906e021d0872d",
+  "started_utc": "2026-08-10T07:07:12.248219+00:00",
   "worktree_dirty": true
  },
  "schema": "engineering_surface_index.v1",
