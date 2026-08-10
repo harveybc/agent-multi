@@ -22,6 +22,7 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -94,10 +95,14 @@ def default_replica_verify(replica_host: str, replica_root: Path,
         "        r['loads']=False; r['error']=f'{type(ex).__name__}:{ex}'\n"
         "    out['terminals'].append(r)\n"
         "print(json.dumps(out))\n")
+    # ssh re-parses the joined argument string on the remote shell, so
+    # the multi-line script MUST be shell-quoted as one argument
+    # (observed 2026-08-09: unquoted newlines executed line-by-line).
+    remote_command = (
+        "/home/harveybc/anaconda3/envs/trading-stack/bin/python -c "
+        + shlex.quote(script))
     proc = subprocess.run(
-        ["ssh", "-o", "BatchMode=yes", replica_host,
-         "/home/harveybc/anaconda3/envs/trading-stack/bin/python", "-c",
-         script],
+        ["ssh", "-o", "BatchMode=yes", replica_host, remote_command],
         input=json.dumps({"replica_root": str(replica_root),
                           "expectations": expectations}),
         capture_output=True, text=True, timeout=3600)
