@@ -120,6 +120,165 @@ def test_compact_brokers_excludes_raw_detail(tmp_path: Path) -> None:
     assert "MUST_NOT_LEAK" not in json.dumps(result)
 
 
+def _ibkr_lab_with_observer_detail(tmp_path: Path, detail: dict) -> None:
+    connection = collector.sqlite3.connect(tmp_path / "ibkr-paper-lab.sqlite")
+    try:
+        connection.execute(
+            "CREATE TABLE lab_sessions (status TEXT, ended_at TEXT, detail_json TEXT)"
+        )
+        connection.execute(
+            "INSERT INTO lab_sessions VALUES (?,?,?)",
+            ("complete", "2026-08-10T07:00:00Z", json.dumps(detail)),
+        )
+        connection.commit()
+    finally:
+        connection.close()
+
+
+def test_observer_label_never_overwrites_execution_authority(
+    tmp_path: Path,
+) -> None:
+    """Finding 205 regression: the exact live contradiction.
+
+    The observer adapter/lab session says read_only=true while the
+    execution-runner heartbeat says read_only=false (write enabled).
+    The snapshot must render BOTH facts truthfully, each with its own
+    source and freshness, and write authority must come only from the
+    execution heartbeat.
+    """
+    _ibkr_lab_with_observer_detail(tmp_path, {
+        "adapter_version": "ibkr.paper.readonly.v1",
+        "account_fingerprint": "fp",
+        "read_only": True,
+    })
+    (tmp_path / "ibkr-model-runner-heartbeat.json").write_text(
+        json.dumps({
+            "schema": "lts.ibkr.model_runner.heartbeat.v1",
+            "read_only": False,
+            "observed_at": "2026-08-10T07:51:38+00:00",
+            "state": "decided",
+        }),
+        encoding="utf-8",
+    )
+    (tmp_path / "alpaca-model-runner-heartbeat.json").write_text(
+        json.dumps({
+            "schema": "lts.alpaca.model_runner.heartbeat.v1",
+            "read_only": False,
+            "observed_at": "2026-08-10T07:51:32+00:00",
+            "state": "monitoring",
+        }),
+        encoding="utf-8",
+    )
+    value = {
+        "generated_at": "2026-08-10T07:52:21Z",
+        "alpaca": {
+            "available": True,
+            "ended_at": "2026-08-10T07:52:21Z",
+            "detail": {"adapter_version": "lts.alpaca.paper.readonly.v1"},
+        },
+        "ibkr": {
+            "available": True,
+            "latest_complete": {"ended_at": "2026-08-10T07:47:16Z"},
+        },
+    }
+
+    result = collector.compact_brokers(value, state_root=tmp_path)
+
+    for venue in ("alpaca", "ibkr"):
+        authority = result[venue]["authority"]
+        # Both facts are present, truthful, and separate.
+        assert authority["observer_read_only"] is True
+        assert authority["execution_write_enabled"] is True
+        # Write authority is answered only by the execution heartbeat.
+        assert authority["authoritative_source"].startswith(
+            "heartbeat_file:"
+        )
+        # Each fact carries its own freshness.
+        assert authority["observer_as_of"]
+        assert authority["execution_observed_at"]
+        # The legacy single ambiguous label is gone.
+        assert "read_only" not in result[venue]
+    assert result["ibkr"]["authority"]["observer_source"] == (
+        "observer_lab_session:ibkr-paper-lab.sqlite"
+    )
+
+    summary = collector.markdown_summary({"brokers": result})
+    assert "Observer read-only" in summary
+    assert "Execution write" in summary
+
+
+def test_missing_execution_heartbeat_is_unavailable_not_observer(
+    tmp_path: Path,
+) -> None:
+    """Without execution evidence, write authority is 'unavailable';
+    the observer label must not fill the gap."""
+    _ibkr_lab_with_observer_detail(tmp_path, {"read_only": True})
+    value = {
+        "generated_at": "2026-08-10T07:52:21Z",
+        "ibkr": {
+            "available": True,
+            "latest_complete": {"ended_at": "2026-08-10T07:47:16Z"},
+        },
+    }
+
+    result = collector.compact_brokers(value, state_root=tmp_path)
+
+    authority = result["ibkr"]["authority"]
+    assert authority["observer_read_only"] is True
+    assert authority["execution_write_enabled"] == "unavailable"
+    assert authority["authoritative_source"] == "unavailable"
+
+
+def test_execution_authority_falls_back_to_watchdog_embedded_copy(
+    tmp_path: Path,
+) -> None:
+    value = {
+        "generated_at": "2026-08-10T07:52:21Z",
+        "ibkr": {
+            "available": True,
+            "latest_complete": {"ended_at": "2026-08-10T07:47:16Z"},
+            "execution_runtime": {
+                "schema": "lts.ibkr.model_runner.heartbeat.v1",
+                "read_only": False,
+                "observed_at": "2026-08-10T07:51:38+00:00",
+                "state": "decided",
+            },
+        },
+    }
+
+    result = collector.compact_brokers(value, state_root=tmp_path)
+
+    authority = result["ibkr"]["authority"]
+    assert authority["execution_write_enabled"] is True
+    assert authority["authoritative_source"] == (
+        "watchdog_embedded_execution_runtime"
+    )
+
+
+def test_mt5_authority_reports_bridge_execution_facts(tmp_path: Path) -> None:
+    value = {
+        "generated_at": "2026-08-10T07:52:21Z",
+        "mt5": {
+            "available": True,
+            "read_only": False,
+            "heartbeat": {
+                "received_at": "2026-08-10T07:52:06+00:00",
+                "connected": True,
+            },
+        },
+    }
+
+    result = collector.compact_brokers(value, state_root=tmp_path)
+
+    authority = result["mt5"]["authority"]
+    assert authority["observer_read_only"] == "unavailable"
+    assert authority["execution_write_enabled"] is True
+    assert authority["authoritative_source"] == (
+        "watchdog_mt5_operational_status"
+    )
+    assert authority["execution_observed_at"] == "2026-08-10T07:52:06+00:00"
+
+
 def test_snapshot_hash_and_delta_are_deterministic(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(
         collector,

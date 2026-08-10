@@ -1,0 +1,159 @@
+{
+  "schema": "agent_multi.front2_venue_protection_facts.v1",
+  "generated_at": "2026-08-10T08:04:24.194067+00:00",
+  "collection_posture": "read-only; no order placed/cancelled/modified, no hold cleared, no service restarted",
+  "controller_labeling": "all live models below are linear CONTROLS (baseline controllers), NOT champions",
+  "venues": {
+    "alpaca_paper": {
+      "as_of": "2026-08-10T08:03:41.733996+00:00",
+      "sources": {
+        "execution_heartbeat": "~/.local/state/lts/alpaca-model-runner-heartbeat.json",
+        "execution_ledger": "~/.local/state/lts/alpaca-model-execution.sqlite",
+        "observer_watchdog": "~/.local/state/lts/paper-execution-watchdog/latest.json"
+      },
+      "account_binding": {
+        "fingerprint_masked": "3de2ab7a14663a11",
+        "binding_verified": true,
+        "environment": "paper"
+      },
+      "model_id": "spy-daily-linear-live-v1",
+      "position": {
+        "instrument": "SPY",
+        "units": -1.0,
+        "side": "short",
+        "opened_at": "2026-08-07T13:31:57.422495+00:00",
+        "entry_fill_price_usd": "770.85",
+        "source": "~/.local/state/lts/alpaca-model-execution.sqlite (exposures, l1_broker_facts monitor_snapshot)"
+      },
+      "orders": {
+        "open_orders": 1,
+        "bracket_order_status": "filled",
+        "source": "~/.local/state/lts/alpaca-model-runner-heartbeat.json"
+      },
+      "native_stop_loss": {
+        "price_usd": "774.06",
+        "broker_order_id": "b59f2adb-8e05-4a48-8f76-fb2444608eeb",
+        "broker_status": "held",
+        "status_note": "Alpaca holds the stop leg of an OCO bracket in 'held' while the take-profit leg works; this is the venue's native bracket mechanics as recorded",
+        "recorded_at": "2026-08-10T08:03:41.620219+00:00",
+        "source": "~/.local/state/lts/alpaca-model-execution.sqlite (l1_broker_facts monitor_snapshot legs)"
+      },
+      "native_take_profit": {
+        "price_usd": "762.51",
+        "broker_order_id": "b1dcdc5d-f0a9-4ffd-8713-0417598fdd1a",
+        "broker_status": "new",
+        "recorded_at": "2026-08-10T08:03:41.620219+00:00",
+        "source": "~/.local/state/lts/alpaca-model-execution.sqlite (l1_broker_facts monitor_snapshot legs)"
+      },
+      "hashes": {
+        "artifact_sha256": "sha256:b0ab77e0377d6224afd480817e1d867041ee234953b85717fdaae16bd5f5e8bb",
+        "config_sha256": "sha256:1125679a5eae4a4272e6e4e161b2307de26fcf28a09479b24c53f0ea149717e1",
+        "input_sha256": "d43941b0dd77d6ec82eb9d803dfbcbccf3835210fb857525580e36691f987a91",
+        "decision_payload_sha256": "3ceb327a6f37d3062dc58d22881c9caa7c9456b76fe27522e94e98f428d39d76",
+        "source": "~/.local/state/lts/alpaca-model-execution.sqlite (decisions intent preflight)"
+      }
+    },
+    "ibkr_paper": {
+      "as_of": "2026-08-10T08:03:55.955580+00:00",
+      "sources": {
+        "execution_heartbeat": "~/.local/state/lts/ibkr-model-runner-heartbeat.json",
+        "execution_ledger": "~/.local/state/lts/ibkr-model-execution.sqlite",
+        "observer_lab": "~/.local/state/lts/ibkr-paper-lab.sqlite",
+        "tws_continuity_monitor": "~/.local/state/lts/tws-continuity-monitor/state.json"
+      },
+      "account_binding": {
+        "fingerprint_masked": "0123456789abcdef",
+        "binding_verified": true,
+        "environment": "paper"
+      },
+      "model_id": "usdcad-4h-linear-live-v1",
+      "halt_state": {
+        "value": "hold",
+        "held_since": "2026-08-05T14:46:32.899168+00:00",
+        "held_since_source": "~/.local/state/lts/ibkr-model-execution.sqlite (l1_broker_facts seq 1171, fact_kind=recovery_hold)",
+        "source": "~/.local/state/lts/ibkr-model-execution.sqlite (service_state key=halt)"
+      },
+      "position": {
+        "instrument": "USD.CAD",
+        "units": 0,
+        "side": "flat",
+        "observer_reconciliation": {
+          "open_positions": 0,
+          "open_orders": 0,
+          "observed_at": "2026-08-10T07:57:36.168979+00:00"
+        },
+        "tws_continuity_exposure_state": "flat",
+        "source": "~/.local/state/lts/paper-execution-watchdog/latest.json (ibkr.latest_complete) + tws-continuity-monitor"
+      },
+      "orders": {
+        "open_orders": 0,
+        "source": "~/.local/state/lts/paper-execution-watchdog/latest.json"
+      },
+      "native_stop_loss": {
+        "value": "unavailable",
+        "missing_fact": "no open position/order; venue flat and held \u2014 no native SL exists to report",
+        "source": "~/.local/state/lts/ibkr-model-execution.sqlite"
+      },
+      "native_take_profit": {
+        "value": "unavailable",
+        "missing_fact": "no open position/order; venue flat and held \u2014 no native TP exists to report",
+        "source": "~/.local/state/lts/ibkr-model-execution.sqlite"
+      },
+      "hashes": {
+        "artifact_sha256": "dc95edcbceca9a86e4395d2cd268bedbfc6b82812d9248b22712b835b891c0fd",
+        "input_sha256": "24256b5e219b93ad226a126efd377ba70f7652a1a422b86be6a16e672219607d",
+        "output_sha256": "d05eeef73b89a104f4c682eaea4e5595a0e0a5deffcee2183f71877571168c06",
+        "config_sha256": "unavailable \u2014 heartbeat inference block carries artifact/input/output hashes; config hash not present in freshest heartbeat",
+        "decision_payload_sha256": null,
+        "decision_payload_note": "null because the freshest decision was rejected (halted:hold) \u2014 no payload was built",
+        "source": "~/.local/state/lts/ibkr-model-runner-heartbeat.json"
+      }
+    },
+    "mt5_demo": {
+      "as_of": "2026-08-10T08:00:38.717566+00:00",
+      "sources": {
+        "execution_heartbeat": "dragon:~/.local/state/lts/mt5-model-runner-heartbeat.json",
+        "bridge_ledger": "dragon:~/.local/state/lts/mt5-bridge.sqlite (read-only ssh)",
+        "operational_status": "http://192.0.2.11:8766/v1/status (lts.mt5.operational_status.v1)"
+      },
+      "account_binding": {
+        "fingerprint_masked": "c88e492afa0f8d66a3643373",
+        "server_fingerprint_masked": "10b414e3216ddedb2c016f07",
+        "binding_verified": "unavailable \u2014 mt5 model-runner heartbeat schema does not carry account_binding_verified; execution commands and snapshots bind by account_fingerprint",
+        "environment": "demo"
+      },
+      "model_id": "ethusdt-4h-linear-live-v1",
+      "position": {
+        "instrument": "ETHUSD",
+        "ticket": "40303218",
+        "side": "long",
+        "volume_lots": 0.01,
+        "price_open_usd": 1907.45,
+        "unrealized_profit_usd": 0.15,
+        "source": "dragon:~/.local/state/lts/mt5-bridge.sqlite (read-only ssh) (position_snapshots latest)"
+      },
+      "orders": {
+        "open_orders": 0,
+        "source": "dragon:~/.local/state/lts/mt5-bridge.sqlite (read-only ssh) (account_snapshots latest)"
+      },
+      "native_stop_loss": {
+        "price_usd": 1885.5,
+        "attached_to_position_ticket": "40303218",
+        "note": "MT5 netting SL is a position attribute enforced server-side, not a separate order",
+        "source": "dragon:~/.local/state/lts/mt5-bridge.sqlite (read-only ssh) (position_snapshots latest)"
+      },
+      "native_take_profit": {
+        "price_usd": 1942.64,
+        "attached_to_position_ticket": "40303218",
+        "source": "dragon:~/.local/state/lts/mt5-bridge.sqlite (read-only ssh) (position_snapshots latest)"
+      },
+      "hashes": {
+        "artifact_sha256": "539f946071a1870672c2d2c1ce7b1ce0f0d4b4317a15b2d082b59b32c98d10bf",
+        "config_sha256": "193cbeaecc759850d5eaae27879769aaf24c0c6f6172c5acc3bac860a3b20b3a",
+        "input_sha256": "82ff7d32ea0c9db59cab068685715871fe62c826e1fe17b7bfe117e278cfd590",
+        "decision_payload_sha256": "099526557ec56d118ea60587cb89ce73de11aef710497935a151873fec4277dd",
+        "source": "dragon:~/.local/state/lts/mt5-bridge.sqlite (read-only ssh) (execution_commands + decisions for the entry that opened the live position)"
+      }
+    }
+  }
+}
