@@ -1035,6 +1035,29 @@ Canonical evidence:
 | AUD-GEN-20260810-207 | S4 | open, repository presentation | Accepted agent-multi README is absent from default master | General Satoshi III transfers docs-only commit; General Musashi verifies GitHub |
 | AUD-GEN-20260810-208 | S4 | open, active-core maintenance | Predictor test collection has eight stale import failures | General Satoshi III implements bounded repair; General Musashi verifies |
 
+### 1ah. Blockchain and four-front return audit, 2026-08-10
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_BLOCKCHAIN_FOUR_FRONT_RETURN_2026_08_10.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_BLOCKCHAIN_FOUR_FRONT_ROUND2_ORDER_2026_08_10.md`
+
+Independent reproduction accepts the central transaction-content binding and
+the existence of startup verification, but not the complete integrity/status
+claim. Findings 201, 204 and 208 are partially corrected; 202-203 remain open
+through the counterexamples below. No active runtime was mutated.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260810-209 | S2 | open, blocks v2 deployment | Incomplete height/tip metadata passes and malformed height crashes the verifier | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260810-210 | S2 | open, blocks v2 deployment | Historical mutation after startup verification does not invalidate a later append | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260810-211 | S3 | open, blocks fleet v2 materialization | All shared-population configs omit explicit chain identity and inherit one global default | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260810-212 | S3 | open, operator-status correctness | Active L1 epoch/trade facts are parsed from stale logs unbound to current cell/attempt | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260810-213 | S3 | open, operator-status correctness | L1 ETA adds parallel cells serially instead of using the critical worker path | General Satoshi III implements; General Musashi verifies |
+| AUD-F2-20260810-214 | S3 | open, operator-status correctness | Static queue reports IBKR L1 dependency-blocked after write execution exists | General Satoshi III implements; General Musashi verifies |
+| AUD-SEC-20260810-215 | S2 | open, immediate containment/owner decision | Removed operational and third-party evidence remains reachable in public Git history | Owner decides visibility/history action; General Satoshi III prepares and implements approved plan; Musashi verifies |
+| AUD-GEN-20260810-216 | S4 | open, active-core maintenance | Predictor default no-header CSV path remains a production crash behind strict xfail | General Satoshi III implements; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

@@ -1,0 +1,26 @@
+{
+  "metadata_cases": {
+    "malformed_height": {
+      "raised": "ValueError",
+      "returned": false
+    },
+    "missing_height": {
+      "check_10": "pass",
+      "outcome": "fully_verified",
+      "returned": true
+    },
+    "missing_tip_hash": {
+      "check_10": "pass",
+      "outcome": "fully_verified",
+      "returned": true
+    }
+  },
+  "network_used": false,
+  "post_start_tamper": {
+    "append_after_historical_tamper_accepted": true,
+    "height_after_append": 3,
+    "startup_verification": "fully_verified",
+    "subsequent_verification": "failed"
+  },
+  "schema": "agent_multi.audit.blockchain_return_repro.v1"
+}

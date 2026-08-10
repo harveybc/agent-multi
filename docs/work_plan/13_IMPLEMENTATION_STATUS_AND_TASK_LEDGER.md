@@ -1158,3 +1158,32 @@ waiting never justifies idling otherwise valid compute. Safety-critical
 deployment boundaries still hold: no Live capital, no unverified chain rollout,
 no mid-run experiment mutation, and no automatic clearing of an authenticated
 broker hold.
+
+## 8. Blockchain/Four-Front Return Audit (2026-08-10 09:50 COT)
+
+Satoshi's return at `agent-multi@6a762a82` is implemented and pushed but not
+yet accepted. The content-derived transaction repair and startup verifier are
+real; independent suites reproduce 316 doin-core, 460 doin-node and 924
+agent-multi passes. The decision factorial remains active and unmodified at
+11/16 landed cells under identity `2de49ea9225e2baf`.
+
+Round-2 execution order:
+
+1. Contain the public-history evidence incident; no new raw evidence enters a
+   public commit. Owner decides private containment/history rewrite.
+2. Correct typed metadata verification and bind later appends to the verified
+   startup cursor without O(chain) work per block.
+3. Require one explicit chain identity in every shared-population machine
+   config. Archive legacy chains read-only and initialize v2 only at a future
+   DOIN job boundary after independent acceptance.
+4. Replace stale global-log parsing with heartbeat-v3 facts bound to active
+   cell/attempt and calculate experiment ETA by parallel critical path.
+5. Derive IBKR queue state from the live execution journal, fix predictor's
+   default no-header CSV path, and complete the bounded Front-3 retry.
+6. Keep all four L1 workers running to 16/16; aggregate once from the sealed
+   collection and decide from raw paired per-seed rows, not from status prose.
+
+Canonical details:
+
+- `../audits/AUDIT_SATOSHI_III_BLOCKCHAIN_FOUR_FRONT_RETURN_2026_08_10.md`;
+- `../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_BLOCKCHAIN_FOUR_FRONT_ROUND2_ORDER_2026_08_10.md`.
