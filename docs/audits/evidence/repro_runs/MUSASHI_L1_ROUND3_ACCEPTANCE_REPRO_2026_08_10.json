@@ -1,0 +1,64 @@
+{
+  "accepted": true,
+  "checks": {
+    "196_seal_immutable_after_aggregation": true,
+    "197_single_collection_authority": true,
+    "198_exact_gpu_binding_in_records_and_env": true,
+    "199_financing_explicit_in_every_record": true,
+    "200_training_epochs_exclude_baseline": true,
+    "decision_identity_recomputed": true,
+    "decision_state_uncontaminated": true,
+    "replica_loaded_all_terminals": true,
+    "smoke_never_decision_eligible": true
+  },
+  "facts": {
+    "aggregation_artifact": "/home/harveybc/.local/share/agent-multi/l1_smoke_collection_7aae0431/aggregations/7aae043107a87554/l1_factorial_aggregation.json",
+    "aggregation_outcome": "INCONCLUSIVE",
+    "aggregation_refusals": 16,
+    "collection_digest": "6da390b5afe837af52f4b5574b017dc574d308a82bacd08ab799120262fd318f",
+    "computed_decision_id": "2de49ea9225e2baf",
+    "decision_roots_present": {
+      "101": true,
+      "202": true,
+      "303": true,
+      "404": true
+    },
+    "decision_seed_dirs": {
+      "dragon": [
+        "seed202"
+      ],
+      "gamma": [
+        "seed303",
+        "seed404"
+      ],
+      "omega": [
+        "seed101"
+      ]
+    },
+    "deployed_env": {
+      "101": {
+        "content": "L1_EXTRA_ARGS=\nCUDA_VISIBLE_DEVICES=GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326",
+        "expected_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326",
+        "host": "omega"
+      },
+      "202": {
+        "content": "L1_EXTRA_ARGS=\nCUDA_VISIBLE_DEVICES=GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9",
+        "expected_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9",
+        "host": "dragon"
+      },
+      "303": {
+        "content": "L1_EXTRA_ARGS=\nCUDA_VISIBLE_DEVICES=GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519",
+        "expected_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519",
+        "host": "gamma"
+      },
+      "404": {
+        "content": "L1_EXTRA_ARGS=\nCUDA_VISIBLE_DEVICES=GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8",
+        "expected_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8",
+        "host": "gamma"
+      }
+    },
+    "records": 16
+  },
+  "runtime_mutated": false,
+  "schema": "agent_multi.audit.l1_round3_acceptance_repro.v1"
+}

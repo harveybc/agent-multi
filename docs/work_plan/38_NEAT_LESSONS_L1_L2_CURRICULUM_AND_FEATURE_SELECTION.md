@@ -384,3 +384,36 @@ resolved hyperparameters, feature/gate artifacts, raw metrics, chronological
 weekly vectors, code/data/config hashes, resource facts and DOIN lineage; the
 scheduled comparisons have an unambiguous typed outcome; and the winning ETH
 contract can be reproduced by inference and Paper/Demo shadow parity.
+
+## 12. Execution Status, 2026-08-10 Round 3
+
+The round-3 mechanics evidence passed independent reproduction. Findings
+196-200 are verified corrected; smoke identity `7aae043107a87554` is sealed at
+digest `6da390b5afe837af52f4b5574b017dc574d308a82bacd08ab799120262fd318f`
+with an equal Dragon replica and 16/16 loadable terminal artifacts.
+
+Decision identity `2de49ea9225e2baf` is active on seeds 101, 202, 303 and 404
+using the Omega 4070, Dragon 4090, Gamma 5070 Ti and Gamma 5090 respectively.
+The four cells cross phase-1 difficulty `N/E` with normal-phase LR multipliers
+`1.0/0.3`; phase-1 LR remains fixed at baseline `1e-4`.
+
+## 13. Learning-Rate Pair Follow-Up
+
+The running factorial answers whether activity is attributable to the easy
+phase, the normal-phase learning rate, or their interaction. It intentionally
+does not vary easy-phase LR.
+
+After the typed result:
+
+- `EASY_CONTRIBUTES` or `INTERACTION`: run a bounded paired
+  `LR_easy x LR_normal` response surface around the observed viable region;
+- `LR_ONLY`: omit easy and spend compute on normal-LR refinement;
+- `EASY_HARMFUL`: retire easy for this SAC recipe;
+- `INCONCLUSIVE`: resolve only the named evidence/activity deficiency before
+  deciding whether more seeds or one additional LR point are justified.
+
+The follow-up holds replay, optimizer transition, phase budgets, chronology,
+costs, topology and seeds fixed. Normal inner/outer validation decides;
+easy-phase metrics remain diagnostic and sealed 2025 remains unopened. Only a
+stable measured asymmetric region authorizes later DOIN genes
+`log_lr_easy` and `log_lr_normal`.

@@ -977,6 +977,37 @@ owner-authorized; review waiting does not authorize idle compute.
 | AUD-F1-20260808-176 | S2 | open, blocks curriculum attribution | Current matrix cannot separate L1 curriculum, L2 curriculum and their interaction | General Satoshi III implements; General Musashi verifies |
 | AUD-GEN-20260808-177 | S3 | open, operational governance | Repeated owner-phrase gates remain in already-approved research flow and can idle the fleet | General Satoshi III removes redundant gates; General Musashi verifies runtime queue behavior |
 
+### 1af. L1 round-1 through round-3 acceptance, 2026-08-09/10
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_L1_CORRECTION_RETURN_2026_08_09.md`
+- `../AUDIT_SATOSHI_III_L1_ROUND2_ACCEPTANCE_2026_08_09.md`
+- `../AUDIT_SATOSHI_III_L1_ROUND3_ACCEPTANCE_2026_08_10.md`
+- `../evidence/repro_runs/MUSASHI_L1_ROUND3_ACCEPTANCE_REPRO_2026_08_10.py`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_ROUND3_ACCEPTANCE_AND_LR_PAIR_PLAN_2026_08_10.md`
+
+Round 3 independently verifies corrections 196-200 and authorizes decision
+identity `2de49ea9225e2baf`. The four decision workers are active. Findings are
+verified corrected and await normal closure authority; they no longer block
+execution.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260809-188 | S2 | verified corrected, pending closure | Failed seed had been mapped to a successful systemd exit | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-189 | S2 | verified corrected, pending closure | Sealed remote records retained unusable absolute paths | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-190 | S2 | verified corrected, pending closure | Replica was optional and its whole-tree digest unverified | General Satoshi III corrected; General Musashi verified round 3 |
+| AUD-F1-20260809-191 | S2 | verified corrected, pending closure | Exact manifest did not govern actual plugins | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-192 | S2 | verified corrected, pending closure | Normal execution could fall back to unprotected orders | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-193 | S2 | verified corrected, pending closure | Normal profile lacked exact costs and min-equity | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-194 | S3 | verified corrected, pending closure | Frozen manifest came from a dirty obsolete tree | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-195 | S3 | verified corrected, pending closure | Phase-1 evidence mislabeled normal arms as easy | General Satoshi III corrected; General Musashi verified |
+| AUD-F1-20260809-196 | S2 | verified corrected, pending closure | Aggregation mutated the sealed input | General Satoshi III corrected; General Musashi verified round 3 |
+| AUD-F1-20260809-197 | S2 | verified corrected, pending closure | Direct aggregator bypassed collection and replica authority | General Satoshi III corrected; General Musashi verified round 3 |
+| AUD-F1-20260809-198 | S2 | verified corrected, pending closure | Assigned Gamma UUIDs were not bound to execution | General Satoshi III corrected; General Musashi verified round 3 |
+| AUD-F1-20260809-199 | S3 | verified corrected, pending closure | Financing treatment remained implicit | General Satoshi III corrected; General Musashi verified round 3 |
+| AUD-F1-20260809-200 | S3 | verified corrected, pending closure | Phase-1 epoch count included baseline telemetry | General Satoshi III corrected; General Musashi verified round 3 |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
