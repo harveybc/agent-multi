@@ -1066,6 +1066,13 @@ docs/handoffs/CODEX_REVIEW_DOIN_NODE_CONFIG_MATERIALIZATION_2026_07_11.md
     gate without changing an active seat or DOIN chain; independently verify
     its statistical family, flat-boundary drain/reseed and no-idle failure
     behavior before the first automated same-seat Paper/Demo succession.
+34. Refresh the multi-repository public presentation from executable truth:
+    classify active, experimental and superseded repositories; modernize root
+    READMEs; document `doin-node` as the unified participant runtime and the
+    retired optimizer/evaluator services as legacy; set a concrete GitHub About
+    description and 20 relevant topics per in-scope owned repository; verify
+    links, installation commands, metadata and non-interference with active
+    runtime. Preserve visibility, archive state, history, results and OLAP.
 
 ## 5. Current Risks
 
