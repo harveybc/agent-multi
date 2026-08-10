@@ -205,6 +205,13 @@
       "authority_class": "campaign_operation",
       "owner": "General Satoshi III"
     },
+    "collect_l1_factorial.py": {
+      "purpose": "Content-addressed L1 collection (order §5/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
+      "lifecycle": "supported",
+      "mutability": "mutating",
+      "authority_class": "evidence_producer",
+      "owner": "General Satoshi III"
+    },
     "bootstrap_test_fixtures.py": {
       "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
       "lifecycle": "supported",

@@ -71,14 +71,24 @@ def test_all_four_workers_share_one_semantic_domain_per_job():
         assert hashes == {job["domain_semantic_hash"]}
 
 
-def test_full_v2_recovery_plan_has_one_fresh_shared_domain():
-    result = materialize_recovery_full_v2()
+def test_full_v2_recovery_plan_has_one_fresh_shared_domain(tmp_path):
+    # WP6 (audit 2026-08-09): the test materializes ONLY below tmp_path.
+    # Production materialization stays an explicit operator command via
+    # the function's defaults / the CLI --full-v2-only path.
+    result = materialize_recovery_full_v2(
+        config_dir=tmp_path / "config",
+        doin_repo=tmp_path / "doin-node",
+        campaign_dir=tmp_path / "campaign",
+    )
     assert len(result["jobs"]) == 1
     job = result["jobs"][0]
     assert job["ordinal"] == 0
     assert job["domain_id"].endswith("full-v2")
     hashes = set()
     for relative in job["worker_configs"].values():
-        config = json.loads((DOIN_ROOT / relative).read_text(encoding="utf-8"))
+        config = json.loads(
+            (tmp_path / "doin-node" / relative).read_text(
+                encoding="utf-8"))
         hashes.add(_domain_semantic_hash(config))
     assert hashes == {job["domain_semantic_hash"]}
+    assert (tmp_path / "campaign" / "campaign_plan.json").is_file()

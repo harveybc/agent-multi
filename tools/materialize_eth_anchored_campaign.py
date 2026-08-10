@@ -470,8 +470,20 @@ def materialize_all() -> dict[str, Any]:
     return {"plan_hash": plan_hash, "jobs": jobs}
 
 
-def materialize_recovery_full_v2() -> dict[str, Any]:
-    """Create a fresh full domain after rejecting the incompatible v1 run."""
+def materialize_recovery_full_v2(
+    *,
+    config_dir: Path = CONFIG_DIR,
+    doin_repo: Path = DOIN_REPO,
+    campaign_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Create a fresh full domain after rejecting the incompatible v1 run.
+
+    Production materialization stays an explicit operator command (the
+    defaults). Tests inject ``config_dir``/``doin_repo``/``campaign_dir``
+    below ``tmp_path`` so the suite never writes into the subject
+    checkout or a sibling repository (audit 2026-08-09 §7/WP6).
+    """
+    campaign_dir = campaign_dir or RECOVERY_CAMPAIGN_DIR
     manifest = _load(ANCHOR_MANIFEST)
     if manifest["artifact_sha256"] != _sha256(ANCHOR_MODEL):
         raise ValueError("ETH anchor manifest hash does not match artifact")
@@ -481,11 +493,12 @@ def materialize_recovery_full_v2() -> dict[str, Any]:
         revision=2,
         artifact_arm="full_v2",
     )
-    config_path = CONFIG_DIR / "phase_2_eth_anchored_full_v2.json"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    config_path = config_dir / "phase_2_eth_anchored_full_v2.json"
     _write(config_path, config)
     domain_id = "trading-asset-policy-eth-4h-anchored-full-v2"
     node_dir_name = "phase_2_eth_anchored_full_v2"
-    node_dir = DOIN_REPO / "examples/trading" / node_dir_name
+    node_dir = doin_repo / "examples/trading" / node_dir_name
     materialize(
         template_dir=TEMPLATE_DIR,
         output_dir=node_dir,
@@ -529,13 +542,13 @@ def materialize_recovery_full_v2() -> dict[str, Any]:
         "participants": PARTICIPANTS,
         "jobs": [job],
     }
-    _write(RECOVERY_CAMPAIGN_DIR / "campaign_plan.json", plan)
+    _write(campaign_dir / "campaign_plan.json", plan)
     plan_hash = hashlib.sha256(
         _canonical_json(plan).encode("utf-8")
     ).hexdigest()
     for node_id in NODE_WORKERS:
         _write(
-            RECOVERY_CAMPAIGN_DIR / f"{node_id}_profile.json",
+            campaign_dir / f"{node_id}_profile.json",
             _build_profile(
                 node_id,
                 plan_hash,

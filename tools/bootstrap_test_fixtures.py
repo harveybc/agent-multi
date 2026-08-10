@@ -33,6 +33,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 DOIN_NODE_ORIGIN = "https://github.com/harveybc/doin-node.git"
+# Exact full revision the suite's fixtures are proven against
+# (order §6/WP5). A checkout at any other revision is reported as a
+# mismatch — never silently used, never mutated in place.
+DOIN_NODE_PIN = "5bd6d3966df37e98e0de6fb904d0ec81566866a6"
 DOIN_TEMPLATE_DIRS = (
     "examples/trading/phase_1_asset_policy_usdcad_4h_protected_easy_v2",
     "examples/trading/phase_1_asset_policy_usdcad_4h_full_genome_v1",
@@ -77,9 +81,26 @@ def check_doin_node(*, mutate: bool) -> dict:
             item["stderr"] = clone.stderr.strip()[-400:]
             return item
         item["cloned_from"] = DOIN_NODE_ORIGIN
+        pin = subprocess.run(
+            ["git", "-C", str(doin_root), "checkout", "--quiet",
+             "--detach", DOIN_NODE_PIN],
+            capture_output=True, text=True)
+        if pin.returncode != 0:
+            item["status"] = "clone_failed"
+            item["stderr"] = ("pin checkout failed: "
+                             + pin.stderr.strip()[-300:])
+            return item
     rev = subprocess.run(["git", "-C", str(doin_root), "rev-parse", "HEAD"],
                          capture_output=True, text=True)
     item["revision"] = rev.stdout.strip() or "unavailable"
+    item["pinned_revision"] = DOIN_NODE_PIN
+    if item["revision"] != DOIN_NODE_PIN:
+        item["status"] = "revision_mismatch"
+        item["remedy"] = (f"sibling checkout is at {item['revision']}, "
+                          f"suite fixtures are pinned to {DOIN_NODE_PIN}; "
+                          "update the sibling explicitly (this tool never "
+                          "mutates an existing checkout)")
+        return item
     missing = []
     for rel in DOIN_TEMPLATE_DIRS:
         tdir = doin_root / rel
