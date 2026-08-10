@@ -12,9 +12,10 @@ sequence. No finding is claimed closed — Musashi verifies.
 |---|---|
 | `4e24e895` | WP2 exact system identity + WP3 hardened aggregation + Musashi counterexamples as regressions |
 | `8ae218db` | WP1 durable idempotent launcher + systemd + contract assignments + 8 socket-free tests |
-| PENDING-FINAL | WP4 collector + WP5 doin-node pin + WP6 hermetic tests + this packet |
+| `339fe49c` | WP4 collector + WP5 doin-node pin + WP6 hermetic tests + this packet draft |
 
-Working tree status at packet finalization: FILLED-ON-COMMIT.
+Working tree status at packet finalization: clean except this packet
+edit; every listed commit pushed to origin.
 
 ## 2. Findings 178-187 mapped to corrections and tests
 
@@ -70,7 +71,11 @@ PENDING — after the corrected decision run completes 16/16.
 
 ## 8. Full clean-suite result
 
-FILLED-ON-PROOF (detached clean clone + declared bootstrap only).
+From a detached clean clone at `339fe49c`, using ONLY
+`tools/bootstrap_test_fixtures.py` (which cloned doin-node from
+nothing and checked out the exact pin `5bd6d396…`): bootstrap reported
+`FIXTURES_READY` with the pinned revision verified, and the complete
+suite passed **861/861** with the WP6 byte-clean session guard active.
 
 ## 9. Diagnostic run vs corrected run (explicitly separate)
 
@@ -78,7 +83,12 @@ FILLED-ON-PROOF (detached clean clone + declared bootstrap only).
   `9b6f0745`, record schema v1 — omega seed-101 and dragon seed-202,
   launched BEFORE this correction order arrived; preserved as
   diagnostics; can NEVER aggregate (schema v1 + old contract sha both
-  refuse). Status at packet time: FILLED-ON-COMMIT.
+  refuse). Status at packet time: both alive in their first N cell
+  (omega epoch ~16, dragon epoch ~29), unanimous zero-activity,
+  no-activity stopper armed; with the typed inactive-terminal branch
+  they will land v1 diagnostic records at their stops. Gamma's
+  lost-dispatch processes are still self-terminating; its GPUs enter
+  the durable launcher smoke queue the moment they free.
 - **Corrected run**: will use the NEW experiment identity computed at
   smoke/launch time under the final commit (contract and manifest
   changed → identity changes); reported here only when real.
