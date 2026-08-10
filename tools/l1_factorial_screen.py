@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
-"""L1 matched factorial runner — one seed, the four v3 cells.
+"""L1 matched factorial runner v2 — one seed, the four v3 cells.
 
-Doc 38 §5.3 / continuation order. Every cell traverses the SAME
-two-phase path (mode-aware phase 1 in the solvency pipeline, matched
-boundary via load_for_training, paired stopping, nested chronology);
-only phase-1 dynamics and the phase-2 LR multiplier differ. Smoke runs
-carry evidence_class=mechanics_smoke and can never enter aggregation.
-
-One experiment identity binds contract sha + nested split contract sha
-+ code revisions + seed + cell + anchor; records land under
-<output_root>/<experiment_id>/seed<seed>/<cell>/.
+Correction order 2026-08-09 (findings 178-187): every cell config is
+materialized exclusively THROUGH the frozen system manifest
+(`materialize_system_config`), never the legacy ETH `_base_config`.
+The execution identity binds contract + system manifest + nested split
++ the ACTUAL executing source trees (full commit plus dirty/untracked
+digest, resolved from this file's own checkout — never a hard-coded
+sibling). Records are published atomically (fsync + replace) into
+content-addressed attempt directories; a complete hash-valid record is
+reused as ALREADY_COMPLETE, a partial directory is recovered into a new
+attempt, and a moved source tree or bound dependency fails the cell
+closed. Smoke runs carry evidence_class=mechanics_smoke and can never
+enter aggregation.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,15 +27,26 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
-from tools import eth_curriculum_decision_experiment as d1  # noqa: E402
+from pipeline_plugins import _system_config as sysid  # noqa: E402
 
 CONTRACT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                  "l1_factorial_contract_v3.json")
-SCHEMA = "agent_multi.l1_factorial_cell_record.v1"
+SYSTEM_MANIFEST_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+                        "systems/ethusdt_4h_l1_system_v1.json")
+SCHEMA = "agent_multi.l1_factorial_cell_record.v2"
+GYM_FX_ROOT = Path("/home/harveybc/Documents/GitHub/gym-fx")
 
 
 def _sha_file(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return sysid.sha_file(path)
+
+
+def _agent_plugin(name: str):
+    from importlib.metadata import entry_points
+
+    ep = next(e for e in entry_points().select(group="agent.plugins")
+              if e.name == name)
+    return ep.load()()
 
 
 def load_contract(path: Path = CONTRACT_PATH) -> dict:
@@ -42,20 +57,104 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
     return contract
 
 
-def experiment_identity(contract: dict, smoke: bool) -> str:
+def load_system_manifest(path: Path = SYSTEM_MANIFEST_PATH) -> dict:
+    return sysid.load_system_manifest(path)
+
+
+def source_identities() -> dict:
+    """Actual executing trees: this script's own checkout + gym-fx."""
+    return {
+        "agent-multi": sysid.source_tree_identity(
+            sysid.resolve_repo_root(Path(__file__))),
+        "gym-fx": sysid.source_tree_identity(GYM_FX_ROOT),
+    }
+
+
+def experiment_identity(contract: dict, manifest: dict, smoke: bool,
+                        sources: dict | None = None) -> str:
+    sources = sources or source_identities()
     payload = {
         "contract": contract["_contract_sha256"],
+        "system_manifest": manifest["_manifest_sha256"],
         "nested_split_contract": _sha_file(
             REPO / contract["nested_split_contract"]),
-        "code": {r: d1._git_rev(r) for r in ("agent-multi", "gym-fx")},
+        "code": {name: {"commit": s["commit"],
+                        "dirty_untracked_digest":
+                            s["dirty_untracked_digest"]}
+                 for name, s in sorted(sources.items())},
         "profile": "smoke" if smoke else "decision",
     }
     return hashlib.sha256(json.dumps(
         payload, sort_keys=True).encode()).hexdigest()[:16]
 
 
-def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
-             agent_name: str = "sac_agent") -> dict:
+def cell_identity(exp_id: str, seed: int, cell: str,
+                  contract: dict) -> str:
+    spec = contract["cells"][cell]
+    payload = {
+        "experiment_id": exp_id,
+        "seed": seed,
+        "cell": cell,
+        "factors": {"phase1_mode": spec["phase1_mode"],
+                    "phase2_lr_multiplier": spec["phase2_lr_multiplier"]},
+        "anchor_sha256": contract["anchors"][str(seed)]["sha256"],
+    }
+    return hashlib.sha256(json.dumps(
+        payload, sort_keys=True).encode()).hexdigest()[:16]
+
+
+def atomic_write_json(path: Path, payload: dict) -> None:
+    """fsync + replace: the record appears only complete, never partial."""
+    text = json.dumps(payload, indent=1, sort_keys=True,
+                      default=str) + "\n"
+    tmp = path.with_name(path.name + ".tmp")
+    with tmp.open("w") as fh:
+        fh.write(text)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+    dir_fd = os.open(str(path.parent), os.O_DIRECTORY)
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
+
+
+def record_is_complete(record_path: Path, expected_cell_id: str) -> bool:
+    """A reusable record hash-validates and its artifacts exist."""
+    try:
+        record = json.loads(record_path.read_text())
+    except Exception:
+        return False
+    if record.get("schema") != SCHEMA:
+        return False
+    if record.get("cell_identity") != expected_cell_id:
+        return False
+    for key in ("terminal_model_path", "terminal_model_sha256"):
+        if not record.get(key):
+            return False
+    terminal = Path(record["terminal_model_path"])
+    if not terminal.is_file():
+        return False
+    if _sha_file(terminal) != record["terminal_model_sha256"]:
+        return False
+    return True
+
+
+def _next_attempt_dir(cell_dir: Path, cell_id: str) -> Path:
+    """Content-addressed attempt directory; existing partials are never
+    overwritten — each recovery lands in a fresh attempt."""
+    n = 0
+    while True:
+        n += 1
+        attempt = cell_dir / f"attempt-{cell_id}-{n:02d}"
+        if not attempt.exists():
+            attempt.mkdir(parents=True)
+            return attempt
+
+
+def run_cell(cell: str, seed: int, *, contract: dict, manifest: dict,
+             smoke: bool, agent_name: str = "sac_agent") -> dict:
     from pipeline_plugins.rl_pipeline_with_solvency_curriculum import (
         PipelinePlugin as CurriculumPipeline)
 
@@ -64,20 +163,38 @@ def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
     stopping = contract["stopping"]
     anchor_entry = contract["anchors"][str(seed)]
     anchor = Path(anchor_entry["path"]).expanduser()
-    actual = d1._sha(anchor)
+    actual = _sha_file(anchor)
     if actual != anchor_entry["sha256"]:
         raise RuntimeError(f"anchor hash mismatch for seed {seed}")
 
-    exp_id = experiment_identity(contract, smoke)
+    sources_before = source_identities()
+    exp_id = experiment_identity(contract, manifest, smoke,
+                                 sources=sources_before)
+    cell_id = cell_identity(exp_id, seed, cell, contract)
     out_root = Path(contract["output_root"]).expanduser()
-    out_dir = out_root / exp_id / f"seed{seed}" / cell
-    out_dir.mkdir(parents=True, exist_ok=True)
+    cell_dir = out_root / exp_id / f"seed{seed}" / cell
+    cell_dir.mkdir(parents=True, exist_ok=True)
 
-    config = d1._base_config(out_dir, cell, seed,
-                             epoch_timesteps=int(
-                                 budget.get("epoch_timesteps", 20000)))
+    record_path = cell_dir / "l1_cell_record.json"
+    if record_path.exists():
+        if record_is_complete(record_path, cell_id):
+            record = json.loads(record_path.read_text())
+            record["_reuse"] = "ALREADY_COMPLETE"
+            return record
+        raise RuntimeError(
+            f"cell {cell} seed {seed}: existing record fails validation; "
+            "refusing to overwrite — recover it explicitly")
+
+    out_dir = _next_attempt_dir(cell_dir, cell_id)
+
+    config = sysid.materialize_system_config(
+        contract, manifest, cell, seed, out_dir)
+    identity = config.pop("_identity")
+    epoch_timesteps = int(budget.get("epoch_timesteps", 20000))
     config.update({
-        "nested_split_contract": str(REPO / contract["nested_split_contract"]),
+        "epoch_timesteps": epoch_timesteps,
+        "nested_split_contract": str(
+            REPO / contract["nested_split_contract"]),
         "nested_split_dir": str(out_dir / "nested_splits"),
         "selection_metric": contract["selection_metric"],
         "l1_gap_penalty_beta": contract["l1_gap_penalty_beta"],
@@ -102,57 +219,104 @@ def run_cell(cell: str, seed: int, *, contract: dict, smoke: bool,
         "easy_learning_rate": float(contract["baseline_learning_rate"]),
         "warm_start_model": str(anchor),
         "warm_start_model_sha256": actual,
-        "evaluate_test_split": False,
-        "learning_starts": int(budget.get(
-            "learning_starts", 1000)),
+        "learning_starts": int(budget.get("learning_starts", 1000)),
         "execution_cost_curriculum_epochs": max(
             2, int(budget["phase2_max_epochs"])),
-        # §7.1: a never-eligible cell is a measured "inactive" outcome;
-        # the pipeline must land a typed terminal result, never raise
-        # (a raise killed seeds 202/303's remaining cells, 2026-08-09).
         "inactive_terminal_is_typed_result": True,
+        "selection_min_trades": 0,
     })
-    agent = d1._agent_plugin(agent_name)
-    code_before = {r: d1._git_rev(r) for r in ("agent-multi", "gym-fx")}
+    resolved_sha = sysid.resolved_config_sha256(config)
+
+    agent = _agent_plugin(agent_name)
     started = datetime.now(timezone.utc)
     pipeline = CurriculumPipeline(config)
     result = pipeline.run_pipeline(config=config, env_plugin=None,
                                    agent_plugin=agent, mode="train")
     finished = datetime.now(timezone.utc)
-    code_after = {r: d1._git_rev(r) for r in ("agent-multi", "gym-fx")}
-    if code_before != code_after:
-        raise RuntimeError("code revisions moved during the cell")
+    sources_after = source_identities()
+    for name in sources_before:
+        sysid.assert_source_identity_unmoved(
+            sources_before[name], sources_after[name])
 
+    terminal_path = result.get("terminal_model_path")
+    if not terminal_path or not Path(terminal_path).is_file():
+        raise RuntimeError(
+            "cell finished without a terminal artifact — invalid, "
+            "record refused")
+    terminal_sha = _sha_file(Path(terminal_path))
+    terminal_tensor_sha = _terminal_tensor_sha(terminal_path)
+
+    history = result.get("history") or []
     record = {
         "schema": SCHEMA,
         "evidence_class": ("mechanics_smoke" if smoke else "decision_run"),
         "decision_eligible": not smoke,
         "performance_aggregate_eligible": not smoke,
         "experiment_id": exp_id,
+        "cell_identity": cell_id,
+        "attempt_dir": str(out_dir),
         "cell": cell,
         "seed": seed,
         "contract_sha256": contract["_contract_sha256"],
+        "system_manifest_sha256": identity["system_manifest_sha256"],
+        "nested_split_contract_sha256": identity[
+            "nested_split_contract_sha256"],
+        "data_sha256": identity["data_sha256"],
+        "data_rows": identity["data_rows"],
+        "data_time_bounds": identity["data_time_bounds"],
+        "resolved_config_sha256": resolved_sha,
+        "observation_manifest_sha256": identity["observation"][
+            "observation_manifest_sha256"],
+        "observation_flattened_shape": identity["observation"][
+            "flattened_shape"],
+        "asset": identity["asset_label"],
+        "env_asset": identity["env_asset"],
+        "metric_schema": identity["metric_schema"],
+        "initial_cash": identity["initial_cash"],
+        "cost_contract": identity["cost_contract"],
         "phase1_mode": spec["phase1_mode"],
         "phase2_lr_multiplier": spec["phase2_lr_multiplier"],
         "anchor_sha256": actual,
-        "code_revisions": code_before,
+        "anchor_policy_tensor_sha256": identity[
+            "anchor_policy_tensor_sha256"],
+        "phase1_requested_epochs": int(budget["phase1_epochs"]),
+        "phase2_requested_epochs": int(budget["phase2_max_epochs"]),
+        "phase1_realized_epochs": (
+            (result.get("curriculum") or {}).get("post_easy", {})
+            .get("easy_epochs_run")),
+        "phase2_realized_epochs": len(history),
+        "stop_reason": result.get("stop_reason"),
+        "termination_cause": result.get("termination_cause"),
+        "activity_stopped_without_eligible_checkpoint": bool(
+            result.get("activity_stopped_without_eligible_checkpoint",
+                       False)),
+        "history_len": len(history),
+        "subject_code_identity": sources_before,
         "started_utc": started.isoformat(),
         "finished_utc": finished.isoformat(),
         "nested_split_manifest": config.get("nested_split_manifest"),
         "curriculum": result.get("curriculum"),
         "best_model_path": result.get("best_model_path"),
-        "terminal_model_path": result.get("terminal_model_path"),
-        "history_len": len(result.get("history") or []),
-        "activity_stopped_without_eligible_checkpoint": bool(
-            result.get("activity_stopped_without_eligible_checkpoint",
-                       False)),
-        "termination_cause": result.get("termination_cause"),
+        "terminal_model_path": str(Path(terminal_path).resolve()),
+        "terminal_model_sha256": terminal_sha,
+        "terminal_policy_tensor_sha256": terminal_tensor_sha,
         "boundary_transfer_evidence": result.get(
             "warm_start_transfer_evidence"),
     }
-    (out_dir / "l1_cell_record.json").write_text(
-        json.dumps(record, indent=1, sort_keys=True, default=str) + "\n")
+    atomic_write_json(record_path, record)
     return record
+
+
+def _terminal_tensor_sha(terminal_path: str) -> str:
+    from stable_baselines3 import SAC
+
+    from agent_plugins.sac_agent import _policy_tensor_hash
+
+    model = SAC.load(str(terminal_path), device="cpu")
+    try:
+        return _policy_tensor_hash(model.policy)
+    finally:
+        del model
 
 
 def main() -> int:
@@ -162,19 +326,21 @@ def main() -> int:
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
     contract = load_contract()
+    manifest = load_system_manifest()
     cells = args.cells or list(contract["cells"])
-    results = {}
     for cell in cells:
         record = run_cell(cell, args.seed, contract=contract,
-                          smoke=args.smoke)
-        results[cell] = {
+                          manifest=manifest, smoke=args.smoke)
+        print(json.dumps({
+            "cell": cell, "seed": args.seed,
+            "experiment_id": record["experiment_id"],
+            "cell_identity": record.get("cell_identity"),
+            "reuse": record.get("_reuse"),
             "evidence_class": record["evidence_class"],
-            "history_len": record["history_len"],
-            "terminal": bool(record["terminal_model_path"]),
-        }
-        print(json.dumps({"cell": cell, "seed": args.seed,
-                          "experiment_id": record["experiment_id"],
-                          **results[cell]}, default=str))
+            "stop_reason": record.get("stop_reason"),
+            "history_len": record.get("history_len"),
+            "terminal": bool(record.get("terminal_model_path")),
+        }, default=str), flush=True)
     return 0
 
 

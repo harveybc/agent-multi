@@ -1,36 +1,40 @@
 #!/usr/bin/env python3
-"""Generic L1 matched-factorial aggregator (repair spec §7.1/§7.2).
+"""Generic L1 matched-factorial aggregator (repair §7 + order §4/WP3).
 
-Consumes the 16 ``l1_cell_record.json`` decision records of one
-experiment identity and emits ONE typed outcome:
+Consumes the 16 ``l1_cell_record.json`` (schema v2) decision records of
+one experiment identity and emits ONE typed outcome:
 
     EASY_CONTRIBUTES | LR_ONLY | INTERACTION | EASY_HARMFUL | INCONCLUSIVE
 
-Activity facts (§7.1) are DIRECT evidence, never trusted telemetry: the
-terminal artifact is loaded, its update counter compared against the
-phase-1 artifact, and a fresh deterministic verification rollout is run
-on the cell's own materialized inner_validation split under
-normal_realistic dynamics. Missing or contradictory facts make a cell
-INVALID — never "inactive" — and any invalid cell forces INCONCLUSIVE
-(§7.2 rule 1). Outcomes concern activity survival only; profit never
-gates this mechanism screen.
+Evidence discipline (findings 178-187):
+- every mandatory identity field must be present and VALIDATED against
+  the loaded contract/system manifest/disk facts — never copied;
+- the terminal artifact and its policy tensor rehash to the producing
+  record BEFORE any verification rollout;
+- every required raw metric must be present, finite and unit-typed; a
+  missing or unreadable results.json, a missing metric or a non-finite
+  value is a refusal and forces INCONCLUSIVE;
+- total return uses the record's bound initial cash, never a literal;
+- subject execution identity and the aggregator's own identity are
+  separate output fields;
+- cross-record identity uniformity is enforced — one tampered record
+  poisons the whole aggregation into INCONCLUSIVE;
+- INCONCLUSIVE or any refusal exits nonzero.
 
-Spec note: §7.2 names the reduced-LR level "M0.1". This contract family
-carries the reduced level as a generic ``phase2_lr_multiplier``; the
-rules bind to the LOWEST multiplier level (0.3 in contract v3). The
-deviation is declared in the output, not silently absorbed.
+Activity facts (§7.1) are DIRECT evidence via terminal probe +
+deterministic verification rollout on the cell's own materialized
+inner_validation split under forced normal_realistic dynamics.
+Invalid is never inactive. Outcomes concern activity survival only.
 
-The decision core (``validate_record_bindings``, ``activity_facts``,
-``decide_outcome``) is pure so mutation tests can prove that malformed
-cells, duplicate physical records, contract drift, tensor mismatch,
-asset mismatch and absent metrics all yield INCONCLUSIVE/refusal and
-never a promotion outcome.
+Spec note: §7.2 "M0.1" binds to the LOWEST phase2_lr_multiplier level
+(0.3 in contract v3); the deviation is declared in the output.
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple
@@ -38,11 +42,11 @@ from typing import Any, Callable, Dict, List, Tuple
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from pipeline_plugins import _system_config as sysid  # noqa: E402
 from tools import l1_factorial_screen as runner  # noqa: E402
-from tools import eth_curriculum_decision_experiment as d1  # noqa: E402
 
-AGGREGATION_SCHEMA = "agent_multi.l1_factorial_aggregation.v1"
-RECORD_SCHEMA = "agent_multi.l1_factorial_cell_record.v1"
+AGGREGATION_SCHEMA = "agent_multi.l1_factorial_aggregation.v2"
+RECORD_SCHEMA = "agent_multi.l1_factorial_cell_record.v2"
 OUTCOMES = ("EASY_CONTRIBUTES", "LR_ONLY", "INTERACTION",
             "EASY_HARMFUL", "INCONCLUSIVE")
 PROMOTION_OUTCOMES = ("EASY_CONTRIBUTES", "LR_ONLY", "INTERACTION",
@@ -53,17 +57,36 @@ MODE_TO_FACTOR = {
     "normal_realistic": "N",
 }
 
+MANDATORY_IDENTITY_FIELDS = (
+    "system_manifest_sha256", "resolved_config_sha256",
+    "observation_manifest_sha256", "terminal_model_sha256",
+    "terminal_policy_tensor_sha256", "phase1_requested_epochs",
+    "phase2_requested_epochs", "subject_code_identity",
+    "initial_cash", "cost_contract", "data_sha256",
+    "nested_split_contract_sha256", "metric_schema", "env_asset",
+    "cell_identity", "stop_reason", "history_len",
+)
+
+UNIFORM_ACROSS_RECORDS = (
+    "experiment_id", "contract_sha256", "system_manifest_sha256",
+    "data_sha256", "nested_split_contract_sha256", "metric_schema",
+    "env_asset", "subject_code_identity", "code_revisions",
+)
+
 RAW_METRIC_UNITS = {
     "trades_total": "count (closed trades, verification rollout)",
     "mean_weekly_return": "fraction per week (results.json)",
-    "total_return": "fraction of initial cash (final_equity/initial-1)",
+    "total_return": "fraction of bound initial cash",
     "max_drawdown_pct": "percent of peak equity (results.json)",
     "sharpe_ratio": "dimensionless (results.json)",
 }
 
 
-def _sha_file(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _finite(value: Any) -> bool:
+    try:
+        return math.isfinite(float(value))
+    except (TypeError, ValueError):
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -73,7 +96,6 @@ def _sha_file(path: Path) -> str:
 def discover_records(output_root: Path, experiment_id: str,
                      contract: dict) -> Tuple[Dict[Tuple[int, str], Path],
                                               List[str]]:
-    """Map (seed, cell) -> record path. Any anomaly is a refusal reason."""
     refusals: List[str] = []
     found: Dict[Tuple[int, str], Path] = {}
     seeds = sorted(int(s) for s in contract["anchors"])
@@ -88,7 +110,7 @@ def discover_records(output_root: Path, experiment_id: str,
             refusals.append(f"unreadable record {rec_path}: {exc}")
             continue
         if rec.get("experiment_id") != experiment_id:
-            continue  # other experiments may share the root; not ours
+            continue
         try:
             key = (int(rec.get("seed", -1)), str(rec.get("cell")))
         except (TypeError, ValueError):
@@ -103,7 +125,8 @@ def discover_records(output_root: Path, experiment_id: str,
             continue
         if key in found:
             refusals.append(
-                f"duplicate physical record for seed={key[0]} cell={key[1]}")
+                f"duplicate physical record for seed={key[0]} "
+                f"cell={key[1]}")
             continue
         found[key] = rec_path
     for seed in seeds:
@@ -113,13 +136,39 @@ def discover_records(output_root: Path, experiment_id: str,
     return found, refusals
 
 
+def cross_record_uniformity(records: Dict[str, dict]) -> List[str]:
+    """All records must share one exact experiment/system/code/data
+    identity. A field present on some records and absent on others is
+    itself a refusal."""
+    reasons: List[str] = []
+    for field in UNIFORM_ACROSS_RECORDS:
+        values = {}
+        for name, rec in sorted(records.items()):
+            marker = json.dumps(rec.get(field, "<ABSENT>"),
+                                sort_keys=True, default=str)
+            values.setdefault(marker, []).append(name)
+        if len(values) > 1:
+            detail = "; ".join(
+                f"{marker[:60]}…×{len(names)}" if len(marker) > 60
+                else f"{marker}×{len(names)}"
+                for marker, names in sorted(values.items()))
+            reasons.append(
+                f"identity field {field!r} is not uniform across "
+                f"records: {detail}")
+    return reasons
+
+
 # ---------------------------------------------------------------------------
-# pure validation of one record's bindings (§7.1 "missing facts = invalid")
+# pure validation of one record's bindings — disk facts injected
 # ---------------------------------------------------------------------------
 
-def validate_record_bindings(record: dict, *, contract: dict, seed: int,
-                             cell: str, experiment_id: str,
-                             evidence: dict | None) -> List[str]:
+def validate_record_bindings(record: dict, *, contract: dict,
+                             seed: int, cell: str,
+                             experiment_id: str,
+                             evidence: dict | None,
+                             manifest: dict | None = None,
+                             disk_facts: dict | None = None
+                             ) -> List[str]:
     reasons: List[str] = []
     spec = contract["cells"].get(cell)
     if spec is None:
@@ -139,15 +188,56 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
     if record.get("contract_sha256") != contract.get("_contract_sha256"):
         reasons.append("contract drift: record contract_sha256 differs "
                        "from the loaded contract")
+
+    for field in MANDATORY_IDENTITY_FIELDS:
+        if field not in record or record.get(field) in (None, ""):
+            reasons.append(f"mandatory identity field {field!r} absent")
+
+    if manifest is not None and \
+            record.get("system_manifest_sha256") not in (None, "") and \
+            record.get("system_manifest_sha256") != \
+            manifest.get("_manifest_sha256"):
+        reasons.append("system-manifest drift: record binds a different "
+                       "manifest than the loaded one")
     if int(record.get("seed", -1)) != seed or record.get("cell") != cell:
         reasons.append("record seed/cell disagree with its directory")
     if record.get("phase1_mode") != spec["phase1_mode"]:
         reasons.append("phase1_mode differs from contract cell spec")
     if record.get("phase2_lr_multiplier") != spec["phase2_lr_multiplier"]:
-        reasons.append("phase2_lr_multiplier differs from contract cell spec")
+        reasons.append("phase2_lr_multiplier differs from contract "
+                       "cell spec")
     anchor = contract["anchors"].get(str(seed), {})
     if record.get("anchor_sha256") != anchor.get("sha256"):
-        reasons.append("anchor artifact sha does not match contract anchor")
+        reasons.append("anchor artifact sha does not match contract "
+                       "anchor")
+
+    budget = contract.get("decision_budget", {})
+    if record.get("phase1_requested_epochs") is not None and \
+            budget.get("phase1_epochs") is not None and \
+            int(record["phase1_requested_epochs"]) != \
+            int(budget["phase1_epochs"]):
+        reasons.append("budget drift: phase1_requested_epochs differs "
+                       "from the contract decision budget")
+    if record.get("phase2_requested_epochs") is not None and \
+            budget.get("phase2_max_epochs") is not None and \
+            int(record["phase2_requested_epochs"]) != \
+            int(budget["phase2_max_epochs"]):
+        reasons.append("budget drift: phase2_requested_epochs differs "
+                       "from the contract decision budget")
+
+    subject = record.get("subject_code_identity")
+    if isinstance(subject, dict):
+        for repo_name, ident in sorted(subject.items()):
+            if not isinstance(ident, dict) or not ident.get("commit"):
+                reasons.append(f"subject code identity for {repo_name} "
+                               "lacks a commit")
+            elif ident.get("dirty"):
+                reasons.append(
+                    f"dirty executing source for {repo_name}: decision "
+                    "records must come from a clean committed tree "
+                    f"(digest {ident.get('dirty_untracked_digest')})")
+    elif subject is not None:
+        reasons.append("subject_code_identity is malformed")
 
     curriculum = record.get("curriculum") or {}
     post_easy = curriculum.get("post_easy") or {}
@@ -159,8 +249,8 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
     if post_easy and boundary:
         if boundary.get("policy_hash_matches_source_after_transfer") \
                 is not True:
-            reasons.append("boundary: transferred policy does not hash-match "
-                           "its source")
+            reasons.append("boundary: transferred policy does not "
+                           "hash-match its source")
         src = boundary.get("source_policy_tensor_hash")
         after = boundary.get("target_policy_tensor_hash_after_transfer")
         before = boundary.get("target_policy_tensor_hash_before_transfer")
@@ -175,16 +265,33 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
             reasons.append("boundary source artifact sha != phase-1 "
                            "selected artifact sha")
         if post_easy.get("phase1_terminal_policy_tensor_sha256") != src:
-            reasons.append("phase-1 terminal tensor sha != boundary source "
-                           "tensor hash")
+            reasons.append("phase-1 terminal tensor sha != boundary "
+                           "source tensor hash")
         updates = post_easy.get("phase1_gradient_updates")
         if not isinstance(updates, int) or updates <= 0:
-            reasons.append("phase-1 required gradient updates fact missing "
-                           "or zero")
+            reasons.append("phase-1 required gradient updates fact "
+                           "missing or zero")
 
     for field in ("terminal_model_path", "started_utc", "finished_utc"):
         if not record.get(field):
             reasons.append(f"record field {field} missing")
+
+    # Terminal rehash-to-record: VALIDATED against disk facts, never
+    # copied. Absent disk facts are themselves a refusal.
+    if disk_facts is None:
+        reasons.append("terminal disk facts absent: artifact and tensor "
+                       "were not rehashed to the record")
+    else:
+        if disk_facts.get("terminal_model_sha256") != \
+                record.get("terminal_model_sha256"):
+            reasons.append(
+                "terminal replacement: on-disk artifact sha "
+                f"{str(disk_facts.get('terminal_model_sha256'))[:12]}… "
+                "does not rehash to the record")
+        if disk_facts.get("terminal_policy_tensor_sha256") != \
+                record.get("terminal_policy_tensor_sha256"):
+            reasons.append("terminal tensor digest does not rehash to "
+                           "the record")
 
     nested_path = REPO / contract["nested_split_contract"]
     try:
@@ -192,6 +299,14 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
     except Exception as exc:
         reasons.append(f"nested split contract unreadable: {exc}")
         nested = {}
+    if record.get("nested_split_contract_sha256") not in (None, ""):
+        try:
+            actual_nested = sysid.sha_file(nested_path)
+        except Exception:
+            actual_nested = None
+        if actual_nested and \
+                record["nested_split_contract_sha256"] != actual_nested:
+            reasons.append("nested split contract drift vs record")
     if evidence is None:
         reasons.append("return-trace evidence.json missing (asset/data "
                        "binding unverifiable)")
@@ -200,16 +315,69 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
         if expected_sha and evidence.get("data_file_hash") != expected_sha:
             reasons.append("asset/data mismatch: evidence data_file_hash "
                            "differs from the pinned nested-split source")
+        if record.get("data_sha256") not in (None, "") and \
+                expected_sha and record["data_sha256"] != expected_sha:
+            reasons.append("record data_sha256 differs from the pinned "
+                           "nested-split source")
         asset = str(evidence.get("asset") or "")
-        # The contract's "asset" is a display label ("ETHUSD");
-        # "env_asset" is the environment's asset id the evidence
-        # actually records. Comparing the label refused every real
-        # cell — caught 2026-08-09 before first real aggregation.
         expected_asset = str(contract.get("env_asset") or "")
         if expected_asset and asset != expected_asset:
             reasons.append(f"asset mismatch: evidence asset {asset!r} != "
                            f"contract env_asset {expected_asset!r}")
+        if record.get("env_asset") not in (None, "") and \
+                expected_asset and record["env_asset"] != expected_asset:
+            reasons.append("record env_asset differs from contract")
     return reasons
+
+
+# ---------------------------------------------------------------------------
+# raw metrics — required, finite, unit-typed; failures are refusal reasons
+# ---------------------------------------------------------------------------
+
+def raw_metrics(record: dict, rollout_summary: dict | None
+                ) -> Tuple[dict, List[str]]:
+    reasons: List[str] = []
+    rec_dir = Path(record["_record_path"]).parent
+    attempt = record.get("attempt_dir")
+    results_path = None
+    for base in ([Path(attempt)] if attempt else []) + [rec_dir]:
+        candidate = Path(base) / "results.json"
+        if candidate.is_file():
+            results_path = candidate
+            break
+    metrics: Dict[str, Any] = {"units": RAW_METRIC_UNITS}
+    if results_path is None:
+        reasons.append("results.json missing — raw metrics unavailable")
+        return metrics, reasons
+    try:
+        results = json.loads(results_path.read_text())
+    except Exception as exc:
+        reasons.append(f"results.json unreadable: {exc}")
+        return metrics, reasons
+
+    initial_cash = record.get("initial_cash")
+    if not _finite(initial_cash) or float(initial_cash) <= 0:
+        reasons.append("bound initial_cash missing or non-finite; "
+                       "total return cannot be derived")
+        initial_cash = None
+
+    final_equity = results.get("final_equity")
+    metrics["trades_total"] = (None if rollout_summary is None
+                               else rollout_summary.get("trades_total"))
+    metrics["mean_weekly_return"] = results.get("mean_weekly_return")
+    metrics["total_return"] = (
+        None if (final_equity is None or initial_cash is None)
+        else float(final_equity) / float(initial_cash) - 1.0)
+    metrics["max_drawdown_pct"] = results.get("max_drawdown_pct")
+    metrics["sharpe_ratio"] = results.get("sharpe_ratio")
+    for key in ("trades_total", "mean_weekly_return", "total_return",
+                "max_drawdown_pct", "sharpe_ratio"):
+        if metrics.get(key) is None:
+            reasons.append(f"raw metric {key} absent")
+        elif not _finite(metrics[key]):
+            reasons.append(f"raw metric {key} non-finite: "
+                           f"{metrics[key]!r}")
+    return metrics, reasons
 
 
 # ---------------------------------------------------------------------------
@@ -218,11 +386,6 @@ def validate_record_bindings(record: dict, *, contract: dict, seed: int,
 
 def activity_facts(*, terminal_probe: dict | None,
                    rollout_summary: dict | None) -> dict:
-    """Six direct facts. active=True only when ALL are present and true.
-
-    A missing probe/summary or a missing field is an invalid_reason,
-    never "inactive".
-    """
     facts: Dict[str, Any] = {}
     invalid: List[str] = []
 
@@ -248,19 +411,18 @@ def activity_facts(*, terminal_probe: dict | None,
             invalid.append("phase-2 applied zero gradient updates")
         facts["phase2_updates_occurred"] = p2 is True
 
-    def _need(summary_key: str, fact_key: str, positive: str) -> bool | None:
+    def _need(summary_key: str, fact_key: str, positive: str) -> None:
         if rollout_summary is None:
-            return None
+            return
         value = rollout_summary.get(summary_key)
         if value is None:
             invalid.append(f"verification rollout lacks {summary_key}")
-            return None
+            return
         ok = float(value) > 0.0
         facts[fact_key] = ok
         facts[fact_key + "_value"] = value
         if not ok:
             facts.setdefault("inactive_signals", []).append(positive)
-        return ok
 
     if rollout_summary is None:
         invalid.append("verification rollout absent")
@@ -309,10 +471,6 @@ def activity_facts(*, terminal_probe: dict | None,
 
 def decide_outcome(matrix: Dict[float, Dict[int, Dict[str, dict]]],
                    *, refusals: List[str]) -> Tuple[str, str]:
-    """matrix[multiplier][seed][factor] = activity facts dict.
-
-    factor is "E" or "N". Evaluated exactly in spec §7.2 order.
-    """
     if refusals:
         return "INCONCLUSIVE", ("refusals precede evaluation: "
                                 + "; ".join(refusals))
@@ -326,7 +484,6 @@ def decide_outcome(matrix: Dict[float, Dict[int, Dict[str, dict]]],
                                 f"x{low}={sorted(matrix[low])} vs "
                                 f"x{high}={sorted(matrix[high])}")
 
-    # Rule 1 — any invalid or missing cell.
     for mult in multipliers:
         seeds = matrix[mult]
         for seed in sorted(seeds):
@@ -334,7 +491,8 @@ def decide_outcome(matrix: Dict[float, Dict[int, Dict[str, dict]]],
                 cell = seeds[seed].get(factor)
                 if cell is None:
                     return "INCONCLUSIVE", (f"missing cell factor={factor} "
-                                            f"multiplier={mult} seed={seed}")
+                                            f"multiplier={mult} "
+                                            f"seed={seed}")
                 if cell.get("valid") is not True:
                     return "INCONCLUSIVE", (
                         f"invalid cell factor={factor} multiplier={mult} "
@@ -354,17 +512,15 @@ def decide_outcome(matrix: Dict[float, Dict[int, Dict[str, dict]]],
     sum_low = sum(deltas(low).values())
     sum_high = sum(deltas(high).values())
 
-    # Rule 2 — INTERACTION.
     if sum_low != 0 and sum_high != 0 and \
             (sum_low > 0) != (sum_high > 0):
         return "INTERACTION", (f"paired delta sums disagree in sign: "
                                f"LR x{high}={sum_high:+d}, "
                                f"LR x{low}={sum_low:+d}")
-    # Rules 3-5 bind to the LOW multiplier level (spec "M0.1").
     e_low = actives(low, "E")
     n_low = actives(low, "N")
-    three_quarters = (3 * n_seeds + 3) // 4  # 3/4 of seeds, ceil
-    one_quarter = n_seeds // 4               # 1/4 of seeds, floor
+    three_quarters = (3 * n_seeds + 3) // 4
+    one_quarter = n_seeds // 4
     if e_low >= three_quarters and sum_low >= 2:
         return "EASY_CONTRIBUTES", (f"at LR x{low}: E active {e_low}/"
                                     f"{n_seeds}, paired delta sum "
@@ -385,19 +541,34 @@ def decide_outcome(matrix: Dict[float, Dict[int, Dict[str, dict]]],
 # impure probes — injectable so mutation tests never need a GPU
 # ---------------------------------------------------------------------------
 
+def terminal_disk_facts(record: dict) -> dict | None:
+    """Rehash the on-disk terminal artifact and its tensor digest —
+    BEFORE any rollout, per order §4."""
+    path = record.get("terminal_model_path")
+    if not path or not Path(path).is_file():
+        return None
+    facts = {"terminal_model_sha256": sysid.sha_file(Path(path))}
+    try:
+        facts["terminal_policy_tensor_sha256"] = \
+            runner._terminal_tensor_sha(path)
+    except Exception as exc:
+        facts["terminal_policy_tensor_sha256"] = None
+        facts["error"] = f"{type(exc).__name__}: {exc}"
+    return facts
+
+
 def probe_terminal(record: dict, *, agent_name: str = "sac_agent") -> dict:
-    """Load phase-1 and terminal artifacts; compare counters and digests."""
-    from pipeline_plugins.rl_pipeline_with_validation import (
-        PipelinePlugin, _load_env_plugin)
+    from pipeline_plugins.rl_pipeline_with_validation import PipelinePlugin
     from agent_plugins.sac_agent import _policy_tensor_hash
 
     out: Dict[str, Any] = {"loads": False}
     try:
         rec_dir = Path(record["_record_path"]).parent
-        config = _eval_config(record, rec_dir)
+        config = _eval_config(record)
         plugin = PipelinePlugin(config)
-        agent = d1._agent_plugin(agent_name)
-        csv_path = str(rec_dir / "nested_splits" / "inner_validation.csv")
+        agent = runner._agent_plugin(agent_name)
+        csv_path = str(Path(record["attempt_dir"]) / "nested_splits" /
+                       "inner_validation.csv")
         plug, env = plugin._make_split_env(
             str(config.get("env_plugin", "gym_fx_env")), config, csv_path,
             agent)
@@ -410,51 +581,41 @@ def probe_terminal(record: dict, *, agent_name: str = "sac_agent") -> dict:
                 terminal.policy)
             out["terminal_n_updates"] = int(
                 getattr(terminal, "_n_updates", 0) or 0)
-            phase1 = agent.load(str(post_easy.get("artifact")), env)
-            out["phase1_n_updates"] = int(
-                getattr(phase1, "_n_updates", 0) or 0)
-            # The boundary rebuilds the model via load_for_training, so
-            # the terminal's counter restarts at 0 there and counts
-            # phase-2 updates exactly; the phase-1 counter lives on a
-            # separate lineage and must never be subtracted from it.
+            # The boundary rebuild restarts the counter, so the
+            # terminal's counter counts phase-2 updates exactly.
             out["phase2_updates_occurred"] = out["terminal_n_updates"] > 0
-            boundary = record.get("boundary_transfer_evidence") or {}
-            start_hash = boundary.get(
-                "target_policy_tensor_hash_after_transfer")
+            phase1 = agent.load(str(post_easy.get("artifact")), env)
             phase1_hash = _policy_tensor_hash(phase1.policy)
+            boundary = record.get("boundary_transfer_evidence") or {}
             chain_ok = (phase1_hash == boundary.get(
                 "source_policy_tensor_hash"))
             out["tensor_chain_consistent"] = bool(chain_ok)
             out["tensor_chain_detail"] = (
-                "phase-1 artifact rehashed to its recorded boundary source"
-                if chain_ok else
-                f"phase-1 artifact rehash {phase1_hash[:12]}… != recorded "
-                f"boundary source")
-            out["terminal_differs_from_phase2_start"] = (
-                out["terminal_policy_tensor_sha256"] != start_hash)
+                "phase-1 artifact rehashed to its recorded boundary "
+                "source" if chain_ok else
+                f"phase-1 artifact rehash {phase1_hash[:12]}… != "
+                "recorded boundary source")
         finally:
             try:
                 plug.close()
             except Exception:
                 pass
-    except Exception as exc:  # any missing fact is invalid, never inactive
+    except Exception as exc:
         out["error"] = f"{type(exc).__name__}: {exc}"
     return out
 
 
 def verification_rollout(record: dict, *,
                          agent_name: str = "sac_agent") -> dict | None:
-    """Deterministic rollout of the terminal policy on the cell's own
-    inner_validation split under forced normal_realistic dynamics."""
     from pipeline_plugins.rl_pipeline_with_validation import PipelinePlugin
 
-    rec_dir = Path(record["_record_path"]).parent
-    csv_path = rec_dir / "nested_splits" / "inner_validation.csv"
+    csv_path = Path(record["attempt_dir"]) / "nested_splits" / \
+        "inner_validation.csv"
     if not csv_path.is_file():
         return None
-    config = _eval_config(record, rec_dir)
+    config = _eval_config(record)
     plugin = PipelinePlugin(config)
-    agent = d1._agent_plugin(agent_name)
+    agent = runner._agent_plugin(agent_name)
     plug, env = plugin._make_split_env(
         str(config.get("env_plugin", "gym_fx_env")), config, str(csv_path),
         agent)
@@ -477,43 +638,18 @@ def verification_rollout(record: dict, *,
             pass
 
 
-def _eval_config(record: dict, rec_dir: Path) -> dict:
-    """Rebuild the evaluation-relevant slice of the cell config."""
-    config = d1._base_config(rec_dir, str(record["cell"]),
-                             int(record["seed"]), epoch_timesteps=20000)
+def _eval_config(record: dict) -> dict:
+    """Evaluation config through the SAME system manifest — never the
+    legacy base config resolver."""
+    contract = runner.load_contract()
+    manifest = runner.load_system_manifest()
+    config = sysid.materialize_system_config(
+        contract, manifest, str(record["cell"]), int(record["seed"]),
+        Path(record["attempt_dir"]))
+    config.pop("_identity", None)
     config["solvency_mode"] = "normal_realistic"
-    config.pop("return_trace_dir", None)  # never touch the cell's traces
+    config.pop("return_trace_dir", None)
     return config
-
-
-# ---------------------------------------------------------------------------
-# raw per-seed metrics (§7.2 tail: always emitted, with units)
-# ---------------------------------------------------------------------------
-
-def raw_metrics(record: dict, rollout_summary: dict | None) -> dict:
-    rec_dir = Path(record["_record_path"]).parent
-    metrics: Dict[str, Any] = {"units": RAW_METRIC_UNITS}
-    results_path = rec_dir / "results.json"
-    try:
-        results = json.loads(results_path.read_text())
-    except Exception:
-        metrics["absent"] = "results.json missing or unreadable"
-        return metrics
-    initial = 10_000.0
-    final_equity = results.get("final_equity")
-    metrics["trades_total"] = (None if rollout_summary is None
-                               else rollout_summary.get("trades_total"))
-    metrics["mean_weekly_return"] = results.get("mean_weekly_return")
-    metrics["total_return"] = (
-        None if final_equity is None else float(final_equity) / initial - 1.0)
-    metrics["max_drawdown_pct"] = results.get("max_drawdown_pct")
-    metrics["sharpe_ratio"] = results.get("sharpe_ratio")
-    missing = [k for k in ("mean_weekly_return", "total_return",
-                           "max_drawdown_pct", "sharpe_ratio",
-                           "trades_total") if metrics.get(k) is None]
-    if missing:
-        metrics["absent"] = f"metrics absent: {', '.join(missing)}"
-    return metrics
 
 
 # ---------------------------------------------------------------------------
@@ -522,29 +658,49 @@ def raw_metrics(record: dict, rollout_summary: dict | None) -> dict:
 
 def aggregate(output_root: Path, experiment_id: str, *,
               contract: dict | None = None,
+              manifest: dict | None = None,
               probe_fn: Callable[[dict], dict] = probe_terminal,
               rollout_fn: Callable[[dict], dict | None] =
-              verification_rollout) -> dict:
+              verification_rollout,
+              disk_facts_fn: Callable[[dict], dict | None] =
+              terminal_disk_facts) -> dict:
     contract = contract or runner.load_contract()
-    records, refusals = discover_records(output_root, experiment_id,
-                                         contract)
+    manifest = manifest or runner.load_system_manifest()
+    records_paths, refusals = discover_records(output_root, experiment_id,
+                                               contract)
     matrix: Dict[float, Dict[int, Dict[str, dict]]] = {}
     per_cell: Dict[str, Any] = {}
     raw: Dict[str, Any] = {}
+    loaded: Dict[str, dict] = {}
 
-    for (seed, cell), rec_path in sorted(records.items()):
+    for (seed, cell), rec_path in sorted(records_paths.items()):
         record = json.loads(rec_path.read_text())
         record["_record_path"] = str(rec_path)
-        evidence_path = rec_path.parent / "return_traces" / "evidence.json"
+        record.setdefault("attempt_dir", str(rec_path.parent))
+        loaded[f"seed{seed}/{cell}"] = record
+
+    refusals.extend(cross_record_uniformity(loaded))
+
+    for name, record in sorted(loaded.items()):
+        seed = int(record["seed"])
+        cell = str(record["cell"])
+        rec_path = Path(record["_record_path"])
+        evidence_path = Path(record["attempt_dir"]) / "return_traces" / \
+            "evidence.json"
+        if not evidence_path.is_file():
+            evidence_path = rec_path.parent / "return_traces" / \
+                "evidence.json"
         evidence = None
         if evidence_path.is_file():
             try:
                 evidence = json.loads(evidence_path.read_text())
             except Exception:
                 evidence = None
+        disk_facts = disk_facts_fn(record)
         reasons = validate_record_bindings(
-            record, contract=contract, seed=seed, cell=cell,
-            experiment_id=experiment_id, evidence=evidence)
+            record, contract=contract, manifest=manifest, seed=seed,
+            cell=cell, experiment_id=experiment_id, evidence=evidence,
+            disk_facts=disk_facts)
         if reasons:
             facts = {"valid": False, "active": None,
                      "invalid_reasons": reasons}
@@ -554,6 +710,9 @@ def aggregate(output_root: Path, experiment_id: str, *,
             summary = rollout_fn(record)
             facts = activity_facts(terminal_probe=probe,
                                    rollout_summary=summary)
+        metrics, metric_reasons = raw_metrics(record, summary)
+        if metric_reasons:
+            refusals.extend(f"{name}: {r}" for r in metric_reasons)
         spec = contract["cells"].get(cell, {})
         factor = MODE_TO_FACTOR.get(str(spec.get("phase1_mode")))
         mult = spec.get("phase2_lr_multiplier")
@@ -566,34 +725,40 @@ def aggregate(output_root: Path, experiment_id: str, *,
                 refusals.append(f"two cells resolve to factor={factor} "
                                 f"multiplier={mult} seed={seed}")
             slot[factor] = facts
-        per_cell[f"seed{seed}/{cell}"] = facts
-        raw[f"seed{seed}/{cell}"] = raw_metrics(record, summary)
+        per_cell[name] = facts
+        raw[name] = metrics
 
     outcome, rationale = decide_outcome(matrix, refusals=refusals)
+    subject_revisions = sorted({
+        json.dumps(rec.get("subject_code_identity"), sort_keys=True,
+                   default=str)
+        for rec in loaded.values()})
     return {
         "schema": AGGREGATION_SCHEMA,
         "experiment_id": experiment_id,
         "contract_sha256": contract.get("_contract_sha256"),
+        "system_manifest_sha256": manifest.get("_manifest_sha256"),
         "outcome": outcome,
         "outcome_rationale": rationale,
         "outcome_domain": "activity survival only; profit does not gate "
                           "this mechanism screen",
         "spec_deviation_declared": (
             "spec §7.2 'M0.1' bound to the contract's lowest "
-            "phase2_lr_multiplier level; cell_record.v1 lacks a terminal "
-            "tensor digest, so the aggregator computes it directly from "
-            "the artifact and publishes it here"),
+            "phase2_lr_multiplier level"),
         "refusals": refusals,
         "cells": per_cell,
         "raw_metrics_per_seed": raw,
-        "code_revisions": {r: d1._git_rev(r)
-                           for r in ("agent-multi", "gym-fx")},
+        "subject_execution_revisions": [
+            json.loads(s) if s != "null" else None
+            for s in subject_revisions],
+        "aggregator_revisions": {
+            "agent-multi": sysid.source_tree_identity(
+                sysid.resolve_repo_root(Path(__file__))),
+        },
     }
 
 
 def write_aggregation(result: dict, output_root: Path) -> Path:
-    """Append-only publication: identical re-runs are idempotent,
-    divergent overwrites are refused."""
     out_dir = output_root / result["experiment_id"] / "aggregation"
     out_dir.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(result, indent=1, sort_keys=True,
@@ -623,7 +788,10 @@ def main() -> int:
                       "rationale": result["outcome_rationale"],
                       "refusals": len(result["refusals"]),
                       "aggregation": str(path)}))
-    return 0 if result["outcome"] in OUTCOMES else 1
+    # INCONCLUSIVE or any refusal exits nonzero (order §4).
+    if result["outcome"] == "INCONCLUSIVE" or result["refusals"]:
+        return 3
+    return 0
 
 
 if __name__ == "__main__":

@@ -1137,6 +1137,7 @@ class PipelinePlugin:
                         ent = float("nan")
                     return actor, critic, ent
 
+                stop_reason = "max_epochs_budget"
                 for epoch in range(1, max_epochs + 1):
                     _set_env_training_progress(
                         train_env,
@@ -1447,6 +1448,7 @@ class PipelinePlugin:
                     )
 
                     if patience_eligible and no_improve >= l1_patience:
+                        stop_reason = "l1_early_stop"
                         print(
                             f"[train] L1 EARLY STOP at epoch {epoch} "
                             f"(no improvement for {no_improve} epochs, patience={l1_patience})",
@@ -1469,6 +1471,7 @@ class PipelinePlugin:
                             " gate never passed, so no eligible"
                             " checkpoint can exist"
                         )
+                        stop_reason = "activity_stop_no_eligible_checkpoint"
                         print(
                             f"[train] ACTIVITY STOP at epoch {epoch}:"
                             f" {activity_stop_reason}", flush=True)
@@ -1514,6 +1517,7 @@ class PipelinePlugin:
                     final["best_model_path"] = None
                     final["activity_stopped_without_eligible_checkpoint"] = (
                         True)
+                    final["stop_reason"] = stop_reason
                     final["termination_cause"] = stop_detail
                     final["artifacts"] = {
                         "best_checkpoint": None,
@@ -1554,6 +1558,7 @@ class PipelinePlugin:
                 final["mode"] = mode
                 final["history"] = history
                 final["best_composite"] = best_composite
+                final["stop_reason"] = stop_reason
                 final["best_model_path"] = str(Path(best_model_path).resolve())
                 final["artifacts"] = {
                     "best_checkpoint": {

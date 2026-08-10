@@ -81,6 +81,5 @@
    "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"
   }
  },
- "output_root": "~/.local/share/agent-multi/l1_matched_factorial_20260809_v1",
- "code_identity_expected": "5322d42a"
+ "output_root": "~/.local/share/agent-multi/l1_matched_factorial_20260809_v1"
 }
