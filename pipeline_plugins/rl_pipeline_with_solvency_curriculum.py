@@ -438,7 +438,16 @@ class PipelinePlugin(ValidationPipelinePlugin):
                                   if phase1_mode == EASY_MODE
                                   else NORMAL_MODE),
                 "best_easy_epoch": best_epoch,
-                "easy_epochs_run": len(history),
+                # Finding 200: trained epochs are epoch > 0 ONLY; the
+                # epoch-0 baseline evaluation is telemetry, counted
+                # separately. The legacy alias carries the SAME truthful
+                # trained count (aliases never lie).
+                "phase1_epochs_run": sum(
+                    1 for h in history if int(h.get("epoch", 0)) > 0),
+                "phase1_baseline_evaluations": sum(
+                    1 for h in history if int(h.get("epoch", 0)) == 0),
+                "easy_epochs_run": sum(
+                    1 for h in history if int(h.get("epoch", 0)) > 0),
                 "easy_budget_epochs": max_epochs,
                 "easy_epoch_timesteps": epoch_ts,
                 "activity_contract": {

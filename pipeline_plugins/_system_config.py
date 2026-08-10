@@ -173,6 +173,14 @@ def validate_normal_contract(bindings: Dict[str, Any]) -> None:
     if "min_equity" not in bindings:
         raise RuntimeError("normal contract: min_equity behavior must "
                            "be explicit")
+    financing = bindings.get("financing_treatment")
+    if not isinstance(financing, dict) or \
+            not isinstance(financing.get("charged"), bool) or \
+            not financing.get("reason"):
+        raise RuntimeError(
+            "normal contract: financing treatment must be EXPLICIT — a "
+            "boolean 'charged' fact with its reason; silence is not a "
+            "declaration (finding 199)")
 
 
 def validate_manifest_provenance(system_manifest: Dict[str, Any]) -> None:

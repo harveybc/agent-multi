@@ -113,12 +113,9 @@ def default_replica_verify(replica_host: str, replica_root: Path,
 
 
 def tree_digest(root: Path) -> str:
-    digest = hashlib.sha256()
-    for path in sorted(root.rglob("*")):
-        if path.is_file():
-            digest.update(str(path.relative_to(root)).encode())
-            digest.update(sysid.sha_file(path).encode())
-    return digest.hexdigest()
+    # Single canonical implementation shared with the aggregator's
+    # envelope gate.
+    return agg.tree_digest(root)
 
 
 def collect(*, contract: dict, experiment_id: str, collection_root: Path,
@@ -334,23 +331,19 @@ def main() -> int:
     if manifest["outcome"] != "COLLECTION_SEALED":
         return 3
     if args.aggregate:
-        # Finding 190: aggregation REFUSES without a successful
-        # whole-tree replica proof.
-        replica = manifest.get("replica") or {}
-        if not (replica.get("host") and replica.get("digests_match")
-                is True):
-            print(json.dumps({
-                "outcome": "AGGREGATION_REFUSED",
-                "reason": "no successful independent replica proof"}),
-                flush=True)
+        # Findings 190/196/197: BOTH public CLIs go through the same
+        # envelope authority — sealed manifest, matching replica proof,
+        # fresh sealed rehash, publication OUTSIDE the seal.
+        try:
+            result = agg.aggregate_from_collection(
+                Path(args.collection_root), args.experiment_id,
+                contract=contract)
+        except RuntimeError as exc:
+            print(json.dumps({"outcome": "AGGREGATION_REFUSED",
+                              "reason": str(exc)}), flush=True)
             return 3
-        # Aggregation ONLY from the sealed collection root.
-        sealed_parent = Path(args.collection_root) / "sealed"
-        result = agg.aggregate(sealed_parent, args.experiment_id,
-                               contract=contract)
-        path = agg.write_aggregation(result, sealed_parent)
         print(json.dumps({"outcome": result["outcome"],
-                          "aggregation": str(path)}), flush=True)
+                          "sealed_digest_unchanged": True}), flush=True)
         if result["outcome"] == "INCONCLUSIVE" or result["refusals"]:
             return 3
     return 0

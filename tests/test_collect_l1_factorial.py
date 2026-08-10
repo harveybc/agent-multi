@@ -281,6 +281,92 @@ class TestSealedRootAuthority:
             record["terminal_model_sha256"]
 
 
+class TestAggregationAuthority:
+    """WP12 (findings 196-197): single envelope authority; the seal is
+    immutable after its digest is published."""
+
+    def _sealed_collection(self, tmp_path, *, with_replica=True):
+        from tools import aggregate_l1_factorial as agg
+
+        contract = make_fleet_contract(tmp_path)
+        build_source(tmp_path, contract)
+        kw = {}
+        if with_replica:
+            replicate, verify, _ = replica_store_fns(tmp_path)
+            kw = {"replica_host": "replica-host",
+                  "replica_root": tmp_path / "replica_root",
+                  "replicate_fn": replicate,
+                  "replica_verify_fn": verify}
+        manifest = run_collect(tmp_path, contract, **kw)
+        return agg, contract, tmp_path / "collection", manifest
+
+    def test_aggregation_outside_seal_and_digest_unchanged(self,
+                                                           tmp_path):
+        agg, contract, croot, manifest = self._sealed_collection(
+            tmp_path)
+        sealed = Path(manifest["sealed_root"])
+        before = agg.tree_digest(sealed)
+        result = agg.aggregate_from_collection(croot, EXP,
+                                               contract=contract)
+        # Publication landed OUTSIDE the sealed input...
+        out = croot / "aggregations" / EXP / \
+            "l1_factorial_aggregation.json"
+        assert out.is_file()
+        assert not any(sealed.rglob("l1_factorial_aggregation.json"))
+        # ...and the sealed digest is byte-identical afterwards.
+        assert agg.tree_digest(sealed) == before
+        assert result["sealed_digest_after_write"] == before
+        env = result["collection_envelope"]
+        assert env["sealed_input_digest"] == before
+        assert env["replica_tree_digest"] == before
+        assert env["collection_manifest_sha256"]
+
+    def test_unreplicated_root_refuses_aggregation(self, tmp_path):
+        import pytest
+
+        agg, contract, croot, manifest = self._sealed_collection(
+            tmp_path, with_replica=False)
+        assert manifest["outcome"] == "COLLECTION_SEALED_WITHOUT_REPLICA"
+        with pytest.raises(RuntimeError, match="not COLLECTION_SEALED"):
+            agg.aggregate_from_collection(croot, EXP, contract=contract)
+
+    def test_tampered_seal_refuses_aggregation(self, tmp_path):
+        import pytest
+
+        agg, contract, croot, manifest = self._sealed_collection(
+            tmp_path)
+        victim = next(Path(manifest["sealed_root"]).rglob(
+            "results.json"))
+        victim.write_text(victim.read_text() + " ")
+        with pytest.raises(RuntimeError, match="stale or tampered"):
+            agg.aggregate_from_collection(croot, EXP, contract=contract)
+
+    def test_wrong_experiment_refuses(self, tmp_path):
+        import pytest
+
+        agg, contract, croot, _ = self._sealed_collection(tmp_path)
+        with pytest.raises(RuntimeError, match="is for experiment"):
+            agg.load_collection_envelope(croot, "0000000000000000")
+
+    def test_direct_cli_enforces_the_same_authority(self, tmp_path,
+                                                    monkeypatch,
+                                                    capsys):
+        import sys as _sys
+
+        agg, contract, croot, manifest = self._sealed_collection(
+            tmp_path, with_replica=False)
+        monkeypatch.setattr(agg.runner, "load_contract",
+                            lambda *a, **k: contract)
+        monkeypatch.setattr(
+            _sys, "argv",
+            ["aggregate", "--experiment-id", EXP,
+             "--collection-root", str(croot)])
+        code = agg.main()
+        assert code == 3
+        out = capsys.readouterr().out
+        assert "AGGREGATION_REFUSED" in out
+
+
 class TestReplica:
     def test_replica_verified_by_rehash_and_load(self, tmp_path):
         contract = make_fleet_contract(tmp_path)

@@ -577,24 +577,22 @@ class TestAggregateEndToEnd:
         assert result["outcome"] == "INCONCLUSIVE"
         assert result["outcome"] not in agg.PROMOTION_OUTCOMES
 
-    def test_cli_exit_semantics(self, tmp_path, monkeypatch, capsys):
+    def test_cli_refuses_without_collection_envelope(self, tmp_path,
+                                                     monkeypatch,
+                                                     capsys):
+        # WP12 (finding 197): the direct CLI cannot aggregate a bare
+        # record tree — it requires the sealed collection envelope.
         contract = make_contract()
-        root = build_tree(tmp_path, contract)
-        (root / EXP / "seed101" / "L1_N_M10" / "results.json").unlink()
+        build_tree(tmp_path, contract)
         monkeypatch.setattr(agg.runner, "load_contract",
                             lambda *a, **k: contract)
-        monkeypatch.setattr(agg.runner, "load_system_manifest",
-                            lambda *a, **k: make_manifest())
-        monkeypatch.setattr(agg, "terminal_disk_facts",
-                            matching_disk_facts)
-        monkeypatch.setattr(agg, "probe_terminal", healthy_probe)
-        monkeypatch.setattr(agg, "verification_rollout", healthy_rollout)
         monkeypatch.setattr(
             sys, "argv",
             ["aggregate", "--experiment-id", EXP,
-             "--output-root", str(root)])
+             "--collection-root", str(tmp_path)])
         code = agg.main()
-        assert code != 0  # INCONCLUSIVE/refusals exit nonzero
+        assert code == 3
+        assert "AGGREGATION_REFUSED" in capsys.readouterr().out
 
     def test_write_aggregation_is_append_only(self, tmp_path):
         contract = make_contract()

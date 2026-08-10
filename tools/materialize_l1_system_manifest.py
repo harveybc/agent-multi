@@ -31,7 +31,7 @@ from tools import l1_factorial_screen as runner  # noqa: E402
 # in the repo only as REJECTED evidence; v2 is generated exclusively
 # from a clean commit (the generator refuses a dirty tree).
 OUT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/systems/"
-            "ethusdt_4h_l1_system_v2.json")
+            "ethusdt_4h_l1_system_v3.json")
 
 COST_KEYS = (
     "commission", "slippage", "leverage", "initial_cash", "k_sl", "k_tp",
@@ -53,6 +53,17 @@ NORMAL_CONTRACT = {
     "slippage": 0.0,
     "require_protected_entries": True,
     "min_equity": 100.0,
+    # Finding 199: financing must be EXPLICIT, never silent. The
+    # Backtrader mechanism screen applies no overnight financing;
+    # declaring it disabled (with the reason) is the honest binding —
+    # future parity analysis can distinguish deliberate zero financing
+    # from omission.
+    "financing_treatment": {
+        "charged": False,
+        "mechanism": "backtrader_mechanism_screen",
+        "reason": ("the Backtrader path applies no overnight/holding "
+                   "financing; declared disabled rather than omitted"),
+    },
 }
 
 # The executable plugin surface (order §3.1, finding 191): these names

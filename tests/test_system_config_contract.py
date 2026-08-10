@@ -56,6 +56,11 @@ def real_manifest_fixture() -> tuple[dict, dict]:
             "min_equity": 100.0,
             "initial_cash": 10000.0,
             "leverage": 1.0,
+            "financing_treatment": {
+                "charged": False,
+                "mechanism": "backtrader_mechanism_screen",
+                "reason": "no overnight financing in the backtest path",
+            },
         }},
         "plugins": {
             "env_plugin": base.get("env_plugin"),
@@ -117,6 +122,20 @@ class TestNormalContractCompleteness:
         contract, manifest = real_manifest_fixture()
         del manifest["costs"]["config_bindings"]["min_equity"]
         with pytest.raises(RuntimeError, match="min_equity"):
+            materialize(contract, manifest, tmp_path)
+
+    def test_implicit_financing_is_refused(self, tmp_path):
+        # Finding 199: silence is not a financing declaration.
+        contract, manifest = real_manifest_fixture()
+        del manifest["costs"]["config_bindings"]["financing_treatment"]
+        with pytest.raises(RuntimeError, match="financing"):
+            materialize(contract, manifest, tmp_path)
+
+    def test_financing_without_reason_is_refused(self, tmp_path):
+        contract, manifest = real_manifest_fixture()
+        manifest["costs"]["config_bindings"]["financing_treatment"] = {
+            "charged": False}
+        with pytest.raises(RuntimeError, match="financing"):
             materialize(contract, manifest, tmp_path)
 
 

@@ -46,12 +46,14 @@ MANIFEST = {"schema": "agent_multi.system_manifest.v1",
             }}
 
 
-def make_launcher(contract, *, run_cell_fn,
-                  hostname="testhost") -> fl.SeedLauncher:
+def make_launcher(contract, *, run_cell_fn, hostname="testhost",
+                  seed=101, cuda_env="GPU-test-uuid",
+                  gpu_uuids=None) -> fl.SeedLauncher:
     return fl.SeedLauncher(
-        contract=contract, manifest=MANIFEST, seed=101, smoke=True,
-        hostname=hostname, gpu_uuids=["GPU-test-uuid"],
-        run_cell_fn=run_cell_fn)
+        contract=contract, manifest=MANIFEST, seed=seed, smoke=True,
+        hostname=hostname,
+        gpu_uuids=gpu_uuids or ["GPU-test-uuid"],
+        cuda_env=cuda_env, run_cell_fn=run_cell_fn)
 
 
 def instant_cell(cell, seed, *, contract, manifest, smoke):
@@ -88,6 +90,61 @@ class TestAssignmentEnforcement:
         result = make_launcher(contract,
                                run_cell_fn=instant_cell).run()
         assert result["outcome"] == "REFUSED_BAD_CONTRACT"
+
+    def test_missing_cuda_binding_is_refused(self, tmp_path):
+        # Finding 198: visibility is not binding — an unset
+        # CUDA_VISIBLE_DEVICES refuses even with the UUID visible.
+        contract = make_contract(tmp_path)
+        result = make_launcher(contract, run_cell_fn=instant_cell,
+                               cuda_env=None).run()
+        assert result["outcome"] == "REFUSED_GPU_UNBOUND"
+        assert "unset" in result["reason"]
+
+    def test_wrong_cuda_binding_is_refused(self, tmp_path):
+        contract = make_contract(tmp_path)
+        result = make_launcher(contract, run_cell_fn=instant_cell,
+                               cuda_env="GPU-other-uuid").run()
+        assert result["outcome"] == "REFUSED_GPU_UNBOUND"
+        assert "does not equal" in result["reason"]
+
+    def test_cross_seed_binding_is_refused(self, tmp_path):
+        # Seed 303's env carrying seed 404's UUID must refuse.
+        contract = make_contract(tmp_path)
+        contract["anchors"]["303"] = contract["anchors"]["101"]
+        contract["anchors"]["404"] = contract["anchors"]["101"]
+        contract["assignments"] = {
+            "303": {"hostname": "testhost", "gpu_uuid": "GPU-5070ti"},
+            "404": {"hostname": "testhost", "gpu_uuid": "GPU-5090"},
+        }
+        result = make_launcher(
+            contract, run_cell_fn=instant_cell, seed=303,
+            cuda_env="GPU-5090",
+            gpu_uuids=["GPU-5070ti", "GPU-5090"]).run()
+        assert result["outcome"] == "REFUSED_GPU_UNBOUND"
+
+    def test_two_concurrent_gamma_workers_both_complete(self, tmp_path):
+        # Distinct seeds with distinct exact bindings run concurrently
+        # on one host: separate flocks, both single-writer complete.
+        contract = make_contract(tmp_path)
+        contract["anchors"]["303"] = contract["anchors"]["101"]
+        contract["anchors"]["404"] = contract["anchors"]["101"]
+        contract["assignments"] = {
+            "303": {"hostname": "testhost", "gpu_uuid": "GPU-5070ti"},
+            "404": {"hostname": "testhost", "gpu_uuid": "GPU-5090"},
+        }
+        gpus = ["GPU-5070ti", "GPU-5090"]
+        results = {}
+
+        def run(seed, uuid):
+            results[seed] = make_launcher(
+                contract, run_cell_fn=instant_cell, seed=seed,
+                cuda_env=uuid, gpu_uuids=gpus).run()
+
+        t1 = threading.Thread(target=run, args=(303, "GPU-5070ti"))
+        t2 = threading.Thread(target=run, args=(404, "GPU-5090"))
+        t1.start(); t2.start(); t1.join(60); t2.join(60)
+        assert results[303]["outcome"] == "SEED_COMPLETE"
+        assert results[404]["outcome"] == "SEED_COMPLETE"
 
 
 class TestDoubleDispatch:

@@ -421,3 +421,42 @@ def test_phase1_metadata_is_truthful_for_easy_mode(harness):
     assert meta["solvency_mode"] == "easy_chronological_continuation"
     assert meta["activity_contract"][
         "normal_handoff_activity_gates_selection"] is False
+
+
+def test_phase1_epoch_facts_exclude_baseline_warm_start(harness):
+    # Finding 200: with a warm start the history carries an epoch-0
+    # baseline evaluation; realized epochs must count ONLY epoch > 0.
+    pipeline, made_envs, parent_calls, tmp_path = harness
+    agent = FakeAgent()
+    config = _config(tmp_path)
+    config["easy_max_epochs"] = 1
+    anchor = tmp_path / "anchor.zip"
+    anchor.write_bytes(b"anchor")
+    config["warm_start_model"] = str(anchor)
+    pipeline.run_pipeline(config=config, env_plugin=None,
+                          agent_plugin=agent, mode="train")
+    meta = json.loads(Path(
+        parent_calls[0]["config"]["warm_start_model"]
+        + ".meta.json").read_text())
+    trained = [h for h in meta["history"] if h["epoch"] > 0]
+    baseline = [h for h in meta["history"] if h["epoch"] == 0]
+    assert meta["phase1_epochs_run"] == len(trained)
+    assert meta["phase1_baseline_evaluations"] == len(baseline)
+    # Truthful alias: identical to the trained count, never inflated.
+    assert meta["easy_epochs_run"] == meta["phase1_epochs_run"]
+
+
+def test_phase1_epoch_facts_multi_epoch_no_warm_start(harness):
+    pipeline, made_envs, parent_calls, tmp_path = harness
+    agent = FakeAgent()
+    config = _config(tmp_path)
+    config["easy_max_epochs"] = 4
+    pipeline.run_pipeline(config=config, env_plugin=None,
+                          agent_plugin=agent, mode="train")
+    meta = json.loads(Path(
+        parent_calls[0]["config"]["warm_start_model"]
+        + ".meta.json").read_text())
+    assert meta["phase1_epochs_run"] == sum(
+        1 for h in meta["history"] if h["epoch"] > 0)
+    assert meta["phase1_epochs_run"] + \
+        meta["phase1_baseline_evaluations"] == len(meta["history"])

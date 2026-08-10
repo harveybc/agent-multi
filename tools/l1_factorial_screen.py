@@ -32,7 +32,7 @@ from pipeline_plugins import _system_config as sysid  # noqa: E402
 CONTRACT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                  "l1_factorial_contract_v3.json")
 SYSTEM_MANIFEST_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
-                        "systems/ethusdt_4h_l1_system_v2.json")
+                        "systems/ethusdt_4h_l1_system_v3.json")
 SCHEMA = "agent_multi.l1_factorial_cell_record.v2"
 GYM_FX_ROOT = Path("/home/harveybc/Documents/GitHub/gym-fx")
 
@@ -263,7 +263,26 @@ def run_cell(cell: str, seed: int, *, contract: dict, manifest: dict,
     terminal_sha = _sha_file(Path(terminal_path))
     terminal_tensor_sha = _terminal_tensor_sha(terminal_path)
 
+    # Finding 198: persist assigned vs bound vs observed CUDA facts.
+    assignment = (contract.get("assignments") or {}).get(str(seed)) or {}
+    gpu_binding = {
+        "assigned_gpu_uuid": assignment.get("gpu_uuid"),
+        "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+    }
+    try:
+        import torch
+        gpu_binding["torch_cuda_available"] = torch.cuda.is_available()
+        gpu_binding["torch_cuda_device_count"] = \
+            torch.cuda.device_count()
+        if torch.cuda.is_available():
+            gpu_binding["torch_cuda_device_name"] = \
+                torch.cuda.get_device_name(0)
+    except Exception:
+        gpu_binding["torch_cuda_available"] = None
+
     history = result.get("history") or []
+    post_easy_meta = (result.get("curriculum") or {}).get(
+        "post_easy") or {}
     record = {
         "schema": SCHEMA,
         "evidence_class": ("mechanics_smoke" if smoke else "decision_run"),
@@ -298,10 +317,14 @@ def run_cell(cell: str, seed: int, *, contract: dict, manifest: dict,
             "anchor_policy_tensor_sha256"],
         "phase1_requested_epochs": int(budget["phase1_epochs"]),
         "phase2_requested_epochs": int(budget["phase2_max_epochs"]),
-        "phase1_realized_epochs": (
-            (result.get("curriculum") or {}).get("post_easy", {})
-            .get("easy_epochs_run")),
+        # Finding 200: realized epochs count TRAINED epochs only
+        # (epoch > 0); the baseline evaluation is a separate fact.
+        "phase1_realized_epochs": post_easy_meta.get(
+            "phase1_epochs_run", post_easy_meta.get("easy_epochs_run")),
+        "phase1_baseline_evaluations": post_easy_meta.get(
+            "phase1_baseline_evaluations"),
         "phase2_realized_epochs": len(history),
+        "gpu_binding": gpu_binding,
         "stop_reason": result.get("stop_reason"),
         "termination_cause": result.get("termination_cause"),
         "activity_stopped_without_eligible_checkpoint": bool(

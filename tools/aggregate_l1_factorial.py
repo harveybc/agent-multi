@@ -826,8 +826,77 @@ def aggregate(output_root: Path, experiment_id: str, *,
     }
 
 
-def write_aggregation(result: dict, output_root: Path) -> Path:
-    out_dir = output_root / result["experiment_id"] / "aggregation"
+def tree_digest(root: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(Path(root).rglob("*")):
+        if path.is_file():
+            digest.update(str(path.relative_to(root)).encode())
+            digest.update(sysid.sha_file(path).encode())
+    return digest.hexdigest()
+
+
+def load_collection_envelope(collection_root: Path,
+                             experiment_id: str) -> dict:
+    """Single aggregation authority (order §2/WP12, findings 196-197).
+
+    No production CLI may publish a decision artifact without this
+    envelope: a COLLECTION_SEALED manifest for the exact experiment,
+    zero refusals, a successful matching replica proof, and a sealed
+    tree that — rehashed NOW — still equals both the published source
+    digest and the replica digest."""
+    collection_root = Path(collection_root)
+    manifest_path = collection_root / "collection_manifest.json"
+    if not manifest_path.is_file():
+        raise RuntimeError(
+            "aggregation refused: no collection manifest at "
+            f"{manifest_path}")
+    cm = json.loads(manifest_path.read_text())
+    if cm.get("outcome") != "COLLECTION_SEALED":
+        raise RuntimeError(
+            "aggregation refused: collection outcome is "
+            f"{cm.get('outcome')!r}, not COLLECTION_SEALED")
+    if cm.get("experiment_id") != experiment_id:
+        raise RuntimeError(
+            "aggregation refused: collection manifest is for experiment "
+            f"{cm.get('experiment_id')!r}, not {experiment_id!r}")
+    if cm.get("refusals"):
+        raise RuntimeError("aggregation refused: collection manifest "
+                           "carries refusals")
+    replica = cm.get("replica") or {}
+    if not replica.get("host") or replica.get("digests_match") is not True:
+        raise RuntimeError("aggregation refused: no successful matching "
+                           "replica proof")
+    sealed_root = collection_root / "sealed" / experiment_id
+    if not sealed_root.is_dir():
+        raise RuntimeError(f"aggregation refused: sealed root "
+                           f"{sealed_root} missing")
+    current = tree_digest(sealed_root)
+    published = cm.get("collection_tree_digest")
+    replica_digest = replica.get("replica_tree_digest")
+    if current != published or current != replica_digest:
+        raise RuntimeError(
+            "aggregation refused: sealed tree rehash "
+            f"{current[:16]}… does not equal the published source "
+            f"digest {str(published)[:16]}… and replica digest "
+            f"{str(replica_digest)[:16]}… — the seal is stale or "
+            "tampered")
+    return {
+        "collection_manifest_sha256": sysid.sha_file(manifest_path),
+        "sealed_input_digest": current,
+        "replica_host": replica.get("host"),
+        "replica_root": replica.get("root"),
+        "replica_tree_digest": replica_digest,
+        "replica_verifier_version": replica.get("verifier_version"),
+        "replica_verified_utc": replica.get("verified_utc"),
+        "sealed_root": str(sealed_root),
+    }
+
+
+def write_aggregation(result: dict, collection_root: Path) -> Path:
+    """Publish OUTSIDE the sealed input (finding 196): the seal stays
+    immutable after its digest is published."""
+    out_dir = (Path(collection_root) / "aggregations" /
+               result["experiment_id"])
     out_dir.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(result, indent=1, sort_keys=True,
                          default=str) + "\n"
@@ -842,20 +911,49 @@ def write_aggregation(result: dict, output_root: Path) -> Path:
     return target
 
 
+def aggregate_from_collection(collection_root: Path, experiment_id: str,
+                              *, contract: dict | None = None) -> dict:
+    """The ONLY production path to a decision artifact: envelope-gated
+    aggregation from the sealed root, published outside the seal, with
+    the seal proven unchanged afterwards."""
+    collection_root = Path(collection_root)
+    envelope = load_collection_envelope(collection_root, experiment_id)
+    sealed_parent = collection_root / "sealed"
+    result = aggregate(sealed_parent, experiment_id, contract=contract)
+    result["collection_envelope"] = envelope
+    path = write_aggregation(result, collection_root)
+    after = tree_digest(Path(envelope["sealed_root"]))
+    if after != envelope["sealed_input_digest"]:
+        raise RuntimeError(
+            "aggregation MUTATED the sealed input tree "
+            f"({after[:16]}… != {envelope['sealed_input_digest'][:16]}…)"
+            " — publication aborted as invalid")
+    result["sealed_digest_after_write"] = after
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment-id", required=True)
-    parser.add_argument("--output-root", default=None)
+    parser.add_argument("--collection-root", required=True,
+                        help="collection root containing "
+                             "collection_manifest.json and sealed/ — "
+                             "aggregation runs ONLY through the sealed "
+                             "envelope (findings 196-197)")
     args = parser.parse_args()
     contract = runner.load_contract()
-    root = Path(args.output_root).expanduser() if args.output_root \
-        else Path(contract["output_root"]).expanduser()
-    result = aggregate(root, args.experiment_id, contract=contract)
-    path = write_aggregation(result, root)
+    try:
+        result = aggregate_from_collection(
+            Path(args.collection_root), args.experiment_id,
+            contract=contract)
+    except RuntimeError as exc:
+        print(json.dumps({"outcome": "AGGREGATION_REFUSED",
+                          "reason": str(exc)}))
+        return 3
     print(json.dumps({"outcome": result["outcome"],
                       "rationale": result["outcome_rationale"],
                       "refusals": len(result["refusals"]),
-                      "aggregation": str(path)}))
+                      "sealed_digest_unchanged": True}))
     # INCONCLUSIVE or any refusal exits nonzero (order §4).
     if result["outcome"] == "INCONCLUSIVE" or result["refusals"]:
         return 3

@@ -139,6 +139,7 @@ class SeedLauncher:
     def __init__(self, *, contract: dict, manifest: dict, seed: int,
                  smoke: bool, hostname: str | None = None,
                  gpu_uuids: list[str] | None = None,
+                 cuda_env: str | None = "<from-environment>",
                  run_cell_fn=None, enforce_gpu: bool = True):
         self.contract = contract
         self.manifest = manifest
@@ -147,6 +148,10 @@ class SeedLauncher:
         self.hostname = hostname or socket.gethostname()
         self.gpu_uuids = (visible_gpu_uuids() if gpu_uuids is None
                           else gpu_uuids)
+        # Finding 198: the EXECUTION binding is CUDA_VISIBLE_DEVICES,
+        # not mere nvidia-smi visibility.
+        self.cuda_env = (os.environ.get("CUDA_VISIBLE_DEVICES")
+                         if cuda_env == "<from-environment>" else cuda_env)
         self.run_cell_fn = run_cell_fn or runner.run_cell
         self.enforce_gpu = enforce_gpu
         self._heartbeat_path: Path | None = None
@@ -166,11 +171,26 @@ class SeedLauncher:
                     "reason": (f"seed {self.seed} is assigned to "
                                f"{assignment.get('hostname')!r}, this is "
                                f"{self.hostname!r}")}
-        if self.enforce_gpu and \
-                assignment.get("gpu_uuid") not in self.gpu_uuids:
-            return {"outcome": "REFUSED_GPU_UNBOUND",
-                    "reason": (f"assigned GPU {assignment.get('gpu_uuid')}"
-                               f" not visible on {self.hostname}")}
+        if self.enforce_gpu:
+            assigned = assignment.get("gpu_uuid")
+            if assigned not in self.gpu_uuids:
+                return {"outcome": "REFUSED_GPU_UNBOUND",
+                        "reason": (f"assigned GPU {assigned} not visible "
+                                   f"on {self.hostname}")}
+            # Finding 198: visibility is NOT binding. The process
+            # environment must pin exactly the assigned UUID, or the
+            # model may select any first-visible device.
+            if self.cuda_env is None:
+                return {"outcome": "REFUSED_GPU_UNBOUND",
+                        "reason": ("CUDA_VISIBLE_DEVICES is unset; the "
+                                   f"assigned GPU {assigned} is not an "
+                                   "execution binding")}
+            if self.cuda_env != assigned:
+                return {"outcome": "REFUSED_GPU_UNBOUND",
+                        "reason": (f"CUDA_VISIBLE_DEVICES="
+                                   f"{self.cuda_env!r} does not equal "
+                                   f"the contract assignment "
+                                   f"{assigned!r}")}
         return None
 
     # -- heartbeat -----------------------------------------------------
@@ -179,12 +199,18 @@ class SeedLauncher:
             return
         self._hb_state.update(update)
         pid = os.getpid()
+        assignment = (self.contract.get("assignments") or {}).get(
+            str(self.seed)) or {}
         self._hb_state.update({
-            "schema": "agent_multi.l1_launcher_heartbeat.v1",
+            "schema": "agent_multi.l1_launcher_heartbeat.v2",
             "seed": self.seed,
             "pid": pid,
             "pid_start_identity": _pid_start_identity(pid),
             "hostname": self.hostname,
+            # Finding 198: assigned vs bound vs observed GPU facts.
+            "assigned_gpu_uuid": assignment.get("gpu_uuid"),
+            "cuda_visible_devices": self.cuda_env,
+            "observed_gpu_uuids": list(self.gpu_uuids),
             "updated_utc": datetime.now(timezone.utc).isoformat(),
         })
         _atomic_json(self._heartbeat_path, self._hb_state)
