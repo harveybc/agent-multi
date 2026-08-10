@@ -25,6 +25,12 @@
 
 [Unit]
 Description=L1 matched factorial seed %i (durable launcher)
+# Bound the SEED_FAILED retry loop: a persistent failure (e.g. an
+# unloadable anchor — observed 2026-08-09, 19 blind retries) freezes
+# into the systemd 'failed' state after 10 restarts per hour instead
+# of burning forever; recovery is an explicit operator reset-failed.
+StartLimitIntervalSec=3600
+StartLimitBurst=10
 
 [Service]
 Type=exec
