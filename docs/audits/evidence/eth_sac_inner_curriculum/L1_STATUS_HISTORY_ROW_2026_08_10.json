@@ -1,0 +1,15 @@
+{
+ "schema": "agent_multi.l1_status_history_row.v1",
+ "experiment_id": "2de49ea9225e2baf",
+ "started_utc": "2026-08-10T04:17:01Z",
+ "ended_utc": "2026-08-10T22:43:49Z",
+ "duration_hours": 18.45,
+ "records": "16/16",
+ "terminal_outcome": "INCONCLUSIVE / total activity collapse (16 valid, 0 active, 16 unavailable Sharpes)",
+ "collection_manifest_sha256": "54447a20c864c3ccd1a0d81df6f052a5d5400c3c7c0bb2643f8646d69a72777f",
+ "sealed_and_replica_tree_digest": "f3bb41516f8f3bb9b458c345aae3c1f261cc9688bece697cadc898d60401d374",
+ "artifact_pointer": "operator-local private collection root l1_decision_collection_2de49ea9 (raw cell records and model artifacts remain private; hashes/units/counts/typed result only are published)",
+ "workers_after_completion": {"active": 0, "queued": 0},
+ "independent_reproduction": "MUSASHI_L1_RESULT_WPB_REPRO_RESULT_2026_08_10.json — recomputed outcome equal, seal unchanged",
+ "never_relabel": "must never be cited as EASY_HARMFUL or LR_ONLY; null activity-survival result under this exact protocol only"
+}

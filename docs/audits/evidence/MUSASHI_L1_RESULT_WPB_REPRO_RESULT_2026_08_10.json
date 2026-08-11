@@ -1,0 +1,45 @@
+{
+  "l1": {
+    "active_cells": 0,
+    "cells_total": 16,
+    "experiment_id": "2de49ea9225e2baf",
+    "published_outcome": "INCONCLUSIVE",
+    "recomputed_outcome": "INCONCLUSIVE",
+    "refusals_total": 16,
+    "replica_digest": "f3bb41516f8f3bb9b458c345aae3c1f261cc9688bece697cadc898d60401d374",
+    "sealed_digest_after": "f3bb41516f8f3bb9b458c345aae3c1f261cc9688bece697cadc898d60401d374",
+    "sealed_digest_before": "f3bb41516f8f3bb9b458c345aae3c1f261cc9688bece697cadc898d60401d374",
+    "substantive_fields_equal": true,
+    "valid_cells": 16
+  },
+  "wp_b": {
+    "broken_relative_links": [
+      {"repository": "heuristic-strategy", "target": "timeseries-gan/"},
+      {"repository": "predictor", "target": "predictor_model_metadata.json"},
+      {"repository": "synthetic-datagen", "target": "examples/data/financial_ohlcv_bootstrap.npz"},
+      {"repository": "synthetic-datagen", "target": "examples/data/financial_ohlcv_synthetic.csv"},
+      {"repository": "financial-data", "target": "features/learned_inputs"},
+      {"repository": "financial-data", "target": "_metadata"},
+      {"repository": "financial-data", "target": "_logs"},
+      {"repository": "financial-data", "target": "_metadata"}
+    ],
+    "inventory_repositories": 21,
+    "metadata_snapshots": 21,
+    "readmes_checked": 20,
+    "relative_links_checked": 423,
+    "semantic_topic_mismatches": [
+      {
+        "documented_replacement": "feature-eng",
+        "incorrect_topic": "superseded-by-doin-node",
+        "repository": "trading-signal"
+      },
+      {
+        "documented_replacement": "synthetic-datagen",
+        "incorrect_topic": "superseded-by-doin-node",
+        "repository": "timeseries-gan"
+      }
+    ],
+    "snapshot_invariant_failures": [],
+    "snapshot_topic_count_failures": []
+  }
+}
