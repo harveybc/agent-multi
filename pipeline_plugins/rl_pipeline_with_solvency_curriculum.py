@@ -23,10 +23,13 @@ dynamics outside ``env_mode=training``.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 from pathlib import Path
 from typing import Any, Dict
+
+import numpy as np
 
 from agent_plugins.sac_agent import _policy_tensor_hash
 from pipeline_plugins import _paired_generalization as _paired
@@ -52,6 +55,273 @@ NORMAL_MODE = "normal_realistic"
 HANDOFF_SEMANTICS_L1_V4 = "l1_trained_epoch_v4"
 HANDOFF_SEMANTICS_M0_V3 = "m0_epoch0_eligible_v3"
 _HANDOFF_SEMANTICS = (HANDOFF_SEMANTICS_L1_V4, HANDOFF_SEMANTICS_M0_V3)
+
+# ---------------------------------------------------------------------------
+# Handoff-viability evidence (AUD-F1-20260811-221 / order WP3 §7).
+#
+# `easy_activity_eligible` counts trades and non-hold actions under the
+# phase-1 threshold only; near-constant policies whose raw actions never
+# reach the phase-2 deadband pass it while their normal probes trade
+# zero. EVERY phase-1 checkpoint record therefore carries a typed
+# evidence block measuring the DETERMINISTIC raw action distribution on
+# train-monitor and inner validation, evaluated against BOTH thresholds
+# on the SAME captured action vector (the WP2 same-vector design).
+#
+# The block is EVIDENCE, never a selector: the paired comparator (v4)
+# and the as-run v3 economic score remain the only selection
+# authorities, and no invented numeric activity floor exists here — the
+# constant-policy call derives its tolerance purely from dtype
+# precision at the observed action scale.
+# ---------------------------------------------------------------------------
+HANDOFF_VIABILITY_SCHEMA = (
+    "agent_multi.solvency_curriculum.handoff_viability.v1")
+SELECTED_HANDOFF_SCHEMA = (
+    "agent_multi.solvency_curriculum.selected_handoff_viability.v1")
+VIABILITY_VIABLE = "VIABLE"
+VIABILITY_BELOW_NORMAL_THRESHOLD = "BELOW_NORMAL_THRESHOLD"
+VIABILITY_CONSTANT_POLICY = "CONSTANT_POLICY"
+VIABILITY_NO_TRADE = "NO_TRADE"
+VIABILITY_UNAVAILABLE = "UNAVAILABLE"
+HANDOFF_VIABILITY_VALUES = (
+    VIABILITY_VIABLE,
+    VIABILITY_BELOW_NORMAL_THRESHOLD,
+    VIABILITY_CONSTANT_POLICY,
+    VIABILITY_NO_TRADE,
+    VIABILITY_UNAVAILABLE,
+)
+PROVENANCE_ANCHOR_PASSTHROUGH = "anchor_passthrough"
+PROVENANCE_TRAINED_EPOCH = "trained_epoch"
+
+# gym-fx (app/env.py) maps continuous actions through this default when
+# the config omits the deadband. Recording the source alongside the
+# value keeps the evidence from silently guessing a threshold.
+_GYM_FX_DEFAULT_CONTINUOUS_THRESHOLD = 0.33
+_HANDOFF_SPLIT_NAMES = ("train_monitor", "inner_validation")
+
+
+def _resolve_action_threshold(raw: Any) -> tuple:
+    """Resolve a deadband exactly as gym-fx would; declare the source."""
+    if raw is None:
+        return _GYM_FX_DEFAULT_CONTINUOUS_THRESHOLD, "gym_fx_default"
+    return float(raw), "config"
+
+
+def _non_hold_fraction(values: "np.ndarray", threshold: float) -> float:
+    """Fraction of raw actions the gym-fx continuous mapping would
+    treat as non-hold: strict ``|a| > 0`` at threshold zero, otherwise
+    ``|a| >= thr`` (mirrors gym-fx app/env.py exactly)."""
+    if values.size == 0:
+        return 0.0
+    thr = float(threshold)
+    if thr == 0.0:
+        return float(np.mean(np.abs(values) > 0.0))
+    return float(np.mean(np.abs(values) >= thr))
+
+
+def _mapped_direction_counts(
+        values: "np.ndarray", threshold: float) -> Dict[str, int]:
+    thr = float(threshold)
+    if thr == 0.0:
+        long_mask = values > 0.0
+        short_mask = values < 0.0
+    else:
+        long_mask = values >= thr
+        short_mask = values <= -thr
+    long_count = int(np.count_nonzero(long_mask))
+    short_count = int(np.count_nonzero(short_mask))
+    return {
+        "long": long_count,
+        "short": short_count,
+        "hold": int(values.size - long_count - short_count),
+    }
+
+
+def _dtype_constant_classification(
+        values: "np.ndarray") -> Dict[str, Any]:
+    """Exact/near-constant facts derived ONLY from dtype precision at
+    the observed action scale — never from an invented behavior floor.
+
+    Declared tolerance: ``finfo(dtype).eps * max(1.0, max|a|)`` (one
+    machine epsilon at the observed scale, floored at the gym-fx action
+    unit scale ``|a| <= 1``). ``near_constant`` holds iff the full
+    peak-to-peak spread of the deterministic action vector fits inside
+    that tolerance; ``exact_constant`` iff exactly one bitwise-unique
+    value was emitted."""
+    dtype = values.dtype
+    eps = float(np.finfo(dtype).eps)
+    observed_max_abs = float(np.max(np.abs(values)))
+    tolerance = eps * max(1.0, observed_max_abs)
+    peak_to_peak = float(np.max(values) - np.min(values))
+    unique_exact = int(np.unique(values).size)
+    unique_under_tolerance = int(np.unique(
+        np.round(values.astype(np.float64) / tolerance)).size)
+    return {
+        "dtype": str(dtype),
+        "dtype_eps": eps,
+        "observed_max_abs": observed_max_abs,
+        "near_constant_tolerance": tolerance,
+        "tolerance_derivation":
+            "finfo(dtype).eps * max(1.0, observed_max_abs)",
+        "unique_action_count_exact": unique_exact,
+        "unique_action_count_under_tolerance": unique_under_tolerance,
+        "peak_to_peak": peak_to_peak,
+        "exact_constant": bool(unique_exact == 1),
+        "near_constant": bool(peak_to_peak <= tolerance),
+        "classification_rule": (
+            "exact_constant iff one bitwise-unique action;"
+            " near_constant iff peak_to_peak <="
+            " near_constant_tolerance"),
+    }
+
+
+def _probe_protection_facts(summary: Any) -> Dict[str, Any]:
+    """Bind protected-entry facts out of an existing normal handoff
+    probe summary; typed ``None`` when the summary carries none."""
+    diagnostics = (summary or {}).get("execution_diagnostics") \
+        if isinstance(summary, dict) else None
+    if not isinstance(diagnostics, dict):
+        return {"available": False, "protected_entries": None,
+                "protected_entry_rejections": None}
+    entry_keys = ("protected_market_entries", "protected_limit_entries",
+                  "protected_stop_entries")
+    seen = [key for key in entry_keys if key in diagnostics]
+    rejections = diagnostics.get("protected_entry_rejections")
+    return {
+        "available": True,
+        "protected_entries": (
+            sum(int(diagnostics[key] or 0) for key in seen)
+            if seen else None),
+        "protected_entry_rejections": (
+            None if rejections is None else int(rejections)),
+    }
+
+
+def _handoff_split_evidence(
+        rollout: Dict[str, Any],
+        phase1_threshold: float,
+        phase2_threshold: float) -> tuple:
+    """Per-split evidence block; returns ``(evidence_values, block)``
+    where ``evidence_values`` is ``None`` when the split is unusable."""
+    values = rollout["values"]
+    if values.size == 0:
+        return None, {
+            "available": False,
+            "error": "deterministic rollout produced zero observations",
+        }
+    if np.issubdtype(values.dtype, np.floating):
+        evidence_values = values
+    else:
+        evidence_values = values.astype(np.float32)
+    non_finite = int(np.count_nonzero(~np.isfinite(evidence_values)))
+    if non_finite:
+        return None, {
+            "available": False,
+            "observation_count": int(values.size),
+            "non_finite_actions": non_finite,
+            "error": f"{non_finite} non-finite raw actions",
+        }
+    abs_values = np.abs(evidence_values)
+    block = {
+        "available": True,
+        "observation_count": int(values.size),
+        "raw_action_dim": int(rollout["raw_action_dim"]),
+        "raw_action_dtype": str(rollout["raw_dtype"]),
+        "evidence_dtype": str(evidence_values.dtype),
+        "non_finite_actions": 0,
+        "action_vector_sha256": hashlib.sha256(
+            np.ascontiguousarray(evidence_values).tobytes()).hexdigest(),
+        "raw_action": {
+            "min": float(np.min(evidence_values)),
+            "max": float(np.max(evidence_values)),
+            "mean": float(np.mean(evidence_values)),
+            "std": float(np.std(evidence_values)),
+        },
+        "abs_action_quantiles": {
+            f"p{int(q * 100):02d}": float(np.quantile(abs_values, q))
+            for q in (0.0, 0.25, 0.5, 0.75, 0.9, 0.99, 1.0)
+        },
+        "abs_action_iqr": float(
+            np.quantile(abs_values, 0.75) - np.quantile(abs_values, 0.25)),
+        "fraction_non_hold_phase1_threshold": _non_hold_fraction(
+            evidence_values, phase1_threshold),
+        "fraction_non_hold_phase2_threshold": _non_hold_fraction(
+            evidence_values, phase2_threshold),
+        "fraction_abs_ge_phase2_threshold": float(
+            np.mean(abs_values >= float(phase2_threshold))),
+        "mapped_counts_phase1_threshold": _mapped_direction_counts(
+            evidence_values, phase1_threshold),
+        "mapped_counts_phase2_threshold": _mapped_direction_counts(
+            evidence_values, phase2_threshold),
+        "constant_policy_classification":
+            _dtype_constant_classification(evidence_values),
+    }
+    return evidence_values, block
+
+
+def _assert_handoff_evidence_invariants(
+        evidence: Dict[str, Any]) -> None:
+    """Source assertions (finding 221): epoch-zero anchor telemetry can
+    never be classified as a trained treatment, and the viability label
+    stays inside its typed enum."""
+    if evidence["handoff_viability"] not in HANDOFF_VIABILITY_VALUES:
+        raise RuntimeError(
+            f"unknown handoff_viability"
+            f" {evidence['handoff_viability']!r}; expected one of"
+            f" {list(HANDOFF_VIABILITY_VALUES)}")
+    epoch = int(evidence["epoch"])
+    provenance = evidence["policy_provenance"]
+    trained = bool(evidence["trained_treatment"])
+    if epoch == 0:
+        if provenance != PROVENANCE_ANCHOR_PASSTHROUGH or trained:
+            raise RuntimeError(
+                "epoch-0 anchor telemetry must carry the"
+                " anchor_passthrough marker and can never be a trained"
+                " treatment (finding 221)")
+        if bool(evidence["viable_as_trained_treatment"]):
+            raise RuntimeError(
+                "epoch-0 anchor telemetry can never be handoff-viable"
+                " AS A TRAINED TREATMENT (finding 221)")
+    elif provenance != PROVENANCE_TRAINED_EPOCH or not trained:
+        raise RuntimeError(
+            f"trained epoch {epoch} must carry trained_epoch"
+            " provenance and trained_treatment=True")
+    if bool(evidence["viable_as_trained_treatment"]) != bool(
+            trained
+            and evidence["handoff_viability"] == VIABILITY_VIABLE):
+        raise RuntimeError(
+            "viable_as_trained_treatment must equal"
+            " (trained_treatment AND handoff_viability == VIABLE)")
+
+
+def _assert_selected_handoff_invariants(
+        selected: Dict[str, Any]) -> None:
+    """Source assertions on the SELECTED handoff representation (order
+    WP3 §7): a diagnostic terminal fallback and the v3 epoch-0 anchor
+    path may hand off, but neither is ever represented as a selected
+    viable trained handoff."""
+    if selected["handoff_viability"] not in HANDOFF_VIABILITY_VALUES:
+        raise RuntimeError(
+            "selected handoff carries an unknown viability label"
+            f" {selected['handoff_viability']!r}")
+    if selected["anchor_passthrough"] and selected["trained_treatment"]:
+        raise RuntimeError(
+            "an anchor passthrough can never be represented as a"
+            " trained treatment (finding 221)")
+    if selected["selected_as_viable_handoff"]:
+        if selected["selection_is_diagnostic_fallback"]:
+            raise RuntimeError(
+                "a diagnostic terminal fallback must never be"
+                " represented as a selected viable handoff (order WP3)")
+        if selected["anchor_passthrough"] or \
+                not selected["trained_treatment"]:
+            raise RuntimeError(
+                "only a TRAINED epoch may be represented as a selected"
+                " viable handoff; the v3 epoch-0 anchor path is"
+                " anchor_passthrough (finding 221)")
+        if selected["handoff_viability"] != VIABILITY_VIABLE:
+            raise RuntimeError(
+                "selected_as_viable_handoff requires"
+                " handoff_viability == VIABLE")
 
 
 class PipelinePlugin(ValidationPipelinePlugin):
@@ -210,6 +480,194 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 plug.close()
             except Exception:
                 pass
+
+    # ------------------------------------------------------------------
+    def _handoff_action_rollout(
+        self,
+        env_plugin_name: str,
+        config: Dict[str, Any],
+        csv_path: str,
+        agent_plugin,
+        model,
+        seed: int,
+    ) -> Dict[str, Any]:
+        """One deterministic rollout on a fresh env capturing the RAW
+        policy action at every step — the first action component,
+        exactly the value gym-fx maps through the deadband — BEFORE the
+        env applies any threshold."""
+        plug, env = self._make_split_env(
+            env_plugin_name, config, csv_path, agent_plugin)
+        try:
+            obs, _info = env.reset(seed=seed)
+            raw_values = []
+            raw_dim = None
+            terminated = truncated = False
+            while not (terminated or truncated):
+                action, _state = model.predict(obs, deterministic=True)
+                flat = np.asarray(action).reshape(-1)
+                if raw_dim is None:
+                    raw_dim = int(flat.size)
+                raw_values.append(flat[0] if flat.size else 0.0)
+                obs, _reward, terminated, truncated, _info = env.step(
+                    action)
+                if len(raw_values) > 1_000_000:
+                    break
+            values = np.asarray(raw_values)
+            return {
+                "values": values,
+                "raw_action_dim": int(raw_dim or 0),
+                "raw_dtype": str(values.dtype),
+            }
+        finally:
+            try:
+                plug.close()
+            except Exception:
+                pass
+
+    def _build_handoff_viability_evidence(
+        self,
+        *,
+        env_plugin_name: str,
+        normal_config: Dict[str, Any],
+        paths: Dict[str, str],
+        agent_plugin,
+        model,
+        seed: int,
+        epoch: int,
+        phase1_threshold_raw: Any,
+        normal_probe_facts: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Typed handoff-viability evidence for ONE phase-1 checkpoint
+        (finding 221). Evidence only — never a gate, never a selector;
+        any rollout failure lands as a typed UNAVAILABLE record."""
+        phase1_threshold, phase1_source = _resolve_action_threshold(
+            phase1_threshold_raw)
+        phase2_threshold, phase2_source = _resolve_action_threshold(
+            normal_config.get("continuous_action_threshold"))
+        evidence_config = dict(normal_config)
+        evidence_config["solvency_mode"] = NORMAL_MODE
+        split_paths = {
+            "train_monitor": paths.get("train_tail", paths["train"]),
+            "inner_validation": paths["val"],
+        }
+        splits: Dict[str, Any] = {}
+        vectors = []
+        for split_name in _HANDOFF_SPLIT_NAMES:
+            try:
+                rollout = self._handoff_action_rollout(
+                    env_plugin_name, evidence_config,
+                    split_paths[split_name], agent_plugin, model, seed)
+                evidence_values, block = _handoff_split_evidence(
+                    rollout, phase1_threshold, phase2_threshold)
+                splits[split_name] = block
+                if evidence_values is not None:
+                    vectors.append(evidence_values)
+            except Exception as exc:  # evidence must never gate phase 1
+                splits[split_name] = {
+                    "available": False,
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
+        train_tail_trades = int(normal_probe_facts["train_tail_trades"])
+        validation_trades = int(normal_probe_facts["validation_trades"])
+        probe_trades_total = train_tail_trades + validation_trades
+        usable = [name for name in _HANDOFF_SPLIT_NAMES
+                  if splits[name].get("available")]
+        reasons = []
+        combined_constant = None
+        any_cross = False
+        if not usable:
+            viability = VIABILITY_UNAVAILABLE
+            reasons.append(
+                "no split produced usable deterministic action evidence")
+            reasons.extend(
+                f"{name}: {splits[name].get('error', 'unavailable')}"
+                for name in _HANDOFF_SPLIT_NAMES)
+        else:
+            combined_constant = _dtype_constant_classification(
+                np.concatenate(vectors))
+            any_cross = any(
+                splits[name]["fraction_non_hold_phase2_threshold"] > 0.0
+                for name in usable)
+            if combined_constant["exact_constant"]:
+                viability = VIABILITY_CONSTANT_POLICY
+                reasons.append(
+                    "exactly one bitwise-unique deterministic action"
+                    f" across {len(usable)} split(s)")
+            elif combined_constant["near_constant"]:
+                viability = VIABILITY_CONSTANT_POLICY
+                reasons.append(
+                    "peak_to_peak="
+                    f"{combined_constant['peak_to_peak']!r} <= dtype-"
+                    "derived tolerance "
+                    f"{combined_constant['near_constant_tolerance']!r}")
+            elif not any_cross:
+                viability = VIABILITY_BELOW_NORMAL_THRESHOLD
+                reasons.append(
+                    "max |a|="
+                    f"{combined_constant['observed_max_abs']!r} never"
+                    " reaches the phase-2 threshold"
+                    f" {phase2_threshold!r} on any split")
+            elif probe_trades_total == 0:
+                viability = VIABILITY_NO_TRADE
+                reasons.append(
+                    "actions cross the phase-2 threshold but the normal"
+                    " handoff probes recorded zero trades (train_tail="
+                    f"{train_tail_trades},"
+                    f" validation={validation_trades})")
+            else:
+                viability = VIABILITY_VIABLE
+                reasons.append(
+                    "non-constant actions cross the phase-2 threshold"
+                    " and the normal probes traded (train_tail="
+                    f"{train_tail_trades},"
+                    f" validation={validation_trades})")
+        trained_treatment = int(epoch) > 0
+        evidence = {
+            "schema": HANDOFF_VIABILITY_SCHEMA,
+            "epoch": int(epoch),
+            "policy_provenance": (
+                PROVENANCE_TRAINED_EPOCH if trained_treatment
+                else PROVENANCE_ANCHOR_PASSTHROUGH),
+            "trained_treatment": trained_treatment,
+            "deterministic": True,
+            "rollout_seed": int(seed),
+            "rollout_solvency_mode": NORMAL_MODE,
+            "threshold_semantics": (
+                "gym_fx_continuous_v1: thr==0 -> non-hold iff |a| > 0;"
+                " thr>0 -> non-hold iff |a| >= thr"),
+            "threshold_application": (
+                "both thresholds evaluated on the SAME raw action"
+                " vector captured from one deterministic"
+                " normal-realistic rollout per split (WP2 same-vector"
+                " design)"),
+            "phase1_threshold": float(phase1_threshold),
+            "phase1_threshold_source": phase1_source,
+            "phase2_threshold": float(phase2_threshold),
+            "phase2_threshold_source": phase2_source,
+            "splits": splits,
+            "normal_probe": {
+                "source": "existing normal handoff probe rollouts",
+                "train_tail_trades": train_tail_trades,
+                "validation_trades": validation_trades,
+                "train_tail_protection": _probe_protection_facts(
+                    normal_probe_facts.get("train_tail_summary")),
+                "validation_protection": _probe_protection_facts(
+                    normal_probe_facts.get("validation_summary")),
+            },
+            "probe_trades_total": probe_trades_total,
+            "constant_policy_classification": combined_constant,
+            "any_action_crosses_phase2_threshold": bool(any_cross),
+            "handoff_viability": viability,
+            "classification_reasons": reasons,
+            "authority": (
+                "evidence only — selection stays with the paired"
+                " comparator (v4) / as-run v3 score; this block never"
+                " selects"),
+            "viable_as_trained_treatment": bool(
+                trained_treatment and viability == VIABILITY_VIABLE),
+        }
+        _assert_handoff_evidence_invariants(evidence)
+        return evidence
 
     def _train_easy_phase(
         self,
@@ -373,6 +831,29 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     normal_train_tail_trades >= normal_min_train_tail
                     and normal_validation_trades >= normal_min_validation
                 )
+                # Finding 221 (order WP3 §7): typed handoff-viability
+                # evidence on EVERY phase-1 checkpoint record — both
+                # thresholds on the same raw action vector, the
+                # existing normal-probe facts bound in. Evidence only;
+                # it never gates and never selects.
+                probe["handoff_viability_evidence"] = (
+                    self._build_handoff_viability_evidence(
+                        env_plugin_name=env_plugin_name,
+                        normal_config=normal_config,
+                        paths=paths,
+                        agent_plugin=agent_plugin,
+                        model=model,
+                        seed=seed,
+                        epoch=epoch,
+                        phase1_threshold_raw=easy_config.get(
+                            "continuous_action_threshold"),
+                        normal_probe_facts={
+                            "train_tail_trades": normal_train_tail_trades,
+                            "validation_trades": normal_validation_trades,
+                            "train_tail_summary": normal_train_tail,
+                            "validation_summary": normal_validation,
+                        },
+                    ))
                 if handoff_semantics == HANDOFF_SEMANTICS_M0_V3:
                     # Mechanism-ladder D0 (finding 220): the boundary AS
                     # THE M0 SCREEN RAN IT — the normal probe GATES, the
@@ -492,6 +973,46 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     " anchor; archive-byte difference is not weight"
                     " change (AUD-F1-20260808-160)")
             post_easy_sha = _verify_artifact_sha256(post_easy_path, None)
+            selected_rows = [row for row in history
+                             if int(row.get("epoch", -1))
+                             == int(best_epoch)]
+            if len(selected_rows) != 1:
+                raise RuntimeError(
+                    "expected exactly one checkpoint record for the"
+                    f" selected epoch {best_epoch}; found"
+                    f" {len(selected_rows)}")
+            selected_evidence = selected_rows[0][
+                "handoff_viability_evidence"]
+            selection_is_fallback = (
+                selection_basis == "terminal_trained_epoch_fallback")
+            selected_handoff = {
+                "schema": SELECTED_HANDOFF_SCHEMA,
+                "best_easy_epoch": int(best_epoch),
+                "selection_basis": selection_basis,
+                "phase1_handoff_semantics": handoff_semantics,
+                "handoff_viability":
+                    selected_evidence["handoff_viability"],
+                "policy_provenance":
+                    selected_evidence["policy_provenance"],
+                "trained_treatment": bool(
+                    selected_evidence["trained_treatment"]),
+                "anchor_passthrough": (
+                    selected_evidence["policy_provenance"]
+                    == PROVENANCE_ANCHOR_PASSTHROUGH),
+                "selection_is_diagnostic_fallback":
+                    selection_is_fallback,
+                # Order WP3 §7: a diagnostic terminal fallback may hand
+                # off an INACTIVE record but is NEVER represented as a
+                # selected viable handoff; the v3 epoch-0 anchor path
+                # is anchor_passthrough, never a trained treatment.
+                "selected_as_viable_handoff": bool(
+                    not selection_is_fallback
+                    and selected_evidence["trained_treatment"]
+                    and selected_evidence["handoff_viability"]
+                    == VIABILITY_VIABLE),
+                "viability_is_selection_authority": False,
+            }
+            _assert_selected_handoff_invariants(selected_handoff)
             meta = {
                 "schema": "agent_multi.solvency_curriculum.post_easy.v4",
                 "anchor_policy_tensor_sha256": anchor_tensor_sha,
@@ -539,6 +1060,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
                         handoff_semantics == HANDOFF_SEMANTICS_M0_V3),
                 },
                 "phase1_mode": phase1_mode,
+                "selected_handoff_viability": selected_handoff,
                 "phase1_difficulty": {
                     # easy-relaxation fields; None under normal phase-1
                     # (the candidate's own contract governs there)
