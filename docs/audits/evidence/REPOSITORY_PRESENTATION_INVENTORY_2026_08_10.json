@@ -1228,5 +1228,15 @@
    "visibility": "PUBLIC"
   }
  },
- "schema": "agent_multi.repository_presentation_inventory.v1"
+ "schema": "agent_multi.repository_presentation_inventory.v1",
+ "updates_2026_08_10": {
+  "agent-multi_visibility": {
+   "authorized_by": "owner (Harvey Bastidas)",
+   "current_visibility": "PRIVATE",
+   "history_remediation": "history scrub/force-push remains a separate action requiring a second explicit owner authorization; privacy containment does not close it",
+   "note": "agent-multi was made PRIVATE after this inventory was captured, as owner-authorized immediate containment for the public-history sensitive-evidence incident (AUD-GEN-20260810 series). The repositories.agent-multi.visibility field above records the historical before-state (PUBLIC) at inventory capture and is deliberately NOT rewritten.",
+   "verification": "gh repo view harveybc/agent-multi --json visibility -> PRIVATE; default branch master and isArchived=false unchanged",
+   "verified_utc": "2026-08-10"
+  }
+ }
 }
