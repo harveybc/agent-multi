@@ -255,6 +255,14 @@
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
+  "m0_l1_boundary_action_replay.py": {
+   "purpose": "Same-artifact threshold replay diagnostic (WP2 order 2026-08-11 §6): flat-hold replay of the sealed D2 post-easy artifact and the D0 anchor over the ladder's train-tail/inner-validation windows, deterministic raw actions with thresholds 0.0/0.1 applied analytically to one hashed action vector; typed outcomes decide whether the 0.1 deadband exposes a pre-existing collapse or causes mapping collapse with variation retained; no learning, no selection, never decision-eligible",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "mutability_note": "reads sealed/pinned inputs strictly read-only (fail-closed sha verification); writes only the explicitly named --output JSON and process-lifetime temp split CSVs",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "m0_l1_d1_evaluator.py": {
    "purpose": "D1_EVALUATOR_ONLY (finding 220 WP3): CPU-only, applies the M0 executable activity definition and the exact L1 paired activity classifier to D0's terminal artifact and recorded evaluation facts; no training, no weight mutation",
    "lifecycle": "supported",
