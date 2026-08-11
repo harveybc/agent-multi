@@ -1,0 +1,104 @@
+{
+ "collection_tree_digest": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e",
+ "diagnostic_identity": "97c0bb29e82dfea3",
+ "outcome": "TABLE_PUBLISHED",
+ "post_write_digest_reproof": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e",
+ "published_utc": "2026-08-11T05:32:36.384602+00:00",
+ "replica_digest_equal": true,
+ "replica_host": "dragon",
+ "rows": [
+  {
+   "activity_survived_normal": true,
+   "arm": "D0_M0_EXACT",
+   "best_easy_epoch": 0,
+   "elapsed_seconds": 492.019794,
+   "gradient_updates_total": 19000,
+   "non_hold_rate": 1.0,
+   "phase1_handoff_semantics": "m0_epoch0_eligible_v3",
+   "protected_entries_submitted": 123,
+   "raw_action_mean": 0.36152261557989246,
+   "raw_action_std": 0.05633137748449435,
+   "stop_reason": "max_epochs_budget",
+   "terminal_model_sha256": "04fc5a8ffd1cf730fa1468940bb6d14d795c9fa4471bcd4f2f02e2d3f9d4621a",
+   "terminal_policy_tensor_sha256": "22cffb4e0983f404bb8e2a9f12cb98961c871d3090f6418d9def8d1b833ccd72",
+   "trades_by_split": {
+    "train": 424,
+    "train_tail": 5,
+    "validation": 122
+   }
+  },
+  {
+   "arm": "D1_EVALUATOR_ONLY",
+   "label_under_l1_definition": "active",
+   "label_under_m0_definition": "active",
+   "labels_agree": true,
+   "note": "CPU relabel of the D0 terminal \u2014 no training"
+  },
+  {
+   "activity_survived_normal": false,
+   "arm": "D2_BOUNDARY_ONLY",
+   "best_easy_epoch": 1,
+   "elapsed_seconds": 293.626622,
+   "gradient_updates_total": 19000,
+   "non_hold_rate": 0.0,
+   "phase1_handoff_semantics": "l1_trained_epoch_v4",
+   "protected_entries_submitted": 0,
+   "raw_action_mean": 0.002390265464782715,
+   "raw_action_std": 0.0,
+   "stop_reason": "max_epochs_budget",
+   "terminal_model_sha256": "1152625de60d721f0f60dd4fcc25c8331579d7a14e809c48ee8fba5189775c85",
+   "terminal_policy_tensor_sha256": "6a341d406d131db2c21930f113320253f4c4530783042abba4bea6f5f0431638",
+   "trades_by_split": {
+    "train": 0,
+    "train_tail": 0,
+    "validation": 0
+   }
+  },
+  {
+   "activity_survived_normal": false,
+   "arm": "D3_COST_PROTECTION",
+   "best_easy_epoch": 1,
+   "elapsed_seconds": 266.30947,
+   "gradient_updates_total": 19000,
+   "non_hold_rate": 0.0,
+   "phase1_handoff_semantics": "l1_trained_epoch_v4",
+   "protected_entries_submitted": 0,
+   "raw_action_mean": -0.00013214349746704102,
+   "raw_action_std": 0.0,
+   "stop_reason": "max_epochs_budget",
+   "terminal_model_sha256": "c11f8ce5c910e17b8b8557ff8675435696df26afa203aa43c9c0cb07cb78ee19",
+   "terminal_policy_tensor_sha256": "1780dfd9539df64e52c15c1b1e57f31c4ed97887a40cd74ba86e269bf6739de8",
+   "trades_by_split": {
+    "train": 0,
+    "train_tail": 0,
+    "validation": 0
+   }
+  },
+  {
+   "activity_survived_normal": false,
+   "arm": "D4_FULL_L1",
+   "best_easy_epoch": 1,
+   "elapsed_seconds": 310.195664,
+   "gradient_updates_total": 19000,
+   "non_hold_rate": 0.0,
+   "phase1_handoff_semantics": "l1_trained_epoch_v4",
+   "protected_entries_submitted": 0,
+   "raw_action_mean": 0.001209259033203125,
+   "raw_action_std": 0.0,
+   "stop_reason": "max_epochs_budget",
+   "terminal_model_sha256": "f0a58c633216b4b5ea8ad1200983bacaeb61f62e14a9146278f0c340f52d7391",
+   "terminal_policy_tensor_sha256": "828326829c5c8d03b2a2bdb51becb3f3daa5739608d49509ef34ec01320a1c5e",
+   "trades_by_split": {
+    "train": 0,
+    "train_tail": 0,
+    "validation": 0
+   }
+  }
+ ],
+ "schema": "agent_multi.m0_l1_ladder_contrast_table.v1",
+ "scope_limits": [
+  "seed 101 only \u2014 locates a deterministic mechanism, supports no superiority decision (contract rule 5)",
+  "never relabels the sealed L1 factorial result 2de49ea9225e2baf: that result remains INCONCLUSIVE"
+ ],
+ "verdict": "MECHANISM_NAMED: first active-to-inactive transition at D2_BOUNDARY_ONLY"
+}

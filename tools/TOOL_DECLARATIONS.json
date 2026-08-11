@@ -1,6 +1,6 @@
 {
  "schema": "tool_declarations.v1",
- "note": "REVIEWED semantic declarations \u2014 the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
+ "note": "REVIEWED semantic declarations — the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
   "engineering_surface_index.py": {
    "purpose": "Generate the engineering surface index (this system); discovered facts + reviewed declarations, typed outcomes",
@@ -186,14 +186,14 @@
    "owner": "General Satoshi III"
   },
   "aggregate_l1_factorial.py": {
-   "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
+   "purpose": "Generic L1 factorial aggregation (repair spec §7.1/§7.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
   "l1_fleet_launcher.py": {
-   "purpose": "Durable idempotent L1 seed launcher (order \u00a72/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
+   "purpose": "Durable idempotent L1 seed launcher (order §2/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
    "lifecycle": "supported",
    "mutability": "mutating",
    "authority_class": "campaign_operation",
@@ -207,7 +207,7 @@
    "owner": "General Satoshi III"
   },
   "collect_l1_factorial.py": {
-   "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
+   "purpose": "Content-addressed L1 collection (order §5/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
    "lifecycle": "supported",
    "mutability": "mutating",
    "authority_class": "evidence_producer",
@@ -252,6 +252,14 @@
    "purpose": "D1_EVALUATOR_ONLY (finding 220 WP3): CPU-only, applies the M0 executable activity definition and the exact L1 paired activity classifier to D0's terminal artifact and recorded evaluation facts; no training, no weight mutation",
    "lifecycle": "supported",
    "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "m0_l1_ladder_collect.py": {
+   "purpose": "Sealed collection + independent replica + five-row contrast table for the M0-to-L1 mechanism ladder (finding 220): per-host fetch, identity-fragmentation refusal, per-file manifest + tree digest, digest recomputed ON the replica, table published OUTSIDE the seal with post-write re-proof",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) and the explicitly named publication path; ladder run artifacts are read strictly read-only",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   }
