@@ -1,0 +1,55 @@
+{
+  "$doc": "PREPARED EVIDENCE ONLY (WP5 section 9, 2026-08-11): one new explicit-ID v2 genesis proposal for the next distributed DOIN component job. Not deployed, not launched; launch requires a DOIN job boundary. Placeholders TBD_AT_JOB_MATERIALIZATION are bound when the component question/domain are materialized under the ordered roadmap; the materializer must fail closed if any placeholder survives into a running worker.",
+  "proposal_id": "doin-v2-component-job-001-20260811",
+  "protocol_version": 2,
+  "generator_id": "doin-v2-component-job-001-20260811",
+  "chain_id": "doin-536f6234e505",
+  "genesis_hash": "536f6234e5051018b2fdda956a1c535eead69917ae128d0b2837bb5e2aecfee0",
+  "genesis_derivation": "doin_core.models.block.Block.genesis('doin-v2-component-job-001-20260811') — fixed Unix-epoch timestamp; every machine recomputes the identical hash independently",
+  "distinct_from": {
+    "deterministic_default_and_legacy_fleet_identity": {
+      "chain_id": "doin-4e19257e8941",
+      "genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5"
+    }
+  },
+  "component_commits": {
+    "doin-core": {
+      "branch": "fix/tx-content-binding-20260810",
+      "commit": "00397f5390649280aab7ba9b6420e71ff299a9da"
+    },
+    "doin-node": {
+      "branch": "fix/tx-content-binding-20260810",
+      "commit": "0821ec236e85040d9ab45c89b01437f4cbaeb9ab"
+    }
+  },
+  "bound_at_job_materialization": {
+    "domain_hash": "TBD_AT_JOB_MATERIALIZATION",
+    "config_hash": "TBD_AT_JOB_MATERIALIZATION",
+    "data_hash": "TBD_AT_JOB_MATERIALIZATION"
+  },
+  "pre_claim_identity_check": {
+    "rule": "Every machine prints one DOIN_V2_IDENTITY line with all seven values byte-identical across the fleet BEFORE its first candidate claim; mismatch, absence, or a surviving placeholder is a typed refusal.",
+    "fields_in_order": [
+      "chain_id",
+      "genesis_hash",
+      "domain_hash",
+      "config_hash",
+      "data_hash",
+      "doin_core_commit",
+      "doin_node_commit"
+    ]
+  },
+  "boot_mechanics": "UnifiedNode.start() initializes an empty DB with the default 'genesis' generator, so the job materializer pre-seeds each worker's fresh state directory via ChainDB.initialize('doin-v2-component-job-001-20260811') before first node start; startup verification then runs the 10-check verifier against the configured genesis_hash and stamps (chain_id, genesis_hash) into database metadata.",
+  "constraints": [
+    "every legacy blockchain database stays byte-for-byte untouched and read-only",
+    "the paused 2026-08-06 chain is not resumed and its identity is not reused",
+    "no deployment or DOIN optimization launch under this evidence; launch sits at the next DOIN job boundary"
+  ],
+  "validation_evidence": {
+    "report": "V2_MIGRATION_MANIFEST_VALIDATION_2026_08_11.json",
+    "reproducer": "V2_MIGRATION_VALIDATION_SCRIPT_2026_08_11.py",
+    "proposal_chain_verifier": "10/10 checks pass, outcome fully_verified, CLI exit 0 (check H)"
+  },
+  "prepared_by": "General Satoshi III (successor technical lead)",
+  "utc": "2026-08-11"
+}

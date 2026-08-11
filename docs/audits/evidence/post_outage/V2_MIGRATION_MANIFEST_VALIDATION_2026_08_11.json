@@ -1,0 +1,288 @@
+{
+  "work_package": "WP5 v2 migration manifest validation (209-211 accepted)",
+  "utc": "2026-08-11T23:43:10.261424+00:00",
+  "doin_core_worktree": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/doin-core-wp5",
+  "doin_node_worktree": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/doin-node-wp5",
+  "doin_core_commit": "00397f5390649280aab7ba9b6420e71ff299a9da",
+  "doin_node_commit": "0821ec236e85040d9ab45c89b01437f4cbaeb9ab",
+  "manifest_path_worktree": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/doin-node-wp5/examples/fleet_shared_population_identity_template.json",
+  "manifest_path_canonical": "doin-node branch fix/tx-content-binding-20260810 @ 0821ec2:examples/fleet_shared_population_identity_template.json",
+  "checks": [
+    {
+      "check": "A_manifest_explicit_identity",
+      "ok": true,
+      "chain_id": "doin-4e19257e8941",
+      "genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+      "sha256": "062ae19149d91ead710302e4aa119aeb1d9577eb324137753e32edcaa3e337cb"
+    },
+    {
+      "check": "B_identity_matches_deterministic_genesis",
+      "ok": true,
+      "computed_genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+      "computed_chain_id": "doin-4e19257e8941"
+    },
+    {
+      "check": "C_materializer_accepts_manifest",
+      "ok": true,
+      "config_chain_id": "doin-4e19257e8941",
+      "config_genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5"
+    },
+    {
+      "check": "D_fresh_chain_instantiated_and_identity_stamped",
+      "ok": true,
+      "state_dir": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/v2-state-validate",
+      "db_path": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/v2-state-validate/chain.db",
+      "height": 1,
+      "tip_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+      "stored_identity": [
+        "doin-4e19257e8941",
+        "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5"
+      ]
+    },
+    {
+      "check": "E_chainstatus_v2_exposes_identity",
+      "ok": true,
+      "PROTOCOL_VERSION": 2,
+      "status_protocol_version": 2,
+      "status_chain_id": "doin-4e19257e8941",
+      "status_genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+      "attested_accepted": true,
+      "legacy_refused": "ProtocolVersionMismatchError: peer chain mismatch on protocol_version: expected 2, received 0",
+      "alien_refused": "ChainIdentityMismatchError: peer chain mismatch on chain_id: expected 'doin-4e19257e8941', received 'doin-000000000000'"
+    },
+    {
+      "check": "F_verifier_cli_10_checks_exit_0",
+      "ok": true,
+      "exit_code": 0,
+      "outcome": "fully_verified",
+      "checks_pass": "10/10",
+      "stderr_summary": "outcome=fully_verified height=1"
+    },
+    {
+      "check": "G_shared_population_without_identity_refused",
+      "ok": true,
+      "both_missing": "typed refusal: ChainIdentityConfigError: shared-population configuration requires an explicit chain identity: both \"chain_id\" and \"genesis_hash\" are missing (shared-population domains: example-shared-domain). Add explicit \"chain_id\" and \"genesis_hash\" keys shared by every participating machine \u2014 see examples/fleet_shared_population_identity_template.json",
+      "chain_id_missing": "typed refusal: ChainIdentityConfigError: shared-population configuration requires an explicit chain identity: \"chain_id\" is missing (shared-population domains: example-shared-domain). Add explicit \"chain_id\" and \"genesis_hash\" keys shared by every participating machine \u2014 see examples/fleet_shared_population_identity_template.json",
+      "genesis_hash_missing": "typed refusal: ChainIdentityConfigError: shared-population configuration requires an explicit chain identity: \"genesis_hash\" is missing (shared-population domains: example-shared-domain). Add explicit \"chain_id\" and \"genesis_hash\" keys shared by every participating machine \u2014 see examples/fleet_shared_population_identity_template.json"
+    },
+    {
+      "check": "H_new_explicit_id_genesis_instantiates_and_verifies",
+      "ok": true,
+      "generator_id": "doin-v2-component-job-001-20260811",
+      "proposal_genesis_hash": "536f6234e5051018b2fdda956a1c535eead69917ae128d0b2837bb5e2aecfee0",
+      "proposal_chain_id": "doin-536f6234e505",
+      "distinct_from_manifest_identity": true,
+      "verifier_exit": 0,
+      "verifier_outcome": "fully_verified",
+      "state_dir": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/v2-state-genesis-proposal"
+    }
+  ],
+  "manifest_sha256": "062ae19149d91ead710302e4aa119aeb1d9577eb324137753e32edcaa3e337cb",
+  "verifier_cli_report_manifest_chain": {
+    "outcome": "fully_verified",
+    "db_path": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/v2-state-validate/chain.db",
+    "protocol_version": 2,
+    "chain_id": "doin-4e19257e8941",
+    "genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+    "expected_chain_id": "doin-4e19257e8941",
+    "expected_genesis_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+    "height": 1,
+    "tip_index": 0,
+    "tip_hash": "4e19257e8941caec2ec6a4d581a981a533ab5728c11e58c3d13040049e3cd6d5",
+    "checks": [
+      {
+        "number": 1,
+        "name": "sqlite_integrity",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 2,
+        "name": "contiguous_indices_from_deterministic_genesis",
+        "status": "pass",
+        "detail": "1 contiguous blocks from deterministic genesis",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 3,
+        "name": "configured_genesis_and_chain_id",
+        "status": "pass",
+        "detail": "genesis=4e19257e8941caec\u2026 chain_id=doin-4e19257e8941",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 4,
+        "name": "block_hashes_match_canonical_headers",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 5,
+        "name": "previous_hash_chain",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 6,
+        "name": "transaction_count_and_contiguous_tx_index",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 7,
+        "name": "transaction_content_hashes",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 8,
+        "name": "merkle_roots",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 9,
+        "name": "snapshots_match_blocks",
+        "status": "pass",
+        "detail": "0 snapshot(s) verified",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 10,
+        "name": "metadata_height_tip",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      }
+    ],
+    "first_failure": null,
+    "verified_suffix": null,
+    "started_at": "2026-08-11T23:43:10.754192Z",
+    "finished_at": "2026-08-11T23:43:10.754719Z"
+  },
+  "verifier_cli_report_proposal_chain": {
+    "outcome": "fully_verified",
+    "db_path": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/v2-state-genesis-proposal/chain.db",
+    "protocol_version": 2,
+    "chain_id": "doin-536f6234e505",
+    "genesis_hash": "536f6234e5051018b2fdda956a1c535eead69917ae128d0b2837bb5e2aecfee0",
+    "expected_chain_id": "doin-536f6234e505",
+    "expected_genesis_hash": "536f6234e5051018b2fdda956a1c535eead69917ae128d0b2837bb5e2aecfee0",
+    "height": 1,
+    "tip_index": 0,
+    "tip_hash": "536f6234e5051018b2fdda956a1c535eead69917ae128d0b2837bb5e2aecfee0",
+    "checks": [
+      {
+        "number": 1,
+        "name": "sqlite_integrity",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 2,
+        "name": "contiguous_indices_from_deterministic_genesis",
+        "status": "pass",
+        "detail": "1 contiguous blocks from deterministic genesis",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 3,
+        "name": "configured_genesis_and_chain_id",
+        "status": "pass",
+        "detail": "genesis=536f6234e5051018\u2026 chain_id=doin-536f6234e505",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 4,
+        "name": "block_hashes_match_canonical_headers",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 5,
+        "name": "previous_hash_chain",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 6,
+        "name": "transaction_count_and_contiguous_tx_index",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 7,
+        "name": "transaction_content_hashes",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 8,
+        "name": "merkle_roots",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 9,
+        "name": "snapshots_match_blocks",
+        "status": "pass",
+        "detail": "0 snapshot(s) verified",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      },
+      {
+        "number": 10,
+        "name": "metadata_height_tip",
+        "status": "pass",
+        "detail": "",
+        "first_failing_block": null,
+        "first_failing_tx": null
+      }
+    ],
+    "first_failure": null,
+    "verified_suffix": null,
+    "started_at": "2026-08-11T23:43:10.972119Z",
+    "finished_at": "2026-08-11T23:43:10.972843Z"
+  },
+  "genesis_proposal": {
+    "generator_id": "doin-v2-component-job-001-20260811",
+    "chain_id": "doin-536f6234e505",
+    "genesis_hash": "536f6234e5051018b2fdda956a1c535eead69917ae128d0b2837bb5e2aecfee0"
+  },
+  "all_pass": true,
+  "test_suites": {
+    "doin-core @ 00397f5 (temp worktree doin-core-wp5)": "316 passed, 1 warning (anaconda3 base python 3.12, pytest 7.4.4)",
+    "doin-node @ 0821ec2 (temp worktree doin-node-wp5)": "482 passed, 22 warnings (conda env trading-stack, pytest 9.1.1 + pytest-asyncio 1.4.0; doin-plugins on PYTHONPATH)",
+    "note": "base env without pytest-asyncio yields 432 passed + 49 async skips + 1 error = 482 collected; the full 482-pass run matches the audited counts"
+  }
+}
