@@ -1,0 +1,40 @@
+{
+ "schema": "agent_multi.venue_recovery_facts.v1",
+ "observed_at_utc": "2026-08-11T23:34:00Z",
+ "redaction": "account identifiers, logins and fingerprints redacted; amounts/counts/symbols retained",
+ "alpaca_paper": {
+  "typed_state": "SESSION_READY",
+  "runner_service": "lts-alpaca-model-runner.service active (NOT restarted — order 4.1)",
+  "heartbeat": {"state": "monitoring", "positions": 1, "orders": 1, "model_id": "spy-daily-linear-live-v1"},
+  "note": "the known single protected exposure persists; write-enabled Paper-only contract unchanged"
+ },
+ "ibkr_paper": {
+  "typed_state": "RECONCILIATION_REQUIRED",
+  "tws_port_7497": "LISTENING (owner started TWS Paper post-outage)",
+  "runner_service": "lts-ibkr-model-runner.service active",
+  "no_duplicate_submission_proof": "runner cycles state=decided with decision outcome=rejected reason=halted:hold and replayed=true every ~62s — the global hold rejects order intents idempotently across the restart; l1 fills/flattens/resumed all empty",
+  "hold": "KEPT — reconnection is not authority to clear; owner-authenticated command only after fresh direct flat/protected reconciliation",
+  "fresh_inference": {"asset": "fx:USD/CAD", "last_closed_bar": "2026-08-11T16:00:00+00:00", "model_id": "usdcad-4h-linear-live-v1"}
+ },
+ "mt5_demo": {
+  "typed_state": "SESSION_READY",
+  "owner_action": "owner opened the interactive Windows session and started MT5 (terminal64 runs inside the VM guest, not observable from host pgrep)",
+  "bridge_freshness": "mt5-bridge.sqlite WAL written 6 s before observation; heartbeat row received_at 2026-08-11T23:34:07Z",
+  "direct_facts": {
+   "adapter_version": "lts.mt5.ea.execution.v2",
+   "environment": "demo",
+   "connected": true,
+   "trade_allowed_algo_trading": true,
+   "terminal_build": 6090,
+   "terminal_ping_ms": 108.7,
+   "account": {"currency": "USD", "balance": 9999.47, "equity": 9999.5, "positions_total": 1, "orders_total": 0},
+   "position": {"symbol": "ETHUSD", "side": "short", "volume": 0.01, "price_open": 1886.3, "stop_loss": 1906.15, "take_profit": 1849.53, "natively_protected": true}
+  },
+  "note": "current position fact is a fresh bridge snapshot, not a stale last-known value"
+ },
+ "remaining_implementation_items": [
+  "typed post-boot TWS continuity state machine (PROCESS_ABSENT|PORT_CLOSED|LOGIN_REQUIRED|SESSION_READY|RECONCILIATION_REQUIRED) with Telegram on unresolved transitions only — lts repo package, queued",
+  "Windows user-logon startup task for MT5 (never SYSTEM session, never plaintext credentials) — owner-assisted, queued",
+  "fresh IBKR direct flat/protected reconciliation packet refresh before any owner hold-clear"
+ ]
+}

@@ -1,0 +1,81 @@
+{
+ "schema": "agent_multi.p1_difficulty_lr_factorial.v1",
+ "$doc": "WP4 (order 2026-08-11 §8): phase-1 difficulty x phase-1 learning-rate 2x2 factorial. The prior L1 factorial varied PHASE-2 LR with phase-1 LR fixed at 1e-4, so it cannot say whether phase-1 LR caused the collapse. This design crosses phase-1 dynamics {normal, easy} with phase-1 LR {1e-4, 3e-5}; phase-2 stays at the active D0 range point. Mechanics screen first (one pass-equivalent per cell, collapse/contract screen, not performance); the decision run spends the full document-38 budget only if the screen finds a viable region.",
+ "question": "Was the apparent easy/normal difficulty question actually a phase-1 learning-rate problem?",
+ "experiment": "p1_difficulty_lr_factorial_20260811_v1",
+ "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1",
+ "asset": "ETHUSD_4h",
+ "factors": {
+  "phase1_dynamics": ["normal_realistic", "easy_chronological_continuation"],
+  "phase1_learning_rate": [0.0001, 3e-05]
+ },
+ "cells": {
+  "P1N_LR1E4": {"phase1_dynamics": "normal_realistic", "phase1_learning_rate": 0.0001},
+  "P1N_LR3E5": {"phase1_dynamics": "normal_realistic", "phase1_learning_rate": 3e-05},
+  "P1E_LR1E4": {"phase1_dynamics": "easy_chronological_continuation", "phase1_learning_rate": 0.0001},
+  "P1E_LR3E5": {"phase1_dynamics": "easy_chronological_continuation", "phase1_learning_rate": 3e-05}
+ },
+ "held_fixed": {
+  "$doc": "Order §8: every non-factor identity field is pinned. Replay and optimizer carry are excluded as factors this round — every ladder arm already proved optimizer_state_transferred=false and replay_size_at_boundary=0 at the boundary (audit §3).",
+  "phase2_learning_rate": 3e-05,
+  "phase2_dynamics": "normal_realistic",
+  "phase2_action_threshold": 0.1,
+  "boundary": {"replay_reset": true, "optimizer_reset": true},
+  "entropy": {"mode": "fixed", "value": 0.2},
+  "phase1_handoff_semantics": "l1_trained_epoch_v4",
+  "handoff_viability_evidence": "required on every phase-1 checkpoint (WP3 / finding 221 block)",
+  "topology_features_costs_protection": "L1 v3 frozen system manifest contract (sha 00bfa585 family) — spread 1e-4, protected entries required, min_equity 100, financing declared-disabled",
+  "dates": "ladder/L1 nested split contract; sealed 2025 inaccessible",
+  "selection": "normal-realistic paired comparator on train-monitor + inner validation; outer validation truth",
+  "anchor_rule": "every cell starts from the exact per-seed anchor, never a preceding cell's terminal"
+ },
+ "seeds": [101, 202, 303, 404],
+ "anchors": {
+  "101": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip", "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"},
+  "202": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip", "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"},
+  "303": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip", "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"},
+  "404": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip", "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"}
+ },
+ "assignments": {
+  "$doc": "One seed per physical GPU; ALL FOUR cells of a seed run sequentially on that same GPU so hardware is paired within seed. Distributed anchors hash-verified on their hosts 2026-08-11.",
+  "101": {"hostname": "omega", "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"},
+  "202": {"hostname": "dragon", "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"},
+  "303": {"hostname": "gamma", "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"},
+  "404": {"hostname": "gamma", "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"}
+ },
+ "cell_order": {
+  "$doc": "Deterministic cyclic Latin square: every cell occupies every within-seed position exactly once across seeds — no order/thermal confounding.",
+  "101": ["P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5"],
+  "202": ["P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5", "P1N_LR1E4"],
+  "303": ["P1E_LR1E4", "P1E_LR3E5", "P1N_LR1E4", "P1N_LR3E5"],
+  "404": ["P1E_LR3E5", "P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4"]
+ },
+ "mechanics_screen": {
+  "budget": "one pass-equivalent per cell (1 phase-1 epoch + 1 phase-2 epoch at 20000 timesteps, matching the ladder pass budget)",
+  "requires": [
+   "16/16 records with exact identities and terminal artifacts (terminal_model_path + terminal_model_sha256 mandatory — finding 223 contract)",
+   "all four terminal loads proven on the replica host for each completed seed batch",
+   "direct handoff-viability facts on every phase-1 checkpoint (finding 221 block)",
+   "at least one trained arm not CONSTANT_POLICY and not BELOW_NORMAL_THRESHOLD before the decision budget is spent"
+  ],
+  "collapse_outcome": "PHASE1_LR_REGION_COLLAPSED — stop, do not burn the full run"
+ },
+ "decision_run": {
+  "$doc": "Only if the screen finds a viable region. Document-38 real L1 stopping.",
+  "max_global_pass_equivalent_checkpoints": 2000,
+  "patience": 60,
+  "patience_floor": 40,
+  "best_checkpoint_restoration": true,
+  "stopping": "train-monitor plus inner-validation paired stopping",
+  "truth": "final outer validation; sealed 2025 inaccessible"
+ },
+ "typed_outcomes": ["PHASE1_LR_MAIN_EFFECT", "PHASE1_DIFFICULTY_MAIN_EFFECT", "PHASE1_LR_DIFFICULTY_INTERACTION", "NO_MATERIAL_EFFECT", "TOTAL_ACTIVITY_COLLAPSE", "INCONCLUSIVE", "PHASE1_LR_REGION_COLLAPSED"],
+ "forbidden": [
+  "broad LR sweep (LR_easy x LR_normal response surface requires a viable easy arm from THIS factorial first)",
+  "resuming the paused 2026-08-06 DOIN chain",
+  "reusing any L1 decision or ladder identity",
+  "mutating sealed collections",
+  "opening sealed 2025",
+  "citing the ladder as a pure boundary effect — accepted wording is the v3-vs-v4 checkpoint-selection/handoff bundle with easy-phase action-amplitude collapse exposed by the normal deadband"
+ ]
+}

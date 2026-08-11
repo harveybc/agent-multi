@@ -1,0 +1,41 @@
+{
+ "schema": "agent_multi.gpu_recovery_verification.v1",
+ "verified_at_local": "2026-08-11T18:30:00-05:00",
+ "verified_from": "independent omega process (order 3.1), ssh BatchMode to dragon/gamma",
+ "before": {
+  "source": "docs/audits/evidence/MUSASHI_POST_OUTAGE_RUNTIME_FACTS_2026_08_11.json @ 2026-08-11T15:40:00-05:00",
+  "omega": "gpu_probe available",
+  "dragon": "gpu_probe failed_driver_unavailable, nvidia module for running kernel missing (latest module 7.0.0-28)",
+  "gamma": "gpu_probe failed_driver_unavailable, nvidia module for running kernel missing (latest module 7.0.0-28)"
+ },
+ "owner_action": "owner installed linux-modules-nvidia-580-open-7.0.0-29-generic=7.0.0-29.29+1 on dragon and gamma (privileged step, not performed by Satoshi)",
+ "after": {
+  "kernel_all_hosts": "7.0.0-29-generic",
+  "modinfo_nvidia_7_0_0_29": {"omega": "OK", "dragon": "OK", "gamma": "OK"},
+  "driver_version_all_hosts": "580.173.02",
+  "nvidia_smi": {"omega": "OK", "dragon": "OK", "gamma": "OK"},
+  "uuid_set_exact": {
+   "omega": ["GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"],
+   "dragon": ["GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"],
+   "gamma": ["GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519", "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"],
+   "matches_order_3_1_expected_set": true
+  },
+  "framework_visibility_per_worker": {
+   "probe": "CUDA_VISIBLE_DEVICES=<assigned uuid> python -c 'import torch; assert torch.cuda.is_available()' — device_count and name checked",
+   "omega_seed101": {"cuda": true, "ndev": 1, "dev0": "NVIDIA GeForce RTX 4070 Laptop GPU"},
+   "dragon_seed202": {"cuda": true, "ndev": 1, "dev0": "NVIDIA GeForce RTX 4090 Laptop GPU"},
+   "gamma_seed303": {"cuda": true, "ndev": 1, "dev0": "NVIDIA GeForce RTX 5070 Ti Laptop GPU"},
+   "gamma_seed404": {"cuda": true, "ndev": 1, "dev0": "NVIDIA GeForce RTX 5090"},
+   "silent_cpu_fallback": false
+  },
+  "temperatures_c": {"omega_4070": 41, "dragon_4090": 28, "gamma_5070ti": 25, "gamma_5090": 40}
+ },
+ "venue_probes_after_recovery": {
+  "tws_paper_port_7497": "LISTENING (owner started TWS Paper); IBKR runner reconnection/reconciliation evidence to follow",
+  "mt5": "linux bridge service active; terminal64 runs inside the Windows VM guest, not observable via host pgrep — bridge-freshness evidence to follow",
+  "alpaca": "runner active per runtime facts; fresh heartbeat evidence to follow"
+ },
+ "classification": {"omega": "GPU_READY", "dragon": "GPU_READY", "gamma": "GPU_READY"},
+ "dispatch_rule": "no GPU job is dispatched to a host whose expected UUID is absent; verified none absent at this observation",
+ "sealed_custody_check": "ladder collection digest cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e already independently recomputed on omega and dragon post-outage (Musashi runtime facts); collection untouched by this verification"
+}
