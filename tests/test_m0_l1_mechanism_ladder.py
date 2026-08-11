@@ -133,12 +133,13 @@ class TestAdjacentDeltaProperty:
         d3, d4 = configs["D3_COST_PROTECTION"], configs["D4_FULL_L1"]
         assert _diff(d3, d4) == {
             "l1_patience", "l1_patience_start_epoch",
-            "l1_activity_patience", "l1_activity_patience_start_epoch",
-            "inactive_terminal_is_typed_result"}
+            "l1_activity_patience", "l1_activity_patience_start_epoch"}
         assert d3["l1_patience"] == 10_000    # M0: no early stopping
         assert d4["l1_patience"] == 60
+        # Evidence plumbing is UNIFORM (never an arm delta): every arm
+        # lands a typed record when fully inactive.
+        assert d3["inactive_terminal_is_typed_result"] is True
         assert d4["inactive_terminal_is_typed_result"] is True
-        assert d3.get("inactive_terminal_is_typed_result") is None
 
     def test_every_delta_stays_inside_its_declared_group(
             self, tmp_path):
