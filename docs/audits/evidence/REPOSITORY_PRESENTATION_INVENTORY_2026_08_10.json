@@ -1231,6 +1231,7 @@
  "schema": "agent_multi.repository_presentation_inventory.v1",
  "updates_2026_08_10": {
   "agent-multi_visibility": {
+   "authorization_provenance": "The visibility change was performed OUTSIDE this working session by the owner; the authorization and execution are attested by the independent auditor in docs/audits/AUDIT_L1_FINAL_RESULT_AND_REPOSITORY_PRESENTATION_2026_08_10.md \u00a71 ('The owner-authorized visibility change is also independently confirmed: agent-multi is private') and \u00a75.1 ('owner ratified and executed'), a document delivered to this session by the owner. Independently re-verified via gh repo view at 2026-08-10: visibility=PRIVATE, archived=false. This note records third-party-attested fact, not first-hand action by this session.",
    "authorized_by": "owner (Harvey Bastidas)",
    "current_visibility": "PRIVATE",
    "history_remediation": "history scrub/force-push remains a separate action requiring a second explicit owner authorization; privacy containment does not close it",
