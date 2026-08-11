@@ -440,3 +440,29 @@ validation). Only a viable easy result can activate the later bounded
 This amendment and the owner's standing approval authorize implementation,
 screening and the conditional full run without another phrase. Audit waiting
 does not suspend unrelated live evidence or compatible approved compute.
+
+## 13. 2026-08-11 Electrical-Outage Recovery Amendment
+
+The long electrical outage preserved the completed ladder collection: Omega
+and the independent Dragon replica recomputed the same tree digest
+`cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e`.
+The interruption exposed three operational gaps that are now part of the
+execution contract:
+
+1. a running supervisor is not evidence of GPU availability or useful work;
+2. a running Linux bridge/VM is not evidence that a broker terminal is logged
+   in and producing fresh direct facts; and
+3. a kernel update must not become the active boot kernel on a GPU worker
+   without a matching NVIDIA module and post-boot UUID/framework verification.
+
+The detailed recovery and prevention order is
+`docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_POST_OUTAGE_RECOVERY_ORDER_2026_08_11.md`.
+Its runtime facts are preserved in
+`docs/audits/evidence/MUSASHI_POST_OUTAGE_RUNTIME_FACTS_2026_08_11.json`.
+
+GPU dispatch is fail-closed per host and never falls back silently to CPU. A
+failed host does not stop compatible work on healthy workers. IBKR and MT5
+require direct post-login reconciliation after reboot; stale last-known facts
+are never treated as current protection evidence. Once the four expected GPU
+UUIDs return, the same-artifact replay and phase-1 difficulty x phase-1 LR
+mechanics screen proceed under section 12 without another owner phrase.
