@@ -384,3 +384,20 @@ resolved hyperparameters, feature/gate artifacts, raw metrics, chronological
 weekly vectors, code/data/config hashes, resource facts and DOIN lineage; the
 scheduled comparisons have an unambiguous typed outcome; and the winning ETH
 contract can be reproduced by inference and Paper/Demo shadow parity.
+
+## 12. L1 Decision Result and Immediate Mechanism Work (2026-08-10)
+
+Decision identity `2de49ea9225e2baf` completed 16/16 and is independently
+accepted as `INCONCLUSIVE`: all 16 cells are valid, all 16 are inactive and no
+paired effect is estimable. The sealed/replica digest is
+`f3bb41516f8f3bb9b458c345aae3c1f261cc9688bece697cadc898d60401d374`.
+
+This result inserts one diagnostic step before execution-order item 7. Run the
+bounded M0-to-L1 one-change-at-a-time ladder specified in
+`../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_RESULT_WPB_AND_MECHANISM_ORDER_2026_08_10.md`.
+Its purpose is to identify the first protocol transition that removes activity;
+it neither selects a champion nor opens a broad hyperparameter sweep.
+
+The ladder is covered by the standing non-idle authority in section 9. Its
+materialization and dispatch are not an owner gate. L2-N/L2-EN remains queued
+behind a reproducible activity-bearing L1 recipe.

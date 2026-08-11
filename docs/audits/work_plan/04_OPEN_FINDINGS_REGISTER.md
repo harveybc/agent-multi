@@ -1058,6 +1058,32 @@ through the counterexamples below. No active runtime was mutated.
 | AUD-SEC-20260810-215 | S2 | open, immediate containment/owner decision | Removed operational and third-party evidence remains reachable in public Git history | Owner decides visibility/history action; General Satoshi III prepares and implements approved plan; Musashi verifies |
 | AUD-GEN-20260810-216 | S4 | open, active-core maintenance | Predictor default no-header CSV path remains a production crash behind strict xfail | General Satoshi III implements; General Musashi verifies |
 
+### 1ai. L1 final-result and WP-B audit, 2026-08-10
+
+Canonical evidence:
+
+- `../AUDIT_L1_FINAL_RESULT_AND_REPOSITORY_PRESENTATION_2026_08_10.md`
+- `../evidence/MUSASHI_L1_RESULT_WPB_REPRO_2026_08_10.py`
+- `../evidence/MUSASHI_L1_RESULT_WPB_REPRO_RESULT_2026_08_10.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_L1_RESULT_WPB_AND_MECHANISM_ORDER_2026_08_10.md`
+
+The decision result `2de49ea9225e2baf` is independently reproduced and
+accepted as `INCONCLUSIVE`: 16 valid cells, zero active cells, 16 unavailable
+Sharpes and an unchanged seal/replica digest. This closes no implementation
+finding and selects the bounded mechanism ladder, not a broad sweep.
+
+State-change note for 215: owner authorized and Musashi independently verified
+that `harveybc/agent-multi` is now private. Immediate exposure is contained;
+the finding remains open for owner-approved history remediation and the
+pre-push sensitivity gate.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-GEN-20260810-217 | S3 | open, blocks WP-B acceptance | Eight relative README links do not resolve in the delivered Git trees despite a zero-broken-links claim | General Satoshi III corrects; General Musashi verifies |
+| AUD-GEN-20260810-218 | S4 | open, metadata correctness | `trading-signal` and `timeseries-gan` carry a doin-node supersession topic that contradicts their documented replacements | General Satoshi III corrects; General Musashi verifies |
+| AUD-GEN-20260810-219 | S4 | open, WP-B completeness | `causal-inference` retained its obsolete README; repair must use a clean worktree without touching owner changes | General Satoshi III corrects; General Musashi verifies |
+| AUD-F1-20260810-220 | S3 | open, anti-idle orchestration | Terminal L1 result left zero active and zero materialized successor GPU jobs despite the standing conditional mechanism plan | General Satoshi III materializes/runs bounded ladder; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |
