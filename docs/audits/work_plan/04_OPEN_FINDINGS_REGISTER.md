@@ -1035,6 +1035,44 @@ Canonical evidence:
 | AUD-GEN-20260810-207 | S4 | open, repository presentation | Accepted agent-multi README is absent from default master | General Satoshi III transfers docs-only commit; General Musashi verifies GitHub |
 | AUD-GEN-20260810-208 | S4 | open, active-core maintenance | Predictor test collection has eight stale import failures | General Satoshi III implements bounded repair; General Musashi verifies |
 
+### 1ah. Return 209-220 and mechanism attribution audit, 2026-08-11
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_RETURN_209_220_2026_08_11.md`
+- `../evidence/repro_runs/MUSASHI_209_220_ACCEPTANCE_REPRO_2026_08_11.py`
+- `../evidence/repro_runs/MUSASHI_209_220_ACCEPTANCE_REPRO_2026_08_11.json`
+- `../evidence/repro_runs/MUSASHI_209_220_RUNTIME_AND_ARTIFACT_FACTS_2026_08_11.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_209_223_VERDICT_AND_PHASE1_LR_ORDER_2026_08_11.md`
+
+Append-only disposition: 209-216, 218 and 219 are independently verified
+pending owner closure. Finding 217 remains open. Finding 220 is partially
+satisfied by the executed ladder but remains open because the ladder's causal
+wording/custody require correction and no successor job was dispatched.
+
+| ID | Sev | Appended state | Basis / remaining work |
+| --- | --- | --- | --- |
+| AUD-F1-20260810-209 | S2 | independently_verified_pending_owner_closure | typed paired metadata and malformed-value refusal reproduced |
+| AUD-F1-20260810-210 | S2 | independently_verified_pending_owner_closure | verified append cursor refuses second-connection history tamper before commit |
+| AUD-F1-20260810-211 | S3 | independently_verified_pending_owner_closure | shared-population config requires explicit chain identity; v2 deployment remains next-boundary work |
+| AUD-F1-20260810-212 | S3 | independently_verified_pending_owner_closure | current-attempt/freshness-bound telemetry and typed unavailable state reproduced |
+| AUD-F1-20260810-213 | S3 | independently_verified_pending_owner_closure | ETA follows maximum per-worker critical path |
+| AUD-F2-20260810-214 | S3 | independently_verified_pending_owner_closure | IBKR queue state derives write-enabled operational hold from durable facts |
+| AUD-SEC-20260810-215 | S2 | independently_verified_pending_owner_closure_for_control_only | pre-push gate accepted and repository private; destructive history scrub remains separately owner-gated |
+| AUD-GEN-20260810-216 | S4 | independently_verified_pending_owner_closure | headerless CSV production path fixed and strict xfail removed |
+| AUD-GEN-20260810-217 | S3 | open | checker ignores repository errors, checks local HEAD, and default agent-multi README has two absent targets |
+| AUD-GEN-20260810-218 | S4 | independently_verified_pending_owner_closure | supersession topics corrected with 20-topic invariant |
+| AUD-GEN-20260810-219 | S4 | independently_verified_pending_owner_closure | default causal-inference README corrected without touching dirty canonical analysis |
+| AUD-F1-20260810-220 | S3 | open, partially satisfied | ladder executed, but compound attribution/custody corrections and automatic successor dispatch remain |
+
+New findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260811-221 | S2 | open, blocks curriculum promotion | Easy activity certifies near-constant policies whose actions cannot cross the normal threshold | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260811-222 | S3 | open, blocks pure-mechanism claim | One handoff key bundles selection/gating/fallback semantics and heterogeneous easy retraining, so the pure boundary attribution is overstated | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260811-223 | S3 | open, blocks ladder custody automation | Collector can seal, replicate and publish records with no terminal models; inactive arms are absent from replica load proof | General Satoshi III implements; General Musashi verifies |
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

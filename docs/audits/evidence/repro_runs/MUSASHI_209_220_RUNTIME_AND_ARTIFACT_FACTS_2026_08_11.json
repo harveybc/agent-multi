@@ -1,0 +1,80 @@
+{
+  "schema": "agent_multi.musashi_209_220_runtime_and_artifact_facts.v1",
+  "subject": {
+    "agent_multi": "f6dc991d87cf65e9217db7e8d47d4c0b31a6cc09",
+    "doin_core": "00397f5390649280aab7ba9b6420e71ff299a9da",
+    "doin_node": "0821ec236e85040d9ab45c89b01437f4cbaeb9ab",
+    "predictor": "e6b91b52b93fb0286ae85a5de3242619085da5e2"
+  },
+  "independent_suites": {
+    "agent_multi": "996 passed, 2 warnings",
+    "doin_core": "316 passed",
+    "doin_node": "482 passed, 22 warnings",
+    "predictor": "25 passed, 1 skipped",
+    "focused_status": "51 passed",
+    "focused_ladder_curriculum": "74 passed",
+    "focused_predictor": "6 passed"
+  },
+  "ladder": {
+    "diagnostic_identity": "97c0bb29e82dfea3",
+    "seed": 101,
+    "collection_tree_digest": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e",
+    "declared_replica_terminal_loads": 1,
+    "expected_replica_terminal_loads": 4,
+    "independent_dragon_terminal_loads": [
+      {
+        "arm": "D0_M0_EXACT",
+        "loads": true,
+        "sha256": "04fc5a8ffd1cf730fa1468940bb6d14d795c9fa4471bcd4f2f02e2d3f9d4621a"
+      },
+      {
+        "arm": "D2_BOUNDARY_ONLY",
+        "loads": true,
+        "sha256": "1152625de60d721f0f60dd4fcc25c8331579d7a14e809c48ee8fba5189775c85"
+      },
+      {
+        "arm": "D3_COST_PROTECTION",
+        "loads": true,
+        "sha256": "c11f8ce5c910e17b8b8557ff8675435696df26afa203aa43c9c0cb07cb78ee19"
+      },
+      {
+        "arm": "D4_FULL_L1",
+        "loads": true,
+        "sha256": "f0a58c633216b4b5ea8ad1200983bacaeb61f62e14a9146278f0c340f52d7391"
+      }
+    ],
+    "phase1_epoch1_raw_action_ranges": {
+      "D0_M0_EXACT": [0.010861039161682129, 0.010861039161682129],
+      "D2_BOUNDARY_ONLY": [0.014293193817138672, 0.014354467391967773],
+      "D3_COST_PROTECTION": [0.007986187934875488, 0.007988214492797852],
+      "D4_FULL_L1": [0.012114286422729492, 0.012130379676818848]
+    },
+    "phase1_epoch1_normal_probe_trades": {
+      "D0_M0_EXACT": [0, 0],
+      "D2_BOUNDARY_ONLY": [0, 0],
+      "D3_COST_PROTECTION": [0, 0],
+      "D4_FULL_L1": [0, 0]
+    },
+    "boundary_state": {
+      "optimizer_state_transferred_all_arms": false,
+      "replay_size_at_boundary_all_arms": 0,
+      "replay_transitions_transferred_all_arms": 0
+    }
+  },
+  "runtime_sample": {
+    "sampled_utc": "2026-08-11T09:00:26Z",
+    "gpu_workers": [
+      {"worker": "omega", "gpu": "RTX 4070 Laptop", "temperature_c": 45, "utilization_pct": 35, "training_process": false},
+      {"worker": "dragon", "gpu": "RTX 4090 Laptop", "temperature_c": 30, "utilization_pct": 0, "training_process": false},
+      {"worker": "gamma-5070ti", "gpu": "RTX 5070 Ti Laptop", "temperature_c": 24, "utilization_pct": 0, "training_process": false},
+      {"worker": "gamma-5090", "gpu": "RTX 5090", "temperature_c": 41, "utilization_pct": 0, "training_process": false}
+    ],
+    "campaign_supervisors": "running on omega, dragon and gamma but supervising a paused 2026-08-06 campaign; no training process",
+    "front2": {
+      "alpaca": {"mode": "paper", "write_enabled": true, "open_exposures": 1, "open_orders": 1},
+      "ibkr": {"mode": "paper", "write_enabled": true, "hold": true, "open_exposures": 0, "open_orders": 0},
+      "mt5": {"mode": "demo", "write_enabled": true, "open_exposures": 1, "open_orders": 0}
+    },
+    "front3": {"posts": 9144, "enriched": 636, "backlog": 315, "drafts": 0}
+  }
+}

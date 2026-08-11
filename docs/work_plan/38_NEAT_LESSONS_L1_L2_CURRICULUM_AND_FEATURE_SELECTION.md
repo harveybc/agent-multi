@@ -384,3 +384,59 @@ resolved hyperparameters, feature/gate artifacts, raw metrics, chronological
 weekly vectors, code/data/config hashes, resource facts and DOIN lineage; the
 scheduled comparisons have an unambiguous typed outcome; and the winning ETH
 contract can be reproduced by inference and Paper/Demo shadow parity.
+
+## 12. 2026-08-11 Mechanism-Ladder Result and Phase-1 LR Amendment
+
+The seed-101 M0-to-L1 ladder is preserved under diagnostic identity
+`97c0bb29e82dfea3`. It does not select a curriculum winner. It establishes the
+following narrower facts:
+
+1. The v3 M0 semantics selected and transferred the epoch-zero anchor and the
+   resulting normal policy remained active.
+2. The v4 semantics transferred a genuinely easy-trained epoch-one policy.
+3. All easy-trained epoch-one policies already emitted near-constant actions
+   with magnitude below `0.015`; their immediate normal probes traded zero
+   times under threshold `0.1`.
+4. Normal training did not restore activity within the diagnostic budget.
+5. Replay and optimizer state were reset in every arm and therefore are not
+   factors in the next experiment.
+
+The phrase "boundary handoff" is insufficiently precise because the v3/v4
+configuration field also changes checkpoint eligibility, selection objective,
+probe gating and fallback. The accepted mechanism label is
+**phase-1 checkpoint-selection/handoff bundle with pre-existing action-amplitude
+collapse exposed by the normal deadband**.
+
+Before another decision-bearing L1 run:
+
+- replay one identical post-easy artifact under action thresholds `0.0` and
+  `0.1` without learning;
+- record raw action variance/range/quantiles, threshold-crossing fraction and
+  deterministic observation sensitivity;
+- classify checkpoint handoff viability explicitly; and
+- require custody/load proof for every terminal arm, including inactive arms.
+
+The prior L1 factorial varied phase-2 normal LR while phase-1 LR remained
+`1e-4`. The next bounded factorial therefore crosses:
+
+```text
+phase-1 dynamics {normal,easy} x phase-1 LR {1e-4,3e-5}
+```
+
+Phase-2 normal LR is fixed at `3e-5`; all other boundary, data, model, cost,
+protection and stopping facts remain fixed. Seeds 101/202/303/404 are pinned
+one per physical GPU, and every seed executes all four cells on that same GPU.
+This estimates phase-1 LR, difficulty and their interaction without mixing in
+hardware identity.
+
+A one-pass mechanics screen precedes full spending. If every combination is a
+typed constant/below-threshold collapse, return
+`PHASE1_LR_REGION_COLLAPSED`. If a viable region exists, execute the full
+document-38 L1 stopping contract (`max_epochs=2000`, patience 60, floor 40,
+paired train-monitor/inner-validation selection, best restoration and outer
+validation). Only a viable easy result can activate the later bounded
+`LR_easy x LR_normal` response surface.
+
+This amendment and the owner's standing approval authorize implementation,
+screening and the conditional full run without another phrase. Audit waiting
+does not suspend unrelated live evidence or compatible approved compute.

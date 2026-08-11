@@ -1,0 +1,30 @@
+{
+  "collector_counterexample": {
+    "manifest_outcome": "COLLECTION_SEALED",
+    "missing_terminal_artifacts_were_accepted": true,
+    "published_outcome": "TABLE_PUBLISHED",
+    "replica_terminal_expectations": 0,
+    "replica_terminals_loaded": 0
+  },
+  "readme_checker_counterexample": {
+    "default_branch_links_missing": [
+      "pipeline_plugins/_nested_splits.py",
+      "pipeline_plugins/_paired_generalization.py"
+    ],
+    "false_zero_reproduced": true,
+    "recorded_broken_total": 0,
+    "recorded_repository_errors": [
+      {
+        "error": "README.md not in HEAD tree",
+        "head": "f5e18696daa119edb5cee3103ea7ed1ab7f07094",
+        "repository": "agent-multi"
+      },
+      {
+        "error": "README.md not in HEAD tree",
+        "head": "efa491600bdc9fee10efdfbe251474d63284a28b",
+        "repository": "gym-fx"
+      }
+    ]
+  },
+  "schema": "agent_multi.musashi_209_220_repro.v1"
+}
