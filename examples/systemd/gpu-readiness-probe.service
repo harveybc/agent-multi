@@ -1,0 +1,38 @@
+# Rootless GPU readiness probe — one heartbeat pass per activation
+# (post-outage order §3.2/§3.3 + §10.3; prevents the 2026-08-11
+# kernel-advance-without-nvidia-module recurrence on dragon/gamma).
+#
+# One pass: bind kernel/modinfo/driver/UUID/temperature/framework facts
+# into ~/.local/state/agent-multi/gpu-readiness/heartbeat.json, check
+# the NEWEST installed /boot kernel for its nvidia module BEFORE any
+# planned reboot, and emit deduplicated state-change incidents into the
+# fleet incident ledger (delivery stays owned by tools/incident_router.py).
+# The probe is strictly rootless and never installs packages.
+#
+# Exit contract: 0 = probe pass completed (WHATEVER the host
+# classification — alerting is the ledger's job, not the exit code);
+# nonzero = the probe itself failed and systemd shows the unit failed.
+#
+# Ship-only file: installation is a separate reviewed operator step —
+# see install_gpu_readiness_probe.sh in this directory. Do NOT enable
+# units as a side effect of a code review.
+#
+# Per-host tuning (disk budget etc.) goes in the environment file, e.g.:
+#   echo 'GPU_READINESS_EXTRA_ARGS=--output-fs /home/harveybc \
+#     --expected-artifact-bytes 20000000000' \
+#     > ~/.config/agent-multi/gpu-readiness.env
+
+[Unit]
+Description=Rootless GPU readiness probe (heartbeat + boot-kernel module guard)
+# The probe must run even (especially) when the GPU is broken; it has
+# no dependency on nvidia services by design.
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+EnvironmentFile=-%h/.config/agent-multi/gpu-readiness.env
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
+    tools/gpu_readiness_probe.py $GPU_READINESS_EXTRA_ARGS
+# The torch subprocess probe can take a while on a cold filesystem.
+TimeoutStartSec=600
+Nice=10

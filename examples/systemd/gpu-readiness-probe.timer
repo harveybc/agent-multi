@@ -1,0 +1,23 @@
+# Timer for the rootless GPU readiness probe (order §3.2/§10.3).
+#
+# Cadence: first pass 2 minutes after boot (catches a bad kernel boot
+# immediately — the exact 2026-08-11 outage mode), then every 10
+# minutes. Telegram noise is impossible by cadence alone: the probe
+# emits only on state change and the fleet ledger/router dedups and
+# owns reminder policy.
+#
+# Ship-only file: installation is a separate reviewed operator step —
+# see install_gpu_readiness_probe.sh in this directory.
+
+[Unit]
+Description=Run the rootless GPU readiness probe periodically
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=10min
+RandomizedDelaySec=30
+Persistent=true
+Unit=gpu-readiness-probe.service
+
+[Install]
+WantedBy=timers.target
