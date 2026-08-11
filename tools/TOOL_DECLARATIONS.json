@@ -240,6 +240,20 @@
    "mutability": "read_only",
    "authority_class": "gate",
    "owner": "General Satoshi III"
+  },
+  "m0_l1_mechanism_ladder.py": {
+   "purpose": "Bounded M0-to-L1 mechanism ladder runner (finding 220 WP3): four single-delta arms D0/D2/D3/D4 under one diagnostic identity, contract-enforced host+GPU-UUID binding, per-arm exclusive claims, atomic contrast-table records; diagnosis only, never decision-eligible",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "m0_l1_d1_evaluator.py": {
+   "purpose": "D1_EVALUATOR_ONLY (finding 220 WP3): CPU-only, applies the M0 executable activity definition and the exact L1 paired activity classifier to D0's terminal artifact and recorded evaluation facts; no training, no weight mutation",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

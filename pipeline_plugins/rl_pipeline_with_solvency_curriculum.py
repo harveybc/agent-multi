@@ -38,6 +38,21 @@ from pipeline_plugins.rl_pipeline_with_validation import (
 EASY_MODE = "easy_chronological_continuation"
 NORMAL_MODE = "normal_realistic"
 
+# Phase-1 handoff selection semantics (finding 220 / mechanism-ladder
+# order WP3). The M0 screen of 2026-08-07 ran the *v3* boundary: the
+# epoch-0 warm-start baseline (the anchor itself) was ELIGIBLE to be
+# selected as the post_easy handoff, selection scored the easy-probe
+# economic equity, and the normal-handoff probe GATED the save. The
+# corrected L1 boundary (v4, findings 159/160/195/200) makes epoch 0
+# structurally ineligible, selects on the paired comparator over
+# trained epochs only, and demotes the normal probe to telemetry. The
+# bounded D0-D4 diagnostic must reproduce the M0 boundary *as the
+# screen ran it*, so the semantics are a typed, config-gated choice —
+# the default is and stays the corrected v4 behavior.
+HANDOFF_SEMANTICS_L1_V4 = "l1_trained_epoch_v4"
+HANDOFF_SEMANTICS_M0_V3 = "m0_epoch0_eligible_v3"
+_HANDOFF_SEMANTICS = (HANDOFF_SEMANTICS_L1_V4, HANDOFF_SEMANTICS_M0_V3)
+
 
 class PipelinePlugin(ValidationPipelinePlugin):
     plugin_params = {
@@ -54,6 +69,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
         "easy_full_spread_rate": 0.0001,
         "easy_slippage_bps_per_side": 0.25,
         "easy_min_trades": 1,
+        "phase1_handoff_semantics": HANDOFF_SEMANTICS_L1_V4,
     }
 
     plugin_debug_vars = [
@@ -62,6 +78,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
         "easy_min_delta", "easy_continuous_action_threshold",
         "easy_commission_fraction_per_side", "easy_full_spread_rate",
         "easy_slippage_bps_per_side", "easy_min_trades",
+        "phase1_handoff_semantics",
     ]
 
     def _easy_training_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
@@ -202,6 +219,14 @@ class PipelinePlugin(ValidationPipelinePlugin):
         agent_plugin,
     ) -> Dict[str, Any]:
         """Phase 1: train under easy dynamics, save post_easy immutably."""
+        handoff_semantics = str(config.get(
+            "phase1_handoff_semantics",
+            self.params["phase1_handoff_semantics"]))
+        if handoff_semantics not in _HANDOFF_SEMANTICS:
+            raise ValueError(
+                f"unknown phase1_handoff_semantics "
+                f"{handoff_semantics!r}; expected one of "
+                f"{sorted(_HANDOFF_SEMANTICS)}")
         phase1_mode = str(config.get("phase1_mode", EASY_MODE))
         if phase1_mode == NORMAL_MODE:
             # matched-boundary NORMAL phase 1 (doc 38 §5.3): identical
@@ -344,13 +369,43 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "minimum_train_tail_trades": normal_min_train_tail,
                     "minimum_validation_trades": normal_min_validation,
                 }
-                probe["normal_handoff_probe_telemetry_only"] = True
-                # AUD-F1-20260808-159: the normal probe is TELEMETRY.
-                # It never gates whether the easy treatment exists.
-                probe["normal_handoff_eligible_telemetry"] = bool(
+                normal_handoff_eligible = bool(
                     normal_train_tail_trades >= normal_min_train_tail
                     and normal_validation_trades >= normal_min_validation
                 )
+                if handoff_semantics == HANDOFF_SEMANTICS_M0_V3:
+                    # Mechanism-ladder D0 (finding 220): the boundary AS
+                    # THE M0 SCREEN RAN IT — the normal probe GATES, the
+                    # score is the easy-probe economic equity, and the
+                    # epoch-0 warm-start baseline is save-eligible. This
+                    # reproduces post_easy.v3 selection (observed:
+                    # best_easy_epoch=0 on the active M0 arm).
+                    probe["normal_handoff_probe_telemetry_only"] = False
+                    probe["normal_handoff_eligible"] = (
+                        normal_handoff_eligible)
+                    probe["activity_eligible"] = bool(
+                        probe["easy_activity_eligible"]
+                        and normal_handoff_eligible)
+                    probe["handoff_eligible"] = True
+                    history.append(probe)
+                    score = probe["economic_equity"]
+                    if (
+                        probe["activity_eligible"]
+                        and math.isfinite(score)
+                        and score > best + min_delta
+                    ):
+                        best = score
+                        best_epoch = epoch
+                        waited = 0
+                        agent_plugin.save(model, str(post_easy_path))
+                    elif best_epoch is not None:
+                        waited += 1
+                    return
+                probe["normal_handoff_probe_telemetry_only"] = True
+                # AUD-F1-20260808-159: the normal probe is TELEMETRY.
+                # It never gates whether the easy treatment exists.
+                probe["normal_handoff_eligible_telemetry"] = (
+                    normal_handoff_eligible)
                 # checkpoint A: easy utility on the monitor year;
                 # checkpoint B: normal-realistic inner validation
                 easy_monitor = self._eval_on_split(
@@ -404,12 +459,27 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     " cannot hand off (invariant 1)")
             selection_basis = "paired_comparator_best_trained_epoch"
             if best_epoch is None or not post_easy_path.exists():
+                if handoff_semantics == HANDOFF_SEMANTICS_M0_V3:
+                    # v3 as-run had NO terminal fallback: a phase 1 with
+                    # no easy-and-normal activity-eligible checkpoint
+                    # refused the handoff outright.
+                    raise RuntimeError(
+                        "easy curriculum produced no easy-and-normal "
+                        "activity-eligible checkpoint under the as-run "
+                        "M0 v3 handoff semantics: required trades>="
+                        f"{minimum_trades}, non-hold actions, entry "
+                        "actions, submitted entries, zero protected-"
+                        "entry rejections in easy; train-tail and "
+                        "validation trade gates must also pass in "
+                        "normal")
                 # invariant 3: a failed/inactive phase-1 result is still
                 # handed off and measured — the TERMINAL trained epoch,
                 # never the anchor.
                 best_epoch = trained_epochs[-1]["epoch"]
                 selection_basis = "terminal_trained_epoch_fallback"
                 agent_plugin.save(model, str(post_easy_path))
+            elif handoff_semantics == HANDOFF_SEMANTICS_M0_V3:
+                selection_basis = "m0_v3_economic_equity_epoch0_eligible"
             updates_after = int(getattr(model, "_n_updates", 0) or 0)
             if updates_after <= 0:
                 raise RuntimeError(
@@ -428,8 +498,11 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "phase1_terminal_policy_tensor_sha256": terminal_tensor_sha,
                 "phase1_gradient_updates": updates_after,
                 "selection_basis": selection_basis,
-                "epoch0_structurally_ineligible": True,
-                "normal_probe_is_telemetry_only": True,
+                "phase1_handoff_semantics": handoff_semantics,
+                "epoch0_structurally_ineligible": (
+                    handoff_semantics != HANDOFF_SEMANTICS_M0_V3),
+                "normal_probe_is_telemetry_only": (
+                    handoff_semantics != HANDOFF_SEMANTICS_M0_V3),
                 "artifact": str(post_easy_path),
                 "artifact_sha256": post_easy_sha,
                 # Finding 195: the persisted mode is the mode that RAN.
@@ -456,11 +529,14 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "requires_entry_action": True,
                     "requires_submitted_entry": True,
                     "maximum_protected_entry_rejections": 0,
-                    # The normal-handoff probe is telemetry ONLY (finding
-                    # 160/195); it never gates selection and these facts
-                    # must not claim otherwise.
-                    "normal_handoff_probe_is_telemetry_only": True,
-                    "normal_handoff_activity_gates_selection": False,
+                    # Under the corrected v4 boundary the normal-handoff
+                    # probe is telemetry ONLY (finding 160/195); under
+                    # the as-run M0 v3 reproduction it gates, and these
+                    # facts say which one actually ran.
+                    "normal_handoff_probe_is_telemetry_only": (
+                        handoff_semantics != HANDOFF_SEMANTICS_M0_V3),
+                    "normal_handoff_activity_gates_selection": (
+                        handoff_semantics == HANDOFF_SEMANTICS_M0_V3),
                 },
                 "phase1_mode": phase1_mode,
                 "phase1_difficulty": {

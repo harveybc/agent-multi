@@ -1,0 +1,279 @@
+{
+ "schema": "agent_multi.m0_l1_mechanism_ladder.v1",
+ "$doc": "Bounded M0-to-L1 mechanism ladder (finding 220, order 2026-08-10 WP3). Diagnosis, not model selection: identify the first controlled M0-to-L1 change that turns the activity-preserving M0 E1_N1_LR03 policy into deterministic hold. One seed (101), four concurrent training arms D0/D2/D3/D4 plus the CPU-only D1 evaluator. NO new LR levels, seeds, topologies, features or order-type genes. Sealed 2025 is never touched. No result is promoted to live authority.",
+ "experiment": "m0_l1_mechanism_ladder",
+ "question": "first controlled M0-to-L1 change that turns an activity-preserving policy into deterministic hold",
+ "asset": "ETHUSD",
+ "env_asset": "ethusdt_4h",
+ "seed": 101,
+ "m0_reference": {
+  "$doc": "The positive-control recipe: M0 arm E1_N1_LR03 seed 101 retained activity. The as-run boundary was post_easy.v3: the epoch-0 warm-start baseline (the anchor itself) was selected as the phase-1 handoff (best_easy_epoch=0), scored by easy-probe economic equity with the normal-handoff probe gating. D0 reproduces those semantics via phase1_handoff_semantics=m0_epoch0_eligible_v3.",
+  "contract_path": "examples/config/phase_3_eth_sac_dynamics/m0_contract.json",
+  "contract_sha256": "1d32729b66aa9e4546e1319695a04a92603340284dc1e742ffd3da159c8db33d",
+  "arm": "E1_N1_LR03",
+  "as_run": {
+   "execution_id": "514922171412916bf3f7eafc07ce5abefa550afd04d4f51c135511df4f02c7f8",
+   "record_path": "~/.local/share/agent-multi/eth_sac_inner_curriculum_m0_20260807_v1/seed101/E1_N1_LR03/m0_arm_record.json",
+   "code_revisions": {
+    "agent-multi": "27a3778b8b9518631840d7f81cba5d6f948c198d",
+    "gym-fx": "efa491600bdc9fee10efdfbe251474d63284a28b",
+    "doin-plugins": "8c959a611d63dce8a67e9cf838b130cd1f3f1bad"
+   },
+   "post_easy_schema": "agent_multi.solvency_curriculum.post_easy.v3",
+   "post_easy_best_easy_epoch": 0,
+   "post_easy_artifact_sha256": "5a7fe593848cbda00c2f6d1855a8c37d2cc84ee9b454a7cfd8d077c1ca1da12c",
+   "terminal_sha256": "3cc146d367b15c4a043df1cb4e6c16ddad76b2c61529a574ab16d1f7d503363c",
+   "reproduction_target": {
+    "activity_survived_normal": true,
+    "terminal_val_trades": 122,
+    "terminal_non_hold_rate": 1.0,
+    "terminal_raw_std": 0.05633137748449435,
+    "normal_updates_applied": 19000
+   }
+  }
+ },
+ "l1_reference": {
+  "$doc": "The delta source: the L1 matched factorial that collapsed (16/16 inactive, experiment 2de49ea9225e2baf).",
+  "contract_path": "examples/config/phase_3_eth_sac_dynamics/l1_factorial_contract_v3.json",
+  "contract_sha256": "4171aa57db21db25c8bcd67f8a4c6d9e247bb3151e78c6c94bb8d96294c009a1",
+  "system_manifest_path": "examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v3.json",
+  "system_manifest_sha256": "00bfa585905f29bfe477d3c5fd3e48fd25f75457e2b3dcf78cbfafddffa6c664"
+ },
+ "common": {
+  "$doc": "Immutable facts bound identically by every training arm (order §3.2). The M0 executable split windows are an exact union of the L1 nested NON-TEST roles: train = fit_train + inner_validation (11509+2190=13699 rows), validation = outer_validation (2196 rows); sealed_test (2025) is excluded by evaluate_test_split=false and window bounds. The runner verifies this equivalence fail-closed before any model construction.",
+  "data": {
+   "path": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+   "sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+   "rows": 18085,
+   "date_column": "DATE_TIME"
+  },
+  "nested_split_contract": {
+   "path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+   "non_test_union": {
+    "train_rows": 13699,
+    "validation_rows": 2196,
+    "sealed_test_rows_excluded": 2190
+   }
+  },
+  "splits": {
+   "train_start": "2017-09-28T04:00:00",
+   "train_end": "2023-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "test_start": "2025-01-01T00:00:00",
+   "test_end": "2025-12-31T23:59:59",
+   "evaluate_test_split": false
+  },
+  "base_config": {
+   "path": "examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json",
+   "sha256": "5df24c0d78a89613041406213692af5f180f4af3c220ac69792a60db8ca70e18"
+  },
+  "anchor": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+   "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+   "policy_tensor_sha256": "e747b893753ee6cfa9ab3f97a197b70ff7f87eeb76e500549f769de814a96e66"
+  },
+  "plugins": {
+   "agent_plugin": "sac_agent",
+   "env_plugin": "gym_fx_env",
+   "strategy_plugin": "direct_atr_sltp"
+  },
+  "budget": {
+   "$doc": "Equal total gradient-update budget through the compared checkpoint = the M0 contract's budget: 1 easy epoch + 1 normal epoch at 20000 timesteps each.",
+   "epoch_timesteps": 20000,
+   "easy_epochs": 1,
+   "normal_epochs": 1,
+   "total_updates_per_arm": 40000
+  },
+  "learning_rates": {
+   "easy": 0.0001,
+   "normal": 3e-05
+  },
+  "selection_metric": "lexicographic_weekly_v1",
+  "selection_min_trades": 0,
+  "evaluation": "normal_realistic dynamics with native SL/TP (direct_atr_sltp, k_sl=2, k_tp=3); terminal weights evaluated raw, both under the arm's own cost contract (as-run parity) and under the L1 v3 cost contract (common measuring stick)"
+ },
+ "delta_groups": {
+  "$doc": "The ONLY field groups an arm delta may touch; the property test asserts each adjacent pair changes exactly its declared group and nothing else.",
+  "boundary": [
+   "phase1_handoff_semantics"
+  ],
+  "cost_protection": [
+   "commission",
+   "continuous_action_threshold",
+   "financing_treatment",
+   "full_spread_rate",
+   "initial_cash",
+   "k_sl",
+   "k_tp",
+   "leverage",
+   "max_order_volume",
+   "min_equity",
+   "min_order_volume",
+   "position_size",
+   "rel_volume",
+   "require_protected_entries",
+   "size_mode",
+   "slippage"
+  ],
+  "stopper": [
+   "l1_patience",
+   "l1_patience_start_epoch",
+   "l1_activity_patience",
+   "l1_activity_patience_start_epoch",
+   "inactive_terminal_is_typed_result"
+  ]
+ },
+ "arms": {
+  "D0_M0_EXACT": {
+   "order": 0,
+   "baseline": null,
+   "delta_group": null,
+   "delta": {},
+   "$doc": "Positive control: the M0 E1_N1_LR03 recipe exactly — M0 costs (base-config contract: zero spread, unprotected entries permitted, default min-equity), M0 activity floor/stopping (l1_patience 10000, no typed inactive result), M0 boundary semantics as the screen ran them (m0_epoch0_eligible_v3)."
+  },
+  "D2_BOUNDARY_ONLY": {
+   "order": 1,
+   "baseline": "D0_M0_EXACT",
+   "delta_group": "boundary",
+   "delta": {
+    "phase1_handoff_semantics": "l1_trained_epoch_v4"
+   },
+   "$doc": "D0 plus ONLY the L1 easy-to-normal boundary/reload mechanism: epoch-0 structurally ineligible, paired-comparator selection over trained epochs, terminal-trained-epoch fallback — the artifact reloaded at the dynamics boundary (fresh replay, its optimizer state) is the TRAINED phase-1 policy, never the anchor. D0 costs, floor and stopping kept.",
+   "expected_config_changes": {
+    "phase1_handoff_semantics": {
+     "from": "m0_epoch0_eligible_v3",
+     "to": "l1_trained_epoch_v4"
+    }
+   }
+  },
+  "D3_COST_PROTECTION": {
+   "order": 2,
+   "baseline": "D2_BOUNDARY_ONLY",
+   "delta_group": "cost_protection",
+   "delta": {
+    "commission": 0.0002,
+    "continuous_action_threshold": 0.1,
+    "financing_treatment": {
+     "charged": false,
+     "mechanism": "backtrader_mechanism_screen",
+     "reason": "the Backtrader path applies no overnight/holding financing; declared disabled rather than omitted"
+    },
+    "full_spread_rate": 0.0001,
+    "initial_cash": 10000.0,
+    "k_sl": 2.0,
+    "k_tp": 3.0,
+    "leverage": 1.0,
+    "max_order_volume": 100.0,
+    "min_equity": 100.0,
+    "min_order_volume": 0.0,
+    "position_size": 0.01,
+    "rel_volume": 0.05,
+    "require_protected_entries": true,
+    "size_mode": "notional",
+    "slippage": 0.0
+   },
+   "$doc": "D2 plus ONLY the L1 v3 normal cost and protected-entry contract, applied verbatim from the frozen system manifest bindings. Semantic changes vs D2: full_spread_rate 0->1e-4, require_protected_entries false->true; min_equity/slippage/financing become explicit declarations at their previously-effective values; every other binding overwrites an identical base-config value. D0 stopping kept.",
+   "expected_config_changes": {
+    "full_spread_rate": {
+     "from": "<absent: gym-fx default 0.0>",
+     "to": 0.0001
+    },
+    "require_protected_entries": {
+     "from": "<absent: gym-fx default false>",
+     "to": true
+    },
+    "min_equity": {
+     "from": "<absent: gym-fx default initial_cash*0.01 = 100.0>",
+     "to": 100.0
+    },
+    "financing_treatment": {
+     "from": "<absent: undeclared>",
+     "to": "<explicit disabled declaration>"
+    }
+   }
+  },
+  "D4_FULL_L1": {
+   "order": 3,
+   "baseline": "D3_COST_PROTECTION",
+   "delta_group": "stopper",
+   "delta": {
+    "l1_patience": 60,
+    "l1_patience_start_epoch": 40,
+    "l1_activity_patience": 40,
+    "l1_activity_patience_start_epoch": 40,
+    "inactive_terminal_is_typed_result": true
+   },
+   "$doc": "D3 plus the L1 activity floor, patience and stopping rule as the factorial ran them. At the matched 1+1-epoch budget the patience thresholds (start epoch 40) cannot fire; the operative deltas are the stopper's accounting and the typed inactive-terminal result semantics. Disclosed, not hidden.",
+   "expected_config_changes": {
+    "l1_patience": {
+     "from": 10000,
+     "to": 60
+    },
+    "l1_patience_start_epoch": {
+     "from": "<absent: pipeline default 40>",
+     "to": 40
+    },
+    "l1_activity_patience": {
+     "from": "<absent: pipeline default 40>",
+     "to": 40
+    },
+    "l1_activity_patience_start_epoch": {
+     "from": "<absent: pipeline default l1_patience_start_epoch>",
+     "to": 40
+    },
+    "inactive_terminal_is_typed_result": {
+     "from": "<absent: pipeline default false>",
+     "to": true
+    }
+   }
+  }
+ },
+ "d1_evaluator": {
+  "arm": "D1_EVALUATOR_ONLY",
+  "depends_on": "D0_M0_EXACT",
+  "cpu_only": true,
+  "tool": "tools/m0_l1_d1_evaluator.py",
+  "$doc": "After D0 terminates: apply ONLY the L1 paired activity classifier (aggregate_l1_factorial.activity_facts) and the M0 activity definition to D0's terminal artifact and recorded evaluation facts. No training, no weight mutation. If D0 is active and D1 changes the label, the defect is the activity definition, not learning."
+ },
+ "assignments": {
+  "D0_M0_EXACT": {
+   "hostname": "omega",
+   "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"
+  },
+  "D2_BOUNDARY_ONLY": {
+   "hostname": "dragon",
+   "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"
+  },
+  "D3_COST_PROTECTION": {
+   "hostname": "gamma",
+   "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"
+  },
+  "D4_FULL_L1": {
+   "hostname": "gamma",
+   "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"
+  }
+ },
+ "interpretation": {
+  "$doc": "Fail-closed (order §3.4).",
+  "rules": [
+   "If D0 fails to reproduce activity, the ladder is INVALID; diagnose source anchor, data/code revision and the M0 claim before any new compute.",
+   "If D0 is active and D1 changes the label, the defect is the activity definition, not learning.",
+   "Otherwise the first D2/D3/D4 transition from active to inactive names the mechanism for the next focused experiment.",
+   "If all of D0-D4 remain active, the prior collapse came from an uncontrolled identity difference; diff every bound manifest field.",
+   "One seed locates a deterministic mechanism only; any superiority decision requires paired replication."
+  ]
+ },
+ "output_root": "~/.local/share/agent-multi/m0_l1_mechanism_ladder_20260810_v1",
+ "forbidden": [
+  "new learning-rate levels",
+  "new seeds",
+  "new topologies",
+  "new features",
+  "order-type genes",
+  "sealed 2025 evaluation",
+  "live promotion",
+  "reuse of any L1 decision identity"
+ ]
+}
