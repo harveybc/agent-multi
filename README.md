@@ -57,14 +57,12 @@ pipeline plugin (pipeline_plugins/)
   └─ execution policy (execution_policy_plugins/)
 ```
 
-Pipeline internals (shared helper modules in
-[`pipeline_plugins/`](pipeline_plugins/)):
+Pipeline internals (in [`pipeline_plugins/`](pipeline_plugins/)):
 
-- [`_nested_splits.py`](pipeline_plugins/_nested_splits.py) — nested
-  chronological train/validation/test splits so selection never touches the
-  sealed evaluation window.
-- [`_paired_generalization.py`](pipeline_plugins/_paired_generalization.py) —
-  paired-seed generalization contrasts between training and held-out regimes.
+- [`rl_pipeline_with_validation.py`](pipeline_plugins/rl_pipeline_with_validation.py)
+  — chronological train/validation/test splitting so selection never touches
+  the sealed evaluation window, plus a train-versus-held-out
+  generalization-gap penalty on candidate selection.
 - [`_return_trace.py`](pipeline_plugins/_return_trace.py),
   [`_weekly_metrics.py`](pipeline_plugins/_weekly_metrics.py),
   [`_lexicographic_selection.py`](pipeline_plugins/_lexicographic_selection.py),
