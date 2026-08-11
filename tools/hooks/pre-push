@@ -1,0 +1,18 @@
+#!/bin/sh
+# Pre-push sensitivity gate hook template (AUD-SEC-20260810-215).
+#
+# Install into a clone:
+#     cp tools/hooks/pre-push .git/hooks/pre-push
+#     chmod +x .git/hooks/pre-push
+#
+# git feeds this hook one line per pushed ref on stdin:
+#     <local_ref> <local_sha> <remote_ref> <remote_sha>
+# The gate scans exactly those outgoing commits for typed sensitivity
+# findings (credentials, account identifiers, signer/key paths,
+# third-party content markers, live SL/TP levels, topology beyond the
+# allowlist) and exits nonzero — blocking the push — on any finding.
+#
+# `git push --no-verify` bypasses every hook; the standing evidence
+# contract forbids that for sensitive content.
+exec python3 "$(git rev-parse --show-toplevel)/tools/prepush_sensitivity_gate.py" \
+    --repo "$(git rev-parse --show-toplevel)" --stdin-refs

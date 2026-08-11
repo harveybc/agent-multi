@@ -233,6 +233,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "prepush_sensitivity_gate.py": {
+   "purpose": "Pre-push sensitivity gate: scans outgoing commits for typed sensitivity classes (credentials, account identifiers, signer/key paths, third-party content markers, live SL/TP levels, topology beyond allowlist) with redacted findings and nonzero exit (AUD-SEC-20260810-215)",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "gate",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

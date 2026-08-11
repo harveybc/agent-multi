@@ -1,0 +1,28 @@
+{
+ "schema": "agent_multi.prepush_sensitivity_allowlist.v1",
+ "note": "Topology names the pre-push sensitivity gate permits (AUD-SEC-20260810-215). Everything else fires a typed finding. allowed_path_globs maps a sensitivity class (or '*') to fnmatch globs of exempt files; a glob exempts the whole file for that class, so the list must stay minimal and named. Shrink-only unless the owner authorizes an addition.",
+ "allowed_hostnames": [
+  "localhost",
+  "github.com",
+  "omega",
+  "dragon",
+  "gamma",
+  "gamma-5070ti",
+  "gamma-5090"
+ ],
+ "allowed_ips": [
+  "127.0.0.1",
+  "0.0.0.0"
+ ],
+ "allowed_path_globs": {
+  "topology": [
+   "examples/config/*",
+   "tests/*"
+  ],
+  "*": [
+   "tests/unit/test_prepush_sensitivity_gate.py",
+   "tools/prepush_sensitivity_gate.py",
+   "tools/prepush_sensitivity_allowlist.json"
+  ]
+ }
+}
