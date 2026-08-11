@@ -379,6 +379,11 @@ def materialize_arm_config(contract: dict, arm: str,
     config["epoch_timesteps"] = int(common["budget"]["epoch_timesteps"])
     config["l1_min_checkpoint_timesteps"] = 1
     config["evaluate_test_split"] = False
+    # Evidence plumbing, UNIFORM across every arm (never an arm delta):
+    # a fully-inactive arm is a MEASURED diagnostic outcome and must
+    # land a typed record — the legacy no-eligible-checkpoint raise
+    # crashed D2 without evidence (observed 2026-08-11).
+    config["inactive_terminal_is_typed_result"] = True
     config["selection_metric"] = str(common["selection_metric"])
     config["selection_min_trades"] = int(common["selection_min_trades"])
     config["quiet_mode"] = True
