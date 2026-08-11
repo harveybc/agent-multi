@@ -41,6 +41,13 @@
       "nvidia_module_for_running_kernel": "missing",
       "installed_latest_module_kernel": "7.0.0-28-generic",
       "available_module_package": "linux-modules-nvidia-580-open-7.0.0-29-generic=7.0.0-29.29+1",
+      "storage": {
+        "root_used_percent": 89,
+        "root_available_gb": 42,
+        "largest_tree": "/home/harveybc/Documents/GitHub/_pre_trading_stack_20260713",
+        "largest_tree_gb": 219,
+        "disposition": "preserve_pending_inventory_replica_and_owner_review"
+      },
       "services": {
         "doin_campaign_supervisor": "active_history_only_paused_campaign"
       }

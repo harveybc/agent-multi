@@ -466,3 +466,10 @@ require direct post-login reconciliation after reboot; stale last-known facts
 are never treated as current protection evidence. Once the four expected GPU
 UUIDs return, the same-artifact replay and phase-1 difficulty x phase-1 LR
 mechanics screen proceed under section 12 without another owner phrase.
+
+Gamma also enters the next long run through a storage-budget gate: its root
+volume was observed at 89% usage after reboot, dominated by a 219 GB historical
+pre-trading-stack backup. That tree is preserved until a content inventory,
+independent replica and owner-reviewed disposition prove what is unique versus
+reproducible. No result, model or OLAP database is deleted to manufacture free
+space.

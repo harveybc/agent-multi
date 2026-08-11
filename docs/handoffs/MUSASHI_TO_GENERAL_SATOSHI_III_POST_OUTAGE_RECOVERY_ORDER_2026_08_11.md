@@ -94,6 +94,31 @@ Dispatch records must store kernel, driver, GPU UUID, framework build and
 CUDA-visible-device values. Any mismatch makes that cell unavailable; it must
 never be reassigned to CPU or counted as executed.
 
+### 3.3 Gamma storage guard
+
+Gamma's root volume is 89% used with 42 GB free. The 219 GB
+`/home/harveybc/Documents/GitHub/_pre_trading_stack_20260713` tree is the
+dominant consumer and contains historical experiments/data that may be unique.
+Do not delete, prune or rewrite it.
+
+Before a long decision run:
+
+1. emit a read-only inventory by repository, artifact class, date, size and
+   content digest;
+2. explicitly locate OLAP databases, sealed results, model artifacts, source
+   dirtiness and files not represented by current Git history;
+3. prepare an rsync/checksum replica plan to Dragon, which currently has more
+   than 500 GB free, without saturating live-trading connectivity;
+4. prove the replica by deterministic manifests before proposing any removal;
+5. classify only reproducible package/download caches as cleanup candidates;
+   and
+6. require owner authorization before deleting any historical experiment,
+   model, database or pre-trading-stack backup.
+
+Add a dispatch disk-budget gate derived from the materialized job's expected
+artifacts plus a reserve. Insufficient space blocks that host only and alerts
+once; it never truncates evidence or silently redirects output.
+
 ## 4. P0: Venue Recovery Without Weakening Controls
 
 ### 4.1 Alpaca
@@ -158,6 +183,7 @@ Return one packet containing:
 - before/after GPU readiness facts for every host;
 - exact package/kernel/driver/UUID/framework bindings;
 - service/timer units and adversarial tests for the boot guard;
+- Gamma storage inventory, replica plan and pre-run disk-budget evidence;
 - direct post-recovery Alpaca, IBKR and MT5 venue facts with secrets and raw
   account identifiers redacted;
 - proof that no duplicate broker action occurred across restart;
