@@ -93,7 +93,9 @@ def _log(epoch=34, streak=0, trades=(0, 0, 0)):
     )
 
 
-def _fixture(tmp_path, *, now=NOW, epochs=None, streaks=None):
+def _fixture(tmp_path, *, now=NOW, epochs=None, streaks=None,
+             hb_cells=None, attempts=None, progress=None,
+             log_age_seconds=30):
     contract = _contract(tmp_path)
     cpath = tmp_path / "contract.json"
     cpath.write_text(json.dumps(contract))
@@ -102,15 +104,17 @@ def _fixture(tmp_path, *, now=NOW, epochs=None, streaks=None):
     for seed, host in HOSTS.items():
         heartbeat = {
             "schema": "agent_multi.l1_launcher_heartbeat.v2",
-            "seed": seed, "cell": "L1_N_M10",
+            "seed": seed, "cell": (hb_cells or {}).get(seed, "L1_N_M10"),
             "terminal_state": "RUNNING",
             "pid": 1000 + seed, "pid_start_identity": str(seed * 7),
             "assigned_gpu_uuid": f"GPU-{seed}",
             "cuda_visible_devices": f"GPU-{seed}",
             "observed_gpu_uuids": [f"GPU-{seed}"],
-            "progress": "0/4 cells",
+            "progress": (progress or {}).get(seed, "0/4 cells"),
             "updated_utc": (now - timedelta(seconds=45)).isoformat(),
         }
+        if (attempts or {}).get(seed):
+            heartbeat["attempt"] = attempts[seed]
         hb_path = f"{root}/{IDENTITY}/seed{seed}/launcher_heartbeat.json"
         files[(host, hb_path)] = json.dumps(heartbeat)
         latest.setdefault(host, hb_path)
@@ -118,9 +122,14 @@ def _fixture(tmp_path, *, now=NOW, epochs=None, streaks=None):
         files[(host, log_path)] = _log(
             epoch=(epochs or {}).get(seed, 34),
             streak=(streaks or {}).get(seed, 0))
-        mtimes[(host, log_path)] = (now - timedelta(seconds=30)).timestamp()
+        mtimes[(host, log_path)] = (
+            now - timedelta(seconds=log_age_seconds)).timestamp()
     reader = FakeReader(files=files, mtimes=mtimes, latest=latest)
     return cpath, reader
+
+
+def _root(tmp_path):
+    return str(tmp_path / "out")
 
 
 def _paused_supervisor(monkeypatch, plan_jobs=None):
@@ -255,11 +264,11 @@ def test_eta_unavailable_first_then_derived_with_formula(
             tmp_path, cpath, reader, l1_state_dir=state_dir,
             l1_now_fn=lambda now=now: now))
     first = packets[0]["fronts"]["f1_optimization"][
-        "active_l1_factorial"]["workers"]["101"]["eta"]
+        "active_l1_factorial"]["workers"]["101"]["current_cell_eta"]
     assert first["value"] == "unavailable"
     assert "epoch log lines carry no timestamps" in first["missing"]
     final = packets[-1]["fronts"]["f1_optimization"][
-        "active_l1_factorial"]["workers"]["101"]["eta"]
+        "active_l1_factorial"]["workers"]["101"]["current_cell_eta"]
     assert final["sample_size"] == {"value": 2, "unit": "observation_pairs"}
     assert final["seconds_per_epoch"]["median"] == 600.0
     assert final["remaining_epochs"] == 1996 - 32
@@ -268,17 +277,23 @@ def test_eta_unavailable_first_then_derived_with_formula(
     assert "uncertainty" in final
 
 
-def test_cell_eta_requires_observed_durations(tmp_path, monkeypatch):
+def test_experiment_eta_requires_observed_durations(tmp_path, monkeypatch):
     cpath, reader = _fixture(tmp_path)
     _paused_supervisor(monkeypatch)
     packet = _collect(tmp_path, cpath, reader)
-    cells_eta = packet["fronts"]["f1_optimization"][
-        "active_l1_factorial"]["cells_eta"]
-    assert cells_eta["value"] == "unavailable"
-    assert "completed cell records" in cells_eta["missing"]
+    experiment_eta = packet["fronts"]["f1_optimization"][
+        "active_l1_factorial"]["experiment_eta"]
+    assert experiment_eta["value"] == "unavailable"
+    assert "completed cell records" in experiment_eta["missing"]
 
 
-def test_landed_records_counted_and_cell_eta_derived(tmp_path, monkeypatch):
+def test_experiment_eta_is_max_worker_path_never_serial_sum(
+        tmp_path, monkeypatch):
+    """AUD-F1-20260810-213: four workers run their cells CONCURRENTLY, so
+    the experiment ETA is the longest single-worker remaining path. The
+    predecessor test enforced the defect (mean duration * ALL remaining
+    cells, which serializes parallel work: 63000s here instead of the
+    18000s critical path); it is REPLACED by this parallel contract."""
     cpath, reader = _fixture(tmp_path)
     root = json.loads(cpath.read_text())["output_root"]
     for cell, hours in (("L1_N_M10", 1), ("L1_E_M10", 2)):
@@ -305,11 +320,45 @@ def test_landed_records_counted_and_cell_eta_derived(tmp_path, monkeypatch):
     assert w["records_landed"]["value"] == 2
     assert w["landed_cells"]["L1_N_M10"]["stop_reason"] == "max_epochs_budget"
     assert w["landed_cells"]["L1_N_M10"]["duration_seconds"] == 3600.0
-    cells_eta = active["cells_eta"]
-    assert cells_eta["sample_size"] == {"value": 2, "unit": "completed_cells"}
-    assert cells_eta["cells_remaining"] == 14
-    assert cells_eta["eta_seconds"]["value"] == 5400.0 * 14
-    assert "mean(finished_utc - started_utc" in cells_eta["formula"]
+    # observed durations 3600s and 7200s -> mean 5400s. seed101 has 2 cells
+    # left (1 active + 1 queued) = 10800s; seeds 202/303/404 have 4 left
+    # (1 active + 3 queued) = 21600s. The critical path is 21600s — the
+    # serial formula would have claimed 5400s * 14 = 75600s.
+    experiment_eta = active["experiment_eta"]
+    assert experiment_eta["eta_seconds"]["value"] == 21600.0
+    assert experiment_eta["eta_seconds"]["value"] != 5400.0 * 14  # not serial
+    assert experiment_eta["eta_seconds"]["low"] == 3600.0 * 4
+    assert experiment_eta["eta_seconds"]["high"] == 7200.0 * 4
+    assert experiment_eta["critical_path_seed"] in {"202", "303", "404"}
+    per_worker = experiment_eta["per_worker_paths"]
+    assert per_worker["101"]["remaining_cells"] == 2
+    assert per_worker["101"]["queued_cells"] == 1
+    assert per_worker["101"]["path_seconds"]["value"] == 10800.0
+    assert per_worker["202"]["queued_cells"] == 3
+    assert per_worker["202"]["path_seconds"]["value"] == 21600.0
+    assert "mean_completed_cell_duration" in \
+        per_worker["202"]["active_cell_eta_source"]
+    assert experiment_eta["sample_size"] == {"value": 2,
+                                             "unit": "completed_cells"}
+    assert "max over workers" in experiment_eta["formula"]
+    assert "never the serial sum" in experiment_eta["formula"]
+    assert "uncertainty" in experiment_eta
+    # the current-cell ETA remains a SEPARATE observable with its own
+    # sample count (epoch observation pairs, none here) — finding 213
+    assert w["current_cell_eta"]["value"] == "unavailable"
+
+
+def test_experiment_eta_degrades_when_a_worker_is_unknown(
+        tmp_path, monkeypatch):
+    cpath, reader = _fixture(tmp_path)
+    reader.unreachable = {"dragon"}
+    _paused_supervisor(monkeypatch)
+    packet = _collect(tmp_path, cpath, reader)
+    experiment_eta = packet["fronts"]["f1_optimization"][
+        "active_l1_factorial"]["experiment_eta"]
+    assert experiment_eta["value"] == "unavailable"
+    assert "202" in experiment_eta["missing"]
+    assert "critical-path" in experiment_eta["missing"]
 
 
 # ── zero-trade monitoring at the declared patience boundary ──
@@ -392,6 +441,86 @@ def test_never_emits_without_dedup_capability(tmp_path, monkeypatch):
     alerts = packet["fronts"]["f1_optimization"][
         "active_l1_factorial"]["zero_trade_alerts"]
     assert "no state dir" in alerts[0]["skipped"]
+
+
+# ── finding 212: telemetry binds to (identity, seed, cell, attempt) ──
+
+def test_stale_cell_unbound_log_never_reads_as_current_telemetry(
+        tmp_path, monkeypatch):
+    """AUD-F1-20260810-212 exact defect: a ~12.7h-old global seed log plus
+    a FRESH heartbeat on a DIFFERENT cell reported the old cell's epochs
+    (34) as current telemetry and displayed the previous cell's attempt
+    path. Facts must render typed unavailability with the source age."""
+    stale_age = int(12.7 * 3600)
+    previous_attempt = (f"{_root(tmp_path)}/{IDENTITY}/seed101/L1_N_M10/"
+                        "attempt-2abdaf3f2972bb94-01")
+    cpath, reader = _fixture(
+        tmp_path,
+        hb_cells={seed: "L1_E_M03" for seed in HOSTS},
+        attempts={101: previous_attempt},
+        log_age_seconds=stale_age)
+    _paused_supervisor(monkeypatch)
+    packet = _collect(tmp_path, cpath, reader)
+    active = packet["fronts"]["f1_optimization"]["active_l1_factorial"]
+    assert active["state"] == "active"  # heartbeats are fresh
+    w = active["workers"]["101"]
+    # epoch/patience/trade facts: typed unavailable with the source age,
+    # never the stale numbers
+    assert w["epoch"]["value"] == "unavailable"
+    assert w["epoch"]["source_age_seconds"] >= 12 * 3600
+    assert "stale" in w["epoch"]["reason"]
+    assert w["activity_patience"]["value"] == "unavailable"
+    assert w["trades"]["value"] == "unavailable"
+    assert w["telemetry_binding"]["bound"] is False
+    dumped = json.dumps(w)
+    assert '"value": 34' not in dumped  # the stale epoch never surfaces
+    # the previous cell's attempt path is withheld, with a typed reason
+    assert w["attempt"] is None
+    assert w["attempt_withheld"]["bound_cell"] == "L1_N_M10"
+    assert previous_attempt not in dumped
+    # stale facts feed no ETA sample
+    assert w["current_cell_eta"]["value"] == "unavailable"
+
+
+def test_current_attempt_path_is_shown_when_bound(tmp_path, monkeypatch):
+    current_attempt = (f"{_root(tmp_path)}/{IDENTITY}/seed101/L1_N_M10/"
+                       "attempt-2abdaf3f2972bb94-02")
+    cpath, reader = _fixture(tmp_path, attempts={101: current_attempt})
+    _paused_supervisor(monkeypatch)
+    packet = _collect(tmp_path, cpath, reader)
+    w = packet["fronts"]["f1_optimization"][
+        "active_l1_factorial"]["workers"]["101"]
+    assert w["attempt"] == current_attempt
+    assert "attempt_withheld" not in w
+    # fresh co-temporal facts stay bound and current
+    assert w["telemetry_binding"]["bound"] is True
+    assert w["telemetry_binding"]["binds"]["cell"] == "L1_N_M10"
+    assert w["telemetry_binding"]["binds"]["attempt"] == current_attempt
+    assert w["telemetry_binding"]["source_age_seconds"] is not None
+    assert w["epoch"] == {"value": 34, "of": 1996, "unit": "epochs",
+                          "horizon": "cell"}
+
+
+def test_structured_heartbeat_progress_binds_without_any_log(
+        tmp_path, monkeypatch):
+    """Forward-compat (finding 212): a launcher that publishes structured
+    progress inside its heartbeat is bound by construction — even when the
+    global log is stale."""
+    cpath, reader = _fixture(
+        tmp_path,
+        progress={101: {"cell": "L1_N_M10", "epoch": 55, "epoch_max": 1996,
+                        "no_activity": 3, "no_activity_of": 40}},
+        log_age_seconds=13 * 3600)
+    _paused_supervisor(monkeypatch)
+    packet = _collect(tmp_path, cpath, reader)
+    workers = packet["fronts"]["f1_optimization"][
+        "active_l1_factorial"]["workers"]
+    assert workers["101"]["telemetry_binding"]["source"] == \
+        "heartbeat_progress"
+    assert workers["101"]["epoch"]["value"] == 55
+    assert workers["101"]["activity_patience"]["value"] == 3
+    # the string-progress workers still degrade on their stale logs
+    assert workers["202"]["epoch"]["value"] == "unavailable"
 
 
 # ── identity discovery and history separation ──

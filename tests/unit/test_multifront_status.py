@@ -419,19 +419,115 @@ def test_missing_sources_become_unavailable_not_invented(tmp_path):
     assert "f2_business_reality" not in packet["fronts"]
 
 
-def test_l1_queue_names_the_current_execution_dependency(tmp_path):
+# ── Finding 214: the IBKR L1 queue item derives from execution facts ──
+# The predecessor test here pinned the retired hardcoded
+# 'IBKR write adapter + preflight' dependency — the exact defect — and is
+# REPLACED by the evidence-derived contract below.
+
+def _ibkr_execution_fixture(tmp_path, *, halt="hold", read_only=False,
+                            age_seconds=60, artifact_sha="c" * 64):
+    import json as jsonlib
+    import sqlite3 as sqlite3lib
+    from datetime import datetime, timedelta, timezone
+    state_dir = tmp_path / "exec-state"
+    state_dir.mkdir(exist_ok=True)
+    observed = (datetime.now(timezone.utc)
+                - timedelta(seconds=age_seconds)).isoformat()
+    (state_dir / "ibkr-model-runner-heartbeat.json").write_text(
+        jsonlib.dumps({
+            "schema": "lts.ibkr.model_runner.heartbeat.v1",
+            "observed_at": observed, "state": "decided",
+            "read_only": read_only, "environment": "paper",
+            "account_fingerprint": "fp-ibkr-exec", "venue": "ibkr_paper",
+            "decision": {"outcome": "rejected", "reason": "halted:hold"},
+            "inference": {"artifact_sha256": artifact_sha},
+        }))
+    con = sqlite3lib.connect(str(state_dir / "ibkr-model-execution.sqlite"))
+    con.executescript("""
+        CREATE TABLE decisions (idempotency_key TEXT PRIMARY KEY,
+            decided_at TEXT, outcome TEXT, reason TEXT);
+        CREATE TABLE l1_effects (effect_id TEXT PRIMARY KEY, state TEXT);
+        CREATE TABLE exposures (exposure_id TEXT PRIMARY KEY, state TEXT);
+        CREATE TABLE live_model_sessions (session_id TEXT PRIMARY KEY);
+        CREATE TABLE service_state (key TEXT PRIMARY KEY, value TEXT);
+    """)
+    con.executemany("INSERT INTO l1_effects VALUES (?,?)",
+                    [(f"e{i}", "terminal_flat") for i in range(4)])
+    con.execute("INSERT INTO decisions VALUES (?,?,?,?)",
+                ("k1", "2026-08-10T04:00:00+00:00", "rejected",
+                 "halted:hold"))
+    if halt is not None:
+        con.execute("INSERT INTO service_state VALUES ('halt', ?)", (halt,))
+    con.commit()
+    con.close()
+    return state_dir
+
+
+def _ibkr_queue_item(tmp_path, state_dir):
     packet = collect(
-        snapshot_path=tmp_path / "missing.json",
-        watchdog_path=tmp_path / "missing2.json",
-        social_db_path=tmp_path / "missing.sqlite",
-        supervisor_url="http://127.0.0.1:1",
-        timeout=0.1,
-        l0_heartbeat_path=tmp_path / "missing-hb.json",
-        l0_db_path=tmp_path / "missing-l0.sqlite",
+        snapshot_path=tmp_path / "m.json",
+        watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+        l0_heartbeat_path=tmp_path / "no-hb.json",
+        l0_db_path=tmp_path / "no-l0.sqlite",
+        execution_state_dir=state_dir,
     )
-    l1 = next(item for item in packet["queue"]
-              if item["id"] == "ibkr-paper-l1-canary")
-    assert l1["state"] == "dependency_blocked"
-    assert "IBKR write adapter" in l1["dependency"]
-    assert "owner single-use activation" in l1["dependency"]
-    assert "24-hour" not in l1["dependency"]
+    return packet, next(item for item in packet["queue"]
+                        if item["id"] == "ibkr-paper-l1-canary")
+
+
+def test_write_enabled_held_ibkr_is_operational_but_held(tmp_path):
+    """AUD-F2-20260810-214: a write-enabled runner with an enforced hold
+    is OPERATIONAL-BUT-HELD with the exact hold reason and owner action —
+    never 'dependency-blocked missing-adapter'."""
+    import json as jsonlib
+    state_dir = _ibkr_execution_fixture(tmp_path, halt="hold")
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "owner_blocked"
+    assert item["operational_state"] == "operational_but_held"
+    assert "halt='hold'" in item["owner_blocked_reason"]
+    assert "'halted:hold'" in item["owner_blocked_reason"]
+    assert "not a missing adapter" in item["owner_blocked_reason"]
+    assert "authenticated" in item["owner_action"]
+    assert "hold-clear" in item["owner_action"]
+    assert item["evidence"]["mode"] == "write_enabled"
+    assert item["evidence"]["lifecycles_cumulative"] == 4
+    assert item["evidence"]["last_decision"]["reason"] == "halted:hold"
+    # the retired development dependency never reappears
+    assert "dependency" not in item
+    assert "write adapter" not in jsonlib.dumps(item)
+
+
+def test_unreadable_ibkr_evidence_is_typed_missing_evidence(tmp_path):
+    empty = tmp_path / "no-exec-state"
+    empty.mkdir()
+    packet, item = _ibkr_queue_item(tmp_path, empty)
+    assert item["state"] == "dependency_blocked"
+    assert "unreadable" in item["dependency"]
+    assert "write adapter" not in item["dependency"]
+    fields = {entry["field"] for entry in packet["unavailable"]}
+    assert "queue.ibkr-paper-l1-canary" in fields
+
+
+def test_write_enabled_unheld_fresh_ibkr_is_running(tmp_path):
+    state_dir = _ibkr_execution_fixture(tmp_path, halt=None)
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "running"
+    assert item["hashes"]["config_sha256"] == "c" * 64
+    assert item["evidence"]["mode"] == "write_enabled"
+
+
+def test_read_only_unheld_ibkr_depends_on_write_authority(tmp_path):
+    state_dir = _ibkr_execution_fixture(tmp_path, halt=None, read_only=True)
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "dependency_blocked"
+    assert "write-enabled" in item["dependency"]
+
+
+def test_stale_heartbeat_unheld_ibkr_depends_on_fresh_evidence(tmp_path):
+    state_dir = _ibkr_execution_fixture(
+        tmp_path, halt=None, age_seconds=3 * 86400)
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "dependency_blocked"
+    assert "stale" in item["dependency"]

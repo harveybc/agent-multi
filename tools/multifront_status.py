@@ -16,6 +16,20 @@ launcher heartbeats, cell records and training logs of the four assigned
 factorial workers (local filesystem + read-only ssh for remote hosts); the
 paused DOIN campaign supervisor renders separately as history and can never
 replace the active factorial in `f1_optimization` or the executable queue.
+
+Finding 212: epoch/trade/patience facts bind to (identity, seed, cell,
+attempt) with source freshness; a stale or differently bound source renders
+typed unavailability with its age, never current telemetry, and attempt
+paths are shown only for the CURRENT heartbeat's attempt.
+
+Finding 213: workers run cells concurrently, so the full-experiment ETA is
+the MAXIMUM per-worker remaining path (active + queued cells), reported
+separately from each worker's current-cell ETA, each with sample count and
+uncertainty.
+
+Finding 214: the IBKR L1 queue item derives from execution heartbeat and
+journal facts; a broker hold is operational-but-held with its exact reason
+and owner action, never a hardcoded development dependency.
 """
 from __future__ import annotations
 
@@ -234,6 +248,117 @@ def _venue_execution_truth(
     except sqlite3.Error:
         truth["olap_reason"] = "execution OLAP unreadable"
     return truth
+
+
+IBKR_QUEUE_ID = "ibkr-paper-l1-canary"
+
+
+def _ibkr_l1_queue_entry(
+    execution_state_dir: Path,
+    now: float,
+    heartbeat_stale_after_seconds: float = 43200.0,
+) -> tuple[dict[str, Any], Optional[dict[str, str]]]:
+    """Finding 214: the IBKR L1 queue item derives from execution
+    heartbeat/journal facts, never a hardcoded development dependency.
+
+    A broker hold is an OPERATIONAL state: the item renders
+    operational-but-held with the exact hold reason and the owner action
+    that clears it — never `dependency-blocked missing-adapter`. Only when
+    no durable evidence is readable does the item name the missing
+    evidence itself as the dependency.
+
+    Returns (queue item, unavailable entry or None).
+    """
+    heartbeat_path = execution_state_dir / "ibkr-model-runner-heartbeat.json"
+    olap_path = execution_state_dir / "ibkr-model-execution.sqlite"
+    truth = _venue_execution_truth(heartbeat_path, olap_path, now)
+    heartbeat_readable = "heartbeat_state" in truth
+    journal_readable = "decisions_cumulative" in truth
+    base: dict[str, Any] = {
+        "id": IBKR_QUEUE_ID, "front": "f2", "basis": "observed",
+        "evidence_sources": {"heartbeat": str(heartbeat_path),
+                             "journal": str(olap_path)},
+        "hashes": {},
+    }
+    if not heartbeat_readable and not journal_readable:
+        item = {**base, "state": "dependency_blocked",
+                "dependency": (
+                    "fresh IBKR execution heartbeat/journal evidence: both "
+                    "sources unreadable at collection time, and no "
+                    "operational state may be asserted without observed "
+                    "facts (finding 214)")}
+        return item, {"field": f"queue.{IBKR_QUEUE_ID}",
+                      "reason": ("IBKR execution heartbeat and journal "
+                                 "unreadable")}
+    hb_age = truth.get("heartbeat_age_seconds")
+    hb_fresh = (heartbeat_readable and hb_age is not None
+                and hb_age <= heartbeat_stale_after_seconds)
+    halt = truth.get("halt")
+    evidence = {
+        "mode": truth.get("mode"),
+        "heartbeat_state": truth.get("heartbeat_state"),
+        "heartbeat_age_seconds": hb_age,
+        "lifecycles_cumulative": truth.get("lifecycles_cumulative"),
+        "last_decision": truth.get("last_decision"),
+    }
+    if halt:
+        last = _as_dict(truth.get("last_decision"))
+        held_operational = truth.get("mode") == "write_enabled" and hb_fresh
+        reason = (f"broker hold enforced: execution journal service_state "
+                  f"halt={halt!r}")
+        if last:
+            reason += (f"; last decision {last.get('outcome')!r} with reason "
+                       f"{last.get('reason')!r}")
+        reason += (" — the runner is operational and rejecting decisions "
+                   "for exactly this hold, not a missing adapter"
+                   if held_operational else
+                   " — the hold is durable journal state; current "
+                   "operational freshness is recorded in `evidence`")
+        item = {**base, "state": "owner_blocked",
+                "operational_state": ("operational_but_held"
+                                      if held_operational else "held"),
+                "owner_blocked_reason": reason,
+                "owner_action": (
+                    "review the flat-reconciliation packet and clear the "
+                    "hold via the one-time authenticated hold-clear packet "
+                    "(order 2026-08-10 WP4.3); the hold stays set until "
+                    "explicit authenticated owner action"),
+                "evidence": evidence}
+        return item, None
+    if not heartbeat_readable or not hb_fresh:
+        age_text = ("unreadable" if not heartbeat_readable else
+                    f"stale: age {hb_age}s exceeds "
+                    f"{heartbeat_stale_after_seconds:.0f}s")
+        item = {**base, "state": "dependency_blocked",
+                "dependency": (f"fresh IBKR execution heartbeat (heartbeat "
+                               f"{age_text}); journal shows no hold"),
+                "evidence": evidence}
+        return item, None
+    if truth.get("mode") != "write_enabled":
+        item = {**base, "state": "dependency_blocked",
+                "dependency": ("write-enabled IBKR execution runner: the "
+                               "current fresh heartbeat reports "
+                               f"{truth.get('mode')!r}"),
+                "evidence": evidence}
+        return item, None
+    # Write-enabled, fresh, unheld: the canary runs as the runner's normal
+    # operation; the executing model artifact hash is its config identity.
+    heartbeat = _as_dict(_load_json_file(heartbeat_path))
+    artifact_sha = _as_dict(heartbeat.get("inference")).get("artifact_sha256")
+    if _valid_sha256(artifact_sha):
+        item = {**base, "state": "running",
+                "hashes": {"config_sha256": artifact_sha},
+                "note": ("config_sha256 = executing model artifact SHA-256 "
+                         "from the live write-enabled heartbeat; runner "
+                         "operational and unheld"),
+                "evidence": evidence}
+        return item, None
+    item = {**base, "state": "dependency_blocked",
+            "dependency": ("content-addressed execution identity: the fresh "
+                           "write-enabled heartbeat carries no valid model "
+                           "artifact SHA-256"),
+            "evidence": evidence}
+    return item, None
 
 
 # ── Front 1 first-class source: L1 matched factorial (finding 204) ──────────
@@ -498,29 +623,244 @@ def _l1_eta_from_samples(samples: list[dict[str, Any]], cell: Optional[str],
     }
 
 
-def _l1_cell_eta(durations: list[float], cells_remaining: int) -> dict[str, Any]:
+def _l1_attempt_cell(attempt_path: Any) -> Optional[str]:
+    """Cell directory an attempt path is bound to. Attempt dirs are
+    ``<root>/<identity>/seed<seed>/<cell>/attempt-<cell_id>-NN``."""
+    parts = str(attempt_path or "").rstrip("/").split("/")
+    if len(parts) < 2 or not parts[-1].startswith("attempt-"):
+        return None
+    return parts[-2]
+
+
+def _l1_attempt_is_current(attempt_path: Any, identity: str, seed: int,
+                           cell: Optional[str]) -> bool:
+    """Finding 212: an attempt path may be shown only when it binds to the
+    CURRENT heartbeat's (identity, seed, cell). The launcher records the
+    last COMPLETED cell's attempt dir in the heartbeat, which is history,
+    never the current attempt."""
+    if not attempt_path or cell is None:
+        return False
+    parts = str(attempt_path).rstrip("/").split("/")
+    return (_l1_attempt_cell(attempt_path) == cell
+            and identity in parts and f"seed{seed}" in parts)
+
+
+def _l1_bound_telemetry(
+    *,
+    reader: Any,
+    host: str,
+    identity: str,
+    seed: int,
+    cell: Optional[str],
+    current_attempt: Optional[str],
+    terminal_state: str,
+    hb_age: Optional[float],
+    hb_progress: Any,
+    output_root: str,
+    now: datetime,
+    stale_after_seconds: float,
+    telemetry_stale_after_seconds: float,
+) -> dict[str, Any]:
+    """Finding 212: epoch/trade/patience facts must bind to
+    ``(identity, seed, cell, attempt)`` and carry source freshness.
+
+    Source preference: (1) structured heartbeat progress published by the
+    launcher, bound and fresh by construction; (2) a per-attempt log inside
+    the CURRENT attempt directory; (3) the global ``logs/seed<seed>.log``,
+    which carries no binding metadata and therefore binds only while it is
+    FRESH and co-temporal with a fresh RUNNING heartbeat (one exclusive
+    launcher per seed writes it serially, so a fresh tail belongs to the
+    current cell). A stale or differently bound source yields a typed
+    unbound result with its age — never current telemetry.
+    """
+    hb_fresh = hb_age is not None and hb_age <= stale_after_seconds
+    result: dict[str, Any] = {"parsed": {}, "log_path": None,
+                              "log_age_seconds": None, "log_mtime_utc": None}
+
+    def _bound(source: str, age: Optional[float], parsed: dict[str, Any],
+               basis: str) -> dict[str, Any]:
+        result["parsed"] = parsed
+        result["binding"] = {
+            "bound": True, "source": source,
+            "source_age_seconds": age, "basis": basis,
+            "binds": {"identity": identity, "seed": seed, "cell": cell,
+                      "attempt": current_attempt},
+        }
+        return result
+
+    # 1) Structured launcher progress: bound facts by construction.
+    if isinstance(hb_progress, dict) and hb_progress.get("epoch") is not None:
+        prog_cell = hb_progress.get("cell", cell)
+        if hb_fresh and cell is not None and prog_cell == cell:
+            parsed: dict[str, Any] = {
+                key: hb_progress.get(key)
+                for key in ("epoch", "epoch_max", "no_activity",
+                            "no_activity_of")
+                if hb_progress.get(key) is not None}
+            trades = hb_progress.get("trades")
+            if isinstance(trades, dict):
+                parsed["trades"] = trades
+            return _bound(
+                "heartbeat_progress", hb_age, parsed,
+                "structured progress published inside the fresh current "
+                "heartbeat: bound to its (identity, seed, cell, attempt)")
+
+    # 2) Per-attempt log inside the CURRENT attempt directory.
+    if current_attempt:
+        for name in ("train.log", "launcher.log"):
+            candidate = f"{current_attempt}/{name}"
+            tail = reader.read_tail(host, candidate)
+            if not tail:
+                continue
+            mtime = reader.mtime(host, candidate)
+            age = (round(now.timestamp() - mtime, 1)
+                   if mtime is not None else None)
+            if age is not None and age <= telemetry_stale_after_seconds:
+                result.update({"log_path": candidate,
+                               "log_age_seconds": age,
+                               "log_mtime_utc": datetime.fromtimestamp(
+                                   mtime, timezone.utc).isoformat()})
+                return _bound(
+                    "per_attempt_log", age, _l1_parse_log_tail(tail),
+                    "timestamp-fresh log inside the current heartbeat's "
+                    "attempt directory: path-bound to "
+                    "(identity, seed, cell, attempt)")
+
+    # 3) Global seed log: binds only fresh AND co-temporal with a fresh
+    #    RUNNING heartbeat that names a current cell.
+    log_path, tail = None, None
+    for candidate in (f"{output_root}/logs/seed{seed}.log",
+                      f"{output_root}/logs/seed{seed}.launcher.log"):
+        text = reader.read_tail(host, candidate)
+        if text:
+            log_path, tail = candidate, text
+            break
+    log_age = None
+    if log_path:
+        mtime = reader.mtime(host, log_path)
+        if mtime is not None:
+            log_age = round(now.timestamp() - mtime, 1)
+            result["log_mtime_utc"] = datetime.fromtimestamp(
+                mtime, timezone.utc).isoformat()
+    result.update({"log_path": log_path, "log_age_seconds": log_age})
+
+    if log_path is None:
+        reason = ("no readable worker log (per-attempt or global) on the "
+                  "assigned host")
+    elif log_age is None:
+        reason = (f"worker log {log_path} has no readable mtime; freshness "
+                  "cannot be established, so its facts cannot be bound to "
+                  "the current attempt")
+    elif log_age > telemetry_stale_after_seconds:
+        reason = (f"worker log is stale (age {log_age:.0f}s > "
+                  f"{telemetry_stale_after_seconds:.0f}s): its last telemetry "
+                  "belongs to an earlier cell/attempt, not the current "
+                  "heartbeat's cell "
+                  f"{cell!r} (finding 212)")
+    elif not hb_fresh:
+        reason = ("launcher heartbeat is stale "
+                  f"(age {hb_age}s > {stale_after_seconds:.0f}s), so the "
+                  "global log cannot be bound to a current attempt")
+    elif cell is None or terminal_state != "RUNNING":
+        reason = (f"heartbeat names no current cell (terminal_state="
+                  f"{terminal_state!r}): the global log has no current "
+                  "attempt to bind to")
+    else:
+        parsed = _l1_parse_log_tail(tail)
+        return _bound(
+            "global_seed_log", log_age, parsed,
+            "global seed log carries no binding metadata; bound because it "
+            "is fresh and co-temporal with the fresh RUNNING heartbeat of "
+            "the single exclusive per-seed launcher, whose current cell is "
+            f"{cell!r}")
+
+    result["binding"] = {
+        "bound": False, "source": log_path,
+        "source_age_seconds": log_age, "reason": reason,
+        "binds": None,
+    }
+    return result
+
+
+def _l1_experiment_eta(worker_states: Mapping[str, Mapping[str, Any]],
+                       durations: list[float]) -> dict[str, Any]:
+    """Finding 213: workers run cells CONCURRENTLY. The full-experiment ETA
+    is the MAXIMUM per-worker remaining path (active cell + queued cells),
+    never the serial sum of all remaining cells across workers."""
+    unknown = sorted(seed for seed, ws in worker_states.items()
+                     if ws.get("remaining") is None)
+    if unknown:
+        return {
+            "value": "unavailable",
+            "missing": ("per-worker remaining path unknown for seed(s) "
+                        f"{', '.join(unknown)}: worker facts unreadable, so "
+                        "the critical-path maximum cannot be established"),
+        }
+    if all((ws.get("remaining") or 0) == 0 for ws in worker_states.values()):
+        return {
+            "basis": "derived",
+            "eta_seconds": {"value": 0.0, "low": 0.0, "high": 0.0,
+                            "unit": "seconds"},
+            "note": "no remaining cells on any worker; experiment complete",
+        }
     if len(durations) < 2:
         return {
             "value": "unavailable",
             "missing": (
                 "fewer than 2 completed cell records under the active "
-                f"identity ({len(durations)} so far); cell-level ETA derives "
-                "only from observed started_utc→finished_utc durations"),
+                f"identity ({len(durations)} so far); per-worker remaining "
+                "paths derive only from observed started_utc→finished_utc "
+                "cell durations"),
         }
     mean = sum(durations) / len(durations)
+    lo, hi = min(durations), max(durations)
+    per_worker: dict[str, dict[str, Any]] = {}
+    for seed, ws in sorted(worker_states.items()):
+        remaining = int(ws.get("remaining") or 0)
+        active = bool(ws.get("active")) and remaining > 0
+        queued = max(0, remaining - (1 if active else 0))
+        value, low, high = queued * mean, queued * lo, queued * hi
+        active_source = None
+        if active:
+            active_eta = _as_dict(ws.get("active_eta"))
+            eta_seconds = _as_dict(active_eta.get("eta_seconds"))
+            if isinstance(eta_seconds.get("value"), (int, float)):
+                value += eta_seconds["value"]
+                low += eta_seconds.get("low", eta_seconds["value"])
+                high += eta_seconds.get("high", eta_seconds["value"])
+                active_source = "current_cell_epoch_eta"
+            else:
+                value, low, high = value + mean, low + lo, high + hi
+                active_source = ("mean_completed_cell_duration (no "
+                                 "epoch-rate samples for the active cell)")
+        per_worker[seed] = {
+            "remaining_cells": remaining,
+            "queued_cells": queued,
+            "active_cell": ws.get("cell") if active else None,
+            "active_cell_eta_source": active_source,
+            "path_seconds": {"value": round(value, 1), "low": round(low, 1),
+                             "high": round(high, 1), "unit": "seconds"},
+        }
+    critical = max(per_worker,
+                   key=lambda s: per_worker[s]["path_seconds"]["value"])
     return {
         "basis": "derived",
-        "eta_seconds": {"value": round(mean * cells_remaining, 1),
-                        "low": round(min(durations) * cells_remaining, 1),
-                        "high": round(max(durations) * cells_remaining, 1),
-                        "unit": "seconds"},
+        "eta_seconds": dict(per_worker[critical]["path_seconds"]),
+        "critical_path_seed": critical,
+        "per_worker_paths": per_worker,
         "mean_cell_seconds": round(mean, 1),
-        "cells_remaining": cells_remaining,
         "sample_size": {"value": len(durations), "unit": "completed_cells"},
-        "formula": ("mean(finished_utc - started_utc of completed cell "
-                    "records under the active identity) * remaining cells"),
-        "horizon": "remaining cells across all workers",
-        "uncertainty": "range [low, high] from min/max observed cell durations",
+        "formula": (
+            "max over workers of (active-cell remaining + queued cells * "
+            "mean observed completed-cell duration); workers run cells "
+            "concurrently, so the experiment ETA is the longest "
+            "single-worker path and never the serial sum of all remaining "
+            "cells (finding 213)"),
+        "horizon": ("full experiment: all remaining cells across concurrent "
+                    "workers"),
+        "uncertainty": ("range [low, high] propagates min/max observed cell "
+                        "durations (and the active-cell epoch-rate range "
+                        "where available) along each worker path"),
     }
 
 
@@ -532,6 +872,7 @@ def collect_l1_factorial(
     state_dir: Optional[Path] = None,
     local_hostname: Optional[str] = None,
     stale_after_seconds: float = 900.0,
+    telemetry_stale_after_seconds: float = 3600.0,
     alert_emitter: Optional[Callable[..., bool]] = None,
     now_fn: Optional[Callable[[], datetime]] = None,
 ) -> tuple[dict[str, Any], list[dict[str, str]], Optional[dict[str, Any]]]:
@@ -602,6 +943,7 @@ def collect_l1_factorial(
                 "contract_path": str(contract_path)}, unavailable, None
 
     workers: dict[str, Any] = {}
+    worker_states: dict[str, dict[str, Any]] = {}
     cell_durations: list[float] = []
     records_landed_total = 0
     running_fresh = 0
@@ -639,6 +981,8 @@ def collect_l1_factorial(
                          f"workers.{seed}",
                 "reason": entry["unavailable_reason"]})
             workers[str(seed)] = entry
+            worker_states[str(seed)] = {"remaining": None, "active": False,
+                                        "cell": None, "active_eta": None}
             continue
         any_fact = True
         hb_updated = _l1_iso(heartbeat.get("updated_utc"))
@@ -646,6 +990,14 @@ def collect_l1_factorial(
                   if hb_updated else None)
         cell = heartbeat.get("cell")
         cell_spec = _as_dict(_as_dict(contract.get("cells")).get(cell))
+        # Finding 212: the heartbeat's `attempt` field records the last
+        # COMPLETED cell's attempt directory. An attempt path is shown
+        # only when it binds to the CURRENT heartbeat's cell; anything
+        # else is withheld with a typed reason (the cell it belongs to),
+        # never displayed as if it were current.
+        raw_attempt = heartbeat.get("attempt")
+        attempt_is_current = _l1_attempt_is_current(
+            raw_attempt, identity, seed, cell)
         entry.update({
             "heartbeat_schema": heartbeat.get("schema"),
             "terminal_state": heartbeat.get("terminal_state") or "unknown",
@@ -655,7 +1007,7 @@ def collect_l1_factorial(
                 "phase1_mode": cell_spec.get("phase1_mode"),
                 "phase2_lr_multiplier": cell_spec.get("phase2_lr_multiplier"),
             } if cell_spec else None,
-            "attempt": heartbeat.get("attempt"),
+            "attempt": raw_attempt if attempt_is_current else None,
             "pid": heartbeat.get("pid"),
             "pid_start_identity": heartbeat.get("pid_start_identity"),
             "cuda_visible_devices": heartbeat.get("cuda_visible_devices"),
@@ -665,38 +1017,60 @@ def collect_l1_factorial(
             "heartbeat_updated_utc": heartbeat.get("updated_utc"),
             "heartbeat_age_seconds": hb_age,
         })
+        if raw_attempt and not attempt_is_current:
+            entry["attempt_withheld"] = {
+                "reason": ("heartbeat attempt path is not the CURRENT "
+                           "attempt: it belongs to cell "
+                           f"{_l1_attempt_cell(raw_attempt)!r} while the "
+                           f"current heartbeat cell is {cell!r} (the "
+                           "launcher records the last COMPLETED attempt); "
+                           "path withheld (finding 212)"),
+                "bound_cell": _l1_attempt_cell(raw_attempt),
+            }
 
-        # Training log: '<root>/logs/seed<seed>.log' is the deployed name;
-        # the '.launcher.log' variant is tolerated for forward-compat.
-        parsed: dict[str, Any] = {}
-        log_path = None
-        for candidate in (f"{output_root}/logs/seed{seed}.log",
-                          f"{output_root}/logs/seed{seed}.launcher.log"):
-            tail = reader.read_tail(host, candidate)
-            if tail:
-                log_path = candidate
-                parsed = _l1_parse_log_tail(tail)
-                break
-        entry["log_path"] = log_path
-        if log_path:
-            log_mtime = reader.mtime(host, log_path)
-            if log_mtime:
-                entry["log_mtime_utc"] = datetime.fromtimestamp(
-                    log_mtime, timezone.utc).isoformat()
-                entry["log_age_seconds"] = round(
-                    now.timestamp() - log_mtime, 1)
-        epoch = parsed.get("epoch")
-        epoch_max = parsed.get("epoch_max")
-        entry["epoch"] = ({"value": epoch, "of": epoch_max,
-                           "unit": "epochs", "horizon": "cell"}
-                          if epoch is not None else None)
-        entry["activity_patience"] = (
-            {"value": parsed.get("no_activity"),
-             "of": parsed.get("no_activity_of"),
-             "declared_patience": declared_patience,
-             "unit": "activity_ineligible_epochs", "horizon": "cell"}
-            if parsed.get("no_activity") is not None else None)
-        entry["trades"] = parsed.get("trades")
+        # Finding 212: telemetry facts bind to (identity, seed, cell,
+        # attempt) with source freshness, or render typed unavailability.
+        telemetry = _l1_bound_telemetry(
+            reader=reader, host=host, identity=identity, seed=seed,
+            cell=cell,
+            current_attempt=raw_attempt if attempt_is_current else None,
+            terminal_state=entry["terminal_state"], hb_age=hb_age,
+            hb_progress=heartbeat.get("progress"),
+            output_root=output_root, now=now,
+            stale_after_seconds=stale_after_seconds,
+            telemetry_stale_after_seconds=telemetry_stale_after_seconds)
+        parsed = telemetry["parsed"]
+        binding = telemetry["binding"]
+        entry["telemetry_binding"] = binding
+        entry["log_path"] = telemetry["log_path"]
+        if telemetry["log_mtime_utc"]:
+            entry["log_mtime_utc"] = telemetry["log_mtime_utc"]
+        if telemetry["log_age_seconds"] is not None:
+            entry["log_age_seconds"] = telemetry["log_age_seconds"]
+        if binding["bound"]:
+            epoch = parsed.get("epoch")
+            epoch_max = parsed.get("epoch_max")
+            entry["epoch"] = ({"value": epoch, "of": epoch_max,
+                               "unit": "epochs", "horizon": "cell"}
+                              if epoch is not None else None)
+            entry["activity_patience"] = (
+                {"value": parsed.get("no_activity"),
+                 "of": parsed.get("no_activity_of"),
+                 "declared_patience": declared_patience,
+                 "unit": "activity_ineligible_epochs", "horizon": "cell"}
+                if parsed.get("no_activity") is not None else None)
+            entry["trades"] = parsed.get("trades")
+        else:
+            epoch = epoch_max = None
+            unbound_fact = {
+                "value": "unavailable",
+                "reason": binding.get("reason"),
+                "source": telemetry["log_path"],
+                "source_age_seconds": telemetry["log_age_seconds"],
+            }
+            entry["epoch"] = dict(unbound_fact)
+            entry["activity_patience"] = dict(unbound_fact)
+            entry["trades"] = dict(unbound_fact)
         progress_times = [t for t in (hb_updated, _l1_iso(
             entry.get("log_mtime_utc"))) if t]
         entry["last_progress_utc"] = (
@@ -755,9 +1129,20 @@ def collect_l1_factorial(
         if state_dir is not None:
             samples = _l1_record_eta_sample(
                 state_dir, identity, seed, cell, epoch, now)
-        entry["eta"] = _l1_eta_from_samples(samples, cell, epoch, epoch_max)
-        if state_dir is None and entry["eta"].get("value") == "unavailable":
-            entry["eta"]["missing"] += "; no state dir for timing samples"
+        entry["current_cell_eta"] = _l1_eta_from_samples(
+            samples, cell, epoch, epoch_max)
+        if state_dir is None and \
+                entry["current_cell_eta"].get("value") == "unavailable":
+            entry["current_cell_eta"]["missing"] += \
+                "; no state dir for timing samples"
+        worker_states[str(seed)] = {
+            "remaining": len(cells) - len(landed),
+            "active": (entry["terminal_state"] == "RUNNING"
+                       and cell is not None and hb_age is not None
+                       and hb_age <= stale_after_seconds),
+            "cell": cell,
+            "active_eta": entry["current_cell_eta"],
+        }
 
         # Zero-trade monitoring (WP3.6): ONE bounded alert exactly at the
         # declared patience boundary — terminal inactivity — deduplicated
@@ -864,8 +1249,7 @@ def collect_l1_factorial(
                                   "unit": "workers", "horizon": "instant"},
         "records_landed": {"value": records_landed_total, "of": total_cells,
                            "unit": "cell_records", "horizon": "experiment"},
-        "cells_eta": _l1_cell_eta(
-            cell_durations, total_cells - records_landed_total),
+        "experiment_eta": _l1_experiment_eta(worker_states, cell_durations),
     }
     if zero_trade_alerts:
         block["zero_trade_alerts"] = zero_trade_alerts
@@ -1324,18 +1708,15 @@ def collect(
             if state == "dependency_blocked":
                 entry["dependency"] = "job-0 champion/elite archive (fail-closed materializer)"
             queue.append(entry)
-    queue.append(
-        {
-            "id": "ibkr-paper-l1-canary",
-            "front": "f2",
-            "state": "dependency_blocked",
-            "dependency": (
-                "IBKR write adapter + independent zero-submit preflight + "
-                "owner single-use activation (doc 29 L1)"
-            ),
-            "hashes": {},
-        }
-    )
+    # Finding 214: the IBKR L1 item derives from execution heartbeat and
+    # journal facts. A broker hold renders operational-but-held with its
+    # exact reason and owner action; the old hardcoded development
+    # dependency ('write adapter + preflight') is retired.
+    ibkr_item, ibkr_unavailable = _ibkr_l1_queue_entry(
+        execution_state_dir, _time.time())
+    queue.append(ibkr_item)
+    if ibkr_unavailable:
+        unavailable.append(ibkr_unavailable)
     queue.append(
         {
             "id": "darwinex-zero-subscription",

@@ -1,342 +1,342 @@
 {
-  "schema": "tool_declarations.v1",
-  "note": "REVIEWED semantic declarations \u2014 the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
-  "tools": {
-    "engineering_surface_index.py": {
-      "purpose": "Generate the engineering surface index (this system); discovered facts + reviewed declarations, typed outcomes",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "config_doctor.py": {
-      "purpose": "Read-only facade over app/config_validation.py shared validators; reports typed findings, never mutates, never authorizes",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "multifront_status.py": {
-      "purpose": "Consolidated machine-readable multi-front status contract; first-class L1 factorial Front-1 source with paused-campaign history separation (finding 204, order 2026-08-10 WP3)",
-      "lifecycle": "supported",
-      "mutability": "mixed",
-      "mutability_note": "reads run artifacts strictly read-only; writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "social_intelligence_enrichment.py": {
-      "purpose": "Bounded Hermes enrichment of untrusted social posts into typed, source-linked OLAP facts and human-review candidates",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Musashi"
-    },
-    "fleet_status_context.py": {
-      "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "pause_doin_fleet.py": {
-      "purpose": "Pause the DOIN fleet with binding hashes, GPU-owner verification and per-node pause reports",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "resume_doin_fleet.py": {
-      "purpose": "Resume a paused DOIN fleet against recorded pause bindings with rejoin proof",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "rolling_origin_adaptation.py": {
-      "purpose": "RT rolling-origin/prequential adaptation runner: test-then-train intervals, simulator-executed handover, single-transaction SQLite state, exactly-once replay",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "eth_curriculum_decision_experiment.py": {
-      "purpose": "Paired N/EN/E curriculum decision arms with pinned base contract, replica observation and validated records",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "eth_curriculum_fleet.py": {
-      "purpose": "Preflight, launch, monitor, collect and independently re-verify the four-GPU ETH curriculum decision experiment",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Musashi"
-    },
-    "aggregate_curriculum_decision.py": {
-      "purpose": "Aggregate validated curriculum-decision arm records into the decision table; shares the arm validator with the runner",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "materialize_eth_curriculum_configs.py": {
-      "purpose": "Materialize corrected ETH curriculum arm configs from the phase-1 base (findings 108-116 corrections)",
-      "lifecycle": "campaign_frozen",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "materialize_rt1a_grid.py": {
-      "purpose": "Materialize the RT1-A reduced factorial grid (owner-ratified arms); MATERIALIZED_NOT_EXECUTED until gates are met",
-      "lifecycle": "campaign_frozen",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "incident_ledger.py": {
-      "purpose": "Append-only incident ledger (live-alerting era, deployed fleet-wide 2026-08-04)",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "incident_pipeline",
-      "owner": "General Satoshi III"
-    },
-    "incident_router.py": {
-      "purpose": "Route ledger incidents to notification channels with severity policy",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "incident_pipeline",
-      "owner": "General Satoshi III"
-    },
-    "incident_emit.py": {
-      "purpose": "Emit a single structured incident into the ledger from scripts/watchdogs",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "incident_pipeline",
-      "owner": "General Satoshi III"
-    },
-    "gpu_idle_watchdog.py": {
-      "purpose": "Alert when campaign GPUs sit idle while a campaign claims them",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "watchdog",
-      "owner": "General Satoshi III"
-    },
-    "gpu_temperature_watchdog.py": {
-      "purpose": "Alert on GPU temperature threshold breaches",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "watchdog",
-      "owner": "General Satoshi III"
-    },
-    "memory_pressure_watchdog.py": {
-      "purpose": "Alert on host memory pressure",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "watchdog",
-      "owner": "General Satoshi III"
-    },
-    "replicate_decision_evidence.py": {
-      "purpose": "Replicate decision evidence to the declared remote authority with independent remote observation (finding 151 semantics)",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "audit_snapshot_collector.py": {
-      "purpose": "Collect read-only audit snapshots of fleet/campaign state",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "eth_sac_training_diagnostics.py": {
-      "purpose": "WP0 read-only D1 training-collapse diagnostics collector; typed absences, never zero",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "eth_sac_inner_curriculum_screen.py": {
-      "purpose": "M0 mechanism screen runner: one seed, four frozen arms, reuses validated D1 helpers",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "aggregate_eth_sac_inner_curriculum.py": {
-      "purpose": "M0 survival aggregation (3/4 rule) + frozen interpretation table selecting exactly one successor branch",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "quarantine_inner_curriculum_successor.py": {
-      "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "l1_factorial_screen.py": {
-      "purpose": "L1 matched factorial runner: four v3 cells per seed, mode-aware phase 1, paired stopping, nested chronology; smoke profile is mechanics-only",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "aggregate_l1_factorial.py": {
-      "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
-      "lifecycle": "supported",
-      "mutability": "read_only",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "l1_fleet_launcher.py": {
-      "purpose": "Durable idempotent L1 seed launcher (order \u00a72/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "materialize_l1_system_manifest.py": {
-      "purpose": "Generate+freeze the exact ETH L1 system manifest from real artifacts (data rows/time bounds, anchors with tensor shas, observation and cost contracts); changed bindings are a new version, never an overwrite",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "campaign_operation",
-      "owner": "General Satoshi III"
-    },
-    "collect_l1_factorial.py": {
-      "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "bootstrap_test_fixtures.py": {
-      "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "discovery",
-      "owner": "General Satoshi III"
-    },
-    "social_review_packet.py": {
-      "purpose": "Materialize one bounded owner-review packet (experiment/reply/investigate candidates) from the social OLAP; proposes, never executes",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    },
-    "social_review_ledger.py": {
-      "purpose": "Append-only owner-review ledger: accept/defer/reject with reason; accepted experiments enter the work queue with provenance, accepted replies become drafts only",
-      "lifecycle": "supported",
-      "mutability": "mutating",
-      "authority_class": "evidence_producer",
-      "owner": "General Satoshi III"
-    }
+ "schema": "tool_declarations.v1",
+ "note": "REVIEWED semantic declarations \u2014 the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
+ "tools": {
+  "engineering_surface_index.py": {
+   "purpose": "Generate the engineering surface index (this system); discovered facts + reviewed declarations, typed outcomes",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   },
-  "plugins": {
-    "console_scripts/agent-multi": {
-      "protocol": "argparse CLI",
-      "config_keys": [],
-      "note": "primary experiment entry point (app.main)"
-    },
-    "console_scripts/doin-campaign-supervisor": {
-      "protocol": "argparse CLI",
-      "config_keys": [],
-      "note": "campaign supervisor daemon (port 8795)"
-    },
-    "env.plugins/gym_fx_env": {
-      "protocol": "IMPLICIT",
-      "config_keys": [
-        "env_plugin"
-      ],
-      "note": "config key mapping discovered from app/canonical_config.py _SECTION_KEYS: env_plugin -> environment.plugin"
-    },
-    "agent.plugins/sac_agent": {
-      "protocol": "IMPLICIT",
-      "config_keys": [
-        "agent_plugin"
-      ],
-      "note": "agent_plugin -> asset_policy.plugin per _SECTION_KEYS"
-    },
-    "pipeline.plugins/rl_pipeline_with_validation": {
-      "protocol": "IMPLICIT",
-      "config_keys": [
-        "pipeline_plugin"
-      ],
-      "note": "pipeline_plugin -> training.pipeline_plugin per _SECTION_KEYS"
-    },
-    "optimizer.plugins/project3_full_genome_optimizer": {
-      "protocol": "IMPLICIT",
-      "config_keys": [
-        "optimizer_plugin"
-      ],
-      "note": "optimizer_plugin -> optimization.plugin per _SECTION_KEYS"
-    }
+  "config_doctor.py": {
+   "purpose": "Read-only facade over app/config_validation.py shared validators; reports typed findings, never mutates, never authorizes",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   },
-  "known_unclassified_baseline": [
-    "aggregate_p4_runs.py",
-    "analyze_swarm_efficiency.py",
-    "audit_brackets.py",
-    "audit_test_evidence.py",
-    "auto_orchestrator.py",
-    "check_sizing.py",
-    "compute_baselines.py",
-    "eth_curriculum_fixture.py",
-    "generate_sac_golden_parity.py",
-    "import_project3_shortlist.py",
-    "incident_forward_shim.py",
-    "install_campaign_profile.py",
-    "materialize_eth_anchored_campaign.py",
-    "materialize_eth_campaign_plan.py",
-    "materialize_eth_smoke_campaign.py",
-    "okf_validate.py",
-    "p5_eval_holdout.py",
-    "p5_rank.py",
-    "prepare_project2_data.py",
-    "project3_asset_policy_training.py",
-    "project3_event_token_transformer.py",
-    "project3_evidence_backup.py",
-    "project3_evidence_metrics.py",
-    "project3_evidence_plan.py",
-    "project3_evidence_pool.py",
-    "project3_evidence_pool_api.py",
-    "project3_evidence_scheduler.py",
-    "project3_evidence_screen.py",
-    "project3_evidence_worker.py",
-    "project3_full_genome_config.py",
-    "project3_live_parity_audit.py",
-    "project3_no_trade_preflight.py",
-    "project3_oracle_behavior_labels.py",
-    "project3_phase4_protocol_dry_run.py",
-    "project3_portfolio_supervisor.py",
-    "project3_portfolio_supervisor_runner.py",
-    "project3_smoke_ethusdt_4h_sac.py",
-    "project3_stage3x_sac_smoke_direct_orchestrator.py",
-    "project3_stage3x_sac_smoke_plan.py",
-    "project3_stageb_run_plan.py",
-    "project3_terminal_verify.py",
-    "project3_weekly_adaptive_scheduler.py",
-    "project3_weekly_api_worker.py",
-    "project3_weekly_artifact_backfill.py",
-    "project3_weekly_dashboard.py",
-    "project3_weekly_materialize.py",
-    "project3_weekly_phase_orchestrator.py",
-    "project3_weekly_pool.py",
-    "project3_weekly_pool_api.py",
-    "project3_weekly_pool_backup.py",
-    "project3_weekly_prune_artifacts.py",
-    "project3_weekly_supervisor.py",
-    "project3_weekly_worker.py",
-    "seed_sweep.py",
-    "smoke_run.py",
-    "smoke_test_agent.py",
-    "social_intelligence.py",
-    "social_intelligence_hermes_context.py",
-    "swarm_telegram_watchdog.py",
-    "update_registry.py",
-    "validate_incident_corpus_manifest.py",
-    "validate_publication_scaffolds.py"
-  ]
+  "multifront_status.py": {
+   "purpose": "Consolidated machine-readable multi-front status contract; first-class L1 factorial Front-1 source with paused-campaign history separation (finding 204), telemetry bound to (identity, seed, cell, attempt) with source freshness (finding 212), parallel critical-path experiment ETA (finding 213) and an execution-evidence-derived IBKR queue item (finding 214)",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "mutability_note": "reads run artifacts strictly read-only; writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "social_intelligence_enrichment.py": {
+   "purpose": "Bounded Hermes enrichment of untrusted social posts into typed, source-linked OLAP facts and human-review candidates",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Musashi"
+  },
+  "fleet_status_context.py": {
+   "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "pause_doin_fleet.py": {
+   "purpose": "Pause the DOIN fleet with binding hashes, GPU-owner verification and per-node pause reports",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "resume_doin_fleet.py": {
+   "purpose": "Resume a paused DOIN fleet against recorded pause bindings with rejoin proof",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "rolling_origin_adaptation.py": {
+   "purpose": "RT rolling-origin/prequential adaptation runner: test-then-train intervals, simulator-executed handover, single-transaction SQLite state, exactly-once replay",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "eth_curriculum_decision_experiment.py": {
+   "purpose": "Paired N/EN/E curriculum decision arms with pinned base contract, replica observation and validated records",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "eth_curriculum_fleet.py": {
+   "purpose": "Preflight, launch, monitor, collect and independently re-verify the four-GPU ETH curriculum decision experiment",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Musashi"
+  },
+  "aggregate_curriculum_decision.py": {
+   "purpose": "Aggregate validated curriculum-decision arm records into the decision table; shares the arm validator with the runner",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "materialize_eth_curriculum_configs.py": {
+   "purpose": "Materialize corrected ETH curriculum arm configs from the phase-1 base (findings 108-116 corrections)",
+   "lifecycle": "campaign_frozen",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "materialize_rt1a_grid.py": {
+   "purpose": "Materialize the RT1-A reduced factorial grid (owner-ratified arms); MATERIALIZED_NOT_EXECUTED until gates are met",
+   "lifecycle": "campaign_frozen",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "incident_ledger.py": {
+   "purpose": "Append-only incident ledger (live-alerting era, deployed fleet-wide 2026-08-04)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "incident_pipeline",
+   "owner": "General Satoshi III"
+  },
+  "incident_router.py": {
+   "purpose": "Route ledger incidents to notification channels with severity policy",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "incident_pipeline",
+   "owner": "General Satoshi III"
+  },
+  "incident_emit.py": {
+   "purpose": "Emit a single structured incident into the ledger from scripts/watchdogs",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "incident_pipeline",
+   "owner": "General Satoshi III"
+  },
+  "gpu_idle_watchdog.py": {
+   "purpose": "Alert when campaign GPUs sit idle while a campaign claims them",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "watchdog",
+   "owner": "General Satoshi III"
+  },
+  "gpu_temperature_watchdog.py": {
+   "purpose": "Alert on GPU temperature threshold breaches",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "watchdog",
+   "owner": "General Satoshi III"
+  },
+  "memory_pressure_watchdog.py": {
+   "purpose": "Alert on host memory pressure",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "watchdog",
+   "owner": "General Satoshi III"
+  },
+  "replicate_decision_evidence.py": {
+   "purpose": "Replicate decision evidence to the declared remote authority with independent remote observation (finding 151 semantics)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "audit_snapshot_collector.py": {
+   "purpose": "Collect read-only audit snapshots of fleet/campaign state",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "eth_sac_training_diagnostics.py": {
+   "purpose": "WP0 read-only D1 training-collapse diagnostics collector; typed absences, never zero",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "eth_sac_inner_curriculum_screen.py": {
+   "purpose": "M0 mechanism screen runner: one seed, four frozen arms, reuses validated D1 helpers",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "aggregate_eth_sac_inner_curriculum.py": {
+   "purpose": "M0 survival aggregation (3/4 rule) + frozen interpretation table selecting exactly one successor branch",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "quarantine_inner_curriculum_successor.py": {
+   "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "l1_factorial_screen.py": {
+   "purpose": "L1 matched factorial runner: four v3 cells per seed, mode-aware phase 1, paired stopping, nested chronology; smoke profile is mechanics-only",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "aggregate_l1_factorial.py": {
+   "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "l1_fleet_launcher.py": {
+   "purpose": "Durable idempotent L1 seed launcher (order \u00a72/WP1): contract-enforced host+GPU-UUID assignment, exclusive_claim flocks per seed and cell, ALREADY_RUNNING/ALREADY_COMPLETE typed outcomes, atomic heartbeat, crash-safe recovery into new attempts",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "materialize_l1_system_manifest.py": {
+   "purpose": "Generate+freeze the exact ETH L1 system manifest from real artifacts (data rows/time bounds, anchors with tensor shas, observation and cost contracts); changed bindings are a new version, never an overwrite",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "collect_l1_factorial.py": {
+   "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "bootstrap_test_fixtures.py": {
+   "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "social_review_packet.py": {
+   "purpose": "Materialize one bounded owner-review packet (experiment/reply/investigate candidates) from the social OLAP; proposes, never executes",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "social_review_ledger.py": {
+   "purpose": "Append-only owner-review ledger: accept/defer/reject with reason; accepted experiments enter the work queue with provenance, accepted replies become drafts only",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  }
+ },
+ "plugins": {
+  "console_scripts/agent-multi": {
+   "protocol": "argparse CLI",
+   "config_keys": [],
+   "note": "primary experiment entry point (app.main)"
+  },
+  "console_scripts/doin-campaign-supervisor": {
+   "protocol": "argparse CLI",
+   "config_keys": [],
+   "note": "campaign supervisor daemon (port 8795)"
+  },
+  "env.plugins/gym_fx_env": {
+   "protocol": "IMPLICIT",
+   "config_keys": [
+    "env_plugin"
+   ],
+   "note": "config key mapping discovered from app/canonical_config.py _SECTION_KEYS: env_plugin -> environment.plugin"
+  },
+  "agent.plugins/sac_agent": {
+   "protocol": "IMPLICIT",
+   "config_keys": [
+    "agent_plugin"
+   ],
+   "note": "agent_plugin -> asset_policy.plugin per _SECTION_KEYS"
+  },
+  "pipeline.plugins/rl_pipeline_with_validation": {
+   "protocol": "IMPLICIT",
+   "config_keys": [
+    "pipeline_plugin"
+   ],
+   "note": "pipeline_plugin -> training.pipeline_plugin per _SECTION_KEYS"
+  },
+  "optimizer.plugins/project3_full_genome_optimizer": {
+   "protocol": "IMPLICIT",
+   "config_keys": [
+    "optimizer_plugin"
+   ],
+   "note": "optimizer_plugin -> optimization.plugin per _SECTION_KEYS"
+  }
+ },
+ "known_unclassified_baseline": [
+  "aggregate_p4_runs.py",
+  "analyze_swarm_efficiency.py",
+  "audit_brackets.py",
+  "audit_test_evidence.py",
+  "auto_orchestrator.py",
+  "check_sizing.py",
+  "compute_baselines.py",
+  "eth_curriculum_fixture.py",
+  "generate_sac_golden_parity.py",
+  "import_project3_shortlist.py",
+  "incident_forward_shim.py",
+  "install_campaign_profile.py",
+  "materialize_eth_anchored_campaign.py",
+  "materialize_eth_campaign_plan.py",
+  "materialize_eth_smoke_campaign.py",
+  "okf_validate.py",
+  "p5_eval_holdout.py",
+  "p5_rank.py",
+  "prepare_project2_data.py",
+  "project3_asset_policy_training.py",
+  "project3_event_token_transformer.py",
+  "project3_evidence_backup.py",
+  "project3_evidence_metrics.py",
+  "project3_evidence_plan.py",
+  "project3_evidence_pool.py",
+  "project3_evidence_pool_api.py",
+  "project3_evidence_scheduler.py",
+  "project3_evidence_screen.py",
+  "project3_evidence_worker.py",
+  "project3_full_genome_config.py",
+  "project3_live_parity_audit.py",
+  "project3_no_trade_preflight.py",
+  "project3_oracle_behavior_labels.py",
+  "project3_phase4_protocol_dry_run.py",
+  "project3_portfolio_supervisor.py",
+  "project3_portfolio_supervisor_runner.py",
+  "project3_smoke_ethusdt_4h_sac.py",
+  "project3_stage3x_sac_smoke_direct_orchestrator.py",
+  "project3_stage3x_sac_smoke_plan.py",
+  "project3_stageb_run_plan.py",
+  "project3_terminal_verify.py",
+  "project3_weekly_adaptive_scheduler.py",
+  "project3_weekly_api_worker.py",
+  "project3_weekly_artifact_backfill.py",
+  "project3_weekly_dashboard.py",
+  "project3_weekly_materialize.py",
+  "project3_weekly_phase_orchestrator.py",
+  "project3_weekly_pool.py",
+  "project3_weekly_pool_api.py",
+  "project3_weekly_pool_backup.py",
+  "project3_weekly_prune_artifacts.py",
+  "project3_weekly_supervisor.py",
+  "project3_weekly_worker.py",
+  "seed_sweep.py",
+  "smoke_run.py",
+  "smoke_test_agent.py",
+  "social_intelligence.py",
+  "social_intelligence_hermes_context.py",
+  "swarm_telegram_watchdog.py",
+  "update_registry.py",
+  "validate_incident_corpus_manifest.py",
+  "validate_publication_scaffolds.py"
+ ]
 }
