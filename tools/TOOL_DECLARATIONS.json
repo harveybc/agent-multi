@@ -122,6 +122,13 @@
    "authority_class": "watchdog",
    "owner": "General Satoshi III"
   },
+  "gpu_readiness_probe.py": {
+   "purpose": "Rootless GPU readiness probe + launch gate (post-outage order §3.2/§3.3): one typed heartbeat binding kernel/modinfo/driver/UUID/temperature/framework facts, newest-boot-kernel module guard before reboot, five-state classification (GPU_UNAVAILABLE_KERNEL_MODULE_MISSING/GPU_UNAVAILABLE_DRIVER/GPU_UUID_MISMATCH/GPU_FRAMEWORK_MISMATCH/GPU_READY), disk-budget dispatch gate, deduplicated state-change incidents via the fleet ledger; read-only except its own state/dedup markers under ~/.local/state/agent-multi/gpu-readiness and ledger observations; never installs packages",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
   "gpu_temperature_watchdog.py": {
    "purpose": "Alert on GPU temperature threshold breaches",
    "lifecycle": "supported",
@@ -256,10 +263,10 @@
    "owner": "General Satoshi III"
   },
   "m0_l1_ladder_collect.py": {
-   "purpose": "Sealed collection + independent replica + five-row contrast table for the M0-to-L1 mechanism ladder (finding 220): per-host fetch, identity-fragmentation refusal, per-file manifest + tree digest, digest recomputed ON the replica, table published OUTSIDE the seal with post-write re-proof",
+   "purpose": "Sealed collection + independent replica + five-row contrast table for the M0-to-L1 mechanism ladder (finding 220; terminal custody per finding 223): per-host fetch, identity-fragmentation refusal, mandatory terminal_model_path/sha256 for EVERY training arm resolved by deterministic relative path (zero/multiple matches refuse; basename-first-match forbidden), fresh terminal rehash, replica expectations built from terminal fields with exactly one load proof per arm bound to (arm, seed, relative path, sha256), per-file manifest + tree digest, digest recomputed ON the replica, table published OUTSIDE the seal with post-write re-proof that REPEATS the terminal binding check; --verify-terminals-only re-runs the custody checks read-only against an existing sealed root",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) and the explicitly named publication path; ladder run artifacts are read strictly read-only",
+   "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) and the explicitly named publication path; ladder run artifacts are read strictly read-only; the --verify-terminals-only mode is fully READ-ONLY (mutates nothing, prints a typed report)",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   }

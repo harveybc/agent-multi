@@ -1,0 +1,134 @@
+{
+ "audit": "docs/audits/AUDIT_SATOSHI_III_RETURN_209_220_2026_08_11.md \u00a72 table, \u00a74 finding 223",
+ "auditor_reproducer_after_fix": {
+  "after_fix": {
+   "manifest_outcome": "COLLECTION_REFUSED",
+   "missing_terminal_artifacts_were_accepted": false,
+   "published_outcome": "PUBLISH_REFUSED",
+   "replica_terminal_expectations": null,
+   "replica_terminals_loaded": 0
+  },
+  "before_fix": {
+   "manifest_outcome": "COLLECTION_SEALED",
+   "missing_terminal_artifacts_were_accepted": true,
+   "published_outcome": "TABLE_PUBLISHED",
+   "source": "docs/audits/evidence/repro_runs/MUSASHI_209_220_ACCEPTANCE_REPRO_2026_08_11.json"
+  },
+  "script": "docs/audits/evidence/repro_runs/MUSASHI_209_220_ACCEPTANCE_REPRO_2026_08_11.py collector_counterexample (unmodified, tempdir, stdout-only)"
+ },
+ "conclusion": "TERMINAL_CUSTODY_VERIFIED: all four training-arm terminal artifacts of the sealed ladder collection resolve by deterministic relative path, hash-match their arm records and the manifest files map, and the fresh whole-tree digest equals the sealed digest. The per-arm replica-proof binding check cannot pass against the stored v1 manifest because that manifest predates this fix (best-model-only proof, D0 load only) \u2014 recorded above as typed legacy-format facts, not artifact failures; the four terminal loads are covered by Musashi's independent Dragon reproduction cited here. The sealed collection was not modified.",
+ "cross_check_musashi_vs_fresh": {
+  "D0_M0_EXACT": {
+   "fresh_read_only_sha256": "04fc5a8ffd1cf730fa1468940bb6d14d795c9fa4471bcd4f2f02e2d3f9d4621a",
+   "musashi_dragon_loads": true,
+   "musashi_dragon_sha256": "04fc5a8ffd1cf730fa1468940bb6d14d795c9fa4471bcd4f2f02e2d3f9d4621a",
+   "shas_equal": true,
+   "terminal_relative_path": "D0_M0_EXACT/attempt-d1a6ad6b0d4fddab-01/model.terminal.zip"
+  },
+  "D2_BOUNDARY_ONLY": {
+   "fresh_read_only_sha256": "1152625de60d721f0f60dd4fcc25c8331579d7a14e809c48ee8fba5189775c85",
+   "musashi_dragon_loads": true,
+   "musashi_dragon_sha256": "1152625de60d721f0f60dd4fcc25c8331579d7a14e809c48ee8fba5189775c85",
+   "shas_equal": true,
+   "terminal_relative_path": "D2_BOUNDARY_ONLY/attempt-8266c6c8ac0bfb12-01/model.terminal.zip"
+  },
+  "D3_COST_PROTECTION": {
+   "fresh_read_only_sha256": "c11f8ce5c910e17b8b8557ff8675435696df26afa203aa43c9c0cb07cb78ee19",
+   "musashi_dragon_loads": true,
+   "musashi_dragon_sha256": "c11f8ce5c910e17b8b8557ff8675435696df26afa203aa43c9c0cb07cb78ee19",
+   "shas_equal": true,
+   "terminal_relative_path": "D3_COST_PROTECTION/attempt-c380e8b7e2e84d3e-01/model.terminal.zip"
+  },
+  "D4_FULL_L1": {
+   "fresh_read_only_sha256": "f0a58c633216b4b5ea8ad1200983bacaeb61f62e14a9146278f0c340f52d7391",
+   "musashi_dragon_loads": true,
+   "musashi_dragon_sha256": "f0a58c633216b4b5ea8ad1200983bacaeb61f62e14a9146278f0c340f52d7391",
+   "shas_equal": true,
+   "terminal_relative_path": "D4_FULL_L1/attempt-760ac2dcc68ad9dd-01/model.terminal.zip"
+  }
+ },
+ "diagnostic_identity": "97c0bb29e82dfea3",
+ "finding": "AUD-F1-20260811-223",
+ "independent_reproduction_citation": {
+  "sources": [
+   "docs/audits/evidence/repro_runs/MUSASHI_209_220_ACCEPTANCE_REPRO_2026_08_11.json",
+   "docs/audits/evidence/repro_runs/MUSASHI_209_220_RUNTIME_AND_ARTIFACT_FACTS_2026_08_11.json (ladder.independent_dragon_terminal_loads)",
+   "docs/audits/AUDIT_SATOSHI_III_RETURN_209_220_2026_08_11.md \u00a72 (Dragon terminal artifacts: 4/4 SHA matches and SAC.load() succeeds)"
+  ],
+  "statement": "Musashi independently rehashed and SAC.load()-ed all four terminal ZIPs on Dragon during the 209-220 acceptance audit; this supplemental proof cross-checks those hashes against a fresh read-only rehash of the sealed tree."
+ },
+ "mutations_performed": "none \u2014 verified by identical file path+mtime inventory before and after the run",
+ "order": "docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_209_223_VERDICT_AND_PHASE1_LR_ORDER_2026_08_11.md \u00a75 (WP1)",
+ "produced_utc": "2026-08-11T23:40:11.877279+00:00",
+ "read_only": true,
+ "schema": "agent_multi.ladder_terminal_custody_supplemental_proof.v1",
+ "seal_digest_cross_check": {
+  "audit_cited_seal_digest": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e",
+  "equal": true,
+  "fresh_read_only_tree_digest": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e"
+ },
+ "sealed_collection_root": "/home/harveybc/.local/share/agent-multi/ladder_collection_97c0bb29_20260811",
+ "typed_facts": [
+  "MANIFEST_PREDATES_TERMINAL_CUSTODY_SCHEMA: manifest schema 'agent_multi.m0_l1_ladder_collection.v1' carries no per-arm terminal custody map \u2014 a property of the pre-finding-223 collector that sealed it, not of the artifacts",
+  "LEGACY_REPLICA_PROOF_UNBOUND: the stored replica proof cannot satisfy the per-arm (arm, seed, relative path, sha256) binding introduced by finding 223 \u2014 recorded as a legacy manifest-format fact, not an artifact failure; the staged terminals above verify fresh by path and hash"
+ ],
+ "verifier": "tools/m0_l1_ladder_collect.py --verify-terminals-only (finding-223 corrected collector)",
+ "verify_terminals_only_report": {
+  "arms": {
+   "D0_M0_EXACT": {
+    "custody_refusals": [],
+    "fresh_hash_matches_record": true,
+    "manifest_files_entry_matches": true,
+    "seed": 101,
+    "terminal_relative_path": "D0_M0_EXACT/attempt-d1a6ad6b0d4fddab-01/model.terminal.zip",
+    "terminal_sha256": "04fc5a8ffd1cf730fa1468940bb6d14d795c9fa4471bcd4f2f02e2d3f9d4621a"
+   },
+   "D2_BOUNDARY_ONLY": {
+    "custody_refusals": [],
+    "fresh_hash_matches_record": true,
+    "manifest_files_entry_matches": true,
+    "seed": 101,
+    "terminal_relative_path": "D2_BOUNDARY_ONLY/attempt-8266c6c8ac0bfb12-01/model.terminal.zip",
+    "terminal_sha256": "1152625de60d721f0f60dd4fcc25c8331579d7a14e809c48ee8fba5189775c85"
+   },
+   "D3_COST_PROTECTION": {
+    "custody_refusals": [],
+    "fresh_hash_matches_record": true,
+    "manifest_files_entry_matches": true,
+    "seed": 101,
+    "terminal_relative_path": "D3_COST_PROTECTION/attempt-c380e8b7e2e84d3e-01/model.terminal.zip",
+    "terminal_sha256": "c11f8ce5c910e17b8b8557ff8675435696df26afa203aa43c9c0cb07cb78ee19"
+   },
+   "D4_FULL_L1": {
+    "custody_refusals": [],
+    "fresh_hash_matches_record": true,
+    "manifest_files_entry_matches": true,
+    "seed": 101,
+    "terminal_relative_path": "D4_FULL_L1/attempt-760ac2dcc68ad9dd-01/model.terminal.zip",
+    "terminal_sha256": "f0a58c633216b4b5ea8ad1200983bacaeb61f62e14a9146278f0c340f52d7391"
+   }
+  },
+  "collection_root": "/home/harveybc/.local/share/agent-multi/ladder_collection_97c0bb29_20260811",
+  "diagnostic_identity": "97c0bb29e82dfea3",
+  "failures": [],
+  "legacy_manifest_binding_gaps": [
+   "arm D0_M0_EXACT: proof path None is not the expected terminal relative path 'D0_M0_EXACT/attempt-d1a6ad6b0d4fddab-01/model.terminal.zip'",
+   "replica proof has NO terminal load for arm D2_BOUNDARY_ONLY \u2014 one bound successful load per arm is mandatory (finding 223)",
+   "replica proof has NO terminal load for arm D3_COST_PROTECTION \u2014 one bound successful load per arm is mandatory (finding 223)",
+   "replica proof has NO terminal load for arm D4_FULL_L1 \u2014 one bound successful load per arm is mandatory (finding 223)"
+  ],
+  "manifest_outcome": "COLLECTION_SEALED",
+  "manifest_predates_terminal_custody_schema": true,
+  "manifest_schema": "agent_multi.m0_l1_ladder_collection.v1",
+  "mode": "READ_ONLY",
+  "outcome": "TERMINAL_CUSTODY_VERIFIED",
+  "schema": "agent_multi.m0_l1_ladder_terminal_custody_verify.v1",
+  "sealed_tree_digest_fresh": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e",
+  "sealed_tree_digest_recorded": "cdb6ef9947887992fc0a133a8c66adb76d64a4484cccb5cfc9f63fbea1c2ed8e",
+  "typed_facts": [
+   "MANIFEST_PREDATES_TERMINAL_CUSTODY_SCHEMA: manifest schema 'agent_multi.m0_l1_ladder_collection.v1' carries no per-arm terminal custody map \u2014 a property of the pre-finding-223 collector that sealed it, not of the artifacts",
+   "LEGACY_REPLICA_PROOF_UNBOUND: the stored replica proof cannot satisfy the per-arm (arm, seed, relative path, sha256) binding introduced by finding 223 \u2014 recorded as a legacy manifest-format fact, not an artifact failure; the staged terminals above verify fresh by path and hash"
+  ],
+  "verified_utc": "2026-08-11T23:39:39.336984+00:00"
+ }
+}
