@@ -153,6 +153,24 @@ isolated environment created from that lock. The project suite had already
 passed 1,301/1,301 under pytest 9.1.1, providing broader compatibility
 evidence without weakening the reproducible 9.0.3 CI floor.
 
+### AUD-GEN-20260812-244 (S2): a documentation commit changes restart identity
+
+**Reproduced after the clean launch without restarting it.** Advancing the
+canonical checkout from the experiment source commit to a docs/CI-only commit
+changed no model or pipeline bytes, yet no-training preflight derived a new
+decision identity because repository revision is part of provenance. A later
+service restart would therefore start a parallel output identity instead of
+resuming the existing seed.
+
+**Corrected operationally and in tooling.** The decision unit can now be
+pinned to a clean detached worktree at the exact experiment revision while the
+canonical checkout continues to receive documentation and audit commits. The
+generated systemd drop-in pins working directory, seed contract and gate check
+to that worktree and runs a mandatory no-training preflight. All three hosts
+are pinned to `agent-multi@182bac7e`; post-pin preflight derives the existing
+identity `8cc6ca5e45e4f993` on every host. The active processes were not
+restarted or interrupted.
+
 ## Post-audit deployment addendum
 
 The corrected mechanics screen completed 16/16 and sealed outcome

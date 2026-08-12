@@ -87,3 +87,6 @@ echo "verify:"
 echo "  systemctl --user list-timers p1lr-idle-guard.timer --no-pager"
 echo "  systemctl --user status p1lr-idle-guard.service --no-pager | tail -20"
 echo "  $PY $REPO_DIR/tools/multifront_status.py --p1lr-mode decision --no-l1"
+echo
+echo "before an unattended long run, pin restarts to its reviewed source:"
+echo "  bash $REPO_DIR/examples/systemd/pin_p1lr_decision_runtime.sh <git-revision>"

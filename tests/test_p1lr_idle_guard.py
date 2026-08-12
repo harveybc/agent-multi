@@ -649,6 +649,21 @@ def test_install_script_installs_but_never_enables():
     assert os.access(SYSTEMD / "p1lr_decision_gate_check.sh", os.X_OK)
 
 
+def test_decision_runtime_pin_separates_canonical_and_experiment_checkouts():
+    script_path = SYSTEMD / "pin_p1lr_decision_runtime.sh"
+    script = script_path.read_text()
+
+    assert "worktree add --detach" in script
+    assert "status --porcelain" in script
+    assert "p1lr-decision@.service.d" in script
+    assert "WorkingDirectory=$RUNTIME_DIR" in script
+    assert "EnvironmentFile=" in script
+    assert "p1lr_decision_gate_check.sh" in script
+    assert "--preflight" in script
+    assert "PREFLIGHT_PASS" in script
+    assert os.access(script_path, os.X_OK)
+
+
 def test_seed_without_any_artifact_is_bounded_by_first_observation(
         tmp_path):
     """No heartbeat has EVER landed: idleness is bounded by the guard's

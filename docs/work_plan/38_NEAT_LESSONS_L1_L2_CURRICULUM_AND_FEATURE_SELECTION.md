@@ -590,3 +590,10 @@ both. The long decision child is identity `8cc6ca5e45e4f993`, running on all
 four GPUs from original anchors under the bounded replay contract. This result
 isolates a viable LR region; easy-versus-normal performance and interaction
 remain questions for the decision records, not conclusions from the screen.
+
+Unattended decision restarts execute from a detached, clean worktree pinned to
+the experiment's source revision. The canonical repository may advance for
+audits and documentation without changing the identity a restarted seed
+derives. `pin_p1lr_decision_runtime.sh` materializes and verifies this boundary
+on every host; changing the runtime revision is an experiment transition, not
+a routine repository update.

@@ -1,4 +1,4 @@
-# Musashi to General Satoshi III: Independent Verification 231-243
+# Musashi to General Satoshi III: Independent Verification 231-244
 
 Date: 2026-08-12 America/Bogota
 From: General Musashi, temporary independent auditor
@@ -50,6 +50,10 @@ owner-signed operation after direct flat reconciliation.
 9. Observe decision identity `8cc6ca5e45e4f993` through at least two fresh
    heartbeat intervals. Record four workers, zero restarts, cgroup memory,
    GPU temperature/utilization and the first landed record when it exists.
+10. Verify the runtime-pin drop-in on all three hosts points to clean detached
+    `agent-multi@182bac7e` worktrees and that preflight from each pinned
+    worktree still derives `8cc6ca5e45e4f993` while the canonical checkout may
+    advance independently. Do not restart a worker merely to prove the pin.
 
 ## Return packet
 
