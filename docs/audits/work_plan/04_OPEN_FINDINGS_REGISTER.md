@@ -1097,6 +1097,30 @@ the execution-role mismatch below.
 | AUD-GEN-20260811-229 | S3 | open, anti-idle/runtime deployment | Corrected branch was not deployed and no P1LR unit or worker exists on the fleet | General Satoshi III deploys after 224-225 preflight; General Musashi verifies live |
 | AUD-GEN-20260811-230 | S4 | correction executing, historical resilience | Gamma-to-Dragon 219 GB historical replica had stopped at roughly 173 GB; Musashi resumed `gamma-history-replica.service` at 19:35 COT | General Satoshi III monitors/completes digest proof; General Musashi verifies |
 
+### 1aj. Return 224-230 independent audit, 2026-08-12
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_RETURN_224_230_2026_08_12.md`
+- `../evidence/repro_runs/MUSASHI_224_230_RETURN_REPRO_2026_08_12.py`
+- `../evidence/repro_runs/MUSASHI_224_230_RETURN_REPRO_2026_08_12.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_224_233_CORRECTION_AND_NONIDLE_ORDER_2026_08_12.md`
+
+Append-only dispositions: 225 and 228 are independently verified corrected,
+pending owner closure. Finding 227's code passes independent focused tests but
+is not pushed/integrated/deployed. Finding 229 has running workers but not a
+decision-aware monitor or durable recovery. Finding 230 is running and only
+4.39% complete by observed bytes; no terminal digest exists. Findings 224 and
+226 have structural corrections but remain blocked from scientific acceptance
+by the new execution defects below.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260812-231 | S2 | open, blocks decision verdict/promotion | Internal train-monitor and inner-validation selection does not install the causal-prefix wrapper or exclude its rows from rollout metrics | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260812-232 | S2 | open, blocks 16-cell completion | Pipeline returns typed inactive terminal while decision runner requires a best checkpoint and aborts before record publication | General Satoshi III implements; General Musashi verifies |
+| AUD-GEN-20260812-233 | S3 | open, operational anti-idle | Status and idle guard read the screen root/unit while four active decision workers run under a distinct root with no deployed timer | General Satoshi III implements/deploys; General Musashi verifies live |
+
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

@@ -505,3 +505,32 @@ The exact audit and executable order are:
 Standing authority remains unchanged: once deterministic split, custody and
 GPU preflights pass, the four-worker mechanics screen starts without another
 owner phrase. Review proceeds in parallel; it does not create idle time.
+
+## 15. 2026-08-12 Decision-Run Execution Correction
+
+The corrected mechanics screen is accepted and establishes a viable phase-1
+LR region at `3e-5` under both easy and normal dynamics across four seeds. The
+active long run is retained as diagnostic compute while three execution defects
+are corrected:
+
+1. causal-prefix rows are materialized but not excluded by the internal
+   train-monitor/inner-validation selector;
+2. typed inactive cells cannot publish a decision record because the runner
+   requires a best checkpoint; and
+3. status/recovery observe the screen root while decision mode runs under a
+   different root through non-durable `nohup` processes.
+
+No output under decision identity `1434685bfdf52911` is promotion-eligible.
+The corrected run uses the same original per-seed anchors under a new identity;
+it never warm-starts from the diagnostic terminals. Replacement is one worker
+at a time after a corrected four-worker smoke so the standing anti-idle
+directive remains satisfied.
+
+The exact audit and execution order are:
+
+- `docs/audits/AUDIT_SATOSHI_III_RETURN_224_230_2026_08_12.md`
+- `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_224_233_CORRECTION_AND_NONIDLE_ORDER_2026_08_12.md`
+
+The final decision report separates raw effect magnitude, sign consistency and
+predeclared practical materiality. An inactive arm is a non-promotable measured
+outcome, never a harness crash and never an invented zero-performance score.
