@@ -1,0 +1,250 @@
+# Independent verification 231-245 — Satoshi return (append-only)
+
+From: General Satoshi III · To: General Musashi · Date: 2026-08-12 ·
+Runtime rule honored: verification ran in parallel; no compute was
+stopped, no broker order submitted or cancelled, no IBKR hold touched.
+**No finding is closed here — verdicts and facts only.**
+
+## P0 RUNTIME EVENT (discovered during this verification)
+
+**Gamma is OFFLINE.** Tailscale reports `gamma … offline, last seen
+26m ago, tx 312 rx 0`; `gamma.lan:22` and `192.0.2.12:22022` both
+fail from omega AND from dragon (so it is not an omega-side route
+problem). Consequence: `p1lr-decision@303` and `p1lr-decision@404`
+are DOWN — two of the four decision workers and both gamma GPUs
+(5070 Ti, 5090) are not producing work.
+
+- Not remotely recoverable from here: no reachable interface, and no
+  wake-on-LAN tooling (`wakeonlan`/`etherwake`/`wol`) is installed on
+  dragon, which shares gamma's LAN segment.
+- **Owner physical item:** gamma needs power/network attention.
+- A watcher is armed; the moment gamma answers ssh I verify whether
+  `p1lr-decision@303/404` auto-resumed from their enabled units and
+  report the resumption facts.
+- Nothing was restarted, re-materialized or re-pinned in response.
+- The consolidated status correctly reports **2 of 4** fresh workers
+  rather than fabricating 4/4 — the finding-233/245 corrections
+  behaving exactly as intended under a real partial outage.
+
+## Item 9 — live decision observation (two fresh heartbeat intervals)
+
+Identity `8cc6ca5e45e4f993`, mode `decision`, units `p1lr-decision@`.
+
+| interval (UTC) | worker | cell | stage | GPU util | GPU temp | restarts | cgroup memory |
+|---|---|---|---|---|---|---|---|
+| 20:29:35 | omega/101 | P1N_LR1E4 | training | 39 % | 48 °C | 0 | 2.502 GB |
+| 20:29:35 | dragon/202 | P1N_LR3E5 | training | 23 % | 39 °C | 0 | 2.485 GB |
+| 20:30:09 | omega/101 | P1N_LR1E4 | training | 39 % | 49 °C | 0 | 2.502 GB |
+| 20:30:09 | dragon/202 | P1N_LR3E5 | training | 26 % | 38 °C | 0 | 2.485 GB |
+
+Heartbeat ages 14.3-41.2 s across the two intervals (fresh). Memory
+sits at ~2.5 GB against `MemoryHigh=5G` / `MemoryMax=6G` — the
+finding-237 ceilings are not being approached. `NRestarts=0` on both
+live units. **Records landed: 0/16** at observation (expected for a
+2,000-checkpoint decision run at this elapsed time; the first landed
+record will be reported when it exists). **gamma/303 and gamma/404
+are absent — see the P0 above.**
+
+## Item 10 — runtime pin (finding 244)
+
+| host | pinned worktree | HEAD | tree | preflight decision identity | training_used | refusals |
+|---|---|---|---|---|---|---|
+| omega | `~/Documents/GitHub/.runtime/agent-multi-p1lr-182bac7e191c9143` | `182bac7e191c9143…` | clean | **`8cc6ca5e45e4f993`** | false | [] |
+| dragon | same path | `182bac7e191c9143…` | clean | **`8cc6ca5e45e4f993`** | false | [] |
+| gamma | not verifiable — host offline | — | — | — | — | — |
+
+The canonical checkout has independently advanced to `1e1745ad`
+(three commits past the pinned revision) while both live units keep
+`WorkingDirectory=` the pinned worktree — exactly the property
+finding 244 required. Unit facts read read-only; **no worker was
+restarted to prove the pin.** The unit also carries
+`MemoryHigh=5G`, `MemoryMax=6G`, `MemorySwapMax=1G` and an
+`ExecStartPre` gate check.
+
+**Verdict: `verified_corrected` on the two reachable hosts; gamma
+unverified (host offline).**
+
+## Item 11 — sequential-reader latency (finding 245)
+
+Mechanism read at `1e1745ad`: each fact is aged at its own
+observation time (`observed_now = (now_fn or utcnow)()` per worker),
+with `hb_age = max(0, raw)` and `hb_clock_ahead = max(0, -raw)`
+published separately as `heartbeat_clock_ahead_seconds`.
+
+Injected latency fixture (collection starts at t0; a heartbeat is
+written at t0+8 s during the sequential remote reads):
+
+| case | raw delta | displayed age | reported clock lead |
+|---|---|---|---|
+| read AFTER the write (t0+12) | +4.0 s | **4.0** | 0.0 |
+| read BEFORE the write (t0+4), genuine lead | −4.0 s | **0.0** | **4.0** |
+| OLD single-`now` behavior (t0 vs t0+8) | −8.0 s | **−8.0 (negative)** | n/a |
+
+Displayed age is never negative; genuine lead is surfaced separately
+and not folded into age. `now_fn` is injectable, so the fixture is
+deterministic. Focused suite `tests/unit/test_multifront_l1_factorial.py`:
+**38 passed**.
+
+**Verdict: `verified_corrected`.**
+
+## Live broker table (read-only evidence, identifiers redacted)
+
+| venue | state | position | orders | model artifact sha (prefix) | manifest sha (prefix) |
+|---|---|---|---|---|---|
+| Alpaca Paper | monitoring | 1 (SPY) | 1 | `b0ab77e0` | `f916696f` |
+| IBKR Paper | monitoring | **−25,000 USD/CAD** | 2 (protection children) | `dc95edcb` | `03b6a794` |
+| MT5 OANDA demo | (dragon-side; reported in the lts verification item) | ETHUSD short 0.01 with native SL/TP | — | — | — |
+
+**Fact that differs from the audit snapshot:** the audit records IBKR
+as "connected and flat". At my observation the runner reports a
+**live short of 25,000 USD/CAD with 2 protection orders**, from fill
+effect `l1e-201af4f2f1f4b448` at the 20:00 UTC bar, with
+`position_reconciled: true`, `flattens: []` and a `resumed` entry
+classified `acknowledged` (owner-signed capability path). This is a
+legitimate protected entry taken after the audit's snapshot, not a
+contradiction of it — but it means IBKR is **not flat now**, and any
+statement conditioned on "flat" must be re-derived before use. I
+touched nothing: no order, no cancel, no hold change.
+
+Both live seats publish artifact/config/manifest and
+`input_feature_sha256` hashes (finding 241's requirement) — the
+independent manifest join is reported in the lts verification item.
+
+## Items 1-8 — delegated independent verification
+
+Three independent verification streams are running in parallel
+(reproducer + 234/235/236 attacks; 237/242 profile and warm-start;
+lts 238-241 plus CI 243). Their reproduced facts, counterexamples and
+counts are appended to this packet as they land. Nothing from those
+streams is asserted here in advance.
+
+## Doubts and observations so far
+
+1. **Gamma outage is the dominant open fact.** Until it returns, the
+   decision campaign is running 2/4 workers and seeds 303/404 have
+   produced nothing. No result may be aggregated on a partial fleet.
+2. My earlier packet declared the 2,191-vs-2,190 transition and the
+   manifest-cache staleness as residual doubts; you converted both
+   into corrected findings (235, 236). I record that as my miss
+   turned into your correction, not as my finding.
+3. **I missed finding 237 in plain sight.** The
+   `replay buffer 21.80GB > 10.59GB` warning appeared in the logs I
+   was reading during the screen launches and I treated it as benign
+   framework noise instead of the OOM precondition it was. That is my
+   error, not a tooling gap.
+4. The verification of gamma's pin, units and preflight identity is
+   impossible while the host is offline; I will not infer it from the
+   other two hosts.
+
+## Item 5 — finding 237 (bounded replay execution profile)
+
+**Verdict: `verified_corrected` for the MECHANISM; the finding's
+quantitative premise is FALSE (new defect, below).**
+
+- One execution profile, sha `7606ac12dc6b0f88…`, byte-identical in
+  canonical and in the pinned runtime; all 16 decision cells carry
+  that single sha and one replay declaration
+  (`buffer_size=40000, optimize_memory_usage=false,
+  uniform_across_seeds=true`); 16 distinct cell identities.
+- Identity binding proven three ways: hand-recomputed payload
+  reproduces the tool's identity; dropping only the profile field
+  yields `6d78d1e6b900aca9` ≠ live; a counterfactual profile
+  (only `$doc` text changed) moves the decision identity to
+  `cca0ead1325f1d21` and leaves the screen identity untouched.
+- Decision 40000 vs screen 200000 across all 16 cells — screen
+  deliberately unchanged, as claimed. Arithmetic from materialized
+  values: `2 × 20000 = 40000`, remainder 0; corroborated live by the
+  journal's `buf=0→20000`, `20000→40000`, then steady 40000.
+- Shipped and installed units byte-identical; live cgroup
+  `MemoryHigh=5 GiB`, `MemoryMax=6 GiB`, `MemorySwapMax=1 GiB`,
+  accounting on, current ≈2.48 GiB.
+
+## Item 6 — finding 242 (warm start must not load the archived buffer)
+
+**Verdict: `reproduced` (old paths) and `verified_corrected` (both
+current paths).** Real SB3 2.9.0 SAC on CPU, replay allocation
+instrumented at `ReplayBuffer.__init__` (nothing mocked), memory by
+`VmPeak` (`ru_maxrss` under-reports calloc'd zero pages — stated
+method).
+
+| path | allocated capacities | max single alloc | VmPeak Δ |
+|---|---|---|---|
+| old `load_for_training` | `[200000]` | 784.302 MiB | +1031.2 MiB |
+| old equal-dim expansion | `[200000]` | 784.302 MiB | +1103.2 MiB |
+| corrected, target 40000 | `[1, 40000]` | 156.86 MiB | +404.0 MiB |
+| corrected, target 40 | `[1, 40]` | 0.157 MiB | +247.1 MiB |
+
+Source transfer capacity 1; target keeps its exact requested
+capacity; replay empty (`size=0, pos=0, full=False`); optimizer state
+fresh (`state == {}`, max step 0.0, target lr) against an archive
+carrying step 100; transferred policy tensors byte-identical
+(`c5663097…`, component L1 distances 0.0); capacity 200000 never
+appears in any corrected path. The genuine 512→520 expansion
+correctly differs and records 8 added dimensions.
+
+Focused suites: **209 passed**. (Six extended files fail only inside
+a scratch worktree because they resolve a sibling `doin-node` by
+`REPO.parent`; the same six pass **10/10** in the canonical checkout —
+a worktree-portability defect in the tests, not in the code.)
+
+## D7 raised and RESOLVED — which screen verdict gates the live run
+
+I raised an alarm that the live decision run might be gated by the
+superseded screen verdict, because
+`systemctl --user show p1lr-decision@101 -p Environment` renders
+`P1LR_SCREEN_GATE=…/p1lr_collection_cd823e2b_20260812/screen_verdict.json`
+— my ORIGINAL pre-correction screen, whose contract sha is
+`8405b70b…` against the current `4a4e0f16…`.
+
+**Resolved against evidence: the run is correctly gated.** The
+per-instance `~/.config/agent-multi/p1lr-decision@101.env` overrides
+that variable with the CORRECTED verdict
+`…/p1lr_collection_886b776e022d0d7c_20260812/screen_verdict.json`,
+and the unit journal proves `ExecStartPre` verified exactly that file
+at start (`verified: true`, `refusals: []`, 14:05:25 and 14:15:46).
+Independently: the gate script exits **4** against the old verdict
+with `REFUSED_SCREEN_GATE_FOREIGN` naming both shas, and **0** against
+the corrected one — so a start on the stale gate was impossible.
+
+**Residual operator hazard (real, S4):** `systemctl show -p
+Environment` displays only the static `Environment=` line and not the
+`EnvironmentFile` override that actually wins, so the standard
+operator probe reports the WRONG gate. The stale literal should be
+removed from the unit template, or the template should carry no
+default gate at all so the per-instance file is the only source.
+
+## Delegated stream findings I am forwarding (not mine to close)
+
+D1 (S2) — 237's memory numbers are wrong by ~5×, and mis-attributed:
+the real observation space is `Box(2724,) float32`, i.e. 21,804 B per
+transition, so 200000 → 4.36 GB (not 21.8 GiB) and 40000 → 0.87 GB.
+The observed `21.80GB` warning came from the ANCHOR archives, which
+declare SB3's default `buffer_size=1000000` — that is finding 242's
+defect, not 237's. These wrong figures are content-addressed into the
+live decision identity `8cc6ca5e45e4f993`, so correcting the profile
+changes the identity and cannot be done casually mid-run.
+
+D2 (S3) — 242's asserted consequence ("all four workers would fail
+rather than train") was not evidenced: the archived buffer is
+calloc-backed, so untouched pages are never charged to the cgroup.
+The defect is real; the stated failure mode is unproven.
+
+D3 (S3) — `agent_plugins/sac_agent.py` `Plugin.load()` is still an
+unbounded `SAC.load(path, env=env)` reached from inference, the
+best-checkpoint reload for final evaluation (while the training
+model's buffer is still referenced), a curriculum fallback and the
+P1LR runner. Bounded today only because the reloaded decision
+checkpoints declare 40000.
+
+D4 (S4) — `load_with_observation_expansion` records no source/target
+policy-tensor hashes or `replay_size_at_boundary`, unlike
+`load_for_training`.
+
+D5 (S4) — the screen unit template carries no memory ceiling while
+screen mode still materializes 200000. No screen unit is loaded now.
+
+D6 — three decision identities have output under the live decision
+root (`1434685bfdf52911`, `7b55ef7eac30ae6a`, live `8cc6ca5e45e4f993`);
+the audit names `2f5054dc59785e2a` as superseded but no such directory
+exists. The stale roots need explicit disposition so aggregation can
+never see them.
