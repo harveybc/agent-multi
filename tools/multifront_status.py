@@ -1783,8 +1783,17 @@ def collect_p1lr_factorial(
                                           or datetime.min.replace(
                                               tzinfo=timezone.utc)))
         hb_updated, hb = heartbeats[-1]
-        hb_age = (round((now - hb_updated).total_seconds(), 1)
-                  if hb_updated else None)
+        # Remote reads are sequential and can take longer than one heartbeat
+        # interval. Age each fact when it has actually arrived instead of
+        # against the collector-start timestamp, which can produce impossible
+        # negative ages for later hosts even when every clock is synchronized.
+        observed_now = (now_fn or (lambda: datetime.now(timezone.utc)))()
+        raw_hb_age = ((observed_now - hb_updated).total_seconds()
+                      if hb_updated else None)
+        hb_clock_ahead = (round(max(0.0, -raw_hb_age), 1)
+                          if raw_hb_age is not None else None)
+        hb_age = (round(max(0.0, raw_hb_age), 1)
+                  if raw_hb_age is not None else None)
         hb_fresh = hb_age is not None and hb_age <= stale_after_seconds
         terminal_state = hb.get("terminal_state") or "unknown"
         cell = hb.get("cell")
@@ -1793,6 +1802,7 @@ def collect_p1lr_factorial(
             "heartbeat_schema": hb.get("schema"),
             "heartbeat_updated_utc": hb.get("updated_utc"),
             "heartbeat_age_seconds": hb_age,
+            "heartbeat_clock_ahead_seconds": hb_clock_ahead,
             "heartbeat_fresh": hb_fresh,
             "terminal_state": terminal_state,
             "error": hb.get("error"),

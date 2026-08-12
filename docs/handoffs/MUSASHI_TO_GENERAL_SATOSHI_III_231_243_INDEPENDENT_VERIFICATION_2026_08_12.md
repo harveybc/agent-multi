@@ -1,4 +1,4 @@
-# Musashi to General Satoshi III: Independent Verification 231-244
+# Musashi to General Satoshi III: Independent Verification 231-245
 
 Date: 2026-08-12 America/Bogota
 From: General Musashi, temporary independent auditor
@@ -54,6 +54,9 @@ owner-signed operation after direct flat reconciliation.
     `agent-multi@182bac7e` worktrees and that preflight from each pinned
     worktree still derives `8cc6ca5e45e4f993` while the canonical checkout may
     advance independently. Do not restart a worker merely to prove the pin.
+11. Inject sequential-reader latency with a heartbeat written after collection
+    starts. Prove displayed age is nonnegative and genuine clock lead is
+    reported separately.
 
 ## Return packet
 

@@ -171,6 +171,16 @@ are pinned to `agent-multi@182bac7e`; post-pin preflight derives the existing
 identity `8cc6ca5e45e4f993` on every host. The active processes were not
 restarted or interrupted.
 
+### AUD-GEN-20260812-245 (S4): sequential remote reads can display negative heartbeat age
+
+The consolidated status captured one `now` before reading four workers over
+SSH. A later Gamma heartbeat written during those reads was then compared to
+the earlier timestamp and displayed an impossible negative age despite NTP
+being synchronized within milliseconds on all hosts. Each heartbeat is now
+aged at its actual observation time; small genuine clock lead is surfaced
+separately and displayed age is never negative. A deterministic latency
+fixture covers the reproduced ordering.
+
 ## Post-audit deployment addendum
 
 The corrected mechanics screen completed 16/16 and sealed outcome

@@ -707,6 +707,24 @@ def test_p1lr_running_screen_renders_current_cell_and_checkpoint(tmp_path):
     assert mfs._valid_sha256(queue[0]["hashes"]["config_sha256"])
 
 
+def test_p1lr_remote_latency_cannot_create_negative_heartbeat_age(tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path, hb_age_seconds=-10.0)
+    observations = iter([NOW] + [NOW + timedelta(seconds=12)] * 8)
+
+    packet = _collect_p1lr(
+        tmp_path,
+        cpath,
+        reader,
+        p1lr_now_fn=lambda: next(observations),
+    )
+    workers = packet["fronts"]["f1_optimization"][
+        "active_p1lr_factorial"]["workers"]
+
+    for worker in workers.values():
+        assert worker["heartbeat_age_seconds"] == 2.0
+        assert worker["heartbeat_clock_ahead_seconds"] == 0.0
+
+
 def test_p1lr_stale_heartbeat_is_typed_staleness_never_current_claims(
         tmp_path):
     cpath, reader = _p1lr_fixture(tmp_path, hb_age_seconds=2 * 3600)
