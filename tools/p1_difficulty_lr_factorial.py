@@ -27,6 +27,54 @@ contract the D0-D4 diagnostic proved (``m0_l1_mechanism_ladder_v1``);
 the v3 cost block is verified verbatim against the frozen system
 manifest before any model construction.
 
+NESTED EVIDENCE ROLES (finding 224). The EXECUTING pipeline consumes
+the typed nested split contract directly: the materialized config
+carries ``nested_split_contract`` (exact path, sha recorded AND
+verified before model construction), ``nested_split_mode=l1`` and
+``selection_metric=paired_generalization_weekly_v1`` — the legacy
+lexicographic/explicit-window branch is structurally unreachable (the
+runner asserts it and the pipeline itself refuses a nested contract
+with any other metric). Roles in execution: ``fit_train`` (11,509
+scored rows) for fitting, ``train_monitor`` (2,190) as the in-sample
+member, ``inner_validation`` (2,190) for selection,
+``outer_validation`` (2,196) as final truth ONLY; 256 declared context
+rows per evaluation role initialize causal state only (forced hold,
+excluded from scores — pipeline_plugins._nested_splits is the one
+implementation). ``sealed_test`` 2025 stays SEALED: no CSV path, hash,
+row load or model evaluation may be emitted for it. Every cell record
+binds the nested contract sha, the split-manifest sha, per-role CSV
+shas, scored/context counts and exact score dates; wrong role path,
+wrong count, wrong sha, outer-used-as-inner, a missing context
+declaration, context counted in score, paired-metric drift or any
+sealed-test materialization refuses BEFORE training.
+
+REPLICA GATE (finding 225). ``--screen-verdict`` takes a MANDATORY
+typed replica-proof file (``--replica-proof``, produced by
+tools/p1lr_collect.py): exactly 16 load proofs each bound to
+(experiment_identity, contract_sha256, seed, cell,
+terminal_relative_path, terminal_model_sha256, loads=true). The
+``replica_terminal_loads`` gate is a boolean derived from that proof —
+never explanatory text — and the verdict also revalidates the
+finding-221 per-checkpoint handoff facts and the nested split identity
+of every record at aggregation time.
+
+DECISION MODE (finding 226). ``--mode decision`` runs the document-38
+decision path under a DISTINCT content-addressed identity (profile
+``p1lr_decision_run``) and a distinct output root; every decision cell
+starts from the ORIGINAL per-seed anchor, never a screen terminal.
+Decision contract: same 2x2 factors/seeds, phase-2 LR 3e-5, per-cell
+ceiling 2,000 pass-equivalent checkpoints (4 phase-1 + 1,996 phase-2),
+paired train-monitor/inner-validation stopping with patience 60 and no
+stopping conclusion before checkpoint 40, immutable best-checkpoint
+restoration, then ONE final outer-validation evaluation after
+selection; sealed 2025 inaccessible. Dispatch requires the corrected
+screen verdict (``--screen-gate``) with a passing replica gate;
+implementing this mode authorizes nothing by itself.
+``--decision-verdict`` aggregates the 16 decision records and emits
+the document-38 outcomes with per-seed paired main effects
+(difficulty, P1 LR) plus interaction and per-cell raw weekly metrics,
+all with units and horizons.
+
 This is a MECHANICS SCREEN, not a performance result: one
 pass-equivalent per cell (1 phase-1 epoch + 1 phase-2 epoch at 20000
 timesteps). ``--screen-verdict`` aggregates the 16 records (refusing
@@ -71,6 +119,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from pipeline_plugins import _nested_splits  # noqa: E402
+from pipeline_plugins import _paired_generalization as _paired  # noqa: E402
 from pipeline_plugins import _system_config as sysid  # noqa: E402
 from tools import gpu_readiness_probe as gpu_probe  # noqa: E402
 from tools import m0_l1_mechanism_ladder as ladder  # noqa: E402
@@ -90,6 +140,10 @@ CONTRACT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
 CONTRACT_SCHEMA = "agent_multi.p1_difficulty_lr_factorial.v1"
 RECORD_SCHEMA = "agent_multi.p1_difficulty_lr_cell_record.v1"
 VERDICT_SCHEMA = "agent_multi.p1_difficulty_lr_screen_verdict.v1"
+DECISION_VERDICT_SCHEMA = \
+    "agent_multi.p1_difficulty_lr_decision_verdict.v1"
+REPLICA_PROOF_SCHEMA = "agent_multi.p1lr_replica_proof.v1"
+PREFLIGHT_SCHEMA = "agent_multi.p1_difficulty_lr_preflight.v1"
 HEARTBEAT_SCHEMA = "agent_multi.p1_difficulty_lr_heartbeat.v1"
 HEARTBEAT_INTERVAL_S = 60
 
@@ -97,6 +151,32 @@ SEEDS = (101, 202, 303, 404)
 CELLS = ("P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5")
 DYNAMICS_LEVELS = ("normal_realistic", "easy_chronological_continuation")
 LR_LEVELS = (0.0001, 3e-05)
+
+# Execution modes (finding 226): distinct content-addressed identity
+# profiles AND distinct output roots per mode. The screen stays the
+# default; the decision path never reuses a screen identity/record.
+MODES = ("screen", "decision")
+MODE_PROFILES = {"screen": "p1lr_mechanics_screen",
+                 "decision": "p1lr_decision_run"}
+
+# The exact executable selection metric (finding 224). The legacy
+# lexicographic branch is UNREACHABLE for this factorial: the loader
+# refuses a contract with any other metric, the materializer asserts
+# the executable config carries exactly this value, and the pipeline's
+# nested branch independently refuses a non-paired metric.
+NESTED_SELECTION_METRIC = _paired.METRIC_NAME  # paired_generalization_weekly_v1
+
+# Per-role facts every record must bind (finding 224): pinned csv sha,
+# scored/context counts and exact score dates, verified against the
+# freshly materialized split manifest before model construction.
+NESTED_ROLE_FACT_KEYS = ("status", "csv_sha256", "scored_rows",
+                         "context_rows", "score_start", "score_end")
+
+# Document-38 decision outcomes (finding 226).
+DECISION_OUTCOMES = (
+    "PHASE1_LR_MAIN_EFFECT", "PHASE1_DIFFICULTY_MAIN_EFFECT",
+    "PHASE1_LR_DIFFICULTY_INTERACTION", "NO_MATERIAL_EFFECT",
+    "TOTAL_ACTIVITY_COLLAPSE", "INCONCLUSIVE")
 
 # The ONLY config fields a factor may move (the one-intended-delta
 # property test asserts each pairwise cell diff equals exactly the
@@ -128,12 +208,22 @@ EXIT_CLASS = {
     "ALREADY_COMPLETE": 0,
     "SCREEN_VIABLE_REGION": 0,
     "PHASE1_LR_REGION_COLLAPSED": 0,
+    "PHASE1_LR_MAIN_EFFECT": 0,
+    "PHASE1_DIFFICULTY_MAIN_EFFECT": 0,
+    "PHASE1_LR_DIFFICULTY_INTERACTION": 0,
+    "NO_MATERIAL_EFFECT": 0,
+    "TOTAL_ACTIVITY_COLLAPSE": 0,
+    "PREFLIGHT_PASS": 0,
     "ALREADY_RUNNING": 3,
     "REFUSED_WRONG_HOST": 4,
     "REFUSED_GPU_UNBOUND": 4,
     "REFUSED_BAD_CONTRACT": 4,
     "REFUSED_ANCHOR_UNVERIFIED": 4,
+    "REFUSED_DECISION_UNGATED": 4,
     "SCREEN_REFUSED": 4,
+    "DECISION_REFUSED": 4,
+    "INCONCLUSIVE": 4,
+    "PREFLIGHT_REFUSED": 4,
     "SEED_FAILED": 1,
 }
 
@@ -276,6 +366,93 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
     if not contract.get("output_root"):
         raise ValueError("output_root missing")
 
+    # Finding 224: the executable nested-role binding is a CONTRACT
+    # fact, not runner prose. Paired-metric drift refuses at load time.
+    metric = str(contract.get("selection_metric") or "").strip().lower()
+    if metric != NESTED_SELECTION_METRIC:
+        raise ValueError(
+            f"selection_metric must be {NESTED_SELECTION_METRIC!r} "
+            f"(got {metric!r}) — the legacy lexicographic branch is "
+            "unreachable for this factorial (finding 224)")
+    nested = contract.get("nested_split_contract") or {}
+    if not isinstance(nested.get("path"), str) or not nested["path"]:
+        raise ValueError("nested_split_contract.path missing — the "
+                         "executing pipeline must consume the typed "
+                         "nested contract (finding 224)")
+    sha = nested.get("sha256")
+    if not isinstance(sha, str) or len(sha) != 64:
+        raise ValueError(
+            "nested_split_contract.sha256 is not a sha256 hex digest")
+    if nested.get("mode") != "l1":
+        raise ValueError("nested_split_contract.mode must be 'l1'")
+    if int(nested.get("context_bars", -1)) != 256:
+        raise ValueError("nested_split_contract.context_bars must be "
+                         "the declared 256 causal context rows")
+    role_facts = nested.get("role_facts") or {}
+    missing_roles = [role for role in _nested_splits.ROLES
+                     if role not in role_facts]
+    if missing_roles:
+        raise ValueError(f"nested_split_contract.role_facts missing "
+                         f"roles: {missing_roles}")
+    for role in _nested_splits.ROLES:
+        pin = role_facts[role]
+        missing_keys = [key for key in NESTED_ROLE_FACT_KEYS
+                        if key not in pin]
+        if missing_keys:
+            raise ValueError(
+                f"role_facts.{role} missing {missing_keys} — every "
+                "record must bind per-role CSV sha, scored/context "
+                "counts and exact score dates (finding 224)")
+    if role_facts["sealed_test"].get("status") != "SEALED" or \
+            role_facts["sealed_test"].get("csv_sha256") is not None:
+        raise ValueError(
+            "role_facts.sealed_test must be SEALED with no CSV hash — "
+            "sealed 2025 may never be materialized")
+
+    # Finding 226: the decision path must be executable, not prose.
+    decision = contract.get("decision_run") or {}
+    if not decision.get("output_root"):
+        raise ValueError("decision_run.output_root missing — decision "
+                         "mode needs its own output root")
+    if str(decision["output_root"]) == str(contract["output_root"]):
+        raise ValueError("decision_run.output_root must differ from "
+                         "the screen output_root (distinct roots per "
+                         "mode, finding 226)")
+    if float(decision.get("phase2_learning_rate",
+                          float("nan"))) != 3e-05:
+        raise ValueError("decision_run.phase2_learning_rate must be "
+                         "3e-05")
+    dknobs = decision.get("budget_knobs") or {}
+    for key in ("epoch_timesteps", "phase1_epochs", "phase2_max_epochs"):
+        if not isinstance(dknobs.get(key), int) or dknobs[key] < 1:
+            raise ValueError(f"decision_run.budget_knobs.{key} must be "
+                             "a positive integer")
+    ceiling = int(decision.get(
+        "max_global_pass_equivalent_checkpoints", 0))
+    if ceiling != 2000 or (dknobs["phase1_epochs"]
+                           + dknobs["phase2_max_epochs"]) != ceiling:
+        raise ValueError(
+            "decision budget must total the 2000 pass-equivalent "
+            "per-cell ceiling (phase1_epochs + phase2_max_epochs)")
+    if int(decision.get("patience", 0)) != 60 or \
+            int(decision.get("patience_floor", 0)) != 40:
+        raise ValueError("decision_run patience must be 60 with floor "
+                         "40 (no stopping conclusion before "
+                         "checkpoint 40)")
+    if decision.get("best_checkpoint_restoration") is not True:
+        raise ValueError("decision_run.best_checkpoint_restoration "
+                         "must be true")
+    sknobs = decision.get("stopping_knobs") or {}
+    if int(sknobs.get("l1_patience", 0)) != 60 or \
+            int(sknobs.get("l1_patience_start_epoch", 0)) != 40:
+        raise ValueError("decision_run.stopping_knobs must carry "
+                         "l1_patience=60, l1_patience_start_epoch=40")
+    if tuple(decision.get("decision_outcomes") or ()) != \
+            DECISION_OUTCOMES:
+        raise ValueError(
+            f"decision_run.decision_outcomes must be exactly "
+            f"{list(DECISION_OUTCOMES)} (document 38)")
+
     contract["_contract_sha256"] = _sha_file(Path(path))
     contract["_contract_path"] = str(path)
     return contract
@@ -290,29 +467,248 @@ def load_bindings(path: Path | None = None) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# nested-role binding (finding 224) — verified BEFORE model construction
+# ---------------------------------------------------------------------------
+
+def nested_contract_path(contract: dict) -> Path:
+    return REPO / contract["nested_split_contract"]["path"]
+
+
+def verify_role_semantics(nested: dict, pins: dict) -> list:
+    """Pure semantic guard over the loaded nested contract + the
+    factorial's pinned role facts: contiguity/ordering (an outer year
+    can never occupy the inner slot), monitor-within-fit, and pinned
+    score dates/counts that equal the nested contract's own role
+    declarations. Returns exact refusal strings."""
+    import pandas as pd
+
+    refusals: list = []
+    roles = nested.get("roles") or {}
+
+    def ts(role: str, key: str):
+        try:
+            return pd.Timestamp(roles[role][key])
+        except Exception:
+            refusals.append(f"nested role {role}.{key} unreadable")
+            return None
+
+    fit_start, fit_end = ts("fit_train", "start"), ts("fit_train", "end")
+    mon_start, mon_end = (ts("train_monitor", "start"),
+                          ts("train_monitor", "end"))
+    inner_start, inner_end = (ts("inner_validation", "start"),
+                              ts("inner_validation", "end"))
+    outer_start, outer_end = (ts("outer_validation", "start"),
+                              ts("outer_validation", "end"))
+    sealed_start = ts("sealed_test", "start")
+    if refusals:
+        return refusals
+    if not (fit_start <= mon_start and mon_end <= fit_end):
+        refusals.append("train_monitor is not a subset of fit_train")
+    if fit_end != inner_start:
+        refusals.append("fit_train and inner_validation are not "
+                        "contiguous")
+    if inner_end != outer_start:
+        refusals.append(
+            "inner_validation and outer_validation are not contiguous")
+    if outer_end != sealed_start:
+        refusals.append(
+            "outer_validation and sealed_test are not contiguous")
+    if not inner_start < outer_start:
+        refusals.append(
+            "outer_validation does not follow inner_validation — the "
+            "outer truth year can never occupy the inner selection "
+            "slot (finding 224)")
+
+    expected_rows = nested.get("expected_rows") or {}
+    for role in ("fit_train", "train_monitor", "inner_validation",
+                 "outer_validation"):
+        pin = pins.get(role) or {}
+        if pin.get("status") != "MATERIALIZED":
+            refusals.append(f"pinned role_facts.{role}.status is not "
+                            "MATERIALIZED")
+            continue
+        if expected_rows.get(role) is not None and \
+                int(pin.get("scored_rows", -1)) != \
+                int(expected_rows[role]):
+            refusals.append(
+                f"role {role}: pinned scored_rows "
+                f"{pin.get('scored_rows')!r} != nested contract "
+                f"expected_rows {expected_rows[role]!r} — scored "
+                "counts must exclude context (finding 224)")
+        if pd.Timestamp(pin.get("score_start")) != \
+                pd.Timestamp(roles[role]["start"]):
+            refusals.append(
+                f"role {role}: pinned score_start "
+                f"{pin.get('score_start')!r} != nested contract role "
+                f"start {roles[role]['start']!r} — a swapped role "
+                "cannot bind (finding 224)")
+    # The inner and outer pins must be distinguishable — binding the
+    # outer facts into the inner slot fails here even if dates parse.
+    if pins.get("inner_validation", {}).get("csv_sha256") == \
+            pins.get("outer_validation", {}).get("csv_sha256"):
+        refusals.append("inner_validation and outer_validation pins "
+                        "share one CSV sha — roles are not distinct")
+    return refusals
+
+
+def verify_nested_split_binding(contract: dict, bindings: dict) -> dict:
+    """Fail-closed nested binding proof, run BEFORE model construction:
+    exact contract path present, sha recorded AND verified against both
+    the factorial pin and the ladder held-fixed binding, context
+    declaration complete (256 bars), role semantics sane. Returns the
+    verified binding facts."""
+    spec = contract["nested_split_contract"]
+    path = nested_contract_path(contract)
+    if not path.is_file():
+        raise RuntimeError(
+            f"nested split contract missing at {path} — wrong role "
+            "path; refusing before model construction (finding 224)")
+    actual_sha = _sha_file(path)
+    if actual_sha != spec["sha256"]:
+        raise RuntimeError(
+            f"nested split contract sha {actual_sha[:16]}… != the "
+            f"factorial pin {spec['sha256'][:16]}… — wrong role sha; "
+            "refused (finding 224)")
+    ladder_pin = bindings["common"]["nested_split_contract"]
+    if spec["path"] != ladder_pin["path"] or \
+            actual_sha != ladder_pin["sha256"]:
+        raise RuntimeError(
+            "factorial nested contract does not equal the ladder "
+            "held-fixed nested binding — the held-fixed dates moved")
+    # _nested_splits.load_contract refuses a missing context
+    # declaration (window_size/scaling_window/max_feature_lookback).
+    nested = _nested_splits.load_contract(path)
+    context_bars = _nested_splits.compute_context_bars(
+        window_size=int(nested["window_size"]),
+        scaling_window=int(nested["scaling_window"]),
+        max_feature_lookback=int(nested["max_feature_lookback"]))
+    if context_bars != int(spec["context_bars"]):
+        raise RuntimeError(
+            f"derived context_bars {context_bars} != pinned "
+            f"{spec['context_bars']} — the context declaration moved")
+    semantic_refusals = verify_role_semantics(nested,
+                                              spec["role_facts"])
+    if semantic_refusals:
+        raise RuntimeError("nested role semantics refused: "
+                           + "; ".join(semantic_refusals))
+    return {
+        "path": str(path),
+        "contract_relative_path": spec["path"],
+        "sha256": actual_sha,
+        "mode": spec["mode"],
+        "context_bars": context_bars,
+        "source_csv": nested["source_csv"],
+        "source_sha256": nested["source_sha256"],
+        "role_facts_pinned": {role: dict(spec["role_facts"][role])
+                              for role in _nested_splits.ROLES},
+    }
+
+
+def verify_role_facts(manifest_roles: dict, pins: dict) -> list:
+    """Pure comparison of a freshly materialized split manifest against
+    the pinned role facts. Any drift — wrong CSV sha, wrong scored or
+    context count (context counted in score), missing context flag,
+    moved score dates, or ANY sealed-test materialization — returns
+    exact refusal strings."""
+    refusals: list = []
+    for role in _nested_splits.ROLES:
+        pin = pins.get(role) or {}
+        got = manifest_roles.get(role) or {}
+        if role == "sealed_test":
+            if got.get("status") != "SEALED":
+                refusals.append(
+                    f"sealed_test status {got.get('status')!r} — "
+                    "sealed 2025 may never be materialized; no CSV "
+                    "path, hash, row load or evaluation may exist")
+            for key in ("csv", "csv_sha256", "scored_rows",
+                        "context_rows"):
+                if got.get(key) is not None:
+                    refusals.append(
+                        f"sealed_test emits {key}={got.get(key)!r} — "
+                        "sealed 2025 must stay state SEALED")
+            continue
+        if got.get("status") != "MATERIALIZED":
+            refusals.append(f"role {role}: status "
+                            f"{got.get('status')!r} != MATERIALIZED")
+            continue
+        for key in ("csv_sha256", "scored_rows", "context_rows",
+                    "score_start", "score_end"):
+            if got.get(key) != pin.get(key):
+                refusals.append(
+                    f"role {role}: {key} {got.get(key)!r} != pinned "
+                    f"{pin.get(key)!r}")
+    return refusals
+
+
+def materialize_nested_roles(contract: dict, bindings: dict,
+                             out_dir: Path) -> dict:
+    """Materialize the nested per-role CSVs through the ONE typed
+    implementation (mode l1) and verify every derived fact against the
+    pinned role facts BEFORE any model construction. Returns the
+    verified role facts (csv paths + shas + counts + score dates) and
+    the split-manifest binding."""
+    binding = verify_nested_split_binding(contract, bindings)
+    nested = _nested_splits.load_contract(nested_contract_path(contract))
+    split_dir = Path(out_dir) / "nested_splits"
+    manifest = _nested_splits.materialize_nested_splits(
+        nested, split_dir, mode=contract["nested_split_contract"]["mode"])
+    refusals = verify_role_facts(manifest["roles"],
+                                 binding["role_facts_pinned"])
+    if refusals:
+        raise RuntimeError(
+            "nested role facts refused before training: "
+            + "; ".join(refusals))
+    manifest_path = Path(manifest["manifest_path"])
+    return {
+        "binding": binding,
+        "split_dir": str(split_dir),
+        "manifest_path": str(manifest_path),
+        "manifest_sha256": _sha_file(manifest_path),
+        "roles": {role: dict(entry)
+                  for role, entry in manifest["roles"].items()},
+    }
+
+
+# ---------------------------------------------------------------------------
 # identities
 # ---------------------------------------------------------------------------
 
 def experiment_identity(contract: dict, bindings: dict,
-                        sources: dict | None = None) -> str:
-    """sha256(p1lr contract sha + held-fixed ladder-contract sha + the
-    four per-seed anchor shas + code identities + 'p1lr_mechanics_
-    screen')[:16] — ONE identity for the whole screen; reuses no L1
-    decision or ladder identity."""
+                        sources: dict | None = None,
+                        mode: str = "screen") -> str:
+    """sha256(p1lr contract sha + held-fixed ladder-contract sha +
+    nested split contract sha + paired selection metric + the four
+    per-seed anchor shas + code identities + the mode profile)[:16] —
+    ONE identity per mode, derived from the CORRECTED executable facts
+    (finding 224); reuses no L1 decision, ladder or pre-correction
+    identity, and the decision profile never collides with the screen.
+    """
+    if mode not in MODES:
+        raise ValueError(f"unknown execution mode {mode!r}")
     sources = sources or ladder.source_identities()
     payload = {
         "contract": contract["_contract_sha256"],
         "held_fixed_bindings_contract": bindings["_contract_sha256"],
+        "nested_split_contract_sha256":
+            contract["nested_split_contract"]["sha256"],
+        "selection_metric": NESTED_SELECTION_METRIC,
         "anchors": {str(seed): contract["anchors"][str(seed)]["sha256"]
                     for seed in SEEDS},
         "code": {name: {"commit": s["commit"],
                         "dirty_untracked_digest":
                             s["dirty_untracked_digest"]}
                  for name, s in sorted(sources.items())},
-        "profile": "p1lr_mechanics_screen",
+        "profile": MODE_PROFILES[mode],
     }
     return hashlib.sha256(json.dumps(
         payload, sort_keys=True).encode()).hexdigest()[:16]
+
+
+def output_root_for_mode(contract: dict, mode: str) -> Path:
+    """Distinct output roots per mode (finding 226)."""
+    if mode == "decision":
+        return Path(contract["decision_run"]["output_root"]).expanduser()
+    return Path(contract["output_root"]).expanduser()
 
 
 def cell_identity(exp_id: str, seed: int, cell: str,
@@ -348,14 +744,20 @@ def intended_delta_fields(contract: dict, cell_a: str,
 # ---------------------------------------------------------------------------
 
 def materialize_cell_config(contract: dict, bindings: dict, seed: int,
-                            cell: str, out_dir: Path) -> dict:
+                            cell: str, out_dir: Path,
+                            mode: str = "screen") -> dict:
     if cell not in CELLS:
         raise ValueError(f"unknown factorial cell {cell!r}")
     if int(seed) not in SEEDS:
         raise ValueError(f"unknown factorial seed {seed!r}")
+    if mode not in MODES:
+        raise ValueError(f"unknown execution mode {mode!r}")
     common = bindings["common"]
     held = contract["held_fixed"]
-    knobs = contract["mechanics_screen"]["budget_knobs"]
+    if mode == "decision":
+        knobs = contract["decision_run"]["budget_knobs"]
+    else:
+        knobs = contract["mechanics_screen"]["budget_knobs"]
 
     base_path = REPO / common["base_config"]["path"]
     actual_base_sha = _sha_file(base_path)
@@ -394,22 +796,35 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
     if int(knobs["epoch_timesteps"]) != int(
             common["budget"]["epoch_timesteps"]):
         raise RuntimeError(
-            "screen epoch_timesteps does not match the ladder pass "
+            f"{mode} epoch_timesteps does not match the ladder pass "
             "budget — the pass-equivalent claim would be false")
 
     union_facts = ladder.verify_nested_nontest_union(bindings)
 
+    # Finding 224: the nested binding is recorded AND verified before
+    # model construction; a legacy-split config can never leave here.
+    nested_binding = verify_nested_split_binding(contract, bindings)
+
     # --- the ladder-proven held-fixed recipe --------------------------
     config = json.loads(base_path.read_text())
-    for field in ("train_years", "val_years", "test_years"):
+    # No legacy split field survives: the ONLY split authority is the
+    # typed nested contract below (finding 224).
+    for field in ("train_years", "val_years", "test_years",
+                  "train_days", "val_days", "test_days",
+                  "train_start", "train_end",
+                  "validation_start", "validation_end",
+                  "val_start", "val_end", "test_start", "test_end",
+                  "split_anchor"):
         config.pop(field, None)
     config["split_contract_note"] = (
-        "explicit split dates govern; year-count shorthand removed")
-    splits = dict(common["splits"])
-    if bool(splits.pop("evaluate_test_split", False)):
+        "typed nested split contract governs (mode l1); legacy "
+        "year-count and explicit-window fields removed (finding 224)")
+    if bool((common["splits"] or {}).get("evaluate_test_split", False)):
         raise RuntimeError("held-fixed contract enables the sealed "
                            "test split — refused")
-    config.update(splits)
+    config["nested_split_contract"] = nested_binding["path"]
+    config["nested_split_mode"] = nested_binding["mode"]
+    config["nested_split_dir"] = str(Path(out_dir) / "nested_splits")
     config["input_data_file"] = str(Path(common["data"]["path"]))
     config["env_mode"] = "training"
     config["eval_seed"] = int(seed)
@@ -422,18 +837,47 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
     # fully-inactive cell is a MEASURED screen outcome and must land a
     # typed record (ladder lesson, observed 2026-08-11).
     config["inactive_terminal_is_typed_result"] = True
-    config["selection_metric"] = str(common["selection_metric"])
+    # Finding 224: paired selection ONLY. The pipeline's nested branch
+    # independently refuses any other metric, so the legacy
+    # lexicographic branch is structurally unreachable.
+    config["selection_metric"] = str(contract["selection_metric"])
+    config["l1_gap_penalty_beta"] = float(
+        contract.get("l1_gap_penalty_beta", 0.25))
     config["selection_min_trades"] = int(common["selection_min_trades"])
     config["quiet_mode"] = True
     config["save_model"] = str(Path(out_dir) / "model.zip")
     config["return_trace_dir"] = str(Path(out_dir) / "return_traces")
-    # Screen budget: ONE pass-equivalent, no early stopping can fire.
-    config["max_epochs"] = int(knobs["phase2_epochs"])
-    config["easy_max_epochs"] = int(knobs["phase1_epochs"])
-    config["l1_patience"] = 10_000
-    config["easy_patience"] = 10_000
-    config["execution_cost_curriculum_epochs"] = max(
-        2, int(knobs["phase2_epochs"]))
+    if mode == "decision":
+        # Document-38 decision stopping (finding 226): paired
+        # train-monitor/inner-validation stopping, patience 60, no
+        # stopping conclusion before checkpoint 40, 2000-checkpoint
+        # per-cell ceiling.
+        stopping = contract["decision_run"]["stopping_knobs"]
+        config["max_epochs"] = int(knobs["phase2_max_epochs"])
+        config["easy_max_epochs"] = int(knobs["phase1_epochs"])
+        config["l1_patience"] = int(stopping["l1_patience"])
+        config["l1_patience_start_epoch"] = int(
+            stopping["l1_patience_start_epoch"])
+        config["l1_activity_patience"] = int(
+            stopping["l1_activity_patience"])
+        config["l1_activity_patience_start_epoch"] = int(
+            stopping["l1_activity_patience_start_epoch"])
+        config["total_max_passes"] = int(stopping["total_max_passes"])
+        config["phase1_max_fraction"] = float(
+            stopping["phase1_max_fraction"])
+        config["normal_phase_min_passes"] = int(
+            stopping["normal_phase_min_passes"])
+        config["easy_patience"] = 10_000
+        config["execution_cost_curriculum_epochs"] = max(
+            2, int(knobs["phase2_max_epochs"]))
+    else:
+        # Screen budget: ONE pass-equivalent, no early stopping fires.
+        config["max_epochs"] = int(knobs["phase2_epochs"])
+        config["easy_max_epochs"] = int(knobs["phase1_epochs"])
+        config["l1_patience"] = 10_000
+        config["easy_patience"] = 10_000
+        config["execution_cost_curriculum_epochs"] = max(
+            2, int(knobs["phase2_epochs"]))
     # Finding 191 discipline: the plugin that EXECUTES is the plugin
     # the contract names.
     config["agent_plugin"] = str(common["plugins"]["agent_plugin"])
@@ -458,11 +902,39 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
             "entropy identity must come from the base config, not a "
             "silent override")
 
-    # Per-seed anchor: hash-bound, NEVER a preceding cell's terminal.
+    # Per-seed anchor: hash-bound, NEVER a preceding cell's terminal
+    # and NEVER a screen terminal (finding 226) — an anchor living
+    # under either mode's output root is structurally refused.
     anchor = contract["anchors"][str(seed)]
-    config["warm_start_model"] = str(
-        Path(anchor["path"]).expanduser())
+    anchor_path = Path(anchor["path"]).expanduser()
+    for other_mode in MODES:
+        mode_root = output_root_for_mode(contract, other_mode)
+        try:
+            anchor_path.resolve().relative_to(mode_root.resolve())
+        except ValueError:
+            continue
+        raise RuntimeError(
+            f"anchor for seed {seed} lives under the {other_mode} "
+            "output root — a run terminal can never anchor a cell "
+            "(finding 226)")
+    config["warm_start_model"] = str(anchor_path)
     config["warm_start_model_sha256"] = anchor["sha256"]
+
+    # Structural unreachability of the legacy branch (finding 224):
+    # the executable config MUST carry the nested contract and the
+    # paired metric, and MUST NOT carry any legacy split window.
+    assert config["nested_split_contract"] == nested_binding["path"]
+    if config["selection_metric"] != NESTED_SELECTION_METRIC:
+        raise RuntimeError(
+            "executable selection_metric drifted from the paired "
+            "comparator — the legacy lexicographic branch is forbidden")
+    for legacy_key in ("train_start", "train_end", "validation_start",
+                       "validation_end", "test_start", "test_end",
+                       "train_years", "val_years", "test_years"):
+        if config.get(legacy_key) is not None:
+            raise RuntimeError(
+                f"legacy split field {legacy_key!r} survived "
+                "materialization — refused (finding 224)")
 
     # --- the cell's declared factor levels, and NOTHING else ----------
     factors = contract["cells"][cell]
@@ -478,8 +950,14 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
             bindings["_contract_sha256"],
         "base_config_sha256": actual_base_sha,
         "data_sha256": common["data"]["sha256"],
-        "nested_split_contract_sha256": common["nested_split_contract"][
-            "sha256"],
+        "mode": mode,
+        "selection_metric": str(config["selection_metric"]),
+        "nested_split_contract_path": nested_binding[
+            "contract_relative_path"],
+        "nested_split_contract_sha256": nested_binding["sha256"],
+        "nested_split_mode": nested_binding["mode"],
+        "nested_context_bars": nested_binding["context_bars"],
+        "nested_role_facts_pinned": nested_binding["role_facts_pinned"],
         "nested_nontest_union": union_facts,
         "l1_system_manifest_sha256": bindings["l1_reference"][
             "system_manifest_sha256"],
@@ -728,9 +1206,12 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
              gpu_dispatch_binding: dict | None,
              gpu_gate: dict | None,
              pipeline_factory=None, agent_loader=None,
-             tensor_sha_fn=None) -> dict:
+             tensor_sha_fn=None, mode: str = "screen",
+             nested_roles_fn=None, outer_eval_fn=None) -> dict:
+    if mode not in MODES:
+        raise ValueError(f"unknown execution mode {mode!r}")
     cell_id = cell_identity(exp_id, seed, cell, contract)
-    out_root = Path(contract["output_root"]).expanduser()
+    out_root = output_root_for_mode(contract, mode)
     seed_dir = out_root / exp_id / f"seed{seed}"
     cell_dir = seed_dir / cell
     cell_dir.mkdir(parents=True, exist_ok=True)
@@ -767,11 +1248,21 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
         heartbeat.beat(terminal_state="RUNNING", attempt=str(out_dir),
                        progress="materializing")
         config = materialize_cell_config(contract, bindings, seed,
-                                         cell, out_dir)
+                                         cell, out_dir, mode=mode)
         identity = config.pop("_identity")
         resolved_sha = sysid.resolved_config_sha256(config)
         agent_name = identity["plugins"]["agent_plugin"]
         agent = (agent_loader or ladder._agent_plugin)(agent_name)
+
+        # Finding 224: materialize + verify the nested evidence roles
+        # BEFORE model construction. Wrong role path/count/sha, a
+        # missing context flag, context counted in score or any
+        # sealed-test materialization refuses HERE — no GPU time is
+        # ever spent on the wrong roles. The pipeline re-materializes
+        # into the same nested_split_dir deterministically.
+        heartbeat.beat(progress="nested-role-verification")
+        nested_roles = (nested_roles_fn or materialize_nested_roles)(
+            contract, bindings, out_dir)
 
         started = datetime.now(timezone.utc)
         heartbeat.beat(progress="training")
@@ -797,6 +1288,23 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
 
         # Finding 221: bind the typed handoff-viability evidence.
         viability = bind_handoff_viability(result)
+
+        # Finding 226 (decision mode): immutable best-checkpoint
+        # restoration is evidence, then ONE final outer-validation
+        # evaluation after selection. Sealed 2025 stays untouched —
+        # the nested manifest above already proved it SEALED.
+        outer_final = None
+        if mode == "decision":
+            if not best_path or not Path(best_path).is_file():
+                raise RuntimeError(
+                    "decision cell finished without a restorable best "
+                    "checkpoint artifact — record refused (finding "
+                    "226: immutable best-checkpoint restoration)")
+            heartbeat.beat(progress="outer-validation-final")
+            outer_final = (outer_eval_fn
+                           or _outer_validation_final_eval)(
+                config=config, agent=agent, best_model_path=best_path,
+                nested_roles=nested_roles, seed=int(seed))
 
         finished = datetime.now(timezone.utc)
         sources_after = ladder.source_identities()
@@ -831,11 +1339,14 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
             gpu_binding["torch_cuda_available"] = None
 
         cell_order = list(contract["cell_order"][str(seed)])
+        nested_binding = nested_roles["binding"]
         record = {
             "schema": RECORD_SCHEMA,
-            "evidence_class": "mechanics_screen",
-            "decision_eligible": False,
-            "performance_aggregate_eligible": False,
+            "mode": mode,
+            "evidence_class": ("decision_run" if mode == "decision"
+                               else "mechanics_screen"),
+            "decision_eligible": mode == "decision",
+            "performance_aggregate_eligible": mode == "decision",
             "live_promotion_eligible": False,
             "experiment_identity": exp_id,
             "cell_identity": cell_id,
@@ -848,6 +1359,22 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
             "contract_sha256": contract["_contract_sha256"],
             "resolved_config_sha256": resolved_sha,
             "identity": identity,
+            # Finding 224: every record binds the nested contract sha,
+            # the split-manifest sha, per-role CSV shas, scored/context
+            # counts and exact score dates; sealed_test stays SEALED.
+            "selection_metric": str(config["selection_metric"]),
+            "nested_split_contract_path": nested_binding[
+                "contract_relative_path"],
+            "nested_split_contract_sha256": nested_binding["sha256"],
+            "nested_split_mode": nested_binding["mode"],
+            "nested_split_manifest_path": nested_roles["manifest_path"],
+            "nested_split_manifest_sha256": nested_roles[
+                "manifest_sha256"],
+            "nested_role_facts": {
+                role: {key: (nested_roles["roles"].get(role) or {})
+                       .get(key) for key in NESTED_ROLE_FACT_KEYS}
+                for role in _nested_splits.ROLES},
+            "outer_validation_final": outer_final,
             "gpu_binding": gpu_binding,
             "gpu_dispatch_binding": gpu_dispatch_binding,
             "gpu_launch_gate": gpu_gate,
@@ -906,18 +1433,48 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
 # the seed batch: four cells, sequential, one GPU
 # ---------------------------------------------------------------------------
 
+def verify_screen_gate(gate: dict | None, contract: dict) -> list:
+    """Finding 226: the decision path is CONDITIONAL. Dispatch demands
+    the corrected screen verdict with a passing boolean replica gate;
+    anything else returns exact refusal strings."""
+    refusals: list = []
+    if not isinstance(gate, dict):
+        return ["decision mode requires the corrected screen verdict "
+                "(--screen-gate PATH) — the screen gate plus the "
+                "16-terminal replica proof decide (finding 226)"]
+    if gate.get("schema") != VERDICT_SCHEMA:
+        refusals.append(f"screen gate schema {gate.get('schema')!r} != "
+                        f"{VERDICT_SCHEMA!r}")
+    if gate.get("outcome") != "SCREEN_VIABLE_REGION":
+        refusals.append(
+            f"screen gate outcome {gate.get('outcome')!r} — only "
+            "SCREEN_VIABLE_REGION authorizes the decision budget")
+    if gate.get("contract_sha256") != contract["_contract_sha256"]:
+        refusals.append("screen gate binds a different contract sha")
+    if (gate.get("gates") or {}).get("replica_terminal_loads") \
+            is not True:
+        refusals.append(
+            "screen gate replica_terminal_loads is not boolean true — "
+            "the 16-terminal replica proof is mandatory (finding 225)")
+    return refusals
+
+
 def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
              enforce_gpu: bool = True, pipeline_factory=None,
              agent_loader=None, tensor_sha_fn=None,
              gate_heartbeat: dict | None = None,
-             dispatch_binding_fn=None) -> dict:
+             dispatch_binding_fn=None, mode: str = "screen",
+             screen_gate: dict | None = None,
+             nested_roles_fn=None, outer_eval_fn=None) -> dict:
     if int(seed) not in SEEDS:
         raise ValueError(f"unknown factorial seed {seed!r}")
+    if mode not in MODES:
+        raise ValueError(f"unknown execution mode {mode!r}")
     bindings = bindings or load_bindings()
     sources_before = ladder.source_identities()
     exp_id = experiment_identity(contract, bindings,
-                                 sources=sources_before)
-    out_root = Path(contract["output_root"]).expanduser()
+                                 sources=sources_before, mode=mode)
+    out_root = output_root_for_mode(contract, mode)
     seed_dir = out_root / exp_id / f"seed{seed}"
     assignment = (contract.get("assignments") or {}).get(
         str(seed)) or {}
@@ -940,6 +1497,15 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
         refusal["experiment_identity"] = exp_id
         refusal["seed"] = int(seed)
         return refusal
+
+    # Finding 226: decision dispatch is gated on the corrected screen
+    # verdict + boolean replica gate BEFORE any GPU/anchor work.
+    if mode == "decision":
+        gate_refusals = verify_screen_gate(screen_gate, contract)
+        if gate_refusals:
+            return _seed_refusal({
+                "outcome": "REFUSED_DECISION_UNGATED",
+                "reason": "; ".join(gate_refusals)})
 
     refusal = check_gpu_binding(contract, seed, enforce=enforce_gpu)
     if refusal:
@@ -976,7 +1542,9 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
                 gpu_gate=gate_payload,
                 pipeline_factory=pipeline_factory,
                 agent_loader=agent_loader,
-                tensor_sha_fn=tensor_sha_fn)
+                tensor_sha_fn=tensor_sha_fn, mode=mode,
+                nested_roles_fn=nested_roles_fn,
+                outer_eval_fn=outer_eval_fn)
         except Exception as exc:                    # noqa: BLE001
             outcomes[cell] = {"outcome": "CELL_FAILED",
                               "error": f"{type(exc).__name__}: {exc}"}
@@ -1009,11 +1577,132 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
         outcome = "SEED_COMPLETE"
     return {
         "outcome": outcome,
+        "mode": mode,
         "experiment_identity": exp_id,
         "seed": int(seed),
         "cell_order": cells,
         "cells": outcomes,
     }
+
+
+# ---------------------------------------------------------------------------
+# decision mode: the ONE final outer-validation evaluation (finding 226)
+# ---------------------------------------------------------------------------
+
+def _outer_validation_final_eval(*, config: dict, agent,
+                                 best_model_path: str,
+                                 nested_roles: dict,
+                                 seed: int) -> dict:
+    """Load the restored best checkpoint and evaluate it ONCE on the
+    outer_validation role — final truth only, after selection. The 256
+    declared context rows initialize causal state under the reusable
+    ContextPrefixWrapper (forced hold; any account mutation raises) and
+    are excluded from every metric. Sealed 2025 is never touched."""
+    from pipeline_plugins import _return_trace as trace_mod
+    from pipeline_plugins._weekly_metrics import (
+        canonical_weekly_metrics_from_trace)
+    from pipeline_plugins.rl_pipeline_with_validation import (
+        PipelinePlugin as ValidationPipeline)
+
+    role = nested_roles["roles"]["outer_validation"]
+    if role.get("status") != "MATERIALIZED":
+        raise RuntimeError("outer_validation role is not materialized")
+    context_rows = int(role["context_rows"])
+    eval_config = dict(config)
+    eval_config["solvency_mode"] = "normal_realistic"
+    eval_config["return_trace_dir"] = None
+    pipeline = ValidationPipeline(eval_config)
+    plug, env = pipeline._make_split_env(
+        str(eval_config.get("env_plugin", "gym_fx_env")), eval_config,
+        str(role["csv"]), agent)
+    env = _nested_splits.ContextPrefixWrapper(env, context_rows)
+    try:
+        model = agent.load(str(best_model_path), env)
+        obs, info = env.reset(seed=int(seed))
+        prev_equity = info.get("equity")
+        trace_rows: list = []
+        steps = scored_steps = 0
+        terminated = truncated = False
+        while not (terminated or truncated):
+            action = agent.predict(model, obs, deterministic=True)
+            obs, reward, terminated, truncated, info = env.step(action)
+            steps += 1
+            if not info.get("is_context_prefix"):
+                scored_steps += 1
+                trace_rows.append(trace_mod.build_trace_row(
+                    env=env, step=scored_steps, action=action,
+                    reward=reward, info=info, prev_equity=prev_equity,
+                    asset=str(eval_config.get("asset",
+                                              "unknown_asset")),
+                    timeframe=str(eval_config.get("timeframe", "")),
+                    split="outer_validation_final", seed=int(seed),
+                    run_id="p1lr_decision",
+                    episode_id=f"p1lr_decision::outer::seed{seed}"))
+                prev_equity = info.get("equity")
+            if steps > 1_000_000:
+                raise RuntimeError("outer validation replay exceeded "
+                                   "the step cap")
+        base = env
+        while hasattr(base, "env") and not hasattr(base, "summary"):
+            base = base.env
+        summary = base.summary() if hasattr(base, "summary") else {}
+        metrics = canonical_weekly_metrics_from_trace(
+            trace_rows,
+            initial_cash=float(eval_config.get("initial_cash",
+                                               10_000.0)),
+            risk_penalty_lambda=float(
+                eval_config.get("risk_penalty_lambda", 1.0)),
+            metric_schema="trading.weekly.v1")
+        weekly_rows = metrics.pop("weekly_rows")
+        trades_total = summary.get("trades_total",
+                                   summary.get("trades"))
+        return {
+            "role": "outer_validation",
+            "purpose": ("final truth ONLY — one evaluation after "
+                        "selection (finding 224/226)"),
+            "csv_sha256": role["csv_sha256"],
+            "scored_rows": role["scored_rows"],
+            "context_rows_forced_hold": context_rows,
+            "context_excluded_from_metrics": True,
+            "score_start": role["score_start"],
+            "score_end": role["score_end"],
+            "best_model_path": str(best_model_path),
+            "best_model_sha256": _sha_file(Path(best_model_path)),
+            "scored_steps": scored_steps,
+            "metrics": metrics,
+            "weekly_return_vector": [row["return_fraction"]
+                                     for row in weekly_rows],
+            "trades_total": trades_total,
+            "activity": {
+                "traded": bool(trades_total) and int(trades_total) > 0,
+                "trades_total": trades_total,
+            },
+            "units": dict(DECISION_METRIC_UNITS),
+        }
+    finally:
+        try:
+            plug.close()
+        except Exception:
+            pass
+
+
+DECISION_METRIC_UNITS = {
+    "weekly_return_vector": ("fraction per calendar week (W-SUN), "
+                             "outer validation 2024 scored window"),
+    "mean_weekly_return": "fraction per week, arithmetic mean",
+    "annualized_return": ("compounded fraction per year: "
+                          "(1+total_return)^(365.25/days)-1 over the "
+                          "outer scored window"),
+    "annual_return": "fraction per year, weekly arithmetic mean x 52",
+    "mean_weekly_rap": ("fraction per week: weekly return - lambda x "
+                        "weekly max drawdown (risk-adjusted "
+                        "performance)"),
+    "annual_rap": "fraction per year, weekly RAP arithmetic mean x 52",
+    "max_drawdown_fraction": ("fraction of peak equity over the whole "
+                              "outer scored window"),
+    "trades_total": "count of closed trades, outer scored window",
+    "activity.traded": "boolean: at least one closed trade",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -1037,36 +1726,215 @@ def _discover_experiment_dir(root: Path,
     return candidates[0]
 
 
+def expected_terminal_relative(record: dict) -> str | None:
+    """The deterministic seal-relative terminal path a replica proof
+    entry must echo: seed<seed>/<cell>/<tail after the cell component
+    of the record's absolute terminal path>. None when underivable."""
+    try:
+        seed = int(record["seed"])
+        cell = str(record["cell"])
+        parts = Path(str(record["terminal_model_path"])).parts
+    except (KeyError, TypeError, ValueError):
+        return None
+    indices = [i for i, part in enumerate(parts) if part == cell]
+    if not indices:
+        return None
+    tail = parts[indices[-1] + 1:]
+    if not tail:
+        return None
+    return str(Path(f"seed{seed}") / cell / Path(*tail))
+
+
+def load_replica_proof(path: Path) -> dict:
+    payload = json.loads(Path(path).read_text())
+    if not isinstance(payload, dict):
+        raise ValueError("replica proof is not a JSON object")
+    return payload
+
+
+def validate_replica_proof(proof: dict | None, *, contract: dict,
+                           records: dict) -> tuple:
+    """Finding 225: the typed 16-entry replica proof is a MANDATORY
+    verdict input. Returns (loads_ok: bool, refusals: list,
+    facts: dict). Every entry must bind (experiment_identity,
+    contract_sha256, seed, cell, terminal_relative_path,
+    terminal_model_sha256, loads=true) to the exact cell record —
+    missing, duplicate, foreign, swapped, hash-altered or unloaded
+    entries refuse; loads is a strict boolean, never text."""
+    refusals: list = []
+    facts: dict = {"entries_present": 0, "entries_expected": 16}
+    if proof is None:
+        return False, [
+            "replica proof required: --replica-proof PATH (typed "
+            "p1lr_replica_proof.v1 from tools/p1lr_collect.py) — the "
+            "screen cannot be declared eligible without 16 bound "
+            "replica terminal loads (finding 225)"], facts
+    if proof.get("schema") != REPLICA_PROOF_SCHEMA:
+        refusals.append(f"replica proof schema {proof.get('schema')!r}"
+                        f" != {REPLICA_PROOF_SCHEMA!r}")
+    identities = {record.get("experiment_identity")
+                  for record in records.values()}
+    exp_id = (sorted(identities)[0] if len(identities) == 1 else None)
+    if proof.get("experiment_identity") != exp_id or exp_id is None:
+        refusals.append(
+            f"replica proof experiment_identity "
+            f"{proof.get('experiment_identity')!r} does not equal the "
+            f"records' single identity {exp_id!r}")
+    if proof.get("contract_sha256") != contract["_contract_sha256"]:
+        refusals.append("replica proof binds a different contract sha")
+    entries = proof.get("proofs")
+    if not isinstance(entries, list):
+        return False, refusals + [
+            "replica proof carries no 'proofs' list"], facts
+    facts["entries_present"] = len(entries)
+    expected_keys = {(seed, cell) for (seed, cell) in records}
+    seen: dict = {}
+    for position, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            refusals.append(f"proof entry {position} is not an object")
+            continue
+        try:
+            key = (int(entry.get("seed")), str(entry.get("cell")))
+        except (TypeError, ValueError):
+            refusals.append(f"proof entry {position} carries unusable "
+                            "seed/cell")
+            continue
+        if key not in expected_keys:
+            refusals.append(f"foreign proof entry for seed={key[0]} "
+                            f"cell={key[1]!r}")
+            continue
+        if key in seen:
+            refusals.append(f"duplicate proof entry for seed={key[0]} "
+                            f"cell={key[1]}")
+            continue
+        seen[key] = entry
+        record = records[key]
+        if entry.get("experiment_identity") != \
+                record.get("experiment_identity"):
+            refusals.append(f"seed={key[0]} cell={key[1]}: proof "
+                            "entry experiment_identity mismatch")
+        if entry.get("contract_sha256") != \
+                contract["_contract_sha256"]:
+            refusals.append(f"seed={key[0]} cell={key[1]}: proof "
+                            "entry contract_sha256 mismatch")
+        if entry.get("terminal_model_sha256") != \
+                record.get("terminal_model_sha256"):
+            refusals.append(
+                f"seed={key[0]} cell={key[1]}: proof terminal sha "
+                "does not equal the record's terminal_model_sha256 "
+                "(hash-altered or swapped)")
+        expected_rel = expected_terminal_relative(record)
+        if expected_rel is None or \
+                entry.get("terminal_relative_path") != expected_rel:
+            refusals.append(
+                f"seed={key[0]} cell={key[1]}: proof relative path "
+                f"{entry.get('terminal_relative_path')!r} != expected "
+                f"{expected_rel!r}")
+        if entry.get("loads") is not True:
+            refusals.append(
+                f"seed={key[0]} cell={key[1]}: replica terminal did "
+                f"not load (loads={entry.get('loads')!r})")
+    missing = sorted(expected_keys - set(seen))
+    for seed, cell in missing:
+        refusals.append(f"replica proof has NO entry for seed={seed} "
+                        f"cell={cell}")
+    facts["entries_bound"] = len(seen)
+    facts["replica_host"] = proof.get("replica_host")
+    facts["collection_tree_digest"] = proof.get(
+        "collection_tree_digest")
+    return not refusals, refusals, facts
+
+
+def _revalidate_record_evidence(record: dict, contract: dict,
+                                tag: dict) -> tuple:
+    """Aggregation-time revalidation (finding 225): the finding-221
+    per-checkpoint handoff facts AND the finding-224 nested split
+    identity of every record — never trusted from the producing run."""
+    checkpoint_failures: list = []
+    nested_failures: list = []
+    viability = record.get("handoff_viability") or {}
+    per_checkpoint = viability.get("per_checkpoint")
+    if not isinstance(per_checkpoint, list) or not per_checkpoint:
+        checkpoint_failures.append(
+            {**tag, "error": "per-checkpoint handoff facts missing "
+             "(finding 221 aggregation-time revalidation)"})
+    else:
+        for row in per_checkpoint:
+            if not isinstance(row, dict) or row.get(
+                    "handoff_viability") not in \
+                    HANDOFF_VIABILITY_VALUES:
+                checkpoint_failures.append(
+                    {**tag, "error": f"per-checkpoint row "
+                     f"{row!r} carries no typed handoff_viability"})
+                break
+    nested_spec = contract["nested_split_contract"]
+    if record.get("nested_split_contract_sha256") != \
+            nested_spec["sha256"]:
+        nested_failures.append(
+            {**tag, "error": "record nested_split_contract_sha256 "
+             "does not equal the contract pin (finding 224)"})
+    if record.get("selection_metric") != NESTED_SELECTION_METRIC:
+        nested_failures.append(
+            {**tag, "error": f"record selection_metric "
+             f"{record.get('selection_metric')!r} is not the paired "
+             "comparator (finding 224)"})
+    role_facts = record.get("nested_role_facts") or {}
+    pins = nested_spec["role_facts"]
+    for role in _nested_splits.ROLES:
+        got = role_facts.get(role) or {}
+        pin = pins.get(role) or {}
+        for key in NESTED_ROLE_FACT_KEYS:
+            if got.get(key) != pin.get(key):
+                nested_failures.append(
+                    {**tag, "error": f"nested role {role}.{key} "
+                     f"{got.get(key)!r} != pinned {pin.get(key)!r} "
+                     "(finding 224)"})
+                break
+    return checkpoint_failures, nested_failures
+
+
+def _load_records_from_disk(contract: dict, expected: list,
+                            records_root: Path | None,
+                            experiment_id: str | None,
+                            mode: str) -> tuple:
+    root = Path(records_root
+                or output_root_for_mode(contract, mode))
+    exp_dir = _discover_experiment_dir(root, experiment_id)
+    records: dict = {}
+    for seed, cell in expected:
+        path = exp_dir / f"seed{seed}" / cell / "cell_record.json"
+        if path.is_file():
+            try:
+                records[(seed, cell)] = json.loads(path.read_text())
+            except Exception:
+                records[(seed, cell)] = {"_unreadable": str(path)}
+    return records, exp_dir
+
+
 def screen_verdict(contract: dict, *, records: dict | None = None,
                    records_root: Path | None = None,
-                   experiment_id: str | None = None) -> tuple:
+                   experiment_id: str | None = None,
+                   replica_proof: dict | None = None) -> tuple:
     """Evaluate the contract's mechanics_screen.requires gates over all
     16 (seed, cell) records and emit the typed screen outcome. Returns
     (payload, exit_code). Collapse/contract screen ONLY — no
-    performance claim is computed, compared or implied."""
+    performance claim is computed, compared or implied. The typed
+    replica proof is MANDATORY (finding 225): without it, or with any
+    unbound/duplicate/foreign/altered/unloaded entry, the verdict is a
+    typed refusal and ``replica_terminal_loads`` stays boolean false."""
     expected = [(seed, cell) for seed in SEEDS
                 for cell in contract["cell_order"][str(seed)]]
 
-    exp_dir = None
     if records is None:
-        root = Path(records_root
-                    or Path(contract["output_root"]).expanduser())
         try:
-            exp_dir = _discover_experiment_dir(root, experiment_id)
+            records, _exp_dir = _load_records_from_disk(
+                contract, expected, records_root, experiment_id,
+                "screen")
         except RuntimeError as exc:
             return ({"schema": VERDICT_SCHEMA,
                      "outcome": "SCREEN_REFUSED",
                      "reasons": [str(exc)]},
                     EXIT_CLASS["SCREEN_REFUSED"])
-        records = {}
-        for seed, cell in expected:
-            path = exp_dir / f"seed{seed}" / cell / "cell_record.json"
-            if path.is_file():
-                try:
-                    records[(seed, cell)] = json.loads(
-                        path.read_text())
-                except Exception:
-                    records[(seed, cell)] = {"_unreadable": str(path)}
 
     reasons: list = []
     missing = [{"seed": seed, "cell": cell}
@@ -1080,6 +1948,8 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
     malformed: list = []
     custody_failures: list = []
     viability_failures: list = []
+    checkpoint_failures: list = []
+    nested_identity_failures: list = []
     identity_set: set = set()
     contract_sha_mismatch: list = []
     labels: dict = {}
@@ -1093,6 +1963,12 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
                               "seed/cell/identity mismatch"})
             continue
         identity_set.add(record.get("experiment_identity"))
+        # Finding 225: revalidate per-checkpoint handoff facts and
+        # nested split identity AT AGGREGATION TIME.
+        cp_fail, nested_fail = _revalidate_record_evidence(
+            record, contract, tag)
+        checkpoint_failures.extend(cp_fail)
+        nested_identity_failures.extend(nested_fail)
         if record.get("contract_sha256") != \
                 contract["_contract_sha256"]:
             contract_sha_mismatch.append(tag)
@@ -1150,6 +2026,23 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         reasons.append(
             f"{len(viability_failures)} record(s) fail the "
             "finding-221 handoff-viability gate")
+    if checkpoint_failures:
+        reasons.append(
+            f"{len(checkpoint_failures)} record(s) fail the "
+            "finding-221 per-checkpoint revalidation at aggregation "
+            "time")
+    if nested_identity_failures:
+        reasons.append(
+            f"{len(nested_identity_failures)} record(s) fail the "
+            "finding-224 nested split identity revalidation")
+
+    # Finding 225: the replica gate is a BOOLEAN derived from the
+    # typed proof — never explanatory text, never assumed.
+    replica_ok, replica_refusals, replica_facts = \
+        validate_replica_proof(replica_proof, contract=contract,
+                               records=records)
+    if replica_refusals:
+        reasons.extend(replica_refusals)
 
     gates = {
         "records_16_16": not missing and not malformed,
@@ -1157,10 +2050,10 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         and not contract_sha_mismatch,
         "terminal_custody_fields": not custody_failures,
         "handoff_viability_facts": not viability_failures,
-        "replica_terminal_loads": (
-            "EXTERNAL_COLLECTOR_REQUIRED — replica load proof per "
-            "seed batch is the sealed collector's job (finding 223); "
-            "this verdict does not certify it"),
+        "per_checkpoint_facts_revalidated": not checkpoint_failures,
+        "nested_split_identity_revalidated":
+            not nested_identity_failures,
+        "replica_terminal_loads": bool(replica_ok),
     }
 
     if reasons:
@@ -1169,13 +2062,18 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
             "outcome": "SCREEN_REFUSED",
             "experiment_identity": (sorted(identity_set)[0]
                                     if len(identity_set) == 1 else None),
+            "contract_sha256": contract["_contract_sha256"],
             "records_present": len(records),
             "records_expected": len(expected),
             "missing_records": missing,
             "malformed_records": malformed,
             "custody_failures": custody_failures,
             "viability_failures": viability_failures,
+            "checkpoint_failures": checkpoint_failures,
+            "nested_identity_failures": nested_identity_failures,
             "contract_sha_mismatch": contract_sha_mismatch,
+            "replica_proof_refusals": replica_refusals,
+            "replica_proof_facts": replica_facts,
             "gates": gates,
             "reasons": reasons,
         }
@@ -1206,6 +2104,7 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "records_present": len(records),
         "records_expected": len(expected),
         "gates": gates,
+        "replica_proof_facts": replica_facts,
         "collapse_definition": (
             "selected trained-checkpoint handoff_viability in "
             f"{list(COLLAPSE_LABELS)} (contract mechanics_screen; "
@@ -1216,9 +2115,9 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "next_step": (
             "stop — do not burn the decision budget (contract "
             "collapse_outcome)" if all_collapsed else
-            "decision run eligible under document-38 stopping for the "
-            "viable region ONLY, after the sealed collector proves "
-            "replica terminal loads (finding 223)"),
+            "decision run eligible: pass THIS verdict file as "
+            "--screen-gate to --mode decision (the 16-entry replica "
+            "proof is already bound into replica_terminal_loads)"),
         "performance_claims": (
             "none — collapse/contract screen only; no return, Sharpe "
             "or superiority statement is made or implied"),
@@ -1227,8 +2126,342 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
 
 
 # ---------------------------------------------------------------------------
+# decision aggregation: --decision-verdict (finding 226, document 38)
+# ---------------------------------------------------------------------------
+
+def _finite_or_none(value) -> float | None:
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return None
+    import math
+    return value if math.isfinite(value) else None
+
+
+def decision_effects(utilities: dict) -> dict:
+    """Per-seed paired main effects and interaction on one declared
+    utility (outer mean weekly RAP). ``utilities`` maps
+    (seed, cell) -> float. Pure; raises KeyError on a missing cell."""
+    per_seed: dict = {}
+    for seed in SEEDS:
+        u = {cell: float(utilities[(seed, cell)]) for cell in CELLS}
+        lr_effect = 0.5 * ((u["P1N_LR3E5"] - u["P1N_LR1E4"])
+                           + (u["P1E_LR3E5"] - u["P1E_LR1E4"]))
+        difficulty_effect = 0.5 * ((u["P1E_LR1E4"] - u["P1N_LR1E4"])
+                                   + (u["P1E_LR3E5"] - u["P1N_LR3E5"]))
+        interaction = ((u["P1E_LR3E5"] - u["P1E_LR1E4"])
+                       - (u["P1N_LR3E5"] - u["P1N_LR1E4"]))
+        per_seed[str(seed)] = {
+            "phase1_lr_effect": lr_effect,
+            "phase1_difficulty_effect": difficulty_effect,
+            "lr_x_difficulty_interaction": interaction,
+        }
+    return per_seed
+
+
+def _effect_material(values: list) -> bool:
+    """Declared materiality rule: all four per-seed paired effects
+    share ONE strict sign (sign-consistent replication)."""
+    return (all(v > 0.0 for v in values)
+            or all(v < 0.0 for v in values))
+
+
+def decide_decision_outcome(per_seed_effects: dict,
+                            all_inactive: bool) -> tuple:
+    """Document-38 outcome from per-seed paired effects. Declared
+    priority: TOTAL_ACTIVITY_COLLAPSE, then a sign-consistent
+    interaction, then the sign-consistent main effect with the larger
+    median magnitude, then NO_MATERIAL_EFFECT."""
+    from statistics import median
+    if all_inactive:
+        return "TOTAL_ACTIVITY_COLLAPSE", (
+            "every decision cell finished with zero closed trades on "
+            "the final outer evaluation")
+    lr = [e["phase1_lr_effect"] for e in per_seed_effects.values()]
+    diff = [e["phase1_difficulty_effect"]
+            for e in per_seed_effects.values()]
+    inter = [e["lr_x_difficulty_interaction"]
+             for e in per_seed_effects.values()]
+    if _effect_material(inter):
+        return "PHASE1_LR_DIFFICULTY_INTERACTION", (
+            "the LR x difficulty interaction is sign-consistent "
+            f"across all four seeds (median {median(inter):+.6g})")
+    lr_material = _effect_material(lr)
+    diff_material = _effect_material(diff)
+    if lr_material and diff_material:
+        if abs(median(lr)) >= abs(median(diff)):
+            return "PHASE1_LR_MAIN_EFFECT", (
+                "both main effects are sign-consistent; the P1 LR "
+                f"effect has the larger median magnitude "
+                f"({median(lr):+.6g} vs {median(diff):+.6g}) — both "
+                "are reported in per_seed_paired_effects")
+        return "PHASE1_DIFFICULTY_MAIN_EFFECT", (
+            "both main effects are sign-consistent; the difficulty "
+            f"effect has the larger median magnitude "
+            f"({median(diff):+.6g} vs {median(lr):+.6g}) — both are "
+            "reported in per_seed_paired_effects")
+    if lr_material:
+        return "PHASE1_LR_MAIN_EFFECT", (
+            "the P1 LR paired effect is sign-consistent across all "
+            f"four seeds (median {median(lr):+.6g})")
+    if diff_material:
+        return "PHASE1_DIFFICULTY_MAIN_EFFECT", (
+            "the P1 difficulty paired effect is sign-consistent "
+            f"across all four seeds (median {median(diff):+.6g})")
+    return "NO_MATERIAL_EFFECT", (
+        "no paired effect is sign-consistent across the four seeds "
+        f"(medians: lr {median(lr):+.6g}, difficulty "
+        f"{median(diff):+.6g}, interaction {median(inter):+.6g})")
+
+
+def decision_verdict(contract: dict, *, records: dict | None = None,
+                     records_root: Path | None = None,
+                     experiment_id: str | None = None,
+                     replica_proof: dict | None = None) -> tuple:
+    """Aggregate the 16 DECISION records and emit the document-38
+    outcome with per-seed paired main effects (difficulty, P1 LR) plus
+    interaction and per-cell raw weekly metrics, all with units and
+    horizons. Fail-closed: the same 16/16, identity, custody,
+    per-checkpoint, nested-identity and replica-proof gates as the
+    screen, PLUS a mandatory final outer evaluation on every record.
+    Any refusal is typed INCONCLUSIVE with exit 4."""
+    expected = [(seed, cell) for seed in SEEDS
+                for cell in contract["cell_order"][str(seed)]]
+    if records is None:
+        try:
+            records, _exp_dir = _load_records_from_disk(
+                contract, expected, records_root, experiment_id,
+                "decision")
+        except RuntimeError as exc:
+            return ({"schema": DECISION_VERDICT_SCHEMA,
+                     "outcome": "INCONCLUSIVE",
+                     "reasons": [str(exc)]},
+                    EXIT_CLASS["INCONCLUSIVE"])
+
+    reasons: list = []
+    missing = [{"seed": seed, "cell": cell}
+               for seed, cell in expected
+               if (seed, cell) not in records]
+    if missing:
+        reasons.append(f"records incomplete: {len(records)}/16 — the "
+                       "decision refuses a partial factorial")
+    identity_set: set = set()
+    utilities: dict = {}
+    per_cell_metrics: dict = {}
+    inactive_cells: list = []
+    for (seed, cell), record in sorted(records.items()):
+        tag = {"seed": seed, "cell": cell}
+        name = f"seed{seed}/{cell}"
+        if record.get("schema") != RECORD_SCHEMA \
+                or record.get("seed") != seed \
+                or record.get("cell") != cell:
+            reasons.append(f"{name}: wrong schema or seed/cell")
+            continue
+        identity_set.add(record.get("experiment_identity"))
+        if record.get("mode") != "decision" or \
+                record.get("evidence_class") != "decision_run":
+            reasons.append(f"{name}: not a decision_run record — "
+                           "screen records never aggregate here")
+        if record.get("contract_sha256") != \
+                contract["_contract_sha256"]:
+            reasons.append(f"{name}: contract sha mismatch")
+        cp_fail, nested_fail = _revalidate_record_evidence(
+            record, contract, tag)
+        for failure in cp_fail + nested_fail:
+            reasons.append(f"{name}: {failure['error']}")
+        terminal_path = record.get("terminal_model_path")
+        if not terminal_path or not record.get("terminal_model_sha256"):
+            reasons.append(f"{name}: terminal custody incomplete "
+                           "(finding 223)")
+        outer = record.get("outer_validation_final")
+        if not isinstance(outer, dict):
+            reasons.append(f"{name}: no final outer-validation "
+                           "evaluation — outer truth is mandatory "
+                           "exactly once after selection")
+            continue
+        metrics = outer.get("metrics") or {}
+        utility = _finite_or_none(metrics.get("mean_weekly_rap"))
+        if utility is None:
+            reasons.append(f"{name}: outer mean_weekly_rap missing or "
+                           "non-finite")
+            continue
+        utilities[(seed, cell)] = utility
+        trades = outer.get("trades_total")
+        traded = bool(trades) and int(trades) > 0
+        if not traded:
+            inactive_cells.append(tag)
+        per_cell_metrics[name] = {
+            "weekly_return_vector": outer.get("weekly_return_vector"),
+            "mean_weekly_return": metrics.get("mean_weekly_return"),
+            "annualized_compounded_return": metrics.get(
+                "annualized_return"),
+            "annual_return_weekly_mean_x52": metrics.get(
+                "annual_return"),
+            "mean_weekly_rap": metrics.get("mean_weekly_rap"),
+            "annual_rap_weekly_mean_x52": metrics.get("annual_rap"),
+            "max_drawdown_fraction": metrics.get(
+                "max_drawdown_fraction"),
+            "evaluation_weeks": metrics.get("evaluation_weeks"),
+            "trades_total": trades,
+            "activity": outer.get("activity"),
+            "units_and_horizons": dict(DECISION_METRIC_UNITS),
+        }
+    if len(identity_set) > 1:
+        reasons.append(f"identity fragmentation: {sorted(identity_set)}")
+
+    replica_ok, replica_refusals, replica_facts = \
+        validate_replica_proof(replica_proof, contract=contract,
+                               records=records)
+    if replica_refusals:
+        reasons.extend(replica_refusals)
+
+    payload = {
+        "schema": DECISION_VERDICT_SCHEMA,
+        "contract_sha256": contract["_contract_sha256"],
+        "experiment_identity": (sorted(identity_set)[0]
+                                if len(identity_set) == 1 else None),
+        "records_present": len(records),
+        "records_expected": len(expected),
+        "missing_records": missing,
+        "gates": {
+            "records_16_16": not missing,
+            "identity_coherent": len(identity_set) <= 1,
+            "replica_terminal_loads": bool(replica_ok),
+        },
+        "replica_proof_facts": replica_facts,
+        "effect_basis": ("outer_validation mean_weekly_rap (fraction "
+                         "per week, 2024 scored window); paired "
+                         "within seed"),
+        "materiality_rule": ("an effect is material iff all four "
+                             "per-seed paired effects share one "
+                             "strict sign"),
+        "per_cell_metrics": per_cell_metrics,
+        "reasons": reasons,
+    }
+    if reasons:
+        payload["outcome"] = "INCONCLUSIVE"
+        payload["outcome_rationale"] = ("refusals precede evaluation: "
+                                        + "; ".join(reasons[:10]))
+        return payload, EXIT_CLASS["INCONCLUSIVE"]
+
+    per_seed_effects = decision_effects(utilities)
+    all_inactive = len(inactive_cells) == len(expected)
+    outcome, rationale = decide_decision_outcome(per_seed_effects,
+                                                 all_inactive)
+    payload["per_seed_paired_effects"] = per_seed_effects
+    payload["inactive_cells"] = inactive_cells
+    payload["outcome"] = outcome
+    payload["outcome_rationale"] = rationale
+    return payload, EXIT_CLASS[outcome]
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# no-training materialization preflight
+# ---------------------------------------------------------------------------
+
+def preflight(contract: dict, bindings: dict | None = None) -> tuple:
+    """No-training preflight (acceptance boundary): prove the exact
+    nested role counts/hashes/score dates, paired selection, sealed
+    2025 absence, distinct mode identities and 16 distinct cell
+    identities per mode — by REAL materialization into a temp dir,
+    without constructing any model. Returns (payload, exit_code)."""
+    import tempfile
+
+    bindings = bindings or load_bindings()
+    payload: dict = {
+        "schema": PREFLIGHT_SCHEMA,
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "contract_sha256": contract["_contract_sha256"],
+        "held_fixed_bindings_contract_sha256":
+            bindings["_contract_sha256"],
+        "training_used": False,
+        "refusals": [],
+    }
+    try:
+        with tempfile.TemporaryDirectory(
+                prefix="p1lr_preflight_") as scratch:
+            nested_roles = materialize_nested_roles(
+                contract, bindings, Path(scratch))
+            payload["nested_split_contract_path"] = nested_roles[
+                "binding"]["contract_relative_path"]
+            payload["nested_split_contract_sha256"] = nested_roles[
+                "binding"]["sha256"]
+            payload["nested_split_mode"] = nested_roles["binding"][
+                "mode"]
+            payload["nested_context_bars"] = nested_roles["binding"][
+                "context_bars"]
+            payload["nested_role_facts"] = {
+                role: {key: (nested_roles["roles"].get(role) or {})
+                       .get(key) for key in NESTED_ROLE_FACT_KEYS}
+                for role in _nested_splits.ROLES}
+            sealed = nested_roles["roles"].get("sealed_test") or {}
+            payload["sealed_test_state"] = sealed.get("status")
+            sealed_csv = Path(scratch) / "nested_splits" / \
+                "sealed_test.csv"
+            payload["sealed_test_csv_absent"] = not sealed_csv.exists()
+            if not payload["sealed_test_csv_absent"]:
+                payload["refusals"].append(
+                    "sealed_test.csv exists in the preflight "
+                    "materialization — sealed 2025 was touched")
+
+            sources = ladder.source_identities()
+            identities: dict = {}
+            for mode in MODES:
+                exp_id = experiment_identity(contract, bindings,
+                                             sources=sources, mode=mode)
+                cell_ids = {}
+                metrics_seen = set()
+                sealed_flags = set()
+                for seed in SEEDS:
+                    for cell in contract["cell_order"][str(seed)]:
+                        config = materialize_cell_config(
+                            contract, bindings, seed, cell,
+                            Path(scratch) / mode / str(seed) / cell,
+                            mode=mode)
+                        config.pop("_identity")
+                        metrics_seen.add(config["selection_metric"])
+                        sealed_flags.add(
+                            bool(config["evaluate_test_split"]))
+                        cell_ids[f"{seed}:{cell}"] = cell_identity(
+                            exp_id, seed, cell, contract)
+                if len(set(cell_ids.values())) != 16:
+                    payload["refusals"].append(
+                        f"mode {mode}: cell identities are not 16 "
+                        "distinct values")
+                identities[mode] = {
+                    "experiment_identity": exp_id,
+                    "output_root": str(output_root_for_mode(contract,
+                                                            mode)),
+                    "cell_identities": cell_ids,
+                    "selection_metrics_materialized": sorted(
+                        metrics_seen),
+                    "evaluate_test_split_values": sorted(sealed_flags),
+                }
+                if metrics_seen != {NESTED_SELECTION_METRIC}:
+                    payload["refusals"].append(
+                        f"mode {mode}: materialized selection metric "
+                        f"set {sorted(metrics_seen)} is not exactly "
+                        f"the paired comparator")
+                if sealed_flags != {False}:
+                    payload["refusals"].append(
+                        f"mode {mode}: evaluate_test_split leaked true")
+            payload["modes"] = identities
+            if identities["screen"]["experiment_identity"] == \
+                    identities["decision"]["experiment_identity"]:
+                payload["refusals"].append(
+                    "screen and decision experiment identities "
+                    "collide — modes are not content-addressed apart")
+    except Exception as exc:  # noqa: BLE001 — typed refusal
+        payload["refusals"].append(f"{type(exc).__name__}: {exc}")
+
+    payload["outcome"] = ("PREFLIGHT_PASS" if not payload["refusals"]
+                          else "PREFLIGHT_REFUSED")
+    return payload, EXIT_CLASS[payload["outcome"]]
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -1238,38 +2471,79 @@ def main() -> int:
                             "in the contract cell order on the seed's "
                             "assigned GPU")
     group.add_argument("--screen-verdict", action="store_true",
-                       help="aggregate all 16 records and emit the "
-                            "typed screen outcome")
+                       help="aggregate all 16 screen records and emit "
+                            "the typed screen outcome (REQUIRES "
+                            "--replica-proof, finding 225)")
+    group.add_argument("--decision-verdict", action="store_true",
+                       help="aggregate all 16 decision records and "
+                            "emit the document-38 outcome (REQUIRES "
+                            "--replica-proof)")
+    group.add_argument("--preflight", action="store_true",
+                       help="no-training materialization preflight: "
+                            "prove nested role counts/hashes, paired "
+                            "selection, sealed-test absence and 16 "
+                            "distinct cell identities per mode")
+    parser.add_argument("--mode", choices=list(MODES), default="screen",
+                        help="execution mode for --seed: the default "
+                             "'screen' preserves current behavior; "
+                             "'decision' runs the document-38 path "
+                             "under a distinct identity/output root "
+                             "and REQUIRES --screen-gate")
+    parser.add_argument("--screen-gate", type=Path, default=None,
+                        help="decision mode: the corrected screen "
+                             "verdict JSON (outcome "
+                             "SCREEN_VIABLE_REGION with a passing "
+                             "boolean replica gate)")
+    parser.add_argument("--replica-proof", type=Path, default=None,
+                        help="verdicts: the typed 16-entry replica "
+                             "proof file from tools/p1lr_collect.py — "
+                             "mandatory; absence is a typed refusal")
     parser.add_argument("--contract", type=Path, default=CONTRACT_PATH)
     parser.add_argument("--no-gpu-check", action="store_true",
                         help="skip GPU-UUID binding enforcement and "
                              "the readiness launch gate (socket-free "
                              "tests only; a fleet launch MUST enforce)")
     parser.add_argument("--records-root", type=Path, default=None,
-                        help="screen-verdict: records root override "
-                             "(default: the contract output_root)")
+                        help="verdicts: records root override "
+                             "(default: the mode's output root)")
     parser.add_argument("--experiment-id", default=None,
-                        help="screen-verdict: experiment identity to "
+                        help="verdicts: experiment identity to "
                              "aggregate (required when several exist)")
     parser.add_argument("--output", type=Path, default=None,
-                        help="screen-verdict: also write the verdict "
-                             "JSON here (atomic)")
+                        help="verdicts/preflight: also write the "
+                             "payload JSON here (atomic)")
     args = parser.parse_args()
     contract = load_contract(args.contract)
 
-    if args.screen_verdict:
-        payload, exit_code = screen_verdict(
-            contract, records_root=args.records_root,
-            experiment_id=args.experiment_id)
+    def _emit(payload: dict, exit_code: int) -> int:
         if args.output is not None:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             atomic_write_json(args.output, payload)
         print(json.dumps(payload, default=str), flush=True)
         return exit_code
 
+    if args.preflight:
+        payload, exit_code = preflight(contract)
+        return _emit(payload, exit_code)
+
+    if args.screen_verdict or args.decision_verdict:
+        proof = None
+        if args.replica_proof is not None:
+            proof = load_replica_proof(args.replica_proof)
+        verdict_fn = (decision_verdict if args.decision_verdict
+                      else screen_verdict)
+        payload, exit_code = verdict_fn(
+            contract, records_root=args.records_root,
+            experiment_id=args.experiment_id, replica_proof=proof)
+        return _emit(payload, exit_code)
+
+    screen_gate = None
+    if args.mode == "decision" and args.screen_gate is not None:
+        screen_gate = json.loads(args.screen_gate.read_text())
     try:
         summary = run_seed(args.seed, contract=contract,
-                           enforce_gpu=not args.no_gpu_check)
+                           enforce_gpu=not args.no_gpu_check,
+                           mode=args.mode, screen_gate=screen_gate)
     except Exception as exc:                        # noqa: BLE001
         print(json.dumps({"outcome": "SEED_FAILED", "seed": args.seed,
                           "error": f"{type(exc).__name__}: {exc}"},

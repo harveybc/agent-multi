@@ -1,0 +1,205 @@
+{
+ "factorial_contract_sha256": "8405b70b312e7a158f34653d563712c02f85de6800978a23e2bcbb9202d70f7c",
+ "factorial_materialized_cells": {
+  "101:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "101:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "101:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "101:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "202:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "202:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "202:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "202:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "303:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "303:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "303:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "303:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "404:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "404:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "404:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  },
+  "404:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-209-220/examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "train_end": null,
+   "train_start": null,
+   "validation_end": null,
+   "validation_start": null
+  }
+ },
+ "materialized_execution_mismatch": {
+  "legacy_validation_role_observed": {
+   "end": null,
+   "start": null
+  },
+  "nested_inner_validation_required": {
+   "end": "2024-01-01T00:00:00",
+   "start": "2023-01-01T00:00:00"
+  },
+  "nested_split_contract_missing": false,
+  "selection_metric_observed": "paired_generalization_weekly_v1",
+  "selection_metric_required": "paired_generalization_weekly_v1"
+ },
+ "nested_role_facts": {
+  "fit_train": {
+   "context_rows": 0,
+   "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+   "scored_rows": 11509,
+   "status": "MATERIALIZED"
+  },
+  "inner_validation": {
+   "context_rows": 256,
+   "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  },
+  "outer_validation": {
+   "context_rows": 256,
+   "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+   "scored_rows": 2196,
+   "status": "MATERIALIZED"
+  },
+  "sealed_test": {
+   "context_rows": null,
+   "csv_sha256": null,
+   "scored_rows": null,
+   "status": "SEALED"
+  },
+  "train_monitor": {
+   "context_rows": 256,
+   "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  }
+ },
+ "network_used": false,
+ "replica_gate_counterexample": {
+  "input_replica_proofs": 0,
+  "replica_gate_value": false,
+  "screen_declared_eligible_without_replica_proof": false,
+  "screen_exit_code": 4,
+  "screen_outcome": "SCREEN_REFUSED"
+ },
+ "schema": "agent_multi.musashi_post_outage_224_230_repro.v1",
+ "sealed_collection_mutated": false,
+ "training_used": false
+}

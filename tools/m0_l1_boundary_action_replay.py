@@ -12,19 +12,37 @@ env is built exactly as the pipeline builds a split evaluation env
 (``PipelinePlugin._split_csv`` + ``_make_split_env`` with the agent's
 ``wrap_env``, ``solvency_mode`` forced to ``normal_realistic`` exactly
 as ``_eval_on_split`` forces it), from the D0 arm config materialized
-by ``tools.m0_l1_mechanism_ladder.materialize_arm_config`` — so the
-train-tail and inner-validation windows are hash-identical to the
-ladder's. The env is then advanced by stepping a FORCED HOLD action
-(``zeros(action_space.shape)``) every step: gym-fx coerces an exact
-zero to HOLD under every threshold in [0, 1), so no position ever
-opens and agent-state stays flat. At each step, BEFORE stepping, the
-loaded SAC policy runs deterministically on the current observation
-and the raw action is recorded. The observation stream is therefore a
-pure function of (data slice, config, seed) — identical for both
-artifacts — and each artifact yields exactly one raw action vector
-per split. Thresholds 0.0 and 0.1 are applied ANALYTICALLY to that
-same vector (no second rollout); the emitted action-vector sha256
-proves both threshold arms consumed identical input.
+by ``tools.m0_l1_mechanism_ladder.materialize_arm_config`` PLUS the
+typed nested split binding (finding 224 correction): the eval config
+carries ``nested_split_contract`` (the ladder's pinned contract, sha
+verified), ``nested_split_mode=l1`` and the paired selection metric,
+so ``_split_csv`` materializes the APPROVED nested evidence roles —
+``train_monitor`` (2,190 scored rows, 2022, 256 context rows) and
+``inner_validation`` (2,190 scored rows, 2023, 256 context rows) —
+never the legacy 42-row train tail or the 2024 outer year. Each
+role's CSV sha and row counts are verified against the pinned role
+facts before any facts are computed. The env is then advanced by
+stepping a FORCED HOLD action (``zeros(action_space.shape)``) every
+step: gym-fx coerces an exact zero to HOLD under every threshold in
+[0, 1), so no position ever opens and agent-state stays flat —
+including across the 256 causal context rows, which initialize state
+ONLY and are EXCLUDED from the scored action facts (the last
+``scored_rows`` recorded actions are scored; the earlier steps are
+the declared context/warmup prefix). At each step, BEFORE stepping,
+the loaded SAC policy runs deterministically on the current
+observation and the raw action is recorded. The observation stream is
+therefore a pure function of (data slice, config, seed) — identical
+for both artifacts — and each artifact yields exactly one raw action
+vector per split. Thresholds 0.0 and 0.1 are applied ANALYTICALLY to
+that same scored vector (no second rollout); the emitted action-vector
+sha256 proves both threshold arms consumed identical input.
+
+The earlier legacy-role replay outputs under
+``~/.local/share/agent-multi/boundary_action_replay_20260811/`` are
+PRESERVED as legacy diagnostic evidence only; this corrected replay
+writes to a NEW directory (default
+``~/.local/share/agent-multi/boundary_action_replay_nested_20260812/``)
+and REFUSES to write inside the legacy directory.
 
 THRESHOLD MAPPING (gym-fx ``GymFxEnv._coerce_action`` parity):
   threshold == 0.0:  a > 0 -> long,  a < 0 -> short,  a == 0 -> hold
@@ -82,7 +100,15 @@ from pipeline_plugins import _system_config as sysid  # noqa: E402
 from tools import m0_l1_mechanism_ladder as ladder  # noqa: E402
 from tools.l1_factorial_screen import atomic_write_json  # noqa: E402
 
-OUTPUT_SCHEMA = "agent_multi.m0_l1_boundary_action_replay.v1"
+OUTPUT_SCHEMA = "agent_multi.m0_l1_boundary_action_replay.v2"
+
+# Legacy-role outputs (42-row train tail / 2196-row 2024 interval) are
+# preserved read-only; corrected nested-role outputs land in the new
+# directory. Writing into the legacy directory is refused.
+LEGACY_OUTPUT_ROOT = Path(
+    "~/.local/share/agent-multi/boundary_action_replay_20260811")
+DEFAULT_OUTPUT_ROOT = Path(
+    "~/.local/share/agent-multi/boundary_action_replay_nested_20260812")
 
 # The ladder contract is the ONLY data/config source (WP2). The pinned
 # sha is enforced unless --contract explicitly overrides (tests only).
@@ -118,8 +144,31 @@ ABS_QUANTILES = (0.0, 0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99, 1.0)
 MAX_REPLAY_STEPS = 1_000_000
 LADDER_ARM = "D0_M0_EXACT"
 
-# Output label -> the pipeline _split_csv key it replays.
-REPLAY_SPLITS = (("train_tail", "train_tail"), ("inner_validation", "val"))
+# Output label -> the pipeline _split_csv key it replays. Finding 224:
+# the EXACT approved nested roles — the paired comparator's in-sample
+# member (train_monitor, 2022) and its selection member
+# (inner_validation, 2023) — never the legacy train tail or the 2024
+# outer-validation year.
+REPLAY_SPLITS = (("train_monitor", "train_monitor"),
+                 ("inner_validation", "val"))
+
+# Pinned per-role facts (auditor-reproduced 2026-08-11): the freshly
+# materialized nested CSV must rehash to these and carry exactly
+# scored+context rows, else the replay refuses before computing facts.
+NESTED_ROLE_PINS = {
+    "train_monitor": {
+        "csv_sha256": ("f9a0e25a5ee7009fa76bac583766455b43359ea616e68"
+                       "d79cb1ce81bf8cb0c06"),
+        "scored_rows": 2190,
+        "context_rows": 256,
+    },
+    "inner_validation": {
+        "csv_sha256": ("e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5"
+                       "a5dd379ec56f1419bd6"),
+        "scored_rows": 2190,
+        "context_rows": 256,
+    },
+}
 
 OUTCOME_EXPOSES = "THRESHOLD_EXPOSES_PREEXISTING_COLLAPSE"
 OUTCOME_CAUSES = (
@@ -277,6 +326,46 @@ def map_actions(raw: np.ndarray, threshold: float) -> dict:
     }
 
 
+def scored_action_slice(raw: np.ndarray, scored_rows: int) -> tuple:
+    """Context/warmup exclusion (finding 224): the LAST ``scored_rows``
+    recorded actions are the scored split; every earlier step belongs
+    to the declared causal context prefix (256 rows) plus any env
+    warmup bar, is forced-hold by construction, and initializes state
+    ONLY. Returns (scored_vector, context_steps_excluded); refuses when
+    fewer steps than scored rows were replayed."""
+    vec = np.asarray(raw, dtype=np.float32).reshape(-1)
+    scored_rows = int(scored_rows)
+    if scored_rows <= 0:
+        raise ValueError("scored_rows must be positive")
+    if vec.size < scored_rows:
+        raise ValueError(
+            f"replay produced only {vec.size} steps but the role "
+            f"scores {scored_rows} rows — the scored window is "
+            "incomplete; refusing to score a partial split")
+    return vec[-scored_rows:], int(vec.size - scored_rows)
+
+
+def resolve_output_path(output: Path | None, artifact_key: str,
+                        device: str) -> Path:
+    """Default the output into the NEW nested-role directory and refuse
+    the preserved legacy directory (legacy outputs are read-only
+    diagnostic evidence; they are never overwritten or mixed)."""
+    if output is None:
+        output = (DEFAULT_OUTPUT_ROOT.expanduser()
+                  / f"{artifact_key}_{device}.json")
+    output = Path(output).expanduser()
+    legacy = LEGACY_OUTPUT_ROOT.expanduser().resolve()
+    try:
+        output.resolve().relative_to(legacy)
+    except ValueError:
+        return output
+    raise ValueError(
+        f"output {output} lies inside the preserved legacy replay "
+        f"directory {legacy} — legacy 42-row/2196-row outputs are "
+        "read-only diagnostic evidence; corrected nested-role outputs "
+        f"belong under {DEFAULT_OUTPUT_ROOT}")
+
+
 def split_facts(raw: np.ndarray, *, observation_count: int,
                 observation_manifest_sha256: str) -> dict:
     """Every emitted per-split fact the outcome rule derives from."""
@@ -431,6 +520,17 @@ def run_replay(artifact_key: str, *, device: str,
                 "flat-hold replay: env advanced on forced zero actions "
                 "(HOLD under every threshold); policy queried "
                 "deterministically on each pre-step observation"),
+            "nested_roles": (
+                "APPROVED nested evidence roles (finding 224): "
+                "train_monitor 2022 (2190 scored + 256 context) and "
+                "inner_validation 2023 (2190 scored + 256 context) "
+                "from the typed nested split contract, mode l1; per-"
+                "role CSV sha and row counts verified against pins"),
+            "context_exclusion": (
+                "the last scored_rows recorded actions are scored; "
+                "earlier steps are the forced-hold context/warmup "
+                "prefix, excluded from every fact "
+                "(scored_action_slice)"),
             "arm_config": LADDER_ARM,
             "eval_solvency_mode": "normal_realistic",
             "thresholds_applied_analytically": [THRESHOLD_EASY,
@@ -500,6 +600,37 @@ def run_replay(artifact_key: str, *, device: str,
             eval_config["load_model"] = str(artifact_path)
             eval_config["quiet_mode"] = True
             eval_config["return_trace_dir"] = None
+
+            # Finding 224: bind the typed nested split contract into
+            # the EXECUTING eval config — sha verified against the
+            # ladder held-fixed binding BEFORE any materialization;
+            # the legacy explicit-window fields are removed so the
+            # legacy split branch is unreachable.
+            nested_pin = contract["common"]["nested_split_contract"]
+            nested_path = REPO / nested_pin["path"]
+            nested_refusal = verify_sha256(
+                nested_path, nested_pin["sha256"],
+                "nested split contract")
+            if nested_refusal:
+                raise RuntimeError(nested_refusal)
+            for legacy_key in ("train_years", "val_years", "test_years",
+                               "train_start", "train_end",
+                               "validation_start", "validation_end",
+                               "val_start", "val_end",
+                               "test_start", "test_end"):
+                eval_config.pop(legacy_key, None)
+            eval_config["nested_split_contract"] = str(nested_path)
+            eval_config["nested_split_mode"] = "l1"
+            eval_config["nested_split_dir"] = str(
+                Path(scratch) / "nested_splits")
+            eval_config["selection_metric"] = \
+                "paired_generalization_weekly_v1"
+            payload["nested_split_contract"] = {
+                "path": str(nested_pin["path"]),
+                "sha256": nested_pin["sha256"],
+                "mode": "l1",
+            }
+
             payload["config_identity"] = identity
             payload["resolved_eval_config_sha256"] = (
                 sysid.resolved_config_sha256(eval_config))
@@ -544,16 +675,45 @@ def run_replay(artifact_key: str, *, device: str,
                         plug.close()
                     except Exception:
                         pass
+                # Finding 224: pin verification per role BEFORE facts.
+                pins = NESTED_ROLE_PINS[label]
+                csv_sha = sysid.sha_file(Path(csv_path))
+                csv_rows = _csv_row_count(Path(csv_path))
+                if csv_sha != pins["csv_sha256"]:
+                    refusals.append(
+                        f"split {label}: csv sha {csv_sha[:16]}… != "
+                        f"pinned {pins['csv_sha256'][:16]}… — wrong "
+                        "role csv")
+                expected_rows = (pins["scored_rows"]
+                                 + pins["context_rows"])
+                if csv_rows != expected_rows:
+                    refusals.append(
+                        f"split {label}: csv has {csv_rows} rows, "
+                        f"pinned scored+context is {expected_rows}")
+                scored = replay["raw_actions"]
+                context_excluded = 0
+                try:
+                    scored, context_excluded = scored_action_slice(
+                        replay["raw_actions"], pins["scored_rows"])
+                except ValueError as exc:
+                    refusals.append(f"split {label}: {exc}")
                 facts = split_facts(
-                    replay["raw_actions"],
+                    scored,
                     observation_count=replay["observation_count"],
                     observation_manifest_sha256=replay[
                         "observation_manifest_sha256"])
                 facts.update({
                     "split_key": key,
+                    "nested_role": label,
                     "split_csv_path": str(csv_path),
-                    "split_csv_sha256": sysid.sha_file(Path(csv_path)),
-                    "split_csv_rows": _csv_row_count(Path(csv_path)),
+                    "split_csv_sha256": csv_sha,
+                    "split_csv_rows": csv_rows,
+                    "scored_rows_pinned": pins["scored_rows"],
+                    "context_rows_pinned": pins["context_rows"],
+                    "context_steps_excluded": context_excluded,
+                    "context_forced_hold": True,
+                    "full_action_vector_sha256": action_vector_sha256(
+                        replay["raw_actions"]),
                     "observation_shape": replay["observation_shape"],
                     "termination": {
                         "terminated": replay["terminated"],
@@ -596,25 +756,38 @@ def main() -> int:
                         choices=sorted(ARTIFACTS))
     parser.add_argument("--device", required=True,
                         choices=("cuda", "cpu"))
-    parser.add_argument("--output", required=True, type=Path,
+    parser.add_argument("--output", required=False, type=Path,
+                        default=None,
                         help="JSON result path (never inside a sealed "
-                             "collection root)")
+                             "collection root and never inside the "
+                             "preserved legacy replay directory); "
+                             "default: "
+                             f"{DEFAULT_OUTPUT_ROOT}/<artifact>_"
+                             "<device>.json")
     parser.add_argument("--contract", type=Path, default=None,
                         help="contract override FOR TESTS ONLY; the "
                              "default enforces the pinned ladder "
                              "contract sha256")
     args = parser.parse_args()
 
+    try:
+        output = resolve_output_path(args.output, args.artifact,
+                                     args.device)
+    except ValueError as exc:
+        print(json.dumps({"outcome": OUTCOME_INCONCLUSIVE,
+                          "refusals": [str(exc)]}), flush=True)
+        return EXIT_CLASS[OUTCOME_INCONCLUSIVE]
+
     payload = run_replay(args.artifact, device=args.device,
                          contract_path=args.contract)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write_json(args.output, payload)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(output, payload)
     print(json.dumps({
         "outcome": payload["outcome"],
         "artifact": args.artifact,
         "split_outcomes": payload.get("split_outcomes"),
         "refusals": payload.get("refusals"),
-        "output": str(args.output),
+        "output": str(output),
     }, default=str), flush=True)
     return EXIT_CLASS.get(payload["outcome"],
                           EXIT_CLASS[OUTCOME_INCONCLUSIVE])

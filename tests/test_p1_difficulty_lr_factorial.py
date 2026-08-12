@@ -1,4 +1,5 @@
-"""P1 difficulty x P1 LR factorial launch gate (order 2026-08-11 WP4).
+"""P1 difficulty x P1 LR factorial launch gate (order 2026-08-11 WP4;
+corrections 224/225/226, order 2026-08-11 §3-§5).
 
 Socket-free proofs that:
 
@@ -11,23 +12,33 @@ Socket-free proofs that:
   entropy 0.2, one pass-equivalent budget) binds identically in every
   cell, and cross-seed same-cell diffs are exactly the seed + anchor
   bindings;
+* finding 224: the EXECUTABLE config binds the typed nested split
+  contract (path + verified sha), nested_split_mode=l1 and the paired
+  selection metric with NO legacy split window surviving; the
+  mandatory refusal matrix fires BEFORE training — wrong role path,
+  wrong role count, wrong role sha, outer used as inner, missing
+  context flag, context counted in score, paired-metric drift, any
+  sealed-test materialization;
 * cell_order is the contract's cyclic Latin square and the loader
-  refuses malformed contracts fail-closed (schema, anchors,
-  assignments, non-permutation / non-Latin / non-cyclic orders,
-  held-fixed drift, non-executable or oversized screen budgets);
+  refuses malformed contracts fail-closed;
 * the runner refuses before any model construction on wrong host,
   unbound/mismatched CUDA (WP13), a refused gpu_readiness launch gate
-  (fake probe heartbeat) and an unverifiable per-seed anchor;
-* every record carries the finding-223 terminal custody and the
-  finding-221 selected-checkpoint viability binding — a fake pipeline
-  result missing either is REFUSED, never certified;
-* complete records are reused (ALREADY_COMPLETE), invalid existing
-  records refuse overwrite, second claimants get ALREADY_RUNNING;
-* --screen-verdict evaluates the mechanics_screen gates: 16/16
-  presence (refusing on fewer, listing missing), custody and typed
-  viability gates, PHASE1_LR_REGION_COLLAPSED when every treatment
-  combination collapses at every seed, else SCREEN_VIABLE_REGION with
-  the exact viable cells.
+  and an unverifiable per-seed anchor;
+* every record carries the finding-223 terminal custody, the
+  finding-221 viability binding AND the finding-224 nested facts
+  (contract sha, manifest sha, per-role CSV shas, scored/context
+  counts, exact score dates);
+* finding 225: --screen-verdict REFUSES without the typed replica
+  proof; zero, 15, 17, duplicate, swapped, foreign, hash-altered and
+  loads=false proofs all refuse; replica_terminal_loads is a BOOLEAN;
+  per-checkpoint handoff facts and nested split identity are
+  revalidated at aggregation time;
+* finding 226: --mode decision runs under a distinct identity and
+  output root, starts from the ORIGINAL anchors, requires the passing
+  screen gate, restores the best checkpoint, performs ONE final
+  outer-validation evaluation, and --decision-verdict emits the
+  document-38 outcomes with per-seed paired effects and per-cell
+  weekly metrics with units.
 """
 from __future__ import annotations
 
@@ -182,7 +193,18 @@ class TestOneIntendedDeltaProperty:
             assert config["train_seed"] == 101, cell
             assert config["inactive_terminal_is_typed_result"] is \
                 True, cell
-            assert config["train_end"] == "2023-12-31T23:59:59", cell
+            # Finding 224: the nested contract IS the split authority.
+            nested_spec = contract["nested_split_contract"]
+            assert config["nested_split_contract"] == str(
+                REPO / nested_spec["path"]), cell
+            assert config["nested_split_mode"] == "l1", cell
+            assert config["selection_metric"] == \
+                "paired_generalization_weekly_v1", cell
+            for legacy in ("train_start", "train_end",
+                           "validation_start", "validation_end",
+                           "test_start", "test_end", "train_years",
+                           "val_years", "test_years"):
+                assert config.get(legacy) is None, (cell, legacy)
 
     def test_cross_seed_same_cell_diff_is_exactly_seed_and_anchor(
             self, bindings, tmp_path):
@@ -391,12 +413,17 @@ def _fake_evidence(epoch: int, label: str) -> dict:
 def _fake_result(config: dict, *, label: str = "VIABLE",
                  with_terminal: bool = True,
                  with_selected: bool = True,
-                 with_checkpoint_evidence: bool = True) -> dict:
+                 with_checkpoint_evidence: bool = True,
+                 with_best: bool = False) -> dict:
     out_dir = Path(config["save_model"]).parent
     terminal = out_dir / "model.terminal.zip"
     if with_terminal:
         terminal.parent.mkdir(parents=True, exist_ok=True)
         terminal.write_bytes(b"terminal-bytes-" + label.encode())
+    best = out_dir / "model.zip"
+    if with_best:
+        best.parent.mkdir(parents=True, exist_ok=True)
+        best.write_bytes(b"best-bytes-" + label.encode())
     history_rows = []
     for epoch in (0, 1):
         row = {"epoch": epoch,
@@ -430,7 +457,7 @@ def _fake_result(config: dict, *, label: str = "VIABLE",
     return {
         "terminal_model_path": (str(terminal) if with_terminal
                                 else None),
-        "best_model_path": None,
+        "best_model_path": str(best) if with_best else None,
         "history": [{"epoch": 1, "gradient_updates_total": 40_000}],
         "stop_reason": "max_epochs_budget",
         "termination_cause": None,
@@ -493,12 +520,82 @@ def _fake_dispatch_binding(uuid: str) -> dict:
     }
 
 
+def _fake_nested_roles_fn(contract: dict):
+    """Socket-free stand-in for materialize_nested_roles: echoes the
+    contract's pinned role facts (the real function verifies a fresh
+    materialization against these same pins)."""
+    spec = contract["nested_split_contract"]
+    pins = spec["role_facts"]
+
+    def fn(contract_arg, bindings_arg, out_dir):
+        split_dir = Path(out_dir) / "nested_splits"
+        roles = {}
+        for role, pin in pins.items():
+            entry = dict(pin)
+            if pin["status"] == "MATERIALIZED":
+                entry["csv"] = str(split_dir / f"{role}.csv")
+            roles[role] = entry
+        return {
+            "binding": {
+                "path": str(REPO / spec["path"]),
+                "contract_relative_path": spec["path"],
+                "sha256": spec["sha256"],
+                "mode": spec["mode"],
+                "context_bars": spec["context_bars"],
+                "role_facts_pinned": pins,
+            },
+            "split_dir": str(split_dir),
+            "manifest_path": str(split_dir /
+                                 "nested_split_manifest.json"),
+            "manifest_sha256": "d" * 64,
+            "roles": roles,
+        }
+    return fn
+
+
+def _fake_outer_eval(*, config, agent, best_model_path, nested_roles,
+                     seed, mean_weekly_rap: float = 0.01,
+                     trades: int = 7) -> dict:
+    role = nested_roles["roles"]["outer_validation"]
+    return {
+        "role": "outer_validation",
+        "purpose": "final truth ONLY — one evaluation after selection",
+        "csv_sha256": role["csv_sha256"],
+        "scored_rows": role["scored_rows"],
+        "context_rows_forced_hold": role["context_rows"],
+        "context_excluded_from_metrics": True,
+        "score_start": role["score_start"],
+        "score_end": role["score_end"],
+        "best_model_path": str(best_model_path),
+        "best_model_sha256": p1._sha_file(Path(best_model_path)),
+        "scored_steps": role["scored_rows"],
+        "metrics": {
+            "metric_schema": "trading.weekly.v1",
+            "total_return": 0.05,
+            "mean_weekly_return": 0.001,
+            "annualized_return": 0.05,
+            "annual_return": 0.052,
+            "mean_weekly_rap": mean_weekly_rap,
+            "annual_rap": 52 * mean_weekly_rap,
+            "max_drawdown_fraction": 0.1,
+            "evaluation_weeks": 52,
+        },
+        "weekly_return_vector": [0.001] * 52,
+        "trades_total": trades,
+        "activity": {"traded": trades > 0, "trades_total": trades},
+        "units": dict(p1.DECISION_METRIC_UNITS),
+    }
+
+
 @pytest.fixture()
 def runtime(bindings, tmp_path, monkeypatch):
-    """A runnable contract copy: tmp output root, tmp hash-bound
-    anchors, host/GPU environment pinned to the seed-101 assignment."""
+    """A runnable contract copy: tmp output roots (both modes), tmp
+    hash-bound anchors, host/GPU environment pinned to the seed-101
+    assignment, and a fake nested-roles verifier echoing the pins."""
     contract = copy.deepcopy(_contract())
     contract["output_root"] = str(tmp_path / "out")
+    contract["decision_run"]["output_root"] = str(
+        tmp_path / "out_decision")
     for seed in p1.SEEDS:
         anchor = tmp_path / f"anchor_seed{seed}.zip"
         anchor.write_bytes(f"anchor-bytes-{seed}".encode())
@@ -517,6 +614,7 @@ def runtime(bindings, tmp_path, monkeypatch):
         tensor_sha_fn=lambda path: FAKE_TENSOR_SHA,
         gate_heartbeat=_fake_gate_heartbeat([assigned]),
         dispatch_binding_fn=_fake_dispatch_binding,
+        nested_roles_fn=_fake_nested_roles_fn(contract),
     )
 
 
@@ -528,6 +626,7 @@ def _run_seed(runtime, **overrides):
         tensor_sha_fn=runtime.tensor_sha_fn,
         gate_heartbeat=runtime.gate_heartbeat,
         dispatch_binding_fn=runtime.dispatch_binding_fn,
+        nested_roles_fn=runtime.nested_roles_fn,
     )
     kwargs.update(overrides)
     return p1.run_seed(101, **kwargs)
@@ -593,6 +692,19 @@ class TestSeedBatch:
                 "optimizer_state_transferred"] is False
             assert record["factors"] == \
                 runtime.contract["cells"][cell]
+            # finding 224: nested facts bound in EVERY record.
+            spec = runtime.contract["nested_split_contract"]
+            assert record["nested_split_contract_sha256"] == \
+                spec["sha256"]
+            assert record["nested_split_manifest_sha256"]
+            assert record["selection_metric"] == \
+                "paired_generalization_weekly_v1"
+            for role, pin in spec["role_facts"].items():
+                got = record["nested_role_facts"][role]
+                for key in p1.NESTED_ROLE_FACT_KEYS:
+                    assert got[key] == pin[key], (role, key)
+            assert record["nested_role_facts"]["sealed_test"][
+                "status"] == "SEALED"
 
     def test_missing_terminal_artifact_is_refused_not_certified(
             self, runtime):
@@ -749,7 +861,8 @@ class TestRecordCustody:
                         gpu_dispatch_binding=None, gpu_gate=None,
                         pipeline_factory=FakePipeline,
                         agent_loader=runtime.agent_loader,
-                        tensor_sha_fn=runtime.tensor_sha_fn)
+                        tensor_sha_fn=runtime.tensor_sha_fn,
+                        nested_roles_fn=runtime.nested_roles_fn)
 
     def test_second_claimant_is_already_running(self, runtime):
         exp_id = p1.experiment_identity(runtime.contract,
@@ -766,7 +879,8 @@ class TestRecordCustody:
                 gpu_dispatch_binding=None, gpu_gate=None,
                 pipeline_factory=FakePipeline,
                 agent_loader=runtime.agent_loader,
-                tensor_sha_fn=runtime.tensor_sha_fn)
+                tensor_sha_fn=runtime.tensor_sha_fn,
+                nested_roles_fn=runtime.nested_roles_fn)
         finally:
             holder.release()
         assert outcome["outcome"] == "ALREADY_RUNNING"
@@ -780,6 +894,7 @@ class TestRecordCustody:
 def _verdict_record(contract, seed: int, cell: str, label: str,
                     tmp_path: Path, *, exp_id: str = "e" * 16,
                     trained: bool = True) -> dict:
+    spec = contract["nested_split_contract"]
     return {
         "schema": p1.RECORD_SCHEMA,
         "experiment_identity": exp_id,
@@ -789,13 +904,32 @@ def _verdict_record(contract, seed: int, cell: str, label: str,
         "factors": dict(contract["cells"][cell]),
         "contract_sha256": contract["_contract_sha256"],
         "terminal_model_path": str(
-            tmp_path / f"absent-{seed}-{cell}.zip"),
+            tmp_path / "root" / exp_id / f"seed{seed}" / cell /
+            "attempt-01" / "model.terminal.zip"),
         "terminal_model_sha256": "c" * 64,
+        # Finding 224: nested facts every record must bind.
+        "selection_metric": "paired_generalization_weekly_v1",
+        "nested_split_contract_path": spec["path"],
+        "nested_split_contract_sha256": spec["sha256"],
+        "nested_split_mode": "l1",
+        "nested_split_manifest_sha256": "d" * 64,
+        "nested_role_facts": {
+            role: {key: spec["role_facts"][role].get(key)
+                   for key in p1.NESTED_ROLE_FACT_KEYS}
+            for role in spec["role_facts"]},
         "handoff_viability": {
             "selected": {"handoff_viability": label,
                          "trained_treatment": trained},
             "selected_label": label,
             "selected_is_collapse": label in p1.COLLAPSE_LABELS,
+            # Finding 225: per-checkpoint facts revalidated at
+            # aggregation time.
+            "per_checkpoint": [
+                {"epoch": 0, "handoff_viability": "UNAVAILABLE",
+                 "trained_treatment": False},
+                {"epoch": 1, "handoff_viability": label,
+                 "trained_treatment": trained},
+            ],
         },
     }
 
@@ -806,17 +940,48 @@ def _all_records(contract, tmp_path, label_fn) -> dict:
             for seed in p1.SEEDS for cell in p1.CELLS}
 
 
+def _proof_for(contract, records) -> dict:
+    """A valid typed 16-entry replica proof for these records."""
+    identities = {rec["experiment_identity"]
+                  for rec in records.values()}
+    exp_id = sorted(identities)[0]
+    return {
+        "schema": p1.REPLICA_PROOF_SCHEMA,
+        "experiment_identity": exp_id,
+        "contract_sha256": contract["_contract_sha256"],
+        "replica_host": "dragon",
+        "collection_tree_digest": "f" * 64,
+        "proofs": [
+            {
+                "experiment_identity": rec["experiment_identity"],
+                "contract_sha256": contract["_contract_sha256"],
+                "seed": seed,
+                "cell": cell,
+                "cell_identity": rec["cell_identity"],
+                "terminal_relative_path":
+                    p1.expected_terminal_relative(rec),
+                "terminal_model_sha256": rec["terminal_model_sha256"],
+                "loads": True,
+            }
+            for (seed, cell), rec in sorted(records.items())
+        ],
+    }
+
+
 class TestScreenVerdict:
     def test_all_viable_region(self, tmp_path):
         contract = _contract()
         records = _all_records(contract, tmp_path,
                                lambda s, c: "VIABLE")
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_VIABLE_REGION"
         assert code == 0
         assert len(payload["viable_cells"]) == 16
         assert payload["collapsed_cells"] == []
         assert "none" in payload["performance_claims"]
+        assert payload["gates"]["replica_terminal_loads"] is True
 
     def test_total_collapse_is_the_typed_region_collapse(
             self, tmp_path):
@@ -827,7 +992,9 @@ class TestScreenVerdict:
                   "P1E_LR3E5": "BELOW_NORMAL_THRESHOLD"}
         records = _all_records(contract, tmp_path,
                                lambda s, c: labels[c])
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "PHASE1_LR_REGION_COLLAPSED"
         assert code == 0
         assert len(payload["collapsed_cells"]) == 16
@@ -843,7 +1010,9 @@ class TestScreenVerdict:
                 return "NO_TRADE"       # not CONSTANT, not BELOW
             return "CONSTANT_POLICY"
         records = _all_records(contract, tmp_path, label)
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_VIABLE_REGION"
         assert payload["viable_cells"] == [
             {"seed": 303, "cell": "P1E_LR3E5",
@@ -858,7 +1027,9 @@ class TestScreenVerdict:
         records = _all_records(contract, tmp_path,
                                lambda s, c: "VIABLE")
         del records[(202, "P1E_LR1E4")]
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_REFUSED"
         assert code == 4
         assert payload["missing_records"] == [
@@ -869,7 +1040,9 @@ class TestScreenVerdict:
         records = _all_records(contract, tmp_path,
                                lambda s, c: "VIABLE")
         records[(404, "P1N_LR1E4")]["terminal_model_sha256"] = ""
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_REFUSED"
         assert code == 4
         assert payload["custody_failures"][0]["seed"] == 404
@@ -882,7 +1055,9 @@ class TestScreenVerdict:
                                lambda s, c: "VIABLE")
         records[(101, "P1N_LR3E5")]["handoff_viability"]["selected"][
             "handoff_viability"] = "UNAVAILABLE"
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_REFUSED"
         assert any(f["seed"] == 101
                    for f in payload["viability_failures"])
@@ -893,7 +1068,9 @@ class TestScreenVerdict:
                                lambda s, c: "VIABLE")
         records[(101, "P1N_LR1E4")]["handoff_viability"]["selected"][
             "trained_treatment"] = False
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_REFUSED"
         assert "trained treatment" in \
             payload["viability_failures"][0]["error"]
@@ -903,25 +1080,81 @@ class TestScreenVerdict:
         records = _all_records(contract, tmp_path,
                                lambda s, c: "VIABLE")
         records[(303, "P1N_LR1E4")]["experiment_identity"] = "f" * 16
-        payload, code = p1.screen_verdict(contract, records=records)
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_REFUSED"
         assert any("fragmentation" in reason
                    for reason in payload["reasons"])
+
+    def test_missing_per_checkpoint_facts_refuse_at_aggregation(
+            self, tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        records[(202, "P1N_LR3E5")]["handoff_viability"].pop(
+            "per_checkpoint")
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "SCREEN_REFUSED"
+        assert payload["gates"][
+            "per_checkpoint_facts_revalidated"] is False
+        assert any("per-checkpoint" in f["error"]
+                   for f in payload["checkpoint_failures"])
+
+    def test_nested_identity_drift_refuses_at_aggregation(
+            self, tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        records[(303, "P1E_LR1E4")]["nested_split_contract_sha256"] = \
+            "0" * 64
+        records[(404, "P1E_LR3E5")]["nested_role_facts"][
+            "inner_validation"]["scored_rows"] = 2196
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "SCREEN_REFUSED"
+        assert payload["gates"][
+            "nested_split_identity_revalidated"] is False
+        errors = " ".join(f["error"]
+                          for f in payload["nested_identity_failures"])
+        assert "nested_split_contract_sha256" in errors
+        assert "inner_validation" in errors
+
+    def test_legacy_selection_metric_in_a_record_refuses(
+            self, tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        records[(101, "P1E_LR1E4")]["selection_metric"] = \
+            "lexicographic_weekly_v1"
+        payload, code = p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "SCREEN_REFUSED"
+        assert any("paired" in f["error"]
+                   for f in payload["nested_identity_failures"])
 
     def test_disk_discovery_reads_the_sixteen_records(self, tmp_path):
         contract = _contract()
         exp_id = "a" * 16
         root = tmp_path / "root"
+        records = {}
         for seed in p1.SEEDS:
             for cell in p1.CELLS:
                 record = _verdict_record(contract, seed, cell,
                                          "VIABLE", tmp_path,
                                          exp_id=exp_id)
+                records[(seed, cell)] = record
                 cell_dir = root / exp_id / f"seed{seed}" / cell
                 cell_dir.mkdir(parents=True)
                 (cell_dir / "cell_record.json").write_text(
                     json.dumps(record))
-        payload, code = p1.screen_verdict(contract, records_root=root)
+        payload, code = p1.screen_verdict(
+            contract, records_root=root,
+            replica_proof=_proof_for(contract, records))
         assert payload["outcome"] == "SCREEN_VIABLE_REGION"
         assert payload["experiment_identity"] == exp_id
 
@@ -935,6 +1168,571 @@ class TestScreenVerdict:
         assert payload["outcome"] == "SCREEN_REFUSED"
         assert code == 4
         assert "--experiment-id" in payload["reasons"][0]
+
+
+# ---------------------------------------------------------------------------
+# (g) finding 225: the replica proof is a REAL gate
+# ---------------------------------------------------------------------------
+
+class TestReplicaProofGate:
+    def _viable(self, tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        return contract, records
+
+    def test_no_proof_refuses_and_gate_is_boolean_false(
+            self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        payload, code = p1.screen_verdict(contract, records=records)
+        assert payload["outcome"] == "SCREEN_REFUSED"
+        assert code == 4
+        assert payload["gates"]["replica_terminal_loads"] is False
+        assert isinstance(payload["gates"]["replica_terminal_loads"],
+                          bool)
+        assert any("replica proof required" in r
+                   for r in payload["reasons"])
+
+    def test_valid_sixteen_proof_passes(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        ok, refusals, facts = p1.validate_replica_proof(
+            proof, contract=contract, records=records)
+        assert (ok, refusals) == (True, [])
+        assert facts["entries_bound"] == 16
+
+    def _refused(self, contract, records, proof):
+        payload, code = p1.screen_verdict(contract, records=records,
+                                          replica_proof=proof)
+        assert payload["outcome"] == "SCREEN_REFUSED"
+        assert code == 4
+        assert payload["gates"]["replica_terminal_loads"] is False
+        return payload
+
+    def test_zero_proof_entries_refuse(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"] = []
+        payload = self._refused(contract, records, proof)
+        assert sum("NO entry" in r for r in
+                   payload["replica_proof_refusals"]) == 16
+
+    def test_fifteen_proof_entries_refuse(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"] = proof["proofs"][:15]
+        payload = self._refused(contract, records, proof)
+        assert any("NO entry" in r
+                   for r in payload["replica_proof_refusals"])
+
+    def test_seventeen_proof_entries_refuse(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"].append(dict(proof["proofs"][0]))
+        payload = self._refused(contract, records, proof)
+        assert any("duplicate" in r
+                   for r in payload["replica_proof_refusals"])
+
+    def test_duplicate_entry_refuses(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"][1] = dict(proof["proofs"][0])
+        payload = self._refused(contract, records, proof)
+        refusals = " ".join(payload["replica_proof_refusals"])
+        assert "duplicate" in refusals and "NO entry" in refusals
+
+    def test_swapped_entries_refuse(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        a, b = proof["proofs"][0], proof["proofs"][1]
+        a["terminal_relative_path"], b["terminal_relative_path"] = (
+            b["terminal_relative_path"], a["terminal_relative_path"])
+        payload = self._refused(contract, records, proof)
+        assert any("relative path" in r
+                   for r in payload["replica_proof_refusals"])
+
+    def test_foreign_entry_refuses(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"][0]["seed"] = 999
+        payload = self._refused(contract, records, proof)
+        refusals = " ".join(payload["replica_proof_refusals"])
+        assert "foreign" in refusals
+
+    def test_hash_altered_entry_refuses(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"][5]["terminal_model_sha256"] = "0" * 64
+        payload = self._refused(contract, records, proof)
+        assert any("hash-altered or swapped" in r
+                   for r in payload["replica_proof_refusals"])
+
+    def test_loads_false_refuses(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"][3]["loads"] = False
+        payload = self._refused(contract, records, proof)
+        assert any("did not load" in r
+                   for r in payload["replica_proof_refusals"])
+
+    def test_loads_as_text_refuses(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["proofs"][3]["loads"] = "verified externally"
+        payload = self._refused(contract, records, proof)
+        assert any("did not load" in r
+                   for r in payload["replica_proof_refusals"])
+
+    def test_wrong_schema_or_identity_refuses(self, tmp_path):
+        contract, records = self._viable(tmp_path)
+        proof = _proof_for(contract, records)
+        proof["schema"] = "agent_multi.other.v1"
+        proof["experiment_identity"] = "f" * 16
+        payload = self._refused(contract, records, proof)
+        refusals = " ".join(payload["replica_proof_refusals"])
+        assert "schema" in refusals and "identity" in refusals
+
+
+# ---------------------------------------------------------------------------
+# (h) finding 224: the mandatory pre-training refusal matrix
+# ---------------------------------------------------------------------------
+
+class TestNestedBindingRefusals:
+    def _pins(self):
+        return copy.deepcopy(
+            _contract()["nested_split_contract"]["role_facts"])
+
+    def _manifest_roles(self):
+        contract = _contract()
+        roles = {}
+        for role, pin in contract["nested_split_contract"][
+                "role_facts"].items():
+            entry = dict(pin)
+            entry.pop("score_start", None)
+            entry["score_start"] = pin["score_start"]
+            entry["score_end"] = pin["score_end"]
+            if pin["status"] == "MATERIALIZED":
+                entry["csv"] = f"/tmp/{role}.csv"
+            else:
+                entry.pop("csv_sha256")
+                entry.pop("scored_rows")
+                entry.pop("context_rows")
+            roles[role] = {k: v for k, v in entry.items()
+                           if v is not None or k == "status"}
+        return roles
+
+    def test_wrong_role_path_refuses(self, bindings, tmp_path):
+        contract = copy.deepcopy(_contract())
+        contract["nested_split_contract"]["path"] = \
+            "examples/config/does_not_exist.json"
+        with pytest.raises(RuntimeError, match="wrong role path"):
+            p1.verify_nested_split_binding(contract, bindings)
+
+    def test_wrong_role_sha_refuses(self, bindings):
+        contract = copy.deepcopy(_contract())
+        contract["nested_split_contract"]["sha256"] = "0" * 64
+        with pytest.raises(RuntimeError, match="wrong role sha"):
+            p1.verify_nested_split_binding(contract, bindings)
+
+    def test_wrong_role_count_refuses(self):
+        roles = self._manifest_roles()
+        roles["train_monitor"]["scored_rows"] = 2189
+        refusals = p1.verify_role_facts(roles, self._pins())
+        assert any("train_monitor: scored_rows" in r for r in refusals)
+
+    def test_context_counted_in_score_refuses(self):
+        # A materializer that counted the 256 context rows as scored
+        # rows drifts BOTH counts — the pins catch either direction.
+        roles = self._manifest_roles()
+        roles["inner_validation"]["scored_rows"] = 2190 + 256
+        roles["inner_validation"]["context_rows"] = 0
+        refusals = p1.verify_role_facts(roles, self._pins())
+        assert any("inner_validation: scored_rows" in r
+                   for r in refusals)
+        assert any("inner_validation: context_rows" in r
+                   for r in refusals)
+
+    def test_missing_context_flag_refuses(self):
+        roles = self._manifest_roles()
+        roles["outer_validation"]["context_rows"] = None
+        refusals = p1.verify_role_facts(roles, self._pins())
+        assert any("outer_validation: context_rows" in r
+                   for r in refusals)
+
+    def test_wrong_role_csv_sha_refuses(self):
+        roles = self._manifest_roles()
+        roles["fit_train"]["csv_sha256"] = "0" * 64
+        refusals = p1.verify_role_facts(roles, self._pins())
+        assert any("fit_train: csv_sha256" in r for r in refusals)
+
+    def test_sealed_test_materialization_refuses(self):
+        roles = self._manifest_roles()
+        roles["sealed_test"] = {
+            "status": "MATERIALIZED", "csv": "/tmp/sealed_test.csv",
+            "csv_sha256": "1" * 64, "scored_rows": 2190,
+            "context_rows": 256}
+        refusals = p1.verify_role_facts(roles, self._pins())
+        assert any("sealed 2025 may never be materialized" in r
+                   for r in refusals)
+        assert any("csv_sha256" in r and "sealed" in r.lower()
+                   for r in refusals)
+
+    def test_outer_used_as_inner_refuses(self):
+        contract = _contract()
+        nested = json.loads(
+            (REPO / contract["nested_split_contract"]["path"])
+            .read_text())
+        # swap the inner/outer role windows: the 2024 outer year now
+        # occupies the inner selection slot.
+        nested["roles"]["inner_validation"], \
+            nested["roles"]["outer_validation"] = (
+                nested["roles"]["outer_validation"],
+                nested["roles"]["inner_validation"])
+        refusals = p1.verify_role_semantics(
+            nested, contract["nested_split_contract"]["role_facts"])
+        assert refusals
+        assert any("inner" in r for r in refusals)
+
+    def test_paired_metric_drift_refuses_at_load(self, tmp_path):
+        contract = copy.deepcopy(_contract())
+        contract["selection_metric"] = "lexicographic_weekly_v1"
+        path = _write_contract(tmp_path, contract)
+        with pytest.raises(ValueError, match="lexicographic"):
+            p1.load_contract(path)
+
+    def test_materialize_refuses_before_training_on_bad_nested_pin(
+            self, bindings, tmp_path):
+        contract = copy.deepcopy(_contract())
+        contract["nested_split_contract"]["sha256"] = "0" * 64
+        with pytest.raises(RuntimeError, match="wrong role sha"):
+            p1.materialize_cell_config(contract, bindings, 101,
+                                       "P1N_LR1E4", tmp_path / "out")
+
+    def test_runner_refuses_before_training_via_nested_roles_fn(
+            self, runtime):
+        def refusing_fn(contract, bindings, out_dir):
+            raise RuntimeError(
+                "nested role facts refused before training: test")
+        summary = _run_seed(runtime, nested_roles_fn=refusing_fn)
+        assert summary["outcome"] == "SEED_FAILED"
+        for facts in summary["cells"].values():
+            assert "refused before training" in facts["error"]
+        # the pipeline never ran: refusal precedes model construction
+        assert not FakePipeline.calls
+
+    def test_experiment_identity_binds_the_nested_contract(
+            self, bindings):
+        contract = _contract()
+        base = p1.experiment_identity(contract, bindings,
+                                      sources=CLEAN_SOURCES)
+        moved = copy.deepcopy(contract)
+        moved["nested_split_contract"]["sha256"] = "9" * 64
+        assert p1.experiment_identity(
+            moved, bindings, sources=CLEAN_SOURCES) != base
+
+
+# ---------------------------------------------------------------------------
+# (i) finding 226: decision mode + decision verdict
+# ---------------------------------------------------------------------------
+
+def _viable_screen_gate(contract) -> dict:
+    return {
+        "schema": p1.VERDICT_SCHEMA,
+        "outcome": "SCREEN_VIABLE_REGION",
+        "contract_sha256": contract["_contract_sha256"],
+        "gates": {"replica_terminal_loads": True},
+    }
+
+
+class TestDecisionMode:
+    def test_decision_identity_and_root_are_distinct(self, bindings):
+        contract = _contract()
+        screen = p1.experiment_identity(contract, bindings,
+                                        sources=CLEAN_SOURCES,
+                                        mode="screen")
+        decision = p1.experiment_identity(contract, bindings,
+                                          sources=CLEAN_SOURCES,
+                                          mode="decision")
+        assert screen != decision
+        assert p1.output_root_for_mode(contract, "screen") != \
+            p1.output_root_for_mode(contract, "decision")
+
+    def test_decision_config_carries_document38_stopping(
+            self, bindings, tmp_path):
+        contract = _contract()
+        config = p1.materialize_cell_config(
+            contract, bindings, 101, "P1N_LR1E4", tmp_path / "out",
+            mode="decision")
+        config.pop("_identity")
+        assert config["max_epochs"] == 1996
+        assert config["easy_max_epochs"] == 4
+        assert config["l1_patience"] == 60
+        assert config["l1_patience_start_epoch"] == 40
+        assert config["total_max_passes"] == 2000
+        assert config["learning_rate"] == pytest.approx(3e-5)
+        assert config["selection_metric"] == \
+            "paired_generalization_weekly_v1"
+        assert config["nested_split_contract"]
+        assert config["evaluate_test_split"] is False
+        # decision cells start from the ORIGINAL per-seed anchor
+        anchor = contract["anchors"]["101"]
+        assert config["warm_start_model"] == str(
+            Path(anchor["path"]).expanduser())
+        assert config["warm_start_model_sha256"] == anchor["sha256"]
+
+    def test_anchor_under_an_output_root_is_refused(self, bindings,
+                                                    tmp_path):
+        contract = copy.deepcopy(_contract())
+        contract["output_root"] = str(tmp_path / "out")
+        fake_terminal = (tmp_path / "out" / "old-screen" /
+                         "model.terminal.zip")
+        fake_terminal.parent.mkdir(parents=True)
+        fake_terminal.write_bytes(b"screen-terminal")
+        contract["anchors"]["101"] = {
+            "path": str(fake_terminal),
+            "sha256": p1._sha_file(fake_terminal)}
+        with pytest.raises(RuntimeError, match="never anchor"):
+            p1.materialize_cell_config(contract, bindings, 101,
+                                       "P1N_LR1E4",
+                                       tmp_path / "cell",
+                                       mode="decision")
+
+    def test_decision_without_screen_gate_is_refused(self, runtime):
+        summary = _run_seed(runtime, mode="decision")
+        assert summary["outcome"] == "REFUSED_DECISION_UNGATED"
+        assert not FakePipeline.calls
+
+    def test_decision_with_failed_gate_is_refused(self, runtime):
+        gate = _viable_screen_gate(runtime.contract)
+        gate["gates"]["replica_terminal_loads"] = (
+            "EXTERNAL_COLLECTOR_REQUIRED")
+        summary = _run_seed(runtime, mode="decision",
+                            screen_gate=gate)
+        assert summary["outcome"] == "REFUSED_DECISION_UNGATED"
+        assert "replica" in summary["reason"]
+        assert not FakePipeline.calls
+
+    def test_decision_seed_runs_and_records_outer_truth(self,
+                                                        runtime):
+        def factory(config):
+            return FakePipeline(config, with_best=True)
+        summary = _run_seed(
+            runtime, mode="decision",
+            screen_gate=_viable_screen_gate(runtime.contract),
+            pipeline_factory=factory,
+            outer_eval_fn=_fake_outer_eval)
+        assert summary["outcome"] == "SEED_COMPLETE"
+        assert summary["mode"] == "decision"
+        exp_id = summary["experiment_identity"]
+        out_root = Path(runtime.contract["decision_run"][
+            "output_root"])
+        for cell in p1.CELLS:
+            record = json.loads(
+                (out_root / exp_id / "seed101" / cell /
+                 "cell_record.json").read_text())
+            assert record["mode"] == "decision"
+            assert record["evidence_class"] == "decision_run"
+            assert record["decision_eligible"] is True
+            outer = record["outer_validation_final"]
+            assert outer["role"] == "outer_validation"
+            assert outer["context_excluded_from_metrics"] is True
+            assert outer["metrics"]["mean_weekly_rap"] == \
+                pytest.approx(0.01)
+            assert len(outer["weekly_return_vector"]) == 52
+            assert record["best_model_path"]
+        # every decision cell warm-started from the ORIGINAL anchor
+        anchor = runtime.contract["anchors"]["101"]
+        for config in FakePipeline.calls:
+            assert config["warm_start_model"] == anchor["path"]
+
+    def test_decision_without_best_checkpoint_is_refused(self,
+                                                         runtime):
+        summary = _run_seed(
+            runtime, mode="decision",
+            screen_gate=_viable_screen_gate(runtime.contract),
+            outer_eval_fn=_fake_outer_eval)
+        assert summary["outcome"] == "SEED_FAILED"
+        for facts in summary["cells"].values():
+            assert "best checkpoint" in facts["error"]
+
+
+def _decision_records(contract, tmp_path, rap_fn, trades_fn=None):
+    trades_fn = trades_fn or (lambda s, c: 7)
+    records = {}
+    for seed in p1.SEEDS:
+        for cell in p1.CELLS:
+            record = _verdict_record(contract, seed, cell, "VIABLE",
+                                     tmp_path)
+            record["mode"] = "decision"
+            record["evidence_class"] = "decision_run"
+            rap = rap_fn(seed, cell)
+            trades = trades_fn(seed, cell)
+            record["outer_validation_final"] = {
+                "role": "outer_validation",
+                "metrics": {
+                    "mean_weekly_rap": rap,
+                    "mean_weekly_return": rap,
+                    "annualized_return": 52 * rap,
+                    "annual_return": 52 * rap,
+                    "annual_rap": 52 * rap,
+                    "max_drawdown_fraction": 0.1,
+                    "evaluation_weeks": 52,
+                },
+                "weekly_return_vector": [rap] * 52,
+                "trades_total": trades,
+                "activity": {"traded": trades > 0,
+                             "trades_total": trades},
+            }
+            records[(seed, cell)] = record
+    return records
+
+
+class TestDecisionVerdict:
+    def test_lr_main_effect(self, tmp_path):
+        contract = _contract()
+
+        def rap(seed, cell):
+            return 0.02 if cell.endswith("LR3E5") else 0.01
+        records = _decision_records(contract, tmp_path, rap)
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "PHASE1_LR_MAIN_EFFECT"
+        assert code == 0
+        effects = payload["per_seed_paired_effects"]
+        for seed in p1.SEEDS:
+            assert effects[str(seed)]["phase1_lr_effect"] == \
+                pytest.approx(0.01)
+            assert effects[str(seed)][
+                "lr_x_difficulty_interaction"] == pytest.approx(0.0)
+        cell = payload["per_cell_metrics"]["seed101/P1N_LR3E5"]
+        assert cell["mean_weekly_rap"] == pytest.approx(0.02)
+        assert len(cell["weekly_return_vector"]) == 52
+        assert "fraction per week" in cell["units_and_horizons"][
+            "mean_weekly_rap"]
+
+    def test_difficulty_main_effect(self, tmp_path):
+        contract = _contract()
+
+        def rap(seed, cell):
+            return 0.03 if cell.startswith("P1E") else 0.01
+        records = _decision_records(contract, tmp_path, rap)
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "PHASE1_DIFFICULTY_MAIN_EFFECT"
+        assert code == 0
+
+    def test_interaction(self, tmp_path):
+        contract = _contract()
+
+        def rap(seed, cell):
+            return 0.04 if cell == "P1E_LR3E5" else 0.01
+        records = _decision_records(contract, tmp_path, rap)
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == \
+            "PHASE1_LR_DIFFICULTY_INTERACTION"
+
+    def test_no_material_effect(self, tmp_path):
+        contract = _contract()
+
+        def rap(seed, cell):
+            # sign flips across seeds: nothing is sign-consistent
+            return 0.01 if (seed + len(cell)) % 2 else -0.01
+        records = _decision_records(
+            contract, tmp_path,
+            lambda s, c: 0.01 if s in (101, 303) else 0.01)
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "NO_MATERIAL_EFFECT"
+        assert code == 0
+
+    def test_total_activity_collapse(self, tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.0,
+                                    trades_fn=lambda s, c: 0)
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "TOTAL_ACTIVITY_COLLAPSE"
+        assert code == 0
+
+    def test_screen_record_never_aggregates_as_decision(
+            self, tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01)
+        records[(101, "P1N_LR1E4")]["mode"] = "screen"
+        records[(101, "P1N_LR1E4")]["evidence_class"] = \
+            "mechanics_screen"
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert code == 4
+        assert any("not a decision_run record" in r
+                   for r in payload["reasons"])
+
+    def test_missing_outer_truth_is_inconclusive(self, tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01)
+        records[(202, "P1E_LR3E5")].pop("outer_validation_final")
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert any("outer" in r for r in payload["reasons"])
+
+    def test_no_replica_proof_is_inconclusive(self, tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01)
+        payload, code = p1.decision_verdict(contract, records=records)
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert payload["gates"]["replica_terminal_loads"] is False
+
+    def test_outcomes_enum_matches_the_contract(self):
+        contract = _contract()
+        assert tuple(contract["decision_run"]["decision_outcomes"]) \
+            == p1.DECISION_OUTCOMES
+
+
+# ---------------------------------------------------------------------------
+# (j) the no-training materialization preflight (acceptance boundary)
+# ---------------------------------------------------------------------------
+
+class TestPreflight:
+    def test_preflight_proves_roles_sealing_and_identities(
+            self, bindings):
+        contract = _contract()
+        payload, code = p1.preflight(contract, bindings)
+        assert payload["outcome"] == "PREFLIGHT_PASS", \
+            payload["refusals"]
+        assert code == 0
+        assert payload["training_used"] is False
+        # exact nested role counts/hashes
+        pins = contract["nested_split_contract"]["role_facts"]
+        for role, pin in pins.items():
+            got = payload["nested_role_facts"][role]
+            for key in p1.NESTED_ROLE_FACT_KEYS:
+                assert got[key] == pin[key], (role, key)
+        # sealed-test absence
+        assert payload["sealed_test_state"] == "SEALED"
+        assert payload["sealed_test_csv_absent"] is True
+        # paired selection everywhere, both modes
+        for mode in p1.MODES:
+            facts = payload["modes"][mode]
+            assert facts["selection_metrics_materialized"] == [
+                "paired_generalization_weekly_v1"]
+            assert facts["evaluate_test_split_values"] == [False]
+            assert len(set(facts["cell_identities"].values())) == 16
+        assert payload["modes"]["screen"]["experiment_identity"] != \
+            payload["modes"]["decision"]["experiment_identity"]
 
 
 # ---------------------------------------------------------------------------

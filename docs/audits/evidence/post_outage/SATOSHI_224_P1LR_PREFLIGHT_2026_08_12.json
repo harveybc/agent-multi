@@ -1,0 +1,115 @@
+{
+ "contract_sha256": "8405b70b312e7a158f34653d563712c02f85de6800978a23e2bcbb9202d70f7c",
+ "generated_utc": "2026-08-12T08:59:49.584236+00:00",
+ "held_fixed_bindings_contract_sha256": "c26fbed45581c2a2322162f30497b1be32fd631067953c4da5d618cf4ed4e604",
+ "modes": {
+  "decision": {
+   "cell_identities": {
+    "101:P1E_LR1E4": "7ea5242d34c5dc4a",
+    "101:P1E_LR3E5": "96ccc7b7664b8fd5",
+    "101:P1N_LR1E4": "68ea0c916dbc4108",
+    "101:P1N_LR3E5": "d0fb8cb0e99a10e2",
+    "202:P1E_LR1E4": "53bf65029384a652",
+    "202:P1E_LR3E5": "bdd6f6c1af73f01c",
+    "202:P1N_LR1E4": "f5d445d81c442479",
+    "202:P1N_LR3E5": "e3e7a7ce0daebb28",
+    "303:P1E_LR1E4": "18cbc1561f625b3c",
+    "303:P1E_LR3E5": "e81762bf7222a095",
+    "303:P1N_LR1E4": "937b95b3ab605070",
+    "303:P1N_LR3E5": "9e34f71951d1d348",
+    "404:P1E_LR1E4": "f26de932bc78166c",
+    "404:P1E_LR3E5": "7f51025bb620ce12",
+    "404:P1N_LR1E4": "0e9ecb17b7fc9231",
+    "404:P1N_LR3E5": "7844299de93956ae"
+   },
+   "evaluate_test_split_values": [
+    false
+   ],
+   "experiment_identity": "a24e5dfc03ee676a",
+   "output_root": "/home/harveybc/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1_decision",
+   "selection_metrics_materialized": [
+    "paired_generalization_weekly_v1"
+   ]
+  },
+  "screen": {
+   "cell_identities": {
+    "101:P1E_LR1E4": "ee5a985a21fd1115",
+    "101:P1E_LR3E5": "b92ce1a53d2beb72",
+    "101:P1N_LR1E4": "42e4a2e079792bd2",
+    "101:P1N_LR3E5": "4b7768ee4d9769df",
+    "202:P1E_LR1E4": "bee8e8c7981f0497",
+    "202:P1E_LR3E5": "ed2daf8539ebfe60",
+    "202:P1N_LR1E4": "cffc3346f8ff25d2",
+    "202:P1N_LR3E5": "6d75558fafc656db",
+    "303:P1E_LR1E4": "51b79bf3f24ca83d",
+    "303:P1E_LR3E5": "1ea8fdbbc65ddcad",
+    "303:P1N_LR1E4": "9c0d06cdd3153bf9",
+    "303:P1N_LR3E5": "d199a91c357f0ace",
+    "404:P1E_LR1E4": "96f643f2cea77256",
+    "404:P1E_LR3E5": "12c47622151379d5",
+    "404:P1N_LR1E4": "3470b0b93cc03c63",
+    "404:P1N_LR3E5": "254c2a70dde9c940"
+   },
+   "evaluate_test_split_values": [
+    false
+   ],
+   "experiment_identity": "85c01728a9e97c51",
+   "output_root": "/home/harveybc/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1",
+   "selection_metrics_materialized": [
+    "paired_generalization_weekly_v1"
+   ]
+  }
+ },
+ "nested_context_bars": 256,
+ "nested_role_facts": {
+  "fit_train": {
+   "context_rows": 0,
+   "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+   "score_end": "2022-12-31 20:00:00",
+   "score_start": "2017-09-28 04:00:00",
+   "scored_rows": 11509,
+   "status": "MATERIALIZED"
+  },
+  "inner_validation": {
+   "context_rows": 256,
+   "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+   "score_end": "2023-12-31 20:00:00",
+   "score_start": "2023-01-01 00:00:00",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  },
+  "outer_validation": {
+   "context_rows": 256,
+   "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+   "score_end": "2024-12-31 20:00:00",
+   "score_start": "2024-01-01 00:00:00",
+   "scored_rows": 2196,
+   "status": "MATERIALIZED"
+  },
+  "sealed_test": {
+   "context_rows": null,
+   "csv_sha256": null,
+   "score_end": null,
+   "score_start": null,
+   "scored_rows": null,
+   "status": "SEALED"
+  },
+  "train_monitor": {
+   "context_rows": 256,
+   "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+   "score_end": "2022-12-31 20:00:00",
+   "score_start": "2022-01-01 00:00:00",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  }
+ },
+ "nested_split_contract_path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+ "nested_split_contract_sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+ "nested_split_mode": "l1",
+ "outcome": "PREFLIGHT_PASS",
+ "refusals": [],
+ "schema": "agent_multi.p1_difficulty_lr_preflight.v1",
+ "sealed_test_csv_absent": true,
+ "sealed_test_state": "SEALED",
+ "training_used": false
+}

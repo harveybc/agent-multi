@@ -13,9 +13,14 @@ exercises the flat-hold replay loop, and the pure primitives prove
   stream), with only forced-hold zero actions ever reaching the env;
 * the typed refusal on artifact sha mismatch (including the
   ``run_replay`` early-refusal path that returns BEFORE any model
-  construction); and
+  construction);
 * every typed outcome branch of the documented rule, including the
-  audit-observed D2 epoch-1 action band.
+  audit-observed D2 epoch-1 action band;
+* finding 224 correction: the replay binds the APPROVED nested roles
+  (train_monitor + inner_validation, 2190 scored + 256 context each,
+  pinned csv shas), excludes the forced-hold context prefix from every
+  scored fact (``scored_action_slice``), and refuses to write inside
+  the preserved legacy output directory.
 """
 from __future__ import annotations
 
@@ -323,3 +328,60 @@ def test_overall_outcome_join_rules():
     payload = replay.refusal_result(["exact refusal"])
     assert payload["outcome"] == replay.OUTCOME_INCONCLUSIVE
     assert payload["refusals"] == ["exact refusal"]
+
+
+# ---------------------------------------------------------------------------
+# finding 224: nested roles, context exclusion, output custody
+# ---------------------------------------------------------------------------
+
+def test_replay_splits_are_the_approved_nested_roles():
+    assert replay.REPLAY_SPLITS == (
+        ("train_monitor", "train_monitor"),
+        ("inner_validation", "val"))
+    for role in ("train_monitor", "inner_validation"):
+        pins = replay.NESTED_ROLE_PINS[role]
+        assert pins["scored_rows"] == 2190
+        assert pins["context_rows"] == 256
+        assert len(pins["csv_sha256"]) == 64
+    # the two roles are distinct datasets
+    assert replay.NESTED_ROLE_PINS["train_monitor"]["csv_sha256"] != \
+        replay.NESTED_ROLE_PINS["inner_validation"]["csv_sha256"]
+
+
+def test_scored_action_slice_excludes_the_context_prefix():
+    raw = np.arange(2446, dtype=np.float32)
+    scored, excluded = replay.scored_action_slice(raw, 2190)
+    assert excluded == 256
+    assert scored.size == 2190
+    np.testing.assert_array_equal(scored, raw[256:])
+    # no context: nothing excluded
+    scored, excluded = replay.scored_action_slice(
+        np.arange(5, dtype=np.float32), 5)
+    assert excluded == 0
+    assert scored.size == 5
+
+
+def test_scored_action_slice_refuses_partial_windows():
+    with pytest.raises(ValueError, match="incomplete"):
+        replay.scored_action_slice(
+            np.arange(100, dtype=np.float32), 2190)
+    with pytest.raises(ValueError, match="positive"):
+        replay.scored_action_slice(
+            np.arange(10, dtype=np.float32), 0)
+
+
+def test_output_path_defaults_to_the_new_nested_directory():
+    out = replay.resolve_output_path(None, "d2_post_easy", "cuda")
+    assert str(replay.DEFAULT_OUTPUT_ROOT.expanduser()) in str(out)
+    assert out.name == "d2_post_easy_cuda.json"
+
+
+def test_output_path_refuses_the_preserved_legacy_directory():
+    legacy = (replay.LEGACY_OUTPUT_ROOT.expanduser()
+              / "new_result.json")
+    with pytest.raises(ValueError, match="legacy"):
+        replay.resolve_output_path(legacy, "anchor", "cpu")
+    # explicit non-legacy paths pass through unchanged
+    explicit = Path("/tmp/replay_out/result.json")
+    assert replay.resolve_output_path(explicit, "anchor", "cpu") == \
+        explicit

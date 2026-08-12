@@ -5,6 +5,29 @@
  "experiment": "p1_difficulty_lr_factorial_20260811_v1",
  "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1",
  "asset": "ETHUSD_4h",
+ "nested_split_contract": {
+  "$doc": "Finding 224: the EXECUTING pipeline consumes this typed nested contract directly (nested_split_mode=l1). The role_facts below are ASSERTIONS the runner verifies against the freshly materialized per-role CSVs before any model construction — wrong path, wrong sha, wrong scored/context count, swapped role dates, a missing context declaration, context counted in score, or any sealed_test materialization refuses the cell. Authoritative values reproduced by the independent auditor 2026-08-11.",
+  "path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+  "sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+  "mode": "l1",
+  "context_bars": 256,
+  "role_facts": {
+   "fit_train": {"status": "MATERIALIZED", "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568", "scored_rows": 11509, "context_rows": 0, "score_start": "2017-09-28 04:00:00", "score_end": "2022-12-31 20:00:00"},
+   "train_monitor": {"status": "MATERIALIZED", "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06", "scored_rows": 2190, "context_rows": 256, "score_start": "2022-01-01 00:00:00", "score_end": "2022-12-31 20:00:00"},
+   "inner_validation": {"status": "MATERIALIZED", "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6", "scored_rows": 2190, "context_rows": 256, "score_start": "2023-01-01 00:00:00", "score_end": "2023-12-31 20:00:00"},
+   "outer_validation": {"status": "MATERIALIZED", "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30", "scored_rows": 2196, "context_rows": 256, "score_start": "2024-01-01 00:00:00", "score_end": "2024-12-31 20:00:00"},
+   "sealed_test": {"status": "SEALED", "csv_sha256": null, "scored_rows": null, "context_rows": null, "score_start": null, "score_end": null}
+  },
+  "role_use": {
+   "fit_train": "fitting only (11509 scored rows)",
+   "train_monitor": "in-sample member of the paired comparator (2190 scored rows, 2022)",
+   "inner_validation": "selection member of the paired comparator (2190 scored rows, 2023)",
+   "outer_validation": "final truth ONLY — one evaluation after selection (2196 scored rows, 2024)",
+   "sealed_test": "SEALED — no CSV path, hash, row load or model evaluation may be emitted (2025)"
+  }
+ },
+ "selection_metric": "paired_generalization_weekly_v1",
+ "l1_gap_penalty_beta": 0.25,
  "factors": {
   "phase1_dynamics": ["normal_realistic", "easy_chronological_continuation"],
   "phase1_learning_rate": [0.0001, 3e-05]
@@ -60,20 +83,38 @@
   },
   "requires": [
    "16/16 records with exact identities and terminal artifacts (terminal_model_path + terminal_model_sha256 mandatory — finding 223 contract)",
-   "all four terminal loads proven on the replica host for each completed seed batch",
+   "a typed 16-entry replica proof file (tools/p1lr_collect.py, agent_multi.p1lr_replica_proof.v1) proving every terminal loads on the replica host, bound to (experiment_identity, contract_sha256, seed, cell, terminal_relative_path, terminal_model_sha256, loads=true) — the verdict REFUSES without it (finding 225)",
    "direct handoff-viability facts on every phase-1 checkpoint (finding 221 block)",
    "at least one trained arm not CONSTANT_POLICY and not BELOW_NORMAL_THRESHOLD before the decision budget is spent"
   ],
   "collapse_outcome": "PHASE1_LR_REGION_COLLAPSED — stop, do not burn the full run"
  },
  "decision_run": {
-  "$doc": "Only if the screen finds a viable region. Document-38 real L1 stopping.",
+  "$doc": "Only if the screen finds a viable region AND the 16-terminal replica proof passes (finding 225 gate). Document-38 real L1 stopping. Executable form (finding 226): distinct content-addressed identity (profile p1lr_decision_run) and distinct output root; every decision cell starts from the ORIGINAL per-seed anchor, never a screen terminal.",
+  "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1_decision",
+  "phase2_learning_rate": 3e-05,
+  "budget_knobs": {
+   "$doc": "4 phase-1 epochs + 1996 phase-2 max epochs = the 2000 pass-equivalent per-cell ceiling below, at the ladder pass budget.",
+   "epoch_timesteps": 20000,
+   "phase1_epochs": 4,
+   "phase2_max_epochs": 1996
+  },
   "max_global_pass_equivalent_checkpoints": 2000,
   "patience": 60,
   "patience_floor": 40,
   "best_checkpoint_restoration": true,
   "stopping": "train-monitor plus inner-validation paired stopping",
-  "truth": "final outer validation; sealed 2025 inaccessible"
+  "stopping_knobs": {
+   "l1_patience": 60,
+   "l1_patience_start_epoch": 40,
+   "l1_activity_patience": 40,
+   "l1_activity_patience_start_epoch": 40,
+   "total_max_passes": 2000,
+   "phase1_max_fraction": 0.3,
+   "normal_phase_min_passes": 10
+  },
+  "truth": "one final outer-validation evaluation after selection; sealed 2025 inaccessible",
+  "decision_outcomes": ["PHASE1_LR_MAIN_EFFECT", "PHASE1_DIFFICULTY_MAIN_EFFECT", "PHASE1_LR_DIFFICULTY_INTERACTION", "NO_MATERIAL_EFFECT", "TOTAL_ACTIVITY_COLLAPSE", "INCONCLUSIVE"]
  },
  "typed_outcomes": ["PHASE1_LR_MAIN_EFFECT", "PHASE1_DIFFICULTY_MAIN_EFFECT", "PHASE1_LR_DIFFICULTY_INTERACTION", "NO_MATERIAL_EFFECT", "TOTAL_ACTIVITY_COLLAPSE", "INCONCLUSIVE", "PHASE1_LR_REGION_COLLAPSED"],
  "forbidden": [
