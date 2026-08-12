@@ -506,3 +506,46 @@ but it is GROWING and deserves watching against findings 237/242.
 | 244 | verified_corrected on omega and dragon; gamma unverifiable (offline) |
 | 245 | verified_corrected |
 | 230 | still_open — transfer stalled with gamma at 40.70 GB / 170,304 files; no dual digest yet |
+
+## P0 RESOLVED — gamma returned, and the guard chain worked in production
+
+Gamma came back after ~55 minutes offline. The boot chronology is
+itself the best live evidence of the 233/237 machinery:
+
+1. **t+3 min:** `p1lr-decision@303` and `@404` both `failed`,
+   `status=4/NOPERMISSION`. The reason is exactly right:
+   `REFUSED_GPU_UNBOUND`, `classification: GPU_UUID_MISMATCH`,
+   `expected ['GPU-b77fc3ad…','GPU-a9f35631…'] observed
+   ['GPU-b77fc3ad…']`. **The launch gate refused BEFORE the framework
+   imported**, so nothing fell back to CPU and nothing trained on the
+   wrong device.
+2. **Diagnosis:** the RTX 5090 was present at PCI (`0a:00.0`, GB202,
+   `Kernel driver in use: nvidia`) and registered in
+   `/proc/driver/nvidia/gpus/0000:0a:00.0` with the exact expected
+   UUID — it had simply not finished enumerating for
+   `nvidia-smi --query-gpu` at 3 minutes post-boot. Kernel
+   `7.0.0-29-generic`, module `580.173.02`, `modinfo` OK: no
+   repeat of the post-outage module-missing failure.
+3. **t+~12 min:** with both GPUs enumerated, the gate returns
+   `GPU_READY, blocking: []`, and `p1lr-idle-guard.service`
+   (finding 233's bounded recovery) ran at 16:08:12 and brought both
+   seeds up.
+
+Fleet now: **4/4 decision workers active** — omega/101 and dragon/202
+`NRestarts=0` and never interrupted, gamma/303 and gamma/404 running
+at 2.97 GB and 2.80 GB. Both gamma GPUs at 40 % / 44 %. The
+historical replica rsync resumed on its own.
+
+**No manual intervention was required or performed:** I diagnosed
+read-only and the shipped guard chain did the recovery. The one thing
+that WAS required was the owner's physical attention to the machine.
+
+**Nuance worth recording for the register:** the gate refuses on the
+HOST's full expected UUID set, so a single missing GPU blocks BOTH
+seeds on that host — including the seed whose own assigned UUID is
+present. During the ~9-minute enumeration window that cost the healthy
+5070 Ti. Whether to scope the refusal per-assigned-UUID instead of
+per-host-set is a design decision with a safety trade-off, and it
+cannot be changed casually: the gate lives inside the pinned runtime
+worktree, so editing it would change the dirty digest and therefore
+the decision identity (finding 244).
