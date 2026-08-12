@@ -16,6 +16,18 @@ from typing import Any, Dict, List, Tuple
 from ._progress_callback import make_progress_callback
 
 
+_WEIGHT_TRANSFER_REPLAY_CAPACITY = 1
+
+
+def _load_sac_source_for_weight_transfer(SAC, path: str, *, device: str):
+    """Load only the source policy without recreating its training buffer."""
+    return SAC.load(
+        path,
+        device=device,
+        custom_objects={"buffer_size": _WEIGHT_TRANSFER_REPLAY_CAPACITY},
+    )
+
+
 def _file_sha256(path: Path) -> str:
     import hashlib
 
@@ -371,7 +383,11 @@ class Plugin:
 
         self._require_continuous(env)
         resolved = self._resolve(config)
-        source = SAC.load(path, device=str(resolved["device"]))
+        source = _load_sac_source_for_weight_transfer(
+            SAC,
+            path,
+            device=str(resolved["device"]),
+        )
         target_config = dict(config)
         requested_entropy = target_config.get("ent_coef", resolved["ent_coef"])
         if requested_entropy == "auto" and not isinstance(source.ent_coef, str):
@@ -433,6 +449,10 @@ class Plugin:
             ),
             "optimizer_state_transferred": False,
             "replay_transitions_transferred": 0,
+            "source_replay_capacity_for_weight_transfer": int(
+                getattr(source, "buffer_size", _WEIGHT_TRANSFER_REPLAY_CAPACITY)
+            ),
+            "target_replay_capacity": int(target.buffer_size),
             "replay_size_at_boundary": int(
                 getattr(
                     getattr(target, "replay_buffer", None), "size",
@@ -456,13 +476,15 @@ class Plugin:
         from stable_baselines3 import SAC
 
         self._require_continuous(env)
-        source = SAC.load(path, device=str(self._resolve(config)["device"]))
+        source = _load_sac_source_for_weight_transfer(
+            SAC,
+            path,
+            device=str(self._resolve(config)["device"]),
+        )
         target = self.build(env, config)
         source_observation_dim = int(np.prod(source.observation_space.shape))
         target_observation_dim = int(np.prod(target.observation_space.shape))
         action_dim = int(np.prod(target.action_space.shape))
-        if target_observation_dim == source_observation_dim:
-            return SAC.load(path, env=env)
         transferred, expanded_keys = _transfer_expanded_policy_state(
             source.policy.state_dict(),
             target.policy.state_dict(),
@@ -486,6 +508,12 @@ class Plugin:
             ),
             "expanded_policy_tensors": expanded_keys,
             "new_observation_weights_initialized_to": 0.0,
+            "source_replay_capacity_for_weight_transfer": int(
+                getattr(source, "buffer_size", _WEIGHT_TRANSFER_REPLAY_CAPACITY)
+            ),
+            "target_replay_capacity": int(target.buffer_size),
+            "optimizer_state_transferred": False,
+            "replay_transitions_transferred": 0,
         }
         return target
 

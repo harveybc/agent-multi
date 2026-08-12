@@ -1,0 +1,118 @@
+{
+ "collector_host": "omega",
+ "generated_at": "2026-08-12T18:42:16.877714+00:00",
+ "schema": "lts.controller_inventory.v3",
+ "seats": {
+  "alpaca_paper": {
+   "controller_type": "linear_shadow_control",
+   "evidence_host": "omega",
+   "evidence_paths": {
+    "heartbeat": "~/.local/state/lts/alpaca-model-runner-heartbeat.json",
+    "manifest_root": "~/.local/share/prediction-provider/live"
+   },
+   "evidence_time": "2026-08-12T18:42:15.537795+00:00",
+   "heartbeat": {
+    "age_seconds": 50.52708,
+    "artifact_sha256": "b0ab77e0377d6224afd480817e1d867041ee234953b85717fdaae16bd5f5e8bb",
+    "config_sha256": "1125679a5eae4a4272e6e4e161b2307de26fcf28a09479b24c53f0ea149717e1",
+    "fresh": true,
+    "freshness_budget_seconds": 3600.0,
+    "input_feature_sha256": "b42fc0852caaccfccfc7d7bbe945e1d8cb4003b440d676af22a537fe1c6a4638",
+    "input_sha256": null,
+    "instrument": "SPY",
+    "manifest_sha256": "f916696f458723cab4d82a2bba3b3f268f1c2a27b8fc808d6b61c2421488e1af",
+    "model_id": "spy-daily-linear-live-v1",
+    "observed_at": "2026-08-12T18:41:24.813146+00:00",
+    "orders": 1,
+    "positions": 1,
+    "preprocessing_sha256": "c09d07e2aa07f988eca3190320d9e468fe87f09401acc06001914d843313ed3f",
+    "selection_error": null,
+    "state": "monitoring"
+   },
+   "join": {
+    "blocking_reasons": [],
+    "manifest": "/home/harveybc/.local/share/prediction-provider/live/spy_daily_linear_v1/manifest.json"
+   },
+   "sac_champion_authoritative": false,
+   "unit": {
+    "ActiveState": "active",
+    "MainPID": "1022843",
+    "SubState": "running"
+   }
+  },
+  "ibkr_paper": {
+   "controller_type": "linear_shadow_control",
+   "evidence_host": "omega",
+   "evidence_paths": {
+    "heartbeat": "~/.local/state/lts/ibkr-model-runner-heartbeat.json",
+    "manifest_root": "~/.local/share/prediction-provider/live"
+   },
+   "evidence_time": "2026-08-12T18:42:15.249621+00:00",
+   "heartbeat": {
+    "age_seconds": 48.838195,
+    "artifact_sha256": "dc95edcbceca9a86e4395d2cd268bedbfc6b82812d9248b22712b835b891c0fd",
+    "config_sha256": "7aa17ae70fef8892a4c1a64539f0370b29d91204d539fcdf64a7c1069ae0aae9",
+    "fresh": true,
+    "freshness_budget_seconds": 3600.0,
+    "input_feature_sha256": "b42fc0852caaccfccfc7d7bbe945e1d8cb4003b440d676af22a537fe1c6a4638",
+    "input_sha256": "f89c2387c128fb8e5a633960eb75e3f6fb83fff0efe8d9b1ffbc583153ee8d73",
+    "instrument": "USD.CAD",
+    "manifest_sha256": "03b6a794b8a99deb18279a16f46392565c3ad6116ff7fff30a8cc07042b8aa66",
+    "model_id": "usdcad-4h-linear-live-v1",
+    "observed_at": "2026-08-12T18:41:26.201700+00:00",
+    "orders": null,
+    "positions": null,
+    "preprocessing_sha256": "aa822968af7fbd038f2d8b4b0381c7677ed7ec350672b21d20ffb5c50b2aa959",
+    "selection_error": null,
+    "state": "decided"
+   },
+   "join": {
+    "blocking_reasons": [],
+    "manifest": "/home/harveybc/.local/share/prediction-provider/live/usdcad_4h_linear_v1/manifest.json"
+   },
+   "sac_champion_authoritative": false,
+   "unit": {
+    "ActiveState": "active",
+    "MainPID": "1022870",
+    "SubState": "running"
+   }
+  },
+  "mt5_demo": {
+   "controller_type": "linear_shadow_control",
+   "evidence_host": "dragon",
+   "evidence_paths": {
+    "heartbeat": "~/.local/state/lts/mt5-model-runner-heartbeat.json",
+    "manifest_root": "~/.local/share/prediction-provider/live"
+   },
+   "evidence_time": "2026-08-12T18:42:16.877702+00:00",
+   "heartbeat": {
+    "age_seconds": 0.878932,
+    "artifact_sha256": "539f946071a1870672c2d2c1ce7b1ce0f0d4b4317a15b2d082b59b32c98d10bf",
+    "config_sha256": "193cbeaecc759850d5eaae27879769aaf24c0c6f6172c5acc3bac860a3b20b3a",
+    "fresh": true,
+    "freshness_budget_seconds": 3600.0,
+    "input_feature_sha256": "b42fc0852caaccfccfc7d7bbe945e1d8cb4003b440d676af22a537fe1c6a4638",
+    "input_sha256": null,
+    "instrument": "ETHUSD",
+    "manifest_sha256": "11a129b5e9e20a03e68969b39557940b4628846e66f32d80b4e32f5e7fa2f2c9",
+    "model_id": "ethusdt-4h-linear-live-v1",
+    "observed_at": "2026-08-12T18:42:15.174236+00:00",
+    "orders": 0,
+    "positions": 1,
+    "preprocessing_sha256": "cf694a09e544101f7988a977ddb096106ccf1c686176fdf16186b5f3764e4d69",
+    "selection_error": null,
+    "state": "monitoring"
+   },
+   "join": {
+    "blocking_reasons": [],
+    "manifest": "/home/harveybc/.local/share/prediction-provider/live/ethusdt_4h_linear_v1/manifest.json"
+   },
+   "sac_champion_authoritative": false,
+   "unit": {
+    "ActiveState": "active",
+    "MainPID": "280414",
+    "SubState": "running"
+   }
+  }
+ }
+}

@@ -89,7 +89,7 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch, tmp_p
             param_groups = [{"lr": 1e-4}]
 
     class FakeModel:
-        def __init__(self, state, *, ent_coef, automatic):
+        def __init__(self, state, *, ent_coef, automatic, buffer_size):
             self.policy = FakePolicy(state)
             self.ent_coef = ent_coef
             self.ent_coef_optimizer = object() if automatic else None
@@ -97,16 +97,26 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch, tmp_p
             self.actor = FakeOptimizerOwner()
             self.critic = FakeOptimizerOwner()
             self.replay_buffer = None
+            self.buffer_size = buffer_size
 
     champion = {"actor.weight": torch.ones(2)}
-    source = FakeModel(champion, ent_coef=0.2, automatic=False)
+    source = FakeModel(champion, ent_coef=0.2, automatic=False, buffer_size=1)
     target = FakeModel(
-        {"actor.weight": torch.zeros(2)}, ent_coef="auto_0.2", automatic=True
+        {"actor.weight": torch.zeros(2)},
+        ent_coef="auto_0.2",
+        automatic=True,
+        buffer_size=40_000,
     )
     captured = {"build_config": None}
 
-    def fake_load(path, *, device):
-        captured.update({"path": path, "device": device})
+    def fake_load(path, *, device, custom_objects):
+        captured.update(
+            {
+                "path": path,
+                "device": device,
+                "custom_objects": custom_objects,
+            }
+        )
         return source
 
     plugin = Plugin()
@@ -134,6 +144,7 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch, tmp_p
 
     assert result is target
     assert captured["path"].endswith("anchor.zip")
+    assert captured["custom_objects"] == {"buffer_size": 1}
     assert captured["build_config"]["learning_rate"] == 1e-4
     assert captured["build_config"]["batch_size"] == 512
     assert captured["build_config"]["ent_coef"] == "auto_0.2"
@@ -144,6 +155,8 @@ def test_training_load_builds_candidate_then_transfers_policy(monkeypatch, tmp_p
     assert evidence["optimizer_state_transferred"] is False
     assert evidence["policy_hash_matches_source_after_transfer"] is True
     assert evidence["replay_transitions_transferred"] == 0
+    assert evidence["source_replay_capacity_for_weight_transfer"] == 1
+    assert evidence["target_replay_capacity"] == 40_000
 
 
 def test_fixed_entropy_anchor_can_warm_start_automatic_entropy(tmp_path) -> None:
@@ -202,9 +215,53 @@ def test_fixed_entropy_anchor_can_warm_start_automatic_entropy(tmp_path) -> None
     ].items():
         assert distance == 0.0, component
     assert evidence["replay_transitions_transferred"] == 0
+    assert evidence["source_replay_capacity_for_weight_transfer"] == 1
+    assert evidence["target_replay_capacity"] == 100
     assert evidence["replay_size_at_boundary"] == 0
     assert evidence["target_actor_optimizer_lr"] > 0
     assert evidence["target_critic_optimizer_lr"] > 0
     assert evidence["source_entropy_value"] == 0.2
     assert len(evidence["source_artifact_sha256"]) == 64
+    env.close()
+
+
+def test_equal_dimension_expansion_path_keeps_target_training_contract(tmp_path) -> None:
+    """The expansion entry point must not fall back to the archived trainer."""
+    import gymnasium as gym
+    from stable_baselines3 import SAC
+
+    env = gym.make("Pendulum-v1")
+    source = SAC(
+        "MlpPolicy",
+        env,
+        policy_kwargs={"net_arch": [8]},
+        buffer_size=200,
+        learning_starts=1,
+        batch_size=8,
+        verbose=0,
+    )
+    source_path = tmp_path / "same_dim_sac"
+    source.save(source_path)
+
+    target = Plugin().load_with_observation_expansion(
+        str(source_path),
+        env,
+        {
+            "net_arch": [8],
+            "buffer_size": 40,
+            "learning_starts": 1,
+            "batch_size": 8,
+            "device": "cpu",
+        },
+    )
+
+    evidence = target.warm_start_transfer_evidence
+    assert target is not source
+    assert target.buffer_size == 40
+    assert target.replay_buffer.size() == 0
+    assert evidence["source_replay_capacity_for_weight_transfer"] == 1
+    assert evidence["target_replay_capacity"] == 40
+    assert evidence["optimizer_state_transferred"] is False
+    assert evidence["replay_transitions_transferred"] == 0
+    assert evidence["expanded_policy_tensors"] == []
     env.close()

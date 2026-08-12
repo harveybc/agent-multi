@@ -98,6 +98,9 @@ class TestNormalFinetuneBoundary:
         evidence = target.warm_start_transfer_evidence
         assert evidence["replay_transitions_transferred"] == 0
         assert evidence["replay_size_at_boundary"] == 0
+        assert evidence["source_replay_capacity_for_weight_transfer"] == 1
+        assert evidence["target_replay_capacity"] == 128
+        assert target.buffer_size == 128
         assert target.replay_buffer.size() == 0
         # normal collection is the ONLY replay source
         target.learn(total_timesteps=16)

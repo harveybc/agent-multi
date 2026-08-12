@@ -568,6 +568,13 @@ feasible starting profile, not a claim that 40,000 is optimal. Replay capacity
 remains an explicit future optimization parameter; neither silent
 host-dependent capacity nor an unmeasured fallback is allowed.
 
+The warm-start source is a weight donor, not a second trainer. It is loaded
+with replay capacity 1 and transfers no replay entries or optimizer moments;
+the target is built separately with the profile's exact 40,000-transition
+capacity. This distinction is asserted in transfer evidence and tests so an
+archived 200,000-transition champion cannot create a transient 21.80 GiB
+allocation before the bounded target starts.
+
 The mechanics screen stays on its already-pinned revision and identity while
 it finishes. Its sealed viable verdict is then the parent gate for a newly
 materialized decision child identity containing the execution-profile hash.

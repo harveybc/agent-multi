@@ -1141,6 +1141,17 @@ those corrections, he does not self-close them.
 | AUD-F1-20260812-235 | S2 | corrected by auditor, awaits independent verification | Backtrader emits and evaluators score a synthetic post-data terminal transition | Independent verifier or owner disposes |
 | AUD-F1-20260812-236 | S3 | corrected by auditor, awaits independent verification | Nested manifest cache does not invalidate when a role CSV changes | Independent verifier or owner disposes |
 | AUD-F1-20260812-237 | S2 | corrected by auditor, awaits independent verification and deployed decision proof | Long-run replay allocation can exceed Gamma RAM twice over and cause predictable OOM | Independent verifier or owner disposes after four-worker handoff |
+| AUD-F2-20260812-238 | S2 | corrected by auditor, deployed, awaits independent verification | Filled IBKR parent disappearance can cause false protection loss, cancel and flatten | Independent verifier or owner disposes |
+| AUD-F2-20260812-239 | S3 | corrected by auditor, deployed, awaits independent verification | MT5 idempotent replay heartbeat can misstate an old command as newly queued | Independent verifier or owner disposes |
+| AUD-SEC-20260812-240 | S2 | corrected by auditor, deployed, awaits independent verification | Resume JSON can be swapped between signature verification and parsing | Independent verifier or owner disposes |
+| AUD-F2-20260812-241 | S3 | corrected by auditor, deployed, awaits independent verification | Alpaca/MT5 heartbeat cannot prove exact loaded model identity | Independent verifier or owner disposes |
+| AUD-F1-20260812-242 | S2 | corrected by auditor, awaits independent verification and clean relaunch proof | Bounded decision target still reconstructs the champion's unbounded replay buffer during weight transfer | Independent verifier or owner disposes after four-worker relaunch |
+
+Append-only finding-227 state: its typed capability-store correction, explicit
+owner selection and immutable signed-byte handling are integrated and deployed
+at `lts@ea239a4`; independent focused and full-suite verification passed. The
+finding is corrected pending owner closure, while the currently persisted
+IBKR hold still requires a newly signed effect-bound capability.
 
 
 ## 2b. Observations Pending Verification (not yet findings)

@@ -66,6 +66,83 @@ observable failed unit instead of a machine crash. The screen identity and
 already-running screen are deliberately unchanged. Replay capacity is not
 declared optimal; it remains an explicit future experimental parameter.
 
+### AUD-F2-20260812-238 (S2): a filled IBKR parent can trigger false recovery
+
+**Reproduced from the live recovery chronology and a socket-trapped fixture.**
+After a parent fills, TWS may remove it from the open-order view while the
+position and both native protection children remain valid. The previous exact
+verifier interpreted the missing parent row as protection loss, cancelled the
+children, flattened the position and set a global hold.
+
+**Corrected at `lts@ea239a4`.** The controller retains append-only direct
+execution proof for the filled parent while still requiring current direct
+position, account, contract, TP and SL facts on every monitoring pass. A
+filled parent that remains in the completed-order cache follows the same
+position-proof path; cache presence cannot bypass exposure reconciliation.
+
+### AUD-F2-20260812-239 (S3): MT5 replay heartbeat misstates command progress
+
+**Reproduced.** Re-evaluating an idempotent decision could relabel an existing
+MT5 command as freshly queued/replayed instead of reporting its durable
+`pending`, `delivered`, `succeeded` or `failed` state.
+
+**Corrected at `lts@ea239a4`.** Runner heartbeat state now derives from the
+account-bound command ledger. A successful command is called flat only after
+a newer direct MT5 snapshot proves zero positions and zero orders; unknown
+states fail closed. The execution bridge and model runner were restarted on
+Dragon and immediately resumed monitoring the existing protected ETHUSD
+position.
+
+### AUD-SEC-20260812-240 (S2): resume capability has a byte-swap TOCTOU window
+
+**Reproduced by adversarial test.** Capability JSON could be parsed from a
+different filesystem read than the bytes authenticated by the owner's
+signature, allowing a replacement between verification and use.
+
+**Corrected at `lts@ea239a4`.** Classification captures one immutable byte
+snapshot and uses it for signature verification, SHA-256 and JSON parsing;
+symlinked capabilities are ineligible. The broader finding-227 correction is
+also integrated: unsigned, expired, consumed and malformed side files no
+longer deny one valid owner-selected signed capability.
+
+### AUD-F2-20260812-241 (S3): live seats cannot prove their loaded model
+
+**Reproduced from the consolidated controller inventory.** Alpaca and MT5
+heartbeats exposed a model label but omitted artifact, manifest,
+configuration, feature-contract and preprocessing hashes. A fresh process and
+open position therefore did not prove which bytes controlled the route.
+
+**Corrected and deployed at `lts@4fcec85`.** All three model runners publish
+the exact loaded artifact/config/manifest hashes plus canonical hashes of the
+ordered feature contract and scaler parameters. Independent post-restart
+inventory joins Alpaca, IBKR and MT5 to their local manifests with zero
+blocking reasons. Evidence:
+`evidence/MUSASHI_LIVE_MODEL_IDENTITY_AFTER_241_2026_08_12.json`, SHA-256
+`25746b3cbf7e1a65d3461866d066efeb4e2c97e0716fd32d94f328dc3a9a5a25`.
+The final LTS suite is **686 passed**.
+
+### AUD-F1-20260812-242 (S2): bounded target replay still loads the unbounded source replay
+
+**Reproduced during the first decision launch and stopped before useful work.**
+The decision materializer correctly emitted `buffer_size=40000`, but the SAC
+warm-start path first reconstructed the archived champion with its stored
+`buffer_size=200000`. Stable-Baselines therefore advertised a transient
+21.80 GiB replay allocation on every worker before the bounded target even
+existed. The systemd memory ceiling would contain the process, but all four
+workers would fail rather than train; Gamma's two workers also made host-level
+pressure unacceptable.
+
+**Corrected before relaunch.** Source archives used only for weight transfer
+now load with a one-transition replay capacity, while the independently built
+target retains the exact candidate/profile capacity. The same correction
+applies to observation-space expansion, whose equal-dimension branch formerly
+discarded the target contract and reloaded the complete archived trainer.
+Boundary evidence records both source-transfer and target capacities. Real SAC
+tests prove an archived 128/200-transition source loads with capacity 1, the
+target retains its requested 128/40 transitions, optimizer state remains
+fresh and replay remains empty. The diagnostic decision processes were
+stopped immediately and are not promotion-eligible.
+
 ## Disposition of Satoshi findings
 
 | Finding | Independent disposition | Evidence |
@@ -118,9 +195,13 @@ gate substitute for the P1LR terminal collection.
 - MT5 OANDA demo: write-enabled; one directly observed ETHUSD short, volume
   0.01, with nonzero native stop loss and take profit.
 - IBKR Paper: connected and flat, but held after a protection-monitor recovery.
-  The owner resume remains fail-closed; finding 227 and the filled-parent
-  evidence path are under independent LTS correction review. No hold is
+  Finding 227 and the filled-parent evidence path are corrected, tested and
+  deployed at `lts@ea239a4`; the existing historical hold remains fail-closed
+  until the owner signs a fresh effect-bound resume capability. No hold is
   cleared by this audit.
+
+The recovery-correction LTS suite was **685 passed** with network sockets blocked in the new
+recovery, resume and MT5 fixtures. Omega and Dragon run the same LTS revision.
 
 ### Front 3
 
@@ -132,7 +213,7 @@ were sent.
 ### Front 4
 
 The correction commits and this evidence are pushed. Findings 231-233 are
-independently corrected pending owner closure. Findings 234-236 are corrected
+independently corrected pending owner closure. Findings 234-241 are corrected
 by the auditor and therefore require a separate verifier or owner disposition;
 they are not self-closed here.
 
