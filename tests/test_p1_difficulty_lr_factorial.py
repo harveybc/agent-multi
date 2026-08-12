@@ -634,6 +634,39 @@ def _fake_outer_eval(*, config, agent, model_path, artifact_role,
     }
 
 
+@pytest.fixture(autouse=True)
+def pinned_source_identities(monkeypatch):
+    """Hermetic CODE identity for every proof in this module.
+
+    ``run_seed``, ``run_cell`` and ``preflight`` each read
+    ``ladder.source_identities()`` AFRESH on every call and fold the
+    commit plus the dirty/untracked content digest of the executing
+    checkout (and of gym-fx) into ``experiment_identity`` — that is
+    correct production behaviour: changed code is a different
+    experiment.
+
+    It also makes the identity a function of the developer's working
+    tree at the instant of the call, which is state this process does
+    not own. Any test that runs a seed TWICE (run -> tamper with the
+    landed record -> run again and expect the refusal) then depends on
+    the tree not moving in between: one concurrent commit, one new
+    untracked file, one editor swapfile is enough to give the second
+    run a DIFFERENT ``experiment_identity``. It lands in a fresh output
+    tree, never meets the record it is supposed to refuse to overwrite,
+    retrains from the anchor and reports SEED_COMPLETE /
+    SEED_COMPLETE_WITH_INACTIVE instead of SEED_FAILED — a silent loss
+    of the no-overwrite proof, and the reason exactly one custody test
+    failed per run while WHICH one varied.
+
+    Pinning the identity to the clean constant makes these proofs
+    measure record custody and nothing else. The identity's real
+    sensitivity to moved code is proven separately and directly by
+    ``TestIdentities``, which passes explicit ``sources``.
+    """
+    monkeypatch.setattr(p1.ladder, "source_identities",
+                        lambda: copy.deepcopy(CLEAN_SOURCES))
+
+
 @pytest.fixture()
 def runtime(bindings, tmp_path, monkeypatch):
     """A runnable contract copy: tmp output roots (both modes), tmp
