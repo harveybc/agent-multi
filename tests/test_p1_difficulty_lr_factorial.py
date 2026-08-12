@@ -1280,6 +1280,65 @@ class TestTerminalIsNeverABestCheckpoint:
                 terminal_path=terminal, terminal_sha="a" * 64,
                 context="unit")
 
+    def test_active_final_checkpoint_may_also_be_the_best_bytes(self):
+        """An active cell may finish exactly on its selected checkpoint.
+
+        The terminal artifact and best-checkpoint artifact retain distinct
+        roles and paths, but identical bytes are not evidence that an active
+        policy was relabelled.  The terminal-as-best prohibition belongs only
+        to inactive cells (finding 234).
+        """
+        shared_sha = "a" * 64
+        record = {
+            "experiment_identity": "e" * 16,
+            "cell_identity": "c" * 16,
+            "contract_sha256": "1" * 64,
+            "nested_split_contract_sha256": "2" * 64,
+            "anchor_sha256": "3" * 64,
+            "terminal_model_path": "/x/model.terminal.zip",
+            "terminal_model_sha256": shared_sha,
+            "terminal_policy_tensor_sha256": "4" * 64,
+            "terminal_load_proof": {
+                "loaded": True,
+                "sha256": shared_sha,
+                "policy_tensor_sha256": "4" * 64,
+            },
+            "activity_status": "active",
+            "promotion_eligible": True,
+            "best_model_path": "/x/model.best.zip",
+            "best_model_sha256": shared_sha,
+        }
+
+        p1.assert_cell_record_custody(record)
+
+    @pytest.mark.parametrize("field", ["best_model_path",
+                                       "best_model_sha256"])
+    def test_active_cell_requires_complete_best_checkpoint_identity(
+            self, field):
+        record = {
+            "experiment_identity": "e" * 16,
+            "cell_identity": "c" * 16,
+            "contract_sha256": "1" * 64,
+            "nested_split_contract_sha256": "2" * 64,
+            "anchor_sha256": "3" * 64,
+            "terminal_model_path": "/x/model.terminal.zip",
+            "terminal_model_sha256": "a" * 64,
+            "terminal_policy_tensor_sha256": "4" * 64,
+            "terminal_load_proof": {
+                "loaded": True,
+                "sha256": "a" * 64,
+                "policy_tensor_sha256": "4" * 64,
+            },
+            "activity_status": "active",
+            "promotion_eligible": True,
+            "best_model_path": "/x/model.best.zip",
+            "best_model_sha256": "b" * 64,
+        }
+        record[field] = None
+
+        with pytest.raises(RuntimeError, match="best checkpoint"):
+            p1.assert_cell_record_custody(record)
+
     def test_unknown_outer_artifact_role_is_refused(self):
         with pytest.raises(RuntimeError, match="artifact role"):
             p1.assert_outer_eval_artifact_role(

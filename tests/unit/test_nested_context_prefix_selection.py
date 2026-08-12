@@ -467,6 +467,9 @@ class TestManifestIsTheOnlyAuthority:
     def test_split_csv_drift_refuses_before_any_score(self, nested):
         pipeline, config, paths, _manifest = nested
         drifted = Path(paths["val"])
+        # Prime the verified-manifest cache first.  A later role-file rewrite
+        # must invalidate that cache even though the manifest is untouched.
+        pipeline._resolve_nested_role(config, str(drifted))
         drifted.write_text(drifted.read_text() + "tamper\n")
         with pytest.raises(ns.NestedSplitError, match="hash drift"):
             pipeline._resolve_nested_role(config, str(drifted))
@@ -477,6 +480,37 @@ class TestManifestIsTheOnlyAuthority:
 # ---------------------------------------------------------------------------
 
 class TestRolloutRefusals:
+    def test_nested_role_refuses_one_synthetic_terminal_step(
+        self, nested, monkeypatch
+    ):
+        pipeline, config, paths, _manifest = nested
+
+        class _ExtraTerminalStepEnv(_ExecutingEnv):
+            def __init__(self, cfg):
+                super().__init__(cfg)
+                self.dataframe = pd.concat(
+                    [self.dataframe, self.dataframe.iloc[[-1]]],
+                    ignore_index=True,
+                )
+
+        class _Factory:
+            def __call__(self, name, config):
+                class _Plug:
+                    def make_env(self, cfg):
+                        return _ExtraTerminalStepEnv(cfg)
+
+                    def close(self):
+                        pass
+
+                return _Plug()
+
+        monkeypatch.setattr(rlv, "_load_env_plugin", _Factory())
+        with pytest.raises(ValueError, match="verified manifest declares"):
+            pipeline._eval_on_split(
+                "fake_env", config, paths["val"],
+                _AdversarialAgent(0.3), object(), 7,
+                "validation_epoch")
+
     def test_declared_context_with_an_unwrapped_env_is_refused(
         self, nested, env_factory
     ):

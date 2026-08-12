@@ -1361,14 +1361,23 @@ def assert_cell_record_custody(record: dict) -> None:
             raise RuntimeError(
                 "inactive cell record carries no termination_cause "
                 "narrative (finding 232)")
-    elif record.get("promotion_eligible") is not True:
-        raise RuntimeError(
-            "active cell record is not promotion_eligible=true "
-            "(finding 232)")
-    assert_terminal_never_labeled_best(
-        record, terminal_path=record["terminal_model_path"],
-        terminal_sha=record["terminal_model_sha256"],
-        context="cell record")
+        assert_terminal_never_labeled_best(
+            record, terminal_path=record["terminal_model_path"],
+            terminal_sha=record["terminal_model_sha256"],
+            context="cell record")
+    else:
+        if record.get("promotion_eligible") is not True:
+            raise RuntimeError(
+                "active cell record is not promotion_eligible=true "
+                "(finding 232)")
+        if not record.get("best_model_path"):
+            raise RuntimeError(
+                "active cell record carries no best checkpoint path "
+                "(finding 234)")
+        if not record.get("best_model_sha256"):
+            raise RuntimeError(
+                "active cell record carries no best checkpoint hash "
+                "(finding 234)")
 
 
 # ---------------------------------------------------------------------------
@@ -2042,6 +2051,13 @@ def _outer_validation_final_eval(*, config: dict, agent,
             if steps > 1_000_000:
                 raise RuntimeError("outer validation replay exceeded "
                                    "the step cap")
+        expected_scored_steps = int(role["scored_rows"])
+        if scored_steps != expected_scored_steps:
+            raise RuntimeError(
+                "outer_validation replay scored "
+                f"{scored_steps} steps but the verified manifest declares "
+                f"{expected_scored_steps}; refusing an off-by-one or "
+                "truncated final evaluation")
         base = env
         while hasattr(base, "env") and not hasattr(base, "summary"):
             base = base.env

@@ -73,7 +73,9 @@ def _verify_artifact_sha256(path: Path, expected: str | None) -> str:
     return actual
 
 
-_VERIFIED_NESTED_MANIFESTS: Dict[Tuple[str, int, int], Dict[str, Any]] = {}
+_VERIFIED_NESTED_MANIFESTS: Dict[
+    Tuple[str, int, int], Tuple[Dict[str, Any], Tuple[Tuple[Any, ...], ...]]
+] = {}
 
 
 def _nested_split_out_dir(config: Dict[str, Any]) -> Path:
@@ -89,21 +91,43 @@ def _verified_nested_manifest(manifest_path: Path) -> Dict[str, Any]:
     """Load and VERIFY the nested split manifest (every materialized
     role csv is re-hashed) before any role fact is trusted.
 
-    Cached per (path, mtime, size): a decision cell materializes its
-    splits once per phase, so the fit_train re-hash happens once per
-    materialization instead of once per epoch, and any rewrite of the
-    manifest re-verifies from scratch.
+    Cached per manifest and materialized-role file stat signatures: a
+    decision cell materializes its splits once per phase, so unchanged
+    files are not re-hashed every epoch.  A role CSV rewrite invalidates
+    the cache even when the manifest itself did not change.
     """
     from . import _nested_splits
 
     path = Path(manifest_path)
     stat = path.stat()
     key = (str(path.resolve()), int(stat.st_mtime_ns), int(stat.st_size))
-    manifest = _VERIFIED_NESTED_MANIFESTS.get(key)
-    if manifest is None:
-        manifest = _nested_splits.verify_split_manifest(path)
-        _VERIFIED_NESTED_MANIFESTS[key] = manifest
+    cached = _VERIFIED_NESTED_MANIFESTS.get(key)
+    if cached is not None:
+        manifest, verified_role_stats = cached
+        try:
+            current_role_stats = _nested_role_file_stats(manifest)
+        except OSError:
+            current_role_stats = ()
+        if current_role_stats == verified_role_stats:
+            return manifest
+
+    manifest = _nested_splits.verify_split_manifest(path)
+    role_stats = _nested_role_file_stats(manifest)
+    _VERIFIED_NESTED_MANIFESTS[key] = (manifest, role_stats)
     return manifest
+
+
+def _nested_role_file_stats(manifest: Dict[str, Any]) -> Tuple[Tuple[Any, ...], ...]:
+    """Stable signatures for every materialized role file in a manifest."""
+    facts = []
+    for role, entry in sorted((manifest.get("roles") or {}).items()):
+        if entry.get("status") != "MATERIALIZED":
+            continue
+        csv_path = Path(str(entry["csv"])).resolve()
+        stat = csv_path.stat()
+        facts.append((role, str(csv_path), int(stat.st_mtime_ns),
+                      int(stat.st_size)))
+    return tuple(facts)
 
 
 def _replay_buffer_size(model: Any) -> int | None:
@@ -892,6 +916,13 @@ class PipelinePlugin:
             )
             if nested is not None:
                 role, entry = nested
+                expected_scored_rows = int(entry["scored_rows"])
+                if int(summary.get("scored_steps", -1)) != expected_scored_rows:
+                    raise ValueError(
+                        f"{role}: rollout scored {summary.get('scored_steps')} "
+                        f"steps but the verified manifest declares "
+                        f"{expected_scored_rows}; refusing an off-by-one or "
+                        "truncated evaluation")
                 summary["nested_role"] = role
                 summary["nested_role_csv_sha256"] = entry.get("csv_sha256")
                 summary["nested_role_scored_rows"] = entry.get("scored_rows")
