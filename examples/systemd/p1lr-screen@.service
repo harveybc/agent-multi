@@ -1,0 +1,52 @@
+# Durable P1 difficulty x P1 LR factorial seed runner (order
+# 2026-08-11 WP4 §8, tools/p1_difficulty_lr_factorial.py).
+# Instance = seed:
+#   systemctl --user enable --now p1lr-screen@101.service
+#
+# The unit sources the repo-committed per-seed binding file
+# (examples/config/phase_3_eth_sac_dynamics/p1lr_env/seed<seed>.env,
+# which pins CUDA_VISIBLE_DEVICES to the contract GPU UUID) plus an
+# optional operator override file for extra args.
+#
+# Exit-class contract (must match EXIT_CLASS in
+# tools/p1_difficulty_lr_factorial.py):
+#   0  SEED_COMPLETE / ALREADY_COMPLETE  -> clean terminal
+#   3  ALREADY_RUNNING                   -> clean no-op (a racing
+#      restart against a live flock holder stops without looping)
+#   4  REFUSED_* configuration refusal   -> recorded as FAILED but
+#      never blindly retried (RestartPreventExitStatus)
+#   1  SEED_FAILED                       -> the ONLY class that
+#      Restart=on-failure retries
+#
+# Install (per worker host):
+#   mkdir -p ~/.config/systemd/user ~/.config/agent-multi
+#   cp examples/systemd/p1lr-screen@.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user start p1lr-screen@<seed>
+
+[Unit]
+Description=P1 difficulty x P1 LR factorial seed %i (mechanics screen)
+# Bound the SEED_FAILED retry loop: persistent failures freeze into
+# the systemd 'failed' state after 10 restarts per hour; recovery is
+# an explicit operator reset-failed.
+StartLimitIntervalSec=3600
+StartLimitBurst=10
+
+[Service]
+Type=exec
+# The runner enforces the contract hostname + GPU-UUID assignment
+# itself (WP13) and runs the gpu_readiness_probe launch gate before
+# any framework import; the env files only materialize the binding.
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+EnvironmentFile=%h/Documents/GitHub/agent-multi/examples/config/phase_3_eth_sac_dynamics/p1lr_env/seed%i.env
+EnvironmentFile=-%h/.config/agent-multi/p1lr-screen@%i.env
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
+    tools/p1_difficulty_lr_factorial.py --seed %i $P1LR_EXTRA_ARGS
+Restart=on-failure
+RestartSec=60
+SuccessExitStatus=3
+RestartPreventExitStatus=4
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=default.target

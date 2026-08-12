@@ -52,6 +52,12 @@
  },
  "mechanics_screen": {
   "budget": "one pass-equivalent per cell (1 phase-1 epoch + 1 phase-2 epoch at 20000 timesteps, matching the ladder pass budget)",
+  "budget_knobs": {
+   "$doc": "Executable form of the budget line above (runner WP4; the prose stays authoritative for intent). The runner refuses any values other than one pass-equivalent, and refuses an epoch_timesteps that does not match the ladder pass budget.",
+   "epoch_timesteps": 20000,
+   "phase1_epochs": 1,
+   "phase2_epochs": 1
+  },
   "requires": [
    "16/16 records with exact identities and terminal artifacts (terminal_model_path + terminal_model_sha256 mandatory — finding 223 contract)",
    "all four terminal loads proven on the replica host for each completed seed batch",

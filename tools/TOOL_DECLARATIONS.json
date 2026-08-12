@@ -277,6 +277,14 @@
    "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) and the explicitly named publication path; ladder run artifacts are read strictly read-only; the --verify-terminals-only mode is fully READ-ONLY (mutates nothing, prints a typed report)",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "p1_difficulty_lr_factorial.py": {
+   "purpose": "Phase-1 difficulty x phase-1 LR 2x2 factorial mechanics-screen runner (order 2026-08-11 WP4 §8): per-seed sequential four-cell batches on the contract-assigned GPU in the cyclic-Latin-square cell order, each cell warm-started from the exact hash-bound per-seed anchor; one-intended-delta materialization against the ladder-proven held-fixed recipe (v3 cost/protection verified against the frozen manifest, l1_trained_epoch_v4 boundary, phase-2 LR 3e-5, entropy 0.2); every record binds finding-223 terminal custody, the finding-221 selected-checkpoint handoff-viability block and the gpu_readiness_probe launch gate + dispatch binding; --screen-verdict aggregates 16/16 records fail-closed and emits PHASE1_LR_REGION_COLLAPSED or SCREEN_VIABLE_REGION; collapse/contract screen only, never decision-eligible",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only under the contract output_root (heartbeats, attempt dirs, atomic cell records, locks) and an explicitly named --output verdict file; pinned contracts, anchors and manifests are read strictly read-only; --screen-verdict itself writes nothing unless --output is given",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
