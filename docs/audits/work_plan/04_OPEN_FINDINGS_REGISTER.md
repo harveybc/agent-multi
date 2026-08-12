@@ -1095,7 +1095,7 @@ the execution-role mismatch below.
 | AUD-F2-20260811-227 | S3 | open, owner-operation availability | Unsigned/expired resume files can deny the valid signed owner capability; TTY is overstated as authentication | General Satoshi III implements in LTS; General Musashi verifies |
 | AUD-GEN-20260811-228 | S3 | open, operator status correctness | Consolidated queue reports an already-cleared IBKR hold from stale decision history | General Satoshi III implements; General Musashi verifies |
 | AUD-GEN-20260811-229 | S3 | open, anti-idle/runtime deployment | Corrected branch was not deployed and no P1LR unit or worker exists on the fleet | General Satoshi III deploys after 224-225 preflight; General Musashi verifies live |
-| AUD-GEN-20260811-230 | S4 | open, historical resilience | Gamma-to-Dragon 219 GB historical replica stopped at roughly 173 GB | General Satoshi III resumes and proves digests; General Musashi verifies |
+| AUD-GEN-20260811-230 | S4 | correction executing, historical resilience | Gamma-to-Dragon 219 GB historical replica had stopped at roughly 173 GB; Musashi resumed `gamma-history-replica.service` at 19:35 COT | General Satoshi III monitors/completes digest proof; General Musashi verifies |
 
 ## 2b. Observations Pending Verification (not yet findings)
 

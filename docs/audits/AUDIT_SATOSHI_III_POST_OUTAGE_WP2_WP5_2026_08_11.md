@@ -147,6 +147,11 @@ Required correction: resume the bandwidth-limited, restartable replica, then
 prove source/destination inventory and content digests. No source deletion is
 authorized.
 
+Post-finding runtime action: the auditor resumed the copy at 19:35 COT as the
+transient user unit `gamma-history-replica.service`, with rsync `--partial` and
+`--bwlimit=25000`. It is active with zero restarts. Finding 230 remains open
+until the completed source/destination digest proof lands.
+
 ## 5. Four-Front Runtime Status
 
 - **Front 1:** old L1 factorial terminal 16/16; new P1LR screen 0/16 and not
@@ -158,7 +163,7 @@ authorized.
 - **Front 3:** 9,513 posts collected, 716 enriched, 254 eligible backlog, zero
   drafts; publishing remains human-gated.
 - **Front 4:** subject branch clean/pushed; 1,120 tests pass. Findings 224-230
-  are open. No S0/S1 event observed.
+  are open; correction 230 is executing. No S0/S1 event observed.
 
 ## 6. Acceptance Boundary
 
@@ -168,4 +173,3 @@ paired selection, sealed-test absence, 16 distinct cell identities, four GPU
 bindings and an executable replica gate. The long decision run is conditional
 on a real viable screen plus a complete 16-terminal replica proof. No Paper or
 Demo risk control is relaxed.
-
