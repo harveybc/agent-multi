@@ -1,0 +1,22 @@
+{
+  "schema": "agent_multi.p1lr_decision_execution_profile.v1",
+  "$doc": "Uniform fleet execution profile for the long P1LR decision run. It changes no experimental factor: every seed receives the same replay capacity. The base 200000-transition buffer advertises 21.80 GB per worker for this observation space, while Gamma runs two workers with about 15 GB physical RAM. The bounded profile retains two complete 20000-step pass-equivalents and prevents a known OOM configuration from masquerading as unattended execution. Replay capacity remains a future optimization parameter.",
+  "replay_buffer": {
+    "base_config_size": 200000,
+    "decision_size": 40000,
+    "epoch_timesteps": 20000,
+    "pass_equivalents_retained": 2,
+    "uniform_across_seeds": true,
+    "optimize_memory_usage": false
+  },
+  "fleet_memory_contract": {
+    "limiting_host": "gamma",
+    "parallel_workers_on_limiting_host": 2,
+    "observed_physical_ram_gib": 15,
+    "base_advertised_gib_per_worker": 21.8,
+    "bounded_advertised_gib_per_worker": 4.36,
+    "systemd_memory_high": "5G",
+    "systemd_memory_max": "6G",
+    "systemd_memory_swap_max": "1G"
+  }
+}

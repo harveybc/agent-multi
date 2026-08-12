@@ -67,6 +67,13 @@ RestartSec=60
 SuccessExitStatus=3
 RestartPreventExitStatus=4
 TimeoutStartSec=infinity
+# The reviewed decision profile caps the replay buffer at 40k transitions
+# (about 4.36 GiB advertised for this observation space).  Gamma runs two
+# workers, so each process also receives a kernel-enforced bound; a regression
+# becomes an observable failed unit instead of an uncontrolled host OOM.
+MemoryHigh=5G
+MemoryMax=6G
+MemorySwapMax=1G
 
 [Install]
 WantedBy=default.target

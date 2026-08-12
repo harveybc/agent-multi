@@ -1936,6 +1936,7 @@ class TestDecisionMode:
         config = p1.materialize_cell_config(
             contract, bindings, 101, "P1N_LR1E4", tmp_path / "out",
             mode="decision")
+        identity = config["_identity"]
         config.pop("_identity")
         assert config["max_epochs"] == 1996
         assert config["easy_max_epochs"] == 4
@@ -1943,6 +1944,11 @@ class TestDecisionMode:
         assert config["l1_patience_start_epoch"] == 40
         assert config["total_max_passes"] == 2000
         assert config["learning_rate"] == pytest.approx(3e-5)
+        assert config["buffer_size"] == 40_000
+        assert config["optimize_memory_usage"] is False
+        assert identity[
+            "decision_execution_profile_sha256"] == \
+            p1.load_decision_execution_profile()["_profile_sha256"]
         assert config["selection_metric"] == \
             "paired_generalization_weekly_v1"
         assert config["nested_split_contract"]
@@ -1952,6 +1958,45 @@ class TestDecisionMode:
         assert config["warm_start_model"] == str(
             Path(anchor["path"]).expanduser())
         assert config["warm_start_model_sha256"] == anchor["sha256"]
+
+    def test_decision_replay_bound_is_uniform_across_seeds_and_cells(
+            self, bindings, tmp_path):
+        contract = _contract()
+        observed = set()
+        for seed in p1.SEEDS:
+            for cell in p1.CELLS:
+                config = p1.materialize_cell_config(
+                    contract, bindings, seed, cell,
+                    tmp_path / str(seed) / cell, mode="decision")
+                observed.add((config["buffer_size"],
+                              config["optimize_memory_usage"],
+                              config["_identity"][
+                                  "decision_execution_profile_sha256"]))
+        assert observed == {(40_000, False,
+                             p1.load_decision_execution_profile()[
+                                 "_profile_sha256"])}
+
+    def test_decision_profile_changes_only_the_decision_identity(
+            self, bindings, monkeypatch):
+        contract = _contract()
+        screen_before = p1.experiment_identity(
+            contract, bindings, sources=CLEAN_SOURCES, mode="screen")
+        decision_before = p1.experiment_identity(
+            contract, bindings, sources=CLEAN_SOURCES, mode="decision")
+        original = p1.load_decision_execution_profile
+
+        def changed():
+            profile = copy.deepcopy(original())
+            profile["_profile_sha256"] = "9" * 64
+            return profile
+
+        monkeypatch.setattr(p1, "load_decision_execution_profile", changed)
+        assert p1.experiment_identity(
+            contract, bindings, sources=CLEAN_SOURCES,
+            mode="screen") == screen_before
+        assert p1.experiment_identity(
+            contract, bindings, sources=CLEAN_SOURCES,
+            mode="decision") != decision_before
 
     def test_anchor_under_an_output_root_is_refused(self, bindings,
                                                     tmp_path):
@@ -2526,3 +2571,11 @@ class TestDispatchSurface:
         assert "SuccessExitStatus=3" in text
         assert "RestartPreventExitStatus=4" in text
         assert "p1lr_env/seed%i.env" in text
+
+    def test_decision_systemd_unit_enforces_reviewed_memory_bound(self):
+        unit = REPO / "examples/systemd/p1lr-decision@.service"
+        assert unit.exists()
+        text = unit.read_text()
+        assert "MemoryHigh=5G" in text
+        assert "MemoryMax=6G" in text
+        assert "MemorySwapMax=1G" in text

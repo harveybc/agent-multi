@@ -1120,6 +1120,28 @@ by the new execution defects below.
 | AUD-F1-20260812-232 | S2 | open, blocks 16-cell completion | Pipeline returns typed inactive terminal while decision runner requires a best checkpoint and aborts before record publication | General Satoshi III implements; General Musashi verifies |
 | AUD-GEN-20260812-233 | S3 | open, operational anti-idle | Status and idle guard read the screen root/unit while four active decision workers run under a distinct root with no deployed timer | General Satoshi III implements/deploys; General Musashi verifies live |
 
+### 1ak. Return 231-233 independent audit and runtime hardening, 2026-08-12
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_RETURN_231_233_AND_RUNTIME_CORRECTIONS_2026_08_12.md`
+- `../../work_plan/SATOSHI_RETURN_PACKET_231_233_2026_08_12.md`
+
+Append-only dispositions: 231 is independently verified corrected. 232 is
+independently verified corrected and its active-cell boundary was further
+hardened under finding 234. 233 is independently verified corrected and its
+screen-mode units/timers are deployed on all three hosts; the same binding
+must be re-verified at screen-to-decision handoff. Owner closure remains
+separate. The audit found and corrected 234-236; because Musashi implemented
+those corrections, he does not self-close them.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260812-234 | S2 | corrected by auditor, awaits independent verification | Active cell is rejected when its final and selected-best artifacts have identical bytes | Independent verifier or owner disposes |
+| AUD-F1-20260812-235 | S2 | corrected by auditor, awaits independent verification | Backtrader emits and evaluators score a synthetic post-data terminal transition | Independent verifier or owner disposes |
+| AUD-F1-20260812-236 | S3 | corrected by auditor, awaits independent verification | Nested manifest cache does not invalidate when a role CSV changes | Independent verifier or owner disposes |
+| AUD-F1-20260812-237 | S2 | corrected by auditor, awaits independent verification and deployed decision proof | Long-run replay allocation can exceed Gamma RAM twice over and cause predictable OOM | Independent verifier or owner disposes after four-worker handoff |
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 

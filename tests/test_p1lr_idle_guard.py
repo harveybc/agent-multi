@@ -530,6 +530,12 @@ def test_decision_unit_always_runs_decision_mode_and_never_screen():
     assert "RestartPreventExitStatus=4" in text
     assert "Restart=on-failure" in text
     assert "SuccessExitStatus=3" in text
+    # The long decision run is uniformly bounded on every host.  In
+    # particular, Gamma runs two workers and must not be able to consume the
+    # old 21.8 GiB advertised replay allocation per process.
+    assert "MemoryHigh=5G" in text
+    assert "MemoryMax=6G" in text
+    assert "MemorySwapMax=1G" in text
     assert "WantedBy=default.target" in text
 
 

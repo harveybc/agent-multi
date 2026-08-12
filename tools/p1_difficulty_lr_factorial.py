@@ -159,7 +159,12 @@ from tools.l1_fleet_launcher import (  # noqa: E402
 
 CONTRACT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                  "p1_difficulty_lr_factorial_v1.json")
+DECISION_EXECUTION_PROFILE_PATH = (
+    REPO / "examples/config/phase_3_eth_sac_dynamics/"
+    "p1lr_decision_execution_profile_v1.json")
 CONTRACT_SCHEMA = "agent_multi.p1_difficulty_lr_factorial.v1"
+DECISION_EXECUTION_PROFILE_SCHEMA = \
+    "agent_multi.p1lr_decision_execution_profile.v1"
 RECORD_SCHEMA = "agent_multi.p1_difficulty_lr_cell_record.v1"
 VERDICT_SCHEMA = "agent_multi.p1_difficulty_lr_screen_verdict.v1"
 DECISION_VERDICT_SCHEMA = \
@@ -513,6 +518,41 @@ def load_bindings(path: Path | None = None) -> dict:
     return ladder.load_contract(path or ladder.CONTRACT_PATH)
 
 
+def load_decision_execution_profile(
+        path: Path = DECISION_EXECUTION_PROFILE_PATH) -> dict:
+    """Load the uniform, content-addressed memory bound for decision mode."""
+    profile = json.loads(Path(path).read_text())
+    if profile.get("schema") != DECISION_EXECUTION_PROFILE_SCHEMA:
+        raise ValueError("unknown P1LR decision execution profile schema")
+    replay = profile.get("replay_buffer") or {}
+    for key in ("base_config_size", "decision_size", "epoch_timesteps",
+                "pass_equivalents_retained"):
+        value = replay.get(key)
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            raise ValueError(
+                f"decision execution profile replay_buffer.{key} must be "
+                "a positive integer")
+    if replay["base_config_size"] != 200_000:
+        raise ValueError("decision execution profile no longer binds the "
+                         "200000-transition base config")
+    if replay["decision_size"] != 40_000:
+        raise ValueError("decision replay buffer must remain the reviewed "
+                         "40000-transition uniform bound")
+    if replay["epoch_timesteps"] != 20_000 or \
+            replay["pass_equivalents_retained"] != 2:
+        raise ValueError("decision replay buffer must retain exactly two "
+                         "20000-step pass-equivalents")
+    if replay.get("uniform_across_seeds") is not True:
+        raise ValueError("decision replay capacity must be uniform across "
+                         "every seed and host")
+    if replay.get("optimize_memory_usage") is not False:
+        raise ValueError("optimize_memory_usage must stay explicitly false "
+                         "for this reviewed profile")
+    profile["_profile_sha256"] = _sha_file(Path(path))
+    profile["_profile_path"] = str(Path(path))
+    return profile
+
+
 # ---------------------------------------------------------------------------
 # nested-role binding (finding 224) — verified BEFORE model construction
 # ---------------------------------------------------------------------------
@@ -747,6 +787,10 @@ def experiment_identity(contract: dict, bindings: dict,
                  for name, s in sorted(sources.items())},
         "profile": MODE_PROFILES[mode],
     }
+    if mode == "decision":
+        execution_profile = load_decision_execution_profile()
+        payload["decision_execution_profile_sha256"] = \
+            execution_profile["_profile_sha256"]
     return hashlib.sha256(json.dumps(
         payload, sort_keys=True).encode()).hexdigest()[:16]
 
@@ -854,6 +898,18 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
 
     # --- the ladder-proven held-fixed recipe --------------------------
     config = json.loads(base_path.read_text())
+    decision_execution_profile = None
+    if mode == "decision":
+        decision_execution_profile = load_decision_execution_profile()
+        replay = decision_execution_profile["replay_buffer"]
+        if int(config.get("buffer_size", -1)) != int(
+                replay["base_config_size"]):
+            raise RuntimeError(
+                "base config replay capacity drifted from the decision "
+                "execution profile")
+        config["buffer_size"] = int(replay["decision_size"])
+        config["optimize_memory_usage"] = bool(
+            replay["optimize_memory_usage"])
     # No legacy split field survives: the ONLY split authority is the
     # typed nested contract below (finding 224).
     for field in ("train_years", "val_years", "test_years",
@@ -1024,6 +1080,14 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         },
         "plugins": dict(common["plugins"]),
     }
+    if decision_execution_profile is not None:
+        config["_identity"]["decision_execution_profile_sha256"] = \
+            decision_execution_profile["_profile_sha256"]
+        config["_identity"]["decision_replay_buffer"] = {
+            "buffer_size": int(config["buffer_size"]),
+            "optimize_memory_usage": bool(config["optimize_memory_usage"]),
+            "uniform_across_seeds": True,
+        }
     return config
 
 

@@ -534,3 +534,45 @@ The exact audit and execution order are:
 The final decision report separates raw effect magnitude, sign consistency and
 predeclared practical materiality. An inactive arm is a non-promotable measured
 outcome, never a harness crash and never an invented zero-performance score.
+
+## 16. 2026-08-12 Exact-Horizon Replacement Run
+
+The 231-233 return audit found two additional execution defects before the
+conditional long run: an active policy finishing on its best checkpoint was
+rejected when terminal and best bytes matched, and Backtrader emitted one
+synthetic terminal action beyond the input rows. Both are corrected before
+further performance evidence is accepted. Nested evaluations now enforce
+exact equality between observed scored steps and the verified role manifest;
+role-file rewrites also invalidate the manifest-verification cache.
+
+The replacement runtime is pinned uniformly across Omega, Dragon and Gamma:
+
+- `agent-multi@374dd2eb`
+- `gym-fx@634c3fd`
+- screen identity `886b776e022d0d7c`
+- conditional decision identity `2f5054dc59785e2a`
+
+All four seed workers run as rootless `p1lr-screen@` units with GPU-readiness
+and mode-bound idle-guard timers. After 16/16 records, the collector must seal
+and independently load all terminal artifacts, emit the typed screen verdict,
+replicate that verdict to every worker, switch the guard to decision mode and
+start only the decision units. Old screen/decision identities remain
+diagnostic and are never mixed or used as warm starts.
+
+Before the decision run starts, replay-buffer capacity is bounded by
+`p1lr_decision_execution_profile_v1.json`: 40,000 transitions, two complete
+20,000-transition pass-equivalents, identical across every seed and host. The
+profile hash participates in decision identity and each decision process is
+also cgroup-bounded at 5G high/6G maximum/1G swap. This is an operationally
+feasible starting profile, not a claim that 40,000 is optimal. Replay capacity
+remains an explicit future optimization parameter; neither silent
+host-dependent capacity nor an unmeasured fallback is allowed.
+
+The mechanics screen stays on its already-pinned revision and identity while
+it finishes. Its sealed viable verdict is then the parent gate for a newly
+materialized decision child identity containing the execution-profile hash.
+This declared parent/child boundary avoids recomputing a valid screen while
+also preventing the old unbounded decision identity from launching.
+
+Canonical audit:
+`docs/audits/AUDIT_SATOSHI_RETURN_231_233_AND_RUNTIME_CORRECTIONS_2026_08_12.md`.
