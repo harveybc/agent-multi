@@ -236,6 +236,76 @@ class TestContextSemantics:
         with pytest.raises(ns.NestedSplitError, match="trades occurred"):
             wrapped.step(0.5)
 
+    def test_prefix_wrapper_counts_both_populations(self):
+        """Finding 231 §5: the wrapper reports what it separated so a
+        caller can PROVE the score boundary was reached."""
+        class FlatEnv:
+            def reset(self, **kwargs):
+                return "obs", {"equity": 1000.0, "position": 0,
+                               "trades": 0}
+
+            def step(self, action):
+                return "obs", 1.0, False, False, {
+                    "equity": 1000.0, "position": 0, "trades": 0}
+
+        wrapped = ns.ContextPrefixWrapper(FlatEnv(), context_rows=3)
+        wrapped.reset()
+        for _ in range(5):
+            wrapped.step(0.9)
+        assert wrapped.context_prefix_steps == 3
+        assert wrapped.scored_steps == 2
+        wrapped.reset()
+        assert (wrapped.context_prefix_steps, wrapped.scored_steps) == (0, 0)
+
+    @pytest.mark.parametrize("key,value", [
+        ("position", 1),
+        ("position_units", 0.5),
+        ("open_order_count", 1),
+        ("commission_paid", 0.02),
+    ])
+    def test_prefix_wrapper_refuses_orders_and_positions(self, key, value):
+        """A prefix row may not open an order or a position even when
+        equity has not settled yet and no trade has closed."""
+        class MutatingEnv:
+            def reset(self, **kwargs):
+                return "obs", {"equity": 1000.0, "position": 0,
+                               "position_units": 0.0,
+                               "open_order_count": 0,
+                               "commission_paid": 0.0, "trades": 0}
+
+            def step(self, action):
+                info = {"equity": 1000.0, "position": 0,
+                        "position_units": 0.0, "open_order_count": 0,
+                        "commission_paid": 0.0, "trades": 0}
+                info[key] = value
+                return "obs", 0.0, False, False, info
+
+        wrapped = ns.ContextPrefixWrapper(MutatingEnv(), context_rows=2)
+        wrapped.reset()
+        with pytest.raises(ns.NestedSplitError,
+                           match="account state changed"):
+            wrapped.step(0.5)
+
+    def test_prefix_wrapper_allows_unchanged_account_facts(self):
+        class SteadyEnv:
+            def reset(self, **kwargs):
+                return "obs", {"equity": 1000.0, "position": 1,
+                               "position_units": 2.0,
+                               "open_order_count": 0,
+                               "commission_paid": 3.0, "trades": 0}
+
+            def step(self, action):
+                return "obs", 0.0, False, False, {
+                    "equity": 1000.0, "position": 1,
+                    "position_units": 2.0, "open_order_count": 0,
+                    "commission_paid": 3.0, "trades": 0}
+
+        wrapped = ns.ContextPrefixWrapper(SteadyEnv(), context_rows=2)
+        wrapped.reset()
+        wrapped.step(0.5)
+        wrapped.step(0.5)
+        assert wrapped.context_prefix_steps == 2
+
 
 class TestManifestFailClosed:
     def test_manifest_verifies_and_detects_drift(self, tmp_path):
@@ -284,6 +354,36 @@ class TestPipelineHook:
         assert paths["val"] == paths["validation"]
         assert Path(paths["validation"]).is_file()
         assert config["nested_split_manifest"]
+
+    @needs_eth
+    def test_pipeline_resolves_eth_roles_from_the_verified_manifest(
+        self, tmp_path
+    ):
+        """AUD-F1-20260812-231 §1: the executing selector learns the
+        role and its context_rows from the verified manifest — 256
+        context rows before 2,190 scored rows on BOTH internal
+        evaluation roles — never from a file name or a row position."""
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            PipelinePlugin,
+        )
+
+        pipeline = PipelinePlugin({})
+        config = {
+            "nested_split_contract": str(CONTRACT_PATH),
+            "nested_split_dir": str(tmp_path / "splits"),
+            "save_model": str(tmp_path / "model.zip"),
+            "selection_metric": "paired_generalization_weekly_v1",
+        }
+        paths = pipeline._split_csv(config)
+        for alias, expected_role in (("train_tail", "train_monitor"),
+                                     ("val", "inner_validation")):
+            role, entry = pipeline._resolve_nested_role(
+                config, paths[alias])
+            assert role == expected_role
+            assert entry["context_rows"] == 256
+            assert entry["scored_rows"] == 2190
+        role, entry = pipeline._resolve_nested_role(config, paths["train"])
+        assert (role, entry["context_rows"]) == ("fit_train", 0)
 
     @needs_eth
     def test_nested_config_refuses_legacy_validation_only_metric(

@@ -73,6 +73,54 @@ def _verify_artifact_sha256(path: Path, expected: str | None) -> str:
     return actual
 
 
+_VERIFIED_NESTED_MANIFESTS: Dict[Tuple[str, int, int], Dict[str, Any]] = {}
+
+
+def _nested_split_out_dir(config: Dict[str, Any]) -> Path:
+    """The ONE derivation of the nested split directory, shared by the
+    materializer and the role resolver so they can never disagree."""
+    return Path(
+        config.get("nested_split_dir")
+        or Path(config.get("save_model", "./agent_model.zip"))
+        .resolve().parent / "nested_splits")
+
+
+def _verified_nested_manifest(manifest_path: Path) -> Dict[str, Any]:
+    """Load and VERIFY the nested split manifest (every materialized
+    role csv is re-hashed) before any role fact is trusted.
+
+    Cached per (path, mtime, size): a decision cell materializes its
+    splits once per phase, so the fit_train re-hash happens once per
+    materialization instead of once per epoch, and any rewrite of the
+    manifest re-verifies from scratch.
+    """
+    from . import _nested_splits
+
+    path = Path(manifest_path)
+    stat = path.stat()
+    key = (str(path.resolve()), int(stat.st_mtime_ns), int(stat.st_size))
+    manifest = _VERIFIED_NESTED_MANIFESTS.get(key)
+    if manifest is None:
+        manifest = _nested_splits.verify_split_manifest(path)
+        _VERIFIED_NESTED_MANIFESTS[key] = manifest
+    return manifest
+
+
+def _replay_buffer_size(model: Any) -> int | None:
+    """Current replay-buffer occupancy, or None when the model has no
+    readable buffer. Used to prove an evaluation rollout — and its
+    causal prefix in particular — writes no transitions."""
+    buffer = getattr(model, "replay_buffer", None)
+    if buffer is None:
+        return None
+    size = getattr(buffer, "size", None)
+    try:
+        value = size() if callable(size) else size
+        return int(value) if value is not None else None
+    except Exception:
+        return None
+
+
 def _load_env_plugin(name: str, config: Dict[str, Any]):
     eps = entry_points().select(group="env.plugins")
     ep = next((e for e in eps if e.name == name), None)
@@ -499,6 +547,11 @@ class PipelinePlugin:
     def __init__(self, config: Dict[str, Any] | None = None):
         self.params = self.plugin_params.copy()
         self._tempdir: Optional[tempfile.TemporaryDirectory] = None
+        # Set by _split_csv when a nested contract materializes: the
+        # role resolver falls back to it so a split evaluation launched
+        # with a derived config copy (curriculum phase 1) still resolves
+        # its role from the same verified manifest.
+        self._nested_split_manifest_path: Optional[str] = None
         if config:
             self.set_params(**config)
 
@@ -523,14 +576,12 @@ class PipelinePlugin:
             from . import _nested_splits
 
             contract = _nested_splits.load_contract(Path(contract_path))
-            out_dir = Path(
-                config.get("nested_split_dir")
-                or Path(config.get("save_model", "./agent_model.zip"))
-                .resolve().parent / "nested_splits")
+            out_dir = _nested_split_out_dir(config)
             manifest = _nested_splits.materialize_nested_splits(
                 contract, out_dir,
                 mode=str(config.get("nested_split_mode", "l1")))
             config["nested_split_manifest"] = manifest["manifest_path"]
+            self._nested_split_manifest_path = manifest["manifest_path"]
             # Doc 38 §5: a nested decision config must use the paired
             # comparator; the validation-only lexicographic branch is
             # structurally out of reach for it.
@@ -688,7 +739,86 @@ class PipelinePlugin:
             )
         return paths
 
-    def _make_split_env(self, env_plugin_name: str, base_config: Dict[str, Any], csv_path: str, agent_plugin):
+    def _nested_manifest_path(
+        self, config: Dict[str, Any]
+    ) -> Optional[Path]:
+        """Where the verified nested manifest lives for this run, or
+        None when the config declares no nested contract at all.
+
+        The instance-recorded path is only ever consulted for a config
+        that itself declares the nested contract, so a legacy run can
+        never inherit a manifest from an earlier nested run.
+        """
+        explicit = config.get("nested_split_manifest")
+        if explicit:
+            return Path(str(explicit))
+        if not (config.get("nested_split_contract")
+                or config.get("nested_split_dir")):
+            return None
+        derived = _nested_split_out_dir(config) / "nested_split_manifest.json"
+        if derived.is_file():
+            return derived
+        recorded = self._nested_split_manifest_path
+        if recorded:
+            return Path(str(recorded))
+        return derived              # missing → the caller fails closed
+
+    def _resolve_nested_role(
+        self, config: Dict[str, Any], csv_path: str
+    ) -> Optional[Tuple[str, Dict[str, Any]]]:
+        """Resolve (role, verified role entry) for ``csv_path`` from the
+        VERIFIED nested split manifest — finding 231 requirement 1.
+
+        The role and its ``context_rows`` come from the manifest's own
+        re-hashed role entries; nothing is inferred from the file name
+        or from row positions. A run without a nested contract returns
+        None (legacy split path, no causal prefix). A csv that the
+        manifest does not declare is REFUSED rather than silently
+        scored as if it carried no context.
+        """
+        manifest_path = self._nested_manifest_path(config)
+        if manifest_path is None:
+            return None
+        if not manifest_path.is_file():
+            raise ValueError(
+                "nested split contract declared but its manifest is "
+                f"missing at {manifest_path} — refusing to evaluate a "
+                "split whose role and context rows cannot be verified")
+        manifest = _verified_nested_manifest(manifest_path)
+        target = Path(csv_path).resolve()
+        for role, entry in (manifest.get("roles") or {}).items():
+            if entry.get("status") != "MATERIALIZED":
+                continue
+            if Path(str(entry["csv"])).resolve() != target:
+                continue
+            context_rows = entry.get("context_rows")
+            if (isinstance(context_rows, bool)
+                    or not isinstance(context_rows, int)
+                    or context_rows < 0):
+                raise ValueError(
+                    f"nested role {role}: context_rows is "
+                    f"{context_rows!r} — the manifest must declare a "
+                    "non-negative integer count of causal context rows")
+            return role, entry
+        raise ValueError(
+            f"{csv_path} is not a materialized role of the verified "
+            f"nested split manifest {manifest_path} — refusing to score "
+            "a slice with no declared role or context semantics")
+
+    def _make_split_env(self, env_plugin_name: str, base_config: Dict[str, Any], csv_path: str, agent_plugin,
+                        context_rows: int | None = None):
+        """Build one evaluation/training env for a split csv.
+
+        ``context_rows`` installs the reusable ContextPrefixWrapper
+        (finding 231 requirement 2): the leading causal-context rows of
+        an evaluation role are forced to hold, tagged
+        ``is_context_prefix`` and refused any account mutation, BEFORE
+        the env reaches ``_rollout``. It is passed by the internal
+        selection path (`_eval_on_split`) from the verified manifest.
+        Callers that own their own prefix boundary — the final
+        outer-validation helper — leave it None and keep their wrapper,
+        and fit training is built without it.
+        """
         cfg = deepcopy(base_config)
         cfg["input_data_file"] = csv_path
         env_plugin = _load_env_plugin(env_plugin_name, cfg)
@@ -696,6 +826,10 @@ class PipelinePlugin:
         wrap = getattr(agent_plugin, "wrap_env", None)
         if callable(wrap):
             env = wrap(env, cfg)
+        if context_rows:
+            from . import _nested_splits
+
+            env = _nested_splits.ContextPrefixWrapper(env, int(context_rows))
         return env_plugin, env
 
     def _eval_on_split(
@@ -717,9 +851,29 @@ class PipelinePlugin:
         WP-C guard: evaluation is structurally ``normal_realistic`` — no
         split evaluation can ever run under relaxed solvency dynamics,
         regardless of the training configuration.
+
+        AUD-F1-20260812-231: this is the EXECUTING internal selection
+        path. Under a nested contract the role and its declared
+        ``context_rows`` are resolved from the verified manifest and the
+        ContextPrefixWrapper is installed before the rollout, so
+        train_monitor and inner_validation are scored on their declared
+        scored rows only — never on the causal prefix that precedes
+        them.
         """
         config = {**config, "solvency_mode": "normal_realistic"}
-        plug, env = self._make_split_env(env_plugin_name, config, csv_path, agent_plugin)
+        nested = self._resolve_nested_role(config, csv_path)
+        context_rows = int(nested[1]["context_rows"]) if nested else 0
+        if context_rows:
+            # A role that DECLARES causal context is built with its
+            # prefix boundary installed; a role that declares none keeps
+            # the historical four-argument factory call.
+            plug, env = self._make_split_env(
+                env_plugin_name, config, csv_path, agent_plugin,
+                context_rows=context_rows,
+            )
+        else:
+            plug, env = self._make_split_env(
+                env_plugin_name, config, csv_path, agent_plugin)
         try:
             split_label = _normalize_split_label(split_name)
             run_id = _trace_mod.make_run_id(config)
@@ -734,7 +888,14 @@ class PipelinePlugin:
                 continuous_threshold=_safe_float_or_none(
                     config.get("continuous_action_threshold")
                 ),
+                context_rows=context_rows,
             )
+            if nested is not None:
+                role, entry = nested
+                summary["nested_role"] = role
+                summary["nested_role_csv_sha256"] = entry.get("csv_sha256")
+                summary["nested_role_scored_rows"] = entry.get("scored_rows")
+                summary["nested_role_context_rows"] = context_rows
             summary["_selection_min_trades"] = int(
                 config.get("selection_min_trades", 0))
             trace_rows = summary.get("_return_trace_rows")
@@ -796,25 +957,71 @@ class PipelinePlugin:
         run_id: str = "run",
         episode_id: str = "run::ep0",
         continuous_threshold: float | None = None,
+        context_rows: int = 0,
     ) -> Dict[str, Any]:
+        """Roll the policy once and return the SCORED outcome.
+
+        AUD-F1-20260812-231 requirement 5: causal-context rows are input,
+        never measurement. A step tagged ``is_context_prefix`` by the
+        ContextPrefixWrapper contributes nothing to the reward, the
+        action statistics, the canonical return trace, the weekly
+        metrics or the metric horizon; the counts of both populations
+        are reported. ``context_rows`` is the count DECLARED by the
+        verified manifest: if a role declares context and the rollout
+        never sees a tagged prefix — an unwrapped env — the evaluation
+        is refused instead of silently scoring the prefix.
+        """
+        declared_context_rows = int(context_rows or 0)
         obs, info = env.reset(seed=seed)
         total_reward = 0.0
+        prefix_reward_excluded = 0.0
         steps = 0
+        scored_steps = 0
+        context_prefix_steps = 0
+        score_boundary_equity: float | None = None
         done = False
         trace_rows: List[Dict[str, Any]] = []
         action_stats = _new_action_stats(
             continuous_threshold=continuous_threshold,
         )
         prev_equity = _safe_float_or_none(info.get("equity"))
+        replay_size_before = _replay_buffer_size(model)
         while not done:
             action = agent_plugin.predict(model, obs, deterministic=True)
             obs, reward, terminated, truncated, info = env.step(action)
+            steps += 1
+            done = bool(terminated or truncated)
+            if bool(info.get("is_context_prefix")):
+                if scored_steps:
+                    raise ValueError(
+                        f"{split}: a causal-context row was reported after "
+                        "the score boundary — the context prefix must "
+                        "precede every scored row")
+                context_prefix_steps += 1
+                prefix_reward_excluded += float(reward)
+                if steps > 1_000_000:
+                    break
+                continue
+            if scored_steps == 0:
+                # The score boundary: equity here is the opening equity
+                # of the scored interval and must be the reset equity —
+                # the wrapper refused any prefix mutation to get here.
+                score_boundary_equity = prev_equity
+                replay_size_at_boundary = _replay_buffer_size(model)
+                if (replay_size_before is not None
+                        and replay_size_at_boundary is not None
+                        and replay_size_at_boundary != replay_size_before):
+                    raise ValueError(
+                        f"{split}: the replay buffer grew during the "
+                        f"causal context prefix ({replay_size_before} -> "
+                        f"{replay_size_at_boundary})")
+            scored_steps += 1
             equity = _safe_float_or_none(info.get("equity"))
             _update_action_stats(action_stats, action, info)
             trace_rows.append(
                 _trace_mod.build_trace_row(
                     env=env,
-                    step=steps + 1,
+                    step=scored_steps,
                     action=action,
                     reward=reward,
                     info=info,
@@ -829,16 +1036,37 @@ class PipelinePlugin:
             )
             prev_equity = equity
             total_reward += float(reward)
-            steps += 1
-            done = bool(terminated or truncated)
             if steps > 1_000_000:
                 break
+        if declared_context_rows and context_prefix_steps != declared_context_rows:
+            raise ValueError(
+                f"{split}: the manifest declares {declared_context_rows} "
+                f"causal context rows but the rollout separated "
+                f"{context_prefix_steps} — the evaluation env was not "
+                "wrapped, or the episode ended inside the prefix; "
+                "refusing to score it")
+        if declared_context_rows and scored_steps == 0:
+            raise ValueError(
+                f"{split}: the episode produced no scored rows after its "
+                "causal context prefix")
+        replay_size_after = _replay_buffer_size(model)
+        if (replay_size_before is not None and replay_size_after is not None
+                and replay_size_after != replay_size_before):
+            raise ValueError(
+                f"{split}: the replay buffer grew during evaluation "
+                f"({replay_size_before} -> {replay_size_after})")
         base = env
         while hasattr(base, "env") and not hasattr(base, "summary"):
             base = base.env
         summary = base.summary() if hasattr(base, "summary") else {}
         summary["episode_reward"] = total_reward
-        summary["episode_length"] = steps
+        summary["episode_length"] = scored_steps
+        summary["scored_steps"] = scored_steps
+        summary["context_prefix_steps"] = context_prefix_steps
+        summary["context_rows_declared"] = declared_context_rows
+        summary["context_prefix_reward_excluded"] = prefix_reward_excluded
+        summary["score_boundary_opening_equity"] = score_boundary_equity
+        summary["total_env_steps"] = steps
         summary.update(_action_summary_fields(action_stats, summary))
         summary["_return_trace_rows"] = trace_rows
         return summary

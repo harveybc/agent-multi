@@ -233,6 +233,22 @@ def assert_same_split_identity(manifest_a: Mapping[str, Any],
                 " split contract cannot be evaluated under another")
 
 
+# Account facts that must not move while the causal prefix runs
+# (order §5.2; finding 231 requirement 4). Equity and trades were the
+# original two; positions, open orders and paid execution costs are the
+# other directly observable proofs that no order was submitted and no
+# account state was mutated by a prefix row.
+PREFIX_GUARDED_KEYS = ("position", "position_units", "open_order_count",
+                       "open_orders", "orders", "commission_paid",
+                       "slippage_paid", "trade_cost")
+
+
+def _numeric(value: Any) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
 class ContextPrefixWrapper:
     """Reusable env-adapter boundary for causal prefixes (order §5.2).
 
@@ -241,6 +257,11 @@ class ContextPrefixWrapper:
     tagged, and any account mutation during the prefix raises. Metrics,
     replay and traces must exclude rows via this flag, never via row
     position.
+
+    The wrapper also counts what it separated — `context_prefix_steps`
+    and `scored_steps` — so a caller can prove the score boundary was
+    reached instead of assuming it, and refuses any order/position
+    mutation during the prefix, not only equity and closed trades.
     """
 
     def __init__(self, env, context_rows: int):
@@ -249,13 +270,20 @@ class ContextPrefixWrapper:
             raise NestedSplitError("context_rows must be a non-negative int")
         self.env = env
         self.context_rows = context_rows
+        self.context_prefix_steps = 0
+        self.scored_steps = 0
         self._steps = 0
         self._prefix_equity = None
+        self._prefix_state: Dict[str, Any] = {}
 
     def reset(self, **kwargs):
         self._steps = 0
+        self.context_prefix_steps = 0
+        self.scored_steps = 0
         obs, info = self.env.reset(**kwargs)
         self._prefix_equity = info.get("equity")
+        self._prefix_state = {key: info.get(key)
+                              for key in PREFIX_GUARDED_KEYS}
         info["is_context_prefix"] = self.context_rows > 0
         return obs, info
 
@@ -267,6 +295,7 @@ class ContextPrefixWrapper:
         self._steps += 1
         info["is_context_prefix"] = in_prefix
         if in_prefix:
+            self.context_prefix_steps += 1
             equity = info.get("equity")
             trades = info.get("trades")
             if (self._prefix_equity is not None and equity is not None
@@ -279,7 +308,34 @@ class ContextPrefixWrapper:
             if trades not in (None, 0):
                 raise NestedSplitError(
                     f"trades occurred during the context prefix: {trades}")
+            self._assert_no_account_mutation(info)
+        else:
+            self.scored_steps += 1
         return obs, reward, terminated, truncated, info
+
+    def _assert_no_account_mutation(self, info) -> None:
+        """No order, position or execution cost may move during the
+        prefix: the prefix is input to the observation window only."""
+        for key in PREFIX_GUARDED_KEYS:
+            now = info.get(key)
+            if now is None:
+                continue
+            before = self._prefix_state.get(key)
+            now_value = _numeric(now)
+            before_value = _numeric(before)
+            if before_value is not None and now_value is not None:
+                if math.isclose(now_value, before_value,
+                                rel_tol=0.0, abs_tol=1e-9):
+                    continue
+            elif before is None:
+                if now_value is None or abs(now_value) <= 1e-9:
+                    continue
+            elif now == before:
+                continue
+            raise NestedSplitError(
+                "account state changed during the context prefix: "
+                f"{key} {before!r} -> {now!r} — the prefix forces hold "
+                "and may not open orders or positions")
 
     def __getattr__(self, name):
         return getattr(self.env, name)
