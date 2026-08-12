@@ -75,6 +75,28 @@ the document-38 outcomes with per-seed paired main effects
 (difficulty, P1 LR) plus interaction and per-cell raw weekly metrics,
 all with units and horizons.
 
+INACTIVE CELLS ARE MEASURED OUTCOMES (finding 232). A treatment that
+produces a policy which never becomes activity-eligible has no best
+checkpoint — that is a RESULT, not a harness exception. Such a cell
+publishes ONE immutable record with ``activity_status=inactive``,
+``promotion_eligible=false``, the typed termination cause and the same
+custody as an active cell (terminal path + sha256 + policy-tensor
+sha256 + load proof + experiment/cell identity, contract sha, nested
+contract sha, anchor sha), and the seed runner CONTINUES to its next
+cell (batch outcome ``SEED_COMPLETE_WITH_INACTIVE``, exit 0 — the
+inactivity is named, the remaining work is never destroyed). In
+decision mode an inactive cell still receives exactly ONE final outer
+evaluation, of its TERMINAL artifact, as DIAGNOSTIC TRUTH ONLY;
+``assert_outer_eval_artifact_role`` and
+``assert_terminal_never_labeled_best`` refuse any payload or record
+that relabels a terminal artifact ``best_checkpoint``. Aggregation
+(both verdicts) types the 16-cell picture as ``FULL_ACTIVITY``,
+``PARTIAL_ACTIVITY_SURVIVAL`` (naming exactly which cells are
+inactive) or ``TOTAL_ACTIVITY_COLLAPSE``; an inactive cell NEVER
+contributes an imputed zero or sentinel utility, and a paired effect
+that therefore cannot be computed is typed unavailable with the exact
+reason.
+
 This is a MECHANICS SCREEN, not a performance result: one
 pass-equivalent per cell (1 phase-1 epoch + 1 phase-2 epoch at 20000
 timesteps). ``--screen-verdict`` aggregates the 16 records (refusing
@@ -202,10 +224,35 @@ HANDOFF_VIABILITY_VALUES = (
     "UNAVAILABLE")
 COLLAPSE_LABELS = ("CONSTANT_POLICY", "BELOW_NORMAL_THRESHOLD")
 
+# Finding 232: an inactive cell is a MEASURED OUTCOME, not a harness
+# exception and not a successful checkpoint. Every cell record carries
+# a typed activity status; ``inactive`` is never promotable, never
+# relabeled ``best_checkpoint`` and never imputed a performance value.
+ACTIVITY_STATUSES = ("active", "inactive")
+INACTIVE_CAUSES = (
+    # training ended before any activity-eligible checkpoint existed
+    "no_activity_eligible_checkpoint",
+    # a selected checkpoint existed but closed zero trades on the one
+    # final outer evaluation (aggregation-time classification only)
+    "zero_trades_on_outer_validation",
+)
+# Aggregation-time activity classification of the 16-record factorial.
+ACTIVITY_CLASSIFICATIONS = ("FULL_ACTIVITY", "PARTIAL_ACTIVITY_SURVIVAL",
+                            "TOTAL_ACTIVITY_COLLAPSE")
+# The artifact a single final outer evaluation may load. ``terminal`` is
+# DIAGNOSTIC TRUTH ONLY — relabeling it best_checkpoint is refused.
+OUTER_ARTIFACT_ROLES = ("best_checkpoint", "terminal")
+TERMINAL_LOAD_PROOF_SCHEMA = "agent_multi.p1lr_terminal_load_proof.v1"
+
 # Exit classes follow the fleet launcher/systemd contract.
 EXIT_CLASS = {
     "SEED_COMPLETE": 0,
+    # Finding 232: inactivity is a measured result, so the batch still
+    # completes (exit 0 — nothing to restart) while the outcome NAMES
+    # that at least one cell finished inactive.
+    "SEED_COMPLETE_WITH_INACTIVE": 0,
     "ALREADY_COMPLETE": 0,
+    "ALREADY_COMPLETE_WITH_INACTIVE": 0,
     "SCREEN_VIABLE_REGION": 0,
     "PHASE1_LR_REGION_COLLAPSED": 0,
     "PHASE1_LR_MAIN_EFFECT": 0,
@@ -996,6 +1043,19 @@ def record_is_complete(record_path: Path, expected_cell_id: str) -> bool:
     for key in ("terminal_model_path", "terminal_model_sha256"):
         if not record.get(key):
             return False
+    # Finding 232: an INACTIVE record is reusable on restart exactly
+    # like an active one — same terminal custody, plus the typed
+    # non-promotable invariants. A record that lost them is not
+    # complete (the caller then refuses rather than overwriting).
+    status = record.get("activity_status")
+    if status is not None:
+        if status not in ACTIVITY_STATUSES:
+            return False
+        if status == "inactive" and (
+                record.get("promotion_eligible") is not False
+                or record.get("best_model_path")
+                or record.get("best_model_sha256")):
+            return False
     terminal = Path(record["terminal_model_path"])
     if not terminal.is_file():
         return False
@@ -1064,6 +1124,251 @@ def bind_handoff_viability(result: dict) -> dict:
         "selected_is_collapse": label in COLLAPSE_LABELS,
         "per_checkpoint": per_checkpoint,
     }
+
+
+# ---------------------------------------------------------------------------
+# activity: the typed inactive outcome (finding 232)
+# ---------------------------------------------------------------------------
+
+def classify_cell_activity(result: dict) -> dict:
+    """Finding 232: classify a finished cell as ``active`` or
+    ``inactive`` from the pipeline's TYPED result — never from a
+    harness exception.
+
+    ``inactive`` means the treatment produced a policy that never became
+    activity-eligible, so no best checkpoint can exist. It is a MEASURED
+    outcome: the cell record still lands (with the same custody strength
+    as an active cell), it is never promotable, and the seed runner
+    continues to its next cell.
+
+    A result that carries NEITHER a restorable best checkpoint NOR the
+    typed inactive declaration (``activity_stopped_without_eligible_
+    checkpoint`` plus a non-empty ``termination_cause``) is a harness
+    failure and is REFUSED — silence is never a measurement.
+    """
+    best_path = result.get("best_model_path")
+    has_best = bool(best_path) and Path(str(best_path)).is_file()
+    declared = bool(result.get(
+        "activity_stopped_without_eligible_checkpoint", False))
+    cause = result.get("termination_cause")
+    stop_reason = result.get("stop_reason")
+    if has_best and declared:
+        raise RuntimeError(
+            "pipeline result is self-contradictory: it declares "
+            "activity_stopped_without_eligible_checkpoint AND carries a "
+            f"best checkpoint {best_path!r} — record refused "
+            "(finding 232)")
+    if has_best:
+        return {
+            "activity_status": "active",
+            "promotion_eligible": True,
+            "inactive_cause": None,
+            "termination_cause": cause,
+            "stop_reason": stop_reason,
+            "evidence": ("a restorable, hash-bound best checkpoint "
+                         "exists and was selected by the paired "
+                         "comparator"),
+        }
+    if not declared:
+        raise RuntimeError(
+            "cell finished with NO best checkpoint and NO typed "
+            "inactive declaration "
+            "(activity_stopped_without_eligible_checkpoint) — an "
+            "unexplained missing checkpoint is a harness failure, not a "
+            "measured outcome; record refused (finding 232)")
+    if not isinstance(cause, str) or not cause.strip():
+        raise RuntimeError(
+            "inactive cell carries no termination_cause — an inactive "
+            "outcome must NAME why the policy never became "
+            "activity-eligible; record refused (finding 232)")
+    return {
+        "activity_status": "inactive",
+        "promotion_eligible": False,
+        "inactive_cause": "no_activity_eligible_checkpoint",
+        "termination_cause": cause.strip(),
+        "stop_reason": stop_reason,
+        "evidence": ("training ended before any activity-eligible "
+                     "checkpoint existed; the terminal policy is bound, "
+                     "hashed and load-proven as diagnostic truth only"),
+    }
+
+
+def terminal_load_proof(terminal_path, terminal_sha: str,
+                        policy_tensor_sha: str) -> dict:
+    """Finding 223/232: the terminal artifact is not merely hashed — it
+    is LOADED and its policy tensors digested. The digest IS the load
+    proof; an unloadable artifact never reaches here."""
+    if not policy_tensor_sha or not isinstance(policy_tensor_sha, str):
+        raise RuntimeError(
+            "terminal artifact produced no policy-tensor digest — the "
+            "load proof is unmet; record refused (finding 223/232)")
+    return {
+        "schema": TERMINAL_LOAD_PROOF_SCHEMA,
+        "path": str(Path(terminal_path).resolve()),
+        "sha256": terminal_sha,
+        "policy_tensor_sha256": policy_tensor_sha,
+        "loaded": True,
+        "method": ("artifact loaded and its policy tensors digested "
+                   "(agent_plugins.sac_agent._policy_tensor_hash) — a "
+                   "digest cannot exist without a successful load"),
+        "proved_utc": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def _walk_json(payload, path: str = ""):
+    """Yield (dotted_key_path, key, value) for every mapping entry."""
+    if isinstance(payload, dict):
+        for key, value in payload.items():
+            here = f"{path}.{key}" if path else str(key)
+            yield here, str(key), value
+            yield from _walk_json(value, here)
+    elif isinstance(payload, (list, tuple)):
+        for index, value in enumerate(payload):
+            yield from _walk_json(value, f"{path}[{index}]")
+
+
+def assert_terminal_never_labeled_best(payload, *, terminal_path,
+                                       terminal_sha: str,
+                                       context: str) -> None:
+    """Finding 232 requirement 2: the terminal artifact may be loaded
+    for diagnostic truth, but it must NEVER be relabeled a best
+    checkpoint. Any ``best``-named field anywhere in ``payload`` bound
+    to the terminal artifact's path or sha256 is a refusal — this makes
+    the relabeling structurally impossible, not merely discouraged."""
+    resolved = str(Path(str(terminal_path)).resolve())
+    identities = {resolved, str(terminal_path)}
+    for dotted, key, value in _walk_json(payload):
+        if "best" not in key.lower():
+            continue
+        if not isinstance(value, str):
+            continue
+        if value in identities or (terminal_sha and value == terminal_sha):
+            raise RuntimeError(
+                f"{context}: field {dotted!r} labels the TERMINAL "
+                f"artifact ({value!r}) as a best checkpoint — an "
+                "inactive cell's terminal policy is diagnostic truth "
+                "only and can never be a best checkpoint (finding 232)")
+
+
+def assert_outer_eval_artifact_role(outer: dict, *, artifact_role: str,
+                                    terminal_path, terminal_sha: str,
+                                    best_path, best_sha) -> None:
+    """The single final outer evaluation is typed by the artifact it
+    loaded. ``terminal`` payloads must carry no best-checkpoint
+    identity at all; ``best_checkpoint`` payloads must evaluate exactly
+    the record's best artifact and never the terminal one."""
+    if artifact_role not in OUTER_ARTIFACT_ROLES:
+        raise RuntimeError(
+            f"unknown outer-evaluation artifact role {artifact_role!r}")
+    if not isinstance(outer, dict):
+        raise RuntimeError(
+            "final outer evaluation did not return a typed payload")
+    got = outer.get("evaluated_artifact_role")
+    if got != artifact_role:
+        raise RuntimeError(
+            f"final outer evaluation declares artifact role {got!r} but "
+            f"the runner loaded the {artifact_role!r} artifact — "
+            "record refused (finding 232)")
+    evaluated = outer.get("evaluated_model_path")
+    terminal_resolved = str(Path(str(terminal_path)).resolve())
+    if artifact_role == "terminal":
+        if outer.get("best_model_path") is not None or \
+                outer.get("best_model_sha256") is not None:
+            raise RuntimeError(
+                "final outer evaluation of an INACTIVE cell carries a "
+                "best_model_path/sha — the terminal policy is never a "
+                "best checkpoint (finding 232)")
+        if outer.get("promotion_eligible") is not False:
+            raise RuntimeError(
+                "final outer evaluation of an INACTIVE cell is not "
+                "marked promotion_eligible=false (finding 232)")
+        if str(Path(str(evaluated)).resolve()) != terminal_resolved:
+            raise RuntimeError(
+                f"inactive cell's final outer evaluation loaded "
+                f"{evaluated!r}, not the bound terminal artifact "
+                f"{terminal_resolved!r} (finding 232)")
+        assert_terminal_never_labeled_best(
+            outer, terminal_path=terminal_path,
+            terminal_sha=terminal_sha,
+            context="final outer evaluation (inactive cell)")
+        return
+    if not best_path:
+        raise RuntimeError(
+            "best_checkpoint outer evaluation without a best artifact")
+    best_resolved = str(Path(str(best_path)).resolve())
+    if str(Path(str(evaluated)).resolve()) != best_resolved:
+        raise RuntimeError(
+            f"final outer evaluation loaded {evaluated!r} instead of "
+            f"the restored best checkpoint {best_resolved!r}")
+    if str(Path(str(evaluated)).resolve()) == terminal_resolved:
+        raise RuntimeError(
+            "final outer evaluation loaded the TERMINAL artifact while "
+            "declaring it the best checkpoint (finding 232)")
+    if outer.get("best_model_sha256") not in (None, best_sha):
+        raise RuntimeError(
+            "final outer evaluation binds a best_model_sha256 that is "
+            "not the record's best checkpoint hash")
+
+
+RECORD_CUSTODY_KEYS = (
+    # source identities every cell record binds — an inactive record
+    # carries EXACTLY the same custody as an active one (finding 223).
+    "experiment_identity", "cell_identity", "contract_sha256",
+    "nested_split_contract_sha256", "anchor_sha256",
+    "terminal_model_path", "terminal_model_sha256",
+    "terminal_policy_tensor_sha256",
+)
+
+
+def assert_cell_record_custody(record: dict) -> None:
+    """Refuse to publish a cell record — active OR inactive — that is
+    missing any custody field, mistypes its activity status, or lets an
+    inactive cell carry promotion/best-checkpoint identity."""
+    missing = [key for key in RECORD_CUSTODY_KEYS if not record.get(key)]
+    if missing:
+        raise RuntimeError(
+            f"cell record is missing custody fields {missing} — an "
+            "inactive cell has the SAME custody strength as an active "
+            "one; record refused (finding 223/232)")
+    proof = record.get("terminal_load_proof") or {}
+    if proof.get("loaded") is not True or \
+            proof.get("sha256") != record["terminal_model_sha256"] or \
+            proof.get("policy_tensor_sha256") != record[
+                "terminal_policy_tensor_sha256"]:
+        raise RuntimeError(
+            "cell record carries no terminal load proof bound to its "
+            "own terminal hashes; record refused (finding 223/232)")
+    status = record.get("activity_status")
+    if status not in ACTIVITY_STATUSES:
+        raise RuntimeError(
+            f"cell record activity_status {status!r} is not one of "
+            f"{list(ACTIVITY_STATUSES)} (finding 232)")
+    if status == "inactive":
+        if record.get("promotion_eligible") is not False:
+            raise RuntimeError(
+                "inactive cell record is not promotion_eligible=false "
+                "(finding 232)")
+        if record.get("best_model_path") or record.get(
+                "best_model_sha256"):
+            raise RuntimeError(
+                "inactive cell record carries a best checkpoint — an "
+                "inactive policy has none by definition (finding 232)")
+        if record.get("activity_inactive_cause") not in INACTIVE_CAUSES:
+            raise RuntimeError(
+                "inactive cell record names no typed termination cause "
+                "(finding 232)")
+        if not record.get("termination_cause"):
+            raise RuntimeError(
+                "inactive cell record carries no termination_cause "
+                "narrative (finding 232)")
+    elif record.get("promotion_eligible") is not True:
+        raise RuntimeError(
+            "active cell record is not promotion_eligible=true "
+            "(finding 232)")
+    assert_terminal_never_labeled_best(
+        record, terminal_path=record["terminal_model_path"],
+        terminal_sha=record["terminal_model_sha256"],
+        context="cell record")
 
 
 # ---------------------------------------------------------------------------
@@ -1282,7 +1587,16 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
         terminal_sha = _sha_file(Path(terminal_path))
         terminal_tensor = (tensor_sha_fn or _terminal_tensor_sha)(
             terminal_path)
-        best_path = result.get("best_model_path")
+        load_proof = terminal_load_proof(terminal_path, terminal_sha,
+                                         terminal_tensor)
+
+        # Finding 232: the typed activity classification. An inactive
+        # cell is a MEASURED outcome — it publishes its record and the
+        # seed continues; only an UNEXPLAINED missing checkpoint raises.
+        activity = classify_cell_activity(result)
+        activity_status = activity["activity_status"]
+        best_path = (result.get("best_model_path")
+                     if activity_status == "active" else None)
         best_sha = (_sha_file(Path(best_path))
                     if best_path and Path(best_path).is_file() else None)
 
@@ -1293,18 +1607,36 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
         # restoration is evidence, then ONE final outer-validation
         # evaluation after selection. Sealed 2025 stays untouched —
         # the nested manifest above already proved it SEALED.
+        # Finding 232: an INACTIVE cell also receives exactly ONE final
+        # outer evaluation, of its TERMINAL artifact, as diagnostic
+        # truth only — assert_outer_eval_artifact_role refuses any
+        # payload that relabels it a best checkpoint.
         outer_final = None
+        outer_artifact_role = None
         if mode == "decision":
-            if not best_path or not Path(best_path).is_file():
-                raise RuntimeError(
-                    "decision cell finished without a restorable best "
-                    "checkpoint artifact — record refused (finding "
-                    "226: immutable best-checkpoint restoration)")
-            heartbeat.beat(progress="outer-validation-final")
+            if activity_status == "active":
+                if not best_path or not Path(best_path).is_file():
+                    raise RuntimeError(
+                        "decision cell finished without a restorable "
+                        "best checkpoint artifact — record refused "
+                        "(finding 226: immutable best-checkpoint "
+                        "restoration)")
+                outer_artifact_role = "best_checkpoint"
+                eval_path = best_path
+            else:
+                outer_artifact_role = "terminal"
+                eval_path = terminal_path
+            heartbeat.beat(progress="outer-validation-final",
+                           activity_status=activity_status)
             outer_final = (outer_eval_fn
                            or _outer_validation_final_eval)(
-                config=config, agent=agent, best_model_path=best_path,
+                config=config, agent=agent, model_path=eval_path,
+                artifact_role=outer_artifact_role,
                 nested_roles=nested_roles, seed=int(seed))
+            assert_outer_eval_artifact_role(
+                outer_final, artifact_role=outer_artifact_role,
+                terminal_path=terminal_path, terminal_sha=terminal_sha,
+                best_path=best_path, best_sha=best_sha)
 
         finished = datetime.now(timezone.utc)
         sources_after = ladder.source_identities()
@@ -1375,6 +1707,7 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                        .get(key) for key in NESTED_ROLE_FACT_KEYS}
                 for role in _nested_splits.ROLES},
             "outer_validation_final": outer_final,
+            "outer_validation_artifact_role": outer_artifact_role,
             "gpu_binding": gpu_binding,
             "gpu_dispatch_binding": gpu_dispatch_binding,
             "gpu_launch_gate": gpu_gate,
@@ -1400,11 +1733,19 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                 "gradient_updates_total"),
             "epoch_history": history,
             "stop_reason": result.get("stop_reason"),
-            "termination_cause": result.get("termination_cause"),
+            "termination_cause": activity["termination_cause"],
             "activity_stopped_without_eligible_checkpoint": bool(
                 result.get(
                     "activity_stopped_without_eligible_checkpoint",
                     False)),
+            # Finding 232: the typed activity outcome, carried by EVERY
+            # record. ``promotion_eligible`` says only that a selected
+            # best checkpoint exists and is hash-bound; live promotion
+            # stays governed by live_promotion_eligible (always false).
+            "activity_status": activity_status,
+            "activity_inactive_cause": activity["inactive_cause"],
+            "activity_evidence": activity["evidence"],
+            "promotion_eligible": activity["promotion_eligible"],
             "boundary_transfer_evidence": result.get(
                 "warm_start_transfer_evidence"),
             "anchor_sha256": actual_anchor,
@@ -1413,10 +1754,26 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
             "terminal_model_path": str(Path(terminal_path).resolve()),
             "terminal_model_sha256": terminal_sha,
             "terminal_policy_tensor_sha256": terminal_tensor,
+            "terminal_load_proof": load_proof,
+            # The exact source identities this outcome is bound to —
+            # repeated as one block so an inactive record is
+            # self-describing custody, not a pointer to context.
+            "source_identities": {
+                "experiment_identity": exp_id,
+                "cell_identity": cell_id,
+                "contract_sha256": contract["_contract_sha256"],
+                "nested_split_contract_sha256": nested_binding["sha256"],
+                "anchor_sha256": actual_anchor,
+                "resolved_config_sha256": resolved_sha,
+            },
             "curriculum": result.get("curriculum"),
         }
+        # Finding 223/232: identical custody for active and inactive,
+        # and a structural refusal of any best-labeled terminal.
+        assert_cell_record_custody(record)
         atomic_write_json(record_path, record)
         heartbeat.beat(terminal_state="CELL_COMPLETE",
+                       activity_status=activity_status,
                        last_artifact=record["terminal_model_path"],
                        progress="complete")
         return record
@@ -1558,23 +1915,33 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
             outcomes[cell] = {"outcome": "ALREADY_COMPLETE"}
         else:
             outcomes[cell] = {"outcome": "CELL_COMPLETE"}
+        # Finding 232: an inactive cell landed a record and the loop
+        # CONTINUES to the seed's remaining cells — a seed batch never
+        # dies on inactivity.
         outcomes[cell].update({
             "cell_identity": record.get("cell_identity"),
+            "activity_status": record.get("activity_status"),
+            "promotion_eligible": record.get("promotion_eligible"),
             "selected_handoff_viability": (record.get(
                 "handoff_viability") or {}).get("selected_label"),
             "terminal_model_sha256": record.get(
                 "terminal_model_sha256"),
         })
 
+    inactive_cells = [cell for cell in cells
+                      if (outcomes.get(cell) or {}).get(
+                          "activity_status") == "inactive"]
     states = {facts["outcome"] for facts in outcomes.values()}
     if "CELL_FAILED" in states:
         outcome = "SEED_FAILED"
     elif "ALREADY_RUNNING" in states:
         outcome = "ALREADY_RUNNING"
     elif reused == len(cells):
-        outcome = "ALREADY_COMPLETE"
+        outcome = ("ALREADY_COMPLETE_WITH_INACTIVE" if inactive_cells
+                   else "ALREADY_COMPLETE")
     else:
-        outcome = "SEED_COMPLETE"
+        outcome = ("SEED_COMPLETE_WITH_INACTIVE" if inactive_cells
+                   else "SEED_COMPLETE")
     return {
         "outcome": outcome,
         "mode": mode,
@@ -1582,6 +1949,14 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
         "seed": int(seed),
         "cell_order": cells,
         "cells": outcomes,
+        # The batch exit class NAMES the inactivity without destroying
+        # remaining work: every cell after an inactive one still ran.
+        "inactive_cells": inactive_cells,
+        "cells_completed": sum(
+            1 for facts in outcomes.values()
+            if facts["outcome"] in ("CELL_COMPLETE",
+                                    "ALREADY_COMPLETE")),
+        "cells_expected": len(cells),
     }
 
 
@@ -1590,20 +1965,40 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
 # ---------------------------------------------------------------------------
 
 def _outer_validation_final_eval(*, config: dict, agent,
-                                 best_model_path: str,
+                                 model_path: str,
+                                 artifact_role: str,
                                  nested_roles: dict,
                                  seed: int) -> dict:
-    """Load the restored best checkpoint and evaluate it ONCE on the
-    outer_validation role — final truth only, after selection. The 256
-    declared context rows initialize causal state under the reusable
-    ContextPrefixWrapper (forced hold; any account mutation raises) and
-    are excluded from every metric. Sealed 2025 is never touched."""
+    """Evaluate ONE artifact ONCE on the outer_validation role — final
+    truth only, after selection. The 256 declared context rows
+    initialize causal state under the reusable ContextPrefixWrapper
+    (forced hold; any account mutation raises) and are excluded from
+    every metric. Sealed 2025 is never touched.
+
+    ``artifact_role`` is the ONLY thing that decides what the payload
+    may claim (finding 232):
+
+    * ``best_checkpoint`` — an ACTIVE cell's restored, selected
+      checkpoint; the payload binds ``best_model_path``/``sha`` and is
+      promotion-eligible evidence within this experiment.
+    * ``terminal`` — an INACTIVE cell's terminal policy, loaded for
+      DIAGNOSTIC TRUTH ONLY. The payload carries no best-checkpoint
+      identity whatsoever and is marked ``promotion_eligible: false``
+      and ``diagnostic_only: true``. There is no code path here that
+      can name a terminal artifact a best checkpoint, and
+      ``assert_outer_eval_artifact_role`` refuses any payload that
+      does.
+    """
     from pipeline_plugins import _return_trace as trace_mod
     from pipeline_plugins._weekly_metrics import (
         canonical_weekly_metrics_from_trace)
     from pipeline_plugins.rl_pipeline_with_validation import (
         PipelinePlugin as ValidationPipeline)
 
+    if artifact_role not in OUTER_ARTIFACT_ROLES:
+        raise RuntimeError(
+            f"unknown outer-evaluation artifact role {artifact_role!r} "
+            f"— must be one of {list(OUTER_ARTIFACT_ROLES)}")
     role = nested_roles["roles"]["outer_validation"]
     if role.get("status") != "MATERIALIZED":
         raise RuntimeError("outer_validation role is not materialized")
@@ -1617,7 +2012,7 @@ def _outer_validation_final_eval(*, config: dict, agent,
         str(role["csv"]), agent)
     env = _nested_splits.ContextPrefixWrapper(env, context_rows)
     try:
-        model = agent.load(str(best_model_path), env)
+        model = agent.load(str(model_path), env)
         obs, info = env.reset(seed=int(seed))
         prev_equity = info.get("equity")
         trace_rows: list = []
@@ -1656,18 +2051,30 @@ def _outer_validation_final_eval(*, config: dict, agent,
         weekly_rows = metrics.pop("weekly_rows")
         trades_total = summary.get("trades_total",
                                    summary.get("trades"))
+        is_best = artifact_role == "best_checkpoint"
+        evaluated_sha = _sha_file(Path(model_path))
         return {
             "role": "outer_validation",
-            "purpose": ("final truth ONLY — one evaluation after "
-                        "selection (finding 224/226)"),
+            "purpose": (
+                "final truth ONLY — one evaluation after selection "
+                "(finding 224/226)" if is_best else
+                "DIAGNOSTIC TRUTH ONLY — one evaluation of the "
+                "inactive cell's terminal policy; never a selection, "
+                "never a promotion (finding 232)"),
             "csv_sha256": role["csv_sha256"],
             "scored_rows": role["scored_rows"],
             "context_rows_forced_hold": context_rows,
             "context_excluded_from_metrics": True,
             "score_start": role["score_start"],
             "score_end": role["score_end"],
-            "best_model_path": str(best_model_path),
-            "best_model_sha256": _sha_file(Path(best_model_path)),
+            "evaluated_artifact_role": artifact_role,
+            "evaluated_model_path": str(Path(model_path).resolve()),
+            "evaluated_model_sha256": evaluated_sha,
+            "best_model_path": (str(Path(model_path).resolve())
+                                if is_best else None),
+            "best_model_sha256": evaluated_sha if is_best else None,
+            "promotion_eligible": is_best,
+            "diagnostic_only": not is_best,
             "scored_steps": scored_steps,
             "metrics": metrics,
             "weekly_return_vector": [row["return_fraction"]
@@ -1893,6 +2300,33 @@ def _revalidate_record_evidence(record: dict, contract: dict,
     return checkpoint_failures, nested_failures
 
 
+def record_activity_status(record: dict) -> str:
+    """Aggregation-time activity status of ONE record (finding 232).
+    Prefers the typed field; falls back to the pipeline's declared
+    inactive flag for records written before the field existed. Never
+    guesses from performance."""
+    status = record.get("activity_status")
+    if status in ACTIVITY_STATUSES:
+        return status
+    if bool(record.get(
+            "activity_stopped_without_eligible_checkpoint", False)):
+        return "inactive"
+    if record.get("best_model_path"):
+        return "active"
+    return "active"
+
+
+def classify_factorial_activity(inactive_count: int,
+                                expected_count: int) -> str:
+    """FULL_ACTIVITY / PARTIAL_ACTIVITY_SURVIVAL /
+    TOTAL_ACTIVITY_COLLAPSE over the 16-cell factorial."""
+    if inactive_count <= 0:
+        return "FULL_ACTIVITY"
+    if inactive_count >= expected_count:
+        return "TOTAL_ACTIVITY_COLLAPSE"
+    return "PARTIAL_ACTIVITY_SURVIVAL"
+
+
 def _load_records_from_disk(contract: dict, expected: list,
                             records_root: Path | None,
                             experiment_id: str | None,
@@ -1953,6 +2387,9 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
     identity_set: set = set()
     contract_sha_mismatch: list = []
     labels: dict = {}
+    activity_failures: list = []
+    inactive_cells: list = []
+    active_cells: list = []
     for (seed, cell), record in sorted(records.items()):
         tag = {"seed": seed, "cell": cell}
         if record.get("schema") != RECORD_SCHEMA \
@@ -1963,6 +2400,26 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
                               "seed/cell/identity mismatch"})
             continue
         identity_set.add(record.get("experiment_identity"))
+        # Finding 232: an inactive cell is a MEASURED screen outcome —
+        # it is counted and named, never a refusal — but it must carry
+        # its non-promotable custody.
+        status = record_activity_status(record)
+        if status == "inactive":
+            inactive_cells.append({
+                **tag,
+                "cause": record.get("activity_inactive_cause"),
+                "termination_cause": record.get("termination_cause"),
+                "terminal_model_sha256": record.get(
+                    "terminal_model_sha256"),
+            })
+            if record.get("best_model_path") or record.get(
+                    "promotion_eligible") is True:
+                activity_failures.append(
+                    {**tag, "error": "inactive record carries a best "
+                     "checkpoint or promotion_eligible=true "
+                     "(finding 232)"})
+        else:
+            active_cells.append(tag)
         # Finding 225: revalidate per-checkpoint handoff facts and
         # nested split identity AT AGGREGATION TIME.
         cp_fail, nested_fail = _revalidate_record_evidence(
@@ -2035,6 +2492,10 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         reasons.append(
             f"{len(nested_identity_failures)} record(s) fail the "
             "finding-224 nested split identity revalidation")
+    if activity_failures:
+        reasons.append(
+            f"{len(activity_failures)} record(s) fail the finding-232 "
+            "inactive-cell custody gate")
 
     # Finding 225: the replica gate is a BOOLEAN derived from the
     # typed proof — never explanatory text, never assumed.
@@ -2043,6 +2504,22 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
                                records=records)
     if replica_refusals:
         reasons.extend(replica_refusals)
+
+    # Finding 232: the screen NAMES the activity picture of the 16
+    # cells alongside its collapse verdict — all inactive, some
+    # inactive (exactly which), or all active.
+    activity_classification = classify_factorial_activity(
+        len(inactive_cells), len(expected))
+    activity_block = {
+        "classification": activity_classification,
+        "active_cells": len(active_cells),
+        "inactive_cells": len(inactive_cells),
+        "cells_expected": len(expected),
+        "inactive_cell_facts": inactive_cells,
+        "imputation": ("none — an inactive cell is reported as a "
+                       "measured outcome; no performance value is "
+                       "invented for it (finding 232)"),
+    }
 
     gates = {
         "records_16_16": not missing and not malformed,
@@ -2053,6 +2530,7 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "per_checkpoint_facts_revalidated": not checkpoint_failures,
         "nested_split_identity_revalidated":
             not nested_identity_failures,
+        "inactive_cells_non_promotable": not activity_failures,
         "replica_terminal_loads": bool(replica_ok),
     }
 
@@ -2072,6 +2550,8 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
             "checkpoint_failures": checkpoint_failures,
             "nested_identity_failures": nested_identity_failures,
             "contract_sha_mismatch": contract_sha_mismatch,
+            "activity_failures": activity_failures,
+            "activity": activity_block,
             "replica_proof_refusals": replica_refusals,
             "replica_proof_facts": replica_facts,
             "gates": gates,
@@ -2104,6 +2584,7 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "records_present": len(records),
         "records_expected": len(expected),
         "gates": gates,
+        "activity": activity_block,
         "replica_proof_facts": replica_facts,
         "collapse_definition": (
             "selected trained-checkpoint handoff_viability in "
@@ -2138,12 +2619,41 @@ def _finite_or_none(value) -> float | None:
     return value if math.isfinite(value) else None
 
 
-def decision_effects(utilities: dict) -> dict:
+def decision_effects(utilities: dict,
+                     unavailable_reasons: dict | None = None) -> dict:
     """Per-seed paired main effects and interaction on one declared
     utility (outer mean weekly RAP). ``utilities`` maps
-    (seed, cell) -> float. Pure; raises KeyError on a missing cell."""
+    (seed, cell) -> float and contains ONLY active cells.
+
+    Finding 232: a seed whose four cells are not all active yields a
+    TYPED UNAVAILABLE entry naming the exact missing cells and their
+    causes. No zero and no sentinel is ever imputed for a missing
+    active pair — an effect that cannot be computed is not a number."""
+    unavailable_reasons = unavailable_reasons or {}
     per_seed: dict = {}
     for seed in SEEDS:
+        absent = [cell for cell in CELLS
+                  if (seed, cell) not in utilities]
+        if absent:
+            per_seed[str(seed)] = {
+                "available": False,
+                "unavailable_cells": [
+                    {"cell": cell,
+                     "reason": unavailable_reasons.get(
+                         (seed, cell),
+                         "no active-cell utility for this cell")}
+                    for cell in absent],
+                "reason": (
+                    f"seed {seed} has no computable paired effect: "
+                    f"{len(absent)} of 4 cells produced no comparable "
+                    f"active-cell performance ({', '.join(absent)}); "
+                    "imputing zero or a sentinel would fabricate the "
+                    "comparison (finding 232)"),
+                "phase1_lr_effect": None,
+                "phase1_difficulty_effect": None,
+                "lr_x_difficulty_interaction": None,
+            }
+            continue
         u = {cell: float(utilities[(seed, cell)]) for cell in CELLS}
         lr_effect = 0.5 * ((u["P1N_LR3E5"] - u["P1N_LR1E4"])
                            + (u["P1E_LR3E5"] - u["P1E_LR1E4"]))
@@ -2152,6 +2662,7 @@ def decision_effects(utilities: dict) -> dict:
         interaction = ((u["P1E_LR3E5"] - u["P1E_LR1E4"])
                        - (u["P1N_LR3E5"] - u["P1N_LR1E4"]))
         per_seed[str(seed)] = {
+            "available": True,
             "phase1_lr_effect": lr_effect,
             "phase1_difficulty_effect": difficulty_effect,
             "lr_x_difficulty_interaction": interaction,
@@ -2167,16 +2678,39 @@ def _effect_material(values: list) -> bool:
 
 
 def decide_decision_outcome(per_seed_effects: dict,
-                            all_inactive: bool) -> tuple:
+                            activity_classification: str,
+                            inactive_cells: list | None = None) -> tuple:
     """Document-38 outcome from per-seed paired effects. Declared
-    priority: TOTAL_ACTIVITY_COLLAPSE, then a sign-consistent
-    interaction, then the sign-consistent main effect with the larger
-    median magnitude, then NO_MATERIAL_EFFECT."""
+    priority: TOTAL_ACTIVITY_COLLAPSE, then PARTIAL_ACTIVITY_SURVIVAL
+    (typed INCONCLUSIVE — the paired comparison does not exist), then a
+    sign-consistent interaction, then the sign-consistent main effect
+    with the larger median magnitude, then NO_MATERIAL_EFFECT."""
     from statistics import median
-    if all_inactive:
+    inactive_cells = inactive_cells or []
+    if activity_classification not in ACTIVITY_CLASSIFICATIONS:
+        raise ValueError("unknown activity classification "
+                         f"{activity_classification!r}")
+    if activity_classification == "TOTAL_ACTIVITY_COLLAPSE":
         return "TOTAL_ACTIVITY_COLLAPSE", (
-            "every decision cell finished with zero closed trades on "
-            "the final outer evaluation")
+            "every one of the 16 decision cells is inactive: no cell "
+            "produced a policy that closed a trade on its final outer "
+            "evaluation")
+    if activity_classification == "PARTIAL_ACTIVITY_SURVIVAL":
+        named = ", ".join(
+            f"seed{entry['seed']}/{entry['cell']}"
+            f"({entry.get('cause') or 'inactive'})"
+            for entry in inactive_cells)
+        unavailable = sorted(
+            seed for seed, facts in per_seed_effects.items()
+            if not facts.get("available"))
+        return "INCONCLUSIVE", (
+            "partial activity survival: "
+            f"{len(inactive_cells)} of 16 cells are inactive "
+            f"[{named}], so the paired effect(s) for seed(s) "
+            f"{unavailable} do not exist. No zero and no sentinel is "
+            "imputed for a missing active pair; the surviving per-seed "
+            "effects are reported as computed and the document-38 "
+            "decision is withheld (finding 232)")
     lr = [e["phase1_lr_effect"] for e in per_seed_effects.values()]
     diff = [e["phase1_difficulty_effect"]
             for e in per_seed_effects.values()]
@@ -2249,6 +2783,7 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
     utilities: dict = {}
     per_cell_metrics: dict = {}
     inactive_cells: list = []
+    inactive_reasons: dict = {}
     for (seed, cell), record in sorted(records.items()):
         tag = {"seed": seed, "cell": cell}
         name = f"seed{seed}/{cell}"
@@ -2277,20 +2812,77 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
         if not isinstance(outer, dict):
             reasons.append(f"{name}: no final outer-validation "
                            "evaluation — outer truth is mandatory "
-                           "exactly once after selection")
+                           "exactly once after selection (an INACTIVE "
+                           "cell still receives one, of its terminal "
+                           "artifact, as diagnostic truth)")
             continue
+        # Finding 232: typed activity FIRST — an inactive cell is a
+        # measured outcome whose diagnostic outer evaluation is
+        # reported but NEVER enters the paired utility set.
+        status = record_activity_status(record)
+        artifact_role = outer.get("evaluated_artifact_role")
         metrics = outer.get("metrics") or {}
-        utility = _finite_or_none(metrics.get("mean_weekly_rap"))
-        if utility is None:
-            reasons.append(f"{name}: outer mean_weekly_rap missing or "
-                           "non-finite")
-            continue
-        utilities[(seed, cell)] = utility
         trades = outer.get("trades_total")
         traded = bool(trades) and int(trades) > 0
-        if not traded:
-            inactive_cells.append(tag)
+        inactive_cause = None
+        if status == "inactive":
+            inactive_cause = (record.get("activity_inactive_cause")
+                              or "no_activity_eligible_checkpoint")
+            if record.get("promotion_eligible") is True or \
+                    record.get("best_model_path"):
+                reasons.append(
+                    f"{name}: inactive record carries a best "
+                    "checkpoint or promotion_eligible=true "
+                    "(finding 232)")
+            if artifact_role not in (None, "terminal"):
+                reasons.append(
+                    f"{name}: inactive cell's final outer evaluation "
+                    f"declares artifact role {artifact_role!r} — an "
+                    "inactive cell may only evaluate its terminal "
+                    "artifact, diagnostically (finding 232)")
+            if outer.get("best_model_path") or outer.get(
+                    "best_model_sha256"):
+                reasons.append(
+                    f"{name}: inactive cell's outer evaluation binds a "
+                    "best-checkpoint identity (finding 232)")
+        elif not traded:
+            # A selected checkpoint that closed zero trades on the one
+            # final outer evaluation is equally non-comparable.
+            status = "inactive"
+            inactive_cause = "zero_trades_on_outer_validation"
+        if status == "inactive":
+            inactive_cells.append({
+                **tag,
+                "cause": inactive_cause,
+                "termination_cause": record.get("termination_cause"),
+                "trades_total": trades,
+                "evaluated_artifact_role": artifact_role,
+                "terminal_model_sha256": record.get(
+                    "terminal_model_sha256"),
+            })
+            inactive_reasons[(seed, cell)] = (
+                f"cell is inactive ({inactive_cause}); its outer "
+                "evaluation is diagnostic truth about a "
+                "non-promotable policy and is not a comparable "
+                "performance value")
+        else:
+            utility = _finite_or_none(metrics.get("mean_weekly_rap"))
+            if utility is None:
+                reasons.append(f"{name}: outer mean_weekly_rap missing "
+                               "or non-finite")
+                continue
+            if artifact_role not in (None, "best_checkpoint"):
+                reasons.append(
+                    f"{name}: active cell's final outer evaluation "
+                    f"declares artifact role {artifact_role!r} — an "
+                    "active cell's outer truth is its restored best "
+                    "checkpoint (finding 232)")
+            utilities[(seed, cell)] = utility
         per_cell_metrics[name] = {
+            "activity_status": status,
+            "inactive_cause": inactive_cause,
+            "performance_eligible": status == "active",
+            "evaluated_artifact_role": artifact_role,
             "weekly_return_vector": outer.get("weekly_return_vector"),
             "mean_weekly_return": metrics.get("mean_weekly_return"),
             "annualized_compounded_return": metrics.get(
@@ -2315,6 +2907,8 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
     if replica_refusals:
         reasons.extend(replica_refusals)
 
+    activity_classification = classify_factorial_activity(
+        len(inactive_cells), len(expected))
     payload = {
         "schema": DECISION_VERDICT_SCHEMA,
         "contract_sha256": contract["_contract_sha256"],
@@ -2335,6 +2929,17 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
         "materiality_rule": ("an effect is material iff all four "
                              "per-seed paired effects share one "
                              "strict sign"),
+        # Finding 232: the three distinguishable activity outcomes.
+        "activity_classification": activity_classification,
+        "activity_classification_values": list(
+            ACTIVITY_CLASSIFICATIONS),
+        "active_cells": len(expected) - len(inactive_cells),
+        "inactive_cells": inactive_cells,
+        "imputation_policy": (
+            "NONE — a cell without comparable active performance is "
+            "excluded from the paired utility set and its per-seed "
+            "effect is typed unavailable with the exact reason; zero "
+            "and sentinel values are never imputed (finding 232)"),
         "per_cell_metrics": per_cell_metrics,
         "reasons": reasons,
     }
@@ -2344,12 +2949,16 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
                                         + "; ".join(reasons[:10]))
         return payload, EXIT_CLASS["INCONCLUSIVE"]
 
-    per_seed_effects = decision_effects(utilities)
-    all_inactive = len(inactive_cells) == len(expected)
-    outcome, rationale = decide_decision_outcome(per_seed_effects,
-                                                 all_inactive)
+    per_seed_effects = decision_effects(utilities, inactive_reasons)
+    outcome, rationale = decide_decision_outcome(
+        per_seed_effects, activity_classification, inactive_cells)
     payload["per_seed_paired_effects"] = per_seed_effects
-    payload["inactive_cells"] = inactive_cells
+    payload["paired_effects_available"] = sorted(
+        seed for seed, facts in per_seed_effects.items()
+        if facts.get("available"))
+    payload["paired_effects_unavailable"] = sorted(
+        seed for seed, facts in per_seed_effects.items()
+        if not facts.get("available"))
     payload["outcome"] = outcome
     payload["outcome_rationale"] = rationale
     return payload, EXIT_CLASS[outcome]

@@ -410,16 +410,34 @@ def _fake_evidence(epoch: int, label: str) -> dict:
     }
 
 
+INACTIVE_CAUSE_TEXT = (
+    "training ended before an activity-eligible L1 checkpoint became "
+    "available: num_timesteps=20000, l1_min_checkpoint_timesteps=1; "
+    "train-tail and validation trade gates must both pass; "
+    "activity-ineligible for 60 consecutive epochs after epoch 40 "
+    "(budget=60); the trade gate never passed, so no eligible "
+    "checkpoint can exist")
+
+
 def _fake_result(config: dict, *, label: str = "VIABLE",
                  with_terminal: bool = True,
                  with_selected: bool = True,
                  with_checkpoint_evidence: bool = True,
-                 with_best: bool = False) -> dict:
+                 with_best: bool = True,
+                 inactive: bool = False,
+                 inactive_cause: str = INACTIVE_CAUSE_TEXT) -> dict:
+    """An ACTIVE cell always carries a restorable best checkpoint; an
+    INACTIVE cell (finding 232) carries none, declares
+    ``activity_stopped_without_eligible_checkpoint`` and NAMES its
+    termination cause, and still saves/hashes its terminal policy."""
+    if inactive:
+        with_best = False
     out_dir = Path(config["save_model"]).parent
     terminal = out_dir / "model.terminal.zip"
     if with_terminal:
         terminal.parent.mkdir(parents=True, exist_ok=True)
-        terminal.write_bytes(b"terminal-bytes-" + label.encode())
+        terminal.write_bytes(b"terminal-bytes-" + label.encode()
+                             + (b"-inactive" if inactive else b""))
     best = out_dir / "model.zip"
     if with_best:
         best.parent.mkdir(parents=True, exist_ok=True)
@@ -459,8 +477,10 @@ def _fake_result(config: dict, *, label: str = "VIABLE",
                                 else None),
         "best_model_path": str(best) if with_best else None,
         "history": [{"epoch": 1, "gradient_updates_total": 40_000}],
-        "stop_reason": "max_epochs_budget",
-        "termination_cause": None,
+        "stop_reason": ("activity_stop_no_eligible_checkpoint"
+                        if inactive else "max_epochs_budget"),
+        "termination_cause": inactive_cause if inactive else None,
+        "activity_stopped_without_eligible_checkpoint": bool(inactive),
         "warm_start_transfer_evidence": {
             "optimizer_state_transferred": False,
             "replay_size_at_boundary": 0,
@@ -487,6 +507,19 @@ class FakePipeline:
         type(self).calls.append(dict(config))
         return _fake_result(config, label=self.label,
                             **self.result_kwargs)
+
+
+def _inactive_at(*positions: int, **result_kwargs):
+    """A pipeline factory whose cells at the given POSITIONS in the
+    seed's cell order finish inactive (finding 232) — the rest are
+    ordinary active cells with a best checkpoint."""
+    seen = {"n": -1}
+
+    def factory(config):
+        seen["n"] += 1
+        return FakePipeline(config, inactive=seen["n"] in positions,
+                            **result_kwargs)
+    return factory
 
 
 def _fake_gate_heartbeat(observed: list,
@@ -553,21 +586,35 @@ def _fake_nested_roles_fn(contract: dict):
     return fn
 
 
-def _fake_outer_eval(*, config, agent, best_model_path, nested_roles,
-                     seed, mean_weekly_rap: float = 0.01,
+def _fake_outer_eval(*, config, agent, model_path, artifact_role,
+                     nested_roles, seed, mean_weekly_rap: float = 0.01,
                      trades: int = 7) -> dict:
     role = nested_roles["roles"]["outer_validation"]
+    is_best = artifact_role == "best_checkpoint"
+    evaluated_sha = p1._sha_file(Path(model_path))
+    if not is_best:
+        # an inactive cell's terminal policy never trades
+        trades = 0
+        mean_weekly_rap = 0.0
     return {
         "role": "outer_validation",
-        "purpose": "final truth ONLY — one evaluation after selection",
+        "purpose": ("final truth ONLY — one evaluation after selection"
+                    if is_best else
+                    "DIAGNOSTIC TRUTH ONLY — inactive terminal policy"),
         "csv_sha256": role["csv_sha256"],
         "scored_rows": role["scored_rows"],
         "context_rows_forced_hold": role["context_rows"],
         "context_excluded_from_metrics": True,
         "score_start": role["score_start"],
         "score_end": role["score_end"],
-        "best_model_path": str(best_model_path),
-        "best_model_sha256": p1._sha_file(Path(best_model_path)),
+        "evaluated_artifact_role": artifact_role,
+        "evaluated_model_path": str(Path(model_path).resolve()),
+        "evaluated_model_sha256": evaluated_sha,
+        "best_model_path": (str(Path(model_path).resolve())
+                            if is_best else None),
+        "best_model_sha256": evaluated_sha if is_best else None,
+        "promotion_eligible": is_best,
+        "diagnostic_only": not is_best,
         "scored_steps": role["scored_rows"],
         "metrics": {
             "metric_schema": "trading.weekly.v1",
@@ -888,13 +935,336 @@ class TestRecordCustody:
 
 
 # ---------------------------------------------------------------------------
+# (e2) finding 232: an inactive cell is a MEASURED outcome
+# ---------------------------------------------------------------------------
+
+def _cell_records(runtime, summary, mode: str = "screen") -> dict:
+    root = Path(runtime.contract["output_root"] if mode == "screen"
+                else runtime.contract["decision_run"]["output_root"])
+    exp_id = summary["experiment_identity"]
+    found = {}
+    for cell in p1.CELLS:
+        path = root / exp_id / "seed101" / cell / "cell_record.json"
+        if path.is_file():
+            found[cell] = json.loads(path.read_text())
+    return found
+
+
+def _assert_inactive_custody(record, runtime, summary, cell):
+    """The finding-232 inactive record schema: typed status, no
+    promotion, a named cause, full terminal custody with a load proof
+    and the exact source identities — same strength as an active
+    cell."""
+    assert record["activity_status"] == "inactive"
+    assert record["promotion_eligible"] is False
+    assert record["live_promotion_eligible"] is False
+    assert record["activity_inactive_cause"] == \
+        "no_activity_eligible_checkpoint"
+    assert record["activity_inactive_cause"] in p1.INACTIVE_CAUSES
+    assert record["termination_cause"]
+    assert "no eligible" in record["termination_cause"]
+    assert record["activity_stopped_without_eligible_checkpoint"] \
+        is True
+    # never a checkpoint
+    assert record["best_model_path"] is None
+    assert record["best_model_sha256"] is None
+    # terminal custody + load proof
+    terminal = Path(record["terminal_model_path"])
+    assert terminal.is_file()
+    assert record["terminal_model_sha256"] == p1._sha_file(terminal)
+    assert record["terminal_policy_tensor_sha256"] == FAKE_TENSOR_SHA
+    proof = record["terminal_load_proof"]
+    assert proof["schema"] == p1.TERMINAL_LOAD_PROOF_SCHEMA
+    assert proof["loaded"] is True
+    assert proof["sha256"] == record["terminal_model_sha256"]
+    assert proof["policy_tensor_sha256"] == FAKE_TENSOR_SHA
+    assert proof["path"] == str(terminal.resolve())
+    # exact source identities
+    ident = record["source_identities"]
+    assert ident["experiment_identity"] == \
+        summary["experiment_identity"]
+    assert ident["cell_identity"] == record["cell_identity"]
+    assert ident["contract_sha256"] == \
+        runtime.contract["_contract_sha256"]
+    assert ident["nested_split_contract_sha256"] == \
+        runtime.contract["nested_split_contract"]["sha256"]
+    assert ident["anchor_sha256"] == \
+        runtime.contract["anchors"]["101"]["sha256"]
+    assert record["cell"] == cell
+
+
+class TestInactiveCellIsAMeasuredOutcome:
+    def test_inactive_first_cell_lands_and_the_seed_continues(
+            self, runtime):
+        order = runtime.contract["cell_order"]["101"]
+        summary = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        assert summary["outcome"] == "SEED_COMPLETE_WITH_INACTIVE"
+        assert p1.EXIT_CLASS[summary["outcome"]] == 0
+        assert summary["inactive_cells"] == [order[0]]
+        assert summary["cells_completed"] == 4
+        assert summary["cells_expected"] == 4
+        # the remaining THREE cells still ran — a seed batch never dies
+        # on an inactive cell.
+        assert len(FakePipeline.calls) == 4
+        records = _cell_records(runtime, summary)
+        assert sorted(records) == sorted(p1.CELLS)
+        _assert_inactive_custody(records[order[0]], runtime, summary,
+                                 order[0])
+        for cell in order[1:]:
+            assert records[cell]["activity_status"] == "active"
+            assert records[cell]["promotion_eligible"] is True
+            assert records[cell]["best_model_path"]
+            assert summary["cells"][cell]["outcome"] == "CELL_COMPLETE"
+
+    def test_inactive_middle_cell_lands_and_the_seed_continues(
+            self, runtime):
+        order = runtime.contract["cell_order"]["101"]
+        summary = _run_seed(runtime, pipeline_factory=_inactive_at(2))
+        assert summary["outcome"] == "SEED_COMPLETE_WITH_INACTIVE"
+        assert summary["inactive_cells"] == [order[2]]
+        records = _cell_records(runtime, summary)
+        assert sorted(records) == sorted(p1.CELLS)
+        _assert_inactive_custody(records[order[2]], runtime, summary,
+                                 order[2])
+        # the cell AFTER the inactive one ran and is active
+        assert records[order[3]]["activity_status"] == "active"
+        assert summary["cells"][order[3]]["outcome"] == "CELL_COMPLETE"
+
+    def test_every_cell_inactive_still_lands_four_records(
+            self, runtime):
+        summary = _run_seed(runtime,
+                            pipeline_factory=_inactive_at(0, 1, 2, 3))
+        assert summary["outcome"] == "SEED_COMPLETE_WITH_INACTIVE"
+        assert p1.EXIT_CLASS[summary["outcome"]] == 0
+        assert sorted(summary["inactive_cells"]) == sorted(p1.CELLS)
+        records = _cell_records(runtime, summary)
+        assert sorted(records) == sorted(p1.CELLS)
+        for cell, record in records.items():
+            _assert_inactive_custody(record, runtime, summary, cell)
+
+    def test_restarting_an_inactive_cell_reuses_the_record(
+            self, runtime):
+        first = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        assert first["outcome"] == "SEED_COMPLETE_WITH_INACTIVE"
+        trained = len(FakePipeline.calls)
+        second = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        assert second["outcome"] == "ALREADY_COMPLETE_WITH_INACTIVE"
+        assert p1.EXIT_CLASS[second["outcome"]] == 0
+        assert len(FakePipeline.calls) == trained  # nothing retrained
+        for facts in second["cells"].values():
+            assert facts["outcome"] == "ALREADY_COMPLETE"
+        order = runtime.contract["cell_order"]["101"]
+        assert second["inactive_cells"] == [order[0]]
+        before = _cell_records(runtime, first)
+        after = _cell_records(runtime, second)
+        assert after[order[0]] == before[order[0]]   # immutable
+
+    def test_missing_inactive_terminal_refuses_on_restart(
+            self, runtime):
+        order = runtime.contract["cell_order"]["101"]
+        first = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        record = _cell_records(runtime, first)[order[0]]
+        Path(record["terminal_model_path"]).unlink()
+        summary = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        assert summary["outcome"] == "SEED_FAILED"
+        assert "refusing to overwrite" in \
+            summary["cells"][order[0]]["error"]
+
+    def test_altered_inactive_terminal_refuses_on_restart(
+            self, runtime):
+        order = runtime.contract["cell_order"]["101"]
+        first = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        record_path = (Path(runtime.contract["output_root"]) /
+                       first["experiment_identity"] / "seed101" /
+                       order[0] / "cell_record.json")
+        record = json.loads(record_path.read_text())
+        Path(record["terminal_model_path"]).write_bytes(b"altered")
+        assert not p1.record_is_complete(record_path,
+                                         record["cell_identity"])
+        summary = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        assert summary["outcome"] == "SEED_FAILED"
+        assert "refusing to overwrite" in \
+            summary["cells"][order[0]]["error"]
+
+    def test_stripped_inactive_custody_breaks_reuse(self, runtime):
+        """An inactive record that is edited to look promotable is no
+        longer a complete record — reuse refuses instead of trusting
+        it."""
+        order = runtime.contract["cell_order"]["101"]
+        first = _run_seed(runtime, pipeline_factory=_inactive_at(0))
+        record_path = (Path(runtime.contract["output_root"]) /
+                       first["experiment_identity"] / "seed101" /
+                       order[0] / "cell_record.json")
+        record = json.loads(record_path.read_text())
+        record["promotion_eligible"] = True
+        record["best_model_path"] = record["terminal_model_path"]
+        record_path.write_text(json.dumps(record))
+        assert not p1.record_is_complete(record_path,
+                                         record["cell_identity"])
+
+    def test_unexplained_missing_checkpoint_is_a_harness_failure(
+            self, runtime):
+        def factory(config):
+            return FakePipeline(config, with_best=False)
+        summary = _run_seed(runtime, pipeline_factory=factory)
+        assert summary["outcome"] == "SEED_FAILED"
+        for facts in summary["cells"].values():
+            assert "NO typed inactive declaration" in facts["error"]
+            assert "harness failure" in facts["error"]
+        assert not _cell_records(runtime, summary)
+
+    def test_inactive_declaration_without_a_cause_is_refused(
+            self, runtime):
+        def factory(config):
+            return FakePipeline(config, inactive=True,
+                                inactive_cause="   ")
+        summary = _run_seed(runtime, pipeline_factory=factory)
+        assert summary["outcome"] == "SEED_FAILED"
+        for facts in summary["cells"].values():
+            assert "termination_cause" in facts["error"]
+
+    def test_a_best_checkpoint_with_an_inactive_flag_is_refused(
+            self, runtime):
+        class Contradictory(FakePipeline):
+            def run_pipeline(self, **kwargs):
+                result = super().run_pipeline(**kwargs)
+                result["activity_stopped_without_eligible_checkpoint"]\
+                    = True
+                return result
+
+        summary = _run_seed(runtime, pipeline_factory=Contradictory)
+        assert summary["outcome"] == "SEED_FAILED"
+        for facts in summary["cells"].values():
+            assert "self-contradictory" in facts["error"]
+
+    def test_classify_cell_activity_is_pure_and_typed(self, tmp_path):
+        best = tmp_path / "model.zip"
+        best.write_bytes(b"best")
+        active = p1.classify_cell_activity({
+            "best_model_path": str(best), "stop_reason": "budget"})
+        assert active["activity_status"] == "active"
+        assert active["promotion_eligible"] is True
+        assert active["inactive_cause"] is None
+        inactive = p1.classify_cell_activity({
+            "best_model_path": None,
+            "activity_stopped_without_eligible_checkpoint": True,
+            "termination_cause": "the trade gate never passed",
+            "stop_reason": "activity_stop_no_eligible_checkpoint"})
+        assert inactive["activity_status"] == "inactive"
+        assert inactive["promotion_eligible"] is False
+        assert inactive["inactive_cause"] == \
+            "no_activity_eligible_checkpoint"
+
+
+class TestTerminalIsNeverABestCheckpoint:
+    def _decision(self, runtime, **overrides):
+        kwargs = dict(mode="decision",
+                      screen_gate=_viable_screen_gate(runtime.contract),
+                      outer_eval_fn=_fake_outer_eval)
+        kwargs.update(overrides)
+        return _run_seed(runtime, **kwargs)
+
+    def test_inactive_decision_cell_evaluates_the_terminal_only(
+            self, runtime):
+        order = runtime.contract["cell_order"]["101"]
+        summary = self._decision(runtime,
+                                 pipeline_factory=_inactive_at(1))
+        assert summary["outcome"] == "SEED_COMPLETE_WITH_INACTIVE"
+        assert summary["inactive_cells"] == [order[1]]
+        records = _cell_records(runtime, summary, mode="decision")
+        assert sorted(records) == sorted(p1.CELLS)
+        record = records[order[1]]
+        _assert_inactive_custody(record, runtime, summary, order[1])
+        assert record["outer_validation_artifact_role"] == "terminal"
+        outer = record["outer_validation_final"]
+        assert outer["evaluated_artifact_role"] == "terminal"
+        assert outer["evaluated_model_path"] == \
+            str(Path(record["terminal_model_path"]).resolve())
+        assert outer["diagnostic_only"] is True
+        assert outer["promotion_eligible"] is False
+        assert outer["best_model_path"] is None
+        assert outer["best_model_sha256"] is None
+        assert outer["trades_total"] == 0
+        # an ACTIVE sibling still evaluates its restored best
+        active = records[order[0]]
+        assert active["outer_validation_artifact_role"] == \
+            "best_checkpoint"
+        assert active["outer_validation_final"]["best_model_path"] == \
+            str(Path(active["best_model_path"]).resolve())
+
+    def test_outer_eval_relabeling_the_terminal_as_best_is_refused(
+            self, runtime):
+        def liar(*, config, agent, model_path, artifact_role,
+                 nested_roles, seed):
+            payload = _fake_outer_eval(
+                config=config, agent=agent, model_path=model_path,
+                artifact_role=artifact_role, nested_roles=nested_roles,
+                seed=seed)
+            payload["best_model_path"] = str(Path(model_path).resolve())
+            return payload
+
+        summary = self._decision(runtime,
+                                 pipeline_factory=_inactive_at(0),
+                                 outer_eval_fn=liar)
+        order = runtime.contract["cell_order"]["101"]
+        assert summary["outcome"] == "SEED_FAILED"
+        assert "never a best checkpoint" in \
+            summary["cells"][order[0]]["error"]
+
+    def test_outer_eval_claiming_the_wrong_role_is_refused(
+            self, runtime):
+        def liar(*, config, agent, model_path, artifact_role,
+                 nested_roles, seed):
+            payload = _fake_outer_eval(
+                config=config, agent=agent, model_path=model_path,
+                artifact_role="best_checkpoint",
+                nested_roles=nested_roles, seed=seed)
+            payload["evaluated_artifact_role"] = "best_checkpoint"
+            return payload
+
+        summary = self._decision(runtime,
+                                 pipeline_factory=_inactive_at(0),
+                                 outer_eval_fn=liar)
+        order = runtime.contract["cell_order"]["101"]
+        assert summary["outcome"] == "SEED_FAILED"
+        assert "artifact role" in summary["cells"][order[0]]["error"]
+
+    def test_assert_terminal_never_labeled_best_walks_nested_payloads(
+            self):
+        terminal = "/x/attempt-01/model.terminal.zip"
+        p1.assert_terminal_never_labeled_best(
+            {"terminal": terminal, "nested": [{"best_easy_epoch": 3}]},
+            terminal_path=terminal, terminal_sha="a" * 64,
+            context="unit")
+        with pytest.raises(RuntimeError, match="best checkpoint"):
+            p1.assert_terminal_never_labeled_best(
+                {"artifacts": {"best_checkpoint": terminal}},
+                terminal_path=terminal, terminal_sha="a" * 64,
+                context="unit")
+        with pytest.raises(RuntimeError, match="best checkpoint"):
+            p1.assert_terminal_never_labeled_best(
+                {"rows": [{"best_model_sha256": "a" * 64}]},
+                terminal_path=terminal, terminal_sha="a" * 64,
+                context="unit")
+
+    def test_unknown_outer_artifact_role_is_refused(self):
+        with pytest.raises(RuntimeError, match="artifact role"):
+            p1.assert_outer_eval_artifact_role(
+                {}, artifact_role="anything",
+                terminal_path="/x/model.terminal.zip",
+                terminal_sha="a" * 64, best_path=None, best_sha=None)
+
+
+# ---------------------------------------------------------------------------
 # (f) --screen-verdict gates and typed outcomes
 # ---------------------------------------------------------------------------
 
 def _verdict_record(contract, seed: int, cell: str, label: str,
                     tmp_path: Path, *, exp_id: str = "e" * 16,
-                    trained: bool = True) -> dict:
+                    trained: bool = True,
+                    activity_status: str = "active") -> dict:
     spec = contract["nested_split_contract"]
+    inactive = activity_status == "inactive"
     return {
         "schema": p1.RECORD_SCHEMA,
         "experiment_identity": exp_id,
@@ -903,6 +1273,17 @@ def _verdict_record(contract, seed: int, cell: str, label: str,
         "cell": cell,
         "factors": dict(contract["cells"][cell]),
         "contract_sha256": contract["_contract_sha256"],
+        "activity_status": activity_status,
+        "activity_inactive_cause": (
+            "no_activity_eligible_checkpoint" if inactive else None),
+        "activity_stopped_without_eligible_checkpoint": inactive,
+        "termination_cause": (INACTIVE_CAUSE_TEXT if inactive
+                              else None),
+        "promotion_eligible": not inactive,
+        "best_model_path": (None if inactive else str(
+            tmp_path / "root" / exp_id / f"seed{seed}" / cell /
+            "attempt-01" / "model.zip")),
+        "best_model_sha256": None if inactive else "b" * 64,
         "terminal_model_path": str(
             tmp_path / "root" / exp_id / f"seed{seed}" / cell /
             "attempt-01" / "model.terminal.zip"),
@@ -1515,7 +1896,7 @@ class TestDecisionMode:
     def test_decision_seed_runs_and_records_outer_truth(self,
                                                         runtime):
         def factory(config):
-            return FakePipeline(config, with_best=True)
+            return FakePipeline(config)
         summary = _run_seed(
             runtime, mode="decision",
             screen_gate=_viable_screen_gate(runtime.contract),
@@ -1547,28 +1928,57 @@ class TestDecisionMode:
 
     def test_decision_without_best_checkpoint_is_refused(self,
                                                          runtime):
+        """A missing best checkpoint that is NOT declared inactive is a
+        harness failure, never a measured outcome (finding 232)."""
+        def factory(config):
+            return FakePipeline(config, with_best=False)
         summary = _run_seed(
             runtime, mode="decision",
             screen_gate=_viable_screen_gate(runtime.contract),
+            pipeline_factory=factory,
             outer_eval_fn=_fake_outer_eval)
         assert summary["outcome"] == "SEED_FAILED"
         for facts in summary["cells"].values():
             assert "best checkpoint" in facts["error"]
+            assert "finding 232" in facts["error"]
+        assert not summary["inactive_cells"]
 
 
-def _decision_records(contract, tmp_path, rap_fn, trades_fn=None):
+def _decision_records(contract, tmp_path, rap_fn, trades_fn=None,
+                      inactive=()):
+    """16 decision records. Cells named in ``inactive`` (as
+    (seed, cell) pairs) are typed finding-232 inactive cells: no best
+    checkpoint, non-promotable, and a TERMINAL-role diagnostic outer
+    evaluation."""
     trades_fn = trades_fn or (lambda s, c: 7)
+    inactive = {tuple(key) for key in inactive}
     records = {}
     for seed in p1.SEEDS:
         for cell in p1.CELLS:
-            record = _verdict_record(contract, seed, cell, "VIABLE",
-                                     tmp_path)
+            is_inactive = (seed, cell) in inactive
+            record = _verdict_record(
+                contract, seed, cell, "VIABLE", tmp_path,
+                activity_status=("inactive" if is_inactive
+                                 else "active"))
             record["mode"] = "decision"
             record["evidence_class"] = "decision_run"
-            rap = rap_fn(seed, cell)
-            trades = trades_fn(seed, cell)
+            rap = 0.0 if is_inactive else rap_fn(seed, cell)
+            trades = 0 if is_inactive else trades_fn(seed, cell)
+            record["outer_validation_artifact_role"] = (
+                "terminal" if is_inactive else "best_checkpoint")
             record["outer_validation_final"] = {
                 "role": "outer_validation",
+                "evaluated_artifact_role": (
+                    "terminal" if is_inactive else "best_checkpoint"),
+                "evaluated_model_path": (
+                    record["terminal_model_path"] if is_inactive
+                    else record["best_model_path"]),
+                "best_model_path": (None if is_inactive
+                                    else record["best_model_path"]),
+                "best_model_sha256": (None if is_inactive
+                                      else record["best_model_sha256"]),
+                "promotion_eligible": not is_inactive,
+                "diagnostic_only": is_inactive,
                 "metrics": {
                     "mean_weekly_rap": rap,
                     "mean_weekly_return": rap,
@@ -1700,6 +2110,263 @@ class TestDecisionVerdict:
         contract = _contract()
         assert tuple(contract["decision_run"]["decision_outcomes"]) \
             == p1.DECISION_OUTCOMES
+
+
+# ---------------------------------------------------------------------------
+# (i2) finding 232: aggregation distinguishes the three activity states
+# ---------------------------------------------------------------------------
+
+class TestDecisionVerdictActivityClassification:
+    def _verdict(self, contract, records):
+        return p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+
+    def test_all_sixteen_inactive_is_total_activity_collapse(
+            self, tmp_path):
+        contract = _contract()
+        every = [(seed, cell) for seed in p1.SEEDS
+                 for cell in p1.CELLS]
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01,
+                                    inactive=every)
+        payload, code = self._verdict(contract, records)
+        assert payload["outcome"] == "TOTAL_ACTIVITY_COLLAPSE"
+        assert payload["activity_classification"] == \
+            "TOTAL_ACTIVITY_COLLAPSE"
+        assert code == 0
+        assert payload["records_present"] == 16
+        assert payload["active_cells"] == 0
+        assert len(payload["inactive_cells"]) == 16
+        assert payload["paired_effects_available"] == []
+        assert sorted(payload["paired_effects_unavailable"]) == \
+            sorted(str(seed) for seed in p1.SEEDS)
+        for facts in payload["per_seed_paired_effects"].values():
+            assert facts["available"] is False
+            assert facts["phase1_lr_effect"] is None
+            assert "imputing zero" in facts["reason"]
+        for entry in payload["inactive_cells"]:
+            assert entry["cause"] == "no_activity_eligible_checkpoint"
+            assert entry["evaluated_artifact_role"] == "terminal"
+        for metrics in payload["per_cell_metrics"].values():
+            assert metrics["activity_status"] == "inactive"
+            assert metrics["performance_eligible"] is False
+
+    def test_partial_activity_survival_names_the_inactive_cells(
+            self, tmp_path):
+        contract = _contract()
+        dead = [(101, "P1N_LR1E4"), (303, "P1E_LR3E5")]
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.02, inactive=dead)
+        payload, code = self._verdict(contract, records)
+        assert payload["activity_classification"] == \
+            "PARTIAL_ACTIVITY_SURVIVAL"
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert code == 4
+        assert payload["active_cells"] == 14
+        named = {(entry["seed"], entry["cell"])
+                 for entry in payload["inactive_cells"]}
+        assert named == set(dead)
+        # the surviving seeds keep their computed effects; the two
+        # damaged seeds are typed unavailable — never imputed.
+        assert payload["paired_effects_available"] == ["202", "404"]
+        assert payload["paired_effects_unavailable"] == ["101", "303"]
+        for seed in ("202", "404"):
+            facts = payload["per_seed_paired_effects"][seed]
+            assert facts["available"] is True
+            assert facts["phase1_lr_effect"] == pytest.approx(0.0)
+        broken = payload["per_seed_paired_effects"]["101"]
+        assert broken["available"] is False
+        assert broken["phase1_lr_effect"] is None
+        assert broken["phase1_difficulty_effect"] is None
+        assert broken["lr_x_difficulty_interaction"] is None
+        assert [entry["cell"] for entry in
+                broken["unavailable_cells"]] == ["P1N_LR1E4"]
+        assert "no_activity_eligible_checkpoint" in \
+            broken["unavailable_cells"][0]["reason"]
+        assert "partial activity survival" in \
+            payload["outcome_rationale"]
+        assert "seed101/P1N_LR1E4" in payload["outcome_rationale"]
+        assert "NONE" in payload["imputation_policy"]
+        # the inactive cells' diagnostic metrics ARE reported, but are
+        # never performance-eligible.
+        dead_metrics = payload["per_cell_metrics"]["seed101/P1N_LR1E4"]
+        assert dead_metrics["performance_eligible"] is False
+        assert dead_metrics["evaluated_artifact_role"] == "terminal"
+
+    def test_fully_paired_performance_is_full_activity(self, tmp_path):
+        contract = _contract()
+        records = _decision_records(
+            contract, tmp_path,
+            lambda s, c: 0.02 if c.endswith("LR3E5") else 0.01)
+        payload, code = self._verdict(contract, records)
+        assert payload["activity_classification"] == "FULL_ACTIVITY"
+        assert payload["outcome"] == "PHASE1_LR_MAIN_EFFECT"
+        assert code == 0
+        assert payload["inactive_cells"] == []
+        assert payload["active_cells"] == 16
+        assert sorted(payload["paired_effects_available"]) == \
+            sorted(str(seed) for seed in p1.SEEDS)
+        for metrics in payload["per_cell_metrics"].values():
+            assert metrics["activity_status"] == "active"
+            assert metrics["performance_eligible"] is True
+
+    def test_a_zero_trade_active_cell_is_classified_inactive(
+            self, tmp_path):
+        """A selected checkpoint that closed zero trades on the one
+        final outer evaluation is equally non-comparable — it is typed
+        inactive with its own cause, not imputed as performance."""
+        contract = _contract()
+        records = _decision_records(
+            contract, tmp_path, lambda s, c: 0.01,
+            trades_fn=lambda s, c: 0 if (s, c) == (202, "P1E_LR1E4")
+            else 7)
+        payload, code = self._verdict(contract, records)
+        assert payload["activity_classification"] == \
+            "PARTIAL_ACTIVITY_SURVIVAL"
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert payload["inactive_cells"][0]["cause"] == \
+            "zero_trades_on_outer_validation"
+        assert payload["paired_effects_unavailable"] == ["202"]
+
+    def test_an_inactive_record_carrying_a_best_checkpoint_refuses(
+            self, tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01,
+                                    inactive=[(101, "P1N_LR1E4")])
+        record = records[(101, "P1N_LR1E4")]
+        record["promotion_eligible"] = True
+        record["best_model_path"] = record["terminal_model_path"]
+        payload, code = self._verdict(contract, records)
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert code == 4
+        assert any("finding 232" in reason
+                   for reason in payload["reasons"])
+
+    def test_an_inactive_outer_eval_labeled_best_refuses(self,
+                                                        tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01,
+                                    inactive=[(404, "P1E_LR3E5")])
+        outer = records[(404, "P1E_LR3E5")]["outer_validation_final"]
+        outer["evaluated_artifact_role"] = "best_checkpoint"
+        outer["best_model_path"] = "/x/model.terminal.zip"
+        payload, code = self._verdict(contract, records)
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert any("terminal" in reason
+                   for reason in payload["reasons"])
+        assert any("best-checkpoint identity" in reason
+                   for reason in payload["reasons"])
+
+    def test_an_inactive_cell_still_needs_its_outer_evaluation(
+            self, tmp_path):
+        contract = _contract()
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01,
+                                    inactive=[(101, "P1N_LR1E4")])
+        records[(101, "P1N_LR1E4")].pop("outer_validation_final")
+        payload, code = self._verdict(contract, records)
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert any("diagnostic truth" in reason
+                   for reason in payload["reasons"])
+
+    def test_classification_helper_is_exhaustive(self):
+        assert p1.classify_factorial_activity(0, 16) == "FULL_ACTIVITY"
+        assert p1.classify_factorial_activity(1, 16) == \
+            "PARTIAL_ACTIVITY_SURVIVAL"
+        assert p1.classify_factorial_activity(15, 16) == \
+            "PARTIAL_ACTIVITY_SURVIVAL"
+        assert p1.classify_factorial_activity(16, 16) == \
+            "TOTAL_ACTIVITY_COLLAPSE"
+        assert set(p1.ACTIVITY_CLASSIFICATIONS) == {
+            "FULL_ACTIVITY", "PARTIAL_ACTIVITY_SURVIVAL",
+            "TOTAL_ACTIVITY_COLLAPSE"}
+
+    def test_sixteen_records_are_still_mandatory(self, tmp_path):
+        contract = _contract()
+        every = [(seed, cell) for seed in p1.SEEDS
+                 for cell in p1.CELLS]
+        records = _decision_records(contract, tmp_path,
+                                    lambda s, c: 0.01,
+                                    inactive=every)
+        records.pop((404, "P1E_LR3E5"))
+        payload, code = p1.decision_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+        assert payload["outcome"] == "INCONCLUSIVE"
+        assert code == 4
+        assert payload["records_present"] == 15
+        assert any("15/16" in reason for reason in payload["reasons"])
+
+
+class TestScreenVerdictActivityClassification:
+    def _screen(self, contract, records):
+        return p1.screen_verdict(
+            contract, records=records,
+            replica_proof=_proof_for(contract, records))
+
+    def test_screen_names_full_activity(self, tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        payload, code = self._screen(contract, records)
+        assert payload["activity"]["classification"] == "FULL_ACTIVITY"
+        assert payload["activity"]["active_cells"] == 16
+        assert payload["gates"]["inactive_cells_non_promotable"] is True
+        assert code == 0
+
+    def test_screen_names_partial_activity_survival(self, tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        for key in ((101, "P1N_LR1E4"), (202, "P1E_LR3E5")):
+            seed, cell = key
+            records[key] = _verdict_record(
+                contract, seed, cell, "NO_TRADE", tmp_path,
+                activity_status="inactive")
+        payload, code = self._screen(contract, records)
+        assert payload["activity"]["classification"] == \
+            "PARTIAL_ACTIVITY_SURVIVAL"
+        assert payload["activity"]["inactive_cells"] == 2
+        assert payload["activity"]["active_cells"] == 14
+        named = {(entry["seed"], entry["cell"])
+                 for entry in payload["activity"]["inactive_cell_facts"]}
+        assert named == {(101, "P1N_LR1E4"), (202, "P1E_LR3E5")}
+        # inactivity is a MEASURED outcome — it never refuses the screen
+        assert payload["outcome"] == "SCREEN_VIABLE_REGION"
+
+    def test_screen_names_total_activity_collapse(self, tmp_path):
+        contract = _contract()
+        records = {
+            (seed, cell): _verdict_record(
+                contract, seed, cell, "NO_TRADE", tmp_path,
+                activity_status="inactive")
+            for seed in p1.SEEDS for cell in p1.CELLS}
+        payload, code = self._screen(contract, records)
+        assert payload["activity"]["classification"] == \
+            "TOTAL_ACTIVITY_COLLAPSE"
+        assert payload["activity"]["inactive_cells"] == 16
+        assert "no performance value is invented" in \
+            payload["activity"]["imputation"]
+
+    def test_screen_refuses_a_promotable_inactive_record(self,
+                                                         tmp_path):
+        contract = _contract()
+        records = _all_records(contract, tmp_path,
+                               lambda s, c: "VIABLE")
+        bad = _verdict_record(contract, 101, "P1N_LR1E4", "NO_TRADE",
+                              tmp_path, activity_status="inactive")
+        bad["promotion_eligible"] = True
+        bad["best_model_path"] = bad["terminal_model_path"]
+        records[(101, "P1N_LR1E4")] = bad
+        payload, code = self._screen(contract, records)
+        assert payload["outcome"] == "SCREEN_REFUSED"
+        assert code == 4
+        assert payload["gates"]["inactive_cells_non_promotable"] \
+            is False
+        assert payload["activity_failures"]
 
 
 # ---------------------------------------------------------------------------
