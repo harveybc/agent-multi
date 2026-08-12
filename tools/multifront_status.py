@@ -30,6 +30,12 @@ uncertainty.
 Finding 214: the IBKR L1 queue item derives from execution heartbeat and
 journal facts; a broker hold is operational-but-held with its exact reason
 and owner action, never a hardcoded development dependency.
+
+Finding 228: the fresh durable halt state and fresh direct broker facts are
+authoritative; the latest decision is historical context only. A cleared
+hold (halt='none') with zero open exposures reports
+operational_waiting_next_decision and never asks the owner to clear an
+already-cleared hold.
 """
 from __future__ import annotations
 
@@ -267,6 +273,15 @@ def _ibkr_l1_queue_entry(
     no durable evidence is readable does the item name the missing
     evidence itself as the dependency.
 
+    Finding 228 authority order: (1) the FRESH durable halt state and
+    fresh direct broker facts are authoritative; (2) the latest decision
+    is historical context only. A durable ``halt='none'`` (the owner's
+    signed clear) with zero open exposures reports
+    ``operational_waiting_next_decision`` with NO owner action — a stale
+    ``halted:hold`` rejection can never outrank current durable state or
+    re-ask the owner to clear an already-cleared hold. The old rejection
+    stays visible as history in ``evidence.last_decision``.
+
     Returns (queue item, unavailable entry or None).
     """
     heartbeat_path = execution_state_dir / "ibkr-model-runner-heartbeat.json"
@@ -294,14 +309,24 @@ def _ibkr_l1_queue_entry(
     hb_fresh = (heartbeat_readable and hb_age is not None
                 and hb_age <= heartbeat_stale_after_seconds)
     halt = truth.get("halt")
+    # Finding 228: the durable halt VALUE decides, not its truthiness as a
+    # string — 'none' (or an absent key) means no hold is active. Only an
+    # actual halt marker ('hold', 'kill', …) renders a held state.
+    hold_active = halt is not None and str(halt).strip().lower() not in (
+        "", "none")
+    open_exposures = truth.get("open_exposures")
     evidence = {
         "mode": truth.get("mode"),
         "heartbeat_state": truth.get("heartbeat_state"),
         "heartbeat_age_seconds": hb_age,
+        "halt": halt,
+        "open_exposures": open_exposures,
         "lifecycles_cumulative": truth.get("lifecycles_cumulative"),
+        # Historical context ONLY (finding 228): the latest decision never
+        # outranks the fresh durable halt state above.
         "last_decision": truth.get("last_decision"),
     }
-    if halt:
+    if hold_active:
         last = _as_dict(truth.get("last_decision"))
         held_operational = truth.get("mode") == "write_enabled" and hb_fresh
         reason = (f"broker hold enforced: execution journal service_state "
@@ -346,11 +371,30 @@ def _ibkr_l1_queue_entry(
     heartbeat = _as_dict(_load_json_file(heartbeat_path))
     artifact_sha = _as_dict(heartbeat.get("inference")).get("artifact_sha256")
     if _valid_sha256(artifact_sha):
+        # Finding 228: halt cleared + flat (zero open exposures) means the
+        # runner simply waits for its next H4 decision; any prior
+        # 'halted:hold' rejection in evidence.last_decision is history and
+        # must never generate an owner action item.
+        if isinstance(open_exposures, int) and open_exposures == 0:
+            operational_state = "operational_waiting_next_decision"
+            state_text = ("write-enabled, flat (zero open exposures), no "
+                          "durable halt — waiting for the next H4 decision;"
+                          " any prior rejection in last_decision is "
+                          "historical context only (finding 228)")
+        elif isinstance(open_exposures, int):
+            operational_state = "operational_with_open_exposure"
+            state_text = (f"write-enabled, unheld, {open_exposures} open "
+                          "exposure(s) under management")
+        else:
+            operational_state = "operational_exposure_unknown"
+            state_text = ("write-enabled and unheld; open-exposure count "
+                          "unavailable from the journal")
         item = {**base, "state": "running",
+                "operational_state": operational_state,
                 "hashes": {"config_sha256": artifact_sha},
                 "note": ("config_sha256 = executing model artifact SHA-256 "
-                         "from the live write-enabled heartbeat; runner "
-                         "operational and unheld"),
+                         "from the live write-enabled heartbeat; "
+                         + state_text),
                 "evidence": evidence}
         return item, None
     item = {**base, "state": "dependency_blocked",

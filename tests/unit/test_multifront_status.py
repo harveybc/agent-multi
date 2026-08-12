@@ -531,3 +531,65 @@ def test_stale_heartbeat_unheld_ibkr_depends_on_fresh_evidence(tmp_path):
     _, item = _ibkr_queue_item(tmp_path, state_dir)
     assert item["state"] == "dependency_blocked"
     assert "stale" in item["dependency"]
+
+
+# ── Finding 228: fresh durable state outranks the stale last decision ──
+# The audit's exact scenario: the owner's signed capability cleared the
+# hold (durable halt='none', zero positions, zero orders), yet the
+# consolidated queue kept reporting operational_but_held and asked the
+# owner to clear the already-cleared hold, because the stale prior
+# decision ('rejected'/'halted:hold') outranked current durable state.
+
+
+def test_cleared_hold_reports_waiting_next_decision_not_held(tmp_path):
+    """AUD-GEN-20260811-228: durable halt='none' + flat + fresh
+    write-enabled heartbeat → operational_waiting_next_decision; the
+    stale 'halted:hold' rejection is historical context only and NO
+    queue item asks the owner to clear the hold."""
+    state_dir = _ibkr_execution_fixture(tmp_path, halt="none")
+    packet, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "running"
+    assert item["operational_state"] == "operational_waiting_next_decision"
+    assert "owner_action" not in item
+    assert "owner_blocked_reason" not in item
+    assert "operational_but_held" not in str(item)
+    # fresh durable facts are authoritative and visible
+    assert item["evidence"]["halt"] == "none"
+    assert item["evidence"]["open_exposures"] == 0
+    assert item["evidence"]["mode"] == "write_enabled"
+    # the old rejection stays visible — as history, never as authority
+    assert item["evidence"]["last_decision"] == {
+        "outcome": "rejected", "reason": "halted:hold"}
+    # no owner action item anywhere in the consolidated queue asks to
+    # clear the already-cleared hold
+    for queued in packet["queue"]:
+        assert not queued.get("owner_action")
+        assert "hold" not in str(queued.get("owner_blocked_reason", ""))
+
+
+def test_fresh_hold_still_reports_operational_but_held(tmp_path):
+    """Finding 228 inverse: a PRESENT durable hold (halt='hold') keeps
+    the held state and the owner hold-clear action."""
+    state_dir = _ibkr_execution_fixture(tmp_path, halt="hold")
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "owner_blocked"
+    assert item["operational_state"] == "operational_but_held"
+    assert "halt='hold'" in item["owner_blocked_reason"]
+    assert "hold-clear" in item["owner_action"]
+    assert item["evidence"]["halt"] == "hold"
+
+
+def test_cleared_hold_with_open_exposure_is_not_waiting(tmp_path):
+    """halt='none' with an open exposure is running under management —
+    unheld, no owner action, but not 'waiting for the next decision'."""
+    import sqlite3 as sqlite3lib
+    state_dir = _ibkr_execution_fixture(tmp_path, halt="none")
+    con = sqlite3lib.connect(str(state_dir / "ibkr-model-execution.sqlite"))
+    con.execute("INSERT INTO exposures VALUES ('x1', 'open')")
+    con.commit()
+    con.close()
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "running"
+    assert item["operational_state"] == "operational_with_open_exposure"
+    assert "owner_action" not in item
+    assert item["evidence"]["open_exposures"] == 1
