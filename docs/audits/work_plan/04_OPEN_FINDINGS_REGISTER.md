@@ -1073,6 +1073,54 @@ New findings:
 | AUD-F1-20260811-222 | S3 | open, blocks pure-mechanism claim | One handoff key bundles selection/gating/fallback semantics and heterogeneous easy retraining, so the pure boundary attribution is overstated | General Satoshi III implements; General Musashi verifies |
 | AUD-F1-20260811-223 | S3 | open, blocks ladder custody automation | Collector can seal, replicate and publish records with no terminal models; inactive arms are absent from replica load proof | General Satoshi III implements; General Musashi verifies |
 
+### 1ai. Post-outage WP2-WP5 acceptance audit, 2026-08-11
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_POST_OUTAGE_WP2_WP5_2026_08_11.md`
+- `../evidence/repro_runs/MUSASHI_POST_OUTAGE_224_230_REPRO_2026_08_11.py`
+- `../evidence/repro_runs/MUSASHI_POST_OUTAGE_224_230_REPRO_2026_08_11.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_POST_OUTAGE_224_230_CORRECTION_AND_DISPATCH_ORDER_2026_08_11.md`
+
+Append-only disposition: finding 223 is independently verified corrected,
+pending owner closure. Findings 217 and 220 remain open. Findings 221-222 have
+valid component corrections but remain blocked from integrated acceptance by
+the execution-role mismatch below.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260811-224 | S2 | open, blocks P1LR launch and scientific attribution | Factorial/replay bind nested metadata while executing legacy roles and validation-only metric | General Satoshi III implements; General Musashi verifies in parallel with deterministic launch preflight |
+| AUD-F1-20260811-225 | S2 | open, blocks screen verdict | Screen can declare viable with zero replica terminal-load proofs | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260811-226 | S3 | open, blocks conditional decision run | WP4 declares a long decision contract but implements only one-pass screen mode | General Satoshi III implements; General Musashi verifies |
+| AUD-F2-20260811-227 | S3 | open, owner-operation availability | Unsigned/expired resume files can deny the valid signed owner capability; TTY is overstated as authentication | General Satoshi III implements in LTS; General Musashi verifies |
+| AUD-GEN-20260811-228 | S3 | open, operator status correctness | Consolidated queue reports an already-cleared IBKR hold from stale decision history | General Satoshi III implements; General Musashi verifies |
+| AUD-GEN-20260811-229 | S3 | open, anti-idle/runtime deployment | Corrected branch was not deployed and no P1LR unit or worker exists on the fleet | General Satoshi III deploys after 224-225 preflight; General Musashi verifies live |
+| AUD-GEN-20260811-230 | S4 | correction executing, historical resilience | Gamma-to-Dragon 219 GB historical replica had stopped at roughly 173 GB; Musashi resumed `gamma-history-replica.service` at 19:35 COT | General Satoshi III monitors/completes digest proof; General Musashi verifies |
+
+### 1aj. Return 224-230 independent audit, 2026-08-12
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_III_RETURN_224_230_2026_08_12.md`
+- `../evidence/repro_runs/MUSASHI_224_230_RETURN_REPRO_2026_08_12.py`
+- `../evidence/repro_runs/MUSASHI_224_230_RETURN_REPRO_2026_08_12.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_224_233_CORRECTION_AND_NONIDLE_ORDER_2026_08_12.md`
+
+Append-only dispositions: 225 and 228 are independently verified corrected,
+pending owner closure. Finding 227's code passes independent focused tests but
+is not pushed/integrated/deployed. Finding 229 has running workers but not a
+decision-aware monitor or durable recovery. Finding 230 is running and only
+4.39% complete by observed bytes; no terminal digest exists. Findings 224 and
+226 have structural corrections but remain blocked from scientific acceptance
+by the new execution defects below.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260812-231 | S2 | open, blocks decision verdict/promotion | Internal train-monitor and inner-validation selection does not install the causal-prefix wrapper or exclude its rows from rollout metrics | General Satoshi III implements; General Musashi verifies |
+| AUD-F1-20260812-232 | S2 | open, blocks 16-cell completion | Pipeline returns typed inactive terminal while decision runner requires a best checkpoint and aborts before record publication | General Satoshi III implements; General Musashi verifies |
+| AUD-GEN-20260812-233 | S3 | open, operational anti-idle | Status and idle guard read the screen root/unit while four active decision workers run under a distinct root with no deployed timer | General Satoshi III implements/deploys; General Musashi verifies live |
+
+
 ## 2b. Observations Pending Verification (not yet findings)
 
 | Ref | Observed | Verify in |

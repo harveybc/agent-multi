@@ -473,3 +473,64 @@ pre-trading-stack backup. That tree is preserved until a content inventory,
 independent replica and owner-reviewed disposition prove what is unique versus
 reproducible. No result, model or OLAP database is deleted to manufacture free
 space.
+
+## 14. 2026-08-11 Post-Outage Execution-Identity Correction
+
+Independent pre-launch reproduction found that the P1LR materializer recorded
+the nested split SHA in metadata without passing the nested contract to the
+executing pipeline. The resulting config used the legacy split path and
+validation-only metric. No P1LR cell had launched, so no output needs to be
+discarded; the experiment identity is replaced before first compute.
+
+The executable P1LR contract now requires these exact roles:
+
+| Role | Scored rows | Use |
+| --- | ---: | --- |
+| fit_train | 11,509 | gradient updates |
+| train_monitor | 2,190 | paired in-sample stopping member |
+| inner_validation | 2,190 | paired held-out stopping member |
+| outer_validation | 2,196 | one final truth evaluation |
+| sealed_test | inaccessible | release only |
+
+The screen verdict also requires an external 16-of-16 replica load proof as a
+real boolean gate. A string saying that a collector is required is not proof.
+The conditional long decision runner must exist before WP4 is considered
+complete, although it runs only after a viable corrected screen.
+
+The exact audit and executable order are:
+
+- `docs/audits/AUDIT_SATOSHI_III_POST_OUTAGE_WP2_WP5_2026_08_11.md`
+- `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_POST_OUTAGE_224_230_CORRECTION_AND_DISPATCH_ORDER_2026_08_11.md`
+
+Standing authority remains unchanged: once deterministic split, custody and
+GPU preflights pass, the four-worker mechanics screen starts without another
+owner phrase. Review proceeds in parallel; it does not create idle time.
+
+## 15. 2026-08-12 Decision-Run Execution Correction
+
+The corrected mechanics screen is accepted and establishes a viable phase-1
+LR region at `3e-5` under both easy and normal dynamics across four seeds. The
+active long run is retained as diagnostic compute while three execution defects
+are corrected:
+
+1. causal-prefix rows are materialized but not excluded by the internal
+   train-monitor/inner-validation selector;
+2. typed inactive cells cannot publish a decision record because the runner
+   requires a best checkpoint; and
+3. status/recovery observe the screen root while decision mode runs under a
+   different root through non-durable `nohup` processes.
+
+No output under decision identity `1434685bfdf52911` is promotion-eligible.
+The corrected run uses the same original per-seed anchors under a new identity;
+it never warm-starts from the diagnostic terminals. Replacement is one worker
+at a time after a corrected four-worker smoke so the standing anti-idle
+directive remains satisfied.
+
+The exact audit and execution order are:
+
+- `docs/audits/AUDIT_SATOSHI_III_RETURN_224_230_2026_08_12.md`
+- `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_224_233_CORRECTION_AND_NONIDLE_ORDER_2026_08_12.md`
+
+The final decision report separates raw effect magnitude, sign consistency and
+predeclared practical materiality. An inactive arm is a non-promotable measured
+outcome, never a harness crash and never an invented zero-performance score.
