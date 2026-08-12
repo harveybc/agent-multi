@@ -1,0 +1,22 @@
+{
+ "schema": "agent_multi.nested_replay_cross_device_table.v1",
+ "generated_local": "2026-08-12 morning",
+ "design": "WP1 item 8 (finding 224): same-artifact threshold replay rerun on the APPROVED nested roles (train_monitor 2022, inner_validation 2023; 256-row context force-hold excluded from scoring), on two distinct physical GPU models (omega RTX 4070 Laptop, dragon RTX 4090 Laptop), corrected tool at commit 2861806e; legacy-role outputs preserved untouched at boundary_action_replay_20260811 as diagnostic evidence only",
+ "artifacts": {
+  "anchor": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+  "d2_post_easy": "2620b7227f201560da7a017eb479350a1e92dc9148c804f6f4acf37efaedbc26"
+ },
+ "cross_device_reproducibility": {
+  "anchor/train_monitor": {"observation_count": 2447, "obs_manifest_sha_prefix": "aa2015d2cc6d2cae", "action_vector_sha_prefix": "5513c525d280ad27", "omega_equals_dragon": true},
+  "anchor/inner_validation": {"observation_count": 2447, "obs_manifest_sha_prefix": "dac2ec4ad26c547a", "action_vector_sha_prefix": "5513c525d280ad27", "omega_equals_dragon": true},
+  "d2_post_easy/train_monitor": {"observation_count": 2447, "obs_manifest_sha_prefix": "aa2015d2cc6d2cae", "action_vector_sha_prefix": "e29696973536fe7c", "omega_equals_dragon": true},
+  "d2_post_easy/inner_validation": {"observation_count": 2447, "obs_manifest_sha_prefix": "dac2ec4ad26c547a", "action_vector_sha_prefix": "e29696973536fe7c", "omega_equals_dragon": true}
+ },
+ "typed_outcomes": {
+  "anchor": {"omega": "NO_THRESHOLD_COLLAPSE", "dragon": "NO_THRESHOLD_COLLAPSE"},
+  "d2_post_easy": {"omega": "THRESHOLD_EXPOSES_PREEXISTING_COLLAPSE", "dragon": "THRESHOLD_EXPOSES_PREEXISTING_COLLAPSE"}
+ },
+ "reading": "the easy-trained D2 policy arrives at the boundary already collapsed (near-constant, below the 0.1 deadband) on the approved monitor/inner roles; the anchor retains threshold-crossing variation. Bitwise-equal observation manifests and action vectors across two GPU architectures prove deterministic cross-device replay.",
+ "full_outputs": "boundary_action_replay_nested_20260812/{d2_post_easy,anchor}.{omega,dragon}.json on each host",
+ "residual_note": "the action_vector sha shown per split is equal across the two splits of the same artifact in the emitted summary; per-split raw vectors live in the full outputs — flagged for Musashi rather than reinterpreted here"
+}
