@@ -11,10 +11,12 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+from pipeline_plugins import _nested_splits as ns
 from pipeline_plugins.rl_pipeline_with_solvency_curriculum import (
     HANDOFF_VIABILITY_VALUES,
     PipelinePlugin as CurriculumPipeline,
@@ -808,6 +810,36 @@ def test_selected_handoff_source_assertions_fire():
             handoff_viability="TOTALLY_FINE"))
 
 
+def test_legacy_no_manifest_evidence_declares_zero_context(harness):
+    """Requirement 4: a legacy run with no nested manifest keeps its old
+    behavior exactly — every observed row is a scored row and nothing is
+    inherited from a nested contract that was never declared."""
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    pipeline.run_pipeline(config=_config(tmp_path), env_plugin=None,
+                          agent_plugin=FakeAgent(), mode="train")
+    meta = _meta(parent_calls)
+    for row in meta["history"]:
+        # the easy probe, too, reports a VERIFIED zero rather than an
+        # assumed one
+        assert row["nested_role"] is None
+        assert row["context_rows_declared"] == 0
+        assert row["context_prefix_steps"] == 0
+        assert row["scored_steps"] == 3
+        ev = row["handoff_viability_evidence"]
+        assert ev["causal_context"]["context_prefix_steps_total"] == 0
+        assert ev["causal_context"]["scored_steps_total"] == 6
+        assert ev["causal_context"]["roles"] == {
+            "train_monitor": None, "inner_validation": None}
+        for split in ("train_monitor", "inner_validation"):
+            block = ev["splits"][split]
+            assert block["nested_role"] is None
+            assert block["context_rows_declared"] == 0
+            assert block["context_prefix_steps"] == 0
+            assert block["scored_steps"] == 3
+            assert block["observation_count"] == 3
+            assert block["total_env_steps"] == 3
+
+
 def _evidence_block(**overrides):
     block = {
         "schema": "agent_multi.solvency_curriculum.handoff_viability.v1",
@@ -819,6 +851,36 @@ def _evidence_block(**overrides):
     }
     block.update(overrides)
     return block
+
+
+def _split_block(**overrides):
+    block = {
+        "available": True,
+        "observation_count": 40,
+        "context_rows_declared": 256,
+        "context_prefix_steps": 256,
+        "scored_steps": 40,
+    }
+    block.update(overrides)
+    return block
+
+
+def test_context_separation_source_assertions_fire():
+    """Finding 231: the source refuses to emit evidence whose measured
+    population is not exactly the scored interval."""
+    _assert_handoff_evidence_invariants(_evidence_block(
+        splits={"train_monitor": _split_block(),
+                "inner_validation": _split_block(),
+                # an unusable split carries no counts and is skipped
+                "extra": {"available": False, "error": "boom"}}))
+    with pytest.raises(RuntimeError, match="causal context rows"):
+        _assert_handoff_evidence_invariants(_evidence_block(
+            splits={"train_monitor": _split_block(
+                context_prefix_steps=255)}))
+    with pytest.raises(RuntimeError, match="observation_count"):
+        _assert_handoff_evidence_invariants(_evidence_block(
+            splits={"inner_validation": _split_block(
+                observation_count=296)}))
 
 
 def test_epoch_zero_evidence_source_assertions_fire():
@@ -838,3 +900,436 @@ def test_epoch_zero_evidence_source_assertions_fire():
     with pytest.raises(RuntimeError, match="must equal"):
         _assert_handoff_evidence_invariants(_evidence_block(
             handoff_viability="CONSTANT_POLICY"))
+
+
+# ---------------------------------------------------------------------------
+# Causal-context separation in the handoff evidence (AUD-F1-20260812-231)
+#
+# The handoff-viability evidence rolls over train_monitor and
+# inner_validation, whose manifest role entries declare a 256-row causal
+# context prefix. Those prefix actions are exactly the ones the policy
+# takes BEFORE the scored interval; mixing them into the distribution or
+# the action-vector hash makes the evidence describe a population the
+# selector never scores.
+#
+# Every test below drives an ADVERSARIAL model: it acts on every single
+# prefix row, and each arm uses a DIFFERENT prefix action while the
+# scored behavior is byte-identical. That is precisely the condition
+# under which pairing cannot cancel contamination.
+# ---------------------------------------------------------------------------
+
+CONTEXT_BARS = 256
+NESTED_SCORED_ROWS = 40
+FIT_ROWS = CONTEXT_BARS + NESTED_SCORED_ROWS       # 296
+INNER_END = FIT_ROWS + NESTED_SCORED_ROWS          # 336
+OUTER_END = INNER_END + 8                          # 344
+NESTED_TOTAL_ROWS = 360
+NESTED_INITIAL_CASH = 10_000.0
+SCORED_PATTERN = [0.5, -0.4, 0.02, 0.3]
+ARM_A_PREFIX_ACTION = 0.95
+ARM_B_PREFIX_ACTION = -0.8
+
+
+def _nested_source_csv(tmp_path: Path) -> Path:
+    dates = pd.date_range("2020-01-01", periods=NESTED_TOTAL_ROWS, freq="4h")
+    frame = pd.DataFrame({
+        "DATE_TIME": dates,
+        "CLOSE": np.linspace(100.0, 200.0, NESTED_TOTAL_ROWS),
+        "f1": np.linspace(-1.0, 1.0, NESTED_TOTAL_ROWS),
+    })
+    path = tmp_path / "nested_source.csv"
+    frame.to_csv(path, index=False)
+    return path
+
+
+def _nested_contract(source: Path) -> dict:
+    dates = pd.read_csv(source)["DATE_TIME"]
+    end = str(pd.Timestamp(dates.iloc[-1]) + pd.Timedelta(hours=4))
+    return {
+        "schema": ns.SCHEMA,
+        "source_csv": str(source),
+        "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "date_column": "DATE_TIME",
+        "window_size": CONTEXT_BARS,
+        "scaling_window": 16,
+        "max_feature_lookback": 0,
+        "expected_rows": {
+            "fit_train": FIT_ROWS,
+            "train_monitor": NESTED_SCORED_ROWS,
+            "inner_validation": NESTED_SCORED_ROWS,
+        },
+        "roles": {
+            "fit_train": {"start": dates.iloc[0],
+                          "end": dates.iloc[FIT_ROWS]},
+            "train_monitor": {"start": dates.iloc[CONTEXT_BARS],
+                              "end": dates.iloc[FIT_ROWS]},
+            "inner_validation": {"start": dates.iloc[FIT_ROWS],
+                                 "end": dates.iloc[INNER_END]},
+            "outer_validation": {"start": dates.iloc[INNER_END],
+                                 "end": dates.iloc[OUTER_END]},
+            "sealed_test": {"start": dates.iloc[OUTER_END], "end": end},
+        },
+    }
+
+
+class _PrefixAdversarialModel(FakeModel):
+    """Requests a trade on EVERY row of the split csv, causal-prefix rows
+    included. The prefix action is arm-specific; the scored pattern is
+    shared, so two arms differ ONLY in prefix behavior."""
+
+    def __init__(self, prefix_action, scored_pattern=SCORED_PATTERN):
+        super().__init__()
+        self.prefix_action = float(prefix_action)
+        self.scored_pattern = [float(v) for v in scored_pattern]
+        self.requested: list = []
+
+    def predict(self, obs, deterministic=True):
+        idx = int(np.asarray(obs).reshape(-1)[0])
+        if idx < CONTEXT_BARS:
+            value = self.prefix_action
+        else:
+            value = self.scored_pattern[
+                (idx - CONTEXT_BARS) % len(self.scored_pattern)]
+        self.requested.append(value)
+        return np.asarray([np.float32(value)], dtype=np.float32), None
+
+
+class _ContextExecutingEnv:
+    """Executes any non-hold action IMMEDIATELY — equity moves, a
+    position opens, a trade is booked on that very row — so an unwrapped
+    causal prefix provably contaminates the account and the action
+    record before the score boundary."""
+
+    def __init__(self, cfg):
+        self.config = dict(cfg)
+        self.rows = len(pd.read_csv(cfg["input_data_file"]))
+        self.initial_cash = float(
+            cfg.get("initial_cash", NESTED_INITIAL_CASH))
+        self.applied: list = []
+        self.reset()
+
+    def reset(self, seed=None, **kwargs):
+        self.i = 0
+        self.equity = self.initial_cash
+        self.position = 0
+        self.trades = 0
+        self.applied = []
+        return self._obs(), self._info()
+
+    def step(self, action):
+        value = float(np.asarray(action, dtype=float).reshape(-1)[0])
+        self.applied.append(value)
+        if abs(value) > 1e-9:
+            self.position = 1 if value > 0 else -1
+            self.trades += 1
+            self.equity += 5.0 * value
+        self.i += 1
+        terminated = self.i >= self.rows
+        return self._obs(), 1.0, terminated, False, self._info()
+
+    def summary(self):
+        return {"trades_total": self.trades, "final_equity": self.equity}
+
+    def close(self):
+        pass
+
+    def _obs(self):
+        return np.array([float(self.i)], dtype=np.float32)
+
+    def _info(self):
+        return {
+            "equity": self.equity,
+            "position": self.position,
+            "position_units": float(self.position),
+            "open_order_count": 0,
+            "commission_paid": 0.0,
+            "trades": self.trades,
+            "economic_equity": self.equity,
+            "recapitalization_debt": 0.0,
+            "recapitalization_count": 0,
+            "would_margin_call_count": 0,
+            "termination_cause": None,
+            "action_diagnostics": {"non_hold_actions": self.trades},
+            "execution_diagnostics": {
+                "entry_actions_seen": self.trades,
+                "entry_orders_submitted": self.trades,
+                "protected_entry_rejections": 0,
+            },
+        }
+
+
+class _ContextEnvFactory:
+    def __init__(self):
+        self.envs: list = []
+
+    def __call__(self, name, config):
+        factory = self
+
+        class _Plug:
+            def make_env(self, cfg):
+                env = _ContextExecutingEnv(cfg)
+                factory.envs.append(env)
+                return env
+
+            def close(self):
+                pass
+
+        return _Plug()
+
+
+@pytest.fixture()
+def nested_curriculum(tmp_path, monkeypatch):
+    source = _nested_source_csv(tmp_path)
+    contract_path = tmp_path / "nested_contract.json"
+    contract_path.write_text(json.dumps(_nested_contract(source)))
+    config = {
+        "nested_split_contract": str(contract_path),
+        "nested_split_dir": str(tmp_path / "splits"),
+        "nested_split_mode": "l1",
+        "save_model": str(tmp_path / "candidate" / "model.zip"),
+        "selection_metric": "paired_generalization_weekly_v1",
+        "continuous_action_threshold": 0.1,
+        "initial_cash": NESTED_INITIAL_CASH,
+        "env_plugin": "fake_env",
+        "date_column": "DATE_TIME",
+        "eval_seed": 7,
+    }
+    pipeline = CurriculumPipeline({})
+    paths = pipeline._split_csv(config)
+    factory = _ContextEnvFactory()
+    monkeypatch.setattr(parent_mod, "_load_env_plugin", factory)
+    manifest = json.loads(Path(config["nested_split_manifest"]).read_text())
+    return pipeline, config, paths, manifest, factory
+
+
+def _build_evidence(pipeline, config, paths, model, epoch=1):
+    return pipeline._build_handoff_viability_evidence(
+        env_plugin_name="fake_env",
+        normal_config=config,
+        paths=paths,
+        agent_plugin=FakeAgent(),
+        model=model,
+        seed=7,
+        epoch=epoch,
+        phase1_threshold_raw=0.0,
+        normal_probe_facts={
+            "train_tail_trades": 3,
+            "validation_trades": 3,
+            "train_tail_summary": {},
+            "validation_summary": {},
+        },
+    )
+
+
+def _scored_sequence():
+    return [SCORED_PATTERN[i % len(SCORED_PATTERN)]
+            for i in range(NESTED_SCORED_ROWS)]
+
+
+def _float32_sha(values):
+    return hashlib.sha256(
+        np.asarray(values, dtype=np.float32).tobytes()).hexdigest()
+
+
+def _f32(values):
+    """What the env actually receives: the policy emits float32."""
+    return [float(np.float32(v)) for v in values]
+
+
+def test_nested_fixture_declares_the_causal_prefix(nested_curriculum):
+    """Guard on the proof itself: the manifest really does declare 256
+    context rows for both evidence roles, so the assertions below are
+    not vacuous."""
+    _pipeline, _config, _paths, manifest, _factory = nested_curriculum
+    for role in ("train_monitor", "inner_validation"):
+        entry = manifest["roles"][role]
+        assert entry["context_rows"] == CONTEXT_BARS
+        assert entry["scored_rows"] == NESTED_SCORED_ROWS
+    assert manifest["roles"]["fit_train"]["context_rows"] == 0
+
+
+def test_handoff_evidence_counts_only_scored_rows(nested_curriculum):
+    pipeline, config, paths, _manifest, factory = nested_curriculum
+    model = _PrefixAdversarialModel(ARM_A_PREFIX_ACTION)
+    ev = _build_evidence(pipeline, config, paths, model)
+
+    scored_sha = _float32_sha(_scored_sequence())
+    contaminated_sha = _float32_sha(
+        [ARM_A_PREFIX_ACTION] * CONTEXT_BARS + _scored_sequence())
+    assert scored_sha != contaminated_sha
+
+    for split in ("train_monitor", "inner_validation"):
+        block = ev["splits"][split]
+        assert block["available"] is True
+        # role and prefix size come from the VERIFIED manifest
+        assert block["nested_role"] == split
+        assert block["context_rows_declared"] == CONTEXT_BARS
+        assert block["context_prefix_steps"] == CONTEXT_BARS
+        assert block["scored_steps"] == NESTED_SCORED_ROWS
+        assert block["total_env_steps"] == FIT_ROWS
+        # the measured population is EXACTLY the scored rows
+        assert block["observation_count"] == NESTED_SCORED_ROWS
+        assert block["action_vector_sha256"] == scored_sha
+        assert block["action_vector_sha256"] != contaminated_sha
+        assert block["evidence_population"].startswith("scored rows only")
+
+    ctx = ev["causal_context"]
+    assert ctx["context_prefix_steps_total"] == 2 * CONTEXT_BARS
+    assert ctx["scored_steps_total"] == 2 * NESTED_SCORED_ROWS
+    assert ctx["roles"] == {"train_monitor": "train_monitor",
+                            "inner_validation": "inner_validation"}
+    assert ctx["context_rows_source"].startswith("verified nested split")
+
+    # the agent DID act on every prefix row (2 splits x 256), and the env
+    # was nevertheless held flat for every one of them
+    assert model.requested.count(ARM_A_PREFIX_ACTION) == 2 * CONTEXT_BARS
+    assert len(model.requested) == 2 * FIT_ROWS
+    assert len(factory.envs) == 2
+    for env in factory.envs:
+        assert env.applied[:CONTEXT_BARS] == [0.0] * CONTEXT_BARS
+        assert set(env.applied[CONTEXT_BARS:]) == set(_f32(SCORED_PATTERN))
+        assert env.trades == NESTED_SCORED_ROWS      # no prefix trade
+        assert env.equity == pytest.approx(
+            NESTED_INITIAL_CASH
+            + 5.0 * sum(_f32(_scored_sequence())), abs=1e-4)
+
+
+def test_prefix_actions_never_enter_the_distribution(nested_curriculum):
+    """The adversarial prefix action is the largest |a| the policy emits;
+    if it leaked, max/quantiles/mapped counts would all move."""
+    pipeline, config, paths, _manifest, _factory = nested_curriculum
+    ev = _build_evidence(pipeline, config, paths,
+                         _PrefixAdversarialModel(ARM_A_PREFIX_ACTION))
+    scored = np.asarray(_scored_sequence(), dtype=np.float32)
+    for split in ("train_monitor", "inner_validation"):
+        block = ev["splits"][split]
+        assert block["raw_action"]["max"] == pytest.approx(0.5)
+        assert block["raw_action"]["min"] == pytest.approx(-0.4)
+        assert block["raw_action"]["mean"] == pytest.approx(
+            float(np.mean(scored)))
+        assert block["abs_action_quantiles"]["p100"] == pytest.approx(0.5)
+        assert block["abs_action_quantiles"]["p99"] == pytest.approx(
+            float(np.quantile(np.abs(scored), 0.99)))
+        assert block["fraction_non_hold_phase1_threshold"] == 1.0
+        assert block["fraction_non_hold_phase2_threshold"] == \
+            pytest.approx(0.75)
+        # 10 cycles of [0.5, -0.4, 0.02, 0.3] at the 0.1 deadband
+        assert block["mapped_counts_phase2_threshold"] == {
+            "long": 20, "short": 10, "hold": 10}
+        assert sum(
+            block["mapped_counts_phase2_threshold"].values()
+        ) == NESTED_SCORED_ROWS
+        constant = block["constant_policy_classification"]
+        assert constant["observed_max_abs"] == pytest.approx(0.5)
+        assert constant["unique_action_count_exact"] == len(SCORED_PATTERN)
+    assert ev["handoff_viability"] == "VIABLE"
+    assert ev["viable_as_trained_treatment"] is True
+
+
+def test_arms_differing_only_in_prefix_produce_identical_evidence(
+        nested_curriculum):
+    """The finding in one assertion: two arms whose prefix behavior is
+    maximally different but whose SCORED behavior is identical now
+    produce byte-identical handoff evidence."""
+    pipeline, config, paths, _manifest, factory = nested_curriculum
+    arm_a = _PrefixAdversarialModel(ARM_A_PREFIX_ACTION)
+    arm_b = _PrefixAdversarialModel(ARM_B_PREFIX_ACTION)
+    ev_a = _build_evidence(pipeline, config, paths, arm_a)
+    ev_b = _build_evidence(pipeline, config, paths, arm_b)
+
+    assert arm_a.prefix_action != arm_b.prefix_action
+    assert arm_a.requested != arm_b.requested          # arms DID differ
+    assert ev_a["splits"] == ev_b["splits"]
+    assert ev_a["causal_context"] == ev_b["causal_context"]
+    assert ev_a["constant_policy_classification"] == \
+        ev_b["constant_policy_classification"]
+    assert ev_a["handoff_viability"] == ev_b["handoff_viability"] == \
+        "VIABLE"
+
+    # non-vacuity: had the prefix been scored, the two arms' vectors —
+    # and therefore their hashes — would have diverged
+    assert _float32_sha([ARM_A_PREFIX_ACTION] * CONTEXT_BARS
+                        + _scored_sequence()) != \
+        _float32_sha([ARM_B_PREFIX_ACTION] * CONTEXT_BARS
+                     + _scored_sequence())
+    # and both arms opened the scored interval from the same account
+    assert len(factory.envs) == 4
+    for env in factory.envs:
+        assert env.applied[:CONTEXT_BARS] == [0.0] * CONTEXT_BARS
+
+
+def test_fit_train_evidence_rollout_declares_zero_context(
+        nested_curriculum):
+    """Requirement 4: fit_train declares zero context rows in the
+    manifest, so its rollout is built unwrapped and every row is scored
+    — confirmed against the manifest, not assumed."""
+    pipeline, config, paths, _manifest, factory = nested_curriculum
+    rollout = pipeline._handoff_action_rollout(
+        "fake_env", config, paths["train"], FakeAgent(),
+        _PrefixAdversarialModel(ARM_A_PREFIX_ACTION), 7)
+    assert rollout["nested_role"] == "fit_train"
+    assert rollout["context_rows_declared"] == 0
+    assert rollout["context_prefix_steps"] == 0
+    assert rollout["scored_steps"] == FIT_ROWS
+    assert rollout["total_env_steps"] == FIT_ROWS
+    assert rollout["values"].size == FIT_ROWS
+    env = factory.envs[-1]
+    assert 0.0 not in env.applied            # nothing was forced to hold
+    assert env.applied[:CONTEXT_BARS] == _f32(
+        [ARM_A_PREFIX_ACTION] * CONTEXT_BARS)
+
+
+def test_easy_probe_runs_unwrapped_on_the_zero_context_fit_role(
+        nested_curriculum):
+    pipeline, config, paths, _manifest, factory = nested_curriculum
+    probe = pipeline._easy_probe(
+        "fake_env", config, paths["train"], FakeAgent(),
+        _PrefixAdversarialModel(ARM_A_PREFIX_ACTION), 7)
+    assert probe["nested_role"] == "fit_train"
+    assert probe["context_rows_declared"] == 0
+    assert probe["context_prefix_steps"] == 0
+    assert probe["scored_steps"] == FIT_ROWS
+    assert probe["trades_total"] == FIT_ROWS      # every row traded
+    env = factory.envs[-1]
+    assert 0.0 not in env.applied
+
+
+def test_unwrapped_env_for_a_context_role_is_typed_unavailable(
+        nested_curriculum, monkeypatch):
+    """Requirement 3: the fail-closed refusal degrades the evidence to a
+    typed UNAVAILABLE record — it never gates the phase, and contaminated
+    numbers are never emitted instead."""
+    pipeline, config, paths, _manifest, _factory = nested_curriculum
+    original = pipeline._make_split_env
+
+    def blind(name, cfg, csv_path, agent, context_rows=None):
+        return original(name, cfg, csv_path, agent)   # drops the wrapper
+
+    monkeypatch.setattr(pipeline, "_make_split_env", blind, raising=False)
+    ev = _build_evidence(pipeline, config, paths,
+                         _PrefixAdversarialModel(ARM_A_PREFIX_ACTION))
+    assert ev["handoff_viability"] == "UNAVAILABLE"
+    assert ev["viable_as_trained_treatment"] is False
+    assert ev["constant_policy_classification"] is None
+    for split in ("train_monitor", "inner_validation"):
+        block = ev["splits"][split]
+        assert block["available"] is False
+        assert "was not wrapped" in block["error"]
+    assert ev["causal_context"]["scored_steps_total"] == 0
+
+
+def test_epoch_zero_anchor_evidence_stays_anchor_under_context(
+        nested_curriculum):
+    """Requirement 3: separating the prefix changes nothing about the
+    finding-221 invariants — an epoch-0 anchor is still passthrough and
+    still can never be viable as a trained treatment."""
+    pipeline, config, paths, _manifest, _factory = nested_curriculum
+    ev = _build_evidence(pipeline, config, paths,
+                         _PrefixAdversarialModel(ARM_A_PREFIX_ACTION),
+                         epoch=0)
+    assert ev["handoff_viability"] == "VIABLE"
+    assert ev["policy_provenance"] == "anchor_passthrough"
+    assert ev["trained_treatment"] is False
+    assert ev["viable_as_trained_treatment"] is False
+    assert ev["splits"]["train_monitor"]["scored_steps"] == \
+        NESTED_SCORED_ROWS

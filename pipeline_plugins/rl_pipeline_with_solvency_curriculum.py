@@ -72,6 +72,18 @@ _HANDOFF_SEMANTICS = (HANDOFF_SEMANTICS_L1_V4, HANDOFF_SEMANTICS_M0_V3)
 # authorities, and no invented numeric activity floor exists here — the
 # constant-policy call derives its tolerance purely from dtype
 # precision at the observed action scale.
+#
+# AUD-F1-20260812-231 (gap closed here): the evidence rollouts run on
+# train_monitor and inner_validation, whose manifest role entries
+# declare a causal-context prefix. Those prefix rows are INPUT to the
+# observation window, never measurement, so they are separated by the
+# same mechanism the corrected selector uses — the role and its
+# `context_rows` resolved from the VERIFIED nested manifest, the
+# ContextPrefixWrapper installed inside `_make_split_env` before the
+# rollout — and contribute nothing to the distribution, the quantiles,
+# the mapped direction counts, the constant-policy classification or
+# the action-vector sha256. The counts of both populations are recorded
+# so an auditor sees the separation directly instead of inferring it.
 # ---------------------------------------------------------------------------
 HANDOFF_VIABILITY_SCHEMA = (
     "agent_multi.solvency_curriculum.handoff_viability.v1")
@@ -91,6 +103,20 @@ HANDOFF_VIABILITY_VALUES = (
 )
 PROVENANCE_ANCHOR_PASSTHROUGH = "anchor_passthrough"
 PROVENANCE_TRAINED_EPOCH = "trained_epoch"
+
+# Declared, machine-readable statements of WHAT the evidence measured
+# and HOW the causal prefix was separated (finding 231 requirement 2).
+EVIDENCE_POPULATION = (
+    "scored rows only: actions requested on causal-context rows are"
+    " forced to hold by the ContextPrefixWrapper and are excluded from"
+    " every statistic in this block and from action_vector_sha256")
+CONTEXT_SEPARATION_MECHANISM = (
+    "role and context_rows resolved from the VERIFIED nested split"
+    " manifest (never a file name, never a row position); the"
+    " ContextPrefixWrapper is installed inside _make_split_env before"
+    " the rollout — the SAME path the executing selector uses; a role"
+    " that declares zero context rows and a legacy run with no nested"
+    " manifest are built unwrapped and unchanged")
 
 # gym-fx (app/env.py) maps continuous actions through this default when
 # the config omits the deadband. Recording the source alongside the
@@ -196,17 +222,40 @@ def _probe_protection_facts(summary: Any) -> Dict[str, Any]:
     }
 
 
+def _context_separation_facts(rollout: Dict[str, Any]) -> Dict[str, Any]:
+    """The causal-context separation this rollout actually performed —
+    recorded on EVERY per-split block, available or not, so an auditor
+    can read the two populations directly (finding 231 requirement 2)."""
+    return {
+        "nested_role": rollout.get("nested_role"),
+        "context_rows_declared": int(rollout["context_rows_declared"]),
+        "context_prefix_steps": int(rollout["context_prefix_steps"]),
+        "scored_steps": int(rollout["scored_steps"]),
+        "total_env_steps": int(rollout["total_env_steps"]),
+        "evidence_population": EVIDENCE_POPULATION,
+    }
+
+
 def _handoff_split_evidence(
         rollout: Dict[str, Any],
         phase1_threshold: float,
         phase2_threshold: float) -> tuple:
     """Per-split evidence block; returns ``(evidence_values, block)``
-    where ``evidence_values`` is ``None`` when the split is unusable."""
+    where ``evidence_values`` is ``None`` when the split is unusable.
+
+    ``rollout['values']`` carries the SCORED raw actions only: the
+    context-prefix actions were separated by `_handoff_action_rollout`
+    before this function saw anything, so every statistic below — and
+    ``action_vector_sha256`` in particular — is computed over the scored
+    interval alone."""
+    separation = _context_separation_facts(rollout)
     values = rollout["values"]
     if values.size == 0:
         return None, {
             "available": False,
-            "error": "deterministic rollout produced zero observations",
+            **separation,
+            "error": "deterministic rollout produced zero scored"
+                     " observations",
         }
     if np.issubdtype(values.dtype, np.floating):
         evidence_values = values
@@ -217,6 +266,7 @@ def _handoff_split_evidence(
         return None, {
             "available": False,
             "observation_count": int(values.size),
+            **separation,
             "non_finite_actions": non_finite,
             "error": f"{non_finite} non-finite raw actions",
         }
@@ -224,6 +274,7 @@ def _handoff_split_evidence(
     block = {
         "available": True,
         "observation_count": int(values.size),
+        **separation,
         "raw_action_dim": int(rollout["raw_action_dim"]),
         "raw_action_dtype": str(rollout["raw_dtype"]),
         "evidence_dtype": str(evidence_values.dtype),
@@ -291,6 +342,26 @@ def _assert_handoff_evidence_invariants(
         raise RuntimeError(
             "viable_as_trained_treatment must equal"
             " (trained_treatment AND handoff_viability == VIABLE)")
+    # Finding 231: a usable split block measures the SCORED interval and
+    # nothing else. The observation count is the scored count, and the
+    # separated prefix is exactly the count the manifest declared.
+    for name, block in (evidence.get("splits") or {}).items():
+        if not isinstance(block, dict) or not block.get("available"):
+            continue
+        declared = int(block["context_rows_declared"])
+        separated = int(block["context_prefix_steps"])
+        scored = int(block["scored_steps"])
+        if separated != declared:
+            raise RuntimeError(
+                f"{name}: the manifest declares {declared} causal"
+                f" context rows but the evidence rollout separated"
+                f" {separated}")
+        if int(block["observation_count"]) != scored:
+            raise RuntimeError(
+                f"{name}: evidence observation_count"
+                f" {block['observation_count']} != scored_steps"
+                f" {scored} — the action evidence must measure the"
+                " scored interval only (finding 231)")
 
 
 def _assert_selected_handoff_invariants(
@@ -416,6 +487,63 @@ class PipelinePlugin(ValidationPipelinePlugin):
         return easy
 
     # ------------------------------------------------------------------
+    def _context_aware_split_env(
+        self,
+        env_plugin_name: str,
+        config: Dict[str, Any],
+        csv_path: str,
+        agent_plugin,
+    ) -> tuple:
+        """Build one evaluation env through the SAME manifest-verified,
+        context-aware path as the corrected executing selector
+        (AUD-F1-20260812-231).
+
+        Returns ``(plug, env, role, context_rows)``. The role and its
+        ``context_rows`` come from the parent's VERIFIED nested split
+        manifest via `_resolve_nested_role` — never from the file name,
+        never from a row position. A role that DECLARES causal context
+        is built with the ContextPrefixWrapper installed by
+        `_make_split_env`, exactly as `_eval_on_split` does. A role that
+        declares none — and any legacy run with no nested manifest at
+        all — keeps the historical four-argument factory call and is
+        unchanged; nothing is ever inherited silently.
+        """
+        nested = self._resolve_nested_role(config, csv_path)
+        role = nested[0] if nested else None
+        context_rows = int(nested[1]["context_rows"]) if nested else 0
+        if context_rows:
+            plug, env = self._make_split_env(
+                env_plugin_name, config, csv_path, agent_plugin,
+                context_rows=context_rows,
+            )
+        else:
+            plug, env = self._make_split_env(
+                env_plugin_name, config, csv_path, agent_plugin)
+        return plug, env, role, context_rows
+
+    @staticmethod
+    def _assert_context_separation(
+        *,
+        split: str,
+        declared: int,
+        separated: int,
+        scored: int,
+    ) -> None:
+        """Fail-closed backstop shared by the evidence rollouts: a role
+        that declares causal context must have had its prefix separated
+        by the wrapper, and must reach at least one scored row."""
+        if declared and separated != declared:
+            raise ValueError(
+                f"{split}: the manifest declares {declared} causal"
+                f" context rows but the rollout separated {separated}"
+                " — the env was not wrapped, or the episode ended"
+                " inside the prefix; refusing to measure it")
+        if declared and scored == 0:
+            raise ValueError(
+                f"{split}: the episode produced no scored rows after"
+                " its causal context prefix")
+
+    # ------------------------------------------------------------------
     def _easy_probe(
         self,
         env_plugin_name: str,
@@ -428,17 +556,34 @@ class PipelinePlugin(ValidationPipelinePlugin):
         """One deterministic rollout on a FRESH easy env; returns the
         ECONOMIC outcome (operational equity minus recapitalization debt)
         plus solvency event counters. Used exclusively for the easy
-        phase's early-stopping budget — never for selection."""
-        plug, env = self._make_split_env(
+        phase's early-stopping budget — never for selection.
+
+        The probe runs on the ``fit_train`` role, which the nested
+        manifest declares with ZERO context rows (fit training consumes
+        its own leading bars), so it is built unwrapped exactly as
+        before. It is nonetheless routed through the same
+        manifest-verified constructor so the zero is a VERIFIED fact
+        rather than an assumption, and the separation counts it observed
+        are recorded on the checkpoint row."""
+        plug, env, role, context_rows = self._context_aware_split_env(
             env_plugin_name, easy_config, csv_path, agent_plugin)
         try:
             obs, _info = env.reset(seed=seed)
             terminated = truncated = False
             last_info: Dict[str, Any] = {}
+            context_prefix_steps = 0
+            scored_steps = 0
             while not (terminated or truncated):
                 action, _state = model.predict(obs, deterministic=True)
                 obs, _reward, terminated, truncated, last_info = env.step(
                     action)
+                if bool(last_info.get("is_context_prefix")):
+                    context_prefix_steps += 1
+                else:
+                    scored_steps += 1
+            self._assert_context_separation(
+                split="easy_probe", declared=context_rows,
+                separated=context_prefix_steps, scored=scored_steps)
             action_diagnostics = dict(
                 last_info.get("action_diagnostics") or {}
             )
@@ -474,6 +619,10 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 ),
                 "action_diagnostics": action_diagnostics,
                 "execution_diagnostics": execution_diagnostics,
+                "nested_role": role,
+                "context_rows_declared": int(context_rows),
+                "context_prefix_steps": int(context_prefix_steps),
+                "scored_steps": int(scored_steps),
             }
         finally:
             try:
@@ -492,31 +641,71 @@ class PipelinePlugin(ValidationPipelinePlugin):
         seed: int,
     ) -> Dict[str, Any]:
         """One deterministic rollout on a fresh env capturing the RAW
-        policy action at every step — the first action component,
+        policy action at every SCORED step — the first action component,
         exactly the value gym-fx maps through the deadband — BEFORE the
-        env applies any threshold."""
-        plug, env = self._make_split_env(
+        env applies any threshold.
+
+        AUD-F1-20260812-231: train_monitor and inner_validation declare a
+        causal-context prefix, and the actions the policy takes on those
+        rows are input to the observation window, not measurement of the
+        scored interval. The env is therefore built through
+        `_context_aware_split_env` — the same manifest-verified,
+        wrapper-installing path the executing selector uses — and every
+        step tagged ``is_context_prefix`` is SEPARATED here: it is forced
+        to hold by the wrapper and its raw action never enters the
+        returned vector, so it cannot reach the distribution, the
+        quantiles, the mapped counts, the constant-policy call or the
+        action-vector sha256.
+
+        Fail-closed: a declared prefix that the rollout did not separate
+        (an unwrapped env), a prefix row reported after the score
+        boundary, or an episode with no scored row REFUSES. Because the
+        only caller wraps this in the typed UNAVAILABLE handler, a
+        refusal degrades the evidence — it never gates a phase.
+        """
+        plug, env, role, context_rows = self._context_aware_split_env(
             env_plugin_name, config, csv_path, agent_plugin)
         try:
             obs, _info = env.reset(seed=seed)
-            raw_values = []
+            scored_values = []
             raw_dim = None
+            context_prefix_steps = 0
+            total_steps = 0
             terminated = truncated = False
             while not (terminated or truncated):
                 action, _state = model.predict(obs, deterministic=True)
                 flat = np.asarray(action).reshape(-1)
-                if raw_dim is None:
-                    raw_dim = int(flat.size)
-                raw_values.append(flat[0] if flat.size else 0.0)
-                obs, _reward, terminated, truncated, _info = env.step(
+                value = flat[0] if flat.size else 0.0
+                obs, _reward, terminated, truncated, info = env.step(
                     action)
-                if len(raw_values) > 1_000_000:
+                total_steps += 1
+                if bool(info.get("is_context_prefix")):
+                    if scored_values:
+                        raise ValueError(
+                            "a causal-context row was reported after the"
+                            " score boundary — the context prefix must"
+                            " precede every scored row")
+                    context_prefix_steps += 1
+                else:
+                    if raw_dim is None:
+                        raw_dim = int(flat.size)
+                    scored_values.append(value)
+                if total_steps > 1_000_000:
                     break
-            values = np.asarray(raw_values)
+            self._assert_context_separation(
+                split="handoff_action_rollout", declared=context_rows,
+                separated=context_prefix_steps,
+                scored=len(scored_values))
+            values = np.asarray(scored_values)
             return {
                 "values": values,
                 "raw_action_dim": int(raw_dim or 0),
                 "raw_dtype": str(values.dtype),
+                "nested_role": role,
+                "context_rows_declared": int(context_rows),
+                "context_prefix_steps": int(context_prefix_steps),
+                "scored_steps": int(len(scored_values)),
+                "total_env_steps": int(total_steps),
             }
         finally:
             try:
@@ -622,6 +811,25 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     f"{train_tail_trades},"
                     f" validation={validation_trades})")
         trained_treatment = int(epoch) > 0
+        # Finding 231: the separation is reported at the top of the
+        # block too, so an auditor reads "how many rows were context and
+        # how many were scored" without opening the per-split blocks.
+        causal_context = {
+            "context_rows_source":
+                "verified nested split manifest role entry"
+                " (roles[<role>].context_rows)",
+            "separation_mechanism": CONTEXT_SEPARATION_MECHANISM,
+            "evidence_population": EVIDENCE_POPULATION,
+            "context_prefix_steps_total": sum(
+                int(splits[name]["context_prefix_steps"])
+                for name in usable),
+            "scored_steps_total": sum(
+                int(splits[name]["scored_steps"]) for name in usable),
+            "roles": {
+                name: splits[name].get("nested_role")
+                for name in _HANDOFF_SPLIT_NAMES
+            },
+        }
         evidence = {
             "schema": HANDOFF_VIABILITY_SCHEMA,
             "epoch": int(epoch),
@@ -639,11 +847,14 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "both thresholds evaluated on the SAME raw action"
                 " vector captured from one deterministic"
                 " normal-realistic rollout per split (WP2 same-vector"
-                " design)"),
+                " design); that vector is the SCORED interval only —"
+                " causal-context rows are separated before any"
+                " threshold is applied (finding 231)"),
             "phase1_threshold": float(phase1_threshold),
             "phase1_threshold_source": phase1_source,
             "phase2_threshold": float(phase2_threshold),
             "phase2_threshold_source": phase2_source,
+            "causal_context": causal_context,
             "splits": splits,
             "normal_probe": {
                 "source": "existing normal handoff probe rollouts",
@@ -706,6 +917,11 @@ class PipelinePlugin(ValidationPipelinePlugin):
             raise ValueError(f"unknown phase1_mode {phase1_mode!r}")
         env_plugin_name = easy_config.get("env_plugin", "gym_fx_env")
         paths = self._split_csv(easy_config)
+        # FIT TRAINING env: built unwrapped, deliberately. fit_train
+        # declares zero context rows in the nested manifest (it consumes
+        # its own leading bars while learning), and the ContextPrefixWrapper
+        # is an EVALUATION boundary — it must never force holds during
+        # training (finding 231; parent `_make_split_env` contract).
         _plug, easy_env = self._make_split_env(
             env_plugin_name, easy_config, paths["train"], agent_plugin)
         try:
