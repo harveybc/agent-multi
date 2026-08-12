@@ -248,3 +248,96 @@ root (`1434685bfdf52911`, `7b55ef7eac30ae6a`, live `8cc6ca5e45e4f993`);
 the audit names `2f5054dc59785e2a` as superseded but no such directory
 exists. The stale roots need explicit disposition so aggregation can
 never see them.
+
+## Items 7-8 — lts 238-241 and CI 243
+
+| Finding | Verdict |
+|---|---|
+| 238 | `reproduced` (pre-fix) + `verified_corrected` at `lts@ea239a4` |
+| 239 | `reproduced` + `verified_corrected` at `lts@ea239a4` |
+| 240 | `reproduced` as a **live exploit** at `lts@3b94569` + `verified_corrected` at `lts@49c79af` |
+| 241 | `verified_corrected` at `lts@4fcec85` — independent join agrees |
+| 243 | `verified_corrected` — pytest 9.0.3, 38/38, 0 open Dependabot alerts |
+
+- **lts suite: 686 passed, three consecutive deterministic runs.** The
+  686-vs-685 discrepancy is explained, not flaky: `ea239a4` yields 685
+  and `4fcec85` deletes one test and adds two.
+- **238 counterfactual on one fixture** (filled parent evicted from the
+  open-order view, position +20,000 intact, both children valid):
+  pre-fix `protected=False, cancels=[1001,1002], flattens=1,
+  halt=hold, positions=[]`; post-fix `protected=True, cancels=[],
+  flattens=0, halt=none, positions=[+20000]`. Fail-closed still holds
+  for zero position, foreign account, inverted sign, partial fill,
+  conId mismatch, cancelled/missing child, no execution evidence and
+  a forged proof source. 16/16.
+- **239** driven through a REAL `Mt5ExecutionStore` on tmp sqlite:
+  durable pending/delivered/failed reported truthfully and stably
+  across idempotent re-evaluation; flat only on a newer snapshot with
+  0/0; unknown states, NULL/naive timestamps and empty ids raise
+  fail-closed; a foreign account never adopts state. 20/20.
+- **240 exploit proven and closed:** restoring honest bytes right
+  after the parser's read made an UNSIGNED attacker capability with a
+  different `resume_of_effect_id` classify as VALID at `3b94569`
+  (`EXPLOITED=True`); at `4fcec85` the same attack yields
+  `kind=unsigned, parsed_effect=None`. One immutable snapshot proven
+  three ways (single `read_bytes`; swaps during and after
+  `ssh-keygen -Y verify` inert; recorded sha is the snapshot's).
+  Symlinks, FIFOs and directories named `*.json` are ineligible and
+  never deny the one valid capability. 18/18. Live owner store
+  asserted unmodified by an autouse fixture.
+- **241 independent join** (standalone script importing no lts module,
+  MT5 side executed on dragon): all three seats publish artifact,
+  config, manifest, `input_feature_sha256` and `preprocessing_sha256`;
+  every hash joins its local manifest; on-disk artifact and config
+  re-hash to the manifest values; zero blocking reasons on all three,
+  repeated ~50 minutes after the auditor's capture. Musashi's evidence
+  file sha256 `25746b3cbf7e1a65…` verified by me and matches.
+- **243** isolated venv from the hash-locked lock: exactly
+  `pytest 9.0.3` (trading-stack's 9.1.1 untouched), the six Tier-A
+  files from `.github/workflows/tier-a.yml` pass **38/38**, and
+  Dependabot reports **1 alert, 0 open** (pytest
+  `GHSA-6w46-j5rx-g56g` state `fixed` at 2026-08-12T19:23:41Z).
+
+### New defects forwarded from this stream (not mine to close)
+
+1. **(S3) Coverage regression at `lts@4fcec85`:** it deleted the only
+   test of `write_runner_heartbeat`; `grep -rn write_runner_heartbeat
+   tests/` now returns nothing repo-wide, so parent-dir creation and
+   the atomic `.tmp`→replace have zero regression guard. Behaviour
+   hand-verified correct today, unguarded tomorrow.
+2. **(S3, live-trading robustness) 241 identity computation is
+   unguarded inside the degraded-error path:** `write_heartbeat` calls
+   `linear_model_identity(...)` unconditionally, including from inside
+   the runner loop's `except` block, and `json.dumps(...,
+   allow_nan=False)` means a non-finite mean/scale would raise INSIDE
+   the exception handler and escape the runner loop.
+3. **(S4) 239 freshness is non-strict** (`snapshot_at < completed`),
+   so a snapshot stamped at the exact completion instant counts as
+   "newer" and can yield `command_succeeded_flat`.
+4. **(S4) 239's "zero positions and zero orders" is route-symbol
+   scoped**, not account-wide; the audit prose omits the qualifier.
+5. **(S4) 241 `input_feature_sha256` cannot distinguish routes** — it
+   is identical on all three seats because it hashes the contract
+   string plus ordered feature NAMES, the same 11 everywhere. It
+   proves ordering, not that the SPY seat is fed SPY features.
+6. **(S4) 241 config/artifact bytes are not continuously re-verified**
+   — `refresh(force=False)` short-circuits on unchanged manifest
+   bytes, so an on-disk swap without a manifest change is invisible to
+   the runner.
+7. **(S4) heartbeat key naming is inconsistent across seats** — IBKR
+   publishes `position` (signed float), Alpaca and MT5 publish
+   `positions` (count).
+8. **(S4) live store hygiene:** the owner capability is 0600 but its
+   detached `.sig` is 0664; classification checks the capability's
+   mode only. Contained by the 0700 store directory, so not a bypass,
+   but a writable `.sig` could downgrade a valid capability to
+   `unsigned` and DENY the owner's resume.
+9. **(S4) hard links are eligible** (same inode, same signed bytes —
+   not a bypass, but it deserves an explicit decision record).
+10. **OWNER ITEM (observed, out of scope):**
+    `usdcad_4h_linear_v1/manifest.json` declares
+    `live_inference_eligible: false` and
+    `live_execution_eligible: false`, yet the live IBKR **paper** seat
+    runs it, admitted through the `demo_research_canary` tier which
+    only requires `research_validated: true`. The owner should
+    confirm that is intended for a paper-execution route.
