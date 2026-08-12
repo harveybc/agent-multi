@@ -1,0 +1,72 @@
+# Durable P1LR DECISION seed runner (finding 233; decision contract of
+# finding 226). Instance = seed:
+#   systemctl --user enable --now p1lr-decision@101.service
+#
+# THIS UNIT NEVER RUNS THE SCREEN. `--mode decision` is written into
+# ExecStart literally and there is no operator EXTRA_ARGS variable that
+# could append a second `--mode`, so no environment file can downgrade
+# a decision worker to a screen worker.
+#
+# The screen gate is PINNED here (P1LR_SCREEN_GATE) and VERIFIED at
+# start by ExecStartPre (examples/systemd/p1lr_decision_gate_check.sh):
+# the file must exist, carry schema
+# agent_multi.p1_difficulty_lr_screen_verdict.v1, record outcome
+# SCREEN_VIABLE_REGION, carry gates.replica_terminal_loads == true and
+# bind THIS contract's sha256. Any other state exits 4 (REFUSED) before
+# a training process exists, and RestartPreventExitStatus=4 stops the
+# retry loop — a configuration refusal is not transient.
+#
+# Output root: the decision run writes under
+# decision_run.output_root (…/p1_difficulty_lr_factorial_20260811_v1_decision),
+# NOT the screen root. Monitor it with:
+#   tools/multifront_status.py --p1lr-mode decision
+#   tools/p1lr_idle_guard.py  --mode decision
+#
+# Exit-class contract (must match EXIT_CLASS in
+# tools/p1_difficulty_lr_factorial.py):
+#   0  SEED_COMPLETE / ALREADY_COMPLETE  -> clean terminal
+#   3  ALREADY_RUNNING                   -> clean no-op (a racing
+#      restart against a live flock holder stops without looping)
+#   4  REFUSED_* configuration refusal   -> recorded as FAILED but
+#      never blindly retried (RestartPreventExitStatus)
+#   1  SEED_FAILED                       -> the ONLY class that
+#      Restart=on-failure retries
+#
+# Install (per worker host, reviewed operator step):
+#   bash examples/systemd/install_p1lr_decision_and_guard.sh
+#   systemctl --user enable --now p1lr-decision@<seed>.service
+
+[Unit]
+Description=P1 difficulty x P1 LR factorial seed %i (DECISION run)
+# Bound the SEED_FAILED retry loop: persistent failures freeze into
+# the systemd 'failed' state after 10 restarts per hour; recovery is
+# an explicit operator reset-failed.
+StartLimitIntervalSec=3600
+StartLimitBurst=10
+
+[Service]
+Type=exec
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+# The PINNED verified screen gate (order 2026-08-12; screen identity
+# cd823e2b5c753497, outcome SCREEN_VIABLE_REGION). Declared BEFORE the
+# environment files so a reviewed per-host override may repoint it —
+# ExecStartPre re-verifies whatever value is effective, so a repointed
+# gate that is absent, foreign or non-viable still refuses.
+Environment=P1LR_SCREEN_GATE=%h/.local/share/agent-multi/p1lr_collection_cd823e2b_20260812/screen_verdict.json
+# The runner enforces the contract hostname + GPU-UUID assignment
+# itself (WP13) and runs the gpu_readiness_probe launch gate before
+# any framework import; the env file only materializes the binding.
+EnvironmentFile=%h/Documents/GitHub/agent-multi/examples/config/phase_3_eth_sac_dynamics/p1lr_env/seed%i.env
+EnvironmentFile=-%h/.config/agent-multi/p1lr-decision@%i.env
+ExecStartPre=%h/Documents/GitHub/agent-multi/examples/systemd/p1lr_decision_gate_check.sh ${P1LR_SCREEN_GATE}
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
+    tools/p1_difficulty_lr_factorial.py --seed %i \
+    --mode decision --screen-gate ${P1LR_SCREEN_GATE}
+Restart=on-failure
+RestartSec=60
+SuccessExitStatus=3
+RestartPreventExitStatus=4
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=default.target

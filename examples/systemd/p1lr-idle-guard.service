@@ -1,0 +1,50 @@
+# P1LR idle guard — one bounded recovery pass per activation
+# (order 2026-08-11 §7.8 / findings 229 + 233).
+#
+# One pass, for the seeds ASSIGNED TO THIS HOST: an assigned GPU idle
+# longer than 15 minutes while a cell is still pending (records
+# incomplete, no runner process, no heartbeat progress, nvidia-smi
+# utilization below threshold) emits ONE deduplicated incident through
+# the fleet ledger and performs BOUNDED recovery — at most 3
+# `systemctl --user restart` calls of the seed's unit with exponential
+# backoff, only when that unit exists. Unknown GPU utilization never
+# reads as idle; a typed REFUSED_* heartbeat withholds restarts.
+#
+# MODE (finding 233): the guard is bound to ONE validated mode.
+# P1LR_GUARD_MODE selects it, and the output root, the unit name
+# (p1lr-decision@<seed>.service vs p1lr-screen@<seed>.service), the
+# expected heartbeat/record mode and the cell total all derive from it.
+# The shipped default is `decision`, because the DECISION run is what
+# is live: guarding the screen root while decision workers train is
+# exactly the false-idle defect this unit exists to prevent. The report
+# names the root it guarded, so the binding is auditable per run.
+#
+# Per-host override (reviewed operator step), e.g. to guard the screen:
+#   echo 'P1LR_GUARD_MODE=screen' > ~/.config/agent-multi/p1lr-idle-guard.env
+#
+# Exit contract: 0 = the guard pass completed (WHATEVER it observed —
+# alerting is the ledger's job, not the exit code); 2 = the guard could
+# not bind mode/identity (unreadable contract, missing decision root,
+# an identity that belongs to the other mode's root) and refused rather
+# than report a false empty state; other nonzero = the guard failed.
+#
+# Ship-only file: installation is a separate reviewed operator step —
+# see install_p1lr_decision_and_guard.sh in this directory. Do NOT
+# enable units as a side effect of a code review.
+
+[Unit]
+Description=P1LR idle guard (bounded recovery for a stalled factorial seed)
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+# Declared BEFORE the optional override file so a reviewed per-host
+# file wins; absent that file the guard binds the DECISION root.
+Environment=P1LR_GUARD_MODE=decision
+Environment=P1LR_GUARD_REPORT=%h/.local/state/agent-multi/p1lr-idle-guard/last_report.json
+EnvironmentFile=-%h/.config/agent-multi/p1lr-idle-guard.env
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
+    tools/p1lr_idle_guard.py --mode ${P1LR_GUARD_MODE} \
+    --report-out ${P1LR_GUARD_REPORT} $P1LR_GUARD_EXTRA_ARGS
+TimeoutStartSec=300
+Nice=10

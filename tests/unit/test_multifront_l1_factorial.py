@@ -10,6 +10,8 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import tools.multifront_status as mfs  # noqa: E402
 
@@ -30,12 +32,15 @@ class FakeReader:
     local_hostname = "omega"
 
     def __init__(self, files=None, mtimes=None, restarts=None,
-                 latest=None, unreachable=()):
+                 latest=None, unreachable=(), units_loaded=None):
         self.files = dict(files or {})
         self.mtimes = dict(mtimes or {})
         self.restarts = dict(restarts or {})
         self.latest = dict(latest or {})
         self.unreachable = set(unreachable)
+        # None = "unit load state unknown"; False = no unit on that host
+        # (the DIRECT nohup case); True = a loaded systemd unit.
+        self.units_loaded = units_loaded
         self.errors = {}
 
     def _gone(self, host):
@@ -57,6 +62,13 @@ class FakeReader:
         if self._gone(host):
             return None
         return self.restarts.get((host, unit), 0)
+
+    def unit_loaded(self, host, unit):
+        if self._gone(host):
+            return None
+        if isinstance(self.units_loaded, dict):
+            return self.units_loaded.get((host, unit))
+        return self.units_loaded
 
     def latest_heartbeat(self, host, output_root):
         return None if self._gone(host) else self.latest.get(host)
@@ -552,6 +564,9 @@ P1LR_CELLS = {
 }
 
 
+P1LR_DECISION_IDENTITY = "1434685bfdf52911"
+
+
 def _p1lr_contract(tmp_path):
     return {
         "schema": "agent_multi.p1_difficulty_lr_factorial.v1",
@@ -566,16 +581,23 @@ def _p1lr_contract(tmp_path):
                         for s in HOSTS},
         "cell_order": {str(s): P1LR_ORDER[s] for s in HOSTS},
         "output_root": str(tmp_path / "p1out"),
+        # Finding 226/233: the decision run has its OWN root.
+        "decision_run": {"output_root": str(tmp_path / "p1out_decision"),
+                         "max_global_pass_equivalent_checkpoints": 2000},
     }
 
 
 def _p1lr_fixture(tmp_path, *, now=NOW, hb_age_seconds=45,
                   terminal_states=None, stages=None, cells=None,
-                  gpu=None, lock_elapsed=None, records=None):
+                  gpu=None, lock_elapsed=None, records=None,
+                  mode="screen", identity=None, units_loaded=None,
+                  record_mode=None):
     contract = _p1lr_contract(tmp_path)
     cpath = tmp_path / "p1lr_contract.json"
     cpath.write_text(json.dumps(contract))
-    root = contract["output_root"]
+    root = (contract["decision_run"]["output_root"] if mode == "decision"
+            else contract["output_root"])
+    ident = identity or P1LR_IDENTITY
     files = {}
     for seed, host in HOSTS.items():
         cell = (cells or {}).get(seed, P1LR_ORDER[seed][0])
@@ -583,7 +605,7 @@ def _p1lr_fixture(tmp_path, *, now=NOW, hb_age_seconds=45,
         heartbeat = {
             "schema": "agent_multi.p1_difficulty_lr_heartbeat.v1",
             "seed": seed, "cell": cell,
-            "experiment_identity": P1LR_IDENTITY,
+            "experiment_identity": ident,
             "cell_identity": f"cid{seed}",
             "pid": 2000 + seed, "pid_start_identity": str(seed * 11),
             "hostname": host,
@@ -594,15 +616,15 @@ def _p1lr_fixture(tmp_path, *, now=NOW, hb_age_seconds=45,
             "gpu_utilization_pct": utilization,
             "terminal_state": (terminal_states or {}).get(seed, "RUNNING"),
             "progress": (stages or {}).get(seed, "training"),
-            "attempt": (f"{root}/{P1LR_IDENTITY}/seed{seed}/{cell}/"
+            "attempt": (f"{root}/{ident}/seed{seed}/{cell}/"
                         f"attempt-cid{seed}-01"),
             "updated_utc": (
                 now - timedelta(seconds=hb_age_seconds)).isoformat(),
         }
-        files[(host, f"{root}/{P1LR_IDENTITY}/seed{seed}/{cell}/"
+        files[(host, f"{root}/{ident}/seed{seed}/{cell}/"
                      "heartbeat.json")] = json.dumps(heartbeat)
         if lock_elapsed is not None:
-            files[(host, f"{root}/{P1LR_IDENTITY}/locks/"
+            files[(host, f"{root}/{ident}/locks/"
                          f"exclusive_claim.seed{seed}.{cell}.lock")] = \
                 json.dumps({
                     "pid": 2000 + seed,
@@ -612,9 +634,22 @@ def _p1lr_fixture(tmp_path, *, now=NOW, hb_age_seconds=45,
     for (seed, cell), payload in (records or {}).items():
         record = {"schema": "agent_multi.p1_difficulty_lr_cell_record.v1",
                   "seed": seed, "cell": cell, **payload}
-        files[(HOSTS[seed], f"{root}/{P1LR_IDENTITY}/seed{seed}/{cell}/"
+        if record_mode is not None:
+            record.setdefault("mode", record_mode)
+            record.setdefault(
+                "evidence_class",
+                "decision_run" if record_mode == "decision"
+                else "mechanics_screen")
+        files[(HOSTS[seed], f"{root}/{ident}/seed{seed}/{cell}/"
                             "cell_record.json")] = json.dumps(record)
-    return cpath, FakeReader(files=files)
+    return cpath, FakeReader(files=files, units_loaded=units_loaded)
+
+
+def _root_of(cpath, key="output_root"):
+    contract = json.loads(Path(cpath).read_text())
+    if key == "decision":
+        return contract["decision_run"]["output_root"]
+    return contract[key]
 
 
 def _collect_p1lr(tmp_path, cpath, reader, **kw):
@@ -659,9 +694,9 @@ def test_p1lr_running_screen_renders_current_cell_and_checkpoint(tmp_path):
     assert w["gpu"]["utilization_pct"]["value"] == 97
     assert w["gpu"]["temperature_c"]["value"] == 61
     assert w["gpu"]["source_age_seconds"] == 45.0
-    assert w["records_landed"] == {"value": 0, "of": 4,
-                                   "unit": "cell_records",
-                                   "horizon": "seed"}
+    assert w["records_landed"] == {
+        "value": 0, "of": 4, "unit": "cell_records", "horizon": "seed",
+        "mode": "screen", "output_root": _root_of(cpath)}
     assert block["records_landed"]["value"] == 0
     assert block["records_landed"]["of"] == 16
     assert "fleet_note" in block["records_landed"]
@@ -713,9 +748,9 @@ def test_p1lr_records_counted_per_seed_and_fleet(tmp_path):
     packet = _collect_p1lr(tmp_path, cpath, reader)
     block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
     w101 = block["workers"]["101"]
-    assert w101["records_landed"] == {"value": 2, "of": 4,
-                                      "unit": "cell_records",
-                                      "horizon": "seed"}
+    assert w101["records_landed"] == {
+        "value": 2, "of": 4, "unit": "cell_records", "horizon": "seed",
+        "mode": "screen", "output_root": _root_of(cpath)}
     assert w101["landed_cells"]["P1N_LR1E4"]["stop_reason"] == \
         "budget_complete"
     assert w101["landed_cells"]["P1N_LR1E4"]["duration_seconds"] == 3600.0
@@ -802,7 +837,276 @@ def test_p1lr_identity_discovered_from_local_root(tmp_path):
     block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
     assert block["identity"] == P1LR_IDENTITY
     assert block["identity_basis"] == \
-        "discovered_latest_heartbeat_mtime(local)"
+        "discovered_latest_heartbeat_mtime(local,screen_root)"
+
+
+# ═══ Finding 233: ONE validated mode derives root/unit/heartbeat/cells ═══
+
+
+def test_mode_derivation_table_screen_and_decision(tmp_path):
+    """mode → (output root, unit, expected heartbeat mode, total cells).
+    Every mode-dependent fact has exactly one source: the mode."""
+    contract = _p1lr_contract(tmp_path)
+    screen = mfs.p1lr_mode_binding(contract, "screen")
+    decision = mfs.p1lr_mode_binding(contract, "decision")
+
+    assert screen["output_root"] == contract["output_root"]
+    assert screen["unit_template"] == "p1lr-screen@{seed}.service"
+    assert screen["unit_example"] == "p1lr-screen@101.service"
+    assert screen["heartbeat_mode_expected"] == "screen"
+    assert screen["record_mode_expected"] == "screen"
+    assert screen["evidence_class_expected"] == "mechanics_screen"
+    assert screen["decision_eligible_expected"] is False
+    assert screen["total_cells"] == 16
+    assert screen["other_mode"] == "decision"
+    assert screen["other_mode_output_root"] == \
+        contract["decision_run"]["output_root"]
+
+    assert decision["output_root"] == contract["decision_run"]["output_root"]
+    assert decision["output_root"] != screen["output_root"]
+    assert decision["unit_template"] == "p1lr-decision@{seed}.service"
+    assert decision["unit_example"] == "p1lr-decision@101.service"
+    assert decision["heartbeat_mode_expected"] == "decision"
+    assert decision["record_mode_expected"] == "decision"
+    assert decision["evidence_class_expected"] == "decision_run"
+    assert decision["decision_eligible_expected"] is True
+    assert decision["total_cells"] == 16
+    assert decision["other_mode"] == "screen"
+    assert decision["other_mode_output_root"] == contract["output_root"]
+
+
+def test_unknown_mode_is_a_typed_refusal(tmp_path):
+    contract = _p1lr_contract(tmp_path)
+    for bad in ("Screen", "decide", "", None):
+        with pytest.raises(mfs.P1lrModeRefusal) as excinfo:
+            mfs.p1lr_mode_binding(contract, bad)
+        assert excinfo.value.code == "P1LR_MODE_INVALID"
+
+
+def test_decision_mode_without_a_decision_root_refuses(tmp_path):
+    contract = _p1lr_contract(tmp_path)
+    contract.pop("decision_run")
+    with pytest.raises(mfs.P1lrModeRefusal) as excinfo:
+        mfs.p1lr_mode_binding(contract, "decision")
+    assert excinfo.value.code == "P1LR_DECISION_ROOT_MISSING"
+    # …and it never silently falls back to the screen root
+    assert "never fall back" in excinfo.value.reason
+
+
+def test_decision_root_equal_to_screen_root_refuses(tmp_path):
+    contract = _p1lr_contract(tmp_path)
+    contract["decision_run"]["output_root"] = contract["output_root"]
+    with pytest.raises(mfs.P1lrModeRefusal) as excinfo:
+        mfs.p1lr_mode_binding(contract, "decision")
+    assert excinfo.value.code == "P1LR_MODE_ROOTS_COLLIDE"
+
+
+# ── the auditor's exact acceptance fixture (finding 233) ──
+
+def _p1lr_direct_decision_fixture(tmp_path, **kw):
+    """THE auditor's live shape: four DIRECT (nohup, NON-systemd)
+    decision workers — one per seed, omega/dragon/gamma/gamma — writing
+    under decision_run.output_root, with NO p1lr-decision@ unit loaded
+    on any host."""
+    kw.setdefault("mode", "decision")
+    kw.setdefault("identity", P1LR_DECISION_IDENTITY)
+    kw.setdefault("units_loaded", False)   # no systemd unit anywhere
+    return _p1lr_fixture(tmp_path, **kw)
+
+
+def test_acceptance_four_direct_decision_workers_render_4_of_4(tmp_path):
+    records = {(101, "P1N_LR1E4"): {"elapsed_seconds": 3600.0,
+                                    "mode": "decision",
+                                    "evidence_class": "decision_run"}}
+    cpath, reader = _p1lr_direct_decision_fixture(tmp_path, records=records)
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_mode="decision",
+                           p1lr_identity=P1LR_DECISION_IDENTITY)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+
+    assert block["state"] == "active"
+    assert block["mode"] == "decision"
+    assert block["mode_basis"] == "explicit_validated_parameter"
+    assert block["identity"] == P1LR_DECISION_IDENTITY
+    assert block["output_root"] == _root_of(cpath, "decision")
+    assert block["heartbeat_mode_expected"] == "decision"
+    assert block["evidence_class_expected"] == "decision_run"
+    assert block["unit_template"] == "p1lr-decision@{seed}.service"
+    # 4/4 FRESH workers — never the 0/4 the screen root rendered
+    assert block["workers_running_fresh"] == {
+        "value": 4, "of": 4, "unit": "workers", "horizon": "instant"}
+
+    # per-host record semantics: each seed counts only ITS cells, and
+    # the fleet total is 16 bound to the DECISION root
+    assert block["workers"]["101"]["records_landed"]["value"] == 1
+    assert block["workers"]["101"]["host"] == "omega"
+    assert block["workers"]["202"]["records_landed"]["value"] == 0
+    assert block["workers"]["303"]["host"] == "gamma"
+    assert block["workers"]["404"]["host"] == "gamma"
+    assert block["records_landed"]["value"] == 1
+    assert block["records_landed"]["of"] == 16
+    assert block["records_landed"]["mode"] == "decision"
+    assert block["records_landed"]["output_root"] == _root_of(cpath,
+                                                              "decision")
+    assert "LOCAL output root" in block["records_landed"]["fleet_note"]
+    assert block["workers"]["101"]["landed_cells"]["P1N_LR1E4"]["mode"] == \
+        "decision"
+
+    # the DIRECT launch is named as such: no unit, so no restart count
+    for seed in ("101", "202", "303", "404"):
+        worker = block["workers"][seed]
+        assert worker["mode"] == "decision"
+        assert worker["unit"] == f"p1lr-decision@{seed}.service"
+        assert worker["unit_loaded"] is False
+        assert worker["restart_count"]["value"] == "unavailable"
+        assert worker["launch_durability"]["value"] == "no_unit_loaded"
+        assert f"p1lr-decision@{seed}.service" in \
+            worker["launch_durability"]["remediation"]
+
+    queue = packet["queue"]
+    assert queue[0]["id"] == f"p1lr-factorial-{P1LR_DECISION_IDENTITY}"
+    assert queue[0]["mode"] == "decision"
+    assert queue[0]["output_root"] == _root_of(cpath, "decision")
+
+
+def test_acceptance_same_fixture_under_the_screen_root_refuses(tmp_path):
+    """The SAME four direct decision workers, read as the screen: a
+    typed refusal with NO counts — never the false 0/4, 0/16 that the
+    auditor's live invocation produced over four busy GPUs."""
+    cpath, reader = _p1lr_direct_decision_fixture(tmp_path)
+    # the decision identity exists only under the decision root
+    decision_root = Path(_root_of(cpath, "decision"))
+    (decision_root / P1LR_DECISION_IDENTITY).mkdir(parents=True)
+    Path(_root_of(cpath)).mkdir(parents=True, exist_ok=True)
+
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_mode="screen",
+                           p1lr_identity=P1LR_DECISION_IDENTITY)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+
+    assert block["state"] == "refused"
+    assert block["error_code"] == "P1LR_IDENTITY_MODE_MISMATCH"
+    assert block["identity_mode"] == "decision"
+    assert block["output_root"] == _root_of(cpath)
+    assert block["other_mode_output_root"] == _root_of(cpath, "decision")
+    assert block["corrective_command"] == (
+        "tools/multifront_status.py --p1lr-mode decision "
+        f"--p1lr-identity {P1LR_DECISION_IDENTITY}")
+    # NO fabricated counts of any kind
+    assert "workers" not in block
+    assert "workers_running_fresh" not in block
+    assert "records_landed" not in block
+    assert "false idle picture" in block["refusal_contract"]
+    # the refusal is surfaced, and never enters the executable queue
+    fields = {entry["field"] for entry in packet["unavailable"]}
+    assert "f1_optimization.active_p1lr_factorial" in fields
+    assert not any(str(item["id"]).startswith("p1lr-factorial")
+                   for item in packet["queue"])
+
+
+def test_screen_identity_under_the_decision_root_refuses(tmp_path):
+    """The mirror direction refuses identically."""
+    cpath, reader = _p1lr_fixture(tmp_path)
+    screen_root = Path(_root_of(cpath))
+    (screen_root / P1LR_IDENTITY).mkdir(parents=True)
+    Path(_root_of(cpath, "decision")).mkdir(parents=True, exist_ok=True)
+
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_mode="decision",
+                           p1lr_identity=P1LR_IDENTITY)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "refused"
+    assert block["error_code"] == "P1LR_IDENTITY_MODE_MISMATCH"
+    assert block["identity_mode"] == "screen"
+    assert block["corrective_command"].endswith(
+        f"--p1lr-mode screen --p1lr-identity {P1LR_IDENTITY}")
+    assert "records_landed" not in block
+
+
+def test_invalid_mode_refuses_at_the_collector_without_counts(tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path)
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_mode="scren")
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "refused"
+    assert block["error_code"] == "P1LR_MODE_INVALID"
+    assert block["known_modes"] == ["screen", "decision"]
+    assert "records_landed" not in block
+
+
+def test_no_readable_fact_renders_typed_unavailable_never_zero(tmp_path):
+    """Finding 233's core: with nothing readable there is nothing to
+    count. 0/16 and 0/4 are claims, and a claim needs a fact."""
+    cpath, _ = _p1lr_fixture(tmp_path)
+    empty = FakeReader(files={})
+    packet = _collect_p1lr(tmp_path, cpath, empty)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "unavailable"
+    assert block["records_landed"]["value"] == "unavailable"
+    assert block["records_landed"]["of"] == 16
+    assert block["workers_running_fresh"]["value"] == "unavailable"
+    assert "no worker fact readable" in block["records_landed"]["reason"]
+    assert block["output_root"] in block["records_landed"]["reason"]
+
+
+def test_a_record_of_the_other_mode_is_rejected_not_counted(tmp_path):
+    """A screen record sitting under the decision root is contamination,
+    not decision evidence."""
+    records = {(101, "P1N_LR1E4"): {"elapsed_seconds": 10.0,
+                                    "mode": "screen",
+                                    "evidence_class": "mechanics_screen"},
+               (101, "P1N_LR3E5"): {"elapsed_seconds": 20.0,
+                                    "mode": "decision",
+                                    "evidence_class": "decision_run"}}
+    cpath, reader = _p1lr_direct_decision_fixture(tmp_path, records=records)
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_mode="decision",
+                           p1lr_identity=P1LR_DECISION_IDENTITY)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["workers"]["101"]["records_landed"]["value"] == 1
+    assert block["records_landed"]["value"] == 1
+    rejected = block["records_rejected_mode_mismatch"]
+    assert len(rejected) == 1
+    assert rejected[0]["cell"] == "P1N_LR1E4"
+    assert rejected[0]["record_mode"] == "screen"
+    assert rejected[0]["expected_mode"] == "decision"
+
+
+def test_fresh_activity_under_the_other_root_is_announced(tmp_path):
+    """Reading the screen while a decision run writes fresh heartbeats
+    locally must SAY so — the silent version is the observed defect."""
+    cpath, reader = _p1lr_fixture(tmp_path)
+    decision_root = Path(_root_of(cpath, "decision"))
+    hb = (decision_root / P1LR_DECISION_IDENTITY / "seed101" / "P1N_LR1E4"
+          / "heartbeat.json")
+    hb.parent.mkdir(parents=True)
+    hb.write_text("{}")
+    now = datetime.now(timezone.utc)
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_now_fn=lambda: now)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    advisory = block["other_mode_activity"]
+    assert advisory["other_mode"] == "decision"
+    assert advisory["other_mode_identity"] == P1LR_DECISION_IDENTITY
+    assert advisory["other_mode_output_root"] == _root_of(cpath, "decision")
+    assert advisory["corrective_command"].startswith(
+        "tools/multifront_status.py --p1lr-mode decision")
+
+
+def test_heartbeat_declaring_another_mode_is_flagged(tmp_path):
+    """Future-proofing: the heartbeat schema carries no mode field
+    today, but if one appears it must agree with the root it sits in."""
+    contract = _p1lr_contract(tmp_path)
+    binding = mfs.p1lr_mode_binding(contract, "decision")
+    assert binding["heartbeat_mode_expected"] == "decision"
+    cpath, reader = _p1lr_direct_decision_fixture(tmp_path)
+    root = _root_of(cpath, "decision")
+    key = (HOSTS[101], f"{root}/{P1LR_DECISION_IDENTITY}/seed101/"
+                       "P1N_LR1E4/heartbeat.json")
+    payload = json.loads(reader.files[key])
+    payload["mode"] = "screen"
+    reader.files[key] = json.dumps(payload)
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_mode="decision",
+                           p1lr_identity=P1LR_DECISION_IDENTITY)
+    worker = (packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+              ["workers"]["101"])
+    assert worker["heartbeat_mode_expected"] == "decision"
+    assert worker["heartbeat_mode_declared"] == "screen"
+    assert "does not belong" in worker["heartbeat_mode_mismatch"]
 
 
 def test_completed_l1_factorial_stays_history_only_while_p1lr_leads(

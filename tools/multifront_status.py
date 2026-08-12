@@ -534,6 +534,29 @@ class DefaultL1Reader:
         except ValueError:
             return None
 
+    def unit_loaded(self, host: str, unit: str) -> Optional[bool]:
+        """Is this systemd user unit actually loaded on ``host``?
+
+        Finding 233: ``systemctl show -p NRestarts`` answers ``0`` for a
+        unit that does not exist, so a restart count alone cannot tell a
+        supervised worker from a direct ``nohup`` process. LoadState is
+        the discriminator; ``None`` means the question was unanswerable.
+        """
+        if self._is_local(host):
+            try:
+                out: Optional[str] = subprocess.run(
+                    ["systemctl", "--user", "show", unit,
+                     "-p", "LoadState", "--value"],
+                    capture_output=True, text=True, timeout=10).stdout
+            except Exception:
+                return None
+        else:
+            out = self._ssh(
+                host, f"systemctl --user show {unit} -p LoadState --value")
+        if not out or not out.strip():
+            return None
+        return out.strip() == "loaded"
+
     def latest_heartbeat(self, host: str,
                          output_root: str) -> Optional[str]:
         if self._is_local(host):
@@ -1325,31 +1348,250 @@ def collect_l1_factorial(
 
 P1LR_HEARTBEAT_SCHEMA = "agent_multi.p1_difficulty_lr_heartbeat.v1"
 P1LR_RECORD_SCHEMA = "agent_multi.p1_difficulty_lr_cell_record.v1"
-P1LR_UNIT_TEMPLATE = "p1lr-screen@{seed}.service"
 P1LR_CHECKPOINT_STAGES = ("materializing", "nested-role-verification",
                           "training", "terminal-custody",
                           "outer-validation-final", "complete")
 
+# ── Finding 233: EVERY mode-dependent fact derives from ONE validated
+# mode. Screen and decision are distinct experiments with distinct
+# content-addressed identities, distinct output roots, distinct units
+# and distinct evidence classes; reading one while the other runs is
+# what rendered a false 0/16, 0/4 idle picture over four busy GPUs.
+P1LR_MODES = ("screen", "decision")
+P1LR_UNIT_TEMPLATES = {"screen": "p1lr-screen@{seed}.service",
+                       "decision": "p1lr-decision@{seed}.service"}
+P1LR_MODE_EVIDENCE_CLASS = {"screen": "mechanics_screen",
+                            "decision": "decision_run"}
+# Back-compat alias: the screen template stays importable under its old
+# name (the guard and older callers referenced it directly).
+P1LR_UNIT_TEMPLATE = P1LR_UNIT_TEMPLATES["screen"]
 
-def _p1lr_discover_identity(output_root: str) -> Optional[str]:
-    """Newest experiment identity under the LOCAL output root, by runner
-    heartbeat mtime (cell heartbeats plus seed-level refusal heartbeats).
+
+class P1lrModeRefusal(ValueError):
+    """A typed P1LR mode/root refusal.
+
+    Finding 233: a mode or identity that does not bind to the root being
+    read is a REFUSAL, never a rendered zero. ``as_block()`` therefore
+    publishes the reason and the corrective command and deliberately
+    carries NO ``workers_running_fresh`` and NO ``records_landed`` — a
+    0/4 or 0/16 under the wrong root is a false idle picture, not a
+    degraded one.
+    """
+
+    def __init__(self, code: str, reason: str, **facts: Any):
+        super().__init__(f"{code}: {reason}")
+        self.code = code
+        self.reason = reason
+        self.facts = facts
+
+    def as_block(self, **extra: Any) -> dict[str, Any]:
+        block: dict[str, Any] = {
+            "source": "p1lr_factorial",
+            "basis": "refusal",
+            "state": "refused",
+            "error_code": self.code,
+            "reason": self.reason,
+            "refusal_contract": (
+                "a refused P1LR mode/identity binding renders NO worker "
+                "and NO record counts: a zero under the wrong output "
+                "root is a false idle picture, not a measurement "
+                "(finding 233)"),
+        }
+        block.update(self.facts)
+        block.update(extra)
+        return block
+
+
+def p1lr_mode_binding(contract: dict, mode: str) -> dict[str, Any]:
+    """Everything mode-dependent, derived from ONE validated mode.
+
+    Returns the output root, systemd unit template, expected heartbeat/
+    record mode, expected evidence class and the per-seed and total cell
+    counts for ``mode``; raises :class:`P1lrModeRefusal` for an unknown
+    mode, a missing/colliding decision root or an incomplete contract.
+    """
+    if mode not in P1LR_MODES:
+        raise P1lrModeRefusal(
+            "P1LR_MODE_INVALID",
+            f"unknown P1LR execution mode {mode!r}: the mode is explicit "
+            f"and validated, one of {list(P1LR_MODES)}",
+            supplied_mode=mode, known_modes=list(P1LR_MODES))
+
+    screen_root = str(contract.get("output_root") or "").rstrip("/")
+    decision = _as_dict(contract.get("decision_run"))
+    decision_root = str(decision.get("output_root") or "").rstrip("/")
+
+    if mode == "decision":
+        if not decision_root:
+            raise P1lrModeRefusal(
+                "P1LR_DECISION_ROOT_MISSING",
+                "decision mode requires contract decision_run.output_root; "
+                "the contract declares none, so there is no decision root "
+                "to read (never fall back to the screen root)",
+                mode=mode, screen_output_root=screen_root or None)
+        if screen_root and decision_root == screen_root:
+            raise P1lrModeRefusal(
+                "P1LR_MODE_ROOTS_COLLIDE",
+                "decision_run.output_root equals the screen output_root: "
+                "the two modes are not separable, so no mode-bound "
+                "reading is possible",
+                mode=mode, output_root=decision_root)
+        output_root, other_root = decision_root, (screen_root or None)
+    else:
+        if not screen_root:
+            raise P1lrModeRefusal(
+                "P1LR_SCREEN_ROOT_MISSING",
+                "screen mode requires contract output_root; the contract "
+                "declares none",
+                mode=mode)
+        output_root, other_root = screen_root, (decision_root or None)
+
+    assignments = _as_dict(contract.get("assignments"))
+    cells_map = _as_dict(contract.get("cells"))
+    cell_order = _as_dict(contract.get("cell_order"))
+    seeds = [s for s in (contract.get("seeds") or []) if str(s) in assignments]
+    if not (seeds and cells_map):
+        raise P1lrModeRefusal(
+            "P1LR_CONTRACT_INCOMPLETE",
+            "contract lacks assigned seeds or cells, so no per-mode cell "
+            "total can be derived",
+            mode=mode, output_root=output_root)
+    cells_per_seed = {
+        str(seed): ([c for c in (cell_order.get(str(seed)) or [])
+                     if c in cells_map] or list(cells_map))
+        for seed in seeds}
+    other_mode = "screen" if mode == "decision" else "decision"
+    return {
+        "mode": mode,
+        "output_root": output_root,
+        "other_mode": other_mode,
+        "other_mode_output_root": other_root,
+        "unit_template": P1LR_UNIT_TEMPLATES[mode],
+        "unit_example": P1LR_UNIT_TEMPLATES[mode].format(seed=seeds[0]),
+        "heartbeat_mode_expected": mode,
+        "record_mode_expected": mode,
+        "evidence_class_expected": P1LR_MODE_EVIDENCE_CLASS[mode],
+        "decision_eligible_expected": mode == "decision",
+        "seeds": [int(s) for s in seeds],
+        "cells_per_seed": cells_per_seed,
+        "total_cells": sum(len(v) for v in cells_per_seed.values()),
+    }
+
+
+def _p1lr_newest_local_heartbeat(
+        output_root: str) -> tuple[Optional[float], Optional[str]]:
+    """(newest heartbeat mtime, its experiment identity) under the LOCAL
+    output root — cell heartbeats plus seed-level refusal heartbeats.
     Remote roots are never globbed: each host discovers its own."""
     root = Path(output_root).expanduser()
-    newest: tuple[float, Optional[str]] = (-1.0, None)
+    newest: tuple[Optional[float], Optional[str]] = (None, None)
     try:
         candidates = (list(root.glob("*/seed*/*/heartbeat.json"))
                       + list(root.glob("*/seed*/runner_heartbeat.json")))
     except OSError:
-        return None
+        return newest
     for path in candidates:
         try:
             mtime = path.stat().st_mtime
         except OSError:
             continue
-        if mtime > newest[0]:
+        if newest[0] is None or mtime > newest[0]:
             newest = (mtime, path.relative_to(root).parts[0])
-    return newest[1]
+    return newest
+
+
+def _p1lr_discover_identity(output_root: str) -> Optional[str]:
+    """Newest experiment identity under the LOCAL output root."""
+    return _p1lr_newest_local_heartbeat(output_root)[1]
+
+
+def _p1lr_identity_local_presence(output_root: Optional[str],
+                                  identity: str) -> bool:
+    """Does this identity have a directory under the LOCAL root?"""
+    if not output_root:
+        return False
+    try:
+        return (Path(output_root).expanduser() / identity).is_dir()
+    except OSError:
+        return False
+
+
+def p1lr_verify_identity_binding(binding: dict, identity: str,
+                                 *, presence_fn: Optional[
+                                     Callable[[Optional[str], str], bool]]
+                                 = None) -> dict[str, Any]:
+    """Bind an identity to the mode's root, or REFUSE (finding 233).
+
+    An identity that lives under the OTHER mode's root and not under the
+    selected one is the exact defect: the auditor's decision identity
+    read under the screen root rendered 0/16 and 0/4 while four decision
+    processes trained. That case raises :class:`P1lrModeRefusal`; an
+    identity absent from both LOCAL roots is not refused (a host may
+    legitimately hold no local seed directory) but its presence facts
+    are published so the reading is never mistaken for proof.
+    """
+    presence = presence_fn or _p1lr_identity_local_presence
+    here = presence(binding["output_root"], identity)
+    there = presence(binding["other_mode_output_root"], identity)
+    if there and not here:
+        other = binding["other_mode"]
+        raise P1lrModeRefusal(
+            "P1LR_IDENTITY_MODE_MISMATCH",
+            f"experiment identity {identity!r} exists under the "
+            f"{other} root {binding['other_mode_output_root']} and NOT "
+            f"under the requested {binding['mode']} root "
+            f"{binding['output_root']}: it is a {other}-mode identity. "
+            f"Reading it here would render a false empty state; rerun "
+            f"with --p1lr-mode {other}",
+            mode=binding["mode"], requested_mode=binding["mode"],
+            identity=identity, identity_mode=other,
+            output_root=binding["output_root"],
+            other_mode_output_root=binding["other_mode_output_root"],
+            corrective_command=(
+                f"tools/multifront_status.py --p1lr-mode {other} "
+                f"--p1lr-identity {identity}"))
+    return {
+        "identity_under_mode_root": here,
+        "identity_under_other_mode_root": there,
+        "basis": ("local filesystem directory presence under each mode's "
+                  "output root on this host"),
+    }
+
+
+def _p1lr_other_mode_activity(binding: dict, now: datetime,
+                              stale_after_seconds: float,
+                              ) -> Optional[dict[str, Any]]:
+    """Advisory: FRESH local heartbeat activity under the OTHER mode's
+    root while this mode is being read (finding 233).
+
+    The defect the auditor hit was silent: the screen root was read
+    while the decision root was the live one. When the other root shows
+    fresh local activity, the reading says so explicitly and names the
+    command that would observe it, instead of leaving an operator with
+    a quiet empty screen."""
+    other_root = binding.get("other_mode_output_root")
+    if not other_root:
+        return None
+    mtime, other_identity = _p1lr_newest_local_heartbeat(str(other_root))
+    if mtime is None or other_identity is None:
+        return None
+    age = round(now.timestamp() - mtime, 1)
+    if age > stale_after_seconds:
+        return None
+    other_mode = binding["other_mode"]
+    return {
+        "value": "fresh_activity_under_other_mode_root",
+        "other_mode": other_mode,
+        "other_mode_output_root": other_root,
+        "other_mode_identity": other_identity,
+        "heartbeat_age_seconds": age,
+        "note": (f"this reading is bound to the {binding['mode']} root; a "
+                 f"{other_mode}-mode run is ALSO writing fresh heartbeats "
+                 "locally and is NOT described by these counts"),
+        "corrective_command": (f"tools/multifront_status.py --p1lr-mode "
+                               f"{other_mode} --p1lr-identity "
+                               f"{other_identity}"),
+    }
 
 
 def _p1lr_cell_eta(durations: list[float], elapsed: Optional[float],
@@ -1400,6 +1642,9 @@ def collect_p1lr_factorial(
     local_hostname: Optional[str] = None,
     stale_after_seconds: float = 900.0,
     now_fn: Optional[Callable[[], datetime]] = None,
+    mode: str = "screen",
+    identity_presence_fn: Optional[
+        Callable[[Optional[str], str], bool]] = None,
 ) -> tuple[dict[str, Any], list[dict[str, str]], Optional[dict[str, Any]]]:
     """First-class Front-1 source: the RUNNING P1 difficulty x P1 LR
     factorial mechanics screen (order 2026-08-11 §7.7 / finding 229).
@@ -1418,11 +1663,24 @@ def collect_p1lr_factorial(
     claims. Finding-213 discipline: the experiment ETA is the MAXIMUM
     per-worker remaining path, reusing ``_l1_experiment_eta``.
 
+    Finding-233 discipline: ``mode`` is explicit and VALIDATED, and the
+    output root, systemd unit, expected heartbeat/record mode and total
+    cell count all derive from it. An identity that belongs to the other
+    mode's root REFUSES (typed, count-free) instead of rendering a false
+    empty state.
+
     Returns (front block, unavailable entries, executable-queue entry).
     """
     now = (now_fn or (lambda: datetime.now(timezone.utc)))()
     unavailable: list[dict[str, str]] = []
     field = "f1_optimization.active_p1lr_factorial"
+
+    def _refuse(refusal: P1lrModeRefusal) -> tuple[
+            dict[str, Any], list[dict[str, str]], None]:
+        unavailable.append({"field": field,
+                            "reason": f"{refusal.code}: {refusal.reason}"})
+        return (refusal.as_block(contract_path=str(contract_path)),
+                unavailable, None)
 
     try:
         contract = json.loads(contract_path.read_text())
@@ -1432,51 +1690,59 @@ def collect_p1lr_factorial(
         return {"source": "p1lr_factorial", "state": "unavailable",
                 "reason": reason}, unavailable, None
     contract_sha = _sha256_file(contract_path)
+
+    # ── ONE validated mode; every mode-dependent fact derives from it ──
+    try:
+        binding = p1lr_mode_binding(contract, mode)
+    except P1lrModeRefusal as refusal:
+        return _refuse(refusal)
+    output_root = binding["output_root"]
+    cells_per_seed = binding["cells_per_seed"]
+    seeds = binding["seeds"]
     assignments = _as_dict(contract.get("assignments"))
     cells_map = _as_dict(contract.get("cells"))
-    cell_order = _as_dict(contract.get("cell_order"))
-    seeds = [s for s in (contract.get("seeds") or []) if str(s) in assignments]
-    output_root = str(contract.get("output_root") or "").rstrip("/")
-    if not (seeds and cells_map and output_root):
-        reason = "contract lacks seeds/cells/output_root"
-        unavailable.append({"field": field, "reason": reason})
-        return {"source": "p1lr_factorial", "state": "unavailable",
-                "reason": reason,
-                "contract_path": str(contract_path)}, unavailable, None
 
     identity_basis = "explicit_parameter"
     if not identity:
         identity = _p1lr_discover_identity(output_root)
-        identity_basis = "discovered_latest_heartbeat_mtime(local)"
+        identity_basis = (f"discovered_latest_heartbeat_mtime(local,"
+                          f"{binding['mode']}_root)")
     if not identity:
         reason = ("no experiment identity: none supplied and no runner "
-                  "heartbeat discoverable under the local output root "
-                  f"{output_root}")
+                  f"heartbeat discoverable under the local {binding['mode']} "
+                  f"output root {output_root}")
         unavailable.append({"field": field, "reason": reason})
         return {"source": "p1lr_factorial", "state": "unavailable",
+                "mode": binding["mode"], "output_root": output_root,
                 "reason": reason,
                 "contract_path": str(contract_path)}, unavailable, None
+
+    # ── identity ↔ mode-root binding: mismatch REFUSES, never renders 0 ──
+    try:
+        identity_presence = p1lr_verify_identity_binding(
+            binding, identity, presence_fn=identity_presence_fn)
+    except P1lrModeRefusal as refusal:
+        return _refuse(refusal)
 
     workers: dict[str, Any] = {}
     worker_states: dict[str, dict[str, Any]] = {}
     pending_eta: dict[str, tuple[Optional[float], Optional[str]]] = {}
     durations: list[float] = []
     records_total = 0
-    total_cells = 0
+    total_cells = binding["total_cells"]
     running_fresh = 0
     any_fact = False
+    rejected_records: list[dict[str, Any]] = []
 
     for seed in seeds:
         assignment = _as_dict(assignments.get(str(seed)))
         host = assignment.get("hostname") or "unknown"
-        unit = P1LR_UNIT_TEMPLATE.format(seed=seed)
+        unit = binding["unit_template"].format(seed=seed)
         seed_dir = f"{output_root}/{identity}/seed{seed}"
-        seed_cells = [c for c in (cell_order.get(str(seed)) or [])
-                      if c in cells_map] or list(cells_map)
-        total_cells += len(seed_cells)
+        seed_cells = cells_per_seed[str(seed)]
         entry: dict[str, Any] = {
             "identity": identity, "seed": seed, "host": host,
-            "unit": unit, "basis": "observed",
+            "mode": binding["mode"], "unit": unit, "basis": "observed",
             "assigned_gpu_uuid": assignment.get("gpu_uuid"),
             "cell_order": seed_cells,
         }
@@ -1536,7 +1802,18 @@ def collect_p1lr_factorial(
             "cuda_visible_devices": hb.get("cuda_visible_devices"),
             "observed_gpu_uuids": hb.get("observed_gpu_uuids"),
             "heartbeat_assigned_gpu_uuid": hb.get("assigned_gpu_uuid"),
+            # Finding 233: the expected mode is derived from the
+            # validated mode; the heartbeat schema carries no mode field
+            # today, so the binding is POSITIONAL (mode root + identity)
+            # and the verified mode field lives on the cell records.
+            "heartbeat_mode_expected": binding["heartbeat_mode_expected"],
+            "heartbeat_mode_declared": hb.get("mode"),
         })
+        if hb.get("mode") is not None and hb.get("mode") != binding["mode"]:
+            entry["heartbeat_mode_mismatch"] = (
+                f"heartbeat declares mode {hb.get('mode')!r} under the "
+                f"{binding['mode']} root {output_root}: the artifact does "
+                "not belong to the mode being read")
 
         running_now = bool(hb_fresh and terminal_state == "RUNNING"
                            and cell)
@@ -1632,6 +1909,20 @@ def collect_p1lr_factorial(
                 continue
             if not isinstance(record, dict):
                 continue
+            # Finding 233: cell records DO carry the executed mode; a
+            # record of the other mode under this root is contamination
+            # and is never counted as landed evidence for this mode.
+            record_mode = record.get("mode")
+            if record_mode is not None and record_mode != binding["mode"]:
+                rejected_records.append({
+                    "seed": seed, "cell": cell_name,
+                    "record_mode": record_mode,
+                    "expected_mode": binding["mode"],
+                    "reason": ("cell record declares another mode under "
+                               f"the {binding['mode']} output root; it is "
+                               "not evidence for this mode"),
+                })
+                continue
             duration: Optional[float] = None
             elapsed_field = record.get("elapsed_seconds")
             if isinstance(elapsed_field, (int, float)) \
@@ -1654,19 +1945,59 @@ def collect_p1lr_factorial(
                 "duration_seconds": duration,
                 "terminal_model_sha256": record.get(
                     "terminal_model_sha256"),
+                "mode": record_mode,
+                "evidence_class": record.get("evidence_class"),
             }
         entry["landed_cells"] = landed or None
         entry["records_landed"] = {"value": len(landed),
                                    "of": len(seed_cells),
                                    "unit": "cell_records",
-                                   "horizon": "seed"}
+                                   "horizon": "seed",
+                                   "mode": binding["mode"],
+                                   "output_root": output_root}
         records_total += len(landed)
 
-        entry["restart_count"] = {
-            "value": reader.nrestarts(host, unit),
-            "unit": "systemd_restarts",
-            "source": f"systemctl --user show {unit} -p NRestarts",
-        }
+        # Finding 233: `systemctl show -p NRestarts` answers 0 even for a
+        # unit that does not exist, so a restart count without LoadState
+        # would render a DIRECT nohup worker as a supervised one. The
+        # unit file that WOULD supervise it is named in the remediation.
+        unit_file = f"examples/systemd/{binding['unit_template'].format(seed='')}"
+        loaded_fn = getattr(reader, "unit_loaded", None)
+        unit_loaded = loaded_fn(host, unit) if callable(loaded_fn) else None
+        nrestarts = reader.nrestarts(host, unit)
+        entry["unit_loaded"] = unit_loaded
+        if unit_loaded is False:
+            entry["restart_count"] = {
+                "value": "unavailable",
+                "reason": (f"{unit} is not loaded on {host}: systemd "
+                           "reports NRestarts=0 for unknown units, so no "
+                           "restart count exists to report"),
+                "unit_name": unit,
+                "source": f"systemctl --user show {unit} -p LoadState",
+            }
+            entry["launch_durability"] = {
+                "value": "no_unit_loaded",
+                "reason": (f"no systemd unit supervises seed {seed} on "
+                           f"{host}; a DIRECT (nohup) worker does not "
+                           "survive logout/reboot and is never restarted "
+                           "automatically"),
+                "remediation": (f"install {unit_file} and run "
+                                f"systemctl --user enable --now {unit}"),
+            }
+        else:
+            entry["restart_count"] = {
+                "value": nrestarts if nrestarts is not None else "unavailable",
+                "unit": "systemd_restarts",
+                "unit_name": unit,
+                "unit_loaded": unit_loaded,
+                "source": f"systemctl --user show {unit} -p NRestarts",
+                **({} if nrestarts is not None else
+                   {"reason": f"NRestarts unreadable for {unit} on {host}"}),
+                **({} if unit_loaded is True else
+                   {"load_state_note": (
+                       "unit load state unknown: this count is only "
+                       "meaningful if the unit exists")}),
+            }
 
         eta_elapsed: Optional[float] = None
         eta_reason: Optional[str] = None
@@ -1716,7 +2047,9 @@ def collect_p1lr_factorial(
                        "per-worker terminal states carry the facts")
     else:
         state = "unavailable"
-        state_basis = "no worker fact readable on any assigned host"
+        state_basis = ("no worker fact readable on any assigned host "
+                       f"under the {binding['mode']} output root "
+                       f"{output_root}")
         unavailable.append({"field": field, "reason": state_basis})
 
     block: dict[str, Any] = {
@@ -1726,19 +2059,50 @@ def collect_p1lr_factorial(
         "state_basis": state_basis,
         "experiment": contract.get("experiment"),
         "asset": contract.get("asset"),
-        "mode": "screen",
+        "mode": binding["mode"],
+        "mode_basis": "explicit_validated_parameter",
         "identity": identity,
         "identity_basis": identity_basis,
+        "identity_presence": identity_presence,
         "contract_path": str(contract_path),
         "contract_sha256": contract_sha,
         "output_root": output_root,
+        "other_mode": binding["other_mode"],
+        "other_mode_output_root": binding["other_mode_output_root"],
+        "unit_template": binding["unit_template"],
         "heartbeat_schema_expected": P1LR_HEARTBEAT_SCHEMA,
+        "heartbeat_mode_expected": binding["heartbeat_mode_expected"],
+        "record_mode_expected": binding["record_mode_expected"],
+        "evidence_class_expected": binding["evidence_class_expected"],
+        "decision_eligible_expected": binding["decision_eligible_expected"],
         "workers": workers,
-        "workers_running_fresh": {"value": running_fresh, "of": len(seeds),
-                                  "unit": "workers", "horizon": "instant"},
-        "records_landed": {
+        "experiment_eta": _l1_experiment_eta(
+            worker_states, durations,
+            active_eta_source_label="current_cell_duration_eta"),
+    }
+    if state == "unavailable":
+        # Finding 233: with NO readable fact there is nothing to count.
+        # Rendering 0/4 workers and 0/16 records here is exactly the
+        # false idle picture the auditor observed over four busy GPUs.
+        typed_empty = {
+            "value": "unavailable",
+            "reason": state_basis,
+            "of": None,
+        }
+        block["workers_running_fresh"] = dict(
+            typed_empty, of=len(seeds), unit="workers", horizon="instant")
+        block["records_landed"] = dict(
+            typed_empty, of=total_cells, unit="cell_records",
+            horizon="experiment", mode=binding["mode"],
+            output_root=output_root)
+    else:
+        block["workers_running_fresh"] = {
+            "value": running_fresh, "of": len(seeds),
+            "unit": "workers", "horizon": "instant"}
+        block["records_landed"] = {
             "value": records_total, "of": total_cells,
             "unit": "cell_records", "horizon": "experiment",
+            "mode": binding["mode"], "output_root": output_root,
             "fleet_note": (
                 "each assigned host's own status run counts its seeds' "
                 "records from its LOCAL output root (per-host N/4 per "
@@ -1747,11 +2111,13 @@ def collect_p1lr_factorial(
                 "renders a typed unavailable worker, never a fabricated "
                 "count — the fleet 16 is complete only when every "
                 "assigned host was readable at collection time"),
-        },
-        "experiment_eta": _l1_experiment_eta(
-            worker_states, durations,
-            active_eta_source_label="current_cell_duration_eta"),
-    }
+        }
+    if rejected_records:
+        block["records_rejected_mode_mismatch"] = rejected_records
+    other_activity = _p1lr_other_mode_activity(binding, now,
+                                               stale_after_seconds)
+    if other_activity is not None:
+        block["other_mode_activity"] = other_activity
 
     queue_entry = None
     if state == "active":
@@ -1759,6 +2125,8 @@ def collect_p1lr_factorial(
             "id": f"p1lr-factorial-{identity}",
             "front": "f1",
             "state": "running",
+            "mode": binding["mode"],
+            "output_root": output_root,
             "hashes": {"config_sha256": contract_sha},
         }
     return block, unavailable, queue_entry
@@ -1789,6 +2157,9 @@ def collect(
     p1lr_local_hostname: Optional[str] = None,
     p1lr_stale_after_seconds: float = 900.0,
     p1lr_now_fn: Optional[Callable[[], datetime]] = None,
+    p1lr_mode: str = "screen",
+    p1lr_identity_presence_fn: Optional[
+        Callable[[Optional[str], str], bool]] = None,
 ) -> dict[str, Any]:
     sources: list[dict[str, Any]] = []
     unavailable: list[dict[str, str]] = []
@@ -1821,10 +2192,12 @@ def collect(
                 local_hostname=p1lr_local_hostname or l1_local_hostname,
                 stale_after_seconds=p1lr_stale_after_seconds,
                 now_fn=p1lr_now_fn or l1_now_fn,
+                mode=p1lr_mode,
+                identity_presence_fn=p1lr_identity_presence_fn,
             )
         f1["active_p1lr_factorial"] = p1lr_block
         unavailable.extend(p1lr_unavailable)
-        if p1lr_block.get("state") != "unavailable":
+        if p1lr_block.get("state") not in ("unavailable", "refused"):
             register("p1lr_factorial", str(p1lr_contract_path), None)
     else:
         f1["active_p1lr_factorial"] = {
@@ -1895,7 +2268,8 @@ def collect(
         }
     else:
         unavailable.append({"field": "f1_optimization.doin_campaign_history", "reason": "supervisor status unreachable, empty, or wrong type"})
-    if (f1["active_p1lr_factorial"].get("state") == "unavailable"
+    if (f1["active_p1lr_factorial"].get("state") in ("unavailable",
+                                                     "refused")
             and f1["active_l1_factorial"].get("state") == "unavailable"
             and "doin_campaign_history" not in f1):
         unavailable.append(
@@ -2314,8 +2688,18 @@ def main() -> int:
                         help="disable the P1LR factorial source")
     parser.add_argument("--p1lr-identity", default=None,
                         help="active P1LR experiment identity; discovered "
-                             "from the newest local runner heartbeat when "
-                             "omitted")
+                             "from the newest local runner heartbeat under "
+                             "the SELECTED mode's root when omitted")
+    parser.add_argument("--p1lr-mode", choices=list(P1LR_MODES),
+                        default="screen",
+                        help="P1LR execution mode to read (finding 233): "
+                             "output root, systemd unit, expected "
+                             "heartbeat/record mode and total cells all "
+                             "derive from it — 'screen' reads "
+                             "output_root, 'decision' reads "
+                             "decision_run.output_root; an identity "
+                             "belonging to the other mode's root is a "
+                             "typed refusal, never a rendered zero")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     l1_alert_emitter = None
@@ -2335,6 +2719,7 @@ def main() -> int:
         l1_alert_emitter=l1_alert_emitter,
         p1lr_contract_path=None if args.no_p1lr else args.p1lr_contract,
         p1lr_identity=args.p1lr_identity,
+        p1lr_mode=args.p1lr_mode,
     )
     text = json.dumps(packet, indent=1, sort_keys=True)
     if args.output:

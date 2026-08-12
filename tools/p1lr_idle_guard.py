@@ -20,6 +20,13 @@ so the next poll retries (the ledger's fingerprint dedup makes a retry
 safe). Guard state lives in the guard's OWN state file — never inside
 the run's output root, which stays strictly read-only.
 
+MODE (finding 233): the guard's mode is EXPLICIT and VALIDATED. Output
+root, unit name, expected heartbeat/record mode and total cells all
+derive from it through ``multifront_status.p1lr_mode_binding``, so a
+decision run under ``decision_run.output_root`` is never guarded by
+reading the screen root — the defect that reported an idle 0/16 screen
+while four decision processes held four busy GPUs.
+
 Socket-free by construction for tests: process facts, GPU telemetry,
 unit existence, restart calls and ledger emissions are injected; the
 default wiring uses pgrep / nvidia-smi (tools.m0_l1_mechanism_ladder.
@@ -40,12 +47,23 @@ from typing import Any, Callable, Optional
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from tools.multifront_status import (  # noqa: E402  (path set above)
+    P1LR_MODES,
+    P1LR_UNIT_TEMPLATES,
+    P1lrModeRefusal,
+    p1lr_mode_binding,
+    p1lr_verify_identity_binding,
+)
+
 STATE_SCHEMA = "agent_multi.p1lr_idle_guard_state.v1"
 REPORT_SCHEMA = "agent_multi.p1lr_idle_guard_report.v1"
 SOURCE = "p1lr_idle_guard"
 FRONT = "front1"
 SEVERITY = "P2"
-UNIT_TEMPLATE = "p1lr-screen@{seed}.service"
+# Kept for compatibility with older callers; the guard itself always
+# takes the unit template from the validated mode binding.
+UNIT_TEMPLATE = P1LR_UNIT_TEMPLATES["screen"]
+DEFAULT_MODE = "screen"
 
 DEFAULT_CONTRACT = (REPO_ROOT / "examples/config/phase_3_eth_sac_dynamics/"
                                "p1_difficulty_lr_factorial_v1.json")
@@ -54,6 +72,12 @@ DEFAULT_IDLE_AFTER_SECONDS = 900.0          # §7.8: 15 minutes
 DEFAULT_GPU_IDLE_UTILIZATION_PCT = 10       # below this the GPU reads idle
 DEFAULT_MAX_RESTARTS = 3                    # bounded recovery cap
 DEFAULT_RESTART_BACKOFF_SECONDS = 900.0     # doubles per attempt
+
+# The decision unit NEVER defaults to screen: its relaunch command
+# carries --mode decision through the shipped unit, whose ExecStartPre
+# verifies the pinned screen gate before any training starts.
+MODE_UNIT_FILES = {"screen": "examples/systemd/p1lr-screen@.service",
+                   "decision": "examples/systemd/p1lr-decision@.service"}
 
 
 def idle_event_code(seed: int) -> str:
@@ -64,12 +88,21 @@ def cap_event_code(seed: int) -> str:
     return f"p1lr_idle_restart_cap.seed{seed}"
 
 
-def relaunch_command(seed: int) -> str:
+def relaunch_command(seed: int, mode: str = DEFAULT_MODE) -> str:
     """The exact owner/operator relaunch command when the unit is
-    missing (matches examples/systemd/p1lr-screen@.service install)."""
-    return ("cp examples/systemd/p1lr-screen@.service "
+    missing, for THIS mode's unit (examples/systemd/p1lr-<mode>@.service).
+    The decision unit itself pins --mode decision and the verified
+    screen gate, so the relaunch can never silently fall back to a
+    screen run."""
+    if mode not in P1LR_MODES:
+        raise P1lrModeRefusal(
+            "P1LR_MODE_INVALID",
+            f"unknown P1LR execution mode {mode!r}: one of "
+            f"{list(P1LR_MODES)}", supplied_mode=mode)
+    unit = P1LR_UNIT_TEMPLATES[mode].format(seed=seed)
+    return (f"cp {MODE_UNIT_FILES[mode]} "
             "~/.config/systemd/user/ && systemctl --user daemon-reload && "
-            f"systemctl --user enable --now p1lr-screen@{seed}.service")
+            f"systemctl --user enable --now {unit}")
 
 
 # ---------------------------------------------------------------------------
@@ -192,7 +225,12 @@ def _iso(value: Any) -> Optional[datetime]:
     return ts if ts.tzinfo else ts.replace(tzinfo=timezone.utc)
 
 
-def _seed_cells(contract: dict, seed: int) -> list[str]:
+def _seed_cells(contract: dict, seed: int,
+                binding: Optional[dict] = None) -> list[str]:
+    if binding is not None:
+        cells = binding["cells_per_seed"].get(str(seed))
+        if cells:
+            return list(cells)
     cells_map = contract.get("cells") or {}
     order = (contract.get("cell_order") or {}).get(str(seed)) or []
     ordered = [c for c in order if c in cells_map]
@@ -200,13 +238,18 @@ def _seed_cells(contract: dict, seed: int) -> list[str]:
 
 
 def seed_facts(contract: dict, identity: str, seed: int,
-               now: datetime) -> dict:
+               now: datetime, binding: Optional[dict] = None) -> dict:
     """Observed facts for one seed: record count, newest progress mtime
     (cell heartbeats, seed refusal heartbeat, cell records) and the
-    newest heartbeat's terminal_state (to detect typed refusals)."""
-    root = Path(str(contract["output_root"])).expanduser()
+    newest heartbeat's terminal_state (to detect typed refusals).
+
+    The output root comes from the VALIDATED mode binding (finding 233),
+    never from ``contract['output_root']`` unconditionally."""
+    if binding is None:
+        binding = p1lr_mode_binding(contract, DEFAULT_MODE)
+    root = Path(str(binding["output_root"])).expanduser()
     seed_dir = root / identity / f"seed{seed}"
-    cells = _seed_cells(contract, seed)
+    cells = _seed_cells(contract, seed, binding)
     records = [c for c in cells
                if (seed_dir / c / "cell_record.json").is_file()]
     progress_paths = ([seed_dir / c / "heartbeat.json" for c in cells]
@@ -240,6 +283,7 @@ def seed_facts(contract: dict, identity: str, seed: int,
         "pending_cells": [c for c in cells if c not in records],
         "progress_age_seconds": progress_age,
         "last_heartbeat_terminal_state": terminal_state,
+        "seed_dir": str(seed_dir),
     }
 
 
@@ -259,13 +303,20 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
          gpu_idle_utilization_pct: int = DEFAULT_GPU_IDLE_UTILIZATION_PCT,
          max_restarts: int = DEFAULT_MAX_RESTARTS,
          restart_backoff_seconds: float = DEFAULT_RESTART_BACKOFF_SECONDS,
+         mode: str = DEFAULT_MODE,
          ) -> dict:
     """One guard cycle over the seeds ASSIGNED TO THIS HOST.
 
-    Returns {"schema", "seeds": {seed: facts+actions}, "emitted",
-    "recovered", "restarts", "state"} where ``state`` is the new dedup
-    state to persist. The run root is only read, never written.
+    ``mode`` is validated and binds the output root, the unit name and
+    the per-seed cell total (finding 233): in decision mode every fact
+    and the whole report come from ``decision_run.output_root``.
+
+    Returns {"schema", "mode", "output_root", "seeds": {seed:
+    facts+actions}, "emitted", "recovered", "restarts", "state"} where
+    ``state`` is the new dedup state to persist. The run root is only
+    read, never written.
     """
+    binding = p1lr_mode_binding(contract, mode)
     facts_fn = seed_facts_fn or seed_facts
     assignments = contract.get("assignments") or {}
     seeds = [int(s) for s in (contract.get("seeds") or [])
@@ -282,11 +333,11 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
         assignment = assignments.get(str(seed)) or {}
         if assignment.get("hostname") != local_hostname:
             continue
-        unit = UNIT_TEMPLATE.format(seed=seed)
+        unit = binding["unit_template"].format(seed=seed)
         gpu_uuid = assignment.get("gpu_uuid")
         seed_state = state["seeds"].setdefault(str(seed),
                                                default_seed_state())
-        facts = facts_fn(contract, identity, seed, now)
+        facts = facts_fn(contract, identity, seed, now, binding)
         pending = facts["records_landed"] < facts["cells_total"]
         process_alive = bool(process_alive_fn(seed))
         telemetry = gpu_telemetry_fn(gpu_uuid) or {}
@@ -324,6 +375,9 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
         actions: list[str] = []
         entry: dict[str, Any] = {
             "seed": seed, "unit": unit, "assigned_gpu_uuid": gpu_uuid,
+            "mode": binding["mode"],
+            "output_root": binding["output_root"],
+            "seed_dir": facts.get("seed_dir"),
             "pending": pending,
             "records_landed": {"value": facts["records_landed"],
                                "of": facts["cells_total"],
@@ -347,6 +401,8 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             if not seed_state.get("idle_active"):
                 payload = {
                     "identity": identity, "seed": seed, "unit": unit,
+                    "mode": binding["mode"],
+                    "output_root": binding["output_root"],
                     "assigned_gpu_uuid": gpu_uuid,
                     "gpu_utilization_pct": utilization,
                     "gpu_temperature_c": telemetry.get("gpu_temperature_c"),
@@ -367,17 +423,18 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
                          "fix the refusal, then systemctl --user "
                          f"reset-failed {unit} && systemctl --user start "
                          f"{unit}") if refusal else
-                        relaunch_command(seed)),
+                        relaunch_command(seed, binding["mode"])),
                 }
                 summary = (
-                    f"P1LR seed {seed} on {local_hostname}: assigned GPU "
+                    f"P1LR {binding['mode']} seed {seed} on "
+                    f"{local_hostname}: assigned GPU "
                     f"{gpu_uuid} idle "
                     f"{observed_idle:.0f}s > {idle_after_seconds:.0f}s with "
                     f"{len(facts['pending_cells'])} cell(s) pending and no "
                     "runner process/heartbeat progress")
                 if not unit_exists:
                     summary += (f" — unit missing; relaunch: "
-                                f"{relaunch_command(seed)}")
+                                f"{relaunch_command(seed, binding['mode'])}")
                 if emitter.observe(idle_event_code(seed), SEVERITY,
                                    summary, payload,
                                    affected_object=affected):
@@ -394,12 +451,15 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
                 actions.append("restart_withheld_typed_refusal")
             elif not unit_exists:
                 actions.append("restart_withheld_unit_missing")
-                entry["relaunch_command"] = relaunch_command(seed)
+                entry["relaunch_command"] = relaunch_command(
+                    seed, binding["mode"])
             elif len(restart_history) >= max_restarts:
                 actions.append("restart_cap_reached")
                 if not seed_state.get("cap_emitted"):
                     cap_payload = {
                         "identity": identity, "seed": seed, "unit": unit,
+                        "mode": binding["mode"],
+                        "output_root": binding["output_root"],
                         "restart_attempts": len(restart_history),
                         "max_restarts": max_restarts,
                         "remediation": (
@@ -469,6 +529,14 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             "generated_at": now.isoformat(),
             "hostname": local_hostname,
             "identity": identity,
+            # Finding 233: the report is BOUND to the mode it guarded —
+            # in decision mode every count above came from the decision
+            # root, and the report says so.
+            "mode": binding["mode"],
+            "mode_basis": "explicit_validated_parameter",
+            "output_root": binding["output_root"],
+            "unit_template": binding["unit_template"],
+            "cells_total": binding["total_cells"],
             "seeds": report_seeds,
             "emitted": emitted,
             "recovered": recovered,
@@ -488,9 +556,22 @@ def _discover_identity(output_root: str) -> Optional[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--contract", type=Path, default=DEFAULT_CONTRACT)
+    parser.add_argument("--mode", choices=list(P1LR_MODES),
+                        default=DEFAULT_MODE,
+                        help="P1LR execution mode to guard (finding 233): "
+                             "output root, unit name, expected heartbeat/"
+                             "record mode and total cells derive from it. "
+                             "'decision' binds every fact AND the report "
+                             "to decision_run.output_root; an identity "
+                             "belonging to the other mode's root refuses")
     parser.add_argument("--identity", default=None,
                         help="experiment identity; discovered from the "
-                             "newest local runner heartbeat when omitted")
+                             "newest local runner heartbeat under the "
+                             "SELECTED mode's output root when omitted")
+    parser.add_argument("--report-out", type=Path, default=None,
+                        help="also write the report JSON here (atomic); "
+                             "the report is bound to the guarded mode's "
+                             "output root")
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE_DIR,
                         help="guard dedup/backoff state; NEVER inside the "
                              "run's output root")
@@ -513,12 +594,30 @@ def main() -> int:
         print(json.dumps({"error": f"contract unreadable: "
                                    f"{type(exc).__name__}"}))
         return 2
-    identity = args.identity or _discover_identity(
-        str(contract.get("output_root") or ""))
+    try:
+        binding = p1lr_mode_binding(contract, args.mode)
+    except P1lrModeRefusal as refusal:
+        print(json.dumps({"error_code": refusal.code,
+                          "error": refusal.reason, **refusal.facts},
+                         indent=1, sort_keys=True))
+        return 2
+    identity = args.identity or _discover_identity(binding["output_root"])
     if not identity:
         print(json.dumps({
+            "error_code": "P1LR_NO_IDENTITY",
+            "mode": binding["mode"],
+            "output_root": binding["output_root"],
             "error": "no experiment identity: none supplied and no runner "
-                     "heartbeat discoverable under the local output root"}))
+                     f"heartbeat discoverable under the local "
+                     f"{binding['mode']} output root "
+                     f"{binding['output_root']}"}, indent=1, sort_keys=True))
+        return 2
+    try:
+        identity_presence = p1lr_verify_identity_binding(binding, identity)
+    except P1lrModeRefusal as refusal:
+        print(json.dumps({"error_code": refusal.code,
+                          "error": refusal.reason, **refusal.facts},
+                         indent=1, sort_keys=True))
         return 2
 
     hostname = socket.gethostname()
@@ -550,11 +649,20 @@ def main() -> int:
         idle_after_seconds=args.idle_after_seconds,
         gpu_idle_utilization_pct=args.gpu_idle_utilization_pct,
         max_restarts=args.max_restarts,
-        restart_backoff_seconds=args.restart_backoff_seconds)
+        restart_backoff_seconds=args.restart_backoff_seconds,
+        mode=args.mode)
     if not args.dry_run:
         save_state(state_path, report["state"])
     printable = {k: v for k, v in report.items() if k != "state"}
-    print(json.dumps(printable, indent=1, sort_keys=True))
+    printable["identity_presence"] = identity_presence
+    printable["dry_run"] = bool(args.dry_run)
+    text = json.dumps(printable, indent=1, sort_keys=True)
+    if args.report_out is not None:
+        args.report_out.parent.mkdir(parents=True, exist_ok=True)
+        tmp = args.report_out.with_suffix(".tmp")
+        tmp.write_text(text, encoding="utf-8")
+        tmp.replace(args.report_out)
+    print(text)
     return 0
 
 

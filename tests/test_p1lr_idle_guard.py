@@ -11,9 +11,12 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+import pytest
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
@@ -31,6 +34,10 @@ ORDER = {
 }
 
 
+DECISION_IDENTITY = "1434685bfdf52911"
+ROOT_DIR = {"screen": "out", "decision": "out_decision"}
+
+
 def _contract(tmp_path):
     return {
         "schema": "agent_multi.p1_difficulty_lr_factorial.v1",
@@ -41,12 +48,19 @@ def _contract(tmp_path):
                                  "gpu_uuid": f"GPU-{s}"}
                         for s in HOSTS},
         "cell_order": {str(s): ORDER[s] for s in HOSTS},
-        "output_root": str(tmp_path / "out"),
+        "output_root": str(tmp_path / ROOT_DIR["screen"]),
+        # Finding 226/233: the decision run has its OWN durable root.
+        "decision_run": {
+            "output_root": str(tmp_path / ROOT_DIR["decision"]),
+            "max_global_pass_equivalent_checkpoints": 2000},
     }
 
 
-def _write(tmp_path, seed, relpath, payload, *, age_seconds, now=NOW):
-    path = (tmp_path / "out" / IDENTITY / f"seed{seed}" / relpath)
+def _write(tmp_path, seed, relpath, payload, *, age_seconds, now=NOW,
+           mode="screen", identity=None):
+    identity = identity or (DECISION_IDENTITY if mode == "decision"
+                            else IDENTITY)
+    path = (tmp_path / ROOT_DIR[mode] / identity / f"seed{seed}" / relpath)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload))
     stamp = (now - timedelta(seconds=age_seconds)).timestamp()
@@ -55,18 +69,22 @@ def _write(tmp_path, seed, relpath, payload, *, age_seconds, now=NOW):
 
 
 def _heartbeat(tmp_path, seed, *, age_seconds, cell=None,
-               terminal_state="RUNNING", now=NOW):
+               terminal_state="RUNNING", now=NOW, mode="screen",
+               identity=None):
     cell = cell or ORDER[seed][0]
     return _write(tmp_path, seed, f"{cell}/heartbeat.json",
                   {"terminal_state": terminal_state, "cell": cell},
-                  age_seconds=age_seconds, now=now)
+                  age_seconds=age_seconds, now=now, mode=mode,
+                  identity=identity)
 
 
-def _record(tmp_path, seed, cell, *, age_seconds=3600, now=NOW):
+def _record(tmp_path, seed, cell, *, age_seconds=3600, now=NOW,
+            mode="screen", identity=None):
     return _write(tmp_path, seed, f"{cell}/cell_record.json",
                   {"schema": "agent_multi.p1_difficulty_lr_cell_record.v1",
-                   "seed": seed, "cell": cell},
-                  age_seconds=age_seconds, now=now)
+                   "seed": seed, "cell": cell, "mode": mode},
+                  age_seconds=age_seconds, now=now, mode=mode,
+                  identity=identity)
 
 
 class FakeEmitter:
@@ -92,7 +110,8 @@ class FakeEmitter:
 
 def _poll(tmp_path, *, state=None, now=NOW, emitter=None,
           local_hostname="omega", process_alive=False, utilization=0,
-          temperature=45, unit_exists=True, restart_calls=None, **kw):
+          temperature=45, unit_exists=True, restart_calls=None,
+          identity=IDENTITY, **kw):
     emitter = emitter if emitter is not None else FakeEmitter()
     restart_calls = restart_calls if restart_calls is not None else []
 
@@ -101,7 +120,7 @@ def _poll(tmp_path, *, state=None, now=NOW, emitter=None,
         return {"ok": True, "returncode": 0, "stderr": ""}
 
     report = guard.poll(
-        contract=_contract(tmp_path), identity=IDENTITY,
+        contract=_contract(tmp_path), identity=identity,
         state=state or guard.default_state(), now=now,
         local_hostname=local_hostname, emitter=emitter,
         process_alive_fn=lambda seed: process_alive,
@@ -328,6 +347,300 @@ def test_only_locally_assigned_seeds_are_guarded(tmp_path):
         {f"{IDENTITY}/seed303", f"{IDENTITY}/seed404"}
     assert sorted(restarts) == ["p1lr-screen@303.service",
                                 "p1lr-screen@404.service"]
+
+
+# ── finding 233: ONE validated mode binds root, unit and report ──
+
+def _decision_poll(tmp_path, **kw):
+    kw.setdefault("identity", DECISION_IDENTITY)
+    kw.setdefault("mode", "decision")
+    return _poll(tmp_path, **kw)
+
+
+def test_decision_mode_binds_root_unit_and_report_to_the_decision_run(
+        tmp_path):
+    """The guard reads the DECISION root, restarts the DECISION unit and
+    says so in its report — the screen root is not consulted at all."""
+    _heartbeat(tmp_path, 101, age_seconds=1200, mode="decision")
+    report, emitter, restarts = _decision_poll(tmp_path)
+
+    assert report["mode"] == "decision"
+    assert report["mode_basis"] == "explicit_validated_parameter"
+    assert report["output_root"] == str(tmp_path / "out_decision")
+    assert report["unit_template"] == "p1lr-decision@{seed}.service"
+    assert report["cells_total"] == 16
+    entry = report["seeds"]["101"]
+    assert entry["mode"] == "decision"
+    assert entry["output_root"] == str(tmp_path / "out_decision")
+    assert entry["seed_dir"] == str(
+        tmp_path / "out_decision" / DECISION_IDENTITY / "seed101")
+    assert entry["unit"] == "p1lr-decision@101.service"
+    assert entry["idle"] is True
+    assert restarts == ["p1lr-decision@101.service"]
+    # the incident names the decision root, never the screen root
+    payload = emitter.observed[0]["payload"]
+    assert payload["mode"] == "decision"
+    assert payload["output_root"] == str(tmp_path / "out_decision")
+    assert "decision" in emitter.observed[0]["summary"]
+
+
+def test_screen_progress_is_never_decision_progress(tmp_path):
+    """Fresh heartbeats under the SCREEN root must not make a decision
+    guard believe the decision run is progressing (and vice versa)."""
+    _heartbeat(tmp_path, 101, age_seconds=5, mode="screen")
+    report, _, _ = _decision_poll(tmp_path)
+    entry = report["seeds"]["101"]
+    assert entry["pending"] is True
+    # no decision artifact exists at all -> bounded by first observation
+    assert entry["observed_idle_seconds"] == 0.0
+    assert "first pending observation" in entry["idle_basis"]
+
+    # …and the mirror: decision progress is not screen progress
+    _heartbeat(tmp_path, 101, age_seconds=5, mode="decision")
+    screen_report, _, _ = _poll(tmp_path)
+    assert screen_report["mode"] == "screen"
+    assert screen_report["output_root"] == str(tmp_path / "out")
+
+
+def test_decision_records_complete_the_decision_seed_only(tmp_path):
+    for cell in ORDER[101]:
+        _record(tmp_path, 101, cell, mode="decision")
+    report, emitter, restarts = _decision_poll(tmp_path)
+    assert report["seeds"]["101"]["pending"] is False
+    assert emitter.observed == [] and restarts == []
+    # the same records do NOT complete the screen seed
+    screen_report, _, _ = _poll(tmp_path)
+    assert screen_report["seeds"]["101"]["pending"] is True
+
+
+def test_relaunch_command_is_mode_specific_and_never_defaults_to_screen():
+    screen = guard.relaunch_command(101, "screen")
+    decision = guard.relaunch_command(101, "decision")
+    assert "p1lr-screen@.service" in screen
+    assert "enable --now p1lr-screen@101.service" in screen
+    assert "p1lr-decision@.service" in decision
+    assert "enable --now p1lr-decision@101.service" in decision
+    assert "screen@" not in decision
+    # the default stays screen for the historical single-mode callers
+    assert guard.relaunch_command(101) == screen
+
+
+def test_unknown_guard_mode_is_a_typed_refusal(tmp_path):
+    with pytest.raises(guard.P1lrModeRefusal) as excinfo:
+        guard.relaunch_command(101, "decisive")
+    assert excinfo.value.code == "P1LR_MODE_INVALID"
+    with pytest.raises(guard.P1lrModeRefusal) as excinfo:
+        _poll(tmp_path, mode="decisive")
+    assert excinfo.value.code == "P1LR_MODE_INVALID"
+
+
+def test_missing_decision_unit_carries_the_decision_relaunch_command(
+        tmp_path):
+    _heartbeat(tmp_path, 101, age_seconds=1200, mode="decision")
+    report, emitter, restarts = _decision_poll(tmp_path, unit_exists=False)
+    assert restarts == []
+    entry = report["seeds"]["101"]
+    assert entry["relaunch_command"] == \
+        guard.relaunch_command(101, "decision")
+    assert "p1lr-decision@101.service" in \
+        emitter.observed[0]["payload"]["remediation"]
+
+
+# ── the CLI refuses a cross-mode identity instead of reporting zeros ──
+
+def _run_cli(tmp_path, *args, contract=None):
+    contract = contract if contract is not None else _contract(tmp_path)
+    cpath = tmp_path / "contract.json"
+    cpath.write_text(json.dumps(contract))
+    proc = subprocess.run(
+        [sys.executable, str(REPO / "tools/p1lr_idle_guard.py"),
+         "--contract", str(cpath), "--dry-run", *args],
+        capture_output=True, text=True, timeout=120, cwd=str(REPO))
+    return proc
+
+
+def test_cli_refuses_a_decision_identity_under_the_screen_root(tmp_path):
+    (tmp_path / "out_decision" / DECISION_IDENTITY).mkdir(parents=True)
+    (tmp_path / "out").mkdir(parents=True, exist_ok=True)
+    proc = _run_cli(tmp_path, "--mode", "screen",
+                    "--identity", DECISION_IDENTITY)
+    assert proc.returncode == 2
+    payload = json.loads(proc.stdout)
+    assert payload["error_code"] == "P1LR_IDENTITY_MODE_MISMATCH"
+    assert payload["identity_mode"] == "decision"
+    assert "seeds" not in payload          # no zero-count report at all
+
+
+def test_cli_refuses_decision_mode_without_a_decision_root(tmp_path):
+    contract = _contract(tmp_path)
+    contract.pop("decision_run")
+    proc = _run_cli(tmp_path, "--mode", "decision", contract=contract)
+    assert proc.returncode == 2
+    payload = json.loads(proc.stdout)
+    assert payload["error_code"] == "P1LR_DECISION_ROOT_MISSING"
+
+
+def test_cli_report_binds_to_the_decision_root_and_is_writable(tmp_path):
+    _heartbeat(tmp_path, 101, age_seconds=30, mode="decision")
+    out = tmp_path / "reports" / "last_report.json"
+    proc = _run_cli(tmp_path, "--mode", "decision",
+                    "--identity", DECISION_IDENTITY,
+                    "--report-out", str(out))
+    assert proc.returncode == 0, proc.stderr
+    payload = json.loads(out.read_text())
+    assert payload["mode"] == "decision"
+    assert payload["output_root"] == str(tmp_path / "out_decision")
+    assert payload["dry_run"] is True
+    assert payload["identity_presence"]["identity_under_mode_root"] is True
+    assert payload["identity_presence"][
+        "identity_under_other_mode_root"] is False
+
+
+# ── the shipped durability surface: units, timer and the gate wrapper ──
+
+SYSTEMD = REPO / "examples/systemd"
+GATE_SCHEMA = "agent_multi.p1_difficulty_lr_screen_verdict.v1"
+
+
+def _unit(name):
+    return (SYSTEMD / name).read_text()
+
+
+def _directives(name):
+    """The unit's EFFECTIVE text: comments carry no systemd semantics."""
+    return "\n".join(line for line in _unit(name).splitlines()
+                     if line.strip() and not line.strip().startswith("#"))
+
+
+def test_decision_unit_always_runs_decision_mode_and_never_screen():
+    text = _directives("p1lr-decision@.service")
+    exec_start = text.split("ExecStart=", 1)[1]
+    assert "--mode decision" in exec_start
+    assert "--mode screen" not in text
+    assert "p1lr-screen" not in text
+    # no operator EXTRA_ARGS can append a second --mode and downgrade it
+    assert "EXTRA_ARGS" not in text
+    # the screen gate is PINNED and passed to the runner
+    assert "Environment=P1LR_SCREEN_GATE=" in text
+    assert "--screen-gate ${P1LR_SCREEN_GATE}" in exec_start
+    # …and VERIFIED before the runner starts
+    assert "ExecStartPre=" in text
+    assert "p1lr_decision_gate_check.sh ${P1LR_SCREEN_GATE}" in text
+    # a configuration refusal (exit 4) is never retried
+    assert "RestartPreventExitStatus=4" in text
+    assert "Restart=on-failure" in text
+    assert "SuccessExitStatus=3" in text
+    assert "WantedBy=default.target" in text
+
+
+def test_decision_unit_pin_matches_the_guard_relaunch_command():
+    text = _unit("p1lr-decision@.service")
+    assert guard.MODE_UNIT_FILES["decision"] == \
+        "examples/systemd/p1lr-decision@.service"
+    assert (SYSTEMD / "p1lr-decision@.service").is_file()
+    assert "p1lr-decision@101.service" in \
+        guard.relaunch_command(101, "decision")
+    assert "Description=P1 difficulty x P1 LR factorial seed %i" in text
+
+
+def test_guard_timer_is_fifteen_minutes_and_persistent():
+    timer = _unit("p1lr-idle-guard.timer")
+    assert "OnUnitActiveSec=15min" in timer
+    assert "OnBootSec=5min" in timer
+    assert "Persistent=true" in timer
+    assert "Unit=p1lr-idle-guard.service" in timer
+    assert "WantedBy=timers.target" in timer
+    assert str(int(guard.DEFAULT_IDLE_AFTER_SECONDS // 60)) == "15"
+
+
+def test_guard_service_binds_the_decision_root_by_default():
+    service = _unit("p1lr-idle-guard.service")
+    assert "Type=oneshot" in service
+    assert "Environment=P1LR_GUARD_MODE=decision" in service
+    assert "--mode ${P1LR_GUARD_MODE}" in service
+    assert "--report-out ${P1LR_GUARD_REPORT}" in service
+    # the reviewed per-host override file comes AFTER the default, so it
+    # wins when present and changes nothing when absent
+    assert service.index("Environment=P1LR_GUARD_MODE") < \
+        service.index("EnvironmentFile=-")
+
+
+def _gate_check(tmp_path, gate_payload, *, contract_text=None,
+                write_gate=True):
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    gate = tmp_path / "screen_verdict.json"
+    if write_gate:
+        gate.write_text(json.dumps(gate_payload))
+    contract = tmp_path / "contract.json"
+    contract.write_text(contract_text if contract_text is not None
+                        else json.dumps({"schema": "x"}))
+    return subprocess.run(
+        ["bash", str(SYSTEMD / "p1lr_decision_gate_check.sh"),
+         str(gate), str(contract)],
+        capture_output=True, text=True, timeout=120)
+
+
+def _viable_gate(contract_text):
+    import hashlib
+    return {
+        "schema": GATE_SCHEMA,
+        "outcome": "SCREEN_VIABLE_REGION",
+        "gates": {"replica_terminal_loads": True},
+        "contract_sha256": hashlib.sha256(
+            contract_text.encode()).hexdigest(),
+    }
+
+
+def test_gate_wrapper_accepts_only_a_verified_viable_gate(tmp_path):
+    text = json.dumps({"schema": "contract"})
+    proc = _gate_check(tmp_path, _viable_gate(text), contract_text=text)
+    assert proc.returncode == 0, proc.stderr
+    assert "VERIFIED" in proc.stdout
+
+
+def test_gate_wrapper_refuses_missing_wrong_and_foreign_gates(tmp_path):
+    text = json.dumps({"schema": "contract"})
+
+    missing = _gate_check(tmp_path / "a", {}, contract_text=text,
+                          write_gate=False)
+    assert missing.returncode == 4
+
+    not_viable = dict(_viable_gate(text),
+                      outcome="PHASE1_LR_REGION_COLLAPSED")
+    proc = _gate_check(tmp_path / "b", not_viable, contract_text=text)
+    assert proc.returncode == 4
+    assert "REFUSED_SCREEN_NOT_VIABLE" in proc.stdout
+
+    no_replica = dict(_viable_gate(text),
+                      gates={"replica_terminal_loads": False})
+    proc = _gate_check(tmp_path / "c", no_replica, contract_text=text)
+    assert proc.returncode == 4
+    assert "REFUSED_REPLICA_PROOF_MISSING" in proc.stdout
+
+    foreign = dict(_viable_gate(text), contract_sha256="0" * 64)
+    proc = _gate_check(tmp_path / "d", foreign, contract_text=text)
+    assert proc.returncode == 4
+    assert "REFUSED_SCREEN_GATE_FOREIGN" in proc.stdout
+
+    bad_schema = dict(_viable_gate(text), schema="something.else")
+    proc = _gate_check(tmp_path / "e", bad_schema, contract_text=text)
+    assert proc.returncode == 4
+    assert "REFUSED_SCREEN_GATE_SCHEMA" in proc.stdout
+
+
+def test_install_script_installs_but_never_enables():
+    script = (SYSTEMD / "install_p1lr_decision_and_guard.sh").read_text()
+    for line in script.splitlines():
+        stripped = line.strip()
+        if "systemctl --user enable" in stripped or \
+                "systemctl --user start" in stripped:
+            assert stripped.startswith("echo "), \
+                f"install script must only PRINT enable commands: {line}"
+    assert "systemctl --user daemon-reload" in script
+    assert "p1lr-idle-guard.timer" in script
+    assert "p1lr-decision@" in script
+    assert os.access(SYSTEMD / "install_p1lr_decision_and_guard.sh", os.X_OK)
+    assert os.access(SYSTEMD / "p1lr_decision_gate_check.sh", os.X_OK)
 
 
 def test_seed_without_any_artifact_is_bounded_by_first_observation(

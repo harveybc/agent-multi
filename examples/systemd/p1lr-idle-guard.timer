@@ -1,0 +1,26 @@
+# Timer for the P1LR idle guard (order 2026-08-11 §7.8, finding 233).
+#
+# Cadence: first pass 5 minutes after boot (a host that reboots into a
+# dead run is detected without an operator), then every 15 MINUTES —
+# the §7.8 idle threshold itself, so a stall is observed within one
+# threshold of becoming one. Persistent=true replays a missed pass
+# after downtime. Telegram noise is impossible by cadence alone: the
+# guard emits only on state change and the fleet ledger/router dedups
+# and owns reminder policy.
+#
+# Ship-only file: installation is a separate reviewed operator step —
+# see install_p1lr_decision_and_guard.sh in this directory.
+
+[Unit]
+Description=Run the P1LR idle guard every 15 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+RandomizedDelaySec=60
+AccuracySec=30s
+Persistent=true
+Unit=p1lr-idle-guard.service
+
+[Install]
+WantedBy=timers.target
