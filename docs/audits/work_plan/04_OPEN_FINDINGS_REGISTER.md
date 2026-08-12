@@ -1146,6 +1146,7 @@ those corrections, he does not self-close them.
 | AUD-SEC-20260812-240 | S2 | corrected by auditor, deployed, awaits independent verification | Resume JSON can be swapped between signature verification and parsing | Independent verifier or owner disposes |
 | AUD-F2-20260812-241 | S3 | corrected by auditor, deployed, awaits independent verification | Alpaca/MT5 heartbeat cannot prove exact loaded model identity | Independent verifier or owner disposes |
 | AUD-F1-20260812-242 | S2 | corrected by auditor, awaits independent verification and clean relaunch proof | Bounded decision target still reconstructs the champion's unbounded replay buffer during weight transfer | Independent verifier or owner disposes after four-worker relaunch |
+| AUD-SEC-20260812-243 | S3 | corrected by auditor, awaits independent verification | Tier-A lock pins pytest with vulnerable tmpdir handling (GHSA-6w46-j5rx-g56g) | Independent verifier or owner disposes |
 
 Append-only finding-227 state: its typed capability-store correction, explicit
 owner selection and immutable signed-byte handling are integrated and deployed

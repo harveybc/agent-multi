@@ -143,6 +143,38 @@ target retains its requested 128/40 transitions, optimizer state remains
 fresh and replay remains empty. The diagnostic decision processes were
 stopped immediately and are not promotion-eligible.
 
+### AUD-SEC-20260812-243 (S3): CI pins a pytest release with vulnerable tmpdir handling
+
+GitHub dependency scanning reported `GHSA-6w46-j5rx-g56g` against
+`pytest==7.4.4` in the hash-locked Tier-A requirements. The input pin is now
+`pytest==9.0.3`, the lock was regenerated with hashes and its new transitive
+Pygments dependency, and the exact six-file Tier-A suite passes 38/38 in an
+isolated environment created from that lock. The project suite had already
+passed 1,301/1,301 under pytest 9.1.1, providing broader compatibility
+evidence without weakening the reproducible 9.0.3 CI floor.
+
+## Post-audit deployment addendum
+
+The corrected mechanics screen completed 16/16 and sealed outcome
+`SCREEN_VIABLE_REGION`; all four `3e-5` arms remained active and all four
+`1e-4` arms collapsed under both dynamics. The screen therefore establishes
+a viable LR region, not a difficulty-performance winner.
+
+After findings 237 and 242 were corrected, no-training preflight on Omega,
+Dragon and Gamma independently returned the same decision identity
+`8cc6ca5e45e4f993`, zero refusals and `training_used=false`. The four durable
+decision units then started from their original seed anchors. At the first
+loaded observation:
+
+- all four units were `active/running`, `NRestarts=0`;
+- process memory was 1.37-1.80 GiB, below the 5/6 GiB cgroup thresholds;
+- all four heartbeats were fresh and at stage `training`;
+- assigned GPU temperatures were 32-49 C with nonzero utilization; and
+- no 21.80 GiB replay warning or OOM event recurred.
+
+Runtime code is uniform at `agent-multi@182bac7e` and `gym-fx@634c3fd`.
+The decision run continues while independent verification proceeds.
+
 ## Disposition of Satoshi findings
 
 | Finding | Independent disposition | Evidence |

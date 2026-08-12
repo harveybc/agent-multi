@@ -583,3 +583,10 @@ also preventing the old unbounded decision identity from launching.
 
 Canonical audit:
 `docs/audits/AUDIT_SATOSHI_RETURN_231_233_AND_RUNTIME_CORRECTIONS_2026_08_12.md`.
+
+The screen subsequently sealed 16/16 with `SCREEN_VIABLE_REGION`: LR `3e-5`
+preserved activity under both phase-1 dynamics while LR `1e-4` collapsed under
+both. The long decision child is identity `8cc6ca5e45e4f993`, running on all
+four GPUs from original anchors under the bounded replay contract. This result
+isolates a viable LR region; easy-versus-normal performance and interaction
+remain questions for the decision records, not conclusions from the screen.
