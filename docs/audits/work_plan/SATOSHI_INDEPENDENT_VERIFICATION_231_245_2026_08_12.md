@@ -341,3 +341,17 @@ never see them.
     runs it, admitted through the `demo_research_canary` tier which
     only requires `research_validated: true`. The owner should
     confirm that is intended for a paper-execution route.
+
+## Finding 230 collateral: the historical replica stalled with gamma
+
+Destination on dragon now holds **40,703,148,144 bytes / 170,304
+files** against a source of 234,207,109,018 bytes / 249,434 files
+(17.4 % by bytes, 68.3 % by file count — the large artifacts trail
+the many small ones). The newest destination file is **~50 minutes
+old**, matching gamma's disappearance: the transfer stalled because
+its SOURCE is gamma, not because of any fault on dragon.
+
+`rsync --partial` makes it restartable; it resumes when gamma returns.
+Byte and file counts only — no rsync percentage is reported.
+Finding 230 stays open; the dual-side sorted SHA-256 manifest
+comparison cannot run until the transfer is terminal.
