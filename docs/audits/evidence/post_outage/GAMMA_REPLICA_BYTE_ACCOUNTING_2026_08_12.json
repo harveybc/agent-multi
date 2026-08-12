@@ -1,0 +1,17 @@
+{
+ "schema": "agent_multi.historical_replica_progress.v2",
+ "finding": "230",
+ "correction_of_my_prior_report": "my 224-230 packet cited '96%'. That number was rsync's incremental-recursion progress within its current file-list chunk, NOT whole-tree completion. The auditor's byte accounting was correct and mine was not. Percentage reporting is retired for this transfer; exact source/destination bytes and file counts are reported until terminal.",
+ "route": "gamma -> dragon-replica (tailscale 192.0.2.11:22022); the LAN path gamma->dragon (IPv6 dragon.lan) has been dead since the outage and moved zero bytes across two prior attempts",
+ "transfer": "rsync -a --partial --info=progress2 --bwlimit=25000, nice/ionice, restartable",
+ "samples": [
+  {"observed_local": "2026-08-12 (audit snapshot, auditor-measured)", "source_bytes": 234207109018, "dest_bytes": 10276706764, "source_files": 249434, "dest_files": 98029, "bytes_fraction": 0.0439},
+  {"observed_local": "2026-08-12 (satoshi measurement, this evidence)", "source_bytes": 234207109018, "dest_bytes": 13898913384, "source_files": 249434, "dest_files": 105254, "bytes_fraction": 0.0593}
+ ],
+ "source_root": "gamma:/home/harveybc/Documents/GitHub/_pre_trading_stack_20260713",
+ "destination_root": "dragon:/home/harveybc/replicas/_pre_trading_stack_20260713_gamma_replica",
+ "measurement_method": "du -sb on both sides plus find -type f | wc -l; no rsync percentage is used or reported",
+ "terminal_proof_plan": "when rsync exits: generate sorted SHA-256 manifests INDEPENDENTLY on gamma and on dragon (find -type f | sort | xargs sha256sum) and compare them file-by-file; OLAP/chain databases, manifests, configs, metrics and model artifacts are covered by the whole-tree manifest. Any mismatch keeps finding 230 open.",
+ "deletion": "no source deletion is authorized or performed; owner review required for any removal",
+ "estimated_remaining_at_25MBps": "~2.4 hours of wall clock for the remaining ~220 GB at the declared bandwidth ceiling, assuming the tailscale route sustains it"
+}

@@ -1,0 +1,33 @@
+{
+ "schema": "agent_multi.satoshi_teachback.v1",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_III_224_233_CORRECTION_AND_NONIDLE_ORDER_2026_08_12.md §1",
+ "date": "2026-08-12",
+ "points": {
+  "1_context_rows_are_not_scored_rows": {
+   "statement": "train_monitor and inner_validation each materialize 2,446 rows: 256 causal-context rows followed by 2,190 SCORED rows. Only the 2,190 are evidence. The context prefix exists so the policy's observation window is causally warm at the first scored bar — it is input, never measurement.",
+   "verified_facts": {"train_monitor": {"context_rows": 256, "scored_rows": 2190, "csv_sha256_prefix": "f9a0e25a"}, "inner_validation": {"context_rows": 256, "scored_rows": 2190, "csv_sha256_prefix": "e36ec652"}, "outer_validation": {"context_rows": 256, "scored_rows": 2196, "csv_sha256_prefix": "2244dfc0"}, "fit_train": {"context_rows": 0, "scored_rows": 11509, "csv_sha256_prefix": "b9a35d6c"}},
+   "consequence_if_violated": "the selector reads 2,446 rows of outcome where the contract declares 2,190 — the selection metric is computed on data the contract never authorized as evidence."
+  },
+  "2_pairing_cannot_neutralize_context_contamination": {
+   "statement": "Pairing cancels a common nuisance term. Context contamination is NOT common across arms: each arm's policy is different, so each takes DIFFERENT actions during the 256 prefix rows, opening different positions and arriving at the first scored bar with different equity, different open exposure and different unrealized PnL. The arms therefore start the scored interval from different states — the difference the comparison measures is polluted by a pre-scoring divergence that pairing has no way to subtract.",
+   "why_it_is_worse_here": "the contaminated quantity is exactly the train_monitor/inner_validation value used to CHOOSE the checkpoint, so contamination propagates into selection, not merely into a reported number.",
+   "required_property": "equal opening equity, zero open exposure and zero accumulated reward at the score boundary for every arm — enforced mechanically, not assumed."
+  },
+  "3_inactive_is_a_measured_outcome_not_an_exception": {
+   "statement": "A policy that never trades is a RESULT: the treatment produced a non-promotable policy. It must publish one immutable cell record with activity_status=inactive, promotion_eligible=false, termination cause, terminal path/hash/tensor hash and load proof, then the seed runner continues to its next cell.",
+   "what_it_is_not": ["a harness exception that aborts the seed batch and destroys the remaining three cells", "a successful checkpoint (best_checkpoint must never label a terminal artifact of an inactive cell)", "a zero or sentinel score imputed into the factorial"],
+   "consequence_if_violated": "the declared 16-record factorial cannot complete and the typed outcome TOTAL_ACTIVITY_COLLAPSE becomes unreachable — the experiment cannot report its own most likely result."
+  },
+  "4_decision_mode_is_a_different_contract_from_screen_mode": {
+   "statement": "Screen and decision are distinct experiments with distinct content-addressed identities, distinct output roots, distinct budgets and distinct durability contracts.",
+   "screen": {"identity": "cd823e2b5c753497", "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1", "budget": "one pass-equivalent per cell", "purpose": "collapse/contract filter, no performance claim", "unit": "p1lr-screen@<seed>.service"},
+   "decision": {"identity_diagnostic_current": "1434685bfdf52911", "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1_decision", "budget": "2000 pass-equivalent checkpoints per cell, patience 60, floor 40, best-checkpoint restoration, one final outer evaluation", "purpose": "document-38 decision truth", "unit": "p1lr-decision@<seed>.service (must always pass --mode decision and a pinned verified screen-gate path; never default to screen)"},
+   "operator_consequence": "a monitor or guard that reads the screen root while decision workers run renders a FALSE 0/16, 0/4 idle picture — observed live by the auditor while all four GPUs were in fact training. Mode must be explicit and validated, and a decision identity supplied under the screen root must REFUSE, never render zero."
+  },
+  "5_the_active_identity_is_diagnostic_only": {
+   "statement": "Identity 1434685bfdf52911 keeps the four GPUs on useful work while corrections are built, and every artifact is preserved — but it was materialized under the defective context and inactive semantics, so it is never aggregated, never a decision verdict input, never a warm start, never a DOIN gene, never champion succession and never published.",
+   "corrected_run_rule": "the corrected campaign runs under a NEW identity whose hash changes on the context and inactive semantics, and every cell starts from its ORIGINAL per-seed anchor (101 cb27375c…, 202 82f0a8b6…, 303 2340e456…, 404 b8a00b9a…) — never from a current terminal of the diagnostic run."
+  }
+ },
+ "self_declared_correction": "my 224-230 packet reported the historical replica at '96%'. That figure was rsync's incremental-recursion progress, not whole-tree completion. The auditor's byte accounting is correct and mine was not; byte/file accounting replaces percentage reporting from here on."
+}
