@@ -36,6 +36,16 @@ authoritative; the latest decision is historical context only. A cleared
 hold (halt='none') with zero open exposures reports
 operational_waiting_next_decision and never asks the owner to clear an
 already-cleared hold.
+
+Order 2026-08-11 §7.7 (finding 229): Front 1 now also carries the RUNNING
+P1 difficulty x P1 LR factorial mechanics screen as a first-class source —
+current seed/cell/checkpoint per worker from the runner's per-cell
+heartbeats with freshness, per-seed and fleet cell-record counts,
+current-cell ETA and the finding-213 critical-path experiment ETA, and the
+runner-sampled GPU utilization/temperature. The completed old L1 matched
+factorial (2de49ea9) renders history-only through its own block: with no
+fresh RUNNING launcher heartbeat it is never `active` and never enters the
+executable queue.
 """
 from __future__ import annotations
 
@@ -827,7 +837,9 @@ def _l1_bound_telemetry(
 
 
 def _l1_experiment_eta(worker_states: Mapping[str, Mapping[str, Any]],
-                       durations: list[float]) -> dict[str, Any]:
+                       durations: list[float],
+                       active_eta_source_label: str =
+                       "current_cell_epoch_eta") -> dict[str, Any]:
     """Finding 213: workers run cells CONCURRENTLY. The full-experiment ETA
     is the MAXIMUM per-worker remaining path (active cell + queued cells),
     never the serial sum of all remaining cells across workers."""
@@ -872,7 +884,7 @@ def _l1_experiment_eta(worker_states: Mapping[str, Mapping[str, Any]],
                 value += eta_seconds["value"]
                 low += eta_seconds.get("low", eta_seconds["value"])
                 high += eta_seconds.get("high", eta_seconds["value"])
-                active_source = "current_cell_epoch_eta"
+                active_source = active_eta_source_label
             else:
                 value, low, high = value + mean, low + lo, high + hi
                 active_source = ("mean_completed_cell_duration (no "
@@ -1309,6 +1321,449 @@ def collect_l1_factorial(
     return block, unavailable, queue_entry
 
 
+# ── Front 1 first-class source: P1 difficulty x P1 LR factorial (§7.7) ──────
+
+P1LR_HEARTBEAT_SCHEMA = "agent_multi.p1_difficulty_lr_heartbeat.v1"
+P1LR_RECORD_SCHEMA = "agent_multi.p1_difficulty_lr_cell_record.v1"
+P1LR_UNIT_TEMPLATE = "p1lr-screen@{seed}.service"
+P1LR_CHECKPOINT_STAGES = ("materializing", "nested-role-verification",
+                          "training", "terminal-custody",
+                          "outer-validation-final", "complete")
+
+
+def _p1lr_discover_identity(output_root: str) -> Optional[str]:
+    """Newest experiment identity under the LOCAL output root, by runner
+    heartbeat mtime (cell heartbeats plus seed-level refusal heartbeats).
+    Remote roots are never globbed: each host discovers its own."""
+    root = Path(output_root).expanduser()
+    newest: tuple[float, Optional[str]] = (-1.0, None)
+    try:
+        candidates = (list(root.glob("*/seed*/*/heartbeat.json"))
+                      + list(root.glob("*/seed*/runner_heartbeat.json")))
+    except OSError:
+        return None
+    for path in candidates:
+        try:
+            mtime = path.stat().st_mtime
+        except OSError:
+            continue
+        if mtime > newest[0]:
+            newest = (mtime, path.relative_to(root).parts[0])
+    return newest[1]
+
+
+def _p1lr_cell_eta(durations: list[float], elapsed: Optional[float],
+                   elapsed_reason: Optional[str]) -> dict[str, Any]:
+    """Current-cell ETA from OBSERVED facts only: mean/min/max completed
+    P1LR cell durations minus the running cell's observed elapsed time
+    (the exclusive-claim sidecar's acquired_utc). The screen heartbeat
+    carries stage progress, not epoch counts, so completed-cell durations
+    are the only observed duration source (finding 213 style)."""
+    if elapsed is None:
+        return {"value": "unavailable",
+                "missing": elapsed_reason or "no observed cell start time"}
+    if len(durations) < 2:
+        return {
+            "value": "unavailable",
+            "missing": (
+                "fewer than 2 completed cell records under the active "
+                f"identity ({len(durations)} so far); the current-cell ETA "
+                "derives only from observed completed-cell durations minus "
+                "the observed cell runtime"),
+            "elapsed_seconds": elapsed,
+        }
+    mean = sum(durations) / len(durations)
+    lo, hi = min(durations), max(durations)
+    return {
+        "basis": "derived",
+        "eta_seconds": {"value": round(max(0.0, mean - elapsed), 1),
+                        "low": round(max(0.0, lo - elapsed), 1),
+                        "high": round(max(0.0, hi - elapsed), 1),
+                        "unit": "seconds"},
+        "elapsed_seconds": elapsed,
+        "mean_cell_seconds": round(mean, 1),
+        "sample_size": {"value": len(durations), "unit": "completed_cells"},
+        "formula": ("max(0, mean observed completed-cell duration - elapsed "
+                    "since the running cell's exclusive claim was acquired)"),
+        "horizon": "current cell",
+        "uncertainty": ("range [low, high] from min/max observed "
+                        "completed-cell durations; 0 floors a cell already "
+                        "running longer than the observed durations"),
+    }
+
+
+def collect_p1lr_factorial(
+    *,
+    contract_path: Path,
+    reader: Any,
+    identity: Optional[str] = None,
+    local_hostname: Optional[str] = None,
+    stale_after_seconds: float = 900.0,
+    now_fn: Optional[Callable[[], datetime]] = None,
+) -> tuple[dict[str, Any], list[dict[str, str]], Optional[dict[str, Any]]]:
+    """First-class Front-1 source: the RUNNING P1 difficulty x P1 LR
+    factorial mechanics screen (order 2026-08-11 §7.7 / finding 229).
+
+    Strictly read-only towards the run: per-cell runner heartbeats
+    (``seed<seed>/<cell>/heartbeat.json``), seed-level refusal heartbeats,
+    cell records and the exclusive-claim sidecars are read; nothing is
+    ever written anywhere. Facts on remote hosts arrive via the shared
+    read-only reader; an unreachable host renders a typed unavailable
+    worker, never a fabricated count — each assigned host's own status
+    run stays authoritative for its local seeds (per-host N/4), so the
+    fleet 16 carries an explicit reachability note.
+
+    Finding-212 discipline: a stale heartbeat renders typed staleness
+    (its age plus last-known facts) and NEVER current seed/cell/checkpoint
+    claims. Finding-213 discipline: the experiment ETA is the MAXIMUM
+    per-worker remaining path, reusing ``_l1_experiment_eta``.
+
+    Returns (front block, unavailable entries, executable-queue entry).
+    """
+    now = (now_fn or (lambda: datetime.now(timezone.utc)))()
+    unavailable: list[dict[str, str]] = []
+    field = "f1_optimization.active_p1lr_factorial"
+
+    try:
+        contract = json.loads(contract_path.read_text())
+    except (OSError, ValueError) as exc:
+        reason = f"p1lr factorial contract unreadable: {type(exc).__name__}"
+        unavailable.append({"field": field, "reason": reason})
+        return {"source": "p1lr_factorial", "state": "unavailable",
+                "reason": reason}, unavailable, None
+    contract_sha = _sha256_file(contract_path)
+    assignments = _as_dict(contract.get("assignments"))
+    cells_map = _as_dict(contract.get("cells"))
+    cell_order = _as_dict(contract.get("cell_order"))
+    seeds = [s for s in (contract.get("seeds") or []) if str(s) in assignments]
+    output_root = str(contract.get("output_root") or "").rstrip("/")
+    if not (seeds and cells_map and output_root):
+        reason = "contract lacks seeds/cells/output_root"
+        unavailable.append({"field": field, "reason": reason})
+        return {"source": "p1lr_factorial", "state": "unavailable",
+                "reason": reason,
+                "contract_path": str(contract_path)}, unavailable, None
+
+    identity_basis = "explicit_parameter"
+    if not identity:
+        identity = _p1lr_discover_identity(output_root)
+        identity_basis = "discovered_latest_heartbeat_mtime(local)"
+    if not identity:
+        reason = ("no experiment identity: none supplied and no runner "
+                  "heartbeat discoverable under the local output root "
+                  f"{output_root}")
+        unavailable.append({"field": field, "reason": reason})
+        return {"source": "p1lr_factorial", "state": "unavailable",
+                "reason": reason,
+                "contract_path": str(contract_path)}, unavailable, None
+
+    workers: dict[str, Any] = {}
+    worker_states: dict[str, dict[str, Any]] = {}
+    pending_eta: dict[str, tuple[Optional[float], Optional[str]]] = {}
+    durations: list[float] = []
+    records_total = 0
+    total_cells = 0
+    running_fresh = 0
+    any_fact = False
+
+    for seed in seeds:
+        assignment = _as_dict(assignments.get(str(seed)))
+        host = assignment.get("hostname") or "unknown"
+        unit = P1LR_UNIT_TEMPLATE.format(seed=seed)
+        seed_dir = f"{output_root}/{identity}/seed{seed}"
+        seed_cells = [c for c in (cell_order.get(str(seed)) or [])
+                      if c in cells_map] or list(cells_map)
+        total_cells += len(seed_cells)
+        entry: dict[str, Any] = {
+            "identity": identity, "seed": seed, "host": host,
+            "unit": unit, "basis": "observed",
+            "assigned_gpu_uuid": assignment.get("gpu_uuid"),
+            "cell_order": seed_cells,
+        }
+
+        # Newest runner heartbeat: the running cell rewrites its
+        # heartbeat every minute, so the max updated_utc across the four
+        # cell heartbeats plus the seed-level refusal heartbeat is the
+        # seed's current fact.
+        heartbeats: list[tuple[Optional[datetime], dict]] = []
+        for name in ([f"{seed_dir}/{cell}/heartbeat.json"
+                      for cell in seed_cells]
+                     + [f"{seed_dir}/runner_heartbeat.json"]):
+            raw = reader.read_text(host, name)
+            if not raw:
+                continue
+            try:
+                loaded = json.loads(raw)
+            except ValueError:
+                continue
+            if isinstance(loaded, dict) and loaded:
+                heartbeats.append((_l1_iso(loaded.get("updated_utc")),
+                                   loaded))
+        host_error = _as_dict(getattr(reader, "errors", {})).get(host)
+        if not heartbeats:
+            entry["terminal_state"] = "unavailable"
+            entry["unavailable_reason"] = (
+                f"host unreachable: {host_error}" if host_error
+                else "no cell or runner heartbeat readable under "
+                     f"{seed_dir}")
+            unavailable.append({"field": f"{field}.workers.{seed}",
+                                "reason": entry["unavailable_reason"]})
+            workers[str(seed)] = entry
+            worker_states[str(seed)] = {"remaining": None, "active": False,
+                                        "cell": None, "active_eta": None}
+            continue
+        any_fact = True
+        heartbeats.sort(key=lambda pair: (pair[0] is not None, pair[0]
+                                          or datetime.min.replace(
+                                              tzinfo=timezone.utc)))
+        hb_updated, hb = heartbeats[-1]
+        hb_age = (round((now - hb_updated).total_seconds(), 1)
+                  if hb_updated else None)
+        hb_fresh = hb_age is not None and hb_age <= stale_after_seconds
+        terminal_state = hb.get("terminal_state") or "unknown"
+        cell = hb.get("cell")
+        stage = hb.get("progress")
+        entry.update({
+            "heartbeat_schema": hb.get("schema"),
+            "heartbeat_updated_utc": hb.get("updated_utc"),
+            "heartbeat_age_seconds": hb_age,
+            "heartbeat_fresh": hb_fresh,
+            "terminal_state": terminal_state,
+            "error": hb.get("error"),
+            "pid": hb.get("pid"),
+            "pid_start_identity": hb.get("pid_start_identity"),
+            "cell_identity": hb.get("cell_identity"),
+            "cuda_visible_devices": hb.get("cuda_visible_devices"),
+            "observed_gpu_uuids": hb.get("observed_gpu_uuids"),
+            "heartbeat_assigned_gpu_uuid": hb.get("assigned_gpu_uuid"),
+        })
+
+        running_now = bool(hb_fresh and terminal_state == "RUNNING"
+                           and cell)
+        if running_now:
+            spec = _as_dict(cells_map.get(cell))
+            entry["current_cell"] = cell
+            entry["current_cell_factors"] = ({
+                "phase1_dynamics": spec.get("phase1_dynamics"),
+                "phase1_learning_rate": spec.get("phase1_learning_rate"),
+            } if spec else None)
+            entry["checkpoint"] = {
+                "stage": stage,
+                "known_stages": list(P1LR_CHECKPOINT_STAGES),
+                "unit": "runner_stage",
+                "horizon": "cell",
+                "source": ("cell heartbeat progress published by the "
+                           "runner; bound to (identity, seed, cell) by "
+                           "construction"),
+                "source_age_seconds": hb_age,
+            }
+            entry["attempt"] = hb.get("attempt")
+            running_fresh += 1
+        elif hb_age is None:
+            typed = {
+                "value": "unavailable",
+                "reason": ("runner heartbeat carries no parseable "
+                           "updated_utc; freshness cannot be established, "
+                           "so no current seed/cell/checkpoint claim is "
+                           "made (finding 212)"),
+                "heartbeat_age_seconds": None,
+                "last_known": {"cell": cell, "stage": stage,
+                               "terminal_state": terminal_state},
+            }
+            entry["current_cell"] = dict(typed)
+            entry["checkpoint"] = dict(typed)
+        elif not hb_fresh:
+            typed = {
+                "value": "unavailable",
+                "reason": (f"runner heartbeat is stale (age {hb_age:.0f}s "
+                           f"> {stale_after_seconds:.0f}s): its last facts "
+                           f"(terminal_state {terminal_state!r}, cell "
+                           f"{cell!r}, stage {stage!r}) are history, never "
+                           "current claims (finding 212)"),
+                "heartbeat_age_seconds": hb_age,
+                "last_known": {"cell": cell, "stage": stage,
+                               "terminal_state": terminal_state},
+            }
+            entry["current_cell"] = dict(typed)
+            entry["checkpoint"] = dict(typed)
+        else:
+            entry["current_cell"] = None
+            entry["checkpoint"] = None
+            entry["not_running_reason"] = (
+                "heartbeat is fresh but terminal_state is "
+                f"{terminal_state!r}, so no current cell is claimed")
+
+        # GPU utilization/temperature: the runner heartbeat embeds a
+        # per-minute nvidia-smi sample for the ASSIGNED GPU taken on its
+        # own host (ladder.gpu_telemetry) — the only source that is
+        # correct for remote seeds too.
+        util = hb.get("gpu_utilization_pct")
+        temp = hb.get("gpu_temperature_c")
+        if hb_fresh and (util is not None or temp is not None):
+            entry["gpu"] = {
+                "basis": "observed",
+                "source": ("nvidia-smi sampled by the runner heartbeat on "
+                           "the assigned host"),
+                "source_age_seconds": hb_age,
+                "utilization_pct": {"value": util, "unit": "percent",
+                                    "horizon": "instant"},
+                "temperature_c": {"value": temp, "unit": "celsius",
+                                  "horizon": "instant"},
+            }
+        else:
+            entry["gpu"] = {
+                "value": "unavailable",
+                "reason": ("heartbeat carries no GPU telemetry sample"
+                           if hb_fresh else
+                           "heartbeat stale: its GPU sample is history, "
+                           "not a current reading"),
+                "heartbeat_age_seconds": hb_age,
+            }
+
+        landed: dict[str, Any] = {}
+        for cell_name in seed_cells:
+            raw = reader.read_text(
+                host, f"{seed_dir}/{cell_name}/cell_record.json")
+            if not raw:
+                continue
+            try:
+                record = json.loads(raw)
+            except ValueError:
+                continue
+            if not isinstance(record, dict):
+                continue
+            duration: Optional[float] = None
+            elapsed_field = record.get("elapsed_seconds")
+            if isinstance(elapsed_field, (int, float)) \
+                    and not isinstance(elapsed_field, bool):
+                duration = round(float(elapsed_field), 1)
+            else:
+                started = _l1_iso(record.get("started_utc"))
+                finished = _l1_iso(record.get("finished_utc"))
+                if started and finished:
+                    duration = round(
+                        (finished - started).total_seconds(), 1)
+            if duration is not None:
+                durations.append(duration)
+            landed[cell_name] = {
+                "schema": record.get("schema"),
+                "stop_reason": record.get("stop_reason"),
+                "termination_cause": record.get("termination_cause"),
+                "decision_eligible": record.get("decision_eligible"),
+                "finished_utc": record.get("finished_utc"),
+                "duration_seconds": duration,
+                "terminal_model_sha256": record.get(
+                    "terminal_model_sha256"),
+            }
+        entry["landed_cells"] = landed or None
+        entry["records_landed"] = {"value": len(landed),
+                                   "of": len(seed_cells),
+                                   "unit": "cell_records",
+                                   "horizon": "seed"}
+        records_total += len(landed)
+
+        entry["restart_count"] = {
+            "value": reader.nrestarts(host, unit),
+            "unit": "systemd_restarts",
+            "source": f"systemctl --user show {unit} -p NRestarts",
+        }
+
+        eta_elapsed: Optional[float] = None
+        eta_reason: Optional[str] = None
+        if running_now:
+            lock_raw = reader.read_text(
+                host, f"{output_root}/{identity}/locks/"
+                      f"exclusive_claim.seed{seed}.{cell}.lock")
+            acquired = None
+            if lock_raw:
+                try:
+                    acquired = _l1_iso(
+                        _as_dict(json.loads(lock_raw)).get("acquired_utc"))
+                except ValueError:
+                    acquired = None
+            if acquired:
+                eta_elapsed = max(
+                    0.0, round((now - acquired).total_seconds(), 1))
+            else:
+                eta_reason = (
+                    "running cell start time unobservable: the "
+                    "exclusive-claim sidecar for the current cell is "
+                    "missing or carries no acquired_utc")
+        else:
+            eta_reason = ("no fresh RUNNING heartbeat names a current "
+                          "cell, so there is no current-cell ETA")
+        pending_eta[str(seed)] = (eta_elapsed, eta_reason)
+        workers[str(seed)] = entry
+        worker_states[str(seed)] = {
+            "remaining": len(seed_cells) - len(landed),
+            "active": running_now,
+            "cell": cell if running_now else None,
+            "active_eta": None,  # filled once all durations are gathered
+        }
+
+    for key, (elapsed, reason) in pending_eta.items():
+        eta = _p1lr_cell_eta(durations, elapsed, reason)
+        workers[key]["current_cell_eta"] = eta
+        worker_states[key]["active_eta"] = eta
+
+    if running_fresh:
+        state = "active"
+        state_basis = (f"{running_fresh} worker(s) RUNNING with runner "
+                       f"heartbeat age <= {stale_after_seconds:.0f}s")
+    elif any_fact:
+        state = "inactive_or_unknown"
+        state_basis = ("no worker is RUNNING with a fresh heartbeat; "
+                       "per-worker terminal states carry the facts")
+    else:
+        state = "unavailable"
+        state_basis = "no worker fact readable on any assigned host"
+        unavailable.append({"field": field, "reason": state_basis})
+
+    block: dict[str, Any] = {
+        "source": "p1lr_factorial",
+        "basis": "observed",
+        "state": state,
+        "state_basis": state_basis,
+        "experiment": contract.get("experiment"),
+        "asset": contract.get("asset"),
+        "mode": "screen",
+        "identity": identity,
+        "identity_basis": identity_basis,
+        "contract_path": str(contract_path),
+        "contract_sha256": contract_sha,
+        "output_root": output_root,
+        "heartbeat_schema_expected": P1LR_HEARTBEAT_SCHEMA,
+        "workers": workers,
+        "workers_running_fresh": {"value": running_fresh, "of": len(seeds),
+                                  "unit": "workers", "horizon": "instant"},
+        "records_landed": {
+            "value": records_total, "of": total_cells,
+            "unit": "cell_records", "horizon": "experiment",
+            "fleet_note": (
+                "each assigned host's own status run counts its seeds' "
+                "records from its LOCAL output root (per-host N/4 per "
+                "assigned seed); this run reaches remote seeds only "
+                "through the read-only reader, and an unreachable host "
+                "renders a typed unavailable worker, never a fabricated "
+                "count — the fleet 16 is complete only when every "
+                "assigned host was readable at collection time"),
+        },
+        "experiment_eta": _l1_experiment_eta(
+            worker_states, durations,
+            active_eta_source_label="current_cell_duration_eta"),
+    }
+
+    queue_entry = None
+    if state == "active":
+        queue_entry = {
+            "id": f"p1lr-factorial-{identity}",
+            "front": "f1",
+            "state": "running",
+            "hashes": {"config_sha256": contract_sha},
+        }
+    return block, unavailable, queue_entry
+
+
 def collect(
     *,
     snapshot_path: Path,
@@ -1328,6 +1783,12 @@ def collect(
     l1_stale_after_seconds: float = 900.0,
     l1_alert_emitter: Optional[Callable[..., bool]] = None,
     l1_now_fn: Optional[Callable[[], datetime]] = None,
+    p1lr_contract_path: Optional[Path] = None,
+    p1lr_identity: Optional[str] = None,
+    p1lr_reader: Optional[Any] = None,
+    p1lr_local_hostname: Optional[str] = None,
+    p1lr_stale_after_seconds: float = 900.0,
+    p1lr_now_fn: Optional[Callable[[], datetime]] = None,
 ) -> dict[str, Any]:
     sources: list[dict[str, Any]] = []
     unavailable: list[dict[str, str]] = []
@@ -1344,9 +1805,38 @@ def collect(
             }
         )
 
-    # ── Front 1: the ACTIVE work — L1 matched factorial (finding 204) ──
+    # ── Front 1: the ACTIVE work — P1LR factorial screen (order
+    # 2026-08-11 §7.7), then the completed L1 factorial (finding 204) ──
     f1: dict[str, Any] = {"basis": "observed"}
     fronts["f1_optimization"] = f1
+    p1lr_queue_entry: Optional[dict[str, Any]] = None
+    if p1lr_contract_path is not None:
+        p1lr_active_reader = (p1lr_reader or l1_reader or DefaultL1Reader(
+            local_hostname=p1lr_local_hostname or l1_local_hostname))
+        p1lr_block, p1lr_unavailable, p1lr_queue_entry = \
+            collect_p1lr_factorial(
+                contract_path=p1lr_contract_path,
+                reader=p1lr_active_reader,
+                identity=p1lr_identity,
+                local_hostname=p1lr_local_hostname or l1_local_hostname,
+                stale_after_seconds=p1lr_stale_after_seconds,
+                now_fn=p1lr_now_fn or l1_now_fn,
+            )
+        f1["active_p1lr_factorial"] = p1lr_block
+        unavailable.extend(p1lr_unavailable)
+        if p1lr_block.get("state") != "unavailable":
+            register("p1lr_factorial", str(p1lr_contract_path), None)
+    else:
+        f1["active_p1lr_factorial"] = {
+            "source": "p1lr_factorial",
+            "state": "unavailable",
+            "reason": ("p1lr factorial source not configured "
+                       "(no contract path)"),
+        }
+        unavailable.append(
+            {"field": "f1_optimization.active_p1lr_factorial",
+             "reason": "p1lr factorial source not configured"})
+
     l1_queue_entry: Optional[dict[str, Any]] = None
     if l1_contract_path is not None:
         l1_active_reader = l1_reader or DefaultL1Reader(
@@ -1405,12 +1895,13 @@ def collect(
         }
     else:
         unavailable.append({"field": "f1_optimization.doin_campaign_history", "reason": "supervisor status unreachable, empty, or wrong type"})
-    if (f1["active_l1_factorial"].get("state") == "unavailable"
+    if (f1["active_p1lr_factorial"].get("state") == "unavailable"
+            and f1["active_l1_factorial"].get("state") == "unavailable"
             and "doin_campaign_history" not in f1):
         unavailable.append(
             {"field": "f1_optimization",
-             "reason": "neither the active L1 factorial nor the paused "
-                       "campaign history is readable"})
+             "reason": "neither the active P1LR screen, the L1 factorial "
+                       "nor the paused campaign history is readable"})
 
     if not isinstance(network, dict):
         network = None  # truthy wrong-type payload degrades to unavailable
@@ -1695,6 +2186,11 @@ def collect(
     _SUPERVISOR_STATE_MAP = {"running": "running", "queued": "dependency_blocked"}
     queue: list[dict[str, Any]] = []
     queue_excluded: list[dict[str, Any]] = []
+    if p1lr_queue_entry is not None:
+        # Order 2026-08-11 §7.7: the RUNNING P1LR screen leads the
+        # executable queue; the completed L1 factorial is history only
+        # (no fresh RUNNING heartbeat -> no queue entry at all).
+        queue.append(p1lr_queue_entry)
     if l1_queue_entry is not None:
         # Finding 204: the ACTIVE factorial leads the executable queue;
         # paused-campaign jobs can never displace it.
@@ -1808,6 +2304,18 @@ def main() -> int:
     parser.add_argument("--no-emit-alerts", action="store_true",
                         help="report zero-trade boundary facts without "
                              "emitting the bounded incident observation")
+    parser.add_argument(
+        "--p1lr-contract", type=Path,
+        default=repo / "examples/config/phase_3_eth_sac_dynamics/"
+                       "p1_difficulty_lr_factorial_v1.json",
+        help="P1 difficulty x P1 LR factorial contract; the RUNNING "
+             "Front-1 source (order 2026-08-11 §7.7)")
+    parser.add_argument("--no-p1lr", action="store_true",
+                        help="disable the P1LR factorial source")
+    parser.add_argument("--p1lr-identity", default=None,
+                        help="active P1LR experiment identity; discovered "
+                             "from the newest local runner heartbeat when "
+                             "omitted")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     l1_alert_emitter = None
@@ -1825,6 +2333,8 @@ def main() -> int:
         l1_identity=args.l1_identity,
         l1_state_dir=None if args.no_l1 else args.l1_state_dir,
         l1_alert_emitter=l1_alert_emitter,
+        p1lr_contract_path=None if args.no_p1lr else args.p1lr_contract,
+        p1lr_identity=args.p1lr_identity,
     )
     text = json.dumps(packet, indent=1, sort_keys=True)
     if args.output:

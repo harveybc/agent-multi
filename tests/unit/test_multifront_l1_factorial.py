@@ -535,6 +535,300 @@ def test_identity_discovered_from_latest_heartbeat(tmp_path, monkeypatch):
         "discovered_latest_heartbeat_mtime")
 
 
+# ═══ Order 2026-08-11 §7.7: the RUNNING P1LR factorial screen front ═══
+
+P1LR_IDENTITY = "cd823e2b5c753497"
+P1LR_ORDER = {
+    101: ["P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5"],
+    202: ["P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5", "P1N_LR1E4"],
+    303: ["P1E_LR1E4", "P1E_LR3E5", "P1N_LR1E4", "P1N_LR3E5"],
+    404: ["P1E_LR3E5", "P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4"],
+}
+P1LR_CELLS = {
+    "P1N_LR1E4": ("normal_realistic", 1e-4),
+    "P1N_LR3E5": ("normal_realistic", 3e-5),
+    "P1E_LR1E4": ("easy_chronological_continuation", 1e-4),
+    "P1E_LR3E5": ("easy_chronological_continuation", 3e-5),
+}
+
+
+def _p1lr_contract(tmp_path):
+    return {
+        "schema": "agent_multi.p1_difficulty_lr_factorial.v1",
+        "experiment": "p1_difficulty_lr_factorial_20260811_v1",
+        "asset": "ETHUSD_4h",
+        "cells": {name: {"phase1_dynamics": mode,
+                         "phase1_learning_rate": lr}
+                  for name, (mode, lr) in P1LR_CELLS.items()},
+        "seeds": [101, 202, 303, 404],
+        "assignments": {str(s): {"hostname": HOSTS[s],
+                                 "gpu_uuid": f"GPU-{s}"}
+                        for s in HOSTS},
+        "cell_order": {str(s): P1LR_ORDER[s] for s in HOSTS},
+        "output_root": str(tmp_path / "p1out"),
+    }
+
+
+def _p1lr_fixture(tmp_path, *, now=NOW, hb_age_seconds=45,
+                  terminal_states=None, stages=None, cells=None,
+                  gpu=None, lock_elapsed=None, records=None):
+    contract = _p1lr_contract(tmp_path)
+    cpath = tmp_path / "p1lr_contract.json"
+    cpath.write_text(json.dumps(contract))
+    root = contract["output_root"]
+    files = {}
+    for seed, host in HOSTS.items():
+        cell = (cells or {}).get(seed, P1LR_ORDER[seed][0])
+        temperature, utilization = (gpu or {}).get(seed, (61, 97))
+        heartbeat = {
+            "schema": "agent_multi.p1_difficulty_lr_heartbeat.v1",
+            "seed": seed, "cell": cell,
+            "experiment_identity": P1LR_IDENTITY,
+            "cell_identity": f"cid{seed}",
+            "pid": 2000 + seed, "pid_start_identity": str(seed * 11),
+            "hostname": host,
+            "assigned_gpu_uuid": f"GPU-{seed}",
+            "cuda_visible_devices": f"GPU-{seed}",
+            "observed_gpu_uuids": [f"GPU-{seed}"],
+            "gpu_temperature_c": temperature,
+            "gpu_utilization_pct": utilization,
+            "terminal_state": (terminal_states or {}).get(seed, "RUNNING"),
+            "progress": (stages or {}).get(seed, "training"),
+            "attempt": (f"{root}/{P1LR_IDENTITY}/seed{seed}/{cell}/"
+                        f"attempt-cid{seed}-01"),
+            "updated_utc": (
+                now - timedelta(seconds=hb_age_seconds)).isoformat(),
+        }
+        files[(host, f"{root}/{P1LR_IDENTITY}/seed{seed}/{cell}/"
+                     "heartbeat.json")] = json.dumps(heartbeat)
+        if lock_elapsed is not None:
+            files[(host, f"{root}/{P1LR_IDENTITY}/locks/"
+                         f"exclusive_claim.seed{seed}.{cell}.lock")] = \
+                json.dumps({
+                    "pid": 2000 + seed,
+                    "acquired_utc": (
+                        now - timedelta(seconds=lock_elapsed)).isoformat(),
+                })
+    for (seed, cell), payload in (records or {}).items():
+        record = {"schema": "agent_multi.p1_difficulty_lr_cell_record.v1",
+                  "seed": seed, "cell": cell, **payload}
+        files[(HOSTS[seed], f"{root}/{P1LR_IDENTITY}/seed{seed}/{cell}/"
+                            "cell_record.json")] = json.dumps(record)
+    return cpath, FakeReader(files=files)
+
+
+def _collect_p1lr(tmp_path, cpath, reader, **kw):
+    kw.setdefault("p1lr_identity", P1LR_IDENTITY)
+    kw.setdefault("p1lr_now_fn", lambda: NOW)
+    return mfs.collect(
+        snapshot_path=tmp_path / "m.json",
+        watchdog_path=tmp_path / "m2.json",
+        social_db_path=tmp_path / "m.sqlite",
+        supervisor_url="http://127.0.0.1:1", timeout=0.1,
+        l0_heartbeat_path=tmp_path / "no-hb.json",
+        l0_db_path=tmp_path / "no-l0.sqlite",
+        p1lr_contract_path=cpath, p1lr_reader=reader,
+        p1lr_local_hostname="omega", **kw)
+
+
+def test_p1lr_running_screen_renders_current_cell_and_checkpoint(tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path)
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["source"] == "p1lr_factorial"
+    assert block["state"] == "active"
+    assert block["mode"] == "screen"
+    assert block["identity"] == P1LR_IDENTITY
+    assert block["identity_basis"] == "explicit_parameter"
+    assert block["workers_running_fresh"]["value"] == 4
+    w = block["workers"]["202"]
+    assert w["host"] == "dragon"
+    assert w["unit"] == "p1lr-screen@202.service"
+    assert w["terminal_state"] == "RUNNING"
+    assert w["heartbeat_fresh"] is True
+    assert w["heartbeat_age_seconds"] == 45.0
+    # current seed/cell/checkpoint claims come from the FRESH heartbeat
+    assert w["current_cell"] == "P1N_LR3E5"
+    assert w["current_cell_factors"] == {
+        "phase1_dynamics": "normal_realistic",
+        "phase1_learning_rate": 3e-05}
+    assert w["checkpoint"]["stage"] == "training"
+    assert w["checkpoint"]["source_age_seconds"] == 45.0
+    assert w["attempt"].endswith("attempt-cid202-01")
+    # GPU utilization + temperature from the runner's nvidia-smi sample
+    assert w["gpu"]["utilization_pct"]["value"] == 97
+    assert w["gpu"]["temperature_c"]["value"] == 61
+    assert w["gpu"]["source_age_seconds"] == 45.0
+    assert w["records_landed"] == {"value": 0, "of": 4,
+                                   "unit": "cell_records",
+                                   "horizon": "seed"}
+    assert block["records_landed"]["value"] == 0
+    assert block["records_landed"]["of"] == 16
+    assert "fleet_note" in block["records_landed"]
+    # the RUNNING screen leads the executable queue
+    queue = packet["queue"]
+    assert queue[0]["id"] == f"p1lr-factorial-{P1LR_IDENTITY}"
+    assert queue[0]["state"] == "running"
+    assert mfs._valid_sha256(queue[0]["hashes"]["config_sha256"])
+
+
+def test_p1lr_stale_heartbeat_is_typed_staleness_never_current_claims(
+        tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path, hb_age_seconds=2 * 3600)
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "inactive_or_unknown"
+    assert block["workers_running_fresh"]["value"] == 0
+    w = block["workers"]["101"]
+    assert w["heartbeat_fresh"] is False
+    assert w["current_cell"]["value"] == "unavailable"
+    assert "stale" in w["current_cell"]["reason"]
+    assert w["current_cell"]["heartbeat_age_seconds"] >= 7200.0
+    assert w["current_cell"]["last_known"]["cell"] == "P1N_LR1E4"
+    assert w["checkpoint"]["value"] == "unavailable"
+    assert w["checkpoint"]["last_known"]["stage"] == "training"
+    # stale GPU sample is history, not a current reading
+    assert w["gpu"]["value"] == "unavailable"
+    assert "history" in w["gpu"]["reason"]
+    assert w["current_cell_eta"]["value"] == "unavailable"
+    # an inactive screen never enters the executable queue
+    assert not any(str(item["id"]).startswith("p1lr-factorial")
+                   for item in packet["queue"])
+
+
+def test_p1lr_records_counted_per_seed_and_fleet(tmp_path):
+    records = {
+        (101, "P1N_LR1E4"): {"elapsed_seconds": 3600.0,
+                             "stop_reason": "budget_complete",
+                             "terminal_model_sha256": "a" * 64,
+                             "finished_utc": NOW.isoformat()},
+        (101, "P1N_LR3E5"): {
+            "started_utc": (NOW - timedelta(hours=3)).isoformat(),
+            "finished_utc": (NOW - timedelta(hours=1)).isoformat()},
+        (303, "P1E_LR1E4"): {"elapsed_seconds": 1800.0},
+    }
+    cpath, reader = _p1lr_fixture(
+        tmp_path, cells={101: "P1E_LR1E4", 303: "P1E_LR3E5"},
+        records=records)
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    w101 = block["workers"]["101"]
+    assert w101["records_landed"] == {"value": 2, "of": 4,
+                                      "unit": "cell_records",
+                                      "horizon": "seed"}
+    assert w101["landed_cells"]["P1N_LR1E4"]["stop_reason"] == \
+        "budget_complete"
+    assert w101["landed_cells"]["P1N_LR1E4"]["duration_seconds"] == 3600.0
+    assert w101["landed_cells"]["P1N_LR3E5"]["duration_seconds"] == 7200.0
+    assert block["workers"]["303"]["records_landed"]["value"] == 1
+    assert block["records_landed"]["value"] == 3
+    assert block["records_landed"]["of"] == 16
+    assert "LOCAL output root" in block["records_landed"]["fleet_note"]
+    assert "N/4" in block["records_landed"]["fleet_note"]
+
+
+def test_p1lr_current_cell_eta_and_critical_path_reuse_finding_213(
+        tmp_path):
+    """Finding 213 reuse: the current-cell ETA derives from observed
+    completed-cell durations minus the exclusive-claim elapsed time, and
+    the experiment ETA stays the MAXIMUM per-worker remaining path."""
+    records = {
+        (101, "P1N_LR1E4"): {"elapsed_seconds": 3600.0},
+        (101, "P1N_LR3E5"): {"elapsed_seconds": 7200.0},
+    }
+    cpath, reader = _p1lr_fixture(
+        tmp_path, cells={101: "P1E_LR1E4"}, lock_elapsed=1800,
+        records=records)
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    eta = block["workers"]["101"]["current_cell_eta"]
+    # durations 3600/7200 -> mean 5400; elapsed 1800
+    assert eta["eta_seconds"] == {"value": 3600.0, "low": 1800.0,
+                                  "high": 5400.0, "unit": "seconds"}
+    assert eta["elapsed_seconds"] == 1800.0
+    assert eta["sample_size"] == {"value": 2, "unit": "completed_cells"}
+    assert "exclusive claim" in eta["formula"]
+    assert "uncertainty" in eta
+    experiment_eta = block["experiment_eta"]
+    # seed101: 2 remaining (active 3600 + 1 queued * 5400) = 9000s;
+    # the other seeds: 4 remaining (active 3600 + 3 * 5400) = 19800s —
+    # the critical path, never the serial sum across workers.
+    per_worker = experiment_eta["per_worker_paths"]
+    assert per_worker["101"]["path_seconds"]["value"] == 9000.0
+    assert per_worker["202"]["path_seconds"]["value"] == 19800.0
+    assert per_worker["202"]["active_cell_eta_source"] == \
+        "current_cell_duration_eta"
+    assert experiment_eta["eta_seconds"]["value"] == 19800.0
+    assert experiment_eta["critical_path_seed"] in {"202", "303", "404"}
+    assert "max over workers" in experiment_eta["formula"]
+    assert experiment_eta["sample_size"] == {"value": 2,
+                                             "unit": "completed_cells"}
+
+
+def test_p1lr_eta_unavailable_without_observed_durations(tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path, lock_elapsed=600)
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    eta = block["workers"]["101"]["current_cell_eta"]
+    assert eta["value"] == "unavailable"
+    assert "fewer than 2 completed cell records" in eta["missing"]
+    assert block["experiment_eta"]["value"] == "unavailable"
+
+
+def test_p1lr_unreachable_host_degrades_typed(tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path, lock_elapsed=600)
+    reader.unreachable = {"dragon"}
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "active"  # three fresh workers remain
+    w = block["workers"]["202"]
+    assert w["terminal_state"] == "unavailable"
+    assert "host unreachable" in w["unavailable_reason"]
+    fields = {entry["field"] for entry in packet["unavailable"]}
+    assert ("f1_optimization.active_p1lr_factorial.workers.202"
+            in fields)
+    experiment_eta = block["experiment_eta"]
+    assert experiment_eta["value"] == "unavailable"
+    assert "202" in experiment_eta["missing"]
+
+
+def test_p1lr_identity_discovered_from_local_root(tmp_path):
+    cpath, reader = _p1lr_fixture(tmp_path)
+    root = Path(json.loads(cpath.read_text())["output_root"])
+    hb_dir = root / P1LR_IDENTITY / "seed101" / "P1N_LR1E4"
+    hb_dir.mkdir(parents=True)
+    (hb_dir / "heartbeat.json").write_text("{}")
+    packet = _collect_p1lr(tmp_path, cpath, reader, p1lr_identity=None)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["identity"] == P1LR_IDENTITY
+    assert block["identity_basis"] == \
+        "discovered_latest_heartbeat_mtime(local)"
+
+
+def test_completed_l1_factorial_stays_history_only_while_p1lr_leads(
+        tmp_path, monkeypatch):
+    """§7.7: the completed old L1 factorial (2de49ea9) is history only —
+    with no fresh RUNNING launcher heartbeat it never renders active and
+    never enters the executable queue, while the RUNNING P1LR screen
+    leads it."""
+    l1_cpath, l1_reader = _fixture(
+        tmp_path, now=NOW - timedelta(days=1))  # heartbeats a day old
+    p1lr_cpath, p1lr_reader = _p1lr_fixture(tmp_path)
+    _paused_supervisor(monkeypatch)
+    packet = _collect(
+        tmp_path, l1_cpath, l1_reader,
+        p1lr_contract_path=p1lr_cpath, p1lr_reader=p1lr_reader,
+        p1lr_identity=P1LR_IDENTITY, p1lr_now_fn=lambda: NOW,
+        p1lr_local_hostname="omega")
+    f1 = packet["fronts"]["f1_optimization"]
+    assert f1["active_p1lr_factorial"]["state"] == "active"
+    assert f1["active_l1_factorial"]["state"] == "inactive_or_unknown"
+    ids = [str(item["id"]) for item in packet["queue"]]
+    assert ids[0] == f"p1lr-factorial-{P1LR_IDENTITY}"
+    assert not any(item_id.startswith("l1-matched-factorial")
+                   for item_id in ids)
+
+
 def test_history_renders_even_without_l1_source(tmp_path, monkeypatch):
     _paused_supervisor(monkeypatch)
     packet = mfs.collect(
