@@ -12,11 +12,46 @@
   "mode": "l1",
   "context_bars": 256,
   "role_facts": {
-   "fit_train": {"status": "MATERIALIZED", "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568", "scored_rows": 11509, "context_rows": 0, "score_start": "2017-09-28 04:00:00", "score_end": "2022-12-31 20:00:00"},
-   "train_monitor": {"status": "MATERIALIZED", "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06", "scored_rows": 2190, "context_rows": 256, "score_start": "2022-01-01 00:00:00", "score_end": "2022-12-31 20:00:00"},
-   "inner_validation": {"status": "MATERIALIZED", "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6", "scored_rows": 2190, "context_rows": 256, "score_start": "2023-01-01 00:00:00", "score_end": "2023-12-31 20:00:00"},
-   "outer_validation": {"status": "MATERIALIZED", "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30", "scored_rows": 2196, "context_rows": 256, "score_start": "2024-01-01 00:00:00", "score_end": "2024-12-31 20:00:00"},
-   "sealed_test": {"status": "SEALED", "csv_sha256": null, "scored_rows": null, "context_rows": null, "score_start": null, "score_end": null}
+   "fit_train": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+    "scored_rows": 11509,
+    "context_rows": 0,
+    "score_start": "2017-09-28 04:00:00",
+    "score_end": "2022-12-31 20:00:00"
+   },
+   "train_monitor": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+    "scored_rows": 2190,
+    "context_rows": 256,
+    "score_start": "2022-01-01 00:00:00",
+    "score_end": "2022-12-31 20:00:00"
+   },
+   "inner_validation": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+    "scored_rows": 2190,
+    "context_rows": 256,
+    "score_start": "2023-01-01 00:00:00",
+    "score_end": "2023-12-31 20:00:00"
+   },
+   "outer_validation": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+    "scored_rows": 2196,
+    "context_rows": 256,
+    "score_start": "2024-01-01 00:00:00",
+    "score_end": "2024-12-31 20:00:00"
+   },
+   "sealed_test": {
+    "status": "SEALED",
+    "csv_sha256": null,
+    "scored_rows": null,
+    "context_rows": null,
+    "score_start": null,
+    "score_end": null
+   }
   },
   "role_use": {
    "fit_train": "fitting only (11509 scored rows)",
@@ -29,22 +64,46 @@
  "selection_metric": "paired_generalization_weekly_v1",
  "l1_gap_penalty_beta": 0.25,
  "factors": {
-  "phase1_dynamics": ["normal_realistic", "easy_chronological_continuation"],
-  "phase1_learning_rate": [0.0001, 3e-05]
+  "phase1_dynamics": [
+   "normal_realistic",
+   "easy_chronological_continuation"
+  ],
+  "phase1_learning_rate": [
+   0.0001,
+   3e-05
+  ]
  },
  "cells": {
-  "P1N_LR1E4": {"phase1_dynamics": "normal_realistic", "phase1_learning_rate": 0.0001},
-  "P1N_LR3E5": {"phase1_dynamics": "normal_realistic", "phase1_learning_rate": 3e-05},
-  "P1E_LR1E4": {"phase1_dynamics": "easy_chronological_continuation", "phase1_learning_rate": 0.0001},
-  "P1E_LR3E5": {"phase1_dynamics": "easy_chronological_continuation", "phase1_learning_rate": 3e-05}
+  "P1N_LR1E4": {
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 0.0001
+  },
+  "P1N_LR3E5": {
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 3e-05
+  },
+  "P1E_LR1E4": {
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 0.0001
+  },
+  "P1E_LR3E5": {
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 3e-05
+  }
  },
  "held_fixed": {
   "$doc": "Order §8: every non-factor identity field is pinned. Replay and optimizer carry are excluded as factors this round — every ladder arm already proved optimizer_state_transferred=false and replay_size_at_boundary=0 at the boundary (audit §3).",
   "phase2_learning_rate": 3e-05,
   "phase2_dynamics": "normal_realistic",
   "phase2_action_threshold": 0.1,
-  "boundary": {"replay_reset": true, "optimizer_reset": true},
-  "entropy": {"mode": "fixed", "value": 0.2},
+  "boundary": {
+   "replay_reset": true,
+   "optimizer_reset": true
+  },
+  "entropy": {
+   "mode": "fixed",
+   "value": 0.2
+  },
   "phase1_handoff_semantics": "l1_trained_epoch_v4",
   "handoff_viability_evidence": "required on every phase-1 checkpoint (WP3 / finding 221 block)",
   "topology_features_costs_protection": "L1 v3 frozen system manifest contract (sha 00bfa585 family) — spread 1e-4, protected entries required, min_equity 100, financing declared-disabled",
@@ -52,26 +111,75 @@
   "selection": "normal-realistic paired comparator on train-monitor + inner validation; outer validation truth",
   "anchor_rule": "every cell starts from the exact per-seed anchor, never a preceding cell's terminal"
  },
- "seeds": [101, 202, 303, 404],
+ "seeds": [
+  101,
+  202,
+  303,
+  404
+ ],
  "anchors": {
-  "101": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip", "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"},
-  "202": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip", "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"},
-  "303": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip", "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"},
-  "404": {"path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip", "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"}
+  "101": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+   "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"
+  },
+  "202": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip",
+   "sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee"
+  },
+  "303": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip",
+   "sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003"
+  },
+  "404": {
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip",
+   "sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"
+  }
  },
  "assignments": {
   "$doc": "One seed per physical GPU; ALL FOUR cells of a seed run sequentially on that same GPU so hardware is paired within seed. Distributed anchors hash-verified on their hosts 2026-08-11.",
-  "101": {"hostname": "omega", "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"},
-  "202": {"hostname": "dragon", "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"},
-  "303": {"hostname": "gamma", "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"},
-  "404": {"hostname": "gamma", "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"}
+  "101": {
+   "hostname": "omega",
+   "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"
+  },
+  "202": {
+   "hostname": "dragon",
+   "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"
+  },
+  "303": {
+   "hostname": "gamma",
+   "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"
+  },
+  "404": {
+   "hostname": "gamma",
+   "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"
+  }
  },
  "cell_order": {
   "$doc": "Deterministic cyclic Latin square: every cell occupies every within-seed position exactly once across seeds — no order/thermal confounding.",
-  "101": ["P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5"],
-  "202": ["P1N_LR3E5", "P1E_LR1E4", "P1E_LR3E5", "P1N_LR1E4"],
-  "303": ["P1E_LR1E4", "P1E_LR3E5", "P1N_LR1E4", "P1N_LR3E5"],
-  "404": ["P1E_LR3E5", "P1N_LR1E4", "P1N_LR3E5", "P1E_LR1E4"]
+  "101": [
+   "P1N_LR1E4",
+   "P1N_LR3E5",
+   "P1E_LR1E4",
+   "P1E_LR3E5"
+  ],
+  "202": [
+   "P1N_LR3E5",
+   "P1E_LR1E4",
+   "P1E_LR3E5",
+   "P1N_LR1E4"
+  ],
+  "303": [
+   "P1E_LR1E4",
+   "P1E_LR3E5",
+   "P1N_LR1E4",
+   "P1N_LR3E5"
+  ],
+  "404": [
+   "P1E_LR3E5",
+   "P1N_LR1E4",
+   "P1N_LR3E5",
+   "P1E_LR1E4"
+  ]
  },
  "mechanics_screen": {
   "budget": "one pass-equivalent per cell (1 phase-1 epoch + 1 phase-2 epoch at 20000 timesteps, matching the ladder pass budget)",
@@ -114,9 +222,24 @@
    "normal_phase_min_passes": 10
   },
   "truth": "one final outer-validation evaluation after selection; sealed 2025 inaccessible",
-  "decision_outcomes": ["PHASE1_LR_MAIN_EFFECT", "PHASE1_DIFFICULTY_MAIN_EFFECT", "PHASE1_LR_DIFFICULTY_INTERACTION", "NO_MATERIAL_EFFECT", "TOTAL_ACTIVITY_COLLAPSE", "INCONCLUSIVE"]
+  "decision_outcomes": [
+   "PHASE1_LR_MAIN_EFFECT",
+   "PHASE1_DIFFICULTY_MAIN_EFFECT",
+   "PHASE1_LR_DIFFICULTY_INTERACTION",
+   "NO_MATERIAL_EFFECT",
+   "TOTAL_ACTIVITY_COLLAPSE",
+   "INCONCLUSIVE"
+  ]
  },
- "typed_outcomes": ["PHASE1_LR_MAIN_EFFECT", "PHASE1_DIFFICULTY_MAIN_EFFECT", "PHASE1_LR_DIFFICULTY_INTERACTION", "NO_MATERIAL_EFFECT", "TOTAL_ACTIVITY_COLLAPSE", "INCONCLUSIVE", "PHASE1_LR_REGION_COLLAPSED"],
+ "typed_outcomes": [
+  "PHASE1_LR_MAIN_EFFECT",
+  "PHASE1_DIFFICULTY_MAIN_EFFECT",
+  "PHASE1_LR_DIFFICULTY_INTERACTION",
+  "NO_MATERIAL_EFFECT",
+  "TOTAL_ACTIVITY_COLLAPSE",
+  "INCONCLUSIVE",
+  "PHASE1_LR_REGION_COLLAPSED"
+ ],
  "forbidden": [
   "broad LR sweep (LR_easy x LR_normal response surface requires a viable easy arm from THIS factorial first)",
   "resuming the paused 2026-08-06 DOIN chain",
@@ -124,5 +247,24 @@
   "mutating sealed collections",
   "opening sealed 2025",
   "citing the ladder as a pure boundary effect — accepted wording is the v3-vs-v4 checkpoint-selection/handoff bundle with easy-phase action-amplitude collapse exposed by the normal deadband"
- ]
+ ],
+ "execution_semantics": {
+  "$doc": "Corrections 231/232 are EXECUTABLE semantics, not documentation. They change what the selector measures and what a dead cell publishes, so they belong in the content-addressed identity: any run materialized before them is diagnostic only and can never be aggregated with a run materialized after them.",
+  "causal_context_enforcement": "v2_selector_wrapped",
+  "causal_context_enforcement_note": "role and context_rows resolve from the VERIFIED nested manifest; ContextPrefixWrapper wraps every baseline and per-epoch train_monitor/inner_validation rollout BEFORE _rollout; prefix rows force hold and are excluded from reward, action statistics, canonical traces, trades, weekly metrics and horizons; every arm reaches the score boundary at equal opening equity (finding 231)",
+  "inactive_cell_semantics": "v2_typed_non_promotable",
+  "inactive_cell_semantics_note": "an inactive cell publishes one immutable non-promotable record with terminal custody and a load proof, receives one diagnostic-only final outer evaluation that can never be relabeled best_checkpoint, and the seed runner continues to its remaining cells (finding 232)",
+  "superseded_diagnostic_identities": [
+   "1434685bfdf52911"
+  ],
+  "superseded_reason": "materialized under the pre-231/232 semantics; preserved as diagnostic evidence, never aggregated, never a warm start, never a DOIN gene, never champion succession, never published"
+ },
+ "activity_classifications": {
+  "$doc": "Finding 232: activity classification is reported ALONGSIDE the document-38 outcome, never inside its pinned enum. Partial survival types the picture; the document-38 outcome for a partially collapsed factorial is INCONCLUSIVE with the dead cells named.",
+  "values": [
+   "FULL_ACTIVITY",
+   "PARTIAL_ACTIVITY_SURVIVAL",
+   "TOTAL_ACTIVITY_COLLAPSE"
+  ]
+ }
 }

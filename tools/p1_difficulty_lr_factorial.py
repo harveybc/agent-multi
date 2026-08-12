@@ -1437,13 +1437,17 @@ class CellHeartbeat:
     proven mechanism-ladder heartbeat style."""
 
     def __init__(self, path: Path, *, contract: dict, seed: int,
-                 cell: str, exp_id: str, cell_id: str):
+                 cell: str, exp_id: str, cell_id: str, mode: str):
         self.path = path
         self.contract = contract
         self.seed = int(seed)
         self.cell = cell
         self.exp_id = exp_id
         self.cell_id = cell_id
+        # Finding 233: the operator surfaces bind mode positionally
+        # (mode root + identity). Declaring it in the heartbeat makes
+        # the binding directly verifiable instead of inferred.
+        self.mode = mode
         self._state: dict = {}
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
@@ -1455,6 +1459,7 @@ class CellHeartbeat:
             str(self.seed)) or {}
         self._state.update({
             "schema": HEARTBEAT_SCHEMA,
+            "mode": self.mode,
             "seed": self.seed,
             "cell": self.cell,
             "experiment_identity": self.exp_id,
@@ -1522,7 +1527,7 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
     cell_dir.mkdir(parents=True, exist_ok=True)
     heartbeat = CellHeartbeat(cell_dir / "heartbeat.json",
                               contract=contract, seed=seed, cell=cell,
-                              exp_id=exp_id, cell_id=cell_id)
+                              exp_id=exp_id, cell_id=cell_id, mode=mode)
 
     record_path = cell_dir / "cell_record.json"
     if record_path.exists():

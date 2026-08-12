@@ -1,0 +1,81 @@
+{
+  "decision_observability": {
+    "decision_output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1_decision",
+    "direct_runtime_facts": {
+      "dragon": {
+        "decision_processes_by_seed": {
+          "202": 1
+        },
+        "gpu_rows_index_name_temp_c_util_pct_memory_mib": [
+          "0, NVIDIA GeForce RTX 4090 Laptop GPU, 37, 23, 457"
+        ]
+      },
+      "gamma": {
+        "decision_processes_by_seed": {
+          "303": 1,
+          "404": 1
+        },
+        "gpu_rows_index_name_temp_c_util_pct_memory_mib": [
+          "0, NVIDIA GeForce RTX 5070 Ti Laptop GPU, 48, 39, 382",
+          "1, NVIDIA GeForce RTX 5090, 56, 44, 790"
+        ]
+      },
+      "omega": {
+        "decision_processes_by_seed": {
+          "101": 1
+        },
+        "gpu_rows_index_name_temp_c_util_pct_memory_mib": [
+          "0, NVIDIA GeForce RTX 4070 Laptop GPU, 58, 39, 2275"
+        ]
+      }
+    },
+    "finding_reproduced": false,
+    "idle_guard_reads_top_level_output_root": false,
+    "idle_guard_unit_template_is_screen": false,
+    "reported_mode": "screen",
+    "reported_records": null,
+    "reported_state": "refused",
+    "reported_workers_running": null,
+    "screen_output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1",
+    "shipped_p1lr_unit_files": [
+      "install_p1lr_decision_and_guard.sh",
+      "p1lr-decision@.service",
+      "p1lr-idle-guard.service",
+      "p1lr-idle-guard.timer",
+      "p1lr-screen@.service",
+      "p1lr_decision_gate_check.sh"
+    ],
+    "status_reads_top_level_output_root": true
+  },
+  "historical_replica": {
+    "byte_fraction_observed": 0.06962069685402601,
+    "destination_bytes_observed": 16305662138,
+    "destination_regular_files_observed": 109880,
+    "finding_230_state": "running_incomplete",
+    "source_bytes": 234207109018,
+    "source_regular_files": 249434,
+    "terminal_digest_proof_available": false,
+    "transfer_process_count": 1
+  },
+  "inactive_decision_publication": {
+    "decision_runner_unconditionally_requires_best": false,
+    "finding_reproduced": false,
+    "pipeline_returns_typed_inactive": true
+  },
+  "nested_context_execution": {
+    "finding_reproduced": false,
+    "internal_roles_with_context_rows": {
+      "inner_validation": 256,
+      "train_monitor": 256
+    },
+    "rollout_filters_is_context_prefix": true,
+    "wrapper_applied_by_internal_split_factory": true,
+    "wrapper_declared": true
+  },
+  "schema": "agent_multi.musashi_224_230_return_repro.v1",
+  "subject": {
+    "contract": "examples/config/phase_3_eth_sac_dynamics/p1_difficulty_lr_factorial_v1.json",
+    "contract_sha256": "4a4e0f16b7da0783b3a0f3d1336474e8a286ec62acc88963599e762eedd00bd6",
+    "decision_identity": "1434685bfdf52911"
+  }
+}
