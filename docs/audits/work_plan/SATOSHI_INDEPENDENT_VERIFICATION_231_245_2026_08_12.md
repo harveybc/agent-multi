@@ -355,3 +355,154 @@ its SOURCE is gamma, not because of any fault on dragon.
 Byte and file counts only — no rsync percentage is reported.
 Finding 230 stays open; the dual-side sorted SHA-256 manifest
 comparison cannot run until the transfer is terminal.
+
+## Items 1-4 — reproducer, 234, 235, 236
+
+### Item 1 — the unchanged reproducer CANNOT RUN while gamma is down
+
+The reproducer aborts before emitting anything:
+`subprocess.CalledProcessError … ssh gamma 'du -sb …' exit 255`
+(`_command(check=True)` raises). It was re-run through a wrapper that
+imports the file VERBATIM and stubs only the `ssh gamma` calls; the
+deviation is recorded inside the emitted JSON and gamma-derived values
+are explicitly NOT evidence. **Any future "all flags false" claim must
+state whether gamma was reachable.**
+
+All emitted booleans: `nested_context_execution.finding_reproduced`
+**false** (wrapper_declared / wrapper_applied_by_internal_split_factory
+/ rollout_filters_is_context_prefix all true);
+`inactive_decision_publication.finding_reproduced` **false**
+(`decision_runner_unconditionally_requires_best` false);
+`decision_observability.finding_reproduced` **false**
+(`idle_guard_reads_top_level_output_root` false,
+`idle_guard_unit_template_is_screen` false,
+`status_reads_top_level_output_root` still true);
+`historical_replica.terminal_digest_proof_available` false.
+`internal_roles_with_context_rows = {train_monitor: 256,
+inner_validation: 256}`; contract `4a4e0f16…`.
+
+**I do NOT report 233 as independently verified from this reproducer.**
+Three of its flags are source-string heuristics, not behaviour: the
+"requires best" flag flips partly because the literal is now
+line-wrapped; `idle_guard_unit_template_is_screen` is false because the
+source reads `UNIT_TEMPLATE = P1LR_UNIT_TEMPLATES["screen"]` — that
+module constant STILL resolves to the screen template, and only the
+per-call `P1LR_UNIT_TEMPLATES[mode]` is mode-aware. And
+`decision_observability.finding_reproduced=false` is reached for the
+WRONG REASON: the reproducer hardcodes the superseded identity
+`1434685bfdf52911`, so status returns `state="refused"` with
+workers/records null — the conjunct is false because the values are
+null, not because the mode moved to decision. (233's semantics ARE
+correct; I verified them directly in items 9-11. The reproducer is
+simply weak evidence for it.)
+
+### Item 2 — finding 234: `verified_corrected` for (a)(b)(c), **`still_open` for (d)**
+
+Byte-identical fixture (`model.terminal.zip` and `model.best.zip`,
+same sha `6724c5ea…`, distinct paths), driven through the REAL
+`assert_cell_record_custody` / `record_is_complete`, with the pre-fix
+module extracted at `04414417^`:
+
+| case | current | pre-fix |
+|---|---|---|
+| ACTIVE, byte-identical best/terminal | **succeeds** | **refused → 234 reproduced** |
+| ACTIVE missing best path / missing best hash | **refused** | succeeded (the fix adds a real requirement) |
+| INACTIVE labeling terminal as best — top-level, nested in `selection`, nested in `outer_validation_final`, or `promotion_eligible=true` | **all refused** | — |
+
+**232 is not weakened.** But:
+
+| case | expected | observed |
+|---|---|---|
+| ACTIVE, best FILE MISSING | refuse | **SUCCEEDED** |
+| ACTIVE, best file hash ≠ record | refuse | **SUCCEEDED** |
+| ACTIVE, `best_model_path == terminal_model_path` | refuse | **SUCCEEDED at custody** (only the production-time outer-eval role check refuses it) |
+
+`record_is_complete` returns **true** for both broken-best cases —
+only the TERMINAL is re-hashed. During a live run the damage is caught
+earlier (`classify_cell_activity`, and the outer-eval hash binding),
+but **after publication, tampering with or deleting an ACTIVE cell's
+best artifact is invisible**: the record can be reused on restart and
+can win selection with a corrupted or absent best `.zip`. Recommended:
+re-hash `best_model_sha256` in `record_is_complete`, symmetric with the
+terminal check.
+
+### Item 3 — finding 235: `verified_corrected`
+
+Mechanism confirmed from the pre-fix source: `next()` published the
+last real bar as NON-terminal and blocked, so Backtrader reached
+`stop()` (`data_end`) only after the env supplied one more action
+purely to release the thread — and that release was counted.
+
+Real gym-fx, 40-row CPU fixture: pre-fix `b71429a` emits **41**
+transitions with a duplicated final `bar_index` for BOTH an active and
+an inactive policy; current `634c3fd` emits exactly **40**, no
+duplicate.
+
+Real nested contract, real env, real `_eval_on_split` and real
+`_outer_validation_final_eval`:
+
+| role | manifest scored | csv rows | env steps | scored_steps (active / inactive) |
+|---|---|---|---|---|
+| train_monitor | 2,190 | 2,446 | 2,446 | **2,190 / 2,190** |
+| inner_validation | 2,190 | 2,446 | 2,446 | **2,190 / 2,190** |
+| outer_validation | 2,196 | 2,452 | 2,452 | **2,196 / 2,196** |
+
+With the pre-fix bridge the literal off-by-one reproduces and BOTH new
+guards fire: `rollout scored 2191 steps but the verified manifest
+declares 2190 … refusing` and `outer_validation replay scored 2197 …
+refusing`. My exact-2,190 residual doubt from the previous packet is
+now settled against the real environment.
+
+### Item 4 — finding 236: `verified_corrected` for mtime/size mutations, **`still_open` for a same-size same-mtime swap**
+
+| mutation of the role CSV (manifest untouched) | re-verified? | outcome |
+|---|---|---|
+| in-place rewrite, natural new mtime | yes | REFUSED (hash drift) |
+| append + `os.utime` restore | yes | REFUSED (hash drift) |
+| role file removed | yes | REFUSED (missing) |
+| **content swap, same size, `st_mtime_ns` restored** | **no (0 verifications)** | **ACCEPTED — NOT CAUGHT** |
+| **replacement by a new inode, same size, mtime restored** | **no** | **ACCEPTED — NOT CAUGHT** |
+
+The custody tuple is `(role, resolved path, st_mtime_ns, st_size)` —
+content is not in it, so a length-preserving writer that restores mtime
+is trusted for the life of the process cache (a restart re-hashes and
+refuses). The manifest's own cache key has the same shape. Also
+`_nested_role_file_stats` catches only `OSError`, so a manifest entry
+missing its `csv` key raises `KeyError` out of the cache-hit path
+instead of failing closed.
+
+### Suites
+
+`agent-multi` full suite in the temp worktree with the sibling
+`doin-node` symlinked: **1,303 passed, 0 failed**. `gym-fx`: **84
+passed**. Focused: 148 + 75 passed. New verification tests: 3 + 7.
+(Without the sibling checkout beside a scratch worktree, four tests
+fail on missing `doin-node` templates — a test worktree-portability
+defect, not a regression.)
+
+### Additional observation
+
+Worker RSS on omega/dragon now reads ~2.48 GiB against the audit's
+first observation of 1.37-1.80 GiB. Still far under `MemoryHigh=5G`,
+but it is GROWING and deserves watching against findings 237/242.
+
+## Consolidated verdicts (no closures — the owner disposes)
+
+| Finding | My verdict |
+|---|---|
+| 231 | verified_corrected |
+| 232 | verified_corrected (not weakened by the 234 fix) |
+| 233 | verified_corrected **by direct observation** (items 9-11); NOT independently established by the reproducer's string heuristics |
+| 234 | verified_corrected for byte-identical-active, missing-best-fields and inactive protection; **still_open** for missing/mismatched ACTIVE best artifact after publication, and for `best_path == terminal_path` at custody |
+| 235 | verified_corrected |
+| 236 | verified_corrected for every mtime/size mutation; **still_open** for same-size same-mtime content swap and same-size inode replacement |
+| 237 | mechanism verified_corrected; **quantitative premise false** (D1) and now content-addressed into the live identity |
+| 238 | reproduced + verified_corrected |
+| 239 | reproduced + verified_corrected (non-strict freshness noted) |
+| 240 | reproduced as a live exploit + verified_corrected |
+| 241 | verified_corrected; independent join agrees |
+| 242 | reproduced + verified_corrected (asserted failure mode unproven, D2) |
+| 243 | verified_corrected |
+| 244 | verified_corrected on omega and dragon; gamma unverifiable (offline) |
+| 245 | verified_corrected |
+| 230 | still_open — transfer stalled with gamma at 40.70 GB / 170,304 files; no dual digest yet |
