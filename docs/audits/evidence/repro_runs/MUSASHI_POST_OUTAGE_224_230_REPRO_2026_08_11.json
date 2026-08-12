@@ -1,0 +1,205 @@
+{
+ "factorial_contract_sha256": "9c2194e138b9f72ce239f0ca0a7c3e9bc47d5efe9a39ef4ee6be2a101046d227",
+ "factorial_materialized_cells": {
+  "101:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "101:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "101:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "101:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "202:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "202:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "202:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "202:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "303:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "303:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "303:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "303:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "404:P1E_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "404:P1E_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "404:P1N_LR1E4": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  },
+  "404:P1N_LR3E5": {
+   "evaluate_test_split": false,
+   "nested_split_contract": null,
+   "selection_metric": "lexicographic_weekly_v1",
+   "train_end": "2023-12-31T23:59:59",
+   "train_start": "2017-09-28T04:00:00",
+   "validation_end": "2024-12-31T23:59:59",
+   "validation_start": "2024-01-01T00:00:00"
+  }
+ },
+ "materialized_execution_mismatch": {
+  "legacy_validation_role_observed": {
+   "end": "2024-12-31T23:59:59",
+   "start": "2024-01-01T00:00:00"
+  },
+  "nested_inner_validation_required": {
+   "end": "2024-01-01T00:00:00",
+   "start": "2023-01-01T00:00:00"
+  },
+  "nested_split_contract_missing": true,
+  "selection_metric_observed": "lexicographic_weekly_v1",
+  "selection_metric_required": "paired_generalization_weekly_v1"
+ },
+ "nested_role_facts": {
+  "fit_train": {
+   "context_rows": 0,
+   "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+   "scored_rows": 11509,
+   "status": "MATERIALIZED"
+  },
+  "inner_validation": {
+   "context_rows": 256,
+   "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  },
+  "outer_validation": {
+   "context_rows": 256,
+   "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+   "scored_rows": 2196,
+   "status": "MATERIALIZED"
+  },
+  "sealed_test": {
+   "context_rows": null,
+   "csv_sha256": null,
+   "scored_rows": null,
+   "status": "SEALED"
+  },
+  "train_monitor": {
+   "context_rows": 256,
+   "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  }
+ },
+ "network_used": false,
+ "replica_gate_counterexample": {
+  "input_replica_proofs": 0,
+  "replica_gate_value": "EXTERNAL_COLLECTOR_REQUIRED \u2014 replica load proof per seed batch is the sealed collector's job (finding 223); this verdict does not certify it",
+  "screen_declared_eligible_without_replica_proof": true,
+  "screen_exit_code": 0,
+  "screen_outcome": "SCREEN_VIABLE_REGION"
+ },
+ "schema": "agent_multi.musashi_post_outage_224_230_repro.v1",
+ "sealed_collection_mutated": false,
+ "training_used": false
+}
