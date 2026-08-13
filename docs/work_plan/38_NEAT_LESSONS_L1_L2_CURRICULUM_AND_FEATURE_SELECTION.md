@@ -597,3 +597,22 @@ audits and documentation without changing the identity a restarted seed
 derives. `pin_p1lr_decision_runtime.sh` materializes and verifies this boundary
 on every host; changing the runtime revision is an experiment transition, not
 a routine repository update.
+
+## 17. 2026-08-13 Outer-Validation Adapter Correction
+
+The first long decision identity reached its final outer-validation load on
+Dragon and Gamma seed 303 and exposed a runtime interface defect: the causal
+prefix adapter implemented the Gymnasium reset/step protocol but did not
+inherit from `gymnasium.Env`. Stable-Baselines therefore accepted the complete
+training path and rejected the selected artifact only when it was reloaded for
+the final outer replay. The affected seed attempts are diagnostic failure
+evidence: they contribute no cell records and are never retried into the same
+scientific collection indefinitely.
+
+`ContextPrefixWrapper` now has an explicit Gymnasium environment identity, and
+the regression suite invokes Stable-Baselines' own environment acceptance
+boundary. The correction is a source change, so the replacement decision run
+uses a new content-derived identity from the same original anchors, contract,
+screen verdict and four seeds. No failed terminal, replay buffer or partially
+trained policy is a warm start. Omega, Dragon, Gamma 5070 Ti and Gamma 5090
+must all report the replacement identity before its records can be aggregated.

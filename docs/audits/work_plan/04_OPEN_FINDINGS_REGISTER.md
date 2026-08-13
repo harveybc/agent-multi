@@ -1149,6 +1149,7 @@ those corrections, he does not self-close them.
 | AUD-SEC-20260812-243 | S3 | corrected by auditor, awaits independent verification | Tier-A lock pins pytest with vulnerable tmpdir handling (GHSA-6w46-j5rx-g56g) | Independent verifier or owner disposes |
 | AUD-GEN-20260812-244 | S2 | corrected by auditor, awaits independent verification and deployed pin proof | Docs-only canonical commit changes the identity a decision unit derives after restart | Independent verifier or owner disposes |
 | AUD-GEN-20260812-245 | S4 | corrected by auditor, awaits independent verification | Sequential remote reads can report a healthy heartbeat with negative age | Independent verifier or owner disposes |
+| AUD-F1-20260813-246 | S2 | corrected by auditor, replacement run pending independent verification | `ContextPrefixWrapper` is not a Gymnasium environment, so Stable-Baselines rejects the selected model only at final outer validation after hours of training; workers publish zero records and restart the same failed seed | General Satoshi independently reproduces the fix and verifies the four-worker replacement identity |
 
 Append-only finding-227 state: its typed capability-store correction, explicit
 owner selection and immutable signed-byte handling are integrated and deployed

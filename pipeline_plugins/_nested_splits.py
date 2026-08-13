@@ -27,6 +27,7 @@ import math
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
+import gymnasium as gym
 import pandas as pd
 
 SCHEMA = "agent_multi.nested_split_contract.v1"
@@ -249,7 +250,7 @@ def _numeric(value: Any) -> float | None:
     return float(value)
 
 
-class ContextPrefixWrapper:
+class ContextPrefixWrapper(gym.Env):
     """Reusable env-adapter boundary for causal prefixes (order §5.2).
 
     For the first `context_rows` steps after reset the agent's action is

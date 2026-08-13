@@ -208,6 +208,30 @@ class TestContextSemantics:
         assert env.actions[:3] == [0.0, 0.0, 0.0]     # forced holds
         assert env.actions[3:] == [0.9, 0.9]          # agent acts after
 
+    def test_prefix_wrapper_is_accepted_as_gymnasium_env(self):
+        """The selected model is loaded against this wrapper only after
+        hours of training, so Stable-Baselines must recognize the wrapper
+        as Gymnasium before a decision run starts."""
+        import gymnasium as gym
+        from gymnasium import spaces
+        from stable_baselines3.common.vec_env.patch_gym import _patch_env
+
+        class GymEnv(gym.Env):
+            observation_space = spaces.Box(-1.0, 1.0, shape=(1,))
+            action_space = spaces.Box(-1.0, 1.0, shape=(1,))
+
+            def reset(self, **kwargs):
+                return self.observation_space.sample(), {
+                    "equity": 1000.0, "trades": 0}
+
+            def step(self, action):
+                return self.observation_space.sample(), 0.0, False, False, {
+                    "equity": 1000.0, "trades": 0}
+
+        wrapped = ns.ContextPrefixWrapper(GymEnv(), context_rows=1)
+        assert isinstance(wrapped, gym.Env)
+        assert _patch_env(wrapped) is wrapped
+
     def test_prefix_wrapper_refuses_account_mutation(self):
         class MutatingEnv:
             def reset(self, **kwargs):
