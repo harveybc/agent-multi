@@ -117,7 +117,7 @@ Added:
 - `tests/unit/test_incident_corpus_manifest.py`.
 
 The exact enumeration rule from lines 369–372 of the introducing commit
-`3b3e9a7abc4e5b1d83df039e7079e23b1bfcd78f` is pinned as:
+`30fd7a8dde46a1f26d64eda6af8da391a50d49b2` is pinned as:
 
 `sha256:6abc241d95ce686ff741f6629f31f4b2ea3da86a1fbf982a7dfa801b68aea88c`
 

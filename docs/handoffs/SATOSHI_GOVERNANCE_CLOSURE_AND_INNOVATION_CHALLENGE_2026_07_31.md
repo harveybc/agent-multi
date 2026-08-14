@@ -4,7 +4,7 @@ Date: 2026-07-31
 Author: Musashi, relayed by Harvey
 Recipient: Satoshi
 Mode: independent academic and governance audit
-Required minimum audited baseline: `3b3e9a7abc4e5b1d83df039e7079e23b1bfcd78f`
+Required minimum audited baseline: `30fd7a8dde46a1f26d64eda6af8da391a50d49b2`
 
 Give Satoshi this entire file.
 
