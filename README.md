@@ -196,9 +196,12 @@ seeding contracts for distributed runs are enforced by the DOIN layer.
 ## Safety and credentials
 
 Training data are local CSV files; no credentials are required for local
-experiments. DOIN node configs, runtime overlays and fleet manifests are
-machine-specific and are deliberately excluded from documentation; never
-commit hostnames, API keys or account identifiers into experiment configs.
+experiments. Published fleet examples use documentation-reserved addresses;
+deployed routes, runtime overlays and credentials remain outside version
+control. Never commit hostnames, private IP addresses, API keys, broker account
+identifiers or account fingerprints into experiment configs. See
+[`SECURITY.md`](SECURITY.md) for the public-repository boundary and pre-push
+check.
 All performance figures produced here are simulation results and do not
 guarantee live performance.
 

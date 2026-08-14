@@ -8,6 +8,19 @@ data/project2/*/scaler.json
 __pycache__/
 *.pyc
 
+# Credentials and machine-local authority. Public examples must contain only
+# placeholders or documentation-reserved addresses.
+.env
+.env.*
+*.env
+!*.env.example
+*.pem
+*.p12
+*.key
+credentials/
+secrets/
+private_runtime/
+
 # Project 3 generated outputs; keep reproducible code/specs in git, not runs.
 examples/results/*
 !examples/results/phase_1_asset_policy/

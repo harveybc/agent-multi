@@ -71,7 +71,7 @@ Also inspect the exact diffs from baseline
 
 1. Run `python tools/validate_incident_corpus_manifest.py`.
 2. Independently extract lines 369–372 from commit
-   `3b3e9a7abc4e5b1d83df039e7079e23b1bfcd78f` and verify the SHA-256.
+   `30fd7a8dde46a1f26d64eda6af8da391a50d49b2` and verify the SHA-256.
 3. Check whether the manifest schema can represent every required exclusion,
    false positive, false negative and detection/recovery timestamp without
    silently changing the preregistered set.
