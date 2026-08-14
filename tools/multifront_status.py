@@ -1946,11 +1946,33 @@ def collect_p1lr_factorial(
                         (finished - started).total_seconds(), 1)
             if duration is not None:
                 durations.append(duration)
+            best_checkpoint_available = bool(
+                record.get("best_model_path")
+                and record.get("best_model_sha256"))
+            raw_stop_reason = record.get("stop_reason")
+            effective_stop_reason = raw_stop_reason
+            if (
+                raw_stop_reason == "activity_stop_no_eligible_checkpoint"
+                and record.get("activity_status") == "active"
+                and best_checkpoint_available
+            ):
+                # Records emitted before the stop-label correction used the
+                # same raw label both with and without a retained checkpoint.
+                # Preserve that durable fact while exposing its truthful
+                # operational interpretation.
+                effective_stop_reason = (
+                    "activity_stop_after_best_checkpoint")
             landed[cell_name] = {
                 "schema": record.get("schema"),
-                "stop_reason": record.get("stop_reason"),
+                "stop_reason": raw_stop_reason,
+                "effective_stop_reason": effective_stop_reason,
                 "termination_cause": record.get("termination_cause"),
+                "activity_status": record.get("activity_status"),
+                "activity_inactive_cause": record.get(
+                    "activity_inactive_cause"),
                 "decision_eligible": record.get("decision_eligible"),
+                "promotion_eligible": record.get("promotion_eligible"),
+                "best_checkpoint_available": best_checkpoint_available,
                 "finished_utc": record.get("finished_utc"),
                 "duration_seconds": duration,
                 "terminal_model_sha256": record.get(
@@ -1959,6 +1981,14 @@ def collect_p1lr_factorial(
                 "evidence_class": record.get("evidence_class"),
             }
         entry["landed_cells"] = landed or None
+        entry["landed_cell_semantics"] = (
+            "decision_eligible means the record may enter the factorial "
+            "decision, including a measured inactive outcome; model "
+            "viability is reported by activity_status, promotion_eligible "
+            "and best_checkpoint_available; stop_reason is the immutable "
+            "as-run label and effective_stop_reason disambiguates legacy "
+            "activity-stop records"
+        )
         entry["records_landed"] = {"value": len(landed),
                                    "of": len(seed_cells),
                                    "unit": "cell_records",

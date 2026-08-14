@@ -315,6 +315,31 @@ def _checkpoint_is_eligible(
     )
 
 
+def _activity_stop_disposition(
+    *,
+    best_checkpoint_saved: bool,
+    streak: int,
+    start_epoch: int,
+    budget: int,
+) -> tuple[str, str]:
+    """Describe activity exhaustion without erasing an earlier checkpoint."""
+    prefix = (
+        f"activity-ineligible for {int(streak)} consecutive epochs after "
+        f"epoch {int(start_epoch)} (budget={int(budget)})"
+    )
+    if best_checkpoint_saved:
+        return (
+            "activity_stop_after_best_checkpoint",
+            prefix + "; the current policy lost the trade gate, while the "
+            "previously saved activity-eligible checkpoint is retained",
+        )
+    return (
+        "activity_stop_no_eligible_checkpoint",
+        prefix + "; the trade gate never passed, so no eligible checkpoint "
+        "exists",
+    )
+
+
 # The complete set of selection metrics _selection_value implements.
 # This module OWNS the invariant; app/config_validation.py observes it
 # through runtime_implemented_metrics() and must never restate it. Any
@@ -1721,16 +1746,14 @@ class PipelinePlugin:
                         activity_patience > 0
                         and activity_ineligible_streak >= activity_patience
                     ):
-                        activity_stop_reason = (
-                            f"activity-ineligible for"
-                            f" {activity_ineligible_streak} consecutive"
-                            f" epochs after epoch"
-                            f" {activity_patience_start_epoch}"
-                            f" (budget={activity_patience}); the trade"
-                            " gate never passed, so no eligible"
-                            " checkpoint can exist"
+                        stop_reason, activity_stop_reason = (
+                            _activity_stop_disposition(
+                                best_checkpoint_saved=best_checkpoint_saved,
+                                streak=activity_ineligible_streak,
+                                start_epoch=activity_patience_start_epoch,
+                                budget=activity_patience,
+                            )
                         )
-                        stop_reason = "activity_stop_no_eligible_checkpoint"
                         print(
                             f"[train] ACTIVITY STOP at epoch {epoch}:"
                             f" {activity_stop_reason}", flush=True)

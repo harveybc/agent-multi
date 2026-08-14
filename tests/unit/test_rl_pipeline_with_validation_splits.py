@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from pipeline_plugins.rl_pipeline_with_validation import (
     PipelinePlugin,
+    _activity_stop_disposition,
     _early_stop_composite,
     _resolve_l1_min_checkpoint_timesteps,
     _set_env_training_progress,
@@ -18,6 +19,29 @@ from pipeline_plugins.rl_pipeline_with_validation import (
     _update_l1_checkpoint_state,
     _verify_artifact_sha256,
 )
+
+
+def test_activity_stop_preserves_the_truth_about_an_earlier_checkpoint():
+    code, detail = _activity_stop_disposition(
+        best_checkpoint_saved=True,
+        streak=40,
+        start_epoch=40,
+        budget=40,
+    )
+    assert code == "activity_stop_after_best_checkpoint"
+    assert "previously saved activity-eligible checkpoint" in detail
+    assert "never passed" not in detail
+
+
+def test_activity_stop_names_a_genuinely_missing_checkpoint():
+    code, detail = _activity_stop_disposition(
+        best_checkpoint_saved=False,
+        streak=40,
+        start_epoch=40,
+        budget=40,
+    )
+    assert code == "activity_stop_no_eligible_checkpoint"
+    assert "trade gate never passed" in detail
 
 
 def test_training_progress_reaches_wrapped_env() -> None:

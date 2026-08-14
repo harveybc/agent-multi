@@ -752,7 +752,12 @@ def test_p1lr_stale_heartbeat_is_typed_staleness_never_current_claims(
 def test_p1lr_records_counted_per_seed_and_fleet(tmp_path):
     records = {
         (101, "P1N_LR1E4"): {"elapsed_seconds": 3600.0,
-                             "stop_reason": "budget_complete",
+                             "stop_reason":
+                                 "activity_stop_no_eligible_checkpoint",
+                             "activity_status": "active",
+                             "promotion_eligible": True,
+                             "best_model_path": "/tmp/model.zip",
+                             "best_model_sha256": "b" * 64,
                              "terminal_model_sha256": "a" * 64,
                              "finished_utc": NOW.isoformat()},
         (101, "P1N_LR3E5"): {
@@ -770,8 +775,16 @@ def test_p1lr_records_counted_per_seed_and_fleet(tmp_path):
         "value": 2, "of": 4, "unit": "cell_records", "horizon": "seed",
         "mode": "screen", "output_root": _root_of(cpath)}
     assert w101["landed_cells"]["P1N_LR1E4"]["stop_reason"] == \
-        "budget_complete"
+        "activity_stop_no_eligible_checkpoint"
+    assert w101["landed_cells"]["P1N_LR1E4"][
+        "effective_stop_reason"] == "activity_stop_after_best_checkpoint"
     assert w101["landed_cells"]["P1N_LR1E4"]["duration_seconds"] == 3600.0
+    assert w101["landed_cells"]["P1N_LR1E4"]["activity_status"] == \
+        "active"
+    assert w101["landed_cells"]["P1N_LR1E4"]["promotion_eligible"] is True
+    assert w101["landed_cells"]["P1N_LR1E4"][
+        "best_checkpoint_available"] is True
+    assert "measured inactive outcome" in w101["landed_cell_semantics"]
     assert w101["landed_cells"]["P1N_LR3E5"]["duration_seconds"] == 7200.0
     assert block["workers"]["303"]["records_landed"]["value"] == 1
     assert block["records_landed"]["value"] == 3
