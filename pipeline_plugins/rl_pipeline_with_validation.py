@@ -552,6 +552,15 @@ class PipelinePlugin:
         "max_epochs": 2_000,
         "l1_patience": 60,
         "l1_patience_start_epoch": 40,
+        # AUD-P1LR-20260815-234: the activity-ineligible budget is a
+        # SECOND terminator and it fires far earlier than the improvement
+        # patience against an inactive policy. It lived as a bare literal
+        # inside the epoch loop, so it never appeared in the plugin's
+        # declared parameter surface and no contract reader could see it.
+        # A rule that can end training is declared here or it is hidden.
+        "l1_activity_patience": 40,
+        # None inherits l1_patience_start_epoch.
+        "l1_activity_patience_start_epoch": None,
         "l1_min_delta": 1e-5,
         "l1_min_checkpoint_timesteps": None,
         "early_stop_train_tail_days": 7,
@@ -582,7 +591,9 @@ class PipelinePlugin:
         "val_start", "val_end", "test_start", "test_end",
         "min_split_rows",
         "epoch_timesteps", "max_epochs", "l1_patience",
-        "l1_patience_start_epoch", "l1_min_delta",
+        "l1_patience_start_epoch",
+        "l1_activity_patience", "l1_activity_patience_start_epoch",
+        "l1_min_delta",
         "l1_min_checkpoint_timesteps",
         "early_stop_train_tail_days", "early_stop_min_trades",
         "early_stop_min_train_tail_trades",
@@ -1256,14 +1267,19 @@ class PipelinePlugin:
                 # AUD-F1-20260806-127: bounded budget for epochs that
                 # produce no eligible trading activity, tracked apart
                 # from improvement patience.
-                activity_patience = int(config.get(
-                    "l1_activity_patience",
-                    self.params.get("l1_activity_patience", 40)))
-                activity_patience_start_epoch = max(1, int(config.get(
-                    "l1_activity_patience_start_epoch",
-                    self.params.get(
-                        "l1_activity_patience_start_epoch",
-                        l1_patience_start_epoch))))
+                activity_patience = int(
+                    config.get("l1_activity_patience")
+                    if config.get("l1_activity_patience") is not None
+                    else self.params["l1_activity_patience"])
+                _activity_start = config.get(
+                    "l1_activity_patience_start_epoch")
+                if _activity_start is None:
+                    _activity_start = self.params[
+                        "l1_activity_patience_start_epoch"]
+                if _activity_start is None:
+                    _activity_start = l1_patience_start_epoch
+                activity_patience_start_epoch = max(
+                    1, int(_activity_start))
                 activity_ineligible_streak = 0
                 activity_stop_reason: str | None = None
 

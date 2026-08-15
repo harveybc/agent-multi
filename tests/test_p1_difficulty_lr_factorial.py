@@ -676,6 +676,16 @@ def runtime(bindings, tmp_path, monkeypatch):
     contract["output_root"] = str(tmp_path / "out")
     contract["decision_run"]["output_root"] = str(
         tmp_path / "out_decision")
+    # AUD-P1LR-20260815-234: decision mode now refuses to start unless
+    # the contract DECLARES the stopping rule it will execute. These
+    # tests exercise decision EXECUTION, so they carry the corrected
+    # declaration; TestStoppingContractGate below covers the shipped
+    # contract's own (refused) declaration.
+    contract["decision_run"]["effective_stopping_rules"] = {
+        "terminators": ["l1_early_stop", "activity_stop",
+                        "max_epochs_budget"],
+        "earliest_stop_epoch": 80,
+    }
     for seed in p1.SEEDS:
         anchor = tmp_path / f"anchor_seed{seed}.zip"
         anchor.write_bytes(f"anchor-bytes-{seed}".encode())
@@ -2579,3 +2589,47 @@ class TestDispatchSurface:
         assert "MemoryHigh=5G" in text
         assert "MemoryMax=6G" in text
         assert "MemorySwapMax=1G" in text
+
+
+class TestStoppingContractGate:
+    """AUD-P1LR-20260815-234: decision mode may not EXECUTE a stopping
+    rule it does not DECLARE."""
+
+    def test_shipped_contract_is_refused_because_it_hides_epoch_80(
+            self, bindings):
+        contract = copy.deepcopy(_contract())
+        refusal = p1.assert_seed_stopping_contract(contract, bindings,
+                                                   101)
+        assert refusal["outcome"] == \
+            "REFUSED_STOPPING_CONTRACT_UNDECLARED"
+        assert refusal["code"] == "UNDECLARED_PREEMPTION"
+        assert "epoch 80" in refusal["reason"]
+
+    def test_corrected_declaration_yields_per_cell_evidence(
+            self, bindings):
+        contract = copy.deepcopy(_contract())
+        contract["decision_run"]["effective_stopping_rules"] = {
+            "terminators": ["l1_early_stop", "activity_stop",
+                            "max_epochs_budget"],
+            "earliest_stop_epoch": 80,
+        }
+        evidence = p1.assert_seed_stopping_contract(contract, bindings,
+                                                    101)
+        assert "outcome" not in evidence
+        assert sorted(evidence["cells"]) == sorted(p1.CELLS)
+        for cell_evidence in evidence["cells"].values():
+            assert cell_evidence["earliest_effective_stop_epoch"] == 80
+            assert cell_evidence["preempts_declared_ceiling"] is True
+
+    def test_a_seed_is_refused_before_any_gpu_or_anchor_work(
+            self, runtime):
+        contract = copy.deepcopy(runtime.contract)
+        contract["decision_run"].pop("effective_stopping_rules")
+        summary = _run_seed(
+            SimpleNamespace(**{**vars(runtime), "contract": contract}),
+            mode="decision",
+            screen_gate=_viable_screen_gate(contract),
+            outer_eval_fn=_fake_outer_eval)
+        assert summary["outcome"] == \
+            "REFUSED_STOPPING_CONTRACT_UNDECLARED"
+        assert FakePipeline.calls == []

@@ -883,3 +883,106 @@ program of §6, on viability grounds. The formal P1LR outcome remains
 the L2 comparison consumes this frozen L1, residual doubts 1 and 2 must be
 resolved or explicitly accepted in writing, because an L1 whose phase-2 stage
 contributes nothing is a weak foundation for attributing L2 effects.
+
+## 19. 2026-08-15 Stopping-Contract Correction and Dead-Actor Finding
+
+The terminal P1LR decision identity `c0e53cf18b7d60dd` sealed 16/16 records
+with `PARTIAL_ACTIVITY_SURVIVAL`. An independent evidence review raised two
+HIGH doubts. Both are resolved here. This section replaces the §5.1 stopping
+sentence and amends §12's mechanism label.
+
+### 19.1 The stopping contract §5.1 should have said (corrected text)
+
+Three rules can end L1 training, and the contract declares all three or it is
+incomplete:
+
+1. `l1_early_stop` — improvement patience `l1_patience=60` starting at floor
+   `l1_patience_start_epoch=40`, measured on `paired_generalization_weekly_v1`.
+   It advances ONLY on activity-eligible epochs. A policy that never passes the
+   trade gate can never consume improvement patience, so this rule cannot
+   terminate an inactive arm at all. Earliest possible stop: epoch 100.
+2. `activity_stop` — activity-ineligible patience `l1_activity_patience=40`
+   starting at `l1_activity_patience_start_epoch=40`. Independent of, and never
+   charged to, improvement patience. Earliest possible stop: **epoch 80**.
+3. `max_epochs_budget` — the 2,000 pass-equivalent global ceiling, a safety
+   ceiling and never the intended stopping point.
+
+The earliest effective stop is therefore **epoch 80 — 4% of the declared
+ceiling — and that is the contract**, not a truncation. The prior text named
+only the paired rule and left the reader to derive epoch 80 from two knobs
+buried in `stopping_knobs`. Every future decision contract states
+`effective_stopping_rules.terminators` and
+`effective_stopping_rules.earliest_stop_epoch` explicitly, and
+`app/stopping_contract.py` REFUSES to start a decision seed whose effective
+rules differ from its declared ones.
+
+### 19.2 Doubt B verdict — correct fail-fast, wrong contract text
+
+The activity stop did not pre-empt the paired comparator; the paired comparator
+was structurally inert. `_update_l1_checkpoint_state` returns `no_improve`
+unchanged for any epoch that fails the trade gate, and every terminal record
+shows `l1_patience_used = 0` and `l1_patience_eligible = false` at epoch 79.
+With the activity stop disabled, every cell would have run to the ceiling and
+selected the SAME checkpoint at ~25x the compute. The behaviour is correct; the
+declaration was not.
+
+One real (already corrected) defect is visible in the sealed records: all
+sixteen cells carry `stop_reason = "activity_stop_no_eligible_checkpoint"`,
+including the eight ACTIVE cells that did hold a best checkpoint.
+`_activity_stop_disposition` (agent-multi@2f531780, 2026-08-14) now emits
+`activity_stop_after_best_checkpoint` for that case. The pinned decision
+runtime predates it, so the label in the sealed records is stale; the run is
+not affected.
+
+### 19.3 Doubt A verdict — confirmed, with the mechanism named
+
+Phase 2 contributed NOTHING to any selected artifact. Recomputed read-only from
+the sealed zips, the seed-101 active cells' `model.zip` policy-tensor digests
+are bit-identical to `boundary_transfer_evidence.source_policy_tensor_hash`
+(`d9298ab7…` for P1E_LR3E5, `33edd255…` for P1N_LR3E5). The reported 2024
+outer-validation numbers measure the PHASE-1 handoff evaluated under normal
+conditions after 1,579,000 phase-2 gradient updates changed nothing.
+
+The cause is not the deadband, the learning rate or the epoch budget. It is a
+**dead first hidden layer in the SAC actor**. For every scored step of every
+split, `val_action_raw_min == val_action_raw_max` and `val_action_raw_std` is
+exactly `0.0`: the actor is a CONSTANT FUNCTION of the observation. That
+constant is reproducible from the weights alone as
+`tanh(W_mu · ReLU(b_latent2) + b_mu)` — i.e. with the first layer's ReLU output
+identically zero — and it matches the recorded per-epoch action to float32
+precision in all four seed-101 cells (for example P1E_LR1E4 predicts
+`-0.00099396764` against the recorded `-0.000993967056`).
+
+Replaying the real `inner_validation` observations against the sealed
+artifacts: the phase-1 handoff has **21/256** live first-layer units and emits
+actions in `[0.034, 0.101]`; the phase-2 terminal has **0/256** and emits the
+single constant `-0.001271`. Mean first-layer pre-activation is `-63.8` at the
+handoff and `-72.8` at the terminal. The driver is the observation contract:
+`include_price_window: true` injects 64 UNNORMALIZED dimensions (raw ETH prices
+around 1,742 and raw price diffs) into an otherwise rolling-z-scored,
+±10-clipped 2,724-dimension observation. The unnormalized block dominates the
+first layer and pushes it into the dead-ReLU regime.
+
+A dead ReLU layer has exactly zero gradient through the observation path. The
+collapse is therefore IRRECOVERABLE by construction, which falsifies every
+remaining hypothesis: LR `1e-4` and `3e-5` behave identically; the action
+amplitude shows no trend across 79 epochs (first-20 mean `0.00162`, last-20
+mean `0.00168`, all-time max `0.0094` against a `0.1` threshold); and no
+checkpoint bookkeeping bug exists — the warm-start baseline floor correctly
+protected the handoff from being replaced by a collapsed epoch-1 policy.
+
+§12's label "pre-existing action-amplitude collapse exposed by the normal
+deadband" is refined to **dead-ReLU actor collapse driven by an unnormalized
+price block in the observation contract, observed as a constant policy far
+below the deadband**.
+
+### 19.4 Consequence for L2
+
+The L1 recipe measured by identity `c0e53cf18b7d60dd` is a PHASE-1 measurement
+only. Its phase-2 normal-realistic fine-tuning stage is not merely
+uninformative — it destroys the policy in its first epoch and is provably
+unable to recover. Freezing that recipe for L2 freezes a stage that cannot
+contribute, so the L2 arms would differ only in phase-1 treatment while burning
+four GPUs on phase-2 compute that is guaranteed dead. The observation contract
+is corrected before L2 attribution, or L2 declares in writing that its phase-2
+stage is a known no-op.

@@ -141,6 +141,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from app import stopping_contract as stopping  # noqa: E402
 from pipeline_plugins import _nested_splits  # noqa: E402
 from pipeline_plugins import _paired_generalization as _paired  # noqa: E402
 from pipeline_plugins import _system_config as sysid  # noqa: E402
@@ -838,6 +839,40 @@ def intended_delta_fields(contract: dict, cell_a: str,
 # ---------------------------------------------------------------------------
 # materialization — the ONLY path from contract to a runnable config
 # ---------------------------------------------------------------------------
+
+def assert_seed_stopping_contract(contract: dict, bindings: dict,
+                                  seed: int) -> dict:
+    """Refuse a decision seed whose stopping rule is undeclared.
+
+    AUD-P1LR-20260815-234. Every cell of the seed is materialized into a
+    throwaway directory and its RESOLVED config — the dict the pipeline
+    actually receives — is compared against ``decision_run``. This is the
+    executing path, so a knob that never reaches the config, a
+    terminator the contract does not name, or an earliest stop epoch far
+    below the declared ceiling is caught before the seed spends a
+    second of GPU.
+
+    Returns the per-cell evidence on success, or a typed refusal dict
+    (carrying ``outcome``) on the first violation.
+    """
+    import tempfile
+
+    evidence: dict = {"schema": stopping.SCHEMA, "cells": {}}
+    declared = contract.get("decision_run") or {}
+    with tempfile.TemporaryDirectory(prefix="p1lr_stopping_") as scratch:
+        for cell in (contract.get("cell_order") or {}).get(
+                str(seed), CELLS):
+            config = materialize_cell_config(
+                contract, bindings, int(seed), cell,
+                Path(scratch) / cell, mode="decision")
+            cell_evidence, refusal = stopping.stopping_contract_refusal(
+                declared=declared, config=config,
+                label=f"decision_run[seed{seed}/{cell}]")
+            if refusal is not None:
+                return refusal
+            evidence["cells"][cell] = cell_evidence
+    return evidence
+
 
 def materialize_cell_config(contract: dict, bindings: dict, seed: int,
                             cell: str, out_dir: Path,
@@ -1946,6 +1981,14 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
             return _seed_refusal({
                 "outcome": "REFUSED_DECISION_UNGATED",
                 "reason": "; ".join(gate_refusals)})
+        # AUD-P1LR-20260815-234: a decision run may not EXECUTE a
+        # stopping rule it does not DECLARE. The check runs on the real
+        # resolved cell config, before any GPU, anchor or dataset work.
+        stopping_evidence = assert_seed_stopping_contract(
+            contract, bindings, seed)
+        if isinstance(stopping_evidence, dict) and \
+                stopping_evidence.get("outcome"):
+            return _seed_refusal(stopping_evidence)
 
     refusal = check_gpu_binding(contract, seed, enforce=enforce_gpu)
     if refusal:
