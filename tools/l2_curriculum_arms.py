@@ -50,6 +50,32 @@ enforced:
                          ``open_or_join_chain``
 10  four-GPU smoke       ``--mode smoke`` + ``smoke_dispatch_commands``
 
+Three ADDITIONAL gates close the failure mode that voided three prior
+experiments (finding D8-20260815). That failure was never a measurement
+bug: when no checkpoint passed the trade/activity gate, selection fell
+back to the untouched warm-start anchor, so every arm scored the SAME
+object and the campaign silently measured the anchor instead of the
+treatment. In ``eth_curriculum_decision_20260807_v2`` the arms E4,
+EN4_10 and N14 all selected checkpoints whose POLICY TENSOR is
+bit-identical to ``anchor_seed101.zip`` (``8137b224…``), so the paired
+EN-minus-N difference was subtracting the anchor from itself.
+
+11  anchor-fallback      ``selected_checkpoint_anchor_facts`` (per
+                         candidate, inside ``evaluate_candidate``) +
+                         ``assert_arm_not_anchor_fallback`` (per arm,
+                         inside ``champion_of_chain``)
+12  arm differentiation  ``compare_arms`` →
+                         ``arm_differentiation.assert_arms_differentiated``
+13  campaign verdict     ``compare_arms(require_informative=True)``, so an
+                         all-degenerate campaign is typed
+                         CAMPAIGN_UNANSWERABLE instead of published as a
+                         scientific null; surfaced by ``smoke_acceptance``
+
+Identity of a checkpoint is ALWAYS its policy TENSOR hash, never the
+``.zip`` container digest: Stable-Baselines3 containers embed member
+timestamps, so the same weights saved twice hash differently and a
+container rule would have missed every one of those three sites.
+
 Nothing here authorizes a launch. A smoke or decision dispatch still
 requires the GPU readiness gate, the contract-assigned host and the
 contract-assigned GPU UUID.
@@ -73,6 +99,7 @@ from optimizer_plugins import l2_curriculum_optimizer as _l2  # noqa: E402
 from pipeline_plugins import _nested_splits  # noqa: E402
 from pipeline_plugins import _paired_generalization as _paired  # noqa: E402
 from pipeline_plugins import _system_config as sysid  # noqa: E402
+from tools import arm_differentiation as _armdiff  # noqa: E402
 from tools import gpu_readiness_probe as gpu_probe  # noqa: E402
 from tools import m0_l1_mechanism_ladder as ladder  # noqa: E402
 from tools import p1_difficulty_lr_factorial as p1  # noqa: E402
@@ -93,6 +120,11 @@ GENERATION_RECORD_SCHEMA = _l2.GENERATION_RECORD_SCHEMA
 HEARTBEAT_SCHEMA = "agent_multi.l2_curriculum_heartbeat.v1"
 PREFLIGHT_SCHEMA = "agent_multi.l2_curriculum_preflight.v1"
 DISPATCH_SCHEMA = "agent_multi.l2_smoke_dispatch.v1"
+ANCHOR_GATE_SCHEMA = "agent_multi.l2_anchor_fallback_gate.v1"
+ARM_ANCHOR_SCHEMA = "agent_multi.l2_arm_anchor_fallback.v1"
+BEHAVIOR_FACTS_SCHEMA = "agent_multi.l2_scored_behavior_facts.v1"
+CAMPAIGN_VERDICT_SCHEMA = "agent_multi.l2_campaign_verdict.v1"
+ACCEPTANCE_SCHEMA = "agent_multi.l2_smoke_acceptance.v1"
 HEARTBEAT_INTERVAL_S = 60
 
 ARMS = ("L2_N", "L2_EN")
@@ -104,6 +136,16 @@ WORKERS = ("w1", "w2", "w3", "w4")
 SELECTION_METRIC = _paired.METRIC_NAME
 EVIDENCE_PAIR = ("inner_validation", "outer_validation")
 
+#: The metric tuple the arm-differentiation ladder compares. It is the
+#: DECISION-side truth (outer validation) plus the paired objective and
+#: the inner member, so two arms that separate on any of them separate
+#: here. ``arm_differentiation.DEFAULT_METRIC_KEYS`` names the P1LR
+#: fields; the L2 pair reports its own, hence an explicit tuple.
+L2_METRIC_KEYS = ("paired_score", "outer_mean_weekly_rap",
+                  "outer_mean_weekly_return", "outer_total_return",
+                  "outer_max_drawdown_fraction", "outer_trades_total",
+                  "inner_mean_weekly_rap")
+
 EXIT_CLASS = {
     "PREFLIGHT_PASS": 0,
     "CHAIN_JOINED": 0,
@@ -112,6 +154,8 @@ EXIT_CLASS = {
     "GENERATION_COMPLETE": 0,
     "STOPPED_ON_PATIENCE": 0,
     "DISPATCH_PLAN": 0,
+    "CAMPAIGN_VERDICT": 0,
+    "ACCEPTANCE_PASS": 0,
     "ALREADY_RUNNING": 3,
     "PREFLIGHT_REFUSED": 4,
     "REFUSED_BAD_CONTRACT": 4,
@@ -121,8 +165,33 @@ EXIT_CLASS = {
     "REFUSED_NODE_IDENTITY_MISMATCH": 4,
     "REFUSED_OUT_OF_ARM_ORDER": 4,
     "REFUSED_ANCHOR_UNVERIFIED": 4,
+    "REFUSED_ANCHOR_FALLBACK": 4,
+    "REFUSED_ARMS_NOT_DIFFERENTIATED": 4,
+    "CAMPAIGN_UNANSWERABLE": 4,
+    "CAMPAIGN_INCOMPLETE": 4,
+    "ACCEPTANCE_REFUSED": 4,
     "WORKER_FAILED": 1,
 }
+
+
+class L2AnchorFallbackRefusal(RuntimeError):
+    """Typed refusal: every selected checkpoint IS the frozen anchor.
+
+    Carries the arm's facts so the refusal is auditable without
+    re-deriving them (finding D8-20260815).
+    """
+
+    def __init__(self, facts: dict) -> None:
+        self.facts = dict(facts)
+        super().__init__(
+            "REFUSED_ANCHOR_FALLBACK: arm "
+            f"{facts.get('arm')!r} selected {facts.get('checked_candidates')}"
+            " checkpoint(s) and EVERY one of them is bit-identical to the"
+            f" frozen warm-start anchor policy tensor"
+            f" {str(facts.get('anchor_policy_tensor_sha256'))[:16]}… — no"
+            " candidate learned anything, so this arm measured the anchor,"
+            " not the treatment. A null result here would be an artefact"
+            " of selection fallback and is refused rather than reported")
 
 
 def _sha_file(path: Path) -> str:
@@ -698,6 +767,15 @@ def materialize_candidate_config(contract: dict, bindings: dict, *,
     stopping = mode_setting(contract, mode, "candidate_stopping_knobs")
 
     config = json.loads(base_path.read_text())
+    observation_contract = contract.get("observation_contract")
+    if not isinstance(observation_contract, dict) or not observation_contract:
+        raise RuntimeError(
+            "the L2 experiment declares no observation_contract; refusing "
+            "before candidate identity or model construction")
+    # Bind the declaration explicitly into the materialized candidate. The
+    # pipeline still validates and applies it, but no worker has to rediscover
+    # its own contract by scanning repository files from an identity digest.
+    config["observation_contract"] = dict(observation_contract)
     for field in ("train_years", "val_years", "test_years", "train_days",
                   "val_days", "test_days", "train_start", "train_end",
                   "validation_start", "validation_end", "val_start",
@@ -835,6 +913,208 @@ def materialize_candidate_config(contract: dict, bindings: dict, *,
         "plugins": dict(common["plugins"]),
     }
     return config
+
+
+# ---------------------------------------------------------------------------
+# gate 11 — the anchor-fallback gate (finding D8-20260815)
+#
+# The highest-value check in this file. Selection that finds no
+# activity-eligible checkpoint used to fall back to the untouched
+# warm-start anchor, so the arm scored the anchor and the treatment was
+# never measured. Identity is the POLICY TENSOR hash: SB3 ``.zip``
+# containers embed member mtimes, so the same weights saved twice yield
+# different container digests and a container rule proves nothing.
+# ---------------------------------------------------------------------------
+
+def default_policy_tensor_sha256(path: Path | str) -> str:
+    """The ONE checkpoint identity used by this program."""
+    return _armdiff.policy_tensor_sha256(path)
+
+
+def anchor_binding(contract: dict) -> dict | None:
+    """The frozen common anchor, or ``None`` for a cold-start contract."""
+    recipe = contract.get("frozen_l1_recipe") or {}
+    if recipe.get("candidate_initialization") != "frozen_common_anchor":
+        return None
+    anchor = dict(recipe.get("common_anchor") or {})
+    if not anchor.get("path"):
+        raise RuntimeError(
+            "REFUSED_ANCHOR_UNVERIFIED: the contract warm-starts from a "
+            "frozen common anchor but declares no anchor path")
+    anchor["path"] = str(Path(str(anchor["path"])).expanduser())
+    return anchor
+
+
+def anchor_policy_tensor_sha256(contract: dict, *,
+                                policy_tensor_sha_fn=None) -> dict:
+    """Hash the frozen anchor's POLICY TENSORS, fail-closed.
+
+    An anchor whose tensors cannot be read is a typed
+    ``REFUSED_ANCHOR_UNVERIFIED``: without the anchor's tensor hash the
+    fallback gate cannot fire, and a gate that cannot fire is worse than
+    no gate at all because it looks like a pass.
+    """
+    anchor = anchor_binding(contract)
+    if anchor is None:
+        return {"declared": False, "anchor_path": None,
+                "anchor_container_sha256": None,
+                "anchor_policy_tensor_sha256": None,
+                "reason": "the contract declares a cold start; there is no "
+                          "warm-start anchor a candidate could fall back to"}
+    path = Path(anchor["path"])
+    if not path.is_file():
+        raise RuntimeError(
+            f"REFUSED_ANCHOR_UNVERIFIED: the frozen common anchor {path} "
+            "does not exist, so no candidate's selected checkpoint can be "
+            "proven different from it")
+    container = _sha_file(path)
+    declared = anchor.get("sha256")
+    if declared and container != declared:
+        raise RuntimeError(
+            f"REFUSED_ANCHOR_UNVERIFIED: the frozen common anchor {path} "
+            f"hashes to {container} but the contract pins {declared}")
+    fn = policy_tensor_sha_fn or default_policy_tensor_sha256
+    try:
+        tensor_sha = fn(path)
+    except Exception as exc:                                # noqa: BLE001
+        raise RuntimeError(
+            f"REFUSED_ANCHOR_UNVERIFIED: cannot read the policy tensors of "
+            f"the frozen common anchor {path}: {type(exc).__name__}: {exc} "
+            "— the anchor-fallback gate would silently pass") from exc
+    return {"declared": True, "anchor_path": str(path),
+            "anchor_container_sha256": container,
+            "anchor_policy_tensor_sha256": str(tensor_sha),
+            "reason": "frozen common anchor policy tensors hashed"}
+
+
+def selected_checkpoint_anchor_facts(contract: dict,
+                                     selected_path: str | Path | None, *,
+                                     policy_tensor_sha_fn=None,
+                                     anchor_facts: dict | None = None
+                                     ) -> dict:
+    """Gate 11, per candidate: is the SELECTED checkpoint the anchor?
+
+    Returns a typed fact, never a bare boolean, so the candidate record
+    carries BOTH tensor shas and the reason. ``selected_equals_anchor``
+    is ``None`` only when there was no selected checkpoint at all (an
+    inactive candidate) or when the contract declares a cold start —
+    both are separately typed outcomes, never a silent pass.
+    """
+    facts = anchor_facts or anchor_policy_tensor_sha256(
+        contract, policy_tensor_sha_fn=policy_tensor_sha_fn)
+    payload = {
+        "schema": ANCHOR_GATE_SCHEMA,
+        "anchor_declared": bool(facts.get("declared")),
+        "anchor_path": facts.get("anchor_path"),
+        "anchor_container_sha256": facts.get("anchor_container_sha256"),
+        "anchor_policy_tensor_sha256":
+            facts.get("anchor_policy_tensor_sha256"),
+        "selected_model_path": (str(selected_path) if selected_path
+                                else None),
+        "selected_container_sha256": None,
+        "selected_policy_tensor_sha256": None,
+        "selected_equals_anchor": None,
+        "checked": False,
+        "identity": "policy_tensor_sha256",
+        "reason": "",
+    }
+    if selected_path is None:
+        payload["reason"] = (
+            "no checkpoint was selected, so nothing could fall back to the "
+            "anchor; the candidate is typed inactive instead")
+        return payload
+    if not facts.get("declared"):
+        payload["reason"] = str(facts.get("reason"))
+        return payload
+    path = Path(str(selected_path))
+    if not path.is_file():
+        raise RuntimeError(
+            f"REFUSED_ANCHOR_UNVERIFIED: the selected checkpoint {path} "
+            "vanished before the anchor-fallback gate could hash it")
+    fn = policy_tensor_sha_fn or default_policy_tensor_sha256
+    try:
+        tensor_sha = str(fn(path))
+    except Exception as exc:                                # noqa: BLE001
+        raise RuntimeError(
+            f"REFUSED_ANCHOR_UNVERIFIED: cannot read the policy tensors of "
+            f"the selected checkpoint {path}: {type(exc).__name__}: {exc}"
+        ) from exc
+    payload["selected_container_sha256"] = _sha_file(path)
+    payload["selected_policy_tensor_sha256"] = tensor_sha
+    payload["checked"] = True
+    equal = tensor_sha == payload["anchor_policy_tensor_sha256"]
+    payload["selected_equals_anchor"] = equal
+    payload["reason"] = (
+        "the selected checkpoint's policy tensor is BIT-IDENTICAL to the "
+        "frozen warm-start anchor: this candidate did not learn, it IS the "
+        "anchor, and any score computed from it measures the anchor rather "
+        "than the treatment (finding D8-20260815)" if equal else
+        "the selected checkpoint's policy tensor differs from the frozen "
+        "warm-start anchor: training moved the weights that were scored")
+    return payload
+
+
+def evidence_behavior_facts(evidence: dict) -> dict:
+    """Behaviour evidence for the SCORED policy — the L2 analogue of
+    ``arm_differentiation.trace_behavior_facts``.
+
+    The L2 role replay (``p1._outer_validation_final_eval``) keeps its
+    trace in memory and returns the per-week return vector instead of
+    writing a CSV, so the behavioural evidence available here is that
+    vector plus the closed-trade count. The degeneracy predicate is the
+    trace helper's, transposed: a scored window with no trades, or whose
+    weekly return vector carries a single distinct value, could not have
+    depended on its observations, and two such arms are ENTITLED to
+    identical metrics. Degeneracy is proven from the evidence, never
+    assumed.
+
+    Identity labels (seed, run_id, episode_id) are excluded by
+    construction: only the weekly vector, the trade count and the role
+    name enter the digest.
+    """
+    roles = []
+    trades = []
+    distinct = 0
+    weeks = 0
+    for role in EVIDENCE_PAIR:
+        payload = (evidence or {}).get(role) or {}
+        vector = [float(value) for value in
+                  (payload.get("weekly_return_vector") or [])]
+        total = payload.get("trades_total")
+        roles.append({"role": role,
+                      "weekly_return_vector": vector,
+                      "trades_total": total})
+        weeks = max(weeks, len(vector))
+        distinct = max(distinct, len({repr(value) for value in vector}))
+        if total is not None:
+            trades.append(int(total))
+    if not any(role["weekly_return_vector"] for role in roles) and not trades:
+        return {"schema": BEHAVIOR_FACTS_SCHEMA,
+                "behavior_fingerprint": None,
+                "behavior_degenerate": True,
+                "trades_total": 0,
+                "distinct_weekly_returns": 0,
+                "weeks": 0,
+                "reason": "no scored evidence exists for this candidate"}
+    fingerprint = hashlib.sha256(json.dumps(
+        roles, sort_keys=True, separators=(",", ":"),
+        default=str).encode()).hexdigest()
+    trades_total = min(trades) if trades else 0
+    degenerate = trades_total <= 0 or distinct <= 1
+    return {
+        "schema": BEHAVIOR_FACTS_SCHEMA,
+        "behavior_fingerprint": fingerprint,
+        "behavior_degenerate": bool(degenerate),
+        "trades_total": trades_total,
+        "distinct_weekly_returns": distinct,
+        "weeks": weeks,
+        "reason": ("the scored window produced no trades or a constant "
+                   "weekly return vector, so this policy's output could "
+                   "not have depended on its observations"
+                   if degenerate else
+                   "the scored window varies week to week under a live "
+                   "trade count"),
+    }
 
 
 def candidate_identity(chain_id: str, generation: int, index: int,
@@ -981,13 +1261,21 @@ def evaluate_candidate(contract: dict, bindings: dict, *, arm: str,
                        generation: int, chain_id: str, out_dir: Path,
                        mode: str, pipeline_factory=None,
                        agent_loader=None, nested_roles_fn=None,
-                       role_eval_fn=None) -> dict:
+                       role_eval_fn=None, policy_tensor_sha_fn=None,
+                       anchor_facts: dict | None = None) -> dict:
     """Train ONE candidate under the frozen L1 recipe and score it with
     the paired inner/outer comparator under the stage's difficulty.
 
     Easy stages are scored under easy solvency dynamics and the record is
     stamped ``evaluation_difficulty=easy_chronological_continuation`` so
     it can never be mistaken for decision evidence.
+
+    Gate 11 fires BEFORE the paired evidence is computed: if the selected
+    checkpoint's policy tensor is bit-identical to the frozen warm-start
+    anchor, this candidate did not learn — it IS the anchor — and scoring
+    it would produce the anchor's numbers under the treatment's name.
+    Such a candidate is typed as a REJECTED, MEASURED outcome (never an
+    imputed zero), exactly like the inactive case beside it.
     """
     started = _utc()
     config = materialize_candidate_config(
@@ -1010,12 +1298,28 @@ def evaluate_candidate(contract: dict, bindings: dict, *, arm: str,
     best_path = result.get("best_model_path")
     active = bool(best_path) and Path(str(best_path)).is_file()
 
+    # --- gate 11: the selected checkpoint may not BE the anchor --------
+    anchor_gate = selected_checkpoint_anchor_facts(
+        contract, str(best_path) if active else None,
+        policy_tensor_sha_fn=policy_tensor_sha_fn,
+        anchor_facts=anchor_facts)
+    anchor_fallback = anchor_gate["selected_equals_anchor"] is True
+
     difficulty = str(stage["evaluation_difficulty"])
     solvency_mode = (_l2.EASY if difficulty == _l2.EASY else _l2.NORMAL)
     evidence: dict = {}
     paired: dict
     rejected_reason = None
-    if active:
+    if anchor_fallback:
+        paired = {"schema": _paired.SCHEMA, "metric": SELECTION_METRIC,
+                  "eligible": False, "paired_score": None,
+                  "ineligibility_reasons": [
+                      "selected checkpoint is bit-identical to the frozen"
+                      " warm-start anchor — the candidate did not learn,"
+                      " so its score would measure the anchor and not the"
+                      " treatment (finding D8-20260815)"]}
+        rejected_reason = "selected_checkpoint_is_the_frozen_warm_start_anchor"
+    elif active:
         for role in EVIDENCE_PAIR:
             evidence[role] = (role_eval_fn or _role_eval)(
                 config=config, agent=agent, model_path=str(best_path),
@@ -1037,6 +1341,7 @@ def evaluate_candidate(contract: dict, bindings: dict, *, arm: str,
         rejected_reason = "no_activity_eligible_checkpoint"
 
     fitness = paired.get("paired_score") if paired.get("eligible") else None
+    behavior = evidence_behavior_facts(evidence)
     record = {
         "schema": CANDIDATE_RECORD_SCHEMA,
         "candidate_identity": candidate_identity(
@@ -1069,6 +1374,21 @@ def evaluate_candidate(contract: dict, bindings: dict, *, arm: str,
         "best_model_path": str(best_path) if active else None,
         "best_model_sha256": (_sha_file(Path(str(best_path)))
                               if active else None),
+        # --- gate 11 facts (finding D8-20260815) -----------------------
+        # The identity of the weights that produced `paired`, hashed as
+        # TENSORS. `best_model_sha256` above is the CONTAINER digest and
+        # is unusable as an identity: SB3 zips embed member mtimes, so
+        # the same weights saved twice hash differently there.
+        "scored_policy_tensor_sha256":
+            anchor_gate["selected_policy_tensor_sha256"],
+        "anchor_policy_tensor_sha256":
+            anchor_gate["anchor_policy_tensor_sha256"],
+        "selected_equals_anchor": anchor_gate["selected_equals_anchor"],
+        "anchor_fallback_gate": anchor_gate,
+        # --- behaviour evidence for the differentiation ladder ---------
+        "behavior": behavior,
+        "behavior_fingerprint": behavior["behavior_fingerprint"],
+        "behavior_degenerate": behavior["behavior_degenerate"],
         "config_identity": identity,
         "resolved_config_sha256": sysid.resolved_config_sha256(config),
         "nested_split_manifest_sha256": nested_roles["manifest_sha256"],
@@ -1357,28 +1677,326 @@ def _reproduction_seed(registry: dict, generation: int,
     return int.from_bytes(digest.digest()[:4], "big")
 
 
-def champion_of_chain(chain_path: Path) -> dict:
-    """The ONLY champion resolver. It refuses first: an easy-evaluated or
-    pending-re-evaluation entry can never become champion (requirement 2).
-    """
+def chain_candidate_records(chain_path: Path, *,
+                            difficulty: str | None = None) -> list:
+    """Every finalized candidate record of ONE chain, in chain order."""
     registry = json.loads((chain_path / "chain.json").read_text())
     entries = []
     for generation in range(int(registry["finalized_generations"])):
         gen_path = generation_dir(chain_path, generation)
         record = json.loads((gen_path / "generation_record.json").read_text())
-        if record["evaluation_difficulty"] != _l2.NORMAL:
+        if difficulty is not None and \
+                record["evaluation_difficulty"] != difficulty:
             continue
         for index in range(int(registry["population_size"])):
             path = gen_path / f"candidate{index:03d}" / \
                 "candidate_record.json"
             if path.is_file():
                 entries.append(json.loads(path.read_text()))
+    return entries
+
+
+def arm_anchor_fallback_facts(chain_path: Path) -> dict:
+    """Gate 11, per ARM: how many selected checkpoints ARE the anchor.
+
+    ``checked_candidates`` counts only the candidates that actually
+    selected a checkpoint and whose tensor identity was established, so
+    an inactive arm is never mistaken for an anchor-fallback arm — those
+    are different diagnoses with different remedies.
+    """
+    registry = json.loads((chain_path / "chain.json").read_text())
+    records = chain_candidate_records(chain_path)
+    checked = [record for record in records
+               if record.get("selected_equals_anchor") is not None]
+    equal = [record for record in checked
+             if record["selected_equals_anchor"] is True]
+    anchor_shas = {str(record.get("anchor_policy_tensor_sha256"))
+                   for record in checked
+                   if record.get("anchor_policy_tensor_sha256")}
+    facts = {
+        "schema": ARM_ANCHOR_SCHEMA,
+        "arm": registry.get("arm"),
+        "mode": registry.get("mode"),
+        "chain_identity": registry.get("chain_identity"),
+        "chain_dir": str(chain_path),
+        "candidates": len(records),
+        "checked_candidates": len(checked),
+        "selected_equals_anchor_count": len(equal),
+        "selected_equals_anchor_ids": [record["candidate_identity"]
+                                       for record in equal],
+        "anchor_policy_tensor_sha256": (sorted(anchor_shas)[0]
+                                        if len(anchor_shas) == 1 else
+                                        sorted(anchor_shas) or None),
+        "distinct_scored_policy_tensors": len({
+            str(record.get("scored_policy_tensor_sha256"))
+            for record in checked
+            if record.get("scored_policy_tensor_sha256")}),
+        "inactive_candidates": sum(
+            1 for record in records
+            if record.get("activity_status") != "active"),
+        "all_selected_equal_anchor": bool(checked) and len(equal) == len(
+            checked),
+    }
+    facts["verdict"] = ("ANCHOR_FALLBACK" if facts["all_selected_equal_anchor"]
+                        else "NOT_EVALUATED" if not checked
+                        else "PARTIAL_ANCHOR_FALLBACK" if equal
+                        else "OK")
+    return facts
+
+
+def assert_arm_not_anchor_fallback(chain_path: Path) -> dict:
+    """Refuse an arm that measured the anchor instead of the treatment.
+
+    The diagnosis of finding D8-20260815 states this single check "would
+    have caught sites 1 and 2 on day one". An arm whose every selected
+    checkpoint is the frozen anchor has produced NO evidence about its
+    treatment, so it refuses rather than publishing a null.
+    """
+    facts = arm_anchor_fallback_facts(chain_path)
+    if facts["all_selected_equal_anchor"]:
+        raise L2AnchorFallbackRefusal(facts)
+    return facts
+
+
+def champion_of_chain(chain_path: Path) -> dict:
+    """The ONLY champion resolver. It refuses first: an arm that measured
+    only the anchor (gate 11), then an easy-evaluated or
+    pending-re-evaluation entry, can never become champion (requirements
+    2 and 11).
+    """
+    anchor = assert_arm_not_anchor_fallback(chain_path)
+    entries = chain_candidate_records(chain_path, difficulty=_l2.NORMAL)
     ranked = _l2.normal_leaderboard(entries)
     if not ranked:
         return {"champion": None,
-                "reason": "no eligible normal-realistic candidate"}
+                "reason": "no eligible normal-realistic candidate",
+                "anchor_fallback": anchor}
     _l2.assert_promotion_eligible(ranked[0], action="champion")
-    return {"champion": ranked[0], "leaderboard_size": len(ranked)}
+    return {"champion": ranked[0], "leaderboard_size": len(ranked),
+            "anchor_fallback": anchor}
+
+
+# ---------------------------------------------------------------------------
+# gates 12 and 13 — the ARM-COMPARISON boundary
+#
+# The only place where L2_N and L2_EN are put beside each other. Nothing
+# may cross this boundary without proving that the two arms could have
+# differed at all: `arm_differentiation.assert_arms_differentiated` reads
+# the same per-candidate facts the records already carry and answers,
+# with a typed verdict, whether an identical result is a real outcome or
+# a lost distinction. Its semantics are respected exactly — a legitimately
+# dead pair of arms (DEGENERATE_IDENTICAL) is NOT a defect, and is typed
+# CAMPAIGN_UNANSWERABLE by require_informative rather than published as a
+# scientific null.
+# ---------------------------------------------------------------------------
+
+def arm_treatment(contract: dict, arm: str, mode: str) -> dict:
+    """The DECLARED treatment of one arm: its stage difficulty policy.
+
+    This is what the campaign claims to vary. If two arms render the
+    same treatment key the ladder returns SAME_TREATMENT and refuses to
+    call the pair a comparison at all.
+    """
+    schedule = arm_schedule(contract, arm, mode)
+    return {
+        "arm": arm,
+        "stage_names": [str(stage["name"]) for stage in schedule],
+        "stage_kinds": [str(stage["stage_kind"]) for stage in schedule],
+        "stage_difficulties": [str(stage["evaluation_difficulty"])
+                               for stage in schedule],
+        "declares_easy_triage": any(
+            stage["evaluation_difficulty"] == _l2.EASY
+            for stage in schedule),
+        "decision_evidence_difficulty": _l2.NORMAL,
+    }
+
+
+def candidate_metric_tuple(record: dict | None) -> dict:
+    """The comparable metric tuple of ONE candidate record.
+
+    Absent evidence renders as ``None`` rather than an imputed zero, so a
+    dead arm never fabricates a number it did not measure.
+    """
+    evidence = (record or {}).get("evidence") or {}
+    outer = dict((evidence.get("outer_validation") or {}).get("metrics")
+                 or {})
+    inner = dict((evidence.get("inner_validation") or {}).get("metrics")
+                 or {})
+    paired = (record or {}).get("paired") or {}
+    return {
+        "paired_score": paired.get("paired_score"),
+        "outer_mean_weekly_rap": outer.get("mean_weekly_rap"),
+        "outer_mean_weekly_return": outer.get("mean_weekly_return"),
+        "outer_total_return": outer.get("total_return"),
+        "outer_max_drawdown_fraction": outer.get("max_drawdown_fraction"),
+        "outer_trades_total": (evidence.get("outer_validation")
+                               or {}).get("trades_total"),
+        "inner_mean_weekly_rap": inner.get("mean_weekly_rap"),
+    }
+
+
+def arm_observation(contract: dict, chain_path: Path, *, arm: str,
+                    mode: str) -> tuple:
+    """Build ONE arm's :class:`ArmObservation` from REAL candidate facts.
+
+    Every field comes from the arm's finalized records — no field is
+    synthesized, and the scored identity is the policy TENSOR sha the
+    per-candidate gate already recorded, never the container digest.
+    Returns ``(observation, facts)``; ``facts`` is the audit trail.
+    """
+    resolved = champion_of_chain(chain_path)
+    champion = resolved.get("champion")
+    anchor = resolved.get("anchor_fallback") or {}
+    records = chain_candidate_records(chain_path)
+    registry = json.loads((chain_path / "chain.json").read_text())
+    active = champion is not None
+    behavior = (champion or {}).get("behavior") or {}
+    metrics = candidate_metric_tuple(champion)
+    trades = metrics.get("outer_trades_total")
+    observation = _armdiff.ArmObservation(
+        arm=arm,
+        treatment=arm_treatment(contract, arm, mode),
+        metrics=metrics,
+        scored_policy_tensor_sha256=(
+            (champion or {}).get("scored_policy_tensor_sha256")),
+        behavior_fingerprint=behavior.get("behavior_fingerprint"),
+        behavior_degenerate=(behavior.get("behavior_degenerate")
+                             if champion is not None else True),
+        active=active,
+        trades_total=(int(trades) if trades is not None else
+                      (None if active else 0)),
+        provenance={
+            "mode": mode,
+            "chain_identity": registry.get("chain_identity"),
+            "chain_dir": str(chain_path),
+            "experiment_identity": registry.get("experiment_identity"),
+            "finalized_generations": registry.get("finalized_generations"),
+            "finalized_ancestry": registry.get("finalized_ancestry"),
+            "candidate_identity": (champion or {}).get("candidate_identity"),
+            "genome_fingerprint": (champion or {}).get("genome_fingerprint"),
+            "evaluation_difficulty": (
+                (champion or {}).get("evaluation_difficulty")),
+            "candidates": len(records),
+            "anchor_policy_tensor_sha256":
+                anchor.get("anchor_policy_tensor_sha256"),
+            "selected_equals_anchor_count":
+                anchor.get("selected_equals_anchor_count"),
+            "distinct_scored_policy_tensors":
+                anchor.get("distinct_scored_policy_tensors"),
+        })
+    facts = {
+        "arm": arm,
+        "champion_resolved": active,
+        "champion_reason": resolved.get("reason"),
+        "anchor_fallback": anchor,
+        "metrics": metrics,
+        "scored_policy_tensor_sha256":
+            observation.scored_policy_tensor_sha256,
+        "behavior_fingerprint": observation.behavior_fingerprint,
+        "behavior_degenerate": observation.is_degenerate(),
+        "trades_total": observation.trades_total,
+        "provenance": dict(observation.provenance),
+    }
+    return observation, facts
+
+
+def compare_arms(contract: dict, bindings: dict | None = None, *,
+                 mode: str = "smoke", sources: dict | None = None,
+                 require_informative: bool = True) -> tuple:
+    """Gates 12 + 13: the campaign verdict, or a typed refusal.
+
+    ``require_informative=True`` is the default and the point: a campaign
+    in which no cross-treatment pair separates is UNANSWERABLE, not a
+    null result. A null published from two arms that both collapsed —
+    or worse, that both scored the same object — is exactly the artefact
+    that voided three prior experiments.
+    """
+    bindings = bindings or load_bindings()
+    sources = sources or ladder.source_identities()
+    exp_id = experiment_identity(contract, bindings, sources=sources,
+                                 mode=mode)
+    payload: dict = {
+        "schema": CAMPAIGN_VERDICT_SCHEMA,
+        "generated_utc": _utc(),
+        "mode": mode,
+        "experiment_identity": exp_id,
+        "contract_sha256": contract["_contract_sha256"],
+        "metric_keys": list(L2_METRIC_KEYS),
+        "require_informative": bool(require_informative),
+        "checkpoint_identity": "policy_tensor_sha256",
+        "arms": {},
+        "refusals": [],
+    }
+    observations = []
+    for arm in ARMS:
+        chain = chain_dir(contract, exp_id, arm, mode,
+                          chain_identity(contract, bindings, arm=arm,
+                                         mode=mode, sources=sources))
+        if not (chain / "chain.json").is_file():
+            payload["refusals"].append(
+                f"arm {arm} has no chain under {chain} — the comparison "
+                "cannot be made from an unfinished campaign")
+            payload["arms"][arm] = {"arm": arm, "chain_dir": str(chain),
+                                    "state": "MISSING"}
+            continue
+        if not (chain / "arm_complete.json").is_file():
+            payload["refusals"].append(
+                f"arm {arm} has not published arm_complete.json — the "
+                "comparison cannot be made from an unfinished campaign")
+            payload["arms"][arm] = {"arm": arm, "chain_dir": str(chain),
+                                    "state": "INCOMPLETE"}
+            continue
+        try:
+            observation, facts = arm_observation(contract, chain, arm=arm,
+                                                 mode=mode)
+        except L2AnchorFallbackRefusal as exc:
+            payload["arms"][arm] = {"arm": arm, "chain_dir": str(chain),
+                                    "state": "ANCHOR_FALLBACK",
+                                    "anchor_fallback": exc.facts,
+                                    "refusal": str(exc)}
+            payload["refusals"].append(str(exc))
+            payload["outcome"] = "REFUSED_ANCHOR_FALLBACK"
+            continue
+        facts["state"] = "COMPLETE"
+        facts["chain_dir"] = str(chain)
+        payload["arms"][arm] = facts
+        observations.append(observation)
+
+    if payload.get("outcome") == "REFUSED_ANCHOR_FALLBACK":
+        return payload, EXIT_CLASS["REFUSED_ANCHOR_FALLBACK"]
+    if payload["refusals"]:
+        payload["outcome"] = "CAMPAIGN_INCOMPLETE"
+        return payload, EXIT_CLASS["CAMPAIGN_INCOMPLETE"]
+
+    try:
+        report = _armdiff.assert_arms_differentiated(
+            observations, metric_keys=L2_METRIC_KEYS,
+            require_informative=require_informative)
+        payload["differentiation"] = report
+        payload["outcome"] = "CAMPAIGN_VERDICT"
+        payload["statement"] = (
+            "the two arms declare different treatments and their measured "
+            "results separate; the comparison measures the treatment")
+        return payload, EXIT_CLASS["CAMPAIGN_VERDICT"]
+    except _armdiff.ArmDifferentiationRefusal as exc:
+        payload["differentiation"] = exc.report
+        verdicts = {pair["verdict"] for pair in exc.refusals}
+        payload["refusals"].extend(
+            f"{pair['arms'][0]} vs {pair['arms'][1]}: {pair['verdict']} — "
+            f"{pair['detail']}" for pair in exc.refusals)
+        if verdicts == {"NO_INFORMATIVE_CONTRAST"}:
+            payload["outcome"] = "CAMPAIGN_UNANSWERABLE"
+            payload["statement"] = (
+                "the measurement is sound but every cross-treatment pair "
+                "is degenerate: this campaign cannot answer its question, "
+                "and it is typed UNANSWERABLE rather than published as a "
+                "scientific null")
+            return payload, EXIT_CLASS["CAMPAIGN_UNANSWERABLE"]
+        payload["outcome"] = "REFUSED_ARMS_NOT_DIFFERENTIATED"
+        payload["statement"] = (
+            "the arms cannot be told apart by the measurement pipeline "
+            f"({sorted(verdicts)}); no verdict may be published")
+        return payload, EXIT_CLASS["REFUSED_ARMS_NOT_DIFFERENTIATED"]
 
 
 # ---------------------------------------------------------------------------
@@ -1390,13 +2008,19 @@ def run_worker(worker_id: str, *, contract: dict, arm: str, mode: str,
                max_candidates: int | None = None,
                gate_heartbeat: dict | None = None,
                pipeline_factory=None, agent_loader=None,
-               nested_roles_fn=None, role_eval_fn=None) -> dict:
+               nested_roles_fn=None, role_eval_fn=None,
+               policy_tensor_sha_fn=None) -> dict:
     """One worker collaborating on the arm's ONE chain.
 
     It joins (never forks) the chain, proves node identity, claims one
     unevaluated candidate at a time with a flock-backed exclusive claim,
     writes an immutable candidate record, and closes a generation only
     when every candidate record exists.
+
+    The frozen anchor's policy tensors are hashed ONCE per worker, before
+    any candidate runs: an unverifiable anchor is a typed
+    ``REFUSED_ANCHOR_UNVERIFIED`` here rather than a gate that silently
+    never fires (gate 11).
     """
     if worker_id not in WORKERS:
         raise ValueError(f"unknown worker {worker_id!r}")
@@ -1406,6 +2030,13 @@ def run_worker(worker_id: str, *, contract: dict, arm: str, mode: str,
     sources_before = ladder.source_identities()
     exp_id = experiment_identity(contract, bindings, sources=sources_before,
                                  mode=mode)
+    try:
+        anchor_facts = anchor_policy_tensor_sha256(
+            contract, policy_tensor_sha_fn=policy_tensor_sha_fn)
+    except RuntimeError as exc:
+        return {"outcome": "REFUSED_ANCHOR_UNVERIFIED", "reason": str(exc),
+                "worker_id": worker_id, "arm": arm,
+                "experiment_identity": exp_id}
 
     refusal = check_gpu_binding(contract, worker_id, enforce=enforce_gpu)
     if refusal:
@@ -1506,7 +2137,9 @@ def run_worker(worker_id: str, *, contract: dict, arm: str, mode: str,
                         pipeline_factory=pipeline_factory,
                         agent_loader=agent_loader,
                         nested_roles_fn=nested_roles_fn,
-                        role_eval_fn=role_eval_fn)
+                        role_eval_fn=role_eval_fn,
+                        policy_tensor_sha_fn=policy_tensor_sha_fn,
+                        anchor_facts=anchor_facts)
                     record["worker_id"] = worker_id
                     sources_after = ladder.source_identities()
                     for name in sources_before:
@@ -1561,6 +2194,10 @@ def run_worker(worker_id: str, *, contract: dict, arm: str, mode: str,
         "candidates_evaluated": evaluated,
         "generations_closed": generations_closed,
         "gpu_gate": gate_payload,
+        "anchor_policy_tensor_sha256":
+            anchor_facts.get("anchor_policy_tensor_sha256"),
+        "anchor_fallback": (arm_anchor_fallback_facts(chain_path)
+                            if complete else None),
     }
 
 
@@ -1680,11 +2317,181 @@ def preflight(contract: dict, bindings: dict | None = None) -> tuple:
                     identities["decision"]["experiment_identity"]:
                 payload["refusals"].append(
                     "smoke and decision identities collide")
+
+            # --- gates 11-13, declared before any GPU is touched -------
+            treatments = {arm: arm_treatment(contract, arm, "smoke")
+                          for arm in ARMS}
+            distinguishable = (
+                json.dumps(treatments["L2_N"], sort_keys=True) !=
+                json.dumps(treatments["L2_EN"], sort_keys=True))
+            if not distinguishable:
+                payload["refusals"].append(
+                    "the two arms render the same treatment key, so the "
+                    "differentiation ladder would type every pair "
+                    "SAME_TREATMENT and the campaign could never be a "
+                    "comparison")
+            payload["differentiation_precondition"] = {
+                "arm_treatments": treatments,
+                "treatments_distinguishable": distinguishable,
+                "metric_keys": list(L2_METRIC_KEYS),
+                "checkpoint_identity": "policy_tensor_sha256",
+                "container_identity_rejected": (
+                    "SB3 .zip containers embed member mtimes; the same "
+                    "weights saved twice hash differently, so a container "
+                    "digest can never prove two arms scored different "
+                    "policies"),
+                "gates_enforced": {
+                    "anchor_fallback_per_candidate":
+                        "selected_checkpoint_anchor_facts",
+                    "anchor_fallback_per_arm":
+                        "assert_arm_not_anchor_fallback",
+                    "arm_differentiation": "compare_arms",
+                    "require_informative": True,
+                },
+            }
+            anchor = anchor_binding(contract)
+            payload["anchor_declared"] = anchor is not None
+            payload["anchor_path"] = (anchor or {}).get("path")
+            payload["anchor_present"] = bool(
+                anchor and Path(anchor["path"]).is_file())
+            if anchor is not None and not payload["anchor_present"]:
+                payload["refusals"].append(
+                    f"the frozen common anchor {anchor['path']} is absent, "
+                    "so the anchor-fallback gate could never fire")
     except Exception as exc:                                # noqa: BLE001
         payload["refusals"].append(f"{type(exc).__name__}: {exc}")
 
     payload["outcome"] = ("PREFLIGHT_PASS" if not payload["refusals"]
                           else "PREFLIGHT_REFUSED")
+    return payload, EXIT_CLASS[payload["outcome"]]
+
+
+def smoke_acceptance(contract: dict, bindings: dict | None = None, *,
+                     mode: str = "smoke", sources: dict | None = None,
+                     require_informative: bool = True) -> tuple:
+    """The smoke's acceptance verdict, with the three gates VISIBLE.
+
+    The smoke exists to prove the machinery, so its acceptance output
+    must state plainly which of two things happened: the machinery
+    distinguished its two arms, or it could not — and in the second case,
+    exactly why. A smoke that runs to completion while every arm scores
+    the same object is the failure this file exists to prevent, and it
+    must not be able to look like a pass.
+    """
+    bindings = bindings or load_bindings()
+    sources = sources or ladder.source_identities()
+    pre, _ = preflight(contract, bindings)
+    exp_id = experiment_identity(contract, bindings, sources=sources,
+                                 mode=mode)
+    payload: dict = {
+        "schema": ACCEPTANCE_SCHEMA,
+        "generated_utc": _utc(),
+        "mode": mode,
+        "experiment_identity": exp_id,
+        "contract_sha256": contract["_contract_sha256"],
+        "preflight": {"outcome": pre["outcome"],
+                      "refusals": list(pre["refusals"]),
+                      "differentiation_precondition": pre.get(
+                          "differentiation_precondition")},
+        "refusals": [],
+        "gates": {},
+    }
+    if pre["outcome"] != "PREFLIGHT_PASS":
+        payload["refusals"].extend(
+            f"preflight: {reason}" for reason in pre["refusals"])
+
+    verdict, _ = compare_arms(contract, bindings, mode=mode,
+                              sources=sources,
+                              require_informative=require_informative)
+    payload["campaign_verdict"] = verdict
+    per_arm = {}
+    for arm, facts in (verdict.get("arms") or {}).items():
+        anchor = facts.get("anchor_fallback") or {}
+        per_arm[arm] = {
+            "state": facts.get("state"),
+            "checked_candidates": anchor.get("checked_candidates"),
+            "selected_equals_anchor_count":
+                anchor.get("selected_equals_anchor_count"),
+            "distinct_scored_policy_tensors":
+                anchor.get("distinct_scored_policy_tensors"),
+            "anchor_policy_tensor_sha256":
+                anchor.get("anchor_policy_tensor_sha256"),
+            "scored_policy_tensor_sha256":
+                facts.get("scored_policy_tensor_sha256"),
+            "verdict": anchor.get("verdict"),
+        }
+    anchor_states = [entry.get("verdict") for entry in per_arm.values()]
+    if verdict["outcome"] == "REFUSED_ANCHOR_FALLBACK":
+        anchor_status = "REFUSED"
+        anchor_statement = (
+            "at least one arm selected ONLY checkpoints that are "
+            "bit-identical to the frozen warm-start anchor: that arm "
+            "measured the anchor, not its treatment")
+    elif not anchor_states or all(state in (None, "NOT_EVALUATED")
+                                  for state in anchor_states):
+        anchor_status = "NOT_EVALUATED"
+        anchor_statement = (
+            "no arm has finalized a selected checkpoint yet, so the "
+            "anchor-fallback gate has nothing to compare")
+    elif "PARTIAL_ANCHOR_FALLBACK" in anchor_states:
+        anchor_status = "PASS_WITH_FINDINGS"
+        anchor_statement = (
+            "some candidates selected the frozen anchor and were typed as "
+            "rejected, measured outcomes; no arm is wholly anchor-bound")
+    else:
+        anchor_status = "PASS"
+        anchor_statement = (
+            "every scored checkpoint's policy tensor differs from the "
+            "frozen warm-start anchor: the arms scored what they trained")
+    payload["gates"]["anchor_fallback"] = {
+        "gate": "anchor_fallback",
+        "enforced_by": ["selected_checkpoint_anchor_facts",
+                        "assert_arm_not_anchor_fallback"],
+        "identity": "policy_tensor_sha256",
+        "status": anchor_status,
+        "statement": anchor_statement,
+        "arms": per_arm,
+    }
+
+    report = verdict.get("differentiation") or {}
+    diff_status = {
+        "CAMPAIGN_VERDICT": "PASS",
+        "CAMPAIGN_UNANSWERABLE": "UNANSWERABLE",
+        "REFUSED_ARMS_NOT_DIFFERENTIATED": "REFUSED",
+    }.get(verdict["outcome"], "NOT_EVALUATED")
+    payload["gates"]["arm_differentiation"] = {
+        "gate": "arm_differentiation",
+        "enforced_by": ["compare_arms",
+                        "arm_differentiation.assert_arms_differentiated"],
+        "status": diff_status,
+        "require_informative": bool(require_informative),
+        "metric_keys": list(L2_METRIC_KEYS),
+        "statement": verdict.get("statement") or (
+            "the arm-differentiation ladder was not reached: "
+            + "; ".join(verdict.get("refusals") or ["unknown"])),
+        "pairs": [{"arms": pair["arms"], "verdict": pair["verdict"],
+                   "detail": pair["detail"],
+                   "metric_tuple_identical": pair["metric_tuple_identical"]}
+                  for pair in (report.get("pairs") or ())],
+        "informative": report.get("informative"),
+        "contrast_pairs": report.get("contrast_pairs"),
+        "degenerate_identical": report.get("degenerate_identical"),
+    }
+
+    if verdict["outcome"] != "CAMPAIGN_VERDICT":
+        payload["refusals"].extend(verdict.get("refusals") or [])
+    payload["outcome"] = ("ACCEPTANCE_PASS" if not payload["refusals"]
+                          else "ACCEPTANCE_REFUSED")
+    payload["proved_arms_are_distinguishable"] = (
+        payload["outcome"] == "ACCEPTANCE_PASS"
+        and diff_status == "PASS")
+    payload["statement"] = (
+        "the L2 smoke PROVED its machinery can distinguish L2_N from "
+        "L2_EN: the anchor-fallback gate passed on every arm and the "
+        "arm-differentiation ladder separated the pair"
+        if payload["proved_arms_are_distinguishable"] else
+        "the L2 smoke CANNOT claim its machinery distinguishes its arms — "
+        + "; ".join(payload["refusals"] or ["no reason recorded"]))
     return payload, EXIT_CLASS[payload["outcome"]]
 
 
@@ -1749,6 +2556,16 @@ def main() -> int:
     group.add_argument("--dispatch-plan", action="store_true",
                        help="print the exact per-host commands for the "
                             "four-GPU dispatch (authorizes nothing)")
+    group.add_argument("--compare-arms", action="store_true",
+                       help="the arm-comparison boundary: refuse unless "
+                            "the two arms scored different policies and "
+                            "their results actually separate (gates "
+                            "11-13); an all-degenerate campaign is typed "
+                            "CAMPAIGN_UNANSWERABLE, never a null")
+    group.add_argument("--acceptance", action="store_true",
+                       help="the smoke's acceptance verdict with the "
+                            "anchor-fallback and arm-differentiation "
+                            "gates made visible")
     group.add_argument("--champion", action="store_true",
                        help="resolve the arm's champion; refuses if any "
                             "easy-evaluated or pending-re-evaluation "
@@ -1778,6 +2595,12 @@ def main() -> int:
     if args.dispatch_plan:
         plan = smoke_dispatch_commands(contract, mode=args.mode)
         return _emit(plan, EXIT_CLASS["DISPATCH_PLAN"])
+    if args.compare_arms:
+        payload, exit_code = compare_arms(contract, mode=args.mode)
+        return _emit(payload, exit_code)
+    if args.acceptance:
+        payload, exit_code = smoke_acceptance(contract, mode=args.mode)
+        return _emit(payload, exit_code)
     if args.champion:
         if args.chain_dir is None:
             return _emit({"outcome": "REFUSED_BAD_CONTRACT",
@@ -1785,6 +2608,10 @@ def main() -> int:
                          EXIT_CLASS["REFUSED_BAD_CONTRACT"])
         try:
             payload = champion_of_chain(Path(args.chain_dir))
+        except L2AnchorFallbackRefusal as exc:
+            return _emit({"outcome": "REFUSED_ANCHOR_FALLBACK",
+                          "reason": str(exc), "anchor_fallback": exc.facts},
+                         EXIT_CLASS["REFUSED_ANCHOR_FALLBACK"])
         except _l2.L2CurriculumError as exc:
             return _emit({"outcome": "REFUSED_BAD_CONTRACT",
                           "reason": str(exc)},

@@ -7,6 +7,7 @@ One seed, one GPU, one candidate, 1 easy epoch + 3 normal epochs.
 
 Environment knobs (defaults are the GPU dispatch values):
     OBS_VALIDATION_DEVICE      cuda
+    OBS_VALIDATION_SEED        101
     OBS_VALIDATION_EPOCH_STEPS 20000
     OBS_VALIDATION_PHASE2      3
     OBS_VALIDATION_OUT         ~/.local/share/agent-multi/l2_observation_contract_validation_20260815
@@ -30,6 +31,7 @@ from pipeline_plugins.rl_pipeline_with_solvency_curriculum import (  # noqa: E40
     PipelinePlugin)
 
 DEVICE = os.environ.get("OBS_VALIDATION_DEVICE", "cuda")
+SEED = int(os.environ.get("OBS_VALIDATION_SEED", "101"))
 EPOCH_STEPS = int(os.environ.get("OBS_VALIDATION_EPOCH_STEPS", "20000"))
 PHASE2_EPOCHS = int(os.environ.get("OBS_VALIDATION_PHASE2", "3"))
 OUT = Path(os.environ.get(
@@ -41,24 +43,29 @@ OUT = Path(os.environ.get(
 def main() -> int:
     contract = l2.load_contract()
     bindings = l2.load_bindings()
-    stage = l2.arm_schedule(contract, "L2_N", "smoke")[0]
+    stage = l2.arm_schedule(contract, "L2_EN", "smoke")[0]
     genome = {"parameters": {"batch_size": 256, "gamma": 0.99, "tau": 0.005,
                              "train_freq": 1, "gradient_steps": 1}}
     OUT.mkdir(parents=True, exist_ok=True)
 
     config = l2.materialize_candidate_config(
-        contract, bindings, arm="L2_N", stage=stage, genome=genome,
+        contract, bindings, arm="L2_EN", stage=stage, genome=genome,
         out_dir=OUT, mode="smoke")
     identity = config.pop("_identity")
-
-    # THE FIX UNDER TEST — the one line the L2 runner must carry.
-    config["observation_contract"] = contract["observation_contract"]
 
     # The 2724-dim frozen anchor cannot warm-start a 2660-dim observation
     # (sac_agent supports observation EXPANSION only), and reusing it
     # would carry the dead first layer forward anyway. Cold start.
     config["warm_start_model"] = None
     config["warm_start_model_sha256"] = None
+
+    # This is a mechanism diagnostic, not an L2 campaign candidate. Exercise
+    # the disputed L1 easy -> normal handoff explicitly; the production L2
+    # contract remains frozen and is not mutated by this run.
+    config["phase1_mode"] = "easy_chronological_continuation"
+    config["train_seed"] = SEED
+    config["eval_seed"] = SEED
+    config["ga_seed"] = SEED
 
     config["device"] = DEVICE
     config["epoch_timesteps"] = EPOCH_STEPS
@@ -88,12 +95,20 @@ def main() -> int:
         "finding": "AUD-P1LR-20260815-235",
         "experiment_contract_sha256":
             identity["experiment_contract_sha256"],
+        "evidence_scope": "bounded_mechanism_diagnostic_not_l2_decision",
+        "diagnostic_intervention": {
+            "phase1_mode": "easy_chronological_continuation",
+            "phase2_mode": "normal_realistic",
+            "old_anchor_removed": True,
+            "campaign_contract_mutated": False,
+        },
         "observation_contract": result.get("observation_contract"),
         "elapsed_seconds": round(elapsed, 1),
         "epoch_timesteps": EPOCH_STEPS,
         "phase1_epochs": 1,
         "phase2_epochs": PHASE2_EPOCHS,
         "cold_start": True,
+        "seed": SEED,
         "device": DEVICE,
         "stop_reason": result.get("stop_reason"),
         "phase1_handoff_liveness": (

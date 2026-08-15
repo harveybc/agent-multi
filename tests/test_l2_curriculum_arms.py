@@ -137,7 +137,8 @@ class FakePipeline:
         terminal.write_bytes(json.dumps(
             {k: config.get(k) for k in
              ("batch_size", "gamma", "tau", "train_freq",
-              "gradient_steps")}, sort_keys=True).encode())
+              "gradient_steps", "l2_arm", "l2_stage",
+              "l2_evaluation_difficulty")}, sort_keys=True).encode())
         fingerprint = f"{config['batch_size']}"
         result = {"terminal_model_path": str(terminal)}
         if fingerprint in type(self).inactive_fingerprints:
@@ -156,9 +157,13 @@ def _fake_role_eval(*, config, agent, model_path, role, nested_roles,
     the leaderboard has a real ordering and easy evidence is visibly a
     different lens."""
     base = float(config["gamma"]) + float(config["tau"])
+    # The acceptance fixture must realize the treatment it claims to test.
+    # Distinct fake model bytes prove artifact identity, not that an arm
+    # reached behavior, so expose a small deterministic EN response too.
+    treatment = 0.01 if config.get("l2_arm") == "L2_EN" else 0.0
     lift = 0.5 if solvency_mode == _l2.EASY else 0.0
     offset = 0.0 if role == "inner_validation" else -0.05
-    rap = round(base + lift + offset, 9)
+    rap = round(base + lift + offset + treatment, 9)
     return {
         "role": role,
         "solvency_mode": solvency_mode,
@@ -166,11 +171,24 @@ def _fake_role_eval(*, config, agent, model_path, role, nested_roles,
         "scored_rows": nested_roles["roles"][role]["scored_rows"],
         "context_rows_forced_hold": 256,
         "trades_total": 7,
+        "weekly_return_vector": [round(rap / 2.0 + step * 1e-4, 9)
+                                 for step in range(6)],
         "metrics": {"mean_weekly_rap": rap,
                     "mean_weekly_return": rap / 2.0,
                     "max_drawdown_fraction": 0.05,
                     "total_return": rap * 10.0},
     }
+
+
+def _fake_policy_tensor_sha(path) -> str:
+    """Stand-in for ``arm_differentiation.policy_tensor_sha256``.
+
+    The fake pipeline writes plain bytes rather than SB3 containers, so
+    the tests inject a byte digest. What the gate proves is unchanged:
+    the SELECTED artifact's identity is compared with the anchor's, and
+    the runner never falls back to a container digest of its own.
+    """
+    return "tensor:" + l2r._sha_file(Path(path))
 
 
 @pytest.fixture()
@@ -207,11 +225,13 @@ def runtime(contract, bindings, tmp_path, monkeypatch):
                     pipeline_factory=FakePipeline,
                     agent_loader=lambda name: SimpleNamespace(name=name),
                     nested_roles_fn=_fake_nested_roles_fn(live),
-                    role_eval_fn=_fake_role_eval))
+                    role_eval_fn=_fake_role_eval,
+                    policy_tensor_sha_fn=_fake_policy_tensor_sha))
 
 
 def _run_arm(runtime, arm: str, workers=("w1", "w2", "w3", "w4"),
-             rounds: int = 24, max_candidates: int | None = 1) -> dict:
+             rounds: int = 24, max_candidates: int | None = 1,
+             kwargs: dict | None = None) -> dict:
     """Four workers collaborating on ONE chain, driven round-robin —
     one claimed candidate per call, which is how four concurrent hosts
     actually interleave against the flock-backed per-candidate claims."""
@@ -221,7 +241,7 @@ def _run_arm(runtime, arm: str, workers=("w1", "w2", "w3", "w4"),
             summary = l2r.run_worker(worker, contract=runtime.contract,
                                      arm=arm, mode="smoke",
                                      max_candidates=max_candidates,
-                                     **runtime.kwargs)
+                                     **(kwargs or runtime.kwargs))
             if summary.get("outcome") == "ARM_COMPLETE":
                 return summary
     return summary
@@ -283,6 +303,8 @@ class TestFrozenL1:
                           config["phase1_learning_rate"],
                           config["easy_learning_rate"],
                           config["learning_rate"]))
+                assert config["observation_contract"] == \
+                    runtime.contract["observation_contract"]
         assert seen == {("normal_realistic", 3e-05, 3e-05, 3e-05)}
 
     def test_easy_stage_binds_evidence_not_the_l1_phase(self, runtime):
@@ -1057,3 +1079,400 @@ class TestContractRefusals:
                                                             contract):
         assert any("eth-4h-anchored-full-sac-shared-v2" in item
                    for item in contract["forbidden"])
+
+
+# ---------------------------------------------------------------------------
+# gate 11 — the anchor-fallback gate (finding D8-20260815)
+#
+# The failure that voided three prior experiments was NOT a measurement
+# bug: when no checkpoint passed the trade gate, selection fell back to
+# the untouched warm-start anchor, so every arm scored the SAME object.
+# In eth_curriculum_decision_20260807_v2 the arms E4, EN4_10 and N14 all
+# selected checkpoints whose POLICY TENSOR equals anchor_seed101.zip's
+# (8137b224…), so paired_differences_EN_minus_N subtracted the anchor
+# from itself. These proofs make that state unreachable here.
+# ---------------------------------------------------------------------------
+
+def _with(runtime, **overrides) -> dict:
+    kwargs = dict(runtime.kwargs)
+    kwargs.update(overrides)
+    return kwargs
+
+
+def _anchor_everything(runtime) -> dict:
+    """Every selected checkpoint hashes to the anchor's policy tensor —
+    the exact eth_curriculum_decision_20260807_v2 fallback state."""
+    anchor = runtime.contract["frozen_l1_recipe"]["common_anchor"]["path"]
+    return _with(runtime,
+                 policy_tensor_sha_fn=lambda _path:
+                 _fake_policy_tensor_sha(anchor))
+
+
+def _all_records(chain: Path) -> list:
+    return [json.loads(path.read_text())
+            for path in sorted(chain.glob("gen*/candidate*/"
+                                          "candidate_record.json"))]
+
+
+def _candidate_path(chain: Path, record: dict) -> Path:
+    return (chain / f"gen{int(record['generation']):03d}"
+            / f"candidate{int(record['index']):03d}"
+            / "candidate_record.json")
+
+
+def _rewrite(path: Path, mutate) -> dict:
+    record = json.loads(path.read_text())
+    mutate(record)
+    path.write_text(json.dumps(record))
+    return record
+
+
+class TestAnchorFallbackGate:
+    def test_every_candidate_records_both_tensor_shas(self, runtime):
+        _run_arm(runtime, "L2_N")
+        chain = _chain_path(runtime, "L2_N")
+        anchor_sha = _fake_policy_tensor_sha(
+            runtime.contract["frozen_l1_recipe"]["common_anchor"]["path"])
+        records = _all_records(chain)
+        assert len(records) == 12
+        for record in records:
+            gate = record["anchor_fallback_gate"]
+            assert gate["schema"] == l2r.ANCHOR_GATE_SCHEMA
+            assert gate["identity"] == "policy_tensor_sha256"
+            assert gate["checked"] is True
+            assert record["anchor_policy_tensor_sha256"] == anchor_sha
+            assert record["scored_policy_tensor_sha256"]
+            assert record["selected_equals_anchor"] is False
+            assert record["scored_policy_tensor_sha256"] != anchor_sha
+
+    def test_the_scored_identity_is_the_tensor_not_the_container(
+            self, runtime):
+        """The discriminator may never be the .zip digest: SB3 embeds
+        member mtimes, so identical weights hash differently there."""
+        _run_arm(runtime, "L2_N")
+        record = _all_records(_chain_path(runtime, "L2_N"))[0]
+        gate = record["anchor_fallback_gate"]
+        assert gate["selected_container_sha256"] == \
+            record["best_model_sha256"]
+        assert gate["selected_policy_tensor_sha256"] != \
+            gate["selected_container_sha256"]
+        assert gate["anchor_policy_tensor_sha256"] != \
+            gate["anchor_container_sha256"]
+
+    def test_a_selected_checkpoint_that_is_the_anchor_is_never_scored(
+            self, runtime):
+        """The decisive D8 shape: DIFFERENT containers, IDENTICAL policy
+        tensors. A container rule calls this healthy; the tensor rule
+        names it for what it is."""
+        summary = _run_arm(runtime, "L2_N",
+                           kwargs=_anchor_everything(runtime))
+        assert summary["outcome"] == "ARM_COMPLETE"
+        chain = _chain_path(runtime, "L2_N")
+        records = _all_records(chain)
+        assert records
+        for record in records:
+            assert record["selected_equals_anchor"] is True
+            assert record["candidate_rejected"] is True
+            assert record["candidate_rejected_reason"] == \
+                "selected_checkpoint_is_the_frozen_warm_start_anchor"
+            assert record["fitness"] is None
+            assert record["paired"]["eligible"] is False
+            assert record["promotion_eligible"] is False
+            assert record["evidence"] == {}, \
+                "an anchor-identical checkpoint must never be scored"
+            # the containers really do differ; only the tensors match
+            assert record["best_model_sha256"] != \
+                record["anchor_fallback_gate"]["anchor_container_sha256"]
+
+    def test_an_all_anchor_arm_refuses_instead_of_reporting_a_null(
+            self, runtime):
+        _run_arm(runtime, "L2_N", kwargs=_anchor_everything(runtime))
+        chain = _chain_path(runtime, "L2_N")
+        facts = l2r.arm_anchor_fallback_facts(chain)
+        assert facts["all_selected_equal_anchor"] is True
+        assert facts["verdict"] == "ANCHOR_FALLBACK"
+        assert facts["distinct_scored_policy_tensors"] == 1
+        with pytest.raises(l2r.L2AnchorFallbackRefusal,
+                           match="REFUSED_ANCHOR_FALLBACK"):
+            l2r.champion_of_chain(chain)
+
+    def test_a_partial_anchor_fallback_still_publishes_a_champion(
+            self, runtime):
+        """Only a WHOLLY anchor-bound arm refuses. Individual
+        anchor-identical candidates are typed rejected outcomes and the
+        arm keeps its remaining, real evidence."""
+        anchor = runtime.contract["frozen_l1_recipe"]["common_anchor"]
+
+        def sha(path):
+            if Path(path).parent.name == "candidate000":
+                return _fake_policy_tensor_sha(anchor["path"])
+            return _fake_policy_tensor_sha(path)
+
+        _run_arm(runtime, "L2_N",
+                 kwargs=_with(runtime, policy_tensor_sha_fn=sha))
+        chain = _chain_path(runtime, "L2_N")
+        facts = l2r.arm_anchor_fallback_facts(chain)
+        assert facts["verdict"] == "PARTIAL_ANCHOR_FALLBACK"
+        assert facts["selected_equals_anchor_count"] == 3
+        resolved = l2r.champion_of_chain(chain)
+        assert resolved["champion"] is not None
+        assert resolved["champion"]["selected_equals_anchor"] is False
+
+    def test_an_unreadable_anchor_refuses_before_any_candidate(
+            self, runtime):
+        def sha(path):
+            raise RuntimeError("policy.pth member missing")
+
+        summary = l2r.run_worker(
+            "w1", contract=runtime.contract, arm="L2_N", mode="smoke",
+            max_candidates=1, **_with(runtime, policy_tensor_sha_fn=sha))
+        assert summary["outcome"] == "REFUSED_ANCHOR_UNVERIFIED"
+        assert "policy tensors" in summary["reason"]
+        assert not _chain_path(runtime, "L2_N").exists()
+
+    def test_a_missing_anchor_refuses_before_any_candidate(self, runtime):
+        Path(runtime.contract["frozen_l1_recipe"]["common_anchor"][
+            "path"]).unlink()
+        summary = l2r.run_worker(
+            "w1", contract=runtime.contract, arm="L2_N", mode="smoke",
+            max_candidates=1, **runtime.kwargs)
+        assert summary["outcome"] == "REFUSED_ANCHOR_UNVERIFIED"
+        assert "does not exist" in summary["reason"]
+
+    def test_a_drifted_anchor_refuses(self, runtime):
+        Path(runtime.contract["frozen_l1_recipe"]["common_anchor"][
+            "path"]).write_bytes(b"a different anchor entirely")
+        summary = l2r.run_worker(
+            "w1", contract=runtime.contract, arm="L2_N", mode="smoke",
+            max_candidates=1, **runtime.kwargs)
+        assert summary["outcome"] == "REFUSED_ANCHOR_UNVERIFIED"
+        assert "contract pins" in summary["reason"]
+
+    def test_behaviour_degeneracy_is_proven_from_the_evidence(self):
+        live = l2r.evidence_behavior_facts({
+            role: {"trades_total": 7,
+                   "weekly_return_vector": [0.01, 0.02, -0.03]}
+            for role in l2r.EVIDENCE_PAIR})
+        assert live["behavior_degenerate"] is False
+        assert live["behavior_fingerprint"]
+        dead = l2r.evidence_behavior_facts({
+            role: {"trades_total": 0,
+                   "weekly_return_vector": [0.0, 0.0, 0.0]}
+            for role in l2r.EVIDENCE_PAIR})
+        assert dead["behavior_degenerate"] is True
+        assert dead["behavior_fingerprint"] != live["behavior_fingerprint"]
+        assert l2r.evidence_behavior_facts({})["behavior_degenerate"] is True
+
+
+# ---------------------------------------------------------------------------
+# gates 12 and 13 — arm differentiation and the campaign verdict
+# ---------------------------------------------------------------------------
+
+def _both_arms(runtime) -> tuple:
+    _run_arm(runtime, "L2_N")
+    _run_arm(runtime, "L2_EN")
+    return _chain_path(runtime, "L2_N"), _chain_path(runtime, "L2_EN")
+
+
+def _force_champion_facts(runtime, chain: Path, *, tensor: str,
+                          trades: int = 7, rap: float = 0.4,
+                          fingerprint: str = "fp") -> dict:
+    champion = l2r.champion_of_chain(chain)["champion"]
+
+    def mutate(record):
+        record["scored_policy_tensor_sha256"] = tensor
+        record["anchor_fallback_gate"][
+            "selected_policy_tensor_sha256"] = tensor
+        record["paired"]["paired_score"] = rap
+        record["behavior"] = {"schema": l2r.BEHAVIOR_FACTS_SCHEMA,
+                              "behavior_fingerprint": fingerprint,
+                              "behavior_degenerate": trades == 0,
+                              "trades_total": trades}
+        record["behavior_fingerprint"] = fingerprint
+        record["behavior_degenerate"] = trades == 0
+        for role in l2r.EVIDENCE_PAIR:
+            record["evidence"][role]["trades_total"] = trades
+            record["evidence"][role]["metrics"] = {
+                "mean_weekly_rap": rap, "mean_weekly_return": rap / 2.0,
+                "max_drawdown_fraction": 0.05, "total_return": rap * 10.0}
+
+    return _rewrite(_candidate_path(chain, champion), mutate)
+
+
+class TestArmDifferentiationBoundary:
+    def test_a_completed_smoke_separates_its_two_arms(self, runtime):
+        _both_arms(runtime)
+        payload, code = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                         mode="smoke")
+        assert payload["outcome"] == "CAMPAIGN_VERDICT"
+        assert code == 0
+        assert payload["require_informative"] is True
+        assert payload["checkpoint_identity"] == "policy_tensor_sha256"
+        report = payload["differentiation"]
+        assert report["differentiated"] is True
+        assert report["informative"] is True
+        assert [pair["verdict"] for pair in report["pairs"]] == ["OK"]
+        for arm in l2r.ARMS:
+            facts = payload["arms"][arm]
+            assert facts["state"] == "COMPLETE"
+            assert facts["scored_policy_tensor_sha256"]
+            assert facts["behavior_fingerprint"]
+        assert payload["arms"]["L2_N"]["scored_policy_tensor_sha256"] != \
+            payload["arms"]["L2_EN"]["scored_policy_tensor_sha256"]
+
+    def test_two_arms_that_scored_one_policy_refuse(self, runtime):
+        """The exact eth_curriculum_decision_20260807_v2 signature."""
+        n_chain, en_chain = _both_arms(runtime)
+        for chain in (n_chain, en_chain):
+            _force_champion_facts(runtime, chain, tensor="tensor:8137b224",
+                                  fingerprint="fp-shared")
+        payload, code = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                         mode="smoke")
+        assert payload["outcome"] == "REFUSED_ARMS_NOT_DIFFERENTIATED"
+        assert code == 4
+        verdicts = {pair["verdict"]
+                    for pair in payload["differentiation"]["pairs"]}
+        assert "SHARED_SCORED_POLICY" in verdicts
+
+    def test_distinct_policies_with_a_lost_metric_refuse(self, runtime):
+        n_chain, en_chain = _both_arms(runtime)
+        _force_champion_facts(runtime, n_chain, tensor="tensor:aaaa",
+                              fingerprint="fp-n")
+        _force_champion_facts(runtime, en_chain, tensor="tensor:bbbb",
+                              fingerprint="fp-en")
+        payload, code = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                         mode="smoke")
+        assert payload["outcome"] == "REFUSED_ARMS_NOT_DIFFERENTIATED"
+        assert "METRIC_COLLAPSE" in {
+            pair["verdict"] for pair in payload["differentiation"]["pairs"]}
+
+    def test_identical_behaviour_under_different_treatments_refuses(
+            self, runtime):
+        n_chain, en_chain = _both_arms(runtime)
+        for chain in (n_chain, en_chain):
+            _force_champion_facts(
+                runtime, chain,
+                tensor=f"tensor:{chain.name}", fingerprint="fp-identical")
+        payload, _ = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                      mode="smoke")
+        assert payload["outcome"] == "REFUSED_ARMS_NOT_DIFFERENTIATED"
+        assert "TREATMENT_NOT_REALIZED" in {
+            pair["verdict"] for pair in payload["differentiation"]["pairs"]}
+
+    def test_two_dead_arms_are_unanswerable_not_a_defect(self, runtime):
+        """Identical metrics from two DEGENERATE arms are real and must
+        not be flagged as a measurement bug — but they also cannot
+        answer the question, so require_informative types the campaign
+        UNANSWERABLE instead of publishing a null."""
+        n_chain, en_chain = _both_arms(runtime)
+        _force_champion_facts(runtime, n_chain, tensor="tensor:dead-n",
+                              trades=0, rap=0.0, fingerprint="fp-dead-n")
+        _force_champion_facts(runtime, en_chain, tensor="tensor:dead-en",
+                              trades=0, rap=0.0, fingerprint="fp-dead-en")
+        permissive, code = l2r.compare_arms(
+            runtime.contract, runtime.bindings, mode="smoke",
+            require_informative=False)
+        assert permissive["outcome"] == "CAMPAIGN_VERDICT"
+        assert code == 0
+        assert [pair["verdict"]
+                for pair in permissive["differentiation"]["pairs"]] == \
+            ["DEGENERATE_IDENTICAL"], \
+            "a legitimately dead pair is NOT a differentiation defect"
+        payload, code = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                         mode="smoke")
+        assert payload["outcome"] == "CAMPAIGN_UNANSWERABLE"
+        assert code == 4
+        assert payload["differentiation"]["informative"] is False
+        assert "NO_INFORMATIVE_CONTRAST" in {
+            pair["verdict"] for pair in payload["differentiation"]["pairs"]}
+
+    def test_an_anchor_bound_arm_refuses_at_the_comparison_boundary(
+            self, runtime):
+        _run_arm(runtime, "L2_N")
+        _run_arm(runtime, "L2_EN", kwargs=_anchor_everything(runtime))
+        payload, code = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                         mode="smoke")
+        assert payload["outcome"] == "REFUSED_ANCHOR_FALLBACK"
+        assert code == 4
+        assert payload["arms"]["L2_EN"]["state"] == "ANCHOR_FALLBACK"
+
+    def test_an_unfinished_campaign_cannot_be_compared(self, runtime):
+        _run_arm(runtime, "L2_N")
+        payload, code = l2r.compare_arms(runtime.contract, runtime.bindings,
+                                         mode="smoke")
+        assert payload["outcome"] == "CAMPAIGN_INCOMPLETE"
+        assert code == 4
+        assert payload["arms"]["L2_EN"]["state"] == "MISSING"
+
+    def test_the_two_arms_declare_different_treatments(self, contract):
+        treatments = {arm: l2r.arm_treatment(contract, arm, "smoke")
+                      for arm in l2r.ARMS}
+        assert treatments["L2_N"] != treatments["L2_EN"]
+        assert treatments["L2_N"]["declares_easy_triage"] is False
+        assert treatments["L2_EN"]["declares_easy_triage"] is True
+
+
+class TestSmokeAcceptanceOutput:
+    def test_acceptance_proves_the_arms_are_distinguishable(self, runtime):
+        _both_arms(runtime)
+        payload, code = l2r.smoke_acceptance(runtime.contract,
+                                             runtime.bindings, mode="smoke")
+        assert payload["schema"] == l2r.ACCEPTANCE_SCHEMA
+        assert payload["outcome"] == "ACCEPTANCE_PASS"
+        assert code == 0
+        assert payload["proved_arms_are_distinguishable"] is True
+        assert payload["preflight"]["outcome"] == "PREFLIGHT_PASS"
+        anchor_gate = payload["gates"]["anchor_fallback"]
+        assert anchor_gate["status"] == "PASS"
+        assert anchor_gate["identity"] == "policy_tensor_sha256"
+        assert set(anchor_gate["arms"]) == set(l2r.ARMS)
+        for arm in l2r.ARMS:
+            assert anchor_gate["arms"][arm]["selected_equals_anchor_count"] \
+                == 0
+            assert anchor_gate["arms"][arm]["checked_candidates"] == 12
+        diff_gate = payload["gates"]["arm_differentiation"]
+        assert diff_gate["status"] == "PASS"
+        assert diff_gate["require_informative"] is True
+        assert diff_gate["pairs"][0]["verdict"] == "OK"
+        assert "PROVED" in payload["statement"]
+
+    def test_acceptance_says_plainly_when_it_cannot_distinguish(
+            self, runtime):
+        n_chain, en_chain = _both_arms(runtime)
+        for chain in (n_chain, en_chain):
+            _force_champion_facts(runtime, chain, tensor="tensor:8137b224",
+                                  fingerprint="fp-shared")
+        payload, code = l2r.smoke_acceptance(runtime.contract,
+                                             runtime.bindings, mode="smoke")
+        assert payload["outcome"] == "ACCEPTANCE_REFUSED"
+        assert code == 4
+        assert payload["proved_arms_are_distinguishable"] is False
+        assert payload["gates"]["arm_differentiation"]["status"] == "REFUSED"
+        assert "CANNOT" in payload["statement"]
+        assert any("SHARED_SCORED_POLICY" in reason
+                   for reason in payload["refusals"])
+
+    def test_acceptance_types_a_dead_campaign_unanswerable(self, runtime):
+        n_chain, en_chain = _both_arms(runtime)
+        _force_champion_facts(runtime, n_chain, tensor="tensor:dead-n",
+                              trades=0, rap=0.0, fingerprint="fp-dead-n")
+        _force_champion_facts(runtime, en_chain, tensor="tensor:dead-en",
+                              trades=0, rap=0.0, fingerprint="fp-dead-en")
+        payload, code = l2r.smoke_acceptance(runtime.contract,
+                                             runtime.bindings, mode="smoke")
+        assert payload["outcome"] == "ACCEPTANCE_REFUSED"
+        assert code == 4
+        assert payload["gates"]["arm_differentiation"]["status"] == \
+            "UNANSWERABLE"
+        assert payload["gates"]["anchor_fallback"]["status"] == "PASS"
+
+    def test_preflight_declares_the_gates_before_any_gpu_is_touched(
+            self, contract):
+        payload, code = l2r.preflight(contract)
+        assert payload["outcome"] == "PREFLIGHT_PASS"
+        assert code == 0
+        precondition = payload["differentiation_precondition"]
+        assert precondition["treatments_distinguishable"] is True
+        assert precondition["checkpoint_identity"] == "policy_tensor_sha256"
+        assert precondition["gates_enforced"]["require_informative"] is True
+        assert payload["anchor_declared"] is True

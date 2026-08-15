@@ -215,8 +215,9 @@ def first_layer_liveness(weight: np.ndarray, bias: np.ndarray,
     """Measure the first layer on a REAL observation batch.
 
     A unit is LIVE when its ReLU fires on at least one observation in the
-    batch; it is DEAD when it fires on none — and a dead ReLU has exactly
-    zero gradient, so it can never come back.  ``varying`` is the
+    batch; it is sample-dead when it fires on none. It has exactly zero
+    gradient for those observations, but a bounded sample alone cannot prove
+    that no unseen training observation could activate it. ``varying`` is the
     stricter, more informative count: units that are live AND whose
     output actually changes with the observation.  A unit that is live on
     every row with a constant value carries no information either.
