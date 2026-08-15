@@ -64,6 +64,22 @@
    "sealed_test": "SEALED - no CSV path, hash, row load or model evaluation may be emitted (2025)"
   }
  },
+ "observation_contract": {
+  "$doc": "AUD-P1LR-20260815-235. The observation fields EVERY L2 candidate runs under, bound onto the materialized runtime config before any env or model is constructed (pipeline_plugins._observation_contract.apply_observation_contract) and then enforced by the pre-existing fail-closed validator (validate_observation_contract). Until now that validator was OPT-IN and defaulted OFF, so it returned on its first line and validated nothing: the base config examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json declares include_price_window=true and no require_feature_aware_preprocessor, which injected 64 UNNORMALIZED dimensions (32 raw ETH closes, mean |value| ~1742, plus their 32 raw diffs) into an otherwise rolling-z-scored, +-10-clipped observation. Those 64 dimensions fix the sign of most first-layer pre-activations at the always-positive price level, so ~half the actor's first-layer ReLUs are dead for EVERY observation from initialization and the survivors saturate tanh into a constant action. A dead ReLU has exactly zero gradient: no learning rate and no epoch budget can recover it, which is why phase-1 LR 1e-4 and 3e-5 collapsed identically.",
+  "require_feature_aware_preprocessor": true,
+  "include_price_window": false,
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "feature_scaling": "rolling_zscore",
+  "feature_scaling_window": 256,
+  "feature_clip": 10.0,
+  "include_agent_state": true,
+  "window_size": 32,
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "$feature_columns": "83 ordered, deduplicated engineered columns declared by the held-fixed base config; the sha256 above pins that exact ordered list (sha256 of the compact JSON array of column names) so this contract refuses to bind onto a different feature set.",
+  "$observation_dimension": "window_size*len(feature_columns) + include_agent_state*4 = 32*83 + 4 = 2660. The superseded price-window observation was 2724 = 2660 + 32 raw closes + 32 raw diffs.",
+  "$consequence_for_the_frozen_anchor": "BLOCKING for dispatch: frozen_l1_recipe.common_anchor (anchor_seed101.zip) was trained under the 2724-dim price-window observation, so its actor.latent_pi.0 weight has 2724 input columns and it CANNOT warm-start a 2660-dim candidate. agent_plugins.sac_agent supports observation EXPANSION only; contraction is not supported and would in any case carry the dead first layer forward. A replacement anchor must be produced under this observation contract, or candidate_initialization must move off frozen_common_anchor, before the L2 decision run is dispatched. This contract does NOT make that scientific choice.",
+  "$how_it_reaches_a_candidate": "REQUIRED RUNNER BINDING, one line, inside materialize_candidate_config in tools/l2_curriculum_arms.py, next to the other contract bindings: config['observation_contract'] = contract['observation_contract']. pipeline_plugins._observation_contract.apply_observation_contract then binds these fields onto the runtime config before any env or model is constructed, and validate_observation_contract enforces them. WITHOUT that line the candidate config carries no declaration (evaluate_candidate pops _identity before the pipeline sees the config) and the now fail-closed validator REFUSES with UNDECLARED_OBSERVATION_CONTRACT. That refusal is the SAFE state: the campaign stops instead of silently training on the raw price window, which is exactly what happened for three experiments while the validator was opt-in and defaulted OFF."
+ },
  "selection_metric": "paired_generalization_weekly_v1",
  "l2_evidence_pair": [
   "inner_validation",
@@ -437,6 +453,8 @@
   "inheriting SAC weights, replay buffers, optimizer moments or topology between L2 genomes",
   "varying any l1_frozen_gene_name during the L2 comparison",
   "materializing, hashing, loading or evaluating sealed_test (2025)",
-  "aggregating smoke records into any scientific collection"
+  "aggregating smoke records into any scientific collection",
+  "training or evaluating any L2 candidate on the unscaled raw price window (include_price_window=true), which drives the actor's first layer into the zero-gradient dead-ReLU regime (AUD-P1LR-20260815-235)",
+  "warm-starting an L2 candidate from an anchor trained under a different observation contract"
  ]
 }

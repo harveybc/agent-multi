@@ -32,7 +32,11 @@ from typing import Any, Dict
 import numpy as np
 
 from agent_plugins.sac_agent import _policy_tensor_hash
+from pipeline_plugins import _actor_liveness as _liveness
 from pipeline_plugins import _paired_generalization as _paired
+from pipeline_plugins._observation_contract import (
+    apply_observation_contract,
+)
 from pipeline_plugins.rl_pipeline_with_validation import (
     PipelinePlugin as ValidationPipelinePlugin,
     _verify_artifact_sha256,
@@ -305,6 +309,10 @@ def _handoff_split_evidence(
             evidence_values, phase2_threshold),
         "constant_policy_classification":
             _dtype_constant_classification(evidence_values),
+        # AUD-P1LR-20260815-235: WHY the action distribution looks the
+        # way it does. A constant handoff action with a dead first layer
+        # is a different fact from a constant action with a live one.
+        "actor_liveness": rollout.get("actor_liveness"),
     }
     return evidence_values, block
 
@@ -672,7 +680,17 @@ class PipelinePlugin(ValidationPipelinePlugin):
             context_prefix_steps = 0
             total_steps = 0
             terminated = truncated = False
+            # AUD-P1LR-20260815-235: the phase-1 HANDOFF artifact is the
+            # one selection actually promotes, and the one measured at
+            # 21/256 live first-layer units. Its observations are already
+            # in hand here, so type it before phase 2 inherits it.
+            liveness_sampler = _liveness.StridedObservationSampler(
+                int(config.get(
+                    "actor_liveness_probe_observations",
+                    self.params["actor_liveness_probe_observations"],
+                ) or 0))
             while not (terminated or truncated):
+                liveness_sampler.offer(obs)
                 action, _state = model.predict(obs, deterministic=True)
                 flat = np.asarray(action).reshape(-1)
                 value = flat[0] if flat.size else 0.0
@@ -699,6 +717,18 @@ class PipelinePlugin(ValidationPipelinePlugin):
             values = np.asarray(scored_values)
             return {
                 "values": values,
+                "actor_liveness": _liveness.actor_liveness_facts(
+                    model=model,
+                    observations=liveness_sampler.batch(),
+                    actions=values if values.size else None,
+                    split=str(role or "handoff_action_rollout"),
+                    phase=EASY_MODE,
+                    min_live_unit_fraction=float(config.get(
+                        "actor_liveness_min_live_unit_fraction",
+                        self.params[
+                            "actor_liveness_min_live_unit_fraction"],
+                    )),
+                ),
                 "raw_action_dim": int(raw_dim or 0),
                 "raw_dtype": str(values.dtype),
                 "nested_role": role,
@@ -1309,6 +1339,12 @@ class PipelinePlugin(ValidationPipelinePlugin):
         agent_plugin,
         mode: str = "train",
     ) -> Dict[str, Any]:
+        # AUD-P1LR-20260815-235: phase 1 trains from THIS config, not
+        # from the one the parent pipeline later binds, so the program's
+        # observation contract has to reach the candidate here or the
+        # easy phase would still build the raw price window.
+        config, _observation_contract_application = (
+            apply_observation_contract(config))
         if str(mode).lower() != "train" or not bool(
                 config.get("solvency_curriculum_enabled", True)):
             passthrough = dict(config)
@@ -1352,6 +1388,14 @@ class PipelinePlugin(ValidationPipelinePlugin):
         result = super().run_pipeline(
             config=normal_config, env_plugin=env_plugin,
             agent_plugin=agent_plugin, mode="train")
+        # The parent re-applies an already-bound contract and therefore
+        # records an empty diff; the phase-1 application is the one that
+        # actually moved the observation fields, so keep it.
+        result["observation_contract_phase1"] = (
+            _observation_contract_application)
+        if _observation_contract_application.get("applied"):
+            result["observation_contract"] = (
+                _observation_contract_application)
         result["curriculum"] = {
             "schema": "agent_multi.solvency_curriculum.result.v1",
             "phases": ["easy_chronological_continuation",

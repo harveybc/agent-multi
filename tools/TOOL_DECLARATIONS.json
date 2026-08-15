@@ -324,6 +324,20 @@
    "mutability_note": "writes only under the mode's output root (chain registry, per-generation populations and records, per-candidate attempt dirs, nested split CSVs, heartbeats, locks) and an explicitly named --output payload file; the pinned contract, the frozen common anchor, the nested split contract and the system manifest are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; --dispatch-plan and --champion write nothing unless --output is given",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "dead_actor_observation_fixture.py": {
+   "purpose": "CPU before/after evidence for AUD-P1LR-20260815-235: builds the REAL ETH observation both ways (with and without the unscaled raw price window) with the real feature_window_preprocessor and a real SB3 SAC actor, and reports first-layer live-unit fraction, per-unit variation, action variance and the measured zero-gradient claim (units dead at initialisation never revive). Read-only: it trains a throwaway actor on a replay env and writes only its own JSON report",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "l2_observation_boundary_validation.py": {
+   "purpose": "Bounded single-GPU validation for AUD-P1LR-20260815-235: runs ONE cold-start L2 candidate through a real phase-1 easy -> phase-2 normal-realistic boundary on the real ETH nested roles under the CORRECTED observation contract (include_price_window=false), and reports the per-epoch actor first-layer liveness. Cold start is forced because the 2724-dim frozen anchor cannot warm-start the corrected 2660-dim observation. Writes only its own output root; launches nothing else",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

@@ -41,11 +41,15 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
+from . import _actor_liveness as _liveness
 from . import _lexicographic_selection as _lex
 from . import _paired_generalization as _paired
 from . import _return_trace as _trace_mod
 from ._weekly_metrics import canonical_weekly_metrics_from_trace
-from ._observation_contract import validate_observation_contract
+from ._observation_contract import (
+    apply_observation_contract,
+    validate_observation_contract,
+)
 from .rl_pipeline import (
     _action_summary_fields,
     _new_action_stats,
@@ -582,6 +586,22 @@ class PipelinePlugin:
         "evaluate_test_split": True,
         "write_results_sidecar": True,
         "execution_cost_curriculum_epochs": None,
+
+        # AUD-P1LR-20260815-235 — actor liveness probe. Every checkpoint
+        # is measured on a strided sample of the REAL validation
+        # observations it was just scored on, so a first layer that
+        # cannot learn is a typed fact at epoch 1 instead of a
+        # post-mortem after an 80-epoch grind. Measurement is ALWAYS on:
+        # it costs one matmul over a 256-row batch and there is no flag
+        # to forget. A fully dead first layer (zero live units, hence
+        # zero gradient) REFUSES by default because every remaining
+        # epoch is already decided.
+        "actor_liveness_probe_observations":
+            _liveness.DEFAULT_PROBE_OBSERVATIONS,
+        "actor_liveness_min_live_unit_fraction":
+            _liveness.DEFAULT_MIN_LIVE_UNIT_FRACTION,
+        "refuse_dead_actor": True,
+        "refuse_constant_policy_actor": False,
     }
 
     plugin_debug_vars = [
@@ -602,6 +622,9 @@ class PipelinePlugin:
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
         "warm_start_model", "return_trace_dir", "evaluate_test_split",
         "write_results_sidecar", "execution_cost_curriculum_epochs",
+        "actor_liveness_probe_observations",
+        "actor_liveness_min_live_unit_fraction", "refuse_dead_actor",
+        "refuse_constant_policy_actor",
     ]
 
     def __init__(self, config: Dict[str, Any] | None = None):
@@ -612,6 +635,10 @@ class PipelinePlugin:
         # with a derived config copy (curriculum phase 1) still resolves
         # its role from the same verified manifest.
         self._nested_split_manifest_path: Optional[str] = None
+        # Per-split observation samples captured by the most recent
+        # rollout, keyed by split label. Measurement scratch only: it is
+        # never serialized and never influences selection.
+        self._liveness_observations: Dict[str, Any] = {}
         if config:
             self.set_params(**config)
 
@@ -949,7 +976,18 @@ class PipelinePlugin:
                     config.get("continuous_action_threshold")
                 ),
                 context_rows=context_rows,
+                capture_observations=int(
+                    config.get(
+                        "actor_liveness_probe_observations",
+                        self.params["actor_liveness_probe_observations"],
+                    )
+                    or 0
+                ),
             )
+            # Measurement scratch: it leaves the summary here so no
+            # record, sidecar or hash ever sees a raw observation batch.
+            self._liveness_observations[split_label] = summary.pop(
+                "_actor_liveness_observations", None)
             if nested is not None:
                 role, entry = nested
                 expected_scored_rows = int(entry["scored_rows"])
@@ -1025,6 +1063,7 @@ class PipelinePlugin:
         episode_id: str = "run::ep0",
         continuous_threshold: float | None = None,
         context_rows: int = 0,
+        capture_observations: int = 0,
     ) -> Dict[str, Any]:
         """Roll the policy once and return the SCORED outcome.
 
@@ -1053,7 +1092,14 @@ class PipelinePlugin:
         )
         prev_equity = _safe_float_or_none(info.get("equity"))
         replay_size_before = _replay_buffer_size(model)
+        # AUD-P1LR-20260815-235: the observations the policy is ABOUT to
+        # act on are the only honest probe batch for a liveness check,
+        # and they are already in hand here — capturing a strided sample
+        # costs no extra env step and no second rollout.
+        liveness_sampler = _liveness.StridedObservationSampler(
+            capture_observations)
         while not done:
+            liveness_sampler.offer(obs)
             action = agent_plugin.predict(model, obs, deterministic=True)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
@@ -1136,6 +1182,9 @@ class PipelinePlugin:
         summary["total_env_steps"] = steps
         summary.update(_action_summary_fields(action_stats, summary))
         summary["_return_trace_rows"] = trace_rows
+        # Private, popped by _eval_on_split before the summary can reach
+        # any record or sidecar.
+        summary["_actor_liveness_observations"] = liveness_sampler.batch()
         return summary
 
     # ------------------------------------------------------------------
@@ -1148,8 +1197,43 @@ class PipelinePlugin:
         mode: str = "train",
     ) -> Dict[str, Any]:
         mode = str(mode).lower()
+        # AUD-P1LR-20260815-235: an experiment program may declare the
+        # observation fields its candidates run under. Binding them HERE
+        # — before the split envs, the preprocessor and the model exist
+        # — is what makes the fail-closed validator below effective; it
+        # used to return on its first line because nothing between the
+        # base config and this call ever declared the guard.
+        config, observation_contract_application = apply_observation_contract(
+            config)
         env_plugin_name = config.get("env_plugin", "gym_fx_env")
         validate_observation_contract(config)
+        self._liveness_observations = {}
+        liveness_probe_size = int(
+            config.get(
+                "actor_liveness_probe_observations",
+                self.params["actor_liveness_probe_observations"],
+            )
+            or 0
+        )
+        liveness_min_live_fraction = float(
+            config.get(
+                "actor_liveness_min_live_unit_fraction",
+                self.params["actor_liveness_min_live_unit_fraction"],
+            )
+        )
+        liveness_refuse_dead = bool(
+            config.get(
+                "refuse_dead_actor",
+                self.params["refuse_dead_actor"],
+            )
+        )
+        liveness_refuse_constant = bool(
+            config.get(
+                "refuse_constant_policy_actor",
+                self.params["refuse_constant_policy_actor"],
+            )
+        )
+        actor_liveness_history: List[Dict[str, Any]] = []
         try:
             paths = self._split_csv(config)
 
@@ -1580,8 +1664,39 @@ class PipelinePlugin:
                         agent_plugin.save(model, best_model_path)
                         best_checkpoint_saved = True
 
+                    # AUD-P1LR-20260815-235: type the actor at THIS
+                    # epoch. The probe combines uniformly distributed
+                    # samples from the fit and validation rollouts that
+                    # were just scored, so the typed fact covers both
+                    # sides of the L1 contract.
+                    liveness_observations = (
+                        _liveness.combine_observation_batches(
+                            self._liveness_observations.get("train_epoch"),
+                            self._liveness_observations.get(
+                                "validation_epoch"),
+                        )
+                    )
+                    liveness = _liveness.actor_liveness_facts(
+                        model=model,
+                        observations=liveness_observations,
+                        action_raw_std=val_summary.get("action_raw_std"),
+                        epoch=epoch,
+                        split="train_epoch+validation_epoch",
+                        phase=str(config.get("solvency_mode")
+                                  or "normal_realistic"),
+                        min_live_unit_fraction=liveness_min_live_fraction,
+                    )
+                    actor_liveness_history.append(liveness)
+
                     history.append({
                         "epoch": epoch,
+                        "actor_liveness": liveness,
+                        "actor_liveness_classification":
+                            liveness["classification"],
+                        "actor_live_unit_fraction":
+                            liveness.get("live_unit_fraction"),
+                        "actor_constant_policy":
+                            liveness.get("constant_policy"),
                         "train_total_return": train_ret,
                         "train_tail_total_return": train_tail_ret,
                         "val_total_return": val_ret,
@@ -1746,6 +1861,20 @@ class PipelinePlugin:
                         f"bal={_safe_float(val_summary.get('final_equity')):.2f}",
                         flush=True,
                     )
+                    if liveness["classification"] != _liveness.ALIVE:
+                        print(
+                            "            "
+                            + _liveness.liveness_summary_line(liveness),
+                            flush=True,
+                        )
+                    # Conservative policy: no first-layer unit fired on the
+                    # combined fit/validation probe. The record preserves the
+                    # sampled support; it does not claim unobserved rows were
+                    # examined.
+                    _liveness.assert_actor_alive(
+                        liveness,
+                        refuse_dead=liveness_refuse_dead,
+                        refuse_constant=liveness_refuse_constant)
 
                     if patience_eligible and no_improve >= l1_patience:
                         stop_reason = "l1_early_stop"
@@ -1833,6 +1962,12 @@ class PipelinePlugin:
                     final["oracle_behavior_pretrain"] = pretrain_summary
                     final["warm_start_transfer_evidence"] = getattr(
                         model, "warm_start_transfer_evidence", None)
+                    final["observation_contract"] = (
+                        observation_contract_application)
+                    final["actor_liveness_history"] = actor_liveness_history
+                    final["actor_liveness"] = (
+                        actor_liveness_history[-1]
+                        if actor_liveness_history else None)
                     return final
 
                 # AUD-F1-20260806-129: preserve the TERMINAL policy —
@@ -1878,6 +2013,12 @@ class PipelinePlugin:
                 # the model object; export it or it dies with the model.
                 final["warm_start_transfer_evidence"] = getattr(
                     model, "warm_start_transfer_evidence", None)
+                final["observation_contract"] = (
+                    observation_contract_application)
+                final["actor_liveness_history"] = actor_liveness_history
+                final["actor_liveness"] = (
+                    actor_liveness_history[-1]
+                    if actor_liveness_history else None)
                 return final
             finally:
                 try:

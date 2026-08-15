@@ -268,6 +268,7 @@
     "preprocessor_plugin": "feature_window_preprocessor",
     "rel_volume": 0.05,
     "require_feature_aware_preprocessor": false,
+    "observation_contract_waiver_reason": "the pinned anchor's 2724-element observation embeds the legacy 32-price + 32-diff raw window; dropping it would make the artifact unloadable, so this campaign keeps the raw window knowingly. AUD-P1LR-20260815-235 shows that window drives the actor's first layer into the zero-gradient dead-ReLU regime: this campaign is diagnostic only and its results may not be read as a treatment effect.",
     "require_protected_entries": true,
     "reward_plugin": "pnl_reward",
     "simulation_engine": "backtrader",
