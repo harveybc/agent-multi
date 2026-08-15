@@ -3718,6 +3718,22 @@ def decide_decision_outcome(per_seed_effects: dict,
             "imputed for a missing active pair; the surviving per-seed "
             "effects are reported as computed and the document-38 "
             "decision is withheld (finding 232)")
+    # Finding 235: a v2 cell can be ACTIVE yet non-promotable (constant
+    # selected policy, unmeasured actor, zero live units, selection ==
+    # genesis). Its exclusion removes the seed's paired comparison even
+    # under FULL activity — that seed's effect is typed unavailable and
+    # the document-38 decision is withheld, never computed over a
+    # partial or imputed pairing.
+    unavailable = sorted(
+        seed for seed, facts in per_seed_effects.items()
+        if not facts.get("available"))
+    if unavailable:
+        return "INCONCLUSIVE", (
+            f"per-seed paired effects are unavailable for seed(s) "
+            f"{unavailable}: a non-promotable or otherwise "
+            "non-comparable cell removes the paired comparison for its "
+            "seed; no zero and no sentinel is imputed and the "
+            "document-38 decision is withheld (findings 232/235)")
     lr = [e["phase1_lr_effect"] for e in per_seed_effects.values()]
     diff = [e["phase1_difficulty_effect"]
             for e in per_seed_effects.values()]

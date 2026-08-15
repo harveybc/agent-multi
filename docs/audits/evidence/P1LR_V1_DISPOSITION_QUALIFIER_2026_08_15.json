@@ -1,0 +1,22 @@
+{
+ "schema": "agent_multi.p1lr_v1_disposition_qualifier.v1",
+ "date": "2026-08-15",
+ "authority": "MUSASHI_TO_GENERAL_SATOSHI_III_DEAD_ACTOR_ACCEPTANCE_AND_CORRECTED_L1_ORDER_2026_08_15.md §4",
+ "finding": "AUD-P1LR-20260815-235",
+ "subject_collection": "c0e53cf18b7d60dd",
+ "subject_result_documentation": "docs/work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md §18 (+§20 appendix)",
+ "historical_outcome_enum": "INCONCLUSIVE",
+ "historical_outcome_rewritten": false,
+ "qualifier_added": "INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235",
+ "qualifier_reason": "every v1 terminal policy trained under the defective 2,724-input observation; the 64 unnormalized raw-price dimensions (32 raw ETH closes + 32 raw diffs) drove the actor's first layer into the dead-ReLU regime; both LR arms converged to the same constant terminal policy (-0.001271069, 0/256 live first-layer units), so the collection cannot select the learning rate or the difficulty curriculum",
+ "withdrawn_conclusion": "doc 38 §18.9: 'L1 is frozen to normal_realistic with phase-1 learning rate 3e-5 for the L2 program' — WITHDRAWN; L2 must not dispatch against that recipe or its 2,724-input anchors",
+ "anchors_disposition": "anchor_seed*.zip preserved as diagnostic evidence only; never contracted, sliced, projected or adapted (order §3)",
+ "successor_experiment": {
+  "contract": "examples/config/phase_3_eth_sac_dynamics/p1_difficulty_lr_factorial_v2.json",
+  "schema": "agent_multi.p1_difficulty_lr_factorial.v2",
+  "observation": "accepted 2,660-input corrected observation contract (32 bars x 83 ordered features + 4 agent state)",
+  "initialization": "per-seed zero_update_genesis artifacts (tools/p1lr_genesis_artifacts.py), never the legacy anchors",
+  "identity_separation": "new experiment identity, output root and replica root; no v1 output or identity is reused"
+ },
+ "append_only": true
+}

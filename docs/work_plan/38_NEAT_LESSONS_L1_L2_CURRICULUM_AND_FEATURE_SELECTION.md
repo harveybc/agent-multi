@@ -986,3 +986,48 @@ contribute, so the L2 arms would differ only in phase-1 treatment while burning
 four GPUs on phase-2 compute that is guaranteed dead. The observation contract
 is corrected before L2 attribution, or L2 declares in writing that its phase-2
 stage is a known no-op.
+
+## 20. 2026-08-15 Disposition Qualifier and Withdrawal (Order §4)
+
+APPEND-ONLY. Nothing above this section is rewritten. The formal §18.2
+aggregate outcome of decision identity `c0e53cf18b7d60dd` REMAINS exactly as
+recorded: `INCONCLUSIVE`, `PARTIAL_ACTIVITY_SURVIVAL`, 8 of 16 active cells.
+The historical enum is not edited.
+
+### 20.1 Qualifier added to the v1 P1LR result
+
+Per the auditor's scientific disposition (order 2026-08-15 §4; audit
+`AUD-P1LR-20260815-235`), the preserved collection `c0e53cf18b7d60dd` and the
+whole §18 result carry the additional qualifier:
+
+```text
+INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235
+```
+
+Reason, independently reproduced by same-weight counterfactual replay on the
+sealed artifacts (audit §2): every v1 terminal policy trained under the
+defective 2,724-input observation whose 64 unnormalized raw-price dimensions
+(32 raw ETH closes + 32 raw diffs) drove the actor's first layer into the
+dead-ReLU regime. Both learning-rate arms converged to the same constant
+terminal policy (`-0.001271069`, 0/256 live first-layer units) under that
+representation, so the collection cannot choose the learning rate or the
+difficulty curriculum. The numbers in §18.3-§18.5 remain preserved evidence
+about DEFECTIVE-representation policies; they select nothing.
+
+### 20.2 The §18.9 freeze is WITHDRAWN
+
+The §18.9 conclusion "L1 is frozen to `normal_realistic` with phase-1
+learning rate `3e-5` for the L2 program" is **withdrawn** (order §4). No L2
+run may be dispatched against that frozen recipe or its 2,724-input anchors
+(`anchor_seed*.zip` are preserved as diagnostic evidence only, order §3).
+
+The next scientific job is the corrected-observation L1 factorial:
+`examples/config/phase_3_eth_sac_dynamics/p1_difficulty_lr_factorial_v2.json`
+(2,660-input accepted observation contract; per-seed zero-update genesis
+artifacts; new experiment identity, output root and replica root; typed
+actor-liveness, action-variation and selected-versus-genesis facts per cell).
+L2 remains implemented and parked until corrected L1 produces a defensible
+recipe.
+
+Machine-readable companion of this disposition:
+`docs/audits/evidence/P1LR_V1_DISPOSITION_QUALIFIER_2026_08_15.json`.
