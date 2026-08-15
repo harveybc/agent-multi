@@ -1,0 +1,1896 @@
+{
+ "schema": "agent_multi.p1lr_final_decision_evidence.v1",
+ "generated_utc": "2026-08-15T16:31:39.364722+00:00",
+ "title": "P1LR phase-1 difficulty x phase-1 learning-rate 2x2 factorial \u2014 terminal decision evidence",
+ "authority": "MUSASHI_TO_GENERAL_SATOSHI_III_POST_OMEGA_RESTART_L2_DISPATCH_AND_LIVE_RECOVERY_ORDER_2026_08_15.md sections 2.1 and 6; document 38 sections 4, 12, 15-17",
+ "decision_identity": "c0e53cf18b7d60dd",
+ "experiment": "p1_difficulty_lr_factorial_20260811_v1",
+ "mode": "decision",
+ "evidence_class": "decision_run",
+ "records": {
+  "present": 16,
+  "expected": 16,
+  "missing": []
+ },
+ "superseded_identities": {
+  "$doc": "earlier decision identities under the same output root; NEVER aggregated and never mixed with c0e53cf18b7d60dd. Direct observation 2026-08-15: each holds ZERO cell_record.json fleet-wide (omega, dragon, gamma), so no superseded record can enter any aggregation.",
+  "1434685bfdf52911": {
+   "status": "SUPERSEDED_DIAGNOSTIC",
+   "cell_records_omega": 0,
+   "cell_records_dragon": 0,
+   "cell_records_gamma": 0,
+   "reason": "document 38 section 15 \u2014 three execution defects; no output is promotion-eligible"
+  },
+  "8cc6ca5e45e4f993": {
+   "status": "SUPERSEDED_DIAGNOSTIC",
+   "cell_records_omega": 0,
+   "cell_records_dragon": 0,
+   "cell_records_gamma": 0,
+   "reason": "document 38 section 17 \u2014 ContextPrefixWrapper Gymnasium identity defect at the final outer load"
+  },
+  "7b55ef7eac30ae6a": {
+   "status": "SUPERSEDED_DIAGNOSTIC",
+   "cell_records_omega": 0,
+   "cell_records_dragon": 0,
+   "cell_records_gamma": 0,
+   "reason": "superseded execution identity; no cell records exist"
+  }
+ },
+ "formal_aggregate_outcome": {
+  "$doc": "verbatim from tools/p1_difficulty_lr_factorial.py --decision-verdict. PRESERVED AS RECORDED. This enum is NOT rewritten by the conditional-stratum report below.",
+  "producer": "tools/p1_difficulty_lr_factorial.py --decision-verdict",
+  "verdict_schema": "agent_multi.p1_difficulty_lr_decision_verdict.v1",
+  "outcome": "INCONCLUSIVE",
+  "outcome_rationale": "partial activity survival: 8 of 16 cells are inactive [seed101/P1E_LR1E4(no_activity_eligible_checkpoint), seed101/P1N_LR1E4(no_activity_eligible_checkpoint), seed202/P1E_LR1E4(no_activity_eligible_checkpoint), seed202/P1N_LR1E4(no_activity_eligible_checkpoint), seed303/P1E_LR1E4(no_activity_eligible_checkpoint), seed303/P1N_LR1E4(no_activity_eligible_checkpoint), seed404/P1E_LR1E4(no_activity_eligible_checkpoint), seed404/P1N_LR1E4(no_activity_eligible_checkpoint)], so the paired effect(s) for seed(s) ['101', '202', '303', '404'] do not exist. No zero and no sentinel is imputed for a missing active pair; the surviving per-seed effects are reported as computed and the document-38 decision is withheld (finding 232)",
+  "activity_classification": "PARTIAL_ACTIVITY_SURVIVAL",
+  "active_cells": 8,
+  "inactive_cell_count": 8,
+  "effect_basis": "outer_validation mean_weekly_rap (fraction per week, 2024 scored window); paired within seed",
+  "materiality_rule": "an effect is material iff all four per-seed paired effects share one strict sign",
+  "imputation_policy": "NONE \u2014 a cell without comparable active performance is excluded from the paired utility set and its per-seed effect is typed unavailable with the exact reason; zero and sentinel values are never imputed (finding 232)",
+  "paired_effects_available": [],
+  "paired_effects_unavailable": [
+   "101",
+   "202",
+   "303",
+   "404"
+  ],
+  "per_seed_paired_effects": {
+   "101": {
+    "available": false,
+    "lr_x_difficulty_interaction": null,
+    "phase1_difficulty_effect": null,
+    "phase1_lr_effect": null,
+    "reason": "seed 101 has no computable paired effect: 2 of 4 cells produced no comparable active-cell performance (P1N_LR1E4, P1E_LR1E4); imputing zero or a sentinel would fabricate the comparison (finding 232)",
+    "unavailable_cells": [
+     {
+      "cell": "P1N_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     },
+     {
+      "cell": "P1E_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     }
+    ]
+   },
+   "202": {
+    "available": false,
+    "lr_x_difficulty_interaction": null,
+    "phase1_difficulty_effect": null,
+    "phase1_lr_effect": null,
+    "reason": "seed 202 has no computable paired effect: 2 of 4 cells produced no comparable active-cell performance (P1N_LR1E4, P1E_LR1E4); imputing zero or a sentinel would fabricate the comparison (finding 232)",
+    "unavailable_cells": [
+     {
+      "cell": "P1N_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     },
+     {
+      "cell": "P1E_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     }
+    ]
+   },
+   "303": {
+    "available": false,
+    "lr_x_difficulty_interaction": null,
+    "phase1_difficulty_effect": null,
+    "phase1_lr_effect": null,
+    "reason": "seed 303 has no computable paired effect: 2 of 4 cells produced no comparable active-cell performance (P1N_LR1E4, P1E_LR1E4); imputing zero or a sentinel would fabricate the comparison (finding 232)",
+    "unavailable_cells": [
+     {
+      "cell": "P1N_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     },
+     {
+      "cell": "P1E_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     }
+    ]
+   },
+   "404": {
+    "available": false,
+    "lr_x_difficulty_interaction": null,
+    "phase1_difficulty_effect": null,
+    "phase1_lr_effect": null,
+    "reason": "seed 404 has no computable paired effect: 2 of 4 cells produced no comparable active-cell performance (P1N_LR1E4, P1E_LR1E4); imputing zero or a sentinel would fabricate the comparison (finding 232)",
+    "unavailable_cells": [
+     {
+      "cell": "P1N_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     },
+     {
+      "cell": "P1E_LR1E4",
+      "reason": "cell is inactive (no_activity_eligible_checkpoint); its outer evaluation is diagnostic truth about a non-promotable policy and is not a comparable performance value"
+     }
+    ]
+   }
+  },
+  "gates": {
+   "identity_coherent": true,
+   "records_16_16": true,
+   "replica_terminal_loads": true
+  },
+  "process_exit_code": 4,
+  "exit_code_meaning": "EXIT_CLASS['INCONCLUSIVE']"
+ },
+ "independent_reproduction": {
+  "$doc": "the verdict was recomputed on 2026-08-15 from a SECOND, freshly fetched and independently sealed collection with its own replica proof.",
+  "aggregation_a": {
+   "collection_root": "/home/harveybc/.local/share/agent-multi/p1lr_collection_c0e53cf18b7d60dd_20260814",
+   "sealed_utc": "2026-08-14T18:16:23.284671+00:00",
+   "collection_tree_digest": "6877945cfbc924f940ce48cd5b46ad56d37339d55590501c488f1cc2077a01cf",
+   "replica_host": "dragon",
+   "replica_proof_file": "/home/harveybc/.local/share/agent-multi/p1lr_collection_c0e53cf18b7d60dd_20260814/p1lr_replica_proof_c0e53cf18b7d60dd.json",
+   "outcome": "INCONCLUSIVE"
+  },
+  "aggregation_b": {
+   "collection_root": "/home/harveybc/.local/share/agent-multi/p1lr_collection_c0e53cf18b7d60dd_20260815_evidence",
+   "sealed_utc": "2026-08-15T16:25:49.842887+00:00",
+   "collection_tree_digest": "e21c00c28adc29929c11680ba179ea6310ec1fea5b07f092893d11155e6e8c63",
+   "replica_host": "dragon",
+   "replica_proof_file": "/home/harveybc/.local/share/agent-multi/p1lr_collection_c0e53cf18b7d60dd_20260815_evidence/p1lr_replica_proof_c0e53cf18b7d60dd.json",
+   "outcome": "INCONCLUSIVE"
+  },
+  "outcome_identical": true,
+  "per_cell_metrics_identical": true,
+  "inactive_cells_identical": true,
+  "per_seed_paired_effects_identical": true,
+  "file_manifest_comparison": {
+   "files_a": 424,
+   "files_b": 424,
+   "only_in_a": [],
+   "only_in_b": [],
+   "content_differs": [
+    "seed101/P1E_LR1E4/heartbeat.json",
+    "seed101/P1E_LR3E5/heartbeat.json",
+    "seed101/P1N_LR1E4/heartbeat.json",
+    "seed101/P1N_LR3E5/heartbeat.json"
+   ],
+   "interpretation": "the two sealed trees differ ONLY in four seed101 heartbeat.json liveness telemetry files, which the worker rewrote between the two fetches. All 16 cell_record.json files, all model artifacts and all custody bindings are bit-identical, which is why the tree digests differ while every scientific field agrees exactly."
+  },
+  "digest_difference_is_explained": true
+ },
+ "replica_load_proofs": {
+  "$doc": "agent_multi.p1lr_replica_proof.v1 \u2014 every terminal artifact really loaded (stable_baselines3 SAC.load) on an independent host and was rehashed there.",
+  "proof_a": {
+   "replica_host": "dragon",
+   "generated_utc": "2026-08-14T18:19:01.094924+00:00",
+   "collection_tree_digest": "6877945cfbc924f940ce48cd5b46ad56d37339d55590501c488f1cc2077a01cf",
+   "entries": 16,
+   "all_load": true
+  },
+  "proof_b": {
+   "replica_host": "dragon",
+   "generated_utc": "2026-08-15T16:27:40.795755+00:00",
+   "collection_tree_digest": "e21c00c28adc29929c11680ba179ea6310ec1fea5b07f092893d11155e6e8c63",
+   "entries": 16,
+   "all_load": true
+  },
+  "per_arm": [
+   {
+    "seed": 101,
+    "cell": "P1N_LR1E4",
+    "cell_identity": "5f9978f42a9aa22c",
+    "terminal_relative_path": "seed101/P1N_LR1E4/attempt-5f9978f42a9aa22c-01/model.terminal.zip",
+    "terminal_model_sha256": "d3bd25cfdab9020c028e68149f28ca4a53dd0ea0ab4e0ad85f3aaf028869bdfb",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 101,
+    "cell": "P1N_LR3E5",
+    "cell_identity": "9488581900155187",
+    "terminal_relative_path": "seed101/P1N_LR3E5/attempt-9488581900155187-01/model.terminal.zip",
+    "terminal_model_sha256": "b73b8699016a440e8b367ff75d265962e3753fa5e7e703186891f1673e6cf04d",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 101,
+    "cell": "P1E_LR1E4",
+    "cell_identity": "f030339a758682cc",
+    "terminal_relative_path": "seed101/P1E_LR1E4/attempt-f030339a758682cc-01/model.terminal.zip",
+    "terminal_model_sha256": "2ba440c20be9c52afa8d183eb0ffb1214d6445e1245ffac941e87c11b467f785",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 101,
+    "cell": "P1E_LR3E5",
+    "cell_identity": "c47b5d7c2ac7f5c7",
+    "terminal_relative_path": "seed101/P1E_LR3E5/attempt-c47b5d7c2ac7f5c7-01/model.terminal.zip",
+    "terminal_model_sha256": "35b5e5a593a7fad1612942c5182bcaaf4270d9708f4650df4399a7c25a13bff4",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 202,
+    "cell": "P1N_LR1E4",
+    "cell_identity": "1d523b44577738ad",
+    "terminal_relative_path": "seed202/P1N_LR1E4/attempt-1d523b44577738ad-01/model.terminal.zip",
+    "terminal_model_sha256": "01a7da0c6713a944aeaa60c7aa68cc9bd7dfe24f1a01c15d0ca8111ed78fb571",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 202,
+    "cell": "P1N_LR3E5",
+    "cell_identity": "08816833e00fe6f2",
+    "terminal_relative_path": "seed202/P1N_LR3E5/attempt-08816833e00fe6f2-01/model.terminal.zip",
+    "terminal_model_sha256": "f9773bae147bbe176b37e9c53342d1b82da966907b8b8c366260964d87ee7553",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 202,
+    "cell": "P1E_LR1E4",
+    "cell_identity": "20904128e0818c1d",
+    "terminal_relative_path": "seed202/P1E_LR1E4/attempt-20904128e0818c1d-01/model.terminal.zip",
+    "terminal_model_sha256": "4cf965407d3ccb243dcf7b388d2b93df31d2748afd5d991bd2aa0189a773e9f4",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 202,
+    "cell": "P1E_LR3E5",
+    "cell_identity": "12daa4daf35d394f",
+    "terminal_relative_path": "seed202/P1E_LR3E5/attempt-12daa4daf35d394f-01/model.terminal.zip",
+    "terminal_model_sha256": "0de4e783ecb4a2f72f1b5f3fc30429708de0f48252b5c93a78ddb87be63e5d5c",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 303,
+    "cell": "P1N_LR1E4",
+    "cell_identity": "5e05cc6f1912d3a5",
+    "terminal_relative_path": "seed303/P1N_LR1E4/attempt-5e05cc6f1912d3a5-01/model.terminal.zip",
+    "terminal_model_sha256": "12951af075a08ce4bff29de7e02da4713ad5794e0dba59972846153738bee1be",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 303,
+    "cell": "P1N_LR3E5",
+    "cell_identity": "21b02bd48ba6a19f",
+    "terminal_relative_path": "seed303/P1N_LR3E5/attempt-21b02bd48ba6a19f-01/model.terminal.zip",
+    "terminal_model_sha256": "f1a5410a19a2ec2a1e2f2e95b0801ca3977c7e808130be53f438218d5783c48e",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 303,
+    "cell": "P1E_LR1E4",
+    "cell_identity": "2f0067b87188bead",
+    "terminal_relative_path": "seed303/P1E_LR1E4/attempt-2f0067b87188bead-01/model.terminal.zip",
+    "terminal_model_sha256": "bd933575780b4901b028087a65881076d023b987a440eea16967d8e022b9ccd9",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 303,
+    "cell": "P1E_LR3E5",
+    "cell_identity": "a536c2e271e74c38",
+    "terminal_relative_path": "seed303/P1E_LR3E5/attempt-a536c2e271e74c38-01/model.terminal.zip",
+    "terminal_model_sha256": "1bd97663931f773e5ca9c02f19ec1b813da90d128bb4a7a1555b536b9059d8ea",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 404,
+    "cell": "P1N_LR1E4",
+    "cell_identity": "5566d595a71264b3",
+    "terminal_relative_path": "seed404/P1N_LR1E4/attempt-5566d595a71264b3-01/model.terminal.zip",
+    "terminal_model_sha256": "f762dfda6e72603bd6e84d6238dcb3e47f836853cdd81314c62e76f4e451d610",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 404,
+    "cell": "P1N_LR3E5",
+    "cell_identity": "e25bbd5d96056c85",
+    "terminal_relative_path": "seed404/P1N_LR3E5/attempt-e25bbd5d96056c85-01/model.terminal.zip",
+    "terminal_model_sha256": "d5fafffe128e07c7a7bd11bce7d28fb4d2aae5f8eea199ed6b63e49a5faa7b40",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 404,
+    "cell": "P1E_LR1E4",
+    "cell_identity": "205b9c8b17c3abc6",
+    "terminal_relative_path": "seed404/P1E_LR1E4/attempt-205b9c8b17c3abc6-01/model.terminal.zip",
+    "terminal_model_sha256": "1a62bb69bcb8c0f521acf2e27a6db574087a53aa583dd9d33ef347a152307728",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   },
+   {
+    "seed": 404,
+    "cell": "P1E_LR3E5",
+    "cell_identity": "1a8874857149799e",
+    "terminal_relative_path": "seed404/P1E_LR3E5/attempt-1a8874857149799e-01/model.terminal.zip",
+    "terminal_model_sha256": "8474c4823cd00f02f32db5b8a66cb69414611fdb83e34c7f2e8e03ff6ad98279",
+    "loads_on_replica": true,
+    "replica_n_updates": 1579000
+   }
+  ]
+ },
+ "digests": {
+  "artifact": {
+   "$doc": "per-cell model custody is in per_cell_records[]",
+   "anchors_per_seed": {
+    "101": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+    "202": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee",
+    "303": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003",
+    "404": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076"
+   },
+   "anchor_paths": {
+    "101": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+    "202": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed202/anchor_seed202.zip",
+    "303": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed303/anchor_seed303.zip",
+    "404": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed404/anchor_seed404.zip"
+   },
+   "terminal_models": {
+    "seed101/P1N_LR1E4": "d3bd25cfdab9020c028e68149f28ca4a53dd0ea0ab4e0ad85f3aaf028869bdfb",
+    "seed101/P1N_LR3E5": "b73b8699016a440e8b367ff75d265962e3753fa5e7e703186891f1673e6cf04d",
+    "seed101/P1E_LR1E4": "2ba440c20be9c52afa8d183eb0ffb1214d6445e1245ffac941e87c11b467f785",
+    "seed101/P1E_LR3E5": "35b5e5a593a7fad1612942c5182bcaaf4270d9708f4650df4399a7c25a13bff4",
+    "seed202/P1N_LR1E4": "01a7da0c6713a944aeaa60c7aa68cc9bd7dfe24f1a01c15d0ca8111ed78fb571",
+    "seed202/P1N_LR3E5": "f9773bae147bbe176b37e9c53342d1b82da966907b8b8c366260964d87ee7553",
+    "seed202/P1E_LR1E4": "4cf965407d3ccb243dcf7b388d2b93df31d2748afd5d991bd2aa0189a773e9f4",
+    "seed202/P1E_LR3E5": "0de4e783ecb4a2f72f1b5f3fc30429708de0f48252b5c93a78ddb87be63e5d5c",
+    "seed303/P1N_LR1E4": "12951af075a08ce4bff29de7e02da4713ad5794e0dba59972846153738bee1be",
+    "seed303/P1N_LR3E5": "f1a5410a19a2ec2a1e2f2e95b0801ca3977c7e808130be53f438218d5783c48e",
+    "seed303/P1E_LR1E4": "bd933575780b4901b028087a65881076d023b987a440eea16967d8e022b9ccd9",
+    "seed303/P1E_LR3E5": "1bd97663931f773e5ca9c02f19ec1b813da90d128bb4a7a1555b536b9059d8ea",
+    "seed404/P1N_LR1E4": "f762dfda6e72603bd6e84d6238dcb3e47f836853cdd81314c62e76f4e451d610",
+    "seed404/P1N_LR3E5": "d5fafffe128e07c7a7bd11bce7d28fb4d2aae5f8eea199ed6b63e49a5faa7b40",
+    "seed404/P1E_LR1E4": "1a62bb69bcb8c0f521acf2e27a6db574087a53aa583dd9d33ef347a152307728",
+    "seed404/P1E_LR3E5": "8474c4823cd00f02f32db5b8a66cb69414611fdb83e34c7f2e8e03ff6ad98279"
+   },
+   "best_checkpoints": {
+    "seed101/P1N_LR1E4": null,
+    "seed101/P1N_LR3E5": "6b1ca6d4e7de039b50f5a1f5a86bf3cfdd68ef3e18a8599294bf9a03fb31dd50",
+    "seed101/P1E_LR1E4": null,
+    "seed101/P1E_LR3E5": "285f79ed7f59612779bf44533090bcae067b129575107df2528d4d4623ead146",
+    "seed202/P1N_LR1E4": null,
+    "seed202/P1N_LR3E5": "de403618be8887b12494ab3d4a9bd773d21e49b6ba1ed742ebb2a28c1a7dec6c",
+    "seed202/P1E_LR1E4": null,
+    "seed202/P1E_LR3E5": "42b899bed7885f10d5f429794ce7f6c15373064f29a1dff545c0fe00646a8d6d",
+    "seed303/P1N_LR1E4": null,
+    "seed303/P1N_LR3E5": "97ad5a5563686ec6a77226a3d86203807ec82af349c06c842e346ede5aa12526",
+    "seed303/P1E_LR1E4": null,
+    "seed303/P1E_LR3E5": "fa4cc7165e0a5291a4c0d9c860563b262630225b4e10f2fec75ae28950be03dc",
+    "seed404/P1N_LR1E4": null,
+    "seed404/P1N_LR3E5": "133887976249c65560d9826a7ab6ec1bd195b638f1ee9049cc6501f9cc778636",
+    "seed404/P1E_LR1E4": null,
+    "seed404/P1E_LR3E5": "3eee14274772503f000be7045038c79ea3d3e6067dd23d35617f7870bb8e731d"
+   }
+  },
+  "source": {
+   "agent-multi": {
+    "commit": "d3d9b99034d6d2af9157fa92cabd4ceb7822cd29",
+    "dirty": false,
+    "dirty_entries": [],
+    "dirty_untracked_digest": null,
+    "repo_root": "/home/harveybc/Documents/GitHub/.runtime/agent-multi-p1lr-d3d9b99034d6d2af"
+   },
+   "gym-fx": {
+    "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+    "dirty": false,
+    "dirty_entries": [],
+    "dirty_untracked_digest": null,
+    "repo_root": "/home/harveybc/Documents/GitHub/gym-fx"
+   },
+   "runtime_pinning": "detached clean runtime worktree; the canonical repository may advance without changing the identity a restarted seed derives (document 38 section 16)",
+   "verdict_tooling_revision_equivalence": "tools/p1_difficulty_lr_factorial.py, tools/p1lr_collect.py, tools/m0_l1_ladder_collect.py and tools/collect_l1_factorial.py are byte-identical between the pinned experiment revision d3d9b99034d6d2af9157fa92cabd4ceb7822cd29 and the aggregation revision 9165eb51, so aggregating from the newer checkout is faithful"
+  },
+  "config": {
+   "contract_path": "examples/config/phase_3_eth_sac_dynamics/p1_difficulty_lr_factorial_v1.json",
+   "contract_sha256": "4a4e0f16b7da0783b3a0f3d1336474e8a286ec62acc88963599e762eedd00bd6",
+   "decision_execution_profile_path": "examples/config/phase_3_eth_sac_dynamics/p1lr_decision_execution_profile_v1.json",
+   "decision_execution_profile_sha256": "7606ac12dc6b0f8808e52594ed1d6a090d0dbc7a6a2edd957cdfaec3d7c80831",
+   "resolved_config_sha256_per_cell": {
+    "seed101/P1N_LR1E4": "4976130c398b2e6ad9b67b314025ce9e3f0091eab443b1d7d208fdcce57a26b3",
+    "seed101/P1N_LR3E5": "38fee506e80139edb5fd8926d37049e1a91ce310bc5f8cbf34957393caf66b6f",
+    "seed101/P1E_LR1E4": "3019098d35dd3f869fcdad04aba10a436f62a7bd78a93fff191c3424913e25c7",
+    "seed101/P1E_LR3E5": "000c0debfcceca4bec2104b9281193840e926d5eab1df6752a21023e800ce5a3",
+    "seed202/P1N_LR1E4": "338da759d7771fda37defa985fe31c8abf4f70f8bc7225ca2816043cd89ea3b2",
+    "seed202/P1N_LR3E5": "05ec8d660565c1b55a517497ceddba1809146378db143e7fd3d3475b3cabe1c5",
+    "seed202/P1E_LR1E4": "4fcd0e84359b7dba1c226110822fc9f7d7d84b081ad2e434eedda3f7fae44e47",
+    "seed202/P1E_LR3E5": "02f09b1474d53bc8d9ca5738f3c1c94e06a948dd0da986e96334bb5aea44b647",
+    "seed303/P1N_LR1E4": "9f38d2833825bae7ae891fc82f17683d015cb784654a04000a99d502f3a59fc1",
+    "seed303/P1N_LR3E5": "4d1c06f52c920e6f9f492e686f3b8167800d5d284c10302867d4623fbbe7a3f0",
+    "seed303/P1E_LR1E4": "5b63399bedd675437c9ea057267a2a543d30eaaeac9187291e7b5a6699a214b9",
+    "seed303/P1E_LR3E5": "4cfec31113b2d99f4ae4df4e0474ef09be3068a5100297e19372e7f672affa83",
+    "seed404/P1N_LR1E4": "6b29ab379e4a7c88d6374d67a378e13445786181216bd3a52a734ecf6eb1e14b",
+    "seed404/P1N_LR3E5": "637454be39c50f415b80abaf52676f06dd2b138994f464147029bc69a653a408",
+    "seed404/P1E_LR1E4": "b25ee0c1683d83ca1d9d64cd3b8f9416f28fdf6959dcdca63aa040d7694008c9",
+    "seed404/P1E_LR3E5": "ac453402b93979da148add3aa85f3e56b8963ba7ade0087741f9ea1faa9452e3"
+   }
+  },
+  "data": {
+   "source_csv": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+   "source_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+   "date_column": "DATE_TIME",
+   "window_size": 32,
+   "scaling_window": 256
+  },
+  "split": {
+   "nested_split_contract_path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+   "nested_split_contract_sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+   "nested_split_mode": "l1",
+   "selection_metric": "paired_generalization_weekly_v1",
+   "l1_gap_penalty_beta": 0.25,
+   "role_facts": {
+    "fit_train": {
+     "context_rows": 0,
+     "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+     "score_end": "2022-12-31 20:00:00",
+     "score_start": "2017-09-28 04:00:00",
+     "scored_rows": 11509,
+     "status": "MATERIALIZED"
+    },
+    "inner_validation": {
+     "context_rows": 256,
+     "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+     "score_end": "2023-12-31 20:00:00",
+     "score_start": "2023-01-01 00:00:00",
+     "scored_rows": 2190,
+     "status": "MATERIALIZED"
+    },
+    "outer_validation": {
+     "context_rows": 256,
+     "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+     "score_end": "2024-12-31 20:00:00",
+     "score_start": "2024-01-01 00:00:00",
+     "scored_rows": 2196,
+     "status": "MATERIALIZED"
+    },
+    "sealed_test": {
+     "context_rows": null,
+     "csv_sha256": null,
+     "score_end": null,
+     "score_start": null,
+     "scored_rows": null,
+     "status": "SEALED"
+    },
+    "train_monitor": {
+     "context_rows": 256,
+     "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+     "score_end": "2022-12-31 20:00:00",
+     "score_start": "2022-01-01 00:00:00",
+     "scored_rows": 2190,
+     "status": "MATERIALIZED"
+    }
+   },
+   "role_facts_uniform_across_all_16_records": true,
+   "nested_split_manifest_sha256_per_cell": {
+    "seed101/P1N_LR1E4": "c1d14a4263b0cd7f16ded1962b8a05d61a912df2e40fa650a5af0779383e01b3",
+    "seed101/P1N_LR3E5": "1912ecbdd1a0da4e8f9df23cafca1714ee29ab35510a84018f6790f139f282d1",
+    "seed101/P1E_LR1E4": "ccb4d5a3e589e17c72161c2ae4a10dc875a0a4c01541613cd8c5a42d129f591c",
+    "seed101/P1E_LR3E5": "b6a7f9efdc747b940184ff1b2ec90cc5928ab0003fdc7a66fac8d1c0739f48eb",
+    "seed202/P1N_LR1E4": "91dd82ad728b1d56d91082ccbad9bda76a823016cb21ba1a474a2b6bda0b6dfe",
+    "seed202/P1N_LR3E5": "ae7155e0b402df358ac72d771c546655161d962c4a29422943d4c691a37e6f51",
+    "seed202/P1E_LR1E4": "9e5fbcae9c0c8eaaddb3cfa71460ca6df687b00512fcc79f0cc25d776b152703",
+    "seed202/P1E_LR3E5": "05853bae05ba431f58d15e58301639f9ff211dee07f85c0e16fc8c337835d40b",
+    "seed303/P1N_LR1E4": "3fd8258a591c7fabc19cbd7a00f934a6cfa3fd950110f549b071185422db46d5",
+    "seed303/P1N_LR3E5": "30bc02c6a038e82ce02e5a940a76e30a3b0a6aca4dbadde81f7f4f15b9eeed1e",
+    "seed303/P1E_LR1E4": "66e843e2978f02616c94581f2edd8f903c22f21d4ed4ed4def30b56a45f456c7",
+    "seed303/P1E_LR3E5": "14ed98b02442115d3ebeb2adb06d0a2de58c47636612098a4c4c298d109cc6fe",
+    "seed404/P1N_LR1E4": "4ba3d8ed634dd70017ef3eabde84cae2d83acac05443ff782be19a4b8c4619a4",
+    "seed404/P1N_LR3E5": "2afe8ea4f0bee2b7767efacc0e6f3b17f561cdad597c0acbe24b8e9016bea5d2",
+    "seed404/P1E_LR1E4": "e3206508c90c916c9441758d02213da8b06465445908bab1384f1d00eb4630ca",
+    "seed404/P1E_LR3E5": "4ca52c5a666fd319725700829fe38ae9f481789855f503c95915a35d6867e62a"
+   },
+   "nested_split_manifest_note": "the split MANIFEST is re-materialized per attempt directory, so its sha256 is per-cell by construction; the split CONTRACT sha and every per-role CSV sha are identical across all 16 records"
+  },
+  "collection": {
+   "collection_a_tree_digest": "6877945cfbc924f940ce48cd5b46ad56d37339d55590501c488f1cc2077a01cf",
+   "collection_b_tree_digest": "e21c00c28adc29929c11680ba179ea6310ec1fea5b07f092893d11155e6e8c63",
+   "collection_schema": "agent_multi.p1lr_collection.v1",
+   "source_hosts": {
+    "101": "omega",
+    "202": "dragon",
+    "303": "gamma",
+    "404": "gamma"
+   },
+   "cell_identities": {
+    "08816833e00fe6f2": "seed202/P1N_LR3E5",
+    "12daa4daf35d394f": "seed202/P1E_LR3E5",
+    "1a8874857149799e": "seed404/P1E_LR3E5",
+    "1d523b44577738ad": "seed202/P1N_LR1E4",
+    "205b9c8b17c3abc6": "seed404/P1E_LR1E4",
+    "20904128e0818c1d": "seed202/P1E_LR1E4",
+    "21b02bd48ba6a19f": "seed303/P1N_LR3E5",
+    "2f0067b87188bead": "seed303/P1E_LR1E4",
+    "5566d595a71264b3": "seed404/P1N_LR1E4",
+    "5e05cc6f1912d3a5": "seed303/P1N_LR1E4",
+    "5f9978f42a9aa22c": "seed101/P1N_LR1E4",
+    "9488581900155187": "seed101/P1N_LR3E5",
+    "a536c2e271e74c38": "seed303/P1E_LR3E5",
+    "c47b5d7c2ac7f5c7": "seed101/P1E_LR3E5",
+    "e25bbd5d96056c85": "seed404/P1N_LR3E5",
+    "f030339a758682cc": "seed101/P1E_LR1E4"
+   }
+  }
+ },
+ "metric_units_and_conventions": {
+  "$doc": "document 38 section 4.1 \u2014 fractional units in storage, labeled percentages in display only. The x52 convention is the runner's declared weekly_arithmetic_mean_x_52.",
+  "activity.traded": "boolean: at least one closed trade",
+  "annual_rap": "fraction per year, weekly RAP arithmetic mean x 52",
+  "annual_return": "fraction per year, weekly arithmetic mean x 52",
+  "annualized_return": "compounded fraction per year: (1+total_return)^(365.25/days)-1 over the outer scored window",
+  "max_drawdown_fraction": "fraction of peak equity over the whole outer scored window",
+  "mean_weekly_rap": "fraction per week: weekly return - lambda x weekly max drawdown (risk-adjusted performance)",
+  "mean_weekly_return": "fraction per week, arithmetic mean",
+  "trades_total": "count of closed trades, outer scored window",
+  "weekly_return_vector": "fraction per calendar week (W-SUN), outer validation 2024 scored window",
+  "annual_return_method": "weekly_arithmetic_mean_x_52",
+  "annual_rap_method": "weekly_arithmetic_mean_x_52",
+  "role_of_every_number_below": "outer_validation",
+  "window_of_every_number_below": "2024-01-01 .. 2024-12-31 20:00",
+  "sealed_test_2025": "UNOPENED"
+ },
+ "per_cell_records": [
+  {
+   "seed": 101,
+   "cell": "P1N_LR1E4",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 0.0001,
+   "host": "omega",
+   "cell_identity": "5f9978f42a9aa22c",
+   "cell_position_in_seed": 0,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "cc3ed52ea87a812da000db5f8453096bb0aa08f50686f8550baf8546247b4713",
+   "resolved_config_sha256": "4976130c398b2e6ad9b67b314025ce9e3f0091eab443b1d7d208fdcce57a26b3",
+   "anchor_sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+   "nested_split_manifest_sha256": "c1d14a4263b0cd7f16ded1962b8a05d61a912df2e40fa650a5af0779383e01b3",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "d3bd25cfdab9020c028e68149f28ca4a53dd0ea0ab4e0ad85f3aaf028869bdfb",
+   "terminal_policy_tensor_sha256": "908c09bb5b0a33148ff437b8a7c251491d707b16d476122cbb387907d29d4cf0",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 101,
+   "cell": "P1N_LR3E5",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 3e-05,
+   "host": "omega",
+   "cell_identity": "9488581900155187",
+   "cell_position_in_seed": 1,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.00028971633205658414,
+   "annual_return_weekly_mean_x52_fraction": 0.015065249266942375,
+   "annualized_compounded_return_fraction": 0.01517913464126397,
+   "mean_weekly_rap_fraction": -0.0021109781222022938,
+   "annual_rap_weekly_mean_x52_fraction": -0.10977086235451927,
+   "max_drawdown_fraction": 0.019385696967900334,
+   "trades_total": 48,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 2,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "3350312054a37e6cf59e88b98f402a051fe12857d8a11f84c718da780f214dbb",
+   "resolved_config_sha256": "38fee506e80139edb5fd8926d37049e1a91ce310bc5f8cbf34957393caf66b6f",
+   "anchor_sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+   "nested_split_manifest_sha256": "1912ecbdd1a0da4e8f9df23cafca1714ee29ab35510a84018f6790f139f282d1",
+   "best_model_sha256": "6b1ca6d4e7de039b50f5a1f5a86bf3cfdd68ef3e18a8599294bf9a03fb31dd50",
+   "terminal_model_sha256": "b73b8699016a440e8b367ff75d265962e3753fa5e7e703186891f1673e6cf04d",
+   "terminal_policy_tensor_sha256": "e1f3991810f1668c6178353a6310c58432884a1f8833e98eb1cd4b1924dd8ebe",
+   "weekly_return_vector_sha256": "0b4ff79fdcc6347fe72e9e56b93d2bdfce913f8516970c465a4878d8a4bc67fa"
+  },
+  {
+   "seed": 101,
+   "cell": "P1E_LR1E4",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 0.0001,
+   "host": "omega",
+   "cell_identity": "f030339a758682cc",
+   "cell_position_in_seed": 2,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "c30cf8215f61c9e4c44ff31f7fe06449f56d57d9451d7ae7ac00057a1a596d22",
+   "resolved_config_sha256": "3019098d35dd3f869fcdad04aba10a436f62a7bd78a93fff191c3424913e25c7",
+   "anchor_sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+   "nested_split_manifest_sha256": "ccb4d5a3e589e17c72161c2ae4a10dc875a0a4c01541613cd8c5a42d129f591c",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "2ba440c20be9c52afa8d183eb0ffb1214d6445e1245ffac941e87c11b467f785",
+   "terminal_policy_tensor_sha256": "4312de6df972f527b66ccf5388832493e1f0daa314dd4434f3cd9dc282f051db",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 101,
+   "cell": "P1E_LR3E5",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 3e-05,
+   "host": "omega",
+   "cell_identity": "c47b5d7c2ac7f5c7",
+   "cell_position_in_seed": 3,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.00014469551179185705,
+   "annual_return_weekly_mean_x52_fraction": 0.0075241666131765665,
+   "annualized_compounded_return_fraction": 0.007409396627557463,
+   "mean_weekly_rap_fraction": -0.001569963591511361,
+   "annual_rap_weekly_mean_x52_fraction": -0.08163810675859076,
+   "max_drawdown_fraction": 0.014826153265891259,
+   "trades_total": 42,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 2,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "182c2096ef41bb457a78164c5ec49db829744124d5eb4cdc9e572a8aba479d8a",
+   "resolved_config_sha256": "000c0debfcceca4bec2104b9281193840e926d5eab1df6752a21023e800ce5a3",
+   "anchor_sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62",
+   "nested_split_manifest_sha256": "b6a7f9efdc747b940184ff1b2ec90cc5928ab0003fdc7a66fac8d1c0739f48eb",
+   "best_model_sha256": "285f79ed7f59612779bf44533090bcae067b129575107df2528d4d4623ead146",
+   "terminal_model_sha256": "35b5e5a593a7fad1612942c5182bcaaf4270d9708f4650df4399a7c25a13bff4",
+   "terminal_policy_tensor_sha256": "0d68901e2238233604665bf5a08671442a34766a296d1e90eb0d7f32f9f62f83",
+   "weekly_return_vector_sha256": "ce7ee913c1070b5523149bec849d3934c3c3889870084ae555d3be6b065b5e19"
+  },
+  {
+   "seed": 202,
+   "cell": "P1N_LR1E4",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 0.0001,
+   "host": "dragon",
+   "cell_identity": "1d523b44577738ad",
+   "cell_position_in_seed": 3,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "ea6168b8283eea589b0bef3464342261f036278cd4447fbc450708753f06ebf4",
+   "resolved_config_sha256": "338da759d7771fda37defa985fe31c8abf4f70f8bc7225ca2816043cd89ea3b2",
+   "anchor_sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee",
+   "nested_split_manifest_sha256": "91dd82ad728b1d56d91082ccbad9bda76a823016cb21ba1a474a2b6bda0b6dfe",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "01a7da0c6713a944aeaa60c7aa68cc9bd7dfe24f1a01c15d0ca8111ed78fb571",
+   "terminal_policy_tensor_sha256": "cb99c7d5e52b02aad649d8166cc84ba358a3ee12c27135503bf66863a90ecdda",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 202,
+   "cell": "P1N_LR3E5",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 3e-05,
+   "host": "dragon",
+   "cell_identity": "08816833e00fe6f2",
+   "cell_position_in_seed": 0,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": -0.00018143609691477204,
+   "annual_return_weekly_mean_x52_fraction": -0.009434677039568146,
+   "annualized_compounded_return_fraction": -0.010051096044026209,
+   "mean_weekly_rap_fraction": -0.0042875603360371965,
+   "annual_rap_weekly_mean_x52_fraction": -0.22295313747393422,
+   "max_drawdown_fraction": 0.032121516795665175,
+   "trades_total": 125,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 2,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "cea7a560a65b29bcb5c4ca48ddc50725068d9669a5e0387d744bba0a9b36d1c8",
+   "resolved_config_sha256": "05ec8d660565c1b55a517497ceddba1809146378db143e7fd3d3475b3cabe1c5",
+   "anchor_sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee",
+   "nested_split_manifest_sha256": "ae7155e0b402df358ac72d771c546655161d962c4a29422943d4c691a37e6f51",
+   "best_model_sha256": "de403618be8887b12494ab3d4a9bd773d21e49b6ba1ed742ebb2a28c1a7dec6c",
+   "terminal_model_sha256": "f9773bae147bbe176b37e9c53342d1b82da966907b8b8c366260964d87ee7553",
+   "terminal_policy_tensor_sha256": "5cc33f4256ec819eee4b2986f91cf099bb8d8935a7343a51858b20b97c8cae87",
+   "weekly_return_vector_sha256": "d98c0c38902378cbe46846969e43eda4fc89717fa6c1d292154d1ebabd3c6246"
+  },
+  {
+   "seed": 202,
+   "cell": "P1E_LR1E4",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 0.0001,
+   "host": "dragon",
+   "cell_identity": "20904128e0818c1d",
+   "cell_position_in_seed": 1,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "558b5261f159dcec2ef79758514fa75f99f1a0e1f7b6ef8313614ffc2f3e88a3",
+   "resolved_config_sha256": "4fcd0e84359b7dba1c226110822fc9f7d7d84b081ad2e434eedda3f7fae44e47",
+   "anchor_sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee",
+   "nested_split_manifest_sha256": "9e5fbcae9c0c8eaaddb3cfa71460ca6df687b00512fcc79f0cc25d776b152703",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "4cf965407d3ccb243dcf7b388d2b93df31d2748afd5d991bd2aa0189a773e9f4",
+   "terminal_policy_tensor_sha256": "a7da73fb002f45377a92284b3b5cb1c21b654e61cb54dddb9e1f099f0b0159ba",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 202,
+   "cell": "P1E_LR3E5",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 3e-05,
+   "host": "dragon",
+   "cell_identity": "12daa4daf35d394f",
+   "cell_position_in_seed": 2,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": -0.00018143609691477204,
+   "annual_return_weekly_mean_x52_fraction": -0.009434677039568146,
+   "annualized_compounded_return_fraction": -0.010051096044026209,
+   "mean_weekly_rap_fraction": -0.0042875603360371965,
+   "annual_rap_weekly_mean_x52_fraction": -0.22295313747393422,
+   "max_drawdown_fraction": 0.032121516795665175,
+   "trades_total": 125,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 2,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "41113a943c815ef33cee168a25a052e146672674fc973f943937b8aad04a1911",
+   "resolved_config_sha256": "02f09b1474d53bc8d9ca5738f3c1c94e06a948dd0da986e96334bb5aea44b647",
+   "anchor_sha256": "82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee",
+   "nested_split_manifest_sha256": "05853bae05ba431f58d15e58301639f9ff211dee07f85c0e16fc8c337835d40b",
+   "best_model_sha256": "42b899bed7885f10d5f429794ce7f6c15373064f29a1dff545c0fe00646a8d6d",
+   "terminal_model_sha256": "0de4e783ecb4a2f72f1b5f3fc30429708de0f48252b5c93a78ddb87be63e5d5c",
+   "terminal_policy_tensor_sha256": "701950da2bf9c0c3f9fc2b088bbd338b8400272572ebdde8c0938ba870018e6a",
+   "weekly_return_vector_sha256": "d98c0c38902378cbe46846969e43eda4fc89717fa6c1d292154d1ebabd3c6246"
+  },
+  {
+   "seed": 303,
+   "cell": "P1N_LR1E4",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 0.0001,
+   "host": "gamma",
+   "cell_identity": "5e05cc6f1912d3a5",
+   "cell_position_in_seed": 2,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "3a6418d6a24f14c3957e36fff724047a724c912fdc52efd2fd84942f14520a1c",
+   "resolved_config_sha256": "9f38d2833825bae7ae891fc82f17683d015cb784654a04000a99d502f3a59fc1",
+   "anchor_sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003",
+   "nested_split_manifest_sha256": "3fd8258a591c7fabc19cbd7a00f934a6cfa3fd950110f549b071185422db46d5",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "12951af075a08ce4bff29de7e02da4713ad5794e0dba59972846153738bee1be",
+   "terminal_policy_tensor_sha256": "b65e8c61a7070b6aad3b2f7bb6cfb8d05615abc0b0747047324a5458bd2d6212",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 303,
+   "cell": "P1N_LR3E5",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 3e-05,
+   "host": "gamma",
+   "cell_identity": "21b02bd48ba6a19f",
+   "cell_position_in_seed": 3,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": -0.00018143609691477204,
+   "annual_return_weekly_mean_x52_fraction": -0.009434677039568146,
+   "annualized_compounded_return_fraction": -0.010051096044026209,
+   "mean_weekly_rap_fraction": -0.0042875603360371965,
+   "annual_rap_weekly_mean_x52_fraction": -0.22295313747393422,
+   "max_drawdown_fraction": 0.032121516795665175,
+   "trades_total": 125,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 2,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "7ea089fe865ea67a21fcc6eb0fd8ab20b9680d64ff0d0d90ab68c17f568924f6",
+   "resolved_config_sha256": "4d1c06f52c920e6f9f492e686f3b8167800d5d284c10302867d4623fbbe7a3f0",
+   "anchor_sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003",
+   "nested_split_manifest_sha256": "30bc02c6a038e82ce02e5a940a76e30a3b0a6aca4dbadde81f7f4f15b9eeed1e",
+   "best_model_sha256": "97ad5a5563686ec6a77226a3d86203807ec82af349c06c842e346ede5aa12526",
+   "terminal_model_sha256": "f1a5410a19a2ec2a1e2f2e95b0801ca3977c7e808130be53f438218d5783c48e",
+   "terminal_policy_tensor_sha256": "971eeaf9f0749f746e59ceb19ab9a02e37665e2b0a134685e2c0dc0203360c12",
+   "weekly_return_vector_sha256": "d98c0c38902378cbe46846969e43eda4fc89717fa6c1d292154d1ebabd3c6246"
+  },
+  {
+   "seed": 303,
+   "cell": "P1E_LR1E4",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 0.0001,
+   "host": "gamma",
+   "cell_identity": "2f0067b87188bead",
+   "cell_position_in_seed": 0,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "f2498c7d068b2d56625d5074eab8ba664d7ce57f3b494c456da30e9057f8666b",
+   "resolved_config_sha256": "5b63399bedd675437c9ea057267a2a543d30eaaeac9187291e7b5a6699a214b9",
+   "anchor_sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003",
+   "nested_split_manifest_sha256": "66e843e2978f02616c94581f2edd8f903c22f21d4ed4ed4def30b56a45f456c7",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "bd933575780b4901b028087a65881076d023b987a440eea16967d8e022b9ccd9",
+   "terminal_policy_tensor_sha256": "8a3cec2af2a3281d115c8f7f7cdf2643fb5c9938347b0b82861be83d95261696",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 303,
+   "cell": "P1E_LR3E5",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 3e-05,
+   "host": "gamma",
+   "cell_identity": "a536c2e271e74c38",
+   "cell_position_in_seed": 1,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": -0.00025271983263711837,
+   "annual_return_weekly_mean_x52_fraction": -0.013141431297130156,
+   "annualized_compounded_return_fraction": -0.013787368528755173,
+   "mean_weekly_rap_fraction": -0.004366553117822238,
+   "annual_rap_weekly_mean_x52_fraction": -0.22706076212675635,
+   "max_drawdown_fraction": 0.03324955838162535,
+   "trades_total": 90,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 1,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "47a839ee5db86e3c11b06b736e7fde44a1d07caf891ac5662dfe4c83aeb02f9a",
+   "resolved_config_sha256": "4cfec31113b2d99f4ae4df4e0474ef09be3068a5100297e19372e7f672affa83",
+   "anchor_sha256": "2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003",
+   "nested_split_manifest_sha256": "14ed98b02442115d3ebeb2adb06d0a2de58c47636612098a4c4c298d109cc6fe",
+   "best_model_sha256": "fa4cc7165e0a5291a4c0d9c860563b262630225b4e10f2fec75ae28950be03dc",
+   "terminal_model_sha256": "1bd97663931f773e5ca9c02f19ec1b813da90d128bb4a7a1555b536b9059d8ea",
+   "terminal_policy_tensor_sha256": "988f0a124df6ed30d4b450f963be02e682b8849ce8fb9310855148c4eb5fa0ea",
+   "weekly_return_vector_sha256": "0463cb9e76aeae417fe817220d119ce4dab751f1589d79be03ca305e2a30839b"
+  },
+  {
+   "seed": 404,
+   "cell": "P1N_LR1E4",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 0.0001,
+   "host": "gamma",
+   "cell_identity": "5566d595a71264b3",
+   "cell_position_in_seed": 1,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "d545530e31dd2919a6f913ef1b352d03af02dd5ca6f3bbbf574cdd8867f96c96",
+   "resolved_config_sha256": "6b29ab379e4a7c88d6374d67a378e13445786181216bd3a52a734ecf6eb1e14b",
+   "anchor_sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076",
+   "nested_split_manifest_sha256": "4ba3d8ed634dd70017ef3eabde84cae2d83acac05443ff782be19a4b8c4619a4",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "f762dfda6e72603bd6e84d6238dcb3e47f836853cdd81314c62e76f4e451d610",
+   "terminal_policy_tensor_sha256": "3e13255b0e008e161288b0f51b79cab956565a68a8080f9699f50c4915e302d7",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 404,
+   "cell": "P1N_LR3E5",
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 3e-05,
+   "host": "gamma",
+   "cell_identity": "e25bbd5d96056c85",
+   "cell_position_in_seed": 2,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0005613129007739328,
+   "annual_return_weekly_mean_x52_fraction": 0.029188270840244505,
+   "annualized_compounded_return_fraction": 0.029571162731664158,
+   "mean_weekly_rap_fraction": -0.0032537865643755327,
+   "annual_rap_weekly_mean_x52_fraction": -0.1691969013475277,
+   "max_drawdown_fraction": 0.028380334115245997,
+   "trades_total": 124,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 1,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "882bab8df7916b7f58affcd416872ae258e3e56fb9fb2dbf16fc307082ebc4d2",
+   "resolved_config_sha256": "637454be39c50f415b80abaf52676f06dd2b138994f464147029bc69a653a408",
+   "anchor_sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076",
+   "nested_split_manifest_sha256": "2afe8ea4f0bee2b7767efacc0e6f3b17f561cdad597c0acbe24b8e9016bea5d2",
+   "best_model_sha256": "133887976249c65560d9826a7ab6ec1bd195b638f1ee9049cc6501f9cc778636",
+   "terminal_model_sha256": "d5fafffe128e07c7a7bd11bce7d28fb4d2aae5f8eea199ed6b63e49a5faa7b40",
+   "terminal_policy_tensor_sha256": "acf67f3e2df3aef510ed7a654476154a9ce1f901aa1c943bf182568a9fb5ebaf",
+   "weekly_return_vector_sha256": "01d06343dae68f327b778573fbdcef3d92a5b2168fd4927fdc5bd9d244fe1ceb"
+  },
+  {
+   "seed": 404,
+   "cell": "P1E_LR1E4",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 0.0001,
+   "host": "gamma",
+   "cell_identity": "205b9c8b17c3abc6",
+   "cell_position_in_seed": 3,
+   "activity_status": "inactive",
+   "performance_eligible": false,
+   "promotion_eligible": false,
+   "evaluated_artifact_role": "terminal",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0,
+   "annual_return_weekly_mean_x52_fraction": 0.0,
+   "annualized_compounded_return_fraction": 0.0,
+   "mean_weekly_rap_fraction": 0.0,
+   "annual_rap_weekly_mean_x52_fraction": 0.0,
+   "max_drawdown_fraction": 0.0,
+   "trades_total": 0,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 4,
+   "phase1_selection_basis": "terminal_trained_epoch_fallback",
+   "phase1_artifact_sha256": "a4a88fc574ba37e958d372dba824bc416305aaf4f5b40f014dd04e7e77c69944",
+   "resolved_config_sha256": "b25ee0c1683d83ca1d9d64cd3b8f9416f28fdf6959dcdca63aa040d7694008c9",
+   "anchor_sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076",
+   "nested_split_manifest_sha256": "e3206508c90c916c9441758d02213da8b06465445908bab1384f1d00eb4630ca",
+   "best_model_sha256": null,
+   "terminal_model_sha256": "1a62bb69bcb8c0f521acf2e27a6db574087a53aa583dd9d33ef347a152307728",
+   "terminal_policy_tensor_sha256": "0725580f25bc39ca37ecd6fa8c431e319d62667e003e9a7c03387fd48ae0ce8c",
+   "weekly_return_vector_sha256": "6f53a8fb033a75da6b989dde8078feb4492a786d8a7ed8ee5b276c7888a0c545"
+  },
+  {
+   "seed": 404,
+   "cell": "P1E_LR3E5",
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 3e-05,
+   "host": "gamma",
+   "cell_identity": "1a8874857149799e",
+   "cell_position_in_seed": 0,
+   "activity_status": "active",
+   "performance_eligible": true,
+   "promotion_eligible": true,
+   "evaluated_artifact_role": "best_checkpoint",
+   "metrics_role": "outer_validation",
+   "metrics_window": {
+    "start": "2024-01-01 00:00:00",
+    "end": "2024-12-31 20:00:00",
+    "scored_rows": 2196,
+    "context_rows_forced_hold": 256,
+    "evaluation_weeks": 53
+   },
+   "mean_weekly_return_fraction": 0.0005613129007739328,
+   "annual_return_weekly_mean_x52_fraction": 0.029188270840244505,
+   "annualized_compounded_return_fraction": 0.029571162731664158,
+   "mean_weekly_rap_fraction": -0.0032537865643755327,
+   "annual_rap_weekly_mean_x52_fraction": -0.1691969013475277,
+   "max_drawdown_fraction": 0.028380334115245997,
+   "trades_total": 124,
+   "epochs_run": 80,
+   "gradient_updates_total": 1579000,
+   "stop_reason": "activity_stop_no_eligible_checkpoint",
+   "phase1_selected_epoch": 1,
+   "phase1_selection_basis": "paired_comparator_best_trained_epoch",
+   "phase1_artifact_sha256": "7c39d08be515cc18f7b42008babb7bf6f6b24bc4bc4391fb16bdf04062ecd9ee",
+   "resolved_config_sha256": "ac453402b93979da148add3aa85f3e56b8963ba7ade0087741f9ea1faa9452e3",
+   "anchor_sha256": "b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076",
+   "nested_split_manifest_sha256": "4ca52c5a666fd319725700829fe38ae9f481789855f503c95915a35d6867e62a",
+   "best_model_sha256": "3eee14274772503f000be7045038c79ea3d3e6067dd23d35617f7870bb8e731d",
+   "terminal_model_sha256": "8474c4823cd00f02f32db5b8a66cb69414611fdb83e34c7f2e8e03ff6ad98279",
+   "terminal_policy_tensor_sha256": "c9a96a9a329f18b8d15f8e873f27db3f5d9bdf9eadff15ef952d66ee946cf3f5",
+   "weekly_return_vector_sha256": "01d06343dae68f327b778573fbdcef3d92a5b2168fd4927fdc5bd9d244fe1ceb"
+  }
+ ],
+ "typed_inactivity": {
+  "$doc": "finding 232 semantics as implemented in the runner. An inactive cell is a MEASURED OUTCOME, not a harness crash. It publishes one immutable record with full custody, receives exactly one final outer evaluation OF ITS TERMINAL ARTIFACT as diagnostic truth, and contributes NO utility. Zero is never imputed as performance.",
+  "inactive_cells": 8,
+  "both_1e-4_arms_inactive_under_both_difficulties": true,
+  "rows": [
+   {
+    "seed": 101,
+    "cell": "P1E_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "easy_chronological_continuation",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "2ba440c20be9c52afa8d183eb0ffb1214d6445e1245ffac941e87c11b467f785",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 245
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 101,
+    "cell": "P1N_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "normal_realistic",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "d3bd25cfdab9020c028e68149f28ca4a53dd0ea0ab4e0ad85f3aaf028869bdfb",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 245
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 202,
+    "cell": "P1E_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "easy_chronological_continuation",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "4cf965407d3ccb243dcf7b388d2b93df31d2748afd5d991bd2aa0189a773e9f4",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 218
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 202,
+    "cell": "P1N_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "normal_realistic",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "01a7da0c6713a944aeaa60c7aa68cc9bd7dfe24f1a01c15d0ca8111ed78fb571",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 218
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 303,
+    "cell": "P1E_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "easy_chronological_continuation",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "bd933575780b4901b028087a65881076d023b987a440eea16967d8e022b9ccd9",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "VIABLE",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 218
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 303,
+    "cell": "P1N_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "normal_realistic",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "12951af075a08ce4bff29de7e02da4713ad5794e0dba59972846153738bee1be",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "VIABLE",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 218
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 404,
+    "cell": "P1E_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "easy_chronological_continuation",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "1a62bb69bcb8c0f521acf2e27a6db574087a53aa583dd9d33ef347a152307728",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "VIABLE",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 245
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   },
+   {
+    "seed": 404,
+    "cell": "P1N_LR1E4",
+    "phase1_learning_rate": 0.0001,
+    "phase1_dynamics": "normal_realistic",
+    "activity_status": "inactive",
+    "inactive_cause": "no_activity_eligible_checkpoint",
+    "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1580000, l1_min_checkpoint_timesteps=1; train-tail and validation trade gates must both pass; activity-ineligible for 40 consecutive epochs after epoch 40 (budget=40); the trade gate never passed, so no eligible checkpoint can exist",
+    "stop_reason": "activity_stop_no_eligible_checkpoint",
+    "activity_stopped_without_eligible_checkpoint": true,
+    "promotion_eligible": false,
+    "best_model_path": null,
+    "evaluated_artifact_role": "terminal",
+    "outer_evaluation_status": "DIAGNOSTIC_TRUTH_ONLY \u2014 one final outer evaluation of the TERMINAL artifact; not a performance value, not comparable, never imputed as zero performance",
+    "trades_total_on_diagnostic_outer": 0,
+    "terminal_model_sha256": "f762dfda6e72603bd6e84d6238dcb3e47f836853cdd81314c62e76f4e451d610",
+    "phase1_trained_checkpoints_handoff_viability": [
+     {
+      "epoch": 0,
+      "checkpoint_source": "warm_start_baseline",
+      "trained_treatment": false,
+      "handoff_viability": "VIABLE",
+      "any_action_crosses_phase2_threshold": true,
+      "probe_trades_total": 245
+     },
+     {
+      "epoch": 1,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 2,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 3,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     },
+     {
+      "epoch": 4,
+      "checkpoint_source": "easy_training_epoch",
+      "trained_treatment": true,
+      "handoff_viability": "CONSTANT_POLICY",
+      "any_action_crosses_phase2_threshold": false,
+      "probe_trades_total": 0
+     }
+    ],
+    "performance_value": null,
+    "imputation": "NONE"
+   }
+  ]
+ },
+ "conditional_stratum_report": {
+  "$doc": "SEPARATE from the formal aggregate outcome, which stays INCONCLUSIVE. This report answers the two questions the order asks, and NOTHING else.",
+  "does_not_modify_formal_outcome": true,
+  "question_a": {
+   "question": "was phase-1 LR 1e-4 inactive under BOTH phase-1 difficulties?",
+   "answer": "YES",
+   "evidence": "8 of 8 cells at LR 1e-4 (4 seeds x {normal_realistic, easy_chronological_continuation}) terminated with activity_status=inactive, cause no_activity_eligible_checkpoint, 0 closed trades on their diagnostic outer evaluation. Every trained phase-1 checkpoint at 1e-4 is typed CONSTANT_POLICY with any_action_crosses_phase2_threshold=false and probe_trades_total=0, under both difficulties.",
+   "scope": "this is an activity/viability statement, not a performance statement; no return number is attributed to a 1e-4 arm"
+  },
+  "question_b": {
+   "question": "inside the viable 3e-5 stratum, did easy have a sign-consistent advantage over normal?",
+   "answer": "NO",
+   "comparator": "paired within seed, easy minus normal, on outer_validation mean_weekly_rap (fraction per week, 2024 scored window) \u2014 the same utility the runner uses",
+   "per_seed": [
+    {
+     "seed": 101,
+     "easy_mean_weekly_rap_fraction": -0.001569963591511361,
+     "normal_mean_weekly_rap_fraction": -0.0021109781222022938,
+     "delta_easy_minus_normal_mean_weekly_rap_fraction": 0.0005410145306909329,
+     "delta_easy_minus_normal_annual_rap_x52_fraction": 0.02813275559592851,
+     "delta_easy_minus_normal_mean_weekly_return_fraction": -0.0001450208202647271,
+     "easy_trades": 42,
+     "normal_trades": 48,
+     "outer_weekly_vectors_bit_identical": false,
+     "sign": "positive"
+    },
+    {
+     "seed": 202,
+     "easy_mean_weekly_rap_fraction": -0.0042875603360371965,
+     "normal_mean_weekly_rap_fraction": -0.0042875603360371965,
+     "delta_easy_minus_normal_mean_weekly_rap_fraction": 0.0,
+     "delta_easy_minus_normal_annual_rap_x52_fraction": 0.0,
+     "delta_easy_minus_normal_mean_weekly_return_fraction": 0.0,
+     "easy_trades": 125,
+     "normal_trades": 125,
+     "outer_weekly_vectors_bit_identical": true,
+     "sign": "exactly_zero"
+    },
+    {
+     "seed": 303,
+     "easy_mean_weekly_rap_fraction": -0.004366553117822238,
+     "normal_mean_weekly_rap_fraction": -0.0042875603360371965,
+     "delta_easy_minus_normal_mean_weekly_rap_fraction": -7.899278178504117e-05,
+     "delta_easy_minus_normal_annual_rap_x52_fraction": -0.004107624652822134,
+     "delta_easy_minus_normal_mean_weekly_return_fraction": -7.128373572234633e-05,
+     "easy_trades": 90,
+     "normal_trades": 125,
+     "outer_weekly_vectors_bit_identical": false,
+     "sign": "negative"
+    },
+    {
+     "seed": 404,
+     "easy_mean_weekly_rap_fraction": -0.0032537865643755327,
+     "normal_mean_weekly_rap_fraction": -0.0032537865643755327,
+     "delta_easy_minus_normal_mean_weekly_rap_fraction": 0.0,
+     "delta_easy_minus_normal_annual_rap_x52_fraction": 0.0,
+     "delta_easy_minus_normal_mean_weekly_return_fraction": 0.0,
+     "easy_trades": 124,
+     "normal_trades": 124,
+     "outer_weekly_vectors_bit_identical": true,
+     "sign": "exactly_zero"
+    }
+   ],
+   "sign_counts": {
+    "positive": 1,
+    "negative": 1,
+    "exactly_zero": 2
+   },
+   "directional_consistency": {
+    "sign_consistent_across_four_seeds": false,
+    "rule": "the runner's declared materiality rule: all four per-seed paired deltas share ONE strict sign",
+    "verdict": "NOT sign-consistent: one seed positive, one seed negative, two seeds exactly zero"
+   },
+   "magnitude": {
+    "$doc": "reported SEPARATELY from directional consistency, per document 38 section 15",
+    "median_delta_mean_weekly_rap_fraction": 0.0,
+    "mean_delta_mean_weekly_rap_fraction": 0.00011550543722647292,
+    "min_delta_mean_weekly_rap_fraction": -7.899278178504117e-05,
+    "max_delta_mean_weekly_rap_fraction": 0.0005410145306909329
+   },
+   "practical_materiality": {
+    "predeclared_threshold": null,
+    "status": "NOT_ASSESSABLE",
+    "statement": "no practical-materiality threshold was predeclared for the easy-versus-normal delta inside the 3e-5 stratum. A merely nonzero sign-consistent delta would NOT be 'material' without such a threshold, and this delta is not even sign-consistent. No materiality claim is made in either direction."
+   },
+   "conclusion": "inside the viable 3e-5 stratum the phase-1 difficulty factor shows NO sign-consistent advantage for easy over normal on 2024 outer validation. Combined with question_a this supports freezing L1 to normal_realistic at 3e-5 for the L2 program on grounds of viability and simplicity, NOT on grounds of a demonstrated performance advantage."
+  }
+ },
+ "sealed_test_custody": {
+  "sealed_test_2025_status": "SEALED \u2014 UNOPENED",
+  "evidence": "all 16 records bind nested_role_facts.sealed_test = {status: SEALED, csv_sha256: null, scored_rows: null, score_start: null, score_end: null, context_rows: null}",
+  "leak_scan": "all 16 cell_record.json files scanned for any 2025 date materialization: 0 hits",
+  "labelling_rule": "every number in this evidence file is 2024 OUTER-VALIDATION evidence under the L1 nested contract. None of it is 2025 release performance, and none of it may be described as such."
+ },
+ "residual_doubts": [
+  {
+   "id": "RD-1",
+   "severity": "high",
+   "title": "the promoted best checkpoint of every active cell is the phase-1 handoff policy; phase-2 normal training contributed nothing",
+   "evidence": "for all 8 active cells the policy-tensor sha256 of the selected best checkpoint (model.zip) is bit-identical to boundary_transfer_evidence.source_policy_tensor_hash, i.e. the phase-1 artifact transferred at the boundary. In every epoch_history, phase-2 epoch 0 (checkpoint_source=warm_start_normal_baseline) is the only epoch whose early_stop_trade_gate_passed is true; epochs 1..79 all report composite=-1000000.0, composite_raw=0.0 and zero trades, and best_composite never moves off its epoch-0 value.",
+   "consequence": "the 2024 outer numbers for the 3e-5 arms measure the PHASE-1 policy evaluated under normal-realistic conditions. The phase-1 difficulty x LR contrast is still the thing that varies, so the conditional-stratum conclusion holds, but no claim may be made about phase-2 normal training.",
+   "per_cell_proof": {
+    "seed101/P1N_LR3E5": {
+     "best_policy_tensor_sha256": "33edd255463785b967eec3a0ad005b4cf2cb80cff84fae9697c2ab9583ec3dde",
+     "phase1_handoff_policy_tensor_sha256": "33edd255463785b967eec3a0ad005b4cf2cb80cff84fae9697c2ab9583ec3dde",
+     "identical": true
+    },
+    "seed101/P1E_LR3E5": {
+     "best_policy_tensor_sha256": "d9298ab753b3cd6dd483e20b9f5f56dcc6c128ca0754c7e448879fba07cd4231",
+     "phase1_handoff_policy_tensor_sha256": "d9298ab753b3cd6dd483e20b9f5f56dcc6c128ca0754c7e448879fba07cd4231",
+     "identical": true
+    },
+    "seed202/P1N_LR3E5": {
+     "best_policy_tensor_sha256": "8a0a7212385d7af9fce62a355110c480dff554a4e0f4e8ec5ac9556f1d8704ca",
+     "phase1_handoff_policy_tensor_sha256": "8a0a7212385d7af9fce62a355110c480dff554a4e0f4e8ec5ac9556f1d8704ca",
+     "identical": true
+    },
+    "seed202/P1E_LR3E5": {
+     "best_policy_tensor_sha256": "a2f48b01c057c92f57b29b17b4996b256ac7f214f086051436b0ce4615cb4d03",
+     "phase1_handoff_policy_tensor_sha256": "a2f48b01c057c92f57b29b17b4996b256ac7f214f086051436b0ce4615cb4d03",
+     "identical": true
+    },
+    "seed303/P1N_LR3E5": {
+     "best_policy_tensor_sha256": "5a5eec2fd36f16c584a0f3ccb74f7490497920d52e083d56b6c75d2af6760112",
+     "phase1_handoff_policy_tensor_sha256": "5a5eec2fd36f16c584a0f3ccb74f7490497920d52e083d56b6c75d2af6760112",
+     "identical": true
+    },
+    "seed303/P1E_LR3E5": {
+     "best_policy_tensor_sha256": "26bdbbac12f78857e26dcf1b39451b1cffcc48768e2a22723ea8b172a651410c",
+     "phase1_handoff_policy_tensor_sha256": "26bdbbac12f78857e26dcf1b39451b1cffcc48768e2a22723ea8b172a651410c",
+     "identical": true
+    },
+    "seed404/P1N_LR3E5": {
+     "best_policy_tensor_sha256": "2d20d94b736ab01338083a21fe8086d8ec0fe7a6cfb9ad9578d775635bd0f6ea",
+     "phase1_handoff_policy_tensor_sha256": "2d20d94b736ab01338083a21fe8086d8ec0fe7a6cfb9ad9578d775635bd0f6ea",
+     "identical": true
+    },
+    "seed404/P1E_LR3E5": {
+     "best_policy_tensor_sha256": "bb0e27f39cb4c3952d8f4c2b9b8cf417123337bf25091c19f8f33e15cb49b47f",
+     "phase1_handoff_policy_tensor_sha256": "bb0e27f39cb4c3952d8f4c2b9b8cf417123337bf25091c19f8f33e15cb49b47f",
+     "identical": true
+    }
+   }
+  },
+  {
+   "id": "RD-2",
+   "severity": "high",
+   "title": "every cell stopped at epoch 80 of a declared 2000 pass-equivalent ceiling",
+   "evidence": "all 16 cells report stop_reason=activity_stop_no_eligible_checkpoint at exactly 80 epochs and 1,579,000 gradient updates. The binding stop was the activity patience (l1_activity_patience=40, start epoch 40), not the document-38 paired-generalization patience (60, floor 40, max 2000).",
+   "consequence": "about 4 percent of the declared per-cell budget was spent. The factorial is a valid measurement of what these treatments do under the AS-RUN stopping contract; it is not evidence about the full document-38 2000-checkpoint contract."
+  },
+  {
+   "id": "RD-3",
+   "severity": "medium",
+   "title": "the four seeds are not four independent outcomes: 5 distinct outer weekly vectors among 8 active cells, including a cross-seed collision",
+   "evidence": "distinct weekly_return_vector sha256 values among active cells: 5. seed202/P1E_LR3E5, seed202/P1N_LR3E5 and seed303/P1N_LR3E5 share one bit-identical 2024 weekly P&L vector (125 trades) despite distinct model artifacts on different hosts; seed404/P1E_LR3E5 and seed404/P1N_LR3E5 share another (124 trades).",
+   "consequence": "distinct weights are collapsing onto the same discretized action sequence, which is why two of the four paired deltas are exactly 0.0. Effective replication is weaker than n=4, so the sign-consistency test in this stratum is underpowered. This weakens any future positive claim more than it weakens the present negative one."
+  },
+  {
+   "id": "RD-4",
+   "severity": "low",
+   "title": "phase-1 per-checkpoint telemetry labels every phase-1 epoch checkpoint_source='easy_training_epoch' even in normal_realistic cells",
+   "evidence": "P1N cells carry checkpoint_source='easy_training_epoch' on phase-1 epochs 1..4 while factors.phase1_dynamics='normal_realistic' and phase1_mode='normal_realistic'.",
+   "consequence": "a naming wart in telemetry only. The factor itself is correctly applied and separable: phase1_mode, resolved_config_sha256 and phase1_artifact_sha256 all differ per cell."
+  },
+  {
+   "id": "RD-5",
+   "severity": "low",
+   "title": "collection tree digests differ between the two seals",
+   "evidence": "6877945c\u2026 (2026-08-14) vs e21c00c2\u2026 (2026-08-15); the only differing files are four seed101 heartbeat.json liveness files.",
+   "consequence": "expected and benign: heartbeats are mutable liveness telemetry that lives inside the fetched subtree. Consider excluding heartbeat files from the sealed tree digest so a re-collection is byte-reproducible."
+  },
+  {
+   "id": "RD-6",
+   "severity": "informational",
+   "title": "no absolute performance claim is supported by these numbers",
+   "evidence": "every active arm has NEGATIVE mean weekly RAP on 2024 outer validation (range -0.004367 to -0.001570 fraction per week), and mean weekly return spans -0.000253 to +0.000561 fraction per week.",
+   "consequence": "nothing here is promotable, and nothing here is a champion. The 2025 sealed test is untouched and remains the only release evidence."
+  }
+ ],
+ "reproduction": {
+  "python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
+  "commands": [
+   "python tools/p1lr_collect.py --experiment-id c0e53cf18b7d60dd --mode decision --collection-root <FRESH_ROOT> --replica-host dragon",
+   "python tools/p1_difficulty_lr_factorial.py --decision-verdict --experiment-id c0e53cf18b7d60dd --records-root <FRESH_ROOT>/sealed --replica-proof <FRESH_ROOT>/p1lr_replica_proof_c0e53cf18b7d60dd.json"
+  ],
+  "expected_exit_code": 4,
+  "expected_outcome": "INCONCLUSIVE",
+  "warning": "never point --collection-root at an existing sealed root; the collector refuses, and writing into a sealed root destroys custody"
+ }
+}
