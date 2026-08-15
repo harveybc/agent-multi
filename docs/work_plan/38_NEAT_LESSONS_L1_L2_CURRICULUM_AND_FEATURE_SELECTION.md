@@ -616,3 +616,270 @@ uses a new content-derived identity from the same original anchors, contract,
 screen verdict and four seeds. No failed terminal, replay buffer or partially
 trained policy is a warm start. Omega, Dragon, Gamma 5070 Ti and Gamma 5090
 must all report the replacement identity before its records can be aggregated.
+
+## 18. 2026-08-15 P1LR Terminal Decision Result
+
+The phase-1 difficulty x phase-1 learning-rate factorial reached a terminal,
+sealed and independently replicated result under decision identity
+`c0e53cf18b7d60dd` with 16/16 cell records. This section is the published
+evidence required by the 2026-08-15 post-restart order §6.
+
+Machine-readable companion:
+`docs/audits/evidence/P1LR_DECISION_FINAL_EVIDENCE_c0e53cf18b7d60dd_2026_08_15.json`.
+
+### 18.1 Identity and superseded output
+
+The terminal identity is `c0e53cf18b7d60dd` under output root
+`~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260811_v1_decision/`.
+
+The earlier decision identities `1434685bfdf52911` (§15),
+`8cc6ca5e45e4f993` (§16/§17) and `7b55ef7eac30ae6a` are SUPERSEDED and
+diagnostic. They are never aggregated and never mixed with the terminal
+identity. Directly observed on 2026-08-15: each of the three holds ZERO
+`cell_record.json` files on omega, dragon and gamma, so no superseded record
+can enter any aggregation even by accident. Their surviving directories are
+attempt scaffolding and lock files only.
+
+### 18.2 Formal aggregate outcome, preserved as recorded
+
+The outcome below is emitted by `tools/p1_difficulty_lr_factorial.py
+--decision-verdict` and is reproduced verbatim. It is NOT rewritten:
+
+```text
+schema                  agent_multi.p1_difficulty_lr_decision_verdict.v1
+outcome                 INCONCLUSIVE
+activity_classification PARTIAL_ACTIVITY_SURVIVAL
+active_cells            8 of 16
+process exit code       4  (EXIT_CLASS["INCONCLUSIVE"])
+gates                   records_16_16=true, identity_coherent=true,
+                        replica_terminal_loads=true
+effect_basis            outer_validation mean_weekly_rap (fraction per week,
+                        2024 scored window); paired within seed
+materiality_rule        an effect is material iff all four per-seed paired
+                        effects share one strict sign
+paired_effects_available    []
+paired_effects_unavailable  ["101", "202", "303", "404"]
+imputation_policy       NONE — a cell without comparable active performance is
+                        excluded from the paired utility set and its per-seed
+                        effect is typed unavailable with the exact reason; zero
+                        and sentinel values are never imputed (finding 232)
+outcome_rationale       partial activity survival: 8 of 16 cells are inactive
+                        [...], so the paired effect(s) for seed(s) ['101',
+                        '202', '303', '404'] do not exist. No zero and no
+                        sentinel is imputed for a missing active pair; the
+                        surviving per-seed effects are reported as computed and
+                        the document-38 decision is withheld (finding 232)
+```
+
+The full 2x2 paired effects (difficulty, phase-1 LR, interaction) DO NOT EXIST
+for any seed, because every seed lost both of its `1e-4` cells. That is the
+correct typed answer and it stands.
+
+### 18.3 Raw economic evidence, viable `3e-5` stratum
+
+Role: `outer_validation`. Window: 2024-01-01 .. 2024-12-31 20:00, 2,196 scored
+rows, 53 evaluation weeks, 256 context rows per role forced-hold and excluded
+from every metric. Storage units are fractions (§4.1); percentages are display
+only. `Annual return (x52)` and `Annual RAP (x52)` use the runner's declared
+`weekly_arithmetic_mean_x_52` convention; `Annualized compounded` is
+`(1+total_return)^(365.25/days)-1` over the same window and is shown so the two
+annualizations are never confused. RAP is `weekly return - lambda x weekly max
+drawdown`. Max drawdown is a fraction of peak equity over the whole window.
+
+| Seed | Arm | Host | Mean weekly return | Annual return (x52) | Annualized compounded | Mean weekly RAP | Annual RAP (x52) | Max drawdown | Trades |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 101 | easy 3e-5 | omega | +0.000145 (+0.0145%) | +0.007524 (+0.7524%) | +0.007409 (+0.7409%) | -0.001570 (-0.1570%) | -0.081638 (-8.1638%) | 0.014826 (1.4826%) | 42 |
+| 101 | normal 3e-5 | omega | +0.000290 (+0.0290%) | +0.015065 (+1.5065%) | +0.015179 (+1.5179%) | -0.002111 (-0.2111%) | -0.109771 (-10.9771%) | 0.019386 (1.9386%) | 48 |
+| 202 | easy 3e-5 | dragon | -0.000181 (-0.0181%) | -0.009435 (-0.9435%) | -0.010051 (-1.0051%) | -0.004288 (-0.4288%) | -0.222953 (-22.2953%) | 0.032122 (3.2122%) | 125 |
+| 202 | normal 3e-5 | dragon | -0.000181 (-0.0181%) | -0.009435 (-0.9435%) | -0.010051 (-1.0051%) | -0.004288 (-0.4288%) | -0.222953 (-22.2953%) | 0.032122 (3.2122%) | 125 |
+| 303 | easy 3e-5 | gamma | -0.000253 (-0.0253%) | -0.013141 (-1.3141%) | -0.013787 (-1.3787%) | -0.004367 (-0.4367%) | -0.227061 (-22.7061%) | 0.033250 (3.3250%) | 90 |
+| 303 | normal 3e-5 | gamma | -0.000181 (-0.0181%) | -0.009435 (-0.9435%) | -0.010051 (-1.0051%) | -0.004288 (-0.4288%) | -0.222953 (-22.2953%) | 0.032122 (3.2122%) | 125 |
+| 404 | easy 3e-5 | gamma | +0.000561 (+0.0561%) | +0.029188 (+2.9188%) | +0.029571 (+2.9571%) | -0.003254 (-0.3254%) | -0.169197 (-16.9197%) | 0.028380 (2.8380%) | 124 |
+| 404 | normal 3e-5 | gamma | +0.000561 (+0.0561%) | +0.029188 (+2.9188%) | +0.029571 (+2.9571%) | -0.003254 (-0.3254%) | -0.169197 (-16.9197%) | 0.028380 (2.8380%) | 124 |
+
+Every active arm has NEGATIVE risk-adjusted performance on 2024 outer
+validation. Nothing in this table is promotable and nothing here is a champion.
+
+### 18.4 Typed inactivity of both `1e-4` arms
+
+All eight `1e-4` cells are typed inactive under BOTH phase-1 difficulties. Per
+finding 232 an inactive cell is a MEASURED OUTCOME with full custody, not a
+harness crash; it receives exactly one final outer evaluation OF ITS TERMINAL
+artifact as diagnostic truth, and it contributes NO utility. Zero is never
+imputed as performance, and the zero trade count below is an activity fact, not
+a return.
+
+| Seed | Arm | Host | Activity status | Typed cause | Trades on diagnostic outer | Artifact evaluated | Performance value | Terminal sha256 (12) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 101 | easy 1e-4 | omega | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `2ba440c20be9` |
+| 101 | normal 1e-4 | omega | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `d3bd25cfdab9` |
+| 202 | easy 1e-4 | dragon | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `4cf965407d3c` |
+| 202 | normal 1e-4 | dragon | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `01a7da0c6713` |
+| 303 | easy 1e-4 | gamma | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `bd933575780b` |
+| 303 | normal 1e-4 | gamma | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `12951af075a0` |
+| 404 | easy 1e-4 | gamma | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `1a62bb69bcb8` |
+| 404 | normal 1e-4 | gamma | `inactive` | `no_activity_eligible_checkpoint` | 0 | `terminal` (diagnostic only) | none — not imputed | `f762dfda6e72` |
+
+The recorded termination cause is uniform: training ended before an
+activity-eligible L1 checkpoint became available; the train-tail and validation
+trade gates must both pass; activity-ineligible for 40 consecutive epochs after
+epoch 40; the trade gate never passed, so no eligible checkpoint can exist.
+Every trained phase-1 checkpoint at `1e-4` is typed `CONSTANT_POLICY` with
+`any_action_crosses_phase2_threshold=false` and `probe_trades_total=0`, under
+both difficulties. This is the same amplitude-collapse mechanism named in §12,
+now measured at decision budget rather than screen budget.
+
+### 18.5 Conditional-stratum report
+
+This report is SEPARATE from §18.2 and does not modify the `INCONCLUSIVE`
+enum. It answers exactly two questions.
+
+(a) Was `1e-4` inactive under both difficulties? **YES** — 8 of 8 cells, as
+tabulated in §18.4. This is an activity/viability statement, not a performance
+statement; no return number is attributed to a `1e-4` arm.
+
+(b) Inside the viable `3e-5` stratum, did easy have a sign-consistent advantage
+over normal? **NO.** Paired within seed, easy minus normal, on the same utility
+the runner uses (outer `mean_weekly_rap`, fraction per week, 2024):
+
+| Seed | easy mean weekly RAP | normal mean weekly RAP | delta (easy - normal) | delta annual RAP (x52) | Sign | easy/normal trades |
+| --- | --- | --- | --- | --- | --- | --- |
+| 101 | -0.001570 | -0.002111 | +0.000541015 | +0.028132756 | positive | 42/48 |
+| 202 | -0.004288 | -0.004288 | +0.000000000 | +0.000000000 | exactly zero | 125/125 |
+| 303 | -0.004367 | -0.004288 | -0.000078993 | -0.004107625 | negative | 90/125 |
+| 404 | -0.003254 | -0.003254 | +0.000000000 | +0.000000000 | exactly zero | 124/124 |
+
+Directional consistency and practical materiality are reported separately:
+
+- **Directional consistency**: one positive seed, one negative seed, two seeds
+  exactly zero. The declared rule — all four per-seed paired deltas share one
+  strict sign — is NOT satisfied. Easy has no sign-consistent advantage.
+- **Magnitude**, reported without any consistency claim: median delta 0.0,
+  mean +0.000115505, range -0.000078993 .. +0.000541015 fraction per week.
+- **Practical materiality**: NOT ASSESSABLE. No practical-materiality
+  threshold was predeclared for this delta. A merely nonzero sign-consistent
+  delta would not be "material" without such a threshold, and this delta is not
+  even sign-consistent. No materiality claim is made in either direction.
+
+Conclusion: freezing L1 to `normal_realistic` at `3e-5` for the L2 program is
+justified by VIABILITY and SIMPLICITY — `1e-4` produces no usable policy at all,
+and easy buys no demonstrated advantage — never by a demonstrated performance
+advantage of normal over easy.
+
+### 18.6 Custody, replication and digests
+
+Two INDEPENDENT collections were fetched from the contract-assigned hosts,
+sealed into separate roots and replicated to dragon, where all 16 terminal
+artifacts were rehashed and really loaded (`stable_baselines3 SAC.load`):
+
+| Collection | Sealed (UTC) | Tree digest | Replica host | Load proofs | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| A `p1lr_collection_c0e53cf18b7d60dd_20260814` | 2026-08-14T18:16:23Z | `6877945cfbc924f940ce48cd5b46ad56d37339d55590501c488f1cc2077a01cf` | dragon | 16/16 `loads=true` | INCONCLUSIVE |
+| B `p1lr_collection_c0e53cf18b7d60dd_20260815_evidence` | 2026-08-15T16:25:49Z | `e21c00c28adc29929c11680ba179ea6310ec1fea5b07f092893d11155e6e8c63` | dragon | 16/16 `loads=true` | INCONCLUSIVE |
+
+The two aggregations agree exactly on `outcome`, `per_cell_metrics`,
+`inactive_cells` and `per_seed_paired_effects`; the ONLY differing field is the
+collection tree digest. Both sealed trees carry the same 424 files with
+identical content except four `seed101/*/heartbeat.json` liveness files that the
+worker rewrote between fetches. All 16 `cell_record.json` files, all model
+artifacts and all custody bindings are bit-identical. Heartbeats are mutable
+telemetry inside the fetched subtree; excluding them from the sealed tree digest
+would make a re-collection byte-reproducible and is recommended.
+
+Exact digests:
+
+```text
+source        agent-multi d3d9b99034d6d2af9157fa92cabd4ceb7822cd29 (clean,
+              detached runtime worktree)
+              gym-fx      634c3fd3c344cae3c4048b334158185c8bf4e1ef (clean)
+              the four collector/verdict tools are byte-identical between
+              d3d9b99 and the aggregation revision, so aggregating from the
+              newer checkout is faithful
+contract      examples/config/phase_3_eth_sac_dynamics/
+              p1_difficulty_lr_factorial_v1.json
+              4a4e0f16b7da0783b3a0f3d1336474e8a286ec62acc88963599e762eedd00bd6
+profile       p1lr_decision_execution_profile_v1.json
+              7606ac12dc6b0f8808e52594ed1d6a090d0dbc7a6a2edd957cdfaec3d7c80831
+data          examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv
+              1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f
+split         examples/config/phase_3_eth_sac_dynamics/splits/
+              eth_nested_split_contract_v1.json
+              2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6
+              mode l1, metric paired_generalization_weekly_v1, beta 0.25
+roles         fit_train        11,509 rows  b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568
+              train_monitor     2,190 rows  f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06
+              inner_validation  2,190 rows  e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6
+              outer_validation  2,196 rows  2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30
+              sealed_test       SEALED — no path, no sha, no rows, no dates
+anchors       101 cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62
+              202 82f0a8b66f8f7e9c35dbd550e143a8aa2e13ce2baef599a03d4b137fa91624ee
+              303 2340e4566bdc322ef0cfba2040b5f013960cbd04377d2e879bdc091c26eb7003
+              404 b8a00b9a300232547333bd1713bafc71d77d1a263f7c971230f8d9267cbb2076
+```
+
+The per-cell `cell_identity`, `resolved_config_sha256`, per-attempt split
+manifest sha, best-checkpoint sha and terminal sha for all 16 cells are in the
+evidence JSON. The split MANIFEST sha is per-cell by construction (it is
+re-materialized per attempt directory); the split CONTRACT sha and every
+per-role CSV sha are identical across all 16 records.
+
+### 18.7 The 2025 sealed test remains UNOPENED
+
+Every number in §18.3, §18.4 and §18.5 is 2024 OUTER-VALIDATION evidence under
+the L1 nested contract. None of it is 2025 release performance and none of it
+may be described as such. All 16 records bind
+`nested_role_facts.sealed_test = {status: SEALED, csv_sha256: null,
+scored_rows: null, score_start: null, score_end: null, context_rows: null}`, and
+a scan of all 16 records for any 2025 date materialization returns zero hits.
+
+### 18.8 Residual doubts
+
+These are stated plainly and are not closed here.
+
+1. **The promoted best checkpoint of every active cell is the phase-1 handoff
+   policy; phase-2 normal training contributed nothing.** For all 8 active cells
+   the policy-tensor sha256 of the selected best checkpoint is bit-identical to
+   `boundary_transfer_evidence.source_policy_tensor_hash`. In every
+   `epoch_history`, phase-2 epoch 0 (`warm_start_normal_baseline`) is the only
+   epoch whose `early_stop_trade_gate_passed` is true; epochs 1..79 all report
+   `composite=-1000000.0`, `composite_raw=0.0` and zero trades, and
+   `best_composite` never moves off its epoch-0 value. Consequence: the 2024
+   numbers for the `3e-5` arms measure the PHASE-1 policy evaluated under
+   normal-realistic conditions. The phase-1 difficulty x LR contrast is still
+   the thing that varies, so §18.5 holds, but no claim may be made about
+   phase-2 normal training.
+2. **Every cell stopped at epoch 80 of a declared 2,000 pass-equivalent
+   ceiling.** All 16 cells report `stop_reason=
+   activity_stop_no_eligible_checkpoint` at exactly 80 epochs and 1,579,000
+   gradient updates. The binding stop was the activity patience
+   (`l1_activity_patience=40`, start epoch 40), not the paired-generalization
+   patience (60, floor 40, max 2,000). About 4% of the declared per-cell budget
+   was spent. This is a valid measurement of the AS-RUN stopping contract; it is
+   not evidence about the full §6 2,000-checkpoint contract.
+3. **The four seeds are not four independent outcomes.** Only 5 distinct outer
+   weekly return vectors exist among the 8 active cells. `seed202/P1E_LR3E5`,
+   `seed202/P1N_LR3E5` and `seed303/P1N_LR3E5` share one bit-identical 2024
+   weekly P&L vector (125 trades) despite distinct model artifacts on different
+   hosts; `seed404/P1E_LR3E5` and `seed404/P1N_LR3E5` share another (124
+   trades). Distinct weights are collapsing onto the same discretized action
+   sequence, which is why two of the four paired deltas are exactly 0.0.
+   Effective replication is weaker than n=4 and the sign-consistency test in
+   this stratum is underpowered. This weakens any future POSITIVE claim more
+   than it weakens the present negative one.
+4. **Telemetry naming wart.** Phase-1 per-checkpoint telemetry labels every
+   phase-1 epoch `checkpoint_source='easy_training_epoch'` even in
+   `normal_realistic` cells. The factor itself is correctly applied and
+   separable: `phase1_mode`, `resolved_config_sha256` and
+   `phase1_artifact_sha256` all differ per cell.
+5. **Collection tree digests are not byte-reproducible** across re-collection
+   because mutable heartbeat telemetry lives inside the sealed subtree (see
+   §18.6).
+
+### 18.9 What this authorizes
+
+L1 is frozen to `normal_realistic` with phase-1 learning rate `3e-5` for the L2
+program of §6, on viability grounds. The formal P1LR outcome remains
+`INCONCLUSIVE`; the 2x2 paired effects do not exist and are not claimed. Before
+the L2 comparison consumes this frozen L1, residual doubts 1 and 2 must be
+resolved or explicitly accepted in writing, because an L1 whose phase-2 stage
+contributes nothing is a weak foundation for attributing L2 effects.
