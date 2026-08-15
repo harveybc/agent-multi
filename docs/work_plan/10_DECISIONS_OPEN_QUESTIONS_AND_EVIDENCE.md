@@ -79,10 +79,23 @@ Retraining and rebalance begin weekly because of the established business and
 Project 3 protocol. Their cadences remain independent configurable parameters
 and can be optimized after costs and operational constraints are stable.
 
-### ADR-012: Synthetic verification supplements real validation
+### ADR-012: Synthetic challenge verification is a separate evidence plane
 
-DOIN deterministic synthetic scenarios support quorum trust and stress tests.
-Chronological full-year validation remains the trading optimization objective.
+Updated: 2026-08-15
+
+Chronological point-in-time real validation remains the trading optimization
+and release objective. Synthetic data has two separately labeled uses:
+training/pretraining augmentation, and post-commit adversarial challenges for
+untrusted-network verification. A challenge generated only after the candidate
+commitment can help detect fabricated reports and exact memorization of a public
+test set, but it is not a real-market test result.
+
+Trading synthetic challenges begin with zero consensus weight. They gain capped
+Proof-of-Optimization weight only after the seed/entropy path is audited,
+challenge evidence is reconstructable, tolerances are calibrated against real
+chronological OOS evidence and independent adversarial tests pass. The full
+contract and promotion ladder are in
+`39_TRUSTLESS_SYNTHETIC_CHALLENGE_VALIDATION.md`.
 
 ### ADR-013: `doin-node` is the only active DOIN runtime process
 
@@ -405,6 +418,18 @@ only trading-domain behavior.
   https://www.nber.org/papers/w8959
 
 ## 7. Change Log
+
+### Plan 1.33.0 - 2026-08-15
+
+- Separated chronological real scientific validation from trustless synthetic
+  challenge verification and from synthetic training augmentation.
+- Accepted commit-before-challenge semantics as the candidate defense against
+  exact public-test memorization in untrusted DOIN domains.
+- Required post-commit entropy, immutable challenge manifests, signed
+  reconstruction evidence and empirically calibrated tolerance before any
+  trading challenge receives consensus weight.
+- Kept current trading campaigns on `synthetic_data_validation: false` pending
+  the runtime audit and promotion ladder in document 39.
 
 ### Plan 1.25.0 - 2026-08-01
 

@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; historical ETH M0/N14 evidence preserved; invalid M0 successor quarantined pending acceptance correction; nested L1/L2 curriculum and sparse-feature decision program active; multi-venue Paper and social-trading reality commissioning active
-Plan version: 1.32.0
-Date: 2026-08-08
+Plan version: 1.33.0
+Date: 2026-08-15
 Primary implementation repository: `agent-multi`
 
 ## Mission
@@ -20,6 +20,8 @@ of the existing DOIN network. The system must support:
 - weekly walk-forward retraining or fine-tuning;
 - weekly portfolio allocation, with cadence later treated as optimizable;
 - decentralized Level 2 optimization and verification through DOIN;
+- post-commit synthetic challenge verification against public-test memorization,
+  kept distinct from real chronological scientific validation;
 - model serving through `prediction_provider`;
 - customer-specific risk and broker execution through LTS;
 - multi-venue paper/live execution through account-specific broker adapters;
@@ -96,6 +98,7 @@ trading domain.
 | [36 Identity-domain design](36_IDENTITY_DOMAIN_DESIGN_N2_2026_08_06.md) | N2 identity-domain contract, typed comparisons and lineage requirements |
 | [37 M0-X mechanism falsification](37_M0X_CROSS_ASSET_MECHANISM_PROPOSAL_2026_08_08.md) | Corrected M1 attribution and conditional cross-system mechanism probe |
 | [38 NEAT lessons for L1/L2 and feature selection](38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md) | Nested stopping, isolated L1/L2 curricula, sparse inherited/learned feature selection, staged maturation and non-idle execution authority |
+| [39 Trustless synthetic challenge validation](39_TRUSTLESS_SYNTHETIC_CHALLENGE_VALIDATION.md) | Post-commit synthetic challenges against public-test memorization, separated from real scientific validation |
 
 ## Repository Ownership Summary
 
@@ -219,7 +222,12 @@ adding value.
    evidence, compare fixed FS0, inherited sparse FS1 and learnable sparse FS2,
    then run sequential DOIN component domains for causal/decomposition inputs,
    encoders/autoencoders, SAC topology and dynamics, conditional event/TSFM
-   adapters, auxiliary heads and bounded synthetic pretraining.
+   adapters, auxiliary heads and bounded synthetic pretraining. The market-state
+   encoder follows the complete local/summary/attention/trainable ladder; it is
+   not coupled to the generator by default. In parallel, audit and calibrate the
+   separate post-commit synthetic-challenge plane in document 39. Synthetic
+   training may improve a policy; synthetic challenges may detect public-test
+   memorization; neither substitutes for real chronological selection.
 7. After the SAC topology/learning domain, execute the corrected RT0 and the
    sequential RT1-A/RT1-B cadence screen. Warm-up never contributes to score;
    it cannot trade or mutate account state; every scored interval has exactly

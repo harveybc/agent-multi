@@ -8,7 +8,9 @@ DOIN already provides the hard distributed-systems layer:
 - controlled flooding and production GossipSub options;
 - TTL, deduplication, peer discovery and chain synchronization;
 - commit-reveal and optimae lifecycle;
-- deterministic evaluator seeds and synthetic-data hash consensus;
+- deterministic evaluator-seed and synthetic-data plugin substrate, with the
+  trading post-commit challenge path pending the audit and calibration in
+  `39_TRUSTLESS_SYNTHETIC_CHALLENGE_VALIDATION.md`;
 - quorum, incentives, reputation, resource limits and finality;
 - Proof of Optimization block generation;
 - island-model champion migration and startup champion synchronization;
@@ -255,8 +257,17 @@ identity and direction; it does not duplicate the formula.
 The `doin.synthetic_data` entry point is a deterministic scenario-verification
 adapter, not the client inference service. It reproduces the scenario-verifier
 role previously exercised through `heuristic-strategy` and its prediction
-providers. It generates or loads the same multi-asset scenario for a
-commitment-derived seed and exposes the scenario hash to DOIN quorum checks.
+providers. It generates or loads a bounded multi-asset challenge from a
+versioned post-commit seed contract and exposes reconstruction evidence to the
+DOIN quorum path.
+
+The seed must mix entropy that became fixed only after candidate commitment;
+public evaluator identities and candidate-controlled commitment bytes are not
+secret entropy. The challenge task binds the finalized anchor, evaluator set,
+generator artifact/config and metric contract. A data hash identifies one
+evaluator's generated sample; evaluators intentionally receiving different
+seeds do not claim identical data hashes. Quorum instead aggregates their
+declared challenge-metric ensemble under a calibrated uncertainty contract.
 
 The verifier may run a reference heuristic policy, the action-critic policy, or
 both in a declared comparison arm. Ideal predictions and configurable
@@ -274,7 +285,9 @@ Initial generator ladder:
 4. later learned generators only after deterministic parity and hash consensus.
 
 Synthetic verification is an anti-cheating/stress mechanism. Real chronological
-validation-year fitness remains the research objective.
+validation-year fitness remains the research objective. No trading domain gives
+synthetic challenges consensus weight until document 39's runtime audit,
+calibration and independent acceptance gates pass.
 
 ### 4.4 Request and metric separation
 
