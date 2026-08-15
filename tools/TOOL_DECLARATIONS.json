@@ -302,6 +302,14 @@
    "authority_class": "watchdog",
    "owner": "General Satoshi III"
   },
+  "experiment_transition_queue.py": {
+   "purpose": "Durable terminal-to-next-job transition queue (order 2026-08-15 §3): one content-addressed JSON record per ENDING job, holding the current job, the terminal result identity, the next approved job, the materialization state, the dispatch state, the blockers, the per-node participation and the declared transition budget. transition_status() types the fleet answer — a terminal experiment with no dispatched successor is completed_untransitioned, and a missing record is completed_untransitioned too (unproven is never healthy); reconstruct_transitions() rebuilds every transition from these files ALONE after a reboot, consulting no heartbeat, shell process, chat message or operator memory, so a dispatch claim whose lease expired while the host was down surfaces as expired rather than as still in flight. Dispatch is a lease and FAILS CLOSED: claim_dispatch() refuses a second live claim or an already-dispatched transition (TRANSITION_DUPLICATE_DISPATCH), an unmaterialized or blocked successor, and a chain identity conflicting with the record's proven chain (TRANSITION_CHAIN_CONFLICT), while join_chain() lets healthy nodes continue the ONE proven common chain and mark_node() types an unavailable node without vetoing the healthy ones. evaluate_transition_incident()/sweep_transition_incidents() emit exactly ONE deduplicated undispatched-successor incident past the declared budget through the existing tools/incident_emit.py ledger and close that SAME event code on recovery, with the dedup marker inside the durable record so a reboot or a second host cannot produce a flood",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only its own durable records under ~/.local/state/agent-multi/experiment-transition-queue (atomic tmp+fsync+replace), NEVER inside any run's output root, plus deduplicated incident-ledger observations/recoveries through the shared shim; it never launches, restarts or stops any job itself",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
   "l2_curriculum_arms.py": {
    "purpose": "L2 curriculum arms runner/materializer (doc 38 §6/§8; order 2026-08-15 §2): materializes and executes L2_N (all generations normal-realistic) versus L2_EN (easy triage generations, then a MANDATORY normal-realistic re-evaluation of every surviving elite) from examples/config/phase_3_eth_sac_dynamics/l2_curriculum_arms_v1.json. L1 stays FROZEN in both arms (phase-1 dynamics normal_realistic, phase-1 and phase-2 LR 3e-5) and no L1 curriculum field may be an L2 gene; both arms carry an identical total candidate-evaluation budget, population size, population seed, initial genome seeds, data roles and normal-realistic decision evidence; the EXECUTING config binds the typed nested split contract in nested_split_mode=l2 with roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, 256 forced-hold context rows excluded from scores and sealed 2025 never materialized; L2 fitness is paired_generalization_weekly_v1 over inner_validation x outer_validation and L2 generation patience uses that paired evidence after a minimum generation floor; easy fitness is INVALIDATED at the stage transition and an easy-evaluated candidate can never enter a normal leaderboard, champion, migration, archive or release path; genomes inherit TYPED GENES only (weights, topology, replay buffers, optimizer moments and per-genome anchors refuse); every generation record logs unique-genome count, allele diversity and rejected/ineligible share; every node proves the same source revisions, plan/domain hashes, dataset hash, population seed, genesis and finalized ancestry before evaluating; a second parallel chain for one arm and an out-of-order arm are typed refusals; --mode smoke is the bounded four-GPU mechanics smoke, --preflight the no-training materialization proof, --dispatch-plan the per-host command plan, --champion the refusal-first champion resolver",
    "lifecycle": "supported",
@@ -349,16 +357,6 @@
     "optimizer_plugin"
    ],
    "note": "optimizer_plugin -> optimization.plugin per _SECTION_KEYS"
-  },
-  "optimizer.plugins/l2_curriculum_optimizer": {
-   "protocol": "shared-population optimizer plugin (subclass of optimizer_plugins.default_optimizer.Plugin)",
-   "config_keys": [
-    "shared_elitism",
-    "ga_cxpb",
-    "ga_mutpb",
-    "optimization_patience"
-   ],
-   "note": "L2 search-curriculum semantics only: stage difficulty, easy-fitness invalidation with mandatory normal re-evaluation, typed-gene-only inheritance, paired inner/outer generation patience and diversity evidence; every genetic operator, encode/decode and tournament stays the inherited default_optimizer implementation"
   }
  },
  "known_unclassified_baseline": [

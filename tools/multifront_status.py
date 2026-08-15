@@ -56,6 +56,7 @@ import re
 import socket
 import sqlite3
 import subprocess
+import sys
 import time as _time
 import urllib.request
 from datetime import datetime, timezone
@@ -1594,6 +1595,143 @@ def _p1lr_other_mode_activity(binding: dict, now: datetime,
     }
 
 
+def _transition_queue():
+    """The durable transition-queue module, however this file was loaded.
+
+    ``tools/multifront_status.py`` runs both as a script (``tools/`` is
+    sys.path[0]) and as ``tools.multifront_status``; the import is
+    written for both instead of assuming one.
+    """
+    try:
+        from tools import experiment_transition_queue as etq
+    except ImportError:  # running with tools/ itself on sys.path
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import experiment_transition_queue as etq  # type: ignore
+    return etq
+
+
+def p1lr_transition_view(*, queue_dir: Optional[Path], experiment: str,
+                         mode: str, identity: str, now: datetime,
+                         terminal: bool, records_landed: int,
+                         cells_total: int,
+                         output_root: Optional[str] = None,
+                         contract_path: Optional[str] = None,
+                         contract_sha256: Optional[str] = None,
+                         terminal_utc: Optional[str] = None,
+                         enrol: bool = True,
+                         budget_seconds: Optional[float] = None,
+                         ) -> dict[str, Any]:
+    """The fleet-level terminal-to-next-job answer (order 2026-08-15 §3).
+
+    This collector is the only observer that reads EVERY assigned host,
+    so it is the one that may declare an experiment terminal and enrol
+    the durable transition record. Enrolment is idempotent and
+    content-addressed on the ending job, so repeated status runs — and
+    runs from different hosts — converge on ONE record and never restart
+    the transition budget.
+
+    A terminal experiment whose successor is not proven dispatched
+    returns ``completed_untransitioned``. That is the state the fleet
+    must surface; ``inactive_or_unknown`` (the old answer) described the
+    previous experiment's stillness instead of the fleet's idleness.
+    """
+    etq = _transition_queue()
+    if queue_dir is None:
+        status = etq.transition_status(None, now=now)
+        status.update({
+            "queue_dir": None,
+            "basis": "transition_queue_not_configured",
+            "reason": ("no durable transition queue is configured, so no "
+                       "successor can be proven dispatched; a terminal "
+                       "experiment is un-transitioned by default"),
+        })
+        return status
+    record = None
+    if terminal and enrol:
+        try:
+            record = etq.ensure_terminal_record(
+                queue_dir, experiment=experiment, mode=mode,
+                identity=identity, records_landed=records_landed,
+                cells_total=cells_total, output_root=output_root,
+                contract_path=contract_path,
+                contract_sha256=contract_sha256,
+                terminal_utc=terminal_utc, evidence_root=output_root,
+                now=now,
+                transition_budget_seconds=(
+                    budget_seconds
+                    if budget_seconds is not None
+                    else etq.DEFAULT_TRANSITION_BUDGET_SECONDS))
+        except OSError:
+            # An unwritable queue directory must degrade to "cannot
+            # prove a dispatch", never to a fabricated healthy state.
+            record = None
+    if record is None:
+        records, _unreadable = etq.load_records(queue_dir)
+        record = etq.find_record(records, experiment=experiment,
+                                 mode=mode, identity=identity)
+    status = etq.transition_status(record, now=now)
+    status["queue_dir"] = str(Path(queue_dir).expanduser())
+    return status
+
+
+def _p1lr_transition_queue_entry(status: Mapping[str, Any], *,
+                                 identity: str,
+                                 contract_sha: Optional[str],
+                                 ) -> Optional[dict[str, Any]]:
+    """The SUCCESSOR's executable-queue item for an un-transitioned run.
+
+    Finding 204 discipline in the transition case: a terminal experiment
+    with no dispatched successor must not vanish from the executable
+    queue — that silence is exactly what hid the fleet's idle time. The
+    successor enters the canonical taxonomy according to what actually
+    blocks it, so an owner reading the queue sees whether the fleet is
+    waiting on materialization, on a dependency, or on the owner.
+    """
+    blockers = list(status.get("blockers") or [])
+    owner_blockers = [b for b in blockers if b.get("owner_action_required")]
+    dependency_blockers = [b for b in blockers
+                           if b.get("dependency") and b not in owner_blockers]
+    next_job = _as_dict(status.get("next_job"))
+    item: dict[str, Any] = {
+        "id": f"p1lr-transition-{status.get('transition_id') or identity}",
+        "front": "f1",
+        "transition_state": status.get("value"),
+        "predecessor_identity": identity,
+        "next_job_id": status.get("next_job_id"),
+        "materialization_state": status.get("materialization_state"),
+        "dispatch_state": status.get("dispatch_state"),
+        "elapsed_since_terminal_seconds":
+            status.get("elapsed_since_terminal_seconds"),
+        "transition_budget_seconds": status.get("transition_budget_seconds"),
+        "over_budget": status.get("over_budget"),
+    }
+    # Only syntactically valid digests may ride in `hashes`: the queue
+    # taxonomy rejects a malformed digest outright, and a transition item
+    # must never be the reason the whole packet fails validation.
+    hashes = {k: v for k, v in
+              {"config_sha256": next_job.get("contract_sha256"),
+               "plan_sha256": next_job.get("plan_sha256")}.items()
+              if _valid_sha256(v)}
+    if owner_blockers:
+        item["state"] = "owner_blocked"
+        item["owner_blocked_reason"] = "; ".join(
+            f"{b.get('code')}: {b.get('detail')}" for b in owner_blockers)
+    elif dependency_blockers:
+        item["state"] = "dependency_blocked"
+        item["dependency"] = "; ".join(
+            str(b.get("dependency")) for b in dependency_blockers)
+    elif (status.get("materialization_state") == "materialized"
+            and hashes):
+        item["state"] = "materialized"
+    else:
+        item["state"] = "proposed"
+    if hashes:
+        item["hashes"] = hashes
+    if contract_sha:
+        item["predecessor_contract_sha256"] = contract_sha
+    return item
+
+
 def _p1lr_cell_eta(durations: list[float], elapsed: Optional[float],
                    elapsed_reason: Optional[str]) -> dict[str, Any]:
     """Current-cell ETA from OBSERVED facts only: mean/min/max completed
@@ -1645,6 +1783,9 @@ def collect_p1lr_factorial(
     mode: str = "screen",
     identity_presence_fn: Optional[
         Callable[[Optional[str], str], bool]] = None,
+    transition_queue_dir: Optional[Path] = None,
+    transition_enrol: bool = True,
+    transition_budget_seconds: Optional[float] = None,
 ) -> tuple[dict[str, Any], list[dict[str, str]], Optional[dict[str, Any]]]:
     """First-class Front-1 source: the RUNNING P1 difficulty x P1 LR
     factorial mechanics screen (order 2026-08-11 §7.7 / finding 229).
@@ -1668,6 +1809,14 @@ def collect_p1lr_factorial(
     cell count all derive from it. An identity that belongs to the other
     mode's root REFUSES (typed, count-free) instead of rendering a false
     empty state.
+
+    Order 2026-08-15 §3 discipline: an experiment whose every assigned
+    host was readable and whose every cell record has landed is TERMINAL.
+    A terminal experiment renders ``completed_untransitioned`` until the
+    durable transition queue proves a successor dispatched — a completed
+    predecessor is never a reason to render the fleet as healthy — and
+    the successor keeps a first-class executable-queue item so the idle
+    time is visible where an owner looks for work.
 
     Returns (front block, unavailable entries, executable-queue entry).
     """
@@ -1733,6 +1882,8 @@ def collect_p1lr_factorial(
     running_fresh = 0
     any_fact = False
     rejected_records: list[dict[str, Any]] = []
+    unreadable_seeds: list[int] = []
+    newest_finished: Optional[datetime] = None
 
     for seed in seeds:
         assignment = _as_dict(assignments.get(str(seed)))
@@ -1774,6 +1925,9 @@ def collect_p1lr_factorial(
                      f"{seed_dir}")
             unavailable.append({"field": f"{field}.workers.{seed}",
                                 "reason": entry["unavailable_reason"]})
+            # An unreadable host can never contribute to a TERMINAL
+            # verdict: 16/16 is only 16/16 when all four were readable.
+            unreadable_seeds.append(seed)
             workers[str(seed)] = entry
             worker_states[str(seed)] = {"remaining": None, "active": False,
                                         "cell": None, "active_eta": None}
@@ -1946,6 +2100,10 @@ def collect_p1lr_factorial(
                         (finished - started).total_seconds(), 1)
             if duration is not None:
                 durations.append(duration)
+            finished_at = _l1_iso(record.get("finished_utc"))
+            if finished_at is not None and (newest_finished is None
+                                            or finished_at > newest_finished):
+                newest_finished = finished_at
             best_checkpoint_available = bool(
                 record.get("best_model_path")
                 and record.get("best_model_sha256"))
@@ -2077,10 +2235,50 @@ def collect_p1lr_factorial(
         workers[key]["current_cell_eta"] = eta
         worker_states[key]["active_eta"] = eta
 
+    # ── §3: TERMINAL is a fleet fact, and it needs every host readable ──
+    experiment_terminal = bool(
+        total_cells > 0 and records_total >= total_cells
+        and not unreadable_seeds and not running_fresh)
+    transition = p1lr_transition_view(
+        queue_dir=transition_queue_dir, experiment=str(
+            contract.get("experiment") or ""),
+        mode=binding["mode"], identity=identity, now=now,
+        terminal=experiment_terminal, records_landed=records_total,
+        cells_total=total_cells, output_root=output_root,
+        contract_path=str(contract_path), contract_sha256=contract_sha,
+        terminal_utc=(newest_finished.isoformat()
+                      if newest_finished else None),
+        enrol=transition_enrol, budget_seconds=transition_budget_seconds)
+
     if running_fresh:
         state = "active"
         state_basis = (f"{running_fresh} worker(s) RUNNING with runner "
                        f"heartbeat age <= {stale_after_seconds:.0f}s")
+    elif experiment_terminal:
+        # The defect (2026-08-15): a terminal 16/16 with no successor
+        # rendered as quiet inactivity, so fleet idle time after a
+        # completed experiment was invisible. It is now a NAMED state.
+        # Only a POSITIVE transition verdict may lift it: anything else
+        # (including a record that never recorded the terminal result)
+        # is un-transitioned, because unproven is not dispatched.
+        state = (transition["value"]
+                 if transition["value"] in ("transitioned",
+                                            "transition_dispatch_in_progress",
+                                            "superseded")
+                 else "completed_untransitioned")
+        if state == "completed_untransitioned":
+            state_basis = (
+                f"every assigned host was readable and all "
+                f"{records_total}/{total_cells} cell records landed, so "
+                f"identity {identity} is TERMINAL — and NO successor is "
+                f"proven dispatched by the durable transition queue "
+                f"({transition['reason']}). This is fleet idle time after "
+                "a terminal completion, not healthy inactivity")
+        else:
+            state_basis = (
+                f"identity {identity} is TERMINAL "
+                f"({records_total}/{total_cells} records) and the durable "
+                f"transition queue reports {state}: {transition['reason']}")
     elif any_fact:
         state = "inactive_or_unknown"
         state_basis = ("no worker is RUNNING with a fresh heartbeat; "
@@ -2116,6 +2314,11 @@ def collect_p1lr_factorial(
         "evidence_class_expected": binding["evidence_class_expected"],
         "decision_eligible_expected": binding["decision_eligible_expected"],
         "workers": workers,
+        "experiment_terminal": experiment_terminal,
+        # §3 bullets 1/3/4: the transition is a first-class fact taken
+        # from durable records, never from a heartbeat, a shell process,
+        # a chat message or operator memory.
+        "transition": transition,
         "experiment_eta": _l1_experiment_eta(
             worker_states, durations,
             active_eta_source_label="current_cell_duration_eta"),
@@ -2169,6 +2372,11 @@ def collect_p1lr_factorial(
             "output_root": output_root,
             "hashes": {"config_sha256": contract_sha},
         }
+    elif state == "completed_untransitioned":
+        # The successor takes the queue slot the terminal predecessor
+        # vacated, so an un-transitioned fleet is never an EMPTY queue.
+        queue_entry = _p1lr_transition_queue_entry(
+            transition, identity=identity, contract_sha=contract_sha)
     return block, unavailable, queue_entry
 
 
@@ -2198,6 +2406,9 @@ def collect(
     p1lr_stale_after_seconds: float = 900.0,
     p1lr_now_fn: Optional[Callable[[], datetime]] = None,
     p1lr_mode: str = "screen",
+    p1lr_transition_queue_dir: Optional[Path] = None,
+    p1lr_transition_enrol: bool = True,
+    p1lr_transition_budget_seconds: Optional[float] = None,
     p1lr_identity_presence_fn: Optional[
         Callable[[Optional[str], str], bool]] = None,
 ) -> dict[str, Any]:
@@ -2233,6 +2444,9 @@ def collect(
                 stale_after_seconds=p1lr_stale_after_seconds,
                 now_fn=p1lr_now_fn or l1_now_fn,
                 mode=p1lr_mode,
+                transition_queue_dir=p1lr_transition_queue_dir,
+                transition_enrol=p1lr_transition_enrol,
+                transition_budget_seconds=p1lr_transition_budget_seconds,
                 identity_presence_fn=p1lr_identity_presence_fn,
             )
         f1["active_p1lr_factorial"] = p1lr_block
@@ -2604,6 +2818,9 @@ def collect(
         # Order 2026-08-11 §7.7: the RUNNING P1LR screen leads the
         # executable queue; the completed L1 factorial is history only
         # (no fresh RUNNING heartbeat -> no queue entry at all).
+        # Order 2026-08-15 §3: when the P1LR run itself is TERMINAL and
+        # un-transitioned, its SUCCESSOR takes that slot — an idle fleet
+        # after a completion must never look like an empty queue.
         queue.append(p1lr_queue_entry)
     if l1_queue_entry is not None:
         # Finding 204: the ACTIVE factorial leads the executable queue;
@@ -2740,6 +2957,18 @@ def main() -> int:
                              "decision_run.output_root; an identity "
                              "belonging to the other mode's root is a "
                              "typed refusal, never a rendered zero")
+    parser.add_argument(
+        "--transition-queue-dir", type=Path,
+        default=Path.home() / ".local/state/agent-multi/"
+                              "experiment-transition-queue",
+        help="durable terminal-to-next-job queue (order 2026-08-15 §3): "
+             "a TERMINAL experiment renders completed_untransitioned "
+             "until these records prove a successor dispatched; NEVER "
+             "inside a run's output root")
+    parser.add_argument("--no-transition-queue", action="store_true",
+                        help="do not read or enrol durable transition "
+                             "records (a terminal experiment then always "
+                             "renders completed_untransitioned)")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     l1_alert_emitter = None
@@ -2760,6 +2989,8 @@ def main() -> int:
         p1lr_contract_path=None if args.no_p1lr else args.p1lr_contract,
         p1lr_identity=args.p1lr_identity,
         p1lr_mode=args.p1lr_mode,
+        p1lr_transition_queue_dir=(None if args.no_transition_queue
+                                   else args.transition_queue_dir),
     )
     text = json.dumps(packet, indent=1, sort_keys=True)
     if args.output:
