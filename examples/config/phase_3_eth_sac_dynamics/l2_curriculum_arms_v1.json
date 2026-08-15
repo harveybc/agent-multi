@@ -1,0 +1,442 @@
+{
+ "schema": "agent_multi.l2_curriculum_arms.v1",
+ "$doc": "Document 38 §6/§8 executable L2 program: L2_N (all generations normal-realistic) versus L2_EN (early generations triage under EASY evidence, then a MANDATORY re-evaluation of every surviving elite under normal-realistic conditions before any champion, migration, archive or release eligibility). L1 is FROZEN for both arms at the section-15/16 result: phase-1 dynamics normal_realistic, phase-1 LR 3e-5, phase-2 LR 3e-5. Both arms receive an identical total candidate-evaluation budget, identical population size, identical population seed, identical initial genome seeds, the identical frozen L1 recipe, the identical nested data roles and identical normal-realistic decision evidence. Easy and normal scores never share one comparable leaderboard: the stage transition INVALIDATES easy fitness and the runner refuses any promotion path that carries an easy-evaluated entry.",
+ "question": "Does an ordered easy->normal L2 SEARCH curriculum improve the evolved configuration genome over an all-normal L2 search, at equal candidate-evaluation budget and a frozen L1 recipe?",
+ "experiment": "l2_curriculum_arms_20260815_v1",
+ "asset": "ETHUSD_4h",
+ "arms": [
+  "L2_N",
+  "L2_EN"
+ ],
+ "nested_split_contract": {
+  "$doc": "Doc 38 §3 / finding 224: the EXECUTING pipeline consumes this typed nested contract directly, in nested_split_mode=l2. role_facts are ASSERTIONS the runner verifies against freshly materialized per-role CSVs BEFORE any model construction. sealed_test (2025) is NEVER materialized: no CSV path, hash, row load or evaluation may exist outside mode=release.",
+  "path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+  "sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+  "mode": "l2",
+  "context_bars": 256,
+  "role_facts": {
+   "fit_train": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+    "scored_rows": 11509,
+    "context_rows": 0,
+    "score_start": "2017-09-28 04:00:00",
+    "score_end": "2022-12-31 20:00:00"
+   },
+   "train_monitor": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+    "scored_rows": 2190,
+    "context_rows": 256,
+    "score_start": "2022-01-01 00:00:00",
+    "score_end": "2022-12-31 20:00:00"
+   },
+   "inner_validation": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+    "scored_rows": 2190,
+    "context_rows": 256,
+    "score_start": "2023-01-01 00:00:00",
+    "score_end": "2023-12-31 20:00:00"
+   },
+   "outer_validation": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+    "scored_rows": 2196,
+    "context_rows": 256,
+    "score_start": "2024-01-01 00:00:00",
+    "score_end": "2024-12-31 20:00:00"
+   },
+   "sealed_test": {
+    "status": "SEALED",
+    "csv_sha256": null,
+    "scored_rows": null,
+    "context_rows": null,
+    "score_start": null,
+    "score_end": null
+   }
+  },
+  "role_use": {
+   "fit_train": "candidate gradient updates only (11509 scored rows)",
+   "train_monitor": "L1 in-sample stopping member inside each candidate (2190 scored rows, 2022)",
+   "inner_validation": "L1 stopping member AND first member of the L2 paired comparator (2190 scored rows, 2023)",
+   "outer_validation": "second member of the L2 paired comparator; L2 selection/confirmation, never fitted (2196 scored rows, 2024)",
+   "sealed_test": "SEALED - no CSV path, hash, row load or model evaluation may be emitted (2025)"
+  }
+ },
+ "selection_metric": "paired_generalization_weekly_v1",
+ "l2_evidence_pair": [
+  "inner_validation",
+  "outer_validation"
+ ],
+ "l2_gap_penalty_beta": 0.25,
+ "l2_min_trades": 1,
+ "decision_evidence_difficulty": "normal_realistic",
+ "frozen_l1_recipe": {
+  "$doc": "Order 2026-08-15 §2 requirement 1: L1 is FROZEN for every L2 arm. These values are byte-identical in every generation of BOTH arms; no L1 curriculum field may appear in the L2 gene space (l1_frozen_gene_names below is the refusal list).",
+  "phase1_dynamics": "normal_realistic",
+  "phase1_learning_rate": 3e-05,
+  "phase2_learning_rate": 3e-05,
+  "phase2_dynamics": "normal_realistic",
+  "phase1_handoff_semantics": "l1_trained_epoch_v4",
+  "entropy": {
+   "mode": "fixed",
+   "value": 0.2
+  },
+  "boundary": {
+   "replay_reset": true,
+   "optimizer_reset": true
+  },
+  "cost_protection_contract": "l1_v3_manifest_bindings",
+  "candidate_initialization": "frozen_common_anchor",
+  "candidate_seed": 101,
+  "common_anchor": {
+   "$doc": "ONE frozen anchor shared by every candidate of BOTH arms. It is part of the frozen L1 recipe, never a per-genome inheritance: a genome that names its own anchor, weights, topology or replay buffer is refused (requirement 4).",
+   "path": "~/.local/share/agent-multi/eth_curriculum_decision_20260807_v2/seed101/anchor_seed101.zip",
+   "sha256": "cb27375c663819333aa4442d5817c657b19ad0e8b61395b04c5e6212217fbc62"
+  },
+  "l1_frozen_gene_names": [
+   "learning_rate",
+   "phase1_learning_rate",
+   "phase1_mode",
+   "phase1_dynamics",
+   "phase1_handoff_semantics",
+   "easy_learning_rate",
+   "easy_max_epochs",
+   "easy_patience",
+   "easy_min_delta",
+   "easy_continuous_action_threshold",
+   "easy_commission_fraction_per_side",
+   "easy_full_spread_rate",
+   "easy_slippage_bps_per_side",
+   "easy_min_trades",
+   "solvency_mode",
+   "solvency_curriculum_enabled",
+   "ent_coef",
+   "l1_patience",
+   "l1_patience_start_epoch",
+   "l1_activity_patience",
+   "l1_activity_patience_start_epoch",
+   "phase1_max_fraction",
+   "normal_phase_min_passes",
+   "total_max_passes",
+   "warm_start_model",
+   "continuous_action_threshold",
+   "commission",
+   "full_spread_rate",
+   "slippage"
+  ]
+ },
+ "l2_stage_difficulty_binding": {
+  "$doc": "How a stage's declared difficulty reaches the executable candidate. evidence_only_v1: the stage difficulty binds the SOLVENCY MODE OF THE CANDIDATE'S TRIAGE EVIDENCE only; training stays on the frozen L1 recipe (phase-1 dynamics normal_realistic) so requirement 1 holds literally. training_and_evidence_v1 would additionally move the candidate's phase-1 dynamics, which IS an L1 curriculum field and is therefore refused unless l1_freeze_exception_approved is explicitly true.",
+  "mechanism": "evidence_only_v1",
+  "allowed_mechanisms": [
+   "evidence_only_v1",
+   "training_and_evidence_v1"
+  ],
+  "training_difficulty_frozen": "normal_realistic",
+  "l1_freeze_exception_approved": false
+ },
+ "shared": {
+  "$doc": "Requirement 3: IDENTICAL across both arms. assert_arms_identical_budget refuses any divergence in these fields or in the per-arm ledger derived from the stage schedules.",
+  "population_size": 12,
+  "population_seed": 20260815,
+  "total_candidate_evaluations": 72,
+  "elitism": 2,
+  "ga_cxpb": 0.5,
+  "ga_mutpb": 0.2,
+  "tournament_size": 3,
+  "gene_space": [
+   [
+    "batch_size",
+    64,
+    512,
+    "int"
+   ],
+   [
+    "gamma",
+    0.9,
+    0.999,
+    "float"
+   ],
+   [
+    "tau",
+    0.001,
+    0.05,
+    "float"
+   ],
+   [
+    "train_freq",
+    1,
+    8,
+    "int"
+   ],
+   [
+    "gradient_steps",
+    1,
+    8,
+    "int"
+   ]
+  ],
+  "gene_space_source": "agent_plugins/sac_agent.py hparam_schema() minus every l1_frozen_gene_name (learning_rate is the frozen phase-2 LR and can never be a gene)",
+  "initial_genome_seeds": [
+   20260815,
+   20260816,
+   20260817,
+   20260818,
+   20260819,
+   20260820,
+   20260821,
+   20260822,
+   20260823,
+   20260824,
+   20260825,
+   20260826
+  ],
+  "candidate_budget_knobs": {
+   "$doc": "Per-candidate L1 budget, identical in both arms. 1 phase-1 pass-equivalent + at most 24 phase-2 pass-equivalents at the ladder 20000-step pass budget.",
+   "epoch_timesteps": 20000,
+   "phase1_epochs": 1,
+   "phase2_max_epochs": 24,
+   "total_max_passes": 25,
+   "phase1_max_fraction": 0.3,
+   "normal_phase_min_passes": 10
+  },
+  "candidate_stopping_knobs": {
+   "l1_patience": 10,
+   "l1_patience_start_epoch": 5,
+   "l1_activity_patience": 8,
+   "l1_activity_patience_start_epoch": 5
+  }
+ },
+ "stage_schedules": {
+  "$doc": "Doc 38 §8 ordered L2 search stages crossed with the arm's difficulty schedule. reevaluation stages are NOT search generations: they spend exactly population_size evaluations re-scoring every carried elite under normal-realistic evidence. Both ledgers total shared.total_candidate_evaluations.",
+  "L2_N": [
+   {
+    "name": "n_capacity_dynamics",
+    "stage_kind": "search",
+    "evaluation_difficulty": "normal_realistic",
+    "active_genes": [
+     "batch_size",
+     "gamma",
+     "tau",
+     "train_freq",
+     "gradient_steps"
+    ],
+    "generations": 3,
+    "categorical_change_allowed": true
+   },
+   {
+    "name": "n_maturation",
+    "stage_kind": "search",
+    "evaluation_difficulty": "normal_realistic",
+    "active_genes": [
+     "gamma",
+     "tau"
+    ],
+    "generations": 3,
+    "categorical_change_allowed": false
+   }
+  ],
+  "L2_EN": [
+   {
+    "name": "en_easy_triage",
+    "stage_kind": "search",
+    "evaluation_difficulty": "easy_chronological_continuation",
+    "active_genes": [
+     "batch_size",
+     "gamma",
+     "tau",
+     "train_freq",
+     "gradient_steps"
+    ],
+    "generations": 2,
+    "categorical_change_allowed": true
+   },
+   {
+    "name": "en_normal_reevaluation",
+    "stage_kind": "reevaluation",
+    "evaluation_difficulty": "normal_realistic",
+    "active_genes": [],
+    "generations": 1,
+    "categorical_change_allowed": false,
+    "invalidates_previous_fitness": true,
+    "reevaluates_all_survivors": true
+   },
+   {
+    "name": "en_normal_capacity",
+    "stage_kind": "search",
+    "evaluation_difficulty": "normal_realistic",
+    "active_genes": [
+     "batch_size",
+     "gamma",
+     "tau",
+     "train_freq",
+     "gradient_steps"
+    ],
+    "generations": 1,
+    "categorical_change_allowed": true
+   },
+   {
+    "name": "en_maturation",
+    "stage_kind": "search",
+    "evaluation_difficulty": "normal_realistic",
+    "active_genes": [
+     "gamma",
+     "tau"
+    ],
+    "generations": 2,
+    "categorical_change_allowed": false
+   }
+  ]
+ },
+ "l2_stopping": {
+  "$doc": "Requirement 5: L2 patience uses the PAIRED inner/outer comparator after a minimum generation floor. Reused implementation: pipeline_plugins._paired_generalization.PairedStoppingState.",
+  "minimum_generations": 4,
+  "patience": 3,
+  "min_delta": 0.0005
+ },
+ "diversity": {
+  "$doc": "Requirement 6: every generation record must carry these fields so apparent convergence is never confused with collapse.",
+  "required_fields": [
+   "unique_genome_count",
+   "unique_genome_fraction",
+   "mean_pairwise_allele_distance",
+   "per_gene_distinct_values",
+   "rejected_share",
+   "ineligible_share",
+   "evaluated_count",
+   "fitness_dispersion"
+  ],
+  "diversity_floor": 0.25
+ },
+ "workers": {
+  "$doc": "Requirement 9: SEQUENTIAL dispatch. All four workers collaborate on ONE chain of ONE arm at a time; the arm order is L2_N then L2_EN. Creating a second chain for the same arm is a typed refusal (REFUSED_PARALLEL_CHAIN).",
+  "arm_order": [
+   "L2_N",
+   "L2_EN"
+  ],
+  "assignments": {
+   "w1": {
+    "hostname": "omega",
+    "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"
+   },
+   "w2": {
+    "hostname": "dragon",
+    "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"
+   },
+   "w3": {
+    "hostname": "gamma",
+    "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"
+   },
+   "w4": {
+    "hostname": "gamma",
+    "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"
+   }
+  }
+ },
+ "modes": {
+  "smoke": {
+   "$doc": "Requirement 10: bounded mechanics smoke across the four physical GPUs. It proves imports, contracts, chain coherence, easy-fitness invalidation, mandatory re-evaluation, diversity logging and four-worker collaboration. It is EXCLUDED from every scientific aggregation (doc 38 §2 and §10 step 5).",
+   "output_root": "~/.local/share/agent-multi/l2_curriculum_arms_20260815_v1_smoke",
+   "population_size": 4,
+   "total_candidate_evaluations": 12,
+   "candidate_budget_knobs": {
+    "epoch_timesteps": 2000,
+    "phase1_epochs": 1,
+    "phase2_max_epochs": 1,
+    "total_max_passes": 2,
+    "phase1_max_fraction": 0.5,
+    "normal_phase_min_passes": 1
+   },
+   "candidate_stopping_knobs": {
+    "l1_patience": 10000,
+    "l1_patience_start_epoch": 10000,
+    "l1_activity_patience": 10000,
+    "l1_activity_patience_start_epoch": 10000
+   },
+   "stage_schedules": {
+    "L2_N": [
+     {
+      "name": "smoke_n",
+      "stage_kind": "search",
+      "evaluation_difficulty": "normal_realistic",
+      "active_genes": [
+       "batch_size",
+       "gamma",
+       "tau",
+       "train_freq",
+       "gradient_steps"
+      ],
+      "generations": 3,
+      "categorical_change_allowed": true
+     }
+    ],
+    "L2_EN": [
+     {
+      "name": "smoke_en_easy",
+      "stage_kind": "search",
+      "evaluation_difficulty": "easy_chronological_continuation",
+      "active_genes": [
+       "batch_size",
+       "gamma",
+       "tau",
+       "train_freq",
+       "gradient_steps"
+      ],
+      "generations": 1,
+      "categorical_change_allowed": true
+     },
+     {
+      "name": "smoke_en_reeval",
+      "stage_kind": "reevaluation",
+      "evaluation_difficulty": "normal_realistic",
+      "active_genes": [],
+      "generations": 1,
+      "categorical_change_allowed": false,
+      "invalidates_previous_fitness": true,
+      "reevaluates_all_survivors": true
+     },
+     {
+      "name": "smoke_en_normal",
+      "stage_kind": "search",
+      "evaluation_difficulty": "normal_realistic",
+      "active_genes": [
+       "batch_size",
+       "gamma",
+       "tau",
+       "train_freq",
+       "gradient_steps"
+      ],
+      "generations": 1,
+      "categorical_change_allowed": true
+     }
+    ]
+   },
+   "l2_stopping": {
+    "minimum_generations": 1000,
+    "patience": 1000,
+    "min_delta": 0.0005
+   }
+  },
+  "decision": {
+   "$doc": "The full comparison. Dispatched only after the smoke passes; both arms run SEQUENTIALLY on one chain each, four workers per chain.",
+   "output_root": "~/.local/share/agent-multi/l2_curriculum_arms_20260815_v1_decision"
+  }
+ },
+ "typed_outcomes": [
+  "L2_CURRICULUM_EFFECT",
+  "NO_MATERIAL_L2_EFFECT",
+  "TOTAL_ACTIVITY_COLLAPSE",
+  "INCONCLUSIVE"
+ ],
+ "forbidden": [
+  "resuming or warm-starting from the paused DOIN campaign eth-4h-anchored-full-sac-shared-v2 (HISTORICAL AND INVALID)",
+  "creating a second, parallel chain for one arm",
+  "letting an easy-evaluated candidate enter a normal leaderboard, champion, migration, archive or release path",
+  "inheriting SAC weights, replay buffers, optimizer moments or topology between L2 genomes",
+  "varying any l1_frozen_gene_name during the L2 comparison",
+  "materializing, hashing, loading or evaluating sealed_test (2025)",
+  "aggregating smoke records into any scientific collection"
+ ]
+}

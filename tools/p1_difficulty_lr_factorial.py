@@ -248,6 +248,11 @@ ACTIVITY_CLASSIFICATIONS = ("FULL_ACTIVITY", "PARTIAL_ACTIVITY_SURVIVAL",
 # DIAGNOSTIC TRUTH ONLY — relabeling it best_checkpoint is refused.
 OUTER_ARTIFACT_ROLES = ("best_checkpoint", "terminal")
 TERMINAL_LOAD_PROOF_SCHEMA = "agent_multi.p1lr_terminal_load_proof.v1"
+# Stable trace tags per nested evaluation role (the outer default keeps
+# the historical "outer" tag so P1LR traces stay byte-comparable).
+_ROLE_TAG = {"outer_validation": "outer",
+             "inner_validation": "inner",
+             "train_monitor": "train_monitor"}
 
 # Exit classes follow the fleet launcher/systemd contract.
 EXIT_CLASS = {
@@ -2046,9 +2051,13 @@ def _outer_validation_final_eval(*, config: dict, agent,
                                  model_path: str,
                                  artifact_role: str,
                                  nested_roles: dict,
-                                 seed: int) -> dict:
-    """Evaluate ONE artifact ONCE on the outer_validation role — final
-    truth only, after selection. The 256 declared context rows
+                                 seed: int,
+                                 role: str = "outer_validation",
+                                 solvency_mode: str = "normal_realistic",
+                                 run_id: str = "p1lr_decision") -> dict:
+    """Evaluate ONE artifact ONCE on a nested evaluation role — for the
+    default ``outer_validation`` role this is final truth only, after
+    selection. The 256 declared context rows
     initialize causal state under the reusable ContextPrefixWrapper
     (forced hold; any account mutation raises) and are excluded from
     every metric. Sealed 2025 is never touched.
@@ -2066,7 +2075,17 @@ def _outer_validation_final_eval(*, config: dict, agent,
       can name a terminal artifact a best checkpoint, and
       ``assert_outer_eval_artifact_role`` refuses any payload that
       does.
+
+    ``role``/``solvency_mode``/``run_id`` exist so the L2 program can
+    reuse THIS implementation for its inner_validation member and for
+    an easy-difficulty triage replay instead of forking a second
+    context-prefix replay. Their defaults reproduce the P1LR decision
+    behaviour byte for byte.
     """
+    if role not in _nested_splits.EVAL_ROLES or role == "sealed_test":
+        raise RuntimeError(
+            f"refusing a nested replay of role {role!r} — sealed 2025 is "
+            "structurally inaccessible and only evaluation roles replay")
     from pipeline_plugins import _return_trace as trace_mod
     from pipeline_plugins._weekly_metrics import (
         canonical_weekly_metrics_from_trace)
@@ -2077,12 +2096,13 @@ def _outer_validation_final_eval(*, config: dict, agent,
         raise RuntimeError(
             f"unknown outer-evaluation artifact role {artifact_role!r} "
             f"— must be one of {list(OUTER_ARTIFACT_ROLES)}")
-    role = nested_roles["roles"]["outer_validation"]
+    role_name = role
+    role = nested_roles["roles"][role_name]
     if role.get("status") != "MATERIALIZED":
-        raise RuntimeError("outer_validation role is not materialized")
+        raise RuntimeError(f"{role_name} role is not materialized")
     context_rows = int(role["context_rows"])
     eval_config = dict(config)
-    eval_config["solvency_mode"] = "normal_realistic"
+    eval_config["solvency_mode"] = solvency_mode
     eval_config["return_trace_dir"] = None
     pipeline = ValidationPipeline(eval_config)
     plug, env = pipeline._make_split_env(
@@ -2108,9 +2128,10 @@ def _outer_validation_final_eval(*, config: dict, agent,
                     asset=str(eval_config.get("asset",
                                               "unknown_asset")),
                     timeframe=str(eval_config.get("timeframe", "")),
-                    split="outer_validation_final", seed=int(seed),
-                    run_id="p1lr_decision",
-                    episode_id=f"p1lr_decision::outer::seed{seed}"))
+                    split=f"{role_name}_final", seed=int(seed),
+                    run_id=run_id,
+                    episode_id=f"{run_id}::{_ROLE_TAG[role_name]}"
+                               f"::seed{seed}"))
                 prev_equity = info.get("equity")
             if steps > 1_000_000:
                 raise RuntimeError("outer validation replay exceeded "
@@ -2118,7 +2139,7 @@ def _outer_validation_final_eval(*, config: dict, agent,
         expected_scored_steps = int(role["scored_rows"])
         if scored_steps != expected_scored_steps:
             raise RuntimeError(
-                "outer_validation replay scored "
+                f"{role_name} replay scored "
                 f"{scored_steps} steps but the verified manifest declares "
                 f"{expected_scored_steps}; refusing an off-by-one or "
                 "truncated final evaluation")
@@ -2139,7 +2160,8 @@ def _outer_validation_final_eval(*, config: dict, agent,
         is_best = artifact_role == "best_checkpoint"
         evaluated_sha = _sha_file(Path(model_path))
         return {
-            "role": "outer_validation",
+            "role": role_name,
+            "solvency_mode": solvency_mode,
             "purpose": (
                 "final truth ONLY — one evaluation after selection "
                 "(finding 224/226)" if is_best else
