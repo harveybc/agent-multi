@@ -325,6 +325,14 @@
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
+  "p1lr_genesis_artifacts.py": {
+   "purpose": "Zero-update 2,660-input SAC genesis artifacts for the corrected-observation P1LR v2 factorial (order 2026-08-15 §3; AUD-P1LR-20260815-235): per seed {101,202,303,404} it derives the corrected observation dimension from the v2 contract + the held-fixed base config's ORDERED feature columns (refusing feature-set or dimension drift), constructs a SAC model DETERMINISTICALLY on CPU through the real sac_agent plugin against a spaces-only env whose step() RAISES (zero gradient updates and zero replay transitions are structural), proves determinism by a second in-process construction, persists the artifact and records BOTH the container sha256 and the policy-tensor sha256 (same digest family the P1LR runner uses for terminals), proving the tensor identity survives the save/load round trip and that the persisted first layer is exactly 2,660 inputs; writes a typed per-seed metadata file and one manifest proving all four cells of a seed begin from ONE persisted tensor and different seeds are pairwise DISTINCT. The artifact type is zero_update_genesis — NEVER a trained champion, handoff or promotable evidence. --check verifies the contract's pinned artifacts on this host without building (distribution custody)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only under the genesis output root (per-seed artifacts + metadata + manifest; an existing artifact is never overwritten — a persisted genesis identity is immutable) ; the v2 contract, ladder bindings and base config are read strictly read-only; --check writes nothing",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "dead_actor_observation_fixture.py": {
    "purpose": "CPU before/after evidence for AUD-P1LR-20260815-235: builds the REAL ETH observation both ways (with and without the unscaled raw price window) with the real feature_window_preprocessor and a real SB3 SAC actor, and reports first-layer live-unit fraction, per-unit variation, action variance and the measured zero-gradient claim (units dead at initialisation never revive). Read-only: it trains a throwaway actor on a replay env and writes only its own JSON report",
    "lifecycle": "supported",
