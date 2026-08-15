@@ -1,8 +1,8 @@
 # 33. ETH Decision, Research, and Multi-Asset Roadmap
 
 Status: active
-Version: 1.3.0
-Date: 2026-08-08
+Version: 1.4.0
+Date: 2026-08-15
 Owner priority: calibrate ETH easy/normal training, mature and jointly optimize
 the complete ETH stack, transfer the validated search contract to all selected
 assets, and only then optimize the portfolio
@@ -454,6 +454,15 @@ Generator parameters may be optimized in a fidelity domain, but promotion uses
 a second downstream domain that optimizes synthetic/real ratio, curriculum
 placement, pretraining duration and real-data fine-tuning. A failed or ambiguous
 pilot closes/defers this line and cannot hold the entire program indefinitely.
+
+R6 scientific evidence is distinct from the trustless synthetic challenge
+plane in document 39. Real chronological data remains the sole source of
+scientific selection and release claims. A post-commit synthetic challenge may
+later verify that an untrusted candidate was not fitted to one public test file,
+but only after its entropy, evaluator, generator, evidence and calibrated-margin
+contracts pass the document-39 promotion ladder. The pretraining generator,
+market-state encoder and challenge generator are separate component identities;
+none scores itself or silently shares fitted state with another.
 
 ### R7. Retraining/fine-tuning cadence and handover DOIN domain
 
