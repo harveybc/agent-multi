@@ -148,6 +148,9 @@ def collect(*, contract: dict, experiment_identity: str,
     custody: Dict[str, dict] = {}
     cell_identities: Dict[str, str] = {}
     contract_hashes = set()
+    # v1 records carry the v1 schema, v2 records the v2 schema — the
+    # loaded contract decides which one this collection may seal.
+    expected_record_schema = p1.record_schema_for(contract)
     for seed in p1.SEEDS:
         for cell in p1.CELLS:
             name = f"seed{seed}/{cell}"
@@ -160,7 +163,7 @@ def collect(*, contract: dict, experiment_identity: str,
             except Exception as exc:
                 refusals.append(f"{name}: unreadable record: {exc}")
                 continue
-            if record.get("schema") != p1.RECORD_SCHEMA \
+            if record.get("schema") != expected_record_schema \
                     or record.get("seed") != seed \
                     or record.get("cell") != cell:
                 refusals.append(f"{name}: wrong schema or seed/cell")
@@ -312,11 +315,16 @@ def _write_proof_file(*, contract: dict, experiment_identity: str,
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--experiment-id", required=True)
-    parser.add_argument("--collection-root", required=True, type=Path)
-    parser.add_argument("--replica-host", required=True,
+    parser.add_argument("--collection-root", type=Path, default=None,
+                        help="staging/seal root; a v2 contract "
+                             "defaults this to its replica."
+                             "collection_root (the NEW v2 root, "
+                             "order §6)")
+    parser.add_argument("--replica-host", default=None,
                         help="independent replica host; the typed "
                              "proof is only written after 16 bound "
-                             "loads succeed THERE")
+                             "loads succeed THERE (a v2 contract "
+                             "defaults this to replica.replica_host)")
     parser.add_argument("--mode", choices=list(p1.MODES),
                         default="screen")
     parser.add_argument("--contract", type=Path,
@@ -327,10 +335,21 @@ def main() -> int:
                              "<exp-id>.json)")
     args = parser.parse_args()
     contract = p1.load_contract(args.contract)
+    replica_defaults = contract.get("replica") or {}
+    collection_root = args.collection_root or \
+        replica_defaults.get("collection_root")
+    if not collection_root:
+        parser.error("--collection-root is required (this contract "
+                     "declares no replica.collection_root)")
+    replica_host = args.replica_host or \
+        replica_defaults.get("replica_host")
+    if not replica_host:
+        parser.error("--replica-host is required (this contract "
+                     "declares no replica.replica_host)")
     manifest = collect(
         contract=contract, experiment_identity=args.experiment_id,
-        collection_root=Path(args.collection_root).expanduser(),
-        replica_host=args.replica_host, proof_out=args.proof_out,
+        collection_root=Path(collection_root).expanduser(),
+        replica_host=replica_host, proof_out=args.proof_out,
         mode=args.mode)
     print(json.dumps({
         "outcome": manifest["outcome"],

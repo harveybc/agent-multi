@@ -125,6 +125,43 @@ contract refusals before model construction, content-addressed attempt
 directories, atomic (fsync+replace) records, flock-backed per-cell
 exclusive claims, complete-record reuse (ALREADY_COMPLETE) and
 refuse-not-overwrite on invalid existing records.
+
+CORRECTED-OBSERVATION V2 (AUD-P1LR-20260815-235; order 2026-08-15
+§6/§7). The SAME runner executes the v2 contract
+``p1_difficulty_lr_factorial_v2.json`` while v1 stays replayable and
+read-only (the v1 schema keeps its exact loader, identities, record
+schema and byte semantics). A v2 contract differs in exactly the
+corrected dimensions:
+
+  observation   the accepted fail-closed observation contract is BOUND
+                into every cell config before any env or model exists
+                (``config["observation_contract"]``), validated at
+                materialization, and its expected 2,660-input dimension
+                (32 bars x 83 ordered features + 4 agent state) is
+                derived and refused on drift. A contract that declares
+                no observation contract, or a drifted one, refuses
+                BEFORE any GPU use.
+  genesis       every cell starts from the per-seed ZERO-UPDATE
+                2,660-input genesis artifact (typed
+                ``zero_update_genesis``, produced by
+                tools/p1lr_genesis_artifacts.py): container sha AND
+                policy-tensor sha are contract-pinned and re-proven
+                before materialization; a 2,724-input legacy anchor
+                refuses before model construction; all four cells of a
+                seed begin from ONE identical policy tensor and
+                different seeds are pinned DISTINCT.
+  gates         every v2 cell record carries typed actor-liveness
+                facts, action-variation facts and selected-vs-genesis
+                facts (``selected_equals_genesis`` typed — a selection
+                that IS the genesis did not learn). Hard non-promotable
+                causes are ONLY: unmeasured actor, zero live units,
+                constant selected behaviour, selected==genesis. The
+                live-unit fraction is RECORDED, never gated: no
+                invented minimum (such as 256/256) may gate promotion
+                (order 2026-08-15 §7).
+  identity      new experiment identity payload (genesis + observation
+                facts instead of anchors), new output/replica roots —
+                v2 never collides with a v1 identity or output tree.
 """
 from __future__ import annotations
 
@@ -160,13 +197,19 @@ from tools.l1_fleet_launcher import (  # noqa: E402
 
 CONTRACT_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                  "p1_difficulty_lr_factorial_v1.json")
+CONTRACT_PATH_V2 = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+                    "p1_difficulty_lr_factorial_v2.json")
 DECISION_EXECUTION_PROFILE_PATH = (
     REPO / "examples/config/phase_3_eth_sac_dynamics/"
     "p1lr_decision_execution_profile_v1.json")
 CONTRACT_SCHEMA = "agent_multi.p1_difficulty_lr_factorial.v1"
+CONTRACT_SCHEMA_V2 = "agent_multi.p1_difficulty_lr_factorial.v2"
+CONTRACT_SCHEMAS = (CONTRACT_SCHEMA, CONTRACT_SCHEMA_V2)
 DECISION_EXECUTION_PROFILE_SCHEMA = \
     "agent_multi.p1lr_decision_execution_profile.v1"
 RECORD_SCHEMA = "agent_multi.p1_difficulty_lr_cell_record.v1"
+RECORD_SCHEMA_V2 = "agent_multi.p1_difficulty_lr_cell_record.v2"
+RECORD_SCHEMAS = (RECORD_SCHEMA, RECORD_SCHEMA_V2)
 VERDICT_SCHEMA = "agent_multi.p1_difficulty_lr_screen_verdict.v1"
 DECISION_VERDICT_SCHEMA = \
     "agent_multi.p1_difficulty_lr_decision_verdict.v1"
@@ -249,6 +292,43 @@ ACTIVITY_CLASSIFICATIONS = ("FULL_ACTIVITY", "PARTIAL_ACTIVITY_SURVIVAL",
 # DIAGNOSTIC TRUTH ONLY — relabeling it best_checkpoint is refused.
 OUTER_ARTIFACT_ROLES = ("best_checkpoint", "terminal")
 TERMINAL_LOAD_PROOF_SCHEMA = "agent_multi.p1lr_terminal_load_proof.v1"
+
+# ---------------------------------------------------------------------------
+# v2 corrected-observation constants (AUD-P1LR-20260815-235, order §6/§7)
+# ---------------------------------------------------------------------------
+
+#: The accepted corrected observation dimension: 32 bars x 83 ordered
+#: rolling-z-scored features + 4 agent-state dims. The superseded raw
+#: price-window observation was 2,724 = 2,660 + 32 raw closes + 32 raw
+#: diffs; those 64 unnormalized dims killed the actor's first layer.
+EXPECTED_OBSERVATION_DIM_V2 = 2660
+
+#: The ONLY initialization a v2 cell may start from. NEVER a trained
+#: champion, NEVER a handoff, NEVER a 2,724-input legacy anchor.
+GENESIS_ARTIFACT_TYPE = "zero_update_genesis"
+
+#: Typed non-promotable causes for a v2 selected policy (order §7).
+#: These are the ONLY hard failures besides wrong dimensions and
+#: missing provenance; the live-unit FRACTION is recorded, never gated.
+NON_PROMOTABLE_ACTOR_UNMEASURED = "ACTOR_UNMEASURED"
+NON_PROMOTABLE_ZERO_LIVE_UNITS = "ZERO_LIVE_UNITS"
+NON_PROMOTABLE_CONSTANT_POLICY = "CONSTANT_SELECTED_POLICY"
+NON_PROMOTABLE_EQUALS_GENESIS = "SELECTED_EQUALS_GENESIS"
+NON_PROMOTABLE_CAUSES = (
+    NON_PROMOTABLE_ACTOR_UNMEASURED, NON_PROMOTABLE_ZERO_LIVE_UNITS,
+    NON_PROMOTABLE_CONSTANT_POLICY, NON_PROMOTABLE_EQUALS_GENESIS)
+
+#: Mirrored from pipeline_plugins._actor_liveness.CLASSIFICATIONS so
+#: the aggregator never imports the measurement module's numpy path; a
+#: cross-check test holds the two enums together.
+ACTOR_LIVENESS_CLASSIFICATIONS = (
+    "ACTOR_ALIVE", "ACTOR_FIRST_LAYER_DEGRADED",
+    "ACTOR_FIRST_LAYER_DEAD", "ACTOR_CONSTANT_POLICY",
+    "ACTOR_UNMEASURED")
+
+LIVENESS_BINDING_SCHEMA = "agent_multi.p1lr_actor_liveness_binding.v1"
+SELECTED_VS_GENESIS_SCHEMA = "agent_multi.p1lr_selected_vs_genesis.v1"
+SELECTED_POLICY_GATES_SCHEMA = "agent_multi.p1lr_selected_policy_gates.v1"
 # Stable trace tags per nested evaluation role (the outer default keeps
 # the historical "outer" tag so P1LR traces stay byte-comparable).
 _ROLE_TAG = {"outer_validation": "outer",
@@ -277,6 +357,7 @@ EXIT_CLASS = {
     "REFUSED_GPU_UNBOUND": 4,
     "REFUSED_BAD_CONTRACT": 4,
     "REFUSED_ANCHOR_UNVERIFIED": 4,
+    "REFUSED_GENESIS_UNVERIFIED": 4,
     "REFUSED_DECISION_UNGATED": 4,
     "SCREEN_REFUSED": 4,
     "DECISION_REFUSED": 4,
@@ -294,12 +375,158 @@ def _sha_file(path: Path) -> str:
 # contract loading — typed refusals BEFORE any model construction
 # ---------------------------------------------------------------------------
 
+def contract_version(contract: dict) -> int:
+    """1 for the sealed v1 factorial (replayable, read-only), 2 for
+    the corrected-observation genesis factorial (finding 235)."""
+    schema = contract.get("schema")
+    if schema == CONTRACT_SCHEMA:
+        return 1
+    if schema == CONTRACT_SCHEMA_V2:
+        return 2
+    raise ValueError(
+        f"unknown p1-difficulty-LR contract schema {schema!r}")
+
+
+def record_schema_for(contract: dict) -> str:
+    return (RECORD_SCHEMA_V2 if contract_version(contract) == 2
+            else RECORD_SCHEMA)
+
+
+def observation_contract_sha256(contract: dict) -> str:
+    """Canonical content digest of the contract's observation block."""
+    block = contract.get("observation_contract")
+    if not isinstance(block, dict) or not block:
+        raise ValueError(
+            "UNDECLARED_OBSERVATION_CONTRACT: the contract declares no "
+            "observation_contract block — a v2 run may never build an "
+            "observation it did not declare (finding 235)")
+    return hashlib.sha256(json.dumps(
+        block, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def _validate_v2_observation_binding(contract: dict) -> None:
+    """Fail-closed v2 observation declaration (finding 235; test 1 of
+    order §7): a missing or drifted declaration refuses at LOAD time —
+    before any GPU, model, env or dataset work."""
+    block = contract.get("observation_contract")
+    if not isinstance(block, dict) or not block:
+        raise ValueError(
+            "UNDECLARED_OBSERVATION_CONTRACT: v2 contract declares no "
+            "observation_contract — refusing before any GPU use "
+            "(finding 235)")
+    if block.get("require_feature_aware_preprocessor") is not True:
+        raise ValueError(
+            "v2 observation_contract must declare "
+            "require_feature_aware_preprocessor=true — the corrected "
+            "contract is fail-closed, not opt-in (finding 235)")
+    if block.get("include_price_window") is not False:
+        raise ValueError(
+            "v2 observation_contract must declare "
+            "include_price_window=false — the 64 unnormalized raw-price "
+            "dims are exactly what killed the actor's first layer "
+            "(finding 235)")
+    if str(block.get("preprocessor_plugin")) != \
+            "feature_window_preprocessor":
+        raise ValueError(
+            "v2 observation_contract must pin "
+            "preprocessor_plugin='feature_window_preprocessor'")
+    if str(block.get("feature_scaling")) not in (
+            "rolling_zscore", "expanding_zscore"):
+        raise ValueError(
+            "v2 observation_contract must pin causal z-score scaling")
+    if block.get("include_agent_state") is not True:
+        raise ValueError(
+            "v2 observation_contract must declare "
+            "include_agent_state=true (the 4 agent-state dims are part "
+            "of the accepted 2,660-input contract)")
+    window = block.get("window_size")
+    if not isinstance(window, int) or window < 1:
+        raise ValueError("v2 observation_contract.window_size must be "
+                         "a positive integer")
+    pinned_columns = block.get("feature_columns_sha256")
+    if not isinstance(pinned_columns, str) or len(pinned_columns) != 64:
+        raise ValueError(
+            "v2 observation_contract must pin feature_columns_sha256 "
+            "(64-hex digest of the ORDERED 83-feature list) — an "
+            "unpinned feature order is a drifted observation contract")
+    expected = contract.get("expected_observation") or {}
+    for key in ("window_size", "feature_count", "agent_state_dims",
+                "expected_dimension"):
+        if not isinstance(expected.get(key), int):
+            raise ValueError(
+                f"v2 expected_observation.{key} must be an integer — "
+                "the expected dimension is a contract fact, not prose")
+    if int(expected["window_size"]) != int(window):
+        raise ValueError(
+            "expected_observation.window_size does not equal the "
+            "observation_contract window_size — drifted declaration")
+    if int(expected["agent_state_dims"]) != 4:
+        raise ValueError("expected_observation.agent_state_dims must "
+                         "be the 4 accepted agent-state dims")
+    derived = (int(expected["window_size"])
+               * int(expected["feature_count"])
+               + int(expected["agent_state_dims"]))
+    if derived != int(expected["expected_dimension"]):
+        raise ValueError(
+            f"expected_observation is internally inconsistent: "
+            f"{expected['window_size']}*{expected['feature_count']}+"
+            f"{expected['agent_state_dims']} = {derived} != declared "
+            f"{expected['expected_dimension']}")
+    if int(expected["expected_dimension"]) != EXPECTED_OBSERVATION_DIM_V2:
+        raise ValueError(
+            f"expected_observation.expected_dimension "
+            f"{expected['expected_dimension']} is not the accepted "
+            f"corrected dimension {EXPECTED_OBSERVATION_DIM_V2} "
+            "(32*83+4; finding 235) — drifted observation declaration")
+
+
+def _validate_v2_genesis_binding(contract: dict) -> None:
+    """Fail-closed v2 genesis pins (order §3): per-seed persisted
+    zero-update artifacts with BOTH container and policy-tensor shas;
+    seeds pinned pairwise DISTINCT; no legacy anchors block."""
+    if contract.get("anchors"):
+        raise ValueError(
+            "v2 contract carries an 'anchors' block — the 2,724-input "
+            "legacy anchors are diagnostic evidence only and can never "
+            "initialize a corrected 2,660-input cell (order §3); v2 "
+            "binds per-seed zero_update_genesis artifacts instead")
+    genesis = contract.get("genesis") or {}
+    if genesis.get("artifact_type") != GENESIS_ARTIFACT_TYPE:
+        raise ValueError(
+            f"v2 genesis.artifact_type must be "
+            f"{GENESIS_ARTIFACT_TYPE!r} — the artifact is never a "
+            "trained champion or handoff (order §3)")
+    seeds_block = genesis.get("seeds") or {}
+    tensor_shas: dict = {}
+    container_shas: dict = {}
+    for seed in SEEDS:
+        entry = seeds_block.get(str(seed)) or {}
+        if not entry.get("path") or not isinstance(entry["path"], str):
+            raise ValueError(
+                f"genesis.seeds.{seed}.path missing — independent "
+                "model construction without a persisted tensor "
+                "identity is insufficient (order §3)")
+        for key in ("container_sha256", "policy_tensor_sha256"):
+            value = entry.get(key)
+            if not isinstance(value, str) or len(value) != 64:
+                raise ValueError(
+                    f"genesis.seeds.{seed}.{key} is not a sha256 hex "
+                    "digest — the genesis must be hash-bound")
+        tensor_shas[seed] = entry["policy_tensor_sha256"]
+        container_shas[seed] = entry["container_sha256"]
+    if len(set(tensor_shas.values())) != len(SEEDS):
+        raise ValueError(
+            f"genesis policy tensors are not pairwise distinct across "
+            f"seeds ({tensor_shas}) — different seeds must have "
+            "DISTINCT genesis tensors (order §3)")
+    if len(set(container_shas.values())) != len(SEEDS):
+        raise ValueError(
+            "genesis containers are not pairwise distinct across seeds")
+
+
 def load_contract(path: Path = CONTRACT_PATH) -> dict:
     contract = json.loads(Path(path).read_text())
-    if contract.get("schema") != CONTRACT_SCHEMA:
-        raise ValueError(
-            f"unknown p1-difficulty-LR contract schema "
-            f"{contract.get('schema')!r}")
+    version = contract_version(contract)
 
     factors = contract.get("factors") or {}
     if tuple(factors.get("phase1_dynamics") or ()) != DYNAMICS_LEVELS:
@@ -334,18 +561,26 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
 
     if [int(s) for s in contract.get("seeds") or []] != list(SEEDS):
         raise ValueError(f"seeds must be exactly {list(SEEDS)}")
-    anchors = contract.get("anchors") or {}
+    if version == 2:
+        # Finding 235: fail-closed observation + genesis declarations,
+        # refused at load — before any GPU, env or model work.
+        _validate_v2_observation_binding(contract)
+        _validate_v2_genesis_binding(contract)
+    else:
+        anchors = contract.get("anchors") or {}
+        for seed in SEEDS:
+            anchor = anchors.get(str(seed)) or {}
+            if not anchor.get("path") or not isinstance(
+                    anchor.get("path"), str):
+                raise ValueError(f"anchors.{seed}.path missing — an "
+                                 "unpinned anchor cannot anchor a "
+                                 "screen")
+            sha = anchor.get("sha256")
+            if not isinstance(sha, str) or len(sha) != 64:
+                raise ValueError(
+                    f"anchors.{seed}.sha256 is not a sha256 hex digest")
     assignments = contract.get("assignments") or {}
     for seed in SEEDS:
-        anchor = anchors.get(str(seed)) or {}
-        if not anchor.get("path") or not isinstance(
-                anchor.get("path"), str):
-            raise ValueError(f"anchors.{seed}.path missing — an "
-                             "unpinned anchor cannot anchor a screen")
-        sha = anchor.get("sha256")
-        if not isinstance(sha, str) or len(sha) != 64:
-            raise ValueError(
-                f"anchors.{seed}.sha256 is not a sha256 hex digest")
         assignment = assignments.get(str(seed)) or {}
         if not assignment.get("hostname") or not assignment.get(
                 "gpu_uuid"):
@@ -766,15 +1001,47 @@ def materialize_nested_roles(contract: dict, bindings: dict,
 # identities
 # ---------------------------------------------------------------------------
 
+def initialization_binding(contract: dict, seed: int) -> dict:
+    """The typed per-seed initialization a cell starts from.
+
+    v1: the sealed hash-bound anchor (replay only — those artifacts
+    carry a learned 2,724-input first layer and are diagnostic
+    evidence for any NEW run). v2: the persisted zero-update
+    2,660-input genesis artifact, bound by BOTH container and
+    policy-tensor sha (order §3)."""
+    if contract_version(contract) == 2:
+        entry = contract["genesis"]["seeds"][str(seed)]
+        return {
+            "kind": GENESIS_ARTIFACT_TYPE,
+            "path": entry["path"],
+            "container_sha256": entry["container_sha256"],
+            "policy_tensor_sha256": entry["policy_tensor_sha256"],
+        }
+    anchor = contract["anchors"][str(seed)]
+    return {
+        "kind": "anchor",
+        "path": anchor["path"],
+        "container_sha256": anchor["sha256"],
+        "policy_tensor_sha256": None,
+    }
+
+
 def experiment_identity(contract: dict, bindings: dict,
                         sources: dict | None = None,
                         mode: str = "screen") -> str:
     """sha256(p1lr contract sha + held-fixed ladder-contract sha +
     nested split contract sha + paired selection metric + the four
-    per-seed anchor shas + code identities + the mode profile)[:16] —
-    ONE identity per mode, derived from the CORRECTED executable facts
-    (finding 224); reuses no L1 decision, ladder or pre-correction
-    identity, and the decision profile never collides with the screen.
+    per-seed initialization shas + code identities + the mode
+    profile)[:16] — ONE identity per mode, derived from the CORRECTED
+    executable facts (finding 224); reuses no L1 decision, ladder or
+    pre-correction identity, and the decision profile never collides
+    with the screen.
+
+    The v1 payload is BYTE-FROZEN (v1 stays replayable). The v2
+    payload replaces the anchor shas with the genesis container +
+    policy-tensor shas and folds in the observation-contract digest
+    and expected dimension, so a v2 identity can never collide with a
+    v1 identity or with a run under a different observation contract.
     """
     if mode not in MODES:
         raise ValueError(f"unknown execution mode {mode!r}")
@@ -785,14 +1052,28 @@ def experiment_identity(contract: dict, bindings: dict,
         "nested_split_contract_sha256":
             contract["nested_split_contract"]["sha256"],
         "selection_metric": NESTED_SELECTION_METRIC,
-        "anchors": {str(seed): contract["anchors"][str(seed)]["sha256"]
-                    for seed in SEEDS},
         "code": {name: {"commit": s["commit"],
                         "dirty_untracked_digest":
                             s["dirty_untracked_digest"]}
                  for name, s in sorted(sources.items())},
         "profile": MODE_PROFILES[mode],
     }
+    if contract_version(contract) == 2:
+        payload["genesis"] = {
+            str(seed): {
+                "container_sha256": contract["genesis"]["seeds"][
+                    str(seed)]["container_sha256"],
+                "policy_tensor_sha256": contract["genesis"]["seeds"][
+                    str(seed)]["policy_tensor_sha256"],
+            } for seed in SEEDS}
+        payload["observation_contract_sha256"] = \
+            observation_contract_sha256(contract)
+        payload["expected_observation_dimension"] = int(
+            contract["expected_observation"]["expected_dimension"])
+    else:
+        payload["anchors"] = {
+            str(seed): contract["anchors"][str(seed)]["sha256"]
+            for seed in SEEDS}
     if mode == "decision":
         execution_profile = load_decision_execution_profile()
         payload["decision_execution_profile_sha256"] = \
@@ -815,8 +1096,14 @@ def cell_identity(exp_id: str, seed: int, cell: str,
         "seed": int(seed),
         "cell": cell,
         "factors": dict(contract["cells"][cell]),
-        "anchor_sha256": contract["anchors"][str(seed)]["sha256"],
     }
+    if contract_version(contract) == 2:
+        payload["genesis_policy_tensor_sha256"] = \
+            contract["genesis"]["seeds"][str(seed)][
+                "policy_tensor_sha256"]
+    else:
+        payload["anchor_sha256"] = contract["anchors"][str(seed)][
+            "sha256"]
     return hashlib.sha256(json.dumps(
         payload, sort_keys=True, default=str).encode()).hexdigest()[:16]
 
@@ -1045,23 +1332,82 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
             "entropy identity must come from the base config, not a "
             "silent override")
 
-    # Per-seed anchor: hash-bound, NEVER a preceding cell's terminal
-    # and NEVER a screen terminal (finding 226) — an anchor living
-    # under either mode's output root is structurally refused.
-    anchor = contract["anchors"][str(seed)]
-    anchor_path = Path(anchor["path"]).expanduser()
+    # Finding 235 (v2): bind the experiment's observation contract
+    # onto the cell config BEFORE any env or model exists, and refuse
+    # a drifted feature set or dimension here — no GPU time is ever
+    # spent building an observation the contract did not declare.
+    observation_identity = None
+    if contract_version(contract) == 2:
+        from pipeline_plugins._observation_contract import (
+            apply_observation_contract, feature_columns_sha256,
+            validate_observation_contract)
+        config["observation_contract"] = dict(
+            contract["observation_contract"])
+        actual_columns_sha = feature_columns_sha256(
+            config.get("feature_columns"))
+        pinned_columns_sha = contract["observation_contract"][
+            "feature_columns_sha256"]
+        if actual_columns_sha != pinned_columns_sha:
+            raise RuntimeError(
+                "OBSERVATION_CONTRACT_DRIFT: the base config's ordered "
+                f"feature_columns hash to {actual_columns_sha[:16]}… "
+                f"but the v2 contract pins {pinned_columns_sha[:16]}… "
+                "— the ordered feature contract moved; refusing before "
+                "model construction (finding 235)")
+        expected = contract["expected_observation"]
+        n_features = len(config.get("feature_columns") or [])
+        if n_features != int(expected["feature_count"]):
+            raise RuntimeError(
+                f"OBSERVATION_CONTRACT_DRIFT: base config carries "
+                f"{n_features} feature columns but the contract "
+                f"expects {expected['feature_count']} (finding 235)")
+        derived_dim = (int(contract["observation_contract"][
+            "window_size"]) * n_features + 4)
+        if derived_dim != int(expected["expected_dimension"]):
+            raise RuntimeError(
+                f"OBSERVATION_CONTRACT_DRIFT: derived observation "
+                f"dimension {derived_dim} != contract expectation "
+                f"{expected['expected_dimension']} — wrong dimensions "
+                "are a hard failure (finding 235)")
+        # Prove the declaration VALIDATES on the resolved config (the
+        # same fail-closed validator the pipeline runs) — on a scratch
+        # copy so the runtime config's provenance stays the pipeline's.
+        bound, application = apply_observation_contract(dict(config))
+        validation = validate_observation_contract(bound)
+        if validation.get("outcome") != \
+                "FEATURE_AWARE_OBSERVATION_CONTRACT":
+            raise RuntimeError(
+                f"v2 observation contract validated to "
+                f"{validation.get('outcome')!r} — only the feature-"
+                "aware outcome may train (finding 235)")
+        observation_identity = {
+            "observation_contract_sha256":
+                observation_contract_sha256(contract),
+            "expected_observation": dict(expected),
+            "derived_observation_dimension": derived_dim,
+            "feature_columns_sha256": actual_columns_sha,
+            "validation": validation,
+            "application_source": application.get("source"),
+        }
+
+    # Per-seed initialization: hash-bound, NEVER a preceding cell's
+    # terminal and NEVER a screen terminal (finding 226) — an artifact
+    # living under either mode's output root is structurally refused.
+    # v1: the sealed anchor. v2: the zero-update genesis (order §3).
+    init = initialization_binding(contract, seed)
+    init_path = Path(init["path"]).expanduser()
     for other_mode in MODES:
         mode_root = output_root_for_mode(contract, other_mode)
         try:
-            anchor_path.resolve().relative_to(mode_root.resolve())
+            init_path.resolve().relative_to(mode_root.resolve())
         except ValueError:
             continue
         raise RuntimeError(
-            f"anchor for seed {seed} lives under the {other_mode} "
-            "output root — a run terminal can never anchor a cell "
-            "(finding 226)")
-    config["warm_start_model"] = str(anchor_path)
-    config["warm_start_model_sha256"] = anchor["sha256"]
+            f"{init['kind']} for seed {seed} lives under the "
+            f"{other_mode} output root — a run terminal can never "
+            "anchor a cell (finding 226)")
+    config["warm_start_model"] = str(init_path)
+    config["warm_start_model_sha256"] = init["container_sha256"]
 
     # Structural unreachability of the legacy branch (finding 224):
     # the executable config MUST carry the nested contract and the
@@ -1104,7 +1450,6 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         "nested_nontest_union": union_facts,
         "l1_system_manifest_sha256": bindings["l1_reference"][
             "system_manifest_sha256"],
-        "anchor_sha256": anchor["sha256"],
         "seed": int(seed),
         "cell": cell,
         "factors": dict(factors),
@@ -1120,6 +1465,13 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         },
         "plugins": dict(common["plugins"]),
     }
+    if contract_version(contract) == 2:
+        # v2 identity facts: the typed zero-update genesis binding and
+        # the validated observation identity replace the v1 anchor sha.
+        config["_identity"]["initialization"] = dict(init)
+        config["_identity"]["observation"] = observation_identity
+    else:
+        config["_identity"]["anchor_sha256"] = init["container_sha256"]
     if decision_execution_profile is not None:
         config["_identity"]["decision_execution_profile_sha256"] = \
             decision_execution_profile["_profile_sha256"]
@@ -1140,13 +1492,24 @@ def record_is_complete(record_path: Path, expected_cell_id: str) -> bool:
         record = json.loads(record_path.read_text())
     except Exception:
         return False
-    if record.get("schema") != RECORD_SCHEMA:
+    if record.get("schema") not in RECORD_SCHEMAS:
         return False
     if record.get("cell_identity") != expected_cell_id:
         return False
     for key in ("terminal_model_path", "terminal_model_sha256"):
         if not record.get(key):
             return False
+    if record.get("schema") == RECORD_SCHEMA_V2:
+        # A v2 record stripped of its corrected-observation evidence —
+        # liveness binding, selected-vs-genesis facts, gates, genesis
+        # custody — is NOT complete: the caller refuses rather than
+        # silently reusing an evidence-free record (finding 235).
+        for key in ("actor_liveness_binding", "selected_vs_genesis",
+                    "selected_policy_gates", "genesis_container_sha256",
+                    "genesis_policy_tensor_sha256",
+                    "observation_contract_sha256"):
+            if not record.get(key):
+                return False
     # Finding 232: an INACTIVE record is reusable on restart exactly
     # like an active one — same terminal custody, plus the typed
     # non-promotable invariants. A record that lost them is not
@@ -1319,6 +1682,171 @@ def terminal_load_proof(terminal_path, terminal_sha: str,
     }
 
 
+# ---------------------------------------------------------------------------
+# v2 evidence: actor liveness, action variation, selected-vs-genesis
+# (AUD-P1LR-20260815-235; order 2026-08-15 §7)
+# ---------------------------------------------------------------------------
+
+_LIVENESS_ROW_KEYS = (
+    "epoch", "phase", "classification", "live_unit_count",
+    "first_layer_units", "live_unit_fraction", "varying_unit_count",
+    "preactivation_mean", "action_raw_std", "constant_policy")
+
+
+def bind_actor_liveness(result: dict) -> dict:
+    """Bind the pipeline's typed per-checkpoint actor-liveness facts.
+
+    MISSING evidence is NOT a refusal here: an unmeasured actor is a
+    MEASURED non-promotable outcome (order §7 — 'zero live units,
+    missing liveness evidence or an unmeasured actor is
+    non-promotable'), so the record still lands and the gate types the
+    cause. A row that exists but carries an UNTYPED classification is a
+    harness failure and IS refused — silence is never a measurement.
+
+    The live-unit FRACTION is recorded verbatim and never compared
+    against an invented minimum: the hard failures are only unmeasured
+    actor, zero live units and constant selected behaviour.
+    """
+    history = result.get("actor_liveness_history")
+    if not isinstance(history, list) or not history:
+        return {
+            "schema": LIVENESS_BINDING_SCHEMA,
+            "measured": False,
+            "history": [],
+            "terminal": None,
+            "reason": ("the pipeline result carries no "
+                       "actor_liveness_history — the selected actor is "
+                       "UNMEASURED and therefore non-promotable "
+                       "(finding 235)"),
+            "live_unit_fraction_note": (
+                "recorded fact only — never a promotion gate "
+                "(order 2026-08-15 §7)"),
+        }
+    compact = []
+    for row in history:
+        if not isinstance(row, dict) or row.get("classification") \
+                not in ACTOR_LIVENESS_CLASSIFICATIONS:
+            raise RuntimeError(
+                f"actor liveness row {row!r} carries no typed "
+                "classification — untyped liveness evidence is a "
+                "harness failure, not a measurement; record refused "
+                "(finding 235)")
+        compact.append({key: row.get(key)
+                        for key in _LIVENESS_ROW_KEYS})
+    return {
+        "schema": LIVENESS_BINDING_SCHEMA,
+        "measured": True,
+        "history": compact,
+        # The terminal row types the actor's END state — the gate
+        # basis for the one-pass screen where the trained epoch IS the
+        # terminal epoch; the full history stays bound for the
+        # decision run's per-checkpoint picture.
+        "terminal": compact[-1],
+        "reason": (f"{len(compact)} typed liveness checkpoints bound "
+                   "from the pipeline result"),
+        "live_unit_fraction_note": (
+            "recorded fact only — never a promotion gate "
+            "(order 2026-08-15 §7)"),
+    }
+
+
+def bind_selected_vs_genesis(*, init_facts: dict, selected_path,
+                             selected_role: str,
+                             selected_tensor_sha: str) -> dict:
+    """Order §7 test 10: the SELECTED policy tensor must DIFFER from
+    the zero-update genesis tensor — a selection that IS the genesis
+    did not learn. Identity is the POLICY TENSOR digest (container
+    digests differ on every save and prove nothing).
+    ``selected_equals_genesis`` is a typed boolean, never text."""
+    genesis_sha = init_facts.get("policy_tensor_sha256")
+    if not genesis_sha or not isinstance(genesis_sha, str):
+        raise RuntimeError(
+            "genesis policy tensor sha unavailable — without it the "
+            "selected-vs-genesis gate cannot fire, and a gate that "
+            "cannot fire is worse than no gate; record refused "
+            "(order §3: the genesis must be persisted and hash-bound)")
+    if not selected_tensor_sha or not isinstance(
+            selected_tensor_sha, str):
+        raise RuntimeError(
+            "selected policy produced no tensor digest — the "
+            "selected-vs-genesis fact is unmet; record refused")
+    equal = str(selected_tensor_sha) == str(genesis_sha)
+    return {
+        "schema": SELECTED_VS_GENESIS_SCHEMA,
+        "genesis_policy_tensor_sha256": str(genesis_sha),
+        "selected_policy_tensor_sha256": str(selected_tensor_sha),
+        "selected_artifact_role": str(selected_role),
+        "selected_model_path": str(selected_path),
+        "selected_equals_genesis": bool(equal),
+        "identity": "policy_tensor_sha256",
+        "reason": (
+            "the selected policy tensor is BIT-IDENTICAL to the "
+            "zero-update genesis: this cell did not learn — any score "
+            "computed from it measures the genesis initialization, "
+            "not the treatment (order §7)" if equal else
+            "the selected policy tensor differs from the zero-update "
+            "genesis: training moved the weights that were scored"),
+    }
+
+
+def selected_policy_gates(liveness: dict, selected_vs_genesis: dict,
+                          activity_status: str) -> dict:
+    """The v2 promotability gates (order §7, verbatim boundaries).
+
+    HARD non-promotable causes — and ONLY these:
+      * ACTOR_UNMEASURED       no liveness evidence / unmeasured actor;
+      * ZERO_LIVE_UNITS        zero live first-layer units;
+      * CONSTANT_SELECTED_POLICY  constant selected behaviour, even if
+                                  a scalar metric looks favorable;
+      * SELECTED_EQUALS_GENESIS   the selection IS the genesis tensor.
+
+    The live-unit fraction is RECORDED (``live_unit_count`` /
+    ``live_unit_fraction``) but NO minimum such as 256/256 is imposed
+    as a performance gate.
+    """
+    causes: list = []
+    terminal = (liveness or {}).get("terminal")
+    measured = bool((liveness or {}).get("measured")) and \
+        isinstance(terminal, dict)
+    if not measured or terminal.get("classification") == \
+            "ACTOR_UNMEASURED":
+        causes.append(NON_PROMOTABLE_ACTOR_UNMEASURED)
+        terminal = terminal if isinstance(terminal, dict) else {}
+    else:
+        live_count = terminal.get("live_unit_count")
+        if terminal.get("classification") == \
+                "ACTOR_FIRST_LAYER_DEAD" or (
+                live_count is not None and int(live_count) == 0):
+            causes.append(NON_PROMOTABLE_ZERO_LIVE_UNITS)
+        if terminal.get("constant_policy") is True or \
+                terminal.get("classification") == \
+                "ACTOR_CONSTANT_POLICY":
+            causes.append(NON_PROMOTABLE_CONSTANT_POLICY)
+    if selected_vs_genesis.get("selected_equals_genesis") is True:
+        causes.append(NON_PROMOTABLE_EQUALS_GENESIS)
+    return {
+        "schema": SELECTED_POLICY_GATES_SCHEMA,
+        "gate_basis": "terminal_checkpoint_liveness"
+                      "+selected_policy_tensor_identity",
+        "activity_status": str(activity_status),
+        "live_unit_count": terminal.get("live_unit_count"),
+        "first_layer_units": terminal.get("first_layer_units"),
+        "live_unit_fraction": terminal.get("live_unit_fraction"),
+        "live_unit_fraction_is_gate": False,
+        "live_unit_fraction_note": (
+            "recorded, never gated: no invented minimum (e.g. 256/256) "
+            "may gate promotion — hard failures are only unmeasured "
+            "actor, zero live units, constant selected behaviour, "
+            "wrong dimensions, missing provenance (order §7)"),
+        "action_raw_std": terminal.get("action_raw_std"),
+        "constant_policy": terminal.get("constant_policy"),
+        "selected_equals_genesis": selected_vs_genesis.get(
+            "selected_equals_genesis"),
+        "non_promotable_causes": causes,
+        "promotable": not causes,
+    }
+
+
 def _walk_json(payload, path: str = ""):
     """Yield (dotted_key_path, key, value) for every mapping entry."""
     if isinstance(payload, dict):
@@ -1423,17 +1951,64 @@ RECORD_CUSTODY_KEYS = (
     "terminal_policy_tensor_sha256",
 )
 
+# v2 (finding 235): the anchor sha is replaced by the genesis custody
+# pair, and the observation-contract digest plus the three typed
+# evidence blocks are MANDATORY provenance — a record without them is
+# refused, never certified ("missing provenance" is a hard failure).
+RECORD_CUSTODY_KEYS_V2 = (
+    "experiment_identity", "cell_identity", "contract_sha256",
+    "nested_split_contract_sha256",
+    "genesis_container_sha256", "genesis_policy_tensor_sha256",
+    "observation_contract_sha256",
+    "terminal_model_path", "terminal_model_sha256",
+    "terminal_policy_tensor_sha256",
+    "actor_liveness_binding", "selected_vs_genesis",
+    "selected_policy_gates",
+)
+
 
 def assert_cell_record_custody(record: dict) -> None:
     """Refuse to publish a cell record — active OR inactive — that is
     missing any custody field, mistypes its activity status, or lets an
-    inactive cell carry promotion/best-checkpoint identity."""
-    missing = [key for key in RECORD_CUSTODY_KEYS if not record.get(key)]
+    inactive cell carry promotion/best-checkpoint identity. A v2
+    record additionally binds genesis custody, the observation digest
+    and the typed liveness / selected-vs-genesis / gate evidence."""
+    is_v2 = record.get("schema") == RECORD_SCHEMA_V2
+    custody_keys = RECORD_CUSTODY_KEYS_V2 if is_v2 \
+        else RECORD_CUSTODY_KEYS
+    missing = [key for key in custody_keys if not record.get(key)]
     if missing:
         raise RuntimeError(
             f"cell record is missing custody fields {missing} — an "
             "inactive cell has the SAME custody strength as an active "
             "one; record refused (finding 223/232)")
+    if is_v2:
+        gates = record.get("selected_policy_gates") or {}
+        causes = gates.get("non_promotable_causes")
+        if not isinstance(causes, list) or any(
+                cause not in NON_PROMOTABLE_CAUSES
+                for cause in causes):
+            raise RuntimeError(
+                f"v2 record carries untyped non_promotable_causes "
+                f"{causes!r} — the hard-failure causes are exactly "
+                f"{list(NON_PROMOTABLE_CAUSES)} (order §7)")
+        svg = record.get("selected_vs_genesis") or {}
+        if not isinstance(svg.get("selected_equals_genesis"), bool):
+            raise RuntimeError(
+                "v2 record's selected_equals_genesis is not a typed "
+                "boolean — the selected-vs-genesis fact is mandatory "
+                "provenance (order §7); record refused")
+        if bool(gates.get("promotable")) != (not causes):
+            raise RuntimeError(
+                "v2 gates are self-contradictory: promotable does not "
+                "equal the absence of non-promotable causes")
+        if record.get("promotion_eligible") is True and causes:
+            raise RuntimeError(
+                f"v2 record is promotion_eligible=true while the gates "
+                f"name hard non-promotable causes {causes} — a "
+                "constant/unmeasured/dead/genesis-equal selection is "
+                "NEVER promotable, whatever its scalar metric "
+                "(order §7); record refused")
     proof = record.get("terminal_load_proof") or {}
     if proof.get("loaded") is not True or \
             proof.get("sha256") != record["terminal_model_sha256"] or \
@@ -1470,7 +2045,17 @@ def assert_cell_record_custody(record: dict) -> None:
             terminal_sha=record["terminal_model_sha256"],
             context="cell record")
     else:
-        if record.get("promotion_eligible") is not True:
+        if is_v2:
+            gates = record.get("selected_policy_gates") or {}
+            expected_eligible = bool(gates.get("promotable"))
+            if record.get("promotion_eligible") is not expected_eligible:
+                raise RuntimeError(
+                    "active v2 cell record's promotion_eligible "
+                    f"{record.get('promotion_eligible')!r} does not "
+                    f"equal its gate verdict {expected_eligible!r} — "
+                    "promotability is DERIVED from the typed gates, "
+                    "never asserted around them (order §7)")
+        elif record.get("promotion_eligible") is not True:
             raise RuntimeError(
                 "active cell record is not promotion_eligible=true "
                 "(finding 232)")
@@ -1624,15 +2209,126 @@ def _verify_anchor(contract: dict, seed: int) -> str:
     return actual
 
 
+def policy_observation_dim(path) -> int:
+    """Observation width of a saved SAC policy, read from the artifact
+    WITHOUT constructing a model: the input-column count of
+    ``actor.latent_pi.0.weight`` inside ``policy.pth``. This is how a
+    2,724-input legacy anchor is refused BEFORE model construction
+    (order §7 test 2)."""
+    import io
+    import zipfile
+
+    import torch
+
+    with zipfile.ZipFile(str(path)) as archive:
+        if "policy.pth" not in archive.namelist():
+            raise RuntimeError(
+                f"{path}: no policy.pth member — not a saved SAC "
+                "policy container")
+        payload = archive.read("policy.pth")
+    state = torch.load(io.BytesIO(payload), map_location="cpu",
+                       weights_only=False)
+    if hasattr(state, "state_dict"):
+        state = state.state_dict()
+    weight = state.get("actor.latent_pi.0.weight")
+    if weight is None:
+        raise RuntimeError(
+            f"{path}: policy.pth carries no actor.latent_pi.0.weight "
+            "— the actor's first-layer width cannot be proven")
+    return int(weight.shape[1])
+
+
+def _genesis_tensor_sha(path) -> str:
+    """Policy-tensor digest of a genesis artifact, using EXACTLY the
+    digest family the runner records for terminals
+    (``agent_plugins.sac_agent._policy_tensor_hash``) so
+    ``selected_equals_genesis`` compares like with like. The replay
+    buffer is capped at one transition for the load — a zero-update
+    genesis has nothing in it anyway."""
+    from stable_baselines3 import SAC
+
+    from agent_plugins.sac_agent import _policy_tensor_hash
+
+    model = SAC.load(str(path), device="cpu",
+                     custom_objects={"buffer_size": 1})
+    try:
+        return _policy_tensor_hash(model.policy)
+    finally:
+        del model
+
+
+def _verify_initialization(contract: dict, seed: int, *,
+                           genesis_tensor_sha_fn=None,
+                           observation_dim_fn=None) -> dict:
+    """Custody re-proof of the per-seed initialization, BEFORE any
+    model construction.
+
+    v1: the anchor's container sha (unchanged legacy behaviour).
+    v2 (order §3/§7): the genesis artifact must exist, container-hash
+    to its pin, policy-tensor-hash to its pin, and carry EXACTLY the
+    expected 2,660-input first layer — a 2,724-input legacy anchor
+    (or any other width) refuses right here, typed, before any model
+    or GPU work.
+    """
+    init = initialization_binding(contract, seed)
+    init_path = Path(init["path"]).expanduser()
+    if contract_version(contract) == 1:
+        actual = _verify_anchor(contract, seed)
+        return {**init, "path": str(init_path),
+                "container_sha256": actual,
+                "observation_dim": None}
+    if not init_path.is_file():
+        raise RuntimeError(
+            f"REFUSED_GENESIS_UNVERIFIED: genesis artifact missing "
+            f"for seed {seed}: {init_path} — independent model "
+            "construction without a persisted tensor identity is "
+            "insufficient (order §3)")
+    container = _sha_file(init_path)
+    if container != init["container_sha256"]:
+        raise RuntimeError(
+            f"REFUSED_GENESIS_UNVERIFIED: genesis container for seed "
+            f"{seed} hashes to {container[:16]}… but the contract pins "
+            f"{init['container_sha256'][:16]}… — the distributed "
+            "genesis is not the contract-bound artifact")
+    observed_dim = int((observation_dim_fn or policy_observation_dim)(
+        init_path))
+    expected_dim = int(contract["expected_observation"][
+        "expected_dimension"])
+    if observed_dim != expected_dim:
+        raise RuntimeError(
+            f"REFUSED_GENESIS_UNVERIFIED: seed {seed} initialization "
+            f"artifact carries a {observed_dim}-input first layer but "
+            f"the corrected contract demands {expected_dim} — a "
+            "legacy-observation anchor (e.g. 2,724 inputs) can never "
+            "initialize a corrected cell; refusing before model "
+            "construction (finding 235, order §7 test 2)")
+    tensor_sha = str((genesis_tensor_sha_fn or _genesis_tensor_sha)(
+        init_path))
+    if tensor_sha != init["policy_tensor_sha256"]:
+        raise RuntimeError(
+            f"REFUSED_GENESIS_UNVERIFIED: seed {seed} genesis policy "
+            f"tensors hash to {tensor_sha[:16]}… but the contract pins "
+            f"{init['policy_tensor_sha256'][:16]}… — the tensor "
+            "identity the four cells must share is not the persisted "
+            "one (order §3)")
+    return {**init, "path": str(init_path),
+            "container_sha256": container,
+            "policy_tensor_sha256": tensor_sha,
+            "observation_dim": observed_dim}
+
+
 def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
              exp_id: str, sources_before: dict,
              gpu_dispatch_binding: dict | None,
              gpu_gate: dict | None,
              pipeline_factory=None, agent_loader=None,
              tensor_sha_fn=None, mode: str = "screen",
-             nested_roles_fn=None, outer_eval_fn=None) -> dict:
+             nested_roles_fn=None, outer_eval_fn=None,
+             genesis_tensor_sha_fn=None,
+             observation_dim_fn=None) -> dict:
     if mode not in MODES:
         raise ValueError(f"unknown execution mode {mode!r}")
+    version = contract_version(contract)
     cell_id = cell_identity(exp_id, seed, cell, contract)
     out_root = output_root_for_mode(contract, mode)
     seed_dir = out_root / exp_id / f"seed{seed}"
@@ -1662,10 +2358,17 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                 "cell": cell, "holder": claim.holder()}
     heartbeat.start()
     try:
-        # Anchor custody re-proof directly before materialization: the
-        # cell starts from the exact per-seed anchor, never a
-        # preceding cell's terminal.
-        actual_anchor = _verify_anchor(contract, seed)
+        # Initialization custody re-proof directly before
+        # materialization: the cell starts from the exact per-seed
+        # artifact (v1 anchor / v2 zero-update genesis), never a
+        # preceding cell's terminal. For v2 this also refuses a
+        # wrong-dimension (e.g. 2,724-input) artifact and re-proves
+        # the pinned policy-tensor identity (order §3/§7).
+        init_facts = _verify_initialization(
+            contract, seed,
+            genesis_tensor_sha_fn=genesis_tensor_sha_fn,
+            observation_dim_fn=observation_dim_fn)
+        actual_anchor = init_facts["container_sha256"]
 
         out_dir = _next_attempt_dir(cell_dir, cell_id)
         heartbeat.beat(terminal_state="RUNNING", attempt=str(out_dir),
@@ -1720,6 +2423,41 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
 
         # Finding 221: bind the typed handoff-viability evidence.
         viability = bind_handoff_viability(result)
+
+        # Finding 235 (v2): the three required per-cell fact families —
+        # actor liveness, action variation (constant-policy facts per
+        # checkpoint) and selected-vs-genesis tensor identity — plus
+        # the derived promotability gates. Missing liveness EVIDENCE is
+        # a typed non-promotable outcome, never a silent pass; a
+        # selection that IS the genesis did not learn.
+        liveness_binding = None
+        selected_vs_genesis_facts = None
+        gates = None
+        promotion_eligible = activity["promotion_eligible"]
+        promotion_causes: list = []
+        if version == 2:
+            liveness_binding = bind_actor_liveness(result)
+            if activity_status == "active" and best_path:
+                selected_role = "best_checkpoint"
+                selected_identity_path = best_path
+                selected_tensor = (tensor_sha_fn
+                                   or _terminal_tensor_sha)(best_path)
+            else:
+                selected_role = "terminal"
+                selected_identity_path = terminal_path
+                selected_tensor = terminal_tensor
+            selected_vs_genesis_facts = bind_selected_vs_genesis(
+                init_facts=init_facts,
+                selected_path=selected_identity_path,
+                selected_role=selected_role,
+                selected_tensor_sha=selected_tensor)
+            gates = selected_policy_gates(
+                liveness_binding, selected_vs_genesis_facts,
+                activity_status)
+            promotion_causes = list(gates["non_promotable_causes"])
+            promotion_eligible = bool(
+                activity["promotion_eligible"]) and bool(
+                gates["promotable"])
 
         # Finding 226 (decision mode): immutable best-checkpoint
         # restoration is evidence, then ONE final outer-validation
@@ -1791,7 +2529,7 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
         cell_order = list(contract["cell_order"][str(seed)])
         nested_binding = nested_roles["binding"]
         record = {
-            "schema": RECORD_SCHEMA,
+            "schema": record_schema_for(contract),
             "mode": mode,
             "evidence_class": ("decision_run" if mode == "decision"
                                else "mechanics_screen"),
@@ -1858,15 +2596,15 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                     False)),
             # Finding 232: the typed activity outcome, carried by EVERY
             # record. ``promotion_eligible`` says only that a selected
-            # best checkpoint exists and is hash-bound; live promotion
-            # stays governed by live_promotion_eligible (always false).
+            # best checkpoint exists, is hash-bound AND (v2) passes the
+            # typed selected-policy gates; live promotion stays
+            # governed by live_promotion_eligible (always false).
             "activity_status": activity_status,
             "activity_inactive_cause": activity["inactive_cause"],
             "activity_evidence": activity["evidence"],
-            "promotion_eligible": activity["promotion_eligible"],
+            "promotion_eligible": promotion_eligible,
             "boundary_transfer_evidence": result.get(
                 "warm_start_transfer_evidence"),
-            "anchor_sha256": actual_anchor,
             "best_model_path": best_path,
             "best_model_sha256": best_sha,
             "terminal_model_path": str(Path(terminal_path).resolve()),
@@ -1881,11 +2619,45 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                 "cell_identity": cell_id,
                 "contract_sha256": contract["_contract_sha256"],
                 "nested_split_contract_sha256": nested_binding["sha256"],
-                "anchor_sha256": actual_anchor,
                 "resolved_config_sha256": resolved_sha,
             },
             "curriculum": result.get("curriculum"),
         }
+        if version == 2:
+            record.update({
+                # Order §3: the genesis custody pair — container AND
+                # policy tensor — plus the observation identity and the
+                # three typed fact families (order §6/§7).
+                "genesis_container_sha256":
+                    init_facts["container_sha256"],
+                "genesis_policy_tensor_sha256":
+                    init_facts["policy_tensor_sha256"],
+                "genesis_artifact_type": GENESIS_ARTIFACT_TYPE,
+                "initialization": {
+                    key: init_facts.get(key)
+                    for key in ("kind", "path", "container_sha256",
+                                "policy_tensor_sha256",
+                                "observation_dim")},
+                "observation_contract_sha256":
+                    observation_contract_sha256(contract),
+                "expected_observation": dict(
+                    contract["expected_observation"]),
+                "observation_contract_application": (
+                    result.get("observation_contract")
+                    or result.get("observation_contract_phase1")),
+                "actor_liveness_binding": liveness_binding,
+                "selected_vs_genesis": selected_vs_genesis_facts,
+                "selected_policy_gates": gates,
+                "promotion_ineligibility_causes": promotion_causes,
+            })
+            record["source_identities"][
+                "genesis_policy_tensor_sha256"] = \
+                init_facts["policy_tensor_sha256"]
+            record["source_identities"]["genesis_container_sha256"] = \
+                init_facts["container_sha256"]
+        else:
+            record["anchor_sha256"] = actual_anchor
+            record["source_identities"]["anchor_sha256"] = actual_anchor
         # Finding 223/232: identical custody for active and inactive,
         # and a structural refusal of any best-labeled terminal.
         assert_cell_record_custody(record)
@@ -1940,7 +2712,9 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
              gate_heartbeat: dict | None = None,
              dispatch_binding_fn=None, mode: str = "screen",
              screen_gate: dict | None = None,
-             nested_roles_fn=None, outer_eval_fn=None) -> dict:
+             nested_roles_fn=None, outer_eval_fn=None,
+             genesis_tensor_sha_fn=None,
+             observation_dim_fn=None) -> dict:
     if int(seed) not in SEEDS:
         raise ValueError(f"unknown factorial seed {seed!r}")
     if mode not in MODES:
@@ -2005,13 +2779,20 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
                             or gpu_probe.dispatch_gpu_binding)(
             assignment["gpu_uuid"])
 
-    # Per-seed anchor custody, proven ONCE before any cell spends GPU
-    # time (each cell re-proves before materializing).
+    # Per-seed initialization custody, proven ONCE before any cell
+    # spends GPU time (each cell re-proves before materializing). For
+    # v2 this includes the wrong-dimension refusal: a 2,724-input
+    # legacy anchor never reaches model construction (order §7).
     try:
-        _verify_anchor(contract, seed)
+        _verify_initialization(
+            contract, seed,
+            genesis_tensor_sha_fn=genesis_tensor_sha_fn,
+            observation_dim_fn=observation_dim_fn)
     except RuntimeError as exc:
-        return _seed_refusal({"outcome": "REFUSED_ANCHOR_UNVERIFIED",
-                              "reason": str(exc)})
+        outcome = ("REFUSED_GENESIS_UNVERIFIED"
+                   if contract_version(contract) == 2
+                   else "REFUSED_ANCHOR_UNVERIFIED")
+        return _seed_refusal({"outcome": outcome, "reason": str(exc)})
 
     cells = list(contract["cell_order"][str(seed)])
     outcomes: dict = {}
@@ -2027,7 +2808,9 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
                 agent_loader=agent_loader,
                 tensor_sha_fn=tensor_sha_fn, mode=mode,
                 nested_roles_fn=nested_roles_fn,
-                outer_eval_fn=outer_eval_fn)
+                outer_eval_fn=outer_eval_fn,
+                genesis_tensor_sha_fn=genesis_tensor_sha_fn,
+                observation_dim_fn=observation_dim_fn)
         except Exception as exc:                    # noqa: BLE001
             outcomes[cell] = {"outcome": "CELL_FAILED",
                               "error": f"{type(exc).__name__}: {exc}"}
@@ -2529,20 +3312,25 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
             f"records incomplete: {len(records)}/16 present — the "
             "screen refuses to conclude on a partial factorial")
 
+    version = contract_version(contract)
+    expected_schema = record_schema_for(contract)
     malformed: list = []
     custody_failures: list = []
     viability_failures: list = []
     checkpoint_failures: list = []
     nested_identity_failures: list = []
+    v2_evidence_failures: list = []
     identity_set: set = set()
     contract_sha_mismatch: list = []
     labels: dict = {}
+    gate_promotable: dict = {}
+    non_promotable_cells: list = []
     activity_failures: list = []
     inactive_cells: list = []
     active_cells: list = []
     for (seed, cell), record in sorted(records.items()):
         tag = {"seed": seed, "cell": cell}
-        if record.get("schema") != RECORD_SCHEMA \
+        if record.get("schema") != expected_schema \
                 or record.get("seed") != seed \
                 or record.get("cell") != cell \
                 or not record.get("cell_identity"):
@@ -2614,6 +3402,48 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
                  "screen conclusion"})
             continue
         labels[(seed, cell)] = label
+        if version == 2:
+            # Finding 235: the three v2 fact families are MANDATORY
+            # provenance — a record without them is refused; a record
+            # whose typed gates fire is a MEASURED non-promotable
+            # outcome the screen names but never counts viable.
+            liveness = record.get("actor_liveness_binding")
+            svg = record.get("selected_vs_genesis")
+            gates_block = record.get("selected_policy_gates")
+            problems = []
+            if not isinstance(liveness, dict) or \
+                    "measured" not in liveness:
+                problems.append("actor_liveness_binding missing")
+            if not isinstance(svg, dict) or not isinstance(
+                    svg.get("selected_equals_genesis"), bool):
+                problems.append(
+                    "selected_vs_genesis missing or untyped")
+            causes = (gates_block or {}).get("non_promotable_causes") \
+                if isinstance(gates_block, dict) else None
+            if not isinstance(causes, list) or any(
+                    cause not in NON_PROMOTABLE_CAUSES
+                    for cause in causes):
+                problems.append(
+                    "selected_policy_gates missing or untyped")
+            if problems:
+                v2_evidence_failures.append(
+                    {**tag, "error": "; ".join(problems)
+                     + " — mandatory v2 provenance (finding 235)"})
+                continue
+            promotable = bool(gates_block.get("promotable")) \
+                and not causes
+            gate_promotable[(seed, cell)] = promotable
+            if not promotable:
+                non_promotable_cells.append({
+                    **tag,
+                    "causes": list(causes),
+                    "selected_equals_genesis":
+                        svg.get("selected_equals_genesis"),
+                    "live_unit_count":
+                        gates_block.get("live_unit_count"),
+                    "live_unit_fraction":
+                        gates_block.get("live_unit_fraction"),
+                })
 
     if malformed:
         reasons.append(f"{len(malformed)} malformed record(s)")
@@ -2646,6 +3476,11 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         reasons.append(
             f"{len(activity_failures)} record(s) fail the finding-232 "
             "inactive-cell custody gate")
+    if v2_evidence_failures:
+        reasons.append(
+            f"{len(v2_evidence_failures)} record(s) miss the mandatory "
+            "v2 liveness/selected-vs-genesis/gate provenance "
+            "(finding 235)")
 
     # Finding 225: the replica gate is a BOOLEAN derived from the
     # typed proof — never explanatory text, never assumed.
@@ -2683,6 +3518,9 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "inactive_cells_non_promotable": not activity_failures,
         "replica_terminal_loads": bool(replica_ok),
     }
+    if version == 2:
+        gates["v2_selected_policy_evidence"] = \
+            not v2_evidence_failures
 
     if reasons:
         payload = {
@@ -2707,6 +3545,8 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
             "gates": gates,
             "reasons": reasons,
         }
+        if version == 2:
+            payload["v2_evidence_failures"] = v2_evidence_failures
         return payload, EXIT_CLASS["SCREEN_REFUSED"]
 
     # Contract text (mechanics_screen): collapse = the selected trained
@@ -2723,7 +3563,18 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         {"seed": seed, "cell": cell, "handoff_viability": label}
         for (seed, cell), label in sorted(labels.items())
         if label not in COLLAPSE_LABELS]
-    all_collapsed = len(collapsed_cells) == len(expected)
+    if version == 2:
+        # Finding 235: a cell whose typed selected-policy gates fired
+        # (unmeasured / zero live units / constant / equals-genesis)
+        # is a measured NON-VIABLE outcome — it is named, never
+        # counted into the viable region, and never a refusal.
+        viable_cells = [
+            entry for entry in viable_cells
+            if gate_promotable.get((entry["seed"], entry["cell"]))
+            is True]
+        all_collapsed = len(viable_cells) == 0
+    else:
+        all_collapsed = len(collapsed_cells) == len(expected)
     outcome = ("PHASE1_LR_REGION_COLLAPSED" if all_collapsed
                else "SCREEN_VIABLE_REGION")
     payload = {
@@ -2743,6 +3594,12 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "viability_matrix": matrix,
         "collapsed_cells": collapsed_cells,
         "viable_cells": viable_cells,
+        **({"non_promotable_cells": non_promotable_cells,
+            "non_promotable_note": (
+                "typed selected-policy gate outcomes (finding 235): "
+                "measured, named, excluded from the viable region; "
+                "live-unit fraction recorded, never gated")}
+           if version == 2 else {}),
         "next_step": (
             "stop — do not burn the decision budget (contract "
             "collapse_outcome)" if all_collapsed else
@@ -2922,6 +3779,8 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
                      "reasons": [str(exc)]},
                     EXIT_CLASS["INCONCLUSIVE"])
 
+    version = contract_version(contract)
+    expected_schema = record_schema_for(contract)
     reasons: list = []
     missing = [{"seed": seed, "cell": cell}
                for seed, cell in expected
@@ -2934,10 +3793,11 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
     per_cell_metrics: dict = {}
     inactive_cells: list = []
     inactive_reasons: dict = {}
+    non_promotable_cells: list = []
     for (seed, cell), record in sorted(records.items()):
         tag = {"seed": seed, "cell": cell}
         name = f"seed{seed}/{cell}"
-        if record.get("schema") != RECORD_SCHEMA \
+        if record.get("schema") != expected_schema \
                 or record.get("seed") != seed \
                 or record.get("cell") != cell:
             reasons.append(f"{name}: wrong schema or seed/cell")
@@ -2966,6 +3826,29 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
                            "cell still receives one, of its terminal "
                            "artifact, as diagnostic truth)")
             continue
+        # Finding 235 (v2): the liveness / selected-vs-genesis / gate
+        # provenance is mandatory on EVERY record — active or inactive.
+        gate_causes: list = []
+        if version == 2:
+            gates_block = record.get("selected_policy_gates")
+            svg = record.get("selected_vs_genesis")
+            liveness = record.get("actor_liveness_binding")
+            causes = (gates_block or {}).get("non_promotable_causes") \
+                if isinstance(gates_block, dict) else None
+            if not isinstance(liveness, dict) \
+                    or not isinstance(svg, dict) \
+                    or not isinstance(
+                        svg.get("selected_equals_genesis"), bool) \
+                    or not isinstance(causes, list) \
+                    or any(cause not in NON_PROMOTABLE_CAUSES
+                           for cause in causes):
+                reasons.append(
+                    f"{name}: missing or untyped v2 liveness/"
+                    "selected-vs-genesis/gate provenance — missing "
+                    "provenance is a hard failure (finding 235)")
+                continue
+            gate_causes = list(causes)
+
         # Finding 232: typed activity FIRST — an inactive cell is a
         # measured outcome whose diagnostic outer evaluation is
         # reported but NEVER enters the paired utility set.
@@ -3015,6 +3898,26 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
                 "evaluation is diagnostic truth about a "
                 "non-promotable policy and is not a comparable "
                 "performance value")
+        elif gate_causes:
+            # Finding 235: a constant, unmeasured, dead or
+            # genesis-equal selected policy is NON-PROMOTABLE even
+            # when a scalar metric looks favorable — its number
+            # measures a policy that did not learn or does not
+            # respond to observations, so it never enters the paired
+            # utility set and no value is imputed for it.
+            non_promotable_cells.append({
+                **tag,
+                "causes": list(gate_causes),
+                "mean_weekly_rap": metrics.get("mean_weekly_rap"),
+                "trades_total": trades,
+                "terminal_model_sha256": record.get(
+                    "terminal_model_sha256"),
+            })
+            inactive_reasons[(seed, cell)] = (
+                "selected policy is non-promotable "
+                f"({', '.join(gate_causes)}); its favorable-looking "
+                "scalar metric is not a comparable performance value "
+                "(finding 235)")
         else:
             utility = _finite_or_none(metrics.get("mean_weekly_rap"))
             if utility is None:
@@ -3031,7 +3934,10 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
         per_cell_metrics[name] = {
             "activity_status": status,
             "inactive_cause": inactive_cause,
-            "performance_eligible": status == "active",
+            "performance_eligible": status == "active"
+            and not gate_causes,
+            **({"non_promotable_causes": list(gate_causes)}
+               if version == 2 else {}),
             "evaluated_artifact_role": artifact_role,
             "weekly_return_vector": outer.get("weekly_return_vector"),
             "mean_weekly_return": metrics.get("mean_weekly_return"),
@@ -3085,6 +3991,14 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
             ACTIVITY_CLASSIFICATIONS),
         "active_cells": len(expected) - len(inactive_cells),
         "inactive_cells": inactive_cells,
+        **({"non_promotable_cells": non_promotable_cells,
+            "non_promotable_policy": (
+                "finding 235: a selected policy whose typed gates "
+                "fired (unmeasured / zero live units / constant / "
+                "equals-genesis) never enters the paired utility set, "
+                "whatever its scalar metric; live-unit fraction is "
+                "recorded, never gated")}
+           if version == 2 else {}),
         "imputation_policy": (
             "NONE — a cell without comparable active performance is "
             "excluded from the paired utility set and its per-seed "
@@ -3122,17 +4036,25 @@ def decision_verdict(contract: dict, *, records: dict | None = None,
 # no-training materialization preflight
 # ---------------------------------------------------------------------------
 
-def preflight(contract: dict, bindings: dict | None = None) -> tuple:
+def preflight(contract: dict, bindings: dict | None = None,
+              genesis_tensor_sha_fn=None,
+              observation_dim_fn=None) -> tuple:
     """No-training preflight (acceptance boundary): prove the exact
     nested role counts/hashes/score dates, paired selection, sealed
     2025 absence, distinct mode identities and 16 distinct cell
     identities per mode — by REAL materialization into a temp dir,
-    without constructing any model. Returns (payload, exit_code)."""
+    without constructing any model. For a v2 contract it additionally
+    re-proves every persisted genesis artifact (existence, container
+    sha, policy-tensor sha, exact 2,660-input width, cross-seed
+    distinctness) and records the validated observation identity.
+    Returns (payload, exit_code)."""
     import tempfile
 
     bindings = bindings or load_bindings()
+    version = contract_version(contract)
     payload: dict = {
         "schema": PREFLIGHT_SCHEMA,
+        "contract_schema": contract.get("schema"),
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "contract_sha256": contract["_contract_sha256"],
         "held_fixed_bindings_contract_sha256":
@@ -3169,6 +4091,7 @@ def preflight(contract: dict, bindings: dict | None = None) -> tuple:
 
             sources = ladder.source_identities()
             identities: dict = {}
+            observation_facts = None
             for mode in MODES:
                 exp_id = experiment_identity(contract, bindings,
                                              sources=sources, mode=mode)
@@ -3181,7 +4104,10 @@ def preflight(contract: dict, bindings: dict | None = None) -> tuple:
                             contract, bindings, seed, cell,
                             Path(scratch) / mode / str(seed) / cell,
                             mode=mode)
-                        config.pop("_identity")
+                        identity = config.pop("_identity")
+                        if version == 2 and observation_facts is None:
+                            observation_facts = identity.get(
+                                "observation")
                         metrics_seen.add(config["selection_metric"])
                         sealed_flags.add(
                             bool(config["evaluate_test_split"]))
@@ -3214,6 +4140,47 @@ def preflight(contract: dict, bindings: dict | None = None) -> tuple:
                 payload["refusals"].append(
                     "screen and decision experiment identities "
                     "collide — modes are not content-addressed apart")
+
+            if version == 2:
+                # Order §3/§7: re-prove every persisted genesis
+                # artifact at the acceptance boundary — existence,
+                # container sha, policy-tensor sha, exact 2,660-input
+                # width — and the cross-seed tensor distinctness.
+                payload["observation"] = observation_facts
+                genesis_report: dict = {}
+                tensor_shas: list = []
+                for seed in SEEDS:
+                    try:
+                        facts = _verify_initialization(
+                            contract, seed,
+                            genesis_tensor_sha_fn=genesis_tensor_sha_fn,
+                            observation_dim_fn=observation_dim_fn)
+                    except RuntimeError as exc:
+                        payload["refusals"].append(str(exc))
+                        genesis_report[str(seed)] = {
+                            "verified": False, "error": str(exc)}
+                        continue
+                    genesis_report[str(seed)] = {
+                        "verified": True,
+                        "path": facts["path"],
+                        "container_sha256": facts["container_sha256"],
+                        "policy_tensor_sha256":
+                            facts["policy_tensor_sha256"],
+                        "observation_dim": facts["observation_dim"],
+                    }
+                    tensor_shas.append(facts["policy_tensor_sha256"])
+                if len(tensor_shas) == len(SEEDS) and \
+                        len(set(tensor_shas)) != len(SEEDS):
+                    payload["refusals"].append(
+                        "verified genesis policy tensors are not "
+                        "pairwise distinct across seeds (order §3)")
+                payload["genesis"] = {
+                    "artifact_type": GENESIS_ARTIFACT_TYPE,
+                    "seeds": genesis_report,
+                    "tensors_pairwise_distinct": (
+                        len(set(tensor_shas)) == len(SEEDS)
+                        if len(tensor_shas) == len(SEEDS) else False),
+                }
     except Exception as exc:  # noqa: BLE001 — typed refusal
         payload["refusals"].append(f"{type(exc).__name__}: {exc}")
 

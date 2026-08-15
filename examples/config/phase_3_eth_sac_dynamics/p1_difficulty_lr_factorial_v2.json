@@ -1,0 +1,323 @@
+{
+ "schema": "agent_multi.p1_difficulty_lr_factorial.v2",
+ "$doc": "Corrected-observation L1 factorial (order 2026-08-15 \u00a76; AUD-P1LR-20260815-235). The v1 factorial's every terminal policy trained under the defective 2,724-input observation whose 64 unnormalized raw-price dims killed the actor's first layer, so its INCONCLUSIVE result is additionally qualified INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235 and the 'frozen normal/3e-5' conclusion is withdrawn. THIS contract re-runs the same 2x2 phase-1 difficulty x phase-1 LR design under the accepted 2,660-input observation contract, from per-seed ZERO-UPDATE genesis artifacts (never the legacy anchors), under a NEW experiment identity, output root and replica root. The factors remain ONLY phase-1 difficulty and phase-1 learning rate \u2014 no preprocessing, topology, L2 or retraining-frequency genes were added.",
+ "question": "Under the CORRECTED observation contract, do phase-1 difficulty and phase-1 learning rate produce measurably different valid policies? (The v1 answer is invalid for recipe selection: both LR arms converged to the same constant dead-actor policy under the defective representation.)",
+ "experiment": "p1_difficulty_lr_factorial_20260815_v2",
+ "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2",
+ "asset": "ETHUSD_4h",
+ "nested_split_contract": {
+  "$doc": "Finding 224: the EXECUTING pipeline consumes this typed nested contract directly (nested_split_mode=l1). The role_facts below are ASSERTIONS the runner verifies against the freshly materialized per-role CSVs before any model construction \u2014 wrong path, wrong sha, wrong scored/context count, swapped role dates, a missing context declaration, context counted in score, or any sealed_test materialization refuses the cell. Authoritative values reproduced by the independent auditor 2026-08-11.",
+  "path": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_v1.json",
+  "sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+  "mode": "l1",
+  "context_bars": 256,
+  "role_facts": {
+   "fit_train": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+    "scored_rows": 11509,
+    "context_rows": 0,
+    "score_start": "2017-09-28 04:00:00",
+    "score_end": "2022-12-31 20:00:00"
+   },
+   "train_monitor": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+    "scored_rows": 2190,
+    "context_rows": 256,
+    "score_start": "2022-01-01 00:00:00",
+    "score_end": "2022-12-31 20:00:00"
+   },
+   "inner_validation": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+    "scored_rows": 2190,
+    "context_rows": 256,
+    "score_start": "2023-01-01 00:00:00",
+    "score_end": "2023-12-31 20:00:00"
+   },
+   "outer_validation": {
+    "status": "MATERIALIZED",
+    "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+    "scored_rows": 2196,
+    "context_rows": 256,
+    "score_start": "2024-01-01 00:00:00",
+    "score_end": "2024-12-31 20:00:00"
+   },
+   "sealed_test": {
+    "status": "SEALED",
+    "csv_sha256": null,
+    "scored_rows": null,
+    "context_rows": null,
+    "score_start": null,
+    "score_end": null
+   }
+  },
+  "role_use": {
+   "fit_train": "fitting only (11509 scored rows)",
+   "train_monitor": "in-sample member of the paired comparator (2190 scored rows, 2022)",
+   "inner_validation": "selection member of the paired comparator (2190 scored rows, 2023)",
+   "outer_validation": "final truth ONLY \u2014 one evaluation after selection (2196 scored rows, 2024)",
+   "sealed_test": "SEALED \u2014 no CSV path, hash, row load or model evaluation may be emitted (2025)"
+  }
+ },
+ "selection_metric": "paired_generalization_weekly_v1",
+ "l1_gap_penalty_beta": 0.25,
+ "observation_contract": {
+  "$doc": "AUD-P1LR-20260815-235 / order 2026-08-15 \u00a76. The accepted corrected observation contract, verbatim from the auditor-accepted L2 binding at 8189d4f9: engineered, rolling-z-scored, clipped features ONLY \u2014 include_price_window=false removes the 64 unnormalized dimensions (32 raw ETH closes, mean |value| ~1742, plus 32 raw diffs) that fixed the sign of most first-layer pre-activations, killed roughly half the actor's ReLUs from initialization and saturated the survivors into the constant terminal action -0.001271069 in BOTH learning-rate arms. The runner binds this block into EVERY cell config before any env or model is constructed (config['observation_contract']); pipeline_plugins._observation_contract applies it in phase 1 AND phase 2 and the fail-closed validator refuses an undeclared or drifted declaration before any GPU use.",
+  "require_feature_aware_preprocessor": true,
+  "include_price_window": false,
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "feature_scaling": "rolling_zscore",
+  "feature_scaling_window": 256,
+  "feature_clip": 10.0,
+  "include_agent_state": true,
+  "window_size": 32,
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "$feature_columns": "83 ordered, deduplicated engineered columns declared by the held-fixed base config; the sha256 above pins that exact ordered list so this contract refuses to bind onto a different feature set \u2014 BOTH phases see the same ordered feature contract.",
+  "$observation_dimension": "window_size*len(feature_columns) + include_agent_state*4 = 32*83 + 4 = 2660. The superseded price-window observation was 2724 = 2660 + 32 raw closes + 32 raw diffs; a 2724-input artifact refuses before model construction."
+ },
+ "expected_observation": {
+  "$doc": "The executable dimension expectation: the runner derives window_size*feature_count+agent_state_dims from the materialized base config at every materialization and refuses drift; wrong dimensions are a hard failure.",
+  "window_size": 32,
+  "feature_count": 83,
+  "agent_state_dims": 4,
+  "expected_dimension": 2660
+ },
+ "factors": {
+  "phase1_dynamics": [
+   "normal_realistic",
+   "easy_chronological_continuation"
+  ],
+  "phase1_learning_rate": [
+   0.0001,
+   3e-05
+  ]
+ },
+ "cells": {
+  "P1N_LR1E4": {
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 0.0001
+  },
+  "P1N_LR3E5": {
+   "phase1_dynamics": "normal_realistic",
+   "phase1_learning_rate": 3e-05
+  },
+  "P1E_LR1E4": {
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 0.0001
+  },
+  "P1E_LR3E5": {
+   "phase1_dynamics": "easy_chronological_continuation",
+   "phase1_learning_rate": 3e-05
+  }
+ },
+ "held_fixed": {
+  "$doc": "Order \u00a76: every non-factor identity field is pinned exactly as the accepted v1/ladder identity. Replay and optimizer carry remain excluded as factors (optimizer_state_transferred=false, replay_size_at_boundary=0 at every boundary).",
+  "phase2_learning_rate": 3e-05,
+  "phase2_dynamics": "normal_realistic",
+  "phase2_action_threshold": 0.1,
+  "boundary": {
+   "replay_reset": true,
+   "optimizer_reset": true
+  },
+  "entropy": {
+   "mode": "fixed",
+   "value": 0.2
+  },
+  "phase1_handoff_semantics": "l1_trained_epoch_v4",
+  "handoff_viability_evidence": "required on every phase-1 checkpoint (WP3 / finding 221 block)",
+  "topology_features_costs_protection": "L1 v3 frozen system manifest contract (sha 00bfa585 family) \u2014 spread 1e-4, protected entries required, min_equity 100, financing declared-disabled",
+  "dates": "ladder/L1 nested split contract; sealed 2025 inaccessible",
+  "selection": "normal-realistic paired comparator on train-monitor + inner validation; outer validation truth",
+  "initialization_rule": "every cell starts from the exact per-seed ZERO-UPDATE GENESIS artifact (typed zero_update_genesis, container- AND policy-tensor-hash-bound), NEVER a preceding cell's terminal, NEVER a trained champion or handoff, NEVER a 2,724-input legacy anchor \u2014 anchor_seed*.zip are preserved as diagnostic evidence only (order \u00a73)",
+  "observation_rule": "the observation_contract block above is bound into every cell before env/model construction; both phases see the same 2,660-input ordered feature contract; an undeclared or drifted declaration refuses before GPU use (finding 235)"
+ },
+ "seeds": [
+  101,
+  202,
+  303,
+  404
+ ],
+ "genesis": {
+  "$doc": "Order \u00a73: the clean start is a per-seed zero-update 2,660-input genesis artifact constructed deterministically under the corrected observation contract by tools/p1lr_genesis_artifacts.py: ZERO gradient updates, ZERO replay transitions (structural \u2014 the construction env cannot be stepped), policy-tensor sha256 + container sha256 recorded, determinism and save/load identity proven. All four cells of a seed begin from the ONE tensor pinned here; different seeds are pinned pairwise DISTINCT. This artifact is NEVER a trained champion or handoff. 'Independent model construction without a persisted tensor identity is insufficient.'",
+  "artifact_type": "zero_update_genesis",
+  "output_root": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815",
+  "manifest": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/genesis_manifest.json",
+  "seeds": {
+   "101": {
+    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed101/zero_update_genesis_seed101.zip",
+    "container_sha256": "b7bb01a1189f80b3f8762732bb0dcc5ecaabd0665a3563bd9ecd988b07fa109a",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db"
+   },
+   "202": {
+    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed202/zero_update_genesis_seed202.zip",
+    "container_sha256": "1f2ce8fcaf6a3bfbfa10c9c9197214e5901e0bf4cafac0a694c5927161aa99f2",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2"
+   },
+   "303": {
+    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed303/zero_update_genesis_seed303.zip",
+    "container_sha256": "d24186eda3aaea3f0d42170bbcdb14f74f294363387b6dfe4c0096fc6efeaa61",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5"
+   },
+   "404": {
+    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed404/zero_update_genesis_seed404.zip",
+    "container_sha256": "8d0ee66b975bd85081bc4ec1073609376084525a1717bbac78c1c91684ca2d02",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97"
+   }
+  }
+ },
+ "assignments": {
+  "$doc": "One seed per physical GPU; ALL FOUR cells of a seed run sequentially on that same GPU so hardware is paired within seed. Distributed anchors hash-verified on their hosts 2026-08-11.",
+  "101": {
+   "hostname": "omega",
+   "gpu_uuid": "GPU-612d1e0c-33de-d5cc-56eb-06c0ae424326"
+  },
+  "202": {
+   "hostname": "dragon",
+   "gpu_uuid": "GPU-a8bd1b2c-26c4-f3a9-0fc0-fc3dfc6780f9"
+  },
+  "303": {
+   "hostname": "gamma",
+   "gpu_uuid": "GPU-b77fc3ad-db77-b648-dc15-ec79b65e2519"
+  },
+  "404": {
+   "hostname": "gamma",
+   "gpu_uuid": "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8"
+  }
+ },
+ "cell_order": {
+  "$doc": "Deterministic cyclic Latin square: every cell occupies every within-seed position exactly once across seeds \u2014 no order/thermal confounding.",
+  "101": [
+   "P1N_LR1E4",
+   "P1N_LR3E5",
+   "P1E_LR1E4",
+   "P1E_LR3E5"
+  ],
+  "202": [
+   "P1N_LR3E5",
+   "P1E_LR1E4",
+   "P1E_LR3E5",
+   "P1N_LR1E4"
+  ],
+  "303": [
+   "P1E_LR1E4",
+   "P1E_LR3E5",
+   "P1N_LR1E4",
+   "P1N_LR3E5"
+  ],
+  "404": [
+   "P1E_LR3E5",
+   "P1N_LR1E4",
+   "P1N_LR3E5",
+   "P1E_LR1E4"
+  ]
+ },
+ "mechanics_screen": {
+  "budget": "one pass-equivalent per cell (1 phase-1 epoch + 1 phase-2 epoch at 20000 timesteps, matching the ladder pass budget)",
+  "budget_knobs": {
+   "$doc": "Executable form of the budget line above (runner WP4; the prose stays authoritative for intent). The runner refuses any values other than one pass-equivalent, and refuses an epoch_timesteps that does not match the ladder pass budget.",
+   "epoch_timesteps": 20000,
+   "phase1_epochs": 1,
+   "phase2_epochs": 1
+  },
+  "requires": [
+   "16/16 records with exact identities and terminal artifacts (terminal_model_path + terminal_model_sha256 mandatory \u2014 finding 223 contract)",
+   "a typed 16-entry replica proof file (tools/p1lr_collect.py, agent_multi.p1lr_replica_proof.v1) proving every terminal loads on the replica host, bound to (experiment_identity, contract_sha256, seed, cell, terminal_relative_path, terminal_model_sha256, loads=true) \u2014 the verdict REFUSES without it (finding 225)",
+   "direct handoff-viability facts on every phase-1 checkpoint (finding 221 block)",
+   "at least one trained arm not CONSTANT_POLICY and not BELOW_NORMAL_THRESHOLD before the decision budget is spent",
+   "typed actor-liveness facts on every cell record (actor_liveness_binding from the pipeline's per-checkpoint agent_multi.actor_liveness.v1 history) \u2014 an unmeasured actor or missing liveness evidence is a typed NON-PROMOTABLE outcome, never a silent pass (finding 235)",
+   "typed action-variation facts per checkpoint (constant_policy, action_raw_std) \u2014 a constant selected policy is non-promotable even when a scalar metric looks favorable",
+   "typed selected-versus-genesis facts on every cell record (selected_policy_tensor_sha256 vs genesis_policy_tensor_sha256, selected_equals_genesis boolean) \u2014 a selection that IS the genesis did not learn and is non-promotable",
+   "the live-unit FRACTION is recorded, never gated: no invented minimum (such as 256/256) may gate promotion; the hard failures are only an unmeasured actor, zero live units, constant selected behavior, wrong dimensions or missing provenance (order 2026-08-15 \u00a77)"
+  ],
+  "collapse_outcome": "PHASE1_LR_REGION_COLLAPSED \u2014 stop, do not burn the full run"
+ },
+ "decision_run": {
+  "$doc": "Only if the screen finds a viable region AND the 16-terminal replica proof passes (finding 225 gate). Document-38 real L1 stopping; same budget/stopping shape as v1 (order: reuse unless \u00a76 says otherwise). Distinct content-addressed identity (profile p1lr_decision_run) and distinct output root; every decision cell starts from the ORIGINAL per-seed zero-update genesis, never a screen terminal.",
+  "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2_decision",
+  "phase2_learning_rate": 3e-05,
+  "budget_knobs": {
+   "$doc": "4 phase-1 epochs + 1996 phase-2 max epochs = the 2000 pass-equivalent per-cell ceiling below, at the ladder pass budget.",
+   "epoch_timesteps": 20000,
+   "phase1_epochs": 4,
+   "phase2_max_epochs": 1996
+  },
+  "max_global_pass_equivalent_checkpoints": 2000,
+  "patience": 60,
+  "patience_floor": 40,
+  "best_checkpoint_restoration": true,
+  "stopping": "train-monitor plus inner-validation paired stopping",
+  "stopping_knobs": {
+   "l1_patience": 60,
+   "l1_patience_start_epoch": 40,
+   "l1_activity_patience": 40,
+   "l1_activity_patience_start_epoch": 40,
+   "total_max_passes": 2000,
+   "phase1_max_fraction": 0.3,
+   "normal_phase_min_passes": 10
+  },
+  "truth": "one final outer-validation evaluation after selection; sealed 2025 inaccessible",
+  "decision_outcomes": [
+   "PHASE1_LR_MAIN_EFFECT",
+   "PHASE1_DIFFICULTY_MAIN_EFFECT",
+   "PHASE1_LR_DIFFICULTY_INTERACTION",
+   "NO_MATERIAL_EFFECT",
+   "TOTAL_ACTIVITY_COLLAPSE",
+   "INCONCLUSIVE"
+  ],
+  "effective_stopping_rules": {
+   "$doc": "AUD-P1LR-20260815-234: every terminator that CAN end training is NAMED and the earliest derivable stop epoch is STATED. The activity-ineligible patience (start epoch 40 + budget 40) can end a never-trading cell at epoch 80 of the 2000-pass ceiling \u2014 4% of the budget \u2014 exactly what the v1 prose never said. app/stopping_contract.py refuses any declared-vs-effective drift before a second of GPU is spent.",
+   "terminators": [
+    "l1_early_stop",
+    "activity_stop",
+    "max_epochs_budget"
+   ],
+   "earliest_stop_epoch": 80
+  }
+ },
+ "replica": {
+  "$doc": "Order \u00a76: a NEW replica/collection root \u2014 never a v1 collection root and never the sealed v1 collection c0e53cf18b7d60dd. tools/p1lr_collect.py stages, seals and replicates here; the replica host recomputes the tree digest and really loads all 16 terminals (finding 225).",
+  "collection_root": "~/.local/share/agent-multi/p1lr_v2_collections_20260815",
+  "replica_host": "dragon"
+ },
+ "typed_outcomes": [
+  "PHASE1_LR_MAIN_EFFECT",
+  "PHASE1_DIFFICULTY_MAIN_EFFECT",
+  "PHASE1_LR_DIFFICULTY_INTERACTION",
+  "NO_MATERIAL_EFFECT",
+  "TOTAL_ACTIVITY_COLLAPSE",
+  "INCONCLUSIVE",
+  "PHASE1_LR_REGION_COLLAPSED"
+ ],
+ "forbidden": [
+  "contracting, slicing, projecting or otherwise adapting the 2,724-input anchor_seed*.zip artifacts \u2014 they carry a learned first layer from the defective representation and are diagnostic evidence only (order \u00a73)",
+  "reusing ANY v1 P1LR identity, output tree or record \u2014 including the sealed v1 decision collection c0e53cf18b7d60dd, which is INCONCLUSIVE and qualified INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235",
+  "dispatching L2 against the withdrawn 'frozen normal_realistic/3e-5' v1 recipe",
+  "adding preprocessing, topology, L2 or retraining-frequency genes to this run \u2014 the only factors are phase-1 difficulty and phase-1 LR (order \u00a76)",
+  "imposing an invented live-unit minimum (e.g. 256/256) as a performance gate (order \u00a77)",
+  "reintroducing raw absolute closes into the observation in any form",
+  "resuming the paused 2026-08-06 DOIN chain",
+  "mutating sealed collections",
+  "opening sealed 2025"
+ ],
+ "execution_semantics": {
+  "$doc": "Corrections 231/232 are EXECUTABLE semantics, not documentation. They change what the selector measures and what a dead cell publishes, so they belong in the content-addressed identity: any run materialized before them is diagnostic only and can never be aggregated with a run materialized after them.",
+  "causal_context_enforcement": "v2_selector_wrapped",
+  "causal_context_enforcement_note": "role and context_rows resolve from the VERIFIED nested manifest; ContextPrefixWrapper wraps every baseline and per-epoch train_monitor/inner_validation rollout BEFORE _rollout; prefix rows force hold and are excluded from reward, action statistics, canonical traces, trades, weekly metrics and horizons; every arm reaches the score boundary at equal opening equity (finding 231)",
+  "inactive_cell_semantics": "v2_typed_non_promotable",
+  "inactive_cell_semantics_note": "an inactive cell publishes one immutable non-promotable record with terminal custody and a load proof, receives one diagnostic-only final outer evaluation that can never be relabeled best_checkpoint, and the seed runner continues to its remaining cells (finding 232)",
+  "observation_contract_enforcement": "v2_fail_closed_bound",
+  "observation_contract_enforcement_note": "finding 235: the observation contract is copied into every materialized cell config BEFORE env/model construction, applied by pipeline_plugins._observation_contract in BOTH phases, and validated fail-closed; materialization refuses feature-set or dimension drift; the initialization verifier refuses any non-2,660-input artifact",
+  "selected_policy_gate_semantics": "v2_typed_non_promotable",
+  "selected_policy_gate_semantics_note": "order \u00a77: every cell record carries actor-liveness, action-variation and selected-vs-genesis facts; unmeasured actor, zero live units, constant selected behavior and selected_equals_genesis=true are the ONLY hard non-promotable causes; live-unit fraction is recorded, never gated"
+ },
+ "activity_classifications": {
+  "$doc": "Finding 232: activity classification is reported ALONGSIDE the document-38 outcome, never inside its pinned enum. Partial survival types the picture; the document-38 outcome for a partially collapsed factorial is INCONCLUSIVE with the dead cells named.",
+  "values": [
+   "FULL_ACTIVITY",
+   "PARTIAL_ACTIVITY_SURVIVAL",
+   "TOTAL_ACTIVITY_COLLAPSE"
+  ]
+ }
+}
