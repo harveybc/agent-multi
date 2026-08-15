@@ -301,6 +301,14 @@
    "mutability_note": "reads the run root strictly read-only; writes only its own dedup/backoff state under ~/.local/state/agent-multi/p1lr-idle-guard, an optional --report-out report file, bounded incident-ledger observations/recoveries, and calls systemctl --user restart on the local seed unit at most N times per idle episode",
    "authority_class": "watchdog",
    "owner": "General Satoshi III"
+  },
+  "experiment_transition_queue.py": {
+   "purpose": "Durable terminal-to-next-job transition queue (order 2026-08-15 §3): one content-addressed JSON record per ENDING job, holding the current job, the terminal result identity, the next approved job, the materialization state, the dispatch state, the blockers, the per-node participation and the declared transition budget. transition_status() types the fleet answer — a terminal experiment with no dispatched successor is completed_untransitioned, and a missing record is completed_untransitioned too (unproven is never healthy); reconstruct_transitions() rebuilds every transition from these files ALONE after a reboot, consulting no heartbeat, shell process, chat message or operator memory, so a dispatch claim whose lease expired while the host was down surfaces as expired rather than as still in flight. Dispatch is a lease and FAILS CLOSED: claim_dispatch() refuses a second live claim or an already-dispatched transition (TRANSITION_DUPLICATE_DISPATCH), an unmaterialized or blocked successor, and a chain identity conflicting with the record's proven chain (TRANSITION_CHAIN_CONFLICT), while join_chain() lets healthy nodes continue the ONE proven common chain and mark_node() types an unavailable node without vetoing the healthy ones. evaluate_transition_incident()/sweep_transition_incidents() emit exactly ONE deduplicated undispatched-successor incident past the declared budget through the existing tools/incident_emit.py ledger and close that SAME event code on recovery, with the dedup marker inside the durable record so a reboot or a second host cannot produce a flood",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only its own durable records under ~/.local/state/agent-multi/experiment-transition-queue (atomic tmp+fsync+replace), NEVER inside any run's output root, plus deduplicated incident-ledger observations/recoveries through the shared shim; it never launches, restarts or stops any job itself",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

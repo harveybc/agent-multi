@@ -14,6 +14,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import tools.multifront_status as mfs  # noqa: E402
+from tools import experiment_transition_queue as etq  # noqa: E402
 
 NOW = datetime(2026, 8, 10, 7, 0, 0, tzinfo=timezone.utc)
 IDENTITY = "2de49ea9225e2baf"
@@ -1183,3 +1184,152 @@ def test_history_renders_even_without_l1_source(tmp_path, monkeypatch):
     # is invented
     assert not any(item["id"].startswith("l1-matched-factorial")
                    for item in packet["queue"])
+
+
+# ── order 2026-08-15 §3: terminal-to-next-job at FLEET level ──────────
+
+def _p1lr_terminal_fixture(tmp_path, *, unreachable=(), mode="screen",
+                           identity=None):
+    """Every assigned host readable, every cell record landed, no fresh
+    RUNNING heartbeat: the exact shape of the observed terminal run."""
+    order = P1LR_ORDER
+    records = {(seed, cell): {"stop_reason": "converged",
+                              "decision_eligible": True,
+                              "finished_utc": (
+                                  NOW - timedelta(hours=9)).isoformat()}
+               for seed, cells in order.items() for cell in cells}
+    return _p1lr_fixture(
+        tmp_path, hb_age_seconds=9 * 3600,
+        terminal_states={seed: "CELL_COMPLETE" for seed in HOSTS},
+        records=records, mode=mode, identity=identity)
+
+
+def _terminal_packet(tmp_path, cpath, reader, queue_dir, **kw):
+    return _collect_p1lr(tmp_path, cpath, reader,
+                         p1lr_transition_queue_dir=queue_dir, **kw)
+
+
+def test_p1lr_terminal_without_successor_is_completed_untransitioned(
+        tmp_path):
+    """The observed defect at fleet level: 16/16 records, no worker
+    running and no next job rendered as quiet ``inactive_or_unknown``
+    with NO queue entry at all — fleet idle time was invisible."""
+    cpath, reader = _p1lr_terminal_fixture(tmp_path)
+    queue_dir = tmp_path / "transition-queue"
+    packet = _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+
+    assert block["experiment_terminal"] is True
+    assert block["records_landed"]["value"] == 16
+    assert block["workers_running_fresh"]["value"] == 0
+    assert block["state"] == "completed_untransitioned"
+    assert "fleet idle time after a terminal completion" in \
+        block["state_basis"]
+    assert block["transition"]["value"] == "completed_untransitioned"
+    assert [b["code"] for b in block["transition"]["blockers"]] == \
+        ["NO_APPROVED_SUCCESSOR"]
+
+    # the successor takes the queue slot: an idle fleet is never an
+    # EMPTY executable queue
+    item = packet["queue"][0]
+    assert item["id"] == (
+        f"p1lr-transition-{block['transition']['transition_id']}")
+    assert item["state"] == "owner_blocked"
+    assert "NO_APPROVED_SUCCESSOR" in item["owner_blocked_reason"]
+    assert item["predecessor_identity"] == P1LR_IDENTITY
+
+
+def test_p1lr_terminal_enrols_one_durable_record_reconstructible_later(
+        tmp_path):
+    """§3 bullets 3-4: the collector writes the durable record, and the
+    transition is reconstructible from that file alone afterwards."""
+    cpath, reader = _p1lr_terminal_fixture(tmp_path)
+    queue_dir = tmp_path / "transition-queue"
+    _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    _terminal_packet(tmp_path, cpath, reader, queue_dir)   # idempotent
+
+    files = sorted(queue_dir.glob("*.json"))
+    assert len(files) == 1
+    record = json.loads(files[0].read_text())
+    assert record["schema"] == "agent_multi.experiment_transition_record.v1"
+    assert record["current_job"]["identity"] == P1LR_IDENTITY
+    assert record["terminal_result"]["records_landed"] == 16
+    assert record["terminal_result"]["terminal_utc"] == (
+        NOW - timedelta(hours=9)).isoformat()
+    assert record["dispatch_state"] == "undispatched"
+
+    view = etq.reconstruct_transitions(queue_dir, now=NOW)
+    assert view["fleet_idle_after_terminal_completion"] is True
+    assert view["completed_untransitioned"][0]["current_job"]["identity"] \
+        == P1LR_IDENTITY
+
+
+def test_p1lr_terminal_with_dispatched_successor_is_transitioned(tmp_path):
+    cpath, reader = _p1lr_terminal_fixture(tmp_path)
+    queue_dir = tmp_path / "transition-queue"
+    _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    tid = etq.transition_id("p1_difficulty_lr_factorial_20260811_v1",
+                            "screen", P1LR_IDENTITY)
+    record = etq.load_record(etq.record_path(queue_dir, tid))
+    record = etq.approve_successor(record, job_id="l2-frozen-l1-en-v1",
+                                   approved_by="owner",
+                                   contract_sha256="b" * 64,
+                                   chain_id="chain-l2-0001", now=NOW)
+    record = etq.set_materialization(record, "materialized", now=NOW)
+    record = etq.claim_dispatch(record, claim_id="c1", host="omega",
+                                chain_id="chain-l2-0001", now=NOW)
+    record = etq.confirm_dispatch(record, claim_id="c1", now=NOW)
+    etq.save_record(queue_dir, record, now=NOW)
+
+    packet = _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "transitioned"
+    assert block["transition"]["next_job_id"] == "l2-frozen-l1-en-v1"
+    assert block["transition"]["chain_id"] == "chain-l2-0001"
+    assert not any(str(item["id"]).startswith("p1lr-transition")
+                   for item in packet["queue"])
+
+
+def test_p1lr_materialized_successor_enters_the_queue_as_materialized(
+        tmp_path):
+    cpath, reader = _p1lr_terminal_fixture(tmp_path)
+    queue_dir = tmp_path / "transition-queue"
+    _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    tid = etq.transition_id("p1_difficulty_lr_factorial_20260811_v1",
+                            "screen", P1LR_IDENTITY)
+    record = etq.load_record(etq.record_path(queue_dir, tid))
+    record = etq.approve_successor(record, job_id="l2-frozen-l1-en-v1",
+                                   approved_by="owner",
+                                   contract_sha256="c" * 64, now=NOW)
+    record = etq.set_materialization(record, "materialized", now=NOW)
+    etq.save_record(queue_dir, record, now=NOW)
+
+    packet = _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    item = packet["queue"][0]
+    assert item["state"] == "materialized"
+    assert item["hashes"]["config_sha256"] == "c" * 64
+    assert item["next_job_id"] == "l2-frozen-l1-en-v1"
+    mfs.validate_queue(packet["queue"])          # canonical taxonomy holds
+
+
+def test_p1lr_unreachable_host_can_never_produce_a_terminal_verdict(
+        tmp_path):
+    """16/16 is only 16/16 when all four hosts were readable: an
+    unreachable host must never be counted as a completed one."""
+    cpath, reader = _p1lr_terminal_fixture(tmp_path)
+    reader.unreachable = {"dragon"}
+    queue_dir = tmp_path / "transition-queue"
+    packet = _terminal_packet(tmp_path, cpath, reader, queue_dir)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["experiment_terminal"] is False
+    assert block["state"] == "inactive_or_unknown"
+    assert not list(queue_dir.glob("*.json"))    # nothing enrolled
+
+
+def test_p1lr_without_a_transition_queue_still_names_the_idleness(
+        tmp_path):
+    cpath, reader = _p1lr_terminal_fixture(tmp_path)
+    packet = _collect_p1lr(tmp_path, cpath, reader)
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "completed_untransitioned"
+    assert block["transition"]["basis"] == "transition_queue_not_configured"

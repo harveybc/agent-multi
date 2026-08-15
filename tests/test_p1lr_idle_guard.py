@@ -21,6 +21,7 @@ import pytest
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from tools import experiment_transition_queue as etq  # noqa: E402
 from tools import p1lr_idle_guard as guard  # noqa: E402
 
 NOW = datetime(2026, 8, 12, 6, 0, 0, tzinfo=timezone.utc)
@@ -190,14 +191,40 @@ def test_unknown_gpu_utilization_never_reads_idle(tmp_path):
     assert emitter.observed == [] and restarts == []
 
 
-def test_completed_seed_never_alerts(tmp_path):
+def test_completed_seed_is_never_stalled_and_never_restarted(tmp_path):
+    """Order 2026-08-15 §3 bullet 1: a terminal seed with no pending
+    cells is NOT a stalled seed — no stall incident, no restart."""
     for cell in ORDER[101]:
         _record(tmp_path, 101, cell)
     report, emitter, restarts = _poll(tmp_path)
     entry = report["seeds"]["101"]
     assert entry["pending"] is False
-    assert entry["idle"] is False
-    assert emitter.observed == [] and restarts == []
+    assert entry["stalled"] is False
+    assert entry["terminal_complete"] is True
+    assert restarts == []
+    assert [c["event_code"] for c in emitter.observed] == []
+    assert "restart_withheld_terminal_complete" in entry["actions"]
+
+
+def test_completed_seed_without_successor_is_never_idle_false(tmp_path):
+    """The observed defect: ``process_alive: false`` + terminal 4/4 + no
+    next executable job rendered ``idle: false`` merely because the
+    previous experiment had completed. It must render
+    ``completed_untransitioned`` (§3 bullets 1-2)."""
+    for cell in ORDER[101]:
+        _record(tmp_path, 101, cell)
+    report, emitter, restarts = _poll(tmp_path, process_alive=False)
+    entry = report["seeds"]["101"]
+    assert entry["process_alive"] is False
+    assert entry["records_landed"] == {"value": 4, "of": 4,
+                                       "unit": "cell_records"}
+    assert entry["idle"] is True                      # never False again
+    assert entry["idle_class"] == "completed_untransitioned"
+    assert entry["stalled"] is False
+    assert "fleet idle time" in entry["idle_class_reason"]
+    assert entry["transition_state"] == "completed_untransitioned"
+    assert report["transition"]["value"] == "completed_untransitioned"
+    assert report["terminal_seeds_local"] == [101]
 
 
 # ── dedup across repeated polls; backoff and restart cap ──
@@ -683,3 +710,158 @@ def test_seed_without_any_artifact_is_bounded_by_first_observation(
     assert entry["idle"] is True
     assert entry["observed_idle_seconds"] == 1200.0
     assert len(emitter.observed) == 1
+
+
+# ── order 2026-08-15 §3: terminal-to-next-job transition ───────────────
+
+def _terminal_seed(tmp_path, seed=101, mode="screen", identity=None):
+    for cell in ORDER[seed]:
+        _record(tmp_path, seed, cell, mode=mode, identity=identity)
+
+
+def _enrolled(tmp_path, *, now=NOW, identity=IDENTITY, mode="screen",
+              budget=3600.0):
+    """Enrol the terminal transition exactly as the fleet-level observer
+    (multifront_status) would, then hand back the queue dir."""
+    queue_dir = tmp_path / "transition-queue"
+    etq.ensure_terminal_record(
+        queue_dir, experiment="p1_difficulty_lr_factorial_20260811_v1",
+        mode=mode, identity=identity, records_landed=16, cells_total=16,
+        terminal_utc=now.isoformat(), now=now,
+        transition_budget_seconds=budget)
+    return queue_dir
+
+
+def test_dispatched_successor_is_the_only_thing_that_clears_idleness(
+        tmp_path):
+    """A durable, DISPATCHED successor — and nothing else — makes a
+    terminal seed non-idle (§3 bullets 2 and 4)."""
+    _terminal_seed(tmp_path)
+    queue_dir = _enrolled(tmp_path)
+    tid = etq.transition_id("p1_difficulty_lr_factorial_20260811_v1",
+                            "screen", IDENTITY)
+
+    report, _, _ = _poll(tmp_path, transition_queue_dir=queue_dir)
+    assert report["seeds"]["101"]["idle"] is True
+    assert report["seeds"]["101"]["idle_class"] == "completed_untransitioned"
+
+    record = etq.load_record(etq.record_path(queue_dir, tid))
+    record = etq.approve_successor(record, job_id="l2-en-v1",
+                                   approved_by="owner", chain_id="chainA",
+                                   now=NOW)
+    record = etq.set_materialization(record, "materialized", now=NOW)
+    record = etq.claim_dispatch(record, claim_id="c1", host="omega",
+                                chain_id="chainA", now=NOW)
+    record = etq.confirm_dispatch(record, claim_id="c1", now=NOW)
+    etq.save_record(queue_dir, record, now=NOW)
+
+    report, emitter, restarts = _poll(tmp_path,
+                                      transition_queue_dir=queue_dir)
+    entry = report["seeds"]["101"]
+    assert entry["idle"] is False
+    assert entry["idle_class"] == "completed_transitioned"
+    assert entry["next_job_id"] == "l2-en-v1"
+    assert emitter.observed == [] and restarts == []
+
+
+def test_undispatched_successor_past_budget_emits_one_incident_and_closes(
+        tmp_path):
+    """§3 bullet 6: ONE deduplicated incident, and recovery closes the
+    SAME event code — never a message flood."""
+    _terminal_seed(tmp_path)
+    queue_dir = _enrolled(tmp_path, budget=3600.0)
+    tid = etq.transition_id("p1_difficulty_lr_factorial_20260811_v1",
+                            "screen", IDENTITY)
+    record = etq.load_record(etq.record_path(queue_dir, tid))
+    record = etq.approve_successor(record, job_id="l2-en-v1",
+                                   approved_by="owner", chain_id="chainA",
+                                   now=NOW)
+    etq.save_record(queue_dir, record, now=NOW)
+
+    emitter = FakeEmitter()
+    over = NOW + timedelta(seconds=5400)          # 1.5x the budget
+    for offset in (0, 600, 1200):                 # three polls, one alert
+        _poll(tmp_path, emitter=emitter, transition_queue_dir=queue_dir,
+              now=over + timedelta(seconds=offset))
+    codes = [c["event_code"] for c in emitter.observed]
+    assert codes == [f"experiment_transition_undispatched.{tid}"]
+    payload = emitter.observed[0]["payload"]
+    assert payload["next_job"]["id"] == "l2-en-v1"
+    assert payload["over_budget_seconds"] == 1800.0
+    assert emitter.observed[0]["affected_object"] == (
+        f"p1_difficulty_lr_factorial_20260811_v1/{IDENTITY}")
+
+    # …the successor is dispatched: the SAME code is recovered, once.
+    record = etq.load_record(etq.record_path(queue_dir, tid))
+    record = etq.set_materialization(record, "materialized", now=over)
+    record = etq.claim_dispatch(record, claim_id="c1", host="omega",
+                                chain_id="chainA", now=over)
+    record = etq.confirm_dispatch(record, claim_id="c1", now=over)
+    etq.save_record(queue_dir, record, now=over)
+    later = over + timedelta(seconds=1800)
+    report, _, _ = _poll(tmp_path, emitter=emitter,
+                         transition_queue_dir=queue_dir, now=later)
+    assert [r["event_code"] for r in emitter.recovered] == \
+        [f"experiment_transition_undispatched.{tid}"]
+    _poll(tmp_path, emitter=emitter, transition_queue_dir=queue_dir,
+          now=later + timedelta(seconds=900))
+    assert len(emitter.recovered) == 1            # no recovery flood
+    assert report["seeds"]["101"]["idle"] is False
+
+
+def test_transition_incident_is_not_emitted_before_the_budget_expires(
+        tmp_path):
+    _terminal_seed(tmp_path)
+    queue_dir = _enrolled(tmp_path, budget=3600.0)
+    emitter = FakeEmitter()
+    report, _, _ = _poll(tmp_path, emitter=emitter,
+                         transition_queue_dir=queue_dir,
+                         now=NOW + timedelta(seconds=1800))
+    assert emitter.observed == []
+    assert report["seeds"]["101"]["idle_class"] == \
+        "completed_untransitioned"
+    assert report["transition"]["over_budget"] is False
+
+
+def test_guard_survives_reboot_by_reading_durable_records_only(tmp_path):
+    """§3 bullet 4: after a reboot every heartbeat mtime is old, no
+    process exists and the guard's own dedup state file is empty — the
+    transition verdict still comes out right, from the records alone."""
+    _terminal_seed(tmp_path)
+    queue_dir = _enrolled(tmp_path)
+    tid = etq.transition_id("p1_difficulty_lr_factorial_20260811_v1",
+                            "screen", IDENTITY)
+    record = etq.load_record(etq.record_path(queue_dir, tid))
+    record = etq.approve_successor(record, job_id="l2-en-v1",
+                                   approved_by="owner", chain_id="chainA",
+                                   now=NOW)
+    record = etq.set_materialization(record, "materialized", now=NOW)
+    record = etq.claim_dispatch(record, claim_id="c1", host="omega",
+                                chain_id="chainA", now=NOW)
+    record = etq.confirm_dispatch(record, claim_id="c1", now=NOW)
+    etq.save_record(queue_dir, record, now=NOW)
+
+    after_reboot = NOW + timedelta(hours=9)
+    report, emitter, restarts = _poll(
+        tmp_path, state=guard.default_state(), now=after_reboot,
+        process_alive=False, transition_queue_dir=queue_dir)
+    entry = report["seeds"]["101"]
+    assert entry["idle_class"] == "completed_transitioned"
+    assert entry["idle"] is False
+    assert report["transition"]["basis"] == "durable_record"
+    assert report["transition"]["next_job_id"] == "l2-en-v1"
+    assert emitter.observed == [] and restarts == []
+
+
+def test_no_transition_queue_configured_still_surfaces_untransitioned(
+        tmp_path):
+    """Without a durable queue nothing can PROVE a dispatch, so the
+    honest answer is completed_untransitioned — never healthy silence."""
+    _terminal_seed(tmp_path)
+    report, emitter, restarts = _poll(tmp_path, transition_queue_dir=None)
+    entry = report["seeds"]["101"]
+    assert entry["idle"] is True
+    assert entry["idle_class"] == "completed_untransitioned"
+    assert report["transition"]["basis"] == "transition_queue_not_configured"
+    assert report["transition_action"]["action"] == "no_durable_record"
+    assert emitter.observed == [] and restarts == []
