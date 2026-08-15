@@ -1,7 +1,7 @@
 # Academic Research Roadmap
 
-Version: 1.0.0
-Date: 2026-07-31
+Version: 1.1.0
+Date: 2026-08-15
 Academic research lead: Satoshi (Claude) — program design and scholarly review
 Experimental and technical lead: Musashi (Codex) — experiments and artifacts
 Human author and release authority: Harvey
@@ -11,15 +11,17 @@ Companion audit: `../audits/AUDIT_ACADEMIC_PUBLICATION_PROGRAM_2026_07_31.md`
 
 | Paper | Disposition | Current state | Order rationale |
 | --- | --- | --- | --- |
-| P5 audit and recovery | **retain — draft first** | evidence_incomplete | Richest existing evidence (real incident corpus with timestamps, live packet infrastructure); no dependency on campaign completion; non-financial, lowest regulatory risk. Precondition: finding 015 conflict controls accepted by Harvey |
-| P1 DOIN protocol | **retain — experiments specified now, drafted second** | evidence_incomplete | Core contribution is real but decisive fault/scaling experiments need Musashi task packets; specifying them now lets them run alongside the trading campaign. Precondition: finding 016 threat-model scoping |
+| P1 DOIN protocol | **retain — first intended output** | evidence_incomplete | Core contribution and direct continuation of the 2018 thesis; decisive fault/scaling and verification-cost experiments remain required. |
+| P5 audit and recovery | **retain — second intended output** | evidence_incomplete | The P5/P13 adversarial method has a rich incident corpus, sealed nulls and role-separated review; conflict controls and external review remain mandatory. |
 | P2 data-first genome search | **retain — evidence accrues from the running campaign** | evidence_incomplete | Blocked on protected-v2 champions plus model-only and fixed-data controls; nothing to draft before at least one asset completes with controls |
 | P4 execution parity | **retain — measurement-paper framing** | evidence_incomplete | Passive observation already accumulating; blocked on protected canaries (M3) and the seven-day consolidated shadow (M4); MT5 optional, not gating |
 | P3 hierarchical portfolio | **defer** | outline | Gate honestly unmet (needs ≥6 qualified frozen cells, rush detector, allocator); revisit when P2 yields three cells |
 
-No paper is merged or rejected: the five research questions are genuinely
-separable, and the duplicate-claim table in the companion audit keeps their
-boundaries enforceable.
+Paper IDs are stable subjects, not ordinals in the drafting queue. In
+particular, the second intended output is P5/P13; P2 continues to identify the
+data-first mixed-genome paper. No paper is merged or rejected: the five
+research questions remain separable, and the duplicate-claim table in the
+companion audit keeps their boundaries enforceable.
 
 ## 2. Dependency Graph
 

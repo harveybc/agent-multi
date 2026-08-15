@@ -282,6 +282,28 @@ Social/business observations can modify future simulation and optimization
 only through a versioned evidence packet and a new semantic hash. They cannot
 mutate an active DOIN chain.
 
+### ADR-023: Separate trusted operation, untrusted verification and prototype economics
+
+Decision:
+
+- Keep `trusted_consortium` as the current operational profile; performance
+  re-evaluation may be explicitly optional, while identity, lineage and chain
+  verification remain mandatory.
+- Treat `untrusted_generated_gate` as conditional research requiring document
+  39's generator admission, post-commit entropy and calibrated evidence.
+- Record current 50/halving/time-targeted-threshold behavior as implemented
+  prototype facts, not owner-ratified economics.
+- Separate ledger liveness, fixed useful-progress bins and issuance. The
+  owner-directed target is one unit per completely filled verified progress
+  certificate and zero issuance for an empty progress bin.
+- Treat generator identity and event draw custody as separate hashes.
+- Keep cross-domain commensurability and paid inference economics open under
+  P14/P18 until measured/adversarial evidence exists.
+
+Rationale: code comments, academic speech and owner intent had diverged.
+Document 40 is the normative boundary; behavior-changing consensus work
+requires isolated implementation, independent audit and owner authorization.
+
 ## 2. Open Questions and Decision Gates
 
 | Question | Current default | Decision gate |

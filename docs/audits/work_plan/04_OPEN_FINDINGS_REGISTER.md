@@ -1,7 +1,7 @@
 # 04. Open Findings Register
 
-Version: 1.8.0
-Date: 2026-08-10
+Version: 1.9.0
+Date: 2026-08-15
 Owner: Musashi during `ROLE_SWAP_ACTIVE`; closure of S0-S2 requires an
 independent verifier per `../README.md` and dual-party findings go to Harvey.
 
@@ -1156,6 +1156,20 @@ owner selection and immutable signed-byte handling are integrated and deployed
 at `lts@ea239a4`; independent focused and full-suite verification passed. The
 finding is corrected pending owner closure, while the currently persisted
 IBKR hold still requires a newly signed effect-bound capability.
+
+### 1al. Retsu doctrine review and runtime isolation, 2026-08-15
+
+Canonical evidence:
+
+- `../../handoffs/MUSASHI_RESPONSE_TO_RETSU_QUESTIONS_CRITIQUES_SUGGESTIONS_2026_08_15.md`
+- `../evidence/repro_runs/MUSASHI_RETSU_DOCTRINE_REPRO_2026_08_15.py`
+- `../evidence/repro_runs/MUSASHI_RETSU_DOCTRINE_REPRO_2026_08_15.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_DOIN_DOCTRINE_ALIGNMENT_ORDER_2026_08_15.md`
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-GEN-20260815-247 | S3 | mitigated by single pinned recalculation; permanent correction open | All four Omega seed-101 P1LR cells ran from a mutable checkout and were rejected after an agent handoff changed the untracked-source digest | General Satoshi III implements immutable runtime worktrees; General Musashi verifies |
+| AUD-DOIN-20260815-248 | S3 | open, reproduced | Nonzero transaction fees violate coinbase conservation (`50 + 10` distributes `67.15`) | General Satoshi III implements; General Musashi verifies |
 
 
 ## 2b. Observations Pending Verification (not yet findings)

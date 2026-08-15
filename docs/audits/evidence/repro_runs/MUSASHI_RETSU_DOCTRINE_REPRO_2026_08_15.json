@@ -1,0 +1,60 @@
+{
+  "fee_conservation": {
+    "available_total": 60.0,
+    "block_reward": 50.0,
+    "distributed_total": 67.15,
+    "excess": 7.150000000000006,
+    "outputs": [
+      {
+        "amount": 67.15,
+        "reason": "block_generator",
+        "recipient": "generator-fixture"
+      }
+    ],
+    "reproduced": true,
+    "transaction_fees": 10.0
+  },
+  "schema": "agent_multi.musashi_retsu_doctrine_repro.v1",
+  "source_tree_drift": {
+    "available": true,
+    "cells_failed": [
+      "P1E_LR1E4",
+      "P1E_LR3E5",
+      "P1N_LR1E4",
+      "P1N_LR3E5"
+    ],
+    "experiment_identity": "14e7ce8208ac9776",
+    "failures": [
+      {
+        "cell": "P1E_LR1E4",
+        "error": "RuntimeError: executing source tree moved during the cell: dirty_untracked_digest None -> 'aadbeca8bc8bfbf65667751df8d76b0aaf772ed30999344d9c4ce5b8c6f68a55'",
+        "heartbeat": "/home/harveybc/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed101.failed_source_moved_1837/P1E_LR1E4/heartbeat.json",
+        "seed": 101,
+        "updated_utc": "2026-08-15T22:39:09.192663+00:00"
+      },
+      {
+        "cell": "P1E_LR3E5",
+        "error": "RuntimeError: executing source tree moved during the cell: dirty_untracked_digest None -> 'aadbeca8bc8bfbf65667751df8d76b0aaf772ed30999344d9c4ce5b8c6f68a55'",
+        "heartbeat": "/home/harveybc/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed101.failed_source_moved_1837/P1E_LR3E5/heartbeat.json",
+        "seed": 101,
+        "updated_utc": "2026-08-15T22:46:34.477264+00:00"
+      },
+      {
+        "cell": "P1N_LR1E4",
+        "error": "RuntimeError: executing source tree moved during the cell: dirty_untracked_digest None -> 'aadbeca8bc8bfbf65667751df8d76b0aaf772ed30999344d9c4ce5b8c6f68a55'",
+        "heartbeat": "/home/harveybc/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed101.failed_source_moved_1837/P1N_LR1E4/heartbeat.json",
+        "seed": 101,
+        "updated_utc": "2026-08-15T22:24:02.857896+00:00"
+      },
+      {
+        "cell": "P1N_LR3E5",
+        "error": "RuntimeError: executing source tree moved during the cell: dirty_untracked_digest None -> 'aadbeca8bc8bfbf65667751df8d76b0aaf772ed30999344d9c4ce5b8c6f68a55'",
+        "heartbeat": "/home/harveybc/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed101.failed_source_moved_1837/P1N_LR3E5/heartbeat.json",
+        "seed": 101,
+        "updated_utc": "2026-08-15T22:31:44.213642+00:00"
+      }
+    ],
+    "reproduced": true,
+    "seed": 101
+  }
+}

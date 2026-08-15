@@ -1,8 +1,8 @@
 # Academic Publication and Reproducibility Program
 
 Status: specified; evidence collection and continuous research active; no submission authorized
-Version: 1.1.0
-Date: 2026-07-31
+Version: 1.2.0
+Date: 2026-08-15
 
 ## 1. Purpose and Authority
 
@@ -176,9 +176,19 @@ selection, commit-reveal, quorum logic, checkpoints and deterministic fork
 choice. Network messages are not presently cryptographically authenticated,
 the deployed research profile can accept reported candidate results without
 independent re-evaluation, and one operator controls the observed fleet.
-Byzantine tolerance, Sybil resistance, collusion resistance, permissionless
-economic security and externally anchored finality are non-goals until
-separate implementations and adversarial experiments support them.
+P1 does not currently claim Byzantine tolerance, Sybil resistance, collusion
+resistance, permissionless economic security or externally anchored finality.
+These remain separately registered research questions until implementations
+and adversarial experiments support them. This is a technical scope boundary,
+not an owner slogan or a claim that those properties do not matter.
+
+P1 also distinguishes implemented prototype economics from owner-directed
+design. Current `doin-core` contains a 50-unit halving schedule, time-targeted
+quality threshold, task-count demand proxy and no direct payment for served
+inference. Document 40 records those facts and the separate target of one unit
+per completely filled verified progress certificate. P1 may not describe the
+target as implemented or the current cross-domain weighted sum as a formal
+economic numeraire.
 
 ### P2. Data-First Mixed-Genome Trading Search
 
@@ -363,6 +373,12 @@ Table of contents:
 Publication gate: versioned incident taxonomy, reproducible fault scenarios,
 detection latency, false-alert rate, runtime overhead and recovery evidence.
 Personal and operationally sensitive security details are excluded.
+
+The paper IDs P1-P5 are stable subject identifiers, not publication order.
+The current owner-directed first two outputs are P1 (protocol and bounded
+verification evidence), followed by P5/P13 (the adversarial cross-audit method
+with sealed nulls, typed findings and role-separated review). P2 continues to
+mean the data-first mixed-genome trading paper.
 
 P5 uses the following conflict controls:
 

@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
 Status: E0-E4 complete; historical ETH M0/N14 evidence preserved; invalid M0 successor quarantined pending acceptance correction; nested L1/L2 curriculum and sparse-feature decision program active; multi-venue Paper and social-trading reality commissioning active
-Plan version: 1.33.0
+Plan version: 1.34.0
 Date: 2026-08-15
 Primary implementation repository: `agent-multi`
 
@@ -99,6 +99,7 @@ trading domain.
 | [37 M0-X mechanism falsification](37_M0X_CROSS_ASSET_MECHANISM_PROPOSAL_2026_08_08.md) | Corrected M1 attribution and conditional cross-system mechanism probe |
 | [38 NEAT lessons for L1/L2 and feature selection](38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md) | Nested stopping, isolated L1/L2 curricula, sparse inherited/learned feature selection, staged maturation and non-idle execution authority |
 | [39 Trustless synthetic challenge validation](39_TRUSTLESS_SYNTHETIC_CHALLENGE_VALIDATION.md) | Post-commit synthetic challenges against public-test memorization, separated from real scientific validation |
+| [40 DOIN trust profiles and economic boundary](40_DOIN_TRUST_PROFILES_PROGRESS_CERTIFICATES_AND_ECONOMIC_BOUNDARY.md) | Current trusted operation, conditional untrusted verification, progress certificates, prototype economics and inference-payment boundary |
 
 ## Repository Ownership Summary
 
@@ -290,6 +291,10 @@ adding value.
     config validators with a read-only doctor facade, and pinned non-mutating
     Ruff checks. Measure correctness and disagreement before expanding to other
     repositories or adding another dependency.
+25. Align DOIN trust/economic doctrine without interrupting active experiments:
+    preserve prototype behavior for replay, separate generator identity from
+    draw custody, measure verification cost, and admit no untrusted domain or
+    economic claim before its adversarial evidence gate passes.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 

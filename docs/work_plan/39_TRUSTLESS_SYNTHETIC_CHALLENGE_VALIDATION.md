@@ -3,7 +3,7 @@
 Status: accepted research and protocol-hardening track; current trading
 campaigns remain `synthetic_data_validation: false` until the acceptance gates
 in this document pass
-Version: 1.0.0
+Version: 1.1.0
 Date: 2026-08-15
 Owner decision: synthetic validation is required as a possible answer to the
 public-test overfitting attack in an untrusted optimization network
@@ -124,6 +124,21 @@ provisional until the spike is accepted.
 Seeds are not secret after evaluation. Reproducibility after commitment is a
 requirement; unpredictability before commitment is the security property.
 
+### 5.3 Generator Identity Is Not Draw Custody
+
+The generator identity and a generated sample hash are complementary facts:
+
+- the generator identity binds code, weights, configuration, training-data
+  references/hashes, runtime contract and dependency lock;
+- the draw-custody hash binds one evaluator's generated challenge and its
+  post-commit seed derivation inputs.
+
+Different evaluators may receive distinct deterministic draws. Their draw
+hashes are therefore expected to differ. Each vote must remain reproducible,
+while quorum compares the declared calibrated ensemble statistic. Reusing one
+sample hash as the generator identity or requiring one frozen sample across
+all rounds is prohibited.
+
 ## 6. Generator Ladder and Separation
 
 The consensus challenge generator is a separate champion from the market-state
@@ -217,6 +232,11 @@ The audit must determine, with runtime traces rather than comments:
 Until these questions pass adversarial reproduction, trading remains at
 `diagnostic_only` and current campaigns keep `synthetic_data_validation: false`.
 
+No current domain has passed the complete admission program. In the untrusted
+profile, absence of an admitted generator means zero challenge authority. The
+legacy `0.5` fallback in `doin-core` is a prototype behavior requiring the
+audit/correction program in document 40; it is not this document's policy.
+
 ## 9. Execution Order
 
 This track does not interrupt the corrected ETH L1 difficulty/learning-rate
@@ -250,4 +270,3 @@ The owner's proposal is accepted with this precise meaning:
   model is satisfied; and
 - no, a tolerance margin receives consensus authority before empirical
   calibration and independent adversarial audit.
-
