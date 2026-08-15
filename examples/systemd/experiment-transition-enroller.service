@@ -1,0 +1,52 @@
+# Experiment transition enroller — one fleet-wide observation per pass
+# (order 2026-08-15 §3).
+#
+# WHY THIS UNIT EXISTS: the durable transition queue only learns that an
+# experiment finished when something OBSERVES the whole fleet. The
+# per-host idle guard deliberately does NOT enrol a transition — one
+# host sees only its own seeds and cannot honestly declare a fleet-wide
+# 16/16. `multifront_status.py` is the enroller, because it is the only
+# surface that reads every assigned host.
+#
+# Without this timer the §3 fix is inert: a terminal experiment with no
+# dispatched successor would still hide fleet idle time until a human
+# happened to run the status tool by hand. That is exactly the defect
+# the order names — the P1LR run sat terminal and undispatched for
+# 21.5 hours past its transition budget while the queue entry was null.
+#
+# One pass: read the fleet, and when the current job is terminal,
+# create or update the durable record under
+# ~/.local/state/agent-multi/experiment-transition-queue/. A terminal
+# experiment with no dispatched successor then surfaces as
+# `completed_untransitioned`, and the successor appears as an
+# executable queue item. One deduplicated incident is emitted when an
+# approved successor stays undispatched beyond its transition budget;
+# recovery closes that same incident.
+#
+# RUN THIS ON ONE HOST that can reach every assigned host over ssh
+# (omega). Running it on several hosts is safe — the transition id is
+# content-addressed on the ending job, so concurrent observers converge
+# on ONE record — but it is unnecessary.
+#
+# Exit contract: 0 = the observation pass completed, whatever it found
+# (alerting belongs to the ledger, not to the exit code); nonzero = the
+# enroller itself failed.
+#
+# Ship-only file: installation is a separate reviewed operator step.
+# Do NOT enable units as a side effect of a code review.
+
+[Unit]
+Description=Enrol terminal experiments into the durable transition queue (fleet-wide)
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Documents/GitHub/agent-multi
+Environment=P1LR_ENROLLER_MODE=decision
+EnvironmentFile=-%h/.config/agent-multi/experiment-transition-enroller.env
+ExecStart=%h/anaconda3/envs/trading-stack/bin/python \
+    tools/multifront_status.py --p1lr-mode ${P1LR_ENROLLER_MODE} \
+    --no-emit-alerts $TRANSITION_ENROLLER_EXTRA_ARGS
+# Reading four hosts over ssh can be slow; never let a hung read wedge
+# the timer.
+TimeoutStartSec=600
+Nice=10
