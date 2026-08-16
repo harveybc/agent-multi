@@ -30,6 +30,10 @@ Required checks:
    Do not accept a value merely because a test asserts it; explain whether it
    is a controlled constant, an experimental factor or a later optimization
    target.
+9. Verify every host binds `AGENT_MULTI_GYM_FX_ROOT` and `PYTHONPATH` to the
+   same clean immutable `gym-fx` runtime commit. Independently derive one
+   fleet-wide screen identity and one decision identity; documentation dirt in
+   a canonical checkout must never create a parallel experiment chain.
 
 Return counterexamples first, then reproductions, exact commit/digests, test
 counts and any proposed correction. Do not declare your own findings closed.

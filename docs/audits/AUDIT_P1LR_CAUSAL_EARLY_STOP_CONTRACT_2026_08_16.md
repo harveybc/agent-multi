@@ -48,6 +48,18 @@ so LR and interaction effects are estimable rather than hidden.
 6. The observation contract is applied by materialization and revalidated at
    training/evaluation boundaries.
 
+## Fleet Identity Incident And Correction
+
+The first corrected fleet launch was stopped during its first minute when
+distributed heartbeats exposed two experiment identities. Omega's canonical
+`gym-fx` checkout contains local documentation-only edits while Dragon and
+Gamma are clean. No canonical file was reverted, copied or discarded.
+
+Fleet runs now bind `AGENT_MULTI_GYM_FX_ROOT` and `PYTHONPATH` to an immutable
+clean `gym-fx` runtime worktree at the same commit on all hosts. Launch must
+refuse unless every host independently derives the same screen and decision
+identities before GPU training begins.
+
 ## Residual Research Questions
 
 This experiment does not claim that either LR, `[256,256]`, replay 40,000,

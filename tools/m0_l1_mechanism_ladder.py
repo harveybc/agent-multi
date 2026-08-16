@@ -62,6 +62,7 @@ CONTRACT_SCHEMA = "agent_multi.m0_l1_mechanism_ladder.v1"
 RECORD_SCHEMA = "agent_multi.m0_l1_ladder_arm_record.v1"
 HEARTBEAT_SCHEMA = "agent_multi.mechanism_ladder_heartbeat.v2"
 GYM_FX_ROOT = Path("/home/harveybc/Documents/GitHub/gym-fx")
+GYM_FX_ROOT_ENV = "AGENT_MULTI_GYM_FX_ROOT"
 ARM_ORDER = ("D0_M0_EXACT", "D2_BOUNDARY_ONLY", "D3_COST_PROTECTION",
              "D4_FULL_L1")
 HEARTBEAT_INTERVAL_S = 60
@@ -185,10 +186,12 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
 # ---------------------------------------------------------------------------
 
 def source_identities() -> dict:
+    gym_fx_root = Path(os.environ.get(
+        GYM_FX_ROOT_ENV, str(GYM_FX_ROOT))).expanduser().resolve()
     return {
         "agent-multi": sysid.source_tree_identity(
             sysid.resolve_repo_root(Path(__file__))),
-        "gym-fx": sysid.source_tree_identity(GYM_FX_ROOT),
+        "gym-fx": sysid.source_tree_identity(gym_fx_root),
     }
 
 

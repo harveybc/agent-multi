@@ -35,6 +35,7 @@ SYSTEM_MANIFEST_PATH = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                         "systems/ethusdt_4h_l1_system_v3.json")
 SCHEMA = "agent_multi.l1_factorial_cell_record.v2"
 GYM_FX_ROOT = Path("/home/harveybc/Documents/GitHub/gym-fx")
+GYM_FX_ROOT_ENV = "AGENT_MULTI_GYM_FX_ROOT"
 
 
 def _sha_file(path: Path) -> str:
@@ -63,10 +64,12 @@ def load_system_manifest(path: Path = SYSTEM_MANIFEST_PATH) -> dict:
 
 def source_identities() -> dict:
     """Actual executing trees: this script's own checkout + gym-fx."""
+    gym_fx_root = Path(os.environ.get(
+        GYM_FX_ROOT_ENV, str(GYM_FX_ROOT))).expanduser().resolve()
     return {
         "agent-multi": sysid.source_tree_identity(
             sysid.resolve_repo_root(Path(__file__))),
-        "gym-fx": sysid.source_tree_identity(GYM_FX_ROOT),
+        "gym-fx": sysid.source_tree_identity(gym_fx_root),
     }
 
 

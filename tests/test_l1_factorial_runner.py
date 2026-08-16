@@ -30,6 +30,26 @@ CLEAN_SOURCES = {
 }
 
 
+def test_source_identity_honors_immutable_gym_fx_runtime(
+        tmp_path, monkeypatch):
+    runtime = tmp_path / "gym-fx-runtime"
+    runtime.mkdir()
+    observed = []
+
+    def fake_identity(path):
+        observed.append(Path(path))
+        return {"repo_root": str(path), "commit": "1" * 40,
+                "dirty": False, "dirty_entries": [],
+                "dirty_untracked_digest": None}
+
+    monkeypatch.setenv(runner.GYM_FX_ROOT_ENV, str(runtime))
+    monkeypatch.setattr(runner.sysid, "source_tree_identity",
+                        fake_identity)
+    identities = runner.source_identities()
+    assert observed[-1] == runtime.resolve()
+    assert identities["gym-fx"]["repo_root"] == str(runtime.resolve())
+
+
 class _RecorderPipeline:
     captured: dict | None = None
     result: dict = {}

@@ -77,6 +77,26 @@ def _diff(a: dict, b: dict) -> set:
             if a.get(key, _SENTINEL) != b.get(key, _SENTINEL)}
 
 
+def test_source_identity_honors_immutable_gym_fx_runtime(
+        tmp_path, monkeypatch):
+    runtime = tmp_path / "gym-fx-runtime"
+    runtime.mkdir()
+    observed = []
+
+    def fake_identity(path):
+        observed.append(Path(path))
+        return {"repo_root": str(path), "commit": "1" * 40,
+                "dirty": False, "dirty_entries": [],
+                "dirty_untracked_digest": None}
+
+    monkeypatch.setenv(ladder.GYM_FX_ROOT_ENV, str(runtime))
+    monkeypatch.setattr(ladder.sysid, "source_tree_identity",
+                        fake_identity)
+    identities = ladder.source_identities()
+    assert observed[-1] == runtime.resolve()
+    assert identities["gym-fx"]["repo_root"] == str(runtime.resolve())
+
+
 # ---------------------------------------------------------------------------
 # (a) one-and-only-one semantic delta between adjacent materializations
 # ---------------------------------------------------------------------------
