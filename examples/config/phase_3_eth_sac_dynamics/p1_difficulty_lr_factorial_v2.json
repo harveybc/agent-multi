@@ -1,7 +1,7 @@
 {
  "schema": "agent_multi.p1_difficulty_lr_factorial.v2",
- "$doc": "Corrected-observation L1 factorial (order 2026-08-15 \u00a76; AUD-P1LR-20260815-235). The v1 factorial's every terminal policy trained under the defective 2,724-input observation whose 64 unnormalized raw-price dims killed the actor's first layer, so its INCONCLUSIVE result is additionally qualified INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235 and the 'frozen normal/3e-5' conclusion is withdrawn. THIS contract re-runs the same 2x2 phase-1 difficulty x phase-1 LR design under the accepted 2,660-input observation contract, from per-seed ZERO-UPDATE genesis artifacts (never the legacy anchors), under a NEW experiment identity, output root and replica root. The factors remain ONLY phase-1 difficulty and phase-1 learning rate \u2014 no preprocessing, topology, L2 or retraining-frequency genes were added.",
- "question": "Under the CORRECTED observation contract, do phase-1 difficulty and phase-1 learning rate produce measurably different valid policies? (The v1 answer is invalid for recipe selection: both LR arms converged to the same constant dead-actor policy under the defective representation.)",
+ "$doc": "Corrected-observation L1 causal factorial. The superseded four-epoch decision contract could not exercise early stopping and used a fixed phase-2 LR that differed from one phase-1 LR stratum. This revision preserves the 2x2 difficulty x LR design but applies each cell's LR unchanged across BOTH phases, gives each phase a 1,000-epoch ceiling, and applies the same validation-driven patience, floor and minimum improvement in both phases. Within an LR stratum, phase1_mode is the only resolved-config difference between normal->normal and easy->normal. No preprocessing, topology, L2 or retraining-frequency genes are added.",
+ "question": "With all non-difficulty facts paired, does an easy pre-training phase followed by normal fine-tuning outperform the same training and handoff procedure run normal-only, and does that effect depend on a separately declared constant learning-rate stratum?",
  "experiment": "p1_difficulty_lr_factorial_20260815_v2",
  "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2",
  "asset": "ETHUSD_4h",
@@ -113,8 +113,8 @@
   }
  },
  "held_fixed": {
-  "$doc": "Order \u00a76: every non-factor identity field is pinned exactly as the accepted v1/ladder identity. Replay and optimizer carry remain excluded as factors (optimizer_state_transferred=false, replay_size_at_boundary=0 at every boundary).",
-  "phase2_learning_rate": 3e-05,
+  "$doc": "Every non-factor identity field is paired. The cell LR is constant across phase 1 and phase 2; replay and optimizer reset identically at the boundary in both difficulty arms (optimizer_state_transferred=false, replay_size_at_boundary=0).",
+  "phase2_learning_rate_rule": "match_cell_phase1_learning_rate",
   "phase2_dynamics": "normal_realistic",
   "phase2_action_threshold": 0.1,
   "boundary": {
@@ -124,6 +124,24 @@
   "entropy": {
    "mode": "fixed",
    "value": 0.2
+  },
+  "sac_training_contract": {
+   "$doc": "Explicitly pinned so plugin/library defaults cannot silently change the causal contrast. These values are held fixed here, not claimed optimal; later DOIN domains may optimize them.",
+   "policy": "MlpPolicy",
+   "net_arch": [
+    256,
+    256
+   ],
+   "batch_size": 256,
+   "learning_starts": 1000,
+   "train_freq": 1,
+   "gradient_steps": 1,
+   "gamma": 0.99,
+   "tau": 0.005,
+   "ent_coef": 0.2,
+   "target_update_interval": 1,
+   "target_entropy": "auto",
+   "use_sde": false
   },
   "phase1_handoff_semantics": "l1_trained_epoch_v4",
   "handoff_viability_evidence": "required on every phase-1 checkpoint (WP3 / finding 221 block)",
@@ -234,14 +252,14 @@
   "collapse_outcome": "PHASE1_LR_REGION_COLLAPSED \u2014 stop, do not burn the full run"
  },
  "decision_run": {
-  "$doc": "Only if the screen finds a viable region AND the 16-terminal replica proof passes (finding 225 gate). Document-38 real L1 stopping; same budget/stopping shape as v1 (order: reuse unless \u00a76 says otherwise). Distinct content-addressed identity (profile p1lr_decision_run) and distinct output root; every decision cell starts from the ORIGINAL per-seed zero-update genesis, never a screen terminal.",
+  "$doc": "Causal decision run. Every cell starts from its seed's original zero-update genesis. Each phase can train for up to 1,000 epochs of 20,000 timesteps; both phases use patience 60, floor 40 and min_delta 1e-4. The inactive-policy terminator is disabled so absence of early activity cannot pre-empt the learning question. The outer 2024 role is evaluated once after selection and sealed 2025 remains inaccessible.",
   "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2_decision",
-  "phase2_learning_rate": 3e-05,
+  "phase2_learning_rate_rule": "match_cell_phase1_learning_rate",
   "budget_knobs": {
-   "$doc": "4 phase-1 epochs + 1996 phase-2 max epochs = the 2000 pass-equivalent per-cell ceiling below, at the ladder pass budget.",
+   "$doc": "1,000 phase-1 epochs + 1,000 phase-2 epochs = the 2,000 pass-equivalent per-cell ceiling. Early stopping may use less, but neither phase is a four-epoch smoke.",
    "epoch_timesteps": 20000,
-   "phase1_epochs": 4,
-   "phase2_max_epochs": 1996
+   "phase1_epochs": 1000,
+   "phase2_max_epochs": 1000
   },
   "max_global_pass_equivalent_checkpoints": 2000,
   "patience": 60,
@@ -249,13 +267,17 @@
   "best_checkpoint_restoration": true,
   "stopping": "train-monitor plus inner-validation paired stopping",
   "stopping_knobs": {
+   "easy_patience": 60,
+   "easy_patience_start_epoch": 40,
+   "easy_min_delta": 0.0001,
    "l1_patience": 60,
    "l1_patience_start_epoch": 40,
-   "l1_activity_patience": 40,
+   "l1_min_delta": 0.0001,
+   "l1_activity_patience": 0,
    "l1_activity_patience_start_epoch": 40,
    "total_max_passes": 2000,
-   "phase1_max_fraction": 0.3,
-   "normal_phase_min_passes": 10
+   "phase1_max_fraction": 0.5,
+   "normal_phase_min_passes": 1000
   },
   "truth": "one final outer-validation evaluation after selection; sealed 2025 inaccessible",
   "decision_outcomes": [
@@ -267,13 +289,23 @@
    "INCONCLUSIVE"
   ],
   "effective_stopping_rules": {
-   "$doc": "AUD-P1LR-20260815-234: every terminator that CAN end training is NAMED and the earliest derivable stop epoch is STATED. The activity-ineligible patience (start epoch 40 + budget 40) can end a never-trading cell at epoch 80 of the 2000-pass ceiling \u2014 4% of the budget \u2014 exactly what the v1 prose never said. app/stopping_contract.py refuses any declared-vs-effective drift before a second of GPU is spent.",
+   "$doc": "Every terminator that can end phase 2 is named. Activity stop is explicitly disabled for this experiment; a never-trading policy reaches the 1,000-epoch phase ceiling instead of being rejected around epoch 80. Phase 1 has the same patience/floor/min_delta contract and its own auditable stop summary.",
    "terminators": [
     "l1_early_stop",
-    "activity_stop",
     "max_epochs_budget"
    ],
-   "earliest_stop_epoch": 80
+   "earliest_stop_epoch": 100
+  },
+  "phase1_effective_stopping_rules": {
+   "terminators": [
+    "easy_early_stop",
+    "max_epochs_budget"
+   ],
+   "patience": 60,
+   "patience_start_epoch": 40,
+   "minimum_improvement": 0.0001,
+   "earliest_declared_stop_epoch": 100,
+   "no_eligible_checkpoint_disposition": "run_to_1000_epoch_ceiling"
   }
  },
  "replica": {

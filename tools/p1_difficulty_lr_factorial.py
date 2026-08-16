@@ -261,7 +261,7 @@ DECISION_OUTCOMES = (
 FACTOR_FIELDS = {
     "phase1_dynamics": ("phase1_mode",),
     "phase1_learning_rate": ("phase1_learning_rate",
-                             "easy_learning_rate"),
+                             "easy_learning_rate", "learning_rate"),
 }
 
 # Typed handoff-viability labels — mirrored from
@@ -619,9 +619,17 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
                 f"{rows[seed]}")
 
     held = contract.get("held_fixed") or {}
-    if float(held.get("phase2_learning_rate", float("nan"))) != 3e-05:
+    if version == 2:
+        if held.get("phase2_learning_rate_rule") != \
+                "match_cell_phase1_learning_rate":
+            raise ValueError(
+                "held_fixed.phase2_learning_rate_rule must require the "
+                "phase-2 LR to match the cell phase-1 LR; otherwise the "
+                "difficulty contrast is mixed with an undeclared LR "
+                "transition")
+    elif float(held.get("phase2_learning_rate", float("nan"))) != 3e-05:
         raise ValueError("held_fixed.phase2_learning_rate must be 3e-05 "
-                         "(the active D0 range point, order §8)")
+                         "for replay of the sealed v1 contract")
     if held.get("phase2_dynamics") != "normal_realistic":
         raise ValueError(
             "held_fixed.phase2_dynamics must be normal_realistic")
@@ -636,6 +644,27 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
     if entropy.get("mode") != "fixed" or float(
             entropy.get("value", float("nan"))) != 0.2:
         raise ValueError("held_fixed.entropy must be fixed at 0.2")
+    if version == 2:
+        sac = held.get("sac_training_contract") or {}
+        expected_sac = {
+            "policy": "MlpPolicy",
+            "net_arch": [256, 256],
+            "batch_size": 256,
+            "learning_starts": 1000,
+            "train_freq": 1,
+            "gradient_steps": 1,
+            "gamma": 0.99,
+            "tau": 0.005,
+            "ent_coef": 0.2,
+            "target_update_interval": 1,
+            "target_entropy": "auto",
+            "use_sde": False,
+        }
+        for key, expected in expected_sac.items():
+            if sac.get(key) != expected:
+                raise ValueError(
+                    f"held_fixed.sac_training_contract.{key} must be "
+                    f"{expected!r}; got {sac.get(key)!r}")
 
     knobs = (contract.get("mechanics_screen") or {}).get(
         "budget_knobs") or {}
@@ -711,10 +740,16 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
         raise ValueError("decision_run.output_root must differ from "
                          "the screen output_root (distinct roots per "
                          "mode, finding 226)")
-    if float(decision.get("phase2_learning_rate",
-                          float("nan"))) != 3e-05:
+    if version == 2:
+        if decision.get("phase2_learning_rate_rule") != \
+                "match_cell_phase1_learning_rate":
+            raise ValueError(
+                "decision_run.phase2_learning_rate_rule must be "
+                "match_cell_phase1_learning_rate")
+    elif float(decision.get("phase2_learning_rate",
+                            float("nan"))) != 3e-05:
         raise ValueError("decision_run.phase2_learning_rate must be "
-                         "3e-05")
+                         "3e-05 for replay of v1")
     dknobs = decision.get("budget_knobs") or {}
     for key in ("epoch_timesteps", "phase1_epochs", "phase2_max_epochs"):
         if not isinstance(dknobs.get(key), int) or dknobs[key] < 1:
@@ -736,7 +771,26 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
         raise ValueError("decision_run.best_checkpoint_restoration "
                          "must be true")
     sknobs = decision.get("stopping_knobs") or {}
-    if int(sknobs.get("l1_patience", 0)) != 60 or \
+    expected_stopping = {
+        "easy_patience": 60,
+        "easy_patience_start_epoch": 40,
+        "easy_min_delta": 0.0001,
+        "l1_patience": 60,
+        "l1_patience_start_epoch": 40,
+        "l1_min_delta": 0.0001,
+        "l1_activity_patience": 0,
+        "l1_activity_patience_start_epoch": 40,
+        "total_max_passes": 2000,
+        "phase1_max_fraction": 0.5,
+        "normal_phase_min_passes": 1000,
+    }
+    if version == 2:
+        for key, expected in expected_stopping.items():
+            if sknobs.get(key) != expected:
+                raise ValueError(
+                    f"decision_run.stopping_knobs.{key} must be "
+                    f"{expected!r}; got {sknobs.get(key)!r}")
+    elif int(sknobs.get("l1_patience", 0)) != 60 or \
             int(sknobs.get("l1_patience_start_epoch", 0)) != 40:
         raise ValueError("decision_run.stopping_knobs must carry "
                          "l1_patience=60, l1_patience_start_epoch=40")
@@ -1120,6 +1174,8 @@ def intended_delta_fields(contract: dict, cell_a: str,
     for factor, config_fields in FACTOR_FIELDS.items():
         if spec_a[factor] != spec_b[factor]:
             fields.update(config_fields)
+    if contract_version(contract) == 1:
+        fields.discard("learning_rate")
     return fields
 
 
@@ -1172,6 +1228,7 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         raise ValueError(f"unknown execution mode {mode!r}")
     common = bindings["common"]
     held = contract["held_fixed"]
+    version = contract_version(contract)
     if mode == "decision":
         knobs = contract["decision_run"]["budget_knobs"]
     else:
@@ -1206,7 +1263,14 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         raise RuntimeError(
             "held_fixed.phase2_action_threshold does not equal the v3 "
             "manifest continuous_action_threshold")
-    if float(common["learning_rates"]["normal"]) != float(
+    if version == 2:
+        if held.get("phase2_learning_rate_rule") != \
+                "match_cell_phase1_learning_rate":
+            raise RuntimeError(
+                "the causal factorial requires phase-2 LR to match the "
+                "cell LR; a fixed phase-2 rate would mix difficulty with "
+                "an LR transition")
+    elif float(common["learning_rates"]["normal"]) != float(
             held["phase2_learning_rate"]):
         raise RuntimeError(
             "held_fixed.phase2_learning_rate does not equal the ladder "
@@ -1225,6 +1289,17 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
 
     # --- the ladder-proven held-fixed recipe --------------------------
     config = json.loads(base_path.read_text())
+    if version == 2:
+        sac_contract = held["sac_training_contract"]
+        for key, expected in sac_contract.items():
+            if key.startswith("$"):
+                continue
+            current = config.get(key)
+            if current is not None and current != expected:
+                raise RuntimeError(
+                    f"base SAC setting {key}={current!r} drifted from "
+                    f"the held-fixed causal contract {expected!r}")
+            config[key] = expected
     decision_execution_profile = None
     if mode == "decision":
         decision_execution_profile = load_decision_execution_profile()
@@ -1288,6 +1363,8 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         config["l1_patience"] = int(stopping["l1_patience"])
         config["l1_patience_start_epoch"] = int(
             stopping["l1_patience_start_epoch"])
+        if version == 2:
+            config["l1_min_delta"] = float(stopping["l1_min_delta"])
         config["l1_activity_patience"] = int(
             stopping["l1_activity_patience"])
         config["l1_activity_patience_start_epoch"] = int(
@@ -1297,9 +1374,17 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
             stopping["phase1_max_fraction"])
         config["normal_phase_min_passes"] = int(
             stopping["normal_phase_min_passes"])
-        config["easy_patience"] = 10_000
-        config["execution_cost_curriculum_epochs"] = max(
-            2, int(knobs["phase2_max_epochs"]))
+        if version == 2:
+            config["easy_patience"] = int(stopping["easy_patience"])
+            config["easy_patience_start_epoch"] = int(
+                stopping["easy_patience_start_epoch"])
+            config["easy_min_delta"] = float(stopping["easy_min_delta"])
+            config["require_constant_lr_across_phases"] = True
+            config["require_exact_total_phase_budget"] = True
+        else:
+            config["easy_patience"] = 10_000
+            config["execution_cost_curriculum_epochs"] = max(
+                2, int(knobs["phase2_max_epochs"]))
     else:
         # Screen budget: ONE pass-equivalent, no early stopping fires.
         config["max_epochs"] = int(knobs["phase2_epochs"])
@@ -1318,11 +1403,13 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
                 f"plugin drift: config[{key!r}]={config.get(key)!r} != "
                 f"held-fixed binding {bound!r}")
 
-    # Held fixed: the corrected v4 boundary, phase-2 LR, the v3
-    # cost/protection contract (includes the 0.1 deadband), entropy.
+    # Held fixed: the corrected v4 boundary, the v3 cost/protection
+    # contract (includes the 0.1 deadband), and entropy. The LR is bound
+    # below from the cell factor and is constant across both phases.
     config["phase1_handoff_semantics"] = str(
         held["phase1_handoff_semantics"])
-    config["learning_rate"] = float(held["phase2_learning_rate"])
+    if version == 1:
+        config["learning_rate"] = float(held["phase2_learning_rate"])
     config.update(v3_costs)
     entropy_value = config.get("ent_coef")
     if entropy_value != float(held["entropy"]["value"]):
@@ -1337,7 +1424,7 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
     # a drifted feature set or dimension here — no GPU time is ever
     # spent building an observation the contract did not declare.
     observation_identity = None
-    if contract_version(contract) == 2:
+    if version == 2:
         from pipeline_plugins._observation_contract import (
             apply_observation_contract, feature_columns_sha256,
             validate_observation_contract)
@@ -1380,6 +1467,12 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
                 f"v2 observation contract validated to "
                 f"{validation.get('outcome')!r} — only the feature-"
                 "aware outcome may train (finding 235)")
+        # Return the actually bound config. Keeping only the declaration
+        # while returning the superseded base values made pre-pipeline
+        # consumers see include_price_window=true even though the
+        # training pipeline later repaired it. One resolved config must
+        # tell one truth at every boundary.
+        config = bound
         observation_identity = {
             "observation_contract_sha256":
                 observation_contract_sha256(contract),
@@ -1427,11 +1520,20 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
 
     # --- the cell's declared factor levels, and NOTHING else ----------
     factors = contract["cells"][cell]
+    cell_lr = float(factors["phase1_learning_rate"])
     config["phase1_mode"] = str(factors["phase1_dynamics"])
-    config["phase1_learning_rate"] = float(
-        factors["phase1_learning_rate"])
-    config["easy_learning_rate"] = float(
-        factors["phase1_learning_rate"])
+    config["phase1_learning_rate"] = cell_lr
+    config["easy_learning_rate"] = cell_lr
+    if version == 2:
+        config["learning_rate"] = cell_lr
+        config["require_constant_lr_across_phases"] = True
+        if len({config["phase1_learning_rate"],
+                config["easy_learning_rate"],
+                config["learning_rate"]}) != 1:
+            raise RuntimeError(
+                "learning-rate isolation failed: phase 1 and phase 2 "
+                "must use the same cell LR in the causal difficulty "
+                "contrast")
 
     config["_identity"] = {
         "experiment_contract_sha256": contract["_contract_sha256"],
@@ -1454,13 +1556,25 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
         "cell": cell,
         "factors": dict(factors),
         "held_fixed": {
-            "phase2_learning_rate": float(held["phase2_learning_rate"]),
+            **({
+                "phase2_learning_rate_rule": str(
+                    held["phase2_learning_rate_rule"]),
+                "resolved_phase2_learning_rate": cell_lr,
+            } if version == 2 else {
+                "phase2_learning_rate": float(
+                    held["phase2_learning_rate"]),
+            }),
             "phase2_dynamics": str(held["phase2_dynamics"]),
             "phase2_action_threshold": float(
                 held["phase2_action_threshold"]),
             "phase1_handoff_semantics": str(
                 held["phase1_handoff_semantics"]),
             "entropy": dict(held["entropy"]),
+            **({"sac_training_contract": {
+                key: value for key, value in
+                held["sac_training_contract"].items()
+                if not key.startswith("$")
+            }} if version == 2 else {}),
             "cost_protection_contract": "l1_v3_manifest_bindings",
         },
         "plugins": dict(common["plugins"]),
@@ -2578,6 +2692,20 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                 "selection_basis"),
             "phase1_best_easy_epoch": post_easy_meta.get(
                 "best_easy_epoch"),
+            "phase1_stopped_epoch": post_easy_meta.get(
+                "phase1_stopped_epoch"),
+            "phase1_stop_reason": post_easy_meta.get(
+                "phase1_stop_reason"),
+            "phase1_epochs_run": post_easy_meta.get(
+                "phase1_epochs_run"),
+            "phase1_patience": post_easy_meta.get("phase1_patience"),
+            "phase1_patience_start_epoch": post_easy_meta.get(
+                "phase1_patience_start_epoch"),
+            "phase1_min_delta": post_easy_meta.get("phase1_min_delta"),
+            "phase1_first_positive_monitor_epoch": post_easy_meta.get(
+                "phase1_first_positive_monitor_epoch"),
+            "phase1_positive_monitor_epoch_count": post_easy_meta.get(
+                "phase1_positive_monitor_epoch_count"),
             "phase1_gradient_updates": post_easy_meta.get(
                 "phase1_gradient_updates"),
             "phase1_artifact_sha256": post_easy_meta.get(
@@ -2588,6 +2716,11 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
             "gradient_updates_total": last.get(
                 "gradient_updates_total"),
             "epoch_history": history,
+            "phase2_epochs_run": sum(
+                1 for row in history
+                if int(row.get("epoch", 0)) > 0),
+            "phase2_stopped_epoch": (
+                int(last.get("epoch")) if history else None),
             "stop_reason": result.get("stop_reason"),
             "termination_cause": activity["termination_cause"],
             "activity_stopped_without_eligible_checkpoint": bool(

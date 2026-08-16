@@ -1031,3 +1031,72 @@ recipe.
 
 Machine-readable companion of this disposition:
 `docs/audits/evidence/P1LR_V1_DISPOSITION_QUALIFIER_2026_08_15.json`.
+
+## 21. 2026-08-16 Causal Early-Stopping Correction
+
+APPEND-ONLY. The stopped decision identities that used four phase-1 epochs are
+preserved as diagnostic evidence, but they are not evidence for or against an
+easy pre-training effect. Four epochs with `easy_patience=10000` ended phase 1
+by its hard cap; early stopping could not fire.
+
+### 21.1 Exact question
+
+For each seed and LR stratum, compare:
+
+```text
+control:   normal_realistic -> normal_realistic
+treatment: easy_chronological_continuation -> normal_realistic
+```
+
+The pair shares the same zero-update genesis tensor, chronology, observation,
+SAC architecture, LR, timesteps per epoch, phase boundary, replay/optimizer
+reset, phase budgets, stopping rule, cost/protection contract, selection roles
+and final outer evaluation. Within either LR stratum the only materialized
+configuration difference is `phase1_mode`.
+
+The LR strata remain `1e-4` and `3e-5`, but a cell now uses its stratum LR
+unchanged in both phases. This permits a separate LR main effect and
+difficulty-by-LR interaction without introducing an undeclared LR change at
+the phase boundary. A future phase-specific LR schedule is a separate
+experiment/DOIN domain; it is not folded into this contrast.
+
+### 21.2 Real stopping and compute
+
+Each phase receives:
+
+- maximum 1,000 epochs;
+- 20,000 SAC timesteps per epoch;
+- patience 60;
+- patience floor 40;
+- `min_delta=1e-4` on the declared paired validation utility.
+
+The combined ceiling is 2,000 epochs (40 million timesteps) per cell. The
+phase-2 activity-ineligible terminator is disabled for this experiment. A
+policy that never becomes eligible runs to the phase ceiling and is recorded
+as such; it is not silently discarded around epoch 80. Both phase summaries
+persist maximum, epochs run, best epoch, stopped epoch, stop reason, patience,
+floor and minimum improvement. Phase 1 additionally records the first and
+count of positive monitor-return epochs.
+
+### 21.3 Explicit held-fixed SAC contract
+
+The resolved config pins `MlpPolicy`, `[256,256]`, batch 256, learning starts
+1,000, train frequency 1, one gradient step, gamma 0.99, tau 0.005, fixed
+entropy coefficient 0.2, target update interval 1, target entropy `auto`, no
+SDE, and the decision replay capacity of 40,000. These values are controlled
+for this comparison, not claimed optimal; later topology/training domains may
+optimize them.
+
+The materializer now returns the already-applied 2,660-input observation
+contract (`include_price_window=false`, rolling z-score window 256, clip 10)
+rather than returning legacy base values and relying on a later pipeline repair.
+Train-monitor 2022 and inner-validation 2023 control stopping; outer-validation
+2024 is evaluated once after selection; sealed 2025 is inaccessible.
+
+### 21.4 Interpretation boundary
+
+Easy-positive-return checkpoints are recorded, but positivity is not inserted
+as a treatment-only selection gate in this primary contrast. Doing so would
+change both the treatment and its censoring rule. After the paired result, a
+secondary analysis may test the historical NEAT rule (only hand off a positive
+easy checkpoint) as its own declared factor.

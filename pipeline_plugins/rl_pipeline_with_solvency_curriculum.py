@@ -409,6 +409,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
         "easy_epoch_timesteps": None,     # default: epoch_timesteps
         "easy_max_epochs": 4,             # declared maximum budget
         "easy_patience": 2,               # early stop (budget control only)
+        "easy_patience_start_epoch": 1,
         "easy_min_delta": 0.0,
         # Easy removes the action deadband and uses the existing strictly
         # positive easy-floor execution costs. Normal evaluation restores
@@ -424,7 +425,8 @@ class PipelinePlugin(ValidationPipelinePlugin):
     plugin_debug_vars = [
         *ValidationPipelinePlugin.plugin_debug_vars,
         "easy_epoch_timesteps", "easy_max_epochs", "easy_patience",
-        "easy_min_delta", "easy_continuous_action_threshold",
+        "easy_patience_start_epoch", "easy_min_delta",
+        "easy_continuous_action_threshold",
         "easy_commission_fraction_per_side", "easy_full_spread_rate",
         "easy_slippage_bps_per_side", "easy_min_trades",
         "phase1_handoff_semantics",
@@ -992,6 +994,9 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "easy_max_epochs", self.params["easy_max_epochs"]))
             patience = int(easy_config.get(
                 "easy_patience", self.params["easy_patience"]))
+            patience_start_epoch = max(1, int(easy_config.get(
+                "easy_patience_start_epoch",
+                self.params["easy_patience_start_epoch"])))
             min_delta = float(easy_config.get(
                 "easy_min_delta", self.params["easy_min_delta"]))
             seed = int(easy_config.get("eval_seed",
@@ -1000,6 +1005,8 @@ class PipelinePlugin(ValidationPipelinePlugin):
             best = -math.inf
             best_epoch = None
             waited = 0
+            last_improvement_epoch = None
+            stop_reason = "max_epochs_budget"
             history = []
             save_model = str(config.get("save_model")
                              or "./agent_model.zip")
@@ -1009,7 +1016,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
             post_easy_path.parent.mkdir(parents=True, exist_ok=True)
 
             def evaluate_checkpoint(epoch: int, source: str) -> None:
-                nonlocal best, best_epoch, waited
+                nonlocal best, best_epoch, waited, last_improvement_epoch
                 probe = self._easy_probe(
                     env_plugin_name, easy_config, paths["train"],
                     agent_plugin, model, seed)
@@ -1114,8 +1121,8 @@ class PipelinePlugin(ValidationPipelinePlugin):
                         probe["easy_activity_eligible"]
                         and normal_handoff_eligible)
                     probe["handoff_eligible"] = True
-                    history.append(probe)
                     score = probe["economic_equity"]
+                    improved = False
                     if (
                         probe["activity_eligible"]
                         and math.isfinite(score)
@@ -1124,9 +1131,15 @@ class PipelinePlugin(ValidationPipelinePlugin):
                         best = score
                         best_epoch = epoch
                         waited = 0
+                        last_improvement_epoch = epoch
+                        improved = True
                         agent_plugin.save(model, str(post_easy_path))
-                    elif best_epoch is not None:
+                    elif (best_epoch is not None
+                          and epoch > patience_start_epoch):
                         waited += 1
+                    probe["checkpoint_improved"] = improved
+                    probe["early_stop_patience_used"] = waited
+                    history.append(probe)
                     return
                 probe["normal_handoff_probe_telemetry_only"] = True
                 # AUD-F1-20260808-159: the normal probe is TELEMETRY.
@@ -1139,6 +1152,12 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     env_plugin_name, easy_config,
                     paths.get("train_tail", paths["train"]),
                     agent_plugin, model, seed, "easy_monitor_epoch")
+                easy_monitor_return = easy_monitor.get("total_return")
+                probe["phase1_monitor_total_return"] = easy_monitor_return
+                probe["phase1_monitor_positive_return"] = bool(
+                    isinstance(easy_monitor_return, (int, float))
+                    and math.isfinite(float(easy_monitor_return))
+                    and float(easy_monitor_return) > 0.0)
                 paired = _paired.paired_generalization_weekly_v1(
                     easy_monitor, normal_validation,
                     beta=float(easy_config.get(
@@ -1152,9 +1171,9 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     "reasons": paired["ineligibility_reasons"],
                 }
                 probe["handoff_eligible"] = epoch > 0
-                history.append(probe)
                 # epoch 0 is baseline telemetry and is STRUCTURALLY
                 # ineligible as a treatment handoff (order §7.5)
+                improved = False
                 if (
                     epoch > 0
                     and paired["eligible"]
@@ -1164,9 +1183,15 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     best = paired["paired_score"]
                     best_epoch = epoch
                     waited = 0
+                    last_improvement_epoch = epoch
+                    improved = True
                     agent_plugin.save(model, str(post_easy_path))
-                elif best_epoch is not None:
+                elif (best_epoch is not None
+                      and epoch > patience_start_epoch):
                     waited += 1
+                probe["checkpoint_improved"] = improved
+                probe["early_stop_patience_used"] = waited
+                history.append(probe)
 
             if warm_start_model:
                 evaluate_checkpoint(0, "warm_start_baseline")
@@ -1175,7 +1200,10 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 model.learn(total_timesteps=epoch_ts,
                             reset_num_timesteps=False)
                 evaluate_checkpoint(epoch, "easy_training_epoch")
-                if best_epoch is not None and waited >= patience:
+                if (best_epoch is not None
+                        and epoch > patience_start_epoch
+                        and waited >= patience):
+                    stop_reason = "easy_early_stop"
                     break
 
             trained_epochs = [row for row in history
@@ -1278,6 +1306,26 @@ class PipelinePlugin(ValidationPipelinePlugin):
                                   if phase1_mode == EASY_MODE
                                   else NORMAL_MODE),
                 "best_easy_epoch": best_epoch,
+                "phase1_stop_reason": stop_reason,
+                "phase1_stopped_epoch": int(trained_epochs[-1]["epoch"]),
+                "phase1_last_improvement_epoch": last_improvement_epoch,
+                "phase1_patience": patience,
+                "phase1_patience_start_epoch": patience_start_epoch,
+                "phase1_patience_used": waited,
+                "phase1_min_delta": min_delta,
+                "phase1_eligible_checkpoint_count": sum(
+                    1 for h in trained_epochs
+                    if bool((h.get("paired_selection") or {}).get(
+                        "eligible")
+                    if handoff_semantics != HANDOFF_SEMANTICS_M0_V3
+                    else h.get("activity_eligible"))),
+                "phase1_positive_monitor_epoch_count": sum(
+                    1 for h in trained_epochs
+                    if h.get("phase1_monitor_positive_return") is True),
+                "phase1_first_positive_monitor_epoch": next(
+                    (int(h["epoch"]) for h in trained_epochs
+                     if h.get("phase1_monitor_positive_return") is True),
+                    None),
                 # Finding 200: trained epochs are epoch > 0 ONLY; the
                 # epoch-0 baseline evaluation is telemetry, counted
                 # separately. The legacy alias carries the SAME truthful
@@ -1353,6 +1401,18 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 config=passthrough, env_plugin=env_plugin,
                 agent_plugin=agent_plugin, mode=mode)
 
+        if bool(config.get("require_constant_lr_across_phases", False)):
+            lr_values = {
+                float(config.get("learning_rate")),
+                float(config.get("phase1_learning_rate")),
+                float(config.get("easy_learning_rate")),
+            }
+            if len(lr_values) != 1:
+                raise ValueError(
+                    "causal difficulty contrast requires one constant "
+                    "learning rate across phase 1 and phase 2; got "
+                    f"{sorted(lr_values)}")
+
         ledger = config.get("total_max_passes")
         if ledger is not None:
             total_max = int(ledger)
@@ -1364,6 +1424,12 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 raise ValueError(
                     f"two-phase budget exceeds total_max_passes:"
                     f" {phase1}+{phase2} > {total_max}")
+            if (bool(config.get("require_exact_total_phase_budget", False))
+                    and phase1 + phase2 != total_max):
+                raise ValueError(
+                    "causal difficulty contrast requires the declared "
+                    "phase budgets to exactly consume total_max_passes: "
+                    f"{phase1}+{phase2} != {total_max}")
             if phase1 > int(fraction * total_max):
                 raise ValueError(
                     f"phase-1 budget {phase1} exceeds phase1_max_fraction"
@@ -1396,16 +1462,69 @@ class PipelinePlugin(ValidationPipelinePlugin):
         if _observation_contract_application.get("applied"):
             result["observation_contract"] = (
                 _observation_contract_application)
+        normal_history = result.get("history") or []
+        normal_trained = [row for row in normal_history
+                          if int(row.get("epoch", 0)) > 0]
+        normal_best_epochs = [int(row["epoch"])
+                              for row in normal_history
+                              if row.get("checkpoint_improved") is True]
+        phase1_mode = str(config.get("phase1_mode", EASY_MODE))
         result["curriculum"] = {
             "schema": "agent_multi.solvency_curriculum.result.v1",
-            "phases": ["easy_chronological_continuation",
-                       "normal_realistic"],
+            "phases": [phase1_mode, NORMAL_MODE],
             "post_easy": post_easy["meta"],
             "post_normal_artifact": result.get("best_model_path"),
             "replay_buffer_boundary": (
                 "fresh buffer via artifact reload at the dynamics"
                 " boundary; easy transitions excluded from normal"
                 " updates"),
-            "selection_basis": "normal_validation_only",
+            "selection_basis": str(
+                config.get("selection_metric")
+                or "normal_validation_only"),
+            "learning_rate_contract": {
+                "constant_across_phases": bool(
+                    config.get("require_constant_lr_across_phases", False)),
+                "phase1_learning_rate": (
+                    float(config["phase1_learning_rate"])
+                    if config.get("phase1_learning_rate") is not None
+                    else None),
+                "phase2_learning_rate": (
+                    float(config["learning_rate"])
+                    if config.get("learning_rate") is not None else None),
+            },
+            "phase_summaries": {
+                "phase1": {
+                    "mode": phase1_mode,
+                    "max_epochs": int(config.get("easy_max_epochs", 0)),
+                    "epochs_run": post_easy["meta"].get(
+                        "phase1_epochs_run"),
+                    "best_epoch": post_easy["meta"].get(
+                        "best_easy_epoch"),
+                    "stopped_epoch": post_easy["meta"].get(
+                        "phase1_stopped_epoch"),
+                    "stop_reason": post_easy["meta"].get(
+                        "phase1_stop_reason"),
+                    "patience": int(config.get("easy_patience", 0)),
+                    "patience_start_epoch": int(config.get(
+                        "easy_patience_start_epoch", 1)),
+                    "min_delta": float(config.get("easy_min_delta", 0.0)),
+                },
+                "phase2": {
+                    "mode": NORMAL_MODE,
+                    "max_epochs": int(config.get("max_epochs", 0)),
+                    "epochs_run": len(normal_trained),
+                    "best_epoch": (normal_best_epochs[-1]
+                                   if normal_best_epochs else None),
+                    "stopped_epoch": (int(normal_trained[-1]["epoch"])
+                                      if normal_trained else None),
+                    "stop_reason": result.get("stop_reason"),
+                    "patience": int(config.get("l1_patience", 0)),
+                    "patience_start_epoch": int(config.get(
+                        "l1_patience_start_epoch", 1)),
+                    "min_delta": float(config.get("l1_min_delta", 0.0)),
+                    "activity_patience": int(config.get(
+                        "l1_activity_patience", 0)),
+                },
+            },
         }
         return result

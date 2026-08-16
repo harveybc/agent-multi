@@ -1475,6 +1475,8 @@ class PipelinePlugin:
                         "selection_metric": baseline_selection_metric,
                         "composite_raw": baseline_raw,
                         "composite": baseline_composite,
+                        "checkpoint_improved": bool(
+                            baseline_trade_gate),
                         "early_stop_trade_gate_passed": baseline_trade_gate,
                         "train_tail_trades": baseline_train_tail_trades,
                         "val_trades": baseline_val_trades,
@@ -1638,7 +1640,7 @@ class PipelinePlugin:
                     )
                     patience_eligible = (
                         checkpoint_eligible
-                        and epoch >= l1_patience_start_epoch
+                        and epoch > l1_patience_start_epoch
                     )
                     # AUD-F1-20260806-127: activity-ineligible epochs
                     # consume their OWN bounded budget. They are never
@@ -1650,7 +1652,7 @@ class PipelinePlugin:
                     # hard epoch cap.
                     if checkpoint_eligible:
                         activity_ineligible_streak = 0
-                    elif epoch >= activity_patience_start_epoch:
+                    elif epoch > activity_patience_start_epoch:
                         activity_ineligible_streak += 1
                     best_composite, no_improve, improved = _update_l1_checkpoint_state(
                         composite=composite,
@@ -1718,6 +1720,7 @@ class PipelinePlugin:
                         **selection_details,
                         "composite_raw": composite_raw,
                         "composite": composite,
+                        "checkpoint_improved": improved,
                         "best_composite": best_composite if best_checkpoint_saved else None,
                         "l1_checkpoint_eligible": checkpoint_eligible,
                         "l1_patience_eligible": patience_eligible,
@@ -1810,7 +1813,7 @@ class PipelinePlugin:
                         l1_status = f"{no_improve}/{l1_patience}"
                     elif checkpoint_eligible:
                         l1_status = (
-                            f"epoch-warmup<{l1_patience_start_epoch}")
+                            f"epoch-warmup<={l1_patience_start_epoch}")
                     elif int(nts_after) < int(
                             l1_min_checkpoint_timesteps):
                         l1_status = (

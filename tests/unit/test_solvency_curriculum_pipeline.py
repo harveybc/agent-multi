@@ -229,10 +229,47 @@ def test_easy_early_stop_respects_budget(harness):
     # its full declared budget, then hands off the TERMINAL trained
     # epoch — never the anchor (invariant 3).
     assert meta["easy_epochs_run"] == 5      # no warm start: 5 trained
+    assert meta["phase1_stopped_epoch"] == 5
+    assert meta["phase1_stop_reason"] == "max_epochs_budget"
+    assert meta["phase1_patience"] == 1
     assert meta["selection_basis"] == "terminal_trained_epoch_fallback"
     assert Path(parent_calls[0]["config"]["warm_start_model"]).read_text() == (
         "fresh+10+10+10+10+10"
     )
+
+
+def test_causal_contrast_refuses_learning_rate_drift_before_training(
+        harness):
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    config = _config(tmp_path)
+    config.update({
+        "require_constant_lr_across_phases": True,
+        "phase1_learning_rate": 1e-4,
+        "easy_learning_rate": 1e-4,
+        "learning_rate": 3e-5,
+    })
+    with pytest.raises(ValueError, match="one constant learning rate"):
+        pipeline.run_pipeline(
+            config=config, env_plugin=None, agent_plugin=FakeAgent(),
+            mode="train")
+    assert parent_calls == []
+
+
+def test_causal_contrast_refuses_partial_total_epoch_budget_before_training(
+        harness):
+    pipeline, _made_envs, parent_calls, tmp_path = harness
+    config = _config(tmp_path)
+    config.update({
+        "total_max_passes": 10,
+        "easy_max_epochs": 4,
+        "max_epochs": 5,
+        "require_exact_total_phase_budget": True,
+    })
+    with pytest.raises(ValueError, match="exactly consume"):
+        pipeline.run_pipeline(
+            config=config, env_plugin=None, agent_plugin=FakeAgent(),
+            mode="train")
+    assert parent_calls == []
 
 
 def test_inactive_phase1_still_hands_off_terminal_never_anchor(harness):

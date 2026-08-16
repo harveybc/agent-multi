@@ -563,6 +563,9 @@ class TestReq6TreatmentReachesTraining:
                 pytest.approx(expected_lr), cell
             assert config["easy_learning_rate"] == \
                 pytest.approx(expected_lr), cell
+            assert config["learning_rate"] == \
+                pytest.approx(expected_lr), cell
+            assert config["require_constant_lr_across_phases"] is True
         records = _records_of(rt, summary)
         for cell, record in records.items():
             assert record["phase1_mode"] == \
@@ -583,6 +586,55 @@ class TestReq6TreatmentReachesTraining:
                 assert _diff(configs[cell_a], configs[cell_b]) == \
                     p1.intended_delta_fields(rt.contract, cell_a,
                                              cell_b)
+
+    def test_decision_budget_and_stopping_are_real_and_symmetric(
+            self, rt, tmp_path):
+        configs = {
+            cell: p1.materialize_cell_config(
+                rt.contract, rt.bindings, 101, cell,
+                tmp_path / cell, mode="decision")
+            for cell in p1.CELLS
+        }
+        for cell, config in configs.items():
+            assert config["easy_max_epochs"] == 1000, cell
+            assert config["max_epochs"] == 1000, cell
+            assert config["easy_patience"] == 60, cell
+            assert config["l1_patience"] == 60, cell
+            assert config["easy_patience_start_epoch"] == 40, cell
+            assert config["l1_patience_start_epoch"] == 40, cell
+            assert config["easy_min_delta"] == pytest.approx(1e-4), cell
+            assert config["l1_min_delta"] == pytest.approx(1e-4), cell
+            assert config["l1_activity_patience"] == 0, cell
+            assert config["total_max_passes"] == 2000, cell
+            assert config["require_exact_total_phase_budget"] is True, cell
+            assert config["net_arch"] == [256, 256], cell
+            assert config["batch_size"] == 256, cell
+            assert config["learning_starts"] == 1000, cell
+            assert config["train_freq"] == 1, cell
+            assert config["gradient_steps"] == 1, cell
+            assert config["gamma"] == pytest.approx(0.99), cell
+            assert config["tau"] == pytest.approx(0.005), cell
+            assert config["ent_coef"] == pytest.approx(0.2), cell
+            assert config["target_update_interval"] == 1, cell
+            assert config["target_entropy"] == "auto", cell
+            assert config["use_sde"] is False, cell
+
+    @pytest.mark.parametrize("normal_cell,easy_cell", [
+        ("P1N_LR1E4", "P1E_LR1E4"),
+        ("P1N_LR3E5", "P1E_LR3E5"),
+    ])
+    def test_difficulty_contrast_changes_only_phase1_mode(
+            self, rt, tmp_path, normal_cell, easy_cell):
+        configs = {}
+        for cell in (normal_cell, easy_cell):
+            config = p1.materialize_cell_config(
+                rt.contract, rt.bindings, 101, cell,
+                tmp_path / "shared", mode="decision")
+            config.pop("_identity")
+            configs[cell] = config
+        assert _diff(configs[normal_cell], configs[easy_cell]) == {
+            "phase1_mode"
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -651,9 +703,10 @@ class TestReq7BothPhases2660:
             rt.contract, rt.bindings, 101, "P1E_LR1E4",
             tmp_path / "cell")
         config.pop("_identity")
-        # Preserve the exact pre-fix condition: materialization validates a
-        # scratch copy while the base runtime field remains legacy/raw.
-        assert config["include_price_window"] is True
+        # Materialization returns the same bound representation that
+        # training and final replay consume; no boundary sees the legacy
+        # raw-price window.
+        assert config["include_price_window"] is False
 
         captured = {}
 
