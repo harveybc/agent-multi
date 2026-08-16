@@ -346,6 +346,14 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "runtime_worktree.py": {
+   "purpose": "Runtime source isolation (WP0, order 2026-08-15 §2): the ONE shared mechanism for pinned experiment worktrees. ensure_runtime_worktree(commit) creates-or-verifies a DEDICATED DETACHED worktree bound to one commit under the declared runtime root (~/Documents/GitHub/.runtime, override P1LR_RUNTIME_ROOT/AGENT_MULTI_RUNTIME_ROOT), refusing typed on a dirty tree (REFUSED_SOURCE_DIRTY), a branch head or non-worktree (REFUSED_SOURCE_NOT_ISOLATED) or a retargeted commit (REFUSED_WORKTREE_COMMIT_MISMATCH); assert_isolated_launch() is the runner launch gate that refuses, before any GPU/model work, a launch whose EXECUTING tree is not a clean detached worktree under the runtime root — the correction for the 2026-08-15 incident where an untracked handoff written into the canonical checkout failed all four omega seed-101 P1LR cells. CLI: 'ensure <commit> [--label]' prints the pinned path + facts; 'verify' type-checks the executing tree (exit 0 facts / exit 4 typed refusal). See docs/ops/RUNTIME_SOURCE_ISOLATION.md",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "mutability_note": "'verify' and assert_isolated_launch are strictly read-only over local git facts; 'ensure' creates at most one detached worktree under the runtime root via git worktree add --detach and never touches the canonical checkout, existing worktrees (verify-only) or any run root",
+   "authority_class": "launch_gate",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

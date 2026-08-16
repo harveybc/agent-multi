@@ -45,6 +45,30 @@ def canonical_sha(obj: Any) -> str:
 # source identity — actual executing tree, dirty-aware
 # ---------------------------------------------------------------------------
 
+class SourceDriftError(RuntimeError):
+    """The executing source tree moved while an experiment held it.
+
+    WP0 (order 2026-08-15 §2): the 2026-08-15 incident — an agent wrote
+    an untracked handoff into the CANONICAL checkout while four cells
+    executed from it — surfaced as an untyped RuntimeError inside
+    SEED_FAILED. This typed subclass keeps the exact legacy message
+    (callers matching "executing source tree moved" still match) while
+    letting status/guard paths classify the failure distinctly:
+    ``failure_class == "source_drift"`` and the retry is eligible,
+    because a relaunch from the pinned runtime worktree is immune to
+    canonical-checkout writes.
+    """
+
+    failure_class = "source_drift"
+
+    def __init__(self, message: str, *, drifted_key: str | None = None,
+                 before: Any = None, after: Any = None) -> None:
+        super().__init__(message)
+        self.drifted_key = drifted_key
+        self.before = before
+        self.after = after
+
+
 def _git(repo_root: Path, *args: str) -> str:
     proc = subprocess.run(["git", "-C", str(repo_root), *args],
                           capture_output=True, text=True)
@@ -63,13 +87,26 @@ def resolve_repo_root(anchor_file: Path) -> Path:
 
 
 def source_tree_identity(repo_root: Path) -> Dict[str, Any]:
-    """Full commit + digest over every dirty/untracked file's content."""
+    """Full commit + digest over every dirty/untracked file's content.
+
+    ``dirty_untracked_digest`` is the sealed combined digest (byte-frozen
+    — v1 experiment identities fold it in). WP0 additionally publishes
+    the SEPARATE ``tracked_diff_digest`` (content digest over modified/
+    staged TRACKED files) and ``untracked_digest`` (content digest over
+    ``??`` untracked files), both ``None`` on a clean tree, so a cell
+    record can bind "tracked diff" and "untracked" custody facts
+    distinctly at materialization and terminal custody.
+    """
     repo_root = Path(repo_root).resolve()
     commit = _git(repo_root, "rev-parse", "HEAD").strip()
     porcelain = _git(repo_root, "status", "--porcelain",
                      "--untracked-files=all")
     entries = []
     digest = hashlib.sha256()
+    tracked_digest = hashlib.sha256()
+    untracked_digest = hashlib.sha256()
+    tracked_seen = False
+    untracked_seen = False
     for line in sorted(porcelain.splitlines()):
         if not line.strip():
             continue
@@ -78,24 +115,42 @@ def source_tree_identity(repo_root: Path) -> Dict[str, Any]:
         file_sha = (sha_file(target) if target.is_file() else "absent")
         entries.append({"status": status.strip() or "??",
                         "path": rel, "sha256": file_sha})
-        digest.update(f"{status}\0{rel}\0{file_sha}\n".encode())
+        chunk = f"{status}\0{rel}\0{file_sha}\n".encode()
+        digest.update(chunk)
+        if (status.strip() or "??") == "??":
+            untracked_seen = True
+            untracked_digest.update(chunk)
+        else:
+            tracked_seen = True
+            tracked_digest.update(chunk)
     return {
         "repo_root": str(repo_root),
         "commit": commit,
         "dirty": bool(entries),
         "dirty_entries": entries,
         "dirty_untracked_digest": (digest.hexdigest() if entries else None),
+        "tracked_diff_digest": (tracked_digest.hexdigest()
+                                if tracked_seen else None),
+        "untracked_digest": (untracked_digest.hexdigest()
+                             if untracked_seen else None),
     }
 
 
 def assert_source_identity_unmoved(before: Dict[str, Any],
                                    after: Dict[str, Any]) -> None:
-    """Fail closed when the executing tree or its digest moved mid-cell."""
+    """Fail closed when the executing tree or its digest moved mid-cell.
+
+    Raises the typed :class:`SourceDriftError` (a RuntimeError subclass
+    keeping the legacy message) so runner/status/guard paths classify
+    the failure as ``source_drift`` instead of an anonymous crash.
+    """
     for key in ("repo_root", "commit", "dirty_untracked_digest"):
         if before.get(key) != after.get(key):
-            raise RuntimeError(
+            raise SourceDriftError(
                 "executing source tree moved during the cell: "
-                f"{key} {before.get(key)!r} -> {after.get(key)!r}")
+                f"{key} {before.get(key)!r} -> {after.get(key)!r}",
+                drifted_key=key, before=before.get(key),
+                after=after.get(key))
 
 
 # ---------------------------------------------------------------------------
