@@ -65,6 +65,7 @@ from tools.multifront_status import (  # noqa: E402  (path set above)
     P1LR_MODES,
     P1LR_UNIT_TEMPLATES,
     P1lrModeRefusal,
+    classify_p1lr_failure,
     p1lr_mode_binding,
     p1lr_verify_identity_binding,
 )
@@ -300,11 +301,20 @@ def seed_facts(contract: dict, identity: str, seed: int,
                 newest_heartbeat[0] is None or mtime > newest_heartbeat[0]):
             newest_heartbeat = (mtime, path)
     terminal_state = None
+    heartbeat_error = None
+    heartbeat_failure_class = None
+    heartbeat_cell = None
     if newest_heartbeat[1] is not None:
         try:
             loaded = json.loads(newest_heartbeat[1].read_text())
             if isinstance(loaded, dict):
                 terminal_state = loaded.get("terminal_state")
+                # WP0 rule 4: the error text and the runner-declared
+                # failure class ride along so the poll classifies a
+                # SEED_FAILED-due-to-source-drift distinctly.
+                heartbeat_error = loaded.get("error")
+                heartbeat_failure_class = loaded.get("failure_class")
+                heartbeat_cell = loaded.get("cell")
         except (OSError, ValueError):
             pass
     progress_age = (round(now.timestamp() - newest_mtime, 1)
@@ -315,6 +325,9 @@ def seed_facts(contract: dict, identity: str, seed: int,
         "pending_cells": [c for c in cells if c not in records],
         "progress_age_seconds": progress_age,
         "last_heartbeat_terminal_state": terminal_state,
+        "last_heartbeat_error": heartbeat_error,
+        "last_heartbeat_failure_class": heartbeat_failure_class,
+        "last_heartbeat_cell": heartbeat_cell,
         "seed_dir": str(seed_dir),
     }
 
@@ -588,6 +601,19 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             entry["transition_id"] = transition.get("transition_id")
             entry["next_job_id"] = transition.get("next_job_id")
             entry["transition_blockers"] = transition.get("blockers")
+
+        # WP0 rule 4: a failed/refused newest heartbeat is CLASSIFIED —
+        # a SEED_FAILED-due-to-source-drift renders failure_class
+        # source_drift with retry_eligible true (the bounded restart /
+        # systemd Restart=on-failure IS the scheduled retry), never
+        # silent progress.
+        failure = classify_p1lr_failure(
+            facts.get("last_heartbeat_terminal_state"),
+            facts.get("last_heartbeat_error"),
+            declared_class=facts.get("last_heartbeat_failure_class"),
+            unit=unit, cell=facts.get("last_heartbeat_cell"))
+        if failure is not None:
+            entry["failure"] = failure
 
         if stalled:
             unit_exists = bool(unit_exists_fn(unit))

@@ -1403,6 +1403,97 @@ class P1lrModeRefusal(ValueError):
         return block
 
 
+# ── WP0 rule 4 (order 2026-08-15 §2): source drift renders a FAILED
+# CELL plus scheduled retry — never silent progress, never an anonymous
+# crash. The 2026-08-15 incident: an untracked handoff written into the
+# canonical checkout failed all four omega seed-101 cells; the guard's
+# refusal was correct, but status showed an untyped SEED_FAILED and
+# recovery was manual.
+P1LR_FAILURE_CLASSES = ("source_drift", "source_isolation_refused",
+                        "unclassified")
+P1LR_SOURCE_DRIFT_MARKERS = ("executing source tree moved",
+                             "SourceDriftError")
+P1LR_SOURCE_ISOLATION_REFUSALS = ("REFUSED_SOURCE_NOT_ISOLATED",
+                                  "REFUSED_SOURCE_DIRTY")
+P1LR_FAILED_TERMINAL_STATES = ("CELL_FAILED", "SEED_FAILED")
+
+
+def classify_p1lr_failure(terminal_state: Any, error: Any = None, *,
+                          declared_class: Any = None,
+                          unit: Optional[str] = None,
+                          cell: Optional[str] = None
+                          ) -> Optional[dict[str, Any]]:
+    """Typed classification of a failed/refused P1LR heartbeat state.
+
+    Returns ``None`` for non-failure states. A ``CELL_FAILED`` /
+    ``SEED_FAILED`` whose error (or runner-declared ``failure_class``)
+    names source drift classifies ``source_drift`` with
+    ``retry_eligible: true`` and the exact scheduled-retry facts
+    (systemd Restart=on-failure retries exit 1; the idle guard's §7.8
+    bounded restart covers a dead unit; the rerun executes ONLY
+    missing/failed cells). A ``REFUSED_SOURCE_*`` launch refusal is
+    ``source_isolation_refused`` with ``retry_eligible: false`` — a
+    configuration refusal (exit class 4, RestartPreventExitStatus) is
+    fixed by pinning the runtime worktree, never by blind restart.
+    """
+    ts = str(terminal_state or "")
+    error_text = str(error or "")
+    if ts in P1LR_SOURCE_ISOLATION_REFUSALS:
+        return {
+            "failure_class": "source_isolation_refused",
+            "terminal_state": ts,
+            "failed_cell": cell,
+            "error": (error or None),
+            "retry_eligible": False,
+            "reason": ("launch refused: the executing tree is not a "
+                       "clean detached worktree under the declared "
+                       "runtime root (WP0); exit class 4 is never "
+                       "blindly restarted"),
+            "remediation": (
+                "python tools/runtime_worktree.py ensure <commit>, "
+                "point the unit's WorkingDirectory at the pinned "
+                "worktree (examples/systemd/pin_p1lr_decision_runtime"
+                ".sh pattern), then systemctl --user reset-failed "
+                f"{unit or '<unit>'} && systemctl --user start "
+                f"{unit or '<unit>'}"),
+        }
+    if ts not in P1LR_FAILED_TERMINAL_STATES:
+        return None
+    failure_class = str(declared_class) if declared_class else (
+        "source_drift" if any(marker in error_text for marker
+                              in P1LR_SOURCE_DRIFT_MARKERS)
+        else "unclassified")
+    block: dict[str, Any] = {
+        "failure_class": failure_class,
+        "terminal_state": ts,
+        "failed_cell": cell,
+        "error": (error or None),
+        "retry_eligible": True,
+        "retry": {
+            "scheduled_by": [
+                "systemd Restart=on-failure (SEED_FAILED exits 1)",
+                "p1lr_idle_guard bounded restart (order 2026-08-11 "
+                "§7.8) when no unit restart lands",
+            ],
+            "retry_command": (f"systemctl --user restart {unit}"
+                              if unit else None),
+            "retry_semantics": (
+                "the rerun executes ONLY missing/failed cells after "
+                "the seed batch; complete cell records are reused "
+                "byte-identically (ALREADY_COMPLETE) — WP0 rule 5"),
+        },
+    }
+    if failure_class == "source_drift":
+        block["reason"] = (
+            "the executing source tree moved (commit / tracked diff / "
+            "untracked digest) while the cell ran; the source-identity "
+            "guard failed the cell rather than certify drifted code. "
+            "The retry is eligible because the relaunch executes from "
+            "the pinned runtime worktree, which is immune to canonical-"
+            "checkout writes (WP0 rule 1)")
+    return block
+
+
 def p1lr_mode_binding(contract: dict, mode: str) -> dict[str, Any]:
     """Everything mode-dependent, derived from ONE validated mode.
 
@@ -1883,6 +1974,7 @@ def collect_p1lr_factorial(
     any_fact = False
     rejected_records: list[dict[str, Any]] = []
     unreadable_seeds: list[int] = []
+    failed_cells: list[dict[str, Any]] = []
     newest_finished: Optional[datetime] = None
 
     for seed in seeds:
@@ -1978,6 +2070,23 @@ def collect_p1lr_factorial(
                 f"heartbeat declares mode {hb.get('mode')!r} under the "
                 f"{binding['mode']} root {output_root}: the artifact does "
                 "not belong to the mode being read")
+
+        # WP0 rule 4: a failed/refused heartbeat state is CLASSIFIED —
+        # source drift renders a typed failed cell plus its scheduled
+        # retry, never silent progress or an anonymous crash.
+        failure = classify_p1lr_failure(
+            terminal_state, hb.get("error"),
+            declared_class=hb.get("failure_class"),
+            unit=unit, cell=cell)
+        if failure is not None:
+            entry["failure"] = failure
+            failed_cells.append({
+                "seed": seed,
+                "cell": cell,
+                "failure_class": failure["failure_class"],
+                "terminal_state": failure["terminal_state"],
+                "retry_eligible": failure["retry_eligible"],
+            })
 
         running_now = bool(hb_fresh and terminal_state == "RUNNING"
                            and cell)
@@ -2289,6 +2398,14 @@ def collect_p1lr_factorial(
                        f"under the {binding['mode']} output root "
                        f"{output_root}")
         unavailable.append({"field": field, "reason": state_basis})
+    if failed_cells and state != "unavailable":
+        # WP0 rule 4: failed cells are NAMED in the block-level basis —
+        # a reader never has to open per-worker entries to learn that
+        # source drift (or any failure) killed cells awaiting retry.
+        state_basis += (
+            f"; {len(failed_cells)} FAILED cell state(s) classified "
+            f"({sorted({f['failure_class'] for f in failed_cells})}) — "
+            "failures[] carries the scheduled retry")
 
     block: dict[str, Any] = {
         "source": "p1lr_factorial",
@@ -2357,6 +2474,8 @@ def collect_p1lr_factorial(
         }
     if rejected_records:
         block["records_rejected_mode_mismatch"] = rejected_records
+    if failed_cells:
+        block["failures"] = failed_cells
     other_activity = _p1lr_other_mode_activity(binding, now,
                                                stale_after_seconds)
     if other_activity is not None:
