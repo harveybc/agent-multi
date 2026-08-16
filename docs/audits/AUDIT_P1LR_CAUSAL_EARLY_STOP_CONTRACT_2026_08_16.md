@@ -107,6 +107,10 @@ persist booleans equivalent to `activity_required_for_dispatch=false` and
 `activity_required_for_promotion=true`. No code or gate mutation is allowed
 inside the running identity.
 
+The exact 16-cell cross-table is persisted as
+`evidence/P1LR_CAUSAL_SCREEN_ACTIVITY_CROSSTAB_2026_08_16.json`; it is derived
+from the accepted gate rather than transcribed from either agent's prose.
+
 Satoshi's statement that no-activity patience should terminate the run applies
 to the superseded contract. In the accepted contract the activity terminator
 is disabled. Direct runtime evidence on seed 404 reached epoch 99 with
@@ -131,6 +135,13 @@ runtime authority existed on a separate pushed branch and was not discoverable
 from Satoshi's canonical-checkout-only search. The durable evidence companion
 `P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json` now names the accepted sources,
 identities, unit family and retired identity without modifying runtime output.
+
+Standing authority rule: a fleet-wide mask may be created only by the owner, a
+currently designated runtime controller named in durable authority evidence,
+or a pre-approved automatic containment mechanism. An observer may report an
+idle or conflicting-runtime condition but may not turn that observation into
+mutation authority. Emergency containment must be recorded durably as part of
+the same incident response.
 
 The eight masks are deliberate containment. Identity `cdf30aebf585385b` and
 its old unit names are formally retired and must not be restarted, unmasked or

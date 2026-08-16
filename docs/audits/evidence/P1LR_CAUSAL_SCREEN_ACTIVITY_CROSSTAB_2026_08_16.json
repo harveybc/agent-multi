@@ -1,0 +1,35 @@
+{
+  "schema": "agent_multi.p1lr_screen_activity_crosstab.v1",
+  "source": {
+    "screen_identity": "0c70ab2ce7804750",
+    "contract_sha256": "70ef4cb3e66b3360d4a272d544e680eeefc35ce41e384526c502b01a273debfd",
+    "screen_gate_sha256": "690507c40b4a9ad9bac6b246592049f569c01701dab15ab9d10991bcc4ffdb0f",
+    "records_present": 16,
+    "records_expected": 16,
+    "activity_classification": "PARTIAL_ACTIVITY_SURVIVAL",
+    "performance_claims": "none"
+  },
+  "totals": {
+    "mechanically_viable": 7,
+    "activity_active": 5,
+    "activity_inactive": 11
+  },
+  "cells": [
+    {"seed": 101, "cell": "P1E_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 202, "cell": "P1E_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 303, "cell": "P1E_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 404, "cell": "P1E_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 101, "cell": "P1E_LR3E5", "handoff_viability": "VIABLE", "activity_status": "inactive"},
+    {"seed": 202, "cell": "P1E_LR3E5", "handoff_viability": "VIABLE", "activity_status": "active"},
+    {"seed": 303, "cell": "P1E_LR3E5", "handoff_viability": "VIABLE", "activity_status": "active"},
+    {"seed": 404, "cell": "P1E_LR3E5", "handoff_viability": "VIABLE", "activity_status": "active"},
+    {"seed": 101, "cell": "P1N_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 202, "cell": "P1N_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 303, "cell": "P1N_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 404, "cell": "P1N_LR1E4", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 101, "cell": "P1N_LR3E5", "handoff_viability": "VIABLE", "activity_status": "inactive"},
+    {"seed": 202, "cell": "P1N_LR3E5", "handoff_viability": "BELOW_NORMAL_THRESHOLD", "activity_status": "inactive"},
+    {"seed": 303, "cell": "P1N_LR3E5", "handoff_viability": "VIABLE", "activity_status": "active"},
+    {"seed": 404, "cell": "P1N_LR3E5", "handoff_viability": "VIABLE", "activity_status": "active"}
+  ]
+}

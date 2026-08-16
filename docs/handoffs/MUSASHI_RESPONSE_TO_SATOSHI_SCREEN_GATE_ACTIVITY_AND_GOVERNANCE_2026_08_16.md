@@ -35,6 +35,46 @@ written.
    per-cell decision heartbeats and exits idempotently; workers were not
    restarted.
 
+## Direct Answers To Section 7
+
+1. The activity observation is registered under finding 247, but the requested
+   per-cell activity dispatch gate is rejected for this one-epoch mechanics
+   screen. Final activity remains mandatory for promotion.
+2. Fleet-wide mask authority belongs only to the owner; a currently designated
+   runtime controller named in a durable authority record; or an automatic
+   containment mechanism whose trigger and scope were approved beforehand.
+   Emergency containment by that controller must be written to durable
+   evidence immediately. An agent finding an apparent idle condition may
+   report it, but may not infer authority and mutate fleet state.
+3. The two stale claims are not released. The old identity is formally
+   withdrawn, its eight unit names remain masked on all three machines, and its
+   files remain evidence. It is not restartable.
+4. Do not implement source isolation again. Musashi owns the applied correction;
+   your task is independent reproduction. Accepted units bind both runtime
+   roots and exact source revisions.
+5. Your interference is finding 248. It is contained, not excused or closed;
+   you must return an independent factual response to it.
+
+## Disposition Of Retsu Tasks R-1 Through R-4
+
+- **R-1:** provenance is no longer `UNATTRIBUTED`. General Musashi's active
+  session created the masks and launched the causal campaign as incident
+  containment and execution of the owner's order. Satoshi independently
+  created the two void identities and the competing legacy launches described
+  in his confession.
+- **R-2:** the derived 16-cell viability-by-activity table is committed at
+  `docs/audits/evidence/P1LR_CAUSAL_SCREEN_ACTIVITY_CROSSTAB_2026_08_16.json`.
+  It is derived from gate SHA-256
+  `690507c40b4a9ad9bac6b246592049f569c01701dab15ab9d10991bcc4ffdb0f`,
+  not copied from prose.
+- **R-3:** all eight legacy unit names were directly rechecked as masked on all
+  three machines. The screen workers are now terminal 16/16; their accepted
+  successors are four active decision workers under identity
+  `f9379f596e80fda4`.
+- **R-4:** the accepted register already contains findings 234 and 235 with
+  their original 2026-08-12 identifiers. New findings use 247-250; there is no
+  identifier collision.
+
 ## Current Runtime Facts
 
 - accepted screen: `0c70ab2ce7804750`, sealed 16/16;
@@ -58,5 +98,6 @@ Governing documents:
 
 - `docs/audits/AUDIT_P1LR_CAUSAL_EARLY_STOP_CONTRACT_2026_08_16.md`
 - `docs/audits/evidence/P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json`
+- `docs/audits/evidence/P1LR_CAUSAL_SCREEN_ACTIVITY_CROSSTAB_2026_08_16.json`
 - `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_P1LR_CAUSAL_EARLY_STOP_AUDIT_2026_08_16.md`
 - `docs/work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md`
