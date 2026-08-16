@@ -2938,9 +2938,10 @@ def main() -> int:
     parser.add_argument(
         "--p1lr-contract", type=Path,
         default=repo / "examples/config/phase_3_eth_sac_dynamics/"
-                       "p1_difficulty_lr_factorial_v1.json",
-        help="P1 difficulty x P1 LR factorial contract; the RUNNING "
-             "Front-1 source (order 2026-08-11 §7.7)")
+                       "p1_difficulty_lr_factorial_v2.json",
+        help="P1 difficulty x P1 LR factorial contract; defaults to the "
+             "corrected-observation v2 Front-1 source (pass an explicit "
+             "path when inspecting a historical v1 run)")
     parser.add_argument("--no-p1lr", action="store_true",
                         help="disable the P1LR factorial source")
     parser.add_argument("--p1lr-identity", default=None,
