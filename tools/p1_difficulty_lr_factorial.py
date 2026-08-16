@@ -184,6 +184,7 @@ from pipeline_plugins import _paired_generalization as _paired  # noqa: E402
 from pipeline_plugins import _system_config as sysid  # noqa: E402
 from tools import gpu_readiness_probe as gpu_probe  # noqa: E402
 from tools import m0_l1_mechanism_ladder as ladder  # noqa: E402
+from tools import runtime_worktree as rtw  # noqa: E402
 from tools.l1_factorial_screen import (  # noqa: E402
     _terminal_tensor_sha,
     atomic_write_json,
@@ -215,6 +216,10 @@ DECISION_VERDICT_SCHEMA = \
     "agent_multi.p1_difficulty_lr_decision_verdict.v1"
 REPLICA_PROOF_SCHEMA = "agent_multi.p1lr_replica_proof.v1"
 PREFLIGHT_SCHEMA = "agent_multi.p1_difficulty_lr_preflight.v1"
+# WP0 (order 2026-08-15 §2): per-record source-isolation custody block
+# and the typed per-seed retry plan (rule 5).
+SOURCE_ISOLATION_SCHEMA = "agent_multi.p1lr_source_isolation.v1"
+RETRY_PLAN_SCHEMA = "agent_multi.p1lr_seed_retry_plan.v1"
 HEARTBEAT_SCHEMA = "agent_multi.p1_difficulty_lr_heartbeat.v1"
 HEARTBEAT_INTERVAL_S = 60
 
@@ -359,6 +364,12 @@ EXIT_CLASS = {
     "REFUSED_ANCHOR_UNVERIFIED": 4,
     "REFUSED_GENESIS_UNVERIFIED": 4,
     "REFUSED_DECISION_UNGATED": 4,
+    # WP0 (order 2026-08-15 §2): a launch whose executing tree is not a
+    # clean detached worktree under the declared runtime root refuses
+    # TYPED before any GPU/model work — configuration refusals (class
+    # 4) are recorded FAILED and never blindly restarted.
+    rtw.REFUSED_SOURCE_NOT_ISOLATED: 4,
+    rtw.REFUSED_SOURCE_DIRTY: 4,
     "SCREEN_REFUSED": 4,
     "DECISION_REFUSED": 4,
     "INCONCLUSIVE": 4,
@@ -2317,6 +2328,22 @@ def _verify_initialization(contract: dict, seed: int, *,
             "observation_dim": observed_dim}
 
 
+def _source_isolation_snapshot(sources: dict) -> dict:
+    """WP0 rule 3: the per-repo worktree/commit/tracked-diff/untracked
+    custody facts a record binds at materialization and terminal
+    custody. Tolerates pre-WP0 identity dicts (missing split digests
+    render None, never a fabricated digest)."""
+    return {
+        name: {
+            "worktree_path": ident.get("repo_root"),
+            "commit": ident.get("commit"),
+            "clean": not ident.get("dirty"),
+            "tracked_diff_digest": ident.get("tracked_diff_digest"),
+            "untracked_digest": ident.get("untracked_digest"),
+            "dirty_untracked_digest": ident.get("dirty_untracked_digest"),
+        } for name, ident in sorted((sources or {}).items())}
+
+
 def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
              exp_id: str, sources_before: dict,
              gpu_dispatch_binding: dict | None,
@@ -2325,7 +2352,8 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
              tensor_sha_fn=None, mode: str = "screen",
              nested_roles_fn=None, outer_eval_fn=None,
              genesis_tensor_sha_fn=None,
-             observation_dim_fn=None) -> dict:
+             observation_dim_fn=None,
+             launch_isolation: dict | None = None) -> dict:
     if mode not in MODES:
         raise ValueError(f"unknown execution mode {mode!r}")
     version = contract_version(contract)
@@ -2358,6 +2386,15 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                 "cell": cell, "holder": claim.holder()}
     heartbeat.start()
     try:
+        # WP0 rule 3: the source identity is re-proven AT
+        # MATERIALIZATION (not merely inherited from seed launch), so a
+        # tree that moved between the seed gate and this cell fails the
+        # cell typed BEFORE any GPU work — never after training.
+        sources_at_materialization = ladder.source_identities()
+        for name in sources_before:
+            sysid.assert_source_identity_unmoved(
+                sources_before[name], sources_at_materialization[name])
+
         # Initialization custody re-proof directly before
         # materialization: the cell starts from the exact per-seed
         # artifact (v1 anchor / v2 zero-update genesis), never a
@@ -2621,6 +2658,24 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                 "nested_split_contract_sha256": nested_binding["sha256"],
                 "resolved_config_sha256": resolved_sha,
             },
+            # WP0 rule 3 (order 2026-08-15 §2): worktree path, commit,
+            # tracked-diff digest and untracked digest at
+            # MATERIALIZATION and TERMINAL CUSTODY, plus the explicit
+            # clean-at-launch facts of the executing tree. Additive:
+            # read-path validators never demand it of pre-WP0 records.
+            "source_isolation": {
+                "schema": SOURCE_ISOLATION_SCHEMA,
+                "launch": launch_isolation or {
+                    "enforced": False,
+                    "reason": ("isolation enforcement disabled for this "
+                               "call (socket-free test / explicit "
+                               "--no-isolation-check); a fleet launch "
+                               "MUST enforce (WP0)")},
+                "at_materialization": _source_isolation_snapshot(
+                    sources_at_materialization),
+                "at_terminal_custody": _source_isolation_snapshot(
+                    sources_after),
+            },
             "curriculum": result.get("curriculum"),
         }
         if version == 2:
@@ -2668,8 +2723,15 @@ def run_cell(seed: int, cell: str, *, contract: dict, bindings: dict,
                        progress="complete")
         return record
     except Exception as exc:
-        heartbeat.beat(terminal_state="CELL_FAILED",
-                       error=f"{type(exc).__name__}: {exc}")
+        # WP0 rule 4: a typed failure class rides the heartbeat so the
+        # status/guard paths classify source drift distinctly — never
+        # as silent progress and never as an anonymous crash.
+        failure_class = getattr(exc, "failure_class", None)
+        beat: dict = {"terminal_state": "CELL_FAILED",
+                      "error": f"{type(exc).__name__}: {exc}"}
+        if failure_class:
+            beat["failure_class"] = failure_class
+        heartbeat.beat(**beat)
         raise
     finally:
         heartbeat.stop()
@@ -2714,7 +2776,21 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
              screen_gate: dict | None = None,
              nested_roles_fn=None, outer_eval_fn=None,
              genesis_tensor_sha_fn=None,
-             observation_dim_fn=None) -> dict:
+             observation_dim_fn=None,
+             enforce_isolation: bool = False,
+             isolation_facts_fn=None) -> dict:
+    """Run one seed's four cells sequentially.
+
+    WP0 (order 2026-08-15 §2): with ``enforce_isolation`` the launch
+    refuses TYPED (``REFUSED_SOURCE_NOT_ISOLATED`` /
+    ``REFUSED_SOURCE_DIRTY``) before any GPU/model work unless the
+    executing tree is a clean DETACHED worktree under the declared
+    runtime root. The CLI launch path enforces this BY DEFAULT
+    (``--no-isolation-check`` is for socket-free tests only — a fleet
+    launch MUST enforce); this API's default stays off so existing
+    socket-free proofs keep measuring what they measure.
+    ``isolation_facts_fn`` is injectable for tests.
+    """
     if int(seed) not in SEEDS:
         raise ValueError(f"unknown factorial seed {seed!r}")
     if mode not in MODES:
@@ -2737,6 +2813,9 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
             "experiment_identity": exp_id,
             "terminal_state": refusal["outcome"],
             "error": refusal.get("reason"),
+            # WP0 rule 4: refusal heartbeats carry the typed class so
+            # status/guard classify them without string archaeology.
+            "failure_class": refusal.get("failure_class"),
             "hostname": socket.gethostname(),
             "assigned_gpu_uuid": assignment.get("gpu_uuid"),
             "cuda_visible_devices": os.environ.get(
@@ -2746,6 +2825,34 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
         refusal["experiment_identity"] = exp_id
         refusal["seed"] = int(seed)
         return refusal
+
+    # WP0 rule 1: source isolation is the FIRST gate — a launch from a
+    # shared writable checkout (or any dirty tree) refuses typed before
+    # the decision gate, GPU binding, anchors or any model work.
+    if enforce_isolation:
+        try:
+            launch_isolation = dict(
+                (isolation_facts_fn or rtw.assert_isolated_launch)())
+            launch_isolation["enforced"] = True
+        except rtw.RuntimeWorktreeRefusal as refusal:
+            return _seed_refusal({
+                "outcome": refusal.code,
+                "reason": refusal.reason,
+                "failure_class": "source_isolation_refused",
+                "launch_tree": refusal.facts,
+                "remediation": (
+                    "create/verify the pinned worktree: python "
+                    "tools/runtime_worktree.py ensure <commit> — then "
+                    "launch from it (see examples/systemd/"
+                    "pin_p1lr_decision_runtime.sh and docs/ops/"
+                    "RUNTIME_SOURCE_ISOLATION.md)")})
+    else:
+        launch_isolation = {
+            "enforced": False,
+            "reason": ("isolation enforcement disabled for this call "
+                       "(socket-free test / explicit "
+                       "--no-isolation-check); a fleet launch MUST "
+                       "enforce (WP0)")}
 
     # Finding 226: decision dispatch is gated on the corrected screen
     # verdict + boolean replica gate BEFORE any GPU/anchor work.
@@ -2810,10 +2917,24 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
                 nested_roles_fn=nested_roles_fn,
                 outer_eval_fn=outer_eval_fn,
                 genesis_tensor_sha_fn=genesis_tensor_sha_fn,
-                observation_dim_fn=observation_dim_fn)
+                observation_dim_fn=observation_dim_fn,
+                launch_isolation=launch_isolation)
         except Exception as exc:                    # noqa: BLE001
-            outcomes[cell] = {"outcome": "CELL_FAILED",
-                              "error": f"{type(exc).__name__}: {exc}"}
+            # WP0 rule 4: source drift is a TYPED failed cell with a
+            # scheduled retry (rule 5 rerun semantics), never an
+            # anonymous crash and never silent progress.
+            outcomes[cell] = {
+                "outcome": "CELL_FAILED",
+                "error": f"{type(exc).__name__}: {exc}",
+                "failure_class": getattr(exc, "failure_class",
+                                         "unclassified"),
+                "retry_eligible": True,
+                "retry_semantics": (
+                    "rerun this seed (--seed N, optionally "
+                    "--retry-missing): complete cell records are reused "
+                    "byte-identically (ALREADY_COMPLETE); ONLY missing/"
+                    "failed cells execute, after the seed batch"),
+            }
             continue
         if record.get("outcome") == "ALREADY_RUNNING":
             outcomes[cell] = {"outcome": "ALREADY_RUNNING",
@@ -2851,6 +2972,9 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
     else:
         outcome = ("SEED_COMPLETE_WITH_INACTIVE" if inactive_cells
                    else "SEED_COMPLETE")
+    failed_cells = [cell for cell in cells
+                    if (outcomes.get(cell) or {}).get(
+                        "outcome") == "CELL_FAILED"]
     return {
         "outcome": outcome,
         "mode": mode,
@@ -2861,11 +2985,75 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
         # The batch exit class NAMES the inactivity without destroying
         # remaining work: every cell after an inactive one still ran.
         "inactive_cells": inactive_cells,
+        # WP0 rule 4/5: failed cells and their typed classes surface on
+        # the batch summary; the retry (rerun after the seed batch)
+        # executes ONLY these, reusing every complete record.
+        "failed_cells": failed_cells,
+        "failure_classes": sorted({
+            (outcomes.get(cell) or {}).get("failure_class")
+            for cell in failed_cells
+            if (outcomes.get(cell) or {}).get("failure_class")}),
+        "launch_isolation": launch_isolation,
         "cells_completed": sum(
             1 for facts in outcomes.values()
             if facts["outcome"] in ("CELL_COMPLETE",
                                     "ALREADY_COMPLETE")),
         "cells_expected": len(cells),
+    }
+
+
+def seed_retry_plan(contract: dict, seed: int, *,
+                    bindings: dict | None = None,
+                    mode: str = "screen",
+                    sources: dict | None = None) -> dict:
+    """WP0 rule 5: the typed retry plan for a seed batch.
+
+    A missing cell is retried AFTER ITS SEED BATCH without rerunning
+    valid cells: the rerun (``--seed N``, optionally ``--retry-missing``
+    to emit this plan first) reuses every COMPLETE record byte-
+    identically (``ALREADY_COMPLETE`` — the pipeline never runs for it)
+    and executes only the cells with no record. A cell whose record
+    EXISTS but fails validation is named ``invalid_records`` — the
+    runner refuses to overwrite it; recover it explicitly.
+    """
+    if mode not in MODES:
+        raise ValueError(f"unknown execution mode {mode!r}")
+    bindings = bindings or load_bindings()
+    sources = sources or ladder.source_identities()
+    exp_id = experiment_identity(contract, bindings, sources=sources,
+                                 mode=mode)
+    out_root = output_root_for_mode(contract, mode)
+    cells = list(contract["cell_order"][str(seed)])
+    complete: list = []
+    missing: list = []
+    invalid: list = []
+    for cell in cells:
+        cell_id = cell_identity(exp_id, seed, cell, contract)
+        record_path = (out_root / exp_id / f"seed{seed}" / cell /
+                       "cell_record.json")
+        if not record_path.exists():
+            missing.append(cell)
+        elif record_is_complete(record_path, cell_id):
+            complete.append(cell)
+        else:
+            invalid.append(cell)
+    return {
+        "schema": RETRY_PLAN_SCHEMA,
+        "experiment_identity": exp_id,
+        "seed": int(seed),
+        "mode": mode,
+        "cell_order": cells,
+        "complete_cells": complete,
+        "missing_cells": missing,
+        "invalid_records": invalid,
+        "will_reuse": complete,
+        "will_run": missing,
+        "will_refuse": invalid,
+        "semantics": (
+            "retry after the seed batch: complete records are reused "
+            "byte-identically (ALREADY_COMPLETE) and their pipelines "
+            "never re-execute; only missing/failed cells run; an "
+            "existing-but-invalid record is refused, never overwritten"),
     }
 
 
@@ -4245,6 +4433,18 @@ def main() -> int:
                         help="skip GPU-UUID binding enforcement and "
                              "the readiness launch gate (socket-free "
                              "tests only; a fleet launch MUST enforce)")
+    parser.add_argument("--no-isolation-check", action="store_true",
+                        help="skip the WP0 runtime-source-isolation "
+                             "launch gate (socket-free tests only; a "
+                             "fleet launch MUST execute from a clean "
+                             "detached worktree under the runtime root "
+                             "— see tools/runtime_worktree.py)")
+    parser.add_argument("--retry-missing", action="store_true",
+                        help="with --seed: emit the typed retry plan "
+                             "(WP0 rule 5) before running — complete "
+                             "cell records are reused byte-identically "
+                             "(ALREADY_COMPLETE), ONLY missing/failed "
+                             "cells execute, invalid records refuse")
     parser.add_argument("--records-root", type=Path, default=None,
                         help="verdicts: records root override "
                              "(default: the mode's output root)")
@@ -4279,18 +4479,35 @@ def main() -> int:
             experiment_id=args.experiment_id, replica_proof=proof)
         return _emit(payload, exit_code)
 
+    if args.retry_missing and args.seed is None:
+        parser.error("--retry-missing requires --seed")
+
     screen_gate = None
     if args.mode == "decision" and args.screen_gate is not None:
         screen_gate = json.loads(args.screen_gate.read_text())
     try:
+        retry_plan = (seed_retry_plan(contract, args.seed,
+                                      mode=args.mode)
+                      if args.retry_missing else None)
+        if retry_plan is not None:
+            print(json.dumps({"retry_plan": retry_plan}, default=str),
+                  flush=True)
+        # WP0 rule 1: the CLI — the fleet launch path — enforces
+        # source isolation BY DEFAULT; --no-isolation-check is for
+        # socket-free tests only.
         summary = run_seed(args.seed, contract=contract,
                            enforce_gpu=not args.no_gpu_check,
+                           enforce_isolation=not args.no_isolation_check,
                            mode=args.mode, screen_gate=screen_gate)
     except Exception as exc:                        # noqa: BLE001
         print(json.dumps({"outcome": "SEED_FAILED", "seed": args.seed,
+                          "failure_class": getattr(
+                              exc, "failure_class", "unclassified"),
                           "error": f"{type(exc).__name__}: {exc}"},
                          default=str), flush=True)
         return EXIT_CLASS["SEED_FAILED"]
+    if retry_plan is not None:
+        summary["retry_plan"] = retry_plan
     print(json.dumps(summary, default=str), flush=True)
     return EXIT_CLASS[summary["outcome"]]
 
