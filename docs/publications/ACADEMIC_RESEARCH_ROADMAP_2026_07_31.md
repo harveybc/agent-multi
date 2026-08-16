@@ -89,3 +89,11 @@ Protected-test data selects nothing in any paper. Null and negative results
 stay visible. Simulated/paper results are never expected live profit. AI
 involvement is disclosed in every manuscript. Readiness states change only on
 evidence, never on prose quality.
+
+**Performance-claim hold, 2026-08-16:** no abstract, title or conclusion may
+claim predictive or trading performance from the withdrawn 2,724-input/dead-
+actor recipe or from a one-epoch mechanics screen. Performance language remains
+blocked until a corrected 2,660-input decision artifact has terminal,
+independently reproducible evidence on the declared outer role. Protocol,
+custody, fault-tolerance and negative-result claims may proceed when their own
+evidence contracts are satisfied.

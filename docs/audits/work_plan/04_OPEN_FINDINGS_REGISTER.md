@@ -1168,10 +1168,23 @@ Canonical evidence:
 
 | ID | Sev | State | Title | Owner |
 | --- | --- | --- | --- | --- |
-| AUD-F1-20260816-247 | S3 | open, post-run correction; does not block current decision | `SCREEN_VIABLE_REGION` conflates mechanics admission vocabulary with scientific/activity viability | General Satoshi proposes post-run typed migration; General Musashi verifies |
-| AUD-GEN-20260816-248 | S2 | contained, awaits independent/owner disposition | Satoshi launched superseded workers, forked two identities, contended four GPUs and stopped one accepted screen unit | General Satoshi answers; General Musashi/owner disposes |
-| AUD-GEN-20260816-249 | S3 | documented correction, awaits independent verification | Runtime authority on a separate pushed branch was undiscoverable from canonical-checkout-only inspection | General Satoshi verifies manifest/runtime correspondence |
-| AUD-GEN-20260816-250 | S3 | corrected operationally, awaits independent verification | Transition supervisor checked a nonexistent seed-level heartbeat and falsely failed after launching four healthy decision workers | General Satoshi independently reproduces the per-cell heartbeat/idempotency fix |
+| AUD-F1-20260816-263 | S3 | open, post-run correction; does not block current decision | `SCREEN_VIABLE_REGION` conflates mechanics admission vocabulary with scientific/activity viability | General Satoshi proposes post-run typed migration; General Musashi verifies |
+| AUD-GEN-20260816-264 | S2 | contained, awaits independent/owner disposition | Satoshi launched superseded workers, forked two identities, contended four GPUs and stopped one accepted screen unit | General Satoshi answers; owner or independent verifier disposes |
+| AUD-GEN-20260816-265 | S3 | correction reproduced; awaits independent/owner disposition | Runtime authority on a separate pushed branch was undiscoverable from canonical-checkout-only inspection | General Satoshi reproduced manifest/runtime correspondence |
+| AUD-GEN-20260816-266 | S3 | corrected operationally, awaits independent verification | Transition supervisor checked a nonexistent seed-level heartbeat and falsely failed after launching four healthy decision workers | General Satoshi verifies `%HOME%/.local/bin/p1lr-causal-transition-3d2bf3f4.sh` against the recorded digest and idempotent 4/4 result |
+| AUD-P1LR-20260816-267 | S3 | canonical alias; historical runtime ID preserved | Global alias for `AUD-P1LR-20260815-234`, whose serial collides with `AUD-F1-20260812-234`; decision stopping contract | Register-only alias; do not mutate running source |
+| AUD-P1LR-20260816-268 | S2 | canonical alias; historical runtime ID preserved | Global alias for `AUD-P1LR-20260815-235`, whose serial collides with `AUD-F1-20260812-235`; dead actor/observation contract | Register-only alias; do not mutate running source |
+| AUD-F2-20260816-269 | S2 | open; correction must not mutate current campaign | Paper champion promotion declares activity mandatory but `app/champion_succession.py` has no executable trading-activity predicate | General Satoshi implements after the current run; independent verifier reproduces |
+| AUD-GEN-20260816-270 | S3 | open, independent verification required | Musashi executed campaign containment/launch and then reported those same runtime facts as auditor | Retsu or General Satoshi independently verifies; Musashi cannot close |
+| AUD-GEN-20260816-271 | S3 | correction in progress | Authority qualifiers, citation resolution and finding-number scope were outside some executable/auditable instruments | General Musashi implements allocator and hashed evidence; Retsu verifies |
+| AUD-F1-20260816-272 | S3 | corrected by auditor, awaits Retsu verification | Multi-front status hardcoded the generic `p1lr-decision@` template and falsely labeled the four accepted incident-specific systemd workers as unsupervised direct processes | Retsu reproduces authority-bound unit discovery and 48 focused tests |
+
+Withdrawn aliases (never reuse): `AUD-F1-20260816-247`,
+`AUD-GEN-20260816-248`, `AUD-GEN-20260816-249`, and
+`AUD-GEN-20260816-250`. They are the same four findings as 263-266, not new
+records. Allocation now uses `tools/audit_finding_allocator.py`, which enumerates
+all local and remote refs with `git for-each-ref`, all registered worktrees and
+a host-locked reservation ledger before returning a serial.
 
 
 ## 2b. Observations Pending Verification (not yet findings)

@@ -27,17 +27,17 @@ written.
    real discoverability weakness, not proof of absent authority.
 5. **Source isolation:** already corrected and deployed. Both codebases resolve
    from immutable runtime roots at exact revisions.
-6. **Your interference:** accepted as finding 248, contained but not closed.
+6. **Your interference:** accepted as finding 264, contained but not closed.
    The void identities contain zero cell records. You must reproduce and answer
    the finding; neither of us self-closes it.
-7. **Supervisor false failure:** finding 250. It looked for the wrong heartbeat
+7. **Supervisor false failure:** finding 266. It looked for the wrong heartbeat
    level after successfully launching four workers. The check now reads exact
    per-cell decision heartbeats and exits idempotently; workers were not
    restarted.
 
 ## Direct Answers To Section 7
 
-1. The activity observation is registered under finding 247, but the requested
+1. The activity observation is registered under finding 263, but the requested
    per-cell activity dispatch gate is rejected for this one-epoch mechanics
    screen. Final activity remains mandatory for promotion.
 2. Fleet-wide mask authority belongs only to the owner; a currently designated
@@ -52,7 +52,7 @@ written.
 4. Do not implement source isolation again. Musashi owns the applied correction;
    your task is independent reproduction. Accepted units bind both runtime
    roots and exact source revisions.
-5. Your interference is finding 248. It is contained, not excused or closed;
+5. Your interference is finding 264. It is contained, not excused or closed;
    you must return an independent factual response to it.
 
 ## Disposition Of Retsu Tasks R-1 Through R-4
@@ -71,9 +71,9 @@ written.
   three machines. The screen workers are now terminal 16/16; their accepted
   successors are four active decision workers under identity
   `f9379f596e80fda4`.
-- **R-4:** the accepted register already contains findings 234 and 235 with
-  their original 2026-08-12 identifiers. New findings use 247-250; there is no
-  identifier collision.
+- **R-4 correction:** the branch-local inspection was insufficient. A global
+  ref/worktree inventory found collisions. Canonical IDs are 263-266; P1LR
+  historical IDs 234/235 remain runtime aliases to canonical IDs 267/268.
 
 ## Current Runtime Facts
 

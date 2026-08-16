@@ -1,0 +1,33 @@
+{
+  "schema": "agent_multi.audit_finding_namespace_correction.v1",
+  "scope": {
+    "workspace": "%HOME%/Documents/GitHub",
+    "repository_discovery": "direct child Git repositories",
+    "refs": "git for-each-ref refs/heads refs/remotes, excluding symbolic remote HEAD",
+    "worktrees": "git worktree list --porcelain; tracked and selected untracked text",
+    "reservation": "%HOME%/.local/state/agent-multi/audit-finding-allocations.jsonl under flock"
+  },
+  "observed_max_serial_before_correction": 262,
+  "first_new_serial": 263,
+  "canonical_mappings": {
+    "AUD-F1-20260816-247": "AUD-F1-20260816-263",
+    "AUD-GEN-20260816-248": "AUD-GEN-20260816-264",
+    "AUD-GEN-20260816-249": "AUD-GEN-20260816-265",
+    "AUD-GEN-20260816-250": "AUD-GEN-20260816-266",
+    "AUD-P1LR-20260815-234": "AUD-P1LR-20260816-267",
+    "AUD-P1LR-20260815-235": "AUD-P1LR-20260816-268"
+  },
+  "new_findings": [
+    "AUD-F2-20260816-269",
+    "AUD-GEN-20260816-270",
+    "AUD-GEN-20260816-271",
+    "AUD-F1-20260816-272"
+  ],
+  "runtime_mutation": false,
+  "historical_runtime_ids_rewritten": false,
+  "test_evidence": {
+    "command": "python -m pytest -q tests/test_audit_finding_allocator.py tests/unit/test_multifront_l1_factorial.py",
+    "result": "48 passed",
+    "focused_allocator_tests": 2
+  }
+}

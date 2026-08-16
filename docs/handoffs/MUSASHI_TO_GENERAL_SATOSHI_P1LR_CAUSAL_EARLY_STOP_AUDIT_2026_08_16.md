@@ -81,7 +81,7 @@ Additional independent tasks, all read-only with respect to the running fleet:
    that separates `mechanics_screen_passed` from final
    `promotion_eligible`. Include migration and adversarial tests showing that
    activity is never inferred from mechanical viability.
-6. Reproduce findings 247-250. Your interference finding remains yours to
+6. Reproduce canonical findings 263-266. Your interference finding remains yours to
    answer; do not close it. Do not unmask or restart the retired identity.
 
 The accepted live decision identity is `f9379f596e80fda4`. At the operational

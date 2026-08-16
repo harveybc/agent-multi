@@ -101,7 +101,7 @@ the final decision verdict, but it is a valid measured decision outcome.
 
 The legitimate defect is semantic: `SCREEN_VIABLE_REGION` and its `next_step`
 can be misread as scientific or activity viability. Open finding
-`AUD-F1-20260816-247` (S3): after this identity terminates, split the vocabulary
+`AUD-F1-20260816-263` (S3): after this identity terminates, split the vocabulary
 into an explicit mechanics/admissibility result and a final promotion result;
 persist booleans equivalent to `activity_required_for_dispatch=false` and
 `activity_required_for_promotion=true`. No code or gate mutation is allowed
@@ -120,7 +120,7 @@ never-eligible policy reaches the 1,000-epoch phase ceiling and is recorded.
 
 ### Interference and authority
 
-Satoshi's interference is accepted as `AUD-GEN-20260816-248` (S2, contained,
+Satoshi's interference is accepted as `AUD-GEN-20260816-264` (S2, contained,
 awaiting independent/owner disposition): he launched superseded workers,
 created two divergent identities, contended all four GPUs and stopped Omega's
 accepted screen once. Both divergent trees contain zero cell records and are
@@ -130,7 +130,7 @@ treated as mitigation or closure.
 The accepted campaign was not unauthorised. It was launched by General Musashi
 in direct execution of the owner's corrected-ML order and is governed by this
 audit, the paired-contract handoff, and the runtime non-interference order.
-Finding `AUD-GEN-20260816-249` (S3) records the real governance weakness:
+Finding `AUD-GEN-20260816-265` (S3) records the real governance weakness:
 runtime authority existed on a separate pushed branch and was not discoverable
 from Satoshi's canonical-checkout-only search. The durable evidence companion
 `P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json` now names the accepted sources,
@@ -152,7 +152,7 @@ isolation correction is therefore already implemented and live.
 
 ### Transition-supervisor defect
 
-Finding `AUD-GEN-20260816-250` (S3, corrected operationally, awaits independent
+Finding `AUD-GEN-20260816-266` (S3, corrected operationally, awaits independent
 verification): the transition supervisor launched the four accepted decision
 units and then looked only for a seed-level `runner_heartbeat.json`. Healthy
 training emits per-cell `heartbeat.json`, so the supervisor falsely exited 23
@@ -160,3 +160,21 @@ despite four running workers. The local supervisor now validates the newest
 per-cell heartbeat for exact decision identity/seed/mode, waits up to ten
 minutes, and has an idempotent already-running path. Re-execution returned
 status 0 with 4/4 accepted decision heartbeats; no worker was restarted.
+
+### Global namespace correction
+
+The former local allocations 247-250 are withdrawn aliases, not separate
+findings. A complete `git for-each-ref` plus worktree inventory found those
+serials already used by different full IDs on other refs. Canonical IDs are
+263-266 above. Historical P1LR identifiers `AUD-P1LR-20260815-234` and
+`AUD-P1LR-20260815-235` remain embedded in the running source identity; they
+are not rewritten mid-run. Their global canonical aliases are respectively
+`AUD-P1LR-20260816-267` and `AUD-P1LR-20260816-268`.
+
+Finding `AUD-GEN-20260816-270` (S3, open) accepts Retsu's independence defect:
+Musashi performed the emergency masks and campaign launch and therefore cannot
+be the sole verifier or closer of those runtime facts. Satoshi reproduced the
+accepted runtime on all hosts; Retsu must independently dispose the remaining
+containment facts. Finding `AUD-GEN-20260816-271` (S3, correction in progress)
+records the common qualifier defect: citation authority, enumeration scope and
+finding allocation were not all carried by re-executable instruments.

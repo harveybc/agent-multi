@@ -1123,7 +1123,7 @@ Therefore:
   epoch 80.
 
 The existing token `SCREEN_VIABLE_REGION` is retained only for identity
-continuity of the running experiment. Finding `AUD-F1-20260816-247` requires a
+continuity of the running experiment. Finding `AUD-F1-20260816-263` requires a
 future typed rename separating mechanics admission from scientific promotion;
 that correction must not alter identity `f9379f596e80fda4` in flight.
 
@@ -1137,3 +1137,27 @@ Accepted runtime sources are `agent-multi@3d2bf3f4` and
 Decision identity `cdf30aebf585385b` and legacy `p1lr-decision*` unit names
 are formally retired and runtime-masked. Their stale locks and files are
 preserved as evidence and must not be released, resumed or aggregated.
+
+### 21.7 Post-run freeze and promotion predicate
+
+The current run may finish unchanged. Before any result freezes an L1 recipe
+or seats a Paper champion, the successor contract must execute all of these
+predicates rather than cite them only in prose:
+
+1. all expected terminal records and artifact load proofs are present under one
+   contract/source identity;
+2. observation dimension and ordered feature identity are the corrected
+   2,660-input contract;
+3. no screen value is interpreted as promotion eligibility;
+4. a promoted terminal checkpoint carries direct activity-eligible evidence;
+5. outer-role evidence is reproduced independently and the protected 2025 role
+   remains unopened; and
+6. a non-pass emits a typed `REINVESTIGATE_REPRESENTATION_OR_RECIPE` outcome,
+   not a fallback champion.
+
+Finding `AUD-F2-20260816-269` implements item 4 in the actual champion
+succession consumer. The next contract must co-locate the explicit booleans
+`activity_required_for_screen_dispatch=false`,
+`activity_required_for_decision_early_stop=false`, and
+`activity_required_for_promotion=true`. This post-run change must use a new
+content identity; it may not rewrite the active contract.

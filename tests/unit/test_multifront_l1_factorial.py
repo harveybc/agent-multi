@@ -907,6 +907,66 @@ def test_mode_derivation_table_screen_and_decision(tmp_path):
     assert decision["other_mode_output_root"] == contract["output_root"]
 
 
+def test_runtime_authority_binds_incident_specific_systemd_units(tmp_path):
+    pattern = "p1lr-v2-causal-decision-seed<seed>-3d2bf3f4.service"
+    units = {
+        (HOSTS[seed], pattern.replace("<seed>", str(seed))): True
+        for seed in HOSTS
+    }
+    cpath, reader = _p1lr_direct_decision_fixture(
+        tmp_path, units_loaded=units)
+    authority_path = tmp_path / "runtime-authority.json"
+    authority_path.write_text(json.dumps({
+        "accepted_runtime": {
+            "decision_identity": P1LR_DECISION_IDENTITY,
+            "screen_contract_sha256": mfs._sha256_file(cpath),
+            "decision_unit_pattern": pattern,
+        }
+    }))
+
+    packet = _collect_p1lr(
+        tmp_path,
+        cpath,
+        reader,
+        p1lr_mode="decision",
+        p1lr_identity=P1LR_DECISION_IDENTITY,
+        p1lr_runtime_authority_path=authority_path,
+    )
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "active"
+    assert block["unit_template"] == pattern.replace("<seed>", "{seed}")
+    assert block["runtime_authority"]["unit_pattern"] == pattern
+    for seed, worker in block["workers"].items():
+        assert worker["unit"] == pattern.replace("<seed>", seed)
+        assert worker["unit_loaded"] is True
+        assert "launch_durability" not in worker
+
+
+def test_runtime_authority_mismatch_refuses_without_worker_counts(tmp_path):
+    cpath, reader = _p1lr_direct_decision_fixture(tmp_path)
+    authority_path = tmp_path / "runtime-authority.json"
+    authority_path.write_text(json.dumps({
+        "accepted_runtime": {
+            "decision_identity": "wrong-identity",
+            "decision_contract_sha256": mfs._sha256_file(cpath),
+            "decision_unit_pattern": "accepted-seed<seed>.service",
+        }
+    }))
+    packet = _collect_p1lr(
+        tmp_path,
+        cpath,
+        reader,
+        p1lr_mode="decision",
+        p1lr_identity=P1LR_DECISION_IDENTITY,
+        p1lr_runtime_authority_path=authority_path,
+    )
+    block = packet["fronts"]["f1_optimization"]["active_p1lr_factorial"]
+    assert block["state"] == "refused"
+    assert block["error_code"] == "P1LR_RUNTIME_AUTHORITY_MISMATCH"
+    assert "workers" not in block
+    assert "workers_running_fresh" not in block
+
+
 def test_unknown_mode_is_a_typed_refusal(tmp_path):
     contract = _p1lr_contract(tmp_path)
     for bad in ("Screen", "decide", "", None):

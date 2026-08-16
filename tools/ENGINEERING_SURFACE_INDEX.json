@@ -1,6 +1,6 @@
 {
  "facts": {
-  "declarations_sha256": "ac54218b8f96775aa92a181f1fdb414d7fa02f41f6141c51902d5e1882da6aac",
+  "declarations_sha256": "a8281f3912d6017b854103abf6b4f72b627e42690e688d53a344161cb69c6d09",
   "entry_point_comparison": {
    "drift": [],
    "installed_only": []
@@ -363,6 +363,42 @@
      "sha256": "6087c5c9ecbdb748e5d504f5434b56b1aab634f3b6d06e374c778483bccb61d0"
     }
    },
+   "arm_differentiation.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Campaign precondition (finding D8-20260815): refuse to dispatch when arms declaring different treatments report byte-identical metric tuples for a defective reason. Typed ladder over POLICY TENSOR hashes (never .zip container digests, whose mtimes make identical weights hash differently) and behaviour fingerprints from return traces with identity columns stripped. SHARED_SCORED_POLICY / TREATMENT_NOT_REALIZED / METRIC_COLLAPSE / UNDECIDABLE refuse; DEGENERATE_IDENTICAL accepts, because a zero-trade or constant-action policy ignores its observations and MUST score alike under any treatment"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--arms-json",
+      "--metric-keys",
+      "--report",
+      "--require-informative"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "csv",
+      "dataclasses",
+      "hashlib",
+      "io",
+      "json",
+      "pathlib",
+      "sys",
+      "torch",
+      "typing",
+      "zipfile"
+     ],
+     "parse_error": null,
+     "path": "tools/arm_differentiation.py",
+     "sha256": "6679baa626b65c9257530d2c83ba9f8a72224a6aa5630ba7b2dc35f667910c3d"
+    }
+   },
    "audit_brackets.py": {
     "declared": "UNCLASSIFIED",
     "discovered": {
@@ -385,6 +421,45 @@
      "parse_error": null,
      "path": "tools/audit_brackets.py",
      "sha256": "c2219b97e04224a531a8eabe900e0faea3082fb77f47f59eb9381b6852c892e9"
+    }
+   },
+   "audit_finding_allocator.py": {
+    "declared": {
+     "authority_class": "audit_evidence",
+     "lifecycle": "supported",
+     "mutability": "mixed",
+     "mutability_note": "inventory is read-only; --reserve-prefix appends one allocation row only to the host-local ledger under ~/.local/state/agent-multi",
+     "owner": "General Musashi",
+     "purpose": "Enumerate audit finding IDs across every local/remote Git ref and registered worktree in every workspace repository, report serial collisions across prefixes/dates, and reserve the next global serial in a host-locked local ledger"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--date",
+      "--fail-on-conflict",
+      "--ledger",
+      "--output",
+      "--owner",
+      "--reserve-prefix",
+      "--title",
+      "--workspace"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "collections",
+      "datetime",
+      "fcntl",
+      "json",
+      "pathlib",
+      "re",
+      "subprocess",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/audit_finding_allocator.py",
+     "sha256": "41bd9408671d24d3ba8e08bac3d33b3e15fa7d7b13a4f96c2be3b3e85f1a277e"
     }
    },
    "audit_snapshot_collector.py": {
@@ -485,7 +560,7 @@
      ],
      "parse_error": null,
      "path": "tools/auto_orchestrator.py",
-     "sha256": "3390f94b6c25251c4008688dd2303def0cbdeeb63cc7c18d04e905e5d5131acc"
+     "sha256": "284b4b75722d2a7c98fe9b95811947529919c662cc712ef8f9a673db62f96acd"
     }
    },
    "bootstrap_test_fixtures.py": {
@@ -626,6 +701,45 @@
      "parse_error": null,
      "path": "tools/config_doctor.py",
      "sha256": "5cdb13f5a65d91634b0426d74688ca804428619d4a3022a06648ba63e7a9f78c"
+    }
+   },
+   "dead_actor_observation_fixture.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "CPU before/after evidence for AUD-P1LR-20260815-235: builds the REAL ETH observation both ways (with and without the unscaled raw price window) with the real feature_window_preprocessor and a real SB3 SAC actor, and reports first-layer live-unit fraction, per-unit variation, action variance and the measured zero-gradient claim (units dead at initialisation never revive). Read-only: it trains a throwaway actor on a replay env and writes only its own JSON report"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--json",
+      "--observations",
+      "--seed",
+      "--start-row",
+      "--updates"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "gymnasium",
+      "hashlib",
+      "json",
+      "numpy",
+      "pandas",
+      "pathlib",
+      "pipeline_plugins",
+      "preprocessor_plugins",
+      "stable_baselines3",
+      "sys",
+      "torch",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/dead_actor_observation_fixture.py",
+     "sha256": "14a1f93cc2465883b6d48371ab7991e3c1063f1bea14edfbac7cfc23afd7e2b9"
     }
    },
    "engineering_surface_index.py": {
@@ -829,6 +943,62 @@
      "sha256": "766738722a54be4c4199cd0d27463fbe1f210c3cf37358186bb68b505b3ac6f4"
     }
    },
+   "experiment_transition_queue.py": {
+    "declared": {
+     "authority_class": "campaign_operation",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "mutability_note": "writes only its own durable records under ~/.local/state/agent-multi/experiment-transition-queue (atomic tmp+fsync+replace), NEVER inside any run's output root, plus deduplicated incident-ledger observations/recoveries through the shared shim; it never launches, restarts or stops any job itself",
+     "owner": "General Satoshi III",
+     "purpose": "Durable terminal-to-next-job transition queue (order 2026-08-15 \u00a73): one content-addressed JSON record per ENDING job, holding the current job, the terminal result identity, the next approved job, the materialization state, the dispatch state, the blockers, the per-node participation and the declared transition budget. transition_status() types the fleet answer \u2014 a terminal experiment with no dispatched successor is completed_untransitioned, and a missing record is completed_untransitioned too (unproven is never healthy); reconstruct_transitions() rebuilds every transition from these files ALONE after a reboot, consulting no heartbeat, shell process, chat message or operator memory, so a dispatch claim whose lease expired while the host was down surfaces as expired rather than as still in flight. Dispatch is a lease and FAILS CLOSED: claim_dispatch() refuses a second live claim or an already-dispatched transition (TRANSITION_DUPLICATE_DISPATCH), an unmaterialized or blocked successor, and a chain identity conflicting with the record's proven chain (TRANSITION_CHAIN_CONFLICT), while join_chain() lets healthy nodes continue the ONE proven common chain and mark_node() types an unavailable node without vetoing the healthy ones. evaluate_transition_incident()/sweep_transition_incidents() emit exactly ONE deduplicated undispatched-successor incident past the declared budget through the existing tools/incident_emit.py ledger and close that SAME event code on recovery, with the dedup marker inside the durable record so a reboot or a second host cannot produce a flood"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--approval-reference",
+      "--approved-by",
+      "--budget-seconds",
+      "--cells-total",
+      "--chain-id",
+      "--claim-id",
+      "--contract-path",
+      "--contract-sha256",
+      "--detail",
+      "--dry-run",
+      "--experiment",
+      "--host",
+      "--identity",
+      "--job-id",
+      "--mode",
+      "--output-root",
+      "--plan-sha256",
+      "--queue-dir",
+      "--reason",
+      "--records-landed",
+      "--state",
+      "--terminal-utc",
+      "state",
+      "transition_id"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "socket",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/experiment_transition_queue.py",
+     "sha256": "cb584386e9120cf23771ead9700c8c6af6989a70f48d474929a41faf73e09ad3"
+    }
+   },
    "fleet_status_context.py": {
     "declared": {
      "authority_class": "discovery",
@@ -927,6 +1097,55 @@
      "parse_error": null,
      "path": "tools/gpu_idle_watchdog.py",
      "sha256": "5cc186d69645baa03a5dfc2b047725176a3ea9f394498a4fbcb4b66e27bfa0fa"
+    }
+   },
+   "gpu_readiness_probe.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Rootless GPU readiness probe + launch gate (post-outage order \u00a73.2/\u00a73.3): one typed heartbeat binding kernel/modinfo/driver/UUID/temperature/framework facts, newest-boot-kernel module guard before reboot, five-state classification (GPU_UNAVAILABLE_KERNEL_MODULE_MISSING/GPU_UNAVAILABLE_DRIVER/GPU_UUID_MISMATCH/GPU_FRAMEWORK_MISMATCH/GPU_READY), disk-budget dispatch gate, deduplicated state-change incidents via the fleet ledger; read-only except its own state/dedup markers under ~/.local/state/agent-multi/gpu-readiness and ledger observations; never installs packages"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--assignments",
+      "--binding",
+      "--expected-artifact-bytes",
+      "--front",
+      "--gate",
+      "--host",
+      "--no-framework-probe",
+      "--no-incidents",
+      "--output-fs",
+      "--python",
+      "--reserve-bytes",
+      "--state-dir",
+      "--temp-alert-c",
+      "--temp-recovery-c",
+      "--torch-timeout",
+      "--uuid"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "incident_emit",
+      "json",
+      "os",
+      "pathlib",
+      "re",
+      "socket",
+      "subprocess",
+      "sys",
+      "types",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/gpu_readiness_probe.py",
+     "sha256": "0f2740837aad2e707f7633a4732aac99a704cdcf6f1e2e6d0c7da7d554089858"
     }
    },
    "gpu_temperature_watchdog.py": {
@@ -1201,7 +1420,7 @@
      ],
      "parse_error": null,
      "path": "tools/l1_factorial_screen.py",
-     "sha256": "2d6c3167264e71eea62ab1016207818157a00abb3fe34057d1bda21d346602df"
+     "sha256": "ed3852584801fd34654f04292909c328bdbd8e79bd33f2c6c8d5e24c0785b33e"
     }
    },
    "l1_fleet_launcher.py": {
@@ -1241,6 +1460,234 @@
      "sha256": "e82e5bab29628ddefc8b1cc8124182dd3c529626631928f87a66fe93728c5905"
     }
    },
+   "l2_curriculum_arms.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "mutability_note": "writes only under the mode's output root (chain registry, per-generation populations and records, per-candidate attempt dirs, nested split CSVs, heartbeats, locks) and an explicitly named --output payload file; the pinned contract, the frozen common anchor, the nested split contract and the system manifest are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; --dispatch-plan and --champion write nothing unless --output is given",
+     "owner": "General Satoshi III",
+     "purpose": "L2 curriculum arms runner/materializer (doc 38 \u00a76/\u00a78; order 2026-08-15 \u00a72): materializes and executes L2_N (all generations normal-realistic) versus L2_EN (easy triage generations, then a MANDATORY normal-realistic re-evaluation of every surviving elite) from examples/config/phase_3_eth_sac_dynamics/l2_curriculum_arms_v1.json. L1 stays FROZEN in both arms (phase-1 dynamics normal_realistic, phase-1 and phase-2 LR 3e-5) and no L1 curriculum field may be an L2 gene; both arms carry an identical total candidate-evaluation budget, population size, population seed, initial genome seeds, data roles and normal-realistic decision evidence; the EXECUTING config binds the typed nested split contract in nested_split_mode=l2 with roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, 256 forced-hold context rows excluded from scores and sealed 2025 never materialized; L2 fitness is paired_generalization_weekly_v1 over inner_validation x outer_validation and L2 generation patience uses that paired evidence after a minimum generation floor; easy fitness is INVALIDATED at the stage transition and an easy-evaluated candidate can never enter a normal leaderboard, champion, migration, archive or release path; genomes inherit TYPED GENES only (weights, topology, replay buffers, optimizer moments and per-genome anchors refuse); every generation record logs unique-genome count, allele diversity and rejected/ineligible share; every node proves the same source revisions, plan/domain hashes, dataset hash, population seed, genesis and finalized ancestry before evaluating; a second parallel chain for one arm and an out-of-order arm are typed refusals; --mode smoke is the bounded four-GPU mechanics smoke, --preflight the no-training materialization proof, --dispatch-plan the per-host command plan, --champion the refusal-first champion resolver"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--acceptance",
+      "--arm",
+      "--chain-dir",
+      "--champion",
+      "--compare-arms",
+      "--contract",
+      "--dispatch-plan",
+      "--max-candidates",
+      "--mode",
+      "--no-gpu-check",
+      "--output",
+      "--preflight",
+      "--worker"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "optimizer_plugins",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "socket",
+      "sys",
+      "tempfile",
+      "threading",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/l2_curriculum_arms.py",
+     "sha256": "f243f3b7634ade6aa4359fe402521a555e16c8f4e4b672be9365b0f228f4dc44"
+    }
+   },
+   "l2_observation_boundary_validation.py": {
+    "declared": {
+     "authority_class": "discovery",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Bounded single-GPU validation for AUD-P1LR-20260815-235: runs ONE cold-start L2 candidate through a real phase-1 easy -> phase-2 normal-realistic boundary on the real ETH nested roles under the CORRECTED observation contract (include_price_window=false), and reports the per-epoch actor first-layer liveness. Cold start is forced because the 2724-dim frozen anchor cannot warm-start the corrected 2660-dim observation. Writes only its own output root; launches nothing else"
+    },
+    "discovered": {
+     "argparse_arguments": [],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "importlib",
+      "json",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "sys",
+      "tempfile",
+      "time",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/l2_observation_boundary_validation.py",
+     "sha256": "10b45ec64561d432dd9eb181fcdae3133821693201a13d167a97e632c6addc1a"
+    }
+   },
+   "m0_l1_boundary_action_replay.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "mutability_note": "reads sealed/pinned inputs strictly read-only (fail-closed sha verification); writes only the resolved --output JSON (never inside the preserved legacy replay directory) and process-lifetime temp split CSVs",
+     "owner": "General Satoshi III",
+     "purpose": "Same-artifact threshold replay diagnostic (WP2 order 2026-08-11 \u00a76; roles corrected per finding 224): flat-hold replay of the sealed D2 post-easy artifact and the D0 anchor over the APPROVED nested evidence roles \u2014 train_monitor 2022 and inner_validation 2023, 2190 scored + 256 context rows each, pinned per-role CSV shas verified before facts \u2014 with the forced-hold context prefix excluded from every scored fact; deterministic raw actions with thresholds 0.0/0.1 applied analytically to one hashed scored action vector; typed outcomes decide whether the 0.1 deadband exposes a pre-existing collapse or causes mapping collapse with variation retained; legacy 42-row/2196-row outputs under boundary_action_replay_20260811 are preserved read-only (writes there refuse); corrected outputs default to boundary_action_replay_nested_20260812; no learning, no selection, never decision-eligible"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--artifact",
+      "--contract",
+      "--device",
+      "--output"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "numpy",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "socket",
+      "stable_baselines3",
+      "sys",
+      "tempfile",
+      "tools",
+      "torch"
+     ],
+     "parse_error": null,
+     "path": "tools/m0_l1_boundary_action_replay.py",
+     "sha256": "a884eb83a348e93eeae21bf85fd6e1bfa424eaa58ef4ca2c508dee26b1b43660"
+    }
+   },
+   "m0_l1_d1_evaluator.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "D1_EVALUATOR_ONLY (finding 220 WP3): CPU-only, applies the M0 executable activity definition and the exact L1 paired activity classifier to D0's terminal artifact and recorded evaluation facts; no training, no weight mutation"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--d0-record",
+      "--out"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "argparse",
+      "datetime",
+      "json",
+      "os",
+      "pathlib",
+      "pipeline_plugins",
+      "stable_baselines3",
+      "sys",
+      "tools",
+      "torch"
+     ],
+     "parse_error": null,
+     "path": "tools/m0_l1_d1_evaluator.py",
+     "sha256": "a14af0751011d3d81b3033a37744e0a8646b4dac00d84e6cc546354e87e25bfc"
+    }
+   },
+   "m0_l1_ladder_collect.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) and the explicitly named publication path; ladder run artifacts are read strictly read-only; the --verify-terminals-only mode is fully READ-ONLY (mutates nothing, prints a typed report)",
+     "owner": "General Satoshi III",
+     "purpose": "Sealed collection + independent replica + five-row contrast table for the M0-to-L1 mechanism ladder (finding 220; terminal custody per finding 223): per-host fetch, identity-fragmentation refusal, mandatory terminal_model_path/sha256 for EVERY training arm resolved by deterministic relative path (zero/multiple matches refuse; basename-first-match forbidden), fresh terminal rehash, replica expectations built from terminal fields with exactly one load proof per arm bound to (arm, seed, relative path, sha256), per-file manifest + tree digest, digest recomputed ON the replica, table published OUTSIDE the seal with post-write re-proof that REPEATS the terminal binding check; --verify-terminals-only re-runs the custody checks read-only against an existing sealed root"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--collection-root",
+      "--contract",
+      "--diagnostic-identity",
+      "--publish-table",
+      "--replica-host",
+      "--verify-terminals-only"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "pathlib",
+      "shlex",
+      "subprocess",
+      "sys",
+      "tools",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/m0_l1_ladder_collect.py",
+     "sha256": "3184c93e73ee850c3924973432584c50e008d5254af7054f41365b52b6a591f1"
+    }
+   },
+   "m0_l1_mechanism_ladder.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "owner": "General Satoshi III",
+     "purpose": "Bounded M0-to-L1 mechanism ladder runner (finding 220 WP3): four single-delta arms D0/D2/D3/D4 under one diagnostic identity, contract-enforced host+GPU-UUID binding, per-arm exclusive claims, atomic contrast-table records; diagnosis only, never decision-eligible"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--arm",
+      "--contract",
+      "--no-gpu-check"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib",
+      "json",
+      "os",
+      "pandas",
+      "pathlib",
+      "pipeline_plugins",
+      "socket",
+      "subprocess",
+      "sys",
+      "threading",
+      "tools",
+      "torch"
+     ],
+     "parse_error": null,
+     "path": "tools/m0_l1_mechanism_ladder.py",
+     "sha256": "03f6ffef738ea3526c244b5474525a08d09db98916f88c5f002ad12c026e06de"
+    }
+   },
    "materialize_eth_anchored_campaign.py": {
     "declared": "UNCLASSIFIED",
     "discovered": {
@@ -1263,7 +1710,7 @@
      ],
      "parse_error": null,
      "path": "tools/materialize_eth_anchored_campaign.py",
-     "sha256": "efb8fa959f9d1f694b0a4baa6dba07c698862b75693b6541d56d76601b18119a"
+     "sha256": "e7084687120eaf6cc987b518830f14a586db2a7a8001940d66808d546c7da494"
     }
    },
    "materialize_eth_campaign_plan.py": {
@@ -1280,7 +1727,7 @@
      ],
      "parse_error": null,
      "path": "tools/materialize_eth_campaign_plan.py",
-     "sha256": "f8e680c12ff40d2b2d0649dcede8465e740b28934ba6221737d085fe6e4a4b8b"
+     "sha256": "ff24b3c24b81010264ab9b01b47326a6aaa95e1081fe0f76c1a94bc15170ca2b"
     }
    },
    "materialize_eth_curriculum_configs.py": {
@@ -1328,7 +1775,7 @@
      ],
      "parse_error": null,
      "path": "tools/materialize_eth_smoke_campaign.py",
-     "sha256": "e7e78cab241cc865246e4bffcaeebe0777b17f8a672031fc2448d8a2b16eb7ed"
+     "sha256": "f763fd7199b4784b7bcb39449b5b09594ae905d6210f1cb22303c4fe68a8309a"
     }
    },
    "materialize_l1_system_manifest.py": {
@@ -1437,9 +1884,9 @@
      "authority_class": "discovery",
      "lifecycle": "supported",
      "mutability": "mixed",
-     "mutability_note": "reads run artifacts strictly read-only; writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
+     "mutability_note": "reads run artifacts strictly read-only (the P1LR source is fully read-only); writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
      "owner": "General Satoshi III",
-     "purpose": "Consolidated machine-readable multi-front status contract; first-class L1 factorial Front-1 source with paused-campaign history separation (finding 204, order 2026-08-10 WP3)"
+     "purpose": "Consolidated machine-readable multi-front status contract; first-class RUNNING P1LR factorial Front-1 source with an EXPLICIT VALIDATED mode (finding 233: --p1lr-mode screen|decision derives the output root, expected heartbeat/record mode, evidence class and cell total; finding 272: optional durable runtime authority binds exact identity+contract to an incident-specific systemd unit pattern and a mismatch refuses without counts); an identity under the other mode root is a typed count-free refusal, a record of another mode is rejected, and direct nohup versus loaded-systemd durability is reported from direct facts; includes current seed/cell/checkpoint, source freshness, per-seed/fleet records, critical-path ETA, GPU utilization/temperature, paused-campaign history separation, IBKR execution evidence and durable halt authority"
     },
     "discovered": {
      "argparse_arguments": [
@@ -1448,10 +1895,17 @@
       "--l1-state-dir",
       "--no-emit-alerts",
       "--no-l1",
+      "--no-p1lr",
+      "--no-transition-queue",
       "--output",
+      "--p1lr-contract",
+      "--p1lr-identity",
+      "--p1lr-mode",
+      "--p1lr-runtime-authority",
       "--snapshot",
       "--social-db",
       "--supervisor-url",
+      "--transition-queue-dir",
       "--watchdog"
      ],
      "defines_main": true,
@@ -1460,6 +1914,7 @@
       "__future__",
       "argparse",
       "datetime",
+      "experiment_transition_queue",
       "hashlib",
       "incident_emit",
       "json",
@@ -1470,12 +1925,13 @@
       "subprocess",
       "sys",
       "time",
+      "tools",
       "typing",
       "urllib"
      ],
      "parse_error": null,
      "path": "tools/multifront_status.py",
-     "sha256": "cea4a81a564c916fcbfdc8f243adc194dce5cb9a28e83d48c5cc657333934c5d"
+     "sha256": "6b6672ae7a9bdda2f1de87753a1b649665a63ab0c865a427264642deb2a6918c"
     }
    },
    "okf_validate.py": {
@@ -1502,6 +1958,176 @@
      "parse_error": null,
      "path": "tools/okf_validate.py",
      "sha256": "3ce3d3946335bdccf60464c585bc6ba4c9431f8f4446e896c1f4d48651dc5122"
+    }
+   },
+   "p1_difficulty_lr_factorial.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "mutability_note": "writes only under the mode's output root (heartbeats, attempt dirs, nested split CSVs, atomic cell records, locks) and an explicitly named --output payload file; pinned contracts, anchors and manifests are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; verdicts write nothing unless --output is given",
+     "owner": "General Satoshi III",
+     "purpose": "Phase-1 difficulty x phase-1 LR 2x2 factorial runner (order 2026-08-11 WP4 \u00a78; corrections 224/225/226): per-seed sequential four-cell batches on the contract-assigned GPU in the cyclic-Latin-square cell order, each cell warm-started from the exact hash-bound per-seed anchor; the EXECUTING config binds the typed nested split contract (sha recorded AND verified before model construction), nested_split_mode=l1 and selection_metric=paired_generalization_weekly_v1 with the legacy lexicographic/explicit-window branch structurally unreachable; roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, sealed 2025 SEALED, 256-row context prefixes declared and excluded from scores; every record binds nested contract sha, split-manifest sha, per-role CSV shas, scored/context counts and exact score dates plus finding-223 terminal custody and the finding-221 viability block; wrong role path/count/sha, outer-as-inner, missing context flag, context counted in score, paired-metric drift and sealed-test materialization refuse BEFORE training; --screen-verdict REQUIRES the typed 16-entry replica proof (--replica-proof, finding 225; replica_terminal_loads is a boolean) and revalidates per-checkpoint + nested identity at aggregation time; --mode decision runs the document-38 decision path (distinct identity/output root, original anchors, 2000-checkpoint ceiling, patience 60/floor 40, paired stopping, best restoration, ONE final outer evaluation) gated on --screen-gate; --decision-verdict emits the document-38 outcomes with per-seed paired effects and per-cell weekly metrics with units; --preflight is the no-training materialization proof"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--contract",
+      "--decision-verdict",
+      "--experiment-id",
+      "--mode",
+      "--no-gpu-check",
+      "--output",
+      "--preflight",
+      "--records-root",
+      "--replica-proof",
+      "--screen-gate",
+      "--screen-verdict",
+      "--seed"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "app",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "io",
+      "json",
+      "math",
+      "os",
+      "pandas",
+      "pathlib",
+      "pipeline_plugins",
+      "socket",
+      "stable_baselines3",
+      "statistics",
+      "sys",
+      "tempfile",
+      "threading",
+      "tools",
+      "torch",
+      "zipfile"
+     ],
+     "parse_error": null,
+     "path": "tools/p1_difficulty_lr_factorial.py",
+     "sha256": "991937d38d4742f71f6bfcb734efb2910d1075ee99ddc935e0081920a4328d4d"
+    }
+   },
+   "p1lr_collect.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) plus the manifest and the typed proof file; source records and terminals are never mutated",
+     "owner": "General Satoshi III",
+     "purpose": "P1LR sealed collection + typed replica proof (finding 225): fetches each seed batch from its contract-assigned host, validates exactly 16 (seed, cell) records \u2014 uniform experiment identity and contract sha, 16 distinct cell identities, finding-223 terminal custody by deterministic relative resolution and fresh rehash \u2014 seals atomically, replicates to an independent host, recomputes the tree digest THERE, really loads every terminal, and only then writes the typed agent_multi.p1lr_replica_proof.v1 file with 16 entries each bound to (experiment_identity, contract_sha256, seed, cell, terminal_relative_path, terminal_model_sha256, loads=true) \u2014 the ONLY input the screen/decision verdicts accept via --replica-proof; reuses the corrected custody primitives of m0_l1_ladder_collect.py and the factorial collector transports (no duplicated rsync/hash logic); zero/missing/duplicate/swapped/foreign/hash-altered/loads=false entries refuse"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--collection-root",
+      "--contract",
+      "--experiment-id",
+      "--mode",
+      "--proof-out",
+      "--replica-host"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "json",
+      "pathlib",
+      "sys",
+      "tools",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/p1lr_collect.py",
+     "sha256": "7359e0f24ae9ed7022366ff427a72f4c7c9d2539c68766a718a3cc8dad30f3a3"
+    }
+   },
+   "p1lr_genesis_artifacts.py": {
+    "declared": {
+     "authority_class": "evidence_producer",
+     "lifecycle": "supported",
+     "mutability": "mutating",
+     "mutability_note": "writes only under the genesis output root (per-seed artifacts + metadata + manifest; an existing artifact is never overwritten \u2014 a persisted genesis identity is immutable) ; the v2 contract, ladder bindings and base config are read strictly read-only; --check writes nothing",
+     "owner": "General Satoshi III",
+     "purpose": "Zero-update 2,660-input SAC genesis artifacts for the corrected-observation P1LR v2 factorial (order 2026-08-15 \u00a73; AUD-P1LR-20260815-235): per seed {101,202,303,404} it derives the corrected observation dimension from the v2 contract + the held-fixed base config's ORDERED feature columns (refusing feature-set or dimension drift), constructs a SAC model DETERMINISTICALLY on CPU through the real sac_agent plugin against a spaces-only env whose step() RAISES (zero gradient updates and zero replay transitions are structural), proves determinism by a second in-process construction, persists the artifact and records BOTH the container sha256 and the policy-tensor sha256 (same digest family the P1LR runner uses for terminals), proving the tensor identity survives the save/load round trip and that the persisted first layer is exactly 2,660 inputs; writes a typed per-seed metadata file and one manifest proving all four cells of a seed begin from ONE persisted tensor and different seeds are pairwise DISTINCT. The artifact type is zero_update_genesis \u2014 NEVER a trained champion, handoff or promotable evidence. --check verifies the contract's pinned artifacts on this host without building (distribution custody)"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--check",
+      "--contract",
+      "--output-root",
+      "--seed"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "agent_plugins",
+      "argparse",
+      "datetime",
+      "gymnasium",
+      "json",
+      "numpy",
+      "pathlib",
+      "pipeline_plugins",
+      "sys",
+      "tools"
+     ],
+     "parse_error": null,
+     "path": "tools/p1lr_genesis_artifacts.py",
+     "sha256": "4537e605520558851e39756947ba7b78e4ce147a8579a7406615f64391b71a1b"
+    }
+   },
+   "p1lr_idle_guard.py": {
+    "declared": {
+     "authority_class": "watchdog",
+     "lifecycle": "supported",
+     "mutability": "mixed",
+     "mutability_note": "reads the run root strictly read-only; writes only its own dedup/backoff state under ~/.local/state/agent-multi/p1lr-idle-guard, an optional --report-out report file, bounded incident-ledger observations/recoveries, and calls systemctl --user restart on the local seed unit at most N times per idle episode",
+     "owner": "General Satoshi III",
+     "purpose": "P1LR idle guard for a per-host systemd timer (order 2026-08-11 \u00a77.8, shipped as examples/systemd/p1lr-idle-guard.{service,timer} at a 15-minute cadence): an assigned GPU idle >15 minutes while a P1LR cell is pending on its seed (records incomplete, no runner process, no heartbeat progress, nvidia-smi utilization below threshold) emits ONE state-change-deduplicated incident through the fleet ledger and triggers BOUNDED recovery \u2014 at most N systemctl --user restarts of the seed's unit with exponential backoff, only when the unit exists; a missing unit puts the exact relaunch command in the incident, a typed REFUSED_* heartbeat withholds restarts entirely, a restart-cap exhaustion emits one escalation, and progress resumption emits one recovery notice and resets the budget; unknown GPU utilization never reads as idle. Mode is EXPLICIT and VALIDATED (finding 233): --mode screen|decision derives the output root, the unit name (p1lr-decision@<seed>.service in decision mode) and the cell total through multifront_status.p1lr_mode_binding, every incident payload and the whole report (optionally written with --report-out) are BOUND to the guarded mode's root, and an identity belonging to the other mode's root refuses with exit 2 rather than reporting a false idle seed"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--contract",
+      "--dry-run",
+      "--gpu-idle-utilization-pct",
+      "--identity",
+      "--idle-after-seconds",
+      "--max-restarts",
+      "--mode",
+      "--no-transition-queue",
+      "--report-out",
+      "--restart-backoff-seconds",
+      "--state-dir",
+      "--transition-queue-dir"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "datetime",
+      "incident_emit",
+      "json",
+      "pathlib",
+      "socket",
+      "subprocess",
+      "sys",
+      "tools",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/p1lr_idle_guard.py",
+     "sha256": "d65f18a32245dd6e2470aa376dc9d976396362819d21d7d96abf47b14ee531c8"
     }
    },
    "p5_eval_holdout.py": {
@@ -1613,6 +2239,41 @@
      "parse_error": null,
      "path": "tools/prepare_project2_data.py",
      "sha256": "e4fd1d23db28d6259080beec9050020376934e8ccbfd1352d8fd66231dd9ba26"
+    }
+   },
+   "prepush_sensitivity_gate.py": {
+    "declared": {
+     "authority_class": "gate",
+     "lifecycle": "supported",
+     "mutability": "read_only",
+     "owner": "General Satoshi III",
+     "purpose": "Pre-push sensitivity gate: scans outgoing commits for typed sensitivity classes (credentials, account identifiers, signer/key paths, third-party content markers, live SL/TP levels, topology beyond allowlist) with redacted findings and nonzero exit (AUD-SEC-20260810-215)"
+    },
+    "discovered": {
+     "argparse_arguments": [
+      "--allowlist",
+      "--json",
+      "--max-commits",
+      "--range",
+      "--repo",
+      "--stdin-refs"
+     ],
+     "defines_main": true,
+     "has_main_guard": true,
+     "imports": [
+      "__future__",
+      "argparse",
+      "fnmatch",
+      "json",
+      "pathlib",
+      "re",
+      "subprocess",
+      "sys",
+      "typing"
+     ],
+     "parse_error": null,
+     "path": "tools/prepush_sensitivity_gate.py",
+     "sha256": "c8ce89d0b157dd6984b596ab783c487f9dcc11cbc9293267502d9b5b23c06af2"
     }
    },
    "project3_asset_policy_training.py": {
@@ -2190,7 +2851,7 @@
      ],
      "parse_error": null,
      "path": "tools/project3_stage3x_sac_smoke_direct_orchestrator.py",
-     "sha256": "b0beafaff207d2dcfcf99da1a2c365edd941fc0d36397244e395d929c8253702"
+     "sha256": "f05c305525e7281020964c10275a1bfd88543d0f2f8449ca2c131d30a4b5b5a6"
     }
    },
    "project3_stage3x_sac_smoke_plan.py": {
@@ -3223,22 +3884,22 @@
   },
   "unclassified_new_executables": []
  },
- "facts_hash": "sha256:687a1b10b5d3d2ffe7d3ea94c77adcda975b8a4608664919ec766eb5d8de9a9b",
+ "facts_hash": "sha256:a8ee7cb20c270faddb9cb6c97d4f72e7ff856b996a439716fde17e2a9bbca48a",
  "provenance": {
   "arguments": {
-   "declarations": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/tools/TOOL_DECLARATIONS.json",
-   "output": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad/agent-multi-m0-wt/tools/ENGINEERING_SURFACE_INDEX.json",
+   "declarations": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-p1lr-causal-early-stop-20260816/tools/TOOL_DECLARATIONS.json",
+   "output": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-p1lr-causal-early-stop-20260816/tools/ENGINEERING_SURFACE_INDEX.json",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
   "environment_identity": {
    "generator_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
-  "finished_utc": "2026-08-10T08:08:06.081825+00:00",
+  "finished_utc": "2026-08-16T23:00:55.517141+00:00",
   "generator": "engineering_surface_index.v1",
   "generator_sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963",
-  "repo_head": "662e1dde5bcbcd6462a6929a9834cd8b2ef2d3f3",
-  "started_utc": "2026-08-10T08:08:05.578493+00:00",
+  "repo_head": "31b8d6773a2624fe8e9f24627027d05db759849e",
+  "started_utc": "2026-08-16T23:00:54.854274+00:00",
   "worktree_dirty": true
  },
  "schema": "engineering_surface_index.v1",

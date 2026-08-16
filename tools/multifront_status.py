@@ -1403,7 +1403,12 @@ class P1lrModeRefusal(ValueError):
         return block
 
 
-def p1lr_mode_binding(contract: dict, mode: str) -> dict[str, Any]:
+def p1lr_mode_binding(
+    contract: dict,
+    mode: str,
+    *,
+    unit_template: Optional[str] = None,
+) -> dict[str, Any]:
     """Everything mode-dependent, derived from ONE validated mode.
 
     Returns the output root, systemd unit template, expected heartbeat/
@@ -1462,13 +1467,21 @@ def p1lr_mode_binding(contract: dict, mode: str) -> dict[str, Any]:
                      if c in cells_map] or list(cells_map))
         for seed in seeds}
     other_mode = "screen" if mode == "decision" else "decision"
+    resolved_unit_template = unit_template or P1LR_UNIT_TEMPLATES[mode]
+    if "{seed}" not in resolved_unit_template:
+        raise P1lrModeRefusal(
+            "P1LR_UNIT_TEMPLATE_INVALID",
+            "runtime unit template must contain the literal {seed} placeholder",
+            mode=mode,
+            unit_template=resolved_unit_template,
+        )
     return {
         "mode": mode,
         "output_root": output_root,
         "other_mode": other_mode,
         "other_mode_output_root": other_root,
-        "unit_template": P1LR_UNIT_TEMPLATES[mode],
-        "unit_example": P1LR_UNIT_TEMPLATES[mode].format(seed=seeds[0]),
+        "unit_template": resolved_unit_template,
+        "unit_example": resolved_unit_template.format(seed=seeds[0]),
         "heartbeat_mode_expected": mode,
         "record_mode_expected": mode,
         "evidence_class_expected": P1LR_MODE_EVIDENCE_CLASS[mode],
@@ -1786,6 +1799,7 @@ def collect_p1lr_factorial(
     transition_queue_dir: Optional[Path] = None,
     transition_enrol: bool = True,
     transition_budget_seconds: Optional[float] = None,
+    runtime_authority_path: Optional[Path] = None,
 ) -> tuple[dict[str, Any], list[dict[str, str]], Optional[dict[str, Any]]]:
     """First-class Front-1 source: the RUNNING P1 difficulty x P1 LR
     factorial mechanics screen (order 2026-08-11 §7.7 / finding 229).
@@ -1865,6 +1879,60 @@ def collect_p1lr_factorial(
                 "mode": binding["mode"], "output_root": output_root,
                 "reason": reason,
                 "contract_path": str(contract_path)}, unavailable, None
+
+    # AUD-F1-20260816-272: an incident-specific accepted unit family may
+    # intentionally differ from the generic p1lr-decision@ template. Status
+    # binds it from durable authority rather than declaring supervised workers
+    # to be direct/nohup workers.
+    authority_facts: Optional[dict[str, Any]] = None
+    if runtime_authority_path is not None:
+        try:
+            authority = json.loads(runtime_authority_path.read_text())
+            accepted = _as_dict(_as_dict(authority).get("accepted_runtime"))
+        except (OSError, ValueError) as exc:
+            return _refuse(P1lrModeRefusal(
+                "P1LR_RUNTIME_AUTHORITY_UNREADABLE",
+                f"runtime authority is explicit but unreadable: {type(exc).__name__}",
+                runtime_authority_path=str(runtime_authority_path),
+            ))
+        expected_identity = accepted.get(f"{binding['mode']}_identity")
+        expected_contract = (
+            accepted.get(f"{binding['mode']}_contract_sha256")
+            or accepted.get("contract_sha256")
+            or accepted.get("screen_contract_sha256")
+        )
+        if expected_identity != identity or expected_contract != contract_sha:
+            return _refuse(P1lrModeRefusal(
+                "P1LR_RUNTIME_AUTHORITY_MISMATCH",
+                "runtime authority does not bind the selected identity and contract",
+                runtime_authority_path=str(runtime_authority_path),
+                authority_identity=expected_identity,
+                selected_identity=identity,
+                authority_contract_sha256=expected_contract,
+                selected_contract_sha256=contract_sha,
+            ))
+        raw_pattern = accepted.get(f"{binding['mode']}_unit_pattern")
+        if not isinstance(raw_pattern, str) or raw_pattern.count("<seed>") != 1:
+            return _refuse(P1lrModeRefusal(
+                "P1LR_RUNTIME_UNIT_PATTERN_INVALID",
+                "authority unit pattern must contain exactly one <seed> placeholder",
+                runtime_authority_path=str(runtime_authority_path),
+                unit_pattern=raw_pattern,
+            ))
+        try:
+            binding = p1lr_mode_binding(
+                contract,
+                binding["mode"],
+                unit_template=raw_pattern.replace("<seed>", "{seed}"),
+            )
+        except P1lrModeRefusal as refusal:
+            return _refuse(refusal)
+        authority_facts = {
+            "path": str(runtime_authority_path),
+            "sha256": _sha256_file(runtime_authority_path),
+            "unit_pattern": raw_pattern,
+            "binding": "identity_contract_and_unit_pattern_exact",
+        }
 
     # ── identity ↔ mode-root binding: mismatch REFUSES, never renders 0 ──
     try:
@@ -2323,6 +2391,8 @@ def collect_p1lr_factorial(
             worker_states, durations,
             active_eta_source_label="current_cell_duration_eta"),
     }
+    if authority_facts is not None:
+        block["runtime_authority"] = authority_facts
     if state == "unavailable":
         # Finding 233: with NO readable fact there is nothing to count.
         # Rendering 0/4 workers and 0/16 records here is exactly the
@@ -2409,6 +2479,7 @@ def collect(
     p1lr_transition_queue_dir: Optional[Path] = None,
     p1lr_transition_enrol: bool = True,
     p1lr_transition_budget_seconds: Optional[float] = None,
+    p1lr_runtime_authority_path: Optional[Path] = None,
     p1lr_identity_presence_fn: Optional[
         Callable[[Optional[str], str], bool]] = None,
 ) -> dict[str, Any]:
@@ -2447,6 +2518,7 @@ def collect(
                 transition_queue_dir=p1lr_transition_queue_dir,
                 transition_enrol=p1lr_transition_enrol,
                 transition_budget_seconds=p1lr_transition_budget_seconds,
+                runtime_authority_path=p1lr_runtime_authority_path,
                 identity_presence_fn=p1lr_identity_presence_fn,
             )
         f1["active_p1lr_factorial"] = p1lr_block
@@ -2959,6 +3031,10 @@ def main() -> int:
                              "belonging to the other mode's root is a "
                              "typed refusal, never a rendered zero")
     parser.add_argument(
+        "--p1lr-runtime-authority", type=Path,
+        help="optional durable authority record binding the selected P1LR "
+             "identity/contract to an incident-specific systemd unit pattern")
+    parser.add_argument(
         "--transition-queue-dir", type=Path,
         default=Path.home() / ".local/state/agent-multi/"
                               "experiment-transition-queue",
@@ -2990,6 +3066,7 @@ def main() -> int:
         p1lr_contract_path=None if args.no_p1lr else args.p1lr_contract,
         p1lr_identity=args.p1lr_identity,
         p1lr_mode=args.p1lr_mode,
+        p1lr_runtime_authority_path=args.p1lr_runtime_authority,
         p1lr_transition_queue_dir=(None if args.no_transition_queue
                                    else args.transition_queue_dir),
     )

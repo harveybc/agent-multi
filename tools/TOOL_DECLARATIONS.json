@@ -23,8 +23,16 @@
    "authority_class": "discovery",
    "owner": "General Satoshi III"
   },
+  "audit_finding_allocator.py": {
+   "purpose": "Enumerate audit finding IDs across every local/remote Git ref and registered worktree in every workspace repository, report serial collisions across prefixes/dates, and reserve the next global serial in a host-locked local ledger",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "mutability_note": "inventory is read-only; --reserve-prefix appends one allocation row only to the host-local ledger under ~/.local/state/agent-multi",
+   "authority_class": "audit_evidence",
+   "owner": "General Musashi"
+  },
   "multifront_status.py": {
-   "purpose": "Consolidated machine-readable multi-front status contract; first-class RUNNING P1LR factorial Front-1 source with an EXPLICIT VALIDATED mode (finding 233: --p1lr-mode screen|decision derives the output root (output_root vs decision_run.output_root), the systemd unit template (p1lr-screen@ vs p1lr-decision@), the expected heartbeat/record mode, the expected evidence class and the total cell count; an identity that lives under the OTHER mode's root is a typed count-free refusal (P1LR_IDENTITY_MODE_MISMATCH) and a root with no readable fact renders typed unavailable instead of a false 0/4, 0/16; a record of the other mode is rejected, not counted; a direct nohup worker renders unit_loaded=false with a typed durability gap instead of a fabricated NRestarts=0; fresh activity under the other mode's root is announced) plus current seed/cell/checkpoint per worker from per-cell runner heartbeats with typed staleness, per-seed and fleet cell-record counts, current-cell + critical-path ETAs, runner-sampled GPU utilization/temperature, the L1 factorial source with paused-campaign history separation (finding 204), telemetry bound to (identity, seed, cell, attempt) with source freshness (finding 212), parallel critical-path experiment ETA (finding 213), an execution-evidence-derived IBKR queue item (finding 214) and durable-halt-value authority (finding 228); the completed L1 factorial renders history-only and never re-enters the executable queue",
+   "purpose": "Consolidated machine-readable multi-front status contract; first-class RUNNING P1LR factorial Front-1 source with an EXPLICIT VALIDATED mode (finding 233: --p1lr-mode screen|decision derives the output root, expected heartbeat/record mode, evidence class and cell total; finding 272: optional durable runtime authority binds exact identity+contract to an incident-specific systemd unit pattern and a mismatch refuses without counts); an identity under the other mode root is a typed count-free refusal, a record of another mode is rejected, and direct nohup versus loaded-systemd durability is reported from direct facts; includes current seed/cell/checkpoint, source freshness, per-seed/fleet records, critical-path ETA, GPU utilization/temperature, paused-campaign history separation, IBKR execution evidence and durable halt authority",
    "lifecycle": "supported",
    "mutability": "mixed",
    "mutability_note": "reads run artifacts strictly read-only (the P1LR source is fully read-only); writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
