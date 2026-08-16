@@ -3,6 +3,20 @@
 Date: 2026-08-16
 Priority: Front 1, in parallel with the running corrected experiment
 
+## Runtime Non-Interference Order
+
+Audit is read-only with respect to runtime control. Do not start, stop,
+restart, unmask or replace any P1LR unit. In particular, identity
+`cdf30aebf585385b`, runtime `agent-multi-p1lr-v2-924910fe` and units named
+`p1lr-decision-seed*.service` are superseded and forbidden. One such stale
+launch stopped Omega's corrected screen at 04:03 America/Bogota; those old
+unit names are runtime-masked across the fleet.
+
+The accepted executing sources are `agent-multi@3d2bf3f4` and
+`gym-fx@634c3fd3`, with screen identity `0c70ab2ce7804750` and prospective
+decision identity `f9379f596e80fda4`. If direct evidence disagrees, report the
+disagreement; do not mutate the fleet to make it agree.
+
 Independently reproduce the contract in
 `examples/config/phase_3_eth_sac_dynamics/p1_difficulty_lr_factorial_v2.json`.
 Do not stop a healthy runtime merely to audit it.

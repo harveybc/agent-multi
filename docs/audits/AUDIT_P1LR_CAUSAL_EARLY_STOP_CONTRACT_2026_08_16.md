@@ -60,6 +60,12 @@ clean `gym-fx` runtime worktree at the same commit on all hosts. Launch must
 refuse unless every host independently derives the same screen and decision
 identities before GPU training begins.
 
+At 04:03 America/Bogota, a stale external runtime command stopped Omega's
+corrected screen and launched superseded decision identity `cdf30aebf585385b`
+from runtime `924910fe`. The stale process was stopped, its legacy unit names
+were runtime-masked across all hosts, and Omega rejoined the same corrected
+screen identity in a fresh attempt. Dragon and Gamma were not interrupted.
+
 ## Residual Research Questions
 
 This experiment does not claim that either LR, `[256,256]`, replay 40,000,
