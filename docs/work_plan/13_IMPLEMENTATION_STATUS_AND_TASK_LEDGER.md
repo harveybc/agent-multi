@@ -1,7 +1,31 @@
 # 13. Implementation Status and Task Ledger
 
-Status timestamp: 2026-08-08 America/Bogota
-Plan version: 1.32.0
+Status timestamp: 2026-08-15 America/Bogota
+Plan version: 1.35.0
+Current correction: the historical ETH P1LR v1 decision identity
+`c0e53cf18b7d60dd` is preserved as `INCONCLUSIVE` with qualifier
+`INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235`; it cannot select
+difficulty or learning rate. Its raw 64-value ETH price block dominated the
+otherwise normalized observation and killed the SAC actor's first hidden
+layer. The corrected 2,660-input v2 screen `14e7ce8208ac9776` sealed `16/16`,
+loaded all terminal artifacts from the Dragon replica and returned the typed
+mechanics verdict `SCREEN_VIABLE_REGION`. Decision identity
+`cdf30aebf585385b` is active on Omega, Dragon and both Gamma GPUs under one
+contract hash. No decision result or ETA is claimed before terminal rows land.
+L2 and sealed 2025 remain parked.
+
+Immediate concurrent priorities:
+
+1. keep the corrected ETH decision run on all four GPUs without duplicate
+   writers or mid-run contract changes;
+2. operate direct Alpaca/IBKR/MT5 seat inventory and same-window
+   simulation-versus-Paper evidence using the existing replay/lineage tools;
+3. make model succession executable while retaining mandatory native SL/TP;
+4. repair the P1LR systemd/idle-guard binding at the next safe process boundary
+   because the deployed units still point to v1 and match workers by seed
+   without proving identity; and
+5. keep academic and social work as bounded sidecars.
+
 Current focus: preserve all historical ETH evidence, complete safe quarantine
 of the invalid M0 successor, and replace the fixed-14-epoch curriculum claim
 with document 38's nested L1/L2 and sparse-feature decision program. Findings

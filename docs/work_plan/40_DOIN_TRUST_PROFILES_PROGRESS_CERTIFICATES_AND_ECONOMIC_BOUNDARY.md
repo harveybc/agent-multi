@@ -113,6 +113,21 @@ available. This is a code defect, not an economic-policy choice. It must be
 corrected under the invariant
 `sum(outputs) == block_reward + transaction_fees` before any coin experiment.
 
+Independent graph/code reproduction also found three prototype drifts that
+must remain explicit until corrected in an isolated protocol branch:
+
+- optimizer/quorum admission derives progress from `abs(reported_value)`
+  rather than the improvement delta against the accepted current best;
+- both the difficulty manager and consensus state can write the optimization
+  threshold during block generation, so authority is not singular; and
+- `ProofOfOptimization.record_evaluation()` has no runtime caller, while
+  inference task completion records a task event rather than the distinct
+  optimization-evaluation service fact.
+
+These facts do not authorize a deployed consensus change during the active ETH
+decision run. They require failing tests, typed trust/economic profiles and an
+independently audited migration.
+
 These are reproducible code facts. They are not accepted as owner-ratified
 production economics. Papers and interviews must label them
 `implemented_prototype` until a versioned replacement is implemented and

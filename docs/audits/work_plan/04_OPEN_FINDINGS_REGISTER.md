@@ -1171,6 +1171,30 @@ Canonical evidence:
 | AUD-GEN-20260815-247 | S3 | mitigated by single pinned recalculation; permanent correction open | All four Omega seed-101 P1LR cells ran from a mutable checkout and were rejected after an agent handoff changed the untracked-source digest | General Satoshi III implements immutable runtime worktrees; General Musashi verifies |
 | AUD-DOIN-20260815-248 | S3 | open, reproduced | Nonzero transaction fees violate coinbase conservation (`50 + 10` distributes `67.15`) | General Satoshi III implements; General Musashi verifies |
 
+### 1am. Retsu full-audit disposition and corrected-v2 runtime, 2026-08-15
+
+Canonical evidence:
+
+- `../../handoffs/MUSASHI_RESPONSE_TO_RETSU_FULL_AUDIT_AND_CORRECTED_SATOSHI_ORDER_2026_08_15.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_DEAD_ACTOR_ACCEPTANCE_AND_CORRECTED_L1_ORDER_2026_08_15.md`
+- `../../work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md` sections 19-21
+- `../evidence/repro_runs/MUSASHI_P1LR_V2_RUNTIME_AND_SUPERVISION_FACTS_2026_08_15.json`
+
+Bare numeric suffixes are not identifiers. The P1LR findings below do not
+collide with the older `AUD-F1-20260812-234/235` findings because the complete
+namespaced identifiers differ.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-P1LR-20260815-234 | S2 | corrected contract/evidence, awaits independent closure | P1LR prose named paired-improvement patience but omitted the binding activity patience whose earliest stop was epoch 80 | Independent verifier or owner disposes from section 19 evidence |
+| AUD-P1LR-20260815-235 | S2 | root cause independently reproduced; corrected v2 decision active | Unnormalized 64-value raw ETH price block dominated the 2,724-input observation and killed the SAC actor; historical v1 cannot select difficulty/LR | General Satoshi returns terminal corrected-v2 evidence; General Musashi verifies |
+| AUD-F2-20260815-249 | S2 | open | Existing sim-vs-live replay/lineage tools are not scheduled as a same-window product; latest report is stale and cannot be subtracted honestly | General Satoshi III implements WO2; Retsu verifies read-only |
+| AUD-GEN-20260815-250 | S2 | open; current workers must remain untouched | Corrected decision v2 runs under `nohup` while deployed systemd units/idle guard bind v1; identity-blind seed matching reports terminal v1 alive from a v2 PID | General Satoshi III corrects at next process boundary; General Musashi verifies single-writer/reboot behavior |
+| AUD-F2-20260815-251 | S2 | open | Alpaca/IBKR/MT5 seats use integration baselines and no executable artifact-compatible champion succession path exists | General Satoshi III implements WO1/WO3; General Musashi verifies |
+| AUD-F2-20260815-252 | S3 | open | Consolidated MT5 health is fresh, but Omega has no direct fleet-auditable MT5 model/bar/command evidence path | General Satoshi III implements direct fleet evidence; Retsu verifies read-only |
+| AUD-F2-20260815-253 | S2 | open | IBKR direct facts disagree about order/exposure state and current heartbeat cannot prove a valid model-artifact SHA-256 | General Satoshi III reconciles direct TWS facts; General Musashi verifies |
+| AUD-DOIN-20260815-254 | S3 | open, reproduced; no deployed consensus mutation authorized | Prototype semantic drift combines absolute reported-value progress, dual threshold writers and an unwired evaluation-accounting method | General Satoshi III creates isolated failing tests/profile correction; General Musashi verifies |
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 

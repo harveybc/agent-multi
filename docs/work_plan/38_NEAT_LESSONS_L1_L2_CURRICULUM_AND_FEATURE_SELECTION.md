@@ -1,6 +1,6 @@
 # 38. NEAT Lessons Applied to L1/L2 Curriculum and Feature Selection
 
-Status: active execution contract, v1.0.0, 2026-08-08
+Status: active execution contract, v1.1.0, 2026-08-15
 Owner: project owner
 Technical lead/independent verifier: General Musashi
 Implementer: General Satoshi III
@@ -1031,3 +1031,44 @@ recipe.
 
 Machine-readable companion of this disposition:
 `docs/audits/evidence/P1LR_V1_DISPOSITION_QUALIFIER_2026_08_15.json`.
+
+## 21. Corrected P1LR v2 Screen and Decision Dispatch
+
+The corrected observation program has crossed the mechanics gate without
+changing the scientific question.
+
+### 21.1 Terminal screen facts
+
+- screen identity: `14e7ce8208ac9776`;
+- terminal records: `16/16`;
+- sealed collection:
+  `~/.local/share/agent-multi/p1lr_v2_collections_20260815/screen_14e7ce82`;
+- collection tree SHA-256:
+  `ccad48ef42f39de1e58c92b0067a987f47626aeb3a03e8ac0fd1049cf5fc4806`;
+- replica terminal loads: `16/16` on Dragon; and
+- typed outcome: `SCREEN_VIABLE_REGION`.
+
+Seven cell/seed combinations passed the typed mechanics criteria. All four
+`P1E_LR3E5` seeds passed; `P1N_LR3E5` passed for seeds 101, 303 and 404. The
+`1e-4` cells did not cross the normal-activity threshold. These are liveness,
+action-variation, trade and artifact facts. They do not establish that easy is
+better, that `3e-5` has better return/risk, or that any recipe is promotable.
+
+### 21.2 Decision run
+
+Decision identity `cdf30aebf585385b` is active on the four assigned GPUs from
+one immutable runtime worktree and one contract hash. At the audit observation
+point it had zero terminal decision records. Therefore:
+
+- no ETA is reported until enough real cell completions exist;
+- no difficulty/LR winner is reported;
+- L2 remains parked;
+- sealed 2025 remains inaccessible; and
+- v1 remains historical evidence with the qualifier in section 20.
+
+The active processes must not be stopped merely to repair service cosmetics.
+However, their current `nohup` launch is not the accepted durable endpoint:
+deployed `p1lr-decision@*.service` units and the idle guard still bind legacy
+v1 paths, and the guard can mistake a v2 process with the same seed for a live
+v1 worker. Before the next process boundary, supervision must bind contract
+identity, mode, seed and output root and prove reboot recovery plus one writer.

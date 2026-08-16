@@ -15,6 +15,14 @@ and execution-policy plugins loaded from entry points.
 current trading-research campaigns; its pipelines, evidence tooling and audit
 corpus are in daily use.
 
+**Current research state (2026-08-15):** the historical ETH P1LR v1 result is
+preserved as `INCONCLUSIVE` and invalid for L1 recipe selection because its
+2,724-input observation admitted an unscaled raw-price block that killed the
+SAC actor. The corrected 2,660-input v2 mechanics screen completed `16/16`
+with `SCREEN_VIABLE_REGION`; the decision-grade v2 run is active on four GPUs.
+That screen proves viable actor mechanics only, not return/risk superiority.
+L2 and the sealed 2025 role remain parked.
+
 > **Disclaimer:** training and evaluation run in simulation/backtest over
 > historical or synthetic data through gym-fx. This repository places no
 > real-capital trades; live or demo execution belongs to separate downstream

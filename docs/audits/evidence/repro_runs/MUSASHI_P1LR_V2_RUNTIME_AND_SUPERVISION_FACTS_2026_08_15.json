@@ -1,0 +1,67 @@
+{
+  "schema": "agent_multi.musashi_p1lr_v2_runtime_audit.v1",
+  "observed_at": "2026-08-15T20:17:22-05:00",
+  "screen": {
+    "identity": "14e7ce8208ac9776",
+    "terminal_records": 16,
+    "expected_records": 16,
+    "outcome": "SCREEN_VIABLE_REGION",
+    "replica_terminal_loads": 16,
+    "collection_tree_sha256": "ccad48ef42f39de1e58c92b0067a987f47626aeb3a03e8ac0fd1049cf5fc4806"
+  },
+  "decision": {
+    "identity": "cdf30aebf585385b",
+    "terminal_records": 0,
+    "expected_records": 16,
+    "eta_available": false,
+    "workers": [
+      {
+        "host": "omega",
+        "seed": 101,
+        "pid": 731019,
+        "gpu_temperature_c": 53,
+        "gpu_utilization_pct": 35,
+        "heartbeats_present": 1
+      },
+      {
+        "host": "dragon",
+        "seed": 202,
+        "pid": 872760,
+        "gpu_temperature_c": 39,
+        "gpu_utilization_pct": 23,
+        "heartbeats_present": 1
+      },
+      {
+        "host": "gamma",
+        "seed": 303,
+        "pid": 859276,
+        "gpu_temperature_c": 48,
+        "gpu_utilization_pct": 40,
+        "heartbeats_present_on_host": 2
+      },
+      {
+        "host": "gamma",
+        "seed": 404,
+        "pid": 859277,
+        "gpu_temperature_c": 56,
+        "gpu_utilization_pct": 44,
+        "heartbeats_present_on_host": 2
+      }
+    ]
+  },
+  "supervision": {
+    "current_launch_class": "nohup_from_immutable_runtime_worktree",
+    "deployed_decision_units_active": false,
+    "idle_guard_timer_active": true,
+    "idle_guard_observed_identity": "c0e53cf18b7d60dd",
+    "idle_guard_expected_identity": "cdf30aebf585385b",
+    "identity_blind_process_match_reproduced": true,
+    "runtime_mutation_performed_by_audit": false
+  },
+  "scientific_boundaries": {
+    "screen_is_performance_evidence": false,
+    "decision_result_available": false,
+    "l2_touched": false,
+    "sealed_2025_touched": false
+  }
+}

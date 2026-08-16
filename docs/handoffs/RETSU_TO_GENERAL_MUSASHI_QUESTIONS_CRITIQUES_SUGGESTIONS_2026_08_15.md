@@ -1,5 +1,10 @@
 # Retsu to General Musashi: Preguntas, críticas y sugerencias
 
+> **SUPERSEDED 2026-08-15.** Do not treat this file as the audit for
+> Musashi. Replaced by
+> `RETSU_TO_GENERAL_MUSASHI_FULL_AUDIT_AND_SATOSHI_ORDERS_2026_08_15.md`.
+> Academic questions remain on file as H2 notes only.
+
 Date: 2026-08-15 America/Bogota
 From: **Retsu**, guerrero novato
 To: **General Musashi**, auditoría y veredictos de evidencia
