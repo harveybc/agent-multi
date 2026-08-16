@@ -636,6 +636,106 @@ class TestReq7BothPhases2660:
                 "observation_contract_sha256"])
         assert len(shas) == 1
 
+    def test_outer_final_eval_binds_the_same_2660_contract(
+            self, rt, tmp_path, monkeypatch):
+        """Regression: training succeeded at 2,660 inputs, then the final
+        replay used the unbound 2,724-input base config and failed after
+        writing the terminal artifact.  The direct ``_make_split_env`` path
+        must bind and validate the declaration itself.
+        """
+        from pipeline_plugins import _return_trace
+        from pipeline_plugins import _weekly_metrics
+        from pipeline_plugins import rl_pipeline_with_validation as rl_pipe
+
+        config = p1.materialize_cell_config(
+            rt.contract, rt.bindings, 101, "P1E_LR1E4",
+            tmp_path / "cell")
+        config.pop("_identity")
+        # Preserve the exact pre-fix condition: materialization validates a
+        # scratch copy while the base runtime field remains legacy/raw.
+        assert config["include_price_window"] is True
+
+        captured = {}
+
+        class FakeEnv:
+            observation_space = SimpleNamespace(shape=(EXPECTED_DIM,))
+
+            def reset(self, **kwargs):
+                return [0.0] * EXPECTED_DIM, {"equity": 10_000.0}
+
+            def step(self, action):
+                return ([0.0] * EXPECTED_DIM, 0.0, True, False,
+                        {"equity": 10_000.0})
+
+            def summary(self):
+                return {"trades_total": 0}
+
+        class FakePlug:
+            def close(self):
+                return None
+
+        class CapturingPipeline:
+            def __init__(self, bound_config):
+                captured["constructor"] = dict(bound_config)
+
+            def _make_split_env(self, name, bound_config, csv_path,
+                                agent):
+                captured["environment"] = dict(bound_config)
+                return FakePlug(), FakeEnv()
+
+        class FakeAgent:
+            def load(self, model_path, env):
+                assert env.observation_space.shape == (EXPECTED_DIM,)
+                return object()
+
+            def predict(self, model, obs, deterministic=True):
+                return 0.0
+
+        monkeypatch.setattr(rl_pipe, "PipelinePlugin",
+                            CapturingPipeline)
+        monkeypatch.setattr(
+            _return_trace, "build_trace_row",
+            lambda **kwargs: {"timestamp": "2024-01-01T00:00:00+00:00",
+                              "equity": 10_000.0})
+        monkeypatch.setattr(
+            _weekly_metrics, "canonical_weekly_metrics_from_trace",
+            lambda *args, **kwargs: {"weekly_rows": []})
+
+        artifact = tmp_path / "model.zip"
+        artifact.write_bytes(b"model")
+        nested_roles = {
+            "roles": {
+                "outer_validation": {
+                    "status": "MATERIALIZED",
+                    "csv": str(tmp_path / "outer.csv"),
+                    "csv_sha256": "a" * 64,
+                    "context_rows": 0,
+                    "scored_rows": 1,
+                    "score_start": "2024-01-01T00:00:00+00:00",
+                    "score_end": "2024-01-01T01:00:00+00:00",
+                },
+            },
+        }
+        result = p1._outer_validation_final_eval(
+            config=config,
+            agent=FakeAgent(),
+            model_path=str(artifact),
+            artifact_role="terminal",
+            nested_roles=nested_roles,
+            seed=101,
+        )
+
+        for bound in (captured["constructor"], captured["environment"]):
+            assert bound["include_price_window"] is False
+            assert bound["require_feature_aware_preprocessor"] is True
+        assert result["observation_contract_application"]["declared"] \
+            is True
+        validation = result["observation_contract_validation"]
+        assert validation["outcome"] == \
+            "FEATURE_AWARE_OBSERVATION_CONTRACT"
+        assert validation["include_price_window"] is False
+        assert validation["feature_column_count"] == 83
+
     def test_records_bind_the_observation_identity(self, rt):
         summary = _run_seed(rt)
         records = _records_of(rt, summary)

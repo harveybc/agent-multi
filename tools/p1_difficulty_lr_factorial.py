@@ -2873,6 +2873,28 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
 # decision mode: the ONE final outer-validation evaluation (finding 226)
 # ---------------------------------------------------------------------------
 
+def _bind_outer_evaluation_observation_contract(
+        config: dict, solvency_mode: str) -> tuple[dict, dict, dict]:
+    """Resolve the same observation contract used by training.
+
+    The training pipeline applies this contract in ``run_pipeline`` before
+    constructing either phase's environment.  Final nested evaluation calls
+    ``_make_split_env`` directly, so it must perform the same binding here;
+    otherwise a corrected 2,660-input model is loaded into the legacy
+    2,724-input environment after training has already completed.
+    """
+    from pipeline_plugins._observation_contract import (
+        apply_observation_contract,
+        validate_observation_contract,
+    )
+
+    eval_config, application = apply_observation_contract(dict(config))
+    validation = validate_observation_contract(eval_config)
+    eval_config["solvency_mode"] = solvency_mode
+    eval_config["return_trace_dir"] = None
+    return eval_config, application, validation
+
+
 def _outer_validation_final_eval(*, config: dict, agent,
                                  model_path: str,
                                  artifact_role: str,
@@ -2927,9 +2949,8 @@ def _outer_validation_final_eval(*, config: dict, agent,
     if role.get("status") != "MATERIALIZED":
         raise RuntimeError(f"{role_name} role is not materialized")
     context_rows = int(role["context_rows"])
-    eval_config = dict(config)
-    eval_config["solvency_mode"] = solvency_mode
-    eval_config["return_trace_dir"] = None
+    eval_config, observation_application, observation_validation = \
+        _bind_outer_evaluation_observation_contract(config, solvency_mode)
     pipeline = ValidationPipeline(eval_config)
     plug, env = pipeline._make_split_env(
         str(eval_config.get("env_plugin", "gym_fx_env")), eval_config,
@@ -2998,6 +3019,8 @@ def _outer_validation_final_eval(*, config: dict, agent,
             "scored_rows": role["scored_rows"],
             "context_rows_forced_hold": context_rows,
             "context_excluded_from_metrics": True,
+            "observation_contract_application": observation_application,
+            "observation_contract_validation": observation_validation,
             "score_start": role["score_start"],
             "score_end": role["score_end"],
             "evaluated_artifact_role": artifact_role,
