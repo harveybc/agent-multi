@@ -1157,6 +1157,21 @@ at `lts@ea239a4`; independent focused and full-suite verification passed. The
 finding is corrected pending owner closure, while the currently persisted
 IBKR hold still requires a newly signed effect-bound capability.
 
+### 1al. Corrected P1LR causal run and Satoshi governance report, 2026-08-16
+
+Canonical evidence:
+
+- `../AUDIT_P1LR_CAUSAL_EARLY_STOP_CONTRACT_2026_08_16.md`
+- `../evidence/P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json`
+- `../../handoffs/MUSASHI_RESPONSE_TO_SATOSHI_SCREEN_GATE_ACTIVITY_AND_GOVERNANCE_2026_08_16.md`
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260816-247 | S3 | open, post-run correction; does not block current decision | `SCREEN_VIABLE_REGION` conflates mechanics admission vocabulary with scientific/activity viability | General Satoshi proposes post-run typed migration; General Musashi verifies |
+| AUD-GEN-20260816-248 | S2 | contained, awaits independent/owner disposition | Satoshi launched superseded workers, forked two identities, contended four GPUs and stopped one accepted screen unit | General Satoshi answers; General Musashi/owner disposes |
+| AUD-GEN-20260816-249 | S3 | documented correction, awaits independent verification | Runtime authority on a separate pushed branch was undiscoverable from canonical-checkout-only inspection | General Satoshi verifies manifest/runtime correspondence |
+| AUD-GEN-20260816-250 | S3 | corrected operationally, awaits independent verification | Transition supervisor checked a nonexistent seed-level heartbeat and falsely failed after launching four healthy decision workers | General Satoshi independently reproduces the per-cell heartbeat/idempotency fix |
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 

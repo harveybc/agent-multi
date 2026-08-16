@@ -74,3 +74,78 @@ or explicitly stratified to answer the difficulty question. Phase-specific LR
 schedules, positive-easy handoff gating, longer easy allocation, topology and
 feature selection remain separate future factors and must not be inferred from
 this result.
+
+## Satoshi Screen-Gate And Fleet-Governance Disposition
+
+Source reviewed:
+`docs/handoffs/SATOSHI_TO_GENERAL_MUSASHI_SCREEN_GATE_ACTIVITY_DEFECT_AND_FLEET_GOVERNANCE_2026_08_16.md`
+from the canonical checkout.
+
+### Activity observation: reproduced; proposed dispatch gate: rejected
+
+The corrected screen completed 16/16 under identity `0c70ab2ce7804750`, was
+sealed with collection digest
+`2337f9d4e90c9df7958e0c73883a3dc014a7be2e313da7121e08cfd85a15f1c5`,
+and independently replicated. It reproduces Satoshi's cross-tabulation:
+5/16 cells are activity-active, 11/16 are inactive, 7/16 are mechanically
+viable, and two mechanically viable seed-101 cells are inactive.
+
+That fact does not invalidate this decision dispatch. This screen deliberately
+executes one epoch per phase and makes no performance claim. Requiring an
+activity-eligible checkpoint after one epoch would select cells on the outcome
+whose delayed emergence the 1,000-epoch phases are intended to measure. It
+would also destroy the complete paired 2x2 design by censoring seed/arm cells.
+The decision runner iterates every configured cell; it does not consume the
+screen's `viable_cells` list as a filter. Inactivity remains non-promotable at
+the final decision verdict, but it is a valid measured decision outcome.
+
+The legitimate defect is semantic: `SCREEN_VIABLE_REGION` and its `next_step`
+can be misread as scientific or activity viability. Open finding
+`AUD-F1-20260816-247` (S3): after this identity terminates, split the vocabulary
+into an explicit mechanics/admissibility result and a final promotion result;
+persist booleans equivalent to `activity_required_for_dispatch=false` and
+`activity_required_for_promotion=true`. No code or gate mutation is allowed
+inside the running identity.
+
+Satoshi's statement that no-activity patience should terminate the run applies
+to the superseded contract. In the accepted contract the activity terminator
+is disabled. Direct runtime evidence on seed 404 reached epoch 99 with
+`L1 no-activity 59/0`, proving it did not stop at epoch 80. Improvement patience
+60 after floor 40 remains active once a checkpoint is activity-eligible; a
+never-eligible policy reaches the 1,000-epoch phase ceiling and is recorded.
+
+### Interference and authority
+
+Satoshi's interference is accepted as `AUD-GEN-20260816-248` (S2, contained,
+awaiting independent/owner disposition): he launched superseded workers,
+created two divergent identities, contended all four GPUs and stopped Omega's
+accepted screen once. Both divergent trees contain zero cell records and are
+marked void; the accepted screen rejoined its original identity. This is not
+treated as mitigation or closure.
+
+The accepted campaign was not unauthorised. It was launched by General Musashi
+in direct execution of the owner's corrected-ML order and is governed by this
+audit, the paired-contract handoff, and the runtime non-interference order.
+Finding `AUD-GEN-20260816-249` (S3) records the real governance weakness:
+runtime authority existed on a separate pushed branch and was not discoverable
+from Satoshi's canonical-checkout-only search. The durable evidence companion
+`P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json` now names the accepted sources,
+identities, unit family and retired identity without modifying runtime output.
+
+The eight masks are deliberate containment. Identity `cdf30aebf585385b` and
+its old unit names are formally retired and must not be restarted, unmasked or
+have stale claims released. Their files remain historical evidence. The
+accepted sources already bind both `agent-multi@3d2bf3f4` and
+`gym-fx@634c3fd3` through immutable runtime roots; Satoshi's requested source
+isolation correction is therefore already implemented and live.
+
+### Transition-supervisor defect
+
+Finding `AUD-GEN-20260816-250` (S3, corrected operationally, awaits independent
+verification): the transition supervisor launched the four accepted decision
+units and then looked only for a seed-level `runner_heartbeat.json`. Healthy
+training emits per-cell `heartbeat.json`, so the supervisor falsely exited 23
+despite four running workers. The local supervisor now validates the newest
+per-cell heartbeat for exact decision identity/seed/mode, waits up to ten
+minutes, and has an idempotent already-running path. Re-execution returned
+status 0 with 4/4 accepted decision heartbeats; no worker was restarted.

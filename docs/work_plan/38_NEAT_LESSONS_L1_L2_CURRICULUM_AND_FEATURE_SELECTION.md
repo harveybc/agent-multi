@@ -1100,3 +1100,40 @@ as a treatment-only selection gate in this primary contrast. Doing so would
 change both the treatment and its censoring rule. After the paired result, a
 secondary analysis may test the historical NEAT rule (only hand off a positive
 easy checkpoint) as its own declared factor.
+
+### 21.5 Mechanics screen is not an activity-selection screen
+
+The one-epoch-per-phase screen answers only whether all 16 cells can
+materialize, train, persist, reload and replicate under the corrected contract
+without actor collapse or custody failure. It records activity but does not
+require activity for dispatch. Requiring trades after one epoch would censor
+slow-learning cells before the long experiment designed to measure their
+activity emergence, and could censor control/treatment arms unequally.
+
+Therefore:
+
+- `activity_required_for_dispatch=false` for the mechanics screen;
+- all four cells per seed execute in the decision run, including
+  mechanically viable but inactive screen cells;
+- `activity_required_for_promotion=true` at the decision verdict;
+- zero-trade and time-to-first-eligible-checkpoint are measured outcomes, not
+  invented performance values;
+- the decision activity terminator remains disabled for this comparison, so a
+  never-eligible policy reaches the phase ceiling rather than being removed at
+  epoch 80.
+
+The existing token `SCREEN_VIABLE_REGION` is retained only for identity
+continuity of the running experiment. Finding `AUD-F1-20260816-247` requires a
+future typed rename separating mechanics admission from scientific promotion;
+that correction must not alter identity `f9379f596e80fda4` in flight.
+
+### 21.6 Fleet authority and retired identities
+
+Accepted runtime sources are `agent-multi@3d2bf3f4` and
+`gym-fx@634c3fd3`; screen `0c70ab2ce7804750` and decision
+`f9379f596e80fda4` are the only accepted identities. The authority manifest is
+`docs/audits/evidence/P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json`.
+
+Decision identity `cdf30aebf585385b` and legacy `p1lr-decision*` unit names
+are formally retired and runtime-masked. Their stale locks and files are
+preserved as evidence and must not be released, resumed or aggregated.

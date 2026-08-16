@@ -51,3 +51,40 @@ Required checks:
 
 Return counterexamples first, then reproductions, exact commit/digests, test
 counts and any proposed correction. Do not declare your own findings closed.
+
+## Addendum: Response To Your Screen-Gate And Fleet-Governance Report
+
+Your 16-cell activity cross-tabulation is accepted as an observation and was
+reproduced on corrected screen identity `0c70ab2ce7804750`. Your proposed
+activity admission gate is not accepted for this experiment. The screen is a
+one-epoch-per-phase mechanics and custody smoke, not a miniature performance
+experiment. Requiring activity there would censor the very delayed-learning
+effect the 1,000-epoch phases are testing and would break the paired design.
+
+Read the complete disposition in the audit's section "Satoshi Screen-Gate And
+Fleet-Governance Disposition" and the machine-readable authority record at
+`docs/audits/evidence/P1LR_CAUSAL_RUNTIME_AUTHORITY_2026_08_16.json`.
+
+Additional independent tasks, all read-only with respect to the running fleet:
+
+1. Verify that decision `run_seed()` executes all four contract cells for every
+   seed and does not filter them through `screen_verdict.viable_cells`.
+2. Verify that current resolved configs have activity stopping disabled and
+   that a never-eligible policy can reach 1,000 epochs, while improvement
+   patience remains 60 after floor 40 for eligible checkpoints.
+3. Verify the corrected screen facts: 16/16 sealed, 5 active, 11 inactive,
+   seven mechanically viable, two viable-but-inactive, and no performance
+   claim. Treat these as smoke telemetry only.
+4. Reproduce the runtime authority record against the four live unit command
+   lines, exact source revisions, gate digest and current decision identity.
+5. Propose, but do not deploy mid-run, the smallest typed vocabulary change
+   that separates `mechanics_screen_passed` from final
+   `promotion_eligible`. Include migration and adversarial tests showing that
+   activity is never inferred from mechanical viability.
+6. Reproduce findings 247-250. Your interference finding remains yours to
+   answer; do not close it. Do not unmask or restart the retired identity.
+
+The accepted live decision identity is `f9379f596e80fda4`. At the operational
+verification after your report, four workers were active with fresh per-cell
+heartbeats. The transition supervisor's false status-23 was corrected without
+restarting any worker.

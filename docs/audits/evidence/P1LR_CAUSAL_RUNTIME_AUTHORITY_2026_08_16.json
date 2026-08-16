@@ -1,0 +1,40 @@
+{
+  "schema": "agent_multi.p1lr_runtime_authority.v1",
+  "recorded_at": "2026-08-16T12:26:52-05:00",
+  "authority": {
+    "owner_direction": "execute the corrected causal easy-to-normal versus normal-to-normal experiment without idle fleet time",
+    "implementer": "General Musashi",
+    "audit_document": "docs/audits/AUDIT_P1LR_CAUSAL_EARLY_STOP_CONTRACT_2026_08_16.md",
+    "handoff_document": "docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_P1LR_CAUSAL_EARLY_STOP_AUDIT_2026_08_16.md"
+  },
+  "accepted_runtime": {
+    "agent_multi_commit": "3d2bf3f4fa9d514e5528345732d4072ee95537ca",
+    "gym_fx_commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+    "screen_identity": "0c70ab2ce7804750",
+    "decision_identity": "f9379f596e80fda4",
+    "screen_contract_sha256": "70ef4cb3e66b3360d4a272d544e680eeefc35ce41e384526c502b01a273debfd",
+    "screen_gate_sha256": "690507c40b4a9ad9bac6b246592049f569c01701dab15ab9d10991bcc4ffdb0f",
+    "screen_collection_digest": "2337f9d4e90c9df7958e0c73883a3dc014a7be2e313da7121e08cfd85a15f1c5",
+    "decision_unit_pattern": "p1lr-v2-causal-decision-seed<seed>-3d2bf3f4.service",
+    "seeds": [101, 202, 303, 404]
+  },
+  "screen_semantics": {
+    "purpose": "mechanics_and_artifact_custody_only",
+    "epochs_per_phase": 1,
+    "activity_required_for_dispatch": false,
+    "activity_required_for_promotion": true,
+    "performance_claims": "none"
+  },
+  "retired_runtime": {
+    "decision_identity": "cdf30aebf585385b",
+    "unit_patterns": [
+      "p1lr-decision-seed<seed>.service",
+      "p1lr-decision@<seed>.service"
+    ],
+    "disposition": "retired_masked_preserve_evidence_do_not_restart"
+  },
+  "transition_supervisor": {
+    "script_sha256_after_heartbeat_fix": "a3f47599e6b21b2db88f87e32c604213a0251fb5e65b3954a6074be3b1ca6796",
+    "verification": "4_of_4_active_decision_units_with_identity_bound_per_cell_heartbeats"
+  }
+}
