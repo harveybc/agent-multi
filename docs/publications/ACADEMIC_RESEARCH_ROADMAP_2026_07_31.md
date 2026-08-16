@@ -89,3 +89,28 @@ Protected-test data selects nothing in any paper. Null and negative results
 stay visible. Simulated/paper results are never expected live profit. AI
 involvement is disclosed in every manuscript. Readiness states change only on
 evidence, never on prose quality.
+
+## 8. Correction Appendix — 2026-08-15 (append-only)
+
+Sections 1-7 are the historical 2026-07-31 record and are not rewritten.
+This appendix, ordered by the DOIN doctrine alignment order §7 (Musashi
+verdicts Q20 and C9, 2026-08-15), supersedes them where they conflict.
+
+1. **Publication order is not a paper identifier.** Section 1's "draft
+   first" (P5) and "drafted second" (P1) recorded a 2026-07-31 drafting
+   disposition. The intended publication order is now recorded as: first
+   publication output — P1 protocol with bounded verification evidence;
+   second publication output — the P5/P13 adversarial cross-audit method
+   paper. Ordinal phrases ("first paper", "second paper") name positions in
+   this order, never identifiers: the "second paper" is not paper P2.
+2. **Paper IDs are stable.** P1-P5 and P6+ keep their identifiers; no
+   renumbering accompanies the order change. P2 remains the data-first
+   mixed-genome trading search paper (still blocked on its model-only and
+   fixed-data controls) regardless of publication order.
+3. **P1 threat-model limitation retained.** The finding-016 precondition and
+   the narrow threat model in work-plan document 25 §4 remain in force. That
+   limitation is a technical scoping decision of the research program — not
+   an owner slogan — and P1's verification claim stays "a bounded
+   verification evaluation compared with the search process that produced
+   the candidate" until the measured verification-to-generation ratio
+   exists (work-plan document 40 §8).

@@ -15,6 +15,14 @@ unbounded idea backlog.
 The academic role never becomes idle after a paper or audit. When no urgent
 finding or manuscript gate is ready, it works the research queue in section 5.
 
+Publication order is recorded separately from paper identifiers (2026-08-15,
+doctrine alignment order §7): the intended first two publication outputs are
+(1) P1 protocol with bounded verification evidence and (2) the P5/P13
+adversarial cross-audit method paper. Ordinals such as "second paper" name
+publication order, never identifiers — the second output is not paper P2,
+which remains the data-first mixed-genome trading search paper. Paper IDs are
+stable and are never renumbered.
+
 ## 2. Two Coupled Loops
 
 ### 2.1 Evidence-to-publication loop

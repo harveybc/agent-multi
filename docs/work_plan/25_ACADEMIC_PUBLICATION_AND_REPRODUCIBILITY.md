@@ -1,8 +1,11 @@
 # Academic Publication and Reproducibility Program
 
 Status: specified; evidence collection and continuous research active; no submission authorized
-Version: 1.1.0
-Date: 2026-07-31
+Version: 1.2.0
+Date: 2026-08-15 (1.2.0: publication order separated from paper identifiers;
+P1 verification wording aligned to the bounded-evaluation contract; P1
+threat-model limitation clarified as a technical decision, not an owner
+slogan — doctrine alignment order §7, Musashi verdicts Q20/C9/C10)
 
 ## 1. Purpose and Authority
 
@@ -116,6 +119,29 @@ rewrite DOI, author, title, venue or year fields.
 
 ## 4. Paper Series
 
+### 4.0 Publication Order Versus Paper Identifiers (2026-08-15)
+
+Paper identifiers (P1, P2, P3, ...) are stable names. They are never
+renumbered and they do not encode publication order.
+
+The intended first two publication outputs are:
+
+1. **First publication output — P1:** the DOIN protocol with bounded
+   verification evidence, phrased as "a bounded verification evaluation
+   compared with the search process that produced the candidate"; the
+   measured verification-to-generation ratio (with workload, hardware,
+   domain, metric and uncertainty) replaces that phrase only after the
+   sealed measurement exists.
+2. **Second publication output — the P5/P13 adversarial cross-audit method
+   paper:** role-separated evidence review evaluated on the enumerated
+   incident/audit corpus.
+
+Ordinal phrases such as "first paper" and "second paper" always denote
+publication order and never a paper identifier. In particular, the "second
+paper" (the P5/P13 cross-audit method) is not paper P2. P2 remains the
+data-first mixed-genome trading search paper regardless of when its
+evidence completes or when it publishes.
+
 ### P1. DOIN Protocol and Verifiable Optimization
 
 Working title:
@@ -126,8 +152,13 @@ Working title:
 Primary question:
 
 > Can heterogeneous peers collaborate on evolutionary optimization, avoid
-> duplicate evaluation, verify improvements more cheaply than producing them,
+> duplicate evaluation, verify improvements through a bounded verification
+> evaluation compared with the search process that produced the candidate,
 > and preserve queryable lineage without a central coordinator?
+
+Until the designed verification-to-generation measurement exists (with its
+workload, hardware, domain, metric and uncertainty), P1 may not claim cheap,
+free or asymptotically cheaper verification (work-plan document 40 §8).
 
 Table of contents:
 
@@ -179,6 +210,12 @@ independent re-evaluation, and one operator controls the observed fleet.
 Byzantine tolerance, Sybil resistance, collusion resistance, permissionless
 economic security and externally anchored finality are non-goals until
 separate implementations and adversarial experiments support them.
+
+This scope limitation is a technical threat-model decision of the research
+program, retained on auditor review (2026-08-15, verdict C10: technically
+honest). It is not an owner slogan and was not authored as owner speech; it
+must not be quoted as one. The enumerated behavior list and non-goals above
+are the authoritative statement of P1's claim boundary.
 
 ### P2. Data-First Mixed-Genome Trading Search
 
