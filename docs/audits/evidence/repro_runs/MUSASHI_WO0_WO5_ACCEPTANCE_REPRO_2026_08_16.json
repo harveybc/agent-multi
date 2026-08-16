@@ -1,0 +1,59 @@
+{
+  "active_runtime": {
+    "identity": "cdf30aebf585385b",
+    "mode": "decision",
+    "mutated_by_audit": false,
+    "records_landed": 0,
+    "workers_fresh": 4,
+    "workers_total": 4
+  },
+  "as_of_identity_counterexample": {
+    "different_input_and_bars_for_same_due_route_accepted": true,
+    "first_insert": true,
+    "rows_after_counterexample": 2
+  },
+  "branch_custody": {
+    "agent_multi_audit_tip_before_this_report": "ef298551",
+    "agent_multi_return_tip": "9e4ebc3f",
+    "agent_multi_return_tip_has_common_ancestor_with_audit": false,
+    "lts_base": "5f80e80",
+    "lts_component_branches_pushed": false
+  },
+  "privacy_check": {
+    "detailed_wo1_evidence_contains_private_account_facts": true,
+    "lts_repository_visibility": "PUBLIC",
+    "wo1_remote_branch_present": false
+  },
+  "schema": "agent_multi.musashi_wo0_wo5_acceptance_repro.v1",
+  "succession_crash_counterexample": {
+    "active_session_after_crash": "challenger-linear-v2",
+    "capability_consumed": true,
+    "injected_boundary": "after_ledger_commit_before_manifest_switch",
+    "manifest_after_crash": "incumbent-linear-v1",
+    "plain_rerun_recovers": false,
+    "rerun_refusal_kind": "different_incumbent_model"
+  },
+  "test_results": {
+    "agent_multi_wo4": {
+      "failed": 2,
+      "passed": 1638,
+      "reason": "four shipped p1lr v2 seed environment files are absent"
+    },
+    "lts_wo1": {
+      "failed": 0,
+      "passed": 729
+    },
+    "lts_wo123_integrated": {
+      "failed": 0,
+      "passed": 782
+    },
+    "lts_wo2": {
+      "failed": 0,
+      "passed": 720
+    },
+    "lts_wo3": {
+      "failed": 0,
+      "passed": 735
+    }
+  }
+}

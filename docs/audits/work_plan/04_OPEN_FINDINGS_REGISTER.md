@@ -1195,6 +1195,31 @@ namespaced identifiers differ.
 | AUD-F2-20260815-253 | S2 | open | IBKR direct facts disagree about order/exposure state and current heartbeat cannot prove a valid model-artifact SHA-256 | General Satoshi III reconciles direct TWS facts; General Musashi verifies |
 | AUD-DOIN-20260815-254 | S3 | open, reproduced; no deployed consensus mutation authorized | Prototype semantic drift combines absolute reported-value progress, dual threshold writers and an unwired evaluation-accounting method | General Satoshi III creates isolated failing tests/profile correction; General Musashi verifies |
 
+### 1an. Satoshi WO0-WO5 return after Retsu review, 2026-08-15/16 boundary
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_WO0_WO5_RETSU_CORRECTIONS_2026_08_16.md`
+- `../evidence/repro_runs/MUSASHI_WO0_WO5_ACCEPTANCE_REPRO_2026_08_16.json`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_III_WO0_WO5_CORRECTION_AND_INTEGRATION_ORDER_2026_08_16.md`
+- `../../handoffs/MUSASHI_RESPONSE_TO_RETSU_AFTER_SATOSHI_WO0_WO5_RETURN_2026_08_16.md`
+
+Append-only disposition of existing findings: 249, 250, 251 and 253 remain
+open with partial implementations; 252 is corrected pending Retsu's read-only
+verification; 254 remains an isolated sidecar. The active P1LR v2 decision was
+not mutated and independently showed four fresh workers on one identity.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-SEC-20260816-255 | S2 | open, blocks any LTS branch push | WO1 commits private Paper/Demo balances, exact exposure/order facts and stable identifiers into public-repository evidence | General Satoshi III sanitizes; General Musashi and Retsu verify |
+| AUD-GEN-20260816-256 | S2 | open, blocks WO4 deployment | Four claimed byte-pinned v2 seed environments are absent; WO4 full suite fails 2 tests and installer input is missing | General Satoshi III implements; General Musashi verifies |
+| AUD-F2-20260816-257 | S2 | open, blocks executable succession claim | Champion succession orchestrator has only test callers; no direct-fact production CLI/service invokes it | General Satoshi III implements; General Musashi verifies |
+| AUD-F2-20260816-258 | S2 | open, blocks Paper promotion | Crash after ledger commit and before manifest switch burns authority, changes active session and cannot be resumed as documented | General Satoshi III implements resumable saga; General Musashi verifies |
+| AUD-F2-20260816-259 | S2 | open, blocks IBKR/Alpaca subtractability claim | As-of uniqueness includes input hash, allowing contradictory inputs for one due decision | General Satoshi III implements v2 identity; General Musashi verifies |
+| AUD-F2-20260816-260 | S3 | open, operational evidence integrity | As-of persistence failure is transient stdout only and does not degrade durable health | General Satoshi III implements; Retsu verifies read-only |
+| AUD-GEN-20260816-261 | S3 | open, restart reproducibility | Pinned v2 unit executes lease-gate code from mutable canonical checkout | General Satoshi III pins control artifact; General Musashi verifies |
+| AUD-GEN-20260816-262 | S3 | open, integration custody | Component branches are local-only and WO5 authoring lineage is disconnected from current audit history | General Satoshi III produces pushed integration branches; General Musashi verifies |
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 
