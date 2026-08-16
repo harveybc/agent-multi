@@ -45,6 +45,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import socket
 import sys
 from datetime import datetime, timezone
@@ -851,6 +852,102 @@ def find_record(records: Iterable[dict], *, experiment: str, mode: str,
         if record.get("transition_id") == tid:
             return record
     return None
+
+
+# ---------------------------------------------------------------------------
+# active-chain authority (WO4, finding AUD-GEN-20260815-250)
+# ---------------------------------------------------------------------------
+
+_FAMILY_SUFFIX = re.compile(r"^(?:decision|v\d+|\d{8})$")
+
+
+def experiment_family(name: str) -> str:
+    """The experiment FAMILY: the name with trailing date / version /
+    ``decision`` segments stripped.
+
+    ``p1_difficulty_lr_factorial_20260811_v1``,
+    ``p1_difficulty_lr_factorial_20260815_v2`` and
+    ``p1_difficulty_lr_factorial_20260815_v2_decision`` are all one
+    family (``p1_difficulty_lr_factorial``): they compete for the same
+    seeds, the same GPUs and the same systemd unit template, so an
+    active dispatched chain in the family is authoritative over every
+    other identity in it.
+    """
+    parts = [p for p in str(name or "").split("_") if p]
+    while parts and _FAMILY_SUFFIX.fullmatch(parts[-1]):
+        parts.pop()
+    return "_".join(parts)
+
+
+def active_chain_authorities(records: Iterable[dict], *,
+                             now: Optional[datetime] = None,
+                             lease_seconds: float =
+                             DEFAULT_CLAIM_LEASE_SECONDS,
+                             family: Optional[str] = None,
+                             ) -> list[dict[str, Any]]:
+    """Every ACTIVE durable transition: a successor DISPATCHED or held
+    under a LIVE dispatch lease (finding 250).
+
+    This is the queue-side answer to "which chain owns the fleet right
+    now?". A record whose claim lease expired or that is still
+    undispatched is NOT an authority — an authority is only ever a
+    proven in-flight or completed dispatch. ``family`` (see
+    :func:`experiment_family`) narrows the answer to one experiment
+    family; the guard uses that to refuse a conflicting identity
+    without vetoing unrelated experiments.
+    """
+    moment = now or _now()
+    authorities: list[dict[str, Any]] = []
+    for record in records:
+        status = transition_status(record, now=moment,
+                                   lease_seconds=lease_seconds)
+        if status["value"] not in ("transitioned",
+                                   "transition_dispatch_in_progress"):
+            continue
+        next_job = dict(record.get("next_job") or {})
+        current = dict(record.get("current_job") or {})
+        dispatch = dict(record.get("dispatch") or {})
+        chain = next_job.get("chain_id") or dispatch.get("chain_id")
+        families = {experiment_family(current.get("experiment") or ""),
+                    experiment_family(next_job.get("experiment") or "")}
+        families.discard("")
+        if family is not None and family not in families:
+            continue
+        dispatched_utc = (dispatch.get("dispatched_utc")
+                          or dispatch.get("renewed_utc")
+                          or dispatch.get("claimed_utc")
+                          or next_job.get("approved_utc")
+                          or record.get("updated_utc"))
+        authorities.append({
+            "transition_id": record.get("transition_id"),
+            "transition_state": status["value"],
+            "dispatch_state": status["dispatch_state"],
+            "chain_id": chain,
+            "dispatched_utc": dispatched_utc,
+            "next_job_id": next_job.get("id"),
+            "next_experiment": next_job.get("experiment"),
+            "next_contract_path": next_job.get("contract_path"),
+            "next_contract_sha256": next_job.get("contract_sha256"),
+            "current_identity": current.get("identity"),
+            "current_experiment": current.get("experiment"),
+            "current_mode": current.get("mode"),
+            "families": sorted(families),
+            "evidence_root": (record.get("terminal_result")
+                              or {}).get("evidence_root"),
+        })
+    # NEWEST dispatch first: within one family the RULING authority is
+    # the most recent dispatch — an older chain whose durable record was
+    # never explicitly superseded (the historical-v1 case) must not keep
+    # outranking the chain that actually owns the fleet now.
+    authorities.sort(
+        key=lambda a: ((_iso(a.get("dispatched_utc")) or
+                        datetime.min.replace(tzinfo=timezone.utc)),
+                       str(a.get("transition_id"))),
+        reverse=True)
+    for rank, auth in enumerate(authorities):
+        auth["authority_rank"] = rank
+        auth["ruling"] = rank == 0
+    return authorities
 
 
 def ensure_terminal_record(queue_dir: Path, *, experiment: str, mode: str,

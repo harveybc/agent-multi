@@ -40,16 +40,31 @@ heartbeat, a shell process, a chat message or operator memory — and the
 same module owns the ONE deduplicated undispatched-successor incident,
 through the same fleet ledger this guard already uses.
 
+IDENTITY-AWARE MATCHING (finding AUD-GEN-20260815-250): a process
+counts as a seed's runner ONLY when its own cmdline/cwd facts prove
+contract identity + mode + seed + output root — NEVER seed alone. The
+retired seed-only pgrep pattern let a v2 decision PID with ``--seed
+101`` make terminal v1 seed 101 render ``busy_process_alive``; that
+pattern survives only as :func:`legacy_seed_only_pattern` for the
+regression proof. The guard also discovers the ACTIVE durable
+transition from the queue records and REFUSES (typed, exit 2) to
+supervise an identity that conflicts with the active dispatched chain,
+and it withholds restarts while a foreign or unprovable same-seed
+process lives — one writer per seed, always.
+
 Socket-free by construction for tests: process facts, GPU telemetry,
 unit existence, restart calls and ledger emissions are injected; the
-default wiring uses pgrep / nvidia-smi (tools.m0_l1_mechanism_ladder.
-gpu_telemetry) / systemctl and tools/incident_emit.py. Intended to run
-from a per-host systemd user timer.
+default wiring uses /proc cmdline+cwd via pgrep candidates /
+nvidia-smi (tools.m0_l1_mechanism_ladder.gpu_telemetry) / systemctl
+and tools/incident_emit.py. Intended to run from a per-host systemd
+user timer.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -65,6 +80,7 @@ from tools.multifront_status import (  # noqa: E402  (path set above)
     P1LR_MODES,
     P1LR_UNIT_TEMPLATES,
     P1lrModeRefusal,
+    classify_p1lr_failure,
     p1lr_mode_binding,
     p1lr_verify_identity_binding,
 )
@@ -178,17 +194,208 @@ def save_state(path: Path, state: dict) -> None:
 # default fact providers (tests inject fakes; nothing here runs in tests)
 # ---------------------------------------------------------------------------
 
-def default_process_alive(seed: int) -> bool:
-    """A live runner process for this seed, found by its exact command
-    line (the systemd unit launches `... p1_difficulty_lr_factorial.py
-    --seed <seed>`)."""
+def legacy_seed_only_pattern(seed: int) -> str:
+    """The RETIRED seed-only pgrep pattern, kept importable ONLY so the
+    regression proof of finding AUD-GEN-20260815-250 can reproduce the
+    defect it caused: this pattern matches ANY runner with the same
+    ``--seed``, whatever its contract, mode, chain or output root — so
+    a v2 decision PID with ``--seed 101`` made terminal v1 seed 101
+    render ``busy_process_alive``. It is never used for matching."""
+    return f"p1_difficulty_lr_factorial\\.py --seed {seed}(\\s|$)"
+
+
+def default_process_facts() -> list[dict]:
+    """Observed runner-candidate process facts on THIS host — pid,
+    argv (``/proc/<pid>/cmdline``) and working directory
+    (``/proc/<pid>/cwd``). Candidates come from a broad pgrep; the
+    IDENTITY decision is made by :func:`match_seed_processes`, never
+    here — finding 250: process matching requires contract identity,
+    mode, seed and output root, NEVER seed alone."""
     try:
-        return subprocess.run(
-            ["pgrep", "-f",
-             f"p1_difficulty_lr_factorial\\.py --seed {seed}(\\s|$)"],
-            capture_output=True, text=True, timeout=10).returncode == 0
+        out = subprocess.run(["pgrep", "-f", "p1_difficulty_lr_factorial"],
+                             capture_output=True, text=True, timeout=10)
     except Exception:
-        return False
+        return []
+    facts: list[dict] = []
+    for token in (out.stdout or "").split():
+        try:
+            pid = int(token)
+        except ValueError:
+            continue
+        entry: dict[str, Any] = {"pid": pid, "cmdline": None, "cwd": None}
+        try:
+            raw = Path(f"/proc/{pid}/cmdline").read_bytes()
+            entry["cmdline"] = [a for a in raw.decode("utf-8", "replace")
+                                .split("\0") if a]
+        except OSError:
+            pass
+        try:
+            entry["cwd"] = os.readlink(f"/proc/{pid}/cwd")
+        except OSError:
+            pass
+        facts.append(entry)
+    return facts
+
+
+#: The runner's own --contract default (tools/p1_difficulty_lr_factorial
+#: .py), relative to the runner's repo root: a runner launched WITHOUT
+#: --contract is a v1-contract runner, and the matcher says so instead
+#: of guessing.
+RUNNER_DEFAULT_CONTRACT_RELPATH = (
+    "examples/config/phase_3_eth_sac_dynamics/"
+    "p1_difficulty_lr_factorial_v1.json")
+
+
+def parse_runner_cmdline(cmdline: Optional[list]) -> Optional[dict]:
+    """Typed runner facts from one argv, or None when the argv is not a
+    ``p1_difficulty_lr_factorial.py`` invocation (a bash wrapper, an ssh
+    line or an unrelated process never parses as a runner: the script
+    name must be its OWN argv element)."""
+    if not isinstance(cmdline, list):
+        return None
+    script_idx = next(
+        (i for i, a in enumerate(cmdline)
+         if isinstance(a, str)
+         and a.endswith("p1_difficulty_lr_factorial.py")), None)
+    if script_idx is None:
+        return None
+    args = [str(a) for a in cmdline[script_idx + 1:]]
+
+    def flag(name: str) -> Optional[str]:
+        for i, arg in enumerate(args):
+            if arg == name and i + 1 < len(args):
+                return args[i + 1]
+            if arg.startswith(name + "="):
+                return arg.split("=", 1)[1]
+        return None
+
+    seed_raw = flag("--seed")
+    try:
+        seed = int(seed_raw) if seed_raw is not None else None
+    except ValueError:
+        seed = None
+    return {"script": str(cmdline[script_idx]),
+            "seed": seed,
+            "mode": flag("--mode") or "screen",   # the runner's default
+            "contract": flag("--contract"),
+            "screen_gate": flag("--screen-gate")}
+
+
+def _resolve_process_contract(parsed: dict, cwd: Optional[str],
+                              ) -> Optional[Path]:
+    """The ABSOLUTE contract path a runner process is executing, resolved
+    against its /proc cwd (relative launches) or its script location
+    (the runner's own --contract default). None when unresolvable."""
+    contract = parsed.get("contract")
+    if contract is None:
+        script = Path(str(parsed.get("script") or ""))
+        if not script.is_absolute():
+            if not cwd:
+                return None
+            script = Path(cwd) / script
+        contract = str(script.parent.parent
+                       / RUNNER_DEFAULT_CONTRACT_RELPATH)
+    path = Path(str(contract)).expanduser()
+    if not path.is_absolute():
+        if not cwd:
+            return None
+        path = Path(cwd) / path
+    return path
+
+
+def _sha256_file(path: Path) -> Optional[str]:
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def match_seed_processes(process_facts: list[dict], *, seed: int,
+                         binding: dict, expected_contract_sha256: str,
+                         sha256_file_fn: Optional[
+                             Callable[[Path], Optional[str]]] = None,
+                         ) -> dict[str, Any]:
+    """Identity-aware seed-process matching (finding 250).
+
+    A process COUNTS AS THIS SEED'S RUNNER only when ALL of these are
+    proven from its own facts: it is a runner invocation, its ``--seed``
+    equals ``seed``, its ``--mode`` equals the guarded mode, and its
+    contract file (resolved against the process's own cwd) hashes to
+    ``expected_contract_sha256`` — which content-addresses the chain
+    identity AND the output root, since both derive from the contract.
+    NEVER seed alone.
+
+    Everything else is typed, not discarded:
+
+    ``foreign_same_seed``
+        a runner holding this seed for a DIFFERENT mode or contract —
+        Musashi's exact observation (a v2 decision PID on terminal v1
+        seed 101). It never renders this identity alive, and the guard
+        withholds restarts while it lives (a restart beside it would
+        create a second writer on the seed's GPU).
+    ``unprovable_same_seed``
+        a runner holding this seed whose contract identity cannot be
+        PROVEN (cwd or contract unreadable). Unproven is not mine — it
+        never renders alive — and unproven is not free either: restarts
+        are withheld exactly as for a foreign process.
+    """
+    hash_fn = sha256_file_fn or _sha256_file
+    expected_root = str(Path(str(binding["output_root"]))
+                        .expanduser()).rstrip("/")
+    matched: list[dict] = []
+    foreign: list[dict] = []
+    unprovable: list[dict] = []
+    for proc in process_facts or []:
+        parsed = parse_runner_cmdline(proc.get("cmdline"))
+        if parsed is None or parsed.get("seed") != seed:
+            continue
+        entry: dict[str, Any] = {
+            "pid": proc.get("pid"),
+            "cwd": proc.get("cwd"),
+            "mode": parsed["mode"],
+            "contract_argument": parsed.get("contract"),
+        }
+        if parsed["mode"] != binding["mode"]:
+            entry["mismatch"] = ("mode_mismatch: process runs "
+                                 f"--mode {parsed['mode']}, this guard "
+                                 f"binds mode {binding['mode']}")
+            foreign.append(entry)
+            continue
+        contract_path = _resolve_process_contract(parsed, proc.get("cwd"))
+        if contract_path is None:
+            entry["mismatch"] = ("contract_unresolvable: no cwd fact to "
+                                 "resolve the process contract path")
+            unprovable.append(entry)
+            continue
+        entry["contract_path"] = str(contract_path)
+        observed_sha = hash_fn(contract_path)
+        entry["contract_sha256"] = observed_sha
+        if observed_sha is None:
+            entry["mismatch"] = ("contract_unprovable: the process "
+                                 "contract file is unreadable from this "
+                                 "guard, so its identity cannot be proven")
+            unprovable.append(entry)
+            continue
+        if observed_sha != expected_contract_sha256:
+            entry["mismatch"] = (
+                "contract_identity_mismatch: process contract sha256 "
+                f"{observed_sha[:16]}… differs from the guarded contract "
+                f"{expected_contract_sha256[:16]}… — a different chain "
+                "identity and a different output root")
+            foreign.append(entry)
+            continue
+        entry["output_root"] = expected_root
+        matched.append(entry)
+    return {
+        "alive": bool(matched),
+        "basis": ("process cmdline/cwd facts: runner script + --seed + "
+                  "--mode + contract sha256 (content-addresses chain "
+                  "identity and output root); never seed alone "
+                  "(finding 250)"),
+        "matched": matched,
+        "foreign_same_seed": foreign,
+        "unprovable_same_seed": unprovable,
+    }
 
 
 def default_gpu_telemetry(gpu_uuid: Optional[str]) -> dict:
@@ -300,11 +507,20 @@ def seed_facts(contract: dict, identity: str, seed: int,
                 newest_heartbeat[0] is None or mtime > newest_heartbeat[0]):
             newest_heartbeat = (mtime, path)
     terminal_state = None
+    heartbeat_error = None
+    heartbeat_failure_class = None
+    heartbeat_cell = None
     if newest_heartbeat[1] is not None:
         try:
             loaded = json.loads(newest_heartbeat[1].read_text())
             if isinstance(loaded, dict):
                 terminal_state = loaded.get("terminal_state")
+                # WP0 rule 4: the error text and the runner-declared
+                # failure class ride along so the poll classifies a
+                # SEED_FAILED-due-to-source-drift distinctly.
+                heartbeat_error = loaded.get("error")
+                heartbeat_failure_class = loaded.get("failure_class")
+                heartbeat_cell = loaded.get("cell")
         except (OSError, ValueError):
             pass
     progress_age = (round(now.timestamp() - newest_mtime, 1)
@@ -315,6 +531,9 @@ def seed_facts(contract: dict, identity: str, seed: int,
         "pending_cells": [c for c in cells if c not in records],
         "progress_age_seconds": progress_age,
         "last_heartbeat_terminal_state": terminal_state,
+        "last_heartbeat_error": heartbeat_error,
+        "last_heartbeat_failure_class": heartbeat_failure_class,
+        "last_heartbeat_cell": heartbeat_cell,
         "seed_dir": str(seed_dir),
     }
 
@@ -424,6 +643,99 @@ def classify_seed_idleness(*, pending: bool, process_alive: bool,
     }
 
 
+def guard_transition_authority(records: list, *, identity: str,
+                               experiment: str, now: datetime,
+                               lease_seconds: float =
+                               etq.DEFAULT_CLAIM_LEASE_SECONDS,
+                               ) -> dict[str, Any]:
+    """Does the ACTIVE durable transition authorize guarding this
+    identity? (finding AUD-GEN-20260815-250, requirement 3.)
+
+    The queue records are the ONLY authority. Three typed verdicts pass:
+
+    - ``identity_is_active_chain`` — the guarded identity IS the
+      dispatched/in-flight successor chain;
+    - ``identity_is_terminal_predecessor_of_active_chain`` — the guarded
+      identity is the current (ending) job of an active record: watching
+      a terminal job's artifacts is legitimate, and classification
+      renders it ``completed_transitioned``;
+    - ``no_active_authority_for_family`` — nothing is dispatched in this
+      experiment family, so nothing can conflict.
+
+    Anything else — an active chain exists in the family and the guarded
+    identity is neither it nor its predecessor — is a CONFLICT. The
+    caller refuses; it never adopts the active chain silently.
+    """
+    family = etq.experiment_family(experiment)
+    authorities = etq.active_chain_authorities(
+        records, now=now, lease_seconds=lease_seconds, family=family)
+    if not authorities:
+        return {"conflict": False,
+                "value": "no_active_authority_for_family",
+                "family": family, "authorities": [],
+                "reason": (f"no durable record proves an active dispatched "
+                           f"chain in experiment family {family!r}"),
+                "corrective_command": None}
+    # Only the RULING (newest-dispatch) authority grants a pass: an
+    # older chain whose record was never explicitly superseded — the
+    # historical v1 decision — must not certify itself alive against
+    # the chain that owns the fleet now.
+    ruling = authorities[0]
+    if ruling.get("chain_id") == identity:
+        return {"conflict": False,
+                "value": "identity_is_active_chain",
+                "family": family, "authority": ruling,
+                "authorities": authorities,
+                "reason": (f"identity {identity} IS the ruling "
+                           f"{ruling['transition_state']} chain of "
+                           f"transition {ruling['transition_id']}"),
+                "corrective_command": None}
+    if ruling.get("current_identity") == identity:
+        return {"conflict": False,
+                "value":
+                    "identity_is_terminal_predecessor_of_active_chain",
+                "family": family, "authority": ruling,
+                "authorities": authorities,
+                "reason": (f"identity {identity} is the terminal "
+                           "current job of ruling transition "
+                           f"{ruling['transition_id']}; its successor "
+                           f"chain is {ruling['chain_id']}"),
+                "corrective_command": None}
+    corrective = (
+        "tools/p1lr_idle_guard.py --mode decision "
+        f"--contract {ruling.get('next_contract_path')} "
+        f"--identity {ruling.get('chain_id')}")
+    superseded = next((a for a in authorities[1:]
+                       if identity in (a.get("chain_id"),
+                                       a.get("current_identity"))), None)
+    if superseded is not None:
+        return {"conflict": True,
+                "value": "identity_is_superseded_older_chain",
+                "family": family, "authorities": authorities,
+                "reason": (
+                    f"identity {identity} belongs to OLDER transition "
+                    f"{superseded['transition_id']} (dispatched "
+                    f"{superseded.get('dispatched_utc')}), but the ruling "
+                    f"authority of family {family!r} is chain "
+                    f"{ruling.get('chain_id')} of transition "
+                    f"{ruling['transition_id']} (dispatched "
+                    f"{ruling.get('dispatched_utc')}): supervising the "
+                    "superseded identity could restart the WRONG "
+                    "unit/identity against the live chain (finding 250)"),
+                "corrective_command": corrective}
+    return {"conflict": True,
+            "value": "identity_conflicts_active_transition",
+            "family": family, "authorities": authorities,
+            "reason": (
+                f"identity {identity} is neither the ruling active chain "
+                f"{ruling.get('chain_id')} nor its terminal predecessor "
+                f"{ruling.get('current_identity')}, yet that chain owns "
+                f"experiment family {family!r} by the durable queue: "
+                f"supervising {identity} could restart the WRONG "
+                "unit/identity against the live chain (finding 250)"),
+            "corrective_command": corrective}
+
+
 def _transition_view(queue_dir: Optional[Path], *, experiment: str,
                      mode: str, identity: str, now: datetime,
                      ) -> tuple[Optional[dict], dict[str, Any]]:
@@ -464,6 +776,9 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
          mode: str = DEFAULT_MODE,
          transition_queue_dir: Optional[Path] = None,
          transition_emitter: Any = None,
+         process_facts_fn: Optional[Callable[[], list]] = None,
+         expected_contract_sha256: Optional[str] = None,
+         enforce_transition_authority: bool = True,
          ) -> dict:
     """One guard cycle over the seeds ASSIGNED TO THIS HOST.
 
@@ -479,16 +794,80 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
     budget, the queue module emits ONE deduplicated incident through the
     same fleet ledger and closes that SAME event code on recovery.
 
+    FINDING 250: when ``process_facts_fn`` is supplied (the default
+    wiring always supplies it), a seed reads ``process_alive`` ONLY for
+    a process proven — via :func:`match_seed_processes` over the
+    injected cmdline/cwd facts — to run THIS contract identity in THIS
+    mode on THIS seed; ``expected_contract_sha256`` is then mandatory.
+    A same-seed process of another chain (or of unprovable identity) is
+    typed ``foreign``/``unprovable`` and WITHHOLDS restarts: a bounded
+    recovery beside a live foreign writer would put two writers on one
+    seed's GPU. And when ``enforce_transition_authority`` holds and the
+    durable queue proves an ACTIVE dispatched chain in this experiment
+    family that is neither the guarded identity nor its direct
+    predecessor, the WHOLE poll returns a typed refusal report — no
+    incident, no restart, no silent adoption of the successor identity.
+
     Returns {"schema", "mode", "output_root", "transition", "seeds":
     {seed: facts+actions}, "emitted", "recovered", "restarts", "state"}
-    where ``state`` is the new dedup state to persist. The run root is
-    only read, never written.
+    where ``state`` is the new dedup state to persist; on an authority
+    conflict the report instead carries a ``refusal`` block and empty
+    action lists. The run root is only read, never written.
     """
     binding = p1lr_mode_binding(contract, mode)
     experiment = str(contract.get("experiment") or "")
+    if process_facts_fn is not None and not expected_contract_sha256:
+        raise ValueError(
+            "poll(): process_facts_fn requires expected_contract_sha256 — "
+            "identity-aware matching cannot run without the guarded "
+            "contract identity (finding 250: never seed alone)")
     transition_record, transition = _transition_view(
         transition_queue_dir, experiment=experiment, mode=binding["mode"],
         identity=identity, now=now)
+
+    # Finding 250: discover the ACTIVE durable transition and refuse a
+    # conflicting identity BEFORE any incident or restart machinery.
+    if transition_queue_dir is not None and enforce_transition_authority:
+        records_all, _unreadable = etq.load_records(transition_queue_dir)
+        authority = guard_transition_authority(
+            records_all, identity=identity, experiment=experiment,
+            now=now)
+        if authority["conflict"]:
+            return {
+                "schema": REPORT_SCHEMA,
+                "generated_at": now.isoformat(),
+                "hostname": local_hostname,
+                "identity": identity,
+                "mode": binding["mode"],
+                "mode_basis": "explicit_validated_parameter",
+                "output_root": binding["output_root"],
+                "unit_template": binding["unit_template"],
+                "cells_total": binding["total_cells"],
+                "transition": transition,
+                "transition_authority": authority,
+                "refusal": {
+                    "error_code":
+                        "P1LR_GUARD_IDENTITY_CONFLICTS_ACTIVE_TRANSITION",
+                    "reason": authority["reason"],
+                    "refusal_contract": (
+                        "the guard refuses to supervise an identity that "
+                        "conflicts with the ACTIVE durable transition: it "
+                        "emits no incident, restarts nothing and never "
+                        "silently adopts the successor identity (finding "
+                        "AUD-GEN-20260815-250)"),
+                    "guarded_identity": identity,
+                    "guarded_experiment": experiment,
+                    "guarded_mode": binding["mode"],
+                    "active_authorities": authority["authorities"],
+                    "corrective_command": authority["corrective_command"],
+                },
+                "seeds": {},
+                "terminal_seeds_local": [],
+                "emitted": [],
+                "recovered": [],
+                "restarts": [],
+                "state": state,
+            }
     facts_fn = seed_facts_fn or seed_facts
     assignments = contract.get("assignments") or {}
     seeds = [int(s) for s in (contract.get("seeds") or [])
@@ -501,6 +880,11 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
     restarts: list[dict] = []
     report_seeds: dict[str, Any] = {}
     terminal_seeds: list[int] = []
+    # One process-table observation per poll (finding 250): the same
+    # facts answer every seed, and the matcher — never a seed-only
+    # pattern — decides which processes belong to THIS identity.
+    observed_processes = (list(process_facts_fn() or [])
+                          if process_facts_fn is not None else None)
 
     for seed in seeds:
         assignment = assignments.get(str(seed)) or {}
@@ -512,7 +896,18 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
                                                default_seed_state())
         facts = facts_fn(contract, identity, seed, now, binding)
         pending = facts["records_landed"] < facts["cells_total"]
-        process_alive = bool(process_alive_fn(seed))
+        process_match: Optional[dict] = None
+        if observed_processes is not None:
+            process_match = match_seed_processes(
+                observed_processes, seed=seed, binding=binding,
+                expected_contract_sha256=str(expected_contract_sha256))
+            process_alive = process_match["alive"]
+        else:
+            process_alive = bool(process_alive_fn(seed))
+        foreign_or_unproven = bool(
+            process_match
+            and (process_match["foreign_same_seed"]
+                 or process_match["unprovable_same_seed"]))
         telemetry = gpu_telemetry_fn(gpu_uuid) or {}
         utilization = telemetry.get("gpu_utilization_pct")
         gpu_idle_now = (utilization is not None
@@ -583,11 +978,32 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
             "terminal_complete": classification["terminal_complete"],
             "actions": actions,
         }
+        if process_match is not None:
+            entry["process_match"] = {
+                "basis": process_match["basis"],
+                "matched": process_match["matched"],
+                "foreign_same_seed": process_match["foreign_same_seed"],
+                "unprovable_same_seed":
+                    process_match["unprovable_same_seed"],
+            }
         if classification["terminal_complete"]:
             entry["transition_state"] = transition.get("value")
             entry["transition_id"] = transition.get("transition_id")
             entry["next_job_id"] = transition.get("next_job_id")
             entry["transition_blockers"] = transition.get("blockers")
+
+        # WP0 rule 4: a failed/refused newest heartbeat is CLASSIFIED —
+        # a SEED_FAILED-due-to-source-drift renders failure_class
+        # source_drift with retry_eligible true (the bounded restart /
+        # systemd Restart=on-failure IS the scheduled retry), never
+        # silent progress.
+        failure = classify_p1lr_failure(
+            facts.get("last_heartbeat_terminal_state"),
+            facts.get("last_heartbeat_error"),
+            declared_class=facts.get("last_heartbeat_failure_class"),
+            unit=unit, cell=facts.get("last_heartbeat_cell"))
+        if failure is not None:
+            entry["failure"] = failure
 
         if stalled:
             unit_exists = bool(unit_exists_fn(unit))
@@ -642,7 +1058,16 @@ def poll(*, contract: dict, identity: str, state: dict, now: datetime,
 
             # Bounded service recovery (never an unbounded loop).
             restart_history = list(seed_state.get("restarts") or [])
-            if refusal:
+            if foreign_or_unproven:
+                # Finding 250: a live same-seed process of ANOTHER (or
+                # unprovable) identity owns this seed's GPU right now.
+                # Restarting this identity's unit beside it would create
+                # a second writer — the restart is withheld, typed.
+                actions.append(
+                    "restart_withheld_foreign_seed_process"
+                    if process_match["foreign_same_seed"]
+                    else "restart_withheld_unproven_seed_process")
+            elif refusal:
                 actions.append("restart_withheld_typed_refusal")
             elif not unit_exists:
                 actions.append("restart_withheld_unit_missing")
@@ -896,10 +1321,19 @@ def main() -> int:
         transition_emitter = etq.LedgerEmitter(hostname)
         restart_fn = default_restart
 
+    # Finding 250: the guarded contract's sha256 IS the identity the
+    # process matcher requires — matching is contract identity + mode +
+    # seed + output root, NEVER seed alone.
+    contract_sha256 = hashlib.sha256(
+        args.contract.read_bytes()).hexdigest()
+
     report = poll(
         contract=contract, identity=identity, state=state,
         now=datetime.now(timezone.utc), local_hostname=hostname,
-        emitter=emitter, process_alive_fn=default_process_alive,
+        emitter=emitter,
+        process_alive_fn=lambda seed: False,  # superseded by the matcher
+        process_facts_fn=default_process_facts,
+        expected_contract_sha256=contract_sha256,
         gpu_telemetry_fn=default_gpu_telemetry,
         unit_exists_fn=default_unit_exists, restart_fn=restart_fn,
         idle_after_seconds=args.idle_after_seconds,
@@ -910,10 +1344,12 @@ def main() -> int:
         transition_queue_dir=(None if args.no_transition_queue
                               else args.transition_queue_dir),
         transition_emitter=transition_emitter)
-    if not args.dry_run:
+    refused = bool(report.get("refusal"))
+    if not args.dry_run and not refused:
         save_state(state_path, report["state"])
     printable = {k: v for k, v in report.items() if k != "state"}
     printable["identity_presence"] = identity_presence
+    printable["contract_sha256"] = contract_sha256
     printable["dry_run"] = bool(args.dry_run)
     text = json.dumps(printable, indent=1, sort_keys=True)
     if args.report_out is not None:
@@ -922,7 +1358,9 @@ def main() -> int:
         tmp.write_text(text, encoding="utf-8")
         tmp.replace(args.report_out)
     print(text)
-    return 0
+    # A typed identity/authority refusal is exit 2, like every other
+    # refusal-to-bind: the guard never supervises a conflicting identity.
+    return 2 if refused else 0
 
 
 if __name__ == "__main__":

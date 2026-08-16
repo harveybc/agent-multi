@@ -10,6 +10,15 @@ __pycache__/
 
 # Credentials and machine-local authority. Public examples must contain only
 # placeholders or documentation-reserved addresses.
+#
+# DO NOT widen this block to `*.env.conf` (finding AUD-GEN-20260816-256).
+# Reviewed NON-SECRET systemd environment payloads that are shipped
+# deliverables — currently
+# examples/config/phase_3_eth_sac_dynamics/p1lr_env_v2/seed*.env.conf —
+# deliberately carry that suffix so a newly generated one is visible to
+# `git status` instead of vanishing the way the earlier seed*.env payload
+# did. tests/test_wo4_identity_supervision.py fails if they become
+# ignored or untracked again. Secrets still belong nowhere in git.
 .env
 .env.*
 *.env

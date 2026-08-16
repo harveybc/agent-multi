@@ -479,9 +479,15 @@ def _run_cli(tmp_path, *args, contract=None):
     contract = contract if contract is not None else _contract(tmp_path)
     cpath = tmp_path / "contract.json"
     cpath.write_text(json.dumps(contract))
+    # Isolated durable queue: the CLI must never read this developer
+    # machine's REAL transition records during a test — finding 250 made
+    # the guard consult them, which surfaced this leak.
+    queue_dir = tmp_path / "transition-queue"
+    queue_dir.mkdir(parents=True, exist_ok=True)
     proc = subprocess.run(
         [sys.executable, str(REPO / "tools/p1lr_idle_guard.py"),
-         "--contract", str(cpath), "--dry-run", *args],
+         "--contract", str(cpath), "--dry-run",
+         "--transition-queue-dir", str(queue_dir), *args],
         capture_output=True, text=True, timeout=120, cwd=str(REPO))
     return proc
 

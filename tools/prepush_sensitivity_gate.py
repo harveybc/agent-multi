@@ -151,12 +151,22 @@ RULES: list[Rule] = [
     # value to end at a value delimiter prevents dynamic expressions such as
     # ``hostname: socket.gethostname()`` and prose such as ``host: the
     # marker`` from being misclassified as topology.
+    #
+    # NARROWED 2026-08-16 (false-positive class, detection unchanged): a
+    # QUOTED key with an UNQUOTED value is a variable reference in code —
+    # ``"hostname": local_hostname`` — never a literal, because a literal
+    # in JSON or a dict is always quoted (``"hostname": "dragon"`` still
+    # fires). The bare-key YAML form ``hostname: dragon`` is untouched.
+    # This narrows the RULE, not the allowlist, which stays shrink-only.
     Rule("topology", "hostname_assignment",
-         r"(?i)\b(?:hostname|host|ssh_host|machine)\b[\"']?\s*"
-         r"(?:"
-         r":\s*(?:[\"']([a-z][a-z0-9_.-]{1,40})[\"']|"
+         r"(?i)(?:"
+         r"(?<![\"'])\b(?:hostname|host|ssh_host|machine)\b\s*"
+         r"(?::\s*(?:[\"']([a-z][a-z0-9_.-]{1,40})[\"']|"
          r"([a-z][a-z0-9_.-]{1,40})(?=\s*(?:[,}\]#]|$)))|"
-         r"=\s*[\"']([a-z][a-z0-9_.-]{1,40})[\"']"
+         r"=\s*[\"']([a-z][a-z0-9_.-]{1,40})[\"'])"
+         r"|"
+         r"[\"']\b(?:hostname|host|ssh_host|machine)\b[\"']\s*"
+         r":\s*[\"']([a-z][a-z0-9_.-]{1,40})[\"']"
          r")",
          check=_hostname_not_allowed),
     Rule("topology", "gpu_uuid",
