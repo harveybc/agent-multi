@@ -1180,6 +1180,7 @@ Canonical evidence:
 | AUD-F1-20260816-272 | S3 | corrected by auditor, awaits Retsu verification | Multi-front status hardcoded the generic `p1lr-decision@` template and falsely labeled the four accepted incident-specific systemd workers as unsupervised direct processes | Retsu reproduces authority-bound unit discovery and 48 focused tests |
 | AUD-F2-20260816-273 | S4 | corrected by auditor, awaits Retsu verification | Multi-front status read only the legacy nested `inference.artifact_sha256`, while the current LTS IBKR heartbeat publishes the valid execution artifact as top-level `artifact_sha256`; an active protected Paper position was falsely rendered `dependency_blocked` | Retsu independently verifies the real heartbeat and both regression fixtures; owner closes |
 | AUD-F1-20260816-274 | S4 | corrected by auditor, awaits Retsu verification | Front-1 exposed the completed historical factorial under legacy key `active_l1_factorial` and rendered a running P1LR experiment's absent transition record as `completed_untransitioned`; this confused current work with history | Retsu verifies `current_work`, history role and `current_job_running` semantics against the live identity; owner closes |
+| AUD-F1-20260817-277 | S2 | open; active identity preserved as diagnostic evidence | Thresholded SAC maps constant numerical bias to easy-mode directional activity and normal-mode HOLD, while the 1,000-epoch contract lacks a policy-responsiveness futility disposition | General Satoshi implements diagnostics, typed taxonomy and successor experiment; General Musashi or Retsu independently verifies |
 
 Withdrawn aliases (never reuse): `AUD-F1-20260816-247`,
 `AUD-GEN-20260816-248`, `AUD-GEN-20260816-249`, and
@@ -1187,6 +1188,9 @@ Withdrawn aliases (never reuse): `AUD-F1-20260816-247`,
 records. Allocation now uses `tools/audit_finding_allocator.py`, which enumerates
 all local and remote refs with `git for-each-ref`, all registered worktrees and
 a host-locked reservation ledger before returning a serial.
+
+Invalid allocator reservations (never findings, never reuse):
+`AUD-AUD-F1-20260817-275` and `AUD-AUD-F1-20260817-276`.
 
 
 ## 2b. Observations Pending Verification (not yet findings)

@@ -1161,3 +1161,58 @@ succession consumer. The next contract must co-locate the explicit booleans
 `activity_required_for_decision_early_stop=false`, and
 `activity_required_for_promotion=true`. This post-run change must use a new
 content identity; it may not rewrite the active contract.
+
+## 22. 2026-08-17 Constant-Policy and Action-Semantics Correction
+
+### 22.1 What the running evidence proves
+
+The corrected 2,660-input actor no longer has the dead-first-layer defect, but
+the four first cells of decision identity `f9379f596e80fda4` show a second,
+different failure mode: deterministic output is exact or near constant and
+normal-role actions remain below the `0.1` threshold.
+
+Easy-role trade counts do not by themselves prove learning. The environment
+maps the SAC scalar to three actions. With threshold zero, any nonzero constant
+becomes permanent LONG or SHORT; with threshold `0.1`, the same bias becomes
+permanent HOLD. Reproduced examples include a constant easy policy with 85
+trades and +4.38% and another with 114 trades and -3.05%. Neither varied with
+the observation during the scored rollout.
+
+### 22.2 Correct causal statement
+
+The normal deadband exposes the behavior but is not established as the root
+cause. Candidate mechanisms, to be isolated rather than guessed, are:
+
+1. SAC continuous-control output being consumed through a discontinuous
+   three-bin action adapter;
+2. fixed entropy coefficient `0.2` relative to normalized per-bar PnL rewards;
+3. reward/cost dynamics making deterministic inactivity optimal;
+4. optimizer or critic collapse despite live actor hidden units.
+
+The detailed audit and implementation order is
+`docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_CONSTANT_POLICY_ACTION_SEMANTICS_AND_FUTILITY_ORDER_2026_08_17.md`.
+
+### 22.3 Decision sequence
+
+1. Preserve the active identity and measure deterministic/stochastic policy,
+   critic, entropy, reward and threshold-counterfactual facts without opening
+   sealed 2025.
+2. Before dispatching the remaining twelve cells, issue a machine-readable
+   disposition from the four first cells. Sixty consecutive checkpoints with
+   zero normal crossings and no material responsiveness improvement supports
+   `ABORTED_DIAGNOSTIC_CONSTANT_POLICY`, never a completed causal verdict.
+3. Under a new identity, isolate current thresholded action semantics versus
+   true continuous target exposure, crossed with fixed versus learned entropy.
+4. Add a real discrete-policy baseline for the `{short, hold, long}` action
+   space.
+5. Rerun easy -> normal versus normal -> normal only after a normal-dynamics
+   recipe demonstrates state-responsive behavior.
+6. Keep weekly retraining out of this causal diagnosis. Evaluate cadence by
+   rolling origin only after the base policy is viable.
+
+### 22.4 Promotion boundary
+
+A live hidden layer is necessary but not sufficient. Promotion requires direct
+evidence that deterministic actions respond to observations and produce
+activity under normal dynamics. A constant-direction policy is not promoted
+as learned activity merely because threshold zero caused orders.
