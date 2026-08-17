@@ -1674,6 +1674,23 @@ def p1lr_transition_view(*, queue_dir: Optional[Path], experiment: str,
     previous experiment's stillness instead of the fleet's idleness.
     """
     etq = _transition_queue()
+    if not terminal:
+        return {
+            "value": "current_job_running",
+            "basis": "experiment_not_terminal",
+            "reason": ("the current experiment is not terminal; transition "
+                       "status does not apply until all assigned cells land "
+                       "and no worker remains RUNNING"),
+            "transition_id": None,
+            "next_job_id": None,
+            "materialization_state": None,
+            "dispatch_state": None,
+            "blockers": [],
+            "over_budget": None,
+            "successor_dispatched": False,
+            "queue_dir": (str(Path(queue_dir).expanduser())
+                          if queue_dir is not None else None),
+        }
     if queue_dir is None:
         status = etq.transition_status(None, now=now)
         status.update({
@@ -2525,7 +2542,13 @@ def collect(
 
     # ── Front 1: the ACTIVE work — P1LR factorial screen (order
     # 2026-08-11 §7.7), then the completed L1 factorial (finding 204) ──
-    f1: dict[str, Any] = {"basis": "observed"}
+    f1: dict[str, Any] = {
+        "basis": "observed",
+        "current_work": {
+            "state": "unavailable",
+            "reason": "active Front-1 sources have not been collected yet",
+        },
+    }
     fronts["f1_optimization"] = f1
     p1lr_queue_entry: Optional[dict[str, Any]] = None
     if p1lr_contract_path is not None:
@@ -2588,6 +2611,41 @@ def collect(
         unavailable.append(
             {"field": "f1_optimization.active_l1_factorial",
              "reason": "l1 factorial source not configured"})
+
+    p1lr_state = _as_dict(f1.get("active_p1lr_factorial")).get("state")
+    l1_state = _as_dict(f1.get("active_l1_factorial")).get("state")
+    if p1lr_state == "active":
+        active = _as_dict(f1["active_p1lr_factorial"])
+        f1["current_work"] = {
+            "state": "active",
+            "source_key": "active_p1lr_factorial",
+            "experiment": active.get("experiment"),
+            "identity": active.get("identity"),
+            "mode": active.get("mode"),
+        }
+        legacy = _as_dict(f1.get("active_l1_factorial"))
+        if l1_state != "active":
+            legacy["role"] = "history"
+            legacy["compatibility_note"] = (
+                "active_l1_factorial is a legacy schema key; current_work "
+                "is authoritative and this block is not running")
+    elif l1_state == "active":
+        active = _as_dict(f1["active_l1_factorial"])
+        f1["current_work"] = {
+            "state": "active",
+            "source_key": "active_l1_factorial",
+            "experiment": active.get("experiment"),
+            "identity": active.get("identity"),
+            "mode": active.get("mode"),
+        }
+    else:
+        f1["current_work"] = {
+            "state": "none_running",
+            "source_states": {
+                "active_p1lr_factorial": p1lr_state,
+                "active_l1_factorial": l1_state,
+            },
+        }
 
     # ── Front 1 history: paused DOIN campaign (supervisor API, observed) ──
     # The paused campaign renders as HISTORY only; it can never replace the

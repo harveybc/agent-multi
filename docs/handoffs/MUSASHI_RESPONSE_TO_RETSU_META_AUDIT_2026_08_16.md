@@ -34,7 +34,7 @@ Read first:
 - `tests/test_audit_finding_allocator.py`
 - `tools/multifront_status.py` and
   `tests/unit/test_multifront_l1_factorial.py`
-- sibling `doin-plugins@f05c3394961ea556474fd35b17d883975112db66`,
+- sibling `doin-plugins@3e490c1`,
   `docs/ADAPT_A_NEW_DOMAIN_WITH_AN_AGENT.md`
 - sibling `lts@803b143473e47aa7c998aacb5aea1de6b0017929`,
   `docs/PAPER_SEAT_EVALUATION_CARD_TEMPLATE.md`
@@ -64,9 +64,17 @@ Return counterexamples first, then exact evidence:
 8. Verify finding 273 against the current IBKR heartbeat: its valid top-level
    `artifact_sha256` must produce a running queue item. Re-run both schema
    fixtures and prove that conflicting top-level/nested hashes fail closed.
+9. Verify finding 274: `current_work` must name the live P1LR identity, the
+   completed L1 block must declare `role=history`, and a non-terminal run must
+   render transition value `current_job_running`, never
+   `completed_untransitioned`.
+10. Re-run Rung 1 of the DOIN adaptation guide at `doin-plugins@3e490c1`.
+    The literal `simple_quadratic` snippet must discover both plugins, share
+    one deterministic target and assert reported equals independently
+    evaluated performance without network or node startup.
 
 No runtime, mask, lock, output tree, broker seat or training config may be
-mutated. Do not close 269-273. Return a typed verdict per finding and clearly
+mutated. Do not close 269-274. Return a typed verdict per finding and clearly
 separate a missing check from a failing check.
 
 ## Orders for General Satoshi after the current run

@@ -1179,6 +1179,7 @@ Canonical evidence:
 | AUD-GEN-20260816-271 | S3 | correction in progress | Authority qualifiers, citation resolution and finding-number scope were outside some executable/auditable instruments | General Musashi implements allocator and hashed evidence; Retsu verifies |
 | AUD-F1-20260816-272 | S3 | corrected by auditor, awaits Retsu verification | Multi-front status hardcoded the generic `p1lr-decision@` template and falsely labeled the four accepted incident-specific systemd workers as unsupervised direct processes | Retsu reproduces authority-bound unit discovery and 48 focused tests |
 | AUD-F2-20260816-273 | S4 | corrected by auditor, awaits Retsu verification | Multi-front status read only the legacy nested `inference.artifact_sha256`, while the current LTS IBKR heartbeat publishes the valid execution artifact as top-level `artifact_sha256`; an active protected Paper position was falsely rendered `dependency_blocked` | Retsu independently verifies the real heartbeat and both regression fixtures; owner closes |
+| AUD-F1-20260816-274 | S4 | corrected by auditor, awaits Retsu verification | Front-1 exposed the completed historical factorial under legacy key `active_l1_factorial` and rendered a running P1LR experiment's absent transition record as `completed_untransitioned`; this confused current work with history | Retsu verifies `current_work`, history role and `current_job_running` semantics against the live identity; owner closes |
 
 Withdrawn aliases (never reuse): `AUD-F1-20260816-247`,
 `AUD-GEN-20260816-248`, `AUD-GEN-20260816-249`, and

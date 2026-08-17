@@ -36,6 +36,7 @@ activity predicate.
 | four-front usefulness coverage was incomplete | **ACCEPTED** | live card, academic hold, social truth label and adaptation guide added |
 | status accurately reports launch durability | **NEW DEFECT FOUND** | `AUD-F1-20260816-272`; generic unit name caused false `no_unit_loaded`; corrected from durable authority |
 | IBKR queue accurately reports current execution identity | **NEW DEFECT FOUND DURING STATUS FOLLOW-UP** | `AUD-F2-20260816-273`; current top-level artifact hash was ignored; corrected with conflict refusal |
+| Front-1 current-work/transition narrative is unambiguous | **RETSU COUNTEREXAMPLE ACCEPTED** | `AUD-F1-20260816-274`; explicit `current_work`, historical-role label and pre-terminal transition semantics added |
 
 ## Finding Namespace
 
@@ -143,8 +144,8 @@ leads, not admitted domains and not optimization authority.
 ## Adaptability Result
 
 The architecture was adaptable and the onboarding was not. The `doin-plugins`
-branch `musashi/domain-adaptation-kit-20260816`, published at
-`f05c3394961ea556474fd35b17d883975112db66`, now adds:
+branch `musashi/domain-adaptation-kit-20260816`, corrected and published at
+`3e490c1`, now adds:
 
 - `AGENTS.md` with repository boundaries and safety rules;
 - `docs/ADAPT_A_NEW_DOMAIN_WITH_AN_AGENT.md` with exact paths;
@@ -179,7 +180,7 @@ fixture proves conflicting top-level and legacy hashes refuse.
 
 ## Open Work
 
-1. Retsu independently verifies findings 270-273 and the artifacts in the
+1. Retsu independently verifies findings 270-274 and the artifacts in the
    companion response. Musashi does not close his own runtime work.
 2. Satoshi implements 263 and 269 only after the current decision identity is
    terminal: typed mechanics vocabulary plus an executable activity gate in

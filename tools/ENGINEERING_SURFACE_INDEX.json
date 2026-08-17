@@ -1931,7 +1931,7 @@
      ],
      "parse_error": null,
      "path": "tools/multifront_status.py",
-     "sha256": "a5389925dd072ebf13dfbae17b6494d8ceb5229bb13ef59d17b47980d8a66b24"
+     "sha256": "cf49e7eddc3014b64a8e8534c8c39f69949c81f0d034461d8b50beb9c1eee124"
     }
    },
    "okf_validate.py": {
@@ -3884,7 +3884,7 @@
   },
   "unclassified_new_executables": []
  },
- "facts_hash": "sha256:68533fd9b2c521ac3d2ea4bc36f7efc982eaed06ee7a27de095483a01c9565d6",
+ "facts_hash": "sha256:1d04887b7b0834d3f7585eb471383a29915685932fc55d20ad0550a4ba27e29c",
  "provenance": {
   "arguments": {
    "declarations": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-p1lr-causal-early-stop-20260816/tools/TOOL_DECLARATIONS.json",
@@ -3895,11 +3895,11 @@
    "generator_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
    "runtime_python": "/home/harveybc/anaconda3/envs/trading-stack/bin/python"
   },
-  "finished_utc": "2026-08-17T02:24:34.899162+00:00",
+  "finished_utc": "2026-08-17T02:30:17.987928+00:00",
   "generator": "engineering_surface_index.v1",
   "generator_sha256": "d804a7ed69f13c7742a80cec38e0db2d2df9c18fb4d5a442ab3bcaecca19a963",
-  "repo_head": "98194bd9868e790e92ea719757b86938f6f16906",
-  "started_utc": "2026-08-17T02:24:34.164937+00:00",
+  "repo_head": "d208cf6190ec7fcf8ed95c69dc8af4dabd05a94f",
+  "started_utc": "2026-08-17T02:30:17.205310+00:00",
   "worktree_dirty": true
  },
  "schema": "engineering_surface_index.v1",

@@ -1217,8 +1217,20 @@ def test_completed_l1_factorial_stays_history_only_while_p1lr_leads(
         p1lr_identity=P1LR_IDENTITY, p1lr_now_fn=lambda: NOW,
         p1lr_local_hostname="omega")
     f1 = packet["fronts"]["f1_optimization"]
+    assert f1["current_work"] == {
+        "state": "active",
+        "source_key": "active_p1lr_factorial",
+        "experiment": "p1_difficulty_lr_factorial_20260811_v1",
+        "identity": P1LR_IDENTITY,
+        "mode": "screen",
+    }
     assert f1["active_p1lr_factorial"]["state"] == "active"
+    assert (f1["active_p1lr_factorial"]["transition"]["value"] ==
+            "current_job_running")
     assert f1["active_l1_factorial"]["state"] == "inactive_or_unknown"
+    assert f1["active_l1_factorial"]["role"] == "history"
+    assert "legacy schema key" in f1["active_l1_factorial"][
+        "compatibility_note"]
     ids = [str(item["id"]) for item in packet["queue"]]
     assert ids[0] == f"p1lr-factorial-{P1LR_IDENTITY}"
     assert not any(item_id.startswith("l1-matched-factorial")
