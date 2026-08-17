@@ -2904,6 +2904,7 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
         if contract_version(contract) == 2:
             try:
                 mv.assert_terminal_disposition_contract(contract)
+                mv.assert_activity_semantics_contract(contract)
             except mv.MechanicsVocabularyError as exc:
                 return _seed_refusal({
                     "outcome":

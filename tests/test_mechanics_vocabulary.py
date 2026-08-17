@@ -181,17 +181,51 @@ class TestTerminalDispositionPredicate:
                 {mv.CONTRACT_PREDICATE_KEY: block})
 
     def _contract(self):
-        return {mv.CONTRACT_PREDICATE_KEY: {
-            "schema": mv.DISPOSITION_SCHEMA,
-            "otherwise": "REINVESTIGATE"}}
+        return {
+            mv.CONTRACT_PREDICATE_KEY: {
+                "schema": mv.DISPOSITION_SCHEMA,
+                "otherwise": "REINVESTIGATE"},
+            mv.ACTIVITY_SEMANTICS_KEY: dict(
+                mv.REQUIRED_ACTIVITY_SEMANTICS),
+        }
 
-    def test_active_eligible_winning_record_freezes(self):
-        verdict = mv.evaluate_terminal_disposition(self._contract(), {
-            "activity_status": "active",
-            "promotion_eligible": True,
-            "best_model_sha256": "a" * 64})
+    def _active_record(self):
+        return {"activity_status": "active",
+                "promotion_eligible": True,
+                "best_model_sha256": "a" * 64}
+
+    def _full_evidence(self):
+        return {key: True for key in mv.FREEZE_EVIDENCE_KEYS}
+
+    def test_freeze_requires_record_AND_campaign_evidence(self):
+        verdict = mv.evaluate_terminal_disposition(
+            self._contract(), self._active_record(),
+            self._full_evidence())
         assert verdict["disposition"] == "FREEZE"
         assert verdict["reasons"] == []
+
+    def test_active_record_without_campaign_evidence_reinvestigates(
+            self):
+        # Open Work 3: a perfect winning record is NOT enough — the
+        # campaign facts (complete records, verified observation
+        # identity, reproduced outer role) must each be established.
+        verdict = mv.evaluate_terminal_disposition(
+            self._contract(), self._active_record())
+        assert verdict["disposition"] == "REINVESTIGATE"
+        assert set(verdict["reasons"]) == {
+            f"campaign_evidence_{key}_not_established"
+            for key in mv.FREEZE_EVIDENCE_KEYS}
+
+    @pytest.mark.parametrize("missing", list(mv.FREEZE_EVIDENCE_KEYS))
+    def test_each_campaign_condition_is_individually_load_bearing(
+            self, missing):
+        evidence = self._full_evidence()
+        evidence[missing] = False
+        verdict = mv.evaluate_terminal_disposition(
+            self._contract(), self._active_record(), evidence)
+        assert verdict["disposition"] == "REINVESTIGATE"
+        assert verdict["reasons"] == [
+            f"campaign_evidence_{missing}_not_established"]
 
     @pytest.mark.parametrize("record,expected_reason", [
         (None, "no_winning_terminal_record"),
@@ -208,9 +242,46 @@ class TestTerminalDispositionPredicate:
     def test_everything_else_reinvestigates(self, record,
                                             expected_reason):
         verdict = mv.evaluate_terminal_disposition(
-            self._contract(), record)
+            self._contract(), record, self._full_evidence())
         assert verdict["disposition"] == "REINVESTIGATE"
         assert expected_reason in verdict["reasons"]
+
+
+class TestActivitySemantics:
+    def test_real_v2_contract_carries_the_exact_object(self):
+        contract = p1.load_contract(p1.CONTRACT_PATH_V2)
+        block = mv.assert_activity_semantics_contract(contract)
+        for key, expected in mv.REQUIRED_ACTIVITY_SEMANTICS.items():
+            assert block[key] is expected
+
+    def test_missing_object_refused(self):
+        with pytest.raises(mv.MechanicsVocabularyError,
+                           match="DECISION_WITHOUT_ACTIVITY_SEMANTICS"):
+            mv.assert_activity_semantics_contract({})
+
+    @pytest.mark.parametrize("key,bad", [
+        ("activity_required_for_screen_dispatch", True),
+        ("activity_required_for_decision_early_stop", True),
+        ("activity_required_for_promotion", False),
+        ("activity_required_for_promotion", None),
+    ])
+    def test_any_divergent_value_refused(self, key, bad):
+        block = dict(mv.REQUIRED_ACTIVITY_SEMANTICS)
+        block[key] = bad
+        with pytest.raises(mv.MechanicsVocabularyError,
+                           match="ACTIVITY_SEMANTICS_DIVERGENT"):
+            mv.assert_activity_semantics_contract(
+                {mv.ACTIVITY_SEMANTICS_KEY: block})
+
+    def test_decision_refuses_contract_without_semantics(self, v2rt):
+        del v2rt.contract[mv.ACTIVITY_SEMANTICS_KEY]
+        gate = _viable_screen_gate(v2rt.contract)
+        summary = v2t._run_seed(v2rt, mode="decision",
+                                screen_gate=gate)
+        assert summary["outcome"] == \
+            "REFUSED_DECISION_WITHOUT_TERMINAL_DISPOSITION"
+        assert "ACTIVITY_SEMANTICS" in summary["reason"]
+        assert not FakePipeline.calls
 
 
 class TestDecisionWiring:

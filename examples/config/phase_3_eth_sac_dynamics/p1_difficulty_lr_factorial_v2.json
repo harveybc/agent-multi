@@ -357,9 +357,18 @@
   "freeze_requires": {
    "winning_record_activity_status": "active",
    "winning_record_promotion_eligible": true,
-   "winning_record_best_model_sha256": "non_empty"
+   "winning_record_best_model_sha256": "non_empty",
+   "terminal_records_complete": true,
+   "observation_identity_verified": true,
+   "outer_role_independently_reproduced": true
   },
   "otherwise": "REINVESTIGATE",
   "note": "order 2026-08-16 item 4: the freeze/reinvestigate decision is a typed predicate evaluated from terminal records by tools/mechanics_vocabulary.evaluate_terminal_disposition; prose cannot freeze a recipe. FREEZE is only reachable from a winning terminal record with an activity-eligible checkpoint; every other outcome is REINVESTIGATE."
+ },
+ "activity_semantics": {
+  "activity_required_for_screen_dispatch": false,
+  "activity_required_for_decision_early_stop": false,
+  "activity_required_for_promotion": true,
+  "note": "audit 2026-08-16 Executed Activity Semantics: the three activity facts in ONE machine-readable object. The screen is a mechanics/custody smoke (no activity gate on dispatch); the decision run disables activity early-stopping so a never-eligible policy reaches the full epoch budget as a measured outcome; promotion REQUIRES direct activity-eligible checkpoint evidence, enforced executably in lts app/champion_succession.py stage 1b (finding 269), never merely declared."
  }
 }

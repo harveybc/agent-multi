@@ -46,6 +46,18 @@ MECHANICS_PURPOSE = "mechanics_and_artifact_custody_only"
 DISPOSITION_SCHEMA = "agent_multi.p1lr_terminal_disposition.v1"
 CONTRACT_PREDICATE_KEY = "terminal_disposition_predicate"
 
+# Audit 2026-08-16 "Executed Activity Semantics": the next contract
+# must carry the three activity facts in ONE machine-readable object,
+# with exactly these values. Any other combination is a different
+# experiment design and must be a new, deliberate contract — not a
+# silent edit.
+ACTIVITY_SEMANTICS_KEY = "activity_semantics"
+REQUIRED_ACTIVITY_SEMANTICS = {
+    "activity_required_for_screen_dispatch": False,
+    "activity_required_for_decision_early_stop": False,
+    "activity_required_for_promotion": True,
+}
+
 REFUSAL_NOT_MEASURED = (
     "PROMOTION_ELIGIBILITY_NOT_MEASURED_BY_MECHANICS_SCREEN")
 
@@ -142,6 +154,27 @@ def promotion_eligibility(verdict: dict) -> None:
             "promotion consumer instead (finding 269)")
 
 
+def assert_activity_semantics_contract(contract: dict) -> dict:
+    """Audit 2026-08-16: the NEXT executed contract carries the three
+    activity facts in one machine-readable object, exact values
+    required. Fail-closed: absence or any divergence refuses."""
+    block = contract.get(ACTIVITY_SEMANTICS_KEY)
+    if not isinstance(block, dict):
+        _refuse("DECISION_WITHOUT_ACTIVITY_SEMANTICS",
+                "the contract carries no activity_semantics object —"
+                " the three activity facts (screen dispatch, decision"
+                " early-stop, promotion) must be one machine-readable"
+                " declaration (audit 2026-08-16)")
+    for key, expected in REQUIRED_ACTIVITY_SEMANTICS.items():
+        if block.get(key) is not expected:
+            _refuse("ACTIVITY_SEMANTICS_DIVERGENT",
+                    f"activity_semantics.{key} is {block.get(key)!r},"
+                    f" contract family requires {expected!r} — a"
+                    " different combination is a different experiment"
+                    " design and needs a new deliberate contract")
+    return block
+
+
 def assert_terminal_disposition_contract(contract: dict) -> dict:
     """Order 2026-08-16 item 4, fail-closed: the NEXT executed decision
     contract must carry the freeze/reinvestigate predicate. Returns the
@@ -164,19 +197,40 @@ def assert_terminal_disposition_contract(contract: dict) -> dict:
     return block
 
 
-def evaluate_terminal_disposition(contract: dict,
-                                  winning_record: dict | None) -> dict:
-    """The executable freeze/reinvestigate predicate.
+#: campaign-level evidence the freeze predicate demands (audit
+#: 2026-08-16 Open Work 3). Each key must be boolean True; absence or
+#: any other value is a typed REINVESTIGATE reason, never a default.
+FREEZE_EVIDENCE_KEYS = (
+    "terminal_records_complete",
+    "observation_identity_verified",
+    "outer_role_independently_reproduced",
+)
 
-    FREEZE requires ALL of, read from the winning terminal record:
+
+def evaluate_terminal_disposition(contract: dict,
+                                  winning_record: dict | None,
+                                  campaign_evidence: dict | None = None,
+                                  ) -> dict:
+    """The executable freeze/reinvestigate predicate (audit 2026-08-16
+    Open Work 3): freeze L1 only when terminal records are COMPLETE,
+    observation identity is CORRECT, the activity/promotion predicates
+    PASS, and independent outer-role evidence is REPRODUCIBLE.
+
+    Per-record conditions, from the winning terminal record:
     - ``activity_status == "active"``
     - ``promotion_eligible is True``
     - a non-empty ``best_model_sha256``
-    Anything else — including an absent record — is REINVESTIGATE with
-    typed reasons. Never raises for a measured outcome; raises only for
-    a contract without the predicate.
+
+    Campaign conditions, from ``campaign_evidence`` — each of
+    ``FREEZE_EVIDENCE_KEYS`` must be boolean True; an absent dict or an
+    absent/false key is a typed reason. Anything short of ALL
+    conditions is REINVESTIGATE — a typed representation/recipe
+    investigation, never a silent promotion. Never raises for a
+    measured outcome; raises only for a contract without the predicate
+    or the activity-semantics object.
     """
     block = assert_terminal_disposition_contract(contract)
+    assert_activity_semantics_contract(contract)
     reasons: list[str] = []
     if not isinstance(winning_record, dict):
         reasons.append("no_winning_terminal_record")
@@ -189,6 +243,11 @@ def evaluate_terminal_disposition(contract: dict,
             reasons.append("winning_record_not_promotion_eligible")
         if not winning_record.get("best_model_sha256"):
             reasons.append("winning_record_missing_best_model_sha256")
+    evidence = campaign_evidence if isinstance(campaign_evidence, dict) \
+        else {}
+    for key in FREEZE_EVIDENCE_KEYS:
+        if evidence.get(key) is not True:
+            reasons.append(f"campaign_evidence_{key}_not_established")
     disposition = "FREEZE" if not reasons else str(
         block.get("otherwise", "REINVESTIGATE"))
     return {
@@ -196,4 +255,6 @@ def evaluate_terminal_disposition(contract: dict,
         "disposition": disposition,
         "reasons": reasons,
         "predicate": block,
+        "campaign_evidence": {key: evidence.get(key)
+                              for key in FREEZE_EVIDENCE_KEYS},
     }
