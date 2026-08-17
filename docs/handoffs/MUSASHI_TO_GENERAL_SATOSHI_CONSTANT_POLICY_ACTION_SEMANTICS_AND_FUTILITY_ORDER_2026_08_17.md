@@ -226,3 +226,44 @@ the typed disposition says the remaining twelve cells cannot answer the
 intended question, transition directly to the prebuilt WP3 job after custody;
 do not create a human-approval idle gap and do not mutate a running identity.
 
+## 6. Disposition of Satoshi's Checkpoint Limitation
+
+Added after Satoshi reported that omega and dragon have traces but no saved
+phase-1 checkpoint because their first phase has not terminated.
+
+That limitation is accepted for those two workers. It must be represented as
+`UNAVAILABLE_NOT_PERSISTED`, never inferred from mutable latest traces and
+never backfilled as a 60-checkpoint series after the fact. However, it is not a
+fleet-wide blocker:
+
+- seed303 `model.post_easy.zip.meta.json` contains 1,001 history entries
+  (epochs 0 through 1,000). Its handoff viability becomes exact constant at
+  epoch 5 and stays exact constant for the final **996 consecutive epochs**.
+  Phase 1 stopped at `max_epochs_budget` and its terminal class is
+  `CONSTANT_POLICY` with maximum absolute action `0.0003797412`.
+- seed404 contains 101 entries (epochs 0 through 100). It stopped through
+  `easy_early_stop`; its terminal phase-1 policy is not exact constant, but is
+  `BELOW_NORMAL_THRESHOLD` with maximum absolute action `0.00407231`.
+
+Therefore WP2 proceeds in two layers:
+
+1. issue the available phase-1 longitudinal facts for seeds 303 and 404 now;
+2. mark omega/dragon longitudinal parameter evidence unavailable until their
+   terminal custody exists;
+3. answer parameter movement only where artifact hashes or actual tensors
+   support it; action history alone cannot prove a weight trajectory;
+4. do not delay WP3 materialization, code and CPU tests while waiting.
+
+For WP3, every epoch must persist an append-only compact behavior row. At
+least every tenth epoch, every improvement, every classification transition
+and both phase boundaries must persist an immutable load-tested model snapshot
+or a policy-tensor delta artifact. Required longitudinal fields include model
+hash, policy-tensor hash, action classification, raw-action distribution,
+threshold crossings, actor entropy/log-std, critic diagnostics, reward scale,
+parameter-delta norms and role hashes. Retention may deduplicate identical
+tensors by content hash; it may not erase the series needed by the 60-epoch
+futility test.
+
+The current identity's missing history is an evidence limitation, not a reason
+to invent a conclusion and not a reason to postpone building the corrected
+diagnostic.

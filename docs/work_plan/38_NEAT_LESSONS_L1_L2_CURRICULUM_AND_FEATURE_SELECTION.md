@@ -1216,3 +1216,23 @@ A live hidden layer is necessary but not sufficient. Promotion requires direct
 evidence that deterministic actions respond to observations and produce
 activity under normal dynamics. A constant-direction policy is not promoted
 as learned activity merely because threshold zero caused orders.
+
+### 22.5 Longitudinal custody requirement
+
+The running identity revealed that phase-terminal metadata can preserve a full
+per-epoch behavior history, but an unfinished phase may expose only mutable
+latest traces and no loadable checkpoint. Missing historical artifacts remain
+typed unavailable; they are not reconstructed from the latest trace.
+
+The successor 2x2 action-semantics/entropy diagnostic persists a compact
+append-only behavior row every epoch and immutable, load-tested policy custody
+at least every ten epochs, at every improvement, classification transition and
+phase boundary. Content-addressed deduplication is allowed. This evidence is
+required to evaluate a 60-epoch constant-policy futility condition without
+waiting for a 1,000-epoch terminal artifact.
+
+Available phase-1 evidence already differentiates two easy cells: seed303 was
+exact constant for 996 consecutive epochs and reached its 1,000-epoch ceiling;
+seed404 stopped at epoch 100 through paired early stopping and remained
+nonconstant but entirely below the normal threshold. Those are distinct
+failure modes and must not be averaged into one zero-trade label.
