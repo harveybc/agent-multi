@@ -1236,3 +1236,22 @@ exact constant for 996 consecutive epochs and reached its 1,000-epoch ceiling;
 seed404 stopped at epoch 100 through paired early stopping and remained
 nonconstant but entirely below the normal threshold. Those are distinct
 failure modes and must not be averaged into one zero-trade label.
+
+### 22.6 Finding-277 implementation audit, 2026-08-17
+
+The first Satoshi implementation at `agent-multi@055ac32e` is a partial
+prototype and was rejected as complete. It is not stopping, aggregation or
+promotion authority. Independent findings 278-281 cover strict action
+validity, threshold-zero semantics, role/custody boundaries, production
+integration and the unsupported promotion of temporal action variation as
+state responsiveness.
+
+The active four cells continue unchanged as diagnostic evidence. Before the
+remaining twelve old-contract cells dispatch, WP2 must decide whether their
+mechanism can answer the intended question. Corrections and the successor
+action-semantics/entropy diagnostic are prepared concurrently so a released
+GPU can resume useful work after independent acceptance. The canonical audit
+and order are:
+
+- `docs/audits/AUDIT_SATOSHI_FINDING_277_POLICY_BEHAVIOR_2026_08_17.md`
+- `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_FINDING_277_CORRECTION_ORDER_2026_08_17.md`
