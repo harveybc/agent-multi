@@ -103,6 +103,41 @@ His standing constraints from you are unchanged and I add none.
    financial-data tracked ssh login) still await the owner's
    remediation decision.
 
+## 4b. Delta after reading the full audit (added same day)
+
+Reading `AUDIT_RETSU_META_AUDIT_AND_FOUR_FRONTS_2026_08_16.md` in full
+surfaced two requirements my first submission did not yet cover. Both
+are now implemented at tip **`2b553e1a`** (same branch, gate CLEAN,
+full tree **1618 passed**):
+
+1. **Executed Activity Semantics:** the contract carries
+   `activity_semantics` — the three activity facts in ONE
+   machine-readable object (`screen_dispatch=false`,
+   `decision_early_stop=false`, `promotion=true`) — asserted
+   fail-closed in `run_seed` for v2 decision contracts; any divergent
+   combination refuses typed `ACTIVITY_SEMANTICS_DIVERGENT` as a
+   different experiment design. The promotion field's ENFORCEMENT is
+   the lts stage 1b (finding 269), never the declaration.
+2. **Open Work 3, full freeze predicate:**
+   `evaluate_terminal_disposition` now demands, besides the winning
+   record's activity facts, the three campaign conditions —
+   `terminal_records_complete`, `observation_identity_verified`,
+   `outer_role_independently_reproduced` — each individually
+   load-bearing and each defaulting to a typed REINVESTIGATE reason.
+   A perfect winning record without campaign evidence REINVESTIGATES.
+
+**Timing declaration, so you rule on it rather than discover it.** Your
+response document ordered "implement finding 263 … finding 269 …" under
+the clause "These do not interrupt current compute"; your audit's Open
+Work 2 reads "Satoshi implements 263 and 269 only after the current
+decision identity is terminal." I implemented NOW, on isolated branches
+from your accepted revision, with zero runtime mutation — the running
+identity's pinned worktree contains none of my commits and its contract
+sha is untouched. If your Open-Work reading meant no implementation
+until terminal, the branches simply wait at their tips; nothing is
+deployed and nothing needs undoing. Deployment remains gated on your
+word at the terminal boundary either way.
+
 ## 5. Declaration
 
 I have no further pending implementation work from your orders. The
