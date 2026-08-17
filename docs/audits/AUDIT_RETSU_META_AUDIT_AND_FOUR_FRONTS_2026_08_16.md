@@ -35,6 +35,7 @@ activity predicate.
 | promotion actually enforces trading activity | **ACCEPTED AS MISSING CHECK** | `AUD-F2-20260816-269`; declaration is not an implementation in `champion_succession.py` |
 | four-front usefulness coverage was incomplete | **ACCEPTED** | live card, academic hold, social truth label and adaptation guide added |
 | status accurately reports launch durability | **NEW DEFECT FOUND** | `AUD-F1-20260816-272`; generic unit name caused false `no_unit_loaded`; corrected from durable authority |
+| IBKR queue accurately reports current execution identity | **NEW DEFECT FOUND DURING STATUS FOLLOW-UP** | `AUD-F2-20260816-273`; current top-level artifact hash was ignored; corrected with conflict refusal |
 
 ## Finding Namespace
 
@@ -170,9 +171,15 @@ consumed no GPU.
 - `git diff --check`, generated engineering-surface validation and JSON parsing:
   passed.
 
+Status follow-up after publication found and corrected finding 273. Its focused
+status and engineering-surface set passed 99 tests. A read-only run against the
+real current heartbeat now reports IBKR `running`,
+`operational_with_open_exposure`, with its valid artifact hash; the paired
+fixture proves conflicting top-level and legacy hashes refuse.
+
 ## Open Work
 
-1. Retsu independently verifies findings 270-272 and the artifacts in the
+1. Retsu independently verifies findings 270-273 and the artifacts in the
    companion response. Musashi does not close his own runtime work.
 2. Satoshi implements 263 and 269 only after the current decision identity is
    terminal: typed mechanics vocabulary plus an executable activity gate in

@@ -1178,6 +1178,7 @@ Canonical evidence:
 | AUD-GEN-20260816-270 | S3 | open, independent verification required | Musashi executed campaign containment/launch and then reported those same runtime facts as auditor | Retsu or General Satoshi independently verifies; Musashi cannot close |
 | AUD-GEN-20260816-271 | S3 | correction in progress | Authority qualifiers, citation resolution and finding-number scope were outside some executable/auditable instruments | General Musashi implements allocator and hashed evidence; Retsu verifies |
 | AUD-F1-20260816-272 | S3 | corrected by auditor, awaits Retsu verification | Multi-front status hardcoded the generic `p1lr-decision@` template and falsely labeled the four accepted incident-specific systemd workers as unsupervised direct processes | Retsu reproduces authority-bound unit discovery and 48 focused tests |
+| AUD-F2-20260816-273 | S4 | corrected by auditor, awaits Retsu verification | Multi-front status read only the legacy nested `inference.artifact_sha256`, while the current LTS IBKR heartbeat publishes the valid execution artifact as top-level `artifact_sha256`; an active protected Paper position was falsely rendered `dependency_blocked` | Retsu independently verifies the real heartbeat and both regression fixtures; owner closes |
 
 Withdrawn aliases (never reuse): `AUD-F1-20260816-247`,
 `AUD-GEN-20260816-248`, `AUD-GEN-20260816-249`, and

@@ -425,7 +425,9 @@ def test_missing_sources_become_unavailable_not_invented(tmp_path):
 # REPLACED by the evidence-derived contract below.
 
 def _ibkr_execution_fixture(tmp_path, *, halt="hold", read_only=False,
-                            age_seconds=60, artifact_sha="c" * 64):
+                            age_seconds=60, artifact_sha="c" * 64,
+                            artifact_location="nested",
+                            second_artifact_sha=None):
     import json as jsonlib
     import sqlite3 as sqlite3lib
     from datetime import datetime, timedelta, timezone
@@ -433,15 +435,24 @@ def _ibkr_execution_fixture(tmp_path, *, halt="hold", read_only=False,
     state_dir.mkdir(exist_ok=True)
     observed = (datetime.now(timezone.utc)
                 - timedelta(seconds=age_seconds)).isoformat()
+    heartbeat = {
+        "schema": "lts.ibkr.model_runner.heartbeat.v1",
+        "observed_at": observed, "state": "decided",
+        "read_only": read_only, "environment": "paper",
+        "account_fingerprint": "fp-ibkr-exec", "venue": "ibkr_paper",
+        "decision": {"outcome": "rejected", "reason": "halted:hold"},
+    }
+    if artifact_location == "top_level":
+        heartbeat["artifact_sha256"] = artifact_sha
+        if second_artifact_sha is not None:
+            heartbeat["inference"] = {
+                "artifact_sha256": second_artifact_sha}
+    else:
+        heartbeat["inference"] = {"artifact_sha256": artifact_sha}
+        if second_artifact_sha is not None:
+            heartbeat["artifact_sha256"] = second_artifact_sha
     (state_dir / "ibkr-model-runner-heartbeat.json").write_text(
-        jsonlib.dumps({
-            "schema": "lts.ibkr.model_runner.heartbeat.v1",
-            "observed_at": observed, "state": "decided",
-            "read_only": read_only, "environment": "paper",
-            "account_fingerprint": "fp-ibkr-exec", "venue": "ibkr_paper",
-            "decision": {"outcome": "rejected", "reason": "halted:hold"},
-            "inference": {"artifact_sha256": artifact_sha},
-        }))
+        jsonlib.dumps(heartbeat))
     con = sqlite3lib.connect(str(state_dir / "ibkr-model-execution.sqlite"))
     con.executescript("""
         CREATE TABLE decisions (idempotency_key TEXT PRIMARY KEY,
@@ -516,6 +527,28 @@ def test_write_enabled_unheld_fresh_ibkr_is_running(tmp_path):
     assert item["state"] == "running"
     assert item["hashes"]["config_sha256"] == "c" * 64
     assert item["evidence"]["mode"] == "write_enabled"
+
+
+def test_current_top_level_ibkr_artifact_identity_is_running(tmp_path):
+    """AUD-F2-20260816-273: current LTS heartbeats publish the artifact hash
+    at top level; status must not falsely call that runner dependency-blocked."""
+    state_dir = _ibkr_execution_fixture(
+        tmp_path, halt=None, artifact_location="top_level")
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "running"
+    assert item["hashes"]["config_sha256"] == "c" * 64
+
+
+def test_conflicting_ibkr_artifact_identity_fields_fail_closed(tmp_path):
+    state_dir = _ibkr_execution_fixture(
+        tmp_path,
+        halt=None,
+        artifact_location="top_level",
+        second_artifact_sha="d" * 64,
+    )
+    _, item = _ibkr_queue_item(tmp_path, state_dir)
+    assert item["state"] == "dependency_blocked"
+    assert "disagree" in item["dependency"]
 
 
 def test_read_only_unheld_ibkr_depends_on_write_authority(tmp_path):

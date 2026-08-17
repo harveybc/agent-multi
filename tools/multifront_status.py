@@ -37,6 +37,11 @@ hold (halt='none') with zero open exposures reports
 operational_waiting_next_decision and never asks the owner to clear an
 already-cleared hold.
 
+Finding 273: IBKR execution identity accepts the current top-level
+``artifact_sha256`` heartbeat field and the legacy ``inference`` field. If
+both are present they must be valid and identical; schema disagreement fails
+closed instead of falsely classifying an operational runner.
+
 Order 2026-08-11 §7.7 (finding 229): Front 1 now also carries the RUNNING
 P1 difficulty x P1 LR factorial mechanics screen as a first-class source —
 current seed/cell/checkpoint per worker from the runner's per-cell
@@ -380,7 +385,27 @@ def _ibkr_l1_queue_entry(
     # Write-enabled, fresh, unheld: the canary runs as the runner's normal
     # operation; the executing model artifact hash is its config identity.
     heartbeat = _as_dict(_load_json_file(heartbeat_path))
-    artifact_sha = _as_dict(heartbeat.get("inference")).get("artifact_sha256")
+    top_level_artifact_sha = heartbeat.get("artifact_sha256")
+    nested_artifact_sha = _as_dict(
+        heartbeat.get("inference")).get("artifact_sha256")
+    top_level_present = top_level_artifact_sha is not None
+    nested_present = nested_artifact_sha is not None
+    if top_level_present and nested_present and (
+        not _valid_sha256(top_level_artifact_sha)
+        or not _valid_sha256(nested_artifact_sha)
+        or top_level_artifact_sha != nested_artifact_sha
+    ):
+        item = {**base, "state": "dependency_blocked",
+                "dependency": (
+                    "unambiguous content-addressed execution identity: "
+                    "top-level and legacy nested artifact SHA-256 fields "
+                    "are both present but are invalid or disagree "
+                    "(finding 273)"),
+                "evidence": evidence}
+        return item, None
+    artifact_sha = (top_level_artifact_sha
+                    if _valid_sha256(top_level_artifact_sha)
+                    else nested_artifact_sha)
     if _valid_sha256(artifact_sha):
         # Finding 228: halt cleared + flat (zero open exposures) means the
         # runner simply waits for its next H4 decision; any prior

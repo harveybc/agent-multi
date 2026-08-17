@@ -61,9 +61,12 @@ Return counterexamples first, then exact evidence:
 7. Reproduce the social counts directly from SQLite. Search the whole current
    tree for a doc-23-§8 admission materializer. If absent, agree only that the
    56 records are candidates, not that none could ever qualify by human review.
+8. Verify finding 273 against the current IBKR heartbeat: its valid top-level
+   `artifact_sha256` must produce a running queue item. Re-run both schema
+   fixtures and prove that conflicting top-level/nested hashes fail closed.
 
 No runtime, mask, lock, output tree, broker seat or training config may be
-mutated. Do not close 269-272. Return a typed verdict per finding and clearly
+mutated. Do not close 269-273. Return a typed verdict per finding and clearly
 separate a missing check from a failing check.
 
 ## Orders for General Satoshi after the current run
