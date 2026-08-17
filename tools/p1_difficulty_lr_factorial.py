@@ -184,6 +184,7 @@ from pipeline_plugins import _paired_generalization as _paired  # noqa: E402
 from pipeline_plugins import _system_config as sysid  # noqa: E402
 from tools import gpu_readiness_probe as gpu_probe  # noqa: E402
 from tools import m0_l1_mechanism_ladder as ladder  # noqa: E402
+from tools import mechanics_vocabulary as mv  # noqa: E402
 from tools.l1_factorial_screen import (  # noqa: E402
     _terminal_tensor_sha,
     atomic_write_json,
@@ -2822,9 +2823,15 @@ def verify_screen_gate(gate: dict | None, contract: dict) -> list:
         return ["decision mode requires the corrected screen verdict "
                 "(--screen-gate PATH) — the screen gate plus the "
                 "16-terminal replica proof decide (finding 226)"]
-    if gate.get("schema") != VERDICT_SCHEMA:
-        refusals.append(f"screen gate schema {gate.get('schema')!r} != "
-                        f"{VERDICT_SCHEMA!r}")
+    # Finding 263: the gate is read ONLY through the mechanics
+    # vocabulary shim — sealed v1 verdicts stay valid byte-for-byte,
+    # new v2 verdicts are accepted, and any mechanics verdict carrying
+    # a non-null promotion_eligible is refused as manufactured
+    # evidence. The shim never mutates the file.
+    try:
+        gate = mv.load_mechanics_screen_verdict(gate)
+    except mv.MechanicsVocabularyError as exc:
+        return [str(exc)]
     if gate.get("outcome") != "SCREEN_VIABLE_REGION":
         refusals.append(
             f"screen gate outcome {gate.get('outcome')!r} — only "
@@ -2888,6 +2895,20 @@ def run_seed(seed: int, *, contract: dict, bindings: dict | None = None,
             return _seed_refusal({
                 "outcome": "REFUSED_DECISION_UNGATED",
                 "reason": "; ".join(gate_refusals)})
+        # Order 2026-08-16 item 4 (finding 263 family): the NEXT
+        # executed v2 contract must carry the typed freeze/
+        # reinvestigate predicate — a decision run whose terminal
+        # disposition rule lives in prose is refused before any GPU
+        # work. v1 contracts are byte-frozen replay history and are
+        # not retro-edited.
+        if contract_version(contract) == 2:
+            try:
+                mv.assert_terminal_disposition_contract(contract)
+            except mv.MechanicsVocabularyError as exc:
+                return _seed_refusal({
+                    "outcome":
+                        "REFUSED_DECISION_WITHOUT_TERMINAL_DISPOSITION",
+                    "reason": str(exc)})
         # AUD-P1LR-20260815-234: a decision run may not EXECUTE a
         # stopping rule it does not DECLARE. The check runs on the real
         # resolved cell config, before any GPU, anchor or dataset work.
@@ -3733,8 +3754,24 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         all_collapsed = len(collapsed_cells) == len(expected)
     outcome = ("PHASE1_LR_REGION_COLLAPSED" if all_collapsed
                else "SCREEN_VIABLE_REGION")
+    if version == 2:
+        # Finding 263: v2 emission speaks the mechanics vocabulary.
+        # "viable" never appears unqualified — the matrix and every
+        # cell entry say mechanics_viability, the verdict declares its
+        # purpose, and promotion_eligible is emitted as null because
+        # the one-epoch screen does not measure it. Sealed v1 verdicts
+        # are untouched; the reader shim maps them.
+        collapsed_cells = [
+            {"seed": e["seed"], "cell": e["cell"],
+             "mechanics_viability": e["handoff_viability"]}
+            for e in collapsed_cells]
+        viable_cells = [
+            {"seed": e["seed"], "cell": e["cell"],
+             "mechanics_viability": e["handoff_viability"]}
+            for e in viable_cells]
     payload = {
-        "schema": VERDICT_SCHEMA,
+        "schema": (mv.SCREEN_VERDICT_SCHEMA_V2 if version == 2
+                   else VERDICT_SCHEMA),
         "outcome": outcome,
         "experiment_identity": sorted(identity_set)[0],
         "contract_sha256": contract["_contract_sha256"],
@@ -3744,10 +3781,16 @@ def screen_verdict(contract: dict, *, records: dict | None = None,
         "activity": activity_block,
         "replica_proof_facts": replica_facts,
         "collapse_definition": (
-            "selected trained-checkpoint handoff_viability in "
+            "selected trained-checkpoint mechanics viability in "
             f"{list(COLLAPSE_LABELS)} (contract mechanics_screen; "
-            "finding 221 typed labels)"),
-        "viability_matrix": matrix,
+            "finding 221 typed labels; finding 263 vocabulary)"),
+        **({"purpose": mv.MECHANICS_PURPOSE,
+            "mechanics_screen_passed": (
+                outcome == "SCREEN_VIABLE_REGION"
+                and all(gates.values())),
+            "promotion_eligible": None,
+            "mechanics_viability_matrix": matrix}
+           if version == 2 else {"viability_matrix": matrix}),
         "collapsed_cells": collapsed_cells,
         "viable_cells": viable_cells,
         **({"non_promotable_cells": non_promotable_cells,

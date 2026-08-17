@@ -351,5 +351,15 @@
    "PARTIAL_ACTIVITY_SURVIVAL",
    "TOTAL_ACTIVITY_COLLAPSE"
   ]
+ },
+ "terminal_disposition_predicate": {
+  "schema": "agent_multi.p1lr_terminal_disposition.v1",
+  "freeze_requires": {
+   "winning_record_activity_status": "active",
+   "winning_record_promotion_eligible": true,
+   "winning_record_best_model_sha256": "non_empty"
+  },
+  "otherwise": "REINVESTIGATE",
+  "note": "order 2026-08-16 item 4: the freeze/reinvestigate decision is a typed predicate evaluated from terminal records by tools/mechanics_vocabulary.evaluate_terminal_disposition; prose cannot freeze a recipe. FREEZE is only reachable from a winning terminal record with an activity-eligible checkpoint; every other outcome is REINVESTIGATE."
  }
 }
