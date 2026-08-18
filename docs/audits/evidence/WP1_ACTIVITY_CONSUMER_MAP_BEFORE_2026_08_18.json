@@ -1,0 +1,44 @@
+{
+ "schema": "agent_multi.wp1_activity_consumer_map.v1",
+ "state": "BEFORE",
+ "order": "HIERARCHICAL_ACTIVITY_RISK_REWARD 2026-08-18 WP1",
+ "verified_by": "General Satoshi III, grep over satoshi/hierarchical-activity-risk-reward-20260818 @ 8758273f",
+ "consumers": {
+  "selection_min_trades": [
+   {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "lines": "1004-1005", "behavior": "config.get('selection_min_trades', 0) — DEFAULT 0", "consumer_role": "selection"},
+   {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "lines": "376", "behavior": "min_trades passed into lexicographic selection"},
+   {"path": "examples/config/phase_3_eth_sac_dynamics/m0_l1_mechanism_ladder_v1.json", "lines": "94", "behavior": "explicit 0"},
+   {"path": "examples/config/phase_2_*/optimization/*.json", "behavior": "explicit 12 (seven configs) — historical, pre-corrected-observation"}
+  ],
+  "early_stop_min_trades": [
+   {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "lines": "571-573", "behavior": "'early_stop_min_trades': 1 default; per-split variants default None", "consumer_role": "stopping"},
+   {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "lines": "451-480", "behavior": "min_train_tail_trades fallback chain"}
+  ],
+  "no_trade_numeric_penalties": [
+   {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "lines": "453,495", "behavior": "composite = raw - no_trade_penalty when gate fails", "consumer_role": "selection", "hazard": "NUMERIC SENTINEL: an ineligible candidate keeps a rankable score (raw - 1e6)"},
+   {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "lines": "574", "behavior": "'early_stop_no_trade_penalty': 1_000_000.0"},
+   {"path": "pipeline_plugins/rl_pipeline.py", "lines": "171-177", "behavior": "no_trade_min_trades gate + reason in summary"}
+  ],
+  "typed_activity_facts": [
+   {"path": "tools/p1_difficulty_lr_factorial.py", "behavior": "activity_status/promotion_eligible/inactive_cause in cell records (finding 232 family)", "consumer_role": "handoff+aggregation"},
+   {"path": "pipeline_plugins/_lexicographic_selection.py", "lines": "121-174", "behavior": "min_trades gate inside selection with typed reason", "consumer_role": "selection"},
+   {"path": "tools/m0_l1_mechanism_ladder.py", "consumer_role": "aggregation"},
+   {"path": "optimizer_plugins/l2_curriculum_optimizer.py", "consumer_role": "optimization"},
+   {"path": "examples/scripts/run_phase_1_weekly_promotion.py", "consumer_role": "promotion"},
+   {"path": "examples/scripts/materialize_phase_1_promotion_candidates.py", "lines": "81-270", "behavior": "min_trades gate re-implemented locally", "consumer_role": "promotion", "hazard": "REIMPLEMENTED THRESHOLD outside any shared authority"},
+   {"path": "lts app/champion_succession.py stage 1b (branch satoshi/finding-269-activity-predicate-20260816)", "consumer_role": "champion succession", "behavior": "activity evidence gate (finding 269)"}
+  ]
+ },
+ "the_inherited_contradiction": {
+  "selection_default": {"path": "rl_pipeline_with_validation.py:1005", "value": 0},
+  "early_stop_default": {"path": "rl_pipeline_with_validation.py:571", "value": 1},
+  "v2_contract": "sets neither key, so it inherits BOTH: selection ranks zero-trade candidates while early-stop demands >=1",
+  "resolution_ordered": "one typed authority; strict nonzero floor 1 materialized; calibrated floor pending WP2"
+ },
+ "hazards_summary": [
+  "no_trade_penalty subtraction keeps ineligible candidates rankable (forbidden by WP1: no fixed numeric sentinel)",
+  "materialize_phase_1_promotion_candidates.py re-implements its own threshold",
+  "selection(0) vs early-stop(1) default contradiction",
+  "trade counts multiplied into fitness exists only in HISTORICAL gym-fx@8088f9e (see provenance artifact); no current consumer does this — verified"
+ ]
+}
