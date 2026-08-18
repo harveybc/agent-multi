@@ -197,3 +197,20 @@ paths, hashes, direct metrics, residual doubts and any proposed improvement.
 Never turn an absent fact into zero or success. Never wait on audit while a
 compatible approved CPU/GPU job can run without contaminating the active
 identity.
+
+## Runtime Facts for Independent Reproduction
+
+- screen identity: `bfbfd6443b849275`;
+- screen outcome: `SCREEN_VIABLE_REGION`, 16/16 records and loads;
+- sealed digest:
+  `61a59e2121b158239d8cd31d94167796b9eb301463228e8aee2cf0717fe48594`;
+- activity: 7 active, 9 inactive, six viable handoffs;
+- decision identity: `ac0941e7bdb1a163`;
+- decision start: 2026-08-18 08:09 America/Bogota;
+- first cells: seed101 `P1N_LR1E4`, seed202 `P1N_LR3E5`, seed303
+  `P1E_LR1E4`, seed404 `P1E_LR3E5`.
+
+Audit and installer hardening run in parallel with these workers. Do not stop,
+restart or mutate them to inspect code. Reproduce EC-13 from effective unit
+properties and the refused first-start journals, then fix the generic installer
+and add the contract-coherence test outside the immutable runtime worktree.

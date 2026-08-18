@@ -1,7 +1,7 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: corrected ETH observation/action contract and explicit early close active; P1LR mechanics screen running before the full decision; staged order-routing research and multi-venue Paper commissioning active
-Plan version: 1.33.0
+Status: corrected ETH observation/action contract and explicit early close active; P1LR v2 decision running on four GPUs after a sealed viable mechanics screen; staged order-routing research and multi-venue Paper commissioning active
+Plan version: 1.33.1
 Date: 2026-08-18
 Primary implementation repository: `agent-multi`
 

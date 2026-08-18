@@ -1,6 +1,7 @@
 # 39. Model Control, Early Close and Order Routing
 
-Status: active execution and research contract, v1.0.0, 2026-08-18
+Status: active execution and research contract, v1.1.0, 2026-08-18;
+corrected P1LR decision identity `ac0941e7bdb1a163` running on four GPUs
 Owner: project owner
 Scope: ETH reference stack first; Paper/Demo only until separately authorized
 
@@ -308,3 +309,29 @@ IBKR USD.CAD are cross-venue infrastructure canaries and are not substitutes
 for the ETH champion. Every risk-increasing position still requires native SL
 and TP. The MT5 SAC route is implemented but remains fail-closed until the EA
 publishes sufficient bars and a corrected artifact/manifest is available.
+
+## 11. Corrected Screen and Decision Runtime
+
+The v2 mechanics screen completed on 2026-08-18 under identity
+`bfbfd6443b849275`:
+
+- 16/16 records across seeds 101/202/303/404;
+- sealed tree digest
+  `61a59e2121b158239d8cd31d94167796b9eb301463228e8aee2cf0717fe48594`;
+- 16/16 terminal models independently loaded on Dragon;
+- all identity, custody, nested-split and selected-policy gates true;
+- activity classification `PARTIAL_ACTIVITY_SURVIVAL`: 7 active and 9
+  inactive cells; and
+- six viable seed/cell handoffs, including easy+`3e-5` for seeds 101, 303 and
+  404, and normal+`3e-5` for seeds 303 and 404.
+
+This is mechanics evidence only. It establishes a trainable region; it does not
+establish return superiority or an easy-mode effect.
+
+The full decision started at 2026-08-18 08:09 America/Bogota under identity
+`ac0941e7bdb1a163`. Seeds 101, 202, 303 and 404 run on their four contract-bound
+GPUs, from the original zero-update genesis artifacts, with up to 1,000 phase-1
+and 1,000 phase-2 epochs per cell and patience 60 after floor 40. The installed
+systemd base template had retained a v1 gate override; all four first starts
+were refused before training, the stale override was removed, and the effective
+v2 gate/contract/runtime bindings were reproduced before the successful start.

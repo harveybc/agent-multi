@@ -85,3 +85,25 @@ TWS reports that the trading session is connected from a different IP address.
 The runner is observably degraded and submits no order; native broker
 protection remains the direct safety layer until the market-data session is
 reconciled.
+
+## Screen Acceptance and Decision Dispatch
+
+The replacement screen completed 16/16 and was sealed with tree digest
+`61a59e2121b158239d8cd31d94167796b9eb301463228e8aee2cf0717fe48594`.
+Dragon loaded all 16 terminal models. The typed verdict is
+`SCREEN_VIABLE_REGION`, with all gates true, 7 active cells, 9 measured inactive
+cells and six viable handoffs. No screen return is promoted as performance.
+
+The first decision start reproduced EC-13: per-seed operator environment files
+overrode the newly pinned gate with the old v1 path. All four `ExecStartPre`
+checks refused the foreign contract hash before any trainer existed. The units
+were stopped; the operator environment override was removed from the effective
+v2 drop-in; gate/verdict and contract hashes were matched on all hosts; and the
+four effective units were re-inspected before restart.
+
+At 2026-08-18 08:09 America/Bogota, all four decision units were active under
+identity `ac0941e7bdb1a163`, each with assigned UUID equal to
+`CUDA_VISIBLE_DEVICES`, v2 contract in both preflight and runner, and the sealed
+v2 verdict. EC-13 remains assigned for upstream installer correction and
+independent reproduction; the runtime incident itself submitted zero broker
+orders and created zero duplicate training writers.
