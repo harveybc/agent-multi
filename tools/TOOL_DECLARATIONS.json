@@ -360,6 +360,13 @@
    "mutability": "read_only",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "systemd_unit_coherence.py": {
+   "purpose": "EC-13 (order 2026-08-18 WP2): read-only systemd unit contract coherence guard. The installed base template carried a v1 contract default and an old screen gate, so a unit could pass ExecStartPre against ONE contract and then run ExecStart against ANOTHER. Checks two independent hazards: the two properties must NAME the same contract file, and they must RESOLVE to the same file \u2014 the gate is invoked absolutely while the runner is invoked relative to WorkingDirectory, so they agree only while the working directory is the intended runtime. Parses effective unit properties; never writes, enables or restarts anything.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
