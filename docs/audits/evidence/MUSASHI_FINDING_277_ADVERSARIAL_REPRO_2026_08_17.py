@@ -26,7 +26,7 @@ def _load(name: str, path: Path):
     return module
 
 
-def _write_trace(path: Path) -> None:
+def _write_trace(path: Path, *, corrupt: bool = True) -> None:
     path.parent.mkdir(parents=True)
     rows = [
         {
@@ -41,11 +41,11 @@ def _write_trace(path: Path) -> None:
         {
             "timestamp": "2025-01-01T04:00:00Z",
             "split": "evaluation",
-            "action_raw": "corrupt",
-            "position": "corrupt",
+            "action_raw": "corrupt" if corrupt else "0.25",
+            "position": "corrupt" if corrupt else "1",
             "equity": "101",
             "trades": "1",
-            "trade_cost": "corrupt",
+            "trade_cost": "corrupt" if corrupt else "",
         },
         {
             "timestamp": "2025-01-01T08:00:00Z",
@@ -61,6 +61,36 @@ def _write_trace(path: Path) -> None:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
+
+
+def _write_role_authority(trace: Path, identity: str = "fixture-identity") -> None:
+    role_root = trace.parent.parent
+    split_dir = role_root / "nested_splits"
+    split_dir.mkdir(parents=True, exist_ok=True)
+    data_file = split_dir / "train_monitor.csv"
+    data_file.write_text("timestamp,value\n2025-01-01,1\n")
+    manifest = {
+        "experiment_identity": identity,
+        "roles": {
+            "train_monitor": {
+                "csv": str(data_file),
+                "csv_sha256": "fixture-data-sha256",
+            }
+        },
+    }
+    (split_dir / "nested_split_manifest.json").write_text(
+        json.dumps(manifest, sort_keys=True) + "\n"
+    )
+    meta = {
+        "nested_role": "train_monitor",
+        "data_file": str(data_file),
+        "data_file_sha256": "fixture-data-sha256",
+        "config_sha256": "fixture-config-sha256",
+        "observation_contract_sha256": "fixture-observation-sha256",
+    }
+    Path(str(trace) + ".meta.json").write_text(
+        json.dumps(meta, sort_keys=True) + "\n"
+    )
 
 
 def main() -> int:
@@ -90,17 +120,60 @@ def main() -> int:
         [-0.2, 0.2, -0.2, 0.2], threshold=0.1
     )
 
+    sidecar_observed: dict[str, object] = {}
     with tempfile.TemporaryDirectory(prefix="musashi-277-repro-") as tmp:
-        trace = (
+        sealed_trace = (
             Path(tmp)
             / "sealed_test_2025"
             / "return_traces"
             / "evaluation_return_trace.csv"
         )
-        _write_trace(trace)
-        sidecar_result = sidecar.measure_trace(
-            trace, threshold=0.1, tolerance=1e-6
+        _write_trace(sealed_trace, corrupt=False)
+        try:
+            sidecar.measure_trace(sealed_trace, threshold=0.1, tolerance=1e-6)
+            sealed_refused = False
+        except sidecar.SidecarRefusal as error:
+            sealed_refused = True
+            sidecar_observed["sealed_refusal"] = str(error)
+
+        corrupt_trace = (
+            Path(tmp)
+            / "allowed_corrupt"
+            / "return_traces"
+            / "evaluation_return_trace.csv"
         )
+        _write_trace(corrupt_trace, corrupt=True)
+        _write_role_authority(corrupt_trace)
+        try:
+            sidecar.measure_trace(corrupt_trace, threshold=0.1, tolerance=1e-6)
+            corrupt_refused = False
+        except sidecar.SidecarRefusal as error:
+            corrupt_refused = True
+            sidecar_observed["corrupt_refusal"] = str(error)
+
+        valid_trace = (
+            Path(tmp)
+            / "allowed_valid"
+            / "return_traces"
+            / "evaluation_return_trace.csv"
+        )
+        _write_trace(valid_trace, corrupt=False)
+        _write_role_authority(valid_trace)
+        try:
+            valid_result = sidecar.measure_trace(
+                valid_trace,
+                threshold=0.1,
+                tolerance=1e-6,
+                model_sha256="fixture-model-sha256",
+                model_file="fixture-model.zip",
+                code_revision="fixture-code-revision",
+            )
+        except TypeError:
+            # The pre-correction implementation did not accept model custody.
+            valid_result = sidecar.measure_trace(
+                valid_trace, threshold=0.1, tolerance=1e-6
+            )
+        sidecar_observed["valid_measurement"] = valid_result
 
     checks = {
         "classifier_rejects_corrupted_sequence": (
@@ -120,13 +193,13 @@ def main() -> int:
             varying_without_observations["classification"]
             != pb.STATE_RESPONSIVE_ACTIVE
         ),
-        "sealed_parent_path_is_refused": False,
-        "corrupt_trace_row_is_refused": False,
+        "sealed_parent_path_is_refused": sealed_refused,
+        "corrupt_trace_row_is_refused": corrupt_refused,
         "missing_cost_is_unavailable": (
-            sidecar_result["economics"]["total_cost"] is None
+            valid_result["economics"]["total_cost"] is None
         ),
         "measurement_binds_model_and_role": all(
-            key in sidecar_result["custody"]
+            valid_result["custody"].get(key)
             for key in (
                 "model_sha256",
                 "experiment_identity",
@@ -135,11 +208,6 @@ def main() -> int:
             )
         ),
     }
-    # Reaching this point proves the sidecar accepted the sealed-parent fixture
-    # and silently skipped its malformed values.
-    checks["sealed_parent_path_is_refused"] = False
-    checks["corrupt_trace_row_is_refused"] = False
-
     report = {
         "schema": "agent_multi.musashi_finding_277_adversarial_repro.v1",
         "implementation_root": str(root),
@@ -149,7 +217,7 @@ def main() -> int:
             "corrupted_sequence": corrupted,
             "zero_threshold_sequence": zero,
             "varying_actions_without_observations": varying_without_observations,
-            "sealed_corrupt_trace_measurement": sidecar_result,
+            "sidecar": sidecar_observed,
         },
     }
     print(json.dumps(report, indent=2, sort_keys=True, allow_nan=False))

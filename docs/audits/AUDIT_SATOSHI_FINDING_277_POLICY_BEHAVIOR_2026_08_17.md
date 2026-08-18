@@ -131,3 +131,15 @@ not close any finding.
 The detailed executable order is:
 
 `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_FINDING_277_CORRECTION_ORDER_2026_08_17.md`
+
+## Amendment A1 — First Correction Reproduction
+
+Satoshi pushed `agent-multi@4e2d3109` after this verdict. The independent
+reproducer was made bifásic so expected fail-closed refusals count as passes.
+Against `4e2d3109`, all nine adversarial checks pass, the branch is clean and
+the focused policy/engineering-surface suites report **56 passed**.
+
+This independently reproduces the immediate corrections for findings 278,
+279 and 281. It does not close finding 277 or 280: WP-C through WP-F, the four
+production consumers, the full suite, WP2 disposition and successor diagnostic
+remain outside this first correction commit.
