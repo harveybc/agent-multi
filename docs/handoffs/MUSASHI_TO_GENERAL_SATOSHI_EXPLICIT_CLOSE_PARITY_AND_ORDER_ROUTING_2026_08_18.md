@@ -20,6 +20,28 @@ Do not resurrect any pre-2026-08-18 P1LR identity. Do not report a linear
 canary as the ETH SAC champion. Review runs in parallel with compatible compute;
 it does not create an idle fleet.
 
+## WP0. Urgent Independent Live-Control Reproduction
+
+Before WP3/WP4 expansion, independently reproduce `lts@1c16d2d`:
+
+1. prove Alpaca `{"qty":"-1","side":"short"}` resolves to exposure `-1`,
+   never `+1`;
+2. prove a close signal while the equity clock is closed calls neither cancel
+   nor flatten and returns `protection_preserved=true`;
+3. for Alpaca, IBKR and MT5, persist `model_close_requested`, then present the
+   same `model_id/timeframe/bar_close` once with exposure and once flat;
+4. prove both replays submit zero broker calls and return a typed consumed-bar
+   state;
+5. prove a strictly later closed bar may act again;
+6. inspect direct Paper/Demo facts after the 2026-08-18 live replay: Alpaca's
+   queued flatten, IBKR's protected USD.CAD short and MT5's protected ETH long;
+7. report the IBKR historical-data refusal as unavailable, not as zero bars or
+   a model hold.
+
+Open a finding for any route that can cancel protection before an executable
+flatten, reverse within one decision bar, or treat signed broker quantities
+inconsistently. Do not close findings implemented by Musashi.
+
 ## WP1. Independent Contract Reproduction
 
 Reproduce before changing code:
@@ -134,4 +156,3 @@ paths, hashes, direct metrics, residual doubts and any proposed improvement.
 Never turn an absent fact into zero or success. Never wait on audit while a
 compatible approved CPU/GPU job can run without contaminating the active
 identity.
-

@@ -198,3 +198,33 @@ LR strata; no nonexistent DOIN champion may be fabricated.
 
 Paper/Demo may lose virtual money; low exposure limits damage. Real-capital
 authority remains outside this document.
+
+## 10. First Live-Control Findings (2026-08-18)
+
+The first deployment of explicit model close found three business-control
+defects that simulation-only tests had not exposed:
+
+1. Alpaca reports a short redundantly as negative `qty` and `side=short`.
+   Applying both signs made the runner read a short as long and request an
+   incorrect close. Quantity is now normalized exactly once.
+2. An equity market close requested outside the regular session cannot be
+   assumed immediately executable. The runner now defers the model close and
+   preserves the existing native protection while the market is closed.
+3. "Close first" did not initially mean "wait for another bar": MT5 could
+   close on one daemon tick and enter the opposite side on the next tick of the
+   same H4 bar. A durable due-bar close fact now consumes the entire bar on all
+   three venues and blocks duplicate close, reversal and new risk.
+
+The third defect is direct evidence against immediately placing order-family
+selection inside the directional SAC. Position state, market session, pending
+state, fill state and bar identity must be coherent before any router can add
+value. O1 therefore begins as a deterministic execution policy over a frozen
+directional artifact. A learned router or separate specialist is admitted only
+after the paired O0/O1 journal proves headroom.
+
+Current Paper/Demo seats remain deliberately labeled: MT5 runs the ETH linear
+infrastructure canary until a corrected SAC artifact exists; Alpaca SPY and
+IBKR USD.CAD are cross-venue infrastructure canaries and are not substitutes
+for the ETH champion. Every risk-increasing position still requires native SL
+and TP. The MT5 SAC route is implemented but remains fail-closed until the EA
+publishes sufficient bars and a corrected artifact/manifest is available.
