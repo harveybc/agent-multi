@@ -1255,3 +1255,32 @@ and order are:
 
 - `docs/audits/AUDIT_SATOSHI_FINDING_277_POLICY_BEHAVIOR_2026_08_17.md`
 - `docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_FINDING_277_CORRECTION_ORDER_2026_08_17.md`
+
+### 22.7 Negative-return learning boundary
+
+Owner clarification from the original NEAT evidence: easy training may begin
+with sustained losses and only later learn a profitable behavior. Therefore a
+finite negative return is valid evidence, not a checkpoint rejection or early
+termination condition.
+
+For the successor L1 experiment:
+
+- easy eligibility has no profitability-sign gate;
+- while no complete, state-responsive, non-negative easy checkpoint has yet
+  appeared, structurally trainable policies continue to the maximum epoch
+  budget and ordinary performance/activity/constancy patience stays disarmed;
+- only invalid/non-finite evidence, broken invariants or direct mathematical
+  evidence of absent learning capacity may fail fast before that point;
+- the first qualifying non-negative epoch is persisted and arms the declared
+  performance patience;
+- exhausting the budget while negative produces
+  `EASY_BUDGET_EXHAUSTED_NEGATIVE`, preserves terminal and best artifacts, and
+  cannot promote or fall back to the initial anchor; and
+- normal consumes an explicitly selected, hash-bound artifact from the same
+  easy lineage. `terminal_easy` versus `best_easy` is recorded and cannot vary
+  implicitly between cells.
+
+The contract deliberately separates profitability, trading activity,
+observation responsiveness and trainability. None is inferred from another.
+The required implementation and regression fixtures are in WP-G of
+`docs/handoffs/MUSASHI_TO_GENERAL_SATOSHI_FINDING_277_CORRECTION_ORDER_2026_08_17.md`.

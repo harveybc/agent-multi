@@ -165,3 +165,59 @@ Return all of the following:
   correction packet is independently accepted.
 
 Do not close findings 277-281 yourself. Ask Musashi or Retsu to reproduce them.
+
+## 9. WP-G: Negative Easy Returns Are Learning States, Not Rejection Gates
+
+Owner clarification, 2026-08-17: the easy phase exists precisely to let a
+policy learn through an initially losing trajectory. A finite negative return
+is valid training evidence. It must not make a checkpoint ineligible, trigger
+activity/futility termination, or substitute an anchor merely because its sign
+is negative.
+
+Apply these requirements to the successor experiment without mutating the
+running identity:
+
+1. Keep profitability out of easy checkpoint eligibility. Eligibility may
+   require complete finite evidence, exact custody, valid structure and the
+   declared activity/behavior facts; it may not require `return > 0`,
+   `RAP > 0` or any equivalent sign test.
+2. Before the first non-negative easy `train_monitor` return, do not allow
+   improvement patience, activity patience or a constant-policy heuristic to
+   terminate a structurally valid, trainable policy. Continue to the declared
+   maximum epoch budget. Early refusal remains legal only for invalid evidence,
+   broken invariants, non-finite computation or a direct proof that learning is
+   impossible, such as a zero-gradient dead actor. Temporal constancy alone is
+   diagnostic evidence, not such a proof.
+3. Persist the first non-negative epoch. Only after a complete,
+   state-responsive, non-negative easy checkpoint exists may the ordinary
+   performance patience become armed. The configured patience and minimum
+   floor remain visible and auditable.
+4. If the maximum budget is reached while every valid easy checkpoint remains
+   negative, emit `EASY_BUDGET_EXHAUSTED_NEGATIVE`. Preserve both the terminal
+   easy artifact and the best easy artifact with hashes and metrics. Do not
+   promote it as a champion or silently replace it with the initial anchor.
+5. The normal phase must start from a declared, hash-bound artifact produced by
+   that same easy lineage, never a fresh model or anchor. Persist whether the
+   handoff uses `terminal_easy` or `best_easy`; do not let implementation
+   accident choose between them. Any comparison of those two handoff policies
+   is a later declared factor, not an unrecorded variation.
+6. Profitability is still a promotion/transition decision at the end of easy,
+   not a reason to censor the learning path that could reach it.
+
+Required regression fixtures:
+
+- a valid return sequence that stays negative but improves for longer than one
+  full patience window must continue training;
+- a negative, trading checkpoint remains eligible and is saved;
+- a negative terminal result receives the typed budget-exhaustion outcome and
+  is not replaced by the anchor;
+- the first qualifying non-negative checkpoint arms patience, with its epoch
+  recorded;
+- the exact easy artifact hash selected by the declared handoff rule is the
+  warm start consumed by normal;
+- no consumer contains a profitability-sign eligibility test.
+
+Report these facts separately from the policy-responsiveness findings. A
+policy can be losing yet learning, active yet unresponsive, or profitable yet
+constant; collapsing those dimensions would repeat the defect this work
+package is meant to remove.
