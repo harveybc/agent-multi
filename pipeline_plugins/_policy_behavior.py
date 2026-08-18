@@ -1,40 +1,45 @@
-"""WP1 (finding AUD-F1-20260817-277): typed policy-behavior taxonomy.
+"""WP-A (findings AUD-F1-20260817-277..281): typed policy-behavior authority.
 
 The defect this exists to name: the training stack pairs a continuous
 learner with a hard three-bin environment adapter
 (``gym-fx/app/env.py::_coerce_action``) that maps ``Box[-1,1]`` to
-``{HOLD, LONG, SHORT}`` through a threshold. Consequences measured on
-the live identity:
+``{HOLD, LONG, SHORT}`` through a threshold. At easy threshold ``0.0``
+ANY non-zero constant becomes permanent direction, so a behaviorally
+constant actor produces orders, exposure and PnL (+4.38% in one
+reproduced cell, -3.05% in another) purely from market path and SL/TP
+cycling. At normal threshold ``0.1`` the same tiny constants map to
+permanent HOLD and the cell reports zero activity.
 
-- at easy threshold ``0.0`` ANY non-zero constant becomes a permanent
-  direction, so a behaviorally constant actor produces orders, exposure
-  and PnL (+4.38% in one reproduced cell, -3.05% in another) purely
-  from market path and SL/TP cycling;
-- at normal threshold ``0.1`` the same tiny constants map to permanent
-  HOLD and the cell reports zero activity.
+**Trades are not evidence of state-conditioned learning, and zero trades
+are not evidence of a dead learner.**
 
-**Trades are therefore not evidence of state-conditioned learning, and
-zero trades are not evidence of a dead learner.** Both readings need
-the action series itself. This module is the single classifier used by
-traces, stopping, aggregation and promotion so the four consumers can
-never disagree.
+Corrected per the 2026-08-17 order:
 
-Classification compares action VARIATION against a declared numerical
-tolerance — exact float equality is explicitly insufficient, because a
-policy that jitters in the 1e-9 range is behaviorally constant — and it
-always carries threshold counterfactuals, because the same series is a
-different behavior under a different adapter setting.
+- a trace alone can establish *deterministic mapped activity* and never
+  *state-responsiveness*: a rollout only visits the states the market
+  handed it, so varying actions may simply reflect varying inputs that
+  were never controlled for. The promotable class requires paired
+  observation evidence bound to a fixed model (see
+  :func:`classify_with_observation_evidence`);
+- input cardinality is preserved: one malformed, NaN or infinite
+  element makes the whole sequence ``UNAVAILABLE`` with index facts,
+  never a silently shortened "valid" sequence;
+- crossings are derived from the mapping itself
+  (``map_action(v, thr) != HOLD``), so an exact zero at threshold zero
+  is HOLD and is not a crossing;
+- absent stochastic evidence is distinguished from present-but-invalid.
 """
 from __future__ import annotations
 
 import math
-from typing import Any, Iterable, Mapping, Optional, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
-SCHEMA = "agent_multi.policy_behavior.v1"
+SCHEMA = "agent_multi.policy_behavior.v2"
 
-# ── the typed taxonomy (WP1) ──────────────────────────────────────────
+# ── the typed taxonomy ────────────────────────────────────────────────
 STATE_RESPONSIVE_ACTIVE = "STATE_RESPONSIVE_ACTIVE"
 STATE_RESPONSIVE_BELOW_THRESHOLD = "STATE_RESPONSIVE_BELOW_THRESHOLD"
+DETERMINISTIC_MAPPED_ACTIVITY = "DETERMINISTIC_MAPPED_ACTIVITY"
 CONSTANT_DIRECTIONAL_EXPOSURE = "CONSTANT_DIRECTIONAL_EXPOSURE"
 CONSTANT_HOLD = "CONSTANT_HOLD"
 STOCHASTIC_ONLY_ACTIVITY = "STOCHASTIC_ONLY_ACTIVITY"
@@ -43,40 +48,46 @@ UNAVAILABLE = "UNAVAILABLE"
 CLASSIFICATIONS = (
     STATE_RESPONSIVE_ACTIVE,
     STATE_RESPONSIVE_BELOW_THRESHOLD,
+    DETERMINISTIC_MAPPED_ACTIVITY,
     CONSTANT_DIRECTIONAL_EXPOSURE,
     CONSTANT_HOLD,
     STOCHASTIC_ONLY_ACTIVITY,
     UNAVAILABLE,
 )
 
-#: Only ONE class may be read as learned, state-conditioned activity.
-#: `CONSTANT_DIRECTIONAL_EXPOSURE` is explicitly excluded however many
-#: orders it created (WP1, order 2026-08-17).
+#: Only ONE class may be read as learned, state-conditioned activity,
+#: and it is unreachable without observation evidence bound to a model.
+#: `CONSTANT_DIRECTIONAL_EXPOSURE` is excluded however many orders it
+#: created; `DETERMINISTIC_MAPPED_ACTIVITY` is excluded because a trace
+#: cannot separate "the policy reacted" from "the inputs moved".
 PROMOTABLE_AS_LEARNED_ACTIVITY = frozenset({STATE_RESPONSIVE_ACTIVE})
 
-#: Declared behavioral-constancy tolerance. A deterministic action
-#: series whose spread is at or below this is behaviorally constant,
-#: whatever its float bits say. Chosen ~3 orders of magnitude below the
-#: smallest adapter threshold in use (0.001) so a real sub-threshold
-#: policy is never called constant.
-DEFAULT_CONSTANCY_TOLERANCE = 1e-6
+#: Classes a trace-only measurement is allowed to return.
+TRACE_ONLY_CLASSIFICATIONS = frozenset({
+    DETERMINISTIC_MAPPED_ACTIVITY,
+    STATE_RESPONSIVE_BELOW_THRESHOLD,
+    CONSTANT_DIRECTIONAL_EXPOSURE,
+    CONSTANT_HOLD,
+    STOCHASTIC_ONLY_ACTIVITY,
+    UNAVAILABLE,
+})
 
-#: Threshold counterfactuals persisted with every classification (WP0).
+DEFAULT_CONSTANCY_TOLERANCE = 1e-6
 DEFAULT_COUNTERFACTUAL_THRESHOLDS = (0.0, 0.001, 0.01, 0.05, 0.1)
 
 HOLD, LONG, SHORT = 0, 1, 2
 
 
 class PolicyBehaviorError(ValueError):
-    """Raised only for a malformed request, never for a measured
-    outcome — an unmeasurable policy is typed ``UNAVAILABLE``."""
+    """Malformed REQUEST (bad threshold/tolerance/evidence contract).
+    A malformed measurement is never an exception — it is typed
+    ``UNAVAILABLE``."""
 
 
 def map_action(value: float, threshold: float) -> int:
     """Mirror of ``gym-fx/app/env.py::_coerce_action`` for the
-    continuous adapter. Kept deliberately faithful, including the
-    ``threshold == 0`` branch where every non-zero value is directional
-    and only an exact zero is HOLD."""
+    continuous adapter, including the ``threshold == 0`` branch where
+    every non-zero value is directional and an exact zero is HOLD."""
     if threshold == 0.0:
         if value > 0.0:
             return LONG
@@ -90,22 +101,53 @@ def map_action(value: float, threshold: float) -> int:
     return HOLD
 
 
-def _finite(values: Optional[Iterable[Any]]) -> list[float]:
+def is_crossing(value: float, threshold: float) -> bool:
+    """A crossing is a NON-HOLD mapped decision — derived from the
+    mapping, never from ``abs(value) >= threshold``, so exact zero at
+    threshold zero is correctly not a crossing."""
+    return map_action(value, threshold) != HOLD
+
+
+def _validate_number(name: str, value: Any, *,
+                     allow_negative: bool = False) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as error:
+        raise PolicyBehaviorError(f"{name} must be a number") from error
+    if not math.isfinite(number):
+        raise PolicyBehaviorError(f"{name} must be finite, got {value!r}")
+    if not allow_negative and number < 0.0:
+        raise PolicyBehaviorError(
+            f"{name} must be non-negative, got {number!r}")
+    return number
+
+
+def _coerce_sequence(values: Optional[Sequence[Any]]) -> dict:
+    """Preserve cardinality. Returns the parsed values plus a typed
+    record of every element that could not be parsed — the caller must
+    refuse rather than shrink the sequence."""
     if values is None:
-        return []
-    out: list[float] = []
-    for value in values:
+        return {"present": False, "count": 0, "values": [],
+                "invalid_indices": [], "invalid_count": 0}
+    parsed: list[float] = []
+    invalid: list[int] = []
+    for index, value in enumerate(values):
         try:
             number = float(value)
         except (TypeError, ValueError):
+            invalid.append(index)
             continue
-        if math.isfinite(number):
-            out.append(number)
-    return out
-
-
-def _spread(values: Sequence[float]) -> float:
-    return (max(values) - min(values)) if values else 0.0
+        if not math.isfinite(number):
+            invalid.append(index)
+            continue
+        parsed.append(number)
+    return {
+        "present": True,
+        "count": len(list(values)),
+        "values": parsed,
+        "invalid_indices": invalid,
+        "invalid_count": len(invalid),
+    }
 
 
 def _std(values: Sequence[float]) -> float:
@@ -133,50 +175,67 @@ def threshold_counterfactuals(
     actions: Sequence[float],
     thresholds: Sequence[float] = DEFAULT_COUNTERFACTUAL_THRESHOLDS,
 ) -> dict[str, dict[str, Any]]:
-    """The same action series under every adapter threshold of interest.
-
-    This is what makes a classification auditable: a reader can see that
-    a series is HOLD-everywhere at 0.1 and LONG-everywhere at 0.0
-    without re-running anything."""
+    """The same action series under every adapter threshold of interest,
+    so a reader can see that a series is HOLD-everywhere at 0.1 and
+    LONG-everywhere at 0.0 without re-running anything."""
     out: dict[str, dict[str, Any]] = {}
     total = len(actions)
-    for threshold in thresholds:
+    for raw in thresholds:
+        threshold = _validate_number("counterfactual threshold", raw)
         mapped = [map_action(value, threshold) for value in actions]
-        crossings = sum(1 for value in actions
-                        if threshold == 0.0 or abs(value) >= threshold)
-        changes = sum(1 for i in range(1, len(mapped))
-                      if mapped[i] != mapped[i - 1])
         out[f"{threshold:g}"] = {
-            "threshold": float(threshold),
+            "threshold": threshold,
             "hold": mapped.count(HOLD),
             "long": mapped.count(LONG),
             "short": mapped.count(SHORT),
             "hold_fraction": (mapped.count(HOLD) / total) if total else None,
-            "threshold_crossings": crossings,
-            "mapped_action_changes": changes,
+            "threshold_crossings": sum(1 for m in mapped if m != HOLD),
+            "mapped_action_changes": sum(
+                1 for i in range(1, len(mapped))
+                if mapped[i] != mapped[i - 1]),
         }
     return out
 
 
-def action_statistics(actions: Sequence[float]) -> dict[str, Any]:
-    """Deterministic action distribution facts required by WP0."""
+def action_statistics(actions: Sequence[float], *,
+                      declared_count: Optional[int] = None) -> dict:
+    """Deterministic action distribution facts. ``declared_count`` is
+    the ORIGINAL input cardinality and is always reported, so a
+    shortened parse can never masquerade as a complete measurement."""
+    count = declared_count if declared_count is not None else len(actions)
     if not actions:
-        return {"count": 0}
+        return {"count": count, "parsed_count": 0}
     return {
-        "count": len(actions),
+        "count": count,
+        "parsed_count": len(actions),
         "min": min(actions),
         "max": max(actions),
         "mean": math.fsum(actions) / len(actions),
         "std": _std(actions),
-        "spread": _spread(actions),
+        "spread": max(actions) - min(actions),
         "unique_count": len(set(actions)),
         "q01": _quantile(actions, 0.01),
         "q50": _quantile(actions, 0.50),
         "q99": _quantile(actions, 0.99),
-        "sign_changes": sum(
-            1 for i in range(1, len(actions))
-            if (actions[i] > 0) != (actions[i - 1] > 0)
-            or (actions[i] < 0) != (actions[i - 1] < 0)),
+    }
+
+
+def _unavailable(reason: str, *, threshold: float, tolerance: float,
+                 deterministic: dict, stochastic: dict,
+                 source: Optional[Mapping[str, Any]]) -> dict:
+    return {
+        "schema": SCHEMA,
+        "classification": UNAVAILABLE,
+        "promotable_as_learned_activity": False,
+        "evidence_level": "unavailable",
+        "reasons": [reason],
+        "threshold": threshold,
+        "constancy_tolerance": tolerance,
+        "deterministic": deterministic,
+        "threshold_crossings": 0,
+        "stochastic": stochastic,
+        "threshold_counterfactuals": {},
+        "source": dict(source) if source else None,
     }
 
 
@@ -190,126 +249,239 @@ def classify_policy_behavior(
         DEFAULT_COUNTERFACTUAL_THRESHOLDS,
     source: Optional[Mapping[str, Any]] = None,
 ) -> dict[str, Any]:
-    """Classify one policy's behavior on one role's rollout.
+    """Classify one policy's behavior from a ROLLOUT TRACE alone.
 
-    ``threshold`` is the adapter threshold the rollout actually ran
-    under. ``tolerance`` is the DECLARED behavioral-constancy bound and
-    is recorded in the result, so a later reader can see which bound
-    produced the verdict rather than having to trust it.
-
-    Never raises for a measured outcome. Missing or non-finite actions
-    are ``UNAVAILABLE``.
+    This function can never return ``STATE_RESPONSIVE_ACTIVE``: a trace
+    cannot separate "the policy reacted to its input" from "the input
+    moved and the policy followed something else". The strongest
+    trace-only verdict is ``DETERMINISTIC_MAPPED_ACTIVITY``, which is
+    explicitly NOT promotable. Use
+    :func:`classify_with_observation_evidence` for the promotable class.
     """
-    if tolerance < 0.0:
-        raise PolicyBehaviorError("tolerance must be non-negative")
-    actions = _finite(deterministic_actions)
-    stochastic = _finite(stochastic_actions)
+    threshold = _validate_number("threshold", threshold)
+    tolerance = _validate_number("tolerance", tolerance)
 
+    det = _coerce_sequence(deterministic_actions)
+    sto = _coerce_sequence(stochastic_actions)
+    det_stats = action_statistics(det["values"],
+                                  declared_count=det["count"])
+    sto_stats = {
+        "present": sto["present"],
+        "count": sto["count"],
+        "parsed_count": len(sto["values"]),
+        "invalid_count": sto["invalid_count"],
+        "invalid_indices": sto["invalid_indices"],
+        "std": _std(sto["values"]),
+        "threshold_crossings": sum(
+            1 for value in sto["values"] if is_crossing(value, threshold)),
+    }
+
+    if not det["present"] or det["count"] == 0:
+        return _unavailable(
+            "no deterministic action sequence was provided",
+            threshold=threshold, tolerance=tolerance,
+            deterministic={**det_stats,
+                           "invalid_count": det["invalid_count"],
+                           "invalid_indices": det["invalid_indices"]},
+            stochastic=sto_stats, source=source)
+    if det["invalid_count"]:
+        return _unavailable(
+            f"{det['invalid_count']} of {det['count']} deterministic "
+            f"actions are missing, malformed, NaN or infinite at "
+            f"indices {det['invalid_indices'][:16]} — a partially "
+            "readable sequence is refused, never silently shortened",
+            threshold=threshold, tolerance=tolerance,
+            deterministic={**det_stats,
+                           "invalid_count": det["invalid_count"],
+                           "invalid_indices": det["invalid_indices"]},
+            stochastic=sto_stats, source=source)
+    if sto["present"] and sto["invalid_count"]:
+        return _unavailable(
+            f"stochastic evidence is present but {sto['invalid_count']} "
+            f"of {sto['count']} draws are unreadable — present-but-"
+            "invalid evidence is refused, unlike absent evidence",
+            threshold=threshold, tolerance=tolerance,
+            deterministic={**det_stats, "invalid_count": 0,
+                           "invalid_indices": []},
+            stochastic=sto_stats, source=source)
+
+    actions = det["values"]
     counterfactuals = threshold_counterfactuals(
-        actions, counterfactual_thresholds) if actions else {}
-    stats = action_statistics(actions)
-
-    key = f"{float(threshold):g}"
-    at_threshold = counterfactuals.get(key) or (
-        threshold_counterfactuals(actions, [float(threshold)]).get(key)
-        if actions else None)
-    crossings = int(at_threshold["threshold_crossings"]) if at_threshold \
-        else 0
-    # The taxonomy is about BEHAVIOR, and behavior is the MAPPED action.
-    # At threshold 0 every non-zero value "crosses", so crossings alone
-    # would make ACTIVE trivially reachable; and a policy whose numbers
-    # vary while its mapped decision never changes is behaviorally
-    # constant however much it jitters. Both are settled by counting
-    # mapped-action changes.
-    mapped_changes = int(at_threshold["mapped_action_changes"]) \
-        if at_threshold else 0
-
-    stochastic_crossings = sum(
-        1 for value in stochastic
-        if float(threshold) == 0.0 or abs(value) >= float(threshold))
+        actions, counterfactual_thresholds)
+    key = f"{threshold:g}"
+    at_threshold = counterfactuals.get(key) or threshold_counterfactuals(
+        actions, [threshold])[key]
+    crossings = int(at_threshold["threshold_crossings"])
+    mapped_changes = int(at_threshold["mapped_action_changes"])
 
     reasons: list[str] = []
-    if not actions:
-        classification = UNAVAILABLE
-        reasons.append("no_finite_deterministic_actions")
-    else:
-        constant = stats["spread"] <= tolerance
-        if constant:
-            # A constant series is classified by what the ADAPTER makes
-            # of it, not by whether orders happened: the same constant
-            # is permanent exposure at threshold 0 and permanent HOLD
-            # at 0.1.
-            mapped = map_action(actions[0], float(threshold))
-            if mapped == HOLD:
-                classification = CONSTANT_HOLD
-                reasons.append(
-                    f"action spread {stats['spread']:.3e} <= tolerance "
-                    f"{tolerance:.3e}; constant maps to HOLD at "
-                    f"threshold {float(threshold):g}")
-            else:
-                classification = CONSTANT_DIRECTIONAL_EXPOSURE
-                reasons.append(
-                    f"action spread {stats['spread']:.3e} <= tolerance "
-                    f"{tolerance:.3e}; constant maps to "
-                    f"{'LONG' if mapped == LONG else 'SHORT'} at "
-                    f"threshold {float(threshold):g} — exposure and any "
-                    "resulting orders come from the adapter and market "
-                    "path, NOT from state-conditioned learning")
-        elif crossings > 0 and mapped_changes > 0:
-            classification = STATE_RESPONSIVE_ACTIVE
+    constant = det_stats["spread"] <= tolerance
+    if constant:
+        mapped = map_action(actions[0], threshold)
+        if mapped == HOLD:
+            classification = CONSTANT_HOLD
             reasons.append(
-                f"action spread {stats['spread']:.3e} > tolerance, "
-                f"{crossings} of {len(actions)} bars cross threshold "
-                f"{float(threshold):g}, and the MAPPED decision changes "
-                f"{mapped_changes} times — behavior varies, not only "
-                "the number")
-        elif crossings > 0:
-            mapped = map_action(actions[0], float(threshold))
-            classification = (CONSTANT_HOLD if mapped == HOLD
-                              else CONSTANT_DIRECTIONAL_EXPOSURE)
-            reasons.append(
-                f"action varies numerically (spread {stats['spread']:.3e}"
-                f") but the MAPPED decision never changes across "
-                f"{len(actions)} bars at threshold {float(threshold):g}"
-                " — behaviorally constant, so varying numbers are not "
-                "state-conditioned activity")
-        elif stochastic_crossings > 0:
-            classification = STOCHASTIC_ONLY_ACTIVITY
-            reasons.append(
-                "deterministic evaluation never crosses the threshold "
-                f"while {stochastic_crossings} of {len(stochastic)} "
-                "stochastic draws do — activity would be exploration "
-                "noise, not evaluated policy behavior")
+                f"action spread {det_stats['spread']:.3e} <= tolerance "
+                f"{tolerance:.3e}; the constant maps to HOLD at "
+                f"threshold {threshold:g}")
         else:
-            classification = STATE_RESPONSIVE_BELOW_THRESHOLD
+            classification = CONSTANT_DIRECTIONAL_EXPOSURE
             reasons.append(
-                f"action varies (spread {stats['spread']:.3e} > "
-                f"tolerance {tolerance:.3e}) but no bar reaches "
-                f"threshold {float(threshold):g}")
-
-    if classification == CONSTANT_HOLD and stochastic_crossings > 0:
-        # A constant deterministic policy whose stochastic draws trade
-        # is still the more informative fact for WP2 question 4.
+                f"action spread {det_stats['spread']:.3e} <= tolerance "
+                f"{tolerance:.3e}; the constant maps to "
+                f"{'LONG' if mapped == LONG else 'SHORT'} at threshold "
+                f"{threshold:g} — exposure and any resulting orders come "
+                "from the adapter and the market path, NOT from "
+                "state-conditioned learning")
+    elif crossings > 0 and mapped_changes > 0:
+        classification = DETERMINISTIC_MAPPED_ACTIVITY
+        reasons.append(
+            f"the mapped decision changes {mapped_changes} times over "
+            f"{len(actions)} bars at threshold {threshold:g}. This is "
+            "deterministic mapped ACTIVITY only: a trace cannot show "
+            "the policy responded to its observations, so it is not "
+            "promotable as learned behavior (observation evidence "
+            "required)")
+    elif crossings > 0:
+        mapped = map_action(actions[0], threshold)
+        classification = (CONSTANT_HOLD if mapped == HOLD
+                          else CONSTANT_DIRECTIONAL_EXPOSURE)
+        reasons.append(
+            f"action varies numerically (spread {det_stats['spread']:.3e}"
+            f") but the MAPPED decision never changes across "
+            f"{len(actions)} bars at threshold {threshold:g} — "
+            "behaviorally constant")
+    elif sto_stats["threshold_crossings"] > 0:
         classification = STOCHASTIC_ONLY_ACTIVITY
         reasons.append(
-            f"{stochastic_crossings} stochastic draws cross the "
-            "threshold while deterministic behavior is constant")
+            "deterministic evaluation never leaves HOLD while "
+            f"{sto_stats['threshold_crossings']} of "
+            f"{sto_stats['parsed_count']} stochastic draws do — any "
+            "activity would be exploration noise, not evaluated policy "
+            "behavior")
+    else:
+        classification = STATE_RESPONSIVE_BELOW_THRESHOLD
+        reasons.append(
+            f"action varies (spread {det_stats['spread']:.3e} > "
+            f"tolerance {tolerance:.3e}) but no bar leaves HOLD at "
+            f"threshold {threshold:g}")
 
+    if classification == CONSTANT_HOLD and \
+            sto_stats["threshold_crossings"] > 0:
+        classification = STOCHASTIC_ONLY_ACTIVITY
+        reasons.append(
+            f"{sto_stats['threshold_crossings']} stochastic draws leave "
+            "HOLD while deterministic behavior is constant")
+
+    assert classification in TRACE_ONLY_CLASSIFICATIONS, (
+        "a trace-only measurement may never return the promotable class")
     return {
         "schema": SCHEMA,
         "classification": classification,
-        "promotable_as_learned_activity":
-            classification in PROMOTABLE_AS_LEARNED_ACTIVITY,
+        "promotable_as_learned_activity": False,
+        "evidence_level": "trace_only",
         "reasons": reasons,
-        "threshold": float(threshold),
-        "constancy_tolerance": float(tolerance),
-        "deterministic": stats,
+        "threshold": threshold,
+        "constancy_tolerance": tolerance,
+        "deterministic": {**det_stats, "invalid_count": 0,
+                          "invalid_indices": [],
+                          "mapped_action_changes": mapped_changes},
         "threshold_crossings": crossings,
-        "stochastic": {
-            "count": len(stochastic),
-            "threshold_crossings": stochastic_crossings,
-            "std": _std(stochastic),
-        },
+        "stochastic": sto_stats,
         "threshold_counterfactuals": counterfactuals,
         "source": dict(source) if source else None,
     }
+
+
+REQUIRED_OBSERVATION_EVIDENCE = (
+    "model_sha256",
+    "observation_contract_sha256",
+    "observation_rows",
+    "role",
+)
+
+
+def classify_with_observation_evidence(
+    deterministic_actions: Optional[Sequence[Any]],
+    *,
+    threshold: float,
+    observation_evidence: Mapping[str, Any],
+    repeated_observation_actions: Optional[Sequence[Any]] = None,
+    permuted_observation_actions: Optional[Sequence[Any]] = None,
+    stochastic_actions: Optional[Sequence[Any]] = None,
+    tolerance: float = DEFAULT_CONSTANCY_TOLERANCE,
+    counterfactual_thresholds: Sequence[float] =
+        DEFAULT_COUNTERFACTUAL_THRESHOLDS,
+) -> dict[str, Any]:
+    """The ONLY path to ``STATE_RESPONSIVE_ACTIVE``.
+
+    Requires actions produced by a FIXED model over a real-role
+    observation batch, plus two controls:
+
+    - ``repeated_observation_actions``: the same observation fed twice
+      must give the same action, or the measurement is not a function
+      of the observation and is refused;
+    - ``permuted_observation_actions``: re-running the batch in a
+      different row order must give the same per-row actions, proving
+      the output depends on the row and not on its position.
+
+    ``observation_evidence`` must carry the custody fields in
+    :data:`REQUIRED_OBSERVATION_EVIDENCE`. Missing custody is a request
+    error, not a quiet downgrade.
+    """
+    missing = [key for key in REQUIRED_OBSERVATION_EVIDENCE
+               if not observation_evidence.get(key)]
+    if missing:
+        raise PolicyBehaviorError(
+            "observation evidence is incomplete; missing "
+            f"{missing} — the promotable class is unreachable without "
+            "custody binding it to a fixed model and a real role")
+
+    base = classify_policy_behavior(
+        deterministic_actions, threshold=threshold,
+        stochastic_actions=stochastic_actions, tolerance=tolerance,
+        counterfactual_thresholds=counterfactual_thresholds,
+        source=dict(observation_evidence))
+    base["evidence_level"] = "observation_bound"
+    base["observation_evidence"] = dict(observation_evidence)
+
+    if base["classification"] != DETERMINISTIC_MAPPED_ACTIVITY:
+        return base
+
+    controls: dict[str, Any] = {}
+    repeated = _coerce_sequence(repeated_observation_actions)
+    permuted = _coerce_sequence(permuted_observation_actions)
+    det = _coerce_sequence(deterministic_actions)
+
+    if not repeated["present"] or repeated["invalid_count"] or \
+            _std(repeated["values"]) > tolerance:
+        controls["identical_observation_control"] = "FAILED_OR_ABSENT"
+        base["reasons"].append(
+            "the repeated-identical-observation control is absent or "
+            "not constant — without it the actions cannot be shown to "
+            "be a function of the observation")
+        return base
+    controls["identical_observation_control"] = "PASSED"
+
+    if not permuted["present"] or permuted["invalid_count"] or \
+            len(permuted["values"]) != len(det["values"]) or \
+            any(abs(a - b) > tolerance
+                for a, b in zip(sorted(permuted["values"]),
+                                sorted(det["values"]))):
+        controls["row_permutation_control"] = "FAILED_OR_ABSENT"
+        base["reasons"].append(
+            "the row-permutation control is absent or inconsistent — "
+            "the output may depend on row position rather than on the "
+            "observation")
+        return base
+    controls["row_permutation_control"] = "PASSED"
+
+    base["classification"] = STATE_RESPONSIVE_ACTIVE
+    base["promotable_as_learned_activity"] = True
+    base["controls"] = controls
+    base["reasons"].append(
+        "actions come from a fixed model over a real-role observation "
+        "batch, are reproducible on identical observations and are "
+        "invariant to row order — the mapped decision therefore varies "
+        "WITH the observation")
+    return base

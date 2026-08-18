@@ -137,21 +137,25 @@ class TestOrderedShape3:
         assert "MAPPED decision never changes" in " ".join(
             result["reasons"])
 
-    def test_active_requires_the_mapped_decision_to_change(self):
+    def test_mapped_decision_change_is_activity_but_not_promotable(
+            self):
         actions = [0.5 if (i // 100) % 2 else -0.5 for i in range(2190)]
         result = pb.classify_policy_behavior(actions, threshold=0.0)
-        assert result["classification"] == pb.STATE_RESPONSIVE_ACTIVE
-        assert "MAPPED decision changes" in " ".join(result["reasons"])
+        assert result["classification"] == \
+            pb.DETERMINISTIC_MAPPED_ACTIVITY
+        assert result["promotable_as_learned_activity"] is False
+        assert result["evidence_level"] == "trace_only"
 
-    def test_responsive_and_crossing_is_the_only_promotable_class(self):
+    def test_no_trace_only_result_is_ever_promotable(self):
         actions = [0.5 if i % 2 else -0.5 for i in range(2190)]
         result = pb.classify_policy_behavior(actions, threshold=0.1)
-        assert result["classification"] == pb.STATE_RESPONSIVE_ACTIVE
-        assert result["promotable_as_learned_activity"] is True
-        promotable = {
-            c for c in pb.CLASSIFICATIONS
-            if c in pb.PROMOTABLE_AS_LEARNED_ACTIVITY}
-        assert promotable == {pb.STATE_RESPONSIVE_ACTIVE}
+        assert result["classification"] == \
+            pb.DETERMINISTIC_MAPPED_ACTIVITY
+        assert result["promotable_as_learned_activity"] is False
+        assert pb.PROMOTABLE_AS_LEARNED_ACTIVITY == {
+            pb.STATE_RESPONSIVE_ACTIVE}
+        assert pb.STATE_RESPONSIVE_ACTIVE not in \
+            pb.TRACE_ONLY_CLASSIFICATIONS
 
 
 class TestStochasticAndUnavailable:
@@ -201,3 +205,79 @@ class TestAdapterFidelity:
         cf = result["threshold_counterfactuals"]
         assert cf["0.01"]["long"] == 2190
         assert cf["0.05"]["hold"] == 2190
+
+
+# ── the auditor's nine counterexamples, verbatim ──────────────────────
+# MUSASHI_FINDING_277_ADVERSARIAL_REPRO_2026_08_17.py, pinned as
+# permanent regression tests (order 2026-08-17 WP-A).
+
+class TestAuditorCounterexamples:
+    def test_1_classifier_rejects_corrupted_sequence(self):
+        import math as _m
+        r = pb.classify_policy_behavior(
+            [0.2, _m.nan, "corrupt", 0.3], threshold=0.1)
+        assert r["classification"] == pb.UNAVAILABLE
+
+    def test_2_classifier_preserves_input_cardinality(self):
+        import math as _m
+        r = pb.classify_policy_behavior(
+            [0.2, _m.nan, "corrupt", 0.3], threshold=0.1)
+        assert r["deterministic"]["count"] == 4
+        assert r["deterministic"]["invalid_indices"] == [1, 2]
+
+    def test_3_zero_at_zero_threshold_is_not_a_crossing(self):
+        r = pb.classify_policy_behavior(
+            [0.0, 0.0], threshold=0.0, stochastic_actions=[0.0, 0.0])
+        assert r["threshold_crossings"] == 0
+        assert r["stochastic"]["threshold_crossings"] == 0
+
+    def test_4_zero_policy_is_constant_hold(self):
+        r = pb.classify_policy_behavior(
+            [0.0, 0.0], threshold=0.0, stochastic_actions=[0.0, 0.0])
+        assert r["classification"] == pb.CONSTANT_HOLD
+
+    def test_5_state_responsive_requires_observation_evidence(self):
+        r = pb.classify_policy_behavior(
+            [-0.2, 0.2, -0.2, 0.2], threshold=0.1)
+        assert r["classification"] != pb.STATE_RESPONSIVE_ACTIVE
+        assert r["classification"] == pb.DETERMINISTIC_MAPPED_ACTIVITY
+
+    def test_6_absent_stochastic_differs_from_invalid_stochastic(self):
+        absent = pb.classify_policy_behavior([0.2, 0.3], threshold=0.1)
+        invalid = pb.classify_policy_behavior(
+            [0.2, 0.3], threshold=0.1, stochastic_actions=["x"])
+        assert absent["stochastic"]["present"] is False
+        assert absent["classification"] != pb.UNAVAILABLE
+        assert invalid["classification"] == pb.UNAVAILABLE
+
+    @pytest.mark.parametrize("bad", [-1.0, float("nan"), float("inf"),
+                                     "x", None])
+    def test_7_invalid_threshold_or_tolerance_is_a_request_error(
+            self, bad):
+        with pytest.raises(pb.PolicyBehaviorError):
+            pb.classify_policy_behavior([0.2], threshold=bad)
+        with pytest.raises(pb.PolicyBehaviorError):
+            pb.classify_policy_behavior([0.2], threshold=0.1,
+                                        tolerance=bad)
+
+    def test_8_observation_evidence_requires_full_custody(self):
+        with pytest.raises(pb.PolicyBehaviorError):
+            pb.classify_with_observation_evidence(
+                [-0.2, 0.2], threshold=0.1,
+                observation_evidence={"role": "train_monitor"})
+
+    def test_9_promotable_needs_both_controls(self):
+        evidence = {"model_sha256": "a" * 64,
+                    "observation_contract_sha256": "b" * 64,
+                    "observation_rows": 4, "role": "train_monitor"}
+        actions = [-0.2, 0.2, -0.2, 0.2]
+        no_controls = pb.classify_with_observation_evidence(
+            actions, threshold=0.1, observation_evidence=evidence)
+        assert no_controls["promotable_as_learned_activity"] is False
+        full = pb.classify_with_observation_evidence(
+            actions, threshold=0.1, observation_evidence=evidence,
+            repeated_observation_actions=[0.2, 0.2, 0.2],
+            permuted_observation_actions=[0.2, -0.2, 0.2, -0.2])
+        assert full["classification"] == pb.STATE_RESPONSIVE_ACTIVE
+        assert full["promotable_as_learned_activity"] is True
+        assert full["evidence_level"] == "observation_bound"

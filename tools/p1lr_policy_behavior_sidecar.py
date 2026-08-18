@@ -60,17 +60,21 @@ def _sha_file(path: Path) -> str:
 
 
 def _assert_role_allowed(name: str) -> None:
-    low = name.lower()
+    """Refuse a forbidden role. ``name`` may be a resolved path, a
+    manifest role or a split label; EVERY path component is checked,
+    because a sealed year can hide in a parent directory."""
+    text = str(name)
+    parts = [text.lower()] + [p.lower() for p in Path(text).parts]
     for marker in SEALED_MARKERS:
-        if marker in low:
+        if any(marker in part for part in parts):
             raise SidecarRefusal(
-                f"REFUSED_SEALED_ROLE: {name} matches sealed marker "
-                f"{marker!r}; the sealed year is never opened by a "
-                "diagnostic")
+                f"REFUSED_SEALED_ROLE: {text} matches sealed marker "
+                f"{marker!r} in its resolved path or role; the sealed "
+                "year is never opened by a diagnostic")
     for marker in ONE_SHOT_MARKERS:
-        if marker in low:
+        if any(marker in part for part in parts):
             raise SidecarRefusal(
-                f"REFUSED_ONE_SHOT_ROLE: {name} is outer-validation "
+                f"REFUSED_ONE_SHOT_ROLE: {text} is outer-validation "
                 "evidence and stays one-shot")
 
 
@@ -93,50 +97,183 @@ def _f(row: dict, key: str) -> float | None:
     return value if math.isfinite(value) else None
 
 
+def _resolve_role(path: Path) -> dict:
+    """Role authority is the trace ``.meta.json`` and the nested split
+    manifest — never the free-text CSV column or the filename."""
+    out: dict = {"role": None, "role_source": None,
+                 "data_file": None, "data_file_sha256": None,
+                 "config_sha256": None, "experiment_identity": None,
+                 "observation_contract_sha256": None}
+    meta_path = Path(str(path) + ".meta.json")
+    if meta_path.is_file():
+        try:
+            meta = json.loads(meta_path.read_text())
+        except ValueError as error:
+            raise SidecarRefusal(
+                f"REFUSED_UNREADABLE_META: {meta_path}: {error}")
+        out["role"] = meta.get("nested_role") or meta.get("split")
+        out["role_source"] = str(meta_path)
+        out["meta_sha256"] = _sha_file(meta_path)
+        out["data_file"] = meta.get("input_data_file") or meta.get("data_file")
+        out["data_file_sha256"] = meta.get("data_file_sha256")
+        out["config_sha256"] = (meta.get("_run_config_hash")
+                                or meta.get("config_sha256"))
+        out["observation_contract_sha256"] = meta.get(
+            "observation_contract_sha256")
+    manifest = None
+    for parent in path.parents:
+        candidate = parent / "nested_splits" / "nested_split_manifest.json"
+        if candidate.is_file():
+            manifest = candidate
+            break
+    if manifest is not None:
+        try:
+            data = json.loads(manifest.read_text())
+        except ValueError as error:
+            raise SidecarRefusal(
+                f"REFUSED_UNREADABLE_MANIFEST: {manifest}: {error}")
+        out["manifest_file"] = str(manifest)
+        out["manifest_sha256"] = _sha_file(manifest)
+        out["experiment_identity"] = data.get("experiment_identity")
+        roles = data.get("roles") or data.get("role_facts") or {}
+        if out["role"] and isinstance(roles, dict):
+            entry = roles.get(out["role"]) or {}
+            out["data_file"] = out["data_file"] or entry.get("csv")
+            out["data_file_sha256"] = (out["data_file_sha256"]
+                                       or entry.get("csv_sha256"))
+    if not out["role"]:
+        raise SidecarRefusal(
+            f"REFUSED_UNRESOLVED_ROLE: {path} has no trace meta and no "
+            "nested split manifest; a free-text CSV column and a "
+            "filename are not role authority")
+    return out
+
+
+def _required_float(row: dict, key: str, index: int) -> float:
+    """One complete, schema-valid value per scored row. A malformed
+    value REFUSES the measurement; it is never dropped."""
+    raw = row.get(key)
+    if raw is None or str(raw).strip() == "":
+        raise SidecarRefusal(
+            f"REFUSED_MISSING_VALUE: column {key!r} is empty at row "
+            f"{index}; a missing value makes the metric unavailable, "
+            "it is never treated as zero")
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        raise SidecarRefusal(
+            f"REFUSED_MALFORMED_VALUE: column {key!r} = {raw!r} at row "
+            f"{index} is not a number")
+    if not math.isfinite(value):
+        raise SidecarRefusal(
+            f"REFUSED_NONFINITE_VALUE: column {key!r} = {raw!r} at row "
+            f"{index}")
+    return value
+
+
+def _optional_metric(rows: list[dict], key: str) -> list[float] | None:
+    """A metric is available only when EVERY scored row carries a
+    complete valid value; otherwise the metric is unavailable (None) —
+    never partially summed."""
+    out: list[float] = []
+    for index, row in enumerate(rows):
+        raw = row.get(key)
+        if raw is None or str(raw).strip() == "":
+            return None
+        try:
+            value = float(raw)
+        except (TypeError, ValueError):
+            return None
+        if not math.isfinite(value):
+            return None
+        out.append(value)
+    return out
+
+
+def _stable_read(path: Path, attempts: int = 3) -> tuple[list[dict], str]:
+    """Hash before and after the read; refuse if the live file moved."""
+    last: str | None = None
+    for _ in range(max(1, attempts)):
+        before = _sha_file(path)
+        with path.open(newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        after = _sha_file(path)
+        if before == after:
+            return rows, after
+        last = f"{before}->{after}"
+    raise SidecarRefusal(
+        f"REFUSED_UNSTABLE_SOURCE: {path} changed while being read "
+        f"({last}); a moving file cannot be measured")
+
+
 def measure_trace(path: Path, *, threshold: float,
-                  tolerance: float) -> dict:
+                  tolerance: float,
+                  model_sha256: str | None = None,
+                  model_file: str | None = None,
+                  code_revision: str | None = None) -> dict:
     """One trace -> one fully bound measurement row."""
-    _assert_role_allowed(path.name)
-    with path.open(newline="") as handle:
-        rows = list(csv.DictReader(handle))
+    path = Path(path).resolve()
+    _assert_role_allowed(path)                      # full resolved path
+    resolved = _resolve_role(path)
+    _assert_role_allowed(str(resolved["role"]))     # manifest role
+
+    rows, trace_sha = _stable_read(path)
     if not rows:
         raise SidecarRefusal(f"REFUSED_EMPTY_TRACE: {path}")
 
-    split = str(rows[0].get("split", "")) or path.stem
-    _assert_role_allowed(split)
-
-    actions = [_f(r, "action_raw") for r in rows]
-    actions = [a for a in actions if a is not None]
-    positions = [_f(r, "position") for r in rows]
-    equity = [e for e in (_f(r, "equity") for r in rows) if e is not None]
-    trades = [t for t in (_f(r, "trades") for r in rows) if t is not None]
-    costs = [c for c in (_f(r, "trade_cost") for r in rows)
-             if c is not None]
+    actions = [_required_float(row, "action_raw", i)
+               for i, row in enumerate(rows)]
+    positions = [_required_float(row, "position", i)
+                 for i, row in enumerate(rows)]
+    equity = _optional_metric(rows, "equity")
+    trades = _optional_metric(rows, "trades")
+    costs = _optional_metric(rows, "trade_cost")
 
     behavior = pb.classify_policy_behavior(
         actions, threshold=threshold, tolerance=tolerance,
-        source={"trace": path.name, "split": split})
+        source={"trace": path.name, "role": resolved["role"]})
 
-    exposed = sum(1 for p in positions if p not in (None, 0.0))
+    exposed = sum(1 for p in positions if p != 0.0)
     return {
-        "split": split,
+        "role": resolved["role"],
         "scored_rows": len(rows),
         "first_timestamp": rows[0].get("timestamp"),
         "last_timestamp": rows[-1].get("timestamp"),
         "behavior": behavior,
+        "promotable": bool(model_sha256) and behavior[
+            "promotable_as_learned_activity"],
+        "promotable_note": (
+            None if model_sha256 else
+            "no load-tested model checkpoint was bound to this "
+            "measurement; the result is NON-PROMOTABLE regardless of "
+            "its behavior class"),
         "economics": {
-            "trades": max(trades) if trades else None,
-            "exposure_fraction": (exposed / len(rows)) if rows else None,
-            "initial_equity": equity[0] if equity else None,
-            "final_equity": equity[-1] if equity else None,
+            "trades": (max(trades) if trades else None),
+            "exposure_fraction": exposed / len(rows),
+            "initial_equity": (equity[0] if equity else None),
+            "final_equity": (equity[-1] if equity else None),
             "total_return": ((equity[-1] / equity[0] - 1.0)
-                             if len(equity) > 1 and equity[0] else None),
-            "max_drawdown": _max_drawdown(equity),
-            "total_cost": math.fsum(costs) if costs else 0.0,
+                             if equity and equity[0] else None),
+            "max_drawdown": (_max_drawdown(equity) if equity else None),
+            "total_cost": (math.fsum(costs) if costs is not None else None),
         },
         "custody": {
             "trace_file": str(path),
-            "trace_sha256": _sha_file(path),
+            "trace_sha256": trace_sha,
+            "meta_sha256": resolved.get("meta_sha256"),
+            "manifest_file": resolved.get("manifest_file"),
+            "manifest_sha256": resolved.get("manifest_sha256"),
+            "role": resolved["role"],
+            "role_source": resolved["role_source"],
+            "data_file": resolved["data_file"],
+            "data_file_sha256": resolved["data_file_sha256"],
+            "config_sha256": resolved["config_sha256"],
+            "experiment_identity": resolved["experiment_identity"],
+            "observation_contract_sha256":
+                resolved["observation_contract_sha256"],
+            "model_file": model_file,
+            "model_sha256": model_sha256,
+            "code_revision": code_revision,
         },
     }
 
