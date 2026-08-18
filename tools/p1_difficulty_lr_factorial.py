@@ -62,8 +62,9 @@ DECISION MODE (finding 226). ``--mode decision`` runs the document-38
 decision path under a DISTINCT content-addressed identity (profile
 ``p1lr_decision_run``) and a distinct output root; every decision cell
 starts from the ORIGINAL per-seed anchor, never a screen terminal.
-Decision contract: same 2x2 factors/seeds, phase-2 LR 3e-5, per-cell
-ceiling 2,000 pass-equivalent checkpoints (4 phase-1 + 1,996 phase-2),
+Decision contract: same 2x2 factors/seeds, each cell's LR unchanged across
+both phases, per-cell ceiling 2,000 pass-equivalent checkpoints (1,000
+phase-1 + 1,000 phase-2),
 paired train-monitor/inner-validation stopping with patience 60 and no
 stopping conclusion before checkpoint 40, immutable best-checkpoint
 restoration, then ONE final outer-validation evaluation after
