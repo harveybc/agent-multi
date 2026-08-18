@@ -1,8 +1,8 @@
 # Adaptive Multi-Asset Trading Work Plan
 
-Status: E0-E4 complete; historical ETH M0/N14 evidence preserved; invalid M0 successor quarantined pending acceptance correction; nested L1/L2 curriculum and sparse-feature decision program active; multi-venue Paper and social-trading reality commissioning active
-Plan version: 1.32.0
-Date: 2026-08-08
+Status: corrected ETH observation/action contract and explicit early close active; P1LR mechanics screen running before the full decision; staged order-routing research and multi-venue Paper commissioning active
+Plan version: 1.33.0
+Date: 2026-08-18
 Primary implementation repository: `agent-multi`
 
 ## Mission

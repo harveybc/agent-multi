@@ -1,9 +1,19 @@
 # 19. Execution Curriculum, State Models, and Adaptive Order Policy
 
-Status: corrected ETH easy-normal smoke verified and four-worker `full-v2`
-running; paired normal/easy/easy-normal decision packet is the next compute
-priority before curriculum generalization
+Status: historical curriculum and routing design retained for lineage. The
+current action, early-close and staged order-routing authority is document 39;
+its 2026-08-18 corrected P1LR identity supersedes the campaign status recorded
+below.
 Decision date: 2026-07-29
+
+> Current-authority note (2026-08-18): sections describing the 2026-07-29 to
+> 2026-08-07 campaigns are historical evidence, not active runtime state. Use
+> `39_MODEL_CONTROL_EARLY_CLOSE_AND_ORDER_ROUTING.md` for the executable
+> target-exposure contract, explicit model close, current 2,660-dimensional
+> observation, fixed P1LR comparison and O0-O4 routing sequence. This document
+> remains authoritative for the broader cost curriculum and the original
+> multi-timescale execution research where it does not conflict with document
+> 39.
 
 ## 1. Objective
 

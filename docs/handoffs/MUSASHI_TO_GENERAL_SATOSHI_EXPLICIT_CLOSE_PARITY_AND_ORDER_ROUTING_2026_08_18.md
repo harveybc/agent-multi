@@ -14,7 +14,7 @@ Read in order:
    sections 20-22
 4. `examples/config/phase_3_eth_sac_dynamics/p1_difficulty_lr_factorial_v2.json`
 5. `gym-fx@1a606df`
-6. `lts@d93cdda`
+6. `lts@1ec2889`
 
 Do not resurrect any pre-2026-08-18 P1LR identity. Do not report a linear
 canary as the ETH SAC champion. Review runs in parallel with compatible compute;
@@ -126,12 +126,30 @@ Do not start a broad GPU search. Build CPU-first evidence:
 
 1. inventory causal ETH H1/15m/tick bid/ask coverage and venue order-family
    capabilities;
+   record separately that gym-fx already has market/limit/stop mechanics while
+   current Alpaca, IBKR and MT5 risk-increasing parents are market-only;
 2. identify where H4 OHLCV cannot determine fill ordering;
 3. specify deterministic O1 market/limit/stop routing with offsets and TTL;
 4. add pending cancel-on-model-close and restart-idempotency fixtures;
 5. define paired replay holding signal, size and SL/TP fixed;
 6. emit fill, non-fill, opportunity-cost, adverse-selection, slippage,
    protection and compute metrics.
+
+The design packet must also:
+
+7. keep buy/sell as directional-policy output, not separate order families;
+8. distinguish entry stop from protective stop-loss in schemas and metrics;
+9. make risk-reducing model close market-by-default and prove a pending entry is
+   cancelled before flat is acknowledged;
+10. define side-normalized offset/TTL features so one router can serve long and
+    short before any model split is considered;
+11. specify O2 as a small counterfactual utility model or contextual bandit,
+    with the directional SAC, size and risk geometry frozen;
+12. include an ablation showing whether separate side/family models add robust
+    out-of-sample value beyond conditioning, including trial-count and compute
+    penalties; and
+13. reject any scalar-Box encoding that gives categorical order families an
+    arbitrary continuous geometry.
 
 `stop-limit` stays an explicit later arm because it is unsupported by the
 current gym plugin and adds trigger-plus-non-fill risk. A learned router or

@@ -102,6 +102,45 @@ Buy/sell is direction. Limit/stop/stop-limit is entry mechanism; they do not
 replace directional policy, SL, TP or early-close authority. Venue capability
 is discovered directly because not every symbol/account accepts every family.
 
+Entry stop orders and protective stop-loss orders are different objects. An
+entry stop may open risk after a breakout; the mandatory stop-loss reduces risk
+after a fill. They must have distinct intent classes, identifiers and metrics.
+
+The initial responsibility split is:
+
+| Decision | Initial owner | Reason |
+| --- | --- | --- |
+| long/short/flat target | directional SAC | this is the learned alpha and lifecycle decision |
+| explicit early close | the same SAC under O0 | preserves one coherent exposure policy for the first causal comparison |
+| position size and account caps | deterministic LTS risk layer | account-specific authority is not delegated to a model |
+| mandatory SL/TP geometry | deterministic risk contract, later bounded DOIN genes | protection cannot disappear because a router is uncertain |
+| market/limit/stop entry | deterministic O1 router, then optional O2 execution model | execution quality is separable from directional alpha |
+| pending cancel/replace/expiry | deterministic execution state machine | restart and partial-fill behavior must be exact |
+| emergency/risk-reducing close | market by default | fill certainty dominates price improvement while risk is open |
+
+The router never changes long to short, changes the requested size, removes SL
+or TP, or reverses on the same decision bar. It may only choose an executable
+entry mechanism and its bounded offset/TTL for an already-authorized target.
+
+### 4.1 Current implementation inventory
+
+The capability baseline is intentionally asymmetric:
+
+- `gym-fx` already implements and tests native market, limit and stop entry,
+  deterministic pending expiration, optional market fallback, cancellation on
+  a new flat target and protected SL/TP children;
+- the historical `adaptive` simulator route is a heuristic implementation, not
+  accepted evidence that adaptive routing improves return/risk;
+- Alpaca Paper currently submits a market parent with native bracket children;
+- IBKR Paper currently enforces a market parent, LMT take-profit and STP
+  stop-loss in both plan and broker translation; and
+- the MT5 Demo EA currently sends market DEAL entries and market closes.
+
+Therefore O0 is executable across venues now. O1 first reuses the existing
+simulator primitives under a new evidence contract; live limit/stop adapters
+are added only after paired replay justifies them and each venue's atomic
+protection behavior is independently tested.
+
 ## 5. Why Separate Models Are Not the Default
 
 Separate entry, exit and order-type models do not guarantee improvement. They
@@ -128,6 +167,37 @@ For early close, compare in the same order: unified target-exposure actor;
 unified actor plus deterministic exit baseline; shared encoder with distinct
 entry/exit heads; fully separate models last. Every exit candidate is evaluated
 counterfactually against holding to native SL/TP using the same entry set.
+
+Do not train separate long and short routers initially. Side is an input and
+price offsets are represented in side-normalized ticks, so one router can learn
+the symmetric mechanics while retaining side-specific interactions. A separate
+model by side, venue or family is admitted only after an interaction test shows
+that conditioning is inadequate. This avoids multiplying trials and false
+discoveries before a business effect exists.
+
+O2 is not another full SAC by default. It is a small execution-value model that
+estimates, for every currently supported family and bounded offset/TTL:
+
+```text
+expected directional value after costs
+- non-fill opportunity cost
+- adverse-selection cost
+- latency/slippage penalty
+- protection/rejection penalty
+```
+
+It can be trained as a supervised counterfactual utility model when replay can
+label all alternatives, or as a contextual bandit when only the selected action
+has credible feedback. The frozen directional SAC supplies target, confidence
+and urgency; causal lower-timeframe execution state supplies spread, volatility,
+distance, liquidity and session features. Promotion uses paired replay and then
+Paper/Demo shadowing against O0/O1, never training return alone.
+
+A monolithic hybrid RL policy remains a research arm, not the baseline. It
+requires a library or policy implementation that correctly supports categorical
+family plus continuous offset/TTL actions, action masks for venue capability,
+pending-order state and partial fills. Encoding categories as arbitrary points
+inside a scalar SAC Box action would impose a false geometry and is rejected.
 
 ## 6. Data and Simulator Requirements
 
@@ -162,6 +232,16 @@ while comparing entry mechanisms. Report:
 
 No family is promoted solely for better entry price. It must improve downstream
 normal-realistic return/risk without material safety, activity or coverage loss.
+
+The minimum attribution packet compares the same timestamped directional
+intents under O0 and the candidate router. It reports both conditional results
+given a fill and unconditional account results. This prevents an apparently
+excellent limit strategy from winning merely by declining difficult trades.
+
+No architecture guarantees improvement. O2/O3/O4 are rejected when their
+paired out-of-sample benefit is smaller than uncertainty, when gains disappear
+after opportunity cost, or when operational/compute cost exceeds the measured
+benefit. A rejected complex arm is useful evidence and does not block O0.
 
 ## 8. DOIN Domains and Gene Boundaries
 
