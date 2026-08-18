@@ -35,6 +35,8 @@ No prior P1LR terminal is promotion-eligible.
 | EC-10 | S2 | close-first allowed a reverse entry on the next daemon tick of the same bar | corrected in `lts@1c16d2d`; durable model-close fact consumes the full bar on all venues |
 | EC-11 | S3 | an unavailable IBKR historical-data session could hold the runner inside one request while emitting errors every two seconds | corrected in `lts@1ec2889`; bounded request timeout restores degraded-heartbeat/backoff behavior |
 | EC-12 | S4 | SIGTERM during an unsuccessful IBKR reconnect could execute `None.close()` and leave the unit failed | corrected in `lts@1ec2889`; absent runner closes are guarded |
+| EC-13 | S2 | the installed `p1lr-decision@` template still defaulted to the v1 contract and old screen gate, so merely unmasking it after the v2 screen could run or verify the wrong identity | corrected operationally on all three hosts with an explicit immutable-runtime drop-in binding v2 in `ExecStartPre` and `ExecStart`; upstream installer hardening and independent effective-unit reproduction assigned |
+| EC-14 | S4 | normal cells currently label per-checkpoint source as `easy_training_epoch`, although phase/config/hash facts prove normal dynamics | do not restart or reinterpret the 16-cell screen; correct the source enum before the next experiment identity and retain the current raw facts |
 
 ## Reproduced Evidence
 
@@ -59,6 +61,9 @@ No prior P1LR terminal is promotion-eligible.
 4. Reconcile direct broker facts before restarting any risk-increasing runner.
 5. Treat limit/stop/stop-limit as a later execution experiment. Current P1 uses
    market so routing cannot confound curriculum attribution.
+6. Before decision dispatch, reproduce the effective systemd unit on every host
+   and prove runtime revision, v2 contract, v2 screen gate and seed/GPU binding;
+   a loaded generic template is not sufficient evidence.
 
 ## Runtime Addendum
 

@@ -81,6 +81,25 @@ After WP1 reproduction:
 Report current cell, phase, epoch/pass, best raw metrics, completion fraction,
 throughput, ETA, GPU utilization/memory/temperature and exact identity per GPU.
 
+Before unmasking decision units, independently inspect their *effective*
+systemd properties on Omega, Dragon and Gamma. They must bind:
+
+- working directory at immutable runtime `agent-multi@8758273f`;
+- contract `p1_difficulty_lr_factorial_v2.json` in both gate check and runner;
+- the newly sealed `bfbfd6443b849275` v2 screen verdict;
+- explicit `--mode decision`; and
+- seed 101/202/303/404 to the contract GPU UUID.
+
+The installed base template still carried a v1 default and old gate (EC-13).
+Musashi deployed a local v2 override; upstream the installer/pinning script so
+future contracts cannot inherit that stale default. Add a test that fails when
+`ExecStartPre` and `ExecStart` name different contract files.
+
+Also correct the checkpoint source enum that currently labels normal cells
+`easy_training_epoch` (EC-14). Preserve the current screen as-is because
+phase/config/hash evidence disambiguates its actual dynamics; the enum fix
+applies to the next content-addressed identity.
+
 ## WP3. SAC Manifest Publisher and MT5 Readiness
 
 Implement a local, fail-closed publisher in `lts/tools/` that accepts an exact
