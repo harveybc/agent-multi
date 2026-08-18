@@ -1100,3 +1100,34 @@ as a treatment-only selection gate in this primary contrast. Doing so would
 change both the treatment and its censoring rule. After the paired result, a
 secondary analysis may test the historical NEAT rule (only hand off a positive
 easy checkpoint) as its own declared factor.
+
+## 22. 2026-08-18 Explicit Close and Live-Stationary Observation Amendment
+
+APPEND-ONLY. The 2,660-input correction removed raw prices but still inherited
+two semantic defects: a weak action meant hold rather than target flat, and the
+legacy agent state included episode steps remaining while unrealized PnL could
+not be reconstructed without the removed price window. Those semantics could
+not drive an honest continuous Paper/Demo controller.
+
+The replacement experiment is
+`p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close`.
+Both phases now use `target_exposure_hysteresis_v2`: normal entry threshold
+0.10, normal exit threshold 0.02, easy thresholds 0/0, and
+`opposite_signal_semantics=close_then_wait`. Existing exposure remains in the
+inference loop. Near-zero actions explicitly close/cancel and opposite targets
+close before any later reversal. Native SL/TP remains mandatory.
+
+The four state values are now signed position, session-relative equity, true
+unrealized PnL from broker/simulator entry price and holding duration capped at
+42 H4 bars. Episode steps remaining is prohibited. The resulting dimension is
+still 2,660, but same width is not treated as same meaning: the observation
+contract hash changed and fresh per-seed zero-update genesis artifacts are
+required.
+
+The causal P1LR comparison fixes every parent entry to market and pending TTL
+zero. The pre-existing adaptive market/limit/stop router was previously being
+selected through plugin defaults rather than the materialized experiment
+contract; allowing it here would confound difficulty with fill behavior.
+Document 39 owns the downstream order-family and separate entry/exit-model
+comparisons. All earlier P1LR artifacts remain diagnostic and cannot be
+promoted under this amended action/observation contract.

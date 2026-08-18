@@ -74,6 +74,8 @@ OBSERVATION_RUNTIME_KEYS: Tuple[str, ...] = (
     "feature_clip",
     "include_price_window",
     "include_agent_state",
+    "agent_state_contract",
+    "holding_duration_scale_bars",
     "window_size",
     "precomputed_causal_features",
     "precomputed_feature_contract_sha256",

@@ -142,9 +142,15 @@ It contains 18,085 rows: 13,699 training bars from 2017-09-28 04:00 through
 2023-12-31, 2,196 validation bars in 2024, and 2,190 disclosed 2025 test bars.
 The N14/EN4_10/E4 packet keeps the 2025 period disabled.
 
-The current observation has 83 features over 32 bars, plus the 32-price and
-32-return windows and four agent-state values: 2,724 flattened values. The
-32-bar context spans 128 hours; rolling scaling over 256 bars spans 1,024 hours.
+The corrected current observation has 83 engineered features over 32 bars plus
+four live-observable agent-state values: signed position, equity relative to
+session start, unrealized PnL from the true entry price and capped holding
+duration. It contains exactly 2,660 flattened values. Raw 32-price and
+32-return windows are prohibited: their absolute scale killed or saturated the
+first actor layer. The 32-bar context spans 128 hours; rolling scaling over 256
+bars spans 1,024 hours. Live provisioning retains at least 800 closed H4 bars
+so the longest causal feature warm-up and scaling history are finite; missing
+warm-up refuses inference rather than replacing missing values with zero.
 The explicit date split overrides the dormant base-config `train_years=4` with
 approximately 6.25 years of unique training history. Materializers must remove
 that contradiction or declare the override in their resolved contract.
@@ -240,8 +246,10 @@ an incomplete full optimization.
 
 In parallel with D0-D2, inventory the active Paper/Demo seats and prove which
 artifact actually drives each decision. The ETH seat must record the exact SAC
-artifact/config/feature/input/decision hashes. A linear or heuristic controller
-may remain a labeled shadow but cannot be reported as the ETH champion.
+artifact/config/feature/input/decision hashes. It continues inference while a
+position is open and can issue an explicit model close without removing the
+mandatory native SL/TP protection. A linear or heuristic controller may remain
+a labeled shadow but cannot be reported as the ETH champion.
 
 Build a due-bar versus synchronized-simulation join with:
 
@@ -419,6 +427,14 @@ After R0 identifies the failure mode, compare the smallest relevant changes:
 Vanilla TD-error PER is not presumed beneficial for SAC. Actor-critic studies
 report mixed or adverse behavior, so this line needs its own bounded evidence.
 Inactive conditional genes must not leak package defaults into candidate builds.
+
+The scalar actor uses the target-exposure contract from document 39: strong
+positive/negative actions target long/short, a near-zero action explicitly
+targets flat, and the hysteresis band preserves current exposure. Opposite
+targets close first and cannot reverse in the same bar. Entry-order family is
+held at market while this policy contract is calibrated; order routing receives
+its own downstream experiment so fill mechanics cannot masquerade as a better
+learning curriculum.
 
 ### R4. Event-context and TSFM adapter DOIN domain - conditional
 

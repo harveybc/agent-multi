@@ -415,6 +415,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
         # positive easy-floor execution costs. Normal evaluation restores
         # the candidate's original threshold and cost contract.
         "easy_continuous_action_threshold": 0.0,
+        "easy_continuous_exit_threshold": 0.0,
         "easy_commission_fraction_per_side": 0.00005,
         "easy_full_spread_rate": 0.0001,
         "easy_slippage_bps_per_side": 0.25,
@@ -426,7 +427,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
         *ValidationPipelinePlugin.plugin_debug_vars,
         "easy_epoch_timesteps", "easy_max_epochs", "easy_patience",
         "easy_patience_start_epoch", "easy_min_delta",
-        "easy_continuous_action_threshold",
+        "easy_continuous_action_threshold", "easy_continuous_exit_threshold",
         "easy_commission_fraction_per_side", "easy_full_spread_rate",
         "easy_slippage_bps_per_side", "easy_min_trades",
         "phase1_handoff_semantics",
@@ -437,6 +438,10 @@ class PipelinePlugin(ValidationPipelinePlugin):
         threshold = float(easy.get(
             "easy_continuous_action_threshold",
             self.params["easy_continuous_action_threshold"],
+        ))
+        exit_threshold = float(easy.get(
+            "easy_continuous_exit_threshold",
+            self.params["easy_continuous_exit_threshold"],
         ))
         commission = float(easy.get(
             "easy_commission_fraction_per_side",
@@ -457,6 +462,15 @@ class PipelinePlugin(ValidationPipelinePlugin):
                 "easy_continuous_action_threshold must be finite in [0, 1)"
             )
         if (
+            not math.isfinite(exit_threshold)
+            or exit_threshold < 0.0
+            or exit_threshold > threshold
+        ):
+            raise ValueError(
+                "easy_continuous_exit_threshold must be finite, "
+                "non-negative and no greater than the easy entry threshold"
+            )
+        if (
             not all(math.isfinite(value) for value in (
                 commission, full_spread, slippage_bps
             ))
@@ -472,6 +486,7 @@ class PipelinePlugin(ValidationPipelinePlugin):
             "solvency_mode": EASY_MODE,
             "env_mode": "training",
             "continuous_action_threshold": threshold,
+            "continuous_exit_threshold": exit_threshold,
             "commission": commission,
             "full_spread_rate": full_spread,
             "slippage": full_spread / 2.0 + slippage_bps / 10_000.0,
@@ -1360,6 +1375,8 @@ class PipelinePlugin(ValidationPipelinePlugin):
                     # (the candidate's own contract governs there)
                     "continuous_action_threshold": easy_config.get(
                         "continuous_action_threshold"),
+                    "continuous_exit_threshold": easy_config.get(
+                        "continuous_exit_threshold"),
                     "commission_fraction_per_side": easy_config.get(
                         "commission"),
                     "full_spread_rate": easy_config.get("full_spread_rate"),

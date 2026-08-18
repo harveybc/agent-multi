@@ -1,9 +1,9 @@
 {
  "schema": "agent_multi.p1_difficulty_lr_factorial.v2",
- "$doc": "Corrected-observation L1 causal factorial. The superseded four-epoch decision contract could not exercise early stopping and used a fixed phase-2 LR that differed from one phase-1 LR stratum. This revision preserves the 2x2 difficulty x LR design but applies each cell's LR unchanged across BOTH phases, gives each phase a 1,000-epoch ceiling, and applies the same validation-driven patience, floor and minimum improvement in both phases. Within an LR stratum, phase1_mode is the only resolved-config difference between normal->normal and easy->normal. No preprocessing, topology, L2 or retraining-frequency genes are added.",
+ "$doc": "Corrected-observation and explicit-early-close L1 causal factorial. Earlier runs could not ask an open position to close to flat: a weak action meant hold, and live runners stopped inference while exposure existed. This revision binds target_exposure_hysteresis_v2 in training and live-compatible artifacts. It preserves the 2x2 difficulty x LR design, applies each cell's LR unchanged across BOTH phases, gives each phase a 1,000-epoch ceiling, and applies the same validation-driven patience, floor and minimum improvement in both phases. Within an LR stratum, phase1_mode is the only resolved-config difference between normal->normal and easy->normal. No preprocessing, topology, L2 or retraining-frequency genes are added.",
  "question": "With all non-difficulty facts paired, does an easy pre-training phase followed by normal fine-tuning outperform the same training and handoff procedure run normal-only, and does that effect depend on a separately declared constant learning-rate stratum?",
- "experiment": "p1_difficulty_lr_factorial_20260815_v2",
- "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2",
+ "experiment": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close",
+ "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close",
  "asset": "ETHUSD_4h",
  "nested_split_contract": {
   "$doc": "Finding 224: the EXECUTING pipeline consumes this typed nested contract directly (nested_split_mode=l1). The role_facts below are ASSERTIONS the runner verifies against the freshly materialized per-role CSVs before any model construction \u2014 wrong path, wrong sha, wrong scored/context count, swapped role dates, a missing context declaration, context counted in score, or any sealed_test materialization refuses the cell. Authoritative values reproduced by the independent auditor 2026-08-11.",
@@ -72,10 +72,13 @@
   "feature_scaling_window": 256,
   "feature_clip": 10.0,
   "include_agent_state": true,
+  "agent_state_contract": "live_stationary_v2",
+  "holding_duration_scale_bars": 42,
+  "$agent_state_fields": ["position", "equity_norm", "unrealized_pnl_norm", "holding_duration_norm"],
   "window_size": 32,
   "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
   "$feature_columns": "83 ordered, deduplicated engineered columns declared by the held-fixed base config; the sha256 above pins that exact ordered list so this contract refuses to bind onto a different feature set \u2014 BOTH phases see the same ordered feature contract.",
-  "$observation_dimension": "window_size*len(feature_columns) + include_agent_state*4 = 32*83 + 4 = 2660. The superseded price-window observation was 2724 = 2660 + 32 raw closes + 32 raw diffs; a 2724-input artifact refuses before model construction."
+  "$observation_dimension": "window_size*len(feature_columns) + include_agent_state*4 = 32*83 + 4 = 2660. The four state fields are live-observable: signed position, equity relative to session start, unrealized PnL from true entry price and capped holding duration. Legacy steps_remaining is forbidden. The superseded price-window observation was 2724 = 2660 + 32 raw closes + 32 raw diffs; a 2724-input artifact refuses before model construction."
  },
  "expected_observation": {
   "$doc": "The executable dimension expectation: the runner derives window_size*feature_count+agent_state_dims from the materialized base config at every materialization and refuses drift; wrong dimensions are a hard failure.",
@@ -117,6 +120,22 @@
   "phase2_learning_rate_rule": "match_cell_phase1_learning_rate",
   "phase2_dynamics": "normal_realistic",
   "phase2_action_threshold": 0.1,
+  "action_contract": {
+   "$doc": "The scalar is a target-exposure command on every scored bar. |a| >= 0.1 targets long/short; |a| <= 0.02 explicitly closes existing exposure or cancels a pending entry; the band between them holds. Easy phase removes both thresholds (0/0), so every nonzero action targets exposure and exact zero closes. Opposite targets close first and never reverse in one transaction. Native SL and TP remain mandatory independent protection.",
+   "name": "target_exposure_hysteresis_v2",
+   "normal_entry_threshold": 0.1,
+   "normal_exit_threshold": 0.02,
+   "easy_entry_threshold": 0.0,
+   "easy_exit_threshold": 0.0,
+   "opposite_signal_semantics": "close_then_wait",
+   "native_sltp_required": true
+  },
+  "entry_order_contract": {
+   "$doc": "The easy/normal causal contrast fixes every risk-increasing parent to market execution. The existing adaptive market/limit/stop router is explicitly excluded because changing fill probability, time-to-fill and adverse selection inside a difficulty experiment would confound the result. Order-type selection is a later execution study with identical signals, risk and splits.",
+   "mode": "market",
+   "pending_order_ttl_bars": 0,
+   "order_type_is_factor": false
+  },
   "boundary": {
    "replay_reset": true,
    "optimizer_reset": true
@@ -160,28 +179,32 @@
  "genesis": {
   "$doc": "Order \u00a73: the clean start is a per-seed zero-update 2,660-input genesis artifact constructed deterministically under the corrected observation contract by tools/p1lr_genesis_artifacts.py: ZERO gradient updates, ZERO replay transitions (structural \u2014 the construction env cannot be stepped), policy-tensor sha256 + container sha256 recorded, determinism and save/load identity proven. All four cells of a seed begin from the ONE tensor pinned here; different seeds are pinned pairwise DISTINCT. This artifact is NEVER a trained champion or handoff. 'Independent model construction without a persisted tensor identity is insufficient.'",
   "artifact_type": "zero_update_genesis",
-  "output_root": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815",
-  "manifest": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/genesis_manifest.json",
+  "output_root": "~/.local/share/agent-multi/p1lr_v4_live_state_zero_update_genesis_20260818",
+  "manifest": "~/.local/share/agent-multi/p1lr_v4_live_state_zero_update_genesis_20260818/genesis_manifest.json",
   "seeds": {
    "101": {
-    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed101/zero_update_genesis_seed101.zip",
-    "container_sha256": "b7bb01a1189f80b3f8762732bb0dcc5ecaabd0665a3563bd9ecd988b07fa109a",
-    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db"
+    "path": "~/.local/share/agent-multi/p1lr_v4_live_state_zero_update_genesis_20260818/seed101/zero_update_genesis_seed101.zip",
+    "container_sha256": "67767d81212cbbbacd308b6d28edb1c0fa1b87369787f521ff5db03b0e35f144",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "observation_contract_sha256": "ce3d3d6eecd517905f39b3dfe56b9ff214b6808144b33138a11d9cf4a1193ed4"
    },
    "202": {
-    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed202/zero_update_genesis_seed202.zip",
-    "container_sha256": "1f2ce8fcaf6a3bfbfa10c9c9197214e5901e0bf4cafac0a694c5927161aa99f2",
-    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2"
+    "path": "~/.local/share/agent-multi/p1lr_v4_live_state_zero_update_genesis_20260818/seed202/zero_update_genesis_seed202.zip",
+    "container_sha256": "5db5adc46c34cba99ae029ab7228be3ead8c4f2b615f5e7c97fe84eab0d852f2",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "observation_contract_sha256": "ce3d3d6eecd517905f39b3dfe56b9ff214b6808144b33138a11d9cf4a1193ed4"
    },
    "303": {
-    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed303/zero_update_genesis_seed303.zip",
-    "container_sha256": "d24186eda3aaea3f0d42170bbcdb14f74f294363387b6dfe4c0096fc6efeaa61",
-    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5"
+    "path": "~/.local/share/agent-multi/p1lr_v4_live_state_zero_update_genesis_20260818/seed303/zero_update_genesis_seed303.zip",
+    "container_sha256": "55ae58a1a8142bd2459e5ae41f4d376c9d84dee0cad5bd73e7e95a93dc55829c",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "observation_contract_sha256": "ce3d3d6eecd517905f39b3dfe56b9ff214b6808144b33138a11d9cf4a1193ed4"
    },
    "404": {
-    "path": "~/.local/share/agent-multi/p1lr_v2_zero_update_genesis_20260815/seed404/zero_update_genesis_seed404.zip",
-    "container_sha256": "8d0ee66b975bd85081bc4ec1073609376084525a1717bbac78c1c91684ca2d02",
-    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97"
+    "path": "~/.local/share/agent-multi/p1lr_v4_live_state_zero_update_genesis_20260818/seed404/zero_update_genesis_seed404.zip",
+    "container_sha256": "ae56a3928cffa0bdbacd9004104950b7b8d88493f93f1010bdf7fa52c9c2672f",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "observation_contract_sha256": "ce3d3d6eecd517905f39b3dfe56b9ff214b6808144b33138a11d9cf4a1193ed4"
    }
   }
  },
@@ -253,7 +276,7 @@
  },
  "decision_run": {
   "$doc": "Causal decision run. Every cell starts from its seed's original zero-update genesis. Each phase can train for up to 1,000 epochs of 20,000 timesteps; both phases use patience 60, floor 40 and min_delta 1e-4. The inactive-policy terminator is disabled so absence of early activity cannot pre-empt the learning question. The outer 2024 role is evaluated once after selection and sealed 2025 remains inaccessible.",
-  "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260815_v2_decision",
+  "output_root": "~/.local/share/agent-multi/p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision",
   "phase2_learning_rate_rule": "match_cell_phase1_learning_rate",
   "budget_knobs": {
    "$doc": "1,000 phase-1 epochs + 1,000 phase-2 epochs = the 2,000 pass-equivalent per-cell ceiling. Early stopping may use less, but neither phase is a four-epoch smoke.",
@@ -310,7 +333,7 @@
  },
  "replica": {
   "$doc": "Order \u00a76: a NEW replica/collection root \u2014 never a v1 collection root and never the sealed v1 collection c0e53cf18b7d60dd. tools/p1lr_collect.py stages, seals and replicates here; the replica host recomputes the tree digest and really loads all 16 terminals (finding 225).",
-  "collection_root": "~/.local/share/agent-multi/p1lr_v2_collections_20260815",
+  "collection_root": "~/.local/share/agent-multi/p1lr_v3_explicit_close_collections_20260818",
   "replica_host": "dragon"
  },
  "typed_outcomes": [
@@ -325,6 +348,7 @@
  "forbidden": [
   "contracting, slicing, projecting or otherwise adapting the 2,724-input anchor_seed*.zip artifacts \u2014 they carry a learned first layer from the defective representation and are diagnostic evidence only (order \u00a73)",
   "reusing ANY v1 P1LR identity, output tree or record \u2014 including the sealed v1 decision collection c0e53cf18b7d60dd, which is INCONCLUSIVE and qualified INVALID_FOR_L1_RECIPE_SELECTION_OBSERVATION_CONTRACT_235",
+  "reusing any pre-20260818 P1LR terminal for promotion: those policies were trained without an explicit model close-to-flat action",
   "dispatching L2 against the withdrawn 'frozen normal_realistic/3e-5' v1 recipe",
   "adding preprocessing, topology, L2 or retraining-frequency genes to this run \u2014 the only factors are phase-1 difficulty and phase-1 LR (order \u00a76)",
   "imposing an invented live-unit minimum (e.g. 256/256) as a performance gate (order \u00a77)",

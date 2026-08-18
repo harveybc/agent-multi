@@ -96,6 +96,7 @@ trading domain.
 | [36 Identity-domain design](36_IDENTITY_DOMAIN_DESIGN_N2_2026_08_06.md) | N2 identity-domain contract, typed comparisons and lineage requirements |
 | [37 M0-X mechanism falsification](37_M0X_CROSS_ASSET_MECHANISM_PROPOSAL_2026_08_08.md) | Corrected M1 attribution and conditional cross-system mechanism probe |
 | [38 NEAT lessons for L1/L2 and feature selection](38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md) | Nested stopping, isolated L1/L2 curricula, sparse inherited/learned feature selection, staged maturation and non-idle execution authority |
+| [39 Model control, early close and order routing](39_MODEL_CONTROL_EARLY_CLOSE_AND_ORDER_ROUTING.md) | Train/live target-exposure parity, mandatory model-driven early close, protected entry families and staged routing research |
 
 ## Repository Ownership Summary
 
@@ -170,6 +171,9 @@ approve its own material claims or authorize publication.
 - All fitting, normalization, vocabulary construction, and feature selection
   happen inside the training cutoff.
 - Simulation and live execution use the same intent and execution contracts.
+- Every open position remains an input to model inference. The selected policy
+  may explicitly close to flat or close on an opposite target; live runners do
+  not suspend inference merely because exposure exists.
 - Every risk-increasing market, limit or stop entry carries both a stop loss
   and take profit. Plugin failure rejects the entry; it never falls back to an
   unprotected order.

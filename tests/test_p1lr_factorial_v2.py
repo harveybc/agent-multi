@@ -82,6 +82,50 @@ def _v1_contract() -> dict:
     return p1.load_contract(p1.CONTRACT_PATH)
 
 
+def _write_v2_contract(tmp_path: Path, contract: dict) -> Path:
+    path = tmp_path / "p1lr_v2_contract.json"
+    clean = {key: value for key, value in contract.items()
+             if not key.startswith("_")}
+    path.write_text(json.dumps(clean), encoding="utf-8")
+    return path
+
+
+class TestExplicitEarlyCloseContract:
+    def test_load_refuses_legacy_hold_only_contract(self, tmp_path):
+        contract = copy.deepcopy(_v2_contract())
+        contract["held_fixed"]["action_contract"]["name"] = \
+            "legacy_directional_v1"
+        with pytest.raises(ValueError, match="action_contract.name"):
+            p1.load_contract(_write_v2_contract(tmp_path, contract))
+
+    def test_load_refuses_action_threshold_drift(self, tmp_path):
+        contract = copy.deepcopy(_v2_contract())
+        contract["held_fixed"]["action_contract"][
+            "normal_exit_threshold"] = 0.03
+        with pytest.raises(ValueError, match="normal_exit_threshold"):
+            p1.load_contract(_write_v2_contract(tmp_path, contract))
+
+    def test_materialized_cells_bind_train_live_action_semantics(
+            self, bindings, tmp_path):
+        contract = _v2_contract()
+        for cell in p1.CELLS:
+            config = p1.materialize_cell_config(
+                contract, bindings, 101, cell, tmp_path / cell)
+            assert config["continuous_action_contract"] == \
+                "target_exposure_hysteresis_v2"
+            assert config["continuous_action_threshold"] == \
+                pytest.approx(0.1)
+            assert config["continuous_exit_threshold"] == \
+                pytest.approx(0.02)
+            assert config["easy_continuous_action_threshold"] == \
+                pytest.approx(0.0)
+            assert config["easy_continuous_exit_threshold"] == \
+                pytest.approx(0.0)
+            assert config["require_protected_entries"] is True
+            assert config["entry_order_mode"] == "market"
+            assert config["pending_order_ttl_bars"] == 0
+
+
 @pytest.fixture(scope="module")
 def bindings() -> dict:
     return p1.load_bindings()
@@ -237,6 +281,8 @@ def rt(bindings, tmp_path, monkeypatch):
             "path": str(artifact),
             "container_sha256": p1._sha_file(artifact),
             "policy_tensor_sha256": _fake_tensor(artifact),
+            "observation_contract_sha256":
+                p1.observation_contract_sha256(contract),
         }
     assigned = contract["assignments"]["101"]["gpu_uuid"]
     monkeypatch.setattr(p1.socket, "gethostname", lambda: "omega")
@@ -336,10 +382,8 @@ class TestReq1ObservationDeclarationRefusal:
         rt.contract["observation_contract"][
             "feature_columns_sha256"] = "a" * 64
         summary = _run_seed(rt)
-        assert summary["outcome"] == "SEED_FAILED"
-        for facts in summary["cells"].values():
-            assert facts["outcome"] == "CELL_FAILED"
-            assert "OBSERVATION_CONTRACT_DRIFT" in facts["error"]
+        assert summary["outcome"] == "REFUSED_GENESIS_UNVERIFIED"
+        assert "state semantics" in summary["reason"]
         assert not FakePipeline.calls
 
 
@@ -657,6 +701,10 @@ class TestReq7BothPhases2660:
         # (phase 2 derives its config from the same dict).
         assert config["observation_contract"][
             "include_price_window"] is False
+        assert config["observation_contract"][
+            "agent_state_contract"] == "live_stationary_v2"
+        assert config["observation_contract"][
+            "holding_duration_scale_bars"] == 42
         bound, application = apply_observation_contract(dict(config))
         assert application["declared"] is True
         validation = validate_observation_contract(bound)
@@ -1287,7 +1335,8 @@ class TestV1V2Separation:
         assert v2["output_root"] != v1["output_root"]
         assert v2["decision_run"]["output_root"] != \
             v1["decision_run"]["output_root"]
-        assert "20260815_v2" in v2["output_root"]
+        assert "20260818_v4_live_state_and_explicit_close" in \
+            v2["output_root"]
         assert v2["replica"]["collection_root"] not in (
             v1.get("replica", {}).get("collection_root"),
             v1["output_root"], v1["decision_run"]["output_root"])

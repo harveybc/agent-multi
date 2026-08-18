@@ -439,6 +439,17 @@ def _validate_v2_observation_binding(contract: dict) -> None:
             "v2 observation_contract must declare "
             "include_agent_state=true (the 4 agent-state dims are part "
             "of the accepted 2,660-input contract)")
+    if str(block.get("agent_state_contract")) != "live_stationary_v2":
+        raise ValueError(
+            "v2 observation_contract must pin agent_state_contract="
+            "'live_stationary_v2' — legacy steps_remaining is an "
+            "episode-bound backtest variable and cannot be reproduced "
+            "by an endless live runner")
+    holding_scale = block.get("holding_duration_scale_bars")
+    if not isinstance(holding_scale, int) or holding_scale < 1:
+        raise ValueError(
+            "v2 observation_contract.holding_duration_scale_bars must "
+            "be a positive integer")
     window = block.get("window_size")
     if not isinstance(window, int) or window < 1:
         raise ValueError("v2 observation_contract.window_size must be "
@@ -514,6 +525,13 @@ def _validate_v2_genesis_binding(contract: dict) -> None:
                     "digest — the genesis must be hash-bound")
         tensor_shas[seed] = entry["policy_tensor_sha256"]
         container_shas[seed] = entry["container_sha256"]
+        if entry.get("observation_contract_sha256") != \
+                observation_contract_sha256(contract):
+            raise ValueError(
+                f"genesis.seeds.{seed}.observation_contract_sha256 "
+                "does not bind the current live-stationary observation "
+                "contract — same-width tensors from a different state "
+                "semantics may not initialize this experiment")
     if len(set(tensor_shas.values())) != len(SEEDS):
         raise ValueError(
             f"genesis policy tensors are not pairwise distinct across "
@@ -637,6 +655,33 @@ def load_contract(path: Path = CONTRACT_PATH) -> dict:
                       float("nan"))) != 0.1:
         raise ValueError("held_fixed.phase2_action_threshold must be "
                          "0.1")
+    if version == 2:
+        action = held.get("action_contract") or {}
+        expected_action = {
+            "name": "target_exposure_hysteresis_v2",
+            "normal_entry_threshold": 0.1,
+            "normal_exit_threshold": 0.02,
+            "easy_entry_threshold": 0.0,
+            "easy_exit_threshold": 0.0,
+            "opposite_signal_semantics": "close_then_wait",
+            "native_sltp_required": True,
+        }
+        for key, expected in expected_action.items():
+            if action.get(key) != expected:
+                raise ValueError(
+                    f"held_fixed.action_contract.{key} must be "
+                    f"{expected!r}; got {action.get(key)!r}")
+        entry_order = held.get("entry_order_contract") or {}
+        expected_entry_order = {
+            "mode": "market",
+            "pending_order_ttl_bars": 0,
+            "order_type_is_factor": False,
+        }
+        for key, expected in expected_entry_order.items():
+            if entry_order.get(key) != expected:
+                raise ValueError(
+                    f"held_fixed.entry_order_contract.{key} must be "
+                    f"{expected!r}; got {entry_order.get(key)!r}")
     if held.get("phase1_handoff_semantics") != "l1_trained_epoch_v4":
         raise ValueError("held_fixed.phase1_handoff_semantics must be "
                          "l1_trained_epoch_v4")
@@ -1070,6 +1115,8 @@ def initialization_binding(contract: dict, seed: int) -> dict:
             "path": entry["path"],
             "container_sha256": entry["container_sha256"],
             "policy_tensor_sha256": entry["policy_tensor_sha256"],
+            "observation_contract_sha256":
+                entry.get("observation_contract_sha256"),
         }
     anchor = contract["anchors"][str(seed)]
     return {
@@ -1411,6 +1458,25 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
     if version == 1:
         config["learning_rate"] = float(held["phase2_learning_rate"])
     config.update(v3_costs)
+    if version == 2:
+        action = held["action_contract"]
+        config["continuous_action_contract"] = str(action["name"])
+        config["continuous_action_threshold"] = float(
+            action["normal_entry_threshold"])
+        config["continuous_exit_threshold"] = float(
+            action["normal_exit_threshold"])
+        config["easy_continuous_action_threshold"] = float(
+            action["easy_entry_threshold"])
+        config["easy_continuous_exit_threshold"] = float(
+            action["easy_exit_threshold"])
+        config["opposite_signal_semantics"] = str(
+            action["opposite_signal_semantics"])
+        config["require_protected_entries"] = bool(
+            action["native_sltp_required"])
+        entry_order = held["entry_order_contract"]
+        config["entry_order_mode"] = str(entry_order["mode"])
+        config["pending_order_ttl_bars"] = int(
+            entry_order["pending_order_ttl_bars"])
     entropy_value = config.get("ent_coef")
     if entropy_value != float(held["entropy"]["value"]):
         raise RuntimeError(
@@ -1567,6 +1633,10 @@ def materialize_cell_config(contract: dict, bindings: dict, seed: int,
             "phase2_dynamics": str(held["phase2_dynamics"]),
             "phase2_action_threshold": float(
                 held["phase2_action_threshold"]),
+            **({"action_contract": {
+                key: value for key, value in held["action_contract"].items()
+                if not key.startswith("$")
+            }} if version == 2 else {}),
             "phase1_handoff_semantics": str(
                 held["phase1_handoff_semantics"]),
             "entropy": dict(held["entropy"]),
@@ -2425,6 +2495,11 @@ def _verify_initialization(contract: dict, seed: int, *,
             f"{init['policy_tensor_sha256'][:16]}… — the tensor "
             "identity the four cells must share is not the persisted "
             "one (order §3)")
+    if init.get("observation_contract_sha256") != \
+            observation_contract_sha256(contract):
+        raise RuntimeError(
+            "REFUSED_GENESIS_UNVERIFIED: genesis state semantics do not "
+            "match the experiment observation contract")
     return {**init, "path": str(init_path),
             "container_sha256": container,
             "policy_tensor_sha256": tensor_sha,
