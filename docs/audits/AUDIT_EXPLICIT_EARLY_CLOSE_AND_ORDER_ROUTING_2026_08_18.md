@@ -33,6 +33,8 @@ No prior P1LR terminal is promotion-eligible.
 | EC-08 | S2 | Alpaca's signed short quantity was negated again from `side=short`, reversing perceived exposure | corrected in `lts@ed3cf67`; exact negative-short regression added |
 | EC-09 | S2 | an Alpaca model close outside regular hours cancelled protection before its market flatten could fill | corrected in `lts@ed3cf67`; defer and preserve protection while closed |
 | EC-10 | S2 | close-first allowed a reverse entry on the next daemon tick of the same bar | corrected in `lts@1c16d2d`; durable model-close fact consumes the full bar on all venues |
+| EC-11 | S3 | an unavailable IBKR historical-data session could hold the runner inside one request while emitting errors every two seconds | corrected in `lts@1ec2889`; bounded request timeout restores degraded-heartbeat/backoff behavior |
+| EC-12 | S4 | SIGTERM during an unsuccessful IBKR reconnect could execute `None.close()` and leave the unit failed | corrected in `lts@1ec2889`; absent runner closes are guarded |
 
 ## Reproduced Evidence
 
@@ -40,7 +42,7 @@ No prior P1LR terminal is promotion-eligible.
   frozen model-ready file within `rtol=2e-5`, `atol=2e-6`, zero mismatched
   columns;
 - `gym-fx`: 91 tests passed;
-- `lts`: 734 tests passed after live-control corrections;
+- `lts`: 736 tests passed after live-control and IBKR continuity corrections;
 - `agent-multi`: 1,647 tests passed; four sibling-repo lookup failures caused
   only by the isolated `/tmp` worktree, then all 10 affected tests passed with
   the real `doin-node` sibling mapped into the test root;

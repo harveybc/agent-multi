@@ -37,6 +37,10 @@ Before WP3/WP4 expansion, independently reproduce `lts@1c16d2d`:
    queued flatten, IBKR's protected USD.CAD short and MT5's protected ETH long;
 7. report the IBKR historical-data refusal as unavailable, not as zero bars or
    a model hold.
+8. prove a historical-data request has a finite timeout, restores the prior
+   client timeout and reaches heartbeat/backoff rather than an unbounded call;
+9. terminate during reconnect refusal and prove a clean inactive unit, with no
+   `None.close()` or systemd failed state.
 
 Open a finding for any route that can cancel protection before an executable
 flatten, reverse within one decision bar, or treat signed broker quantities
