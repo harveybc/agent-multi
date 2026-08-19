@@ -55,30 +55,30 @@ def test_activity_gate_without_profit_gate():
 
 def test_failures_and_missing_metrics_fail_closed():
     assert not evaluate_selection_contract(
-        _summary(error="boom"), min_trades=0)["eligible"]
+        _summary(error="boom"), min_trades=1)["eligible"]
     assert not evaluate_selection_contract(
-        _summary(mean_weekly_return=float("nan")), min_trades=0)["eligible"]
-    assert not evaluate_selection_contract({}, min_trades=0)["eligible"]
+        _summary(mean_weekly_return=float("nan")), min_trades=1)["eligible"]
+    assert not evaluate_selection_contract({}, min_trades=1)["eligible"]
 
 
 def test_lexicographic_order_preserved_by_transport_scalar():
     better_weekly = evaluate_selection_contract(
         _summary(mean_weekly_return=0.005, max_drawdown_fraction=0.5),
-        min_trades=0)
+        min_trades=1)
     worse_weekly = evaluate_selection_contract(
         _summary(mean_weekly_return=0.004, max_drawdown_fraction=0.01),
-        min_trades=0)
+        min_trades=1)
     assert (better_weekly["transport_scalar"]
             > worse_weekly["transport_scalar"])        # weekly dominates
     tie_low_dd = evaluate_selection_contract(
-        _summary(max_drawdown_fraction=0.02), min_trades=0)
+        _summary(max_drawdown_fraction=0.02), min_trades=1)
     tie_high_dd = evaluate_selection_contract(
-        _summary(max_drawdown_fraction=0.30), min_trades=0)
+        _summary(max_drawdown_fraction=0.30), min_trades=1)
     assert tie_low_dd["transport_scalar"] > tie_high_dd["transport_scalar"]
     tie_total_hi = evaluate_selection_contract(
-        _summary(total_return=0.5), min_trades=0)
+        _summary(total_return=0.5), min_trades=1)
     tie_total_lo = evaluate_selection_contract(
-        _summary(total_return=0.1), min_trades=0)
+        _summary(total_return=0.1), min_trades=1)
     assert (tie_total_hi["transport_scalar"]
             > tie_total_lo["transport_scalar"])
 
@@ -91,6 +91,9 @@ def test_selection_value_integration_persists_contract():
     assert summary["selection_contract"]["eligible"] is True
     assert value == summary["selection_contract"]["transport_scalar"]
     ineligible = _summary(trades_total=1, _selection_min_trades=10)
+    # C2 (order 2026-08-19): the producer types the absence as None;
+    # ordering consumers refuse via require_orderable.
     assert _selection_value(
         ineligible, selection_metric="lexicographic_weekly_v1",
-        risk_lambda=1.0) == INELIGIBLE_TRANSPORT_SCALAR
+        risk_lambda=1.0) is None
+    assert ineligible["selection_contract"]["transport_scalar"] is None

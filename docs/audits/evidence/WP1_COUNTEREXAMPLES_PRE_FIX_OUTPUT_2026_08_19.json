@@ -1,0 +1,207 @@
+{
+  "all_reproduced": true,
+  "commit_under_test": "3069d56450eff9fd505c9e0a3089a7ef69d2c0bd",
+  "evidence_free_result": {
+    "active_weeks": null,
+    "active_weeks_available": false,
+    "calibrated_floor": "pending_wp2_evidence",
+    "eligible": true,
+    "evidence_refs": [],
+    "exposure_fraction": null,
+    "exposure_fraction_available": false,
+    "floor": 1,
+    "inner_validation_trades": 1,
+    "inner_validation_trades_available": true,
+    "reason_codes": [],
+    "schema": "agent_multi.activity_authority.v1",
+    "selection_score_permitted": true,
+    "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+    "train_monitor_trades": 1,
+    "train_monitor_trades_available": true
+  },
+  "floor_one": {
+    "eligible": true,
+    "floor": 1,
+    "reason_codes": [],
+    "role": "inner_validation",
+    "schema": "agent_multi.activity_authority.v1",
+    "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+    "trades": 12,
+    "trades_available": true
+  },
+  "floor_twelve": {
+    "eligible": true,
+    "floor": 12,
+    "reason_codes": [],
+    "role": "inner_validation",
+    "schema": "agent_multi.activity_authority.v1",
+    "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+    "trades": 12,
+    "trades_available": true
+  },
+  "malformed_counts": {
+    "'1'": {
+      "raised": null,
+      "returned": {
+        "eligible": true,
+        "floor": 1,
+        "reason_codes": [],
+        "role": "inner_validation",
+        "schema": "agent_multi.activity_authority.v1",
+        "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+        "trades": 1,
+        "trades_available": true
+      }
+    },
+    "1.5": {
+      "raised": null,
+      "returned": {
+        "eligible": true,
+        "floor": 1,
+        "reason_codes": [],
+        "role": "inner_validation",
+        "schema": "agent_multi.activity_authority.v1",
+        "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+        "trades": 1,
+        "trades_available": true
+      }
+    },
+    "True": {
+      "raised": null,
+      "returned": {
+        "eligible": true,
+        "floor": 1,
+        "reason_codes": [],
+        "role": "inner_validation",
+        "schema": "agent_multi.activity_authority.v1",
+        "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+        "trades": 1,
+        "trades_available": true
+      }
+    },
+    "inf": {
+      "raised": {
+        "message": "cannot convert float infinity to integer",
+        "type": "OverflowError"
+      },
+      "returned": null
+    }
+  },
+  "malformed_floors": {
+    "'1'": {
+      "raised": null,
+      "returned": 1
+    },
+    "1.5": {
+      "raised": null,
+      "returned": 1
+    },
+    "True": {
+      "raised": null,
+      "returned": 1
+    },
+    "inf": {
+      "raised": {
+        "message": "cannot convert float infinity to integer",
+        "type": "OverflowError"
+      },
+      "returned": null
+    }
+  },
+  "missing_pipeline_trade": {
+    "raised": {
+      "message": "cannot convert float NaN to integer",
+      "type": "ValueError"
+    },
+    "returned": null
+  },
+  "missing_trade_selection": {
+    "components": {
+      "max_drawdown_fraction": 0.1,
+      "mean_weekly_net_simple_return": 0.01,
+      "min_trades_required": 1,
+      "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+      "total_net_return": 0.2,
+      "trades_total": 0
+    },
+    "eligible": false,
+    "ineligible_reasons": [
+      "trades_total missing",
+      "TRADES_UNAVAILABLE_INNER_VALIDATION"
+    ],
+    "metric": "lexicographic_weekly_v1",
+    "ordered_tuple": null,
+    "quantization": {
+      "drawdown_bounds": [
+        0.0,
+        1.0
+      ],
+      "drawdown_step": 0.0001,
+      "total_bounds": [
+        -1.0,
+        20.0
+      ],
+      "total_step": 0.0001,
+      "weekly_bounds": [
+        -0.5,
+        0.5
+      ],
+      "weekly_step": 1e-06
+    },
+    "schema": "agent_multi.lexicographic_selection.v2",
+    "transport_note": "order KEY only (mixed-radix packing of the quantized tuple; scalar comparison IS tuple comparison) \u2014 never display as return, profit or champion quality",
+    "transport_scalar": 0.0
+  },
+  "reproduced": {
+    "boolean_count_is_eligible": true,
+    "different_floors_share_one_contract_id": true,
+    "fractional_count_is_truncated_and_eligible": true,
+    "ineligible_candidate_still_has_numeric_transport_scalar": true,
+    "infinite_count_crashes_instead_of_typed_unavailable": true,
+    "malformed_floors_are_coerced_or_crash": true,
+    "missing_activity_evidence_still_allows_selection": true,
+    "missing_trade_fact_is_rendered_as_zero": true,
+    "pipeline_missing_trade_crashes_before_typed_authority": true,
+    "string_count_is_eligible": true,
+    "zero_floor_is_silently_promoted_to_one": true
+  },
+  "schema": "agent_multi.wp1_activity_authority_counterexamples.v1",
+  "silent_zero_floor_selection": {
+    "components": {
+      "max_drawdown_fraction": 0.1,
+      "mean_weekly_net_simple_return": -0.01,
+      "min_trades_required": 1,
+      "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+      "total_net_return": -0.2,
+      "trades_total": 1
+    },
+    "eligible": true,
+    "ineligible_reasons": [],
+    "metric": "lexicographic_weekly_v1",
+    "ordered_tuple": [
+      -0.01,
+      -0.1,
+      -0.2
+    ],
+    "quantization": {
+      "drawdown_bounds": [
+        0.0,
+        1.0
+      ],
+      "drawdown_step": 0.0001,
+      "total_bounds": [
+        -1.0,
+        20.0
+      ],
+      "total_step": 0.0001,
+      "weekly_bounds": [
+        -0.5,
+        0.5
+      ],
+      "weekly_step": 1e-06
+    },
+    "schema": "agent_multi.lexicographic_selection.v2",
+    "transport_note": "order KEY only (mixed-radix packing of the quantized tuple; scalar comparison IS tuple comparison) \u2014 never display as return, profit or champion quality",
+    "transport_scalar": 1029109690507001.0
+  }
+}

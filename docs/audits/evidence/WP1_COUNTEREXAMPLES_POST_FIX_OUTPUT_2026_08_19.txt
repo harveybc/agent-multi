@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/WP1_ACTIVITY_AUTHORITY_COUNTEREXAMPLES_2026_08_19.py", line 144, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/WP1_ACTIVITY_AUTHORITY_COUNTEREXAMPLES_2026_08_19.py", line 56, in main
+    floor_twelve = activity.evaluate_role_activity(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/pipeline_plugins/_activity_authority.py", line 179, in evaluate_role_activity
+    contract = threshold_contract_for(floor, calibrated_contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/pipeline_plugins/_activity_authority.py", line 129, in threshold_contract_for
+    raise ActivityAuthorityError(
+pipeline_plugins._activity_authority.ActivityAuthorityError: UNBOUND_FLOOR_CONTRACT: floor 12 > 1 may not reuse 'agent_multi.activity_floor.strict_nonzero.v1'; declare an explicit calibrated contract with id, floor, units and evidence_ref (order 2026-08-19 C4)

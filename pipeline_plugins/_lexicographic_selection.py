@@ -26,7 +26,9 @@ Preregistered quantization (bounds clamp, never wrap):
 
 The packed key is an exact integer below 2**53 (float64-exact), strictly
 positive for every eligible tuple; ineligible candidates encode to
-``INELIGIBLE_ORDER_KEY`` (0.0), below every eligible key. The key is an
+``INELIGIBLE_ORDER_KEY`` (None — typed non-orderable, C2 of the
+2026-08-19 order: an ineligible candidate has NO numeric key at all, so
+no sort, comparison or tie-break can rank it). The key is an
 ORDER KEY ONLY — it must never be displayed as return, profit or
 champion quality; the persisted ordered tuple and components are the
 human-facing truth.
@@ -55,10 +57,29 @@ _TOTAL_LEVELS = int(round((TOTAL_MAX - TOTAL_MIN) / TOTAL_STEP)) + 1
 _MAX_KEY = _WEEKLY_LEVELS * _DD_LEVELS * _TOTAL_LEVELS
 assert _MAX_KEY < 2 ** 53, "order-key packing exceeds float64 exactness"
 
-INELIGIBLE_ORDER_KEY = 0.0
-# Backwards-compatible alias for readers of the v1 field name; the VALUE
-# is the new ineligible key, never the old -1e9 sentinel.
+# C2 (order 2026-08-19): the ineligible key is None — typed
+# non-orderable. The previous 0.0 was still a NUMBER: consumers could
+# sort ineligible candidates below eligible ones and, worse, tie-break
+# BETWEEN two ineligible records. None refuses both at the type level.
+INELIGIBLE_ORDER_KEY = None
 INELIGIBLE_TRANSPORT_SCALAR = INELIGIBLE_ORDER_KEY
+
+
+class IneligibleOrderKeyError(RuntimeError):
+    """Raised when a consumer asks to order an ineligible candidate."""
+
+
+def require_orderable(contract):
+    """Scalar consumers call this BEFORE sorting or comparing. An
+    ineligible candidate refuses typed — no tie-breaker can select a
+    winner from records that carry no key."""
+    key = (contract or {}).get("transport_scalar")
+    if key is None:
+        raise IneligibleOrderKeyError(
+            "INELIGIBLE_CANDIDATE_HAS_NO_ORDER_KEY: "
+            f"{(contract or {}).get('ineligible_reasons')} — ranking "
+            "an ineligible candidate is forbidden (order 2026-08-19 C2)")
+    return float(key)
 
 
 def _quantize(value: float, minimum: float, maximum: float,
@@ -148,11 +169,20 @@ def evaluate_selection_contract(
     # stopping, handoff, aggregation and promotion. This contract sees
     # only the validation role, so it uses the single-role primitive.
     from . import _activity_authority as _activity_auth
+    _floor = (_activity_auth.validate_floor_value(
+        min_trades, source="selection_min_trades")
+        if min_trades is not None
+        else _activity_auth.STRICT_NONZERO_FLOOR)
+    _calibrated = None
+    if _floor > _activity_auth.STRICT_NONZERO_FLOOR:
+        _calibrated = {
+            "id": "agent_multi.activity_floor.config_declared.v1",
+            "floor": _floor, "units": "trades",
+            "evidence_ref": f"config:selection_min_trades={_floor}"}
     role_activity = _activity_auth.evaluate_role_activity(
         validation_summary.get("trades_total"),
-        role="inner_validation",
-        floor=max(int(min_trades),
-                  _activity_auth.STRICT_NONZERO_FLOOR))
+        role="inner_validation", floor=_floor,
+        calibrated_contract=_calibrated)
     trades = role_activity["trades"] if role_activity[
         "trades_available"] else 0
     if not role_activity["trades_available"]:
@@ -176,9 +206,7 @@ def evaluate_selection_contract(
             "max_drawdown_fraction": max_drawdown,
             "total_net_return": total_return,
             "trades_total": trades,
-            "min_trades_required": max(
-                int(min_trades),
-                _activity_auth.STRICT_NONZERO_FLOOR),
+            "min_trades_required": role_activity["floor"],
             "threshold_contract_id":
                 _activity_auth.THRESHOLD_CONTRACT_ID,
         },

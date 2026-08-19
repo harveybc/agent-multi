@@ -227,8 +227,28 @@ def _training_progress_for_epoch(
     return min(1.0, max(0.0, (int(epoch) - 1) / (horizon - 1)))
 
 
-def _trade_count(summary: Dict[str, Any]) -> int:
-    return int(_safe_float(summary.get("trades_total")) or 0)
+def _trade_count(summary: Dict[str, Any]) -> int | None:
+    """C3 (order 2026-08-19): a missing or malformed trade fact is
+    UNAVAILABLE (None), never rendered as zero and never a crash — the
+    typed authority downstream turns None into an ineligible-with-
+    reason, which is the honest disposition."""
+    return _activity_auth._coerce_count(summary.get("trades_total"))
+
+
+def _activity_evidence_ref(role: str, summary: Dict[str, Any]) -> str:
+    """C3.3: content-bound evidence for a role's trade fact. Prefers the
+    nested-role csv hash the rollout was scored on; falls back to the
+    sha256 of the summary content itself (the in-process evidence
+    artifact)."""
+    csv_sha = summary.get("nested_role_csv_sha256")
+    if isinstance(csv_sha, str) and len(csv_sha) >= 40:
+        return f"{role}:nested_role_csv:sha256:{csv_sha}"
+    canonical = json.dumps(
+        {k: v for k, v in sorted(summary.items())
+         if isinstance(v, (int, float, str, bool)) or v is None},
+        sort_keys=True, default=str)
+    digest = hashlib.sha256(canonical.encode()).hexdigest()
+    return f"{role}:summary:sha256:{digest}"
 
 
 def _drawdown_fraction(summary: Dict[str, Any]) -> float:
@@ -374,10 +394,17 @@ def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lam
         # nothing here may be displayed as return or profit.
         contract = _lex.evaluate_selection_contract(
             summary,
-            min_trades=int(summary.get("_selection_min_trades", 0)),
+            min_trades=summary.get("_selection_min_trades"),
         )
         summary["selection_contract"] = contract
-        return float(contract["transport_scalar"])
+        # C2 (order 2026-08-19): an ineligible candidate carries a
+        # typed None — NOT a numeric sentinel. The refusal lives in the
+        # ORDERING consumers (require_orderable before any
+        # sort/compare); the score producer types the absence so the
+        # epoch loop can dispose of it as ineligible rather than crash.
+        if contract["transport_scalar"] is None:
+            return None
+        return _lex.require_orderable(contract)
     if metric == _paired.METRIC_NAME:
         value, source = _paired._split_utility(summary)
         if value is None:
@@ -431,6 +458,17 @@ def _selection_pair_details(
             "train_validation_selection_gap_penalty": 0.0,
             "train_validation_selection_score": val_score,
         }
+    if train_tail_score is None or val_score is None:
+        # C2: an ineligible side leaves the pair with NO comparable
+        # score; downstream the authority gate already types the epoch
+        # ineligible, so this None never reaches a sorter.
+        return {
+            "train_tail_selection_score": train_tail_score,
+            "validation_selection_score": val_score,
+            "train_validation_selection_gap": None,
+            "train_validation_selection_gap_penalty": None,
+            "train_validation_selection_score": None,
+        }
     mean_score = 0.5 * (train_tail_score + val_score)
     gap = abs(train_tail_score - val_score)
     gap_penalty = float(gap_penalty_beta) * gap
@@ -472,34 +510,47 @@ def _early_stop_composite(
     raw = details["train_validation_selection_score"]
     train_tail_trades = _trade_count(train_tail_summary)
     val_trades = _trade_count(val_summary)
-    legacy_min = max(0, int(min_trades or 0))
-    train_tail_min = max(
-        0,
-        int(
-            legacy_min
-            if min_train_tail_trades is None
-            else min_train_tail_trades
-        ),
-    )
-    validation_min = max(
-        0,
-        int(
-            legacy_min
-            if min_validation_trades is None
-            else min_validation_trades
-        ),
-    )
+    # C4 (order 2026-08-19): declared floors are VALIDATED, never
+    # max()-repaired — an explicit zero refuses typed at the resolver.
+    declared = [
+        _activity_auth.validate_floor_value(v, source=name)
+        for name, v in (("early_stop_min_trades", min_trades),
+                        ("early_stop_min_train_tail_trades",
+                         min_train_tail_trades),
+                        ("early_stop_min_validation_trades",
+                         min_validation_trades))
+        if v is not None
+    ]
+    floor = max(declared) if declared else \
+        _activity_auth.STRICT_NONZERO_FLOOR
     # WP1 (order 2026-08-18): activity is judged by the ONE typed
     # authority, and an ineligible epoch carries NO comparable selection
     # score. The historical `raw - no_trade_penalty` sentinel kept
     # ineligible candidates rankable at -1e6 and is gone; the
     # no_trade_penalty parameter is retained in the signature solely so
     # legacy call sites still parse, and it is never applied.
+    calibrated = None
+    if floor > _activity_auth.STRICT_NONZERO_FLOOR:
+        # C4.2: a floor above 1 must arrive as an explicit contract with
+        # id, value, units and evidence naming its config provenance.
+        calibrated = {
+            "id": "agent_multi.activity_floor.config_declared.v1",
+            "floor": floor,
+            "units": "trades",
+            "evidence_ref": "config:early_stop_min_trades_family="
+                            f"{floor}",
+        }
     activity = _activity_auth.evaluate_activity(
         train_monitor_trades=train_tail_trades,
         inner_validation_trades=val_trades,
-        floor=max(train_tail_min, validation_min,
-                  _activity_auth.STRICT_NONZERO_FLOOR),
+        evidence_refs={
+            "train_monitor": _activity_evidence_ref(
+                "train_monitor", train_tail_summary),
+            "inner_validation": _activity_evidence_ref(
+                "inner_validation", val_summary),
+        },
+        floor=floor,
+        calibrated_contract=calibrated,
     )
     trade_gate_passed = bool(activity["eligible"])
     composite = raw if trade_gate_passed else None
@@ -1851,7 +1902,8 @@ class PipelinePlugin:
                         f"L2 {l2_counter}/{l2_patience}  "
                         f"{selection_metric} composite="
                         f"{'ineligible' if composite is None else format(composite, '+.4f')}"
-                        f" raw={composite_raw:+.4f} "
+                        f" raw="
+                        f"{'ineligible' if composite_raw is None else format(composite_raw, '+.4f')} "
                         f"trade_gate={'PASS' if trade_gate_passed else 'FAIL'} "
                         f"best={best_composite:+.4f} "
                         f"{checkpoint_status} "

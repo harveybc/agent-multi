@@ -115,10 +115,19 @@ def _candidate_from_transaction(
     # the ONE typed authority instead of a locally re-implemented
     # threshold — same floor, same typing as stopping and selection.
     from pipeline_plugins import _activity_authority as _activity_auth
+    _floor = (_activity_auth.validate_floor_value(
+        min_trades, source="min_trades")
+        if min_trades is not None
+        else _activity_auth.STRICT_NONZERO_FLOOR)
+    _calibrated = None
+    if _floor > _activity_auth.STRICT_NONZERO_FLOOR:
+        _calibrated = {
+            "id": "agent_multi.activity_floor.config_declared.v1",
+            "floor": _floor, "units": "trades",
+            "evidence_ref": f"cli:--min-trades={_floor}"}
     role_activity = _activity_auth.evaluate_role_activity(
-        trades_total, role="inner_validation",
-        floor=max(int(min_trades),
-                  _activity_auth.STRICT_NONZERO_FLOOR))
+        trades_total, role="inner_validation", floor=_floor,
+        calibrated_contract=_calibrated)
     if not role_activity["eligible"]:
         return None
 

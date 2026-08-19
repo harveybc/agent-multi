@@ -63,7 +63,9 @@ def test_order_key_is_float64_exact_and_positive():
     assert top == int(top)
     bottom = lex.encode_order_key(lex.WEEKLY_MIN, lex.DD_MAX, lex.TOTAL_MIN)
     assert bottom >= 1.0
-    assert lex.INELIGIBLE_ORDER_KEY < bottom
+    # C2 (order 2026-08-19): the ineligible key is None — typed
+    # non-orderable, no numeric relation to any eligible key exists.
+    assert lex.INELIGIBLE_ORDER_KEY is None
 
 
 def test_ineligible_loses_to_every_eligible():
@@ -72,13 +74,16 @@ def test_ineligible_loses_to_every_eligible():
          "total_return": -0.99, "trades_total": 100},
         min_trades=1)
     assert contract["eligible"]
-    assert contract["transport_scalar"] > lex.INELIGIBLE_ORDER_KEY
+    assert contract["transport_scalar"] is not None
+    assert contract["transport_scalar"] >= 1.0
     rejected = lex.evaluate_selection_contract(
         {"mean_weekly_return": 0.4, "max_drawdown_fraction": 0.0,
          "total_return": 5.0, "trades_total": 0},
         min_trades=1)
     assert not rejected["eligible"]
-    assert rejected["transport_scalar"] == lex.INELIGIBLE_ORDER_KEY
+    assert rejected["transport_scalar"] is None
+    with pytest.raises(lex.IneligibleOrderKeyError):
+        lex.require_orderable(rejected)
 
 
 def test_metric_branch_implemented_and_fail_closed():
