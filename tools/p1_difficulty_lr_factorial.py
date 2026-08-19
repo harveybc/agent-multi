@@ -1810,9 +1810,22 @@ def classify_cell_activity(result: dict) -> dict:
             "activity_stopped_without_eligible_checkpoint AND carries a "
             f"best checkpoint {best_path!r} — record refused "
             "(finding 232)")
+    # WP1 (order 2026-08-18): the record names WHICH authority judged
+    # it. A best checkpoint exists only if _activity_authority judged
+    # its epoch eligible inside the executing pipeline, so the binding
+    # is factual, not decorative.
+    from pipeline_plugins import _activity_authority as _activity_auth
+    authority_binding = {
+        "threshold_contract_id": _activity_auth.THRESHOLD_CONTRACT_ID,
+        "floor": _activity_auth.STRICT_NONZERO_FLOOR,
+        "derivation": ("best-checkpoint existence is downstream of "
+                       "per-epoch authority eligibility in "
+                       "rl_pipeline_with_validation"),
+    }
     if has_best:
         return {
             "activity_status": "active",
+            "activity_authority": authority_binding,
             "promotion_eligible": True,
             "inactive_cause": None,
             "termination_cause": cause,
@@ -1835,6 +1848,7 @@ def classify_cell_activity(result: dict) -> dict:
             "activity-eligible; record refused (finding 232)")
     return {
         "activity_status": "inactive",
+        "activity_authority": authority_binding,
         "promotion_eligible": False,
         "inactive_cause": "no_activity_eligible_checkpoint",
         "termination_cause": cause.strip(),

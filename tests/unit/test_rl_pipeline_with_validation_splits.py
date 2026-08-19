@@ -259,7 +259,10 @@ def test_early_stop_composite_penalizes_validation_no_trade():
     )
 
     assert raw == 0.875
-    assert composite < -999_000
+    # WP1 (order 2026-08-18): an ineligible epoch carries NO comparable
+    # selection score — None, never the historical raw-minus-1e6
+    # sentinel that kept it rankable.
+    assert composite is None
     assert passed is False
     assert train_tail_ret == 3.5
     assert val_ret == 0.0
@@ -277,7 +280,7 @@ def test_early_stop_composite_uses_split_specific_trade_minimums():
     )
 
     assert passed is False
-    assert composite == pytest.approx(raw - 1_000_000.0)
+    assert composite is None  # WP1: no numeric sentinel
 
 
 def test_l1_checkpoint_defaults_to_after_off_policy_learning_starts():

@@ -143,16 +143,21 @@ def evaluate_selection_contract(
     mean_weekly = _finite("mean_weekly_return")
     max_drawdown = _finite("max_drawdown_fraction")
     total_return = _finite("total_return")
-    trades = validation_summary.get("trades_total")
-    try:
-        trades = int(trades)
-    except (TypeError, ValueError):
-        trades = 0
+    # WP1 (order 2026-08-18): activity is judged by the ONE typed
+    # authority — same floor, same typing, same threshold contract id as
+    # stopping, handoff, aggregation and promotion. This contract sees
+    # only the validation role, so it uses the single-role primitive.
+    from . import _activity_authority as _activity_auth
+    role_activity = _activity_auth.evaluate_role_activity(
+        validation_summary.get("trades_total"),
+        role="inner_validation",
+        floor=max(int(min_trades),
+                  _activity_auth.STRICT_NONZERO_FLOOR))
+    trades = role_activity["trades"] if role_activity[
+        "trades_available"] else 0
+    if not role_activity["trades_available"]:
         reasons.append("trades_total missing")
-    if trades < int(min_trades):
-        reasons.append(
-            f"activity below declared minimum ({trades} <"
-            f" {int(min_trades)} trades); no profit gate applies")
+    reasons.extend(role_activity["reason_codes"])
 
     eligible = not reasons
     ordered_tuple = (
@@ -171,7 +176,11 @@ def evaluate_selection_contract(
             "max_drawdown_fraction": max_drawdown,
             "total_net_return": total_return,
             "trades_total": trades,
-            "min_trades_required": int(min_trades),
+            "min_trades_required": max(
+                int(min_trades),
+                _activity_auth.STRICT_NONZERO_FLOOR),
+            "threshold_contract_id":
+                _activity_auth.THRESHOLD_CONTRACT_ID,
         },
         "quantization": {
             "weekly_step": WEEKLY_STEP,

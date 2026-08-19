@@ -44,7 +44,11 @@ def test_activity_gate_without_profit_gate():
     contract = evaluate_selection_contract(
         _summary(trades_total=3), min_trades=10)
     assert contract["eligible"] is False
-    assert any("no profit gate applies" in reason
+    # WP1 (order 2026-08-18): the reason is now the shared authority's
+    # typed code. Its meaning is unchanged — activity gating never
+    # applies a profit gate, which the authority guarantees
+    # structurally (it never sees a return).
+    assert any(reason.startswith(("ZERO_TRADES_", "BELOW_FLOOR_"))
                for reason in contract["ineligible_reasons"])
     assert contract["transport_scalar"] == INELIGIBLE_TRANSPORT_SCALAR
 

@@ -41,6 +41,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
+from . import _activity_authority as _activity_auth
 from . import _actor_liveness as _liveness
 from . import _lexicographic_selection as _lex
 from . import _paired_generalization as _paired
@@ -488,11 +489,20 @@ def _early_stop_composite(
             else min_validation_trades
         ),
     )
-    trade_gate_passed = (
-        train_tail_trades >= train_tail_min
-        and val_trades >= validation_min
+    # WP1 (order 2026-08-18): activity is judged by the ONE typed
+    # authority, and an ineligible epoch carries NO comparable selection
+    # score. The historical `raw - no_trade_penalty` sentinel kept
+    # ineligible candidates rankable at -1e6 and is gone; the
+    # no_trade_penalty parameter is retained in the signature solely so
+    # legacy call sites still parse, and it is never applied.
+    activity = _activity_auth.evaluate_activity(
+        train_monitor_trades=train_tail_trades,
+        inner_validation_trades=val_trades,
+        floor=max(train_tail_min, validation_min,
+                  _activity_auth.STRICT_NONZERO_FLOOR),
     )
-    composite = raw if trade_gate_passed else raw - no_trade_penalty
+    trade_gate_passed = bool(activity["eligible"])
+    composite = raw if trade_gate_passed else None
     return composite, raw, trade_gate_passed, train_tail_ret, val_ret, train_tail_trades, val_trades
 
 
@@ -568,7 +578,7 @@ class PipelinePlugin:
         "l1_min_delta": 1e-5,
         "l1_min_checkpoint_timesteps": None,
         "early_stop_train_tail_days": 7,
-        "early_stop_min_trades": 1,
+        "early_stop_min_trades": _activity_auth.STRICT_NONZERO_FLOOR,
         "early_stop_min_train_tail_trades": None,
         "early_stop_min_validation_trades": None,
         "early_stop_no_trade_penalty": 1_000_000.0,
@@ -1001,8 +1011,13 @@ class PipelinePlugin:
                 summary["nested_role_csv_sha256"] = entry.get("csv_sha256")
                 summary["nested_role_scored_rows"] = entry.get("scored_rows")
                 summary["nested_role_context_rows"] = context_rows
-            summary["_selection_min_trades"] = int(
-                config.get("selection_min_trades", 0))
+            # WP1: the selection floor and the early-stop floor come
+            # from the same authority; the inherited 0-vs-1 default
+            # contradiction is eliminated in the next materialized
+            # identity. An explicit 0 refuses at resolve time.
+            summary["_selection_min_trades"] = \
+                _activity_auth.resolve_floor(
+                    config, key="selection_min_trades")
             trace_rows = summary.get("_return_trace_rows")
             if trace_rows:
                 weekly_metrics = canonical_weekly_metrics_from_trace(
@@ -1483,7 +1498,10 @@ class PipelinePlugin:
                     })
                     if baseline_trade_gate:
                         agent_plugin.save(model, best_model_path)
-                        best_composite = baseline_composite
+                        best_composite = (
+                            baseline_composite
+                            if baseline_composite is not None
+                            else -math.inf)
                         best_checkpoint_saved = True
 
                 if not config.get("quiet_mode"):
@@ -1831,7 +1849,9 @@ class PipelinePlugin:
                         f"[epoch {epoch:>3}/{max_epochs}] "
                         f"L1 {l1_status}  "
                         f"L2 {l2_counter}/{l2_patience}  "
-                        f"{selection_metric} composite={composite:+.4f} raw={composite_raw:+.4f} "
+                        f"{selection_metric} composite="
+                        f"{'ineligible' if composite is None else format(composite, '+.4f')}"
+                        f" raw={composite_raw:+.4f} "
                         f"trade_gate={'PASS' if trade_gate_passed else 'FAIL'} "
                         f"best={best_composite:+.4f} "
                         f"{checkpoint_status} "

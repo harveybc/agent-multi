@@ -11,10 +11,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.request import urlopen
+
+# WP1: the script consumes the shared activity authority from the repo
+# root (it lives under examples/scripts/).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 
 SCHEMA_VERSION = "agent_multi.phase1_promotion_candidates.v1"
@@ -106,7 +111,15 @@ def _candidate_from_transaction(
         metrics["max_drawdown_fraction"], field="max_drawdown_fraction"
     )
     trades_total = int(_finite_number(metrics["trades_total"], field="trades_total"))
-    if trades_total < min_trades:
+    # WP1 (order 2026-08-18): the promotion path judges activity through
+    # the ONE typed authority instead of a locally re-implemented
+    # threshold — same floor, same typing as stopping and selection.
+    from pipeline_plugins import _activity_authority as _activity_auth
+    role_activity = _activity_auth.evaluate_role_activity(
+        trades_total, role="inner_validation",
+        floor=max(int(min_trades),
+                  _activity_auth.STRICT_NONZERO_FLOOR))
+    if not role_activity["eligible"]:
         return None
 
     parameter_hash = _sha256(parameters)
