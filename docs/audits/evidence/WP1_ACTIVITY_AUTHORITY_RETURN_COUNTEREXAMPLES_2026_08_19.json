@@ -1,0 +1,318 @@
+{
+  "all_reproduced": true,
+  "case_count": 12,
+  "commit_under_test": "4e8134049bb2eb71f3f773b4be7c8a16fd90c257",
+  "facts": {
+    "calibrated_fractional_floor": {
+      "raised": null,
+      "returned": {
+        "evidence_ref": "audit",
+        "floor": 12.9,
+        "id": "audit.activity_floor.v1",
+        "informational_fields": [
+          "active_weeks",
+          "exposure_fraction"
+        ],
+        "units": "trades"
+      }
+    },
+    "calibrated_string_floor": {
+      "raised": null,
+      "returned": {
+        "evidence_ref": "audit",
+        "floor": "12",
+        "id": "audit.activity_floor.v1",
+        "informational_fields": [
+          "active_weeks",
+          "exposure_fraction"
+        ],
+        "units": "trades"
+      }
+    },
+    "fake_40_hex_evidence": {
+      "active_weeks": null,
+      "active_weeks_available": false,
+      "calibrated_floor": "pending_wp2_evidence",
+      "eligible": true,
+      "evidence_refs": {
+        "inner_validation": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "train_monitor": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "exposure_fraction": null,
+      "exposure_fraction_available": false,
+      "floor": 1,
+      "inner_validation_trades": 1,
+      "inner_validation_trades_available": true,
+      "reason_codes": [],
+      "schema": "agent_multi.activity_authority.v1",
+      "selection_score_permitted": true,
+      "threshold_contract": {
+        "floor": 1,
+        "id": "agent_multi.activity_floor.strict_nonzero.v1",
+        "informational_fields": [
+          "active_weeks",
+          "exposure_fraction"
+        ],
+        "units": "trades"
+      },
+      "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+      "train_monitor_trades": 1,
+      "train_monitor_trades_available": true
+    },
+    "higher_floor_selection": {
+      "components": {
+        "max_drawdown_fraction": 0.1,
+        "mean_weekly_net_simple_return": 0.01,
+        "min_trades_required": 12,
+        "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+        "total_net_return": 0.2,
+        "trades_total": 12
+      },
+      "eligible": true,
+      "ineligible_reasons": [],
+      "metric": "lexicographic_weekly_v1",
+      "ordered_tuple": [
+        0.01,
+        -0.1,
+        0.2
+      ],
+      "quantization": {
+        "drawdown_bounds": [
+          0.0,
+          1.0
+        ],
+        "drawdown_step": 0.0001,
+        "total_bounds": [
+          -1.0,
+          20.0
+        ],
+        "total_step": 0.0001,
+        "weekly_bounds": [
+          -0.5,
+          0.5
+        ],
+        "weekly_step": 1e-06
+      },
+      "schema": "agent_multi.lexicographic_selection.v2",
+      "transport_note": "order KEY only (mixed-radix packing of the quantized tuple; scalar comparison IS tuple comparison) \u2014 never display as return, profit or champion quality",
+      "transport_scalar": 1071114090531001.0
+    },
+    "legacy_rl_pipeline": {
+      "config_count": 31,
+      "registered": true,
+      "sample_configs": [
+        "examples/config/doin/trading_asset_solusdt_4h_sac_smoke_v1.json",
+        "examples/config/doin/trading_asset_solusdt_4h_sac_v1.json",
+        "examples/config/dqn_btc_1h_twelve_atr.json",
+        "examples/config/dqn_eth_1h_twelve_atr.json",
+        "examples/config/p4_ppo_btc_1h.json"
+      ]
+    },
+    "missing_trade_selection": {
+      "components": {
+        "max_drawdown_fraction": 0.1,
+        "mean_weekly_net_simple_return": 0.01,
+        "min_trades_required": 1,
+        "threshold_contract_id": "agent_multi.activity_floor.strict_nonzero.v1",
+        "total_net_return": 0.2,
+        "trades_total": 0
+      },
+      "eligible": false,
+      "ineligible_reasons": [
+        "trades_total missing",
+        "TRADES_UNAVAILABLE_INNER_VALIDATION"
+      ],
+      "metric": "lexicographic_weekly_v1",
+      "ordered_tuple": null,
+      "quantization": {
+        "drawdown_bounds": [
+          0.0,
+          1.0
+        ],
+        "drawdown_step": 0.0001,
+        "total_bounds": [
+          -1.0,
+          20.0
+        ],
+        "total_step": 0.0001,
+        "weekly_bounds": [
+          -0.5,
+          0.5
+        ],
+        "weekly_step": 1e-06
+      },
+      "schema": "agent_multi.lexicographic_selection.v2",
+      "transport_note": "order KEY only (mixed-radix packing of the quantized tuple; scalar comparison IS tuple comparison) \u2014 never display as return, profit or champion quality",
+      "transport_scalar": null
+    },
+    "paired_bool": {
+      "beta": 0.25,
+      "candidate_id": "",
+      "eligible": true,
+      "gap": 0.0,
+      "ineligibility_reasons": [],
+      "labels": [
+        "split_a",
+        "split_b"
+      ],
+      "mean": -0.2,
+      "metric": "paired_generalization_weekly_v1",
+      "paired_score": -0.2,
+      "penalty": 0.0,
+      "raw_refs": {
+        "split_a": {
+          "max_drawdown_fraction": 0.5,
+          "mean_weekly_rap": null,
+          "mean_weekly_return": -0.01,
+          "robust_weekly_rap_fitness": -0.2,
+          "total_return": null,
+          "trades_total": true
+        },
+        "split_b": {
+          "max_drawdown_fraction": 0.5,
+          "mean_weekly_rap": null,
+          "mean_weekly_return": -0.01,
+          "robust_weekly_rap_fitness": -0.2,
+          "total_return": null,
+          "trades_total": true
+        }
+      },
+      "schema": "agent_multi.paired_generalization_weekly.v1",
+      "score_a": -0.2,
+      "score_b": -0.2,
+      "tie_break": [
+        -0.2,
+        -0.01,
+        -0.5,
+        -0.0,
+        -0.01,
+        -0.5,
+        -0.0,
+        ""
+      ],
+      "utility_source": "robust_weekly_rap_fitness"
+    },
+    "paired_fractional": {
+      "beta": 0.25,
+      "candidate_id": "",
+      "eligible": true,
+      "gap": 0.0,
+      "ineligibility_reasons": [],
+      "labels": [
+        "split_a",
+        "split_b"
+      ],
+      "mean": -0.2,
+      "metric": "paired_generalization_weekly_v1",
+      "paired_score": -0.2,
+      "penalty": 0.0,
+      "raw_refs": {
+        "split_a": {
+          "max_drawdown_fraction": 0.5,
+          "mean_weekly_rap": null,
+          "mean_weekly_return": -0.01,
+          "robust_weekly_rap_fitness": -0.2,
+          "total_return": null,
+          "trades_total": 1.5
+        },
+        "split_b": {
+          "max_drawdown_fraction": 0.5,
+          "mean_weekly_rap": null,
+          "mean_weekly_return": -0.01,
+          "robust_weekly_rap_fitness": -0.2,
+          "total_return": null,
+          "trades_total": 1.5
+        }
+      },
+      "schema": "agent_multi.paired_generalization_weekly.v1",
+      "score_a": -0.2,
+      "score_b": -0.2,
+      "tie_break": [
+        -0.2,
+        -0.01,
+        -0.5,
+        -0.0,
+        -0.01,
+        -0.5,
+        -0.0,
+        ""
+      ],
+      "utility_source": "robust_weekly_rap_fitness"
+    },
+    "paired_zero_floor": {
+      "beta": 0.25,
+      "candidate_id": "",
+      "eligible": true,
+      "gap": 0.0,
+      "ineligibility_reasons": [],
+      "labels": [
+        "split_a",
+        "split_b"
+      ],
+      "mean": -0.2,
+      "metric": "paired_generalization_weekly_v1",
+      "paired_score": -0.2,
+      "penalty": 0.0,
+      "raw_refs": {
+        "split_a": {
+          "max_drawdown_fraction": 0.5,
+          "mean_weekly_rap": null,
+          "mean_weekly_return": -0.01,
+          "robust_weekly_rap_fitness": -0.2,
+          "total_return": null,
+          "trades_total": 0
+        },
+        "split_b": {
+          "max_drawdown_fraction": 0.5,
+          "mean_weekly_rap": null,
+          "mean_weekly_return": -0.01,
+          "robust_weekly_rap_fitness": -0.2,
+          "total_return": null,
+          "trades_total": 0
+        }
+      },
+      "schema": "agent_multi.paired_generalization_weekly.v1",
+      "score_a": -0.2,
+      "score_b": -0.2,
+      "tie_break": [
+        -0.2,
+        -0.01,
+        -0.5,
+        -0.0,
+        -0.01,
+        -0.5,
+        -0.0,
+        ""
+      ],
+      "utility_source": "robust_weekly_rap_fitness"
+    },
+    "pending_consumers": [
+      "L2_candidate_leaderboard",
+      "m0_diagnostics",
+      "phase1_promotion_materialization",
+      "weekly_promotion"
+    ],
+    "promotion_fractional_count": {
+      "accepted": true,
+      "input": 1.9,
+      "persisted": 1
+    },
+    "self_assertion_reference": "train_monitor:summary:sha256:370e8e5b8a792699def7bec5a05833f433ef8e8874d84ff70925653ed1d2428c"
+  },
+  "reproduced": {
+    "calibrated_fractional_floor_is_accepted": true,
+    "calibrated_string_floor_is_accepted": true,
+    "consumer_graph_is_incomplete": true,
+    "higher_floor_is_mislabeled_with_strict_contract_id": true,
+    "missing_trade_is_rendered_as_zero": true,
+    "paired_comparator_accepts_boolean_count": true,
+    "paired_comparator_accepts_fractional_count": true,
+    "paired_comparator_accepts_zero_floor": true,
+    "pipeline_manufactures_self_assertion_reference": true,
+    "promotion_truncates_fractional_count_before_authority": true,
+    "registered_legacy_pipeline_bypasses_authority": true,
+    "syntactic_fake_evidence_is_eligible": true
+  },
+  "reproduced_count": 12,
+  "schema": "agent_multi.wp1_activity_authority_return_audit.v1"
+}

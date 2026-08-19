@@ -1,0 +1,61 @@
+{
+  "schema": "agent_multi.wp1_return_runtime_status_divergence.v1",
+  "observed_at_utc": "2026-08-19T20:41:40Z",
+  "runtime_mutation": "none",
+  "consolidated_status": {
+    "generated_at": "2026-08-19T20:38:59.437425+00:00",
+    "packet_sha256": "dcf375115cd347df11b371df4fece896dff292ea418ad56d444fd5433a62281a",
+    "reported_identity": "bfbfd6443b849275",
+    "reported_state": "completed_untransitioned",
+    "reported_workers_running_fresh": "0/4"
+  },
+  "direct_runtime": {
+    "experiment_identity": "ac0941e7bdb1a163",
+    "workers_running_fresh": "4/4",
+    "records_landed": "0/16",
+    "workers": [
+      {
+        "seed": 101,
+        "cell": "P1N_LR1E4",
+        "unit": "p1lr-decision@101.service",
+        "state": "active/running",
+        "terminal_state": "RUNNING",
+        "gpu_temperature_c": 54,
+        "gpu_utilization_pct": 39,
+        "updated_utc": "2026-08-19T20:41:40.634001+00:00",
+        "restart_count": 0
+      },
+      {
+        "seed": 202,
+        "cell": "P1N_LR3E5",
+        "unit": "p1lr-decision@202.service",
+        "state": "active/running",
+        "terminal_state": "RUNNING",
+        "gpu_temperature_c": 40,
+        "gpu_utilization_pct": 25,
+        "updated_utc": "2026-08-19T20:40:51.118245+00:00"
+      },
+      {
+        "seed": 303,
+        "cell": "P1E_LR1E4",
+        "unit": "p1lr-decision@303.service",
+        "state": "active/running",
+        "terminal_state": "RUNNING",
+        "gpu_temperature_c": 50,
+        "gpu_utilization_pct": 40,
+        "updated_utc": "2026-08-19T20:41:01.862883+00:00"
+      },
+      {
+        "seed": 404,
+        "cell": "P1E_LR3E5",
+        "unit": "p1lr-decision@404.service",
+        "state": "active/running",
+        "terminal_state": "RUNNING",
+        "gpu_temperature_c": 56,
+        "gpu_utilization_pct": 46,
+        "updated_utc": "2026-08-19T20:40:55.340277+00:00"
+      }
+    ]
+  },
+  "verdict": "the consolidated status selected the completed screen identity instead of the active decision identity"
+}
