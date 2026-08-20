@@ -92,6 +92,22 @@ def validate_config(cfg: Mapping[str, Any]) -> dict:
     if out["activity_plateau_low_rate"] >=             out["activity_plateau_high_rate"]:
         raise EpisodicFitnessError(
             "activity plateau low must be < high")
+    # EAF-010 relational invariant: EVERY active-loss scalar lives in a
+    # guaranteed open interval above the sentinel. The worst active
+    # scalar is -(law + lew*(0.01 + loss_scale + ddw)) because
+    # loss_units < 1 and utility >= 0; the sentinel must sit strictly
+    # below it, with margin.
+    branch2_floor = -(out["loss_activity_weight"]
+                      + out["loss_economic_weight"]
+                      * (0.01 + out["loss_scale"]
+                         + out["loss_drawdown_weight"]))
+    if out["zero_trade_sentinel"] >= branch2_floor:
+        raise EpisodicFitnessError(
+            f"SENTINEL_INVARIANT: zero_trade_sentinel "
+            f"{out['zero_trade_sentinel']} must be strictly below the "
+            f"worst achievable active-loss scalar {branch2_floor:.4f} —"
+            " otherwise a finite active policy could lose to no-trade")
+    out["_branch2_floor"] = branch2_floor
     return out
 
 BRANCH_ZERO_TRADE = "B1_zero_trade_sentinel"
@@ -204,8 +220,10 @@ def evaluate_episode(
         # beyond, strictly monotone forever (-100%/-1000%/-10000% can
         # never alias).
         magnitude = abs(ret)
-        loss_units = min(magnitude, 1.0) + math.log1p(
-            max(0.0, magnitude - 1.0))
+        # EAF-010: BOUNDED, strictly monotone over the WHOLE finite
+        # domain — m/(1+m) in [0,1). No finite loss can ever cross the
+        # sentinel, and -1/-10/-100/-1e300 all stay distinct.
+        loss_units = magnitude / (1.0 + magnitude)
         loss_term = (0.01 + cfg["loss_scale"] * loss_units
                      + cfg["loss_drawdown_weight"] * dd_capped)
         economic = -loss_term

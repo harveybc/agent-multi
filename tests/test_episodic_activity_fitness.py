@@ -282,3 +282,45 @@ class TestOrderingTable:
         quasi_passive = value(closed_trades=2, total_return=-0.002,
                               max_drawdown_fraction=0.01)
         assert learner > quasi_passive
+
+
+class TestEAF010BoundedLossDomain:
+    @pytest.mark.parametrize("cfg", [
+        {},
+        {"loss_activity_weight": 50.0, "loss_economic_weight": 1.0,
+         "zero_trade_sentinel": -150.0},   # invariant: below -110.01
+        {"zero_trade_sentinel": -20.0,
+         "loss_activity_weight": 5.0,
+         "loss_economic_weight": 0.05},
+    ])
+    def test_every_finite_loss_beats_the_sentinel(self, cfg):
+        merged = dict(CAL); merged.update(cfg)
+        sentinel = ef.evaluate_episode(
+            total_return=0.0, max_drawdown_fraction=0.0, sharpe=None,
+            closed_trades=0, scored_rows=ROWS,
+            config=merged)["selection_value"]
+        previous = None
+        for k in range(-4, 301, 10):        # 1e-4 .. 1e300
+            loss = -(10.0 ** k)
+            s = ef.evaluate_episode(
+                total_return=loss, max_drawdown_fraction=1.0,
+                sharpe=None, closed_trades=120, scored_rows=ROWS,
+                config=merged)["selection_value"]
+            assert s > sentinel, (k, s, sentinel)
+            if previous is not None:
+                # mathematically strictly monotone; in float64 the
+                # transform saturates (m/(1+m) == 1.0 exactly for
+                # m >~ 1e16 — true of the ordered example loss/(1+loss)
+                # as well), so strictness is asserted while the
+                # representation can still distinguish, and
+                # non-increase always.
+                assert s <= previous
+                if k <= 12:
+                    assert s < previous
+            previous = s
+
+    def test_sentinel_relational_invariant_refuses(self):
+        with pytest.raises(ef.EpisodicFitnessError,
+                           match="SENTINEL_INVARIANT"):
+            episode(closed_trades=40, total_return=-0.2,
+                    config={"zero_trade_sentinel": -1.0})
