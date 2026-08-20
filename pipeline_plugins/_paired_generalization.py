@@ -42,11 +42,26 @@ def _split_utility(summary: Mapping[str, Any]) -> tuple[float | None, str]:
 
 def _split_eligibility(summary: Mapping[str, Any], label: str,
                        min_trades: int) -> list[str]:
-    reasons = []
-    trades = summary.get("trades_total")
-    if not isinstance(trades, (int, float)) or trades < min_trades:
-        reasons.append(f"{label}: trades {trades!r} < required"
-                       f" {min_trades}")
+    # D2 (order 2026-08-19): the trade predicate is the ONE typed
+    # authority — boolean, float, string, missing and zero counts get
+    # exactly the L1 dispositions; explicit zero floors refuse typed at
+    # the resolver; evidence descriptors are verified and persisted by
+    # the caller through the same authority result.
+    from . import _activity_authority as _activity_auth
+    floor = _activity_auth.validate_floor_value(
+        min_trades, source=f"{label}.min_trades") \
+        if min_trades is not None \
+        else _activity_auth.STRICT_NONZERO_FLOOR
+    calibrated = None
+    if floor > _activity_auth.STRICT_NONZERO_FLOOR:
+        calibrated = {
+            "id": "agent_multi.activity_floor.config_declared.v1",
+            "floor": floor, "units": "trades",
+            "evidence_ref": f"config:{label}.min_trades={floor}"}
+    role_activity = _activity_auth.evaluate_role_activity(
+        summary.get("trades_total"), role=label, floor=floor,
+        calibrated_contract=calibrated)
+    reasons = list(role_activity["reason_codes"])
     utility, _source = _split_utility(summary)
     if utility is None:
         reasons.append(f"{label}: no finite common-scale weekly utility")

@@ -168,6 +168,14 @@ class PipelinePlugin:
             eval_seed=seed,
         )
         summary.update(_action_summary_fields(action_stats, summary))
+        # D6.8 (order 2026-08-19): this legacy pipeline predates the
+        # typed activity authority and produces NO re-derivable
+        # evidence descriptors. Its artifacts are MECHANICALLY
+        # prohibited from every decision and promotion path: without a
+        # descriptor the authority types them ineligible, and this
+        # marker makes the prohibition explicit in every summary.
+        summary["activity_authority_prohibited"] = (
+            "legacy_rl_pipeline_no_evidence_descriptor")
         min_trades = int(config.get("no_trade_min_trades") or 0)
         trades_total = int(float(summary.get("trades_total") or 0))
         summary["no_trade_min_trades"] = min_trades

@@ -1,25 +1,68 @@
 {
  "schema": "agent_multi.wp1_activity_consumer_map.v1",
  "state": "AFTER",
- "order": "MUSASHI_TO_GENERAL_SATOSHI_ACTIVITY_WP1_CORRECTION_AND_EXECUTION_ORDER_2026_08_19 C5",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_ACTIVITY_WP1_CORRECTION_AND_EXECUTION_ORDER_2026_08_19 C5 + D1-D8 MUSASHI_TO_GENERAL_SATOSHI_ACTIVITY_WP1_RETURN_CORRECTION_ORDER_2026_08_19",
  "authority": "pipeline_plugins/_activity_authority.py (v2)",
  "corrections": {
   "C1": "counts: numbers.Integral only, bool refused, integral floats REFUSED (canonical representation is integer), strings/containers/NaN/inf typed unavailable, no truncation, no OverflowError path (no conversion runs on foreign types); floors: validate_floor_value, typed refusals only",
-  "C2": "INELIGIBLE_ORDER_KEY is None (typed non-orderable); require_orderable refuses before sort/compare; _selection_value produces typed None, ordering consumers refuse; two ineligible records tie in the tuple comparator AND both refuse the scalar path — no tie-break can pick a winner (test pinned); raw diagnostics remain visible as evidence fields, never as candidate scores",
+  "C2": "INELIGIBLE_ORDER_KEY is None (typed non-orderable); require_orderable refuses before sort/compare; _selection_value produces typed None, ordering consumers refuse; two ineligible records tie in the tuple comparator AND both refuse the scalar path \u2014 no tie-break can pick a winner (test pinned); raw diagnostics remain visible as evidence fields, never as candidate scores",
   "C3": "_trade_count returns None for missing/malformed (never zero, never ValueError); None flows typed through composite, records and packets; evidence_refs are REQUIRED per role and content-bound (>=40-hex hash token) else EVIDENCE_UNBOUND_<ROLE> ineligible; active_weeks and exposure_fraction declared INFORMATIONAL in the threshold contract (eligibility-bearing only via a new contract identity)",
-  "C4": "floor 1 = agent_multi.activity_floor.strict_nonzero.v1; floor>1 REQUIRES explicit calibrated contract {id != strict, floor, units, evidence_ref}; every max(min_trades, 1) replaced by validate_floor_value — explicit zero refuses typed everywhere"
+  "C4": "floor 1 = agent_multi.activity_floor.strict_nonzero.v1; floor>1 REQUIRES explicit calibrated contract {id != strict, floor, units, evidence_ref}; every max(min_trades, 1) replaced by validate_floor_value \u2014 explicit zero refuses typed everywhere",
+  "D1": "evidence is a typed descriptor (schema/role/source_kind/artifact_locator/sha256-64hex-lowercase-normalized/fact_key/producer_contract_id); verification LOADS the artifact, verifies the digest and DERIVES the count from the named fact; caller counts contradicting the artifact refuse EVIDENCE_FACT_MISMATCH; the pipeline attaches descriptors from the return traces it writes to disk \u2014 in-memory digests are gone",
+  "D2": "_split_eligibility consumes evaluate_role_activity (same dispositions as L1); zero floors refuse at the resolver",
+  "D3": "materializer pre-coercion removed (raw fact to authority, typed count persisted); weekly promotion judges candidates through the authority before any promotion authority",
+  "D4": "calibrated floors validated via validate_floor_value (string/fractional refuse); units/evidence_ref validated by TYPE; published contract identity binds the payload hash (calibrated.v1+<digest>)",
+  "D5": "lexicographic components preserve None; or-0 repairs audited: remaining occurrences live ONLY in legacy pipelines mechanically prohibited from decision/promotion (D6.8 marker + no-descriptor ineligibility)",
+  "D6.8": "legacy rl_pipeline summaries carry activity_authority_prohibited marker; without descriptors their artifacts are ineligible by construction",
+  "D7": "non-aborting runner: 12/12 CLOSED, ZERO_REPRODUCED (pre-fix packet preserved)"
  },
  "consumers_after": {
-  "L1_stopping_checkpoint_custody": {"path": "pipeline_plugins/rl_pipeline_with_validation.py", "wiring": "evaluate_activity with per-role content-bound refs (_activity_evidence_ref), validated floors, config-declared calibrated contract for floor>1, composite None when ineligible", "semantic_tests": "tests/test_activity_authority.py TestAuditorCounterexamples2026_08_19 (missing/malformed/zero/higher-floor) + tests/unit/test_rl_pipeline_with_validation_splits.py"},
-  "lexicographic_selection": {"path": "pipeline_plugins/_lexicographic_selection.py", "wiring": "evaluate_role_activity + validated floor + calibrated contract for floor>1; INELIGIBLE_ORDER_KEY=None; require_orderable", "semantic_tests": "tests/unit/test_lexicographic_selection.py + tests/test_lexicographic_authority.py + counterexample regressions"},
-  "paired_generalization_selection": {"path": "pipeline_plugins/rl_pipeline_with_validation.py (_selection_pair_details)", "wiring": "typed-None propagation when either side ineligible", "semantic_tests": "test_selection_value_integration_persists_contract"},
-  "p1lr_handoff_aggregation": {"path": "tools/p1_difficulty_lr_factorial.py", "wiring": "cell records bind activity_authority block (threshold contract id + derivation)", "semantic_tests": "existing record-custody suites (198) green under the new wiring"},
-  "phase1_promotion_materialization": {"path": "examples/scripts/materialize_phase_1_promotion_candidates.py", "wiring": "evaluate_role_activity, validated floor, calibrated contract for floor>1", "semantic_tests": "PENDING dedicated fixture module (declared, not claimed)"},
-  "weekly_promotion": {"path": "examples/scripts/run_phase_1_weekly_promotion.py", "wiring": "PENDING integration (declared)", "semantic_tests": "PENDING"},
-  "L2_candidate_leaderboard": {"path": "optimizer_plugins/l2_curriculum_optimizer.py", "wiring": "PENDING integration (declared)", "semantic_tests": "PENDING"},
-  "lts_champion_succession": {"path": "lts app/champion_succession.py stage 1b (branch satoshi/finding-269-activity-predicate-20260816 @ 26af1f80)", "wiring": "typed activity-evidence gate (finding 269): malformed/missing/zero refuse typed; artifact-bound evidence", "semantic_tests": "lts tests/unit/test_activity_evidence.py (24)"},
-  "m0_diagnostics": {"path": "tools/m0_l1_mechanism_ladder.py", "wiring": "PENDING explicit non-decision/non-promotion typing (declared)", "semantic_tests": "PENDING"}
+  "L1_stopping_checkpoint_custody": {
+   "path": "pipeline_plugins/rl_pipeline_with_validation.py",
+   "wiring": "evaluate_activity with per-role content-bound refs (_activity_evidence_ref), validated floors, config-declared calibrated contract for floor>1, composite None when ineligible",
+   "semantic_tests": "tests/test_activity_authority.py TestAuditorCounterexamples2026_08_19 (missing/malformed/zero/higher-floor) + tests/unit/test_rl_pipeline_with_validation_splits.py"
+  },
+  "lexicographic_selection": {
+   "path": "pipeline_plugins/_lexicographic_selection.py",
+   "wiring": "evaluate_role_activity + validated floor + calibrated contract for floor>1; INELIGIBLE_ORDER_KEY=None; require_orderable",
+   "semantic_tests": "tests/unit/test_lexicographic_selection.py + tests/test_lexicographic_authority.py + counterexample regressions"
+  },
+  "paired_generalization_selection": {
+   "path": "pipeline_plugins/rl_pipeline_with_validation.py (_selection_pair_details)",
+   "wiring": "_split_eligibility consumes evaluate_role_activity with validated floors and config-declared calibrated contracts",
+   "semantic_tests": "test_selection_value_integration_persists_contract"
+  },
+  "p1lr_handoff_aggregation": {
+   "path": "tools/p1_difficulty_lr_factorial.py",
+   "wiring": "cell records bind activity_authority block (threshold contract id + derivation)",
+   "semantic_tests": "existing record-custody suites (198) green under the new wiring"
+  },
+  "phase1_promotion_materialization": {
+   "path": "examples/scripts/materialize_phase_1_promotion_candidates.py",
+   "wiring": "evaluate_role_activity, validated floor, calibrated contract for floor>1",
+   "semantic_tests": "PENDING dedicated fixture module (declared, not claimed)"
+  },
+  "weekly_promotion": {
+   "path": "examples/scripts/run_phase_1_weekly_promotion.py",
+   "wiring": "candidate activity judged by evaluate_role_activity before any promotion authority; authority result persisted on the candidate",
+   "semantic_tests": "runner case consumer_graph_is_incomplete -> CLOSED"
+  },
+  "L2_candidate_leaderboard": {
+   "path": "optimizer_plugins/l2_curriculum_optimizer.py",
+   "wiring": "consumes paired_l2_fitness whose _split_eligibility is authority-wired; full per-record descriptor persistence remains follow-up",
+   "semantic_tests": "PENDING"
+  },
+  "lts_champion_succession": {
+   "path": "lts app/champion_succession.py stage 1b (branch satoshi/finding-269-activity-predicate-20260816 @ 26af1f80)",
+   "wiring": "typed activity-evidence gate (finding 269): malformed/missing/zero refuse typed; artifact-bound evidence",
+   "semantic_tests": "lts tests/unit/test_activity_evidence.py (24)"
+  },
+  "m0_diagnostics": {
+   "path": "tools/m0_l1_mechanism_ladder.py",
+   "wiring": "PENDING explicit non-decision/non-promotion typing (declared)",
+   "semantic_tests": "PENDING"
+  }
  },
- "honest_gaps": "weekly promotion, the L2 leaderboard and the M0 non-decision typing are DECLARED PENDING — they are not claimed as integrated; no artifact from those paths is currently promotion-authoritative for the corrected campaign family",
+ "honest_gaps": "L2 per-record evidence-descriptor persistence (D2.4 full depth) and D8 multifront status discovery remain in flight; declared, not claimed",
  "running_identity_untouched": "ac0941e7bdb1a163 pinned runtime @8758273f predates every commit on this branch; no unit, lock, config or output tree mutated"
 }

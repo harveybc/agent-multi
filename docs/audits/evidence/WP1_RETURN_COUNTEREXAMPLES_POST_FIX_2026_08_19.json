@@ -1,0 +1,20 @@
+{
+ "acceptance": "ZERO_REPRODUCED",
+ "commit_under_test": "4e8134049bb2eb71f3f773b4be7c8a16fd90c257",
+ "dispositions": {
+  "calibrated_fractional_floor_is_accepted": "CLOSED",
+  "calibrated_string_floor_is_accepted": "CLOSED",
+  "consumer_graph_is_incomplete": "CLOSED",
+  "higher_floor_is_mislabeled_with_strict_contract_id": "CLOSED",
+  "missing_trade_is_rendered_as_zero": "CLOSED",
+  "paired_comparator_accepts_boolean_count": "CLOSED",
+  "paired_comparator_accepts_fractional_count": "CLOSED",
+  "paired_comparator_accepts_zero_floor": "CLOSED",
+  "pipeline_manufactures_self_assertion_reference": "CLOSED",
+  "promotion_truncates_fractional_count_before_authority": "CLOSED",
+  "registered_legacy_pipeline_bypasses_authority": "CLOSED",
+  "syntactic_fake_evidence_is_eligible": "CLOSED"
+ },
+ "reproduced_count": 0,
+ "schema": "agent_multi.wp1_return_counterexamples_runner.v1"
+}

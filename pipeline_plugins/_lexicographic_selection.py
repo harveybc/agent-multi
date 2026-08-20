@@ -183,8 +183,10 @@ def evaluate_selection_contract(
         validation_summary.get("trades_total"),
         role="inner_validation", floor=_floor,
         calibrated_contract=_calibrated)
-    trades = role_activity["trades"] if role_activity[
-        "trades_available"] else 0
+    # D5.1 (order 2026-08-19): an unavailable count STAYS None in the
+    # persisted components — display may say "unavailable", but no
+    # measurement is manufactured.
+    trades = role_activity["trades"]
     if not role_activity["trades_available"]:
         reasons.append("trades_total missing")
     reasons.extend(role_activity["reason_codes"])

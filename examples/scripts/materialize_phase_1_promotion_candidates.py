@@ -110,7 +110,9 @@ def _candidate_from_transaction(
     max_drawdown = _finite_number(
         metrics["max_drawdown_fraction"], field="max_drawdown_fraction"
     )
-    trades_total = int(_finite_number(metrics["trades_total"], field="trades_total"))
+    # D3 (order 2026-08-19): NO pre-coercion — the raw fact goes to the
+    # authority, which types foreign values unavailable-and-ineligible.
+    trades_total = metrics.get("trades_total")
     # WP1 (order 2026-08-18): the promotion path judges activity through
     # the ONE typed authority instead of a locally re-implemented
     # threshold — same floor, same typing as stopping and selection.
@@ -130,6 +132,10 @@ def _candidate_from_transaction(
         calibrated_contract=_calibrated)
     if not role_activity["eligible"]:
         return None
+    # persist the authority's typed count (None preserved as
+    # unavailable — although unavailable is ineligible and returns
+    # above, this keeps the persisted field honest by construction)
+    trades_total = role_activity["trades"]
 
     parameter_hash = _sha256(parameters)
     metric_key = {

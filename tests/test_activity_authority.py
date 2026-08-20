@@ -16,12 +16,42 @@ from pipeline_plugins.rl_pipeline_with_validation import (  # noqa: E402
     _early_stop_composite,
 )
 
-REFS = {"train_monitor": "trace:sha256:" + "a" * 64,
-        "inner_validation": "trace:sha256:" + "b" * 64}
+import hashlib as _hashlib
+import json as _json
+import tempfile as _tempfile
+from pathlib import Path as _Path
+
+_EVIDENCE_DIR = _Path(_tempfile.mkdtemp(prefix="activity-evidence-"))
+
+
+def make_descriptor(role: str, trades) -> dict:
+    """A REAL, re-derivable evidence artifact (D1): the fact lives in a
+    file whose digest the authority re-verifies."""
+    artifact = _EVIDENCE_DIR / f"{role}_{trades}_{id(object())}.json"
+    artifact.write_text(_json.dumps({"trades_total": trades}))
+    return {"schema": aa.EVIDENCE_DESCRIPTOR_SCHEMA, "role": role,
+            "source_kind": "summary_artifact",
+            "artifact_locator": str(artifact),
+            "sha256": _hashlib.sha256(
+                artifact.read_bytes()).hexdigest(),
+            "fact_key": "trades_total",
+            "producer_contract_id": "test.fixture.v1"}
+
+
+def refs_for(train_monitor_trades, inner_validation_trades) -> dict:
+    return {
+        "train_monitor": make_descriptor(
+            "train_monitor", train_monitor_trades),
+        "inner_validation": make_descriptor(
+            "inner_validation", inner_validation_trades),
+    }
 
 
 def evaluate(**kwargs):
-    kwargs.setdefault("evidence_refs", REFS)
+    if "evidence_refs" not in kwargs:
+        kwargs["evidence_refs"] = refs_for(
+            kwargs.get("train_monitor_trades"),
+            kwargs.get("inner_validation_trades"))
     return aa.evaluate_activity(**kwargs)
 
 
@@ -84,12 +114,31 @@ class TestOrderedRequirements:
         assert isinstance(raw, float)  # evidence, not a selection score
 
     def test_eligible_epoch_keeps_its_raw_composite(self):
+        # D1: eligibility now demands re-derivable evidence — the
+        # summaries carry the descriptor the pipeline attaches when it
+        # writes the split's return trace.
+        tm = _summary(5, total_return=-0.02)
+        tm["activity_evidence_descriptor"] = make_descriptor(
+            "train_monitor", 5)
+        iv = _summary(2, total_return=-0.01)
+        iv["activity_evidence_descriptor"] = make_descriptor(
+            "inner_validation", 2)
         composite, raw, gate, *_ = _early_stop_composite(
-            _summary(5, total_return=-0.02),
-            _summary(2, total_return=-0.01),
-            min_trades=1, no_trade_penalty=1_000_000.0)
+            tm, iv, min_trades=1, no_trade_penalty=1_000_000.0)
         assert gate is True
         assert composite == raw  # negative return, still eligible
+
+    def test_epoch_without_evidence_descriptor_is_ineligible(self):
+        # D1.3: a summary without its trace-backed descriptor has NO
+        # evidence; the epoch is typed ineligible — this is also the
+        # MECHANICAL PROHIBITION of legacy-pipeline artifacts (D6.8):
+        # producers that never attach descriptors can never reach a
+        # decision or promotion path.
+        composite, raw, gate, *_ = _early_stop_composite(
+            _summary(5), _summary(2),
+            min_trades=1, no_trade_penalty=1_000_000.0)
+        assert gate is False
+        assert composite is None
 
     def test_trade_count_never_in_fitness(self):
         # The authority exposes counts and eligibility, never a score
@@ -257,6 +306,62 @@ class TestAuditorCounterexamples2026_08_19:
         assert {"EVIDENCE_UNBOUND_TRAIN_MONITOR",
                 "EVIDENCE_UNBOUND_INNER_VALIDATION"} <= set(
             result["reason_codes"])
+
+    def test_d1_free_form_string_refs_are_refused(self):
+        result = aa.evaluate_activity(
+            train_monitor_trades=3, inner_validation_trades=2,
+            evidence_refs={"train_monitor": "trace:sha256:" + "a" * 64,
+                           "inner_validation": "x"})
+        assert result["eligible"] is False
+        assert "EVIDENCE_UNBOUND_TRAIN_MONITOR" in result["reason_codes"]
+
+    def test_d1_sha1_length_token_is_refused(self):
+        d = make_descriptor("train_monitor", 3)
+        d["sha256"] = "a" * 40
+        result = aa.evaluate_activity(
+            train_monitor_trades=3, inner_validation_trades=2,
+            evidence_refs={"train_monitor": d,
+                           "inner_validation": make_descriptor(
+                               "inner_validation", 2)})
+        assert "EVIDENCE_DIGEST_INVALID_TRAIN_MONITOR" in \
+            result["reason_codes"]
+
+    def test_d1_mutated_artifact_is_refused(self):
+        d = make_descriptor("train_monitor", 3)
+        _Path(d["artifact_locator"]).write_text(
+            _json.dumps({"trades_total": 99}))
+        result = aa.evaluate_activity(
+            train_monitor_trades=3, inner_validation_trades=2,
+            evidence_refs={"train_monitor": d,
+                           "inner_validation": make_descriptor(
+                               "inner_validation", 2)})
+        assert "EVIDENCE_DIGEST_MISMATCH_TRAIN_MONITOR" in \
+            result["reason_codes"]
+
+    def test_d1_caller_count_contradicting_artifact_is_refused(self):
+        refs = refs_for(5, 2)
+        result = aa.evaluate_activity(
+            train_monitor_trades=9, inner_validation_trades=2,
+            evidence_refs=refs)
+        assert result["eligible"] is False
+        assert "EVIDENCE_FACT_MISMATCH_TRAIN_MONITOR" in \
+            result["reason_codes"]
+
+    def test_d1_count_is_derived_when_caller_has_none(self):
+        refs = refs_for(5, 2)
+        result = aa.evaluate_activity(
+            train_monitor_trades=None, inner_validation_trades=2,
+            evidence_refs=refs)
+        assert result["eligible"] is True
+        assert result["train_monitor_trades"] == 5
+
+    def test_d4_calibrated_identity_binds_payload(self):
+        a = aa.contract_identity_for(
+            {"floor": 12, "units": "trades", "evidence_ref": "e1"})
+        b = aa.contract_identity_for(
+            {"floor": 13, "units": "trades", "evidence_ref": "e1"})
+        assert a != b and a.startswith(
+            "agent_multi.activity_floor.calibrated.v1+")
 
     def test_c3_informational_fields_are_declared(self):
         contract = aa.threshold_contract_for(1)

@@ -63,6 +63,20 @@ BELOW_FLOOR_TRAIN_MONITOR = "BELOW_FLOOR_TRAIN_MONITOR"
 BELOW_FLOOR_INNER_VALIDATION = "BELOW_FLOOR_INNER_VALIDATION"
 
 
+EVIDENCE_DESCRIPTOR_SCHEMA = "agent_multi.activity_evidence_descriptor.v1"
+
+#: D1.2 documented rule: a sha256 is EXACTLY 64 hex characters; upper or
+#: mixed case is accepted and NORMALIZED TO LOWERCASE; any other length
+#: (including 40-hex SHA-1) or content is refused.
+def normalize_sha256(value: Any) -> Optional[str]:
+    if not isinstance(value, str):
+        return None
+    token = value.strip().lower()
+    if len(token) == 64 and all(c in "0123456789abcdef" for c in token):
+        return token
+    return None
+
+
 class ActivityAuthorityError(ValueError):
     """Malformed REQUEST (bad floor, contradictory config). A malformed
     MEASUREMENT is never an exception — it is typed unavailable and
@@ -133,20 +147,38 @@ def threshold_contract_for(floor: int,
             "contract with id, floor, units and evidence_ref "
             "(order 2026-08-19 C4)")
     required = ("id", "floor", "units", "evidence_ref")
-    missing = [k for k in required if not calibrated.get(k)]
+    missing = [k for k in required if calibrated.get(k) in (None, "")]
     if missing:
         raise ActivityAuthorityError(
             f"INCOMPLETE_FLOOR_CONTRACT: calibrated contract lacks "
             f"{missing}")
+    # D4.1/D4.2: field TYPES are validated, never truthiness — a string
+    # or fractional floor refuses through the same validator as every
+    # other floor; units and evidence_ref must be non-empty strings.
+    for field in ("id", "units", "evidence_ref"):
+        if not isinstance(calibrated[field], str) or \
+                not calibrated[field].strip():
+            raise ActivityAuthorityError(
+                f"MALFORMED_FLOOR_CONTRACT: {field} must be a "
+                f"non-empty string, got {calibrated[field]!r}")
+    contract_floor = validate_floor_value(
+        calibrated["floor"], source="calibrated_contract.floor")
     if calibrated["id"] == THRESHOLD_CONTRACT_ID:
         raise ActivityAuthorityError(
             "UNBOUND_FLOOR_CONTRACT: a calibrated floor cannot reuse "
             f"the strict-nonzero id {THRESHOLD_CONTRACT_ID!r}")
-    if int(calibrated["floor"]) != int(floor):
+    if contract_floor != floor:
         raise ActivityAuthorityError(
             f"FLOOR_CONTRACT_MISMATCH: contract floor "
-            f"{calibrated['floor']} != requested floor {floor}")
+            f"{contract_floor} != requested floor {floor}")
+    # D4.3: the published identity binds the payload, so two different
+    # floors can never share one identity string.
     return {**calibrated,
+            "id": contract_identity_for(calibrated)
+            if not str(calibrated["id"]).startswith(
+                "agent_multi.activity_floor.calibrated.v1+")
+            else calibrated["id"],
+            "declared_id": calibrated["id"],
             "informational_fields": list(INFORMATIONAL_FIELDS)}
 
 
@@ -228,19 +260,35 @@ def evaluate_activity(
     reasons = list(monitor["reason_codes"]) + list(
         validation["reason_codes"])
 
-    # C3.3 (order 2026-08-19): each required role's trade fact must be
-    # bound to non-empty, CONTENT-BOUND evidence — a reference carrying
-    # a hex content hash. An unbound fact is ineligible: a count nobody
-    # can re-derive is an assertion, not evidence.
+    # D1 (order 2026-08-19): evidence is a TYPED DESCRIPTOR that is
+    # loaded, digest-verified and used to DERIVE the role's count. A
+    # free-form string, an in-memory digest, a missing artifact, a
+    # mutated artifact or a fact that contradicts the caller's count is
+    # typed unavailable and ineligible.
     refs = dict(evidence_refs or {})
-    for role in ("train_monitor", "inner_validation"):
-        ref = refs.get(role)
-        bound = isinstance(ref, str) and any(
-            len(token) >= 40 and all(c in "0123456789abcdef"
-                                     for c in token)
-            for token in ref.replace(":", " ").replace("/", " ").split())
-        if not bound:
-            reasons.append(f"EVIDENCE_UNBOUND_{role.upper()}")
+    verifications: dict = {}
+    for role, passed_count in (("train_monitor", monitor),
+                               ("inner_validation", validation)):
+        verdict = verify_evidence(refs.get(role) or {},
+                                  expected_role=role)
+        verifications[role] = verdict
+        reasons.extend(verdict["reason_codes"])
+        if verdict["verified"]:
+            derived = verdict["derived_trades"]
+            if passed_count["trades_available"] and \
+                    passed_count["trades"] != derived:
+                reasons.append(f"EVIDENCE_FACT_MISMATCH_{role.upper()}")
+            elif not passed_count["trades_available"]:
+                # the artifact is the measurement: adopt the derived
+                # count and re-run the role judgement on it
+                fresh = evaluate_role_activity(
+                    derived, role=role, floor=floor,
+                    calibrated_contract=calibrated_contract)
+                passed_count.update(fresh)
+                # drop the stale unavailable reason for this role
+                reasons[:] = [r for r in reasons
+                              if r != f"TRADES_UNAVAILABLE_{role.upper()}"]
+                reasons.extend(fresh["reason_codes"])
 
     weeks = _coerce_count(active_weeks)
     try:
@@ -271,6 +319,7 @@ def evaluate_activity(
             "pending_wp2_evidence"
             if floor == STRICT_NONZERO_FLOOR else contract["id"]),
         "evidence_refs": refs,
+        "evidence_verifications": verifications,
         # The load-bearing invariant: an ineligible candidate has NO
         # comparable selection score. Not -1e6. Not raw-minus-penalty.
         # None — and consumers that need a rankable value must call
@@ -294,3 +343,104 @@ def require_rankable(result: Mapping[str, Any]) -> None:
             f"{result.get('reason_codes')} — ranking an ineligible "
             "candidate through any numeric sentinel is forbidden "
             "(order 2026-08-18 WP1)")
+
+
+# ── D1 (order 2026-08-19): re-derivable evidence ──────────────────────
+
+REQUIRED_DESCRIPTOR_FIELDS = (
+    "schema", "role", "source_kind", "artifact_locator", "sha256",
+    "fact_key", "producer_contract_id",
+)
+
+
+def validate_evidence_descriptor(descriptor: Any, *,
+                                 expected_role: str) -> list[str]:
+    """Shape validation only; returns typed reason codes (empty = ok).
+    Verification against the artifact is :func:`verify_evidence`."""
+    role_tag = expected_role.upper()
+    if not isinstance(descriptor, Mapping) or not descriptor:
+        return [f"EVIDENCE_UNBOUND_{role_tag}"]
+    reasons = []
+    if descriptor.get("schema") != EVIDENCE_DESCRIPTOR_SCHEMA:
+        reasons.append(f"EVIDENCE_SCHEMA_INVALID_{role_tag}")
+    if descriptor.get("role") != expected_role:
+        reasons.append(f"EVIDENCE_ROLE_MISMATCH_{role_tag}")
+    for field in ("source_kind", "artifact_locator", "fact_key",
+                  "producer_contract_id"):
+        value = descriptor.get(field)
+        if not isinstance(value, str) or not value.strip():
+            reasons.append(f"EVIDENCE_FIELD_MISSING_{role_tag}")
+            break
+    if normalize_sha256(descriptor.get("sha256")) is None:
+        reasons.append(f"EVIDENCE_DIGEST_INVALID_{role_tag}")
+    return reasons
+
+
+def verify_evidence(descriptor: Mapping[str, Any], *,
+                    expected_role: str) -> dict:
+    """D1.3: load the referenced artifact, verify its digest and DERIVE
+    the role's trade count from the named fact. A digest over an
+    in-memory assertion is not evidence. Never raises for a measurement
+    problem — returns typed reasons and an unavailable count."""
+    import csv as _csv
+    import hashlib as _hashlib
+    import json as _json
+    from pathlib import Path as _Path
+
+    role_tag = expected_role.upper()
+    reasons = validate_evidence_descriptor(descriptor,
+                                           expected_role=expected_role)
+    if reasons:
+        return {"verified": False, "derived_trades": None,
+                "reason_codes": reasons}
+    path = _Path(str(descriptor["artifact_locator"]))
+    if not path.is_file():
+        return {"verified": False, "derived_trades": None,
+                "reason_codes": [f"EVIDENCE_ARTIFACT_MISSING_{role_tag}"]}
+    data = path.read_bytes()
+    actual = _hashlib.sha256(data).hexdigest()
+    if actual != normalize_sha256(descriptor["sha256"]):
+        return {"verified": False, "derived_trades": None,
+                "reason_codes": [f"EVIDENCE_DIGEST_MISMATCH_{role_tag}"]}
+    fact_key = str(descriptor["fact_key"])
+    derived: Optional[int] = None
+    try:
+        if path.suffix == ".json":
+            doc = _json.loads(data)
+            derived = _coerce_count(doc.get(fact_key))
+        else:  # CSV return trace: the fact is the column's final value
+            rows = list(_csv.DictReader(
+                data.decode("utf-8", "strict").splitlines()))
+            values = [row.get(fact_key) for row in rows]
+            last = values[-1] if values else None
+            if last is not None:
+                try:
+                    number = float(last)
+                except (TypeError, ValueError):
+                    number = None
+                if number is not None and number >= 0 and \
+                        float(number).is_integer():
+                    derived = int(number)
+    except Exception:
+        derived = None
+    if derived is None:
+        return {"verified": False, "derived_trades": None,
+                "reason_codes": [f"EVIDENCE_FACT_MISMATCH_{role_tag}"]}
+    return {"verified": True, "derived_trades": derived,
+            "reason_codes": []}
+
+
+def contract_identity_for(calibrated: Mapping[str, Any]) -> str:
+    """D4.3: a calibrated contract identity BINDS its payload — schema,
+    exact floor, units and evidence digest — so two different floors can
+    never share one identity."""
+    import hashlib as _hashlib
+    import json as _json
+    payload = _json.dumps({
+        "schema": "agent_multi.activity_floor.calibrated.v1",
+        "floor": int(calibrated["floor"]),
+        "units": str(calibrated["units"]),
+        "evidence_ref": str(calibrated["evidence_ref"]),
+    }, sort_keys=True)
+    digest = _hashlib.sha256(payload.encode()).hexdigest()[:16]
+    return f"agent_multi.activity_floor.calibrated.v1+{digest}"

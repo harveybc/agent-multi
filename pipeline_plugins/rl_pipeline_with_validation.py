@@ -235,20 +235,16 @@ def _trade_count(summary: Dict[str, Any]) -> int | None:
     return _activity_auth._coerce_count(summary.get("trades_total"))
 
 
-def _activity_evidence_ref(role: str, summary: Dict[str, Any]) -> str:
-    """C3.3: content-bound evidence for a role's trade fact. Prefers the
-    nested-role csv hash the rollout was scored on; falls back to the
-    sha256 of the summary content itself (the in-process evidence
-    artifact)."""
-    csv_sha = summary.get("nested_role_csv_sha256")
-    if isinstance(csv_sha, str) and len(csv_sha) >= 40:
-        return f"{role}:nested_role_csv:sha256:{csv_sha}"
-    canonical = json.dumps(
-        {k: v for k, v in sorted(summary.items())
-         if isinstance(v, (int, float, str, bool)) or v is None},
-        sort_keys=True, default=str)
-    digest = hashlib.sha256(canonical.encode()).hexdigest()
-    return f"{role}:summary:sha256:{digest}"
+def _activity_evidence_descriptor(role: str,
+                                  summary: Dict[str, Any]) -> dict:
+    """D1 (order 2026-08-19): the ONLY evidence this pipeline presents
+    is the typed descriptor attached when the split's return trace was
+    written to disk. A digest over the in-memory summary is explicitly
+    NOT evidence; absence is typed unavailable and ineligible."""
+    descriptor = summary.get("activity_evidence_descriptor")
+    if isinstance(descriptor, dict):
+        return {**descriptor, "role": role}
+    return {}
 
 
 def _drawdown_fraction(summary: Dict[str, Any]) -> float:
@@ -544,9 +540,9 @@ def _early_stop_composite(
         train_monitor_trades=train_tail_trades,
         inner_validation_trades=val_trades,
         evidence_refs={
-            "train_monitor": _activity_evidence_ref(
+            "train_monitor": _activity_evidence_descriptor(
                 "train_monitor", train_tail_summary),
-            "inner_validation": _activity_evidence_ref(
+            "inner_validation": _activity_evidence_descriptor(
                 "inner_validation", val_summary),
         },
         floor=floor,
@@ -1108,6 +1104,21 @@ class PipelinePlugin:
                 )
                 summary["return_trace_file"] = metadata["trace_file"]
                 summary["return_trace_metadata_file"] = metadata["metadata_file"]
+                # D1 (order 2026-08-19): the just-written trace IS the
+                # re-derivable evidence for this split's trade fact —
+                # digest computed from the bytes on disk, fact derived
+                # from the trace's own trades column.
+                trace_bytes = Path(metadata["trace_file"]).read_bytes()
+                summary["activity_evidence_descriptor"] = {
+                    "schema": _activity_auth.EVIDENCE_DESCRIPTOR_SCHEMA,
+                    "role": split_label,
+                    "source_kind": "return_trace",
+                    "artifact_locator": str(metadata["trace_file"]),
+                    "sha256": hashlib.sha256(trace_bytes).hexdigest(),
+                    "fact_key": "trades",
+                    "producer_contract_id": str(
+                        split_config.get("_run_config_hash")),
+                }
                 # Stash the full sidecar so _final_eval can roll the per-split
                 # metadata items into the run-level evidence index.
                 summary["_return_trace_metadata"] = metadata

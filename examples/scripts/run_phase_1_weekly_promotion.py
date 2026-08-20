@@ -8,6 +8,8 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 from app.weekly_promotion import (
     PROMOTION_SCHEMA_VERSION,
     _atomic_write_json,
@@ -74,6 +76,21 @@ def main() -> int:
     if protected.get("status") != "not_opened":
         raise ValueError("candidate manifest is not eligible to open a first protected evaluation")
     candidate = _candidate_by_rank(candidate_manifest, args.candidate_rank)
+    # D3.3 (order 2026-08-19): before any candidate, week or aggregate
+    # becomes promotion-authoritative, its activity is judged by the ONE
+    # typed authority — the same dispositions as stopping and selection.
+    from pipeline_plugins import _activity_authority as _activity_auth
+    _candidate_activity = _activity_auth.evaluate_role_activity(
+        (candidate.get("metrics") or {}).get(
+            "trades_total", candidate.get("trades_total")),
+        role="inner_validation",
+        floor=_activity_auth.STRICT_NONZERO_FLOOR)
+    if not _candidate_activity["eligible"]:
+        raise ValueError(
+            "candidate is not activity-eligible for weekly promotion: "
+            f"{_candidate_activity['reason_codes']} "
+            f"(contract {_candidate_activity['threshold_contract_id']})")
+    candidate["activity_authority"] = _candidate_activity
     base_config = _read_json(args.base_config)
     data = base_config.get("data", {})
     all_windows = build_week_windows(
