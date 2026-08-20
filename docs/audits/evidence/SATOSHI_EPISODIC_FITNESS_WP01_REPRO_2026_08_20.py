@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 """Independent adversarial reproducer for Satoshi commit 342f4a84."""
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPO))
+
 from pipeline_plugins._episodic_activity_fitness import evaluate_episode
 
 
