@@ -30,24 +30,69 @@ DEFAULT_BARS_PER_YEAR = 2190
 
 DEFAULT_CONFIG = {
     "zero_trade_sentinel": -100.0,
-    # activity curve: steep rise from zero, plateau, gradual decay with
-    # a floor so overtrading always beats inactivity. The plateau is a
-    # DECLARED candidate pending the WP4 sensitivity table — it is not
-    # derived from any outer-validation result.
+    # activity curve shape. THE PLATEAU HAS NO DEFAULT: the order
+    # forbids inventing the target — it must be declared explicitly
+    # from the WP4 candidate/sensitivity artifact. evaluate_episode
+    # refuses when either bound is absent.
     "activity_rise_exponent": 0.5,
-    "activity_plateau_low_rate": 50.0,
-    "activity_plateau_high_rate": 300.0,
+    "activity_plateau_low_rate": None,
+    "activity_plateau_high_rate": None,
     "activity_decay_exponent": 0.5,
     "activity_overtrading_floor": 0.2,
-    # branch weights, all bounded by construction
+    # branch-2 (active loss): activity dominates ACROSS materially
+    # different activity levels; loss ranks WITHIN comparable activity.
+    "loss_activity_weight": 10.0,
+    "loss_economic_weight": 0.1,
     "loss_scale": 50.0,
     "loss_drawdown_weight": 10.0,
-    "loss_activity_relief": 0.5,
     "gain_base_share": 0.25,
     "gain_drawdown_share": 0.5,
     "sharpe_bonus_share": 0.2,
     "sharpe_bonus_cap": 3.0,
 }
+
+#: (validator, message) per config key — an invalid configuration is a
+#: typed refusal; it can never flip the sign of a branch.
+_CONFIG_RULES = {
+    "zero_trade_sentinel": (lambda v: v < 0, "must be < 0"),
+    "activity_rise_exponent": (lambda v: 0 < v <= 4, "must be in (0,4]"),
+    "activity_plateau_low_rate": (lambda v: v > 0, "must be > 0"),
+    "activity_plateau_high_rate": (lambda v: v > 0, "must be > 0"),
+    "activity_decay_exponent": (lambda v: 0 < v <= 4, "must be in (0,4]"),
+    "activity_overtrading_floor": (lambda v: 0 < v <= 1,
+                                   "must be in (0,1]"),
+    "loss_activity_weight": (lambda v: v > 0, "must be > 0"),
+    "loss_economic_weight": (lambda v: v > 0, "must be > 0"),
+    "loss_scale": (lambda v: v > 0, "must be > 0"),
+    "loss_drawdown_weight": (lambda v: v >= 0, "must be >= 0"),
+    "gain_base_share": (lambda v: 0 < v <= 1, "must be in (0,1]"),
+    "gain_drawdown_share": (lambda v: 0 <= v <= 1, "must be in [0,1]"),
+    "sharpe_bonus_share": (lambda v: 0 <= v <= 1, "must be in [0,1]"),
+    "sharpe_bonus_cap": (lambda v: v > 0, "must be > 0"),
+}
+
+
+def validate_config(cfg: Mapping[str, Any]) -> dict:
+    out = {}
+    for key, (rule, message) in _CONFIG_RULES.items():
+        value = cfg.get(key)
+        if value is None:
+            raise EpisodicFitnessError(
+                f"config.{key} is required and has no default"
+                if key.startswith("activity_plateau")
+                else f"config.{key} must not be None")
+        if isinstance(value, bool) or not isinstance(value, numbers.Real):
+            raise EpisodicFitnessError(
+                f"config.{key}={value!r} is not a real number")
+        number = float(value)
+        if not math.isfinite(number) or not rule(number):
+            raise EpisodicFitnessError(
+                f"config.{key}={value!r} invalid: {message}")
+        out[key] = number
+    if out["activity_plateau_low_rate"] >=             out["activity_plateau_high_rate"]:
+        raise EpisodicFitnessError(
+            "activity plateau low must be < high")
+    return out
 
 BRANCH_ZERO_TRADE = "B1_zero_trade_sentinel"
 BRANCH_ACTIVE_LOSS = "B2_active_loss_toward_zero"
@@ -120,9 +165,10 @@ def evaluate_episode(
     penalty; a positive Sharpe adds a bounded bonus; an unavailable
     Sharpe is typed, never treated as zero-good.
     """
-    cfg = dict(DEFAULT_CONFIG)
+    merged = dict(DEFAULT_CONFIG)
     if config:
-        cfg.update(config)
+        merged.update(config)
+    cfg = validate_config(merged)
 
     trades = _count("closed_trades", closed_trades)
     rows = _count("scored_rows", scored_rows)
@@ -137,7 +183,13 @@ def evaluate_episode(
     if sharpe is not None:
         sharpe_value = _finite("sharpe", sharpe)
 
-    years = rows / float(bars_per_year)
+    if isinstance(bars_per_year, bool) or \
+            not isinstance(bars_per_year, numbers.Integral) or \
+            int(bars_per_year) <= 0:
+        raise EpisodicFitnessError(
+            f"bars_per_year must be a positive integer, got "
+            f"{bars_per_year!r}")
+    years = rows / float(int(bars_per_year))
     rate = trades / years
     utility = activity_utility(rate, cfg)
     dd_capped = min(drawdown, 1.0)
@@ -148,12 +200,22 @@ def evaluate_episode(
         economic = 0.0
     elif ret <= 0.0:
         branch = BRANCH_ACTIVE_LOSS
-        loss = min(abs(ret), 1.0)
-        base = (0.01 + float(cfg["loss_scale"]) * loss
-                + float(cfg["loss_drawdown_weight"]) * dd_capped)
-        relief = 1.0 - float(cfg["loss_activity_relief"]) * utility
-        scalar = -base * relief
-        economic = -base
+        # deep losses stay DISTINCT: linear to -100%, logarithmic
+        # beyond, strictly monotone forever (-100%/-1000%/-10000% can
+        # never alias).
+        magnitude = abs(ret)
+        loss_units = min(magnitude, 1.0) + math.log1p(
+            max(0.0, magnitude - 1.0))
+        loss_term = (0.01 + cfg["loss_scale"] * loss_units
+                     + cfg["loss_drawdown_weight"] * dd_capped)
+        economic = -loss_term
+        # activity dominates across materially different activity
+        # levels; loss ranks within comparable activity (the reproduced
+        # blocking case: 1 quasi-passive trade must NOT outrank the
+        # 40-trade active learner on a 300x smaller loss).
+        scalar = -(cfg["loss_activity_weight"] * (1.0 - utility)
+                   + cfg["loss_economic_weight"] * loss_term)
+        scalar = min(scalar, -1e-9)
     else:
         base_share = float(cfg["gain_base_share"])
         economic = ret * (base_share + (1.0 - base_share) * utility)
@@ -214,6 +276,8 @@ def evaluate_episode(
 
 def assert_handoff_survivable(deterministic_actions,
                               *, normal_threshold: float,
+                              min_normal_crossings: int,
+                              min_mapped_changes: int = 2,
                               tolerance: float = 1e-6) -> dict:
     """Counterexample 10: an easy checkpoint whose actions do not
     survive normal action semantics cannot be selected for handoff."""
@@ -221,13 +285,26 @@ def assert_handoff_survivable(deterministic_actions,
     behavior = _pb.classify_policy_behavior(
         deterministic_actions, threshold=normal_threshold,
         tolerance=tolerance)
+    if isinstance(min_normal_crossings, bool) or \
+            not isinstance(min_normal_crossings, numbers.Integral) or \
+            int(min_normal_crossings) < 2:
+        raise EpisodicFitnessError(
+            "min_normal_crossings must be an integer >= 2 — a single "
+            "crossing is mechanical noise, never survivability "
+            "(audit 2026-08-20)")
     crossings = behavior["threshold_crossings"]
-    survivable = crossings > 0 and behavior["classification"] in (
-        _pb.DETERMINISTIC_MAPPED_ACTIVITY,)
+    mapped_changes = behavior["deterministic"].get(
+        "mapped_action_changes", 0)
+    survivable = (crossings >= int(min_normal_crossings)
+                  and mapped_changes >= int(min_mapped_changes)
+                  and behavior["classification"] ==
+                  _pb.DETERMINISTIC_MAPPED_ACTIVITY)
     return {
         "survivable": survivable,
         "classification": behavior["classification"],
         "threshold_crossings": crossings,
+        "mapped_action_changes": mapped_changes,
+        "min_normal_crossings": int(min_normal_crossings),
         "normal_threshold": float(normal_threshold),
         "refusal": (None if survivable else
                     "HANDOFF_REFUSED_ACTIONS_DO_NOT_SURVIVE_NORMAL_"

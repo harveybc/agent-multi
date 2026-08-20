@@ -1,0 +1,5 @@
+{'one_trade_score': -0.009757537879754126, 'active_learner_score': -0.06357043651750484, 'one_trade_still_wins': True, 'deep_loss_scores': [-25.005, -25.005, -25.005], 'deep_losses_alias': True, 'invalid_config_turns_loss_positive': True, 'invalid_config_turns_gain_negative': True}
+{'bars_per_year': 0, 'accepted': False, 'exception': 'ZeroDivisionError'}
+{'bars_per_year': -2190, 'accepted': True, 'scored_years': -1.0, 'annualized_trade_rate': -5.0}
+{'bars_per_year': True, 'accepted': True, 'scored_years': 2190.0, 'annualized_trade_rate': 0.00228310502283105}
+{'bars_per_year': 1.5, 'accepted': True, 'scored_years': 1460.0, 'annualized_trade_rate': 0.003424657534246575}

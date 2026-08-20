@@ -1,0 +1,67 @@
+{
+ "schema": "agent_multi.wp4_activity_curve_candidates.v1",
+ "measured_annualized_rates_from_historical_traces": {
+  "easy_fit_epoch1_seed404": 324.9056603773585,
+  "easy_eval_seed404": 114.0,
+  "easy_eval_seed303": 85.0,
+  "monitor_epoch15_seed404": 39.0,
+  "monitor_typical": 7.0
+ },
+ "candidates": {
+  "narrow": {
+   "plateau": [
+    30.0,
+    150.0
+   ],
+   "scores": {
+    "quasi_passive_1t": -8.1758,
+    "low_20t": -2.186,
+    "target_120t": -0.351,
+    "over_3000t": -8.1149
+   },
+   "ordering_best_to_worst": [
+    "target_120t",
+    "low_20t",
+    "over_3000t",
+    "quasi_passive_1t"
+   ]
+  },
+  "central": {
+   "plateau": [
+    50.0,
+    300.0
+   ],
+   "scores": {
+    "quasi_passive_1t": -8.5873,
+    "low_20t": -4.0264,
+    "target_120t": -0.351,
+    "over_3000t": -7.1887
+   },
+   "ordering_best_to_worst": [
+    "target_120t",
+    "low_20t",
+    "over_3000t",
+    "quasi_passive_1t"
+   ]
+  },
+  "wide": {
+   "plateau": [
+    100.0,
+    400.0
+   ],
+   "scores": {
+    "quasi_passive_1t": -9.0015,
+    "low_20t": -5.8789,
+    "target_120t": -0.351,
+    "over_3000t": -6.6995
+   },
+   "ordering_best_to_worst": [
+    "target_120t",
+    "low_20t",
+    "over_3000t",
+    "quasi_passive_1t"
+   ]
+  }
+ },
+ "declaration": "three candidates materialized from measured ETH train/monitor activity; NO candidate is chosen here \u2014 the choice belongs to the ordered WP4 sensitivity review, and the plugin refuses to run without an explicitly declared plateau"
+}

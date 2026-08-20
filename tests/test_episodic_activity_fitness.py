@@ -16,10 +16,20 @@ from pipeline_plugins import _episodic_activity_fitness as ef  # noqa: E402
 ROWS = 2190  # one 4h year
 
 
+# calibration DECLARED from the WP4 candidate artifact (central
+# candidate); the plugin refuses without an explicit plateau.
+CAL = {"activity_plateau_low_rate": 50.0,
+       "activity_plateau_high_rate": 300.0}
+
+
 def episode(**kwargs):
     base = dict(total_return=0.0, max_drawdown_fraction=0.0,
-                sharpe=None, closed_trades=0, scored_rows=ROWS)
+                sharpe=None, closed_trades=0, scored_rows=ROWS,
+                config=dict(CAL))
     base.update(kwargs)
+    if "config" in kwargs:
+        merged = dict(CAL); merged.update(kwargs["config"])
+        base["config"] = merged
     return ef.evaluate_episode(**base)
 
 
@@ -69,6 +79,42 @@ class TestMandatoryCounterexamples:
         target_gain = value(closed_trades=120, total_return=0.05)
         assert target_gain > low_gain
 
+    def test_audit_one_trade_never_beats_the_active_learner(self):
+        # THE blocking reproduction of 2026-08-20: 1 quasi-passive
+        # trade vs the 40-trade active learner
+        one = value(closed_trades=1, total_return=-0.0001)
+        forty = value(closed_trades=40, total_return=-0.05,
+                      max_drawdown_fraction=0.1)
+        assert forty > one
+
+    def test_audit_deep_losses_never_alias(self):
+        deep = [value(closed_trades=10, total_return=r,
+                      max_drawdown_fraction=1.0)
+                for r in (-1.0, -10.0, -100.0)]
+        assert deep[0] > deep[1] > deep[2]
+
+    def test_audit_invalid_config_refuses_typed(self):
+        for bad in ({"loss_economic_weight": -5},
+                    {"loss_scale": -1}, {"gain_base_share": 0},
+                    {"zero_trade_sentinel": 5.0},
+                    {"activity_overtrading_floor": 0}):
+            with pytest.raises(ef.EpisodicFitnessError):
+                episode(closed_trades=40, total_return=-0.05,
+                        config=bad)
+
+    @pytest.mark.parametrize("bad", [0, -2190, True, 1.5, "x", None])
+    def test_audit_bars_per_year_validated(self, bad):
+        with pytest.raises(ef.EpisodicFitnessError):
+            episode(closed_trades=10, total_return=0.01,
+                    bars_per_year=bad)
+
+    def test_audit_plateau_has_no_default(self):
+        with pytest.raises(ef.EpisodicFitnessError,
+                           match="required and has no default"):
+            ef.evaluate_episode(
+                total_return=0.01, max_drawdown_fraction=0.0,
+                sharpe=None, closed_trades=10, scored_rows=ROWS)
+
     def test_5_overtrading_below_target_above_zero(self):
         target = value(closed_trades=120, total_return=-0.05,
                        max_drawdown_fraction=0.10)
@@ -77,7 +123,8 @@ class TestMandatoryCounterexamples:
         sentinel = value(closed_trades=0)
         assert over < target
         assert over > sentinel
-        assert ef.activity_utility(5000 / 1.0, ef.DEFAULT_CONFIG) > 0
+        cfg = dict(ef.DEFAULT_CONFIG); cfg.update(CAL)
+        assert ef.activity_utility(5000 / 1.0, cfg) > 0
 
     def test_6_lower_drawdown_wins(self):
         assert value(closed_trades=120, total_return=0.05,
@@ -117,13 +164,13 @@ class TestMandatoryCounterexamples:
         assert result["production_promotion_satisfied"] is False
         with_contract = ef.evaluate_episode(
             total_return=0.10, max_drawdown_fraction=0.0, sharpe=None,
-            closed_trades=1, scored_rows=ROWS,
+            closed_trades=1, scored_rows=ROWS, config=dict(CAL),
             production_promotion_contract={
                 "min_annualized_trade_rate": 50.0})
         assert with_contract["production_promotion_satisfied"] is False
         enough = ef.evaluate_episode(
             total_return=0.10, max_drawdown_fraction=0.0, sharpe=None,
-            closed_trades=120, scored_rows=ROWS,
+            closed_trades=120, scored_rows=ROWS, config=dict(CAL),
             production_promotion_contract={
                 "min_annualized_trade_rate": 50.0})
         assert enough["production_promotion_satisfied"] is True
@@ -131,12 +178,21 @@ class TestMandatoryCounterexamples:
     def test_10_unsurvivable_easy_checkpoint_cannot_hand_off(self):
         constant = [0.0008] * 500          # dies at normal threshold
         verdict = ef.assert_handoff_survivable(
-            constant, normal_threshold=0.1)
+            constant, normal_threshold=0.1, min_normal_crossings=4)
         assert verdict["survivable"] is False
         assert "HANDOFF_REFUSED" in verdict["refusal"]
         alive = [0.5 if i % 3 else -0.5 for i in range(500)]
         assert ef.assert_handoff_survivable(
-            alive, normal_threshold=0.1)["survivable"] is True
+            alive, normal_threshold=0.1,
+            min_normal_crossings=4)["survivable"] is True
+        # audit 2026-08-20: ONE crossing is mechanical noise
+        one_cross = [0.0] * 499 + [0.5]
+        with pytest.raises(ef.EpisodicFitnessError):
+            ef.assert_handoff_survivable(
+                one_cross, normal_threshold=0.1, min_normal_crossings=1)
+        barely = ef.assert_handoff_survivable(
+            one_cross, normal_threshold=0.1, min_normal_crossings=4)
+        assert barely["survivable"] is False
 
     def test_11_difficulty_change_leaves_tensors_untouched(self):
         import numpy as np

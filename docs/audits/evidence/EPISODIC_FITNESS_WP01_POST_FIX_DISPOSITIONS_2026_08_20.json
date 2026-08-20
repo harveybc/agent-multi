@@ -1,0 +1,14 @@
+{
+ "schema": "agent_multi.episodic_fitness_post_dispositions.v1",
+ "dispositions": {
+  "one_trade_still_wins": false,
+  "deep_losses_alias": false,
+  "invalid_config_turns_loss_positive": "TYPED_REFUSAL: config.loss_economic_weight=-5 invalid: must be > 0",
+  "bars_negative_accepted": "TYPED_REFUSAL: bars_per_year must be a positive integer, got -2190",
+  "bars_boolean_accepted": "TYPED_REFUSAL: bars_per_year must be a positive integer, got True",
+  "bars_fractional_accepted": "TYPED_REFUSAL: bars_per_year must be a positive integer, got 1.5",
+  "plateau_default_invented": "TYPED_REFUSAL: config.activity_plateau_low_rate is required and has no default"
+ },
+ "reproduced": [],
+ "acceptance": "ZERO_REPRODUCED"
+}
