@@ -1,0 +1,37 @@
+{
+ "schema": "agent_multi.wp0_ordering_reproduction.v1",
+ "comparator": "paired_generalization_weekly_v1 (executing code)",
+ "utility_key": "robust_weekly_rap_fitness",
+ "fixtures": {
+  "passive": {
+   "tm": {
+    "trades_total": 1,
+    "robust_weekly_rap_fitness": -1e-05
+   },
+   "iv": {
+    "trades_total": 1,
+    "robust_weekly_rap_fitness": -1e-05
+   }
+  },
+  "learner": {
+   "tm": {
+    "trades_total": 40,
+    "robust_weekly_rap_fitness": -0.0021
+   },
+   "iv": {
+    "trades_total": 12,
+    "robust_weekly_rap_fitness": -0.0018
+   }
+  }
+ },
+ "passive_collapse": {
+  "eligible": true,
+  "paired_score": -1e-05
+ },
+ "active_learner": {
+  "eligible": true,
+  "paired_score": -0.002025
+ },
+ "defect_reproduced": true,
+ "reading": "both eligible at floor 1; the passive collapse outranks the active learner because trade count does not improve the weekly utility \u2014 the local attractor of section 2"
+}
