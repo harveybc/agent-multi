@@ -1568,6 +1568,16 @@ class PipelinePlugin:
                 no_improve = 0
                 best_checkpoint_saved = False
 
+                # AUD-F1-20260821-PLR-05: the non-resumable guard runs for
+                # EVERY warm start BEFORE scheduler policy selection. An
+                # interrupted plateau checkpoint (sidecar beside it) must
+                # refuse whether the new run requests plateau OR fixed
+                # LR — resuming under changed scheduler semantics is not
+                # a curriculum handoff. Deliberate conversion requires a
+                # separate migration tool, never a training-CLI bypass.
+                _plateau.assert_not_resuming_plateau_run(
+                    config.get("warm_start_model"))
+
                 # Order 2026-08-21 §3: build the plateau-LR controller
                 # BEFORE the loop so a malformed contract or a wrong
                 # selection metric refuses before any training spend.
@@ -1586,9 +1596,6 @@ class PipelinePlugin:
                         else float(config.get("learning_rate", 3e-4))
                     ),
                 )
-                if plateau_controller is not None:
-                    _plateau.assert_not_resuming_plateau_run(
-                        config.get("warm_start_model"))
                 if (plateau_controller is not None
                         and _initial_lrs.get("actor") is None):
                     raise _plateau.SacPlateauLrError(

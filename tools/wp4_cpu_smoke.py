@@ -357,6 +357,29 @@ def main(argv=None) -> int:
                          "note": ("bounded mechanism screen only; no "
                                   "claim about the multi-year easy "
                                   "curriculum (PLR-02)")},
+        # AUD-F1-20260821-PLR-06: canonical pair/arm identity. The
+        # aggregator requires exact equality of every pair_contract
+        # field across a seed's two arms and permits the arm_contract
+        # to differ ONLY as predeclared (fixed vs exact plateau spec).
+        "pair_contract": {
+            "seed": args.seed,
+            "data_sha256": data_sha,
+            "epoch_timesteps": args.epoch_timesteps,
+            "max_epochs": args.max_epochs,
+            "l1_patience": args.l1_patience,
+            "l1_patience_start_epoch": args.l1_patience_start_epoch,
+            "selection_metric": args.selection_metric,
+            "train_days": 120, "val_days": 40, "test_days": 40,
+            "device_mask": os.environ.get("CUDA_VISIBLE_DEVICES"),
+            "env_origin": origin,
+            "learning_rate_initial": 3e-4,
+        },
+        "arm_contract": {
+            "scheduler_policy": ("plateau" if args.plateau_lr_json
+                                 else "fixed"),
+            "plateau_spec": (json.loads(args.plateau_lr_json)
+                             if args.plateau_lr_json else None),
+        },
         "elapsed_seconds": round(elapsed, 1),
         "epochs_run": len(history),
         "stop_reason": result.get("stop_reason"),

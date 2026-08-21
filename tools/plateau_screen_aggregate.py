@@ -105,6 +105,180 @@ def arm_facts(report_path: Path) -> dict:
     }
 
 
+FROZEN_SCREEN_COMMIT = "93880beb"
+LEGACY_LABEL = "long_horizon_contract"
+BOUNDED_LABEL = "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"
+
+# The plateau spec predeclared for this screen; an arm may differ from
+# its pair ONLY by this factor (AUD-F1-20260821-PLR-06).
+PREDECLARED_PLATEAU_SPEC = {
+    "factor": 0.5, "lr_patience": 20, "min_lr": 1e-6,
+    "threshold": 1e-6, "cooldown": 0, "start_epoch": 40}
+
+
+def _derive_pair_contract(doc: dict, report_path: Path) -> dict:
+    """Derivation for reports produced by the FROZEN screen tip only.
+
+    Reports from any other commit must carry an explicit
+    pair_contract; deriving one for arbitrary code would let a
+    mislabelled report smuggle identity (PLR-06)."""
+    commit = str(doc.get("commit") or "")
+    if not commit.startswith(FROZEN_SCREEN_COMMIT):
+        raise ScreenAggregationError(
+            f"{report_path}: no pair_contract and commit "
+            f"{commit[:12]!r} is not the pinned frozen screen tip "
+            f"{FROZEN_SCREEN_COMMIT}; refusing derivation")
+    budgets = doc.get("budgets") or {}
+    stopping = doc.get("stopping_contract") or {}
+    history = doc.get("history") or []
+    metrics = {row.get("selection_metric") for row in history}
+    if len(metrics) != 1:
+        raise ScreenAggregationError(
+            f"{report_path}: inconsistent selection_metric in history")
+    return {
+        "seed": budgets.get("seed"),
+        "data_sha256": doc.get("data_sha256"),
+        "epoch_timesteps": budgets.get("epoch_timesteps"),
+        "max_epochs": budgets.get("max_epochs"),
+        "l1_patience": (stopping.get("l1_patience") or {}).get(
+            "effective"),
+        "l1_patience_start_epoch": (stopping.get(
+            "l1_patience_start_epoch") or {}).get("effective"),
+        "selection_metric": metrics.pop(),
+        "device_mask": (doc.get("device") or {}).get(
+            "cuda_visible_devices"),
+        "commit": commit,
+        "derived_from_frozen_tip": True,
+    }
+
+
+def _derive_arm_contract(doc: dict) -> dict:
+    history = doc.get("history") or []
+    plateau_rows = [row for row in history
+                    if row.get("plateau_lr") is not None]
+    if plateau_rows and len(plateau_rows) != len(history):
+        raise ScreenAggregationError(
+            "plateau records present on some epochs but not all; "
+            "inconsistent scheduler machinery")
+    return {
+        "scheduler_policy": "plateau" if plateau_rows else "fixed",
+        "plateau_spec": (PREDECLARED_PLATEAU_SPEC if plateau_rows
+                         else None),
+        "derived_from_frozen_tip": True,
+    }
+
+
+def _split_identity(doc: dict) -> dict:
+    """Split identity = rows + boundary timestamps per INPUT role.
+
+    Trace sha256 is a model-rollout OUTPUT and legitimately differs
+    between arms; it does not participate in pair identity."""
+    traces = ((doc.get("split_facts") or {}).get("traces")) or {}
+    out = {}
+    for role in ("train_epoch", "train_tail_epoch", "validation_epoch"):
+        t = traces.get(role) or {}
+        out[role] = {"rows": t.get("rows"),
+                     "first_timestamp": t.get("first_timestamp"),
+                     "last_timestamp": t.get("last_timestamp")}
+    return out
+
+
+def _verify_arm_semantics(facts: dict, doc: dict, policy: str,
+                          report_path: Path) -> None:
+    history = doc.get("history") or []
+    reductions = facts["lr_reductions"]
+    if policy == "fixed":
+        if reductions:
+            raise ScreenAggregationError(
+                f"{report_path}: fixed arm shows LR reductions "
+                f"{reductions}; not a fixed arm (PLR-06)")
+        lrs = {row.get("observed_learning_rates", {}).get("actor")
+               for row in history
+               if row.get("observed_learning_rates")}
+        if len(lrs) > 1:
+            raise ScreenAggregationError(
+                f"{report_path}: fixed arm observed multiple actor "
+                f"LRs {sorted(lrs)}; scheduler leaked in")
+    else:
+        if not any(row.get("plateau_lr") is not None
+                   for row in history):
+            raise ScreenAggregationError(
+                f"{report_path}: plateau arm carries no scheduler "
+                "records; machinery absent (PLR-06)")
+        for r in reductions:
+            if abs(r["new_lr"] - r["old_lr"] * 0.5) > 1e-18:
+                raise ScreenAggregationError(
+                    f"{report_path}: reduction at epoch {r['epoch']} "
+                    f"is not the predeclared halving: {r}")
+            if r["new_lr"] < PREDECLARED_PLATEAU_SPEC["min_lr"]:
+                raise ScreenAggregationError(
+                    f"{report_path}: reduction below min_lr: {r}")
+
+
+def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
+                fixed_facts: dict, plateau_facts: dict,
+                fixed_path: Path, plateau_path: Path) -> dict:
+    """PLR-06: exact pair identity; arms differ only as predeclared."""
+    if fixed_facts["report_sha256"] == plateau_facts["report_sha256"]:
+        raise ScreenAggregationError(
+            f"seed {seed}: identical report files supplied for both "
+            "arms; duplicate evidence refused")
+    contracts = {}
+    for label, doc, path in (("fixed", fixed_doc, fixed_path),
+                             ("plateau", plateau_doc, plateau_path)):
+        pair = doc.get("pair_contract") or _derive_pair_contract(
+            doc, path)
+        arm = doc.get("arm_contract") or _derive_arm_contract(doc)
+        contracts[label] = {"pair": pair, "arm": arm}
+        if pair.get("seed") != seed:
+            raise ScreenAggregationError(
+                f"{path}: pair_contract seed {pair.get('seed')!r} does "
+                f"not match filename seed {seed}; swapped or "
+                "mislabelled report (PLR-06)")
+        if not doc.get("accepted", False):
+            raise ScreenAggregationError(
+                f"{path}: arm not accepted; incomplete or typed-"
+                "negative arms cannot enter a directional outcome")
+        label_str = ((doc.get("stopping_contract") or {}).get(
+            "classification"))
+        commit = str(doc.get("commit") or "")
+        legacy_ok = (label_str == LEGACY_LABEL
+                     and commit.startswith(FROZEN_SCREEN_COMMIT))
+        if label_str != BOUNDED_LABEL and not legacy_ok:
+            raise ScreenAggregationError(
+                f"{path}: classification {label_str!r} is neither the "
+                f"bounded screen label nor the pinned frozen-tip "
+                "legacy label (PLR-02/PLR-06)")
+    pf, pp = contracts["fixed"]["pair"], contracts["plateau"]["pair"]
+    if pf != pp:
+        diff = {k: (pf.get(k), pp.get(k))
+                for k in set(pf) | set(pp) if pf.get(k) != pp.get(k)}
+        raise ScreenAggregationError(
+            f"seed {seed}: pair_contract mismatch between arms: "
+            f"{diff}; extra factor differences refuse (PLR-06)")
+    if _split_identity(fixed_doc) != _split_identity(plateau_doc):
+        raise ScreenAggregationError(
+            f"seed {seed}: split rows/timestamps differ between arms")
+    af, ap = contracts["fixed"]["arm"], contracts["plateau"]["arm"]
+    if af.get("scheduler_policy") != "fixed":
+        raise ScreenAggregationError(
+            f"seed {seed}: fixed-labelled report declares policy "
+            f"{af.get('scheduler_policy')!r}; swapped arms (PLR-06)")
+    if ap.get("scheduler_policy") != "plateau":
+        raise ScreenAggregationError(
+            f"seed {seed}: plateau-labelled report declares policy "
+            f"{ap.get('scheduler_policy')!r}; swapped arms (PLR-06)")
+    spec = ap.get("plateau_spec")
+    if spec != PREDECLARED_PLATEAU_SPEC:
+        raise ScreenAggregationError(
+            f"seed {seed}: plateau arm spec {spec!r} is not the "
+            f"predeclared {PREDECLARED_PLATEAU_SPEC!r}")
+    _verify_arm_semantics(fixed_facts, fixed_doc, "fixed", fixed_path)
+    _verify_arm_semantics(plateau_facts, plateau_doc, "plateau",
+                          plateau_path)
+    return contracts
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      allow_abbrev=False)
@@ -125,7 +299,12 @@ def main(argv=None) -> int:
         if f.get("data_sha256") != p.get("data_sha256"):
             raise ScreenAggregationError(
                 f"seed {seed}: arms trained on different data hashes")
+        fixed_doc = json.loads(fixed.read_text())
+        plateau_doc = json.loads(plateau.read_text())
+        contracts = verify_pair(seed, fixed_doc, plateau_doc, f, p,
+                                fixed, plateau)
         pairs[seed] = {
+            "identity": contracts,
             "fixed": f, "plateau": p,
             "delta_primary_best_monitor_value":
                 p["best_monitor_value"] - f["best_monitor_value"],
@@ -136,6 +315,13 @@ def main(argv=None) -> int:
             "delta_best_val_trades":
                 (p["best_val_trades"] or 0) - (f["best_val_trades"] or 0),
         }
+
+    hashes = [pairs[s][arm]["report_sha256"]
+              for s in SEEDS for arm in ("fixed", "plateau")]
+    if len(set(hashes)) != len(hashes):
+        raise ScreenAggregationError(
+            "duplicate report content across arms/seeds; refused "
+            "(PLR-06)")
 
     primary = [pairs[s]["delta_primary_best_monitor_value"]
                for s in SEEDS]

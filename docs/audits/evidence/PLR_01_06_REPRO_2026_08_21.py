@@ -1,4 +1,4 @@
-"""Reproducer for AUD-F1-20260821-PLR-01..04 corrections.
+"""Reproducer for AUD-F1-20260821-PLR-01..06 corrections.
 
 Run from the repo root. Exit 0 with {"reproduced": false} when every
 finding no longer reproduces; exit 1 with the surviving cases.
@@ -53,6 +53,27 @@ if "internal_test_split" in src_tool:
     surviving["PLR-04"] = "internal_test_split key still present"
 if '"diagnostic_holdout"' not in src_tool:
     surviving["PLR-04-rename"] = "diagnostic_holdout key missing"
+
+# PLR-05: the guard must be unconditional — before policy selection,
+# not nested under a plateau-only branch.
+i_guard = src_pipeline.index("assert_not_resuming_plateau_run")
+i_build = src_pipeline.index("build_controller_from_config(")
+if i_guard >= i_build:
+    surviving["PLR-05"] = "guard does not precede policy selection"
+if "if plateau_controller" in src_pipeline[max(0, i_guard - 300):i_guard]:
+    surviving["PLR-05-conditional"] = (
+        "guard nested under plateau-only branch")
+
+# PLR-06: canonical contracts in reports; aggregator verifies identity.
+if '"pair_contract"' not in src_tool or '"arm_contract"' not in src_tool:
+    surviving["PLR-06-report"] = "smoke report lacks canonical contracts"
+if "verify_pair" not in src_agg:
+    surviving["PLR-06-aggregator"] = "aggregator lacks pair verification"
+for probe in ("mislabelled report", "identical report",
+              "not a fixed arm", "predeclared", "pinned frozen screen"):
+    if probe not in src_agg:
+        surviving[f"PLR-06-{probe.split()[0]}"] = (
+            f"aggregator missing refusal: {probe}")
 
 print(json.dumps({"reproduced": bool(surviving),
                   "surviving": surviving}, indent=1))

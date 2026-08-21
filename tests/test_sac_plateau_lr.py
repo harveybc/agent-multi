@@ -346,12 +346,28 @@ class TestNonResumableFailClosed:
         pl.assert_not_resuming_plateau_run(None)
         pl.assert_not_resuming_plateau_run("")
 
-    def test_executing_pipeline_calls_the_guard(self):
-        """The guard must sit on the executing construction path, not
-        only exist as a helper."""
+    def test_executing_pipeline_calls_the_guard_unconditionally(self):
+        """PLR-05: the guard runs for EVERY warm start, BEFORE scheduler
+        policy selection — a sidecar refuses whether the new config
+        requests plateau or fixed LR."""
         import inspect as _inspect
         from pipeline_plugins import rl_pipeline_with_validation as rl
         src = _inspect.getsource(rl)
-        assert "assert_not_resuming_plateau_run" in src
         idx = src.index("assert_not_resuming_plateau_run")
         assert "warm_start_model" in src[idx:idx + 200]
+        # BEFORE policy selection:
+        assert idx < src.index("build_controller_from_config(")
+        # and NOT nested under a plateau-only conditional: the guard
+        # call's enclosing 300 chars contain no plateau_controller test.
+        window = src[max(0, idx - 300):idx]
+        assert "if plateau_controller" not in window
+
+    def test_sidecar_refuses_under_fixed_lr_semantics(self, tmp_path):
+        """PLR-05 acceptance 2: the guard itself is policy-blind — a
+        sidecar refuses with no plateau contract in sight."""
+        model = tmp_path / "warm.zip"
+        model.write_bytes(b"x")
+        (tmp_path / "warm.plateau_lr_state.json").write_text("{}")
+        with pytest.raises(pl.SacPlateauLrError,
+                           match="REFUSED_PLATEAU_RESUME"):
+            pl.assert_not_resuming_plateau_run(str(model))

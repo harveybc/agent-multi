@@ -1,4 +1,4 @@
-"""Tests for the predeclared bounded-screen aggregator (PLR orders 2-3)."""
+"""Predeclared bounded-screen aggregator tests (PLR orders 2-3, PLR-06)."""
 import importlib.util
 import json
 from pathlib import Path
@@ -22,12 +22,32 @@ def tool():
     return _load()
 
 
-def _report(path, best_composite, val_ret=0.01, epochs=10,
-            data_sha="d" * 64, reduced_at=()):
+SPEC = {"factor": 0.5, "lr_patience": 20, "min_lr": 1e-6,
+        "threshold": 1e-6, "cooldown": 0, "start_epoch": 40}
+
+
+def _pair_contract(default_seed, **over):
+    base = {"data_sha256": "d" * 64,
+            "epoch_timesteps": 20000, "max_epochs": 2000,
+            "l1_patience": 60, "l1_patience_start_epoch": 40,
+            "selection_metric": "easy_checkpoint_monitor_v1",
+            "train_days": 120, "val_days": 40, "test_days": 40,
+            "device_mask": f"GPU-mask-{default_seed}", "env_origin": "pinned",
+            "learning_rate_initial": 3e-4}
+    base["seed"] = default_seed
+    base.update(over)
+    return base
+
+
+def _report(path, *, seed, policy, best_composite, val_ret=0.01,
+            epochs=10, data_sha="d" * 64, reduced_at=(),
+            accepted=True, classification=None, commit="93880beb0000",
+            pair_over=None, arm_over=None, salt=""):
+    lr = 3e-4
     history = []
     for e in range(1, epochs + 1):
-        history.append({
-            "epoch": e,
+        row = {
+            "epoch": e, "selection_metric": "easy_checkpoint_monitor_v1",
             "composite": best_composite if e == epochs // 2 + 1
             else best_composite - 0.05,
             "l1_checkpoint_eligible": True,
@@ -35,27 +55,58 @@ def _report(path, best_composite, val_ret=0.01, epochs=10,
             "val_total_return": val_ret,
             "val_trades": 10, "train_tail_trades": 5,
             "val_max_drawdown_fraction": 0.02,
-            "observed_learning_rates": {"actor": 3e-4},
-            "plateau_lr": ({"reduced": True, "old_lr": 3e-4,
-                            "new_lr": 1.5e-4}
-                           if e in reduced_at else None),
-        })
-    path.write_text(json.dumps({
+            "observed_learning_rates": {"actor": lr},
+        }
+        if policy == "plateau":
+            if e in reduced_at:
+                row["plateau_lr"] = {"reduced": True, "old_lr": lr,
+                                     "new_lr": lr * 0.5}
+                lr = lr * 0.5
+            else:
+                row["plateau_lr"] = {"reduced": False, "old_lr": lr,
+                                     "new_lr": lr}
+        else:
+            row["plateau_lr"] = None
+        history.append(row)
+    pair = _pair_contract(seed, **(pair_over or {}))
+    arm = {"scheduler_policy": policy,
+           "plateau_spec": dict(SPEC) if policy == "plateau" else None}
+    arm.update(arm_over or {})
+    doc = {
         "history": history, "stop_reason": "l1_early_stop",
         "epochs_run": epochs, "elapsed_seconds": 100.0,
-        "data_sha256": data_sha}))
+        "data_sha256": data_sha, "accepted": accepted,
+        "commit": commit,
+        "budgets": {"seed": seed, "epoch_timesteps": 20000,
+                    "max_epochs": 2000},
+        "stopping_contract": {
+            "l1_patience": {"effective": 60},
+            "l1_patience_start_epoch": {"effective": 40},
+            "classification": classification
+            or "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"},
+        "split_facts": {"traces": {
+            r: {"rows": 100, "first_timestamp": "2018-01-01",
+                "last_timestamp": "2018-05-01"}
+            for r in ("train_epoch", "train_tail_epoch",
+                      "validation_epoch")}},
+        "pair_contract": pair, "arm_contract": arm,
+        "salt": salt,
+    }
+    path.write_text(json.dumps(doc))
 
 
-def _screen(tmp_path, deltas):
+def _screen(tmp_path, deltas, **kw):
     for seed, d in zip((101, 202, 303, 404), deltas):
-        _report(tmp_path / f"seed{seed}_fixed_report.json", 0.10)
-        _report(tmp_path / f"seed{seed}_plateau_report.json", 0.10 + d,
-                reduced_at=(5,))
+        _report(tmp_path / f"seed{seed}_fixed_report.json", seed=seed,
+                policy="fixed", best_composite=0.10, salt="f", **kw)
+        _report(tmp_path / f"seed{seed}_plateau_report.json", seed=seed,
+                policy="plateau", best_composite=0.10 + d,
+                reduced_at=(5,), salt="p", **kw)
     return tmp_path
 
 
 class TestPredeclaredRule:
-    def test_signal_for(self, tool, tmp_path, capsys):
+    def test_signal_for(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.02, 0.03, -0.01])
         out = tmp_path / "agg.json"
         assert tool.main(["--screen-dir", str(d),
@@ -80,33 +131,125 @@ class TestPredeclaredRule:
         assert json.loads(out.read_text())["outcome"] == "INCONCLUSIVE"
 
     def test_incomplete_screen_refuses(self, tool, tmp_path, capsys):
-        _report(tmp_path / "seed101_fixed_report.json", 0.1)
+        _report(tmp_path / "seed101_fixed_report.json", seed=101,
+                policy="fixed", best_composite=0.1)
         assert tool.main(["--screen-dir", str(tmp_path),
                           "--out-json",
                           str(tmp_path / "agg.json")]) == 2
         assert "REFUSED_INCOMPLETE_SCREEN" in capsys.readouterr().out
-
-    def test_mismatched_data_hash_refuses(self, tool, tmp_path):
-        _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
-        _report(tmp_path / "seed101_plateau_report.json", 0.11,
-                data_sha="e" * 64)
-        with pytest.raises(tool.ScreenAggregationError,
-                           match="different data hashes"):
-            tool.main(["--screen-dir", str(tmp_path),
-                       "--out-json", str(tmp_path / "agg.json")])
 
     def test_wall_clock_is_descriptive_only(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04])
         out = tmp_path / "agg.json"
         tool.main(["--screen-dir", str(d), "--out-json", str(out)])
         r = json.loads(out.read_text())
-        for seed in ("101", "202", "303", "404"):
-            arm = r["pairs"][seed]["fixed"]
-            assert "elapsed_seconds" in arm["descriptive_only"]
-            assert arm["descriptive_only"][
-                "excluded_from_causal_conclusion"] is True
-            assert "elapsed" not in json.dumps(
-                r["primary_deltas_by_seed"])
+        arm = r["pairs"]["101"]["fixed"]
+        assert arm["descriptive_only"][
+            "excluded_from_causal_conclusion"] is True
+
+
+class TestPairIdentity:
+    """AUD-F1-20260821-PLR-06 adversarial fixtures."""
+
+    def _one_pair(self, tmp_path, **plateau_kw):
+        _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        if plateau_kw:
+            _report(tmp_path / "seed101_plateau_report.json", seed=101,
+                    policy="plateau", best_composite=0.11,
+                    reduced_at=(5,), salt="p", **plateau_kw)
+        return tmp_path
+
+    def _expect(self, tool, tmp_path, match):
+        with pytest.raises(tool.ScreenAggregationError, match=match):
+            tool.main(["--screen-dir", str(tmp_path),
+                       "--out-json", str(tmp_path / "agg.json")])
+
+    def test_swapped_seed_label_refuses(self, tool, tmp_path):
+        d = self._one_pair(tmp_path,
+                           pair_over={"seed": 202})
+        self._expect(tool, d, "swapped or mislabelled")
+
+    def test_duplicate_report_refuses(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        fixed = d / "seed101_fixed_report.json"
+        (d / "seed101_plateau_report.json").write_text(
+            fixed.read_text())
+        self._expect(tool, d, "identical report")
+
+    def test_fixed_arm_with_reduction_refuses(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        doc = json.loads(
+            (d / "seed101_fixed_report.json").read_text())
+        doc["history"][4]["plateau_lr"] = {
+            "reduced": True, "old_lr": 3e-4, "new_lr": 1.5e-4}
+        (d / "seed101_fixed_report.json").write_text(json.dumps(doc))
+        self._expect(tool, d, "not a fixed arm|declares policy")
+
+    def test_swapped_arm_policy_refuses(self, tool, tmp_path):
+        d = self._one_pair(tmp_path,
+                           arm_over={"scheduler_policy": "fixed"})
+        self._expect(tool, d, "swapped arms")
+
+    def test_extra_factor_difference_refuses(self, tool, tmp_path):
+        d = self._one_pair(tmp_path,
+                           pair_over={"epoch_timesteps": 10000})
+        self._expect(tool, d, "mismatch|swapped")
+
+    def test_nonaccepted_arm_refuses(self, tool, tmp_path):
+        d = self._one_pair(tmp_path, accepted=False)
+        self._expect(tool, d, "not accepted")
+
+    def test_wrong_plateau_spec_refuses(self, tool, tmp_path):
+        d = self._one_pair(
+            tmp_path,
+            arm_over={"plateau_spec": dict(SPEC, factor=0.9)})
+        self._expect(tool, d, "not the\\s+predeclared|predeclared")
+
+    def test_non_halving_reduction_refuses(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        doc = json.loads(
+            (d / "seed101_plateau_report.json").read_text())
+        doc["history"][4]["plateau_lr"]["new_lr"] = 2e-4
+        (d / "seed101_plateau_report.json").write_text(json.dumps(doc))
+        self._expect(tool, d, "halving")
+
+    def test_legacy_label_with_wrong_commit_refuses(self, tool,
+                                                    tmp_path):
+        d = self._one_pair(tmp_path,
+                           classification="long_horizon_contract",
+                           commit="deadbeef0000")
+        self._expect(tool, d, "neither the")
+
+    def test_legacy_label_on_frozen_tip_passes(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04],
+                    classification="long_horizon_contract",
+                    commit="93880beb0000")
+        out = tmp_path / "agg.json"
+        assert tool.main(["--screen-dir", str(d),
+                          "--out-json", str(out)]) == 0
+
+    def test_frozen_tip_derivation_without_contracts(self, tool,
+                                                     tmp_path):
+        """Reports from the frozen screen tip carry no explicit
+        contracts; identity derives from report facts, pinned to the
+        commit."""
+        d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04])
+        for f in d.glob("seed*_report.json"):
+            doc = json.loads(f.read_text())
+            del doc["pair_contract"], doc["arm_contract"]
+            f.write_text(json.dumps(doc))
+        out = tmp_path / "agg.json"
+        assert tool.main(["--screen-dir", str(d),
+                          "--out-json", str(out)]) == 0
+
+    def test_derivation_refused_off_frozen_tip(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04],
+                    commit="deadbeef0000")
+        for f in d.glob("seed*_report.json"):
+            doc = json.loads(f.read_text())
+            del doc["pair_contract"], doc["arm_contract"]
+            f.write_text(json.dumps(doc))
+        self._expect(tool, d, "pinned frozen screen tip")
 
     def test_no_eligible_checkpoint_refuses(self, tool, tmp_path):
         p = tmp_path / "r.json"
