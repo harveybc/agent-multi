@@ -1,5 +1,20 @@
 {
- "elapsed_seconds": 9.4,
+ "accepted": false,
+ "budgets": {
+  "epoch_timesteps": 512,
+  "max_epochs": 3,
+  "seed": 101
+ },
+ "commit": "92828f8ea334fa8209d8a7aa18e61a416f1d32f1",
+ "config_sha256": "c345d274c16ce480139ff1bf3a667df0774ad50b90fa7a9ea25a06ef59975c04",
+ "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+ "device": {
+  "cuda_visible_devices": "",
+  "effective": "cpu",
+  "gpu_uuid": null,
+  "requested": "cpu"
+ },
+ "elapsed_seconds": 8.2,
  "env_origin": {
   "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
   "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
@@ -8,68 +23,104 @@
   "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/env_plugins/gym_fx_env.py"
  },
  "epochs_run": 3,
- "final_equity": 9304.990000000003,
- "last_epoch_facts": {
-  "checkpoint_eligible": null,
-  "composite": null,
-  "composite_raw": -0.8467459104092145,
-  "epoch": 3,
-  "trade_gate_passed": null,
-  "train_tail_trades": 7,
-  "val_trades": 37
+ "internal_test_split": {
+  "influences_selection": false,
+  "label": "diagnostic_internal_test_split",
+  "max_timestamp": null,
+  "note": "selection consumes train_tail/validation only (_early_stop_composite); the internal test table is display-only in this pipeline",
+  "sealed_2025_untouched": null
  },
- "max_drawdown_fraction": 0.0923795084583468,
- "mean_weekly_rap": -0.030718952677662944,
+ "learning": {
+  "actor_delta_sum": 0.0,
+  "distinct_actions_max": 719,
+  "gradient_updates": 0
+ },
  "no_eligible_checkpoint": true,
- "proposed_gpu_smoke_command_NOT_LAUNCHED": "CUDA_VISIBLE_DEVICES=<uuid> python tools/wp4_cpu_smoke.py --gpu  # same contract, epoch_timesteps=20000, max_epochs=50, single local GPU, bounded",
- "result_keys": [
-  "activity_stopped_without_eligible_checkpoint",
-  "actor_liveness",
-  "actor_liveness_history",
-  "annual_rap",
-  "annual_rap_method",
-  "annual_return",
-  "annual_return_method",
-  "annualized_return",
-  "artifacts",
-  "best_composite",
-  "best_model_path",
-  "episode_length",
-  "episode_reward",
-  "eval_seed",
-  "evaluation_days",
-  "evaluation_weeks",
-  "final_equity",
-  "history",
-  "l1_generalization_gap_penalty_beta",
-  "lower_tail_cvar_weekly_rap",
-  "max_drawdown_fraction",
-  "max_drawdown_pct",
-  "mean_weekly_rap",
-  "mean_weekly_return",
-  "mode",
-  "observation_contract",
-  "oracle_behavior_pretrain",
-  "return_trace_evidence",
-  "return_trace_evidence_file",
-  "risk_adjusted_total_return",
-  "risk_penalty_lambda",
-  "robust_weekly_rap_fitness",
-  "scenario_weekly_rap_dispersion",
-  "selection_metric",
-  "sharpe_ratio",
-  "splits",
-  "stop_reason",
-  "summary_table",
-  "terminal_model_path",
-  "termination_cause"
- ],
- "schema": "agent_multi.wp4_cpu_smoke.v1",
+ "schema": "agent_multi.wp4_smoke.v2",
  "selected_checkpoint": null,
  "selected_checkpoint_sha256": null,
+ "split_facts": {
+  "last_epoch": {
+   "composite": null,
+   "composite_raw": -0.8467459104092145,
+   "early_stop_trade_gate_passed": false,
+   "epoch": 3,
+   "gradient_updates_total": 0,
+   "l1_checkpoint_eligible": false,
+   "policy_actor_delta": 0.0,
+   "policy_critic_delta": 0.0,
+   "train_tail_trades": 7,
+   "val_trades": 37
+  },
+  "traces": {
+   "train_epoch": {
+    "distinct_actions": 719,
+    "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_epoch_return_trace.csv",
+    "first_timestamp": "2017-09-28 04:00:00",
+    "last_timestamp": "2018-01-26 00:00:00",
+    "rows": 720,
+    "sha256": "627e4bacbc187efa109e0eca965668afed5b31d5875c1c234c5532bfd49ec53d",
+    "trades": "74"
+   },
+   "train_tail_epoch": {
+    "distinct_actions": 41,
+    "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_tail_epoch_return_trace.csv",
+    "first_timestamp": "2018-01-19 04:00:00",
+    "last_timestamp": "2018-01-26 00:00:00",
+    "rows": 42,
+    "sha256": "d2e186bc5c25ffd01e171eac80b737ad46d9125779f41d11c655c58e0d9ae781",
+    "trades": "6"
+   },
+   "validation_epoch": {
+    "distinct_actions": 232,
+    "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/validation_epoch_return_trace.csv",
+    "first_timestamp": "2018-01-26 04:00:00",
+    "last_timestamp": "2018-03-07 00:00:00",
+    "rows": 233,
+    "sha256": "9b7035863246bd9038ec776c713fc5c19a9f90c0d9722192ee3b472228c95775",
+    "trades": "36"
+   }
+  }
+ },
  "stop_reason": "max_epochs_budget",
- "termination_cause": "training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1536, l1_min_checkpoint_timesteps=0; train-tail and validation trade gates must both pass",
- "train_facts": null,
- "train_tail_facts": null,
- "validation_facts": null
+ "typed_negative": {
+  "actor_parameters_moved": false,
+  "distinct_actions_ge_10": true,
+  "eligible_checkpoint_selected": false,
+  "episodic_call_path": true,
+  "failed_evidence": {
+   "last_epoch_gates": {
+    "composite": null,
+    "composite_raw": -0.8467459104092145,
+    "early_stop_trade_gate_passed": false,
+    "epoch": 3,
+    "gradient_updates_total": 0,
+    "l1_checkpoint_eligible": false,
+    "policy_actor_delta": 0.0,
+    "policy_critic_delta": 0.0,
+    "train_tail_trades": 7,
+    "val_trades": 37
+   },
+   "trace_descriptors": {
+    "train_epoch": {
+     "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_epoch_return_trace.csv",
+     "sha256": "627e4bacbc187efa109e0eca965668afed5b31d5875c1c234c5532bfd49ec53d",
+     "trades": "74"
+    },
+    "train_tail_epoch": {
+     "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_tail_epoch_return_trace.csv",
+     "sha256": "d2e186bc5c25ffd01e171eac80b737ad46d9125779f41d11c655c58e0d9ae781",
+     "trades": "6"
+    },
+    "validation_epoch": {
+     "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/validation_epoch_return_trace.csv",
+     "sha256": "9b7035863246bd9038ec776c713fc5c19a9f90c0d9722192ee3b472228c95775",
+     "trades": "36"
+    }
+   }
+  },
+  "promotion": "REFUSED",
+  "real_split_activity": true,
+  "type": "TYPED_NEGATIVE_SMOKE"
+ }
 }

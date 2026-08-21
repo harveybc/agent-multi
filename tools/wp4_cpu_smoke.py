@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-"""WP4 (order 2026-08-20 20:40): bounded CPU end-to-end smoke of the
-REAL path — real PipelinePlugin, real gym_fx_env, real SAC agent, real
-ETH data, episodic objective as the executing selector.
+"""WP4 bounded smoke of the REAL path (correction order 2026-08-20).
 
-Correction 3: asserts and reports the loaded gym_fx_env implementation
-origin and its pinned commit before anything trains.
+Strict CLI; requested vs effective device with CUDA assertion; learning
+and checkpoint acceptance built in; complete hashed facts; typed
+negative results. Never launches anything beyond its own bounded run.
 """
 from __future__ import annotations
 
+import argparse
+import csv as _csv
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import time
@@ -24,176 +26,257 @@ PINNED_GYMFX = Path("/home/harveybc/Documents/GitHub/.runtime/"
 EXPECTED_COMMIT = "634c3fd3c344cae3c4048b334158185c8bf4e1ef"
 DATA = Path("/home/harveybc/Documents/GitHub/predictor/examples/data/"
             "project3/ethusdt_4h_tech_stat_full_model_ready.csv")
-
-# engineered feature list derived from the real CSV header (price/raw
-# columns excluded per the observation contract)
-import csv as _csv
 _EXCLUDE = {"DATE_TIME", "OPEN", "HIGH", "LOW", "CLOSE", "VOLUME"}
-FEATURE_COLUMNS = [c for c in next(_csv.reader(DATA.open()))
-                   if c not in _EXCLUDE]
+
+
+def _sha_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def assert_env_origin() -> dict:
-    """Correction 3: prove the loaded implementation IS the pinned one."""
     ep = next(e for e in entry_points().select(group="env.plugins")
               if e.name == "gym_fx_env")
     wrapper = ep.load()
-    wrapper_file = str(Path(sys.modules[wrapper.__module__].__file__
-                            ).resolve())
-    # the entry point is agent-multi's WRAPPER; the implementation that
-    # actually steps bars is gym-fx app.env — assert THAT origin, which
-    # is what the campaign pins via PYTHONPATH.
+    wrapper_file = str(Path(
+        sys.modules[wrapper.__module__].__file__).resolve())
     import importlib
     env_mod = importlib.import_module("app.env")
     origin = str(Path(env_mod.__file__).resolve())
     commit = subprocess.run(
         ["git", "-C", str(PINNED_GYMFX), "rev-parse", "HEAD"],
         capture_output=True, text=True).stdout.strip()
-    pinned = origin.startswith(str(PINNED_GYMFX))
-    if not pinned:
-        del sys.modules["app.env"]  # do not leave a wrong module cached
-        raise RuntimeError(
-            f"REFUSED_ENV_ORIGIN: gym_fx_env loads from {origin}, not "
-            f"the pinned runtime {PINNED_GYMFX}")
+    if not origin.startswith(str(PINNED_GYMFX)):
+        raise RuntimeError(f"REFUSED_ENV_ORIGIN: {origin}")
     if commit != EXPECTED_COMMIT:
-        raise RuntimeError(
-            f"REFUSED_ENV_COMMIT: pinned worktree at {commit}, "
-            f"expected {EXPECTED_COMMIT}")
+        raise RuntimeError(f"REFUSED_ENV_COMMIT: {commit}")
     return {"wrapper_file": wrapper_file,
-            "implementation_module": "app.env",
-            "file": origin, "pinned_root":
-            str(PINNED_GYMFX), "commit": commit}
+            "implementation_module": "app.env", "file": origin,
+            "pinned_root": str(PINNED_GYMFX), "commit": commit}
 
 
-def main() -> int:
+def resolve_device(requested: str) -> dict:
+    """Correction 2: requested vs EFFECTIVE device; CUDA must actually
+    be selected when requested."""
+    import torch
+    facts = {"requested": requested,
+             "cuda_visible_devices":
+                 os.environ.get("CUDA_VISIBLE_DEVICES")}
+    if requested == "cuda":
+        if not torch.cuda.is_available():
+            raise RuntimeError(
+                "REFUSED_CUDA_UNAVAILABLE: --device cuda was requested "
+                "but torch reports no CUDA device; refusing a silent "
+                "CPU run (WP4-A)")
+        facts["effective"] = "cuda"
+        facts["torch_device_name"] = torch.cuda.get_device_name(0)
+        uuid = subprocess.run(
+            ["nvidia-smi", "--query-gpu=uuid",
+             "--format=csv,noheader"],
+            capture_output=True, text=True).stdout.strip().splitlines()
+        facts["gpu_uuid"] = uuid[0] if uuid else None
+    else:
+        facts["effective"] = "cpu"
+        facts["gpu_uuid"] = None
+    return facts
+
+
+def build_config(args, features) -> dict:
+    return {
+        "input_data_file": str(DATA), "env_plugin": "gym_fx_env",
+        "agent_plugin": "project3_sac_actor_critic_agent",
+        "quiet_mode": True,
+        "train_days": 120, "val_days": 40, "test_days": 40,
+        "min_split_rows": 100,
+        "epoch_timesteps": args.epoch_timesteps,
+        "max_epochs": args.max_epochs,
+        "l1_patience": max(2, args.max_epochs // 5),
+        "l1_patience_start_epoch": 0, "l1_min_delta": 1e-6,
+        "window_size": 32, "initial_cash": 10000.0,
+        "action_space_mode": "continuous",
+        "continuous_action_threshold": 0.0,
+        "solvency_mode": "normal_realistic",
+        "require_feature_aware_preprocessor": True,
+        "include_price_window": False,
+        "preprocessor_plugin": "feature_window_preprocessor",
+        "feature_columns": features,
+        "feature_scaling": "rolling_zscore",
+        "feature_scaling_window": 256,
+        "selection_metric": "episodic_activity_economic_v1",
+        "require_episodic_fitness": True,
+        "episodic_activity_fitness": {
+            "activity_plateau_low_rate": 50.0,
+            "activity_plateau_high_rate": 300.0},
+        "sac_params": {"learning_rate": 3e-4, "batch_size": 64,
+                       "learning_starts": 128, "device": args.device,
+                       "seed": args.seed},
+        "seed": args.seed,
+        "return_trace_dir": str(args.output_dir / "traces"),
+        "output_dir": str(args.output_dir),
+        "inactive_terminal_is_typed_result": True,
+    }
+
+
+def facts_from(history, trace_dir: Path) -> dict:
+    """Correction: complete per-split facts, hash-bound to their traces."""
+    last = history[-1] if history else {}
+    traces = {}
+    for name in ("train_epoch", "train_tail_epoch", "validation_epoch",
+                 "evaluation"):
+        path = trace_dir / f"{name}_return_trace.csv"
+        if path.is_file():
+            rows = list(_csv.DictReader(path.open()))
+            stamps = [r.get("timestamp", "") for r in rows]
+            traces[name] = {
+                "file": str(path), "sha256": _sha_file(path),
+                "rows": len(rows),
+                "trades": rows[-1].get("trades") if rows else None,
+                "first_timestamp": stamps[0] if stamps else None,
+                "last_timestamp": stamps[-1] if stamps else None,
+                "distinct_actions": len({r.get("action_raw")
+                                         for r in rows}),
+            }
+    return {"last_epoch": {k: last.get(k) for k in (
+                "epoch", "composite", "composite_raw",
+                "l1_checkpoint_eligible", "early_stop_trade_gate_passed",
+                "policy_actor_delta", "policy_critic_delta",
+                "gradient_updates_total", "train_tail_trades",
+                "val_trades") if isinstance(last, dict)},
+            "traces": traces}
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     allow_abbrev=False)
+    parser.add_argument("--device", choices=["cpu", "cuda"],
+                        default="cpu")
+    parser.add_argument("--epoch-timesteps", type=int, default=512)
+    parser.add_argument("--max-epochs", type=int, default=3)
+    parser.add_argument("--seed", type=int, default=101)
+    parser.add_argument("--output-dir", type=Path,
+                        default=REPO / "docs/audits/evidence/wp4_smoke")
+    parser.add_argument("--report", type=Path, default=None)
+    parser.add_argument("--preflight", action="store_true",
+                        help="non-mutating: assert env origin, device "
+                             "and data hash, then exit")
+    args = parser.parse_args(argv)
+
     sys.path.insert(0, str(PINNED_GYMFX))
     origin = assert_env_origin()
+    device = resolve_device(args.device)
+    data_sha = _sha_file(DATA)
+    if args.preflight:
+        print(json.dumps({"outcome": "PREFLIGHT_OK",
+                          "env_origin": origin, "device": device,
+                          "data_sha256": data_sha}, indent=1))
+        return 0
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    features = [c for c in next(_csv.reader(DATA.open()))
+                if c not in _EXCLUDE]
+    config = build_config(args, features)
+    config_sha = hashlib.sha256(json.dumps(
+        config, sort_keys=True, default=str).encode()).hexdigest()
 
     from pipeline_plugins.rl_pipeline_with_validation import (
         PipelinePlugin,
     )
-    config = {
-        "input_data_file": str(DATA),
-        "env_plugin": "gym_fx_env",
-        "agent_plugin": "project3_sac_actor_critic_agent",
-        "quiet_mode": True,
-        # bounded real splits (days, from dataset start)
-        "train_days": 120, "val_days": 40, "test_days": 40,
-        "min_split_rows": 100,
-        # bounded budgets
-        "epoch_timesteps": 512, "max_epochs": 3,
-        "l1_patience": 2, "l1_patience_start_epoch": 0,
-        "l1_min_delta": 1e-6,
-        "window_size": 32, "initial_cash": 10000.0,
-        "action_space_mode": "continuous",
-        # easy-phase action semantics for the bounded smoke: an
-        # untrained 3-epoch SAC cannot cross 0.1; threshold 0.0 is the
-        # campaign's own easy contract and lets the smoke demonstrate
-        # activity, selection and episodic components end to end.
-        "continuous_action_threshold": 0.0,
-        "solvency_mode": "normal_realistic",
-        # finding-235 fail-closed contract: engineered causally scaled
-        # features only, no raw price window
-        "require_feature_aware_preprocessor": True,
-        "include_price_window": False,
-        "preprocessor_plugin": "feature_window_preprocessor",
-        "feature_columns": FEATURE_COLUMNS,
-        "feature_scaling": "rolling_zscore",
-        "feature_scaling_window": 256,
-        # WP3: the episodic objective IS the selector, legacy refused
-        "selection_metric": "episodic_activity_economic_v1",
-        "require_episodic_fitness": True,
-        "episodic_activity_fitness": {
-            # the NAMED diagnostic WP4 candidate — not production truth
-            "activity_plateau_low_rate": 50.0,
-            "activity_plateau_high_rate": 300.0,
-        },
-        "sac_params": {"learning_rate": 3e-4, "batch_size": 64,
-                       "learning_starts": 128, "device": "cpu"},
-        # D1: the per-epoch return traces ARE the activity evidence the
-        # authority verifies — the smoke writes them like the campaign.
-        "return_trace_dir": str(REPO / "docs/audits/evidence/"
-                                "wp4_smoke_traces"),
-        "inactive_terminal_is_typed_result": True,
-    }
     agent_ep = next(e for e in entry_points().select(
         group="agent.plugins")
         if e.name == config["agent_plugin"])
-    agent_plugin = agent_ep.load()()
-
-    pipeline = PipelinePlugin(config)
     started = time.time()
-    typed_termination = None
-    try:
-        result = pipeline.run_pipeline(config=config, env_plugin=None,
-                                       agent_plugin=agent_plugin,
-                                       mode="train")
-    except RuntimeError as error:
-        # the finding-232 typed no-activity termination is a VALID
-        # smoke outcome: the real path ran and refused honestly.
-        typed_termination = str(error)
-        result = {}
+    result = PipelinePlugin(config).run_pipeline(
+        config=config, env_plugin=None,
+        agent_plugin=agent_ep.load()(), mode="train")
     elapsed = time.time() - started
 
-    def facts(summary):
-        if not isinstance(summary, dict):
-            return None
-        keep = {}
-        for key in ("trades_total", "total_return",
-                    "max_drawdown_fraction", "scored_steps",
-                    "episodic_fitness"):
-            if key in summary:
-                value = summary[key]
-                keep[key] = (value if not isinstance(value, dict) else
-                             {k: value[k] for k in
-                              ("branch", "selection_value",
-                               "annualized_trade_rate",
-                               "activity_utility")
-                              if k in value})
-        return keep
-
-    best_path = result.get("best_model_path")
     history = result.get("history") or []
-    last = history[-1] if history else {}
+    trace_dir = Path(config["return_trace_dir"])
+    detail = facts_from(history, trace_dir)
+    actor_moved = sum(abs(float(row.get("policy_actor_delta") or 0))
+                      for row in history)
+    distinct = max((t.get("distinct_actions") or 0
+                    for t in detail["traces"].values()), default=0)
+    activity = any(float(t.get("trades") or 0) > 0
+                   for t in detail["traces"].values())
+    episodic_path = any(row.get("composite_raw") is not None
+                        for row in history)
+    best = result.get("best_model_path")
+    eligible = bool(best) and Path(str(best)).is_file()
+
+    accepted = (actor_moved > 0 and distinct >= 10 and activity
+                and episodic_path and eligible)
+    negative = None
+    if not accepted:
+        negative = {
+            "type": "TYPED_NEGATIVE_SMOKE",
+            "actor_parameters_moved": actor_moved > 0,
+            "distinct_actions_ge_10": distinct >= 10,
+            "real_split_activity": activity,
+            "episodic_call_path": episodic_path,
+            "eligible_checkpoint_selected": eligible,
+            "failed_evidence": {
+                "last_epoch_gates": detail["last_epoch"],
+                "trace_descriptors": {k: {kk: v[kk] for kk in
+                                          ("file", "sha256", "trades")}
+                                      for k, v in
+                                      detail["traces"].items()},
+            },
+            "promotion": "REFUSED",
+        }
+
+    # internal 'test' split: diagnostic label + sealed-2025 proof
+    test_trace = detail["traces"].get("evaluation") or {}
+    sealed_proof = {
+        "label": "diagnostic_internal_test_split",
+        "influences_selection": False,
+        "note": ("selection consumes train_tail/validation only "
+                 "(_early_stop_composite); the internal test table is "
+                 "display-only in this pipeline"),
+        "max_timestamp": test_trace.get("last_timestamp"),
+        "sealed_2025_untouched": (
+            (test_trace.get("last_timestamp") or "")[:4] < "2025"
+            if test_trace.get("last_timestamp") else None),
+    }
+
     report = {
-        "schema": "agent_multi.wp4_cpu_smoke.v1",
+        "schema": "agent_multi.wp4_smoke.v2",
+        "commit": subprocess.run(
+            ["git", "-C", str(REPO), "rev-parse", "HEAD"],
+            capture_output=True, text=True).stdout.strip(),
+        "config_sha256": config_sha,
+        "data_sha256": data_sha,
         "env_origin": origin,
+        "device": device,
+        "budgets": {"epoch_timesteps": args.epoch_timesteps,
+                    "max_epochs": args.max_epochs, "seed": args.seed},
         "elapsed_seconds": round(elapsed, 1),
         "epochs_run": len(history),
+        "stop_reason": result.get("stop_reason"),
         "no_eligible_checkpoint": result.get(
             "activity_stopped_without_eligible_checkpoint"),
-        "final_equity": result.get("final_equity"),
-        "max_drawdown_fraction": result.get("max_drawdown_fraction"),
-        "mean_weekly_rap": result.get("mean_weekly_rap"),
-        "last_epoch_facts": {k: last.get(k) for k in
-                             ("epoch", "composite", "composite_raw",
-                              "train_tail_trades", "val_trades",
-                              "trade_gate_passed", "checkpoint_eligible")
-                             if isinstance(last, dict)},
-        "stop_reason": result.get("stop_reason"),
-        "termination_cause": (result.get("termination_cause")
-                              or typed_termination),
-        "selected_checkpoint": best_path,
+        "selected_checkpoint": best,
         "selected_checkpoint_sha256": (
-            hashlib.sha256(Path(best_path).read_bytes()).hexdigest()
-            if best_path and Path(str(best_path)).is_file() else None),
-        "train_facts": facts(result.get("train_summary")),
-        "train_tail_facts": facts(result.get("train_tail_summary")),
-        "validation_facts": facts(result.get("validation_summary")),
-        "result_keys": sorted(result.keys())[:40],
-        "proposed_gpu_smoke_command_NOT_LAUNCHED": (
-            "CUDA_VISIBLE_DEVICES=<uuid> python tools/wp4_cpu_smoke.py "
-            "--gpu  # same contract, epoch_timesteps=20000, "
-            "max_epochs=50, single local GPU, bounded"),
+            _sha_file(Path(str(best))) if eligible else None),
+        "learning": {"actor_delta_sum": actor_moved,
+                     "distinct_actions_max": distinct,
+                     "gradient_updates": (history[-1].get(
+                         "gradient_updates_total")
+                         if history else None)},
+        "split_facts": detail,
+        "internal_test_split": sealed_proof,
+        "accepted": accepted,
+        "typed_negative": negative,
     }
-    out = REPO / ("docs/audits/evidence/"
-                  "WP4_CPU_SMOKE_REPORT_2026_08_20.json")
+    out = args.report or (REPO / "docs/audits/evidence/"
+                          "WP4_CPU_SMOKE_REPORT_2026_08_20.json")
     out.write_text(json.dumps(report, indent=1, sort_keys=True,
                               default=str) + "\n")
-    print(json.dumps({k: report[k] for k in
-                      ("elapsed_seconds", "epochs_run", "stop_reason",
-                       "selected_checkpoint")}, default=str))
-    return 0
+    print(json.dumps({"accepted": accepted,
+                      "epochs": len(history),
+                      "elapsed": round(elapsed, 1),
+                      "device": device["effective"],
+                      "negative": bool(negative)}, default=str))
+    return 0 if accepted else 3
 
 
 if __name__ == "__main__":

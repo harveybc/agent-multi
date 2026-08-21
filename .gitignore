@@ -54,3 +54,4 @@ experiments/oracle_behavior_pretraining/*.json
 !examples/results/project3_ethusdt_4h_sac_train_val_test_v2/
 examples/results/project3_ethusdt_4h_sac_train_val_test_v2/*
 !examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json
+agent_model.terminal.zip

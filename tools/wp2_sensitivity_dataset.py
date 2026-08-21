@@ -171,7 +171,43 @@ def main() -> int:
     parser.add_argument("--base", default=os.path.expanduser(
         "~/.local/share/agent-multi"))
     parser.add_argument("--regenerate", action="store_true")
+    parser.add_argument("--merge", nargs="+", type=Path, default=None,
+                        help="WP2-G: per-host regenerated fragments -> "
+                             "one canonical global artifact, compared "
+                             "against --artifact without trusting any "
+                             "stored rate")
     args = parser.parse_args()
+    if args.merge:
+        rows = []
+        for fragment in args.merge:
+            rows.extend(json.loads(fragment.read_text()))
+        rows.sort(key=lambda r: (r["host"], r["trace"]))
+        rates = [r["annualized_rate"] for r in rows]
+        rebuilt_q = quantiles(rates)
+        artifact = json.loads(args.artifact.read_text())
+        stored_rows = sorted(
+            artifact["source_traces"]["per_trace_references"],
+            key=lambda r: (r["host"], r["trace"]))
+        rebuilt_scores = {name: candidate_scores(spec["plateau"])
+                          for name, spec in
+                          artifact["candidates"].items()}
+        stored_scores = {name: spec["scores"] for name, spec in
+                         artifact["candidates"].items()}
+        report = {
+            "schema": "agent_multi.wp2_global_merge.v1",
+            "fragments": [str(f) for f in args.merge],
+            "rows_regenerated": len(rows),
+            "rows_match_artifact": rows == stored_rows,
+            "quantiles_match":
+                rebuilt_q == artifact["measured_annualized_rates"],
+            "candidate_scores_match": rebuilt_scores == stored_scores,
+        }
+        report["global_artifact_reproduced"] = all(
+            report[k] for k in ("rows_match_artifact",
+                                "quantiles_match",
+                                "candidate_scores_match"))
+        print(json.dumps(report, indent=1, sort_keys=True))
+        return 0 if report["global_artifact_reproduced"] else 1
     if args.regenerate:
         print(json.dumps(discover(args.base), indent=1))
         return 0

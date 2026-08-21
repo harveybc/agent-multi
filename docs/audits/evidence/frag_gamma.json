@@ -1,0 +1,2612 @@
+[
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed303/P1E_LR1E4/attempt-7dee86f9a83e39e8-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "d2792fcf32c4cc7d22089d0cd006ec83bf0a74f355ca14863f8a67f18f1a4199",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed404/P1E_LR3E5/attempt-e05b622b15d67c51-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "cb13bf20b9980a262d8d704303b909cbd045c818d8668f4ec5333b0fdd3436c7",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/1e4cf29b007cdf5d/seed303/P1E_LR1E4/attempt-045d298d42b5f033-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "ec7f1c7f09a7e0a377c6f50d9741a85e529d31996b03b65787e33cc3b6c529ad",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/1e4cf29b007cdf5d/seed404/P1E_LR3E5/attempt-e73a2c201112b37c-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "4fa52affcb95063113ccb41bd752f846f4289bd2647a177258181dae779ea7b6",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1N_LR1E4/attempt-5f681f5fd925e378-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "91704d1c589c2fb21e35ab92bbefe07609c37bc843b548dacf87a6b4d2e56dc6",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR3E5/attempt-41aace49bfb14961-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "4c692beb4cdf6e37209e326c3401de566a7463ff302a166e2a078f8a504f41d6",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "7c32193926ee0d7b4f28e1745379f73cbea0b4e6c32a2bd1eabd6a22c71ea611",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1N_LR1E4/attempt-cbc958d8f2a479fa-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "eefc8bee6b5030a3f885a7f7aea7638e60f7aac71650092462cd54c443d61a75",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "f0b6693235c9ac4cee75210d70909db8e0bb7ab70de8cf4381ba6c8b3102d2d0",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1N_LR3E5/attempt-991ab664c9e38cd9-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "6d4f4c81d06669a5b9d97109b59e19aff28bb4adcd8fdbfd19a8857ed002ea63",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed303/P1E_LR1E4/attempt-7dee86f9a83e39e8-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d38789c1377af14cfc3ec55892b56599c0af0b6a5cefb1b3e35742144a9a7869",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed404/P1N_LR1E4/attempt-81e4f0f307f78ab0-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "aedbdaf1e52c27cc7f88030e9085222e5fbafd412237494ced77c8ce624fe2c1",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed404/P1E_LR3E5/attempt-e05b622b15d67c51-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "caa2a85197375b3dae460943dcfc3831cc03c88f241ed6a4697462d836566844",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/1e4cf29b007cdf5d/seed303/P1E_LR1E4/attempt-045d298d42b5f033-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "e78dbbc54d7e239133c5e77ca2ff7da8fb8ecfd96f27fe81aaf66e7a51df9a2a",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/1e4cf29b007cdf5d/seed404/P1E_LR3E5/attempt-e73a2c201112b37c-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "ae5c9565c63c8ff479d2aa37d0e90adf68eb07e124d7365ad40809cd00719049",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1N_LR1E4/attempt-5f681f5fd925e378-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d560be3ddb3e95408e906082b8b876ee22076f45f93627f9bad386a6c5257834",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR3E5/attempt-41aace49bfb14961-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "3d6da7f501bcc6b5ba9d6ac11a8ccc4a6755b2e452603c8c4422efda47ca3d69",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "971cf685723bd68487f959e3324e19160d1c2c907397b1bc042b8b533f983bdb",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "f4b14a475e53ead91274db83f14727ebaf8f80d31e0b51a57cb801e2fbe784a6",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-03/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "c555986f7fcc35b5aaae6b31f417a6b233baeded1872d2aed222840a31ad61b9",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1N_LR1E4/attempt-cbc958d8f2a479fa-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "0ecedf2cc41dc357b66ecc1f03d7d421df196d7f75139c7757fbb89042f23bf6",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "be5c4d86744b605b534a50a725a434c0bdf1e6d5984303df223c9f547f0cade4",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "5e4778d5c0cc2559c54e6e35f54c0b93c070f3ec10d6bf89e76a35fd07f836c6",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-03/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "ab639e6a97894bf0189af367bce6f8c4ee86d36f094a780c633cc3925441650c",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 5.0,
+  "annualized_rate": 5.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1N_LR3E5/attempt-991ab664c9e38cd9-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "310fa4e4773effc652c1dd6f72fae7a75f44d6b4c76a964c09598dff287c7d5a",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed303/P1E_LR1E4/attempt-7dee86f9a83e39e8-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "468d894a7b53a81ea73aa6f315bae0a418c9f8a3c247e2bec457198e8aca8838",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed404/P1N_LR1E4/attempt-81e4f0f307f78ab0-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "f9c1e2106d57d854070ab364d051dc3fb44aa1b7091fe4a1960703c926c99bd3",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/f9379f596e80fda4/seed404/P1E_LR3E5/attempt-e05b622b15d67c51-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "12732e2fb3a90b05132b6b899c3eec4268ce842d7053f9c3e2b5f912675416fa",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 114.0,
+  "annualized_rate": 114.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/1e4cf29b007cdf5d/seed303/P1E_LR1E4/attempt-045d298d42b5f033-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "9016eb100119b950d6a21743cd9ef659681a12324471e2bf7db989bcb9a7e98a",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/1e4cf29b007cdf5d/seed404/P1E_LR3E5/attempt-e73a2c201112b37c-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "a42d7f7e94246bc8ce4816064f89d89a89c94fe23be525f2038048ba6e868f36",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 274.0,
+  "annualized_rate": 274.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1N_LR1E4/attempt-5f681f5fd925e378-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "a87d24ac08e64dcea0d7926b0b90f5f973bf34cc08798863b83d8795867984ff",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR3E5/attempt-41aace49bfb14961-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "8a478b0ccda670c8d21cab91c6ffa796bc2e23bf6087ef56cbfd24b38e386fa9",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 282.0,
+  "annualized_rate": 282.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "9a8225ef1d809c37de3a3d15e82e15253c9e62eb04c99b8355b6a234b7dce1a6",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "269dc9acfc0cca0fc45e851497f5585d8317082768b0d407e6aeb4a2133389d9",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed303/P1E_LR1E4/attempt-d498621d0f2b97af-03/return_traces/evaluation_return_trace.csv",
+  "sha256": "3d4b3ad0060ac6b6b5bd16ce965631766c13c4c7dce75f4f30a2db23965ece07",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 138.0,
+  "annualized_rate": 138.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1N_LR1E4/attempt-cbc958d8f2a479fa-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "a439b7b7da1ad81375a291f6dfaacbb6bfdaa86b0c8dc046f93a1d56e382efeb",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "37f56ac54a610571c94397e89a23b0694396ab9612ecc5b7380a06eff963edf0",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 218.0,
+  "annualized_rate": 218.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "44c9fb26326ace3c577837f2171f1ae8bd9273aaf4a521e0d7e0f90eb0059170",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 274.0,
+  "annualized_rate": 274.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1E_LR3E5/attempt-22736dc00e309a65-03/return_traces/evaluation_return_trace.csv",
+  "sha256": "bfb55b9134ef2d9653b92fa9f1067c52c3098614d6cdab4cc772b314566c61d6",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 273.0,
+  "annualized_rate": 273.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2_decision/cdf30aebf585385b/seed404/P1N_LR3E5/attempt-991ab664c9e38cd9-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "a1ba1156587112c7e08f0c2200985c2c04e48d979d564851f0e24a306b6097a9",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR1E4/attempt-2da4512a926c0535-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "a515da3a7c6591c0ca2209f4ea000c0fec1fe3e80f28fae368156ba2c2fb4ea7",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR1E4/attempt-2da4512a926c0535-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "c17632c77f0719da0747e31ab9eb2b31aedc0c5e0373b2da5fb18d030a326996",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR3E5/attempt-3ed9b840117658de-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "db75b3a3b5396c939895cb945f65c924443035c29e72ae5a18f08605f015c27b",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR3E5/attempt-3ed9b840117658de-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "9116abd6419aa64afa69927d88a514bde7e2e19ab6a2ec83145a44fd354d0900",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR3E5/attempt-0fa8315ad2dbf50f-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "5850c6e2391599d5ee246f341be05722fc7c80dcfc7a56ca12e6f80f4e61ac78",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR3E5/attempt-0fa8315ad2dbf50f-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "39276d9731a835b382c138441cce9d264bc18d5641ee7e2e8039ef60a0de18aa",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "7c3ac53cc4975808fcd3c65c478db9f9221c9920856116077a99d10f403f83b9",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-03/return_traces/train_epoch_return_trace.csv",
+  "sha256": "2733ef3b4cda3ee6287f0968b915d5011b04524fb66ade6a2a0122d817c41ce5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "ef2c2d600af8c3a6a4a7a0266487c010c5a8475b922786a16c6b9a4b02bfed41",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR1E4/attempt-85cdaa0742739b64-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "79c9cc0aefa853812ae7916ffdd594bda08ffa92f5b787fe17ebd90d75747aea",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR1E4/attempt-85cdaa0742739b64-03/return_traces/train_epoch_return_trace.csv",
+  "sha256": "294586653ce2f6fdce23f330fc99906eb029edc040edef1e486e05cd6f6cd7e5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "a449dd5570ab61f5517a95edc666b7550af1c6eed8db36c3ff360c540103b0c6",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "6df702bcd215ff4f0d01ce892c6042cf4e6cdcce1fe44ec5833e61b69e0392d5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-03/return_traces/train_epoch_return_trace.csv",
+  "sha256": "63fbaae2c16444f5b184438270462742cf06dda128c1f584468140ffe5e6470d",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR3E5/attempt-e1fabbd5c977b1ef-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "3feb657e5a475a12662404e5e2c81458e8797309bda048e0a8af6623e5ab71f8",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR3E5/attempt-e1fabbd5c977b1ef-03/return_traces/train_epoch_return_trace.csv",
+  "sha256": "9b770a06562f95b1940290c04f946b0cecc87fd2ea4ebfb88faeaa58df047d14",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR1E4/attempt-331e878a248b63d0-02/return_traces/train_epoch_return_trace.csv",
+  "sha256": "ea55858fe61e85e86714a644f03a5505468bcb2eda81a6099e765e84986cb404",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1N_LR1E4/attempt-5e05cc6f1912d3a5-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "c30e790d5038c20c3be4e59fa583950b1ea55cfc40fabda178c6b2b653149d9e",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1E_LR3E5/attempt-a536c2e271e74c38-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "2c69db4f6276c59800bbce9e83fcfd0e8c7b8d83feefacde0231f7b95a20e2f5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1N_LR3E5/attempt-21b02bd48ba6a19f-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "402dc283f39f140e8a60048baa2796cc13e9fd82229854007143fb1697d99b4a",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1E_LR1E4/attempt-2f0067b87188bead-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "3670c24a8653c5c0a306d0cc67789a1e4dce9930461fe8c4d42d1db1ad967fb8",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1N_LR1E4/attempt-5566d595a71264b3-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "06e861076b5a534f9e36a1611dd25b6d2a0f09543eaff9a0a2eee218f1f39186",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1E_LR3E5/attempt-1a8874857149799e-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "9a14e9cf76003c34cfa441435b8f70e73e0282444698822d56a4af04ecc6e90f",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1N_LR3E5/attempt-e25bbd5d96056c85-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "765a70afdd4e41add7d7b1812720296a4a8eebe0466ef7686b02580a00e8d1ae",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1E_LR1E4/attempt-205b9c8b17c3abc6-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "f35632fb1209bf776f46a8cd0894ade6505a4565785b15dca4ded30f5ca07cda",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed303/P1E_LR1E4/attempt-90ae00d6e18b4a20-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "ff1dfe97342d53e483f3427019cffbd522d9ca1ba2c437aad87a4cbf70ff4641",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1N_LR1E4/attempt-8fec3a298abae726-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "6bb1671b694d23354306eb046c13cc009608816c076ae20188457aa2f3d4c453",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1E_LR3E5/attempt-e5338773f20b2997-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "fff51fdb7a488e6198b117cdbafa8780a500fb4a985f4489bdc0de8802d3bfa8",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1N_LR3E5/attempt-d6f55bd1138f7914-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "950eeed961a6e8a16a09a9b337ce2b40cc87330e176d2d8cfbc26d137d3485d8",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR1E4/attempt-2da4512a926c0535-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "0c3531d87e671f2962d1d01b02153e31ed84f9798c843a0dd7064561c4c2e747",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR1E4/attempt-2da4512a926c0535-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d0e471acc8dbfc47fca6eae51b81eb4b4c7ba570711a06fad4f2f2a9b8eb855d",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR3E5/attempt-3ed9b840117658de-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "50be503559334a01ff07e996467df3030230df1c1a12080ec3a419572c762d4c",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR3E5/attempt-3ed9b840117658de-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "5e9c91b93f7e298d9b198b7f7f51a4ada198cd303979d2cd085dbd77f9b37def",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR3E5/attempt-0fa8315ad2dbf50f-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "ea8915d3954e6eaafb969b9d1404fb913dc62e212448f0e7f7352b25e922891a",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR3E5/attempt-0fa8315ad2dbf50f-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "70a13a8d26b0545daf2b5787714eef3244054a6feb5a77b609f1517e45303fc1",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "df279b8a2717da306260af8792ca37c9cd4a7410adfc81120927fb80e9da7da1",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-03/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "32b92cd1d8c36ca8ce9514975f82bea44c67b42e2db3e5684f991d7f6d2b5d8e",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-04/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "92179e5171de65523fdef2434d54b91a779e3a008d3fadaf184f0586764dba26",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "342672608cfdcc3a34891f04e90bc8c7ac58f0b576714ce59f466927dfce850a",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR1E4/attempt-85cdaa0742739b64-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "e028c1ef91c596ee446742e0a09e2a31f4765f2b7df31a8de8d2ee9104a2ba3f",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR1E4/attempt-85cdaa0742739b64-03/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "270ac6ce2b45567c33bccac1e5156fe84b21645691da6e9c984466bddc38939e",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "6dd3f813f4a844d35d795c617aa4aace239b0f53ca392f9fabd82d53df3883d7",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "748e6527b70d018f25428dc59348c29fa3daf50b6e8135f6ebe61d096663eafe",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-03/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "14d6f5131f5b605f0577c3d8ddfc299a6195738ef14ca95d8103785d8896ee25",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR3E5/attempt-e1fabbd5c977b1ef-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d1ebf4c57c5e9658ad44815110072ed4d551ad4d8fb20056dd489a5c231729e0",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR3E5/attempt-e1fabbd5c977b1ef-03/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "306b64721585de255371c24aed238bcd82b798de12fa642a7dd930aef7684be4",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR1E4/attempt-331e878a248b63d0-02/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "3861318aa60d805ea13b17ab2b5b28348a8cff97bda4a9f5bba8e92280144a58",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1N_LR1E4/attempt-5e05cc6f1912d3a5-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "abf592a3aa1a5718a2d972adb198d7b66722a99bc2b7445829dcd7ee6127babd",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1E_LR3E5/attempt-a536c2e271e74c38-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "6d6a3de08c62a1efaa6fa432fa33ac3d0041b24aa7c75bd24cdfc8f045f43640",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1N_LR3E5/attempt-21b02bd48ba6a19f-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "feddb58e59679134adc71183e2b03489666f409696290b7ed5a4ad00ac746643",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1E_LR1E4/attempt-2f0067b87188bead-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "a2b3c0ec8256b824021ef4a2e9a77cb438f29b97c664a0379a1630d33dfa9092",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1N_LR1E4/attempt-5566d595a71264b3-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "92f7f99954b4a90ae00fd662c27d2fb7da3cc605d05b7077a4b9d6f5237a0a68",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1E_LR3E5/attempt-1a8874857149799e-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "5ce55d2a0498dd2e4b5b284c942bf2c6e1023331ea96ff791dc8dc2bb2dd73c5",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1N_LR3E5/attempt-e25bbd5d96056c85-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "efa68a65d272404f1f41fd32682d9016a6c2acd3ffe9ad301d9ed24ce810beca",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1E_LR1E4/attempt-205b9c8b17c3abc6-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "e29c07e4b8b1a5b43c02b2ecf908df4b544f95f69d28ef87d07d6e5dcac950f8",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/7b55ef7eac30ae6a/seed303/P1E_LR1E4/attempt-6fbc62b850027dee-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "5be3987dfb6c4d0334457252babd9aab4db8bde959ab9e86d6d79c563a133e52",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 100.0,
+  "annualized_rate": 100.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/7b55ef7eac30ae6a/seed404/P1E_LR3E5/attempt-af503815ed2ebaf4-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "028d66c530a9a963bf7a33e0a912395f3fbc6e94217c6e767bbc762716ec7910",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 113.0,
+  "annualized_rate": 113.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed303/P1E_LR1E4/attempt-90ae00d6e18b4a20-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "253d939536c27f2c2396c5deb385cdc1f15dc363674fec728303d3f86da5d132",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1N_LR1E4/attempt-8fec3a298abae726-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "1ebd051f589cdc939ef704f79503bf719dfd527d0f414411aa3be44c8d39ef93",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1E_LR3E5/attempt-e5338773f20b2997-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "ddfc14db43b94bceeb1c6bde2a2309f2c19f9b1e6d82598ee75721a3d63913f7",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1N_LR3E5/attempt-d6f55bd1138f7914-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "f1ff2062232f383019e8d92dd6670daf8e857ed1cdf978bf9085065366b0eeb1",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR1E4/attempt-2da4512a926c0535-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "50eb499b7d2e4195e995ab4f7968f69ec9b9eaedd684406aa72f7d96daaa9742",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR1E4/attempt-2da4512a926c0535-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "4342c6f3ef56bbdc4fd68dc26dfe766b464ba29eae5cae5c789af457054cf161",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR3E5/attempt-3ed9b840117658de-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "8c6a288138494985002aa157ece6122e9d9ba55e3a6330d221d5a2219308b0c2",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR3E5/attempt-3ed9b840117658de-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "6087bc114667fe62d19e3b1fb4749c16c45465a653bceef5722741a9ca81c71c",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR3E5/attempt-0fa8315ad2dbf50f-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "d474f9643007b310af0a26e3e7597f3078c32c0faf1066da601468e68bd0b607",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1N_LR3E5/attempt-0fa8315ad2dbf50f-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "ff06a5f84b3a0259f44363f608a87326b6064543dfb75850969a5e55b4f7ee4e",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "1ad49df7aa61ebfdb87e793e030f16ea61947ab0e29bf73f9c875ef3d6e1d5f6",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-03/return_traces/evaluation_return_trace.csv",
+  "sha256": "3f8be56d737b27d645737db3cbbe1a77b6f89dbe918c06178e6654833d412cb6",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-04/return_traces/evaluation_return_trace.csv",
+  "sha256": "a87229e3672b063c7a157f9e1d639ce55765484b509d66971e0ea1749d66b11f",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed303/P1E_LR1E4/attempt-daf94c5f46638322-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "aa368fe4cae348ac543a6e05247838e65b64ac03a359e4c941bc4c46c40a2d79",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR1E4/attempt-85cdaa0742739b64-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "8ac7d53927dc1ae6dc68cd9e4830a929819648258cb41787387097cfc3a0c3f3",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR1E4/attempt-85cdaa0742739b64-03/return_traces/evaluation_return_trace.csv",
+  "sha256": "29c1ae150067554358918e379b6e46e9540ac720c0c7ebd1eea14f1f78e6d177",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "eba4cc8232ce881631567b0e06e334a1d97383847fc63ee21f819360323297f9",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "f6bdd6afb03ce251bee1dad4f08aa5e346f02c118b99eb27dd7b205321fc5b74",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR3E5/attempt-e602e519c0d0d615-03/return_traces/evaluation_return_trace.csv",
+  "sha256": "2055fad052b37caad49222b52c9f5f2873086fe9860e153abdf197286a37dea5",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR3E5/attempt-e1fabbd5c977b1ef-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "891cd1de51b0ab2f4390f5fcb5b66419011a31a2faf7ba8409535f3abafa104b",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1N_LR3E5/attempt-e1fabbd5c977b1ef-03/return_traces/evaluation_return_trace.csv",
+  "sha256": "fcae6f30b91354f6d4a0756447efa2fa9cd06a497799fdd40166be58e99a1073",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/8cc6ca5e45e4f993/seed404/P1E_LR1E4/attempt-331e878a248b63d0-02/return_traces/evaluation_return_trace.csv",
+  "sha256": "f982731da2abad5c6ebbacea8f3288975b9e7149fb2aeb604713400c9e9c22f4",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1N_LR1E4/attempt-5e05cc6f1912d3a5-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "f2cacebf55bcc45dbe6ba612dfdd2a0d066ddc54bddc970254f16e0599a48e56",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1E_LR3E5/attempt-a536c2e271e74c38-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "59de59cdbbce043336311e6b35fa229721c9d537189da37bd0dcc254a1e0c9cd",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1N_LR3E5/attempt-21b02bd48ba6a19f-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "3be4d5d097bacd1ca5658a51449d4adaee558b8dff97d871ce330362e7a368b3",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed303/P1E_LR1E4/attempt-2f0067b87188bead-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "c116a711040d9e91a5699d7a854b3fb9c4ac29fac290bf9d1900ec34f28f9364",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1N_LR1E4/attempt-5566d595a71264b3-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "4e9dc2952df763020efa3c03db7011d5968efe7efbbcd7a82fba9c1fcd4cbdfc",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1E_LR3E5/attempt-1a8874857149799e-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "97a202e145e5b46cdafc6dbd4d8b96121ace0fc31ad2fd173e6ede7e1ebfb047",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1N_LR3E5/attempt-e25bbd5d96056c85-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "37866d39db3c2ac796601f57bb835f8f504acce7e3d6b9291a59de7a45fe0375",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/c0e53cf18b7d60dd/seed404/P1E_LR1E4/attempt-205b9c8b17c3abc6-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "1332ce1a31b56095671648a60d6f74654ef030e12bb6b6c10dc3d6411b97b980",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/7b55ef7eac30ae6a/seed303/P1E_LR1E4/attempt-6fbc62b850027dee-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "9f663f43cff39e22d66d1fa80ad14718afeef445f9bd57bf2e0d532efdc6b7c2",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 100.0,
+  "annualized_rate": 100.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/7b55ef7eac30ae6a/seed404/P1E_LR3E5/attempt-af503815ed2ebaf4-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "87fdafd38d7ca1991a75f841ff006aa14d4725cfbdd265fe0677ba05330c5dcd",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 113.0,
+  "annualized_rate": 113.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed303/P1E_LR1E4/attempt-90ae00d6e18b4a20-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "46ef01481f24ed56dab9e64a90a362defb36b3856dc97d30ad9c25ff997b8faa",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 101.0,
+  "annualized_rate": 90.43
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1N_LR1E4/attempt-8fec3a298abae726-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "dada2e028f15be6b1f960b3851eac700f102bb6df498b7c68f2e1ba2f2bd6725",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1E_LR3E5/attempt-e5338773f20b2997-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "bd1fd2b7c3abb1f2ccb5036d92a963ccfd48e90a4974ddea576c3c8e79c440eb",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 101.0,
+  "annualized_rate": 90.43
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1_decision/1434685bfdf52911/seed404/P1N_LR3E5/attempt-d6f55bd1138f7914-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "1ca6e682489fe501adbdcb67f23e4bf486f353f7ca54060c7818d9a9b0934ea6",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1N_LR1E4/attempt-4f96f9f1162d8652-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "a21b4ba591d800b0adac33a2f94d62d29de05344557904a511eb1bf42df2cf5e",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1E_LR3E5/attempt-7f1ef86c888c7dfb-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "272cd6819f53d75a7ca3970a1cb8a17bdd50a7988aa935a1f1465a96b3962c29",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 15.0,
+  "annualized_rate": 2.85
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1N_LR3E5/attempt-a00927dd45e81e51-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "531ab22e249a9b2e2e8149ad27a3c4e3581f08195bc931e26a2a5643f001c000",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 24.0,
+  "annualized_rate": 4.57
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1E_LR1E4/attempt-e6aafcea75d18901-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "f01b929fbc56dd67f3b6581e239d5c4cc7600b309d5a13c25df8e18269742c6b",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1N_LR1E4/attempt-9769446ec1d16fb0-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "148b038d6ec4bfa5408c83688c850fd186fcb38644289e91bcd385270cb378c2",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1E_LR3E5/attempt-986c2a922cdc6797-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "6b084c2f55fd6b4fd1d66136f717acbe24c1b5bad61dcc3237af7981af4bd8a3",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 21.0,
+  "annualized_rate": 4.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1N_LR3E5/attempt-92281df418b70fc0-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "978cfbb2f356bb22bc1cebb8316241efebe41fd1647d8c2782af0eb86594d8c1",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 4.0,
+  "annualized_rate": 0.76
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1E_LR1E4/attempt-4ac9fba13469eaec-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "67e101ff1f0aa3e3888bfeb0d7574decced37fb865278f5de3704e07c2476a2b",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1N_LR1E4/attempt-4f96f9f1162d8652-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "6329f7ae2f987d5ac47e2daca7baa79ecbae00cf70c44e598a0002c27514208f",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1E_LR3E5/attempt-7f1ef86c888c7dfb-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "3189319a768e4f3eff538ddabbe9f5a0d14abd201631bcdd628895eeaaf69164",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 2.0,
+  "annualized_rate": 2.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1N_LR3E5/attempt-a00927dd45e81e51-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "ffed7781a3fc1ef889c1002bb6c7cc3a5313572e9593e97bd4a48a9021b152d2",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 4.0,
+  "annualized_rate": 4.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1E_LR1E4/attempt-e6aafcea75d18901-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "c17f9137690b83e5b2f9c6d5d30f1d548c458a19de55a10d0a85ed12f526ca95",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1N_LR1E4/attempt-9769446ec1d16fb0-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "f5889cd1ee398e670e047a559b11f03135e1776f8e9ccfed2469b17802e67e5d",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1E_LR3E5/attempt-986c2a922cdc6797-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "c2bc24f5ccc96dc1f2a0cbcfb7ea956871e5571ae7d1180416128bf54f16effb",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 4.0,
+  "annualized_rate": 4.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1N_LR3E5/attempt-92281df418b70fc0-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "bb86b1f75441df2fe0eb89b11e2ddbf64b3eaa0ed9b44568595ab7d9b35016b5",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 2.0,
+  "annualized_rate": 2.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1E_LR1E4/attempt-4ac9fba13469eaec-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "eafc3cf81babda4398a55996192a6d3d120f01865925c5ac5582312546ce08bd",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1N_LR1E4/attempt-4f96f9f1162d8652-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "d5aede86d521b6b09a7498bda2c9e07ad8fa055343969882d22ab196afd822a7",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1E_LR3E5/attempt-7f1ef86c888c7dfb-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "84979c595917c424b628b53013b728471e0502452a6f93a71cd0e75b22a2466b",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 221.0,
+  "annualized_rate": 221.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1N_LR3E5/attempt-a00927dd45e81e51-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "8bdc8edb24ee8c55ca897367c4ecf08730215c08eb41d1cf3638f1f9a2ccf37d",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 3.0,
+  "annualized_rate": 3.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed303/P1E_LR1E4/attempt-e6aafcea75d18901-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "0383376bb393cde23dc9f4e88580db14eb231d26163fbb4ec9af0d6918b16175",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 153.0,
+  "annualized_rate": 153.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1N_LR1E4/attempt-9769446ec1d16fb0-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "2db66e9beda843896040c1d5a1f48db66ee15d18f4ea3823df0bed8f85501d18",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 5.0,
+  "annualized_rate": 5.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1E_LR3E5/attempt-986c2a922cdc6797-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "af448baa751e65504508964382978012d1c30629edccd991415c3db73d7384ff",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 333.0,
+  "annualized_rate": 333.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1N_LR3E5/attempt-92281df418b70fc0-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "7880f0d10d46341faaadfd9bce669ecc25e5528d3d423174533fae1475559310",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 3.0,
+  "annualized_rate": 3.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close/bfbfd6443b849275/seed404/P1E_LR1E4/attempt-4ac9fba13469eaec-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "f5029cc1dc166b62766180293f163105081b418babd0e444205cb6a64fa4bb39",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 166.0,
+  "annualized_rate": 166.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1N_LR1E4/attempt-612019dea06e508e-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "7c3c1311808ce31aa23be5a1cc992ac3dbd213614bf1f2b9a944842d7471f0a7",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1E_LR3E5/attempt-8bd561a9c8a13aac-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "4a26a15f9c7a28dbec11cf23575e164f00984b5cbce2add68d7373efacd603c9",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 150.0,
+  "annualized_rate": 28.54
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1N_LR3E5/attempt-e9f4c1bbd93ea914-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "9cf597bbfb7e45bb616a3e988a7e470f64353874f7719638b763fb5c759a2d47",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 58.0,
+  "annualized_rate": 11.04
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1E_LR1E4/attempt-db5e0ef559c28d22-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "86ade0c699c17c10a7bb93ee33054b85cb472ceaa9d2f95bacdc4cb4bfce0af7",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1N_LR1E4/attempt-7112a15bac4de5db-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "8e828119408c754f8c3bec800744babe9dcc2f5b34abe0cf657236ada6ac9f74",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1E_LR3E5/attempt-ebd6c351fd4c293a-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "7b1201806c48425b3fd9e38b0428c04f515d5c0aefd86b5b5b45eedcf2c1cd13",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 32.0,
+  "annualized_rate": 6.09
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1N_LR3E5/attempt-f545e6999a595f0e-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "8f39380d56682789e3358a585aff6c335c872421306666bfdbda7d1dbe614d5f",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 41.0,
+  "annualized_rate": 7.8
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1E_LR1E4/attempt-bd9887ff5c26bd65-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "40cf3c75bbf826b0761cfacf22cc65016153ea0dae2814eb8473ec1c370229d3",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1N_LR1E4/attempt-73844f87dcd10a77-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "6e2ac3f25bbbba918b2bee5f33710438190201f5974e4ea6e8948ff9e29437db",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1E_LR3E5/attempt-4c302834843dc589-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "3924298d1e1276ee134348acd18b76ac7f1c41103360ed9004ec4a550c3a2bc5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 150.0,
+  "annualized_rate": 28.54
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1N_LR3E5/attempt-c95eba6dcc838877-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "d6e765ce0997c0675b04149dccdfd9e28066668f64126016949e85b9bd2bd1ca",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 58.0,
+  "annualized_rate": 11.04
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1E_LR1E4/attempt-31699dd4582a06ce-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "89e1ceebf03a2299c2830cfff1a922c9bcf517799b92059a4efd4fc374a85fbc",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1N_LR1E4/attempt-80ea725c208bf34e-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "c45a0d50c7c2ad16c4a678b45bdbc63b6ca32e5467f3adfe3937bb70fa34ca70",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1E_LR3E5/attempt-3bcbe4c490643d5f-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "25a591d1c0db424f2a0ad5ac8e7dfc32956b73113b25adf51cfbb638ae40031f",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 32.0,
+  "annualized_rate": 6.09
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1N_LR3E5/attempt-76059da5a8b3d12b-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "9d54656d193e6f68a8a90d692b6a37d46a4a56df8b374da6c8bc243d09514cba",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 41.0,
+  "annualized_rate": 7.8
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1E_LR1E4/attempt-a706856aa7f18508-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "e02b0965b7705953a083f8ec88d625adebb5237e62248589e9747162ea317d72",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1N_LR1E4/attempt-eecee55620087b16-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "06e654732382cc80b74d20d693e50b46c8ffa3f2da20ae103ee32d1199460532",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1E_LR3E5/attempt-b7b69517494260cd-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "75880721a08caf5e6b93ceca84c5bd6848c905be2f030a8ea661373fa2932dee",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 142.0,
+  "annualized_rate": 27.02
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1N_LR3E5/attempt-a7237341882616e3-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "f0520e2a4628457c6d3bf603b13de35daeaf6e0382f1db998e36e85efb9dc46d",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 128.0,
+  "annualized_rate": 24.36
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1E_LR1E4/attempt-07dfeb610346fe4c-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "bec5843fe5ce673dfa43e31a222aa9f65f26302d0289d98ec0097403c2a27568",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1N_LR1E4/attempt-95ea0c63c280cfcd-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "9b017c7ea4e5fe0c6ec4e7957d14c0441fb519d388f37d81abd8cb9a0a2e6c5d",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1E_LR3E5/attempt-f2c2978bc0b6068a-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "a4bb95c96bea12fdf1d4dbfc0f6f23cf89afd24a1ae82f0ed9a63f11465a4eb4",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 14.0,
+  "annualized_rate": 2.66
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1N_LR3E5/attempt-592c18ab1bb4db2c-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "48230837909130cb9836a1edaf064666a8d0769fec5b518bdd9b7fbc1129ced6",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 103.0,
+  "annualized_rate": 19.6
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1E_LR1E4/attempt-bc68ee014ad13def-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "15286dd1dc61758f4406d9be76479a0e259f96181bd8bd8d1b8796522dfe85eb",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1N_LR1E4/attempt-612019dea06e508e-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "439d21ac9cc399a0d4ec7cdc6b93619aa843af71f53ca04c271fe2dfc4a8497c",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1E_LR3E5/attempt-8bd561a9c8a13aac-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "2f2e754e152c366b5bc0106628acf54e8a1c64957edacc75ad2c6c672e7b4362",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 66.0,
+  "annualized_rate": 59.09
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1N_LR3E5/attempt-e9f4c1bbd93ea914-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "b878b74b2f76766541be40db2000ebd244cd4686d03bd1e21b62483a90ab2c7b",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 26.0,
+  "annualized_rate": 23.28
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1E_LR1E4/attempt-db5e0ef559c28d22-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "6eced8c893b29a647b59a41f0786dc3dc412c064062b92ec7bf2ddb646855d49",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1N_LR1E4/attempt-7112a15bac4de5db-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d9c327c666f701a0c90ffab873d7ffae1792ce95a5f38198c06e23a16ba83739",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1E_LR3E5/attempt-ebd6c351fd4c293a-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "c3035c3df66f5150ae7f6c7fe852b2e8f16c457a5df7c0c5786fbac96f60d74b",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 13.0,
+  "annualized_rate": 11.64
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1N_LR3E5/attempt-f545e6999a595f0e-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d8436ce34fd2d7cd47ab6f57c29d5ec4610439922f727c0a9b689b6eef34c0e7",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 12.0,
+  "annualized_rate": 10.74
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1E_LR1E4/attempt-bd9887ff5c26bd65-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "9ab8a9177153d445f628b420a8e17884e7a69fa2baa3a7417032205ec7fb9727",
+  "split": "train_tail_epoch",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1N_LR1E4/attempt-73844f87dcd10a77-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "3ddd3b11a969940005ccb3fcb06f69f95dc0b5f2d1b680969b1e7fefc327d437",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1E_LR3E5/attempt-4c302834843dc589-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "070c225ad09cc4e5d37be5c2c51df0df99fca5e33c4341d0266393459f964cd4",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 50.0,
+  "annualized_rate": 50.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1N_LR3E5/attempt-c95eba6dcc838877-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "66d810a488e5b0664bd4a1ee91af3b6b4a66dd186860be42ee1a0c6bf8501516",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 14.0,
+  "annualized_rate": 14.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1E_LR1E4/attempt-31699dd4582a06ce-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "52e790f293f35924d8ee1014755ff1638bad9f23ccab5da2412c4b7d935e51b9",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1N_LR1E4/attempt-80ea725c208bf34e-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "0f1778e1fee127f45079f83d5758dd0a116a4149cbb30d97746b2fab79e6c7fe",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1E_LR3E5/attempt-3bcbe4c490643d5f-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "a005be578a2231fef54f4c75812db9b977d702b7bf905a3ac4aceff7d7dd04bb",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 6.0,
+  "annualized_rate": 6.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1N_LR3E5/attempt-76059da5a8b3d12b-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "9574def25f0202fdfda3d99d3d9f66e21b30bfa85268038f78ca6bfd832e4df6",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 8.0,
+  "annualized_rate": 8.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1E_LR1E4/attempt-a706856aa7f18508-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "8e707161c0cf004fce5430389447456623890fa8a0a7bf539af6582033ab7515",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1N_LR1E4/attempt-eecee55620087b16-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "aa018a01ed0a33271af9ee1f7a312047b4353f054f26f5cfe99f51ea11463281",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1E_LR3E5/attempt-b7b69517494260cd-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "73d1e6607395369ff4d5335f9fee9ee9a3ef95a6d4048e37b87ecee541ffba59",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 42.0,
+  "annualized_rate": 42.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1N_LR3E5/attempt-a7237341882616e3-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "14ac5a222dcfd8e0d7730458c950fc475bcd6f090a752de2b1e14a6d65a0c51c",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 38.0,
+  "annualized_rate": 38.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1E_LR1E4/attempt-07dfeb610346fe4c-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "21a93ca562fa40644cdd1eaff2d7cb33bd0473ab13dce5b4e25163529df962f8",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1N_LR1E4/attempt-95ea0c63c280cfcd-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "8a7962c8ce32f339f8c2b020fab2310665c3b7ab065e1d94390f56a67c22f5a6",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1E_LR3E5/attempt-f2c2978bc0b6068a-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "e66841b9a63a93f4fb5cb76a10ff1eff67152ba695be75ed88dd2d3cea379346",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 3.0,
+  "annualized_rate": 3.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1N_LR3E5/attempt-592c18ab1bb4db2c-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "cb65b95ecfe2f5b393bee1867f0f35ec00e31356399893bd596c0fd581cb55da",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 34.0,
+  "annualized_rate": 34.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1E_LR1E4/attempt-bc68ee014ad13def-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "5677e1e68a115be30da0c3a5a091abd63945e76952524c912badadbe6afa92ac",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1N_LR1E4/attempt-612019dea06e508e-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "2bdb04c5a22c583118e8e8312c9530fb4a5ad34ff985becd98bcce6c4cee73f5",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1E_LR3E5/attempt-8bd561a9c8a13aac-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "8d00ce395fae3dd273d191b38abd7a3c2408b5b2f11ee8544e7801553c9360c7",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 108.0,
+  "annualized_rate": 96.7
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1N_LR3E5/attempt-e9f4c1bbd93ea914-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "415c57fda5eab96e5c54475693f468804d9e8e8101da2104f189418e7d4f7232",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 100.0,
+  "annualized_rate": 89.53
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed303/P1E_LR1E4/attempt-db5e0ef559c28d22-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "0082a9fd9bf23ac77f9fddf747597cd3fc35734e93968eb1b25b5f42599d5052",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 101.0,
+  "annualized_rate": 90.43
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1N_LR1E4/attempt-7112a15bac4de5db-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "5e02334095a930283895aeef63cbe98bca74826ac6030c2aeab7f09022f76f65",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1E_LR3E5/attempt-ebd6c351fd4c293a-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "5c983eff1e59392e223a3a4b55c35236b9f7556ea95eb1050d9ac9f7021c4f82",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 128.0,
+  "annualized_rate": 114.6
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1N_LR3E5/attempt-f545e6999a595f0e-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "eb99704b2baecb034f7ad95845045408c7522bbdc98c8457fd543d2e90479ca3",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 107.0,
+  "annualized_rate": 95.8
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/cd823e2b5c753497/seed404/P1E_LR1E4/attempt-bd9887ff5c26bd65-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "927484bea6e68584827753c2c1e809b4ca78d9beb376aa1731f98871c9b80a2c",
+  "split": "evaluation",
+  "rows": 2446,
+  "closed_trades": 129.0,
+  "annualized_rate": 115.5
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1N_LR1E4/attempt-73844f87dcd10a77-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "22a8a35a0968240898138311a21a363c43668ca1452a4e7dde7e032e5b60e002",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1E_LR3E5/attempt-4c302834843dc589-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "63d51cd22c50304859d1c5b25efe844e73430fd830ea4f89fada866c5c8108c4",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 92.0,
+  "annualized_rate": 92.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1N_LR3E5/attempt-c95eba6dcc838877-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "bf792058267f2bf231512634ff66dbb777b177a730b315fe8c55b97b74d0bd62",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 84.0,
+  "annualized_rate": 84.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed303/P1E_LR1E4/attempt-31699dd4582a06ce-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "4a8ad78dd96f30b5822c9ae8ba12b413b8f5dceacf20ac1474033655efaca425",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1N_LR1E4/attempt-80ea725c208bf34e-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "0f446c9e0a259f982fbbd7acfd602dd35552327acc0c6232284cad7a2deeb4f9",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1E_LR3E5/attempt-3bcbe4c490643d5f-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "71bbebdf43f4c3299693f4162f56abc18c79fcd1d004910eebdfe9c58cb590da",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 113.0,
+  "annualized_rate": 113.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1N_LR3E5/attempt-76059da5a8b3d12b-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "2b1cdca68dd0aeb777ce7a239f563669056f436a861335843f75f316e8ed024c",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 92.0,
+  "annualized_rate": 92.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/1d3fc9df64987fb9/seed404/P1E_LR1E4/attempt-a706856aa7f18508-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "82d0e6d1738162eb773cfeae1c7978d21d0fd62b6693dc4b700a6e0c26b0eb36",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 114.0,
+  "annualized_rate": 114.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1N_LR1E4/attempt-eecee55620087b16-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "bb75595e723240dfdc6db3ece0575ed2d31fffbbec71866a96751f9129c0cdef",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1E_LR3E5/attempt-b7b69517494260cd-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "a490f70c24e0c2fd05519dd090a4863be01c8d8ccfcfec40d4d130d286952202",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 99.0,
+  "annualized_rate": 99.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1N_LR3E5/attempt-a7237341882616e3-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "c00be33d66448ea286d0abd6f04811ae7b804607b7e7df2b87005481ce4118f8",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 84.0,
+  "annualized_rate": 84.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed303/P1E_LR1E4/attempt-07dfeb610346fe4c-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "42d2723c4316ec3f16f22584b104cca667eaed0ff5e8ec3b359f1d33536be5bb",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 85.0,
+  "annualized_rate": 85.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1N_LR1E4/attempt-95ea0c63c280cfcd-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "cb42d582be279915bc65a009af1ec80b9bdd1545621f9b51fc1113e60b61fff8",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1E_LR3E5/attempt-f2c2978bc0b6068a-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "5eac0c7a6ffcc7052cd7003c306777e19630397e297659a5b082113fc5189e32",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 113.0,
+  "annualized_rate": 113.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1N_LR3E5/attempt-592c18ab1bb4db2c-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "104ec1dd5f17feb7ee8dec8a25931c97eed7d03e6cb162a4864fa582adc52a3d",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 101.0,
+  "annualized_rate": 101.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260811_v1/886b776e022d0d7c/seed404/P1E_LR1E4/attempt-bc68ee014ad13def-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "14af723f847097a46e4ae9cbd39d02a4a1d4e4c4260488da50d13d4c92cc639b",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 114.0,
+  "annualized_rate": 114.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1N_LR1E4/attempt-d68cd8cffe2d69a1-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "709244028cb508bb10cfa9932fd8f6af747c2ac2660cc23d491daa5c5a311fa2",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 1.0,
+  "annualized_rate": 0.19
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1E_LR3E5/attempt-e3c27079c10a4953-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "d8225161d29e7205b22d861abc5dd67db8d9f5145f681ec9cf6e15aa540fe4f9",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 1.0,
+  "annualized_rate": 0.19
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1N_LR3E5/attempt-1ca33e3c3d72b033-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "498f67b7f7dc261e03c1a46bebc61f39933b29016f7e3db0da887207d8c19ff4",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 2.0,
+  "annualized_rate": 0.38
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1E_LR1E4/attempt-dcbb2a8edca4c746-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "c532b42d726aaa1811bfbcd373f1350757e18712b747e40a7adfc61d5e2c4bdd",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1N_LR1E4/attempt-48f1fc7d37945987-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "38826bf48caacbdd460d462d3fb2b30f68e7e7eab35e08a332882cff20c603aa",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1E_LR3E5/attempt-5a8c505a3cbdff77-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "27f748f9fd7afa1d686c42eacfa9ddf6f3da1e663a498a4757ec4e31bc9f4075",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 10.0,
+  "annualized_rate": 1.9
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1N_LR3E5/attempt-f8a9496599c2262a-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "5fe6cdb8c2b8f7d35e03a4ea84031bdd18513c94a44636c8db9498714fa74501",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 6.0,
+  "annualized_rate": 1.14
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1E_LR1E4/attempt-044398d7f621607f-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "68003d0e111e6ffdf2028524b607f9463eca40406254a5fe8d4dc8707e9e52f1",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1N_LR1E4/attempt-f71a75883aac7388-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "d1a9c83896c04bf5a8c07e21c5c4fb062484a7cd2fdb00cd92acc26ab2ec6ee6",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1E_LR3E5/attempt-aa1decf37b3c5d31-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "caccc653eb6256bf9b9d941259015c95ddbd137fc0c2b14d8fb62a7eadf3f899",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 1.0,
+  "annualized_rate": 0.19
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1N_LR3E5/attempt-94d06973837a9479-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "5adc8c861baf8d3feec9b253aaad62ee8600c929b18c0e5b4267bea9647ff131",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 2.0,
+  "annualized_rate": 0.38
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1E_LR1E4/attempt-af889420598741be-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "3b1ac4bf33932f05e5006630c14b83fe6ff6ea615b99752aa85a156c2be22ea4",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1N_LR1E4/attempt-22080b4b744b8e48-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "ea1636f0d129a2695cbab3ea5360fa4fcb2f96665fc4dbed37fa1b94ac34ba6b",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1E_LR3E5/attempt-212608acb2b5adad-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "1ee17e73211ecf73e4d1b0709f4ee3485694e525b37549702238cd201af44cb5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 10.0,
+  "annualized_rate": 1.9
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1N_LR3E5/attempt-a04dd8f731def3bb-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "2632b1f212f8eb5f8f28c773672df056bf8e4c9542a4457488c1ac15960323d9",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 6.0,
+  "annualized_rate": 1.14
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1E_LR1E4/attempt-5a9775a683cac447-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "49bfa8e92684d5b67b66cda3e0cffc3e9ed2707a521b5029e616b655b5bea8b5",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1N_LR1E4/attempt-d68cd8cffe2d69a1-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "f16dd609fce9ec11c1b8289473d4087d155c766e6911e57fd6a019e426f3aad7",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1E_LR3E5/attempt-e3c27079c10a4953-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "c53363ae7a9043149440c2a332a4ff6cd3e13efa2e391f520fc9eefcaddc0391",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1N_LR3E5/attempt-1ca33e3c3d72b033-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "250627854949f7d301ab3841a968947bb2750f25b3f3946fbc2c44cc267dd9b6",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1E_LR1E4/attempt-dcbb2a8edca4c746-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "362834c0139c057c0e76e1be04af431d9ee743a53b697abb85b28d5439c1a6bf",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1N_LR1E4/attempt-48f1fc7d37945987-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "ddbbec47051372149dd5179bc532bddf43b1161c62606822bae98f2a7e053411",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1E_LR3E5/attempt-5a8c505a3cbdff77-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "d0c3c3c20817f54719773a850b3f574b757f83857ea1e501ff9994c99f1b431e",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 2.0,
+  "annualized_rate": 2.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1N_LR3E5/attempt-f8a9496599c2262a-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "1d777b9f807bb74370392201ece1f571da64d96091c9f1f20c10b0781d27934d",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 1.0,
+  "annualized_rate": 1.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1E_LR1E4/attempt-044398d7f621607f-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "81c0557051414b45aee4bf26ce0a6728e5d1a00c81364e383274dbb78519e39e",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/3939010d865dfa63/seed303/P1E_LR1E4/attempt-982da089e4dacb43-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "0a8d35c43f76a495a6766bb07bb6a3d4ff8cd90c0abe6d4857c637dfbe7a3a82",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 47.0,
+  "annualized_rate": 47.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/3939010d865dfa63/seed404/P1E_LR3E5/attempt-bf9f7003d6c12aa1-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "4463268b1597ec6f2f68a43167bd886444abc6310cc354ebdffaf5c9440626c5",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 87.0,
+  "annualized_rate": 87.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1N_LR1E4/attempt-f71a75883aac7388-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "fc4b0a18cc8bc2efdcdf43b84ac7c5fce1bf696e0d92342e6424dccfc7b49ca5",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1E_LR3E5/attempt-aa1decf37b3c5d31-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "84d2bd51a7593e500b51a9ccb4b9ae79680db32e04939b6e9f233781387df1ab",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1N_LR3E5/attempt-94d06973837a9479-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "12e8e0e02e7e7eb1a30c265c47dbaa807ef0faebe705c163fe90b8782320d608",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1E_LR1E4/attempt-af889420598741be-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "2aaa76606b6581c43a34766cb34bfac595e4c0766393b14559ba0d527301695d",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1N_LR1E4/attempt-22080b4b744b8e48-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "7a8a63a926d654a0ff35d8d6a244fe282fbf1cd35369e3b077ce305d2d024eab",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1E_LR3E5/attempt-212608acb2b5adad-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "4be1744169df8b2bec7387c3b40fedf1326ac4b550e4c98fc0a7293c5a0a1290",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 2.0,
+  "annualized_rate": 2.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1N_LR3E5/attempt-a04dd8f731def3bb-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "668aa991695a69d031158b5789b22fa8ce0c475b61c6156f561f2d0cc06e5076",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 1.0,
+  "annualized_rate": 1.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1E_LR1E4/attempt-5a9775a683cac447-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "eee990ac77862640a74b1fc211295ba200bce24a7f009828b14c37a1584de492",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1N_LR1E4/attempt-d68cd8cffe2d69a1-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "0a16fb09a7478c98d602fcb1c079bff8fcc4e65cc7c8194f6717d5c518214e83",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1E_LR3E5/attempt-e3c27079c10a4953-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "a64f48d571f02fb95664a011180b11f8652e3bed48aebd85350bb8078ea1d6a3",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 224.0,
+  "annualized_rate": 224.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1N_LR3E5/attempt-1ca33e3c3d72b033-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "e3f0f957d0ecfe7a2c3f9ee823140014e625af7dd8d5f06d7d86ccb7fb4887fc",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 4.0,
+  "annualized_rate": 4.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed303/P1E_LR1E4/attempt-dcbb2a8edca4c746-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "fbeb62676dfd19b475ecdf490acfa0e06795007e33546497a475fea7543ea4aa",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 138.0,
+  "annualized_rate": 138.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1N_LR1E4/attempt-48f1fc7d37945987-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "d50da8209121e363b3bdca9beac507f0b05da022059495f2938709c4ed4ec622",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1E_LR3E5/attempt-5a8c505a3cbdff77-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "1bf6359027b6893141fbdb57e4f72ffe2534046ec99e277cf01dcf1699750684",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 273.0,
+  "annualized_rate": 273.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1N_LR3E5/attempt-f8a9496599c2262a-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "9fd64a268e8d5ddd993c2a63c2fdd905e977dab3ac8a714c327304c7d6ff815a",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 1.0,
+  "annualized_rate": 1.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/14e7ce8208ac9776/seed404/P1E_LR1E4/attempt-044398d7f621607f-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "9cc6562c9a30965c1999c73db35b181cdc2319e7f0a4e73c952afea52fa07db3",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 149.0,
+  "annualized_rate": 149.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/3939010d865dfa63/seed303/P1E_LR1E4/attempt-982da089e4dacb43-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "b81565c309f17a56fb8bf90d3c217cef09a6c5433aa7c825bf636aa84c7fa75e",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 381.0,
+  "annualized_rate": 381.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/3939010d865dfa63/seed404/P1E_LR3E5/attempt-bf9f7003d6c12aa1-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "04f8a9a98daa230d6662f0c327067578a36abef63c3b2ec6a8474e1c01e65089",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 262.0,
+  "annualized_rate": 262.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1N_LR1E4/attempt-f71a75883aac7388-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "eb968adc82ae475cc70589ad5643b5e07c13110cad46cafe14473b89a450f736",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1E_LR3E5/attempt-aa1decf37b3c5d31-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "77f8a5efb4a692b037252a691be76a8d60f3982ba3bca3583ff15138000fd7ec",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 224.0,
+  "annualized_rate": 224.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1N_LR3E5/attempt-94d06973837a9479-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "9eecb75a321cb15d45b009c16ed17997e75fd115120558d68fa16848ecb721c2",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 4.0,
+  "annualized_rate": 4.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed303/P1E_LR1E4/attempt-af889420598741be-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "dd46bc493718890336d5c067c99340fe830af8fe76d490dd1835b7cd08e0103f",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 138.0,
+  "annualized_rate": 138.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1N_LR1E4/attempt-22080b4b744b8e48-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "b882e980512740b99f40a09413752c3b97d2d3c8daab14a6d7befe17a84a4a58",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1E_LR3E5/attempt-212608acb2b5adad-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "10630b5cda5fb8c963ee4782700e739696ef20f5522afbc48f9ca57e84a91c53",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 273.0,
+  "annualized_rate": 273.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1N_LR3E5/attempt-a04dd8f731def3bb-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "ef25cef9df9f9b2e705c9de1b4c5dd464aa898c92a302e5b9b78c758fbb18f6d",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 1.0,
+  "annualized_rate": 1.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260815_v2/0c70ab2ce7804750/seed404/P1E_LR1E4/attempt-5a9775a683cac447-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "88ac4a6ca942a383117b7f6c3c750ff9aaf186e293020621aeb4ce6cef492aac",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 149.0,
+  "annualized_rate": 149.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed303/P1E_LR1E4/attempt-6efa43275e2d56ca-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "8bba4dda7abede91d3ff923269b9319880da9c4b57debf5141ff408488f30d91",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed404/P1N_LR1E4/attempt-0a8b0da7880f9047-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "70a19e7d837856f9a31e827ef8093432bb498554ad9300dc1e49c5392349bf09",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed404/P1E_LR3E5/attempt-3bb1d7e807455f50-01/return_traces/train_epoch_return_trace.csv",
+  "sha256": "97282be878047e8934a1d4e1c2f837b01d2da973a2750781aaf8537839841dc4",
+  "split": "train_epoch",
+  "rows": 11509,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed303/P1E_LR1E4/attempt-6efa43275e2d56ca-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "2a7cd289064b0d30c00b76fb1fb33f75ca4cae5f228ce41326e6a25152867eb1",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed404/P1N_LR1E4/attempt-0a8b0da7880f9047-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "c721ffd93ae2cfe1b8584ffe8e9d4c25280af16786f6c97225a995863550e762",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed404/P1E_LR3E5/attempt-3bb1d7e807455f50-01/return_traces/train_tail_epoch_return_trace.csv",
+  "sha256": "b41db2a8772436886c3e5ec2001826cd95e19f535613ce6d5b9e98a1d8951b9b",
+  "split": "train_tail_epoch",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed303/P1E_LR1E4/attempt-6efa43275e2d56ca-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "dd71b3c10490ee5e8cb90043cf9a85f296b40aab3bc4ceee2c47d890f78e4eef",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 100.0,
+  "annualized_rate": 100.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed404/P1N_LR1E4/attempt-0a8b0da7880f9047-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "c2a3def0200820c2078a06661155668b96950890c3ff2ac81246dd6ade69aaf8",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 0.0,
+  "annualized_rate": 0.0
+ },
+ {
+  "host": "gamma",
+  "trace": "p1_difficulty_lr_factorial_20260818_v4_live_state_and_explicit_close_decision/ac0941e7bdb1a163/seed404/P1E_LR3E5/attempt-3bb1d7e807455f50-01/return_traces/evaluation_return_trace.csv",
+  "sha256": "454a2318a0eb74ebfe1450454af2addf8263a2d5fff1699d58abf74812a3dcdc",
+  "split": "evaluation",
+  "rows": 2190,
+  "closed_trades": 113.0,
+  "annualized_rate": 113.0
+ }
+]
