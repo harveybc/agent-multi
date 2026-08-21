@@ -629,7 +629,7 @@
   "eval_seed": 0,
   "return_trace_evidence": {
     "schema_version": "project3_return_trace_evidence_v1",
-    "generated_at": "2026-08-21T04:06:19Z",
+    "generated_at": "2026-08-21T07:09:36Z",
     "run_id": "wp4_smoke",
     "pipeline_plugin": "rl_pipeline_with_validation",
     "trace_schema_version": "stage_b_return_trace_v1",

@@ -1,0 +1,29 @@
+{
+ "adversarial_ordering_best_to_worst": [
+  "equal_activity_low_risk",
+  "equal_econ_small_gap",
+  "equal_econ_big_gap",
+  "active_moderate_loss",
+  "equal_activity_high_risk",
+  "catastrophic_loss",
+  "one_losing_trade",
+  "overtrading",
+  "zero_trades"
+ ],
+ "csv": "docs/audits/evidence/RANK_DISAGREEMENT_CPU3_2026_08_21.csv",
+ "epochs": 3,
+ "forbidden_keys_found": [],
+ "max_abs_rank_delta": 1,
+ "no_test_fact_loaded": true,
+ "schema": "agent_multi.rank_disagreement_study.v1",
+ "top_by_fitness": [
+  2,
+  1,
+  3
+ ],
+ "top_by_monitor": [
+  1,
+  2,
+  3
+ ]
+}

@@ -4,7 +4,7 @@
   "calendar_policy_id": null,
   "config_hash": "649f4d1141314b557d0b8aeb15017e52764850169b5d8fb20da76b91dd169ff6",
   "contains_heldout_rows": false,
-  "data_file": "/tmp/agent_multi_split_jcbnnhux/train_tail.csv",
+  "data_file": "/tmp/agent_multi_split_ombxdkde/train_tail.csv",
   "data_file_hash": "870199e30e14e4ea2bd0dd840e2fd13a45473c98f847ab335ffcac8cd7f4a299",
   "episode_id": "wp4_smoke::train_tail_epoch",
   "feature_column_count": 84,
@@ -120,7 +120,7 @@
     "closed_trades_cumulative",
     "terminal_settlement_event"
   ],
-  "generated_at": "2026-08-21T04:06:17Z",
+  "generated_at": "2026-08-21T07:09:34Z",
   "heldout_boundary": "2025-01-01",
   "market_state_profile_family": null,
   "market_state_profile_hash": null,

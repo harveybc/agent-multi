@@ -294,6 +294,10 @@ def main(argv=None) -> int:
         "internal_test_split": sealed_proof,
         "accepted": accepted,
         "typed_negative": negative,
+        # WP1 2026-08-21: the FULL per-epoch history is durable
+        # evidence — the 22-epoch GPU run could not be reconstructed
+        # because this was missing; never again.
+        "history": history,
         "model_artifacts_not_committed": {
             "policy": ("binaries stay OUT of git; hashes are the "
                        "evidence (audit 2026-08-20: duplicate 33.4MB "

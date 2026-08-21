@@ -381,6 +381,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "rank_disagreement_study.py": {
+   "purpose": "WP1 (order 2026-08-21): zero-GPU rank disagreement study. Scores every persisted epoch under BOTH separated contracts (easy_checkpoint_monitor.v1 vs easy_doin_candidate_fitness.v1), ranks, reports deltas and the nine adversarial fixtures, and mechanically asserts no test fact was loaded. Refuses a report without per-epoch history.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

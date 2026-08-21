@@ -1,0 +1,4 @@
+epoch,train_tail_trades,val_trades,monitor_value,monitor_components,fitness_lex_key,eligible,reason,monitor_rank,fitness_rank,rank_delta
+1,1,5,0.0,"{""train_tail_rap"": 0.0, ""validation_rap"": 0.0, ""mean_rap"": 0.0, ""gap"": 0.0, ""gap_penalty"": 0.0, ""risk_lambda"": 1.0, ""gap_penalty_beta"": 0.25}","[0, 0.0, -0.0]",True,,1,2,-1
+2,6,40,0.0,"{""train_tail_rap"": 0.0, ""validation_rap"": 0.0, ""mean_rap"": 0.0, ""gap"": 0.0, ""gap_penalty"": 0.0, ""risk_lambda"": 1.0, ""gap_penalty_beta"": 0.25}","[1, 0.0, -0.0]",True,,2,1,1
+3,4,8,0.0,"{""train_tail_rap"": 0.0, ""validation_rap"": 0.0, ""mean_rap"": 0.0, ""gap"": 0.0, ""gap_penalty"": 0.0, ""risk_lambda"": 1.0, ""gap_penalty_beta"": 0.25}","[0, 0.0, -0.0]",True,,3,3,0
