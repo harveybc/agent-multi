@@ -205,11 +205,19 @@ def main(argv=None) -> int:
                    for t in detail["traces"].values())
     episodic_path = any(row.get("composite_raw") is not None
                         for row in history)
+    # internal 'test' split: diagnostic label + sealed-2025 proof
+    # (resolved BEFORE acceptance: TR-6 — unavailable proof refuses)
+    test_trace = (detail["traces"].get("evaluation")
+                  or detail["traces"].get("validation_epoch")
+                  or detail["traces"].get("train_epoch") or {})
     best = result.get("best_model_path")
     eligible = bool(best) and Path(str(best)).is_file()
 
+    sealed_ok = (
+        (test_trace.get("last_timestamp") or "")[:4] < "2025"
+        if test_trace.get("last_timestamp") else False)
     accepted = (actor_moved > 0 and distinct >= 10 and activity
-                and episodic_path and eligible)
+                and episodic_path and eligible and sealed_ok)
     negative = None
     if not accepted:
         negative = {
@@ -219,6 +227,7 @@ def main(argv=None) -> int:
             "real_split_activity": activity,
             "episodic_call_path": episodic_path,
             "eligible_checkpoint_selected": eligible,
+            "sealed_proof_available": sealed_ok,
             "failed_evidence": {
                 "last_epoch_gates": detail["last_epoch"],
                 "trace_descriptors": {k: {kk: v[kk] for kk in
@@ -229,10 +238,7 @@ def main(argv=None) -> int:
             "promotion": "REFUSED",
         }
 
-    # internal 'test' split: diagnostic label + sealed-2025 proof
-    test_trace = (detail["traces"].get("evaluation")
-                  or detail["traces"].get("validation_epoch")
-                  or detail["traces"].get("train_epoch") or {})
+
     sealed_proof = {
         "label": "diagnostic_internal_test_split",
         "influences_selection": False,
@@ -240,10 +246,10 @@ def main(argv=None) -> int:
                  "(_early_stop_composite); the internal test table is "
                  "display-only in this pipeline"),
         "max_timestamp": test_trace.get("last_timestamp"),
-        "sealed_2025_untouched": (
-            (test_trace.get("last_timestamp") or "")[:4] < "2025"
-            if test_trace.get("last_timestamp") else
-            "REFUSED_NO_TIMESTAMP_EVIDENCE"),
+        "sealed_2025_untouched": sealed_ok,
+        "proof_basis": ("max trace timestamp" if sealed_ok else
+                        "REFUSED_NO_TIMESTAMP_EVIDENCE — acceptance "
+                        "refused (TR-6)"),
     }
 
     report = {

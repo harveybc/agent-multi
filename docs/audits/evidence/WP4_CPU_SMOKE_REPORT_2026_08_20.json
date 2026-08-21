@@ -5,7 +5,7 @@
   "max_epochs": 3,
   "seed": 101
  },
- "commit": "8aac53d3ef3df1b725eefae1065c56bfed771439",
+ "commit": "fe4de8176657188f896fc28f5bfc8e33e3f47a7b",
  "config_sha256": "649f4d1141314b557d0b8aeb15017e52764850169b5d8fb20da76b91dd169ff6",
  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
  "device": {
@@ -14,7 +14,7 @@
   "gpu_uuid": null,
   "requested": "cpu"
  },
- "elapsed_seconds": 27.8,
+ "elapsed_seconds": 27.5,
  "env_origin": {
   "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
   "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
@@ -28,6 +28,7 @@
   "label": "diagnostic_internal_test_split",
   "max_timestamp": "2018-03-07 00:00:00",
   "note": "selection consumes train_tail/validation only (_early_stop_composite); the internal test table is display-only in this pipeline",
+  "proof_basis": "max trace timestamp",
   "sealed_2025_untouched": true
  },
  "learning": {
@@ -36,13 +37,13 @@
   "gradient_updates": 1408
  },
  "model_artifacts_not_committed": {
-  "best_sha256": "e02465a528ec2280ef9fe1d8c95ab177e641a3fd05c0e316dacc1f7f4badf0da",
+  "best_sha256": "41278e8d54e4dd34881896285b55d8d51aa0ab1b9cc481dffdb87789e64217f7",
   "policy": "binaries stay OUT of git; hashes are the evidence (audit 2026-08-20: duplicate 33.4MB models removed)"
  },
  "no_eligible_checkpoint": null,
  "schema": "agent_multi.wp4_smoke.v2",
  "selected_checkpoint": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/best_model.zip",
- "selected_checkpoint_sha256": "e02465a528ec2280ef9fe1d8c95ab177e641a3fd05c0e316dacc1f7f4badf0da",
+ "selected_checkpoint_sha256": "41278e8d54e4dd34881896285b55d8d51aa0ab1b9cc481dffdb87789e64217f7",
  "split_facts": {
   "last_epoch": {
    "composite": 0.013548974080959498,
@@ -63,7 +64,7 @@
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2018-01-26 00:00:00",
     "rows": 720,
-    "sha256": "b5071d747e3a29fb057b0e60121cb3b7e97104bb3609865a86bae66e3ce423d5",
+    "sha256": "1eea5f1ee06bc08b4e37e2d0d7884c2f9aadcb4f473d0c433a5d7af5152b3e6a",
     "trades": "10"
    },
    "train_tail_epoch": {
@@ -72,7 +73,7 @@
     "first_timestamp": "2018-01-19 04:00:00",
     "last_timestamp": "2018-01-26 00:00:00",
     "rows": 42,
-    "sha256": "bff819527f81fcced36f7a77a9ec21b932002faeb80ad803a5c1bf49af8db3a1",
+    "sha256": "2867abb8c160e385f90a3f94dd06b7c750f83fed4590d1d7bee28959a797cfeb",
     "trades": "4"
    },
    "validation_epoch": {
@@ -81,7 +82,7 @@
     "first_timestamp": "2018-01-26 04:00:00",
     "last_timestamp": "2018-03-07 00:00:00",
     "rows": 233,
-    "sha256": "f9d4f7ea30d138c56d9d63a909318a52df19ecc53692c0fb7512d2fe332d4eb2",
+    "sha256": "4dde2a0b8b55ab99d4d1dce390a0948cb9797cac90b70b7c5891461a5a10c715",
     "trades": "8"
    }
   }

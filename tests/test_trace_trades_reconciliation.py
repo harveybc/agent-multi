@@ -38,7 +38,7 @@ class TestReconciliation:
         assert result["terminal_settlement_trades"] == settlement
         if settlement:
             event = result["terminal_settlement_event"]
-            assert event["closes"] == settlement
+            assert event["settlement_delta"] == settlement
             assert event["open_positions_at_last_bar"] == open_pos
 
     def test_fabrication_refused_summary_cannot_mint_trades(self):
@@ -60,13 +60,50 @@ class TestReconciliation:
             tr.reconcile_trace_trades(rows_with([0, 3, 1]), 3,
                                       terminal_open_positions=0)
 
-    @pytest.mark.parametrize("bad", [2.0, "3", True, None, float("nan")])
+    def test_unexplained_plus_two_jump_refuses(self):
+        # TR-8: +2 with one open position is one close too many
+        with pytest.raises(tr.TraceReconciliationError,
+                           match="cannot mint"):
+            tr.reconcile_trace_trades(rows_with([0, 1]), 3,
+                                      terminal_open_positions=1)
+
+    def test_settlement_appends_row_market_row_untouched(self):
+        rows = rows_with([0, 1, 2])
+        rows[-1]["price"] = 123.0
+        tr.reconcile_trace_trades(rows, 3, terminal_open_positions=1)
+        assert len(rows) == 4                     # appended, not mutated
+        assert rows[2]["closed_trades_cumulative"] == 2  # market row
+        settlement_row = rows[3]
+        assert settlement_row["closed_trades_cumulative"] == 3
+        assert "before=2;delta=1;after=3" in \
+            settlement_row["terminal_settlement_event"]
+
+    def test_four_way_count_equality(self, tmp_path):
+        """final cumulative == summary == authority-derived ==
+        settlement after_count (TR-4)."""
+        rows = rows_with([0, 1, 2])
+        result = tr.reconcile_trace_trades(rows, 3,
+                                           terminal_open_positions=1)
+        event = result["terminal_settlement_event"]
+        assert rows[-1]["closed_trades_cumulative"] == 3
+        assert event["after_count"] == 3
+        assert result["final_cumulative"] == 3
+
+    @pytest.mark.parametrize("bad", [2.0, "3", True, None,
+                                     float("nan"), float("inf")])
     def test_non_integral_counts_refuse_no_truncation(self, bad):
         rows = [{"closed_trades_cumulative": bad, "trades": bad}]
         with pytest.raises(tr.TraceReconciliationError,
                            match="not an integer"):
             tr.reconcile_trace_trades(rows, 1,
                                       terminal_open_positions=1)
+
+    def test_negative_count_refuses(self):
+        with pytest.raises(tr.TraceReconciliationError,
+                           match="negative"):
+            tr.reconcile_trace_trades(
+                [{"closed_trades_cumulative": -1}], 1,
+                terminal_open_positions=1)
 
     def test_counter_exceeding_summary_refuses(self):
         with pytest.raises(tr.TraceReconciliationError,
@@ -82,7 +119,8 @@ class TestReconciliation:
             writer = csv.DictWriter(
                 handle, fieldnames=["closed_trades_cumulative",
                                     "trades",
-                                    "terminal_settlement_event"])
+                                    "terminal_settlement_event"],
+                extrasaction="ignore")
             writer.writeheader()
             writer.writerows(rows)
         descriptor = {

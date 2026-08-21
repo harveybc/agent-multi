@@ -436,15 +436,32 @@ def reconcile_trace_trades(trace_rows, trades_total, *,
             f"only {bound} position(s) were open at the last bar — a "
             "summary cannot mint trades the trajectory never carried "
             "(audit 2026-08-20)")
-    trace_rows[-1]["closed_trades_cumulative"] = total
     event = {"type": "terminal_settlement",
-             "closes": settlement,
+             "before_count": final_running,
+             "settlement_delta": settlement,
+             "after_count": total,
              "open_positions_at_last_bar": bound,
-             "running_counter_before": final_running,
-             "summary_trades_total": total}
-    trace_rows[-1]["terminal_settlement_event"] = (
-        "" if settlement == 0 else
-        f"closes={settlement};open={bound}")
+             "reason": ("environment settles open position(s) on data "
+                        "end AFTER the last step's info" if settlement
+                        else "no settlement required")}
+    if settlement:
+        # TR-1 letter: the last MARKET row is never mutated — the
+        # settlement is its own appended row carrying before/delta/
+        # after/reason from direct environment settlement facts.
+        last = trace_rows[-1]
+        trace_rows.append({
+            **{k: last.get(k) for k in ("timestamp", "asset",
+                                        "timeframe", "split",
+                                        "episode_id", "run_id", "seed",
+                                        "bar_index", "price",
+                                        "equity")},
+            "action_raw": None, "position": 0.0, "reward": 0.0,
+            "trades": total,
+            "closed_trades_cumulative": total,
+            "terminal_settlement_event": (
+                f"before={final_running};delta={settlement};"
+                f"after={total};open={bound}"),
+        })
     return {"terminal_settlement_trades": settlement,
             "terminal_settlement_event": event,
             "final_cumulative": total}
