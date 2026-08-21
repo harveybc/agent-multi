@@ -42,6 +42,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pandas as pd
 
 from . import _activity_authority as _activity_auth
+from . import _episodic_activity_fitness as _episodic
 from . import _actor_liveness as _liveness
 from . import _lexicographic_selection as _lex
 from . import _paired_generalization as _paired
@@ -401,6 +402,36 @@ def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lam
         if contract["transport_scalar"] is None:
             return None
         return _lex.require_orderable(contract)
+    if metric == "episodic_activity_economic_v1":
+        # WP3 (order 2026-08-20): the ACCEPTED episodic objective IS
+        # the selector for this contract. Facts come from the split
+        # summary the rollout just produced; the plateau must be
+        # declared in config (the plugin refuses otherwise), and any
+        # missing fact refuses typed — there is NO legacy scalar
+        # fallthrough from this branch.
+        episodic_cfg = summary.get("_episodic_fitness_config")
+        if not isinstance(episodic_cfg, dict):
+            raise _episodic.EpisodicFitnessError(
+                "episodic_activity_economic_v1 requires the contract's "
+                "episodic_activity_fitness config on the summary "
+                "(_episodic_fitness_config); refusing the legacy "
+                "scalar path")
+        trades = _activity_auth._coerce_count(
+            summary.get("trades_total"))
+        if trades is None:
+            raise _episodic.EpisodicFitnessError(
+                "episodic selection requires an Integral trades_total")
+        rows = summary.get("scored_steps") or summary.get(
+            "nested_role_scored_rows")
+        result = _episodic.evaluate_episode(
+            total_return=_safe_float(summary.get("total_return")),
+            max_drawdown_fraction=_drawdown_fraction(summary),
+            sharpe=None,
+            closed_trades=trades,
+            scored_rows=int(rows) if rows else 0,
+            config=episodic_cfg)
+        summary["episodic_fitness"] = result
+        return float(result["selection_value"])
     if metric == _paired.METRIC_NAME:
         value, source = _paired._split_utility(summary)
         if value is None:
@@ -949,6 +980,18 @@ class PipelinePlugin:
             f"nested split manifest {manifest_path} — refusing to score "
             "a slice with no declared role or context semantics")
 
+    def _assert_episodic_contract(self, config: Dict[str, Any]) -> None:
+        """WP3: a contract that declares require_episodic_fitness may
+        never train under a legacy scalar metric — fail-closed before
+        the first epoch."""
+        if config.get("require_episodic_fitness") and \
+                str(config.get("selection_metric")) != \
+                "episodic_activity_economic_v1":
+            raise _episodic.EpisodicFitnessError(
+                "contract requires episodic_activity_economic_v1 but "
+                f"selection_metric={config.get('selection_metric')!r} — "
+                "the legacy scalar path is refused for this contract")
+
     def _make_split_env(self, env_plugin_name: str, base_config: Dict[str, Any], csv_path: str, agent_plugin,
                         context_rows: int | None = None):
         """Build one evaluation/training env for a split csv.
@@ -1062,6 +1105,8 @@ class PipelinePlugin:
             # from the same authority; the inherited 0-vs-1 default
             # contradiction is eliminated in the next materialized
             # identity. An explicit 0 refuses at resolve time.
+            summary["_episodic_fitness_config"] = config.get(
+                "episodic_activity_fitness")
             summary["_selection_min_trades"] = \
                 _activity_auth.resolve_floor(
                     config, key="selection_min_trades")
@@ -1274,6 +1319,10 @@ class PipelinePlugin:
         mode: str = "train",
     ) -> Dict[str, Any]:
         mode = str(mode).lower()
+        # WP3 (order 2026-08-20): a contract that requires the episodic
+        # objective refuses any legacy scalar metric before anything
+        # else exists.
+        self._assert_episodic_contract(config)
         # AUD-P1LR-20260815-235: an experiment program may declare the
         # observation fields its candidates run under. Binding them HERE
         # — before the split envs, the preprocessor and the model exist

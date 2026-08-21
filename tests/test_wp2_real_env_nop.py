@@ -46,20 +46,30 @@ def make_env(eth_slice, threshold=0.1):
 
 def run_policy(env, actions_fn, bars=400):
     obs, _ = env.reset(seed=1)
-    total, neg, rewards = 0.0, 0, []
+    total, neg, rewards, equity_series = 0.0, 0, [], []
     info = {}
     for i in range(bars):
         obs, r, term, trunc, info = env.step([actions_fn(i)])
         total += r
         rewards.append(r)
+        equity_series.append(float(info.get("equity", 10000.0)
+                                   or 10000.0))
         if r < 0:
             neg += 1
         if term or trunc:
             break
     trades = int(info.get("trades", info.get("trades_total", 0)) or 0)
-    equity = float(info.get("equity", 10000.0) or 10000.0)
+    # correction 1 (2026-08-20 20:40): drawdown is DERIVED from the
+    # recorded equity series of the trajectory, never hard-coded.
+    peak, max_dd = equity_series[0], 0.0
+    for value in equity_series:
+        peak = max(peak, value)
+        if peak > 0:
+            max_dd = max(max_dd, (peak - value) / peak)
     return {"steps": i + 1, "total_reward": total, "negative_steps": neg,
-            "trades": trades, "equity": equity, "rewards": rewards}
+            "trades": trades, "equity": equity_series[-1],
+            "equity_series": equity_series,
+            "max_drawdown_fraction": max_dd, "rewards": rewards}
 
 
 class TestRealEnvironmentNop:
@@ -96,17 +106,19 @@ class TestRealEnvironmentNop:
             make_env(eth_slice),
             lambda i: 0.5 if (i // 40) % 2 else -0.5)
         assert active["trades"] > 0
-        def episode(run, dd):
+        def episode(run):
             return ef.evaluate_episode(
                 total_return=run["equity"] / 10000.0 - 1.0,
-                max_drawdown_fraction=dd, sharpe=None,
-                closed_trades=run["trades"],
+                max_drawdown_fraction=run["max_drawdown_fraction"],
+                sharpe=None, closed_trades=run["trades"],
                 scored_rows=run["steps"], config=dict(CAL))
-        nop_ep = episode(nop, 0.0)
-        active_ep = episode(active, 0.10)
+        nop_ep = episode(nop)
+        active_ep = episode(active)
+        assert active["max_drawdown_fraction"] >= 0.0  # measured
         assert active_ep["selection_value"] > \
             nop_ep["selection_value"]
-        # catastrophic loss stays economically bad and visibly worse
+        # SYNTHETIC catastrophic counterexample (labelled synthetic:
+        # not derived from this trajectory)
         catastrophic = ef.evaluate_episode(
             total_return=-0.95, max_drawdown_fraction=0.95,
             sharpe=None, closed_trades=active["trades"],
