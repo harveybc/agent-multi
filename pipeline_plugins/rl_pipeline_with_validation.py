@@ -47,6 +47,7 @@ from . import _actor_liveness as _liveness
 from . import _lexicographic_selection as _lex
 from . import _paired_generalization as _paired
 from . import _return_trace as _trace_mod
+from . import _sac_plateau_lr as _plateau
 from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import (
     apply_observation_contract,
@@ -711,6 +712,13 @@ class PipelinePlugin:
         "selection_metric": "total_return",
         "risk_penalty_lambda": 1.0,
         "l1_generalization_gap_penalty_beta": 0.25,
+        # Order 2026-08-21 §3: optional epoch-level Reduce-on-Plateau
+        # contract for SAC. None = disabled = byte/decision identical
+        # fixed-LR behavior. When set it must be a mapping with EXPLICIT
+        # factor / lr_patience / min_lr / threshold / cooldown (and
+        # optionally start_epoch, else l1_patience_start_epoch), and the
+        # selection metric must be easy_checkpoint_monitor_v1.
+        "plateau_lr": None,
 
         # eval
         "eval_seed": 0,
@@ -756,6 +764,7 @@ class PipelinePlugin:
         "early_stop_min_validation_trades",
         "early_stop_no_trade_penalty",
         "selection_metric", "risk_penalty_lambda", "l1_generalization_gap_penalty_beta",
+        "plateau_lr",
         "warm_start_model", "return_trace_dir", "evaluate_test_split",
         "write_results_sidecar", "execution_cost_curriculum_epochs",
         "actor_liveness_probe_observations",
@@ -1558,7 +1567,35 @@ class PipelinePlugin:
                 best_composite = -math.inf
                 no_improve = 0
                 best_checkpoint_saved = False
+
+                # Order 2026-08-21 §3: build the plateau-LR controller
+                # BEFORE the loop so a malformed contract or a wrong
+                # selection metric refuses before any training spend.
+                _plateau_selection_metric = str(
+                    config.get("selection_metric",
+                               self.params["selection_metric"]))
+                _initial_lrs = _plateau.observed_sac_lrs(model)
+                plateau_controller = _plateau.build_controller_from_config(
+                    {**self.params, **{k: v for k, v in config.items()
+                                       if v is not None}},
+                    selection_metric=_plateau_selection_metric,
+                    default_start_epoch=l1_patience_start_epoch,
+                    initial_lr=(
+                        _initial_lrs.get("actor")
+                        if _initial_lrs.get("actor") is not None
+                        else float(config.get("learning_rate", 3e-4))
+                    ),
+                )
+                if (plateau_controller is not None
+                        and _initial_lrs.get("actor") is None):
+                    raise _plateau.SacPlateauLrError(
+                        "plateau_lr requires a SAC model exposing an "
+                        "actor optimizer; none was found")
                 best_model_path = config.get("save_model") or "./agent_model.zip"
+                plateau_state_path = (
+                    str(Path(best_model_path).with_suffix(""))
+                    + ".plateau_lr_state.json"
+                ) if plateau_controller is not None else None
                 Path(best_model_path).parent.mkdir(parents=True, exist_ok=True)
 
                 history: List[Dict[str, Any]] = []
@@ -1857,6 +1894,34 @@ class PipelinePlugin:
                         agent_plugin.save(model, best_model_path)
                         best_checkpoint_saved = True
 
+                    # Order 2026-08-21 §2/§3: observed per-optimizer LR
+                    # is a required per-epoch report fact, recorded every
+                    # epoch whether or not the controller is enabled.
+                    observed_learning_rates = _plateau.observed_sac_lrs(
+                        model)
+                    plateau_record = None
+                    if plateau_controller is not None:
+                        plateau_record = plateau_controller.observe(
+                            epoch=epoch,
+                            monitor_value=composite,
+                            apply_fn=lambda _lr: _plateau.apply_lr_to_sac(
+                                model, _lr),
+                        )
+                        try:
+                            with open(plateau_state_path, "w",
+                                      encoding="utf-8") as _fh:
+                                json.dump({
+                                    "contract":
+                                        plateau_controller.contract(),
+                                    "state":
+                                        plateau_controller.state_dict(),
+                                }, _fh, indent=2)
+                        except OSError as _exc:
+                            raise _plateau.SacPlateauLrError(
+                                "cannot persist plateau-LR scheduler "
+                                f"state to {plateau_state_path}: {_exc}"
+                            ) from _exc
+
                     # AUD-P1LR-20260815-235: type the actor at THIS
                     # epoch. The probe combines uniformly distributed
                     # samples from the fit and validation rollouts that
@@ -1929,6 +1994,8 @@ class PipelinePlugin:
                         ),
                         "l1_patience_used": no_improve,
                         "l1_patience_max": l1_patience,
+                        "observed_learning_rates": observed_learning_rates,
+                        "plateau_lr": plateau_record,
                         "policy_actor_l1_before": a_b,
                         "policy_actor_l1_after": a_a,
                         "policy_actor_delta": a_a - a_b,
@@ -2139,6 +2206,10 @@ class PipelinePlugin:
                     )
                     final["mode"] = mode
                     final["history"] = history
+                    final["plateau_lr"] = ({
+                        "contract": plateau_controller.contract(),
+                        "final_state": plateau_controller.state_dict(),
+                    } if plateau_controller is not None else None)
                     final["best_composite"] = best_composite
                     final["best_model_path"] = None
                     final["activity_stopped_without_eligible_checkpoint"] = (
@@ -2189,6 +2260,10 @@ class PipelinePlugin:
                 )
                 final["mode"] = mode
                 final["history"] = history
+                final["plateau_lr"] = ({
+                    "contract": plateau_controller.contract(),
+                    "final_state": plateau_controller.state_dict(),
+                } if plateau_controller is not None else None)
                 final["best_composite"] = best_composite
                 final["stop_reason"] = stop_reason
                 final["best_model_path"] = str(Path(best_model_path).resolve())

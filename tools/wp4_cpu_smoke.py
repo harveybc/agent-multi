@@ -89,8 +89,14 @@ def build_config(args, features) -> dict:
         "min_split_rows": 100,
         "epoch_timesteps": args.epoch_timesteps,
         "max_epochs": args.max_epochs,
-        "l1_patience": max(2, args.max_epochs // 5),
-        "l1_patience_start_epoch": 0, "l1_min_delta": 1e-6,
+        # MUSASHI_CORRECTION_SMOKE_PATIENCE_WAS_UNAUTHORIZED_2026_08_21:
+        # stopping semantics are NEVER derived from the runtime budget.
+        # Both values are explicit CLI facts; argparse refuses their
+        # absence. Requested == effective by construction and both are
+        # persisted with provenance in the report.
+        "l1_patience": args.l1_patience,
+        "l1_patience_start_epoch": args.l1_patience_start_epoch,
+        "l1_min_delta": 1e-6,
         "window_size": 32, "initial_cash": 10000.0,
         "action_space_mode": "continuous",
         "continuous_action_threshold": 0.0,
@@ -101,8 +107,18 @@ def build_config(args, features) -> dict:
         "feature_columns": features,
         "feature_scaling": "rolling_zscore",
         "feature_scaling_window": 256,
-        "selection_metric": "episodic_activity_economic_v1",
-        "require_episodic_fitness": True,
+        # Order 2026-08-21 §3/§4: the smoke can run under either the
+        # episodic contract (default) or the easy checkpoint monitor —
+        # the matching fail-closed guard is asserted for whichever is
+        # chosen, and the plateau-LR contract (optional) requires the
+        # monitor metric.
+        "selection_metric": args.selection_metric,
+        "require_episodic_fitness": (
+            args.selection_metric == "episodic_activity_economic_v1"),
+        "require_easy_contracts": (
+            args.selection_metric == "easy_checkpoint_monitor_v1"),
+        **({"plateau_lr": json.loads(args.plateau_lr_json)}
+           if args.plateau_lr_json else {}),
         "episodic_activity_fitness": {
             "activity_plateau_low_rate": 50.0,
             "activity_plateau_high_rate": 300.0},
@@ -162,6 +178,24 @@ def main(argv=None) -> int:
     parser.add_argument("--output-dir", type=Path,
                         default=REPO / "docs/audits/evidence/wp4_smoke")
     parser.add_argument("--report", type=Path, default=None)
+    parser.add_argument(
+        "--l1-patience", type=int, required=True,
+        help="explicit early-stop patience; never derived from "
+             "--max-epochs (correction 2026-08-21)")
+    parser.add_argument(
+        "--l1-patience-start-epoch", type=int, required=True,
+        help="explicit epoch before which patience never counts; "
+             "never derived from --max-epochs (correction 2026-08-21)")
+    parser.add_argument(
+        "--selection-metric",
+        choices=["episodic_activity_economic_v1",
+                 "easy_checkpoint_monitor_v1"],
+        default="episodic_activity_economic_v1")
+    parser.add_argument(
+        "--plateau-lr-json", default=None,
+        help="explicit plateau-LR contract as JSON (factor, lr_patience, "
+             "min_lr, threshold, cooldown[, start_epoch]); requires "
+             "--selection-metric easy_checkpoint_monitor_v1")
     parser.add_argument("--preflight", action="store_true",
                         help="non-mutating: assert env origin, device "
                              "and data hash, then exit")
@@ -277,6 +311,20 @@ def main(argv=None) -> int:
         "device": device,
         "budgets": {"epoch_timesteps": args.epoch_timesteps,
                     "max_epochs": args.max_epochs, "seed": args.seed},
+        # Correction 2026-08-21: stopping semantics are explicit CLI
+        # facts with provenance — never derived from max_epochs.
+        "stopping_contract": {
+            "l1_patience": {
+                "requested": args.l1_patience,
+                "effective": args.l1_patience,
+                "provenance": "cli_explicit_required"},
+            "l1_patience_start_epoch": {
+                "requested": args.l1_patience_start_epoch,
+                "effective": args.l1_patience_start_epoch,
+                "provenance": "cli_explicit_required"},
+            "classification": "MECHANICS_RANK_DIAGNOSTIC_ONLY"
+            if args.l1_patience < 60 or args.max_epochs < 2000
+            else "long_horizon_contract"},
         "elapsed_seconds": round(elapsed, 1),
         "epochs_run": len(history),
         "stop_reason": result.get("stop_reason"),
