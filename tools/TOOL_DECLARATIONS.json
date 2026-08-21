@@ -374,6 +374,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "agent_courier.py": {
+   "purpose": "Owner order 2026-08-20: the barracks mail. Polls git fetch, scans fetched branches' docs/handoffs+docs/audits for documents whose filenames address the local general (X_TO_Y convention), dedupes by blob sha and injects a delivery prompt into the local general's own subscription CLI headlessly. Transport ONLY: no API keys, no permission changes, no authority; replies remain committed documents so the git audit trail is strengthened. PROTOTYPE STATUS: awaiting Musashi audit; no daemon enabled anywhere.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
