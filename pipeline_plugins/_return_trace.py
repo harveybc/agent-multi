@@ -67,6 +67,7 @@ TRACE_FIELDNAMES: Sequence[str] = (
     "slippage_paid",
     "trade_cost",
     "trades",
+    "closed_trades_cumulative",
 )
 
 
@@ -365,7 +366,47 @@ def build_trace_row(
         "slippage_paid": slippage_paid,
         "trade_cost": trade_cost,
         "trades": info.get("trades"),
+        # per-step running counter from the env info; the FINAL value is
+        # reconciled against the environment summary's trades_total by
+        # reconcile_trace_trades() before the trace is written
+        "closed_trades_cumulative": info.get("trades"),
     }
+
+
+class TraceReconciliationError(RuntimeError):
+    """The trace and the summary disagree in a direction settlement
+    cannot explain — refused, never patched silently."""
+
+
+def reconcile_trace_trades(trace_rows, trades_total) -> dict:
+    """Runtime finding 2026-08-20: make ``closed_trades_cumulative``'s
+    FINAL value equal the environment summary's ``trades_total``
+    EXACTLY.
+
+    The env settles the episode (forced close on data end) AFTER the
+    last step emitted its info, so the last row's running counter may
+    lag the summary by the terminal settlement. That settlement is
+    applied to the LAST row only, and is RECORDED — a lag is visible
+    accounting. A running counter EXCEEDING the summary has no such
+    explanation and refuses typed.
+    """
+    if not trace_rows:
+        return {"terminal_settlement_trades": 0}
+    try:
+        final_running = int(float(
+            trace_rows[-1].get("closed_trades_cumulative") or 0))
+    except (TypeError, ValueError):
+        final_running = 0
+    total = int(trades_total or 0)
+    settlement = total - final_running
+    if settlement < 0:
+        raise TraceReconciliationError(
+            f"trace running counter {final_running} exceeds the "
+            f"environment summary trades_total {total} — incoherent "
+            "accounting, trace refused")
+    trace_rows[-1]["closed_trades_cumulative"] = total
+    return {"terminal_settlement_trades": settlement,
+            "final_cumulative": total}
 
 
 def _safe_action_value(action: Any) -> Any:

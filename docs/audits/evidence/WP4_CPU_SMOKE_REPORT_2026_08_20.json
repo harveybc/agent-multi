@@ -1,12 +1,12 @@
 {
- "accepted": false,
+ "accepted": true,
  "budgets": {
   "epoch_timesteps": 512,
   "max_epochs": 3,
   "seed": 101
  },
- "commit": "92828f8ea334fa8209d8a7aa18e61a416f1d32f1",
- "config_sha256": "c345d274c16ce480139ff1bf3a667df0774ad50b90fa7a9ea25a06ef59975c04",
+ "commit": "8de6856be53ccaf398ccc0cfa7432cdba4fc17cb",
+ "config_sha256": "649f4d1141314b557d0b8aeb15017e52764850169b5d8fb20da76b91dd169ff6",
  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
  "device": {
   "cuda_visible_devices": "",
@@ -14,7 +14,7 @@
   "gpu_uuid": null,
   "requested": "cpu"
  },
- "elapsed_seconds": 8.2,
+ "elapsed_seconds": 28.1,
  "env_origin": {
   "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
   "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
@@ -31,26 +31,26 @@
   "sealed_2025_untouched": null
  },
  "learning": {
-  "actor_delta_sum": 0.0,
+  "actor_delta_sum": 347.2901428565383,
   "distinct_actions_max": 719,
-  "gradient_updates": 0
+  "gradient_updates": 1408
  },
- "no_eligible_checkpoint": true,
+ "no_eligible_checkpoint": null,
  "schema": "agent_multi.wp4_smoke.v2",
- "selected_checkpoint": null,
- "selected_checkpoint_sha256": null,
+ "selected_checkpoint": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/best_model.zip",
+ "selected_checkpoint_sha256": "d2dc18cd4e1c8b66189da7c9bd0bdb7834c927c6ef3207be8f7ff92be1171edc",
  "split_facts": {
   "last_epoch": {
-   "composite": null,
-   "composite_raw": -0.8467459104092145,
-   "early_stop_trade_gate_passed": false,
+   "composite": 0.013548974080959498,
+   "composite_raw": 0.013548974080959498,
+   "early_stop_trade_gate_passed": true,
    "epoch": 3,
-   "gradient_updates_total": 0,
-   "l1_checkpoint_eligible": false,
-   "policy_actor_delta": 0.0,
-   "policy_critic_delta": 0.0,
-   "train_tail_trades": 7,
-   "val_trades": 37
+   "gradient_updates_total": 1408,
+   "l1_checkpoint_eligible": true,
+   "policy_actor_delta": 68.50625253841281,
+   "policy_critic_delta": 320.8230344373733,
+   "train_tail_trades": 4,
+   "val_trades": 8
   },
   "traces": {
    "train_epoch": {
@@ -59,8 +59,8 @@
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2018-01-26 00:00:00",
     "rows": 720,
-    "sha256": "627e4bacbc187efa109e0eca965668afed5b31d5875c1c234c5532bfd49ec53d",
-    "trades": "74"
+    "sha256": "6c445b1b8d2711dfb1593447e7b56fb0c59512b1ee7f8cefa7134fec605c58a3",
+    "trades": "9"
    },
    "train_tail_epoch": {
     "distinct_actions": 41,
@@ -68,8 +68,8 @@
     "first_timestamp": "2018-01-19 04:00:00",
     "last_timestamp": "2018-01-26 00:00:00",
     "rows": 42,
-    "sha256": "d2e186bc5c25ffd01e171eac80b737ad46d9125779f41d11c655c58e0d9ae781",
-    "trades": "6"
+    "sha256": "549e7d5e476e4928f31fbf08f7b8e01e8d332041ebc9fab071de5431ef841cb3",
+    "trades": "3"
    },
    "validation_epoch": {
     "distinct_actions": 232,
@@ -77,50 +77,11 @@
     "first_timestamp": "2018-01-26 04:00:00",
     "last_timestamp": "2018-03-07 00:00:00",
     "rows": 233,
-    "sha256": "9b7035863246bd9038ec776c713fc5c19a9f90c0d9722192ee3b472228c95775",
-    "trades": "36"
+    "sha256": "3dd1487794263013065fd67038e148c7616e5611489ba7cc174cf37c5728d12b",
+    "trades": "7"
    }
   }
  },
  "stop_reason": "max_epochs_budget",
- "typed_negative": {
-  "actor_parameters_moved": false,
-  "distinct_actions_ge_10": true,
-  "eligible_checkpoint_selected": false,
-  "episodic_call_path": true,
-  "failed_evidence": {
-   "last_epoch_gates": {
-    "composite": null,
-    "composite_raw": -0.8467459104092145,
-    "early_stop_trade_gate_passed": false,
-    "epoch": 3,
-    "gradient_updates_total": 0,
-    "l1_checkpoint_eligible": false,
-    "policy_actor_delta": 0.0,
-    "policy_critic_delta": 0.0,
-    "train_tail_trades": 7,
-    "val_trades": 37
-   },
-   "trace_descriptors": {
-    "train_epoch": {
-     "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_epoch_return_trace.csv",
-     "sha256": "627e4bacbc187efa109e0eca965668afed5b31d5875c1c234c5532bfd49ec53d",
-     "trades": "74"
-    },
-    "train_tail_epoch": {
-     "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_tail_epoch_return_trace.csv",
-     "sha256": "d2e186bc5c25ffd01e171eac80b737ad46d9125779f41d11c655c58e0d9ae781",
-     "trades": "6"
-    },
-    "validation_epoch": {
-     "file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/validation_epoch_return_trace.csv",
-     "sha256": "9b7035863246bd9038ec776c713fc5c19a9f90c0d9722192ee3b472228c95775",
-     "trades": "36"
-    }
-   }
-  },
-  "promotion": "REFUSED",
-  "real_split_activity": true,
-  "type": "TYPED_NEGATIVE_SMOKE"
- }
+ "typed_negative": null
 }

@@ -580,6 +580,23 @@ def _early_stop_composite(
         calibrated_contract=calibrated,
     )
     trade_gate_passed = bool(activity["eligible"])
+    # runtime finding 2026-08-20 item 5: the authority verdict — reason
+    # codes plus PASSED and DERIVED counts — is attached to both
+    # summaries so the epoch history and reports expose exactly why a
+    # gate failed, directly observable.
+    gate_visibility = {
+        "reason_codes": activity["reason_codes"],
+        "train_monitor_trades_passed": train_tail_trades,
+        "inner_validation_trades_passed": val_trades,
+        "train_monitor_trades_derived": (
+            activity.get("evidence_verifications", {})
+            .get("train_monitor", {}).get("derived_trades")),
+        "inner_validation_trades_derived": (
+            activity.get("evidence_verifications", {})
+            .get("inner_validation", {}).get("derived_trades")),
+    }
+    train_tail_summary["activity_gate"] = gate_visibility
+    val_summary["activity_gate"] = gate_visibility
     composite = raw if trade_gate_passed else None
     return composite, raw, trade_gate_passed, train_tail_ret, val_ret, train_tail_trades, val_trades
 
@@ -1160,7 +1177,7 @@ class PipelinePlugin:
                     "source_kind": "return_trace",
                     "artifact_locator": str(metadata["trace_file"]),
                     "sha256": hashlib.sha256(trace_bytes).hexdigest(),
-                    "fact_key": "trades",
+                    "fact_key": "closed_trades_cumulative",
                     "producer_contract_id": str(
                         split_config.get("_run_config_hash")),
                 }
@@ -1303,6 +1320,11 @@ class PipelinePlugin:
         summary["score_boundary_opening_equity"] = score_boundary_equity
         summary["total_env_steps"] = steps
         summary.update(_action_summary_fields(action_stats, summary))
+        # runtime finding 2026-08-20: the final cumulative must equal
+        # trades_total exactly; the terminal settlement is recorded.
+        reconciliation = _trace_mod.reconcile_trace_trades(
+            trace_rows, summary.get("trades_total"))
+        summary["trace_trades_reconciliation"] = reconciliation
         summary["_return_trace_rows"] = trace_rows
         # Private, popped by _eval_on_split before the summary can reach
         # any record or sidecar.
@@ -1849,6 +1871,8 @@ class PipelinePlugin:
                         **selection_details,
                         "composite_raw": composite_raw,
                         "composite": composite,
+                        "activity_gate": val_summary.get(
+                            "activity_gate"),
                         "checkpoint_improved": improved,
                         "best_composite": best_composite if best_checkpoint_saved else None,
                         "l1_checkpoint_eligible": checkpoint_eligible,

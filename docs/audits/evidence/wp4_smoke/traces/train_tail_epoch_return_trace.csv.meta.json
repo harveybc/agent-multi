@@ -2,11 +2,11 @@
   "asset": "unknown_asset",
   "broker_profile": null,
   "calendar_policy_id": null,
-  "config_hash": "c345d274c16ce480139ff1bf3a667df0774ad50b90fa7a9ea25a06ef59975c04",
+  "config_hash": "649f4d1141314b557d0b8aeb15017e52764850169b5d8fb20da76b91dd169ff6",
   "contains_heldout_rows": false,
-  "data_file": "/tmp/agent_multi_split_eyx_gmg2/train_tail.csv",
+  "data_file": "/tmp/agent_multi_split_deh1nt94/train_tail.csv",
   "data_file_hash": "870199e30e14e4ea2bd0dd840e2fd13a45473c98f847ab335ffcac8cd7f4a299",
-  "episode_id": "asset_seed0::train_tail_epoch",
+  "episode_id": "wp4_smoke::train_tail_epoch",
   "feature_column_count": 84,
   "feature_columns": [
     "typical_price",
@@ -116,9 +116,10 @@
     "commission_paid",
     "slippage_paid",
     "trade_cost",
-    "trades"
+    "trades",
+    "closed_trades_cumulative"
   ],
-  "generated_at": "2026-08-21T02:50:11Z",
+  "generated_at": "2026-08-21T03:25:30Z",
   "heldout_boundary": "2025-01-01",
   "market_state_profile_family": null,
   "market_state_profile_hash": null,
@@ -135,7 +136,7 @@
   ],
   "observation_state_hash": "0792ad01825065de72edcf28bfb925436b2ef0ab1d9f77c5272911f01f761be4",
   "row_count": 42,
-  "run_id": "asset_seed0",
+  "run_id": "wp4_smoke",
   "schema_version": "stage_b_return_trace_v1",
   "seed": 0,
   "split": "train_tail_epoch",
@@ -146,6 +147,6 @@
   "stage_c_authorized": false,
   "timeframe": null,
   "trace_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_tail_epoch_return_trace.csv",
-  "trace_file_sha256": "d2e186bc5c25ffd01e171eac80b737ad46d9125779f41d11c655c58e0d9ae781",
+  "trace_file_sha256": "549e7d5e476e4928f31fbf08f7b8e01e8d332041ebc9fab071de5431ef841cb3",
   "trade_rate_band_id": null
 }

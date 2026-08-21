@@ -106,9 +106,13 @@ def build_config(args, features) -> dict:
         "episodic_activity_fitness": {
             "activity_plateau_low_rate": 50.0,
             "activity_plateau_high_rate": 300.0},
-        "sac_params": {"learning_rate": 3e-4, "batch_size": 64,
-                       "learning_starts": 128, "device": args.device,
-                       "seed": args.seed},
+        # the pipeline consumes these at TOP level (config.get), not
+        # inside a sac_params dict — runtime finding follow-up
+        "learning_rate": 3e-4, "batch_size": 64,
+        "learning_starts": 128, "device": args.device,
+        # correction 6: model artifacts land under --output-dir, never
+        # the repo root
+        "save_model": str(args.output_dir / "best_model.zip"),
         "seed": args.seed,
         "return_trace_dir": str(args.output_dir / "traces"),
         "output_dir": str(args.output_dir),
