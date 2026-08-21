@@ -74,3 +74,41 @@ class TestStoppingContractNotDerived:
         assert exc.value.code == 2
         err = capsys.readouterr().err
         assert "--l1-patience-start-epoch" in err
+
+
+class TestGpuUuidProvenance:
+    """Replication defect 2026-08-21: seed 404 ran on the 5090 (torch
+    name + CVD mask agree) but the report attributed the 5070 Ti UUID
+    from host index 0. The UUID must come from the mask when the mask
+    names one GPU-UUID; ambiguous host enumeration reports None."""
+
+    def test_mask_uuid_is_authoritative(self, tool, monkeypatch):
+        import types
+        fake_torch = types.SimpleNamespace(cuda=types.SimpleNamespace(
+            is_available=lambda: True,
+            get_device_name=lambda i: "NVIDIA GeForce RTX 5090"))
+        monkeypatch.setitem(sys.modules, "torch", fake_torch)
+        monkeypatch.setenv(
+            "CUDA_VISIBLE_DEVICES",
+            "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8")
+        facts = tool.resolve_device("cuda")
+        assert facts["gpu_uuid"] == (
+            "GPU-a9f35631-d36a-6cc6-c23b-eb0b36d50fb8")
+        assert facts["gpu_uuid_provenance"] == "cuda_visible_devices_mask"
+
+    def test_multi_gpu_without_mask_is_unresolved_not_wrong(
+            self, tool, monkeypatch):
+        import types
+        fake_torch = types.SimpleNamespace(cuda=types.SimpleNamespace(
+            is_available=lambda: True,
+            get_device_name=lambda i: "X"))
+        monkeypatch.setitem(sys.modules, "torch", fake_torch)
+        monkeypatch.delenv("CUDA_VISIBLE_DEVICES", raising=False)
+        fake_result = types.SimpleNamespace(
+            stdout="GPU-aaa\nGPU-bbb\n")
+        monkeypatch.setattr(tool.subprocess, "run",
+                            lambda *a, **k: fake_result)
+        facts = tool.resolve_device("cuda")
+        assert facts["gpu_uuid"] is None
+        assert facts["gpu_uuid_provenance"] == (
+            "ambiguous_multi_gpu_unresolved")

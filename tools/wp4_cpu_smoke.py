@@ -69,11 +69,27 @@ def resolve_device(requested: str) -> dict:
                 "CPU run (WP4-A)")
         facts["effective"] = "cuda"
         facts["torch_device_name"] = torch.cuda.get_device_name(0)
-        uuid = subprocess.run(
-            ["nvidia-smi", "--query-gpu=uuid",
-             "--format=csv,noheader"],
-            capture_output=True, text=True).stdout.strip().splitlines()
-        facts["gpu_uuid"] = uuid[0] if uuid else None
+        # Replication defect 2026-08-21 (seed 404): nvidia-smi
+        # enumerates the HOST, not the CUDA_VISIBLE_DEVICES mask, so
+        # index 0 here misattributed the 5070 Ti UUID to a run that
+        # torch placed on the 5090. When the mask itself names a
+        # GPU-UUID that IS the effective device; only an unmasked run
+        # may fall back to host enumeration, and then only if it is
+        # unambiguous (a single GPU).
+        cvd = facts["cuda_visible_devices"]
+        if cvd and cvd.startswith("GPU-") and "," not in cvd:
+            facts["gpu_uuid"] = cvd
+            facts["gpu_uuid_provenance"] = "cuda_visible_devices_mask"
+        else:
+            uuid = subprocess.run(
+                ["nvidia-smi", "--query-gpu=uuid",
+                 "--format=csv,noheader"],
+                capture_output=True, text=True).stdout.strip().splitlines()
+            facts["gpu_uuid"] = (
+                uuid[0] if len(uuid) == 1 else None)
+            facts["gpu_uuid_provenance"] = (
+                "host_single_gpu" if len(uuid) == 1
+                else "ambiguous_multi_gpu_unresolved")
     else:
         facts["effective"] = "cpu"
         facts["gpu_uuid"] = None

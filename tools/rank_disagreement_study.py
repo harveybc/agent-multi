@@ -66,24 +66,35 @@ def main() -> int:
         # EC-02: RAW values into the strict validators — no defaulting,
         # no int()/float() pre-coercion. Any missing, boolean, string,
         # fractional, negative or non-finite fact REFUSES the study.
+        # Replication defect 2026-08-21: the EC-02 rewrite read keys
+        # ("train_tail_return", ...) that the EXECUTING pipeline history
+        # never produces, so the strict path refused every real report
+        # and the corrected happy path had never run end to end. The
+        # binding below names the canonical rl_pipeline_with_validation
+        # history keys verbatim; there is no aliasing or fallback — a
+        # report without them still refuses.
         raw = {"train_tail_trades": row.get("train_tail_trades"),
                "val_trades": row.get("val_trades"),
-               "train_tail_return": row.get("train_tail_return"),
-               "val_return": row.get("val_return"),
-               "train_tail_drawdown": row.get("train_tail_drawdown"),
-               "val_drawdown": row.get("val_drawdown")}
+               "train_tail_total_return":
+                   row.get("train_tail_total_return"),
+               "val_total_return": row.get("val_total_return"),
+               "train_tail_max_drawdown_fraction":
+                   row.get("train_tail_max_drawdown_fraction"),
+               "val_max_drawdown_fraction":
+                   row.get("val_max_drawdown_fraction")}
         try:
             monitor = ec.easy_checkpoint_monitor(
-                train_tail_return=raw["train_tail_return"],
-                validation_return=raw["val_return"],
-                train_tail_drawdown=raw["train_tail_drawdown"],
-                validation_drawdown=raw["val_drawdown"])
+                train_tail_return=raw["train_tail_total_return"],
+                validation_return=raw["val_total_return"],
+                train_tail_drawdown=raw[
+                    "train_tail_max_drawdown_fraction"],
+                validation_drawdown=raw["val_max_drawdown_fraction"])
             fit = ec.easy_doin_candidate_fitness(
                 closed_trades=raw["val_trades"],
                 scored_rows=2190,
-                validation_return=raw["val_return"],
-                validation_drawdown=raw["val_drawdown"],
-                train_tail_return=raw["train_tail_return"],
+                validation_return=raw["val_total_return"],
+                validation_drawdown=raw["val_max_drawdown_fraction"],
+                train_tail_return=raw["train_tail_total_return"],
                 activity_config=CAL)
         except ec.EasyContractError as error:
             print(json.dumps({
