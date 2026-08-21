@@ -1586,6 +1586,9 @@ class PipelinePlugin:
                         else float(config.get("learning_rate", 3e-4))
                     ),
                 )
+                if plateau_controller is not None:
+                    _plateau.assert_not_resuming_plateau_run(
+                        config.get("warm_start_model"))
                 if (plateau_controller is not None
                         and _initial_lrs.get("actor") is None):
                     raise _plateau.SacPlateauLrError(

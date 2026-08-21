@@ -112,3 +112,31 @@ class TestGpuUuidProvenance:
         assert facts["gpu_uuid"] is None
         assert facts["gpu_uuid_provenance"] == (
             "ambiguous_multi_gpu_unresolved")
+
+
+class TestPlrScreenLabels:
+    """AUD-F1-20260821-PLR-02/PLR-04 regressions."""
+
+    def test_no_long_horizon_label_exists(self, tool):
+        src = (REPO / "tools" / "wp4_cpu_smoke.py").read_text()
+        assert "long_horizon_contract" not in src
+        assert "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN" in src
+
+    def test_holdout_is_named_diagnostic_not_test(self, tool):
+        src = (REPO / "tools" / "wp4_cpu_smoke.py").read_text()
+        assert "internal_test_split" not in src
+        assert '"diagnostic_holdout"' in src
+        assert "not_the_sealed_2025_test" in src
+
+    def test_facts_from_maps_test_trace_to_diagnostic_holdout(
+            self, tool, tmp_path):
+        trace = tmp_path / "test_return_trace.csv"
+        trace.write_text(
+            "timestamp,split,action_raw,closed_trades_cumulative\n"
+            "2018-03-07 04:00:00,test,0.1,0\n"
+            "2018-04-16 00:00:00,test,0.2,1\n")
+        facts = tool.facts_from([], tmp_path)
+        assert "diagnostic_holdout" in facts["traces"]
+        assert "test" not in facts["traces"]
+        assert facts["traces"]["diagnostic_holdout"]["file"].endswith(
+            "test_return_trace.csv")

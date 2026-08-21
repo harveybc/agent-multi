@@ -156,13 +156,19 @@ def facts_from(history, trace_dir: Path) -> dict:
     """Correction: complete per-split facts, hash-bound to their traces."""
     last = history[-1] if history else {}
     traces = {}
+    # AUD-F1-20260821-PLR-04: the 40-day holdout is reported as
+    # "diagnostic_holdout", never bare "test" — it is NOT the sealed
+    # 2025 test and repeated inspection under that name invites
+    # adaptation. The source filename (written by the pipeline) is
+    # retained verbatim in the descriptor's "file" field.
     for name in ("train_epoch", "train_tail_epoch", "validation_epoch",
                  "evaluation", "test"):
+        report_key = "diagnostic_holdout" if name == "test" else name
         path = trace_dir / f"{name}_return_trace.csv"
         if path.is_file():
             rows = list(_csv.DictReader(path.open()))
             stamps = [r.get("timestamp", "") for r in rows]
-            traces[name] = {
+            traces[report_key] = {
                 "file": str(path), "sha256": _sha_file(path),
                 "rows": len(rows),
                 "closed_trades_cumulative": (
@@ -261,7 +267,7 @@ def main(argv=None) -> int:
     # TR-L2: the boundary proof requires the ACTUAL diagnostic test
     # trace — NO fallback to train/validation; absent -> acceptance
     # refuses.
-    test_trace = detail["traces"].get("test") or {}
+    test_trace = detail["traces"].get("diagnostic_holdout") or {}
     best = result.get("best_model_path")
     eligible = bool(best) and Path(str(best)).is_file()
 
@@ -292,7 +298,8 @@ def main(argv=None) -> int:
 
 
     sealed_proof = {
-        "label": "diagnostic_internal_test_split",
+        "label": "diagnostic_holdout_120_40_40",
+        "not_the_sealed_2025_test": True,
         "influences_selection": False,
         "note": ("selection consumes train_tail/validation only "
                  "(_early_stop_composite); the internal test table is "
@@ -338,9 +345,18 @@ def main(argv=None) -> int:
                 "requested": args.l1_patience_start_epoch,
                 "effective": args.l1_patience_start_epoch,
                 "provenance": "cli_explicit_required"},
+            # AUD-F1-20260821-PLR-02: this tool's data contract is a
+            # fixed 120/40/40-day window; no stopping contract makes it
+            # long-horizon. The strongest truthful label is a bounded
+            # scheduler mechanism screen.
             "classification": "MECHANICS_RANK_DIAGNOSTIC_ONLY"
             if args.l1_patience < 60 or args.max_epochs < 2000
-            else "long_horizon_contract"},
+            else "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"},
+        "data_horizon": {"train_days": 120, "val_days": 40,
+                         "test_days": 40,
+                         "note": ("bounded mechanism screen only; no "
+                                  "claim about the multi-year easy "
+                                  "curriculum (PLR-02)")},
         "elapsed_seconds": round(elapsed, 1),
         "epochs_run": len(history),
         "stop_reason": result.get("stop_reason"),
@@ -355,7 +371,7 @@ def main(argv=None) -> int:
                          "gradient_updates_total")
                          if history else None)},
         "split_facts": detail,
-        "internal_test_split": sealed_proof,
+        "diagnostic_holdout": sealed_proof,
         "accepted": accepted,
         "typed_negative": negative,
         # WP1 2026-08-21: the FULL per-epoch history is durable

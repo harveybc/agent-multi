@@ -388,6 +388,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "plateau_screen_aggregate.py": {
+   "purpose": "Orders 2-3 of AUDIT_SATOSHI_WP3_PLATEAU_LR_2026_08_21: aggregate the bounded 120/40/40-day scheduler mechanism screen. Predeclared decision rule (primary = best eligible monitor value; FOR/AGAINST need >=3/4 seeds same-sign plus median; else INCONCLUSIVE). Wall-clock and thermal facts are descriptive_only and excluded from the causal conclusion (PLR-03). Refuses incomplete screens, mismatched data hashes and reports without an eligible checkpoint. Never promotes a checkpoint.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

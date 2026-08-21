@@ -22,8 +22,14 @@ Contract, stated once:
   improvement: the controller keeps its own bookkeeping and does not
   touch checkpoint/patience state; its internal best is NOT reset by a
   reduction.
-- State round-trips exactly through ``state_dict``/``load_state_dict``
-  so resume restores the scheduler precisely.
+- State serialization (``state_dict``/``load_state_dict``) exists for
+  AUDIT DERIVABILITY and the per-epoch sidecar only. The executing
+  pipeline NEVER loads a sidecar, so plateau runs are NON-RESUMABLE and
+  fail closed: warm-starting from a checkpoint that has a plateau
+  sidecar beside it is refused, because a fresh controller would
+  silently discard best value, bad-epoch count, cooldown, reduction
+  count and current LR while appearing to continue
+  (AUD-F1-20260821-PLR-01).
 """
 from __future__ import annotations
 
@@ -204,6 +210,12 @@ class SacPlateauLrController:
         }
 
     def state_dict(self) -> Dict[str, Any]:
+        """Serialization for audit derivability and the sidecar ONLY.
+
+        No executing path loads this back into a training run
+        (PLR-01): plateau runs are non-resumable and refuse
+        warm-starts that look like resumes.
+        """
         return {
             "contract_id": CONTRACT_ID,
             "current_lr": self.current_lr,
@@ -354,3 +366,29 @@ def build_controller_from_config(
         start_epoch=start_epoch,
         initial_lr=initial_lr,
     )
+
+
+def assert_not_resuming_plateau_run(warm_start_model: Any) -> None:
+    """PLR-01 fail-closed guard: plateau runs are non-resumable.
+
+    A plateau sidecar sitting beside the warm-start checkpoint is
+    evidence of an interrupted or continued plateau run. Constructing a
+    fresh controller there would silently reset scheduler state while
+    appearing to resume — refuse instead. A warm start WITHOUT a
+    sidecar is a legitimately new scheduler lifecycle (e.g. the
+    curriculum handoff) and passes. Nothing is ever loaded merely
+    because it exists.
+    """
+    if not warm_start_model:
+        return
+    from pathlib import Path
+    sidecar = Path(
+        str(Path(str(warm_start_model)).with_suffix(""))
+        + ".plateau_lr_state.json")
+    if sidecar.exists():
+        raise SacPlateauLrError(
+            "REFUSED_PLATEAU_RESUME: plateau runs are non-resumable "
+            f"(PLR-01). A scheduler sidecar exists at {sidecar} beside "
+            "the warm-start checkpoint; a fresh controller would "
+            "silently discard its state. Start a new run directory or "
+            "disable plateau_lr for this warm start.")

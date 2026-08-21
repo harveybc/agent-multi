@@ -165,8 +165,11 @@ class TestPlateauSemantics:
 
 
 class TestStateRoundTrip:
-    def test_resume_restores_scheduler_exactly(self):
-        """Acceptance §5: scheduler state survives checkpoint/resume."""
+    def test_serialization_round_trip_is_exact(self):
+        """PLR-01 relabel: serialization is for audit derivability and
+        the sidecar only — the executing pipeline never loads it, and
+        plateau runs are non-resumable (see
+        TestNonResumableFailClosed)."""
         curve = [1.0, 0.9, 0.8, 0.7, 1.5, 1.4, 1.3, 1.2, 1.1, 1.0]
         a = _controller(lr_patience=2, cooldown=1)
         for e, v in enumerate(curve[:5], start=1):
@@ -320,3 +323,35 @@ class TestBuildFromConfig:
             selection_metric="easy_checkpoint_monitor_v1",
             default_start_epoch=40, initial_lr=3e-4)
         assert c2.start_epoch == 7
+
+
+class TestNonResumableFailClosed:
+    """AUD-F1-20260821-PLR-01: plateau runs are non-resumable."""
+
+    def test_sidecar_beside_warm_start_refuses(self, tmp_path):
+        model = tmp_path / "best_model.zip"
+        model.write_bytes(b"x")
+        (tmp_path / "best_model.plateau_lr_state.json").write_text("{}")
+        with pytest.raises(pl.SacPlateauLrError,
+                           match="REFUSED_PLATEAU_RESUME"):
+            pl.assert_not_resuming_plateau_run(str(model))
+
+    def test_warm_start_without_sidecar_is_a_new_lifecycle(
+            self, tmp_path):
+        model = tmp_path / "best_model.zip"
+        model.write_bytes(b"x")
+        pl.assert_not_resuming_plateau_run(str(model))
+
+    def test_no_warm_start_passes(self):
+        pl.assert_not_resuming_plateau_run(None)
+        pl.assert_not_resuming_plateau_run("")
+
+    def test_executing_pipeline_calls_the_guard(self):
+        """The guard must sit on the executing construction path, not
+        only exist as a helper."""
+        import inspect as _inspect
+        from pipeline_plugins import rl_pipeline_with_validation as rl
+        src = _inspect.getsource(rl)
+        assert "assert_not_resuming_plateau_run" in src
+        idx = src.index("assert_not_resuming_plateau_run")
+        assert "warm_start_model" in src[idx:idx + 200]
