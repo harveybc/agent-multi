@@ -1322,8 +1322,17 @@ class PipelinePlugin:
         summary.update(_action_summary_fields(action_stats, summary))
         # runtime finding 2026-08-20: the final cumulative must equal
         # trades_total exactly; the terminal settlement is recorded.
+        last_position = 0.0
+        if trace_rows:
+            try:
+                last_position = float(
+                    trace_rows[-1].get("position") or 0.0)
+            except (TypeError, ValueError):
+                last_position = 0.0
         reconciliation = _trace_mod.reconcile_trace_trades(
-            trace_rows, summary.get("trades_total"))
+            trace_rows,
+            int(summary.get("trades_total") or 0),
+            terminal_open_positions=1 if last_position != 0.0 else 0)
         summary["trace_trades_reconciliation"] = reconciliation
         summary["_return_trace_rows"] = trace_rows
         # Private, popped by _eval_on_split before the summary can reach

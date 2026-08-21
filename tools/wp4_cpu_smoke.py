@@ -133,7 +133,8 @@ def facts_from(history, trace_dir: Path) -> dict:
             traces[name] = {
                 "file": str(path), "sha256": _sha_file(path),
                 "rows": len(rows),
-                "trades": rows[-1].get("trades") if rows else None,
+                "trades": (rows[-1].get("closed_trades_cumulative")
+                           if rows else None),
                 "first_timestamp": stamps[0] if stamps else None,
                 "last_timestamp": stamps[-1] if stamps else None,
                 "distinct_actions": len({r.get("action_raw")
@@ -229,7 +230,9 @@ def main(argv=None) -> int:
         }
 
     # internal 'test' split: diagnostic label + sealed-2025 proof
-    test_trace = detail["traces"].get("evaluation") or {}
+    test_trace = (detail["traces"].get("evaluation")
+                  or detail["traces"].get("validation_epoch")
+                  or detail["traces"].get("train_epoch") or {})
     sealed_proof = {
         "label": "diagnostic_internal_test_split",
         "influences_selection": False,
@@ -239,7 +242,8 @@ def main(argv=None) -> int:
         "max_timestamp": test_trace.get("last_timestamp"),
         "sealed_2025_untouched": (
             (test_trace.get("last_timestamp") or "")[:4] < "2025"
-            if test_trace.get("last_timestamp") else None),
+            if test_trace.get("last_timestamp") else
+            "REFUSED_NO_TIMESTAMP_EVIDENCE"),
     }
 
     report = {
@@ -270,6 +274,13 @@ def main(argv=None) -> int:
         "internal_test_split": sealed_proof,
         "accepted": accepted,
         "typed_negative": negative,
+        "model_artifacts_not_committed": {
+            "policy": ("binaries stay OUT of git; hashes are the "
+                       "evidence (audit 2026-08-20: duplicate 33.4MB "
+                       "models removed)"),
+            "best_sha256": (_sha_file(Path(str(best)))
+                            if eligible else None),
+        },
     }
     out = args.report or (REPO / "docs/audits/evidence/"
                           "WP4_CPU_SMOKE_REPORT_2026_08_20.json")

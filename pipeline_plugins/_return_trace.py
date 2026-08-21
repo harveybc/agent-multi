@@ -68,6 +68,7 @@ TRACE_FIELDNAMES: Sequence[str] = (
     "trade_cost",
     "trades",
     "closed_trades_cumulative",
+    "terminal_settlement_event",
 )
 
 
@@ -374,38 +375,78 @@ def build_trace_row(
 
 
 class TraceReconciliationError(RuntimeError):
-    """The trace and the summary disagree in a direction settlement
-    cannot explain — refused, never patched silently."""
+    """The trace and the summary disagree in a way settlement cannot
+    explain — refused, never patched silently."""
 
 
-def reconcile_trace_trades(trace_rows, trades_total) -> dict:
-    """Runtime finding 2026-08-20: make ``closed_trades_cumulative``'s
-    FINAL value equal the environment summary's ``trades_total``
-    EXACTLY.
+def _integral_count(value, *, where: str) -> int:
+    """Audit 2026-08-20: counts are validated as Integrals — no
+    int(float(...)) truncation path exists."""
+    import numbers
+    if isinstance(value, bool) or not isinstance(value, numbers.Integral):
+        raise TraceReconciliationError(
+            f"{where}: {value!r} is not an integer trade count")
+    number = int(value)
+    if number < 0:
+        raise TraceReconciliationError(f"{where}: negative count")
+    return number
 
-    The env settles the episode (forced close on data end) AFTER the
-    last step emitted its info, so the last row's running counter may
-    lag the summary by the terminal settlement. That settlement is
-    applied to the LAST row only, and is RECORDED — a lag is visible
-    accounting. A running counter EXCEEDING the summary has no such
-    explanation and refuses typed.
+
+def reconcile_trace_trades(trace_rows, trades_total, *,
+                           terminal_open_positions: int = 0) -> dict:
+    """Make ``closed_trades_cumulative``'s FINAL value equal the
+    summary's ``trades_total`` through an EXPLICIT, PHYSICALLY BOUNDED
+    terminal settlement event — never by trusting the summary blindly.
+
+    Audit 2026-08-20 (reconciliation return):
+    - every row's cumulative is validated Integral and MONOTONE
+      non-decreasing; any violation refuses typed;
+    - the terminal settlement can close at most the positions that were
+      OPEN at the last bar (``terminal_open_positions``, evidenced by
+      the rollout from the env's own last info). A gap larger than that
+      physical bound is fabrication and REFUSES — a trace ending at 2
+      with a summary claiming 100 can never be "settled";
+    - the settlement is recorded as an explicit event on the last row,
+      not a silent overwrite.
     """
     if not trace_rows:
         return {"terminal_settlement_trades": 0}
-    try:
-        final_running = int(float(
-            trace_rows[-1].get("closed_trades_cumulative") or 0))
-    except (TypeError, ValueError):
-        final_running = 0
-    total = int(trades_total or 0)
+    total = _integral_count(trades_total, where="summary.trades_total")
+    bound = _integral_count(terminal_open_positions,
+                            where="terminal_open_positions")
+    previous = None
+    for index, row in enumerate(trace_rows):
+        value = _integral_count(
+            row.get("closed_trades_cumulative"),
+            where=f"trace_row[{index}].closed_trades_cumulative")
+        if previous is not None and value < previous:
+            raise TraceReconciliationError(
+                f"cumulative count decreased at row {index}: "
+                f"{previous} -> {value} — not a cumulative series")
+        previous = value
+    final_running = previous
     settlement = total - final_running
     if settlement < 0:
         raise TraceReconciliationError(
             f"trace running counter {final_running} exceeds the "
-            f"environment summary trades_total {total} — incoherent "
-            "accounting, trace refused")
+            f"summary trades_total {total} — incoherent accounting")
+    if settlement > bound:
+        raise TraceReconciliationError(
+            f"terminal settlement of {settlement} trades claimed but "
+            f"only {bound} position(s) were open at the last bar — a "
+            "summary cannot mint trades the trajectory never carried "
+            "(audit 2026-08-20)")
     trace_rows[-1]["closed_trades_cumulative"] = total
+    event = {"type": "terminal_settlement",
+             "closes": settlement,
+             "open_positions_at_last_bar": bound,
+             "running_counter_before": final_running,
+             "summary_trades_total": total}
+    trace_rows[-1]["terminal_settlement_event"] = (
+        "" if settlement == 0 else
+        f"closes={settlement};open={bound}")
     return {"terminal_settlement_trades": settlement,
+            "terminal_settlement_event": event,
             "final_cumulative": total}
 
 

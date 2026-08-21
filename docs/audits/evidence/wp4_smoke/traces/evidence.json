@@ -94,7 +94,7 @@
     "zscore_close_100"
   ],
   "feature_list_hash": "33b8c158ff1f1ed54fc6a24e27d5e09b034ab44981d0fad449b363ac29df61d4",
-  "generated_at": "2026-08-21T03:25:32Z",
+  "generated_at": "2026-08-21T03:35:59Z",
   "heldout_boundary": "2025-01-01",
   "market_state_profile_family": null,
   "market_state_profile_hash": null,
@@ -131,7 +131,7 @@
       "split": "train",
       "stage_c_authorized": false,
       "trace_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_return_trace.csv",
-      "trace_file_sha256": "a6374b314ca645abbb0307029d585a167abd658cbbb179a38752ac58228aae6a"
+      "trace_file_sha256": "bd686fbcfb7e74c5b83d998fb58cad29ede7bbf99ffe4208e9ea708e69d7f02c"
     },
     {
       "contains_heldout_rows": false,
@@ -146,7 +146,7 @@
       "split": "train_tail",
       "stage_c_authorized": false,
       "trace_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_tail_return_trace.csv",
-      "trace_file_sha256": "6d98bd11eac915535949ac541166914cad0968a976e35bccf455fb9f3c57ee8b"
+      "trace_file_sha256": "3727f5885735c6dd1bac8f3561b86d053a288864e6edb34e6f93f49b570cd444"
     },
     {
       "contains_heldout_rows": false,
@@ -161,7 +161,7 @@
       "split": "validation",
       "stage_c_authorized": false,
       "trace_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/validation_return_trace.csv",
-      "trace_file_sha256": "0d29c9dacb78aae663a0d948709573f8faa9523a8b51f76b8785a256d223f087"
+      "trace_file_sha256": "3dc27d8c6ebc3666ead373d7d1ac42ea1b54a1f6a8261c9a6ec5a176e621827a"
     },
     {
       "contains_heldout_rows": false,
@@ -176,7 +176,7 @@
       "split": "test",
       "stage_c_authorized": false,
       "trace_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/test_return_trace.csv",
-      "trace_file_sha256": "56f38017b036bb316e8096012f388491c16d1b90008add660201f71b6859aa20"
+      "trace_file_sha256": "385598212c9ce66f48ee533a7c88db85f576863849604da2f33d6d6451469edc"
     }
   ],
   "trade_rate_band_id": null

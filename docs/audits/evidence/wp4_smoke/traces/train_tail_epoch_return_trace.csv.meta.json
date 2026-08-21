@@ -4,7 +4,7 @@
   "calendar_policy_id": null,
   "config_hash": "649f4d1141314b557d0b8aeb15017e52764850169b5d8fb20da76b91dd169ff6",
   "contains_heldout_rows": false,
-  "data_file": "/tmp/agent_multi_split_deh1nt94/train_tail.csv",
+  "data_file": "/tmp/agent_multi_split_gftgpcv3/train_tail.csv",
   "data_file_hash": "870199e30e14e4ea2bd0dd840e2fd13a45473c98f847ab335ffcac8cd7f4a299",
   "episode_id": "wp4_smoke::train_tail_epoch",
   "feature_column_count": 84,
@@ -117,9 +117,10 @@
     "slippage_paid",
     "trade_cost",
     "trades",
-    "closed_trades_cumulative"
+    "closed_trades_cumulative",
+    "terminal_settlement_event"
   ],
-  "generated_at": "2026-08-21T03:25:30Z",
+  "generated_at": "2026-08-21T03:35:57Z",
   "heldout_boundary": "2025-01-01",
   "market_state_profile_family": null,
   "market_state_profile_hash": null,
@@ -147,6 +148,6 @@
   "stage_c_authorized": false,
   "timeframe": null,
   "trace_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/docs/audits/evidence/wp4_smoke/traces/train_tail_epoch_return_trace.csv",
-  "trace_file_sha256": "549e7d5e476e4928f31fbf08f7b8e01e8d332041ebc9fab071de5431ef841cb3",
+  "trace_file_sha256": "bff819527f81fcced36f7a77a9ec21b932002faeb80ad803a5c1bf49af8db3a1",
   "trade_rate_band_id": null
 }
