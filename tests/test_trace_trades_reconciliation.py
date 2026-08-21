@@ -155,3 +155,41 @@ class TestReconciliation:
         assert "EVIDENCE_FACT_MISMATCH_INNER_VALIDATION" in \
             verdict["reason_codes"]
         # the ambiguous legacy column is never silently reused
+
+
+class TestExecutingCallPath:
+    """TR-L1: the EXECUTING call site (not just the primitive) refuses
+    foreign count types."""
+
+    @pytest.mark.parametrize("bad", ["3", 3.7, True, float("nan"),
+                                     float("inf"), -1])
+    def test_rollout_call_site_refuses_foreign_counts(self, bad):
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _reconcile_rollout_trades,
+        )
+        rows = [{"closed_trades_cumulative": 0, "position": 0.0}]
+        with pytest.raises(tr.TraceReconciliationError):
+            _reconcile_rollout_trades(rows, {"trades_total": bad})
+
+    def test_rollout_call_site_source_has_no_precoercion(self):
+        import inspect
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _reconcile_rollout_trades,
+        )
+        source = inspect.getsource(_reconcile_rollout_trades)
+        assert "int(summary" not in source
+        assert 'summary.get("trades_total")' in source
+
+    def test_selection_firewall_test_split_cannot_influence_stopping(
+            self):
+        """TR-L2 second half: the executing stopping path consumes only
+        the train-tail and validation summaries."""
+        import inspect
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _early_stop_composite,
+        )
+        params = list(inspect.signature(
+            _early_stop_composite).parameters)
+        assert params[0] == "train_tail_summary"
+        assert params[1] == "val_summary"
+        assert not any("test" in name for name in params)

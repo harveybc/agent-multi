@@ -125,7 +125,7 @@ def facts_from(history, trace_dir: Path) -> dict:
     last = history[-1] if history else {}
     traces = {}
     for name in ("train_epoch", "train_tail_epoch", "validation_epoch",
-                 "evaluation"):
+                 "evaluation", "test"):
         path = trace_dir / f"{name}_return_trace.csv"
         if path.is_file():
             rows = list(_csv.DictReader(path.open()))
@@ -133,8 +133,10 @@ def facts_from(history, trace_dir: Path) -> dict:
             traces[name] = {
                 "file": str(path), "sha256": _sha_file(path),
                 "rows": len(rows),
-                "trades": (rows[-1].get("closed_trades_cumulative")
-                           if rows else None),
+                "closed_trades_cumulative": (
+                    rows[-1].get("closed_trades_cumulative")
+                    if rows else None),
+                "split_label": rows[0].get("split") if rows else None,
                 "first_timestamp": stamps[0] if stamps else None,
                 "last_timestamp": stamps[-1] if stamps else None,
                 "distinct_actions": len({r.get("action_raw")
@@ -201,15 +203,15 @@ def main(argv=None) -> int:
                       for row in history)
     distinct = max((t.get("distinct_actions") or 0
                     for t in detail["traces"].values()), default=0)
-    activity = any(float(t.get("trades") or 0) > 0
-                   for t in detail["traces"].values())
+    activity = any(
+        float(t.get("closed_trades_cumulative") or 0) > 0
+        for t in detail["traces"].values())
     episodic_path = any(row.get("composite_raw") is not None
                         for row in history)
-    # internal 'test' split: diagnostic label + sealed-2025 proof
-    # (resolved BEFORE acceptance: TR-6 — unavailable proof refuses)
-    test_trace = (detail["traces"].get("evaluation")
-                  or detail["traces"].get("validation_epoch")
-                  or detail["traces"].get("train_epoch") or {})
+    # TR-L2: the boundary proof requires the ACTUAL diagnostic test
+    # trace — NO fallback to train/validation; absent -> acceptance
+    # refuses.
+    test_trace = detail["traces"].get("test") or {}
     best = result.get("best_model_path")
     eligible = bool(best) and Path(str(best)).is_file()
 
@@ -230,10 +232,10 @@ def main(argv=None) -> int:
             "sealed_proof_available": sealed_ok,
             "failed_evidence": {
                 "last_epoch_gates": detail["last_epoch"],
-                "trace_descriptors": {k: {kk: v[kk] for kk in
-                                          ("file", "sha256", "trades")}
-                                      for k, v in
-                                      detail["traces"].items()},
+                "trace_descriptors": {
+                    k: {kk: v.get(kk) for kk in
+                        ("file", "sha256", "closed_trades_cumulative")}
+                    for k, v in detail["traces"].items()},
             },
             "promotion": "REFUSED",
         }
@@ -247,9 +249,21 @@ def main(argv=None) -> int:
                  "display-only in this pipeline"),
         "max_timestamp": test_trace.get("last_timestamp"),
         "sealed_2025_untouched": sealed_ok,
-        "proof_basis": ("max trace timestamp" if sealed_ok else
-                        "REFUSED_NO_TIMESTAMP_EVIDENCE — acceptance "
-                        "refused (TR-6)"),
+        "split_label": test_trace.get("split_label"),
+        "first_timestamp": test_trace.get("first_timestamp"),
+        "last_timestamp": test_trace.get("last_timestamp"),
+        "sha256": test_trace.get("sha256"),
+        "contains_heldout_rows": bool(test_trace.get("rows")),
+        "proof_basis": ("actual test trace timestamps" if sealed_ok
+                        else "REFUSED_NO_TEST_TRACE — acceptance "
+                        "refused (TR-L2: no fallback to train or "
+                        "validation)"),
+        "selection_firewall": (
+            "the executing stopping path (_early_stop_composite) "
+            "consumes ONLY train_tail_summary and val_summary; the "
+            "test split is written at final evaluation and never "
+            "enters checkpoint or stopping state (pinned by "
+            "test_wp3_episodic_wiring firewall test)"),
     }
 
     report = {
