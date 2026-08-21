@@ -111,3 +111,44 @@ class TestSeparation:
     def test_non_finite_facts_refuse(self, bad):
         with pytest.raises(ec.EasyContractError):
             fitness(10, bad)
+
+
+class TestExecutingWiring:
+    """EC-01/EC-03: call-path proof and legacy refusal."""
+
+    def test_monitor_governs_the_executing_selector(self, monkeypatch):
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _selection_value,
+        )
+        calls = []
+        original = ec.easy_checkpoint_monitor
+
+        def spy(**kwargs):
+            calls.append(kwargs)
+            return original(**kwargs)
+
+        monkeypatch.setattr(ec, "easy_checkpoint_monitor", spy)
+        summary = {"total_return": 0.02,
+                   "max_drawdown_fraction": 0.05}
+        value = _selection_value(
+            summary, selection_metric="easy_checkpoint_monitor_v1",
+            risk_lambda=1.0)
+        assert len(calls) == 1
+        record = summary["easy_checkpoint_monitor"]
+        assert record["contract_id"] == ec.MONITOR_CONTRACT_ID
+        assert value == record["value"]
+
+    def test_legacy_scalar_refuses_before_training(self):
+        from pipeline_plugins import _episodic_activity_fitness as ef
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            PipelinePlugin,
+        )
+        plugin = PipelinePlugin.__new__(PipelinePlugin)
+        with pytest.raises(ef.EpisodicFitnessError,
+                           match="EC-03"):
+            plugin._assert_episodic_contract(
+                {"require_easy_contracts": True,
+                 "selection_metric": "total_return"})
+        plugin._assert_episodic_contract(
+            {"require_easy_contracts": True,
+             "selection_metric": "easy_checkpoint_monitor_v1"})

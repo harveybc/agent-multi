@@ -63,39 +63,63 @@ def main() -> int:
     rows = []
     for row in history:
         epoch = row.get("epoch")
-        tt_tr = row.get("train_tail_trades")
-        vv_tr = row.get("val_trades")
-        tt_ret = row.get("train_tail_return", 0.0) or 0.0
-        vv_ret = row.get("val_return", row.get("validation_return",
-                                               0.0)) or 0.0
-        monitor = ec.easy_checkpoint_monitor(
-            train_tail_return=float(tt_ret),
-            validation_return=float(vv_ret),
-            train_tail_drawdown=float(row.get(
-                "train_tail_drawdown", 0.0) or 0.0),
-            validation_drawdown=float(row.get(
-                "val_drawdown", 0.0) or 0.0))
+        # EC-02: RAW values into the strict validators — no defaulting,
+        # no int()/float() pre-coercion. Any missing, boolean, string,
+        # fractional, negative or non-finite fact REFUSES the study.
+        raw = {"train_tail_trades": row.get("train_tail_trades"),
+               "val_trades": row.get("val_trades"),
+               "train_tail_return": row.get("train_tail_return"),
+               "val_return": row.get("val_return"),
+               "train_tail_drawdown": row.get("train_tail_drawdown"),
+               "val_drawdown": row.get("val_drawdown")}
         try:
+            monitor = ec.easy_checkpoint_monitor(
+                train_tail_return=raw["train_tail_return"],
+                validation_return=raw["val_return"],
+                train_tail_drawdown=raw["train_tail_drawdown"],
+                validation_drawdown=raw["val_drawdown"])
             fit = ec.easy_doin_candidate_fitness(
-                closed_trades=int(vv_tr or 0),
+                closed_trades=raw["val_trades"],
                 scored_rows=2190,
-                validation_return=float(vv_ret),
-                validation_drawdown=float(row.get(
-                    "val_drawdown", 0.0) or 0.0),
-                train_tail_return=float(tt_ret),
+                validation_return=raw["val_return"],
+                validation_drawdown=raw["val_drawdown"],
+                train_tail_return=raw["train_tail_return"],
                 activity_config=CAL)
-            key = fit["lex_key"]
-            eligible = fit["eligible"]
-            reason = fit["reason"]
         except ec.EasyContractError as error:
-            key, eligible, reason = None, False, str(error)[:60]
-        rows.append({"epoch": epoch, "train_tail_trades": tt_tr,
-                     "val_trades": vv_tr,
-                     "monitor_value": monitor["value"],
-                     "monitor_components": json.dumps(
-                         monitor["components"]),
-                     "fitness_lex_key": json.dumps(key),
-                     "eligible": eligible, "reason": reason})
+            print(json.dumps({
+                "outcome": "REFUSED_EPOCH_FACTS",
+                "epoch": epoch, "detail": str(error)[:160],
+                "raw": {k: repr(v) for k, v in raw.items()}}))
+            return 2
+        mc, fc = monitor["components"], fit["components"]
+        rows.append({
+            "epoch": epoch,
+            # EC-04: every raw input first-class
+            **{f"raw_{k}": v for k, v in raw.items()},
+            # decomposed monitor outputs
+            "monitor_value": monitor["value"],
+            "monitor_train_tail_rap": mc["train_tail_rap"],
+            "monitor_validation_rap": mc["validation_rap"],
+            "monitor_gap": mc["gap"],
+            "monitor_gap_penalty": mc["gap_penalty"],
+            # decomposed fitness outputs
+            "fitness_activity_band": fc["activity_band"],
+            "fitness_annualized_rate": fc["annualized_rate"],
+            "fitness_activity_utility": fc["activity_utility"],
+            "fitness_validation_economics":
+                fc["validation_economics"],
+            "fitness_gap_bounded": fc["gap_bounded"],
+            "fitness_lex_key": json.dumps(fit["lex_key"]),
+            "eligible": fit["eligible"], "reason": fit["reason"],
+            "monitor_contract_id": monitor["contract_id"],
+            "fitness_contract_id": fit["contract_id"],
+            "source_report": str(args.report),
+        })
+    import hashlib as _hashlib
+    report_sha = _hashlib.sha256(
+        args.report.read_bytes()).hexdigest()
+    for row in rows:
+        row["source_report_sha256"] = report_sha
     by_monitor = sorted(
         [r for r in rows if r["monitor_value"] is not None],
         key=lambda r: r["monitor_value"], reverse=True)

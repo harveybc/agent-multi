@@ -421,6 +421,18 @@ def _selection_value(summary: Dict[str, Any], *, selection_metric: str, risk_lam
         if contract["transport_scalar"] is None:
             return None
         return _lex.require_orderable(contract)
+    if metric == "easy_checkpoint_monitor_v1":
+        # EC-01 (order 2026-08-21): the CHECKPOINT/PATIENCE path is
+        # governed by the named monitor contract; components and
+        # identity persist on the summary (OLAP record, EC-03/EC-04).
+        from . import _easy_contracts as _easy
+        monitor = _easy.easy_checkpoint_monitor(
+            train_tail_return=summary.get("total_return"),
+            validation_return=summary.get("total_return"),
+            train_tail_drawdown=summary.get("max_drawdown_fraction"),
+            validation_drawdown=summary.get("max_drawdown_fraction"))
+        summary["easy_checkpoint_monitor"] = monitor
+        return float(monitor["value"])
     if metric == "episodic_activity_economic_v1":
         # WP3 (order 2026-08-20): the ACCEPTED episodic objective IS
         # the selector for this contract. Facts come from the split
@@ -1020,6 +1032,15 @@ class PipelinePlugin:
         """WP3: a contract that declares require_episodic_fitness may
         never train under a legacy scalar metric — fail-closed before
         the first epoch."""
+        if config.get("require_easy_contracts") and \
+                str(config.get("selection_metric")) not in (
+                    "easy_checkpoint_monitor_v1",):
+            raise _episodic.EpisodicFitnessError(
+                "contract requires the separated easy contracts: "
+                "selection_metric must be easy_checkpoint_monitor_v1 "
+                f"(got {config.get('selection_metric')!r}) — the "
+                "legacy scalar refuses before training "
+                "(EC-03, order 2026-08-21)")
         if config.get("require_episodic_fitness") and \
                 str(config.get("selection_metric")) != \
                 "episodic_activity_economic_v1":

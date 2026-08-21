@@ -1,0 +1,28 @@
+{
+  "module_loaded": true,
+  "outcomes": {
+    "coercions_present": {
+      "defaulted_validation_return": true,
+      "int_trade_count": true
+    },
+    "executing_consumers": [],
+    "missing_trade_count": {
+      "accepted": true,
+      "epochs": 1,
+      "returncode": 0
+    },
+    "missing_validation_return": {
+      "accepted": true,
+      "epochs": 1,
+      "returncode": 0
+    },
+    "string_trade_count": {
+      "accepted": true,
+      "epochs": 1,
+      "returncode": 0
+    }
+  },
+  "reproduced": true,
+  "schema": "agent_multi.easy_contracts_audit_repro.v1",
+  "target": "d9888aef"
+}

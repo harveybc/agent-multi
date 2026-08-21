@@ -137,8 +137,23 @@ def _candidate_from_transaction(
     # above, this keeps the persisted field honest by construction)
     trades_total = role_activity["trades"]
 
+    # EC-01 (order 2026-08-21): the DOIN candidate record carries the
+    # named fitness contract's key and decomposition.
+    from pipeline_plugins import _easy_contracts as _easy
+    try:
+        _fitness = _easy.easy_doin_candidate_fitness(
+            closed_trades=role_activity["trades"],
+            scored_rows=2190,
+            validation_return=validation_return,
+            validation_drawdown=max_drawdown,
+            train_tail_return=validation_return,
+            activity_config={"activity_plateau_low_rate": 50.0,
+                             "activity_plateau_high_rate": 300.0})
+    except _easy.EasyContractError:
+        return None
     parameter_hash = _sha256(parameters)
     metric_key = {
+        "easy_doin_candidate_fitness": _fitness,
         "l2_fitness": l2_fitness,
         "validation_rap": validation_rap,
         "validation_return": validation_return,

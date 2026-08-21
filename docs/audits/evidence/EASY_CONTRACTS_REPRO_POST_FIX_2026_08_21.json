@@ -1,0 +1,31 @@
+{
+  "module_loaded": true,
+  "outcomes": {
+    "coercions_present": {
+      "defaulted_validation_return": false,
+      "int_trade_count": false
+    },
+    "executing_consumers": [
+      "./pipeline_plugins/rl_pipeline_with_validation.py",
+      "./examples/scripts/materialize_phase_1_promotion_candidates.py"
+    ],
+    "missing_trade_count": {
+      "accepted": false,
+      "epochs": null,
+      "returncode": 2
+    },
+    "missing_validation_return": {
+      "accepted": false,
+      "epochs": null,
+      "returncode": 2
+    },
+    "string_trade_count": {
+      "accepted": false,
+      "epochs": null,
+      "returncode": 2
+    }
+  },
+  "reproduced": false,
+  "schema": "agent_multi.easy_contracts_audit_repro.v1",
+  "target": "d9888aef"
+}
