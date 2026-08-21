@@ -395,6 +395,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "screen_recovery_controller.py": {
+   "purpose": "Post-outage order \u00a7B: persistent, filesystem-backed attempt state machine for screen arms. Durable manifest before launch; classification from durable artifacts only (absence is never completion); journaled idempotent preservation of interrupted attempts; fresh-attempt retries with clean output dirs (plateau state never resumed); duplicate-active and completed-arm-rerun refusals; commit/config/GPU/ownership launch preconditions; heartbeat status JSON. NOT ACTIVATED against the frozen 93880beb screen \u2014 activation boundary proposed after it completes. Never touches broker authority or trading services.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
