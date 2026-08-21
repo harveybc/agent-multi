@@ -360,6 +360,20 @@
    "mutability": "read_only",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "wp2_sensitivity_dataset.py": {
+   "purpose": "Correction 2 (order 2026-08-20 20:40): deterministic generator/validator for the WP2 activity-plateau sensitivity dataset. --validate discovers every referenced trace, verifies each SHA-256 byte-for-byte, verifies split roles (outer/sealed refused), recomputes annualized rates, quantiles and candidate scores, and compares under the declared canonical comparison; rows for other hosts are typed REMOTE_UNVERIFIABLE_ON_THIS_HOST so full validation is the union of per-host runs. --regenerate rebuilds this host's rows with the exact measurement rule.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "wp4_cpu_smoke.py": {
+   "purpose": "WP4 (order 2026-08-20 20:40): bounded CPU end-to-end smoke of the REAL path \u2014 real PipelinePlugin, real gym_fx_env (implementation origin asserted against the pinned gym-fx runtime and its exact commit before anything trains, correction 3), real SAC agent, real ETH data, the episodic objective as the executing selector with the NAMED diagnostic plateau candidate. Writes its report and per-epoch traces under docs/audits/evidence; the typed no-eligible-checkpoint terminal is a valid smoke outcome. Proposes and never launches the local GPU smoke.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
