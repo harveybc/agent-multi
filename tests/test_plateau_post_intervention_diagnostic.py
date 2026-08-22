@@ -23,35 +23,70 @@ def tool():
     return _load()
 
 
-def _hist(composites, *, reduced_at=(), extra=None):
+def _hist(composites, *, reduced_at=(), plateau=None, extra=None):
+    # The real pipeline emits a scheduler record on EVERY epoch of a
+    # plateau arm (reduced False between reductions) and None on every
+    # epoch of a fixed arm; the identity contract pins that shape.
+    if plateau is None:
+        plateau = bool(reduced_at)
     rows = []
     for i, c in enumerate(composites, start=1):
+        if plateau:
+            rec = {"reduced": i in reduced_at, "old_lr": 3e-4,
+                   "new_lr": 1.5e-4 if i in reduced_at else 3e-4}
+        else:
+            rec = None
         row = {"epoch": i, "composite": c,
                "val_total_return": 0.01, "val_max_drawdown_fraction":
                0.02, "val_trades": 10, "train_tail_trades": 5,
                "val_action_raw_std": 0.1,
                "val_action_non_hold_rate": 0.5,
                "policy_actor_delta": 1.0, "policy_critic_delta": 2.0,
-               "plateau_lr": ({"reduced": True, "old_lr": 3e-4,
-                               "new_lr": 1.5e-4}
-                              if i in reduced_at else None)}
+               "plateau_lr": rec}
         if extra:
             row.update(extra.get(i, {}))
         rows.append(row)
     return rows
 
 
-def _write(path, hist, *, seed=101, data_sha="d" * 64):
+FULL40 = "93880beb" + "0" * 32
+
+
+def _write(path, hist, *, seed=101, data_sha="d" * 64, commit=FULL40,
+           policy=None, config_sha=None, device="GPU-X",
+           epoch_timesteps=20000, stopping=True):
+    if policy is None:
+        policy = ("plateau" if any(r.get("plateau_lr") is not None
+                                   for r in hist) else "fixed")
+    if config_sha is None:
+        config_sha = "f" * 64 if policy == "fixed" else "b" * 64
+    for r in hist:
+        r.setdefault("selection_metric", "easy_checkpoint_monitor_v1")
     path.write_text(json.dumps({
-        "history": hist, "budgets": {"seed": seed},
-        "data_sha256": data_sha}))
+        "history": hist, "budgets": {"seed": seed,
+                                     "epoch_timesteps": epoch_timesteps,
+                                     "max_epochs": 2000},
+        "data_sha256": data_sha, "commit": commit,
+        "config_sha256": config_sha,
+        "device": {"cuda_visible_devices": device},
+        "stopping_contract": ({
+            "l1_patience": {"effective": 60},
+            "l1_patience_start_epoch": {"effective": 40}}
+            if stopping else {}),
+        "split_facts": {"traces": {
+            r_: {"rows": 100, "first_timestamp": "2018-01-01",
+                 "last_timestamp": "2018-05-01"}
+            for r_ in ("train_epoch", "train_tail_epoch",
+                       "validation_epoch")}},
+    }))
 
 
 def _pair(tmp_path, fixed_c, plateau_c, reduced_at=(5,), **kw):
     f = tmp_path / "seed101_fixed_report.json"
     p = tmp_path / "seed101_plateau_report.json"
     _write(f, _hist(fixed_c), **kw)
-    _write(p, _hist(plateau_c, reduced_at=reduced_at), **kw)
+    _write(p, _hist(plateau_c, reduced_at=reduced_at, plateau=True),
+           **kw)
     return f, p
 
 
@@ -104,7 +139,7 @@ class TestDiagnosis:
         f = tmp_path / "seed101_fixed_report.json"
         p = tmp_path / "seed101_plateau_report.json"
         hf = _hist([0.1] * 7)
-        hp = _hist([0.1] * 7, reduced_at=(5,))
+        hp = _hist([0.1] * 7, reduced_at=(5,), plateau=True)
         for row in hf + hp:
             del row["val_action_raw_std"]
         _write(f, hf); _write(p, hp)
@@ -117,7 +152,7 @@ class TestDiagnosis:
         f = tmp_path / "seed101_fixed_report.json"
         _write(f, _hist([0.1] * 3), seed=202)
         with pytest.raises(tool.DiagnosticError, match="mismatched"):
-            tool._load_history(f, 101)
+            tool._load_report(f, 101)
 
     def test_mismatched_data_sha_refuses(self, tool, tmp_path):
         f, p = _pair(tmp_path, [0.1] * 6, [0.1] * 6)
@@ -130,8 +165,8 @@ class TestDiagnosis:
     def test_reduction_in_fixed_arm_refuses(self, tool, tmp_path):
         f = tmp_path / "seed101_fixed_report.json"
         p = tmp_path / "seed101_plateau_report.json"
-        _write(f, _hist([0.1] * 6, reduced_at=(4,)))
-        _write(p, _hist([0.1] * 6, reduced_at=(5,)))
+        _write(f, _hist([0.1] * 6, reduced_at=(4,)), policy="fixed")
+        _write(p, _hist([0.1] * 6, reduced_at=(5,), plateau=True))
         with pytest.raises(tool.DiagnosticError, match="fixed arm"):
             tool.diagnose_seed(f, p, 101)
 
@@ -146,7 +181,8 @@ class TestDiagnosis:
             _write(tmp_path / f"seed{s}_fixed_report.json",
                    _hist([0.1] * 7), seed=s)
             _write(tmp_path / f"seed{s}_plateau_report.json",
-                   _hist([0.1] * 7, reduced_at=(5,)), seed=s)
+                   _hist([0.1] * 7, reduced_at=(5,), plateau=True),
+                   seed=s)
         out = tmp_path / "diag.json"
         assert tool.main(["--screen-dir", str(tmp_path),
                           "--out-json", str(out)]) == 0
@@ -154,3 +190,69 @@ class TestDiagnosis:
         assert doc["label"] == "POST_HOC_EXPLORATORY"
         assert "NONE" in doc["authority"]
         assert "INCONCLUSIVE" in doc["authority"]
+
+
+class TestC1IdentityMutations:
+    """AUD-F1-20260822-PLR-08 (C1): every identity field and every
+    projected pre-treatment field, mutated one at a time, refuses."""
+
+    def _pair(self, tmp_path, **plateau_kw):
+        f = tmp_path / "seed101_fixed_report.json"
+        p = tmp_path / "seed101_plateau_report.json"
+        _write(f, _hist([0.1] * 7))
+        _write(p, _hist([0.1] * 7, reduced_at=(5,), plateau=True),
+               **plateau_kw)
+        return f, p
+
+    @pytest.mark.parametrize("kw,pattern", [
+        ({"commit": "deadbeef" + "0" * 32}, "commit"),
+        ({"config_sha": "f" * 64}, "config_sha256"),   # equal = dup
+        ({"data_sha": "e" * 64}, "data_sha256"),
+        ({"device": "GPU-OTHER"}, "device"),
+        ({"epoch_timesteps": 10000}, "budgets"),
+        ({"stopping": False}, "stopping_contract"),
+    ])
+    def test_each_identity_field_refuses(self, tool, tmp_path, kw,
+                                         pattern):
+        f, p = self._pair(tmp_path, **kw)
+        with pytest.raises(tool.DiagnosticError, match=pattern):
+            tool.diagnose_seed(f, p, 101)
+
+    def test_foreign_commit_with_matching_composites_refuses(
+            self, tool, tmp_path):
+        """The audit's exact counterexample: same seed, data and
+        composites, different commit — must refuse, not exit 0."""
+        f, p = self._pair(tmp_path, commit="deadbeef" + "0" * 32)
+        with pytest.raises(tool.DiagnosticError, match="commit"):
+            tool.diagnose_seed(f, p, 101)
+
+    def test_split_identity_mutation_refuses(self, tool, tmp_path):
+        f, p = self._pair(tmp_path)
+        doc = json.loads(p.read_text())
+        doc["split_facts"]["traces"]["validation_epoch"]["rows"] = 99
+        p.write_text(json.dumps(doc))
+        with pytest.raises(tool.DiagnosticError, match="split"):
+            tool.diagnose_seed(f, p, 101)
+
+    @pytest.mark.parametrize("field,value", [
+        ("val_trades", 11), ("val_total_return", 0.02),
+        ("policy_actor_delta", 2.0), ("train_tail_trades", 6),
+        ("val_action_raw_std", 0.2),
+    ])
+    def test_each_projected_field_mutation_refuses(self, tool,
+                                                   tmp_path, field,
+                                                   value):
+        f, p = self._pair(tmp_path)
+        doc = json.loads(p.read_text())
+        doc["history"][1][field] = value  # epoch 2, pre-treatment
+        p.write_text(json.dumps(doc))
+        with pytest.raises(tool.DiagnosticError,
+                           match="projection differs"):
+            tool.diagnose_seed(f, p, 101)
+
+    def test_projection_hash_emitted(self, tool, tmp_path):
+        f, p = self._pair(tmp_path)
+        d = tool.diagnose_seed(f, p, 101)
+        assert len(d["prefix_projection_sha256"]) == 64
+        assert d["treatment_fields_excluded"] == ["plateau_lr"]
+        assert "composite" in d["prefix_projection_fields"]

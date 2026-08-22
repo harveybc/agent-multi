@@ -42,7 +42,11 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 SCHEMA = "agent_multi.screen_recovery_attempt.v2"
-REPORT_SCHEMA_PREFIX = "agent_multi.wp4_smoke"
+# AUD-GEN-20260822-REC-05: EXACT allowlist equality. Prefix matching
+# is forbidden — "agent_multi.wp4_smoke_malicious.v999" or a Unicode
+# confusable must never classify completed. New versions enter only
+# through a separately audited migration entry here.
+REPORT_SCHEMA_ALLOWLIST = frozenset({"agent_multi.wp4_smoke.v2"})
 
 COMPLETED = "completed"
 FAILED_BEFORE_TRAINING = "failed_before_training"
@@ -64,6 +68,27 @@ def _fsync_dir_default(path: Path) -> None:
         os.fsync(fd)
     finally:
         os.close(fd)
+
+
+def _fsync_file_default(fileno: int) -> None:
+    os.fsync(fileno)
+
+
+def _atomic_write_bytes(
+    path: Path, data: bytes, *,
+    fsync_file: Callable[[int], None] = _fsync_file_default,
+    fsync_dir: Callable[[Path], None] = _fsync_dir_default,
+) -> None:
+    """REC-04 (C3): durable byte write — temp file in the destination
+    directory, write+flush+fsync the FILE, atomic rename, fsync the
+    PARENT. Either fsync failure propagates; nothing is acknowledged."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    with tmp.open("wb") as fh:
+        fh.write(data)
+        fh.flush()
+        fsync_file(fh.fileno())
+    tmp.replace(path)
+    fsync_dir(path.parent)
 
 
 def _atomic_write(path: Path, payload: Dict[str, Any], *,
@@ -123,6 +148,7 @@ def write_attempt_manifest(
     clock: Callable[[], float] = time.time,
     pid_alive: Callable[[int, str], bool] = _pid_alive_default,
     fsync_dir: Callable[[Path], None] = _fsync_dir_default,
+    fsync_file: Callable[[int], None] = _fsync_file_default,
 ) -> Path:
     """Materialize manifest + canonical launch artifact BEFORE launch."""
     if arm not in ("fixed", "plateau"):
@@ -155,10 +181,11 @@ def write_attempt_manifest(
          for p in _live_manifests(root, seed, arm)), default=0)
     payload = _canonical_launch_payload(argv, cwd, gpu_mask)
     artifact = root / f"launch_seed{seed}_{arm}_{attempt_id:04d}.json"
-    tmp = artifact.with_suffix(".json.tmp")
-    tmp.write_bytes(payload)
-    tmp.replace(artifact)
-    fsync_dir(artifact.parent)
+    # C3: the launch artifact is written durably BEFORE the manifest;
+    # a failed file or directory fsync propagates and no manifest is
+    # created or acknowledged.
+    _atomic_write_bytes(artifact, payload, fsync_file=fsync_file,
+                        fsync_dir=fsync_dir)
     path = _manifest_path(root, seed, arm, attempt_id)
     _atomic_write(path, {
         "schema": SCHEMA, "seed": seed, "arm": arm,
@@ -192,8 +219,9 @@ def _semantic_completion(doc: Dict[str, Any], report: Path
                 "detail": f"report unparseable ({exc.__class__.__name__});"
                           " an incomplete report is not completion"}
     problems = []
-    if not str(rep.get("schema", "")).startswith(REPORT_SCHEMA_PREFIX):
-        problems.append(f"schema {rep.get('schema')!r}")
+    if rep.get("schema") not in REPORT_SCHEMA_ALLOWLIST:
+        problems.append(f"schema {rep.get('schema')!r} not in exact "
+                        "allowlist")
     if rep.get("accepted") is not True:
         problems.append(f"accepted {rep.get('accepted')!r}")
     if (rep.get("budgets") or {}).get("seed") != doc["seed"]:

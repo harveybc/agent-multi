@@ -1,0 +1,42 @@
+{
+ "schema": "agent_multi.plateau_screen_preflight.v1",
+ "proposed_contract": {
+  "factor": 0.5,
+  "lr_patience": 8,
+  "min_lr": 1e-06,
+  "threshold": 1e-06,
+  "cooldown": 0,
+  "start_epoch": 0
+ },
+ "controller_contract_id": "agent_multi.sac_plateau_lr.v1",
+ "per_seed": {
+  "101": {
+   "predicted_first_reduction_epoch": 20,
+   "historical_global_best_epoch": 12,
+   "intervenes_before_best": false,
+   "epochs_replayed": 100
+  },
+  "202": {
+   "predicted_first_reduction_epoch": 9,
+   "historical_global_best_epoch": 20,
+   "intervenes_before_best": true,
+   "epochs_replayed": 100
+  },
+  "303": {
+   "predicted_first_reduction_epoch": 9,
+   "historical_global_best_epoch": 43,
+   "intervenes_before_best": true,
+   "epochs_replayed": 103
+  },
+  "404": {
+   "predicted_first_reduction_epoch": 23,
+   "historical_global_best_epoch": 54,
+   "intervenes_before_best": true,
+   "epochs_replayed": 114
+  }
+ },
+ "seeds_with_treatment_window": 3,
+ "min_required": 3,
+ "dispatch_permitted": true,
+ "scope_statement": "A negative screen result rejects THIS bounded-ETH scheduler specification (120/40/40-day window, this contract) \u2014 not plateau scheduling as a universal mechanism."
+}

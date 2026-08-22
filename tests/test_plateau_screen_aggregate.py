@@ -39,9 +39,13 @@ def _pair_contract(default_seed, **over):
     return base
 
 
+FULL40 = "93880beb" + "0" * 32
+OTHER40 = "deadbeef" + "0" * 32
+
+
 def _report(path, *, seed, policy, best_composite, val_ret=0.01,
             epochs=10, data_sha="d" * 64, reduced_at=(),
-            accepted=True, classification=None, commit="93880beb0000",
+            accepted=True, classification=None, commit=FULL40,
             pair_over=None, arm_over=None, salt=""):
     lr = 3e-4
     history = []
@@ -77,6 +81,7 @@ def _report(path, *, seed, policy, best_composite, val_ret=0.01,
         "epochs_run": epochs, "elapsed_seconds": 100.0,
         "data_sha256": data_sha, "accepted": accepted,
         "commit": commit,
+        "config_sha256": ("f" * 64 if policy == "fixed" else "b" * 64),
         "budgets": {"seed": seed, "epoch_timesteps": 20000,
                     "max_epochs": 2000},
         "stopping_contract": {
@@ -174,7 +179,9 @@ class TestPairIdentity:
         fixed = d / "seed101_fixed_report.json"
         (d / "seed101_plateau_report.json").write_text(
             fixed.read_text())
-        self._expect(tool, d, "identical report")
+        # the shared exact-identity check fires first: a duplicated
+        # file necessarily carries an identical config_sha256
+        self._expect(tool, d, "identical report|identical config_sha256")
 
     def test_fixed_arm_with_reduction_refuses(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
@@ -183,7 +190,9 @@ class TestPairIdentity:
         doc["history"][4]["plateau_lr"] = {
             "reduced": True, "old_lr": 3e-4, "new_lr": 1.5e-4}
         (d / "seed101_fixed_report.json").write_text(json.dumps(doc))
-        self._expect(tool, d, "not a fixed arm|declares policy")
+        self._expect(
+            tool, d,
+            "not a fixed arm|declares policy|arm identity violated")
 
     def test_swapped_arm_policy_refuses(self, tool, tmp_path):
         d = self._one_pair(tmp_path,
@@ -221,7 +230,7 @@ class TestPairIdentity:
         refuses regardless of commit."""
         d = self._one_pair(tmp_path,
                            classification="long_horizon_contract",
-                           commit="93880beb0000")
+                           commit=FULL40)
         self._expect(tool, d, "legacy\s+exception was retired|retired")
 
     def test_missing_contracts_refuse_after_retirement(self, tool,

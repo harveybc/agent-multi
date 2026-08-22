@@ -37,10 +37,13 @@ spec. Option 2 is the cheapest falsifiable test of the MECHANISM:
   s/epoch ⇒ ≈ 10-14 GPU-hours total across the four GPUs, ≈ 3-4 h
   wall-clock per round; zero new code (existing smoke flags express
   the contract).
-- Falsification criteria, predeclared both ways:
-  - if ≥3/4 seeds show NEGATIVE paired global-best delta → the
-    mechanism (not just the timing) is rejected for this domain;
-    option 1 executes with evidence and option 3 dies.
+- Falsification criteria, predeclared both ways (scope amended per
+  C4: every branch below rejects or advances THIS bounded-ETH
+  scheduler specification — the 120/40/40-day window and this exact
+  contract — never plateau scheduling as a universal mechanism):
+  - if ≥3/4 seeds show NEGATIVE paired global-best delta → this
+    bounded-ETH spec is rejected with evidence; option 1 executes for
+    this spec and option 3 dies for it.
   - if ≥3/4 seeds show POSITIVE delta with positive median → a
     timing-corrected spec earns the counterbalanced multi-year
     confirmation (option 3), and only then.
@@ -49,3 +52,14 @@ spec. Option 2 is the cheapest falsifiable test of the MECHANISM:
 
 No checkpoint promotion in any branch of the criterion. Launch only
 after your WP1 audit clears it.
+
+
+## C4 preflight (2026-08-22, post-audit amendment)
+
+Replay of the proposed scheduler over the four existing fixed monitor
+histories (real controller implementation, committed artifact
+`PREFLIGHT_EARLY_INTERVENTION_2026_08_22.json`): predicted first
+reductions 101→20, 202→9, 303→9, 404→23 vs historical bests
+12/20/43/54 ⇒ **3/4 seeds intervene before their best** (101 does
+not — its best at epoch 12 precedes any possible patience-8 window).
+Mechanical dispatch rule (≥3 required): **dispatch_permitted: true**.

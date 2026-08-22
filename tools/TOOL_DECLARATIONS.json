@@ -409,6 +409,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "plateau_screen_preflight.py": {
+   "purpose": "C4 of order 2026-08-22: replay the proposed early-intervention scheduler (real controller, counterfactual) over the four committed fixed monitor histories; persist predicted first reductions vs historical bests; mechanical fail-closed dispatch rule (>=3 seeds must intervene before their best, else exit 2 REFUSED). Scope: bounded-ETH spec only.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

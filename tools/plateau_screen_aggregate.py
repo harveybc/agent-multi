@@ -160,10 +160,107 @@ def _verify_arm_semantics(facts: dict, doc: dict, policy: str,
                     f"{report_path}: reduction below min_lr: {r}")
 
 
+def exact_pair_identity(fixed_doc: dict, plateau_doc: dict,
+                        seed: int) -> None:
+    """C1 (AUD-F1-20260822-PLR-08): exact report-fact pair identity.
+
+    Field-equality based — full commit, config, data, split, seed,
+    device, budgets and arm semantics — with NO frozen-tip or any
+    other compatibility exception. Shared by the aggregator's
+    verify_pair and the post-intervention diagnostic so there is ONE
+    identity authority."""
+    docs = {"fixed": fixed_doc, "plateau": plateau_doc}
+    for label, doc in docs.items():
+        if (doc.get("budgets") or {}).get("seed") != seed:
+            raise ScreenAggregationError(
+                f"{label} arm: seed "
+                f"{(doc.get('budgets') or {}).get('seed')!r} does not "
+                f"match expected {seed}")
+        commit = str(doc.get("commit") or "")
+        if len(commit) != 40 or any(
+                c not in "0123456789abcdef" for c in commit):
+            raise ScreenAggregationError(
+                f"{label} arm: commit {commit[:16]!r} is not a full "
+                "40-hex identity")
+    for field in ("commit", "data_sha256"):
+        a, b = fixed_doc.get(field), plateau_doc.get(field)
+        if a != b or a is None:
+            raise ScreenAggregationError(
+                f"pair identity mismatch on {field}: fixed="
+                f"{str(a)[:16]!r} plateau={str(b)[:16]!r}")
+    # config_sha256 hashes the WHOLE effective config, which includes
+    # the treatment key (plateau_lr) in exactly one arm — so across a
+    # valid fixed/plateau pair the hashes MUST both exist and MUST
+    # differ. Equal hashes mean a duplicated or swapped config, not a
+    # treated pair. Config-minus-treatment identity is carried by the
+    # explicit pair_contract where present.
+    ca = fixed_doc.get("config_sha256")
+    cb = plateau_doc.get("config_sha256")
+    if not ca or not cb:
+        raise ScreenAggregationError(
+            "pair identity: config_sha256 missing from an arm")
+    if ca == cb:
+        raise ScreenAggregationError(
+            "pair identity: identical config_sha256 across a "
+            "fixed/plateau pair — the treatment key must differentiate "
+            "the configs; duplicated or swapped configuration refused")
+    dev_a = (fixed_doc.get("device") or {}).get("cuda_visible_devices")
+    dev_b = (plateau_doc.get("device") or {}).get(
+        "cuda_visible_devices")
+    if dev_a != dev_b:
+        raise ScreenAggregationError(
+            f"pair identity mismatch on device mask: {dev_a!r} vs "
+            f"{dev_b!r}")
+    for field in ("epoch_timesteps", "max_epochs"):
+        a = (fixed_doc.get("budgets") or {}).get(field)
+        b = (plateau_doc.get("budgets") or {}).get(field)
+        if a != b or a is None:
+            raise ScreenAggregationError(
+                f"pair identity mismatch on budgets.{field}: "
+                f"{a!r} vs {b!r}")
+    sa = {k: {kk: vv for kk, vv in (v or {}).items()
+              if kk != "provenance"}
+          for k, v in (fixed_doc.get("stopping_contract") or {}).items()
+          if isinstance(v, dict)}
+    sb = {k: {kk: vv for kk, vv in (v or {}).items()
+              if kk != "provenance"}
+          for k, v in (plateau_doc.get("stopping_contract")
+                       or {}).items() if isinstance(v, dict)}
+    if sa != sb or not sa:
+        raise ScreenAggregationError(
+            "pair identity mismatch on stopping_contract")
+    if _split_identity(fixed_doc) != _split_identity(plateau_doc):
+        raise ScreenAggregationError(
+            "pair identity mismatch on split rows/timestamps")
+    for label, doc in docs.items():
+        metrics = {row.get("selection_metric")
+                   for row in (doc.get("history") or [])}
+        if len(metrics) != 1:
+            raise ScreenAggregationError(
+                f"{label} arm: inconsistent selection_metric")
+    ma = (fixed_doc["history"][0]).get("selection_metric")
+    mb = (plateau_doc["history"][0]).get("selection_metric")
+    if ma != mb:
+        raise ScreenAggregationError(
+            f"pair identity mismatch on selection_metric: {ma!r} vs "
+            f"{mb!r}")
+    if any((r.get("plateau_lr") or {}).get("reduced")
+           for r in fixed_doc.get("history") or []):
+        raise ScreenAggregationError(
+            "fixed arm shows LR reductions; arm identity violated")
+    ph = plateau_doc.get("history") or []
+    with_records = sum(1 for r in ph if r.get("plateau_lr") is not None)
+    if with_records not in (0, len(ph)) or (ph and with_records == 0):
+        raise ScreenAggregationError(
+            "plateau arm scheduler records absent or inconsistent; "
+            "arm identity violated")
+
+
 def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
                 fixed_facts: dict, plateau_facts: dict,
                 fixed_path: Path, plateau_path: Path) -> dict:
     """PLR-06: exact pair identity; arms differ only as predeclared."""
+    exact_pair_identity(fixed_doc, plateau_doc, seed)
     if fixed_facts["report_sha256"] == plateau_facts["report_sha256"]:
         raise ScreenAggregationError(
             f"seed {seed}: identical report files supplied for both "

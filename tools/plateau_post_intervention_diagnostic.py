@@ -17,11 +17,43 @@ no clock, no randomness, no network.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import importlib.util
 import json
 import math
 import statistics
 import sys
 from pathlib import Path
+
+_AGG_SPEC = importlib.util.spec_from_file_location(
+    "plateau_screen_aggregate",
+    Path(__file__).resolve().parent / "plateau_screen_aggregate.py")
+_agg = importlib.util.module_from_spec(_AGG_SPEC)
+_AGG_SPEC.loader.exec_module(_agg)
+
+# C1 (AUD-F1-20260822-PLR-08): the canonical pre-intervention
+# projection. Every non-treatment per-epoch fact — economic,
+# observation/action, optimization-state and model-movement — must be
+# EXACTLY equal across the pair for every pre-treatment epoch, or the
+# diagnostic refuses. The ONLY excluded field is the treatment record
+# itself.
+TREATMENT_FIELDS = frozenset({"plateau_lr"})
+PROJECTION_FIELDS = (
+    "composite", "composite_raw",
+    "val_total_return", "val_trades", "val_max_drawdown_fraction",
+    "val_sharpe", "val_balance", "val_profit_pct", "val_win_pct",
+    "val_action_raw_std", "val_action_raw_mean",
+    "val_action_non_hold_rate", "val_action_deadband_rate",
+    "train_total_return", "train_trades", "train_sharpe",
+    "train_tail_total_return", "train_tail_trades",
+    "train_tail_max_drawdown_fraction", "train_tail_sharpe",
+    "policy_actor_delta", "policy_critic_delta",
+    "policy_actor_l1_after", "policy_critic_l1_after",
+    "ent_coef", "gradient_updates_total", "replay_buffer_size",
+    "observed_learning_rates",
+    "best_composite", "checkpoint_improved", "l1_checkpoint_eligible",
+    "actor_loss", "critic_loss",
+)
 
 SEEDS = (101, 202, 303, 404)
 LABEL = "POST_HOC_EXPLORATORY"
@@ -55,7 +87,7 @@ def _optional(row, key):
     return None if (math.isnan(f) or math.isinf(f)) else f
 
 
-def _load_history(path: Path, seed: int) -> list:
+def _load_report(path: Path, seed: int):
     doc = json.loads(path.read_text())
     if (doc.get("budgets") or {}).get("seed") != seed:
         raise DiagnosticError(
@@ -71,17 +103,26 @@ def _load_history(path: Path, seed: int) -> list:
                 f"{path.name}: history epoch {row.get('epoch')!r} at "
                 f"position {i}; non-contiguous epochs refuse (off-by-"
                 "one hazard)")
-    return hist, doc.get("data_sha256")
+    return doc, hist
+
+
+def _projection(rows) -> list:
+    return [{k: row.get(k) for k in PROJECTION_FIELDS}
+            for row in rows]
 
 
 def diagnose_seed(fixed_path: Path, plateau_path: Path,
                   seed: int) -> dict:
-    fh, f_sha = _load_history(fixed_path, seed)
-    ph, p_sha = _load_history(plateau_path, seed)
-    if f_sha != p_sha:
-        raise DiagnosticError(
-            f"seed {seed}: arms carry different data_sha256; "
-            "mismatched pair identity")
+    fdoc, fh = _load_report(fixed_path, seed)
+    pdoc, ph = _load_report(plateau_path, seed)
+    # C1: ONE identity authority — the aggregator's exact pair
+    # verification, with no compatibility exception of any kind. A
+    # changed commit, config, data, split, device, budget, metric or
+    # arm semantics refuses before any number is emitted.
+    try:
+        _agg.exact_pair_identity(fdoc, pdoc, seed)
+    except _agg.ScreenAggregationError as exc:
+        raise DiagnosticError(f"seed {seed}: {exc}") from exc
     reductions = [r["epoch"] for r in ph
                   if (r.get("plateau_lr") or {}).get("reduced")]
     if any((r.get("plateau_lr") or {}).get("reduced") for r in fh):
@@ -93,20 +134,21 @@ def diagnose_seed(fixed_path: Path, plateau_path: Path,
                 "intervention": "none — no LR reduction occurred; "
                                 "no treatment window exists"}
     t0 = min(reductions)
-    # Pre-intervention prefix must be bit-identical: same seed, same
-    # everything, LR untouched before the first reduction.
-    prefix_max_abs_diff = 0.0
+    # C1: the pre-intervention prefix must be identical on the FULL
+    # canonical projection — every non-treatment fact — not only the
+    # monitor scalar.
     n_prefix = min(t0, len(fh), len(ph))
-    for i in range(n_prefix):
-        a = _finite("fixed composite", fh[i]["composite"], epoch=i + 1)
-        b = _finite("plateau composite", ph[i]["composite"], epoch=i + 1)
-        prefix_max_abs_diff = max(prefix_max_abs_diff, abs(a - b))
-    if prefix_max_abs_diff != 0.0:
-        raise DiagnosticError(
-            f"seed {seed}: pre-intervention prefix differs (max abs "
-            f"diff {prefix_max_abs_diff}); the arms are not the same "
-            "experiment before epoch "
-            f"{t0} — changed prefix refuses")
+    proj_f = _projection(fh[:n_prefix])
+    proj_p = _projection(ph[:n_prefix])
+    for i, (ra, rb) in enumerate(zip(proj_f, proj_p), start=1):
+        for k in PROJECTION_FIELDS:
+            if ra[k] != rb[k]:
+                raise DiagnosticError(
+                    f"seed {seed}: pre-intervention projection "
+                    f"differs at epoch {i} field {k!r}: "
+                    f"{ra[k]!r} vs {rb[k]!r} — changed prefix refuses")
+    projection_sha = hashlib.sha256(json.dumps(
+        proj_f, sort_keys=True).encode()).hexdigest()
     n_aligned = min(len(fh), len(ph))
     if n_aligned <= t0:
         return {"seed": seed, "label": LABEL,
@@ -146,7 +188,9 @@ def diagnose_seed(fixed_path: Path, plateau_path: Path,
         "unaligned_tail_epochs": {"fixed": len(fh) - n_aligned,
                                   "plateau": len(ph) - n_aligned},
         "prefix_identical": True,
-        "prefix_max_abs_diff": 0.0,
+        "prefix_projection_fields": list(PROJECTION_FIELDS),
+        "prefix_projection_sha256": projection_sha,
+        "treatment_fields_excluded": sorted(TREATMENT_FIELDS),
         "per_epoch_monitor_delta": [
             {"epoch": e, "delta": d} for e, d in zip(window, deltas)],
         "best_post_fixed": max(f_post),

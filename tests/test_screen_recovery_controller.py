@@ -378,3 +378,66 @@ class TestStatusAndUnit:
         text = rc.emit_persistent_unit(m)
         assert "NOT INSTALLED" in text
         assert " supervise --root" in text
+
+
+class TestExactSchemaAllowlist:
+    """AUD-GEN-20260822-REC-05 (C2): exact equality, never prefixes."""
+
+    @pytest.mark.parametrize("schema", [
+        "agent_multi.wp4_smoke_malicious.v999",   # foreign suffix word
+        "agent_multi.wp4_smoke.v2.evil",          # trailing suffix
+        "agent_multi.wp4_smoke.v1",               # unsupported version
+        "agent_multi.wp4_smoke.v3",               # future major
+        "agent_multi.wp4_smokе.v2",          # Cyrillic 'е' confusable
+        "AGENT_MULTI.WP4_SMOKE.V2",               # case confusable
+    ])
+    def test_non_allowlisted_schema_never_completes(self, rc, tmp_path,
+                                                    schema):
+        m = _mk(rc, tmp_path)
+        Path(json.loads(m.read_text())["report_path"]).write_text(
+            json.dumps(_semantic_report(schema=schema)))
+        out = rc.classify_attempt(m)
+        assert out["state"] == rc.INTERRUPTED_NONRESUMABLE
+        assert "allowlist" in out["detail"]
+
+    def test_exact_schema_completes(self, rc, tmp_path):
+        m = _mk(rc, tmp_path)
+        Path(json.loads(m.read_text())["report_path"]).write_text(
+            json.dumps(_semantic_report()))
+        assert rc.classify_attempt(m)["state"] == rc.COMPLETED
+
+    def test_no_prefix_matching_in_source(self, rc):
+        src = TOOL.read_text()
+        assert "REPORT_SCHEMA_ALLOWLIST" in src
+        assert "startswith(REPORT_SCHEMA" not in src
+
+
+class TestDurableLaunchArtifact:
+    """REC-04 (C3): both fsync failures refuse without a manifest."""
+
+    def test_file_fsync_failure_creates_no_manifest(self, rc,
+                                                    tmp_path):
+        def boom(_fd):
+            raise OSError("file fsync failed")
+        with pytest.raises(OSError, match="file fsync failed"):
+            _mk(rc, tmp_path, fsync_file=boom)
+        assert not list((tmp_path / "attempts").glob(
+            "attempt_seed*.json"))
+
+    def test_dir_fsync_failure_creates_no_manifest(self, rc, tmp_path):
+        def boom(_p):
+            raise OSError("dir fsync failed")
+        with pytest.raises(OSError, match="dir fsync failed"):
+            _mk(rc, tmp_path, fsync_dir=boom)
+        assert not list((tmp_path / "attempts").glob(
+            "attempt_seed*.json"))
+
+    def test_artifact_written_via_flushed_temp_then_rename(self, rc,
+                                                           tmp_path):
+        synced_files = []
+        m = _mk(rc, tmp_path,
+                fsync_file=lambda fd: synced_files.append(fd))
+        assert synced_files, "launch artifact file was never fsynced"
+        art = Path(json.loads(m.read_text())["launch_artifact"])
+        assert art.is_file()
+        assert not art.with_suffix(".json.tmp").exists()
