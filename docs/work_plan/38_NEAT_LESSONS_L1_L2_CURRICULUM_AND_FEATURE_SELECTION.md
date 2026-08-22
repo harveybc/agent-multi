@@ -1131,3 +1131,12 @@ contract; allowing it here would confound difficulty with fill behavior.
 Document 39 owns the downstream order-family and separate entry/exit-model
 comparisons. All earlier P1LR artifacts remain diagnostic and cannot be
 promoted under this amended action/observation contract.
+# 2026-08-22 plateau-screen closure disposition
+
+The bounded four-seed fixed-vs-plateau screen completed with the predeclared
+result `INCONCLUSIVE`: all global-best paired deltas are zero because every
+selected checkpoint precedes the first LR reduction. Independent audit accepts
+that result and prohibits promotion. Before any multi-year confirmation, WP1
+must extract the explicitly post-hoc post-intervention diagnostics from the
+eight existing reports. The observed best-post deltas are negative on all four
+seeds, so the next GPU expense depends on that diagnostic and its audit.
