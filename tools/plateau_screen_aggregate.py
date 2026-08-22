@@ -105,67 +105,12 @@ def arm_facts(report_path: Path) -> dict:
     }
 
 
-FROZEN_SCREEN_COMMIT = "93880beb"
-LEGACY_LABEL = "long_horizon_contract"
 BOUNDED_LABEL = "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"
 
-# The plateau spec predeclared for this screen; an arm may differ from
-# its pair ONLY by this factor (AUD-F1-20260821-PLR-06).
+# The plateau spec an arm may differ by (AUD-F1-20260821-PLR-06).
 PREDECLARED_PLATEAU_SPEC = {
     "factor": 0.5, "lr_patience": 20, "min_lr": 1e-6,
     "threshold": 1e-6, "cooldown": 0, "start_epoch": 40}
-
-
-def _derive_pair_contract(doc: dict, report_path: Path) -> dict:
-    """Derivation for reports produced by the FROZEN screen tip only.
-
-    Reports from any other commit must carry an explicit
-    pair_contract; deriving one for arbitrary code would let a
-    mislabelled report smuggle identity (PLR-06)."""
-    commit = str(doc.get("commit") or "")
-    if not commit.startswith(FROZEN_SCREEN_COMMIT):
-        raise ScreenAggregationError(
-            f"{report_path}: no pair_contract and commit "
-            f"{commit[:12]!r} is not the pinned frozen screen tip "
-            f"{FROZEN_SCREEN_COMMIT}; refusing derivation")
-    budgets = doc.get("budgets") or {}
-    stopping = doc.get("stopping_contract") or {}
-    history = doc.get("history") or []
-    metrics = {row.get("selection_metric") for row in history}
-    if len(metrics) != 1:
-        raise ScreenAggregationError(
-            f"{report_path}: inconsistent selection_metric in history")
-    return {
-        "seed": budgets.get("seed"),
-        "data_sha256": doc.get("data_sha256"),
-        "epoch_timesteps": budgets.get("epoch_timesteps"),
-        "max_epochs": budgets.get("max_epochs"),
-        "l1_patience": (stopping.get("l1_patience") or {}).get(
-            "effective"),
-        "l1_patience_start_epoch": (stopping.get(
-            "l1_patience_start_epoch") or {}).get("effective"),
-        "selection_metric": metrics.pop(),
-        "device_mask": (doc.get("device") or {}).get(
-            "cuda_visible_devices"),
-        "commit": commit,
-        "derived_from_frozen_tip": True,
-    }
-
-
-def _derive_arm_contract(doc: dict) -> dict:
-    history = doc.get("history") or []
-    plateau_rows = [row for row in history
-                    if row.get("plateau_lr") is not None]
-    if plateau_rows and len(plateau_rows) != len(history):
-        raise ScreenAggregationError(
-            "plateau records present on some epochs but not all; "
-            "inconsistent scheduler machinery")
-    return {
-        "scheduler_policy": "plateau" if plateau_rows else "fixed",
-        "plateau_spec": (PREDECLARED_PLATEAU_SPEC if plateau_rows
-                         else None),
-        "derived_from_frozen_tip": True,
-    }
 
 
 def _split_identity(doc: dict) -> dict:
@@ -226,9 +171,15 @@ def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
     contracts = {}
     for label, doc, path in (("fixed", fixed_doc, fixed_path),
                              ("plateau", plateau_doc, plateau_path)):
-        pair = doc.get("pair_contract") or _derive_pair_contract(
-            doc, path)
-        arm = doc.get("arm_contract") or _derive_arm_contract(doc)
+        # §C.6 (post-outage order): the 93880beb compatibility path
+        # was removed after committing the one migrated screen result.
+        # Every report must carry its canonical contracts explicitly.
+        pair = doc.get("pair_contract")
+        arm = doc.get("arm_contract")
+        if not pair or not arm:
+            raise ScreenAggregationError(
+                f"{path}: missing canonical pair_contract/arm_contract; "
+                "the frozen-tip derivation path was retired (§C.6)")
         contracts[label] = {"pair": pair, "arm": arm}
         if pair.get("seed") != seed:
             raise ScreenAggregationError(
@@ -241,14 +192,11 @@ def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
                 "negative arms cannot enter a directional outcome")
         label_str = ((doc.get("stopping_contract") or {}).get(
             "classification"))
-        commit = str(doc.get("commit") or "")
-        legacy_ok = (label_str == LEGACY_LABEL
-                     and commit.startswith(FROZEN_SCREEN_COMMIT))
-        if label_str != BOUNDED_LABEL and not legacy_ok:
+        if label_str != BOUNDED_LABEL:
             raise ScreenAggregationError(
-                f"{path}: classification {label_str!r} is neither the "
-                f"bounded screen label nor the pinned frozen-tip "
-                "legacy label (PLR-02/PLR-06)")
+                f"{path}: classification {label_str!r} is not the "
+                "bounded screen label (PLR-02/PLR-06; the legacy "
+                "exception was retired in §C.6)")
     pf, pp = contracts["fixed"]["pair"], contracts["plateau"]["pair"]
     if pf != pp:
         diff = {k: (pf.get(k), pp.get(k))

@@ -213,43 +213,27 @@ class TestPairIdentity:
         (d / "seed101_plateau_report.json").write_text(json.dumps(doc))
         self._expect(tool, d, "halving")
 
-    def test_legacy_label_with_wrong_commit_refuses(self, tool,
-                                                    tmp_path):
+    def test_legacy_label_refuses_after_retirement(self, tool,
+                                                   tmp_path):
+        """§C.6: after the one migrated screen result was committed at
+        the working-branch closure, the frozen-tip legacy label and
+        derivation path were retired — every legacy-labelled report now
+        refuses regardless of commit."""
         d = self._one_pair(tmp_path,
                            classification="long_horizon_contract",
-                           commit="deadbeef0000")
-        self._expect(tool, d, "neither the")
+                           commit="93880beb0000")
+        self._expect(tool, d, "legacy\s+exception was retired|retired")
 
-    def test_legacy_label_on_frozen_tip_passes(self, tool, tmp_path):
-        d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04],
-                    classification="long_horizon_contract",
-                    commit="93880beb0000")
-        out = tmp_path / "agg.json"
-        assert tool.main(["--screen-dir", str(d),
-                          "--out-json", str(out)]) == 0
-
-    def test_frozen_tip_derivation_without_contracts(self, tool,
-                                                     tmp_path):
-        """Reports from the frozen screen tip carry no explicit
-        contracts; identity derives from report facts, pinned to the
-        commit."""
+    def test_missing_contracts_refuse_after_retirement(self, tool,
+                                                       tmp_path):
+        """§C.6: identity derivation from report facts is gone; a
+        report without explicit canonical contracts refuses."""
         d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04])
         for f in d.glob("seed*_report.json"):
             doc = json.loads(f.read_text())
             del doc["pair_contract"], doc["arm_contract"]
             f.write_text(json.dumps(doc))
-        out = tmp_path / "agg.json"
-        assert tool.main(["--screen-dir", str(d),
-                          "--out-json", str(out)]) == 0
-
-    def test_derivation_refused_off_frozen_tip(self, tool, tmp_path):
-        d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04],
-                    commit="deadbeef0000")
-        for f in d.glob("seed*_report.json"):
-            doc = json.loads(f.read_text())
-            del doc["pair_contract"], doc["arm_contract"]
-            f.write_text(json.dumps(doc))
-        self._expect(tool, d, "pinned frozen screen tip")
+        self._expect(tool, d, "derivation path was retired")
 
     def test_no_eligible_checkpoint_refuses(self, tool, tmp_path):
         p = tmp_path / "r.json"
