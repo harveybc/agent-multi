@@ -397,7 +397,7 @@
    "owner": "General Satoshi III"
   },
   "screen_recovery_controller.py": {
-   "purpose": "Post-outage order \u00a7B: persistent, filesystem-backed attempt state machine for screen arms. Durable manifest before launch; classification from durable artifacts only (absence is never completion); journaled idempotent preservation of interrupted attempts; fresh-attempt retries with clean output dirs (plateau state never resumed); duplicate-active and completed-arm-rerun refusals; commit/config/GPU/ownership launch preconditions; heartbeat status JSON. NOT ACTIVATED against the frozen 93880beb screen \u2014 activation boundary proposed after it completes. Never touches broker authority or trading services.",
+   "purpose": "Post-outage \u00a7B controller, REC-01..04 corrected: REAL supervise lifecycle (manifest -> classify -> preserve/retry -> preconditions -> launch FROM the hashed canonical launch artifact -> immediate PID record -> heartbeat -> typed terminal reconciliation), SEMANTIC completion (schema/accepted/seed/arm/full-commit/config-hash/ownership/stop-reason \u2014 empty, typed-negative or foreign reports never complete), full-40-hex commit + clean-tree + absent-or-empty non-symlink output binding, and file+parent-directory fsync durability. NOT activated against any live experiment until independently verified. Never touches broker authority or trading services.",
    "lifecycle": "supported",
    "mutability": "mixed",
    "authority_class": "diagnostic",
