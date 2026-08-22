@@ -1131,3 +1131,14 @@ contract; allowing it here would confound difficulty with fill behavior.
 Document 39 owns the downstream order-family and separate entry/exit-model
 comparisons. All earlier P1LR artifacts remain diagnostic and cannot be
 promoted under this amended action/observation contract.
+
+## 23. 2026-08-22 Plateau scheduler diagnostic disposition
+
+The bounded fixed-versus-plateau screen remains officially `INCONCLUSIVE` and
+cannot promote a checkpoint. The exploratory post-intervention signs are all
+negative, but audit reproduced an identity bypass in that diagnostic,
+prefix-based completion-schema acceptance and incomplete fsync of the canonical
+launch artifact. The early-intervention plateau screen is the conditionally
+accepted next GPU experiment. Dispatch follows correction and independent
+reproduction of PLR-08, REC-05 and REC-04 plus a scheduler timing preflight over
+the existing monitor histories.
