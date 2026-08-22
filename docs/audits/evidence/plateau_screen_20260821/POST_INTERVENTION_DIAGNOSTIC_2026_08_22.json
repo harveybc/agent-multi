@@ -1,0 +1,838 @@
+{
+ "schema": "agent_multi.plateau_post_intervention_diag.v1",
+ "label": "POST_HOC_EXPLORATORY",
+ "authority": "NONE \u2014 exploratory diagnostic only; the official screen outcome remains INCONCLUSIVE; no checkpoint selection; no promotion authority",
+ "per_seed": {
+  "101": {
+   "seed": 101,
+   "label": "POST_HOC_EXPLORATORY",
+   "first_reduction_epoch": 60,
+   "all_reduction_epochs": [
+    60,
+    80,
+    100
+   ],
+   "aligned_window_epochs": [
+    61,
+    100
+   ],
+   "unaligned_tail_epochs": {
+    "fixed": 0,
+    "plateau": 0
+   },
+   "prefix_identical": true,
+   "prefix_max_abs_diff": 0.0,
+   "per_epoch_monitor_delta": [
+    {
+     "epoch": 61,
+     "delta": -0.03714507145272228
+    },
+    {
+     "epoch": 62,
+     "delta": -0.02161900362802696
+    },
+    {
+     "epoch": 63,
+     "delta": 0.015342719291350393
+    },
+    {
+     "epoch": 64,
+     "delta": -0.0036910170270530868
+    },
+    {
+     "epoch": 65,
+     "delta": -0.04350954594077164
+    },
+    {
+     "epoch": 66,
+     "delta": -0.002964443340931912
+    },
+    {
+     "epoch": 67,
+     "delta": 0.013614005362630445
+    },
+    {
+     "epoch": 68,
+     "delta": 0.03558723003569625
+    },
+    {
+     "epoch": 69,
+     "delta": -0.04136987146389938
+    },
+    {
+     "epoch": 70,
+     "delta": -0.0644633725654705
+    },
+    {
+     "epoch": 71,
+     "delta": -0.06423782611340054
+    },
+    {
+     "epoch": 72,
+     "delta": -0.041820068450962145
+    },
+    {
+     "epoch": 73,
+     "delta": 0.000619276365958335
+    },
+    {
+     "epoch": 74,
+     "delta": -0.049248956163892264
+    },
+    {
+     "epoch": 75,
+     "delta": -0.018397408218050755
+    },
+    {
+     "epoch": 76,
+     "delta": -0.02163413299725979
+    },
+    {
+     "epoch": 77,
+     "delta": -0.02322703655704731
+    },
+    {
+     "epoch": 78,
+     "delta": -0.07567283356757372
+    },
+    {
+     "epoch": 79,
+     "delta": -0.027286342592189157
+    },
+    {
+     "epoch": 80,
+     "delta": -0.05074409319649079
+    },
+    {
+     "epoch": 81,
+     "delta": -0.05114456035737995
+    },
+    {
+     "epoch": 82,
+     "delta": -0.04645893804635134
+    },
+    {
+     "epoch": 83,
+     "delta": -0.018815039547798174
+    },
+    {
+     "epoch": 84,
+     "delta": -0.04896397177356264
+    },
+    {
+     "epoch": 85,
+     "delta": -0.03582778875706362
+    },
+    {
+     "epoch": 86,
+     "delta": -0.04248681143462053
+    },
+    {
+     "epoch": 87,
+     "delta": -0.050037981829733666
+    },
+    {
+     "epoch": 88,
+     "delta": -0.027323948421237892
+    },
+    {
+     "epoch": 89,
+     "delta": -0.03121771889533824
+    },
+    {
+     "epoch": 90,
+     "delta": -0.036134200323631266
+    },
+    {
+     "epoch": 91,
+     "delta": -0.07239780332294131
+    },
+    {
+     "epoch": 92,
+     "delta": -0.031252691738703035
+    },
+    {
+     "epoch": 93,
+     "delta": -0.052960646172192705
+    },
+    {
+     "epoch": 94,
+     "delta": -0.07527165738240031
+    },
+    {
+     "epoch": 95,
+     "delta": -0.014486191539305644
+    },
+    {
+     "epoch": 96,
+     "delta": -0.02970769263776453
+    },
+    {
+     "epoch": 97,
+     "delta": -0.007730964098319103
+    },
+    {
+     "epoch": 98,
+     "delta": 0.0013871692595992524
+    },
+    {
+     "epoch": 99,
+     "delta": -0.03551500393095999
+    },
+    {
+     "epoch": 100,
+     "delta": -0.013715614047316943
+    }
+   ],
+   "best_post_fixed": 0.0027987936711316684,
+   "best_post_plateau": -0.018952419119029937,
+   "best_post_delta": -0.021751212790161605,
+   "terminal_delta": -0.013715614047316943,
+   "auc_delta": -1.2164995044671087,
+   "auc_units": "monitor-value-fraction x epochs (trapezoidal)",
+   "monitor_units": "risk-adjusted validation/train-tail return fraction (easy_checkpoint_monitor composite)",
+   "terminal_fact_deltas": {
+    "val_total_return_fraction": -0.013997999999998845,
+    "val_max_drawdown_fraction": 0.014591697158961636,
+    "val_trades": -6.0,
+    "train_tail_trades": -10.0,
+    "val_action_raw_std": -0.08832192474694978,
+    "val_action_non_hold_rate": 0.0
+   },
+   "post_window_sum_deltas": {
+    "policy_actor_movement": -4389.362250447273,
+    "policy_critic_movement": -780.4123431402259
+   }
+  },
+  "202": {
+   "seed": 202,
+   "label": "POST_HOC_EXPLORATORY",
+   "first_reduction_epoch": 60,
+   "all_reduction_epochs": [
+    60,
+    80,
+    100
+   ],
+   "aligned_window_epochs": [
+    61,
+    100
+   ],
+   "unaligned_tail_epochs": {
+    "fixed": 0,
+    "plateau": 0
+   },
+   "prefix_identical": true,
+   "prefix_max_abs_diff": 0.0,
+   "per_epoch_monitor_delta": [
+    {
+     "epoch": 61,
+     "delta": -0.06870581159192242
+    },
+    {
+     "epoch": 62,
+     "delta": -0.020452036261829967
+    },
+    {
+     "epoch": 63,
+     "delta": -0.017569558677410106
+    },
+    {
+     "epoch": 64,
+     "delta": 0.021546775315300304
+    },
+    {
+     "epoch": 65,
+     "delta": 0.07425363019197967
+    },
+    {
+     "epoch": 66,
+     "delta": 0.08645093493970621
+    },
+    {
+     "epoch": 67,
+     "delta": 0.007060047113933904
+    },
+    {
+     "epoch": 68,
+     "delta": -0.018329212315384744
+    },
+    {
+     "epoch": 69,
+     "delta": 0.011769680801140991
+    },
+    {
+     "epoch": 70,
+     "delta": 0.02752517962469292
+    },
+    {
+     "epoch": 71,
+     "delta": -0.005608078952306306
+    },
+    {
+     "epoch": 72,
+     "delta": 0.02633804014693755
+    },
+    {
+     "epoch": 73,
+     "delta": 0.01391454841319175
+    },
+    {
+     "epoch": 74,
+     "delta": -0.0010431792680086621
+    },
+    {
+     "epoch": 75,
+     "delta": -0.018735505428528813
+    },
+    {
+     "epoch": 76,
+     "delta": -0.016968024402421955
+    },
+    {
+     "epoch": 77,
+     "delta": 0.01892569318070871
+    },
+    {
+     "epoch": 78,
+     "delta": -0.030484920632886884
+    },
+    {
+     "epoch": 79,
+     "delta": -0.01770708515482981
+    },
+    {
+     "epoch": 80,
+     "delta": -0.006825903368312264
+    },
+    {
+     "epoch": 81,
+     "delta": -0.010139318716109107
+    },
+    {
+     "epoch": 82,
+     "delta": -0.0107130698122875
+    },
+    {
+     "epoch": 83,
+     "delta": 0.005044789975373391
+    },
+    {
+     "epoch": 84,
+     "delta": 0.0016975697382625027
+    },
+    {
+     "epoch": 85,
+     "delta": 0.0016041137817701875
+    },
+    {
+     "epoch": 86,
+     "delta": 0.008444613781770019
+    },
+    {
+     "epoch": 87,
+     "delta": -0.00872367206737162
+    },
+    {
+     "epoch": 88,
+     "delta": 0.008633021096016616
+    },
+    {
+     "epoch": 89,
+     "delta": -0.0075943835448068694
+    },
+    {
+     "epoch": 90,
+     "delta": 0.007864065094140336
+    },
+    {
+     "epoch": 91,
+     "delta": -0.048502877483248656
+    },
+    {
+     "epoch": 92,
+     "delta": -0.05229487748324845
+    },
+    {
+     "epoch": 93,
+     "delta": -0.047912932086783024
+    },
+    {
+     "epoch": 94,
+     "delta": -0.047912932086783024
+    },
+    {
+     "epoch": 95,
+     "delta": -0.04835866750560199
+    },
+    {
+     "epoch": 96,
+     "delta": -0.04752293208678297
+    },
+    {
+     "epoch": 97,
+     "delta": -0.04682393208678302
+    },
+    {
+     "epoch": 98,
+     "delta": -0.04988416750560173
+    },
+    {
+     "epoch": 99,
+     "delta": -0.04609516750560202
+    },
+    {
+     "epoch": 100,
+     "delta": -0.04188808076233682
+    }
+   ],
+   "best_post_fixed": -0.005034265151892869,
+   "best_post_plateau": -0.013657068062235815,
+   "best_post_delta": -0.008622802910342946,
+   "terminal_delta": -0.04188808076233682,
+   "auc_delta": -0.36042667741513407,
+   "auc_units": "monitor-value-fraction x epochs (trapezoidal)",
+   "monitor_units": "risk-adjusted validation/train-tail return fraction (easy_checkpoint_monitor composite)",
+   "terminal_fact_deltas": {
+    "val_total_return_fraction": -0.033677999999999986,
+    "val_max_drawdown_fraction": 0.009332335094020101,
+    "val_trades": -20.0,
+    "train_tail_trades": -8.0,
+    "val_action_raw_std": -0.00044319764387146243,
+    "val_action_non_hold_rate": 0.0
+   },
+   "post_window_sum_deltas": {
+    "policy_actor_movement": -910.255272673443,
+    "policy_critic_movement": -395.23577777441824
+   }
+  },
+  "303": {
+   "seed": 303,
+   "label": "POST_HOC_EXPLORATORY",
+   "first_reduction_epoch": 63,
+   "all_reduction_epochs": [
+    63,
+    83,
+    103
+   ],
+   "aligned_window_epochs": [
+    64,
+    103
+   ],
+   "unaligned_tail_epochs": {
+    "fixed": 0,
+    "plateau": 0
+   },
+   "prefix_identical": true,
+   "prefix_max_abs_diff": 0.0,
+   "per_epoch_monitor_delta": [
+    {
+     "epoch": 64,
+     "delta": 0.03504785503037526
+    },
+    {
+     "epoch": 65,
+     "delta": 0.007953892988885936
+    },
+    {
+     "epoch": 66,
+     "delta": -0.054774073139016805
+    },
+    {
+     "epoch": 67,
+     "delta": -0.11780933792046733
+    },
+    {
+     "epoch": 68,
+     "delta": -0.0354887388290126
+    },
+    {
+     "epoch": 69,
+     "delta": 0.012961394702014573
+    },
+    {
+     "epoch": 70,
+     "delta": -0.011361219746532203
+    },
+    {
+     "epoch": 71,
+     "delta": -0.025158214021838682
+    },
+    {
+     "epoch": 72,
+     "delta": -0.06170702295088912
+    },
+    {
+     "epoch": 73,
+     "delta": -0.024631145393930604
+    },
+    {
+     "epoch": 74,
+     "delta": -0.10186335839467373
+    },
+    {
+     "epoch": 75,
+     "delta": -0.044089043929746025
+    },
+    {
+     "epoch": 76,
+     "delta": -0.047797117646942056
+    },
+    {
+     "epoch": 77,
+     "delta": 0.0019127798837337284
+    },
+    {
+     "epoch": 78,
+     "delta": -0.05058304610428249
+    },
+    {
+     "epoch": 79,
+     "delta": -0.05656060590736625
+    },
+    {
+     "epoch": 80,
+     "delta": 0.034833001669934804
+    },
+    {
+     "epoch": 81,
+     "delta": -0.011376869295103072
+    },
+    {
+     "epoch": 82,
+     "delta": -0.05916130110336705
+    },
+    {
+     "epoch": 83,
+     "delta": 0.05181617541873228
+    },
+    {
+     "epoch": 84,
+     "delta": 0.05301793262506058
+    },
+    {
+     "epoch": 85,
+     "delta": -0.02713373614397952
+    },
+    {
+     "epoch": 86,
+     "delta": -0.008015890684652055
+    },
+    {
+     "epoch": 87,
+     "delta": -0.027649204592254242
+    },
+    {
+     "epoch": 88,
+     "delta": -0.004536491654342292
+    },
+    {
+     "epoch": 89,
+     "delta": 0.0067203367509776
+    },
+    {
+     "epoch": 90,
+     "delta": 0.01293081304342996
+    },
+    {
+     "epoch": 91,
+     "delta": 0.024003992147618003
+    },
+    {
+     "epoch": 92,
+     "delta": -0.03888393438699324
+    },
+    {
+     "epoch": 93,
+     "delta": -0.027796335879394396
+    },
+    {
+     "epoch": 94,
+     "delta": -0.08359272988286122
+    },
+    {
+     "epoch": 95,
+     "delta": -0.04612958143572607
+    },
+    {
+     "epoch": 96,
+     "delta": -0.019827938851023748
+    },
+    {
+     "epoch": 97,
+     "delta": -0.010188180267156441
+    },
+    {
+     "epoch": 98,
+     "delta": -0.04009238900480602
+    },
+    {
+     "epoch": 99,
+     "delta": 0.04741253999291567
+    },
+    {
+     "epoch": 100,
+     "delta": 0.03699709819124068
+    },
+    {
+     "epoch": 101,
+     "delta": -0.022002101661398744
+    },
+    {
+     "epoch": 102,
+     "delta": 0.047353177267603186
+    },
+    {
+     "epoch": 103,
+     "delta": -0.022881886162320883
+    }
+   ],
+   "best_post_fixed": -0.0072635642640725495,
+   "best_post_plateau": -0.03439730040805207,
+   "best_post_delta": -0.02713373614397952,
+   "terminal_delta": -0.022881886162320883,
+   "auc_delta": -0.7142134897115818,
+   "auc_units": "monitor-value-fraction x epochs (trapezoidal)",
+   "monitor_units": "risk-adjusted validation/train-tail return fraction (easy_checkpoint_monitor composite)",
+   "terminal_fact_deltas": {
+    "val_total_return_fraction": -0.005955999999999739,
+    "val_max_drawdown_fraction": 0.017136328679089263,
+    "val_trades": 8.0,
+    "train_tail_trades": 3.0,
+    "val_action_raw_std": -0.10122408114653358,
+    "val_action_non_hold_rate": 0.0
+   },
+   "post_window_sum_deltas": {
+    "policy_actor_movement": -4277.181726515293,
+    "policy_critic_movement": -667.5651320330799
+   }
+  },
+  "404": {
+   "seed": 404,
+   "label": "POST_HOC_EXPLORATORY",
+   "first_reduction_epoch": 74,
+   "all_reduction_epochs": [
+    74,
+    94,
+    114
+   ],
+   "aligned_window_epochs": [
+    75,
+    114
+   ],
+   "unaligned_tail_epochs": {
+    "fixed": 0,
+    "plateau": 0
+   },
+   "prefix_identical": true,
+   "prefix_max_abs_diff": 0.0,
+   "per_epoch_monitor_delta": [
+    {
+     "epoch": 75,
+     "delta": 0.0012104999999999477
+    },
+    {
+     "epoch": 76,
+     "delta": 0.0005095000000000516
+    },
+    {
+     "epoch": 77,
+     "delta": -0.003056499999999955
+    },
+    {
+     "epoch": 78,
+     "delta": -0.006683910717970899
+    },
+    {
+     "epoch": 79,
+     "delta": -0.010852923759620055
+    },
+    {
+     "epoch": 80,
+     "delta": -0.011778923759620037
+    },
+    {
+     "epoch": 81,
+     "delta": -0.014844152391525166
+    },
+    {
+     "epoch": 82,
+     "delta": -0.00754650326327868
+    },
+    {
+     "epoch": 83,
+     "delta": -0.01997015239152508
+    },
+    {
+     "epoch": 84,
+     "delta": -0.015722910717970703
+    },
+    {
+     "epoch": 85,
+     "delta": -0.0058046523915255
+    },
+    {
+     "epoch": 86,
+     "delta": -0.004212652391525289
+    },
+    {
+     "epoch": 87,
+     "delta": 0.000775847608474628
+    },
+    {
+     "epoch": 88,
+     "delta": 0.001030346416524698
+    },
+    {
+     "epoch": 89,
+     "delta": 0.001626220258350207
+    },
+    {
+     "epoch": 90,
+     "delta": -0.016575653583475007
+    },
+    {
+     "epoch": 91,
+     "delta": -0.023606772470809487
+    },
+    {
+     "epoch": 92,
+     "delta": -0.03223327127886002
+    },
+    {
+     "epoch": 93,
+     "delta": -0.0068229693478343845
+    },
+    {
+     "epoch": 94,
+     "delta": -0.02409915239152527
+    },
+    {
+     "epoch": 95,
+     "delta": -0.02513623602637696
+    },
+    {
+     "epoch": 96,
+     "delta": -0.02593823602637704
+    },
+    {
+     "epoch": 97,
+     "delta": -0.023983236026377194
+    },
+    {
+     "epoch": 98,
+     "delta": -0.01248071035459248
+    },
+    {
+     "epoch": 99,
+     "delta": -0.012026710354592525
+    },
+    {
+     "epoch": 100,
+     "delta": -0.015674126861310346
+    },
+    {
+     "epoch": 101,
+     "delta": -0.011543152391525806
+    },
+    {
+     "epoch": 102,
+     "delta": -0.023757152391525704
+    },
+    {
+     "epoch": 103,
+     "delta": -0.025003652391525633
+    },
+    {
+     "epoch": 104,
+     "delta": -0.025311343966324364
+    },
+    {
+     "epoch": 105,
+     "delta": -0.017509497253182776
+    },
+    {
+     "epoch": 106,
+     "delta": -0.02845171327963985
+    },
+    {
+     "epoch": 107,
+     "delta": -0.033114170756317014
+    },
+    {
+     "epoch": 108,
+     "delta": -0.030923670756317086
+    },
+    {
+     "epoch": 109,
+     "delta": -0.013638170756316952
+    },
+    {
+     "epoch": 110,
+     "delta": -0.023303170756317076
+    },
+    {
+     "epoch": 111,
+     "delta": -0.019495254391168806
+    },
+    {
+     "epoch": 112,
+     "delta": -0.026864050654170205
+    },
+    {
+     "epoch": 113,
+     "delta": -0.013492038364711374
+    },
+    {
+     "epoch": 114,
+     "delta": -0.005566538364711396
+    }
+   ],
+   "best_post_fixed": -0.006223071668997942,
+   "best_post_plateau": -0.030627844139807396,
+   "best_post_delta": -0.024404772470809452,
+   "terminal_delta": -0.005566538364711396,
+   "auc_delta": -0.6096934995147408,
+   "auc_units": "monitor-value-fraction x epochs (trapezoidal)",
+   "monitor_units": "risk-adjusted validation/train-tail return fraction (easy_checkpoint_monitor composite)",
+   "terminal_fact_deltas": {
+    "val_total_return_fraction": -0.019942000000000126,
+    "val_max_drawdown_fraction": 0.008983238931223742,
+    "val_trades": 15.0,
+    "train_tail_trades": -2.0,
+    "val_action_raw_std": 0.14463216997202177,
+    "val_action_non_hold_rate": 0.0
+   },
+   "post_window_sum_deltas": {
+    "policy_actor_movement": -1234.0517988204956,
+    "policy_critic_movement": -272.8608225402422
+   }
+  }
+ },
+ "sign_table": {
+  "101": {
+   "best_post": "-",
+   "terminal": "-",
+   "auc": "-"
+  },
+  "202": {
+   "best_post": "-",
+   "terminal": "-",
+   "auc": "-"
+  },
+  "303": {
+   "best_post": "-",
+   "terminal": "-",
+   "auc": "-"
+  },
+  "404": {
+   "best_post": "-",
+   "terminal": "-",
+   "auc": "-"
+  }
+ },
+ "dispersion_best_post_delta": {
+  "median": -0.02307799263048553,
+  "min": -0.02713373614397952,
+  "max": -0.008622802910342946
+ }
+}

@@ -402,6 +402,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "plateau_post_intervention_diagnostic.py": {
+   "purpose": "WP1 of order 2026-08-22 (finding PLR-07): deterministic POST_HOC_EXPLORATORY diagnostic over the eight committed screen reports \u2014 first-reduction epoch, exact aligned window, bit-identical prefix proof, per-epoch monitor deltas, best-post/terminal/trapezoidal-AUC deltas with units, terminal fact deltas (unavailable never zero), parameter-movement sums, sign table + dispersion. NO authority: cannot alter the official INCONCLUSIVE, select checkpoints, or create promotion authority.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
