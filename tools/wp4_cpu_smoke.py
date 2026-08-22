@@ -239,6 +239,51 @@ def main(argv=None) -> int:
     config = build_config(args, features)
     config_sha = hashlib.sha256(json.dumps(
         config, sort_keys=True, default=str).encode()).hexdigest()
+    # Dispatch order 2026-08-22: config-minus-treatment identity hash,
+    # computed AT MATERIALIZATION TIME — the pair-identity fact that
+    # two arms are the same experiment except the scheduler treatment.
+    pair_config_sha = hashlib.sha256(json.dumps(
+        {k: v for k, v in config.items() if k != "plateau_lr"},
+        sort_keys=True, default=str).encode()).hexdigest()
+    pair_contract_doc = {
+        "seed": args.seed, "data_sha256": data_sha,
+        "epoch_timesteps": args.epoch_timesteps,
+        "max_epochs": args.max_epochs,
+        "l1_patience": args.l1_patience,
+        "l1_patience_start_epoch": args.l1_patience_start_epoch,
+        "selection_metric": args.selection_metric,
+        "train_days": 120, "val_days": 40, "test_days": 40,
+        "device_mask": os.environ.get("CUDA_VISIBLE_DEVICES"),
+        "env_origin": origin, "learning_rate_initial": 3e-4,
+        "pair_config_sha256": pair_config_sha,
+    }
+    arm_contract_doc = {
+        "scheduler_policy": ("plateau" if args.plateau_lr_json
+                             else "fixed"),
+        "plateau_spec": (json.loads(args.plateau_lr_json)
+                         if args.plateau_lr_json else None),
+    }
+    # Persist the launch manifest BEFORE training; an arm without it
+    # refuses aggregation (durable pre-launch identity).
+    if args.report is not None:
+        launch_manifest = Path(str(args.report)).with_suffix(
+            ".launch_manifest.json")
+        launch_manifest.parent.mkdir(parents=True, exist_ok=True)
+        launch_manifest.write_text(json.dumps({
+            "schema": "agent_multi.wp4_smoke_launch.v1",
+            "effective_config": {k: str(v) if not isinstance(
+                v, (int, float, bool, str, list, dict, type(None)))
+                else v for k, v in config.items()},
+            "pair_contract": pair_contract_doc,
+            "arm_contract": arm_contract_doc,
+            "config_sha256": config_sha,
+            "pair_config_sha256": pair_config_sha,
+            "commit": subprocess.run(
+                ["git", "-C", str(REPO), "rev-parse", "HEAD"],
+                capture_output=True, text=True).stdout.strip(),
+            "data_sha256": data_sha,
+            "argv": sys.argv,
+        }, indent=1, default=str))
 
     from pipeline_plugins.rl_pipeline_with_validation import (
         PipelinePlugin,
@@ -361,25 +406,9 @@ def main(argv=None) -> int:
         # aggregator requires exact equality of every pair_contract
         # field across a seed's two arms and permits the arm_contract
         # to differ ONLY as predeclared (fixed vs exact plateau spec).
-        "pair_contract": {
-            "seed": args.seed,
-            "data_sha256": data_sha,
-            "epoch_timesteps": args.epoch_timesteps,
-            "max_epochs": args.max_epochs,
-            "l1_patience": args.l1_patience,
-            "l1_patience_start_epoch": args.l1_patience_start_epoch,
-            "selection_metric": args.selection_metric,
-            "train_days": 120, "val_days": 40, "test_days": 40,
-            "device_mask": os.environ.get("CUDA_VISIBLE_DEVICES"),
-            "env_origin": origin,
-            "learning_rate_initial": 3e-4,
-        },
-        "arm_contract": {
-            "scheduler_policy": ("plateau" if args.plateau_lr_json
-                                 else "fixed"),
-            "plateau_spec": (json.loads(args.plateau_lr_json)
-                             if args.plateau_lr_json else None),
-        },
+        "pair_contract": pair_contract_doc,
+        "arm_contract": arm_contract_doc,
+        "pair_config_sha256": pair_config_sha,
         "elapsed_seconds": round(elapsed, 1),
         "epochs_run": len(history),
         "stop_reason": result.get("stop_reason"),

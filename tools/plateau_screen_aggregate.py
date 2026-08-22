@@ -277,6 +277,12 @@ def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
             raise ScreenAggregationError(
                 f"{path}: missing canonical pair_contract/arm_contract; "
                 "the frozen-tip derivation path was retired (§C.6)")
+        # Dispatch order 2026-08-22: config-minus-treatment identity
+        # from materialization time is REQUIRED on every new report.
+        if not doc.get("pair_config_sha256"):
+            raise ScreenAggregationError(
+                f"{path}: missing pair_config_sha256 (config-minus-"
+                "treatment identity); absence refuses aggregation")
         contracts[label] = {"pair": pair, "arm": arm}
         if pair.get("seed") != seed:
             raise ScreenAggregationError(
@@ -294,6 +300,13 @@ def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
                 f"{path}: classification {label_str!r} is not the "
                 "bounded screen label (PLR-02/PLR-06; the legacy "
                 "exception was retired in §C.6)")
+    pcf = fixed_doc.get("pair_config_sha256")
+    pcp = plateau_doc.get("pair_config_sha256")
+    if pcf != pcp:
+        raise ScreenAggregationError(
+            f"seed {seed}: config-minus-treatment identity differs "
+            f"({str(pcf)[:16]!r} vs {str(pcp)[:16]!r}); the arms are "
+            "not the same experiment (dispatch order 2026-08-22)")
     pf, pp = contracts["fixed"]["pair"], contracts["plateau"]["pair"]
     if pf != pp:
         diff = {k: (pf.get(k), pp.get(k))

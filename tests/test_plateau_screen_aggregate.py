@@ -95,6 +95,7 @@ def _report(path, *, seed, policy, best_composite, val_ret=0.01,
             for r in ("train_epoch", "train_tail_epoch",
                       "validation_epoch")}},
         "pair_contract": pair, "arm_contract": arm,
+        "pair_config_sha256": "e" * 64,
         "salt": salt,
     }
     path.write_text(json.dumps(doc))
@@ -254,3 +255,30 @@ class TestPairIdentity:
         with pytest.raises(tool.ScreenAggregationError,
                            match="typed refusal"):
             tool.arm_facts(p)
+
+
+class TestConfigMinusTreatmentIdentity:
+    """Dispatch order 2026-08-22: pair_config_sha256 required + equal."""
+
+    def test_missing_hash_refuses(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        f = d / "seed101_fixed_report.json"
+        doc = json.loads(f.read_text())
+        del doc["pair_config_sha256"]
+        f.write_text(json.dumps(doc))
+        with pytest.raises(tool.ScreenAggregationError,
+                           match="absence refuses"):
+            tool.main(["--screen-dir", str(d),
+                       "--out-json", str(d / "agg.json")])
+
+    def test_unequal_hash_refuses(self, tool, tmp_path):
+        d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        f = d / "seed101_plateau_report.json"
+        doc = json.loads(f.read_text())
+        doc["pair_config_sha256"] = "9" * 64
+        doc["pair_contract"]["pair_config_sha256"] = "9" * 64
+        f.write_text(json.dumps(doc))
+        with pytest.raises(tool.ScreenAggregationError,
+                           match="not the same experiment|mismatch"):
+            tool.main(["--screen-dir", str(d),
+                       "--out-json", str(d / "agg.json")])
