@@ -1,0 +1,474 @@
+{
+ "schema": "agent_multi.plateau_screen_aggregate.v1",
+ "screen_label": "bounded 120/40/40-day scheduler mechanism screen (AUD-F1-20260821-PLR-02); no claim about the multi-year easy curriculum",
+ "predeclared_rule": "primary=best eligible monitor value; FOR if >=3/4 seeds delta>0 and median>0; AGAINST mirrored; else INCONCLUSIVE; 4 seeds are never conclusive",
+ "outcome": "INCONCLUSIVE",
+ "primary_deltas_by_seed": {
+  "101": 0.0,
+  "202": 0.0,
+  "303": 0.0,
+  "404": 0.0
+ },
+ "dispersion": {
+  "median": 0.0,
+  "min": 0.0,
+  "max": 0.0,
+  "positive_seeds": 0,
+  "negative_seeds": 0
+ },
+ "pairs": {
+  "101": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "seed": 101,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-612d1e0c-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "fixed",
+      "plateau_spec": null,
+      "derived_from_frozen_tip": true
+     }
+    },
+    "plateau": {
+     "pair": {
+      "seed": 101,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-612d1e0c-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "plateau",
+      "plateau_spec": {
+       "factor": 0.5,
+       "lr_patience": 20,
+       "min_lr": 1e-06,
+       "threshold": 1e-06,
+       "cooldown": 0,
+       "start_epoch": 40
+      },
+      "derived_from_frozen_tip": true
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed101_fixed_report.json",
+    "report_sha256": "0b5cf59a16700d8afcd77f06f077b3ebe5b26a2f5d0f38b53a673ee100d511c4",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 12,
+    "best_monitor_value": 0.007345051627438587,
+    "best_val_total_return": 0.03417500000000029,
+    "best_val_trades": 22,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.02920863771154893,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 16899.9,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed101_plateau_report.json",
+    "report_sha256": "c0af751696bf07fb9e50953a387726ba1909bd081c69b571cedf9844ec2258a6",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 12,
+    "best_monitor_value": 0.007345051627438587,
+    "best_val_total_return": 0.03417500000000029,
+    "best_val_trades": 22,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.02920863771154893,
+    "lr_reductions": [
+     {
+      "epoch": 60,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 80,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 100,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 7.5e-05,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 20787.5,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": 0.0,
+   "delta_best_val_total_return": 0.0,
+   "delta_epochs_run": 0,
+   "delta_best_val_trades": 0
+  },
+  "202": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "seed": 202,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-a8bd1b2c-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "fixed",
+      "plateau_spec": null,
+      "derived_from_frozen_tip": true
+     }
+    },
+    "plateau": {
+     "pair": {
+      "seed": 202,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-a8bd1b2c-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "plateau",
+      "plateau_spec": {
+       "factor": 0.5,
+       "lr_patience": 20,
+       "min_lr": 1e-06,
+       "threshold": 1e-06,
+       "cooldown": 0,
+       "start_epoch": 40
+      },
+      "derived_from_frozen_tip": true
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed202_fixed_report.json",
+    "report_sha256": "1b711ae685ed73b3e43e5e1d4e83361b703a9bb64c336c760287961a8c3a94cc",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 20,
+    "best_monitor_value": 0.005426784484384446,
+    "best_val_total_return": 0.06601699999999888,
+    "best_val_trades": 37,
+    "best_train_tail_trades": 11,
+    "best_val_max_drawdown_fraction": 0.019458378122936992,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 23188.5,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed202_plateau_report.json",
+    "report_sha256": "d536874628a1073bf8aaf35f0f2a751ade41c2342c72a4183b79f3d2a0ce78e3",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 20,
+    "best_monitor_value": 0.005426784484384446,
+    "best_val_total_return": 0.06601699999999888,
+    "best_val_trades": 37,
+    "best_train_tail_trades": 11,
+    "best_val_max_drawdown_fraction": 0.019458378122936992,
+    "lr_reductions": [
+     {
+      "epoch": 60,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 80,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 100,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 7.5e-05,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 23360.4,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": 0.0,
+   "delta_best_val_total_return": 0.0,
+   "delta_epochs_run": 0,
+   "delta_best_val_trades": 0
+  },
+  "303": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "seed": 303,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-b77fc3ad-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "fixed",
+      "plateau_spec": null,
+      "derived_from_frozen_tip": true
+     }
+    },
+    "plateau": {
+     "pair": {
+      "seed": 303,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-b77fc3ad-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "plateau",
+      "plateau_spec": {
+       "factor": 0.5,
+       "lr_patience": 20,
+       "min_lr": 1e-06,
+       "threshold": 1e-06,
+       "cooldown": 0,
+       "start_epoch": 40
+      },
+      "derived_from_frozen_tip": true
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed303_fixed_report.json",
+    "report_sha256": "84dff1e49337ad23990a8b01302c36a8ee529bbd550a11a771b778de71345b6a",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 103,
+    "best_epoch": 43,
+    "best_monitor_value": 0.004446256245274541,
+    "best_val_total_return": 0.036366999999999594,
+    "best_val_trades": 43,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.03292165833963361,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 103,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 10068.9,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed303_plateau_report.json",
+    "report_sha256": "02de774184ee2ccedf57e2e11a4a7edc0d6a70b8458e897bf7e54470b9b12ea2",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 103,
+    "best_epoch": 43,
+    "best_monitor_value": 0.004446256245274541,
+    "best_val_total_return": 0.036366999999999594,
+    "best_val_trades": 43,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.03292165833963361,
+    "lr_reductions": [
+     {
+      "epoch": 63,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 83,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 103,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 7.5e-05,
+    "monitor_curve_len": 103,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 9955.8,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": 0.0,
+   "delta_best_val_total_return": 0.0,
+   "delta_epochs_run": 0,
+   "delta_best_val_trades": 0
+  },
+  "404": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "seed": 404,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-a9f35631-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "fixed",
+      "plateau_spec": null,
+      "derived_from_frozen_tip": true
+     }
+    },
+    "plateau": {
+     "pair": {
+      "seed": 404,
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "epoch_timesteps": 20000,
+      "max_epochs": 2000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "device_mask": "GPU-a9f35631-TRUNCATED",
+      "commit": "93880bebb623442a92458cfff92b35b9829f7372",
+      "derived_from_frozen_tip": true
+     },
+     "arm": {
+      "scheduler_policy": "plateau",
+      "plateau_spec": {
+       "factor": 0.5,
+       "lr_patience": 20,
+       "min_lr": 1e-06,
+       "threshold": 1e-06,
+       "cooldown": 0,
+       "start_epoch": 40
+      },
+      "derived_from_frozen_tip": true
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed404_fixed_report.json",
+    "report_sha256": "cf5b41e96f5c9ff21af691242a537de0977a2bca72efe19943168e8e1df0591e",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 114,
+    "best_epoch": 54,
+    "best_monitor_value": 0.024922395071594744,
+    "best_val_total_return": 0.08219899999999991,
+    "best_val_trades": 28,
+    "best_train_tail_trades": 11,
+    "best_val_max_drawdown_fraction": 0.015607402180593182,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 114,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 12182.5,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_20260821/seed404_plateau_report.json",
+    "report_sha256": "336b7cd7e8637beee097202aaa97bbc76fa00d77ad59917a2569002cd08a6182",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 114,
+    "best_epoch": 54,
+    "best_monitor_value": 0.024922395071594744,
+    "best_val_total_return": 0.08219899999999991,
+    "best_val_trades": 28,
+    "best_train_tail_trades": 11,
+    "best_val_max_drawdown_fraction": 0.015607402180593182,
+    "lr_reductions": [
+     {
+      "epoch": 74,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 94,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 114,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 7.5e-05,
+    "monitor_curve_len": 114,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 11884.3,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": 0.0,
+   "delta_best_val_total_return": 0.0,
+   "delta_epochs_run": 0,
+   "delta_best_val_trades": 0
+  }
+ },
+ "promotion": "REFUSED \u2014 no checkpoint from this screen may be promoted (audit 2026-08-21 ML verdict)"
+}
