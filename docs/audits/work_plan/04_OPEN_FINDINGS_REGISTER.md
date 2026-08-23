@@ -1168,6 +1168,12 @@ opened two new S3 findings:
 | AUD-F1-20260823-313 | S3 | open, reproduced | Outer endpoint publishes null row count and CSV digest because it reads keys absent from the nested manifest schema | General Satoshi implements; Musashi verifies |
 | AUD-SEC-20260823-314 | S3 | open, reproduced by inspection | Effective-profile materializer can follow a pre-existing destination symlink and does not enforce atomic no-follow installation | General Satoshi implements; Musashi verifies |
 
+Append-only state change, 2026-08-23: findings 313 and 314 were corrected at
+`agent-multi@6e7bd128` and `lts@41be6a3`. Musashi independently reproduced 35
+P1 tests and 74 MT5/materializer tests and verified the corrected artifacts.
+Both findings are `verified_corrected`, awaiting owner closure. This acceptance
+also dispatches the predeclared P1 4x3 campaign without another owner phrase.
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 
