@@ -281,6 +281,20 @@ def arm_contracts(effective: dict, arm: str) -> dict:
     }
 
 
+def treatment_divergence(n_manifest: dict, en_manifest: dict) -> dict:
+    """Aggregation-time check (verified necessary by BOTH smokes): an
+    easy phase whose named-state map equals arm N's is an INERT
+    treatment — the solvency relaxation never bound — and the seed's
+    EN arms are uninformative about easy pretraining, not silently
+    equal. Never a refusal: a typed, mandatory fact."""
+    a = n_manifest["named_state_sha256"]
+    b = en_manifest["named_state_sha256"]
+    identical = sum(1 for k in a if a.get(k) == b.get(k))
+    return {"total_tensors": len(a),
+            "identical_tensors": identical,
+            "easy_treatment_diverged": identical < len(a)}
+
+
 def verify_arm_identity(records: list) -> None:
     shas = {r["contracts"]["pair_contract_sha256"] for r in records}
     if len(shas) != 1:

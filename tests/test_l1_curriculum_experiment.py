@@ -279,3 +279,17 @@ class TestDeclarations:
         assert "PREDECLARED DIRECTION RULE" in src
         assert "never merged" in src.lower()
         assert "flat_mlp" in src
+
+
+class TestTreatmentDivergence:
+    def test_identical_maps_flag_inert_treatment(self, tool):
+        m = {"named_state_sha256": {"a": "1", "b": "2"}}
+        out = tool.treatment_divergence(m, m)
+        assert out["easy_treatment_diverged"] is False
+        assert out["identical_tensors"] == 2
+
+    def test_any_divergence_marks_active_treatment(self, tool):
+        a = {"named_state_sha256": {"a": "1", "b": "2"}}
+        b = {"named_state_sha256": {"a": "1", "b": "X"}}
+        assert tool.treatment_divergence(a, b)[
+            "easy_treatment_diverged"] is True
