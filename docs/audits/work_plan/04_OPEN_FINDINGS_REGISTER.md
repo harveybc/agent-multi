@@ -1176,6 +1176,14 @@ also dispatches the predeclared P1 4x3 campaign without another owner phrase.
 
 | AUD-F1-20260823-315 | S3 | open, observed during dispatch | Omega sequential wrapper points at a mutable worktree and launch manifests omit executable commit identity | General Satoshi corrects without stopping active N; Musashi verifies |
 
+Append-only state change, 2026-08-23: finding 315 was corrected without
+interrupting the active N arm. Omega now has a clean detached worktree at
+`6e7bd128`; the remaining-arm handover pins executable hashes and the manifest
+digest as a wrapper literal. Musashi independently verified process states and
+5/5 adversarial tests at `eb6bddea`. Finding 315 is
+`verified_corrected`, awaiting owner closure; campaign authorization remains
+active.
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 
