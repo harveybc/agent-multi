@@ -41,7 +41,9 @@ def _args(tool, **over):
         warm_start_model=None, warm_start_model_sha256=None,
         warm_start_replay_buffer=None,
         warm_start_replay_buffer_sha256=None,
-        save_replay_buffer=None)
+        save_replay_buffer=None,
+        nested_contract=None, warm_start_bundle=None,
+        warm_start_replay_from_bundle=False, buffer_size=None)
     for k, v in over.items():
         setattr(ns, k, v)
     return ns

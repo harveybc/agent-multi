@@ -105,8 +105,15 @@ def build_config(args, features) -> dict:
         "input_data_file": str(DATA), "env_plugin": "gym_fx_env",
         "agent_plugin": "project3_sac_actor_critic_agent",
         "quiet_mode": True,
-        "train_days": args.train_days, "val_days": args.val_days,
-        "test_days": args.test_days,
+        **({"nested_split_contract": str(args.nested_contract),
+            "nested_split_dir": str(args.output_dir / "nested_splits"),
+            # sealed_test is structurally unmaterialized in l1 mode;
+            # there is no test surface to evaluate (finding 311/§5)
+            "evaluate_test_split": False}
+           if args.nested_contract else
+           {"train_days": args.train_days or 120,
+            "val_days": args.val_days or 40,
+            "test_days": args.test_days or 40}),
         "min_split_rows": 100,
         "epoch_timesteps": args.epoch_timesteps,
         "max_epochs": args.max_epochs,
@@ -147,6 +154,8 @@ def build_config(args, features) -> dict:
         # inside a sac_params dict — runtime finding follow-up
         "learning_rate": 3e-4, "batch_size": 64,
         "learning_starts": 128, "device": args.device,
+        **({"buffer_size": args.buffer_size}
+           if args.buffer_size else {}),
         # correction 6: model artifacts land under --output-dir, never
         # the repo root
         "save_model": str(args.output_dir / "best_model.zip"),
@@ -164,6 +173,12 @@ def build_config(args, features) -> dict:
            if args.warm_start_replay_buffer else {}),
         **({"save_replay_buffer": str(args.save_replay_buffer)}
            if args.save_replay_buffer else {}),
+        **({"warm_start_bundle": str(args.warm_start_bundle),
+            "warm_start_replay_from_bundle":
+                bool(args.warm_start_replay_from_bundle)}
+           if args.warm_start_bundle else {}),
+        "checkpoint_bundle_dir": str(args.output_dir /
+                                     "selected_bundle"),
     }
 
 
@@ -223,9 +238,20 @@ def main(argv=None) -> int:
         "--l1-patience-start-epoch", type=int, required=True,
         help="explicit epoch before which patience never counts; "
              "never derived from --max-epochs (correction 2026-08-21)")
-    parser.add_argument("--train-days", type=int, default=120)
-    parser.add_argument("--val-days", type=int, default=40)
-    parser.add_argument("--test-days", type=int, default=40)
+    parser.add_argument(
+        "--nested-contract", type=Path, default=None,
+        help="P1 path: the verified nested split contract JSON. "
+             "Mutually exclusive with day-based splits — passing any "
+             "--*-days flag alongside it REFUSES (finding 311).")
+    parser.add_argument("--warm-start-bundle", type=Path, default=None,
+                        help="selected-checkpoint bundle manifest; "
+                             "binds model+replay+epoch (findings "
+                             "307/308/309)")
+    parser.add_argument("--warm-start-replay-from-bundle",
+                        action="store_true")
+    parser.add_argument("--train-days", type=int, default=None)
+    parser.add_argument("--val-days", type=int, default=None)
+    parser.add_argument("--test-days", type=int, default=None)
     parser.add_argument(
         "--solvency-mode", default="normal_realistic",
         choices=["normal_realistic", "easy_chronological_continuation"])
@@ -236,10 +262,14 @@ def main(argv=None) -> int:
     parser.add_argument("--warm-start-replay-buffer-sha256",
                         default=None)
     parser.add_argument("--save-replay-buffer", type=Path, default=None)
+    parser.add_argument("--buffer-size", type=int, default=None,
+                        help="bounded replay capacity for smokes; "
+                             "None = plugin default")
     parser.add_argument(
         "--selection-metric",
         choices=["episodic_activity_economic_v1",
-                 "easy_checkpoint_monitor_v1"],
+                 "easy_checkpoint_monitor_v1",
+                 "paired_generalization_weekly_v1"],
         default="episodic_activity_economic_v1")
     parser.add_argument(
         "--plateau-lr-json", default=None,
@@ -250,6 +280,20 @@ def main(argv=None) -> int:
                         help="non-mutating: assert env origin, device "
                              "and data hash, then exit")
     args = parser.parse_args(argv)
+    if args.nested_contract and any(
+            v is not None for v in (args.train_days, args.val_days,
+                                    args.test_days)):
+        print(json.dumps({"outcome": "REFUSED_DAY_SPLITS_WITH_NESTED",
+                          "detail": "finding 311: the nested role "
+                          "manifest is the only P1 data contract; "
+                          "day-based slicing refuses"}))
+        return 2
+    if args.nested_contract and args.selection_metric != (
+            "paired_generalization_weekly_v1"):
+        print(json.dumps({"outcome": "REFUSED_METRIC_FOR_NESTED",
+                          "detail": "nested contracts require the "
+                          "paired hierarchical comparator"}))
+        return 2
 
     sys.path.insert(0, str(PINNED_GYMFX))
     origin = assert_env_origin()
@@ -265,6 +309,7 @@ def main(argv=None) -> int:
     features = [c for c in next(_csv.reader(DATA.open()))
                 if c not in _EXCLUDE]
     config = build_config(args, features)
+    config["_source_data_sha256"] = data_sha
     config_sha = hashlib.sha256(json.dumps(
         config, sort_keys=True, default=str).encode()).hexdigest()
     # Dispatch order 2026-08-22: config-minus-treatment identity hash,
@@ -352,9 +397,18 @@ def main(argv=None) -> int:
     best = result.get("best_model_path")
     eligible = bool(best) and Path(str(best)).is_file()
 
-    sealed_ok = (
-        (test_trace.get("last_timestamp") or "")[:4] < "2025"
-        if test_trace.get("last_timestamp") else False)
+    if args.nested_contract:
+        # Finding 311/order §5: under the nested L1 contract the
+        # sealed 2025 role is STRUCTURALLY unmaterialized — the
+        # stronger proof is its absence, verified from the manifest.
+        _mnf = json.loads(Path(
+            config["nested_split_manifest"]).read_text())
+        _sealed_role = (_mnf.get("roles") or {}).get("sealed_test", {})
+        sealed_ok = _sealed_role.get("status") != "MATERIALIZED"
+    else:
+        sealed_ok = (
+            (test_trace.get("last_timestamp") or "")[:4] < "2025"
+            if test_trace.get("last_timestamp") else False)
     accepted = (actor_moved > 0 and distinct >= 10 and activity
                 and episodic_path and eligible and sealed_ok)
     negative = None
@@ -432,14 +486,16 @@ def main(argv=None) -> int:
             # scheduler mechanism screen.
             "classification": "MECHANICS_RANK_DIAGNOSTIC_ONLY"
             if args.l1_patience < 60 or args.max_epochs < 2000
-            else ("BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"
-                  if (args.train_days, args.val_days,
-                      args.test_days) == (120, 40, 40)
+            else ("NESTED_ROLE_MANIFEST_CONTRACT"
+                  if args.nested_contract else
+                  "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"
+                  if (args.train_days or 120, args.val_days or 40,
+                      args.test_days or 40) == (120, 40, 40)
                   else f"BOUNDED_{args.train_days}_{args.val_days}_"
                        f"{args.test_days}_DAY_CONTRACT")},
-        "data_horizon": {"train_days": args.train_days,
-                         "val_days": args.val_days,
-                         "test_days": args.test_days,
+        "data_horizon": {"contract": (
+                             "nested_role_manifest"
+                             if args.nested_contract else "day_slices"),
                          "note": ("bounded mechanism screen only; no "
                                   "claim about the multi-year easy "
                                   "curriculum (PLR-02)")},

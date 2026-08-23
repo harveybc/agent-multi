@@ -48,6 +48,7 @@ from . import _lexicographic_selection as _lex
 from . import _paired_generalization as _paired
 from . import _return_trace as _trace_mod
 from . import _sac_plateau_lr as _plateau
+from . import _checkpoint_bundle as _bundle
 from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import (
     apply_observation_contract,
@@ -728,6 +729,9 @@ class PipelinePlugin:
         "warm_start_model": None,
         "warm_start_replay_buffer": None,
         "save_replay_buffer": None,
+        "checkpoint_bundle_dir": None,
+        "warm_start_bundle": None,
+        "warm_start_replay_from_bundle": False,
         "return_trace_dir": None,
         "evaluate_test_split": True,
         "write_results_sidecar": True,
@@ -1463,6 +1467,26 @@ class PipelinePlugin:
                 # split windows and run id.
                 replay_disposition = {"mode": "cold_start",
                                       "loaded_transitions": 0}
+                # Findings 307/308: a bundle warm start binds model,
+                # replay and epoch to ONE selected checkpoint. Mixing a
+                # bundle with the loose replay path REFUSES — selected
+                # and terminal state never combine.
+                warm_bundle_manifest = None
+                _wb = config.get("warm_start_bundle")
+                if _wb:
+                    if config.get("warm_start_replay_buffer"):
+                        raise _bundle.BundleError(
+                            "warm_start_bundle and warm_start_replay_"
+                            "buffer are mutually exclusive: selected "
+                            "and terminal state never mix (finding 308)")
+                    warm_bundle_manifest = _bundle.load_manifest(
+                        Path(str(_wb)))
+                    config = {**config,
+                              "warm_start_model":
+                                  warm_bundle_manifest["model"]["path"],
+                              "warm_start_model_sha256":
+                                  warm_bundle_manifest["model"][
+                                      "sha256"]}
                 warm_start_model = config.get("warm_start_model", self.params["warm_start_model"])
                 if warm_start_model:
                     warm_start_path = Path(str(warm_start_model))
@@ -1494,6 +1518,18 @@ class PipelinePlugin:
                             train_env,
                             config,
                         )
+                    elif warm_bundle_manifest is not None:
+                        # Findings 308/309: a BUNDLE warm start is a
+                        # full-state restoration — actor, critics,
+                        # targets, entropy AND optimizer states — so
+                        # the exact named-state verification below can
+                        # hold. load_for_training is weights-only by
+                        # design (fresh optimizers) and would fail the
+                        # map equality; it stays the semantics of the
+                        # non-bundle path.
+                        model = agent_plugin.load(
+                            str(warm_start_path), train_env
+                        )
                     else:
                         training_loader = getattr(
                             agent_plugin, "load_for_training", None
@@ -1517,6 +1553,34 @@ class PipelinePlugin:
                     # The per-epoch history already records
                     # replay_buffer_size, so the disposition is
                     # executing evidence, not a claim.
+                    if warm_bundle_manifest is not None:
+                        # 309: EXACT named-state map equality of the
+                        # LOADED runtime against the bundle.
+                        state_verification = _bundle.verify_loaded_model(
+                            model, warm_bundle_manifest)
+                        replay_disposition = {
+                            "mode": "fresh",
+                            "loaded_transitions": 0,
+                            "bundle_epoch":
+                                warm_bundle_manifest["epoch"],
+                            "state_verification": state_verification}
+                        if config.get("warm_start_replay_from_bundle"):
+                            _rp = Path(str(
+                                warm_bundle_manifest["replay"]["path"]))
+                            _verify_artifact_sha256(
+                                _rp, warm_bundle_manifest["replay"][
+                                    "sha256"])
+                            model.load_replay_buffer(str(_rp))
+                            replay_disposition = {
+                                "mode":
+                                    "selected_epoch_full_continuity",
+                                "source": str(_rp),
+                                "bundle_epoch":
+                                    warm_bundle_manifest["epoch"],
+                                "loaded_transitions": int(
+                                    model.replay_buffer.size()),
+                                "state_verification":
+                                    state_verification}
                     _warm_replay = config.get("warm_start_replay_buffer")
                     if _warm_replay:
                         _replay_path = Path(str(_warm_replay))
@@ -1535,7 +1599,10 @@ class PipelinePlugin:
                             "loaded_transitions": int(
                                 model.replay_buffer.size()),
                         }
-                    else:
+                    elif warm_bundle_manifest is None:
+                        # the bundle branch above already recorded its
+                        # disposition (with epoch binding and state
+                        # verification); never clobber it here
                         replay_disposition = {
                             "mode": "fresh",
                             "loaded_transitions": 0,
@@ -1758,6 +1825,36 @@ class PipelinePlugin:
                     })
                     if baseline_trade_gate:
                         agent_plugin.save(model, best_model_path)
+                        # 307/308: the installed baseline IS a selected
+                        # checkpoint; its coherent bundle (epoch 0)
+                        # exists so a warm-started run whose training
+                        # never beats the baseline still has a bound,
+                        # evaluable selected state.
+                        _bundle_dir0 = config.get(
+                            "checkpoint_bundle_dir")
+                        if _bundle_dir0:
+                            _trace_dir0 = Path(str(config.get(
+                                "return_trace_dir") or "."))
+                            _bundle.write_bundle(
+                                Path(str(_bundle_dir0)),
+                                epoch=0, model=model,
+                                model_artifact=Path(best_model_path),
+                                trace_sources={
+                                    "train_monitor": _trace_dir0 /
+                                    "train_tail_epoch_return_trace.csv",
+                                    "inner_validation": _trace_dir0 /
+                                    "validation_epoch_return_trace.csv",
+                                },
+                                config_sha256=hashlib.sha256(
+                                    json.dumps(config, sort_keys=True,
+                                               default=str).encode()
+                                ).hexdigest(),
+                                data_sha256=str(
+                                    config.get("_source_data_sha256")
+                                    or ""),
+                                observation_contract=(
+                                    observation_contract_application),
+                            )
                         best_composite = (
                             baseline_composite
                             if baseline_composite is not None
@@ -1943,6 +2040,35 @@ class PipelinePlugin:
                     if improved:
                         agent_plugin.save(model, best_model_path)
                         best_checkpoint_saved = True
+                        # Findings 307/308/309: ONE coherent bundle per
+                        # improvement — model, replay AS OF THIS EPOCH,
+                        # the traces that scored it, exact named-state
+                        # hashes, all bound in one manifest. Handoff
+                        # consumes only this manifest.
+                        _bundle_dir = config.get("checkpoint_bundle_dir")
+                        if _bundle_dir:
+                            _trace_dir = Path(str(config.get(
+                                "return_trace_dir") or "."))
+                            _bundle.write_bundle(
+                                Path(str(_bundle_dir)),
+                                epoch=epoch, model=model,
+                                model_artifact=Path(best_model_path),
+                                trace_sources={
+                                    "train_monitor": _trace_dir /
+                                    "train_tail_epoch_return_trace.csv",
+                                    "inner_validation": _trace_dir /
+                                    "validation_epoch_return_trace.csv",
+                                },
+                                config_sha256=hashlib.sha256(
+                                    json.dumps(config, sort_keys=True,
+                                               default=str).encode()
+                                ).hexdigest(),
+                                data_sha256=str(
+                                    config.get("_source_data_sha256")
+                                    or ""),
+                                observation_contract=(
+                                    observation_contract_application),
+                            )
 
                     # Order 2026-08-21 §2/§3: observed per-optimizer LR
                     # is a required per-epoch report fact, recorded every
