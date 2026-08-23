@@ -1174,6 +1174,8 @@ P1 tests and 74 MT5/materializer tests and verified the corrected artifacts.
 Both findings are `verified_corrected`, awaiting owner closure. This acceptance
 also dispatches the predeclared P1 4x3 campaign without another owner phrase.
 
+| AUD-F1-20260823-315 | S3 | open, observed during dispatch | Omega sequential wrapper points at a mutable worktree and launch manifests omit executable commit identity | General Satoshi corrects without stopping active N; Musashi verifies |
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 
