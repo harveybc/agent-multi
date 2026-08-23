@@ -81,3 +81,22 @@ def test_dirty_tree_refuses(repo):
     (path / "scratch.txt").write_text("dirty")
     with pytest.raises(tool.LaunchIdentityDrift, match="dirty"):
         tool.verify_launch_identity(manifest, path)
+
+
+def test_altered_manifest_refuses_via_pinned_literal(repo):
+    """Order 2026-08-23: the wrapper pins the manifest digest as a
+    LITERAL; an altered manifest refuses before any of its contents
+    are trusted."""
+    tool = _load()
+    path, manifest, _ = repo
+    pinned = hashlib.sha256(manifest.read_bytes()).hexdigest()
+    out = tool.verify_launch_identity(manifest, path,
+                                      expected_manifest_sha256=pinned)
+    assert out["identity_ok"]
+    doc = json.loads(manifest.read_text())
+    doc["file_sha256"]["driver.py"] = "0" * 64  # attacker edit
+    manifest.write_text(json.dumps(doc))
+    with pytest.raises(tool.LaunchIdentityDrift,
+                       match="manifest drift"):
+        tool.verify_launch_identity(manifest, path,
+                                    expected_manifest_sha256=pinned)

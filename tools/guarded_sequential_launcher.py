@@ -18,8 +18,18 @@ class LaunchIdentityDrift(RuntimeError):
     pass
 
 
-def verify_launch_identity(manifest_path: Path, worktree: Path) -> dict:
-    manifest = json.loads(Path(manifest_path).read_text())
+def verify_launch_identity(manifest_path: Path, worktree: Path,
+                           expected_manifest_sha256: str | None = None
+                           ) -> dict:
+    raw = Path(manifest_path).read_bytes()
+    if expected_manifest_sha256 is not None:
+        actual = hashlib.sha256(raw).hexdigest()
+        if actual != expected_manifest_sha256:
+            raise LaunchIdentityDrift(
+                "manifest drift: the launch-identity manifest no "
+                f"longer matches its pinned literal digest "
+                f"({actual[:16]} != {expected_manifest_sha256[:16]})")
+    manifest = json.loads(raw)
     head = subprocess.run(["git", "-C", str(worktree), "rev-parse",
                            "HEAD"], capture_output=True,
                           text=True).stdout.strip()
