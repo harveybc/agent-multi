@@ -35,7 +35,13 @@ def _args(tool, **over):
         output_dir=Path("/tmp/x"), report=None, preflight=False,
         l1_patience=60, l1_patience_start_epoch=40,
         selection_metric="episodic_activity_economic_v1",
-        plateau_lr_json=None)
+        plateau_lr_json=None,
+        train_days=120, val_days=40, test_days=40,
+        solvency_mode="normal_realistic",
+        warm_start_model=None, warm_start_model_sha256=None,
+        warm_start_replay_buffer=None,
+        warm_start_replay_buffer_sha256=None,
+        save_replay_buffer=None)
     for k, v in over.items():
         setattr(ns, k, v)
     return ns

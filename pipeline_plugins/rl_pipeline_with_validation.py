@@ -726,6 +726,8 @@ class PipelinePlugin:
         "save_model": "./agent_model.zip",
         "load_model": None,
         "warm_start_model": None,
+        "warm_start_replay_buffer": None,
+        "save_replay_buffer": None,
         "return_trace_dir": None,
         "evaluate_test_split": True,
         "write_results_sidecar": True,
@@ -1434,8 +1436,14 @@ class PipelinePlugin:
         try:
             paths = self._split_csv(config)
 
+            # The FIT env is the training env by fact; the gym-fx guard
+            # requires the declaration so relaxed (easy) solvency can
+            # exist here and ONLY here. Scoped to THIS build only:
+            # every evaluation env goes through _eval_on_split, which
+            # forces normal_realistic and keeps env_mode inference.
             train_env_plugin, train_env = self._make_split_env(
-                env_plugin_name, config, paths["train"], agent_plugin
+                env_plugin_name, {**config, "env_mode": "training"},
+                paths["train"], agent_plugin
             )
 
             try:
@@ -1453,6 +1461,8 @@ class PipelinePlugin:
                 # training mode. Optional warm-start continues from a previous
                 # weekly checkpoint but evaluates/saves under the current
                 # split windows and run id.
+                replay_disposition = {"mode": "cold_start",
+                                      "loaded_transitions": 0}
                 warm_start_model = config.get("warm_start_model", self.params["warm_start_model"])
                 if warm_start_model:
                     warm_start_path = Path(str(warm_start_model))
@@ -1500,6 +1510,36 @@ class PipelinePlugin:
                         model.set_env(train_env)
                     except Exception:
                         pass
+                    # P1 continuity order 2026-08-23: EN-F replay
+                    # continuity is EXPLICIT — a carried buffer loads
+                    # only when the contract names it (sha-verified);
+                    # its absence means EN-W fresh-replay semantics.
+                    # The per-epoch history already records
+                    # replay_buffer_size, so the disposition is
+                    # executing evidence, not a claim.
+                    _warm_replay = config.get("warm_start_replay_buffer")
+                    if _warm_replay:
+                        _replay_path = Path(str(_warm_replay))
+                        if not _replay_path.exists():
+                            raise FileNotFoundError(
+                                "warm_start_replay_buffer not found: "
+                                f"{_replay_path}")
+                        _verify_artifact_sha256(
+                            _replay_path,
+                            config.get("warm_start_replay_buffer_sha256"),
+                        )
+                        model.load_replay_buffer(str(_replay_path))
+                        replay_disposition = {
+                            "mode": "full_continuity",
+                            "source": str(_replay_path),
+                            "loaded_transitions": int(
+                                model.replay_buffer.size()),
+                        }
+                    else:
+                        replay_disposition = {
+                            "mode": "fresh",
+                            "loaded_transitions": 0,
+                        }
                 else:
                     model = agent_plugin.build(train_env, config)
                 pretrain_summary = None
@@ -2180,6 +2220,22 @@ class PipelinePlugin:
                             f" {activity_stop_reason}", flush=True)
                         break
 
+                saved_replay_fact = None
+                _save_replay = config.get("save_replay_buffer")
+                if _save_replay:
+                    # EN-F contract: the carried buffer is the LIVE
+                    # terminal training buffer, captured BEFORE the
+                    # best-checkpoint reload rebinds `model` to a
+                    # fresh (empty-replay) instance.
+                    _sr = Path(str(_save_replay))
+                    _sr.parent.mkdir(parents=True, exist_ok=True)
+                    model.save_replay_buffer(str(_sr))
+                    saved_replay_fact = {
+                        "path": str(_sr),
+                        "transitions": int(model.replay_buffer.size()),
+                        "source": "terminal_training_buffer",
+                    }
+
                 if not best_checkpoint_saved:
                     stop_detail = (
                         "training ended before an activity-eligible L1 "
@@ -2225,6 +2281,8 @@ class PipelinePlugin:
                     final["activity_stopped_without_eligible_checkpoint"] = (
                         True)
                     final["stop_reason"] = stop_reason
+                    final["replay_disposition"] = replay_disposition
+                    final["saved_replay_buffer"] = saved_replay_fact
                     final["termination_cause"] = stop_detail
                     final["artifacts"] = {
                         "best_checkpoint": None,
@@ -2276,6 +2334,8 @@ class PipelinePlugin:
                 } if plateau_controller is not None else None)
                 final["best_composite"] = best_composite
                 final["stop_reason"] = stop_reason
+                final["replay_disposition"] = replay_disposition
+                final["saved_replay_buffer"] = saved_replay_fact
                 final["best_model_path"] = str(Path(best_model_path).resolve())
                 final["artifacts"] = {
                     "best_checkpoint": {

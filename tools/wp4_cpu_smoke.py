@@ -105,7 +105,8 @@ def build_config(args, features) -> dict:
         "input_data_file": str(DATA), "env_plugin": "gym_fx_env",
         "agent_plugin": "project3_sac_actor_critic_agent",
         "quiet_mode": True,
-        "train_days": 120, "val_days": 40, "test_days": 40,
+        "train_days": args.train_days, "val_days": args.val_days,
+        "test_days": args.test_days,
         "min_split_rows": 100,
         "epoch_timesteps": args.epoch_timesteps,
         "max_epochs": args.max_epochs,
@@ -120,7 +121,7 @@ def build_config(args, features) -> dict:
         "window_size": 32, "initial_cash": 10000.0,
         "action_space_mode": "continuous",
         "continuous_action_threshold": 0.0,
-        "solvency_mode": "normal_realistic",
+        "solvency_mode": args.solvency_mode,
         "require_feature_aware_preprocessor": True,
         "include_price_window": False,
         "preprocessor_plugin": "feature_window_preprocessor",
@@ -153,6 +154,16 @@ def build_config(args, features) -> dict:
         "return_trace_dir": str(args.output_dir / "traces"),
         "output_dir": str(args.output_dir),
         "inactive_terminal_is_typed_result": True,
+        **({"warm_start_model": str(args.warm_start_model),
+            "warm_start_model_sha256": args.warm_start_model_sha256}
+           if args.warm_start_model else {}),
+        **({"warm_start_replay_buffer":
+                str(args.warm_start_replay_buffer),
+            "warm_start_replay_buffer_sha256":
+                args.warm_start_replay_buffer_sha256}
+           if args.warm_start_replay_buffer else {}),
+        **({"save_replay_buffer": str(args.save_replay_buffer)}
+           if args.save_replay_buffer else {}),
     }
 
 
@@ -212,6 +223,19 @@ def main(argv=None) -> int:
         "--l1-patience-start-epoch", type=int, required=True,
         help="explicit epoch before which patience never counts; "
              "never derived from --max-epochs (correction 2026-08-21)")
+    parser.add_argument("--train-days", type=int, default=120)
+    parser.add_argument("--val-days", type=int, default=40)
+    parser.add_argument("--test-days", type=int, default=40)
+    parser.add_argument(
+        "--solvency-mode", default="normal_realistic",
+        choices=["normal_realistic", "easy_chronological_continuation"])
+    parser.add_argument("--warm-start-model", type=Path, default=None)
+    parser.add_argument("--warm-start-model-sha256", default=None)
+    parser.add_argument("--warm-start-replay-buffer", type=Path,
+                        default=None)
+    parser.add_argument("--warm-start-replay-buffer-sha256",
+                        default=None)
+    parser.add_argument("--save-replay-buffer", type=Path, default=None)
     parser.add_argument(
         "--selection-metric",
         choices=["episodic_activity_economic_v1",
@@ -263,7 +287,8 @@ def main(argv=None) -> int:
         "l1_patience": args.l1_patience,
         "l1_patience_start_epoch": args.l1_patience_start_epoch,
         "selection_metric": args.selection_metric,
-        "train_days": 120, "val_days": 40, "test_days": 40,
+        "train_days": args.train_days, "val_days": args.val_days,
+        "test_days": args.test_days,
         "device_mask": os.environ.get("CUDA_VISIBLE_DEVICES"),
         "env_origin": origin, "learning_rate_initial": 3e-4,
         "pair_config_sha256": pair_config_sha,
@@ -407,9 +432,14 @@ def main(argv=None) -> int:
             # scheduler mechanism screen.
             "classification": "MECHANICS_RANK_DIAGNOSTIC_ONLY"
             if args.l1_patience < 60 or args.max_epochs < 2000
-            else "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"},
-        "data_horizon": {"train_days": 120, "val_days": 40,
-                         "test_days": 40,
+            else ("BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"
+                  if (args.train_days, args.val_days,
+                      args.test_days) == (120, 40, 40)
+                  else f"BOUNDED_{args.train_days}_{args.val_days}_"
+                       f"{args.test_days}_DAY_CONTRACT")},
+        "data_horizon": {"train_days": args.train_days,
+                         "val_days": args.val_days,
+                         "test_days": args.test_days,
                          "note": ("bounded mechanism screen only; no "
                                   "claim about the multi-year easy "
                                   "curriculum (PLR-02)")},
@@ -434,6 +464,8 @@ def main(argv=None) -> int:
                          "gradient_updates_total")
                          if history else None)},
         "split_facts": detail,
+        "replay_disposition": result.get("replay_disposition"),
+        "saved_replay_buffer": result.get("saved_replay_buffer"),
         "diagnostic_holdout": sealed_proof,
         "accepted": accepted,
         "typed_negative": negative,

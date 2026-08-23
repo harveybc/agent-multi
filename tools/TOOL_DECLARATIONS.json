@@ -430,6 +430,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "l1_curriculum_experiment.py": {
+   "purpose": "P1 order 2026-08-23: fixed-LR L1 curriculum arms N / EN-W / EN-F on the FLAT-MLP identity (grouped extractor never enabled). Orchestrates easy->normal phases via the accepted phase runner; fail-closed handoff gate (eligible checkpoint + >=2 mapped normal decision crossings from the executing validation trace); PROVES tensor continuity (exact actor-L1 match easy-selected vs normal-initial), replay disposition per declared arm semantics, and component identity via SB3 zip member hashes. Predeclared direction rule; EN-W and EN-F never merged into one claim. Easy compute reported separately.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
