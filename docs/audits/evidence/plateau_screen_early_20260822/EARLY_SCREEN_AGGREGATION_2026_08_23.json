@@ -1,0 +1,674 @@
+{
+ "schema": "agent_multi.plateau_screen_aggregate.v1",
+ "screen_label": "bounded 120/40/40-day scheduler mechanism screen (AUD-F1-20260821-PLR-02); no claim about the multi-year easy curriculum",
+ "expected_plateau_spec": {
+  "factor": 0.5,
+  "lr_patience": 8,
+  "min_lr": 1e-06,
+  "threshold": 1e-06,
+  "cooldown": 0,
+  "start_epoch": 0
+ },
+ "predeclared_rule": "primary=best eligible monitor value; FOR if >=3/4 seeds delta>0 and median>0; AGAINST mirrored; else INCONCLUSIVE; 4 seeds are never conclusive",
+ "outcome": "SHORT_SCREEN_SIGNAL_AGAINST",
+ "primary_deltas_by_seed": {
+  "101": 0.0,
+  "202": -0.01839470226637477,
+  "303": -0.021908445686428683,
+  "404": -0.019812131043025087
+ },
+ "dispersion": {
+  "median": -0.019103416654699928,
+  "min": -0.021908445686428683,
+  "max": 0.0,
+  "positive_seeds": 0,
+  "negative_seeds": 3
+ },
+ "pairs": {
+  "101": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-612d1e0c-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "300e98b98e51e01630ae5af69977d6bd17592d6d4d569b26c85ec2c582eb18bd",
+      "seed": 101,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": null,
+      "scheduler_policy": "fixed"
+     }
+    },
+    "plateau": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-612d1e0c-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-hier-reward-20260818/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "9ba9deba6a80f488bea2934aceada145c584099531ba52d205d2e23d0853e659",
+      "seed": 101,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": {
+       "cooldown": 0,
+       "factor": 0.5,
+       "lr_patience": 8,
+       "min_lr": 1e-06,
+       "start_epoch": 0,
+       "threshold": 1e-06
+      },
+      "scheduler_policy": "plateau"
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed101_fixed_report.json",
+    "report_sha256": "a2960a2c1aeccb38dfdc22e7e1bb9a576371e6d412eadb7f7fc72ccc27312896",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 12,
+    "best_monitor_value": 0.007345051627438587,
+    "best_val_total_return": 0.03417500000000029,
+    "best_val_trades": 22,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.02920863771154893,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 20585.3,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed101_plateau_report.json",
+    "report_sha256": "293ba62122fea2530891cb73fdb334ac9797797de2f8953db7fbd946421efc54",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 12,
+    "best_monitor_value": 0.007345051627438587,
+    "best_val_total_return": 0.03417500000000029,
+    "best_val_trades": 22,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.02920863771154893,
+    "lr_reductions": [
+     {
+      "epoch": 20,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 28,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 36,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     },
+     {
+      "epoch": 44,
+      "old_lr": 3.75e-05,
+      "new_lr": 1.875e-05
+     },
+     {
+      "epoch": 52,
+      "old_lr": 1.875e-05,
+      "new_lr": 9.375e-06
+     },
+     {
+      "epoch": 60,
+      "old_lr": 9.375e-06,
+      "new_lr": 4.6875e-06
+     },
+     {
+      "epoch": 68,
+      "old_lr": 4.6875e-06,
+      "new_lr": 2.34375e-06
+     },
+     {
+      "epoch": 76,
+      "old_lr": 2.34375e-06,
+      "new_lr": 1.171875e-06
+     },
+     {
+      "epoch": 84,
+      "old_lr": 1.171875e-06,
+      "new_lr": 1e-06
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 1e-06,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 20297.0,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": 0.0,
+   "delta_best_val_total_return": 0.0,
+   "delta_epochs_run": 0,
+   "delta_best_val_trades": 0
+  },
+  "202": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-a8bd1b2c-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/am-early-56510f20/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "e8d4f6a6c55e76fba75102d7ddbdc8bf85eeac20f752c9af342e183740844910",
+      "seed": 202,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": null,
+      "scheduler_policy": "fixed"
+     }
+    },
+    "plateau": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-a8bd1b2c-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/am-early-56510f20/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "d12f1d612cc1ac3fdec46feeea8e2d5f29f8c92dc2c8069f9b49d2c3a2a78949",
+      "seed": 202,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": {
+       "cooldown": 0,
+       "factor": 0.5,
+       "lr_patience": 8,
+       "min_lr": 1e-06,
+       "start_epoch": 0,
+       "threshold": 1e-06
+      },
+      "scheduler_policy": "plateau"
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed202_fixed_report.json",
+    "report_sha256": "69327afb6ebc0a90d09a0ae2f04582283e5530e2098971e095a84e510035c8dd",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 20,
+    "best_monitor_value": 0.005426784484384446,
+    "best_val_total_return": 0.06601699999999888,
+    "best_val_trades": 37,
+    "best_train_tail_trades": 11,
+    "best_val_max_drawdown_fraction": 0.019458378122936992,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 23174.3,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed202_plateau_report.json",
+    "report_sha256": "c7ebcd1fca172d2135019074864222fc3244e765b110ea7471a9b22d454ed4ff",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 13,
+    "best_monitor_value": -0.012967917781990322,
+    "best_val_total_return": 0.031044999999999545,
+    "best_val_trades": 25,
+    "best_train_tail_trades": 7,
+    "best_val_max_drawdown_fraction": 0.031978317201433,
+    "lr_reductions": [
+     {
+      "epoch": 9,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 21,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 29,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     },
+     {
+      "epoch": 37,
+      "old_lr": 3.75e-05,
+      "new_lr": 1.875e-05
+     },
+     {
+      "epoch": 45,
+      "old_lr": 1.875e-05,
+      "new_lr": 9.375e-06
+     },
+     {
+      "epoch": 53,
+      "old_lr": 9.375e-06,
+      "new_lr": 4.6875e-06
+     },
+     {
+      "epoch": 61,
+      "old_lr": 4.6875e-06,
+      "new_lr": 2.34375e-06
+     },
+     {
+      "epoch": 69,
+      "old_lr": 2.34375e-06,
+      "new_lr": 1.171875e-06
+     },
+     {
+      "epoch": 77,
+      "old_lr": 1.171875e-06,
+      "new_lr": 1e-06
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 1e-06,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 23094.5,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": -0.01839470226637477,
+   "delta_best_val_total_return": -0.03497199999999934,
+   "delta_epochs_run": 0,
+   "delta_best_val_trades": -12
+  },
+  "303": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-b77fc3ad-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/am-early-56510f20/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "20241b77ed251496953d5f1878b05fd2d1a80c656eb042d8334f20cb51edb207",
+      "seed": 303,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": null,
+      "scheduler_policy": "fixed"
+     }
+    },
+    "plateau": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-b77fc3ad-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/am-early-56510f20/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "6eb7031e258205a584609f25e8280671aa32c574a25efeb6a832f67be07ae350",
+      "seed": 303,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": {
+       "cooldown": 0,
+       "factor": 0.5,
+       "lr_patience": 8,
+       "min_lr": 1e-06,
+       "start_epoch": 0,
+       "threshold": 1e-06
+      },
+      "scheduler_policy": "plateau"
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed303_fixed_report.json",
+    "report_sha256": "4de6e2539210631a80d8d7df786e457c91b4b718ae759231ce62d03b5a4aff0d",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 103,
+    "best_epoch": 43,
+    "best_monitor_value": 0.004446256245274541,
+    "best_val_total_return": 0.036366999999999594,
+    "best_val_trades": 43,
+    "best_train_tail_trades": 9,
+    "best_val_max_drawdown_fraction": 0.03292165833963361,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 103,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 10007.7,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed303_plateau_report.json",
+    "report_sha256": "4fe8be1cb9005491b81b7cf44ac33b4a78606c0f0168b9d5c18c5dbd79ba8d12",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 15,
+    "best_monitor_value": -0.017462189441154144,
+    "best_val_total_return": 0.024719000000000824,
+    "best_val_trades": 42,
+    "best_train_tail_trades": 7,
+    "best_val_max_drawdown_fraction": 0.04612758592153969,
+    "lr_reductions": [
+     {
+      "epoch": 9,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 23,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 31,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     },
+     {
+      "epoch": 39,
+      "old_lr": 3.75e-05,
+      "new_lr": 1.875e-05
+     },
+     {
+      "epoch": 47,
+      "old_lr": 1.875e-05,
+      "new_lr": 9.375e-06
+     },
+     {
+      "epoch": 55,
+      "old_lr": 9.375e-06,
+      "new_lr": 4.6875e-06
+     },
+     {
+      "epoch": 63,
+      "old_lr": 4.6875e-06,
+      "new_lr": 2.34375e-06
+     },
+     {
+      "epoch": 71,
+      "old_lr": 2.34375e-06,
+      "new_lr": 1.171875e-06
+     },
+     {
+      "epoch": 79,
+      "old_lr": 1.171875e-06,
+      "new_lr": 1e-06
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 1e-06,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 9767.4,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": -0.021908445686428683,
+   "delta_best_val_total_return": -0.01164799999999877,
+   "delta_epochs_run": -3,
+   "delta_best_val_trades": -1
+  },
+  "404": {
+   "identity": {
+    "fixed": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-a9f35631-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/am-early-56510f20/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "86778872e06e23d96d919246bf161bec000bac426dab4a5c8b3415fe56b34f90",
+      "seed": 404,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": null,
+      "scheduler_policy": "fixed"
+     }
+    },
+    "plateau": {
+     "pair": {
+      "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+      "device_mask": "GPU-a9f35631-TRUNCATED",
+      "env_origin": {
+       "commit": "634c3fd3c344cae3c4048b334158185c8bf4e1ef",
+       "file": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3/app/env.py",
+       "implementation_module": "app.env",
+       "pinned_root": "/home/harveybc/Documents/GitHub/.runtime/gym-fx-p1lr-634c3fd3",
+       "wrapper_file": "/home/harveybc/Documents/GitHub/.worktrees/am-early-56510f20/env_plugins/gym_fx_env.py"
+      },
+      "epoch_timesteps": 20000,
+      "l1_patience": 60,
+      "l1_patience_start_epoch": 40,
+      "learning_rate_initial": 0.0003,
+      "max_epochs": 2000,
+      "pair_config_sha256": "8bd5c664ee0d2ee12e1bc499fbf47e6218758a4fb30457e42c54af1ef52f5c88",
+      "seed": 404,
+      "selection_metric": "easy_checkpoint_monitor_v1",
+      "test_days": 40,
+      "train_days": 120,
+      "val_days": 40
+     },
+     "arm": {
+      "plateau_spec": {
+       "cooldown": 0,
+       "factor": 0.5,
+       "lr_patience": 8,
+       "min_lr": 1e-06,
+       "start_epoch": 0,
+       "threshold": 1e-06
+      },
+      "scheduler_policy": "plateau"
+     }
+    }
+   },
+   "fixed": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed404_fixed_report.json",
+    "report_sha256": "8c53b855d47735ac94d523340f53d1592cf804291aaa1b6eab31817ae310c83f",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 114,
+    "best_epoch": 54,
+    "best_monitor_value": 0.024922395071594744,
+    "best_val_total_return": 0.08219899999999991,
+    "best_val_trades": 28,
+    "best_train_tail_trades": 11,
+    "best_val_max_drawdown_fraction": 0.015607402180593182,
+    "lr_reductions": [],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 0.0003,
+    "monitor_curve_len": 114,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 11935.4,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "plateau": {
+    "report": "docs/audits/evidence/plateau_screen_early_20260822/seed404_plateau_report.json",
+    "report_sha256": "9234a630e314c491288ec0001d220887599a01032d16371c3e5faf724e0421ed",
+    "stop_reason": "l1_early_stop",
+    "epochs_run": 100,
+    "best_epoch": 28,
+    "best_monitor_value": 0.005110264028569658,
+    "best_val_total_return": 0.027692999999999746,
+    "best_val_trades": 36,
+    "best_train_tail_trades": 14,
+    "best_val_max_drawdown_fraction": 0.023285632101968344,
+    "lr_reductions": [
+     {
+      "epoch": 23,
+      "old_lr": 0.0003,
+      "new_lr": 0.00015
+     },
+     {
+      "epoch": 36,
+      "old_lr": 0.00015,
+      "new_lr": 7.5e-05
+     },
+     {
+      "epoch": 44,
+      "old_lr": 7.5e-05,
+      "new_lr": 3.75e-05
+     },
+     {
+      "epoch": 52,
+      "old_lr": 3.75e-05,
+      "new_lr": 1.875e-05
+     },
+     {
+      "epoch": 60,
+      "old_lr": 1.875e-05,
+      "new_lr": 9.375e-06
+     },
+     {
+      "epoch": 68,
+      "old_lr": 9.375e-06,
+      "new_lr": 4.6875e-06
+     },
+     {
+      "epoch": 76,
+      "old_lr": 4.6875e-06,
+      "new_lr": 2.34375e-06
+     },
+     {
+      "epoch": 84,
+      "old_lr": 2.34375e-06,
+      "new_lr": 1.171875e-06
+     },
+     {
+      "epoch": 92,
+      "old_lr": 1.171875e-06,
+      "new_lr": 1e-06
+     }
+    ],
+    "observed_actor_lr_first": 0.0003,
+    "observed_actor_lr_last": 1e-06,
+    "monitor_curve_len": 100,
+    "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "descriptive_only": {
+     "elapsed_seconds": 10547.1,
+     "excluded_from_causal_conclusion": true,
+     "reason": "arm order is not counterbalanced (AUD-F1-20260821-PLR-03)"
+    }
+   },
+   "delta_primary_best_monitor_value": -0.019812131043025087,
+   "delta_best_val_total_return": -0.054506000000000165,
+   "delta_epochs_run": -14,
+   "delta_best_val_trades": 8
+  }
+ },
+ "promotion": "REFUSED \u2014 no checkpoint from this screen may be promoted (audit 2026-08-21 ML verdict)"
+}

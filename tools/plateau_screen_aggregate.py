@@ -43,6 +43,25 @@ class ScreenAggregationError(ValueError):
     pass
 
 
+# Keys excluded from the canonical config-minus-treatment identity:
+# the treatment itself plus per-arm bookkeeping locations (differ
+# across arms by construction; carry no scientific content).
+PAIR_IDENTITY_EXCLUDED_KEYS = frozenset({
+    "plateau_lr", "save_model", "return_trace_dir", "output_dir"})
+
+
+def _canonical_pair_config_sha(effective_config: dict) -> str:
+    return hashlib.sha256(json.dumps(
+        {k: v for k, v in effective_config.items()
+         if k not in PAIR_IDENTITY_EXCLUDED_KEYS},
+        sort_keys=True, default=str).encode()).hexdigest()
+
+
+def _manifest_for(report_path: Path):
+    m = report_path.with_suffix(".launch_manifest.json")
+    return json.loads(m.read_text()) if m.is_file() else None
+
+
 def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -107,10 +126,10 @@ def arm_facts(report_path: Path) -> dict:
 
 BOUNDED_LABEL = "BOUNDED_120_40_40_DAY_SCHEDULER_SCREEN"
 
-# The plateau spec an arm may differ by (AUD-F1-20260821-PLR-06).
-PREDECLARED_PLATEAU_SPEC = {
-    "factor": 0.5, "lr_patience": 20, "min_lr": 1e-6,
-    "threshold": 1e-6, "cooldown": 0, "start_epoch": 40}
+# The predeclared plateau spec is a PER-SCREEN fact supplied by the
+# caller (--expected-plateau-spec); hardcoding one screen's spec made
+# the next screen refuse. There is no default — the operator must
+# state which predeclared treatment this screen ran.
 
 
 def _split_identity(doc: dict) -> dict:
@@ -129,7 +148,8 @@ def _split_identity(doc: dict) -> dict:
 
 
 def _verify_arm_semantics(facts: dict, doc: dict, policy: str,
-                          report_path: Path) -> None:
+                          report_path: Path,
+                          expected_spec: dict) -> None:
     history = doc.get("history") or []
     reductions = facts["lr_reductions"]
     if policy == "fixed":
@@ -151,11 +171,20 @@ def _verify_arm_semantics(facts: dict, doc: dict, policy: str,
                 f"{report_path}: plateau arm carries no scheduler "
                 "records; machinery absent (PLR-06)")
         for r in reductions:
-            if abs(r["new_lr"] - r["old_lr"] * 0.5) > 1e-18:
+            target = r["old_lr"] * expected_spec["factor"]
+            # The controller contract is new_lr = max(old*factor,
+            # min_lr): a pure factor cut, OR the terminal clamp when
+            # the factor cut would cross the floor.
+            pure = abs(r["new_lr"] - target) <= 1e-18
+            clamped = (r["new_lr"] == expected_spec["min_lr"]
+                       and target <= expected_spec["min_lr"]
+                       < r["old_lr"])
+            if not (pure or clamped):
                 raise ScreenAggregationError(
                     f"{report_path}: reduction at epoch {r['epoch']} "
-                    f"is not the predeclared halving: {r}")
-            if r["new_lr"] < PREDECLARED_PLATEAU_SPEC["min_lr"]:
+                    "is neither the predeclared factor cut nor the "
+                    f"min_lr clamp: {r}")
+            if r["new_lr"] < expected_spec["min_lr"]:
                 raise ScreenAggregationError(
                     f"{report_path}: reduction below min_lr: {r}")
 
@@ -258,7 +287,8 @@ def exact_pair_identity(fixed_doc: dict, plateau_doc: dict,
 
 def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
                 fixed_facts: dict, plateau_facts: dict,
-                fixed_path: Path, plateau_path: Path) -> dict:
+                fixed_path: Path, plateau_path: Path,
+                expected_plateau_spec: dict) -> dict:
     """PLR-06: exact pair identity; arms differ only as predeclared."""
     exact_pair_identity(fixed_doc, plateau_doc, seed)
     if fixed_facts["report_sha256"] == plateau_facts["report_sha256"]:
@@ -300,14 +330,41 @@ def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
                 f"{path}: classification {label_str!r} is not the "
                 "bounded screen label (PLR-02/PLR-06; the legacy "
                 "exception was retired in §C.6)")
-    pcf = fixed_doc.get("pair_config_sha256")
-    pcp = plateau_doc.get("pair_config_sha256")
-    if pcf != pcp:
-        raise ScreenAggregationError(
-            f"seed {seed}: config-minus-treatment identity differs "
-            f"({str(pcf)[:16]!r} vs {str(pcp)[:16]!r}); the arms are "
-            "not the same experiment (dispatch order 2026-08-22)")
-    pf, pp = contracts["fixed"]["pair"], contracts["plateau"]["pair"]
+    # Config-minus-treatment identity. The materialization-time
+    # launch manifests are AUTHORITATIVE when present: recompute the
+    # canonical hash from each manifest's persisted effective_config
+    # (excluding treatment + bookkeeping paths) and bind each manifest
+    # to its report via config_sha256 equality. Report-level hash
+    # equality is the fallback when no manifests exist.
+    mf = _manifest_for(fixed_path)
+    mp = _manifest_for(plateau_path)
+    if mf is not None and mp is not None:
+        for label, man, doc in (("fixed", mf, fixed_doc),
+                                ("plateau", mp, plateau_doc)):
+            if man.get("config_sha256") != doc.get("config_sha256"):
+                raise ScreenAggregationError(
+                    f"seed {seed} {label}: launch manifest is not "
+                    "bound to this report (config_sha256 mismatch)")
+        ca = _canonical_pair_config_sha(mf["effective_config"])
+        cb = _canonical_pair_config_sha(mp["effective_config"])
+        if ca != cb:
+            raise ScreenAggregationError(
+                f"seed {seed}: canonical config-minus-treatment "
+                f"identity differs ({ca[:16]} vs {cb[:16]}); the arms "
+                "are not the same experiment")
+    else:
+        pcf = fixed_doc.get("pair_config_sha256")
+        pcp = plateau_doc.get("pair_config_sha256")
+        if pcf != pcp:
+            raise ScreenAggregationError(
+                f"seed {seed}: config-minus-treatment identity differs "
+                f"({str(pcf)[:16]!r} vs {str(pcp)[:16]!r}) and no "
+                "launch manifests exist to derive the canonical "
+                "identity; refused")
+    pf = {k: v for k, v in contracts["fixed"]["pair"].items()
+          if k != "pair_config_sha256"}
+    pp = {k: v for k, v in contracts["plateau"]["pair"].items()
+          if k != "pair_config_sha256"}
     if pf != pp:
         diff = {k: (pf.get(k), pp.get(k))
                 for k in set(pf) | set(pp) if pf.get(k) != pp.get(k)}
@@ -327,13 +384,14 @@ def verify_pair(seed: int, fixed_doc: dict, plateau_doc: dict,
             f"seed {seed}: plateau-labelled report declares policy "
             f"{ap.get('scheduler_policy')!r}; swapped arms (PLR-06)")
     spec = ap.get("plateau_spec")
-    if spec != PREDECLARED_PLATEAU_SPEC:
+    if spec != expected_plateau_spec:
         raise ScreenAggregationError(
             f"seed {seed}: plateau arm spec {spec!r} is not the "
-            f"predeclared {PREDECLARED_PLATEAU_SPEC!r}")
-    _verify_arm_semantics(fixed_facts, fixed_doc, "fixed", fixed_path)
+            f"predeclared {expected_plateau_spec!r}")
+    _verify_arm_semantics(fixed_facts, fixed_doc, "fixed", fixed_path,
+                          expected_plateau_spec)
     _verify_arm_semantics(plateau_facts, plateau_doc, "plateau",
-                          plateau_path)
+                          plateau_path, expected_plateau_spec)
     return contracts
 
 
@@ -342,7 +400,12 @@ def main(argv=None) -> int:
                                      allow_abbrev=False)
     parser.add_argument("--screen-dir", type=Path, required=True)
     parser.add_argument("--out-json", type=Path, required=True)
+    parser.add_argument(
+        "--expected-plateau-spec", required=True,
+        help="the predeclared plateau treatment of THIS screen, as "
+             "JSON; no default")
     args = parser.parse_args(argv)
+    expected_spec = json.loads(args.expected_plateau_spec)
 
     pairs = {}
     for seed in SEEDS:
@@ -360,7 +423,7 @@ def main(argv=None) -> int:
         fixed_doc = json.loads(fixed.read_text())
         plateau_doc = json.loads(plateau.read_text())
         contracts = verify_pair(seed, fixed_doc, plateau_doc, f, p,
-                                fixed, plateau)
+                                fixed, plateau, expected_spec)
         pairs[seed] = {
             "identity": contracts,
             "fixed": f, "plateau": p,
@@ -398,6 +461,7 @@ def main(argv=None) -> int:
         "screen_label": ("bounded 120/40/40-day scheduler mechanism "
                          "screen (AUD-F1-20260821-PLR-02); no claim "
                          "about the multi-year easy curriculum"),
+        "expected_plateau_spec": expected_spec,
         "predeclared_rule": ("primary=best eligible monitor value; "
                              "FOR if >=3/4 seeds delta>0 and median>0; "
                              "AGAINST mirrored; else INCONCLUSIVE; "

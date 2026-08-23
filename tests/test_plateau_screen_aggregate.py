@@ -1,5 +1,6 @@
 """Predeclared bounded-screen aggregator tests (PLR orders 2-3, PLR-06)."""
 import importlib.util
+import json as _json
 import json
 from pathlib import Path
 
@@ -115,8 +116,7 @@ class TestPredeclaredRule:
     def test_signal_for(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.02, 0.03, -0.01])
         out = tmp_path / "agg.json"
-        assert tool.main(["--screen-dir", str(d),
-                          "--out-json", str(out)]) == 0
+        assert tool.main(["--screen-dir", str(d), "--out-json", str(out), "--expected-plateau-spec", _json.dumps(SPEC)]) == 0
         r = json.loads(out.read_text())
         assert r["outcome"] == "SHORT_SCREEN_SIGNAL_FOR_PLATEAU"
         assert r["dispersion"]["positive_seeds"] == 3
@@ -124,30 +124,30 @@ class TestPredeclaredRule:
     def test_signal_against(self, tool, tmp_path):
         d = _screen(tmp_path, [-0.01, -0.02, -0.03, 0.01])
         out = tmp_path / "agg.json"
-        assert tool.main(["--screen-dir", str(d),
-                          "--out-json", str(out)]) == 0
+        assert tool.main(["--screen-dir", str(d), "--out-json", str(out), "--expected-plateau-spec", _json.dumps(SPEC)]) == 0
         assert json.loads(out.read_text())["outcome"] == (
             "SHORT_SCREEN_SIGNAL_AGAINST")
 
     def test_inconclusive_split(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.02, -0.01, -0.02])
         out = tmp_path / "agg.json"
-        assert tool.main(["--screen-dir", str(d),
-                          "--out-json", str(out)]) == 0
+        assert tool.main(["--screen-dir", str(d), "--out-json", str(out), "--expected-plateau-spec", _json.dumps(SPEC)]) == 0
         assert json.loads(out.read_text())["outcome"] == "INCONCLUSIVE"
 
     def test_incomplete_screen_refuses(self, tool, tmp_path, capsys):
         _report(tmp_path / "seed101_fixed_report.json", seed=101,
                 policy="fixed", best_composite=0.1)
         assert tool.main(["--screen-dir", str(tmp_path),
-                          "--out-json",
-                          str(tmp_path / "agg.json")]) == 2
+                          "--out-json", str(tmp_path / "agg.json"),
+                          "--expected-plateau-spec",
+                          _json.dumps(SPEC)]) == 2
         assert "REFUSED_INCOMPLETE_SCREEN" in capsys.readouterr().out
 
     def test_wall_clock_is_descriptive_only(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.02, 0.03, 0.04])
         out = tmp_path / "agg.json"
-        tool.main(["--screen-dir", str(d), "--out-json", str(out)])
+        tool.main(["--screen-dir", str(d), "--out-json", str(out),
+                   "--expected-plateau-spec", _json.dumps(SPEC)])
         r = json.loads(out.read_text())
         arm = r["pairs"]["101"]["fixed"]
         assert arm["descriptive_only"][
@@ -168,7 +168,8 @@ class TestPairIdentity:
     def _expect(self, tool, tmp_path, match):
         with pytest.raises(tool.ScreenAggregationError, match=match):
             tool.main(["--screen-dir", str(tmp_path),
-                       "--out-json", str(tmp_path / "agg.json")])
+                       "--out-json", str(tmp_path / "agg.json"),
+                       "--expected-plateau-spec", _json.dumps(SPEC)])
 
     def test_swapped_seed_label_refuses(self, tool, tmp_path):
         d = self._one_pair(tmp_path,
@@ -269,7 +270,8 @@ class TestConfigMinusTreatmentIdentity:
         with pytest.raises(tool.ScreenAggregationError,
                            match="absence refuses"):
             tool.main(["--screen-dir", str(d),
-                       "--out-json", str(d / "agg.json")])
+                       "--out-json", str(d / "agg.json"),
+                       "--expected-plateau-spec", _json.dumps(SPEC)])
 
     def test_unequal_hash_refuses(self, tool, tmp_path):
         d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
@@ -278,7 +280,88 @@ class TestConfigMinusTreatmentIdentity:
         doc["pair_config_sha256"] = "9" * 64
         doc["pair_contract"]["pair_config_sha256"] = "9" * 64
         f.write_text(json.dumps(doc))
-        with pytest.raises(tool.ScreenAggregationError,
-                           match="not the same experiment|mismatch"):
+        with pytest.raises(
+                tool.ScreenAggregationError,
+                match="identity differs|not the same experiment"):
             tool.main(["--screen-dir", str(d),
-                       "--out-json", str(d / "agg.json")])
+                       "--out-json", str(d / "agg.json"),
+                       "--expected-plateau-spec", _json.dumps(SPEC)])
+
+
+class TestManifestDerivedIdentity:
+    """2026-08-23 correction: launch manifests are authoritative; the
+    first pair_config hash wrongly included per-arm bookkeeping paths."""
+
+    def _with_manifests(self, tmp_path, *, bind_ok=True,
+                        science_diff=False):
+        d = _screen(tmp_path, [0.01, 0.01, 0.01, 0.01])
+        for seed in (101, 202, 303, 404):
+            for policy in ("fixed", "plateau"):
+                rp = d / f"seed{seed}_{policy}_report.json"
+                doc = json.loads(rp.read_text())
+                # report-level hashes mismatched (the shipped defect)
+                doc["pair_config_sha256"] = (
+                    "1" * 64 if policy == "fixed" else "2" * 64)
+                doc["config_sha256"] = (
+                    "f" * 64 if policy == "fixed" else "b" * 64)
+                rp.write_text(json.dumps(doc))
+                cfg = {"seed": seed, "epoch_timesteps": 20000,
+                       "output_dir": f"/x/seed{seed}_{policy}",
+                       "save_model": f"/x/seed{seed}_{policy}/m.zip",
+                       "return_trace_dir": f"/x/seed{seed}_{policy}/t"}
+                if policy == "plateau":
+                    cfg["plateau_lr"] = dict(SPEC)
+                if science_diff and policy == "plateau":
+                    cfg["epoch_timesteps"] = 10000
+                man = {"schema": "agent_multi.wp4_smoke_launch.v1",
+                       "effective_config": cfg,
+                       "config_sha256": doc["config_sha256"]
+                       if bind_ok else "0" * 64}
+                (d / f"seed{seed}_{policy}_report.launch_manifest.json"
+                 ).write_text(json.dumps(man))
+        return d
+
+    def _run(self, tool, d):
+        return tool.main(["--screen-dir", str(d),
+                          "--out-json", str(d / "agg.json"),
+                          "--expected-plateau-spec",
+                          _json.dumps(SPEC)])
+
+    def test_bookkeeping_path_diffs_accept_via_manifests(self, tool,
+                                                         tmp_path):
+        d = self._with_manifests(tmp_path)
+        assert self._run(tool, d) == 0
+
+    def test_unbound_manifest_refuses(self, tool, tmp_path):
+        d = self._with_manifests(tmp_path, bind_ok=False)
+        with pytest.raises(tool.ScreenAggregationError,
+                           match="not\s+bound"):
+            self._run(tool, d)
+
+    def test_scientific_config_diff_still_refuses(self, tool,
+                                                  tmp_path):
+        d = self._with_manifests(tmp_path, science_diff=True)
+        with pytest.raises(tool.ScreenAggregationError,
+                           match="canonical config-minus-treatment"):
+            self._run(tool, d)
+
+    def test_min_lr_clamp_reduction_accepted(self, tool, tmp_path):
+        d = self._with_manifests(tmp_path)
+        rp = d / "seed101_plateau_report.json"
+        doc = json.loads(rp.read_text())
+        doc["history"][8]["plateau_lr"] = {
+            "reduced": True, "old_lr": SPEC["min_lr"] * 1.171875,
+            "new_lr": SPEC["min_lr"]}
+        rp.write_text(json.dumps(doc))
+        assert self._run(tool, d) == 0
+
+    def test_non_factor_non_clamp_cut_refuses(self, tool, tmp_path):
+        d = self._with_manifests(tmp_path)
+        rp = d / "seed101_plateau_report.json"
+        doc = json.loads(rp.read_text())
+        doc["history"][8]["plateau_lr"] = {
+            "reduced": True, "old_lr": 3e-4, "new_lr": 2.9e-4}
+        rp.write_text(json.dumps(doc))
+        with pytest.raises(tool.ScreenAggregationError,
+                           match="neither the predeclared"):
+            self._run(tool, d)

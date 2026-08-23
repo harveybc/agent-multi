@@ -96,6 +96,10 @@ def resolve_device(requested: str) -> dict:
     return facts
 
 
+PAIR_IDENTITY_EXCLUDED_KEYS = frozenset({
+    "plateau_lr", "save_model", "return_trace_dir", "output_dir"})
+
+
 def build_config(args, features) -> dict:
     return {
         "input_data_file": str(DATA), "env_plugin": "gym_fx_env",
@@ -242,8 +246,15 @@ def main(argv=None) -> int:
     # Dispatch order 2026-08-22: config-minus-treatment identity hash,
     # computed AT MATERIALIZATION TIME — the pair-identity fact that
     # two arms are the same experiment except the scheduler treatment.
+    # Self-reported defect 2026-08-23: the first definition hashed
+    # config minus ONLY the treatment, but per-arm bookkeeping paths
+    # (output_dir/save_model/return_trace_dir) differ across arms by
+    # construction, so every honest pair mismatched. The canonical
+    # pair identity excludes the treatment AND the declared
+    # non-scientific location keys — nothing else.
     pair_config_sha = hashlib.sha256(json.dumps(
-        {k: v for k, v in config.items() if k != "plateau_lr"},
+        {k: v for k, v in config.items()
+         if k not in PAIR_IDENTITY_EXCLUDED_KEYS},
         sort_keys=True, default=str).encode()).hexdigest()
     pair_contract_doc = {
         "seed": args.seed, "data_sha256": data_sha,
