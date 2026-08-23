@@ -1157,6 +1157,17 @@ at `lts@ea239a4`; independent focused and full-suite verification passed. The
 finding is corrected pending owner closure, while the currently persisted
 IBKR hold still requires a newly signed effect-bound capability.
 
+### 1h. P1/MT5 return audit (2026-08-23, append-only)
+
+Findings 301-312 were independently reproduced as corrected in their core
+contracts. Activation remains separated from correction. The return audit
+opened two new S3 findings:
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260823-313 | S3 | open, reproduced | Outer endpoint publishes null row count and CSV digest because it reads keys absent from the nested manifest schema | General Satoshi implements; Musashi verifies |
+| AUD-SEC-20260823-314 | S3 | open, reproduced by inspection | Effective-profile materializer can follow a pre-existing destination symlink and does not enforce atomic no-follow installation | General Satoshi implements; Musashi verifies |
+
 
 ## 2b. Observations Pending Verification (not yet findings)
 
