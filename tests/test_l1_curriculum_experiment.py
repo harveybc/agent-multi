@@ -293,3 +293,60 @@ class TestTreatmentDivergence:
         b = {"named_state_sha256": {"a": "1", "b": "X"}}
         assert tool.treatment_divergence(a, b)[
             "easy_treatment_diverged"] is True
+
+
+class TestOuterEvidenceBinding:
+    """Finding 313: bound scored_rows + csv_sha256, re-hashed."""
+
+    def _normal_dir(self, tmp_path, *, scored_rows=2196,
+                    sha_ok=True, mutate_after=False,
+                    missing_rows=False, malformed_sha=False):
+        import hashlib
+        normal = tmp_path / "normal"
+        (normal / "nested_splits").mkdir(parents=True)
+        csv_path = tmp_path / "outer.csv"
+        csv_path.write_text("timestamp,x\n2024-01-01,1\n")
+        sha = hashlib.sha256(csv_path.read_bytes()).hexdigest()
+        outer = {"status": "MATERIALIZED", "csv": str(csv_path),
+                 "scored_rows": scored_rows, "csv_sha256": sha}
+        if missing_rows:
+            del outer["scored_rows"]
+        if malformed_sha:
+            outer["csv_sha256"] = "zz"
+        if not sha_ok:
+            outer["csv_sha256"] = "0" * 64
+        (normal / "nested_splits" /
+         "nested_split_manifest.json").write_text(json.dumps({
+            "roles": {"outer_validation": outer,
+                      "sealed_test": {"status": "UNMATERIALIZED"}}}))
+        (tmp_path / "normal_report.launch_manifest.json").write_text(
+            json.dumps({"effective_config": {}}))
+        if mutate_after:
+            csv_path.write_text("timestamp,x\n2024-01-01,999\n")
+        return normal
+
+    def test_missing_scored_rows_refuses(self, tool, tmp_path):
+        d = self._normal_dir(tmp_path, missing_rows=True)
+        with pytest.raises(tool.CurriculumError, match="scored_rows"):
+            tool.outer_endpoint(d, {})
+
+    def test_malformed_sha_refuses(self, tool, tmp_path):
+        d = self._normal_dir(tmp_path, malformed_sha=True)
+        with pytest.raises(tool.CurriculumError, match="64-hex"):
+            tool.outer_endpoint(d, {})
+
+    def test_substituted_csv_refuses(self, tool, tmp_path):
+        d = self._normal_dir(tmp_path, sha_ok=False)
+        with pytest.raises(tool.CurriculumError, match="drifted"):
+            tool.outer_endpoint(d, {})
+
+    def test_post_manifest_mutation_refuses(self, tool, tmp_path):
+        d = self._normal_dir(tmp_path, mutate_after=True)
+        with pytest.raises(tool.CurriculumError, match="drifted"):
+            tool.outer_endpoint(d, {})
+
+    @pytest.mark.parametrize("bad", [0, -3, True, "2196"])
+    def test_nonpositive_rows_refuse(self, tool, tmp_path, bad):
+        d = self._normal_dir(tmp_path, scored_rows=bad)
+        with pytest.raises(tool.CurriculumError, match="scored_rows"):
+            tool.outer_endpoint(d, {})

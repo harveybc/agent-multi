@@ -219,6 +219,32 @@ def outer_endpoint(normal_dir: Path, normal_report: dict) -> dict:
         raise CurriculumError(
             "sealed_test is materialized in a P1 run — REFUSED "
             "(order §5: sealed 2025 is never read, traced or reported)")
+    # Finding 313: bind the REAL manifest schema — scored_rows and
+    # csv_sha256 — and independently re-hash the CSV immediately
+    # before evaluation. Null, malformed or drifted evidence refuses;
+    # an endpoint without bound row count and content digest is not
+    # admissible for the decision campaign.
+    scored_rows = outer.get("scored_rows")
+    if isinstance(scored_rows, bool) or not isinstance(
+            scored_rows, int) or scored_rows <= 0:
+        raise CurriculumError(
+            f"outer scored_rows {scored_rows!r} is not a positive "
+            "integer; evidence unbound (finding 313)")
+    declared_sha = outer.get("csv_sha256")
+    if not isinstance(declared_sha, str) or len(declared_sha) != 64             or any(c not in "0123456789abcdef" for c in declared_sha):
+        raise CurriculumError(
+            f"outer csv_sha256 {str(declared_sha)[:16]!r} is not a "
+            "64-hex digest; evidence unbound (finding 313)")
+    outer_csv = Path(str(outer["csv"]))
+    if not outer_csv.is_file():
+        raise CurriculumError("outer CSV missing at evaluation time")
+    actual_sha = hashlib.sha256(outer_csv.read_bytes()).hexdigest()
+    if actual_sha != declared_sha:
+        raise CurriculumError(
+            "outer CSV content drifted after manifest materialization "
+            f"({actual_sha[:16]} != {declared_sha[:16]}); substituted "
+            "or mutated evaluation data refuses (finding 313)")
+
     bundle = load_bundle_manifest(normal_dir)
     sys.path.insert(0, str(REPO))
     from importlib.metadata import entry_points
@@ -241,8 +267,9 @@ def outer_endpoint(normal_dir: Path, normal_report: dict) -> dict:
     ret = float(summary.get("total_return") or 0.0)
     dd = float(summary.get("max_drawdown_fraction") or 0.0)
     return {"role": "outer_validation_2024",
-            "role_rows": outer.get("rows"),
-            "csv_sha256": outer.get("sha256"),
+            "scored_rows": scored_rows,
+            "csv_sha256": declared_sha,
+            "csv_rehashed_before_eval": True,
             "selected_bundle_epoch": bundle["epoch"],
             "primary_score_risk_adjusted_return": ret
             - RISK_LAMBDA * dd,
