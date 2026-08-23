@@ -2,6 +2,20 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations \u2014 the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
+  "export_sac_architecture.py": {
+   "purpose": "Read-only exporter for SAC actor/critic summaries and architecture diagrams from a declared checkpoint",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Musashi"
+  },
+  "materialize_grouped_sac_config.py": {
+   "purpose": "Materialize a grouped semantic-feature SAC experiment config from an existing feature-aware config; does not train or promote",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Musashi"
+  },
   "arm_differentiation.py": {
    "purpose": "Campaign precondition (finding D8-20260815): refuse to dispatch when arms declaring different treatments report byte-identical metric tuples for a defective reason. Typed ladder over POLICY TENSOR hashes (never .zip container digests, whose mtimes make identical weights hash differently) and behaviour fingerprints from return traces with identity columns stripped. SHARED_SCORED_POLICY / TREATMENT_NOT_REALIZED / METRIC_COLLAPSE / UNDECIDABLE refuse; DEGENERATE_IDENTICAL accepts, because a zero-trade or constant-action policy ignores its observations and MUST score alike under any treatment",
    "lifecycle": "supported",

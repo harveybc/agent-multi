@@ -5,7 +5,7 @@ Thin subclass of `sac_agent.Plugin` that bakes in the canonical Project 3
 hyperparameters and adds a small validation layer for the reproduction
 profile (continuous action space, canonical strategy/reward in strict
 mode). All RL lifecycle behavior (build/train/predict/save/load,
-seeding, FlattenObservation wrapping) is inherited unchanged.
+seeding and optional structured feature extraction) is inherited unchanged.
 
 See docs/PROJECT3_ETHUSDT_4H_SAC_ACTOR_CRITIC_PLUGIN_SPEC.md for context.
 
@@ -37,6 +37,8 @@ class Plugin(SacPlugin):
         "target_entropy": "auto",
         "use_sde": True,
         "net_arch": (256, 256),
+        "feature_extractor_plugin": None,
+        "feature_extractor_config": None,
         "device": "cuda",
         "agent_verbose": 0,
         "train_seed": 0,

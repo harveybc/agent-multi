@@ -32,6 +32,20 @@ setup(
         "execution_policy.plugins": [
             "adaptive_order_router=execution_policy_plugins.adaptive_order_router:Plugin",
         ],
+        "feature_branch.plugins": [
+            "mlp_branch=feature_branch_plugins.mlp_branch:Plugin",
+            "gru_branch=feature_branch_plugins.gru_branch:Plugin",
+            "tcn_branch=feature_branch_plugins.tcn_branch:Plugin",
+            "transformer_branch=feature_branch_plugins.transformer_branch:Plugin",
+        ],
+        "feature_fusion.plugins": [
+            "concat_fusion=feature_fusion_plugins.concat_fusion:Plugin",
+            "gated_fusion=feature_fusion_plugins.gated_fusion:Plugin",
+        ],
+        "pretraining_objective.plugins": [
+            "next_step_huber=pretraining_objective_plugins.next_step_huber:Plugin",
+            "direction_bce=pretraining_objective_plugins.direction_bce:Plugin",
+        ],
         "optimizer.plugins": [
             "default_optimizer=optimizer_plugins.default_optimizer:Plugin",
             "project3_full_genome_optimizer=optimizer_plugins.project3_full_genome_optimizer:Plugin",

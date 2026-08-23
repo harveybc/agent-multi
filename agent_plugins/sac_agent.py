@@ -148,6 +148,8 @@ class Plugin:
         "target_entropy": "auto",
         "use_sde": False,
         "net_arch": (256, 256),
+        "feature_extractor_plugin": None,
+        "feature_extractor_config": None,
         "device": "auto",
         "agent_verbose": 0,
         "train_seed": 0,
@@ -196,9 +198,26 @@ class Plugin:
         self._require_continuous(env)
         p = self._resolve(config)
         policy_kwargs = {"net_arch": list(p["net_arch"])}
+        policy = "MlpPolicy"
+        if p["feature_extractor_plugin"] is not None:
+            if p["feature_extractor_plugin"] != "grouped_features_extractor":
+                raise ValueError("unsupported SAC feature_extractor_plugin")
+            from .grouped_features_extractor import build_grouped_extractor_class
+
+            architecture = p["feature_extractor_config"]
+            if not isinstance(architecture, dict):
+                raise ValueError("feature_extractor_config must be an object")
+            policy = "MultiInputPolicy"
+            policy_kwargs.update({
+                "features_extractor_class": build_grouped_extractor_class(),
+                "features_extractor_kwargs": {"architecture": architecture},
+                "share_features_extractor": bool(
+                    architecture.get("share_features_extractor", False)
+                ),
+            })
         seed = int(p["train_seed"])
         model = SAC(
-            policy="MlpPolicy",
+            policy=policy,
             env=env,
             learning_rate=float(p["learning_rate"]),
             buffer_size=int(p["buffer_size"]),
@@ -519,6 +538,9 @@ class Plugin:
 
     def wrap_env(self, env, config: Dict[str, Any] | None = None):
         """Called by the pipeline before build/load — SAC needs flat obs."""
+        resolved = self._resolve(config or {})
+        if resolved["feature_extractor_plugin"] is not None:
+            return env
         return self._flatten_if_dict(env)
 
     def fitness(self, summary: Dict[str, Any], config: Dict[str, Any]) -> float:
