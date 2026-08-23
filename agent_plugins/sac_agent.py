@@ -207,6 +207,23 @@ class Plugin:
             architecture = p["feature_extractor_config"]
             if not isinstance(architecture, dict):
                 raise ValueError("feature_extractor_config must be an object")
+            # Order 2026-08-23 §1: the architecture's feature_columns
+            # must equal the EXPERIMENT's feature_columns exactly and
+            # in order. The extractor can only check the count against
+            # the observation space (spaces carry no names), so an
+            # order drift between the preprocessor's emission order and
+            # the architecture's grouping would silently route features
+            # into the wrong semantic branches. Refuse before SAC
+            # construction.
+            env_columns = list(config.get("feature_columns") or [])
+            arch_columns = list(architecture.get("feature_columns") or [])
+            if env_columns != arch_columns:
+                raise ValueError(
+                    "feature_extractor_config.feature_columns must be "
+                    "IDENTICAL (same names, same order) to the "
+                    "experiment feature_columns that define the "
+                    "observation emission order; refusing silent "
+                    "branch misrouting")
             policy = "MultiInputPolicy"
             policy_kwargs.update({
                 "features_extractor_class": build_grouped_extractor_class(),

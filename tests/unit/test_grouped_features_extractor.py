@@ -130,7 +130,12 @@ def test_sac_builds_multi_input_actor_and_twin_critics(local_plugins):
         "device": "cpu",
     })
     env = plugin.wrap_env(TinyEnv(), {})
-    model = plugin.build(env, {})
+    # Order 2026-08-23 §1: the experiment config must DECLARE the
+    # emission-order feature_columns; the agent refuses any drift from
+    # the architecture's grouping order.
+    experiment_config = {
+        "feature_columns": _architecture()["feature_columns"]}
+    model = plugin.build(env, experiment_config)
     observation, _ = env.reset()
     action, _ = model.predict(observation)
     assert model.policy.__class__.__name__ == "MultiInputPolicy"
