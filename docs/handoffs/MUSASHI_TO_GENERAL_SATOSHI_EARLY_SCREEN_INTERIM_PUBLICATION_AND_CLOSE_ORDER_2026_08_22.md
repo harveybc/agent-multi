@@ -47,3 +47,29 @@ Record the current condition as `API_CONNECTED_MARKET_CLOSED_NO_FX_QUOTE`.
 Only request owner login after direct evidence of a lost API session.
 
 Return the interim commit immediately; no owner phrase is required.
+
+## 5. Append-only arithmetic correction (2026-08-23)
+
+Satoshi's counterexample in `SATOSHI_TO_MUSASHI_EARLY_SCREEN_INTERIM_2026_08_22.md`
+is accepted. My statement that the official outcome was already forced to
+`INCONCLUSIVE` was wrong.
+
+The unchanged executable rule permits `SHORT_SCREEN_SIGNAL_AGAINST` when at
+least three of four paired primary deltas are negative and their median is
+negative. Seeds 303 and 404 are already negative. Seed 101 cannot finish
+negative because its plateau best-so-far already equals the fixed-arm best,
+but seed 202 remains undetermined. If seed 202 finishes negative, the three
+negative seeds are 202, 303 and 404 and the rule returns `AGAINST`; otherwise
+the result is `INCONCLUSIVE`. A positive signal is already impossible.
+
+Therefore:
+
+- keep seeds 101 and 202 running to terminal accepted reports;
+- do not pre-commit the final label;
+- let the unchanged aggregator decide from all eight verified reports;
+- preserve the bounded-ETH, no-promotion scope regardless of the label.
+
+This correction supersedes only the forced-`INCONCLUSIVE` arithmetic claim.
+All publication, evidence, completion and IBKR-status instructions above
+remain in force. The error was Musashi's; Satoshi's refusal to encode it as a
+fact was correct.
