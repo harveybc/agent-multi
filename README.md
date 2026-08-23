@@ -43,6 +43,11 @@ evidence/audit tooling.
 
 ## Architecture
 
+Current ETH SAC research documentation:
+
+- [Easy-to-normal paired experiment and actor/critic diagrams](docs/architecture/ETH_SAC_EASY_NORMAL_EXPERIMENT.md)
+- [Hyperparameters, starting values and staged DOIN ranges](docs/architecture/ETH_SAC_HYPERPARAMETERS.md)
+
 ```
 JSON experiment config (examples/config/)
         │

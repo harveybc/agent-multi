@@ -1,0 +1,15 @@
+digraph G {
+rankdir=LR;
+graph [bgcolor=white, pad=0.2];
+
+node [shape=box, style="rounded,filled", fillcolor="#f3f1ff", color="#554486", fontname="DejaVu Sans"];
+obs [label="Observation\n2692"];
+act [label="Action\n1"];
+cat [label="Concatenate\n2693"];
+q1 [label="Q1\nLinear 2693 -> 256, ReLU\nLinear 256 -> 256, ReLU\nLinear 256 -> 1"];
+q2 [label="Q2\nLinear 2693 -> 256, ReLU\nLinear 256 -> 256, ReLU\nLinear 256 -> 1"];
+minimum [label="min(Q1, Q2)\nreduces positive bias", fillcolor="#eaf8ea"];
+target [label="Target critics\nPolyak update tau=0.005", fillcolor="#fff4dc"];
+obs -> cat; act -> cat; cat -> q1 -> minimum; cat -> q2 -> minimum; minimum -> target;
+
+}

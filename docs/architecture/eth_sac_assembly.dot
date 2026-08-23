@@ -1,0 +1,19 @@
+digraph G {
+rankdir=LR;
+graph [bgcolor=white, pad=0.2];
+
+node [shape=box, style="rounded,filled", fillcolor="#f7f7f7", color="#444444", fontname="DejaVu Sans"];
+features [label="83 causal market features x 32 bars\n2,656 normalized values"];
+state [label="Agent/account state\n36 values"];
+guard [label="Observation contract\nraw price window forbidden", fillcolor="#ffe8e8"];
+obs [label="Flattened observation\n2692 values", fillcolor="#eef5ff"];
+actor [label="SAC actor\n755,713 parameters"];
+action [label="Continuous action\n[-1, 1]"];
+execution [label="gym-fx execution mapping\nNOP / open / early close\nnative SL and TP"];
+env [label="Equity, position, reward\nnext observation"];
+replay [label="Replay buffer\n200,000 transitions"];
+critics [label="Twin critics\n1,511,426 parameters"];
+features -> guard -> obs; state -> obs; obs -> actor -> action -> execution -> env -> obs;
+env -> replay; action -> replay; replay -> critics; critics -> actor [label="policy gradient"];
+
+}

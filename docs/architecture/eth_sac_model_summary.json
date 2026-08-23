@@ -1,0 +1,24 @@
+{
+  "schema": "agent_multi.sac_architecture_summary.v1",
+  "checkpoint": "best_model.zip",
+  "observation_shape": [
+    2692
+  ],
+  "action_shape": [
+    1
+  ],
+  "actor_parameters": 755713,
+  "critic_parameters": 1511426,
+  "target_critic_parameters": 1511426,
+  "learning_rate": 0.0003,
+  "buffer_size": 200000,
+  "learning_starts": 128,
+  "batch_size": 64,
+  "gamma": 0.99,
+  "tau": 0.005,
+  "train_freq": "TrainFreq(frequency=1, unit=<TrainFrequencyUnit.STEP: 'step'>)",
+  "gradient_steps": 1,
+  "entropy_coefficient": "auto",
+  "use_sde": true,
+  "policy": "SACPolicy(\n  (actor): Actor(\n    (features_extractor): FlattenExtractor(\n      (flatten): Flatten(start_dim=1, end_dim=-1)\n    )\n    (latent_pi): Sequential(\n      (0): Linear(in_features=2692, out_features=256, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=256, out_features=256, bias=True)\n      (3): ReLU()\n    )\n    (mu): Sequential(\n      (0): Linear(in_features=256, out_features=1, bias=True)\n      (1): Hardtanh(min_val=-2.0, max_val=2.0)\n    )\n  )\n  (critic): ContinuousCritic(\n    (features_extractor): FlattenExtractor(\n      (flatten): Flatten(start_dim=1, end_dim=-1)\n    )\n    (qf0): Sequential(\n      (0): Linear(in_features=2693, out_features=256, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=256, out_features=256, bias=True)\n      (3): ReLU()\n      (4): Linear(in_features=256, out_features=1, bias=True)\n    )\n    (qf1): Sequential(\n      (0): Linear(in_features=2693, out_features=256, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=256, out_features=256, bias=True)\n      (3): ReLU()\n      (4): Linear(in_features=256, out_features=1, bias=True)\n    )\n  )\n  (critic_target): ContinuousCritic(\n    (features_extractor): FlattenExtractor(\n      (flatten): Flatten(start_dim=1, end_dim=-1)\n    )\n    (qf0): Sequential(\n      (0): Linear(in_features=2693, out_features=256, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=256, out_features=256, bias=True)\n      (3): ReLU()\n      (4): Linear(in_features=256, out_features=1, bias=True)\n    )\n    (qf1): Sequential(\n      (0): Linear(in_features=2693, out_features=256, bias=True)\n      (1): ReLU()\n      (2): Linear(in_features=256, out_features=256, bias=True)\n      (3): ReLU()\n      (4): Linear(in_features=256, out_features=1, bias=True)\n    )\n  )\n)"
+}

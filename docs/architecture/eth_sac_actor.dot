@@ -1,0 +1,16 @@
+digraph G {
+rankdir=LR;
+graph [bgcolor=white, pad=0.2];
+
+node [shape=box, style="rounded,filled", fillcolor="#eef5ff", color="#315b7d", fontname="DejaVu Sans"];
+obs [label="Observation\n2692 float32 values"];
+flat [label="FlattenExtractor\nidentity flatten"];
+d1 [label="Linear 2692 -> 256\nReLU"];
+d2 [label="Linear 256 -> 256\nReLU"];
+mu [label="Mean head\nLinear 256 -> 1\nHardtanh [-2, 2]"];
+noise [label="gSDE log_std\n256 x 1", fillcolor="#fff4dc"];
+squash [label="Squashed stochastic action\nBox [-1, 1] (1,)", fillcolor="#eaf8ea"];
+obs -> flat -> d1 -> d2 -> mu -> squash;
+d2 -> noise -> squash;
+
+}
