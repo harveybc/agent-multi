@@ -14,7 +14,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DOCS = HERE.parent
-FILES = sorted(DOCS.glob("0[1-8]_*.md"))
+FILES = sorted(DOCS.glob("0[1-8]_*.md")) + sorted(DOCS.glob("10_*.md"))
 SOURCE_LINE = re.compile(r"Fuente[s]?:\s*(\[[^\]]+\](?:\s*,?\s*\[[^\]]+\])*)")
 REF = re.compile(r"\[([A-Z0-9-]+)\s+loc:([^\]]+)\]")
 

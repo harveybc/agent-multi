@@ -49,6 +49,13 @@ TLOB (2025), Sirignano & Cont (QF 2019), Théate & Ernst TDQN (ESWA
 6. [06_BROKERS_SIMULATORS_BACKTESTERS.md](06_BROKERS_SIMULATORS_BACKTESTERS.md) — dónde se ejecutó cada evaluación (backtester/simulador/broker).
 7. [07_METRICS_RESULTS.md](07_METRICS_RESULTS.md) — métricas y valores exactos reportados.
 8. [08_TRAINING_OPTIMIZATION.md](08_TRAINING_OPTIMIZATION.md) — régimen de entrenamiento, búsqueda de hiperparámetros, ensembles, re-entrenamiento.
+
+Documentos de decisión (orden Musashi 2026-08-24, no son archivos de aspecto):
+
+- [09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md](09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md) — autocrítica + enmienda con las nueve correcciones de Musashi.
+- [10_GAP_MATRIX_DECISIONES.md](10_GAP_MATRIX_DECISIONES.md) — matriz de brechas WP2: seis decisiones abiertas del programa con mecanismo candidato, evidencia, similitud ETH H4, insumos, coste y falsación más barata por candidato.
+- Enmienda del plan de trabajo (WP3): [../../work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md](../../work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md) §23.
+- Especificaciones post-P1 (WP4, no lanzadas): [../../work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md](../../work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md).
 9. [09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md](09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md) — autocrítica severa del sistema propio contra este estado del arte (para Musashi).
 
 Cada archivo cubre TODOS los papers sin excepción y cierra con la

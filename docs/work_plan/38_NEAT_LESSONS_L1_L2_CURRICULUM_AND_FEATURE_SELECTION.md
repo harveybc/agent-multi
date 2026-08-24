@@ -64,7 +64,7 @@ SHA-256:
 | `fit_train` | 2017-09-28 04:00 through 2022-12-31 | 11,509 | gradient updates only |
 | `train_monitor` | calendar 2022, subset of fit | materializer computes exact | L1 paired stopping, in-sample side |
 | `inner_validation` | calendar 2023 | 2,190 | L1 stopping, no fitting |
-| `outer_validation` | calendar 2024 | 2,196 | L2 selection/confirmation, no fitting |
+| `outer_validation` (program-level: `development_outer`) | calendar 2024 | 2,196 | development/research validation; L2 selection/confirmation, no fitting; repeatedly informs researcher decisions, therefore NOT a test set (SOTA-01, 2026-08-24) |
 | `sealed_test` | calendar 2025 | 2,190 | disabled until release freeze |
 
 `train_monitor` is the last complete fit year, not seven days. The materializer
@@ -1131,3 +1131,83 @@ contract; allowing it here would confound difficulty with fill behavior.
 Document 39 owns the downstream order-family and separate entry/exit-model
 comparisons. All earlier P1LR artifacts remain diagnostic and cannot be
 promoted under this amended action/observation contract.
+
+## 23. 2026-08-24 SOTA Roadmap Amendment (Musashi order, WP3)
+
+Authority: `MUSASHI_TO_GENERAL_SATOSHI_SOTA_CORRECTION_AND_ROADMAP_ORDER_2026_08_24`
+(order commit `6fef96ac`) after audit
+`AUDIT_SATOSHI_SOTA_TRADING_AND_ROADMAP_IMPACT_2026_08_24.md`.
+This amendment changes the post-P1 ordering only. It does not touch the
+running P1 4x3 campaign, does not dispatch GPU work, and does not open 2025.
+
+### 23.1 Split relabel (SOTA-01)
+
+Calendar 2024 is prospectively relabeled `development_outer`
+(development/research validation) at program level; the per-run key
+`outer_validation` remains for artifact compatibility. Calendar 2025 remains
+the only sealed test for this lineage and is not opened for individual
+mechanism screens. A program-level access ledger will record every occasion a
+2024 aggregate informs a researcher decision, in addition to the per-run split
+firewall.
+
+### 23.2 Superseded ordering
+
+Section 10 steps 9-12 (FS program, stage-local mutation domains, document 33
+component roadmap, release) are PUSHED BACK. Between P1 termination and any
+architecture/DOIN expansion, the following screens run in order. None of them
+launches without Musashi's design verification (order clause WP3).
+
+1. **B — Same-harness economic baselines** (CPU-first): buy-and-hold, flat,
+   simple momentum/TSMOM, volatility-scaled rule, on the same cost engine and
+   rolling development folds as SAC. Establishes whether SAC adds value at all
+   before any claim (SOTA amendment "Revised immediate priority").
+2. **A — Action-contract screen**: sign-only vs continuous target exposure vs
+   ternary deadband/hysteresis vs explicit close/hold, identical data and
+   parameter budgets (SOTA-03). Precedes grouped-extractor optimization.
+3. **R — Retraining cadence screen**: frozen control vs 168h/24h/12h rolling
+   adaptation with paired frozen controls (SOTA-07); 6h enters only after
+   measured runtime p95 leaves a safe deadline margin.
+4. **C — Capacity-matched architecture screen**: flat MLP vs small shared
+   temporal baseline vs grouped extractor at matched parameter budget, with
+   parameter count, FLOPs, wall time and inference latency reported next to
+   economic metrics (SOTA-04). Only a winner across rolling origins and seeds
+   earns the fusion stage.
+5. Only then: DOIN topology/hyperparameter domain materialization, based on
+   corrected action/retraining evidence rather than inherited defaults.
+6. Portfolio/multi-asset remains LATER (the self-critique's multi-asset-P0
+   proposal is REJECTED per the amendment; single-asset contract first).
+7. Sealed 2025 is evaluated once, for surviving configurations, under an
+   owner-approved release protocol.
+
+### 23.3 Dependency graph
+
+```text
+P1 terminal (seal + aggregate + inert-treatment classification per seed)
+  └─> B  baseline screen (CPU-only capable; first executable post-P1)
+        └─> gate G1: does any SAC arm beat all four baselines net of costs
+            on rolling development folds? (SPA/DSR-aware comparison)
+              ├─ no  -> action screen A still runs (defect may BE the action
+              │         contract), architecture work FROZEN
+              └─ yes -> A
+  A  action-contract screen ──> winner action contract frozen
+        └─> R  retraining cadence screen (uses frozen action contract)
+              └─> C  capacity-matched architecture screen
+                    └─> gate G2: grouped extractor wins at matched capacity
+                          across origins AND seeds?
+                          ├─ no  -> keep simpler winner; DOIN domain uses it
+                          └─ yes -> fusion stage, then DOIN domain
+  DOIN domain ──> surviving configs ──> sealed-2025 once (owner release
+  protocol) ──> FS program / document 33 roadmap resume as amended
+Constraints: no GPU dispatch without explicit authorization; screens B, A, R,
+C each require Musashi design verification BEFORE launch; 2025 absent from
+every materialized development config; rolling development origins mandatory
+(never 2024-only evaluation).
+```
+
+### 23.4 Standing selection-statistics requirement (SOTA-08)
+
+Four seeds screen mechanisms; they do not select champions. Every screen
+reports paired per-seed effect sizes with intervals, retains all seeds, and
+adds seeds only for mechanisms surviving the screen. Trial counting for
+deflated-Sharpe / SPA accounting starts now: every config x seed x screen row
+is a trial and is recorded in the OLAP cube.
