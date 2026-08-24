@@ -10,6 +10,7 @@ Read first:
 2. `docs/research/sota_trading/00_INDEX.md`
 3. `docs/research/sota_trading/08_TRAINING_OPTIMIZATION.md`
 4. `docs/work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md`
+5. `docs/research/sota_trading/09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md`
 
 ## Priority 0 — Preserve Runtime
 
@@ -44,14 +45,28 @@ adaptation and multiple-trial selection. For each open program decision record:
 
 Do not call a mechanism SOTA without defining the decision and comparator.
 
+Correct the self-critique while doing this work:
+
+- replace "flat MLP destroys time" with "lacks temporal inductive bias";
+- replace raw bar-reuse arithmetic with measured environment/replay statistics;
+- distinguish SAC entropy/stability mechanisms from untested weight/capacity
+  regularization;
+- treat gamma, volatility targeting and ATR stops as candidates for paired
+  experiments, not imported answers;
+- classify easy inaction per seed only after all P1 arms terminate;
+- re-run the 256-bar warmup probe through the current nested context-prefix
+  call path.
+
 ## WP3 — Amend the Work Plan, Without Dispatching GPU Work
 
 1. Relabel 2024 as development/research validation at program level.
 2. Preserve 2025 as the only sealed test for this lineage.
 3. Insert the action-contract screen before grouped-extractor optimization.
-4. Insert rolling retraining cadence before architecture expansion.
-5. Require capacity-matched architecture baselines and complexity reporting.
-6. Keep portfolio/multi-asset work after the single-asset contract is sound.
+4. Insert same-harness economic baselines before claiming SAC value.
+5. Insert rolling retraining cadence before architecture expansion.
+6. Require capacity-matched architecture baselines and complexity reporting.
+7. Keep portfolio/multi-asset work after the single-asset contract is sound;
+   reject the self-critique's proposed multi-asset P0.
 
 Submit exact diffs and a dependency graph. Do not launch the new experiments
 until P1 is terminal and Musashi verifies the designs.
@@ -60,6 +75,8 @@ until P1 is terminal and Musashi verifies the designs.
 
 Prepare, but do not launch:
 
+- baseline screen: flat, buy-and-hold, simple momentum/TSMOM and
+  volatility-scaled rule under the same costs and folds;
 - action screen: sign target, continuous target exposure, ternary
   deadband/hysteresis, explicit close/hold;
 - retraining screen: frozen versus 168h/24h/12h adaptation;
@@ -71,10 +88,13 @@ turnover, drawdown, activity, inference latency and deadline evidence. State
 how early closing and native SL/TP coexist. The sealed 2025 split must be absent
 from every materialized development config.
 
+The baseline screen may be CPU-only and should be the first executable design
+after P1 closes. Do not evaluate it only on 2024; use the development rolling
+origins and reserve 2025.
+
 ## Return Packet
 
 Return one packet with commit IDs, corrected index, source-registry validation,
 gap matrix, work-plan diff and three non-launched experiment specifications.
 List disagreements explicitly. This audit welcomes a technically supported
 counterproposal; it does not welcome silent scope substitution.
-

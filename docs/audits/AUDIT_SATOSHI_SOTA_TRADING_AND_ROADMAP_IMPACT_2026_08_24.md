@@ -5,6 +5,9 @@ Auditor: General Musashi
 Subject: `docs/research/sota_trading/00_INDEX.md` through
 `08_TRAINING_OPTIMIZATION.md` at `agent-multi@0058dc74`
 
+Amendment input: `09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md` at
+`agent-multi@04d6bfb8`.
+
 ## Verdict
 
 `ACCEPT_WITH_MAJOR_REVISIONS`.
@@ -148,6 +151,66 @@ files including `00` and an unlisted `08_TRAINING_OPTIMIZATION.md`. The commit
 subject repeats the wrong count. Add `08` to the index and state "eight aspect
 files plus index".
 
+Status after `04d6bfb8`: partially corrected. Documents 08 and 09 are now
+linked, but the source-registry and claim-locator defect remains open.
+
+## Amendment: Audit of Satoshi's Self-Critique
+
+The self-critique materially strengthens the packet. Accept these diagnoses:
+
+- absence of same-harness economic baselines;
+- no systematic SAC hyperparameter search;
+- lack of rolling adaptation;
+- insufficient feature-family attribution;
+- seed instability and weak statistical power;
+- lack of explicit volatility/turnover normalization experiments;
+- possible easy-treatment inaction requiring a mechanical bite check;
+- disproportionate engineering effort relative to empirical model comparison.
+
+Do not adopt the following statements as facts without correction:
+
+1. **A flat MLP does not destroy temporal information.** Flattening preserves
+   every coordinate and its order; it removes temporal inductive bias and
+   parameter sharing. That may be inefficient, but it is an empirical question,
+   not proof that the model cannot use time.
+2. **"Each bar seen more than 1,700 times" is not a sufficient sample-size
+   statistic.** Environment visits and replay gradient draws are different,
+   correlated quantities. Report unique transitions, replay sample counts,
+   effective sample reuse, autocorrelation and train/validation divergence.
+3. **SAC is not literally unregularized.** Automatic entropy regularization,
+   twin critics, target networks and replay stabilization exist. The accurate
+   claim is that no explicit actor weight decay, dropout or capacity control has
+   been evaluated.
+4. **ZZR's gamma=0.3 is not a candidate default for ETH H4 SAC.** It belongs to
+   a different algorithm, market and cadence. Gamma is an optimization/design
+   variable, with horizon reported in H4 bars and wall-clock time.
+5. **The top papers do not all systematically tune hyperparameters.** Several
+   use fixed or incompletely reported choices. Our defect is failure to justify
+   our defaults, not failure to imitate a universal practice that does not
+   exist.
+6. **Easy is not yet universally proved inert.** Exact equality in completed
+   seed/arm pairs proves those pairs uninformative. The campaign must finish and
+   report solvency-event and trajectory divergence per seed before a global
+   statement.
+7. **Multi-asset is not P0.** It is valuable for mechanism transport and later
+   portfolio work, but moving it ahead of action semantics, baselines and
+   adaptation would multiply a possibly defective agent across assets. Preserve
+   the owner's single-asset-first strategy.
+8. **Volatility targeting and ATR stops are candidates, not automatic fixes.**
+   They require paired ablation because the current risk envelope and native
+   protection already constrain exposure differently in simulation and Demo.
+9. **The 256-bar zero warmup must be re-verified on the current nested-prefix
+   execution path.** Historical probe behavior is not enough to claim every
+   current episode discards 42 days; context-prefix materialization may change
+   that fact.
+
+### Revised immediate priority
+
+Same-harness baselines move into the first post-P1 work package. Multi-asset
+does not. Run buy-and-hold, flat, simple momentum/TSMOM and a volatility-scaled
+rule on the same development folds and cost engine. These baselines establish
+whether SAC adds value before architecture expansion.
+
 ## What Does Not Need Rebuilding
 
 - The nested temporal split machinery and sealed-2025 firewall remain useful.
@@ -175,4 +238,3 @@ After P1 closes:
 
 Portfolio and multi-asset optimization remain later: first establish a sound
 single-asset action, adaptation and representation contract on ETH.
-
