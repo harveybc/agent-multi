@@ -39,7 +39,7 @@ EIIE (2017), Kronos (2025/AAAI'26), FinAgent (KDD'24), FinMem (2023),
 TLOB (2025), Sirignano & Cont (QF 2019), Théate & Ernst TDQN (ESWA
 2021), LOBCAST (2024, control negativo).
 
-## Archivos
+## Archivos (OCHO archivos de aspecto más este índice; el 09 es la autocrítica)
 
 1. [01_ASSETS_MARKETS_DATA_SOURCES.md](01_ASSETS_MARKETS_DATA_SOURCES.md) — activos, mercados, timeframes, fuentes de datos, fechas exactas.
 2. [02_INPUTS_FEATURES.md](02_INPUTS_FEATURES.md) — inputs/features de cada paper, dimensionalidades y ventanas.

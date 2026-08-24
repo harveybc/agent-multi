@@ -14,11 +14,15 @@
 | P4 DeepLOB | Clasificación pura; simulación de trading "proof-of-concept" propia sobre datos LSE | NO | Micro-mecánica de fills NO DECLARADA |
 | P5 Momentum Transformer | Backtest propio walk-forward (código público en GitHub) | NO | Fills a cierre; costes 0–3 pb paramétricos |
 
-**Hecho transversal verificado**: NINGUNO de los 5 ejecutó en broker
-real, ni siquiera en paper-trading — todos son backtests propios sobre
-datos históricos con fills a precio de cierre (o etiquetas de
-mid-price en LOB). Los costes, cuando existen, son fracciones
-aritméticas, no libros de órdenes simulados.
+**Hecho transversal (formulación corregida por SOTA-06)**: en las
+FUENTES REVISADAS de los 5 papers NO SE REPORTA ejecución en broker ni
+paper-trading (`not_reported_in_reviewed_sources`) — la ausencia no
+está probada contra materiales suplementarios y código. Lo verificado
+es que las evaluaciones publicadas son backtests propios con fills a
+precio de cierre (o etiquetas de mid-price en LOB) y costes como
+fracciones aritméticas.
+
+Fuentes: [GKX2020 loc:§2], [FK2018 loc:§3-4], [ZZR2020 loc:§4], [DEEPLOB2019 loc:§V], [WOOD2022 loc:§V]
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: backtest propio minuto a minuto; costes por punto
@@ -36,24 +40,33 @@ aritméticas, no libros de órdenes simulados.
   backtrader estandarizado — primeras evaluaciones del campo fuera
   de backtests ad-hoc.
 
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
+
 ## <a name="nuestros"></a>Nuestros experimentos
-- **Investigación**: simulador propio `gym-fx` (runtime fijado por
+- **Investigación**: `historical_simulation` — simulador propio
+  `gym-fx` (runtime fijado por
   commit `634c3fd3…`, entry point `gym_fx_env` envuelto por
   agent-multi): dinámica de cuenta con solvencia/margen, costes de
   ejecución, trazas de retorno por barra con contabilidad física de
   trades; pipeline `rl_pipeline_with_validation` con roles anidados
   verificados. NO usamos backtrader ni motores de terceros.
-- **Demo/paper en vivo, TRES venues reales**:
-  1. **MT5 (OANDA Demo)** — terminal MetaTrader 5 con EA propio
+- **Clases de ejecución exactas (mandato SOTA-06);
+  `live_capital_execution = false` en TODO el programa**:
+  1. **MT5 (OANDA)** — `broker_mediated_demo_or_paper_execution` —
+     terminal MetaTrader 5 con EA propio
      `LtsMt5ModelBridge.mq5` + bridge HTTP autenticado (HMAC + nonce
      + identidad de ruta firmada) + runner Python; ETHUSD activo,
      USDCAD gated.
-  2. **Alpaca Paper** — API oficial, runner propio, SPY.
-  3. **IBKR Paper (TWS)** — suspendido por el dueño; ledgers
-     preservados.
-- **Diferencia clave con el estado del arte**: nuestros resultados
-  demo provienen de EJECUCIÓN REAL en broker (fills del broker Demo,
-  SL/TP nativos, latencia real), no de fills a cierre asumidos — un
-  nivel de realismo que ninguno de los 5 papers tiene; el costo es
-  muestras pequeñas (23 round-trips ETHUSD) frente a sus miles de
-  trades backtesteados.
+  2. **Alpaca** — `broker_mediated_demo_or_paper_execution` — API
+     oficial, runner propio, SPY.
+  3. **IBKR (TWS)** — `preserved_suspended` — suspendido por el
+     dueño; ledgers preservados.
+- **Diferencia con el estado del arte (formulación corregida)**:
+  nuestros fills provienen de ejecución MEDIADA POR BROKER en
+  Demo/Paper (SL/TP nativos, latencia real) — más realista que fills
+  a cierre asumidos, pero NO es ejecución con capital real y no
+  establece rentabilidad, impacto ni fiabilidad de producción. Coste:
+  muestras pequeñas (23 round-trips ETHUSD) frente a los miles de
+  trades backtesteados del SOTA.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

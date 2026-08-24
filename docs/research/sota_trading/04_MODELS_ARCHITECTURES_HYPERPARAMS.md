@@ -17,6 +17,8 @@
   ∈{3,5,10,20,30,50}; GBRT: profundidad 1–2, 1–1000 árboles,
   LR∈{0.01,0.1}; ENet ρ=0,5; Huber ξ = cuantil 99,9%.
 
+Fuentes: [GKX2020 loc:§1.3-1.7], [GKX2020-IA loc:Tab.A.5]
+
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **LSTM**: 1 capa, 25 neuronas ocultas, dropout recurrente 0,1 (Gal
   & Ghahramani), densa 2 + softmax. **2.752 parámetros LSTM**.
@@ -26,6 +28,8 @@
 - Benchmarks: RF 1.000 árboles prof. 20 m=√p; DNN 31-31-10-5-2
   maxout 2 canales, dropout 0,5, L1 1e-5 (H2O); logística L2 (100
   valores 1e-4..1e4, 5-fold CV, L-BFGS).
+
+Fuente: [FK2018 loc:§3.3-3.4]
 
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - **Arquitectura común**: LSTM 2 capas 64→32, Leaky-ReLU — idéntica
@@ -37,6 +41,8 @@
   64, **γ=0,3**, replay 5.000, target cada τ=1.000 pasos, bp
   entrenamiento 0,0020. PG — LR 1e-4, γ=0,3. A2C — LR crítico 1e-3,
   actor 1e-4, batch 128, γ=0,3. [Épocas NO DECLARADAS].
+
+Fuente: [ZZR2020 loc:Tab.1,§4]
 
 ## <a name="p4"></a>P4 — DeepLOB
 - **CNN estructural**: bloque 1 conv 1×2 stride 1×2 (precio-volumen
@@ -51,6 +57,8 @@
   cross-entropy categórica, early-stop cuando validación estanca 20
   épocas (~100 épocas FI-2010, ~40 LSE).
 
+Fuente: [DEEPLOB2019 loc:§IV arquitectura]
+
 ## <a name="p5"></a>P5 — Momentum Transformer
 - **Decoder-Only Temporal Fusion Transformer**: Variable Selection
   Network → LSTM (procesamiento local/encoding posicional) → atención
@@ -62,6 +70,8 @@
   Transformer, Informer, LSTM-DMN, TSMOM clásico, long-only.
 - [Anchos de capa/dropout exactos viven en los apéndices B/C del
   paper — NO EXTRAÍDOS: UNVERIFIED].
+
+Fuente: [WOOD2022 loc:§III-IV]
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: fuzzy(R^150) → 4 capas sigmoides 128-128-128-20 →
@@ -92,6 +102,8 @@
   ~25 nodos GPU (500 para modelos por-acción). [LR/batch/épocas NO
   DECLARADOS].
 
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
+
 ## <a name="nuestros"></a>Nuestros experimentos
 - **Algoritmo**: SAC (Stable-Baselines3), política MlpPolicy (flat)
   para la identidad P1; entropía automática (log_ent_coef aprendido).
@@ -114,3 +126,5 @@
 - **Continuidad probada**: bundles coherentes por checkpoint con hash
   por-tensor (148 tensores verificados exactos tras cada warm-start);
   EN-F carga modelo+replay de la MISMA época seleccionada.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

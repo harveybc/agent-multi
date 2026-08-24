@@ -18,6 +18,8 @@
 - **Costes**: NO deducidos; turnover reportado (110–130%/mes en
   NN1–NN5) para que el lector los impute.
 
+Fuente: [GKX2020 loc:§2.4 portafolios,Tab.7]
+
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **Apertura**: cada DÍA t, tras el cierre, se rankean ~500 acciones
   por probabilidad predicha de superar la mediana en t+1; se abre
@@ -29,6 +31,8 @@
 - **Apalancamiento**: long-short 1:1 nocional; margen no modelado.
 - **Costes**: 5 puntos básicos por media vuelta (0,05%), aplicados
   a las 4 medias-vueltas diarias del par largo-corto.
+
+Fuente: [FK2018 loc:§3.5,§4 k=10]
 
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - **Apertura**: la RED emite directamente la posición objetivo del
@@ -45,6 +49,8 @@
 - **Costes**: 20 pb en el entrenamiento (regularizador); evaluación
   a 1–45 pb; sin SL/TP — la salida es el cambio de señal.
 
+Fuente: [ZZR2020 loc:§3 vol-targeting,§4 costes]
+
 ## <a name="p4"></a>P4 — DeepLOB
 - **No es un paper de estrategia**: el producto es la CLASIFICACIÓN
   del próximo movimiento del mid-price. La simulación de trading en
@@ -53,6 +59,8 @@
   1 unidad [micro-mecánica de fill y coste NO DECLARADOS en detalle;
   PnL exactos no extraídos — UNVERIFIED].
 - Sin SL/TP, sin apalancamiento declarado.
+
+Fuente: [DEEPLOB2019 loc:§V-C simulación]
 
 ## <a name="p5"></a>P5 — Momentum Transformer
 - **Apertura**: posición CONTINUA z∈(−1,1) por futuro y día, emitida
@@ -64,6 +72,8 @@
   declarado.
 - **Costes**: análisis explícito de sensibilidad — Sharpe reportado
   a C = 0/0,5/1/1,5/2/2,5/3 pb; sin SL/TP.
+
+Fuente: [WOOD2022 loc:§V,Exh.10]
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: δ∈{1,0,−1} sobre UN contrato; coste por CAMBIO de
@@ -80,6 +90,8 @@
   sin SL/TP nativo; costes: FinMem NO declara costes de transacción.
 - **Kronos**: backtest long-only top-k (CSI300 k=50; CSI800 k=200),
   holding mínimo 5 días, coste 0,15% por operación.
+
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 
 ## <a name="nuestros"></a>Nuestros experimentos
 
@@ -118,3 +130,5 @@
 - **Alpaca (SPY)** e **IBKR USD.CAD (suspendido)**: runners análogos
   con mandatos propios (IBKR: máx 4 entradas/día, riesgo en stop
   6,25e-5, techo 25.000 unidades — mandato verificado).
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

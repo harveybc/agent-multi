@@ -22,6 +22,8 @@
 - Predictores dominantes: reversal corto, momentum, liquidez,
   volatilidad, ratios de valoración.
 
+Fuentes: [GKX2020 loc:Tab.1,Tab.5,Tab.7,Tab.8]
+
 ## <a name="p2"></a>P2 — Fischer-Krauss (k=10, dic 1992–oct 2015)
 - **Retorno diario ANTES de costes**: LSTM 0,46%; RF 0,43%; DNN
   0,32%; LOG 0,26% (mercado 0,04%). Sharpe anualizado: **LSTM 5,83**;
@@ -37,6 +39,8 @@
   **2010–15 ≈ CERO neto** (RF pierde). 52–54% de la varianza
   explicada por una regla de reversal corto.
 
+Fuente: [FK2018 loc:Fig.3,Tab.3,§4.1.4]
+
 ## <a name="p3"></a>P3 — ZZR DRL (test 2011–2019, neto de 20 pb)
 - **Portafolio 50 contratos** (E(R) anualizada / Sharpe): DQN
   1,258/**1,288** (Sortino 2,22, Calmar 1,03, 54,3% días positivos);
@@ -49,6 +53,8 @@
   contrato); baselines colapsan mucho antes. Win rate 0,49–0,54.
 - Nota: MDD (0,002–0,066) es de retornos vol-targeted; el σ objetivo
   numérico NO está declarado.
+
+Fuente: [ZZR2020 loc:Tab.2,Tab.3,Fig.2]
 
 ## <a name="p4"></a>P4 — DeepLOB
 - **FI-2010 setup-2** (train días 1–7, test 8–10; acc/F1 %): k=10
@@ -63,6 +69,8 @@
 - Simulación de trading: "beneficios consistentes y t-values
   significativos" [PnL exactos NO EXTRAÍDOS — UNVERIFIED].
 
+Fuente: [DEEPLOB2019 loc:tablas setup1/setup2,§V LSE]
+
 ## <a name="p5"></a>P5 — Momentum Transformer (señal a 15% vol)
 - **Sharpe promedio 1995–2020**: long-only 0,51; TSMOM 1,03;
   LSTM-DMN 1,70; Transformer 1,41; Informer 1,72; **TFT
@@ -74,6 +82,8 @@
 - **Costes (2015–20)**: TFT+CPD Sharpe 2,00/1,61/1,22/0,83/0,44/
   0,04/−0,35 a C=0/0,5/1/1,5/2/2,5/3 pb — break-even ~2,5–3 pb;
   LSTM cae a −1,05 ya con 3 pb.
+
+Fuente: [WOOD2022 loc:Exh.3,Exh.10]
 
 ## <a name="menciones"></a>Menciones (cifras clave verificadas)
 - **Deng FDDR** (IF, objetivo TP; beneficio total en puntos / SR%):
@@ -105,6 +115,8 @@
   recalibrar; entrenar con 19 meses > 1/3/6 meses en 100% de 50
   acciones (+7,2/+3,7/+1,6%).
 
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
+
 ## <a name="nuestros"></a>Nuestros experimentos (métricas y estado)
 - **Métricas de selección (nunca de reporte final)**: composite del
   comparador jerárquico pareado sobre monitor-2022/inner-2023 (RAP =
@@ -128,3 +140,5 @@
   ETHUSD 23 round-trips; Alpaca SPY 10+1; IBKR USD.CAD 12
   (suspendido). Sin reclamos de rentabilidad con n así — son rutas de
   VALIDACIÓN del simulador, la prioridad P1 del dueño.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

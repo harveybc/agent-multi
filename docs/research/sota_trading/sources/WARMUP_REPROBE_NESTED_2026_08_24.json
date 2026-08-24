@@ -1,0 +1,14 @@
+{
+ "schema": "agent_multi.warmup_reprobe.v1",
+ "date": "2026-08-24",
+ "path": "current nested context-prefix execution path (campaign seed101_N fit role)",
+ "role": "fit_train (campaign-materialized, nested manifest)",
+ "fit_context_rows": 0,
+ "steps_probed": 400,
+ "zero_fraction_at_reset": 1.0,
+ "zero_fraction_step_50": 0.0238,
+ "zero_fraction_step_150": 0.0238,
+ "zero_fraction_step_300": 0.0119,
+ "first_step_below_50pct_zeros": 2,
+ "first_step_below_5pct_zeros": 2
+}

@@ -222,3 +222,62 @@ sub-SOTA. La proporción de esfuerzo debe invertirse.
 No cierro ningún juicio: la disposición es tuya y del dueño. Los
 hechos de los archivos 01–08 sostienen cada afirmación de este
 documento.
+
+
+---
+
+## ENMIENDA 2026-08-24 — correcciones de la auditoría de Musashi, ACEPTADAS
+
+La auditoría AUDIT_SATOSHI_SOTA_TRADING_AND_ROADMAP_IMPACT corrigió
+nueve afirmaciones de este documento. Se aceptan todas; las
+formulaciones corregidas SUSTITUYEN a las originales:
+
+1. **C1 corregido**: el flat-MLP no "destruye" la información temporal
+   — el aplanado preserva cada coordenada y su orden; lo que FALTA es
+   sesgo inductivo temporal y compartición de parámetros. Es una
+   ineficiencia probable, y una PREGUNTA EMPÍRICA para la ablación de
+   capacidad emparejada, no un hecho.
+2. **A2 corregido**: "cada barra vista >1.700 veces" es aritmética
+   ingenua — visitas del env y extracciones de replay son cantidades
+   distintas y correlacionadas. Lo debido: reportar transiciones
+   únicas, conteos de muestreo del replay, reuso efectivo,
+   autocorrelación y divergencia train/validación medidos.
+3. **C2 corregido**: SAC no está literalmente sin regularizar —
+   entropía automática, críticos gemelos, target networks y replay
+   existen. El déficit exacto: NINGUNA regularización de pesos/
+   capacidad del actor (weight decay, dropout, control de tamaño) ha
+   sido EVALUADA.
+4. **C3 corregido**: el γ=0,3 de ZZR no es candidato importable —
+   pertenece a otro algoritmo, mercado y cadencia. γ es variable de
+   diseño A OPTIMIZAR, con horizonte reportado en barras H4 y tiempo
+   de pared.
+5. **D1 matizado**: no todos los top-papers buscan hiperparámetros
+   sistemáticamente (varios usan elecciones fijas o incompletas).
+   Nuestro defecto es NO JUSTIFICAR nuestros defaults, no incumplir
+   una práctica universal inexistente.
+6. **D3 matizado**: la inercia del easy está probada SOLO en los
+   pares semilla/brazo completados con igualdad exacta; la
+   clasificación global espera el término de TODOS los brazos con
+   divergencia de trayectoria y eventos de solvencia por semilla.
+7. **H1 RECHAZADO**: multi-activo NO es P0 — multiplicaría un agente
+   posiblemente defectuoso. Se preserva la estrategia
+   un-activo-primero del dueño. La prioridad revisada: BASELINES EN
+   EL MISMO ARNÉS como primer paquete post-P1.
+8. **E1/E2 matizados**: volatility-targeting y stops por ATR son
+   CANDIDATOS para ablación pareada, no correcciones automáticas —
+   la envolvente de riesgo y la protección nativa actuales ya
+   restringen exposición de forma distinta en simulación y Demo.
+9. **B1 RE-PROBADO Y CORREGIDO** (la cautela del auditor era
+   fundada): por la ruta anidada ACTUAL (rol fit_train materializado
+   de la campaña, env_mode=training) NO existe zona muerta de 256
+   barras — la observación en reset es un buffer inicializado a cero
+   que se densifica en ~2 pasos (fracción de ceros 1,0 → 0,024 en el
+   paso 2; residual 1–2% son ceros genuinos de features). Los ceros
+   observados en el smoke provenían de las filas-cabecera del DATASET
+   (warmup de indicadores rellenado a cero en la fuente) dentro de un
+   fixture recortado a las primeras 700 filas — propiedad de esos
+   datos, no dead-zone por episodio del escalado. El hallazgo B1
+   original queda RETIRADO en su forma fuerte; persiste solo la nota
+   de que las primeras filas del dataset fuente llevan warmup de
+   indicadores. Evidencia:
+   `sources/WARMUP_REPROBE_NESTED_2026_08_24.json`.

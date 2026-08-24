@@ -17,6 +17,8 @@
 - **Early stopping**: paciencia 5 sobre validación; batch-norm; 100
   épocas máximo; batch 10.000.
 
+Fuentes: [GKX2020 loc:§1.2,§2.2], [GKX2020-IA loc:Tab.A.5]
+
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **Búsqueda**: mínima y declarada — arquitectura LSTM fijada (25
   unidades) sin grid search reportado; la logística sí busca L2 en
@@ -28,6 +30,8 @@
 - **Early stopping**: split interno 80/20, paciencia 10, máx 1.000
   épocas, restaura mejores pesos.
 
+Fuente: [FK2018 loc:§3.3-3.4]
+
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - **Búsqueda**: hiperparámetros de la Tabla 1 fijos [procedimiento de
   selección NO DECLARADO]; γ=0,3 notablemente bajo (horizonte
@@ -37,6 +41,8 @@
 - **Re-entrenamiento**: cada 5 años con ventana expansiva; parámetros
   CONGELADOS durante los 5 años de trading OOS.
 - Replay 5.000 (pequeño), target-network cada 1.000 pasos.
+
+Fuente: [ZZR2020 loc:Tab.1,§4]
 
 ## <a name="p4"></a>P4 — DeepLOB
 - **Búsqueda**: no reportada como grid; arquitectura diseñada por
@@ -48,6 +54,8 @@
 - Transferencia sin fine-tuning a acciones nunca vistas (el hallazgo
   de universalidad sustituye al re-entrenamiento).
 
+Fuente: [DEEPLOB2019 loc:§IV-D entrenamiento]
+
 ## <a name="p5"></a>P5 — Momentum Transformer
 - **Búsqueda**: longitud de secuencia elegida por validación (1 año;
   vs ~63 días óptimo del LSTM-DMN); [grid completo en apéndices — NO
@@ -58,6 +66,8 @@
   (1990–95→test 95–00; …→2020).
 - Pérdida = −Sharpe directamente (optimización del objetivo económico
   end-to-end, sin proxy de clasificación).
+
+Fuente: [WOOD2022 loc:§V protocolo]
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: 5 entrenamientos por ventana, se queda el mejor en
@@ -74,6 +84,8 @@
 - **Sirignano-Cont**: SGD asíncrono distribuido (~25 nodos GPU
   universal; ~500 para por-acción); hallazgo: entrenar con TODA la
   historia (19 meses) > ventanas recientes en el 100% de los casos.
+
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 
 ## <a name="nuestros"></a>Nuestros experimentos
 - **Búsqueda de hiperparámetros**: HOY INEXISTENTE para la línea SAC
@@ -98,3 +110,5 @@
   ser INERTE (148/148 tensores idénticos easy vs normal a escala
   real en las semillas verificadas) — el factor experimental activo
   restante es la continuidad de replay.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

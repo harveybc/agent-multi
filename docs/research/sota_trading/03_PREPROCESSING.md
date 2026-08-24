@@ -16,6 +16,8 @@
   preservado). Objetivo: retorno excedente del mes siguiente
   (regresión).
 
+Fuente: [GKX2020 loc:§2.1,§1.2]
+
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **Normalización**: retornos estandarizados con μ/σ calculados SOLO
   sobre el conjunto de entrenamiento del periodo de estudio.
@@ -26,6 +28,8 @@
   trading NO solapados; 23 periodos 1990–2015; ~380.000 secuencias
   solapadas de 240 días por periodo (~255k train, ~125k OOS); dentro
   del train, 80/20 para early stopping.
+
+Fuente: [FK2018 loc:§3.1-3.2]
 
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - **Volatility scaling en todo**: posiciones escaladas por
@@ -38,6 +42,8 @@
 - **Split**: ventana expansiva, re-entrenamiento cada 5 años, 5 años
   fijos de trading OOS cada vez; test 2011–2019. Un modelo por CLASE
   de activo (agrupar dentro de la clase mejoró resultados).
+
+Fuente: [ZZR2020 loc:§3 recompensa,§4]
 
 ## <a name="p4"></a>P4 — DeepLOB
 - **Normalización**: z-score por feature usando μ/σ de los **5 días
@@ -53,6 +59,8 @@
   eventos.
 - **Split LSE**: 6 meses train / 3 validación / 3 test (temporal).
 
+Fuente: [DEEPLOB2019 loc:Eq.3-4,§III-B]
+
 ## <a name="p5"></a>P5 — Momentum Transformer
 - **Normalización**: retornos escalados por σ ex-ante (EWM 60 días);
   el PORTAFOLIO se lleva a volatilidad objetivo 15% anualizada
@@ -63,6 +71,8 @@
 - **Split**: walk-forward expansivo — train/val 1990–95 → test
   1995–2000; expandir → test 2000–05; … hasta 2020. CADA experimento
   repetido 5 veces (semillas), medias reportadas.
+
+Fuente: [WOOD2022 loc:§III Eq.11,§V]
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: capa fuzzy (3 membresías gaussianas por input,
@@ -86,12 +96,19 @@
   volatilidad, nivel de precio, spread) NO mejoran el entrenamiento;
   particionar por sector/tick-size tampoco.
 
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
+
 ## <a name="nuestros"></a>Nuestros experimentos
 - **Normalización**: z-score RODANTE por feature con ventana de 256
   barras H4 (`feature_scaling: rolling_zscore`,
-  `feature_scaling_window: 256`). CAVEAT verificado y documentado: las
-  primeras ~256 barras de un episodio emiten CEROS hasta llenar la
-  ventana (probes de gradiente deben tomarse post-calentamiento).
+  `feature_scaling_window: 256`). CAVEAT (RE-PROBADO 2026-08-24 por la
+  ruta anidada actual): NO hay zona muerta de 256 barras por episodio
+  — la observación en reset es un buffer cero-inicializado que se
+  densifica en ~2 pasos; los ceros largos observados en fixtures
+  provenían de las filas-cabecera del dataset fuente (warmup de
+  indicadores rellenado a cero EN LOS DATOS). Los probes de gradiente
+  deben evitar la cabecera del dataset, no "42 días por episodio".
+  Evidencia: sources/WARMUP_REPROBE_NESTED_2026_08_24.json.
 - **Splits**: manifiesto de roles ANIDADO verificado (contrato
   `eth_nested_split_contract_v1.json`): fit_train→2022 /
   train_monitor 2022 / inner_validation 2023 / outer_validation 2024
@@ -109,3 +126,5 @@
 - **Anti-lookahead estructural**: sellado 2025 inaccesible fuera de
   modo release; evaluación outer post-selección únicamente; holdout
   de 40 días renombrado `diagnostic_holdout` en la ruta de screens.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

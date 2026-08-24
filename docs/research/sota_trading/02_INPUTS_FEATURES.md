@@ -16,12 +16,16 @@
   default spread (dfy), varianza del mercado (svar).
 - Sin secuencias: vector estático por observación mensual.
 
+Fuente: [GKX2020 loc:§2.1]
+
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **LSTM: UNA sola feature** — el retorno simple de 1 día
   estandarizado — presentada como SECUENCIA de 240 pasos (~1 año
   bursátil). Dimensión de entrada: 1×240.
 - Benchmarks sin memoria (RF/DNN/logística): 31 retornos acumulados
   multi-periodo con m ∈ {1,…,20} ∪ {40,60,…,240}.
+
+Fuente: [FK2018 loc:§2.1,§3.1]
 
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - Estado = últimas **60 observaciones** de cada una de:
@@ -34,11 +38,15 @@
      S∈{8,16,32}, largas L∈{24,48,96};
   4. RSI con lookback de 30 días.
 
+Fuente: [ZZR2020 loc:§3 estado]
+
 ## <a name="p4"></a>P4 — DeepLOB
 - **Imagen 100×40**: los 100 estados más recientes del libro × 40
   features por estado = 10 niveles × 2 lados × (precio, volumen).
 - Sin indicadores técnicos, sin features manuales: el CNN aprende la
   estructura precio-volumen/bid-ask/niveles por diseño de filtros.
+
+Fuente: [DEEPLOB2019 loc:§III-IV]
 
 ## <a name="p5"></a>P5 — Momentum Transformer
 - Por activo y día: retornos vol-normalizados a 5 escalas (diaria,
@@ -47,6 +55,8 @@
   lookback (severidad ν y localización γ de un módulo GP) con
   lookbacks 21 y 126 días.
 - Secuencia de entrada: 1 año de días hábiles (~252 pasos).
+
+Fuente: [WOOD2022 loc:§V features]
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: futuros — vector R^50 = cambios de precio crudos de
@@ -70,6 +80,8 @@
   ≈ 2 h de flujo); definición por-feature exacta [NO DECLARADA
   completa en el arXiv].
 
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
+
 ## <a name="nuestros"></a>Nuestros experimentos
 - **Observación estructurada (dict de gym-fx)**: bloque `features`
   de forma **(32, 83)** — ventana de 32 barras H4 × 83 features — más
@@ -89,3 +101,5 @@
   `prediction_provider_mechanics.build_closed_bar_features` sobre las
   últimas 60 barras del bridge (ETHUSD) — contrato de observación
   declarado en el manifiesto del modelo con paridad verificada.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

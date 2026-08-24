@@ -22,6 +22,8 @@
 - **Fechas**: marzo 1957 – diciembre 2016 (60 años). Test
   out-of-sample: 1987–2016 (30 años).
 
+Fuente: [GKX2020 loc:§2.1 p.2248-2249]
+
 ## <a name="p2"></a>P2 — Fischer & Krauss (EJOR 2018)
 - **Activos**: TODOS los constituyentes históricos del S&P 500,
   reconstruidos con listas de constituyentes a fin de mes (matriz de
@@ -36,6 +38,8 @@
 - **Fechas de evaluación de trading**: dic 1992 – oct 2015 (5.750
   días de trading, 23 periodos de estudio).
 
+Fuente: [FK2018 loc:§2.1]
+
 ## <a name="p3"></a>P3 — Zhang, Zohren & Roberts DRL (JFDS 2020)
 - **Activos**: 50 contratos de FUTUROS CONTINUOS ratio-ajustados:
   25 commodities, 11 índices de acciones, 5 renta fija, 9 FX (lista
@@ -45,6 +49,8 @@
 - **Fuente**: Pinnacle Data Corp CLC Database.
 - **Fechas**: dataset 2005–2019; TEST out-of-sample 2011–2019
   (ventana expansiva, re-entrenamiento cada 5 años).
+
+Fuente: [ZZR2020 loc:§datos,App.A]
 
 ## <a name="p4"></a>P4 — DeepLOB (IEEE TSP 2019)
 - **Dataset A — FI-2010** (benchmark público): 5 acciones de NASDAQ
@@ -61,6 +67,8 @@
 - **Fuente**: FI-2010 público; LSE: datos de libro de órdenes a 10
   niveles [proveedor exacto NO DECLARADO en el paper].
 
+Fuente: [DEEPLOB2019 loc:§III datasets]
+
 ## <a name="p5"></a>P5 — Momentum Transformer (Wood et al. 2022)
 - **Activos**: 50 futuros continuos líquidos, balanceados entre
   commodities, índices, renta fija y FX; series continuas con ajuste
@@ -70,6 +78,8 @@
 - **Fechas**: 1990–2020. Test walk-forward: ventanas de 5 años
   1995→2020; análisis específicos 2015–2020 y crisis COVID
   (1 ene – 15 oct 2020).
+
+Fuente: [WOOD2022 loc:§V]
 
 ## <a name="menciones"></a>Menciones documentadas
 - **Deng et al. FDDR (TNNLS 2017)**: futuros chinos por MINUTO — IF
@@ -100,6 +110,8 @@
   mar 2017, NASDAQ Level III (ITCH) reconstruido con LOBSTER;
   event-time en cambios de mid-price (paso medio 1,7 s).
 
+Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
+
 ## <a name="nuestros"></a>Nuestros experimentos (estado 2026-08-24)
 
 ### Investigación (campaña P1 en curso)
@@ -126,3 +138,5 @@
   exposiciones históricas preservadas); modelo
   `usdcad-4h-linear-live-v1`.
 - Regla de la casa: solo Paper/Demo, capital real jamás.
+
+Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
