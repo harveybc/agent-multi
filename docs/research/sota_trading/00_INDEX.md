@@ -48,6 +48,8 @@ TLOB (2025), Sirignano & Cont (QF 2019), Théate & Ernst TDQN (ESWA
 5. [05_TRADING_STRATEGY_EXECUTION.md](05_TRADING_STRATEGY_EXECUTION.md) — mecánica exacta de órdenes: apertura, sizing, apalancamiento, costes.
 6. [06_BROKERS_SIMULATORS_BACKTESTERS.md](06_BROKERS_SIMULATORS_BACKTESTERS.md) — dónde se ejecutó cada evaluación (backtester/simulador/broker).
 7. [07_METRICS_RESULTS.md](07_METRICS_RESULTS.md) — métricas y valores exactos reportados.
+8. [08_TRAINING_OPTIMIZATION.md](08_TRAINING_OPTIMIZATION.md) — régimen de entrenamiento, búsqueda de hiperparámetros, ensembles, re-entrenamiento.
+9. [09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md](09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md) — autocrítica severa del sistema propio contra este estado del arte (para Musashi).
 
 Cada archivo cubre TODOS los papers sin excepción y cierra con la
 sección **«Nuestros experimentos»** (estado a 2026-08-24).
