@@ -68,6 +68,6 @@ Registry validator: PASS {coverage heuristic_lint, files 9, sources 31}.
 ## Explicitly not done
 
 No B/A/R/C materialization; no GPU dispatch; P1 monitored, not
-altered (10/12 arms accepted at packet time). The rule-only baseline
+altered (9/12 arms accepted at packet time: 303 all, 404 all, 101 N+EN-W, 202 EN-W; running: 101 EN-F easy phase, 202 EN-F; queued: 202 N). The rule-only baseline
 formula unit tests authorized by the verdict are NOT yet written —
 queued behind this packet if you want them before your reproduction.
