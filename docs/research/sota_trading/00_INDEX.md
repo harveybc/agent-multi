@@ -56,6 +56,7 @@ Documentos de decisión (orden Musashi 2026-08-24, no son archivos de aspecto):
 - [10_GAP_MATRIX_DECISIONES.md](10_GAP_MATRIX_DECISIONES.md) — matriz de brechas WP2: seis decisiones abiertas del programa con mecanismo candidato, evidencia, similitud ETH H4, insumos, coste y falsación más barata por candidato.
 - Enmienda del plan de trabajo (WP3): [../../work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md](../../work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md) §23.
 - Especificaciones post-P1 (WP4, no lanzadas): [../../work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md](../../work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md).
+- Contrato estadístico (R07): [../../work_plan/41_STATISTICS_CONTRACT_2026_08_24.md](../../work_plan/41_STATISTICS_CONTRACT_2026_08_24.md).
 9. [09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md](09_AUTOCRITICA_COMPARATIVA_PARA_MUSASHI.md) — autocrítica severa del sistema propio contra este estado del arte (para Musashi).
 
 Cada archivo cubre TODOS los papers sin excepción y cierra con la
