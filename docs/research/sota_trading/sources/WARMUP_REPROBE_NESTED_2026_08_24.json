@@ -1,14 +1,73 @@
 {
- "schema": "agent_multi.warmup_reprobe.v1",
- "date": "2026-08-24",
- "path": "current nested context-prefix execution path (campaign seed101_N fit role)",
- "role": "fit_train (campaign-materialized, nested manifest)",
- "fit_context_rows": 0,
- "steps_probed": 400,
- "zero_fraction_at_reset": 1.0,
- "zero_fraction_step_50": 0.0238,
- "zero_fraction_step_150": 0.0238,
- "zero_fraction_step_300": 0.0119,
- "first_step_below_50pct_zeros": 2,
- "first_step_below_5pct_zeros": 2
+ "schema": "agent_multi.warmup_context_probe.v2",
+ "probe_sha256": "5ab262bc0b90363693a02ea91f774fe40ef432dd97119a2a845bbea017a3961a",
+ "code_root": "/home/harveybc/Documents/GitHub/.worktrees/am-p1-6e7bd128",
+ "code_identity": {
+  "commit": "6e7bd128f422939cba21d55b3eaed66739ef515f",
+  "dirty": false
+ },
+ "effective_config_sha256": "b9d42c93590abec74b88cb8b67a1b388217cba901b127b9e983e0baefb002620",
+ "arm_dir": "/home/harveybc/.local/share/agent-multi/l1_curriculum_campaign_20260823/seed101_N",
+ "phase": "normal",
+ "command": "/home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-sota-docs/tools/warmup_context_probe.py --arm-dir /home/harveybc/.local/share/agent-multi/l1_curriculum_campaign_20260823/seed101_N --phase normal --code-root /home/harveybc/Documents/GitHub/.worktrees/am-p1-6e7bd128 --steps 400 --out /home/harveybc/Documents/GitHub/.worktrees/agent-multi-satoshi-sota-docs/docs/research/sota_trading/sources/WARMUP_REPROBE_NESTED_2026_08_24.json",
+ "seed": 101,
+ "roles": {
+  "fit_train": {
+   "context_rows": 0,
+   "csv_sha256_verified": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+   "feature_denominator": 84,
+   "features_fully_zero_at_reset": 84,
+   "source_head_zero_fraction": 0.02247191011235955,
+   "steps_probed": 400,
+   "zero_fraction_at_reset": 1.0,
+   "zero_fraction_step_2": 0.0238,
+   "zero_fraction_step_50": 0.0238,
+   "zero_fraction_step_300": 0.0119,
+   "first_step_below_50pct_zeros": 2,
+   "first_step_below_5pct_zeros": 2
+  },
+  "train_monitor": {
+   "context_rows": 256,
+   "csv_sha256_verified": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+   "feature_denominator": 84,
+   "features_fully_zero_at_reset": 84,
+   "source_head_zero_fraction": 0.013699222126188418,
+   "steps_probed": 400,
+   "zero_fraction_at_reset": 1.0,
+   "zero_fraction_step_2": 0.0238,
+   "zero_fraction_step_50": 0.0,
+   "zero_fraction_step_300": 0.0,
+   "first_step_below_50pct_zeros": 2,
+   "first_step_below_5pct_zeros": 2
+  },
+  "inner_validation": {
+   "context_rows": 256,
+   "csv_sha256_verified": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+   "feature_denominator": 84,
+   "features_fully_zero_at_reset": 84,
+   "source_head_zero_fraction": 0.012100259291270527,
+   "steps_probed": 400,
+   "zero_fraction_at_reset": 1.0,
+   "zero_fraction_step_2": 0.0238,
+   "zero_fraction_step_50": 0.0,
+   "zero_fraction_step_300": 0.0238,
+   "first_step_below_50pct_zeros": 2,
+   "first_step_below_5pct_zeros": 2
+  },
+  "outer_validation": {
+   "context_rows": 256,
+   "csv_sha256_verified": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+   "feature_denominator": 84,
+   "features_fully_zero_at_reset": 84,
+   "source_head_zero_fraction": 0.013396715643906655,
+   "steps_probed": 400,
+   "zero_fraction_at_reset": 1.0,
+   "zero_fraction_step_2": 0.0238,
+   "zero_fraction_step_50": 0.0,
+   "zero_fraction_step_300": 0.0,
+   "first_step_below_50pct_zeros": 2,
+   "first_step_below_5pct_zeros": 2
+  }
+ },
+ "interpretation_note": "fit_train has context_rows=0 BY DESIGN (the fit role starts at dataset head; context prefixes exist to protect evaluation partitions). source_head_zero_fraction near the observed reset zero fraction indicates dataset-head indicator warmup, not a scaler dead zone."
 }
