@@ -1,118 +1,158 @@
-# 40. Post-P1 Screen Specifications (WP4, prepared NOT launched)
+# 40. Post-P1 Screen Specifications (WP4, prepared NOT launched) — rev 2
 
-Authority: Musashi SOTA correction and roadmap order 2026-08-24 (@6fef96ac),
-WP4. Status of every spec here: **PREPARED / NOT LAUNCHED**. Launch requires
-(a) P1 terminal seal, (b) Musashi design verification, (c) explicit dispatch
-authorization for anything touching GPU. Nothing below mutates the running
-campaign.
+Authority: Musashi SOTA correction and roadmap order 2026-08-24
+(@6fef96ac) WP4, amended per
+`AUDIT_SATOSHI_SOTA_RETURN_WP1_WP4_2026_08_24.md` (R01, R03, R04, R08)
+and `MUSASHI_TO_GENERAL_SATOSHI_SOTA_RETURN_CORRECTION_ORDER_2026_08_24`
+(C1, C3, C5). Status of every spec: **PREPARED / NOT LAUNCHED**. Launch
+requires (a) P1 terminal seal, (b) Musashi design verification,
+(c) explicit dispatch authorization for anything touching GPU. Nothing
+below mutates the running campaign.
 
-## Shared contract (applies to all four screens)
+## Shared contract (all screens)
 
 - **Data**: pinned ETH H4 dataset
   `ethusdt_4h_tech_stat_full_model_ready.csv`
   sha256 `1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f`.
-- **Folds**: rolling development origins (document 38 §3.3 spirit, brought
-  forward): three origins — fit≤2021→score 2022; fit≤2022→score 2023;
-  fit≤2023→score 2024. NEVER 2024-only. **Sealed 2025 is absent from every
-  materialized config** — asserted by the materializer
-  (`sealed_test structurally unmaterialized`), not by prose.
-- **Seeds**: paired seeds {101, 202, 303, 404} across all arms of a screen;
-  same seed = same data order/init draw wherever the arm allows it. Four
-  seeds SCREEN mechanisms; champion selection needs more (doc 38 §23.4).
-- **Costs**: full cost engine on every arm — taker fee + half-spread +
-  configured slippage; identical cost config hash across arms of a screen,
-  bound into each arm return.
-- **Mandatory per-arm evidence**: net return, Sharpe (net), max drawdown,
-  turnover (sum |Δposition|), activity (trades/scored year), per-bar return
-  series (retained for SPA/DSR), inference latency p50/p95 per decision,
-  deadline evidence (decisions delivered inside the H4 bar), effective
-  config hash, code identity (immutable worktree commit), replay/env
-  statistics where RL is involved.
-- **SL/TP coexistence (order clause)**: native SL/TP remain a safety
-  envelope on every live/demo execution and are SIMULATED identically in
-  every arm here; a learned early-close or target-position action operates
-  INSIDE that envelope and never disables it. Protective closes are logged
-  as `envelope_close`, agent closes as `policy_close`, and both enter
-  turnover/activity accounting.
-- **Statistics**: paired per-seed deltas with bootstrap intervals; IQM
-  alongside mean; every arm x seed logged as a trial for DSR/SPA counting.
+- **Folds**: three rolling development origins — fit≤2021→score 2022;
+  fit≤2022→score 2023; fit≤2023→score 2024. NEVER 2024-only. **Sealed
+  2025 absent from every materialized config**, enforced by
+  `tools/post_p1_screen_contract.check_sealed_absence` (refusal, not
+  prose) with negative tests in
+  `tests/test_post_p1_screen_contract.py`.
+- **Causal eligibility (C1)**: every policy entering an origin's
+  comparison must satisfy
+  `check_causal_eligibility`: fit AND selection information strictly
+  before that origin's score start. A model whose fit/selection
+  timestamp reaches or exceeds the score start is REFUSED
+  (negative-tested). Frozen P1 artifacts are admissible ONLY under the
+  explicit `diagnostic_2024` label, on the 2024 diagnostic, and never
+  enter the three-origin G1 claim.
+- **Seeds**: paired {101, 202, 303, 404} across all arms; same seed =
+  same init/data-order draw where the arm permits. Four seeds screen
+  mechanisms; they never select champions (doc 38 §23.4).
+- **Costs**: full cost engine every arm — taker fee + half-spread +
+  configured slippage; identical cost-config hash across a screen's
+  arms, bound into each arm return.
+- **Per-arm evidence**: net return, net Sharpe, max drawdown, turnover
+  (Σ|Δposition|), activity (trades/scored year), per-bar return series
+  retained (statistics contract, doc 41), inference latency p50/p95,
+  deadline evidence (decision inside the H4 bar), effective config
+  hash, code identity (immutable worktree commit + launch-identity
+  manifest with literal digest, finding-315 pattern), replay/env stats
+  where RL is involved.
+- **SL/TP coexistence**: native SL/TP remain the safety envelope in
+  every arm, simulated identically; learned target-position/early-close
+  acts INSIDE the envelope and never disables it. `envelope_close` and
+  `policy_close` are logged separately; both enter turnover/activity.
+- **Trial accounting (C5)**: every effective option — each arm, seed,
+  calibrated threshold, lookback — is one trial in the DSR/SPA ledger
+  (doc 41). No option may be chosen after seeing results unless it was
+  predeclared here as a comparison.
 
 ## Screen B — Same-harness economic baselines (CPU-only, first post-P1)
 
-- **Question**: does any P1-surviving SAC policy add value over mechanical
+- **Question**: does a causally eligible SAC add value over mechanical
   rules under identical costs and folds?
-- **Arms (5)**: B0 flat (always out); B1 buy-and-hold (always long 1.0);
-  B2 TSMOM sign of k-bar return, k ∈ {30d, 90d} in H4 bars, chosen ON
-  DEVELOPMENT FOLDS ONLY and reported both; B3 volatility-scaled rule
-  (TSMOM sign x target_vol/realized_vol, clamped [−1,1]); B4 the frozen P1
-  champion policies evaluated inference-only on the same folds.
-- **Compute class**: CPU (`CUDA_VISIBLE_DEVICES=""`); no training, only
-  rule evaluation + frozen-policy inference.
-- **Decision rule (gate G1, doc 38 §23.3)**: SAC "adds value" only if its
-  paired net Sharpe beats EVERY baseline on ≥2 of 3 origins and ≥3 of 4
-  seeds, and Hansen-SPA over per-bar excess returns vs the best baseline
-  does not classify the win as best-of-N noise. Otherwise architecture work
-  stays frozen and screen A becomes diagnosis, not scaling.
+- **Rule arms (fully bound, C5/R08)**:
+  - B0 flat: position 0 always.
+  - B1 buy-and-hold: position +1.0 always, no leverage.
+  - B2a TSMOM-30d: position = sign(close_t−1 − close_t−181) (180 H4
+    bars); B2b TSMOM-90d: same with 540 bars. BOTH run as separate
+    arms; neither is selected post hoc; each is a trial.
+  - B3 vol-scaled TSMOM: position = sign_B2a × min(1, σ_target/σ_real),
+    σ_target = 15% annualized; σ_real = std of the last 180 per-bar log
+    returns × sqrt(2190) (H4 bars/year), computed through bar t−1
+    (lag 1); leverage cap 1.0; no other free parameter.
+- **SAC arm (C1)**: B4 causal per-origin SAC — trained independently AT
+  EACH origin using only that origin's fit data, under the frozen P1
+  recipe (contract sha 2b31b7770f815b75 hyperparameters, fixed LR 3e-4,
+  same stopping), selection restricted to data before the origin's
+  score start. This is GPU work: Screen B's rule arms are CPU-only and
+  can run first; B4 requires dispatch authorization and may follow.
+- **Diagnostic annex (non-G1)**: frozen P1 champions, labeled
+  `diagnostic_2024`, evaluated inference-only on the 2024 fold ONLY;
+  reported in an annex; excluded from G1 by
+  `check_causal_eligibility` (tested).
+- **Decision rule (gate G1)**: SAC "adds value" only if B4's paired net
+  Sharpe beats EVERY rule arm on ≥2 of 3 origins and ≥3 of 4 seeds, and
+  the doc-41 SPA procedure over per-bar excess returns vs the best rule
+  arm does not attribute the win to best-of-N noise.
 
-## Screen A — Action-contract screen
+## Screen A — Action semantics, staged (C3/R03)
 
-- **Question**: which action semantics does the H4 problem actually pay
-  for? (SOTA-03: current sign-only threshold-0 may collapse magnitude and
-  induce switching.)
-- **Arms (4)**, identical SAC trunk, data and parameter budget:
-  A1 sign-only target (current contract, control);
-  A2 continuous target exposure in [−1,1] with bounded risk sizing and
-  |Δposition|-cost internalized in reward (DMN-style);
-  A3 ternary long/flat/short with calibrated deadband + hysteresis (enter
-  |a|>θ_in, exit |a|<θ_out, θ calibrated on development folds only);
-  A4 explicit close/hold head while a position is open (doc 39 semantics)
-  under the same envelope.
-- **Compute class**: GPU (training); requires dispatch authorization.
-- **Decision rule**: winner = best paired net-Sharpe with turnover reported
-  next to it; a win produced solely by lower turnover at equal gross is a
-  VALID win (costs are real). Winner's contract is FROZEN before screen R.
+- **Question**: which action semantics does the H4 problem pay for —
+  decomposed so each stage varies ONE object.
+- **Stage A0 — mapping only**: one scalar actor output a∈[−1,1], one
+  common economic reward and sizing engine; three PREDECLARED mappings
+  of the same output: (i) sign(a); (ii) continuous target = a;
+  (iii) ternary with FIXED predeclared deadband θ_in=0.3, θ_out=0.1
+  (hysteresis). No calibration in A0; the fixed thresholds are part of
+  the spec, chosen before any result. Identical trunk, budget, data.
+- **Stage A1 — calibration of the surviving mapping**: only if a
+  thresholded mapping survives A0. Deadband/hysteresis grid
+  θ_in ∈ {0.2, 0.3, 0.4} × θ_out ∈ {0.05, 0.1, 0.2}, calibrated on
+  development folds only; EVERY grid point is a counted trial; the
+  chosen pair is frozen before any later screen.
+- **Stage A2 — mechanism change**: explicit close/hold head (doc 39
+  semantics) as a SEPARATE capacity-matched comparison against the
+  A0/A1 winner (±5% parameter tolerance, matched update budget). Runs
+  only after A0/A1 conclude.
+- **Compute**: GPU; each stage needs its own dispatch authorization.
+- **Decision rule**: per stage, paired net Sharpe with turnover
+  reported; a win from lower turnover at equal gross is valid.
 
-## Screen R — Retraining cadence screen
+## Screen R — Retraining cadence, method held fixed (C3/R04)
 
-- **Question**: does rolling adaptation add net value over a frozen policy,
-  and at what cadence? (SOTA-07 — central to the owner's business model.)
-- **Arms (4)**: R0 frozen control; R168 weekly refresh; R24 daily; R12
-  twice-daily. Each refresh: bounded fine-tune on the trailing window under
-  the frozen action contract; every Rx is paired with R0 on the same folds
-  and seeds. Update variants within an arm (warm vs shrink-perturb warm
-  start, doc 10 gap matrix D5) enter only as a nested sub-comparison if
-  budget allows, else warm-start only.
-- **Compute class**: GPU for refresh training; refresh runtime p50/p95
-  measured and published — 6h cadence enters ONLY after p95 leaves a safe
-  deadline margin (order clause).
-- **Decision rule**: incremental value after costs vs paired frozen
-  control, plus stability (variance of rolling Sharpe), deadline misses,
-  state continuity, and degradation-of-frozen curves.
+- **Question**: does rolling adaptation add net value, at what cadence
+  — with the update method FROZEN so cadence is the only factor.
+- **Frozen update contract (bound before dispatch)**: warm-start
+  continuation from the running policy (no reinit), optimizer state
+  carried, replay buffer carried and trimmed to the trailing window,
+  trailing window = 2,190 H4 bars (1 year) ending at the refresh bar,
+  update budget = 5,000 gradient steps per refresh regardless of
+  cadence, batch and LR exactly the frozen P1 recipe values. Equal
+  TOTAL compute across arms is achieved by accounting: cadences with
+  more refreshes use the same per-refresh budget; total steps are
+  reported and enter the comparison as a covariate, never as a tuned
+  knob.
+- **Arms**: R0 frozen control; R168 weekly; R24 daily; R12 twice-daily.
+  Each Rx paired with R0 on the same folds/seeds.
+- **Deferred screen R2 (separate, later)**: update METHOD at the
+  winning cadence only — fresh reinit vs warm vs shrink-and-perturb
+  (λ, σ predeclared in its own spec). Not part of Screen R.
+- **Compute**: GPU; refresh runtime p50/p95 measured and published; 6h
+  cadence enters only after p95 leaves a safe deadline margin.
+- **Decision rule**: incremental net value vs paired frozen control,
+  stability (variance of rolling Sharpe), deadline misses, state
+  continuity, degradation-of-frozen curves.
 
-## Screen C — Capacity-matched architecture screen
+## Screen C — Capacity-matched architecture (C5/R08)
 
-- **Question**: does the grouped extractor earn its complexity at matched
-  capacity? (SOTA-04: GKX warning — shallow dominated deep in low-signal
-  finance; 18,085 rows.)
-- **Arms (3+1)**: C1 flat MLP (control, current); C2 small shared causal
-  temporal baseline (single TCN or GRU over all families); C3 grouped
-  extractor (TCN/Transformer/GRU branch per family) at the SAME approximate
-  parameter budget as C2; C4 grouped+fusion ONLY IF C3 wins across origins
-  and seeds.
-- **Mandatory extra evidence**: parameter count, FLOPs/decision, wall time,
-  inference latency next to every economic metric. No component is called
-  state of the art because its family is modern.
-- **Compute class**: GPU; last screen before DOIN domain materialization.
-- **Decision rule (gate G2)**: C3 must beat C1 AND C2 on paired net Sharpe
-  across ≥2 of 3 origins and ≥3 of 4 seeds at matched capacity; otherwise
-  the simpler winner feeds the DOIN domain.
+- **Question**: does the grouped extractor earn its complexity at
+  matched capacity? (GKX warning; 18,085 rows.)
+- **Arms**: C1 flat MLP (current control); C2 small shared causal
+  **GRU** over all feature families — GRU is chosen NOW, before any
+  result (single recurrent layer, hidden size set to meet the parameter
+  budget); C3 grouped extractor (TCN/Transformer/GRU branch per family)
+  at C2's parameter budget **±5%**, with matched training-update budget
+  (same gradient steps × batch); C4 grouped+fusion ONLY IF C3 wins
+  across origins and seeds.
+- **Mandatory evidence**: parameter count, FLOPs/decision, wall time,
+  inference latency beside every economic metric.
+- **Decision rule (gate G2)**: C3 beats C1 AND C2 on paired net Sharpe
+  across ≥2 of 3 origins and ≥3 of 4 seeds at matched capacity;
+  otherwise the simpler winner feeds the DOIN domain.
 
-## Launch preconditions checklist (every screen)
+## Launch preconditions (every screen)
 
 1. P1 sealed and aggregated; inert treatments classified per seed.
-2. Musashi has verified the screen design (this document + any deltas).
-3. GPU dispatch authorization explicit where applicable (B is CPU-only).
-4. Immutable worktree + launch-identity manifest with literal digest guard
-   (finding 315 pattern) on every sequential wrapper.
-5. Materialized configs re-validated: sealed-2025 absent; nested-contract
-   sha bound; effective config + cost config hashes in every arm return.
+2. Musashi has verified this revision.
+3. Explicit GPU dispatch authorization where applicable (Screen B rule
+   arms are CPU-only).
+4. Immutable worktree + launch-identity manifest, literal digest guard.
+5. Materialized configs pass `check_sealed_absence` and every entering
+   policy passes `check_causal_eligibility`; effective config + cost
+   config hashes bound into every arm return.
+6. Statistics contract (doc 41) predeclared parameters bound into the
+   screen's aggregation config.
