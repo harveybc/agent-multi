@@ -9,48 +9,48 @@
 - **Búsqueda de hiperparámetros**: sí, sistemática — cada modelo
   ajusta sus hiperparámetros (λ de L1, LR, profundidad de árboles,
   nº de árboles, features/split…) sobre la VENTANA DE VALIDACIÓN de
-  12 años, separada del test.
+  12 años, separada del test. Fuente: [GKX2020 loc:§1.2,§2.2], [GKX2020-IA loc:Tab.A.5]
 - **Ensembles**: 10 redes con semillas aleatorias distintas,
-  pronósticos PROMEDIADOS — reduce varianza de inicialización.
+  pronósticos PROMEDIADOS — reduce varianza de inicialización. Fuente: [GKX2020 loc:§1.2,§2.2], [GKX2020-IA loc:Tab.A.5]
 - **Re-entrenamiento**: anual, ventana de train expansiva +
-  validación rodante — 30 re-ajustes en el periodo de test.
+  validación rodante — 30 re-ajustes en el periodo de test. Fuente: [GKX2020 loc:§1.2,§2.2], [GKX2020-IA loc:Tab.A.5]
 - **Early stopping**: paciencia 5 sobre validación; batch-norm; 100
-  épocas máximo; batch 10.000.
+  épocas máximo; batch 10.000. Fuente: [GKX2020 loc:§1.2,§2.2], [GKX2020-IA loc:Tab.A.5]
 
 Fuentes: [GKX2020 loc:§1.2,§2.2], [GKX2020-IA loc:Tab.A.5]
 
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **Búsqueda**: mínima y declarada — arquitectura LSTM fijada (25
   unidades) sin grid search reportado; la logística sí busca L2 en
-  100 valores con 5-fold CV.
+  100 valores con 5-fold CV. Fuente: [FK2018 loc:§3.3-3.4]
 - **Ensembles**: NO para el LSTM (una red por periodo de estudio).
 - **Re-entrenamiento**: CADA 250 días de trading (23 veces) — modelo
   fresco por periodo de estudio, entrenado sobre los 750 días
   previos.
 - **Early stopping**: split interno 80/20, paciencia 10, máx 1.000
-  épocas, restaura mejores pesos.
+  épocas, restaura mejores pesos. Fuente: [FK2018 loc:§3.3-3.4]
 
 Fuente: [FK2018 loc:§3.3-3.4]
 
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - **Búsqueda**: hiperparámetros de la Tabla 1 fijos [procedimiento de
   selección NO DECLARADO]; γ=0,3 notablemente bajo (horizonte
-  efectivo corto, deliberado para trading).
+  efectivo corto, deliberado para trading). Fuente: [ZZR2020 loc:Tab.1,§4]
 - **Ensembles**: no de semillas; sí agregación por CLASE de activo
   (un modelo por clase, mejor que por contrato).
 - **Re-entrenamiento**: cada 5 años con ventana expansiva; parámetros
-  CONGELADOS durante los 5 años de trading OOS.
+  CONGELADOS durante los 5 años de trading OOS. Fuente: [ZZR2020 loc:Tab.1,§4]
 - Replay 5.000 (pequeño), target-network cada 1.000 pasos.
 
 Fuente: [ZZR2020 loc:Tab.1,§4]
 
 ## <a name="p4"></a>P4 — DeepLOB
 - **Búsqueda**: no reportada como grid; arquitectura diseñada por
-  estructura del problema; LR 0,01/ε=1 de ADAM declarados.
+  estructura del problema; LR 0,01/ε=1 de ADAM declarados. Fuente: [DEEPLOB2019 loc:§IV-D entrenamiento]
 - **Ensembles**: no.
 - **Re-entrenamiento**: no rodante — un entrenamiento por dataset
   (FI-2010: ~100 épocas; LSE: ~40), early-stop paciencia 20 sobre
-  accuracy de validación.
+  accuracy de validación. Fuente: [DEEPLOB2019 loc:§IV-D entrenamiento]
 - Transferencia sin fine-tuning a acciones nunca vistas (el hallazgo
   de universalidad sustituye al re-entrenamiento).
 
@@ -61,7 +61,7 @@ Fuente: [DEEPLOB2019 loc:§IV-D entrenamiento]
   vs ~63 días óptimo del LSTM-DMN); [grid completo en apéndices — NO
   EXTRAÍDO].
 - **Ensembles/semillas**: CADA experimento repetido 5 VECES, medias
-  reportadas — control explícito de varianza de semilla.
+  reportadas — control explícito de varianza de semilla. Fuente: [WOOD2022 loc:§V protocolo]
 - **Re-entrenamiento**: walk-forward expansivo cada 5 años
   (1990–95→test 95–00; …→2020).
 - Pérdida = −Sharpe directamente (optimización del objetivo económico
@@ -73,17 +73,17 @@ Fuente: [WOOD2022 loc:§V protocolo]
 - **Deng FDDR**: 5 entrenamientos por ventana, se queda el mejor en
   validación; re-entrenamiento ONLINE cada 5.000 barras con
   warm-start; inicialización por autoencoders; 100 épocas, LR decay
-  0,97.
+  0,97. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Jiang EIIE**: hiperparámetros elegidos UNA vez sobre un rango de
   CV previo a los tres backtests [valores NO TABULADOS]; batches con
   inicio muestreado geométricamente (favorece datos recientes);
   entrenamiento online continuo durante el backtest.
 - **Kronos**: pre-entrenamiento masivo único (12B velas) + escalado
   de familia (24,7M→499M params); warmup 15k pasos, coseno; N=10
-  rollouts MC en inferencia.
+  rollouts MC en inferencia. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Sirignano-Cont**: SGD asíncrono distribuido (~25 nodos GPU
   universal; ~500 para por-acción); hallazgo: entrenar con TODA la
-  historia (19 meses) > ventanas recientes en el 100% de los casos.
+  historia (19 meses) > ventanas recientes en el 100% de los casos. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 
 Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 
@@ -93,10 +93,10 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   screens pareados), net_arch (256,256) heredada, batch 64, buffer
   200k, γ/τ en defaults del plugin: NINGUNO buscado sistemáticamente.
   El plan DOIN (optimización distribuida de genes) existe pero NO ha
-  corrido para esta línea.
+  corrido para esta línea. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Ensembles**: no hay ensemble de semillas por brazo — cada brazo
   de la campaña es UNA semilla; la campaña usa 4 semillas como
-  réplicas direccionales, no como ensemble de política.
+  réplicas direccionales, no como ensemble de política. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Re-entrenamiento**: NO HAY esquema rodante — un único
   entrenamiento con fit→2022 y evaluación outer en 2024 (brecha de
   ~2 años entre fin de train y evaluación de decisión, sin
@@ -109,6 +109,6 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   la campaña; la parametrización actual de la relajación demostró
   ser INERTE (148/148 tensores idénticos easy vs normal a escala
   real en las semillas verificadas) — el factor experimental activo
-  restante es la continuidad de replay.
+  restante es la continuidad de replay. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 
 Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

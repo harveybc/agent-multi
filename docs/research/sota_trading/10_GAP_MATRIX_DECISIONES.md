@@ -26,14 +26,14 @@ continua vs ternario con deadband/histéresis vs close/hold explícito.
   head de SAC). Insumos faltantes: ninguno. Coste: trivial.
   Falsación más barata: añadir |Δposición|·fee al reward del SAC a
   fees H4 realistas; si el Sharpe neto no mejora, deadband/close-hold
-  tampoco pagarán. Colisión: compite con el screen de acción WP4-B.
+  tampoco pagarán. Colisión: compite con el screen de acción WP4-B. Fuente: [LIM2019 loc:abstract+§métodos]
 - **Candidato B — no-trade region (teoría)**: la anchura óptima de la
   zona de no-operación crece con el coste incluso para costes
   pequeños. Justifica histéresis a priori. Falsación: incluida en el
   brazo ternario del screen de acción.
 - **Candidato C — continuo vs discreto en cripto** (TD3 BTC): reclama
   continuo > discreto; venue débil, costes no declarados —
-  evidencia de baja calidad, solo orientativa.
+  evidencia de baja calidad, solo orientativa. Fuente: [LIM2019 loc:abstract+§métodos]
 
 Fuentes: [LIM2019 loc:abstract+§métodos], [MUHLEKARBE2017 loc:§1
 no-trade region], [ZZR2020 loc:§3 vol-scaling], [MAJIDI2022
@@ -48,7 +48,7 @@ crítico distribucional CVaR vs SAC restringido lagrangiano.
   errático; familia DQN discreta. Similitud: estructural buena (un
   instrumento volátil). Falsación: crítico cuantílico en nuestro SAC
   con dos α; si los drawdowns no ordenan monótonos con α, el dial no
-  funciona en H4.
+  funciona en H4. Fuente: [HECHE2025 loc:abstract+resultados], [WCSAC2021 loc:§método]
 - **Candidato B — WCSAC** (safety-critic distribucional + peso
   lagrangiano adaptativo): receta canónica para "SAC + restricción de
   drawdown en CVaR". En contra: cero experimentos financieros;
@@ -57,7 +57,7 @@ crítico distribucional CVaR vs SAC restringido lagrangiano.
   lagrangiano en expectativa, un lote de semillas; si las colas de
   drawdown no se estrechan a retorno similar, no paga.
   Colisión: interactúa con la envolvente SL/TP viva — el screen debe
-  declarar cómo coexisten (WP4).
+  declarar cómo coexisten (WP4). Fuente: [HECHE2025 loc:abstract+resultados], [WCSAC2021 loc:§método]
 
 Fuentes: [HECHE2025 loc:abstract+resultados], [WCSAC2021 loc:§método]
 
@@ -90,13 +90,13 @@ de régimen en el estado.
   sustituir encoders por GRUs separadas a 2 longitudes de contexto;
   si el PnL de validación no mejora, la ventana ya resume la
   historia. Colisión: compite con el extractor agrupado — entra al
-  screen de arquitectura, no antes.
+  screen de arquitectura, no antes. Fuente: [NI2022 loc:abstract+§5], [MACRI2025 loc:abstract]
 - **Candidato B — probabilidades de régimen en el estado** (Macrì):
   prob-DDPG (posterior de régimen) > forecast puntual > embedding
   opaco. Falsación barata: HMM 2–3 estados sobre retornos/vol H4,
   añadir posteriors al estado vs (a) nada y (b) forecast; su
   resultado predice el orden. Insumos: solo un filtro HMM — lo
-  podemos construir en CPU.
+  podemos construir en CPU. Fuente: [NI2022 loc:abstract+§5], [MACRI2025 loc:abstract]
 
 Fuentes: [NI2022 loc:abstract+§5], [MACRI2025 loc:abstract]
 
@@ -129,7 +129,7 @@ formales.
   nuestro cubo OLAP ya registra trials: el insumo EXISTE. Falsación/
   adopción: computar DSR del campeón vigente con el N verdadero; si
   p<0,95, el campeón es indistinguible de ruido best-of-N — ese
-  cálculo es EL experimento más barato e importante del programa.
+  cálculo es EL experimento más barato e importante del programa. Fuente: [DSR2014 loc:eq. PSR/DSR §deflated], [WHITE2000 loc:abstract]
 - **Candidato B — Reality Check / SPA de Hansen**: bootstrap del
   máximo sobre el panel completo de retornos por barra de TODOS los
   candidatos vs benchmark; SPA estudentiza y es más potente.
@@ -142,5 +142,5 @@ formales.
   intervalos estratificados es la práctica correcta. Adopción:
   recomputar el ranking de brazos vigente con IQM/CIs.
 
-Fuentes: [DSR2014 loc:fórmula DSR], [WHITE2000 loc:abstract],
+Fuentes: [DSR2014 loc:eq. PSR/DSR §deflated], [WHITE2000 loc:abstract],
 [HANSEN2005 loc:abstract], [RLIABLE2021 loc:abstract+§3]

@@ -14,7 +14,7 @@
   test (1987–2016). Re-ajuste UNA vez al año; train expansivo,
   validación rodante de 12 años. SIN cross-validation (orden temporal
   preservado). Objetivo: retorno excedente del mes siguiente
-  (regresión).
+  (regresión). Fuente: [GKX2020 loc:§2.1,§1.2]
 
 Fuente: [GKX2020 loc:§2.1,§1.2]
 
@@ -23,7 +23,7 @@ Fuente: [GKX2020 loc:§2.1,§1.2]
   sobre el conjunto de entrenamiento del periodo de estudio.
 - **Etiqueta**: binaria — clase 1 si el retorno t+1 de la acción ≥
   mediana cross-seccional de todas las acciones en t+1 (Takeuchi &
-  Lee 2013).
+  Lee 2013). Fuente: [FK2018 loc:§3.1-3.2]
 - **Split**: periodos de estudio rodantes de 750 días train + 250 días
   trading NO solapados; 23 periodos 1990–2015; ~380.000 secuencias
   solapadas de 240 días por periodo (~255k train, ~125k OOS); dentro
@@ -34,14 +34,14 @@ Fuente: [FK2018 loc:§3.1-3.2]
 ## <a name="p3"></a>P3 — Zhang-Zohren-Roberts DRL
 - **Volatility scaling en todo**: posiciones escaladas por
   σ_target/σ_{t−1} (σ = EWM std 60 días) — normaliza exposición y
-  recompensas entre 50 contratos de precios heterogéneos.
+  recompensas entre 50 contratos de precios heterogéneos. Fuente: [ZZR2020 loc:§3 recompensa,§4]
 - **Recompensa** (aditiva): R_t = μ[A_{t−1}·(σ_tgt/σ_{t−1})·r_t −
   bp·p_{t−1}·|Δ posición escalada|], con **bp = 0,0020 (20 puntos
   básicos) EN ENTRENAMIENTO** — coste deliberadamente punitivo como
-  regularizador de rotación.
+  regularizador de rotación. Fuente: [ZZR2020 loc:§3 recompensa,§4]
 - **Split**: ventana expansiva, re-entrenamiento cada 5 años, 5 años
   fijos de trading OOS cada vez; test 2011–2019. Un modelo por CLASE
-  de activo (agrupar dentro de la clase mejoró resultados).
+  de activo (agrupar dentro de la clase mejoró resultados). Fuente: [ZZR2020 loc:§3 recompensa,§4]
 
 Fuente: [ZZR2020 loc:§3 recompensa,§4]
 
@@ -56,7 +56,7 @@ Fuente: [ZZR2020 loc:§3 recompensa,§4]
   futuros) porque las etiquetas Eq. 3 en LSE eran "rather stochastic".
   Clase por umbral α: FI-2010 α=0,002; LSE α elegido para balancear
   clases [valor numérico NO DECLARADO]. Horizontes k = 10/20/50/100
-  eventos.
+  eventos. Fuente: [DEEPLOB2019 loc:Eq.3-4,§III-B]
 - **Split LSE**: 6 meses train / 3 validación / 3 test (temporal).
 
 Fuente: [DEEPLOB2019 loc:Eq.3-4,§III-B]
@@ -64,13 +64,13 @@ Fuente: [DEEPLOB2019 loc:Eq.3-4,§III-B]
 ## <a name="p5"></a>P5 — Momentum Transformer
 - **Normalización**: retornos escalados por σ ex-ante (EWM 60 días);
   el PORTAFOLIO se lleva a volatilidad objetivo 15% anualizada
-  (convención TSMOM).
+  (convención TSMOM). Fuente: [WOOD2022 loc:§III Eq.11,§V]
 - **Pérdida = objetivo de trading**: Sharpe anualizado negativo de los
   retornos vol-escalados del portafolio (Eq. 11) — sin etiqueta de
-  predicción; supervisión directa sobre la economía.
+  predicción; supervisión directa sobre la economía. Fuente: [WOOD2022 loc:§III Eq.11,§V]
 - **Split**: walk-forward expansivo — train/val 1990–95 → test
   1995–2000; expandir → test 2000–05; … hasta 2020. CADA experimento
-  repetido 5 veces (semillas), medias reportadas.
+  repetido 5 veces (semillas), medias reportadas. Fuente: [WOOD2022 loc:§III Eq.11,§V]
 
 Fuente: [WOOD2022 loc:§III Eq.11,§V]
 
@@ -87,11 +87,11 @@ Fuente: [WOOD2022 loc:§III Eq.11,§V]
   interna en backtests.
 - **Kronos**: tokenizador BSQ (autoencoder transformer 3+3 capas,
   d=256, k=20 bits, subtokens jerárquicos coarse/fine); corte
-  temporal ESTRICTO train ≤ jun 2024 / test ≥ jul 2024.
+  temporal ESTRICTO train ≤ jun 2024 / test ≥ jul 2024. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **TLOB**: capa BiN (normalización bilineal APRENDIDA) como entrada;
   etiquetado propio desacoplando suavizado de horizonte (w₊/w₋ con
   desplazamiento h) — OJO: infla F1 de horizonte largo vs etiquetas
-  clásicas FI-2010.
+  clásicas FI-2010. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Sirignano-Cont**: hallazgo clave — normalizaciones estándar (por
   volatilidad, nivel de precio, spread) NO mejoran el entrenamiento;
   particionar por sector/tick-size tampoco.
@@ -108,21 +108,21 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   provenían de las filas-cabecera del dataset fuente (warmup de
   indicadores rellenado a cero EN LOS DATOS). Los probes de gradiente
   deben evitar la cabecera del dataset, no "42 días por episodio".
-  Evidencia: sources/WARMUP_REPROBE_NESTED_2026_08_24.json.
+  Evidencia: sources/WARMUP_REPROBE_NESTED_2026_08_24.json. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Splits**: manifiesto de roles ANIDADO verificado (contrato
   `eth_nested_split_contract_v1.json`): fit_train→2022 /
   train_monitor 2022 / inner_validation 2023 / outer_validation 2024
   / sealed_test 2025 estructuralmente inmaterializado. Filas de
   contexto causal (context prefixes) inicializan la observación pero
   JAMÁS puntúan ni actualizan (wrapper de prefijo instalado antes del
-  rollout). Hash del CSV re-verificado antes de cada evaluación outer.
+  rollout). Hash del CSV re-verificado antes de cada evaluación outer. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Recompensa/selección**: recompensa por paso económica del env +
   objetivo episódico de actividad/economía aceptado (sentinela −100
   SOLO a episodios con cero trades; NOP intra-episodio jamás
   penalizado; transformación de pérdida acotada m/(1+m)); selección
   de checkpoints por comparador jerárquico pareado
   (`paired_generalization_weekly_v1`) sobre monitor 2022 + inner
-  2023; coste de transacción del env dentro de la recompensa.
+  2023; coste de transacción del env dentro de la recompensa. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Anti-lookahead estructural**: sellado 2025 inaccesible fuera de
   modo release; evaluación outer post-selección únicamente; holdout
   de 40 días renombrado `diagnostic_holdout` en la ruta de screens.

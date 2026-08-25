@@ -10,7 +10,7 @@
   (61 de actualización anual, 13 trimestral, 20 mensual — familias:
   momentum/reversal, liquidez, volatilidad, valoración, fundamentales)
   × (8 predictores macro Welch-Goyal + constante) + 74 dummies de
-  industria (2 primeros dígitos SIC).
+  industria (2 primeros dígitos SIC). Fuente: [GKX2020 loc:§2.1]
 - Los 8 macro: dividend-price (dp), earnings-price (ep), book-market
   (bm), net equity expansion (ntis), T-bill (tbl), term spread (tms),
   default spread (dfy), varianza del mercado (svar).
@@ -21,9 +21,9 @@ Fuente: [GKX2020 loc:§2.1]
 ## <a name="p2"></a>P2 — Fischer-Krauss
 - **LSTM: UNA sola feature** — el retorno simple de 1 día
   estandarizado — presentada como SECUENCIA de 240 pasos (~1 año
-  bursátil). Dimensión de entrada: 1×240.
+  bursátil). Dimensión de entrada: 1×240. Fuente: [FK2018 loc:§2.1,§3.1]
 - Benchmarks sin memoria (RF/DNN/logística): 31 retornos acumulados
-  multi-periodo con m ∈ {1,…,20} ∪ {40,60,…,240}.
+  multi-periodo con m ∈ {1,…,20} ∪ {40,60,…,240}. Fuente: [FK2018 loc:§2.1,§3.1]
 
 Fuente: [FK2018 loc:§2.1,§3.1]
 
@@ -36,7 +36,7 @@ Fuente: [FK2018 loc:§2.1,§3.1]
   3. indicadores MACD multi-escala (Baz et al.): q_t = (m(S) −
      m(L))/std(precio 63d); MACD = q_t/std(q 252d); escalas cortas
      S∈{8,16,32}, largas L∈{24,48,96};
-  4. RSI con lookback de 30 días.
+  4. RSI con lookback de 30 días. Fuente: [ZZR2020 loc:§3 estado]
 
 Fuente: [ZZR2020 loc:§3 estado]
 
@@ -53,7 +53,7 @@ Fuente: [DEEPLOB2019 loc:§III-IV]
   mensual, trimestral, semestral, anual); MACD(8,24), MACD(16,48),
   MACD(32,96); opcionalmente 2 features de changepoint detection por
   lookback (severidad ν y localización γ de un módulo GP) con
-  lookbacks 21 y 126 días.
+  lookbacks 21 y 126 días. Fuente: [WOOD2022 loc:§V features]
 - Secuencia de entrada: 1 año de días hábiles (~252 pasos).
 
 Fuente: [WOOD2022 loc:§V features]
@@ -66,14 +66,14 @@ Fuente: [WOOD2022 loc:§V features]
   Nikkei+Shanghai → R^100.
 - **Jiang EIIE**: tensor de precios (3, 11, 50): cierre/máximo/mínimo
   de cada periodo de 30 min, 11 activos, lookback 50 periodos (25 h).
-  SIN volumen, SIN indicadores.
+  SIN volumen, SIN indicadores. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Kronos**: velas OHLCV crudas tokenizadas (cuantización esférica
   binaria k=20 bits → vocabulario 2^20), contexto 512 tokens.
 - **FinAgent**: OHLC+ajustado diario, ~7.900–10.000 noticias/activo,
   imágenes de gráficos K-line e historial, textos de analistas
   (~400–600/activo), MACD/KDJ+RSI/Z-score como herramientas.
 - **FinMem**: noticias diarias, 10-Q, 10-K en tres capas de memoria
-  (retención 14/90/365 días) + OHLCV Yahoo.
+  (retención 14/90/365 días) + OHLCV Yahoo. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **TLOB**: LOB 10 niveles (40 features), secuencia 128; BiN como capa
   de entrada.
 - **Sirignano-Cont**: estado del libro + historia (hasta 5.000 lags
@@ -86,7 +86,7 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
 - **Observación estructurada (dict de gym-fx)**: bloque `features`
   de forma **(32, 83)** — ventana de 32 barras H4 × 83 features — más
   bloques escalares de estado de cuenta (4 llaves: equity/balance/
-  posición/exposición según el contrato de observación).
+  posición/exposición según el contrato de observación). Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Las 83 features** (dataset project3, 90 columnas menos
   DATE_TIME/OHLCV) por familias semánticas (agrupación verificada
   exhaustiva y disjunta en el extractor agrupado): retornos y momentum
@@ -94,7 +94,7 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   distribución 29; volumen y flujo 6. Ejemplos: return_1,
   log_return_1, return_5, return_10, RSI, MACD, ATR, bandas, z-scores
   estadísticos [lista completa en la config
-  `project3_ethusdt_4h_sac_grouped_features_v1.json`].
+  `project3_ethusdt_4h_sac_grouped_features_v1.json`]. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Eje temporal verificado**: eje 0 = tiempo, viejo→nuevo (prueba de
   corrimiento de una barra contra el env real).
 - **Modelo en producción demo (lts)**: features de barra cerrada vía

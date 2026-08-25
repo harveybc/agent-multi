@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""WP1 acceptance validator for the SOTA review (order 2026-08-24).
+"""WP1/R05 acceptance validator (v2: claim-level binding) for the SOTA review (order 2026-08-24).
 
 Rejects: unknown source IDs, paper sections without a source line,
 duplicate registry IDs, and secondary sources cited as the source of
@@ -14,22 +14,107 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DOCS = HERE.parent
-FILES = sorted(DOCS.glob("0[1-8]_*.md")) + sorted(DOCS.glob("10_*.md"))
+
+
+def doc_files(docs):
+    return sorted(docs.glob("0[1-8]_*.md")) + sorted(docs.glob("10_*.md"))
+
+
+FILES = doc_files(DOCS)
 SOURCE_LINE = re.compile(r"Fuente[s]?:\s*(\[[^\]]+\](?:\s*,?\s*\[[^\]]+\])*)")
 REF = re.compile(r"\[([A-Z0-9-]+)\s+loc:([^\]]+)\]")
 
 
-def main() -> int:
-    raw = json.loads((HERE / "registry.json").read_text())
+
+# ---- v2 (SOTA-R05): claim-level binding -------------------------------
+# A "quantitative claim bullet" is any top-level list bullet containing a
+# digit plus a metric/config keyword. Every such bullet must itself carry
+# at least one inline `[ID loc:...]` reference with a non-generic locator.
+CLAIM_KW = re.compile(
+    r"(?i)(sharpe|sortino|mae\b|rmse|mse\b|auc|r\u00b2|r2\b|drawdown|mdd|"
+    r"retorno|rendimiento|precisi|accuracy|\bbp\b|\bpb\b|bps|"
+    r"par[a\u00e1]metros|params|[e\u00e9]pocas|epochs|capas|layers|unidades|units|"
+    r"learning.rate|\blr\b|gamma|\u03b3|semillas|seeds|coste|fee|comisi|"
+    r"filas|rows|acciones|stocks|contratos|horizonte|ventana|lookback|"
+    r"batch|buffer|volatilidad|apalancamiento|leverage|trades|operaciones|"
+    r"turnover|alpha|percentil)")
+NUM_RE = re.compile(r"\d")
+LOC_GENERIC = {"paper", "general", "passim", "texto", "todo", "n/a", "-",
+               "varios", "ver paper", "ver texto"}
+LOC_ANCHOR = re.compile(
+    r"(?i)^(tab|table|tabla|eq|ec|fig|p\b|pp|pag|sec|\u00a7|abs|abstract|"
+    r"alg|app|apx|anexo|cap|kw|nota|benchmark)")
+
+
+def locator_ok(loc, source_type):
+    loc = loc.strip()
+    if len(loc) < 3 or loc.lower() in LOC_GENERIC:
+        return False
+    if source_type == "internal_primary":
+        return True  # repo-artifact locators are free text (paths/manifests)
+    return bool(re.search(r"\d", loc) or LOC_ANCHOR.match(loc))
+
+
+def iter_bullets(text):
+    lines = text.split("\n")
+    j = 0
+    while j < len(lines):
+        if re.match(r"^- ", lines[j]):
+            blk = [lines[j]]
+            j += 1
+            while j < len(lines) and lines[j].startswith("  "):
+                blk.append(lines[j])
+                j += 1
+            yield "\n".join(blk)
+        else:
+            j += 1
+
+
+def claim_level_problems(path, text, ids):
+    probs = []
+    for blk in iter_bullets(text):
+        if not (NUM_RE.search(blk) and CLAIM_KW.search(blk)):
+            continue
+        refs = REF.findall(blk)
+        head = blk.split("\n")[0][:60]
+        if not refs:
+            probs.append(f"{path.name} :: claim sin fuente inline: '{head}'")
+            continue
+        for sid, loc in refs:
+            if sid not in ids:
+                probs.append(f"{path.name} :: claim con id desconocido {sid}: '{head}'")
+                continue
+            stype = ids[sid].get("type", "")
+            if not locator_ok(loc, stype):
+                probs.append(
+                    f"{path.name} :: locator generico/invalido '{loc.strip()[:40]}' en claim '{head}'")
+    return probs
+
+
+def registry_metadata_problems(ids):
+    probs = []
+    for sid, e in ids.items():
+        if "retrieved" not in e or "retrieval_channel" not in e:
+            probs.append(f"registry :: {sid} sin retrieved/retrieval_channel")
+        if e.get("retrieval_channel") == "local_pdf" and not e.get("content_sha256"):
+            probs.append(f"registry :: {sid} local_pdf sin content_sha256")
+    return probs
+
+
+def main(docs_root=None) -> int:
+    docs = Path(docs_root) if docs_root else DOCS
+    here = docs / "sources"
+    files = doc_files(docs)
+    raw = json.loads((here / "registry.json").read_text())
     ids = raw["sources"]
     # duplicate detection must operate on the raw text (json.loads
     # silently keeps the last duplicate key)
-    keys = re.findall(r'"([A-Z0-9-]+)":\s*\{"type"', (HERE / "registry.json").read_text())
+    keys = re.findall(r'"([A-Z0-9-]+)":\s*\{"type"', (here / "registry.json").read_text())
     dups = {k for k in keys if keys.count(k) > 1}
     problems = []
     if dups:
         problems.append(f"duplicate registry ids: {sorted(dups)}")
-    for path in FILES:
+    for path in files:
         text = path.read_text()
         sections = re.split(r"\n## ", text)
         for sec in sections[1:]:
@@ -50,14 +135,17 @@ def main() -> int:
                     # secondary benchmarks may only source their OWN claims
                     if "benchmark" not in sec[:400].lower() and "control negativo" not in sec.lower() and "contaminaci" not in sec.lower():
                         problems.append(f"{path.name} :: fuente secundaria {sid} citada como primaria en '{title[:40]}'")
+    for path in files:
+        problems += claim_level_problems(path, path.read_text(), ids)
+    problems += registry_metadata_problems(ids)
     if problems:
         print(json.dumps({"outcome": "REJECTED", "problems": problems[:40],
                           "total_problems": len(problems)}, indent=1))
         return 2
-    print(json.dumps({"outcome": "PASS", "files": len(FILES),
+    print(json.dumps({"outcome": "PASS", "files": len(files),
                       "registered_sources": len(ids)}))
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1] if len(sys.argv) > 1 else None))

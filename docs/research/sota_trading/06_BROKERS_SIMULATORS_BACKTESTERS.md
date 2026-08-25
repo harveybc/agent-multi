@@ -26,13 +26,13 @@ Fuentes: [GKX2020 loc:§2], [FK2018 loc:§3-4], [ZZR2020 loc:§4], [DEEPLOB2019 
 
 ## <a name="menciones"></a>Menciones
 - **Deng FDDR**: backtest propio minuto a minuto; costes por punto
-  de índice (≈5× comisión real declarada).
+  de índice (≈5× comisión real declarada). Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Jiang EIIE**: backtest propio con datos de la API de Poloniex;
   supuestos DECLARADOS: liquidez suficiente para ejecutar al último
   precio del periodo y capital sin impacto de mercado; comisión
-  0,25% por lado.
+  0,25% por lado. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Kronos**: backtest long-only propio sobre CSI300/CSI800 con
-  coste 0,15%.
+  coste 0,15%. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **FinAgent/FinMem**: backtests propios diarios; FinMem sin costes
   declarados.
 - **Benchmarks vivos 2025–26** (contra-evidencia LLM): "When Agents
@@ -49,7 +49,7 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   agent-multi): dinámica de cuenta con solvencia/margen, costes de
   ejecución, trazas de retorno por barra con contabilidad física de
   trades; pipeline `rl_pipeline_with_validation` con roles anidados
-  verificados. NO usamos backtrader ni motores de terceros.
+  verificados. NO usamos backtrader ni motores de terceros. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Clases de ejecución exactas (mandato SOTA-06);
   `live_capital_execution = false` en TODO el programa**:
   1. **MT5 (OANDA)** — `broker_mediated_demo_or_paper_execution` —
@@ -67,6 +67,6 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   a cierre asumidos, pero NO es ejecución con capital real y no
   establece rentabilidad, impacto ni fiabilidad de producción. Coste:
   muestras pequeñas (23 round-trips ETHUSD) frente a los miles de
-  trades backtesteados del SOTA.
+  trades backtesteados del SOTA. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 
 Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

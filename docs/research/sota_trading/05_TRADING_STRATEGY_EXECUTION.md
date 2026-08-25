@@ -8,15 +8,15 @@
 ## <a name="p1"></a>P1 — Gu-Kelly-Xiu
 - **Apertura**: al cierre de cada MES se ordenan todas las acciones
   por retorno predicho; se forman DECILES; portafolio long-short =
-  largo decil 10, corto decil 1.
+  largo decil 10, corto decil 1. Fuente: [GKX2020 loc:§2.4 portafolios,Tab.7]
 - **Sizing**: dos esquemas — value-weighted (por capitalización) y
   equal-weighted dentro del decil. Sin stop-loss, sin take-profit:
   rebalanceo mensual puro.
 - **Apalancamiento**: no se declara apalancamiento explícito; el
   long-short es autofinanciado nocional (100/100). [Margen real NO
-  MODELADO].
+  MODELADO]. Fuente: [GKX2020 loc:§2.4 portafolios,Tab.7]
 - **Costes**: NO deducidos; turnover reportado (110–130%/mes en
-  NN1–NN5) para que el lector los impute.
+  NN1–NN5) para que el lector los impute. Fuente: [GKX2020 loc:§2.4 portafolios,Tab.7]
 
 Fuente: [GKX2020 loc:§2.4 portafolios,Tab.7]
 
@@ -26,11 +26,11 @@ Fuente: [GKX2020 loc:§2.4 portafolios,Tab.7]
   LARGO en las top-k y CORTO en las bottom-k (foco k=10);
   ejecución asumida al cierre de t+1 [convención del paper: entrada
   y salida a precios de cierre del día siguiente]; cartera
-  reconstituida a diario (holding de 1 día).
+  reconstituida a diario (holding de 1 día). Fuente: [FK2018 loc:§3.5,§4 k=10]
 - **Sizing**: equal-weighted 1/k por pata. Sin SL/TP.
-- **Apalancamiento**: long-short 1:1 nocional; margen no modelado.
+- **Apalancamiento**: long-short 1:1 nocional; margen no modelado. Fuente: [FK2018 loc:§3.5,§4 k=10]
 - **Costes**: 5 puntos básicos por media vuelta (0,05%), aplicados
-  a las 4 medias-vueltas diarias del par largo-corto.
+  a las 4 medias-vueltas diarias del par largo-corto. Fuente: [FK2018 loc:§3.5,§4 k=10]
 
 Fuente: [FK2018 loc:§3.5,§4 k=10]
 
@@ -43,11 +43,11 @@ Fuente: [FK2018 loc:§3.5,§4 k=10]
   efectiva = A_t · σ_target/σ_t — la posición se INFLA en mercados
   calmos y se ENCOGE en volátiles. A nivel portafolio, 50 contratos
   equal-weighted con segundo escalado a volatilidad objetivo.
-  [Valor numérico del σ_target NO DECLARADO.]
+  [Valor numérico del σ_target NO DECLARADO.] Fuente: [ZZR2020 loc:§3 vol-targeting,§4 costes]
 - **Apalancamiento**: implícito en futuros (margen); no se declara
   límite de apalancamiento explícito.
 - **Costes**: 20 pb en el entrenamiento (regularizador); evaluación
-  a 1–45 pb; sin SL/TP — la salida es el cambio de señal.
+  a 1–45 pb; sin SL/TP — la salida es el cambio de señal. Fuente: [ZZR2020 loc:§3 vol-targeting,§4 costes]
 
 Fuente: [ZZR2020 loc:§3 vol-targeting,§4 costes]
 
@@ -57,7 +57,7 @@ Fuente: [ZZR2020 loc:§3 vol-targeting,§4 costes]
   LSE es "proof-of-concept": entra según la clase predicha
   (sube→largo, baja→corto) y sale al cambiar la predicción; tamaño
   1 unidad [micro-mecánica de fill y coste NO DECLARADOS en detalle;
-  PnL exactos no extraídos — UNVERIFIED].
+  PnL exactos no extraídos — UNVERIFIED]. Fuente: [DEEPLOB2019 loc:§V-C simulación]
 - Sin SL/TP, sin apalancamiento declarado.
 
 Fuente: [DEEPLOB2019 loc:§V-C simulación]
@@ -66,12 +66,12 @@ Fuente: [DEEPLOB2019 loc:§V-C simulación]
 - **Apertura**: posición CONTINUA z∈(−1,1) por futuro y día, emitida
   por la red; el trade diario es la DIFERENCIA de posición.
 - **Sizing**: retornos del activo escalados por σ ex-ante 60d;
-  portafolio 50 futuros promediado y llevado a σ objetivo 15% anual.
+  portafolio 50 futuros promediado y llevado a σ objetivo 15% anual. Fuente: [WOOD2022 loc:§V,Exh.10]
 - **Apalancamiento**: el implícito del vol-targeting sobre futuros
   (posiciones nominales crecen si σ<15%); sin límite explícito
-  declarado.
+  declarado. Fuente: [WOOD2022 loc:§V,Exh.10]
 - **Costes**: análisis explícito de sensibilidad — Sharpe reportado
-  a C = 0/0,5/1/1,5/2/2,5/3 pb; sin SL/TP.
+  a C = 0/0,5/1/1,5/2/2,5/3 pb; sin SL/TP. Fuente: [WOOD2022 loc:§V,Exh.10]
 
 Fuente: [WOOD2022 loc:§V,Exh.10]
 
@@ -79,17 +79,17 @@ Fuente: [WOOD2022 loc:§V,Exh.10]
 - **Deng FDDR**: δ∈{1,0,−1} sobre UN contrato; coste por CAMBIO de
   posición |δ_t−δ_{t−1}|·c con c = 1 pt (IF), 2 pt (AG), 1,5 pt (SU)
   — fijado ≈5× las comisiones reales; S&P: 0,1% del índice. Sin
-  SL/TP; sin apalancamiento declarado (futuros margen implícito).
+  SL/TP; sin apalancamiento declarado (futuros margen implícito). Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **Jiang EIIE**: la ACCIÓN es el vector de pesos del portafolio
   (softmax + sesgo BTC); rebalanceo TOTAL cada 30 min al peso
   objetivo; comisión 0,25% por lado (máximo Poloniex) dentro del
   factor μ_t resuelto iterativamente; sin cortos, sin margen, sin
-  SL/TP.
+  SL/TP. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 - **FinAgent/FinMem**: decisión diaria {buy, sell, hold} sobre UN
   activo; sizing no fraccionado [detalle de sizing NO DECLARADO];
   sin SL/TP nativo; costes: FinMem NO declara costes de transacción.
 - **Kronos**: backtest long-only top-k (CSI300 k=50; CSI800 k=200),
-  holding mínimo 5 días, coste 0,15% por operación.
+  holding mínimo 5 días, coste 0,15% por operación. Fuente: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 
 Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS2025 loc:§4,Fig.4], [FINAGENT2024 loc:Tab.4,§5], [FINMEM2023 loc:§4,Tab.resultados], [TLOB2025 loc:Tab.8,§5], [SIRCONT2019 loc:Tab.1,§3-4], [LOBCAST2024 loc:benchmark propio], [STOCKBENCH2025 loc:benchmark propio]
 
@@ -104,12 +104,12 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
 - **Apertura/cierre**: el env abre/cierra según la señal por barra
   H4; contabilidad de trades por `closed_trades_cumulative` con
   reconciliación física (liquidación terminal como fila añadida,
-  jamás mutación de filas de mercado).
+  jamás mutación de filas de mercado). Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Sizing**: cash inicial 10.000; dimensionamiento interno del env
   [posición unitaria por señal en la configuración vigente];
   apalancamiento: dinámica de solvencia del env
   (`normal_realistic`; margen/insolvencia simulados; el modo easy
-  relaja SOLO la dinámica de solvencia y es train-only por guard).
+  relaja SOLO la dinámica de solvencia y es train-only por guard). Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Costes**: coste de ejecución del env dentro de la recompensa
   (curriculum de coste configurable; en la campaña actual sin
   curriculum — coste pleno desde el inicio).
@@ -126,9 +126,9 @@ Fuentes: [DENG2017 loc:Tab.I-III,Fig.7], [JIANG2017 loc:Tab.1-2,§5], [KRONOS202
   (fracciones de riesgo en el perfil: risk_fraction_at_stop 2e-5,
   daily_loss_budget 8e-5, gross_notional/margin ≤0,3%);
   max_concurrent_positions 1 por ruta; sin adopción de posiciones
-  ajenas; Demo únicamente, capital real jamás.
+  ajenas; Demo únicamente, capital real jamás. Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 - **Alpaca (SPY)** e **IBKR USD.CAD (suspendido)**: runners análogos
   con mandatos propios (IBKR: máx 4 entradas/día, riesgo en stop
-  6,25e-5, techo 25.000 unidades — mandato verificado).
+  6,25e-5, techo 25.000 unidades — mandato verificado). Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]
 
 Fuente: [OURS-PIPELINE loc:configs+manifiestos verificados por ejecución]

@@ -9,7 +9,10 @@
    "venue": "Review of Financial Studies 33(5):2223-2273",
    "year": 2020,
    "url": "https://academic.oup.com/rfs/article/33/5/2223/5758276",
-   "pdf": "https://dachxiu.chicagobooth.edu/download/ML.pdf"
+   "pdf": "https://dachxiu.chicagobooth.edu/download/ML.pdf",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_fulltext",
+   "content_sha256": null
   },
   "GKX2020-IA": {
    "type": "appendix_primary",
@@ -17,7 +20,10 @@
    "authors": "Gu, Kelly, Xiu",
    "venue": "RFS supplementary",
    "year": 2020,
-   "url": "https://dachxiu.chicagobooth.edu/download/ML_supp.pdf"
+   "url": "https://dachxiu.chicagobooth.edu/download/ML_supp.pdf",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "FK2018": {
    "type": "paper_primary",
@@ -26,7 +32,10 @@
    "venue": "EJOR 270(2):654-669 (verificado contra FAU DP 11/2017, textualmente coincidente)",
    "year": 2018,
    "url": "https://www.econstor.eu/bitstream/10419/157808/1/886576210.pdf",
-   "doi": "10.1016/j.ejor.2017.11.054"
+   "doi": "10.1016/j.ejor.2017.11.054",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_fulltext",
+   "content_sha256": null
   },
   "ZZR2020": {
    "type": "paper_primary",
@@ -35,7 +44,10 @@
    "venue": "J. Financial Data Science 2(2):25-40",
    "year": 2020,
    "url": "https://arxiv.org/abs/1911.10107",
-   "doi": "10.3905/jfds.2020.1.030"
+   "doi": "10.3905/jfds.2020.1.030",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_fulltext",
+   "content_sha256": null
   },
   "DEEPLOB2019": {
    "type": "paper_primary",
@@ -44,7 +56,10 @@
    "venue": "IEEE TSP 67(11):3001-3012",
    "year": 2019,
    "url": "https://arxiv.org/abs/1808.03668",
-   "code": "https://github.com/zcakhaa/DeepLOB-Deep-Convolutional-Neural-Networks-for-Limit-Order-Books"
+   "code": "https://github.com/zcakhaa/DeepLOB-Deep-Convolutional-Neural-Networks-for-Limit-Order-Books",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_fulltext",
+   "content_sha256": null
   },
   "WOOD2022": {
    "type": "paper_primary",
@@ -53,7 +68,10 @@
    "venue": "arXiv 2112.08534 v3 (estatus journal no verificado)",
    "year": 2022,
    "url": "https://arxiv.org/abs/2112.08534",
-   "code": "https://github.com/kieranjwood/trading-momentum-transformer"
+   "code": "https://github.com/kieranjwood/trading-momentum-transformer",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_fulltext",
+   "content_sha256": null
   },
   "DENG2017": {
    "type": "paper_primary",
@@ -62,7 +80,10 @@
    "venue": "IEEE TNNLS 28(3):653-664",
    "year": 2017,
    "url": "https://ieeexplore.ieee.org/document/7407387/",
-   "doi": "10.1109/TNNLS.2016.2522401"
+   "doi": "10.1109/TNNLS.2016.2522401",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "JIANG2017": {
    "type": "paper_primary",
@@ -70,7 +91,10 @@
    "authors": "Jiang, Xu, Liang",
    "venue": "arXiv 1706.10059v2",
    "year": 2017,
-   "url": "https://arxiv.org/abs/1706.10059"
+   "url": "https://arxiv.org/abs/1706.10059",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "KRONOS2025": {
    "type": "paper_primary",
@@ -79,7 +103,10 @@
    "venue": "arXiv 2508.02739 (AAAI 2026 segun fuentes secundarias - NO VERIFICADO en arXiv)",
    "year": 2025,
    "url": "https://arxiv.org/abs/2508.02739",
-   "code": "https://huggingface.co/NeoQuasar/Kronos-base"
+   "code": "https://huggingface.co/NeoQuasar/Kronos-base",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "FINAGENT2024": {
    "type": "paper_primary",
@@ -88,7 +115,10 @@
    "venue": "KDD 2024",
    "year": 2024,
    "url": "https://arxiv.org/abs/2402.18485",
-   "doi": "10.1145/3637528.3671801"
+   "doi": "10.1145/3637528.3671801",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "FINMEM2023": {
    "type": "paper_primary",
@@ -97,7 +127,10 @@
    "venue": "arXiv 2311.13743; AAAI Spring Symposium 2024",
    "year": 2023,
    "url": "https://arxiv.org/abs/2311.13743",
-   "code": "https://github.com/pipiku915/finmem-llm-stocktrading"
+   "code": "https://github.com/pipiku915/finmem-llm-stocktrading",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "TLOB2025": {
    "type": "paper_primary",
@@ -106,7 +139,10 @@
    "venue": "arXiv 2502.15757 (preprint)",
    "year": 2025,
    "url": "https://arxiv.org/abs/2502.15757",
-   "code": "https://github.com/LeonardoBerti00/TLOB"
+   "code": "https://github.com/LeonardoBerti00/TLOB",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "SIRCONT2019": {
    "type": "paper_primary",
@@ -114,7 +150,10 @@
    "authors": "Sirignano, Cont",
    "venue": "Quantitative Finance 19(9):1449-1459",
    "year": 2019,
-   "url": "https://arxiv.org/abs/1803.06917"
+   "url": "https://arxiv.org/abs/1803.06917",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "LOBCAST2024": {
    "type": "paper_secondary_benchmark",
@@ -122,7 +161,10 @@
    "authors": "Prata et al.",
    "venue": "Artificial Intelligence Review 57(5)",
    "year": 2024,
-   "url": "https://arxiv.org/abs/2308.01915"
+   "url": "https://arxiv.org/abs/2308.01915",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "STOCKBENCH2025": {
    "type": "paper_secondary_benchmark",
@@ -130,7 +172,10 @@
    "authors": "(equipo StockBench)",
    "venue": "arXiv 2510.02209",
    "year": 2025,
-   "url": "https://arxiv.org/abs/2510.02209"
+   "url": "https://arxiv.org/abs/2510.02209",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "OURS-PIPELINE": {
    "type": "internal_primary",
@@ -138,7 +183,10 @@
    "authors": "programa propio",
    "venue": "repos agent-multi/lts/gym-fx",
    "year": 2026,
-   "url": "internal"
+   "url": "internal",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "repo_artifact",
+   "content_sha256": null
   },
   "LIM2019": {
    "type": "paper_primary",
@@ -146,7 +194,10 @@
    "authors": "Lim, Zohren, Roberts",
    "venue": "JFDS Fall 2019; arXiv 1904.04912",
    "year": 2019,
-   "url": "https://arxiv.org/abs/1904.04912"
+   "url": "https://arxiv.org/abs/1904.04912",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "MUHLEKARBE2017": {
    "type": "paper_primary",
@@ -154,7 +205,10 @@
    "authors": "Muhle-Karbe et al.",
    "venue": "arXiv 1207.7330",
    "year": 2013,
-   "url": "https://arxiv.org/abs/1207.7330"
+   "url": "https://arxiv.org/abs/1207.7330",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "HECHE2025": {
    "type": "paper_primary",
@@ -162,7 +216,10 @@
    "authors": "Heche, Nigro, Barakat, Robert-Nicoud",
    "venue": "arXiv 2501.04421",
    "year": 2025,
-   "url": "https://arxiv.org/abs/2501.04421"
+   "url": "https://arxiv.org/abs/2501.04421",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "WCSAC2021": {
    "type": "paper_primary",
@@ -170,7 +227,10 @@
    "authors": "Yang, Simao, Tindemans, Spaan",
    "venue": "AAAI 2021",
    "year": 2021,
-   "url": "https://ojs.aaai.org/index.php/AAAI/article/view/17272"
+   "url": "https://ojs.aaai.org/index.php/AAAI/article/view/17272",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "YUN2024": {
    "type": "paper_primary",
@@ -178,7 +238,10 @@
    "authors": "Yun",
    "venue": "arXiv 2411.17900 (preprint monoautor)",
    "year": 2024,
-   "url": "https://arxiv.org/abs/2411.17900"
+   "url": "https://arxiv.org/abs/2411.17900",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "BANDI2020": {
    "type": "paper_primary",
@@ -186,7 +249,10 @@
    "authors": "Bandi, Tulabandhula",
    "venue": "arXiv 2012.11715",
    "year": 2020,
-   "url": "https://arxiv.org/abs/2012.11715"
+   "url": "https://arxiv.org/abs/2012.11715",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "NI2022": {
    "type": "paper_primary",
@@ -194,7 +260,10 @@
    "authors": "Ni, Eysenbach, Salakhutdinov",
    "venue": "ICML 2022; arXiv 2110.05038",
    "year": 2022,
-   "url": "https://arxiv.org/abs/2110.05038"
+   "url": "https://arxiv.org/abs/2110.05038",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "MACRI2025": {
    "type": "paper_primary",
@@ -202,7 +271,10 @@
    "authors": "Macri, Jaimungal, Lillo",
    "venue": "arXiv 2511.00190",
    "year": 2025,
-   "url": "https://arxiv.org/abs/2511.00190"
+   "url": "https://arxiv.org/abs/2511.00190",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "DOUBLEADAPT2023": {
    "type": "paper_primary",
@@ -211,7 +283,10 @@
    "venue": "KDD 2023; arXiv 2306.09862",
    "year": 2023,
    "url": "https://arxiv.org/abs/2306.09862",
-   "code": "https://github.com/SJTU-DMTai/DoubleAdapt"
+   "code": "https://github.com/SJTU-DMTai/DoubleAdapt",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "ASHADAMS2020": {
    "type": "paper_primary",
@@ -219,7 +294,10 @@
    "authors": "Ash, Adams",
    "venue": "NeurIPS 2020; arXiv 1910.08475",
    "year": 2020,
-   "url": "https://arxiv.org/abs/1910.08475"
+   "url": "https://arxiv.org/abs/1910.08475",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "DSR2014": {
    "type": "paper_primary",
@@ -227,7 +305,10 @@
    "authors": "Bailey, Lopez de Prado",
    "venue": "J. Portfolio Management 40(5):94-107",
    "year": 2014,
-   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551"
+   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "WHITE2000": {
    "type": "paper_primary",
@@ -235,7 +316,10 @@
    "authors": "White",
    "venue": "Econometrica 68(5):1097-1126",
    "year": 2000,
-   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=264569"
+   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=264569",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "HANSEN2005": {
    "type": "paper_primary",
@@ -243,7 +327,10 @@
    "authors": "Hansen",
    "venue": "JBES 23(4):365-380 (texto completo tras paywall: puntos exactos UNVERIFIED)",
    "year": 2005,
-   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=264569"
+   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=264569",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "RLIABLE2021": {
    "type": "paper_primary",
@@ -251,7 +338,10 @@
    "authors": "Agarwal, Schwarzer, Castro, Courville, Bellemare",
    "venue": "NeurIPS 2021 (Outstanding Paper); arXiv 2108.13264",
    "year": 2021,
-   "url": "https://arxiv.org/abs/2108.13264"
+   "url": "https://arxiv.org/abs/2108.13264",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   },
   "MAJIDI2022": {
    "type": "paper_primary",
@@ -259,7 +349,10 @@
    "authors": "Majidi, Shamsi, Marvasti",
    "venue": "arXiv 2210.03469 (venue debil; solo abstract verificado)",
    "year": 2022,
-   "url": "https://arxiv.org/abs/2210.03469"
+   "url": "https://arxiv.org/abs/2210.03469",
+   "retrieved": "2026-08-24",
+   "retrieval_channel": "web_abstract_or_landing",
+   "content_sha256": null
   }
  }
 }
