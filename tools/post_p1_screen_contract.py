@@ -22,10 +22,23 @@ ScreenContractViolation; materializers must not catch it.
    contract declared 83).
 """
 import hashlib
+import sys
 from dataclasses import dataclass
 from datetime import date
+from pathlib import Path
+
+# Canonical digest: REUSED from the project helper (SOTA-F01) — one
+# implementation, no duplication. tools/ scripts run from the checkout
+# root; the explicit path insert keeps importlib-loaded test usage working.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from pipeline_plugins._observation_contract import feature_columns_sha256
 
 SEALED_START = "2025-01-01"
+
+import re
+
+_SHA256_RE = re.compile(r"[0-9a-f]{64}")
+_GIT_COMMIT_RE = re.compile(r"[0-9a-f]{40}")
 
 REPORT_ONLY_ALLOWED_KEYS = frozenset(
     {"name", "metrics", "series_sha256", "notes", "decision_authoritative"})
@@ -153,10 +166,18 @@ def check_release_packet(candidates):
     finalist = auth[0]
     for k in FINALIST_REQUIRED_DIGESTS:
         v = finalist.get(k)
-        if not isinstance(v, str) or len(v) < 7:
+        pattern = (_GIT_COMMIT_RE if k == "code_commit" else _SHA256_RE)
+        if not isinstance(v, str) or not pattern.fullmatch(v):
             raise ScreenContractViolation(
-                f"REFUSED: finalist {finalist.get('name', '?')} missing "
-                f"frozen digest '{k}'")
+                f"REFUSED: finalist {finalist.get('name', '?')} digest "
+                f"'{k}' must be "
+                f"{'40' if k == 'code_commit' else '64'} lowercase hex "
+                f"(got {v!r})")
+    schema = finalist.get("ensemble_rule_schema")
+    if not (isinstance(schema, str) and "@" in schema):
+        raise ScreenContractViolation(
+            "REFUSED: finalist must bind ensemble_rule_schema as "
+            "'<name>@<version>' alongside its digest (SOTA-F03)")
     for c in candidates:
         if c.get("decision_authoritative"):
             continue
@@ -169,8 +190,30 @@ def check_release_packet(candidates):
     return True
 
 
-def feature_list_digest(columns):
+def refresh_update_schedule(total_updates, n_refreshes):
+    """Deterministic quotient/remainder schedule (SOTA-F02): the first
+    `remainder` refreshes receive one extra update; the sum is EXACTLY
+    total_updates for every cadence and scored-period cardinality."""
+    if n_refreshes <= 0 or total_updates < 0:
+        raise ScreenContractViolation(
+            "REFUSED: refresh schedule needs n_refreshes > 0 and "
+            "total_updates >= 0")
+    base, rem = divmod(total_updates, n_refreshes)
+    return [base + 1] * rem + [base] * (n_refreshes - rem)
+
+
+def legacy_newline_feature_digest(columns):
+    """LEGACY DIAGNOSTIC ONLY (SOTA-F01): newline-joined digest used in
+    the first C01 evidence (`dd9e05d8...`). Preserved so historical P1
+    evidence stays reproducible; every NEW digest is canonical
+    (`feature_columns_sha256`, compact-JSON)."""
     return hashlib.sha256("\n".join(columns).encode()).hexdigest()
+
+
+def agent_state_fields_sha256(fields):
+    """Canonical digest of the ORDERED agent-state field names — same
+    compact-JSON convention as feature_columns_sha256."""
+    return feature_columns_sha256(fields)
 
 
 def expected_flattened_shape(contract):
@@ -201,7 +244,7 @@ def check_observation_identity(effective_config, contract):
         raise ScreenContractViolation(
             "REFUSED: executed feature ORDER differs from declared contract "
             "(same length); observation tensors are not comparable")
-    if feature_list_digest(exe) != feature_list_digest(decl):
+    if feature_columns_sha256(exe) != feature_columns_sha256(decl):
         raise ScreenContractViolation("REFUSED: feature digest mismatch")
     for flag in ("include_price_window", "include_agent_state",
                  "window_size"):
@@ -210,24 +253,54 @@ def check_observation_identity(effective_config, contract):
                 f"REFUSED: observation flag '{flag}' differs "
                 f"(executed={effective_config.get(flag)!r}, "
                 f"declared={contract.get(flag)!r})")
+    decl_fields = contract.get("agent_state_fields")
+    if contract.get("include_agent_state"):
+        if not decl_fields:
+            raise ScreenContractViolation(
+                "REFUSED: contract declares include_agent_state without "
+                "binding agent_state_fields names/order (SOTA-F01)")
+        exe_fields = effective_config.get("agent_state_fields")
+        if exe_fields is not None and list(exe_fields) != list(decl_fields):
+            raise ScreenContractViolation(
+                "REFUSED: agent_state_fields differ from declared contract")
     return {"feature_count": len(exe),
-            "feature_digest": feature_list_digest(exe),
+            "feature_columns_sha256": feature_columns_sha256(exe),
+            "agent_state_fields_sha256": (
+                agent_state_fields_sha256(decl_fields)
+                if decl_fields else None),
             "flattened_shape": expected_flattened_shape(contract)}
 
 
 def executed_observation_identity(launch_manifest):
-    """Terminal-aggregation labeling helper (F1.4): report the EXECUTED
-    identity of a P1 arm honestly — never rewrite artifacts."""
+    """Terminal-aggregation labeling helper (F1.4/SOTA-F01): report the
+    EXECUTED identity of a P1 arm honestly — never rewrite artifacts.
+
+    Emits BOTH digests: canonical (compact-JSON, the project convention)
+    and the labeled legacy newline diagnostic from the first C01
+    evidence. Flattened shape is derived only when the config carries
+    explicit flags; agent-state dimensionality is never inferred from
+    arithmetic alone."""
     cfg = launch_manifest["effective_config"]
     cols = list(cfg["feature_columns"])
     n = len(cols)
-    flat = cfg.get("window_size", 32) * (
-        n + (2 if cfg.get("include_price_window") else 0)) + 4
-    return {
+    out = {
         "executed_feature_count": n,
-        "executed_feature_digest": feature_list_digest(cols),
+        "executed_feature_columns_sha256": feature_columns_sha256(cols),
+        "executed_feature_digest_legacy_newline":
+            legacy_newline_feature_digest(cols),
         "executed_feature_columns": cols,
         "executed_include_price_window": bool(
             cfg.get("include_price_window")),
-        "executed_flattened_shape": flat,
+        "executed_agent_state_contract": cfg.get("agent_state_contract"),
     }
+    if "include_agent_state" in cfg and "window_size" in cfg:
+        state_dims = 4 if cfg["include_agent_state"] else 0
+        out["executed_flattened_shape"] = cfg["window_size"] * (
+            n + (2 if cfg.get("include_price_window") else 0)) + state_dims
+        out["flattened_shape_basis"] = "explicit_config_flags"
+    else:
+        out["executed_flattened_shape"] = None
+        out["flattened_shape_basis"] = (
+            "unavailable: config lacks explicit include_agent_state/"
+            "window_size; bind from the actual observation space")
+    return out

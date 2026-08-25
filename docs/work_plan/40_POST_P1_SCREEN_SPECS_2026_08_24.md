@@ -117,13 +117,15 @@ below mutates the running campaign.
   optimizer state carried, replay carried and trimmed to the trailing
   window of 2,190 H4 bars ending at the refresh bar, batch and LR
   exactly the frozen P1 recipe values.
-- **Equal TOTAL update budget (F2)**: every arm receives exactly
-  **260,000 gradient steps per scored year**, allocated evenly across
-  its refreshes: R168 weekly = 5,000/refresh × 52; R24 daily ≈
-  712/refresh × 365; R12 twice-daily ≈ 356/refresh × 730. R0 frozen
-  control receives 0 (it is the no-adaptation reference, paired per
-  fold/seed). Per-refresh and total steps are materialized constants,
-  never tuned.
+- **Equal TOTAL update budget (F2/SOTA-F02)**: every adaptive arm
+  receives EXACTLY **260,000 gradient steps per scored year** via the
+  deterministic quotient/remainder schedule
+  `tools/post_p1_screen_contract.refresh_update_schedule` (the first
+  `remainder` refreshes get one extra update; exact conservation is
+  regression-tested): R168 = 5,000 × 52; R24 = 713 × 120 + 712 × 245;
+  R12 = 357 × 120 + 356 × 610. R0 frozen control receives 0 (the
+  no-adaptation reference, paired per fold/seed). Schedules are
+  materialized constants, never tuned.
 - **Arms**: R0 frozen; R168; R24; R12 — cadence is the sole factor.
 - **Separate operational screen R-op (`cadence_plus_compute`)**:
   OPTIONAL, distinct spec and label — fixed 5,000 steps per refresh at

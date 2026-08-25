@@ -56,3 +56,16 @@ redundant with the excluded raw OHLC family) with
 `include_price_window: false` as executed (flattened 2,660). P1 stays
 diagnostic under its executed 84-feature identity. No inheritance
 either way without this decision recorded.
+
+## Addendum 2026-08-25 (SOTA-F01)
+
+The digest `dd9e05d8...` above is the LEGACY newline-joined diagnostic,
+now labeled as such. Canonical compact-JSON digests
+(`pipeline_plugins._observation_contract.feature_columns_sha256`, the
+single shared implementation, unity fixture-tested):
+
+- executed 84-feature list: `df2d981dc83367075643d20eb22d484e0543aef512ecdfc12ddb0f321ae3c682`
+- declared v1 / proposed v2 83-feature list: `c4697681c1323245...` (see
+  `ethusdt_4h_l1_system_v2.json`)
+- v2 agent-state fields (position, equity_norm, unrealized_pnl_norm,
+  holding_duration_norm): `b5beeb97e2031b8b...`

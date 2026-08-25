@@ -1231,9 +1231,11 @@ shape is 32×84+4 = 2,692 (with `include_price_window=false` executed vs
 Sealing requirements, binding on the P1 terminal aggregation:
 
 1. Every arm's terminal record is labeled with
-   `executed_observation_identity` (count 84, ordered list, digest
-   `dd9e05d8e6dffeb4...`, flattened 2,692) via
-   `tools/post_p1_screen_contract.executed_observation_identity`.
+   `executed_observation_identity` (count 84, ordered list, flattened
+   2,692) via `tools/post_p1_screen_contract.executed_observation_identity`,
+   carrying BOTH digests (SOTA-F01): the canonical compact-JSON
+   `feature_columns_sha256` `df2d981dc8336707...` and the labeled legacy
+   newline diagnostic `dd9e05d8e6dffeb4...` from the first C01 evidence.
 2. The intended-contract mismatch is classified explicitly:
    `contract_mismatch: {extra: [typical_price], executed_price_window:
    false, declared_price_window: true}`.
@@ -1243,6 +1245,11 @@ Sealing requirements, binding on the P1 terminal aggregation:
 4. Post-P1 materializers refuse observation drift pre-model via
    `check_observation_identity` (negative-tested against the real
    84/83 fixture).
-5. The prospective 83-or-84 decision for post-P1 screens is a NEW
-   contract identity, requested from Musashi/owner in the return
-   packet; no silent inheritance in either direction.
+5. The prospective decision is materialized as
+   `examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v2.json`
+   (status PROPOSED_AWAITING_OWNER_RATIFICATION): declared 83 list
+   (canonical sha `c4697681c1323245...`), no typical_price, price window
+   false, four bound agent-state fields
+   (position, equity_norm, unrealized_pnl_norm, holding_duration_norm;
+   sha `b5beeb97e2031b8b...`), window 32, flattened 2,660. No silent
+   inheritance in either direction.

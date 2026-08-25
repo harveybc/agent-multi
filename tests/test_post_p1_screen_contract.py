@@ -121,7 +121,8 @@ def test_clean_development_config_accepted():
 FINALIST = {"name": "a", "decision_authoritative": True,
             "artifact_sha256": "a" * 64, "config_sha256": "b" * 64,
             "code_commit": "6e7bd128f422939cba21d55b3eaed66739ef515f",
-            "ensemble_rule_sha256": "c" * 64}
+            "ensemble_rule_sha256": "c" * 64,
+            "ensemble_rule_schema": "single_policy_no_ensemble@1"}
 
 
 def test_two_authoritative_refused():
@@ -130,9 +131,30 @@ def test_two_authoritative_refused():
 
 
 def test_finalist_without_frozen_digests_refused():
-    with pytest.raises(sc.ScreenContractViolation, match="frozen digest"):
+    with pytest.raises(sc.ScreenContractViolation, match="lowercase hex"):
         sc.check_release_packet([{"name": "a",
                                   "decision_authoritative": True}])
+
+
+def test_short_or_uppercase_digest_refused():
+    # SOTA-F03: the old guard accepted any 7+ char string
+    for bad in ("deadbee", "A" * 64, "g" * 64):
+        f = dict(FINALIST, artifact_sha256=bad)
+        with pytest.raises(sc.ScreenContractViolation, match="lowercase hex"):
+            sc.check_release_packet([f])
+
+
+def test_truncated_git_commit_refused():
+    f = dict(FINALIST, code_commit="6e7bd128")
+    with pytest.raises(sc.ScreenContractViolation, match="40"):
+        sc.check_release_packet([f])
+
+
+def test_missing_ensemble_schema_refused():
+    f = dict(FINALIST)
+    del f["ensemble_rule_schema"]
+    with pytest.raises(sc.ScreenContractViolation, match="ensemble_rule_schema"):
+        sc.check_release_packet([f])
 
 
 def test_report_only_authority_smuggling_refused():
@@ -152,9 +174,11 @@ def test_typed_report_only_companions_accepted():
 
 # --- observation identity (SOTA-C01) ------------------------------------
 
+STATE_FIELDS = ["position", "equity_norm", "unrealized_pnl_norm",
+                "holding_duration_norm"]
 DECLARED_83 = {"feature_columns": [f"f{i}" for i in range(83)],
                "include_price_window": True, "include_agent_state": True,
-               "window_size": 32}
+               "agent_state_fields": STATE_FIELDS, "window_size": 32}
 EXECUTED_84 = {"feature_columns": ["typical_price"] +
                [f"f{i}" for i in range(83)],
                "include_price_window": False, "include_agent_state": True,
@@ -185,11 +209,72 @@ def test_matching_identity_accepted_with_shape():
     out = sc.check_observation_identity(dict(DECLARED_83), DECLARED_83)
     assert out["feature_count"] == 83
     assert out["flattened_shape"] == 32 * 85 + 4  # price window adds 2
+    assert len(out["feature_columns_sha256"]) == 64
+    assert len(out["agent_state_fields_sha256"]) == 64
+
+
+def test_contract_with_agent_state_but_no_fields_refused():
+    decl = dict(DECLARED_83)
+    del decl["agent_state_fields"]
+    with pytest.raises(sc.ScreenContractViolation,
+                       match="agent_state_fields"):
+        sc.check_observation_identity(dict(decl), decl)
 
 
 def test_executed_identity_labeling_is_honest():
-    ident = sc.executed_observation_identity(
-        {"effective_config": EXECUTED_84})
+    cfg = dict(EXECUTED_84, include_agent_state=True)
+    ident = sc.executed_observation_identity({"effective_config": cfg})
     assert ident["executed_feature_count"] == 84
     assert ident["executed_flattened_shape"] == 32 * 84 + 4
     assert ident["executed_include_price_window"] is False
+    assert ident["flattened_shape_basis"] == "explicit_config_flags"
+    assert len(ident["executed_feature_columns_sha256"]) == 64
+    assert len(ident["executed_feature_digest_legacy_newline"]) == 64
+
+
+def test_identity_without_explicit_state_flag_reports_no_shape():
+    # SOTA-F01: never add four state dims by arithmetic inference
+    cfg = {"feature_columns": ["a", "b"], "window_size": 32}
+    del cfg["window_size"]
+    ident = sc.executed_observation_identity({"effective_config": cfg})
+    assert ident["executed_flattened_shape"] is None
+    assert "unavailable" in ident["flattened_shape_basis"]
+
+
+# --- canonical digest unity (SOTA-F01) ----------------------------------
+
+def test_one_digest_across_producer_and_consumer():
+    import importlib.util as ilu
+    root = Path(__file__).resolve().parents[1]
+    ospec = ilu.spec_from_file_location(
+        "obs_contract", root / "pipeline_plugins" / "_observation_contract.py")
+    oc = ilu.module_from_spec(ospec)
+    ospec.loader.exec_module(oc)
+    cols = ["typical_price", "return_1", "log_return_1"]
+    assert (sc.feature_columns_sha256(cols)
+            == oc.feature_columns_sha256(cols)), (
+        "screen contract and pipeline must share ONE digest implementation")
+    assert sc.legacy_newline_feature_digest(cols) != sc.feature_columns_sha256(
+        cols), "legacy diagnostic digest must stay distinct and labeled"
+
+
+# --- exact update conservation (SOTA-F02) -------------------------------
+
+def test_refresh_schedule_exact_conservation():
+    for total, n in ((260_000, 52), (260_000, 365), (260_000, 730),
+                     (260_000, 7), (259_999, 365), (1, 3)):
+        sched = sc.refresh_update_schedule(total, n)
+        assert len(sched) == n and sum(sched) == total
+
+
+def test_refresh_schedule_deterministic_remainder_placement():
+    sched = sc.refresh_update_schedule(260_000, 365)
+    assert sched[:120] == [713] * 120 and sched[120:] == [712] * 245
+    sched12 = sc.refresh_update_schedule(260_000, 730)
+    assert sched12[:120] == [357] * 120 and sched12[120:] == [356] * 610
+    assert sc.refresh_update_schedule(260_000, 52) == [5000] * 52
+
+
+def test_refresh_schedule_invalid_inputs_refused():
+    with pytest.raises(sc.ScreenContractViolation):
+        sc.refresh_update_schedule(100, 0)
