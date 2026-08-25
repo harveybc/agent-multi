@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""WP1/R05 acceptance validator (v2: claim-level binding) for the SOTA review (order 2026-08-24).
+"""WP1/R05 acceptance validator (v3: HEURISTIC claim-binding lint gate).
+
+Coverage statement (SOTA-C05): this gate detects quantitative claims in
+top-level bullets (keyword+digit heuristic) and in Markdown table rows
+with numeric cells. It does NOT parse prose paragraphs or nested
+bullets; its claim count means "claims detected by the heuristic",
+never "all quantitative claims". It is a lint gate, not an exhaustive
+verifier. for the SOTA review (order 2026-08-24).
 
 Rejects: unknown source IDs, paper sections without a source line,
 duplicate registry IDs, and secondary sources cited as the source of
@@ -70,8 +77,37 @@ def iter_bullets(text):
             j += 1
 
 
+def iter_numeric_table_blocks(text):
+    """Yield contiguous Markdown table blocks containing numeric cells."""
+    lines = text.split("\n")
+    j = 0
+    while j < len(lines):
+        if lines[j].lstrip().startswith("|"):
+            blk = []
+            while j < len(lines) and lines[j].lstrip().startswith("|"):
+                blk.append(lines[j])
+                j += 1
+            # a Fuente line under the table (blank lines allowed)
+            # binds the whole table
+            k = j
+            while k < len(lines) and not lines[k].strip():
+                k += 1
+            trailing = lines[k] if k < len(lines) else ""
+            body = "\n".join(blk)
+            if re.search(r"\|[^|]*\d", body.replace("---", "")):
+                yield body, trailing
+        else:
+            j += 1
+
+
 def claim_level_problems(path, text, ids):
     probs = []
+    for body, trailing in iter_numeric_table_blocks(text):
+        if not (REF.search(body) or REF.search(trailing)):
+            head = body.split("\n")[0][:60]
+            probs.append(
+                f"{path.name} :: tabla numerica sin fuente inline ni "
+                f"linea Fuente inmediata: '{head}'")
     for blk in iter_bullets(text):
         if not (NUM_RE.search(blk) and CLAIM_KW.search(blk)):
             continue
@@ -142,7 +178,8 @@ def main(docs_root=None) -> int:
         print(json.dumps({"outcome": "REJECTED", "problems": problems[:40],
                           "total_problems": len(problems)}, indent=1))
         return 2
-    print(json.dumps({"outcome": "PASS", "files": len(files),
+    print(json.dumps({"outcome": "PASS", "coverage": "heuristic_lint",
+                      "files": len(files),
                       "registered_sources": len(ids)}))
     return 0
 

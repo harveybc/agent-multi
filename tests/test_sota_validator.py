@@ -110,3 +110,36 @@ def test_duplicate_registry_id_rejected(tmp_path, capsys):
     (docs / "sources" / "registry.json").write_text(dup)
     rc, out = run(docs, capsys)
     assert rc != 0 and any("duplicate" in p for p in out["problems"])
+
+
+def test_numeric_table_without_source_rejected(tmp_path, capsys):
+    doc = GOOD_DOC + """
+## Tabla seccion
+| Modelo | Sharpe |
+|---|---|
+| LSTM | 2,34 |
+
+prosa intermedia sin referencia.
+
+Fuentes: [GKX2020 loc:Tab.7]
+"""
+    rc, out = run(build(tmp_path, doc), capsys)
+    assert rc != 0 and any("tabla numerica" in p for p in out["problems"])
+
+
+def test_numeric_table_with_trailing_fuente_accepted(tmp_path, capsys):
+    doc = GOOD_DOC + """
+## Tabla seccion
+| Modelo | Sharpe |
+|---|---|
+| LSTM | 2,34 |
+
+Fuente: [GKX2020 loc:Tab.7]
+"""
+    rc, out = run(build(tmp_path, doc), capsys)
+    assert rc == 0, out
+
+
+def test_pass_output_declares_heuristic_coverage(tmp_path, capsys):
+    rc, out = run(build(tmp_path, GOOD_DOC), capsys)
+    assert rc == 0 and out.get("coverage") == "heuristic_lint"

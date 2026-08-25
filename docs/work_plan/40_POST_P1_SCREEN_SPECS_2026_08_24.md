@@ -45,6 +45,12 @@ below mutates the running campaign.
   every arm, simulated identically; learned target-position/early-close
   acts INSIDE the envelope and never disables it. `envelope_close` and
   `policy_close` are logged separately; both enter turnover/activity.
+- **Observation identity (F1/SOTA-C01)**: every screen materializer
+  calls `check_observation_identity` BEFORE model construction, binding
+  the exact ordered feature list, count, digest, window/price-window/
+  agent-state flags and flattened shape against the screen's declared
+  observation contract; any drift (e.g. the P1-executed 84-feature
+  identity vs the declared 83) is REFUSED (negative-tested).
 - **Trial accounting (C5)**: every effective option — each arm, seed,
   calibrated threshold, lookback — is one trial in the DSR/SPA ledger
   (doc 41). No option may be chosen after seeing results unless it was
@@ -102,25 +108,32 @@ below mutates the running campaign.
 - **Decision rule**: per stage, paired net Sharpe with turnover
   reported; a win from lower turnover at equal gross is valid.
 
-## Screen R — Retraining cadence, method held fixed (C3/R04)
+## Screen R — Retraining cadence, causal (C3/R04, F2/SOTA-C02)
 
-- **Question**: does rolling adaptation add net value, at what cadence
-  — with the update method FROZEN so cadence is the only factor.
-- **Frozen update contract (bound before dispatch)**: warm-start
-  continuation from the running policy (no reinit), optimizer state
-  carried, replay buffer carried and trimmed to the trailing window,
-  trailing window = 2,190 H4 bars (1 year) ending at the refresh bar,
-  update budget = 5,000 gradient steps per refresh regardless of
-  cadence, batch and LR exactly the frozen P1 recipe values. Equal
-  TOTAL compute across arms is achieved by accounting: cadences with
-  more refreshes use the same per-refresh budget; total steps are
-  reported and enter the comparison as a covariate, never as a tuned
-  knob.
-- **Arms**: R0 frozen control; R168 weekly; R24 daily; R12 twice-daily.
-  Each Rx paired with R0 on the same folds/seeds.
-- **Deferred screen R2 (separate, later)**: update METHOD at the
-  winning cadence only — fresh reinit vs warm vs shrink-and-perturb
-  (λ, σ predeclared in its own spec). Not part of Screen R.
+- **Question**: does rolling adaptation add net value, at what cadence —
+  with BOTH the update method AND the total optimization budget frozen,
+  so cadence is the only treatment.
+- **Frozen update contract**: warm-start continuation (no reinit),
+  optimizer state carried, replay carried and trimmed to the trailing
+  window of 2,190 H4 bars ending at the refresh bar, batch and LR
+  exactly the frozen P1 recipe values.
+- **Equal TOTAL update budget (F2)**: every arm receives exactly
+  **260,000 gradient steps per scored year**, allocated evenly across
+  its refreshes: R168 weekly = 5,000/refresh × 52; R24 daily ≈
+  712/refresh × 365; R12 twice-daily ≈ 356/refresh × 730. R0 frozen
+  control receives 0 (it is the no-adaptation reference, paired per
+  fold/seed). Per-refresh and total steps are materialized constants,
+  never tuned.
+- **Arms**: R0 frozen; R168; R24; R12 — cadence is the sole factor.
+- **Separate operational screen R-op (`cadence_plus_compute`)**:
+  OPTIONAL, distinct spec and label — fixed 5,000 steps per refresh at
+  every cadence, honestly measuring the OPERATIONAL bundle
+  cadence+compute; compared on value per GPU-hour as well as economic
+  outcome. No causal cadence claim may cite R-op, and no covariate
+  language may claim causal isolation anywhere.
+- **Deferred screen R2**: update METHOD at the winning causal cadence
+  only — fresh reinit vs warm vs shrink-and-perturb (λ, σ predeclared
+  in its own spec). Not part of Screen R.
 - **Compute**: GPU; refresh runtime p50/p95 measured and published; 6h
   cadence enters only after p95 leaves a safe deadline margin.
 - **Decision rule**: incremental net value vs paired frozen control,

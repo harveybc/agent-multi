@@ -22,10 +22,12 @@ post-hoc choice.
 ## 2. Dependence handling
 
 - **Bootstrap**: stationary bootstrap (Politis-Romano). Expected block
-  length chosen by the Politis-White automatic rule computed ON THE
-  CONTROL ARM's differential series, once per screen, before any
-  candidate is examined; the chosen length is logged in the screen's
-  aggregation config and reused for every candidate in that screen.
+  length chosen by the Politis-White automatic rule computed on the
+  CONTROL ARM'S OWN PER-BAR NET RETURN SERIES ALONE — a single series,
+  no candidate data and no differential enters the computation
+  (SOTA-C06). Computed once per screen, before any candidate outcome is
+  examined; the chosen length is logged in the screen's aggregation
+  config and reused for every candidate in that screen.
 - **Resamples**: B = 10,000; RNG seed for the bootstrap = 20260824
   (fixed, logged).
 - **SPA**: Hansen (2005) studentized statistic with the sample-dependent

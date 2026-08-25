@@ -14,6 +14,8 @@
 | P4 DeepLOB | Clasificación pura; simulación de trading "proof-of-concept" propia sobre datos LSE | NO | Micro-mecánica de fills NO DECLARADA |
 | P5 Momentum Transformer | Backtest propio walk-forward (código público en GitHub) | NO | Fills a cierre; costes 0–3 pb paramétricos |
 
+Fuente: [GKX2020 loc:§2 metodología], [FK2018 loc:§3 costes 5pb], [ZZR2020 loc:§4 costes 1-45bp], [DEEPLOB2019 loc:§V simulación], [WOOD2022 loc:§V costes 0-3bp]
+
 **Hecho transversal (formulación corregida por SOTA-06)**: en las
 FUENTES REVISADAS de los 5 papers NO SE REPORTA ejecución en broker ni
 paper-trading (`not_reported_in_reviewed_sources`) — la ausencia no
