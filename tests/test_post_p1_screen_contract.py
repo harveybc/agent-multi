@@ -1,11 +1,11 @@
-"""Materialization-negative tests (C1/C2): future-trained policies and
-sealed-2025 must be unable to enter development screens; release packets
-must carry exactly one decision-authoritative finalist.
+"""Materialization-negative tests (C1/C2 + F1/F3).
 
-Reproduction-before: doc 40 v1 admitted frozen P1 champions (fit through
-2022, selection informed by 2024) as Screen-B arm B4 on origins scoring
-2022/2023 — the exact fixture below; and doc 38 §23 said "surviving
-configurations" (plural) evaluate on sealed 2025.
+Reproduction-before fixtures are the audited defects verbatim: the
+frozen P1 champion admitted on earlier origins; plural finalists on
+sealed 2025; a policy trained after the fit boundary but before score
+start (SOTA-C03 bypass); authority smuggled through a non-denylisted key
+(SOTA-C04); and the REAL executed-84 vs declared-83 observation drift
+with `typical_price` prepended (SOTA-C01).
 """
 import importlib.util
 from pathlib import Path
@@ -21,29 +21,48 @@ P1_CHAMPION = sc.PolicyIdentity(
     name="p1_champion_seed303",
     fit_data_end="2022-12-31", selection_info_end="2024-12-31")
 
-ORIGIN_2022 = sc.Origin("o2022", "2021-12-31", "2022-01-01", "2022-12-31")
-ORIGIN_2023 = sc.Origin("o2023", "2022-12-31", "2023-01-01", "2023-12-31")
-ORIGIN_2024 = sc.Origin("o2024", "2023-12-31", "2024-01-01", "2024-12-31")
+ORIGIN_2022 = sc.Origin("o2022", "2021-12-31", "2021-12-31",
+                        "2022-01-01", "2022-12-31")
+ORIGIN_2023 = sc.Origin("o2023", "2022-12-31", "2022-12-31",
+                        "2023-01-01", "2023-12-31")
+ORIGIN_2024 = sc.Origin("o2024", "2023-12-31", "2023-12-31",
+                        "2024-01-01", "2024-12-31")
 
 
-def test_frozen_p1_policy_refused_on_2022_origin():
-    with pytest.raises(sc.ScreenContractViolation, match="lookahead"):
-        sc.check_causal_eligibility(P1_CHAMPION, ORIGIN_2022)
+# --- causal eligibility -------------------------------------------------
+
+def test_frozen_p1_policy_refused_on_earlier_origins():
+    for origin in (ORIGIN_2022, ORIGIN_2023):
+        with pytest.raises(sc.ScreenContractViolation):
+            sc.check_causal_eligibility(P1_CHAMPION, origin)
 
 
-def test_frozen_p1_policy_refused_on_2023_origin():
-    with pytest.raises(sc.ScreenContractViolation, match="lookahead"):
-        sc.check_causal_eligibility(P1_CHAMPION, ORIGIN_2023)
+def test_fit_boundary_bypass_refused():
+    # SOTA-C03: trained AFTER the declared fit boundary but before score
+    # start — the old check passed this; it must now be refused.
+    p = sc.PolicyIdentity("late_fit", "2022-06-30", "2022-06-30")
+    origin = sc.Origin("o2023", "2021-12-31", "2022-12-31",
+                       "2023-01-01", "2023-12-31")
+    with pytest.raises(sc.ScreenContractViolation, match="fit boundary"):
+        sc.check_causal_eligibility(p, origin)
 
 
-def test_fit_timestamp_equal_to_score_start_refused():
-    p = sc.PolicyIdentity("edge", "2023-01-01", "2022-06-30")
-    with pytest.raises(sc.ScreenContractViolation):
+def test_selection_boundary_enforced():
+    p = sc.PolicyIdentity("late_sel", "2021-12-31", "2022-12-30")
+    origin = sc.Origin("o2023", "2021-12-31", "2022-06-30",
+                       "2023-01-01", "2023-12-31")
+    with pytest.raises(sc.ScreenContractViolation, match="selection boundary"):
+        sc.check_causal_eligibility(p, origin)
+
+
+def test_malformed_date_refused():
+    p = sc.PolicyIdentity("bad", "2022-13-45", "2022-12-31")
+    with pytest.raises(sc.ScreenContractViolation, match="ISO date"):
         sc.check_causal_eligibility(p, ORIGIN_2023)
 
 
-def test_causally_eligible_per_origin_policy_accepted():
-    p = sc.PolicyIdentity("causal_o2023", "2022-12-31", "2022-12-31")
+def test_causally_eligible_policy_accepted():
+    p = sc.PolicyIdentity("causal", "2022-12-31", "2022-12-31")
     assert sc.check_causal_eligibility(p, ORIGIN_2023)
 
 
@@ -55,9 +74,32 @@ def test_diagnostic_label_admits_only_2024():
         sc.check_causal_eligibility(diag, ORIGIN_2022)
 
 
-def test_sealed_date_anywhere_in_config_refused():
-    cfg = {"folds": [{"score_start": "2024-01-01"},
-                     {"score_start": "2025-01-01"}]}
+# --- origin set ---------------------------------------------------------
+
+def test_valid_origin_set_accepted():
+    assert sc.validate_origins([ORIGIN_2022, ORIGIN_2023, ORIGIN_2024])
+
+
+def test_overlapping_origins_refused():
+    o1 = sc.Origin("a", "2021-12-31", "2021-12-31",
+                   "2022-01-01", "2023-06-30")
+    o2 = sc.Origin("b", "2022-12-31", "2022-12-31",
+                   "2023-01-01", "2023-12-31")
+    with pytest.raises(sc.ScreenContractViolation, match="overlap"):
+        sc.validate_origins([o1, o2])
+
+
+def test_disordered_origin_boundaries_refused():
+    bad = sc.Origin("x", "2023-06-30", "2022-01-01",
+                    "2022-06-01", "2022-12-31")  # fit_end > score_start
+    with pytest.raises(sc.ScreenContractViolation, match="not ordered"):
+        sc.validate_origins([bad])
+
+
+# --- sealed absence -----------------------------------------------------
+
+def test_sealed_date_anywhere_refused():
+    cfg = {"folds": [{"score_start": "2025-01-01"}]}
     with pytest.raises(sc.ScreenContractViolation, match="sealed-period"):
         sc.check_sealed_absence(cfg)
 
@@ -74,26 +116,80 @@ def test_clean_development_config_accepted():
     assert sc.check_sealed_absence(cfg)
 
 
-def test_release_packet_with_two_authoritative_refused():
+# --- release packet -----------------------------------------------------
+
+FINALIST = {"name": "a", "decision_authoritative": True,
+            "artifact_sha256": "a" * 64, "config_sha256": "b" * 64,
+            "code_commit": "6e7bd128f422939cba21d55b3eaed66739ef515f",
+            "ensemble_rule_sha256": "c" * 64}
+
+
+def test_two_authoritative_refused():
     with pytest.raises(sc.ScreenContractViolation, match="exactly one"):
+        sc.check_release_packet([FINALIST, dict(FINALIST, name="b")])
+
+
+def test_finalist_without_frozen_digests_refused():
+    with pytest.raises(sc.ScreenContractViolation, match="frozen digest"):
+        sc.check_release_packet([{"name": "a",
+                                  "decision_authoritative": True}])
+
+
+def test_report_only_authority_smuggling_refused():
+    # SOTA-C04: authority via a key OUTSIDE the old denylist
+    with pytest.raises(sc.ScreenContractViolation, match="non-allowlisted"):
         sc.check_release_packet([
-            {"name": "a", "decision_authoritative": True},
-            {"name": "b", "decision_authoritative": True}])
+            FINALIST,
+            {"name": "b", "promotion_condition": "if a drawdown > 10%"}])
 
 
-def test_release_packet_with_zero_authoritative_refused():
-    with pytest.raises(sc.ScreenContractViolation, match="exactly one"):
-        sc.check_release_packet([{"name": "a"}])
-
-
-def test_reported_companion_with_fallback_trigger_refused():
-    with pytest.raises(sc.ScreenContractViolation, match="fallback"):
-        sc.check_release_packet([
-            {"name": "a", "decision_authoritative": True},
-            {"name": "b", "fallback_trigger": "if a degrades"}])
-
-
-def test_single_finalist_with_report_only_companions_accepted():
+def test_typed_report_only_companions_accepted():
     assert sc.check_release_packet([
-        {"name": "a", "decision_authoritative": True},
-        {"name": "b"}, {"name": "c"}])
+        FINALIST,
+        {"name": "b", "metrics": {"sharpe": 0.4},
+         "series_sha256": "d" * 64, "notes": "report-only"}])
+
+
+# --- observation identity (SOTA-C01) ------------------------------------
+
+DECLARED_83 = {"feature_columns": [f"f{i}" for i in range(83)],
+               "include_price_window": True, "include_agent_state": True,
+               "window_size": 32}
+EXECUTED_84 = {"feature_columns": ["typical_price"] +
+               [f"f{i}" for i in range(83)],
+               "include_price_window": False, "include_agent_state": True,
+               "window_size": 32}
+
+
+def test_executed_84_vs_declared_83_refused():
+    with pytest.raises(sc.ScreenContractViolation,
+                       match="84 != declared\n?.*83|feature count"):
+        sc.check_observation_identity(EXECUTED_84, DECLARED_83)
+
+
+def test_same_count_wrong_order_refused():
+    exe = dict(DECLARED_83)
+    exe["feature_columns"] = list(reversed(DECLARED_83["feature_columns"]))
+    with pytest.raises(sc.ScreenContractViolation, match="ORDER"):
+        sc.check_observation_identity(exe, DECLARED_83)
+
+
+def test_price_window_flag_drift_refused():
+    exe = dict(DECLARED_83, include_price_window=False)
+    with pytest.raises(sc.ScreenContractViolation,
+                       match="include_price_window"):
+        sc.check_observation_identity(exe, DECLARED_83)
+
+
+def test_matching_identity_accepted_with_shape():
+    out = sc.check_observation_identity(dict(DECLARED_83), DECLARED_83)
+    assert out["feature_count"] == 83
+    assert out["flattened_shape"] == 32 * 85 + 4  # price window adds 2
+
+
+def test_executed_identity_labeling_is_honest():
+    ident = sc.executed_observation_identity(
+        {"effective_config": EXECUTED_84})
+    assert ident["executed_feature_count"] == 84
+    assert ident["executed_flattened_shape"] == 32 * 84 + 4
+    assert ident["executed_include_price_window"] is False

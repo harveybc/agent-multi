@@ -1215,3 +1215,34 @@ reports paired per-seed effect sizes with intervals, retains all seeds, and
 adds seeds only for mechanisms surviving the screen. Trial counting for
 deflated-Sharpe / SPA accounting starts now: every config x seed x screen row
 is a trial and is recorded in the OLAP cube.
+
+### 23.5 2026-08-25 P1 observation-identity sealing requirement (SOTA-C01)
+
+Independent audit reproduced that the executed P1 observation carries
+**84 features** — the declared 83-feature system contract
+(`ethusdt_4h_l1_system_v1.json`, list starting `return_1`) plus
+`typical_price` PREPENDED at index 0 — because the campaign driver
+derives features from the dataset CSV header minus an exclusion set
+(`tools/wp4_cpu_smoke.py`, feature derivation at the header read) and
+never consumes the system observation contract. The executed flattened
+shape is 32×84+4 = 2,692 (with `include_price_window=false` executed vs
+`true` declared; the manifest's own [2724] assumed the price window).
+
+Sealing requirements, binding on the P1 terminal aggregation:
+
+1. Every arm's terminal record is labeled with
+   `executed_observation_identity` (count 84, ordered list, digest
+   `dd9e05d8e6dffeb4...`, flattened 2,692) via
+   `tools/post_p1_screen_contract.executed_observation_identity`.
+2. The intended-contract mismatch is classified explicitly:
+   `contract_mismatch: {extra: [typical_price], executed_price_window:
+   false, declared_price_window: true}`.
+3. Historical artifacts are NEVER rewritten as 83; P1 results remain
+   diagnostic for their executed 84-feature identity and cannot be
+   promoted or compared as the declared 83-feature contract.
+4. Post-P1 materializers refuse observation drift pre-model via
+   `check_observation_identity` (negative-tested against the real
+   84/83 fixture).
+5. The prospective 83-or-84 decision for post-P1 screens is a NEW
+   contract identity, requested from Musashi/owner in the return
+   packet; no silent inheritance in either direction.
