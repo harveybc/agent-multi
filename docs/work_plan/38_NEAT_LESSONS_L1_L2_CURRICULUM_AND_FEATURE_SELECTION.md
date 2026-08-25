@@ -1176,8 +1176,12 @@ launches without Musashi's design verification (order clause WP3).
    corrected action/retraining evidence rather than inherited defaults.
 6. Portfolio/multi-asset remains LATER (the self-critique's multi-asset-P0
    proposal is REJECTED per the amendment; single-asset contract first).
-7. Sealed 2025 is evaluated once, for surviving configurations, under an
-   owner-approved release protocol.
+7. Sealed 2025 is evaluated once, for EXACTLY ONE frozen finalist system
+   (policy + ensemble/seed rule frozen before release), under an
+   owner-approved release protocol. Companion results may be reported
+   but may not select, retune or trigger fallbacks; a release packet
+   with more than one decision-authoritative candidate is REFUSED by
+   `tools/post_p1_screen_contract.check_release_packet` (SOTA-R02).
 
 ### 23.3 Dependency graph
 
@@ -1196,8 +1200,8 @@ P1 terminal (seal + aggregate + inert-treatment classification per seed)
                           across origins AND seeds?
                           ├─ no  -> keep simpler winner; DOIN domain uses it
                           └─ yes -> fusion stage, then DOIN domain
-  DOIN domain ──> surviving configs ──> sealed-2025 once (owner release
-  protocol) ──> FS program / document 33 roadmap resume as amended
+  DOIN domain ──> ONE frozen finalist ──> sealed-2025 once (owner release
+  protocol; singleton enforced) ──> FS program / doc 33 roadmap resume
 Constraints: no GPU dispatch without explicit authorization; screens B, A, R,
 C each require Musashi design verification BEFORE launch; 2025 absent from
 every materialized development config; rolling development origins mandatory
