@@ -166,6 +166,14 @@ def apply_observation_contract(config: Dict[str, Any]
     """
     declared, source = declared_observation_contract(config)
     if not declared:
+        if config.get("require_observation_declaration"):
+            # Finding 327: for contracts that demand it (B4), an OMITTED
+            # observation declaration REFUSES on every construction and
+            # resume path — absence can no longer bypass authority.
+            raise ValueError(
+                "require_observation_declaration is set but no "
+                "observation contract is declared — REFUSED before any "
+                "env or model exists (finding 327)")
         return config, {
             "schema": APPLICATION_SCHEMA,
             "declared": False,

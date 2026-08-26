@@ -433,6 +433,7 @@ def calibrate_origin_envelope(df: pd.DataFrame, origin: dict,
     for gi, env_geom in enumerate(CALIBRATION_GRID):
         esha = _sha_obj(env_geom)
         results = []
+        (out / "calibration_runs").mkdir(parents=True, exist_ok=True)
         for arm in CALIBRATION_ARMS:
             print(f"== cal o{origin['year']} geom{gi} {arm}",
                   flush=True)

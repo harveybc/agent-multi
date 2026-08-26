@@ -82,3 +82,19 @@ def test_undeclared_contract_is_noop_for_dimension_check():
     del cfg["observation_contract"]
     facts = verify_flattened_dimension(cfg, _Space(1234).space)
     assert facts == {"checked": False, "source": "undeclared"}
+
+
+def test_required_declaration_omitted_refuses():
+    # finding 327: the B4 flag makes ABSENCE a refusal, not a no-op
+    cfg = _cfg()
+    del cfg["observation_contract"]
+    cfg["require_observation_declaration"] = True
+    with pytest.raises(ValueError, match="finding 327"):
+        apply_observation_contract(cfg)
+
+
+def test_required_declaration_present_passes():
+    cfg = _cfg()
+    cfg["require_observation_declaration"] = True
+    _cfg2, prov = apply_observation_contract(cfg)
+    assert prov["declared"] is True
