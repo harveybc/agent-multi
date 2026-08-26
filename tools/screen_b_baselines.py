@@ -387,7 +387,7 @@ def envelope_criterion(results: list) -> dict:
     then median across arms of (net_return - RISK_LAMBDA * mdd)."""
     fires = [sum(v for k, v in r["close_reason_counts"].items()
                  if k.startswith("envelope_close")) for r in results]
-    moves = [r["activity_position_changes"] for r in results]
+    moves = [sum(r["close_reason_counts"].values()) for r in results]
     med_fires = statistics.median(fires)
     med_moves = statistics.median(moves)
     if med_fires > MAX_ENVELOPE_FIRES_PER_YEAR:

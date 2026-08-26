@@ -141,9 +141,67 @@ def gpu_hours_estimate(reports_dir: Path) -> dict:
                        "measures the real rate before dispatch")}
 
 
+COST_MANIFEST = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+                 "cost_manifest_eth_h4_v2.json")
+
+
+def build_cell_config(origin_contract: dict, seed: int,
+                      frozen_envelope: dict, cost_manifest: dict,
+                      obs: dict) -> dict:
+    """WP4 (finding 326): the FULL contract identity of one B4 cell —
+    envelope, venue cost binding, observation declaration and the
+    mandatory-declaration flag — exists AT MATERIALIZATION, never
+    injected at launch. Refusals fire here."""
+    if not frozen_envelope:
+        raise SystemExit("REFUSED: B4 cell without a frozen execution "
+                         "envelope (finding 326)")
+    if not cost_manifest.get("mt5_ethusd"):
+        raise SystemExit("REFUSED: B4 cell without a venue cost "
+                         "contract (finding 326)")
+    if not obs:
+        raise SystemExit("REFUSED: B4 cell without the v2 observation "
+                         "declaration (finding 327)")
+    cfg = {
+        "seed": seed,
+        "nested_split_contract_sha256": origin_contract["sha256"],
+        "nested_split_contract_path_descriptive":
+            origin_contract["path"],
+        "strategy_plugin": "shared_execution_envelope",
+        "execution_envelope": dict(frozen_envelope),
+        # training env executes under the LIVE venue's binding (mt5);
+        # evaluation is re-scored under both venue primaries (declared)
+        **cost_manifest["mt5_ethusd"]["env_binding"],
+        "feature_columns": list(obs["feature_columns"]),
+        "include_price_window": obs["include_price_window"],
+        "include_agent_state": obs["include_agent_state"],
+        "agent_state_contract": obs.get("agent_state_contract",
+                                        "live_stationary_v2"),
+        "window_size": obs["window_size"],
+        "require_observation_declaration": True,
+        "observation_contract": {
+            "require_feature_aware_preprocessor": True,
+            "preprocessor_plugin": "feature_window_preprocessor",
+            "include_price_window": obs["include_price_window"],
+            "include_agent_state": obs["include_agent_state"],
+            "agent_state_contract": obs.get("agent_state_contract",
+                                            "live_stationary_v2"),
+            "window_size": obs["window_size"],
+            "feature_columns_sha256": obs["feature_columns_sha256"],
+            "expected_flattened_dimension": int(
+                obs["flattened_shape"][0]
+                if isinstance(obs.get("flattened_shape"), list)
+                else obs["flattened_shape"]),
+        },
+    }
+    return cfg
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--output-dir", type=Path, required=True)
+    ap.add_argument("--calibration-dir", type=Path, default=None,
+                    help="Screen B v3 evidence dir with the frozen "
+                         "per-origin envelope geometries (WP3)")
     ap.add_argument("--skip-genesis", action="store_true",
                     help="author contracts and proofs only")
     args = ap.parse_args(argv)
@@ -211,7 +269,45 @@ def main(argv=None) -> int:
                                "origins (paired); no cross-origin or "
                                "P1 warm start")}
 
-    recipe = {"nested_contract_by_origin":
+    # WP4: full per-cell contract identity embedded at materialization
+    cost_manifest = json.loads(COST_MANIFEST.read_text())
+    sysm = json.loads(V2_SYSTEM.read_text())
+    obs = sysm["observation"]
+    frozen_by_origin = {}
+    if args.calibration_dir:
+        for oc in origins:
+            calf = (args.calibration_dir /
+                    f"ENVELOPE_CALIBRATION_o{oc['year']}.json")
+            if not calf.is_file():
+                raise SystemExit(
+                    f"REFUSED: no frozen envelope calibration for "
+                    f"origin {oc['year']} (finding 326/WP3)")
+            cal = json.loads(calf.read_text())
+            frozen_by_origin[oc["year"]] = {
+                "geometry": cal["frozen_geometry"],
+                "envelope_sha256": cal["frozen_envelope_sha256"],
+                "calibrated_on_year": cal["calibration_year"]}
+    cells_cfg = {}
+    if frozen_by_origin:
+        for oc in origins:
+            for seed in SEEDS:
+                cfg = build_cell_config(
+                    oc, seed, frozen_by_origin[oc["year"]]["geometry"],
+                    cost_manifest, obs)
+                key = f"o{oc['year']}_seed{seed}"
+                cells_cfg[key] = {
+                    "effective_config": cfg,
+                    "config_sha256": hashlib.sha256(json.dumps(
+                        cfg, sort_keys=True,
+                        default=str).encode()).hexdigest()}
+        (out / "B4_CELL_CONFIGS.json").write_text(json.dumps(
+            cells_cfg, indent=1))
+
+    recipe = {"cost_manifest_sha256": hashlib.sha256(
+                  COST_MANIFEST.read_bytes()).hexdigest(),
+              "frozen_envelope_by_origin": frozen_by_origin or
+              "PENDING_WP3_CALIBRATION (pass --calibration-dir)",
+              "nested_contract_by_origin":
               {o["year"]: o["sha256"] for o in origins},
               "observation": ident["feature_columns_sha256"],
               "fixed": "P1 recipe: LR 3e-4, epoch_timesteps 20000, "
@@ -229,6 +325,7 @@ def main(argv=None) -> int:
         "observation_identity": ident,
         "recipe_equality_sha256": recipe_sha,
         "genesis": genesis,
+        "cells": {k: v["config_sha256"] for k, v in cells_cfg.items()} if cells_cfg else "PENDING_WP3_CALIBRATION",
         "gpu_hours_estimate": gpu_hours_estimate(out),
         "cpu_smoke_command": (
             "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python "
