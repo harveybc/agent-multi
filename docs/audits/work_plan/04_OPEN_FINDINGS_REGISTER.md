@@ -1160,6 +1160,24 @@ IBKR hold still requires a newly signed effect-bound capability.
 
 ## 2b. Observations Pending Verification (not yet findings)
 
+### 1am. Screen B C1-C7 return audit, 2026-08-26
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_SCREEN_B_C1_C7_RETURN_2026_08_26.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_SCREEN_B_C1_C7_SECOND_CORRECTION_ORDER_2026_08_26.md`
+
+Findings 319 and 321 are independently verified corrected. Findings 318, 320
+and 322 remain open with narrower counterexamples. B4 remains undispatched.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260826-324 | S2 | open, blocks G1/B4 | Entry is unprotected for one H4 bar and accepted traces contain residual sweeps | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-325 | S2 | open, blocks G1 | Cost canon mixes Alpaca spread with venue-free L0 commission evidence | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-326 | S2 | open, blocks B4 | B4 materialization omits shared envelope and cost identities | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-327 | S2 | open, blocks B4 | Missing observation declaration remains an accepted no-op | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-328 | S2 | open, blocks primary Screen B | Fixed 1%/2% envelope dominates H4 signal economics and requires causal calibration | General Satoshi implements; Musashi verifies |
+
 | Ref | Observed | Verify in |
 | --- | --- | --- |
 | OBS-20260730-A | Job-0 record `started_at` is 2026-07-29T07:16:30Z (02:16 COT) but the Omega node process start implies ~18:18 COT the same day, a ~16 h gap with `restart_count=0`. Likely the job record marks plan materialization while workers launched after the deployment sequence, but unverified. | `worker_events` table, next delta session |
