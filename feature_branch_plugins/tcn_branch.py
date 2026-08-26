@@ -16,11 +16,12 @@ class Plugin:
     def build(input_channels: int, window_size: int, config: dict[str, Any]):
         import torch.nn as nn
 
-        channels = [int(value) for value in config["channels"]]
-        kernel = int(config["kernel_size"])
-        dilation_base = int(config["dilation_base"])
-        if not channels or min(channels) < 1 or kernel < 1 or dilation_base < 1:
-            raise ValueError("invalid tcn_branch topology")
+        from feature_branch_plugins._topology import (
+            require_dropout, require_int_list, require_positive_int)
+        channels = require_int_list(config, "channels")
+        kernel = require_positive_int(config, "kernel_size")
+        dilation_base = require_positive_int(config, "dilation_base")
+        require_dropout(config)
         activation = {"relu": nn.ReLU, "gelu": nn.GELU}.get(str(config["activation"]).lower())
         if activation is None:
             raise ValueError("tcn_branch activation must be relu or gelu")

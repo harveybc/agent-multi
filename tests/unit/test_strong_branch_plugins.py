@@ -105,13 +105,16 @@ def test_cross_family_attention_fuses_and_grads():
     torch.manual_seed(4)
     dims = [64, 64, 32]
     fusion, out_dim = CrossAttn.build(
-        dims, dict(CrossAttn.plugin_params))
+        dims, dict(CrossAttn.plugin_params,
+                   family_ids=["ret", "trend", "vol"]))
     encoded = [torch.randn(BATCH, d, requires_grad=True) for d in dims]
-    out = fusion(encoded)
+    named = list(zip(["ret", "trend", "vol"], encoded))
+    out = fusion(named)
     assert out.shape == (BATCH, out_dim)
     out.sum().backward()
     for e in encoded:
         assert e.grad is not None and e.grad.abs().sum() > 0
+    assert len(fusion.family_digest) == 64
 
 
 @pytest.mark.parametrize("plugin", [PatchTST, TFT])

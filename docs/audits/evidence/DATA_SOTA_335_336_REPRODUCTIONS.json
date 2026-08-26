@@ -1,0 +1,8 @@
+{
+ "335_patch_len_True_accepted": true,
+ "335_dropout_string_accepted": true,
+ "335_bool_branch_width_accepted": true,
+ "335_fractional_window": "late TypeError from torch: zeros(): argument 'size' failed to unpack the object at pos ",
+ "336_duplicate_family_ids_accepted": true,
+ "336_same_width_swap_refused": false
+}

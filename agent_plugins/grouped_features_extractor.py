@@ -113,12 +113,18 @@ def build_grouped_extractor_class():
                 fusion_params = {**fusion_params,
                                  "family_ids": ordered_families}
             fusion, features_dim = fusion_class.build(branch_dims, fusion_params)
+            cfg["family_ids_ordered"] = ordered_families
+            cfg["family_digest"] = getattr(fusion, "family_digest",
+                                           None)
             super().__init__(observation_space, features_dim)
             self.temporal_branches = nn.ModuleList(modules[: len(indices)])
             self.feature_indices = deepcopy(indices)
             self.state_keys = state_keys
             self.state_branch = modules[-1] if state_keys else None
             self.fusion = fusion
+            self.fusion_consumes_named = bool(
+                getattr(fusion, "consumes_named", False))
+            self.ordered_families = ordered_families
             self.effective_architecture = cfg
 
         def forward(self, observations):
@@ -130,6 +136,8 @@ def build_grouped_extractor_class():
             if self.state_branch is not None:
                 state = torch.cat([observations[key].float() for key in self.state_keys], dim=-1)
                 encoded.append(self.state_branch(state.unsqueeze(1)))
+            if self.fusion_consumes_named:
+                encoded = list(zip(self.ordered_families, encoded))
             return self.fusion(encoded)
 
     return GroupedFeaturesExtractor

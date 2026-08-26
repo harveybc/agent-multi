@@ -31,6 +31,7 @@ class Plugin:
         d_model, n_heads = require_heads_divide(config, "d_model",
                                                 "n_heads")
         n_layers = require_positive_int(config, "n_layers")
+        require_positive_int(config, "ff_mult")
         require_dropout(config)
         n_patches = require_patch_coverage(window_size, patch_len,
                                            stride)

@@ -85,47 +85,55 @@ def test_331_auditor_counterexample_stride5():
 # --- 332: fusion refuses count/width drift ------------------------------
 
 def _fusion(dims, families=("a", "b", "c")):
+    fam = list(families)[:len(dims)]
     params = dict(CrossAttn.plugin_params, d_model=16, n_heads=2,
-                  output_dim=24, family_ids=list(families)[:len(dims)])
-    return CrossAttn.build(dims, params)[0]
+                  output_dim=24, family_ids=fam)
+    return CrossAttn.build(dims, params)[0], fam
+
+
+def _named(fam, tensors):
+    return list(zip(fam, tensors))
 
 
 def test_332_extra_branch_refused():
-    f = _fusion([8, 8, 8])
-    enc = [torch.randn(2, 8) for _ in range(4)]
-    with pytest.raises(ValueError, match="expected 3 branches"):
+    f, fam = _fusion([8, 8, 8])
+    enc = _named(fam + ["d"], [torch.randn(2, 8) for _ in range(4)])
+    with pytest.raises(ValueError, match="expected 3 named branches"):
         f(enc)
 
 
 def test_332_missing_branch_refused():
-    f = _fusion([8, 8, 8])
-    with pytest.raises(ValueError, match="expected 3 branches"):
-        f([torch.randn(2, 8), torch.randn(2, 8)])
+    f, fam = _fusion([8, 8, 8])
+    with pytest.raises(ValueError, match="expected 3 named branches"):
+        f(_named(fam[:2], [torch.randn(2, 8), torch.randn(2, 8)]))
 
 
 def test_332_wrong_width_refused_with_family_name():
-    f = _fusion([8, 16, 8])
-    enc = [torch.randn(2, 8), torch.randn(2, 8), torch.randn(2, 8)]
+    f, fam = _fusion([8, 16, 8])
+    enc = _named(fam, [torch.randn(2, 8), torch.randn(2, 8),
+                       torch.randn(2, 8)])
     with pytest.raises(ValueError, match="'b' must be \\(B, 16\\)"):
         f(enc)
 
 
 def test_332_swapped_widths_refused():
-    f = _fusion([8, 16, 8])
-    enc = [torch.randn(2, 16), torch.randn(2, 8), torch.randn(2, 8)]
+    f, fam = _fusion([8, 16, 8])
+    enc = _named(fam, [torch.randn(2, 16), torch.randn(2, 8),
+                       torch.randn(2, 8)])
     with pytest.raises(ValueError):
         f(enc)
 
 
 def test_332_family_ids_bound():
-    f = _fusion([8, 8], families=("returns", "trend"))
+    f, _fam = _fusion([8, 8], families=("returns", "trend"))
     assert f.family_ids == ["returns", "trend"]
+    assert len(f.family_digest) == 64
 
 
 # --- 334: degenerate topology domains refuse ----------------------------
 
 def test_334_timesnet_window1_refused():
-    with pytest.raises(TopologyError, match="window_size >= 4"):
+    with pytest.raises(TopologyError, match="window_size must be >= 4"):
         TimesNet.build(4, 1, dict(TimesNet.plugin_params))
 
 

@@ -28,13 +28,23 @@ class Plugin:
                                                 "n_heads")
         out_dim = require_positive_int(config, "output_dim")
         require_dropout(config)
-        if not branch_dims or any(int(d) < 1 for d in branch_dims):
-            raise ValueError("cross_family_attention needs positive "
-                             "branch dims")
+        from feature_branch_plugins._topology import strict_int
+        if not branch_dims:
+            raise ValueError("cross_family_attention needs branches")
+        expected_dims = [strict_int(d, f"branch_dims[{i}]", 1)
+                         for i, d in enumerate(branch_dims)]
+        # DATA-SOTA-336: family identity is REQUIRED, unique, nonempty
         family_ids = list(config.get("family_ids") or [])
-        if family_ids and len(family_ids) != len(branch_dims):
-            raise ValueError("family_ids must match branch count")
-        expected_dims = [int(d) for d in branch_dims]
+        if len(family_ids) != len(expected_dims):
+            raise ValueError(
+                "cross_family_attention requires one family_id per "
+                f"branch ({len(expected_dims)}), got {len(family_ids)}")
+        if any(not isinstance(f, str) or not f.strip()
+               for f in family_ids):
+            raise ValueError("family_ids must be nonempty strings")
+        if len(set(family_ids)) != len(family_ids):
+            raise ValueError(
+                f"duplicate family_ids refused: {family_ids}")
 
         class Fusion(nn.Module):
             def __init__(self):
@@ -52,20 +62,35 @@ class Plugin:
                                      out_dim)
 
             def forward(self, encoded):
-                # DATA-SOTA-332: exact count/rank/width — never a
-                # silent zip truncation
+                # DATA-SOTA-332/336: NAMED runtime records — identity,
+                # count, rank and width all refuse; a same-width swap
+                # refuses BY NAME, not by numeric accident.
                 if len(encoded) != len(expected_dims):
                     raise ValueError(
                         f"cross_family_attention expected "
-                        f"{len(expected_dims)} branches "
-                        f"({family_ids or 'unnamed'}), got "
-                        f"{len(encoded)}")
-                for i, (e, d) in enumerate(zip(encoded, expected_dims)):
+                        f"{len(expected_dims)} named branches "
+                        f"{family_ids}, got {len(encoded)}")
+                tensors = []
+                for i, record in enumerate(encoded):
+                    if (not isinstance(record, (tuple, list))
+                            or len(record) != 2):
+                        raise ValueError(
+                            "cross_family_attention consumes NAMED "
+                            "records (family_id, tensor); positional "
+                            f"input at index {i} refused")
+                    name, e = record
+                    if name != family_ids[i]:
+                        raise ValueError(
+                            f"family identity mismatch at position "
+                            f"{i}: expected {family_ids[i]!r}, got "
+                            f"{name!r}")
+                    d = expected_dims[i]
                     if e.dim() != 2 or e.shape[-1] != d:
-                        name = family_ids[i] if family_ids else i
                         raise ValueError(
                             f"branch {name!r} must be (B, {d}), got "
                             f"{tuple(e.shape)}")
+                    tensors.append(e)
+                encoded = tensors
                 tokens = torch.stack(
                     [p(e) for p, e in zip(self.proj, encoded)],
                     dim=1) + self.family_pos          # (B, N, D)
@@ -75,7 +100,11 @@ class Plugin:
                 fused = self.norm(tokens + gated)
                 return self.out(fused.flatten(1))
 
+        import hashlib
         fusion = Fusion()
         fusion.family_ids = family_ids
         fusion.expected_dims = expected_dims
+        fusion.consumes_named = True
+        fusion.family_digest = hashlib.sha256(
+            "\n".join(family_ids).encode()).hexdigest()
         return fusion, out_dim
