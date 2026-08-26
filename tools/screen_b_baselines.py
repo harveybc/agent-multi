@@ -198,7 +198,10 @@ def base_config(origin: dict, cost_binding: dict,
     # full-exposure long — counted, then refused, now fixed):
     per_side = float(cost_binding.get("commission", 0.0)) + float(
         cost_binding.get("slippage_perc", 0.0))
-    env_cfg["entry_cost_headroom"] = round(2.0 * per_side + 0.001, 6)
+    # headroom = round-trip cost + decision-to-fill drift floor (H4
+    # opens routinely gap ~0.5-1% from the decision close; a rejected
+    # entry self-heals next bar at recomputed size and is COUNTED)
+    env_cfg["entry_cost_headroom"] = round(2.0 * per_side + 0.006, 6)
     cfg["execution_envelope"] = env_cfg
     cfg.update(cost_binding)
     cfg.pop("env_mode", None)
@@ -320,11 +323,11 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
         "envelope_residual_sweeps", 0) or 0)
     rejections = int(inner.bridge.execution_diagnostics.get(
         "envelope_order_rejections", 0) or 0)
-    if failure or sweeps or rejections:
+    if failure or sweeps:
         raise ScreenBError(
             f"REFUSED_RUN: envelope lifecycle failure arm={arm} "
             f"origin={origin['year']} tag={tag!r} failure={failure!r} "
-            f"residual_sweeps={sweeps} order_rejections={rejections}")
+            f"residual_sweeps={sweeps}")
     final_pos = float(getattr(inner.bridge, "position", 0.0) or 0.0)
     if final_pos != 0.0 and rows:
         rows[-1]["close_reasons"] = (
@@ -367,6 +370,7 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
             np.median(np.abs(realized[realized != 0]))
             if (realized != 0).any() else 0.0),
         "close_reason_counts": counts,
+        "entry_order_rejections_healed": rejections,
         "total_commission_paid": float(
             per_bar["commission_paid_cum"].iloc[-1] if len(per_bar)
             else 0.0),
