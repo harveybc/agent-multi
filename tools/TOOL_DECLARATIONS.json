@@ -2,22 +2,85 @@
  "schema": "tool_declarations.v1",
  "note": "REVIEWED semantic declarations \u2014 the semantic source of truth for the engineering surface index (T-1 redesign). Discovered facts live in the generated index, never here. A tool absent from both 'tools' and 'known_unclassified_baseline' that is executable FAILS CI. The baseline grandfathers the pre-index population; it only ever shrinks as tools get reviewed and declared. UNCLASSIFIED is an honest state, never a guess.",
  "tools": {
-  "export_sac_architecture.py": {
-   "purpose": "Read-only exporter for SAC actor/critic summaries and architecture diagrams from a declared checkpoint",
+  "agent_courier.py": {
+   "purpose": "Owner order 2026-08-20: the barracks mail. Polls git fetch, scans fetched branches' docs/handoffs+docs/audits for documents whose filenames address the local general (X_TO_Y convention), dedupes by blob sha and injects a delivery prompt into the local general's own subscription CLI headlessly. Transport ONLY: no API keys, no permission changes, no authority; replies remain committed documents so the git audit trail is strengthened. PROTOTYPE STATUS: awaiting Musashi audit; no daemon enabled anywhere.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "aggregate_curriculum_decision.py": {
+   "purpose": "Aggregate validated curriculum-decision arm records into the decision table; shares the arm validator with the runner",
    "lifecycle": "supported",
    "mutability": "read_only",
-   "authority_class": "discovery",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "aggregate_eth_sac_inner_curriculum.py": {
+   "purpose": "M0 survival aggregation (3/4 rule) + frozen interpretation table selecting exactly one successor branch",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "aggregate_l1_curriculum_campaign.py": {
+   "purpose": "Fail-closed terminal aggregation for the four-seed N / EN-W / EN-F P1 campaign. Verifies 12 accepted reports, content-based pair identity, selected-state maps, outer-2024 endpoints and the predeclared directional rule; never accesses sealed 2025 or authorizes promotion.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
    "owner": "General Musashi"
   },
-  "materialize_grouped_sac_config.py": {
-   "purpose": "Materialize a grouped semantic-feature SAC experiment config from an existing feature-aware config; does not train or promote",
+  "aggregate_l1_factorial.py": {
+   "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
    "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "campaign_operation",
-   "owner": "General Musashi"
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   },
   "arm_differentiation.py": {
    "purpose": "Campaign precondition (finding D8-20260815): refuse to dispatch when arms declaring different treatments report byte-identical metric tuples for a defective reason. Typed ladder over POLICY TENSOR hashes (never .zip container digests, whose mtimes make identical weights hash differently) and behaviour fingerprints from return traces with identity columns stripped. SHARED_SCORED_POLICY / TREATMENT_NOT_REALIZED / METRIC_COLLAPSE / UNDECIDABLE refuse; DEGENERATE_IDENTICAL accepts, because a zero-trade or constant-action policy ignores its observations and MUST score alike under any treatment",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "audit_snapshot_collector.py": {
+   "purpose": "Collect read-only audit snapshots of fleet/campaign state",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "bootstrap_test_fixtures.py": {
+   "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "collect_l1_factorial.py": {
+   "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "config_doctor.py": {
+   "purpose": "Read-only facade over app/config_validation.py shared validators; reports typed findings, never mutates, never authorizes",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "cuda_c0_smoke.py": {
+   "purpose": "Single bounded CUDA C0 mechanics smoke of the strong grouped route: device/versions/memory/gradients/parity evidence; no economics, no promotion, no B4",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "dead_actor_observation_fixture.py": {
+   "purpose": "CPU before/after evidence for AUD-P1LR-20260815-235: builds the REAL ETH observation both ways (with and without the unscaled raw price window) with the real feature_window_preprocessor and a real SB3 SAC actor, and reports first-layer live-unit fraction, per-unit variation, action variance and the measured zero-gradient claim (units dead at initialisation never revive). Read-only: it trains a throwaway actor on a replay env and writes only its own JSON report",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "discovery",
@@ -28,56 +91,6 @@
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "config_doctor.py": {
-   "purpose": "Read-only facade over app/config_validation.py shared validators; reports typed findings, never mutates, never authorizes",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "multifront_status.py": {
-   "purpose": "Consolidated machine-readable multi-front status contract; first-class RUNNING P1LR factorial Front-1 source with an EXPLICIT VALIDATED mode (finding 233: --p1lr-mode screen|decision derives the output root (output_root vs decision_run.output_root), the systemd unit template (p1lr-screen@ vs p1lr-decision@), the expected heartbeat/record mode, the expected evidence class and the total cell count; an identity that lives under the OTHER mode's root is a typed count-free refusal (P1LR_IDENTITY_MODE_MISMATCH) and a root with no readable fact renders typed unavailable instead of a false 0/4, 0/16; a record of the other mode is rejected, not counted; a direct nohup worker renders unit_loaded=false with a typed durability gap instead of a fabricated NRestarts=0; fresh activity under the other mode's root is announced) plus current seed/cell/checkpoint per worker from per-cell runner heartbeats with typed staleness, per-seed and fleet cell-record counts, current-cell + critical-path ETAs, runner-sampled GPU utilization/temperature, the L1 factorial source with paused-campaign history separation (finding 204), telemetry bound to (identity, seed, cell, attempt) with source freshness (finding 212), parallel critical-path experiment ETA (finding 213), an execution-evidence-derived IBKR queue item (finding 214) and durable-halt-value authority (finding 228); the completed L1 factorial renders history-only and never re-enters the executable queue",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "mutability_note": "reads run artifacts strictly read-only (the P1LR source is fully read-only); writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "social_intelligence_enrichment.py": {
-   "purpose": "Bounded Hermes enrichment of untrusted social posts into typed, source-linked OLAP facts and human-review candidates",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "evidence_producer",
-   "owner": "General Musashi"
-  },
-  "fleet_status_context.py": {
-   "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "pause_doin_fleet.py": {
-   "purpose": "Pause the DOIN fleet with binding hashes, GPU-owner verification and per-node pause reports",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "campaign_operation",
-   "owner": "General Satoshi III"
-  },
-  "resume_doin_fleet.py": {
-   "purpose": "Resume a paused DOIN fleet against recorded pause bindings with rejoin proof",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "campaign_operation",
-   "owner": "General Satoshi III"
-  },
-  "rolling_origin_adaptation.py": {
-   "purpose": "RT rolling-origin/prequential adaptation runner: test-then-train intervals, simulator-executed handover, single-transaction SQLite state, exactly-once replay",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
   "eth_curriculum_decision_experiment.py": {
@@ -94,46 +107,40 @@
    "authority_class": "campaign_operation",
    "owner": "General Musashi"
   },
-  "aggregate_curriculum_decision.py": {
-   "purpose": "Aggregate validated curriculum-decision arm records into the decision table; shares the arm validator with the runner",
+  "eth_sac_inner_curriculum_screen.py": {
+   "purpose": "M0 mechanism screen runner: one seed, four frozen arms, reuses validated D1 helpers",
    "lifecycle": "supported",
-   "mutability": "read_only",
+   "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
-  "materialize_eth_curriculum_configs.py": {
-   "purpose": "Materialize corrected ETH curriculum arm configs from the phase-1 base (findings 108-116 corrections)",
-   "lifecycle": "campaign_frozen",
+  "eth_sac_training_diagnostics.py": {
+   "purpose": "WP0 read-only D1 training-collapse diagnostics collector; typed absences, never zero",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "experiment_transition_queue.py": {
+   "purpose": "Durable terminal-to-next-job transition queue (order 2026-08-15 \u00a73): one content-addressed JSON record per ENDING job, holding the current job, the terminal result identity, the next approved job, the materialization state, the dispatch state, the blockers, the per-node participation and the declared transition budget. transition_status() types the fleet answer \u2014 a terminal experiment with no dispatched successor is completed_untransitioned, and a missing record is completed_untransitioned too (unproven is never healthy); reconstruct_transitions() rebuilds every transition from these files ALONE after a reboot, consulting no heartbeat, shell process, chat message or operator memory, so a dispatch claim whose lease expired while the host was down surfaces as expired rather than as still in flight. Dispatch is a lease and FAILS CLOSED: claim_dispatch() refuses a second live claim or an already-dispatched transition (TRANSITION_DUPLICATE_DISPATCH), an unmaterialized or blocked successor, and a chain identity conflicting with the record's proven chain (TRANSITION_CHAIN_CONFLICT), while join_chain() lets healthy nodes continue the ONE proven common chain and mark_node() types an unavailable node without vetoing the healthy ones. evaluate_transition_incident()/sweep_transition_incidents() emit exactly ONE deduplicated undispatched-successor incident past the declared budget through the existing tools/incident_emit.py ledger and close that SAME event code on recovery, with the dedup marker inside the durable record so a reboot or a second host cannot produce a flood",
+   "lifecycle": "supported",
    "mutability": "mutating",
+   "mutability_note": "writes only its own durable records under ~/.local/state/agent-multi/experiment-transition-queue (atomic tmp+fsync+replace), NEVER inside any run's output root, plus deduplicated incident-ledger observations/recoveries through the shared shim; it never launches, restarts or stops any job itself",
    "authority_class": "campaign_operation",
    "owner": "General Satoshi III"
   },
-  "materialize_rt1a_grid.py": {
-   "purpose": "Materialize the RT1-A reduced factorial grid (owner-ratified arms); MATERIALIZED_NOT_EXECUTED until gates are met",
-   "lifecycle": "campaign_frozen",
-   "mutability": "mutating",
-   "authority_class": "campaign_operation",
-   "owner": "General Satoshi III"
-  },
-  "incident_ledger.py": {
-   "purpose": "Append-only incident ledger (live-alerting era, deployed fleet-wide 2026-08-04)",
+  "export_sac_architecture.py": {
+   "purpose": "Read-only exporter for SAC actor/critic summaries and architecture diagrams from a declared checkpoint",
    "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "incident_pipeline",
-   "owner": "General Satoshi III"
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Musashi"
   },
-  "incident_router.py": {
-   "purpose": "Route ledger incidents to notification channels with severity policy",
+  "fleet_status_context.py": {
+   "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)",
    "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "incident_pipeline",
-   "owner": "General Satoshi III"
-  },
-  "incident_emit.py": {
-   "purpose": "Emit a single structured incident into the ledger from scripts/watchdogs",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "incident_pipeline",
+   "mutability": "read_only",
+   "authority_class": "discovery",
    "owner": "General Satoshi III"
   },
   "gpu_idle_watchdog.py": {
@@ -157,66 +164,38 @@
    "authority_class": "watchdog",
    "owner": "General Satoshi III"
   },
-  "memory_pressure_watchdog.py": {
-   "purpose": "Alert on host memory pressure",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "watchdog",
-   "owner": "General Satoshi III"
-  },
-  "replicate_decision_evidence.py": {
-   "purpose": "Replicate decision evidence to the declared remote authority with independent remote observation (finding 151 semantics)",
+  "incident_emit.py": {
+   "purpose": "Emit a single structured incident into the ledger from scripts/watchdogs",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "authority_class": "evidence_producer",
+   "authority_class": "incident_pipeline",
    "owner": "General Satoshi III"
   },
-  "audit_snapshot_collector.py": {
-   "purpose": "Collect read-only audit snapshots of fleet/campaign state",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "eth_sac_training_diagnostics.py": {
-   "purpose": "WP0 read-only D1 training-collapse diagnostics collector; typed absences, never zero",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "eth_sac_inner_curriculum_screen.py": {
-   "purpose": "M0 mechanism screen runner: one seed, four frozen arms, reuses validated D1 helpers",
+  "incident_ledger.py": {
+   "purpose": "Append-only incident ledger (live-alerting era, deployed fleet-wide 2026-08-04)",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "authority_class": "evidence_producer",
+   "authority_class": "incident_pipeline",
    "owner": "General Satoshi III"
   },
-  "aggregate_eth_sac_inner_curriculum.py": {
-   "purpose": "M0 survival aggregation (3/4 rule) + frozen interpretation table selecting exactly one successor branch",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "quarantine_inner_curriculum_successor.py": {
-   "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
+  "incident_router.py": {
+   "purpose": "Route ledger incidents to notification channels with severity policy",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "authority_class": "campaign_operation",
+   "authority_class": "incident_pipeline",
+   "owner": "General Satoshi III"
+  },
+  "l1_curriculum_experiment.py": {
+   "purpose": "P1 order 2026-08-23: fixed-LR L1 curriculum arms N / EN-W / EN-F on the FLAT-MLP identity (grouped extractor never enabled). Orchestrates easy->normal phases via the accepted phase runner; fail-closed handoff gate (eligible checkpoint + >=2 mapped normal decision crossings from the executing validation trace); PROVES tensor continuity (exact actor-L1 match easy-selected vs normal-initial), replay disposition per declared arm semantics, and component identity via SB3 zip member hashes. Predeclared direction rule; EN-W and EN-F never merged into one claim. Easy compute reported separately.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
    "owner": "General Satoshi III"
   },
   "l1_factorial_screen.py": {
    "purpose": "L1 matched factorial runner: four v3 cells per seed, mode-aware phase 1, paired stopping, nested chronology; smoke profile is mechanics-only",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "aggregate_l1_factorial.py": {
-   "purpose": "Generic L1 factorial aggregation (repair spec \u00a77.1/\u00a77.2): direct activity facts via terminal probe + verification rollout, exact ordered typed outcome, append-only publication; smoke and invalid cells can never promote",
-   "lifecycle": "supported",
-   "mutability": "read_only",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
@@ -227,53 +206,19 @@
    "authority_class": "campaign_operation",
    "owner": "General Satoshi III"
   },
-  "materialize_l1_system_manifest.py": {
-   "purpose": "Generate+freeze the exact ETH L1 system manifest from real artifacts (data rows/time bounds, anchors with tensor shas, observation and cost contracts); changed bindings are a new version, never an overwrite",
+  "l2_curriculum_arms.py": {
+   "purpose": "L2 curriculum arms runner/materializer (doc 38 \u00a76/\u00a78; order 2026-08-15 \u00a72): materializes and executes L2_N (all generations normal-realistic) versus L2_EN (easy triage generations, then a MANDATORY normal-realistic re-evaluation of every surviving elite) from examples/config/phase_3_eth_sac_dynamics/l2_curriculum_arms_v1.json. L1 stays FROZEN in both arms (phase-1 dynamics normal_realistic, phase-1 and phase-2 LR 3e-5) and no L1 curriculum field may be an L2 gene; both arms carry an identical total candidate-evaluation budget, population size, population seed, initial genome seeds, data roles and normal-realistic decision evidence; the EXECUTING config binds the typed nested split contract in nested_split_mode=l2 with roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, 256 forced-hold context rows excluded from scores and sealed 2025 never materialized; L2 fitness is paired_generalization_weekly_v1 over inner_validation x outer_validation and L2 generation patience uses that paired evidence after a minimum generation floor; easy fitness is INVALIDATED at the stage transition and an easy-evaluated candidate can never enter a normal leaderboard, champion, migration, archive or release path; genomes inherit TYPED GENES only (weights, topology, replay buffers, optimizer moments and per-genome anchors refuse); every generation record logs unique-genome count, allele diversity and rejected/ineligible share; every node proves the same source revisions, plan/domain hashes, dataset hash, population seed, genesis and finalized ancestry before evaluating; a second parallel chain for one arm and an out-of-order arm are typed refusals; --mode smoke is the bounded four-GPU mechanics smoke, --preflight the no-training materialization proof, --dispatch-plan the per-host command plan, --champion the refusal-first champion resolver",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "authority_class": "campaign_operation",
-   "owner": "General Satoshi III"
-  },
-  "collect_l1_factorial.py": {
-   "purpose": "Content-addressed L1 collection (order \u00a75/WP4): pull assigned seed subtrees from declared source hosts, stage without overwrite, verify referenced hashes, reject duplicate identities, enforce cross-record identity uniformity, seal with tree digest, replicate + rehash/load on an independent host, aggregate only from the sealed root",
-   "lifecycle": "supported",
-   "mutability": "mutating",
+   "mutability_note": "writes only under the mode's output root (chain registry, per-generation populations and records, per-candidate attempt dirs, nested split CSVs, heartbeats, locks) and an explicitly named --output payload file; the pinned contract, the frozen common anchor, the nested split contract and the system manifest are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; --dispatch-plan and --champion write nothing unless --output is given",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
-  "bootstrap_test_fixtures.py": {
-   "purpose": "Clean-checkout test-fixture bootstrap (audit 2026-08-08 req 6): verifies the pinned base contract, clones/verifies the sibling doin-node templates; typed outcomes, --check-only never mutates",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "social_review_packet.py": {
-   "purpose": "Materialize one bounded owner-review packet (experiment/reply/investigate candidates) from the social OLAP; proposes, never executes",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "social_review_ledger.py": {
-   "purpose": "Append-only owner-review ledger: accept/defer/reject with reason; accepted experiments enter the work queue with provenance, accepted replies become drafts only",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "prepush_sensitivity_gate.py": {
-   "purpose": "Pre-push sensitivity gate: scans outgoing commits for typed sensitivity classes (credentials, account identifiers, signer/key paths, third-party content markers, live SL/TP levels, topology beyond allowlist) with redacted findings and nonzero exit (AUD-SEC-20260810-215)",
+  "l2_observation_boundary_validation.py": {
+   "purpose": "Bounded single-GPU validation for AUD-P1LR-20260815-235: runs ONE cold-start L2 candidate through a real phase-1 easy -> phase-2 normal-realistic boundary on the real ETH nested roles under the CORRECTED observation contract (include_price_window=false), and reports the per-epoch actor first-layer liveness. Cold start is forced because the 2724-dim frozen anchor cannot warm-start the corrected 2660-dim observation. Writes only its own output root; launches nothing else",
    "lifecycle": "supported",
    "mutability": "read_only",
-   "authority_class": "gate",
-   "owner": "General Satoshi III"
-  },
-  "m0_l1_mechanism_ladder.py": {
-   "purpose": "Bounded M0-to-L1 mechanism ladder runner (finding 220 WP3): four single-delta arms D0/D2/D3/D4 under one diagnostic identity, contract-enforced host+GPU-UUID binding, per-arm exclusive claims, atomic contrast-table records; diagnosis only, never decision-eligible",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "evidence_producer",
+   "authority_class": "discovery",
    "owner": "General Satoshi III"
   },
   "m0_l1_boundary_action_replay.py": {
@@ -299,164 +244,11 @@
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
-  "p1_difficulty_lr_factorial.py": {
-   "purpose": "Phase-1 difficulty x phase-1 LR 2x2 factorial runner (order 2026-08-11 WP4 \u00a78; corrections 224/225/226): per-seed sequential four-cell batches on the contract-assigned GPU in the cyclic-Latin-square cell order, each cell warm-started from the exact hash-bound per-seed anchor; the EXECUTING config binds the typed nested split contract (sha recorded AND verified before model construction), nested_split_mode=l1 and selection_metric=paired_generalization_weekly_v1 with the legacy lexicographic/explicit-window branch structurally unreachable; roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, sealed 2025 SEALED, 256-row context prefixes declared and excluded from scores; every record binds nested contract sha, split-manifest sha, per-role CSV shas, scored/context counts and exact score dates plus finding-223 terminal custody and the finding-221 viability block; wrong role path/count/sha, outer-as-inner, missing context flag, context counted in score, paired-metric drift and sealed-test materialization refuse BEFORE training; --screen-verdict REQUIRES the typed 16-entry replica proof (--replica-proof, finding 225; replica_terminal_loads is a boolean) and revalidates per-checkpoint + nested identity at aggregation time; --mode decision runs the document-38 decision path (distinct identity/output root, original anchors, 2000-checkpoint ceiling, patience 60/floor 40, paired stopping, best restoration, ONE final outer evaluation) gated on --screen-gate; --decision-verdict emits the document-38 outcomes with per-seed paired effects and per-cell weekly metrics with units; --preflight is the no-training materialization proof",
+  "m0_l1_mechanism_ladder.py": {
+   "purpose": "Bounded M0-to-L1 mechanism ladder runner (finding 220 WP3): four single-delta arms D0/D2/D3/D4 under one diagnostic identity, contract-enforced host+GPU-UUID binding, per-arm exclusive claims, atomic contrast-table records; diagnosis only, never decision-eligible",
    "lifecycle": "supported",
    "mutability": "mutating",
-   "mutability_note": "writes only under the mode's output root (heartbeats, attempt dirs, nested split CSVs, atomic cell records, locks) and an explicitly named --output payload file; pinned contracts, anchors and manifests are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; verdicts write nothing unless --output is given",
    "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "p1lr_collect.py": {
-   "purpose": "P1LR sealed collection + typed replica proof (finding 225): fetches each seed batch from its contract-assigned host, validates exactly 16 (seed, cell) records \u2014 uniform experiment identity and contract sha, 16 distinct cell identities, finding-223 terminal custody by deterministic relative resolution and fresh rehash \u2014 seals atomically, replicates to an independent host, recomputes the tree digest THERE, really loads every terminal, and only then writes the typed agent_multi.p1lr_replica_proof.v1 file with 16 entries each bound to (experiment_identity, contract_sha256, seed, cell, terminal_relative_path, terminal_model_sha256, loads=true) \u2014 the ONLY input the screen/decision verdicts accept via --replica-proof; reuses the corrected custody primitives of m0_l1_ladder_collect.py and the factorial collector transports (no duplicated rsync/hash logic); zero/missing/duplicate/swapped/foreign/hash-altered/loads=false entries refuse",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) plus the manifest and the typed proof file; source records and terminals are never mutated",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "p1lr_idle_guard.py": {
-   "purpose": "P1LR idle guard for a per-host systemd timer (order 2026-08-11 \u00a77.8, shipped as examples/systemd/p1lr-idle-guard.{service,timer} at a 15-minute cadence): an assigned GPU idle >15 minutes while a P1LR cell is pending on its seed (records incomplete, no runner process, no heartbeat progress, nvidia-smi utilization below threshold) emits ONE state-change-deduplicated incident through the fleet ledger and triggers BOUNDED recovery \u2014 at most N systemctl --user restarts of the seed's unit with exponential backoff, only when the unit exists; a missing unit puts the exact relaunch command in the incident, a typed REFUSED_* heartbeat withholds restarts entirely, a restart-cap exhaustion emits one escalation, and progress resumption emits one recovery notice and resets the budget; unknown GPU utilization never reads as idle. Mode is EXPLICIT and VALIDATED (finding 233): --mode screen|decision derives the output root, the unit name (p1lr-decision@<seed>.service in decision mode) and the cell total through multifront_status.p1lr_mode_binding, every incident payload and the whole report (optionally written with --report-out) are BOUND to the guarded mode's root, and an identity belonging to the other mode's root refuses with exit 2 rather than reporting a false idle seed",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "mutability_note": "reads the run root strictly read-only; writes only its own dedup/backoff state under ~/.local/state/agent-multi/p1lr-idle-guard, an optional --report-out report file, bounded incident-ledger observations/recoveries, and calls systemctl --user restart on the local seed unit at most N times per idle episode",
-   "authority_class": "watchdog",
-   "owner": "General Satoshi III"
-  },
-  "experiment_transition_queue.py": {
-   "purpose": "Durable terminal-to-next-job transition queue (order 2026-08-15 \u00a73): one content-addressed JSON record per ENDING job, holding the current job, the terminal result identity, the next approved job, the materialization state, the dispatch state, the blockers, the per-node participation and the declared transition budget. transition_status() types the fleet answer \u2014 a terminal experiment with no dispatched successor is completed_untransitioned, and a missing record is completed_untransitioned too (unproven is never healthy); reconstruct_transitions() rebuilds every transition from these files ALONE after a reboot, consulting no heartbeat, shell process, chat message or operator memory, so a dispatch claim whose lease expired while the host was down surfaces as expired rather than as still in flight. Dispatch is a lease and FAILS CLOSED: claim_dispatch() refuses a second live claim or an already-dispatched transition (TRANSITION_DUPLICATE_DISPATCH), an unmaterialized or blocked successor, and a chain identity conflicting with the record's proven chain (TRANSITION_CHAIN_CONFLICT), while join_chain() lets healthy nodes continue the ONE proven common chain and mark_node() types an unavailable node without vetoing the healthy ones. evaluate_transition_incident()/sweep_transition_incidents() emit exactly ONE deduplicated undispatched-successor incident past the declared budget through the existing tools/incident_emit.py ledger and close that SAME event code on recovery, with the dedup marker inside the durable record so a reboot or a second host cannot produce a flood",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "mutability_note": "writes only its own durable records under ~/.local/state/agent-multi/experiment-transition-queue (atomic tmp+fsync+replace), NEVER inside any run's output root, plus deduplicated incident-ledger observations/recoveries through the shared shim; it never launches, restarts or stops any job itself",
-   "authority_class": "campaign_operation",
-   "owner": "General Satoshi III"
-  },
-  "l2_curriculum_arms.py": {
-   "purpose": "L2 curriculum arms runner/materializer (doc 38 \u00a76/\u00a78; order 2026-08-15 \u00a72): materializes and executes L2_N (all generations normal-realistic) versus L2_EN (easy triage generations, then a MANDATORY normal-realistic re-evaluation of every surviving elite) from examples/config/phase_3_eth_sac_dynamics/l2_curriculum_arms_v1.json. L1 stays FROZEN in both arms (phase-1 dynamics normal_realistic, phase-1 and phase-2 LR 3e-5) and no L1 curriculum field may be an L2 gene; both arms carry an identical total candidate-evaluation budget, population size, population seed, initial genome seeds, data roles and normal-realistic decision evidence; the EXECUTING config binds the typed nested split contract in nested_split_mode=l2 with roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, 256 forced-hold context rows excluded from scores and sealed 2025 never materialized; L2 fitness is paired_generalization_weekly_v1 over inner_validation x outer_validation and L2 generation patience uses that paired evidence after a minimum generation floor; easy fitness is INVALIDATED at the stage transition and an easy-evaluated candidate can never enter a normal leaderboard, champion, migration, archive or release path; genomes inherit TYPED GENES only (weights, topology, replay buffers, optimizer moments and per-genome anchors refuse); every generation record logs unique-genome count, allele diversity and rejected/ineligible share; every node proves the same source revisions, plan/domain hashes, dataset hash, population seed, genesis and finalized ancestry before evaluating; a second parallel chain for one arm and an out-of-order arm are typed refusals; --mode smoke is the bounded four-GPU mechanics smoke, --preflight the no-training materialization proof, --dispatch-plan the per-host command plan, --champion the refusal-first champion resolver",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "mutability_note": "writes only under the mode's output root (chain registry, per-generation populations and records, per-candidate attempt dirs, nested split CSVs, heartbeats, locks) and an explicitly named --output payload file; the pinned contract, the frozen common anchor, the nested split contract and the system manifest are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; --dispatch-plan and --champion write nothing unless --output is given",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "p1lr_genesis_artifacts.py": {
-   "purpose": "Zero-update 2,660-input SAC genesis artifacts for the corrected-observation P1LR v2 factorial (order 2026-08-15 \u00a73; AUD-P1LR-20260815-235): per seed {101,202,303,404} it derives the corrected observation dimension from the v2 contract + the held-fixed base config's ORDERED feature columns (refusing feature-set or dimension drift), constructs a SAC model DETERMINISTICALLY on CPU through the real sac_agent plugin against a spaces-only env whose step() RAISES (zero gradient updates and zero replay transitions are structural), proves determinism by a second in-process construction, persists the artifact and records BOTH the container sha256 and the policy-tensor sha256 (same digest family the P1LR runner uses for terminals), proving the tensor identity survives the save/load round trip and that the persisted first layer is exactly 2,660 inputs; writes a typed per-seed metadata file and one manifest proving all four cells of a seed begin from ONE persisted tensor and different seeds are pairwise DISTINCT. The artifact type is zero_update_genesis \u2014 NEVER a trained champion, handoff or promotable evidence. --check verifies the contract's pinned artifacts on this host without building (distribution custody)",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "mutability_note": "writes only under the genesis output root (per-seed artifacts + metadata + manifest; an existing artifact is never overwritten \u2014 a persisted genesis identity is immutable) ; the v2 contract, ladder bindings and base config are read strictly read-only; --check writes nothing",
-   "authority_class": "evidence_producer",
-   "owner": "General Satoshi III"
-  },
-  "dead_actor_observation_fixture.py": {
-   "purpose": "CPU before/after evidence for AUD-P1LR-20260815-235: builds the REAL ETH observation both ways (with and without the unscaled raw price window) with the real feature_window_preprocessor and a real SB3 SAC actor, and reports first-layer live-unit fraction, per-unit variation, action variance and the measured zero-gradient claim (units dead at initialisation never revive). Read-only: it trains a throwaway actor on a replay env and writes only its own JSON report",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "l2_observation_boundary_validation.py": {
-   "purpose": "Bounded single-GPU validation for AUD-P1LR-20260815-235: runs ONE cold-start L2 candidate through a real phase-1 easy -> phase-2 normal-realistic boundary on the real ETH nested roles under the CORRECTED observation contract (include_price_window=false), and reports the per-epoch actor first-layer liveness. Cold start is forced because the 2724-dim frozen anchor cannot warm-start the corrected 2660-dim observation. Writes only its own output root; launches nothing else",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "discovery",
-   "owner": "General Satoshi III"
-  },
-  "p1lr_policy_behavior_sidecar.py": {
-   "purpose": "WP0/WP-B (finding AUD-F1-20260817-277): read-only policy-behavior sidecar over a RUNNING campaign identity. Resolves the data role from the trace .meta.json and the nested split manifest \u2014 never from the free-text CSV column or the filename \u2014 and REFUSES sealed-test and outer-validation roles on the full resolved path including every parent component. Requires one complete schema-valid value per scored row: a malformed row refuses the measurement and a missing cost stays unavailable, never zero. Hashes the source before and after reading and refuses a file that moved. Binds every measurement to identity, role, attempt, config, trace/meta/manifest hashes and the load-tested model hash; without a model hash the result is explicitly NON-PROMOTABLE. It classifies through pipeline_plugins._policy_behavior and is NOT stopping, aggregation or promotion authority.",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "p1lr_actor_probe.py": {
-   "purpose": "WP0/WP-C (finding AUD-F1-20260817-277): CPU read-only checkpoint probe. A rollout trace cannot separate 'the policy reacted to its input' from 'the input moved', because a rollout only visits the states the market handed it. This probe measures the checkpoint directly: deterministic action across dissimilar observations, repeated stochastic draws from ONE state, actor mean and log-std, critic Q1/Q2 over an action grid, and parameter delta from the zero-update genesis. Synthetic probe vectors are a DIAGNOSTIC and are never a global proof of input independence; a promotable verdict requires real-role observation evidence through pipeline_plugins._policy_behavior.classify_with_observation_evidence. Loads on CPU, refuses sealed artifacts by path and never writes inside a campaign identity.",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "wp2_sensitivity_dataset.py": {
-   "purpose": "Correction 2 (order 2026-08-20 20:40): deterministic generator/validator for the WP2 activity-plateau sensitivity dataset. --validate discovers every referenced trace, verifies each SHA-256 byte-for-byte, verifies split roles (outer/sealed refused), recomputes annualized rates, quantiles and candidate scores, and compares under the declared canonical comparison; rows for other hosts are typed REMOTE_UNVERIFIABLE_ON_THIS_HOST so full validation is the union of per-host runs. --regenerate rebuilds this host's rows with the exact measurement rule.",
-   "lifecycle": "supported",
-   "mutability": "read_only",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "wp4_cpu_smoke.py": {
-   "purpose": "WP4 (order 2026-08-20 20:40): bounded CPU end-to-end smoke of the REAL path \u2014 real PipelinePlugin, real gym_fx_env (implementation origin asserted against the pinned gym-fx runtime and its exact commit before anything trains, correction 3), real SAC agent, real ETH data, the episodic objective as the executing selector with the NAMED diagnostic plateau candidate. Writes its report and per-epoch traces under docs/audits/evidence; the typed no-eligible-checkpoint terminal is a valid smoke outcome. Proposes and never launches the local GPU smoke.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "agent_courier.py": {
-   "purpose": "Owner order 2026-08-20: the barracks mail. Polls git fetch, scans fetched branches' docs/handoffs+docs/audits for documents whose filenames address the local general (X_TO_Y convention), dedupes by blob sha and injects a delivery prompt into the local general's own subscription CLI headlessly. Transport ONLY: no API keys, no permission changes, no authority; replies remain committed documents so the git audit trail is strengthened. PROTOTYPE STATUS: awaiting Musashi audit; no daemon enabled anywhere.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "rank_disagreement_study.py": {
-   "purpose": "WP1 (order 2026-08-21): zero-GPU rank disagreement study. Scores every persisted epoch under BOTH separated contracts (easy_checkpoint_monitor.v1 vs easy_doin_candidate_fitness.v1), ranks, reports deltas and the nine adversarial fixtures, and mechanically asserts no test fact was loaded. Refuses a report without per-epoch history.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "plateau_screen_aggregate.py": {
-   "purpose": "Orders 2-3 of AUDIT_SATOSHI_WP3_PLATEAU_LR_2026_08_21: aggregate the bounded 120/40/40-day scheduler mechanism screen. Predeclared decision rule (primary = best eligible monitor value; FOR/AGAINST need >=3/4 seeds same-sign plus median; else INCONCLUSIVE). Wall-clock and thermal facts are descriptive_only and excluded from the causal conclusion (PLR-03). Refuses incomplete screens, mismatched data hashes and reports without an eligible checkpoint. Never promotes a checkpoint.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "screen_recovery_controller.py": {
-   "purpose": "Post-outage \u00a7B controller, REC-01..04 corrected: REAL supervise lifecycle (manifest -> classify -> preserve/retry -> preconditions -> launch FROM the hashed canonical launch artifact -> immediate PID record -> heartbeat -> typed terminal reconciliation), SEMANTIC completion (schema/accepted/seed/arm/full-commit/config-hash/ownership/stop-reason \u2014 empty, typed-negative or foreign reports never complete), full-40-hex commit + clean-tree + absent-or-empty non-symlink output binding, and file+parent-directory fsync durability. NOT activated against any live experiment until independently verified. Never touches broker authority or trading services.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "plateau_post_intervention_diagnostic.py": {
-   "purpose": "WP1 of order 2026-08-22 (finding PLR-07): deterministic POST_HOC_EXPLORATORY diagnostic over the eight committed screen reports \u2014 first-reduction epoch, exact aligned window, bit-identical prefix proof, per-epoch monitor deltas, best-post/terminal/trapezoidal-AUC deltas with units, terminal fact deltas (unavailable never zero), parameter-movement sums, sign table + dispersion. NO authority: cannot alter the official INCONCLUSIVE, select checkpoints, or create promotion authority.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "plateau_screen_preflight.py": {
-   "purpose": "C4 of order 2026-08-22: replay the proposed early-intervention scheduler (real controller, counterfactual) over the four committed fixed monitor histories; persist predicted first reductions vs historical bests; mechanical fail-closed dispatch rule (>=3 seeds must intervene before their best, else exit 2 REFUSED). Scope: bounded-ETH spec only.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "aggregate_l1_curriculum_campaign.py": {
-   "purpose": "Fail-closed terminal aggregation for the four-seed N / EN-W / EN-F P1 campaign. Verifies 12 accepted reports, content-based pair identity, selected-state maps, outer-2024 endpoints and the predeclared directional rule; never accesses sealed 2025 or authorizes promotion.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Musashi"
-  },
-  "warmup_context_probe.py": {
-   "purpose": "Read-only SOTA-R06 probe of observation-buffer warmup on the executing pipeline path, with code, config and per-role dataset identities bound into its evidence.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "l1_curriculum_experiment.py": {
-   "purpose": "P1 order 2026-08-23: fixed-LR L1 curriculum arms N / EN-W / EN-F on the FLAT-MLP identity (grouped extractor never enabled). Orchestrates easy->normal phases via the accepted phase runner; fail-closed handoff gate (eligible checkpoint + >=2 mapped normal decision crossings from the executing validation trace); PROVES tensor continuity (exact actor-L1 match easy-selected vs normal-initial), replay disposition per declared arm semantics, and component identity via SB3 zip member hashes. Predeclared direction rule; EN-W and EN-F never merged into one claim. Easy compute reported separately.",
-   "lifecycle": "supported",
-   "mutability": "mixed",
-   "authority_class": "diagnostic",
-   "owner": "General Satoshi III"
-  },
-  "screen_b_baselines.py": {
-   "purpose": "Screen B rule baselines B0-B3 (doc 40): causal origin materialization with sealed refusal, strict-lag rule positions, GymFx execution, per-bar evidence and pre-registered trial ledger (writes only the declared --output-dir)",
-   "lifecycle": "supported",
-   "mutability": "mutating",
-   "authority_class": "experiment_driver",
    "owner": "General Satoshi III"
   },
   "materialize_b4_causal_sac.py": {
@@ -480,11 +272,226 @@
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
-  "cuda_c0_smoke.py": {
-   "purpose": "Single bounded CUDA C0 mechanics smoke of the strong grouped route: device/versions/memory/gradients/parity evidence; no economics, no promotion, no B4",
+  "materialize_eth_curriculum_configs.py": {
+   "purpose": "Materialize corrected ETH curriculum arm configs from the phase-1 base (findings 108-116 corrections)",
+   "lifecycle": "campaign_frozen",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "materialize_grouped_sac_config.py": {
+   "purpose": "Materialize a grouped semantic-feature SAC experiment config from an existing feature-aware config; does not train or promote",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Musashi"
+  },
+  "materialize_l1_system_manifest.py": {
+   "purpose": "Generate+freeze the exact ETH L1 system manifest from real artifacts (data rows/time bounds, anchors with tensor shas, observation and cost contracts); changed bindings are a new version, never an overwrite",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "materialize_rt1a_grid.py": {
+   "purpose": "Materialize the RT1-A reduced factorial grid (owner-ratified arms); MATERIALIZED_NOT_EXECUTED until gates are met",
+   "lifecycle": "campaign_frozen",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "memory_pressure_watchdog.py": {
+   "purpose": "Alert on host memory pressure",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "watchdog",
+   "owner": "General Satoshi III"
+  },
+  "multifront_status.py": {
+   "purpose": "Consolidated machine-readable multi-front status contract; first-class RUNNING P1LR factorial Front-1 source with an EXPLICIT VALIDATED mode (finding 233: --p1lr-mode screen|decision derives the output root (output_root vs decision_run.output_root), the systemd unit template (p1lr-screen@ vs p1lr-decision@), the expected heartbeat/record mode, the expected evidence class and the total cell count; an identity that lives under the OTHER mode's root is a typed count-free refusal (P1LR_IDENTITY_MODE_MISMATCH) and a root with no readable fact renders typed unavailable instead of a false 0/4, 0/16; a record of the other mode is rejected, not counted; a direct nohup worker renders unit_loaded=false with a typed durability gap instead of a fabricated NRestarts=0; fresh activity under the other mode's root is announced) plus current seed/cell/checkpoint per worker from per-cell runner heartbeats with typed staleness, per-seed and fleet cell-record counts, current-cell + critical-path ETAs, runner-sampled GPU utilization/temperature, the L1 factorial source with paused-campaign history separation (finding 204), telemetry bound to (identity, seed, cell, attempt) with source freshness (finding 212), parallel critical-path experiment ETA (finding 213), an execution-evidence-derived IBKR queue item (finding 214) and durable-halt-value authority (finding 228); the completed L1 factorial renders history-only and never re-enters the executable queue",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "mutability_note": "reads run artifacts strictly read-only (the P1LR source is fully read-only); writes only its own ETA samples and alert-dedup markers under ~/.local/state/agent-multi/multifront-l1 plus at most one deduplicated incident-ledger observation per (identity, seed, cell) at the zero-trade patience boundary",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "p1_difficulty_lr_factorial.py": {
+   "purpose": "Phase-1 difficulty x phase-1 LR 2x2 factorial runner (order 2026-08-11 WP4 \u00a78; corrections 224/225/226): per-seed sequential four-cell batches on the contract-assigned GPU in the cyclic-Latin-square cell order, each cell warm-started from the exact hash-bound per-seed anchor; the EXECUTING config binds the typed nested split contract (sha recorded AND verified before model construction), nested_split_mode=l1 and selection_metric=paired_generalization_weekly_v1 with the legacy lexicographic/explicit-window branch structurally unreachable; roles fit_train 11509 / train_monitor 2190 / inner_validation 2190 / outer_validation 2196, sealed 2025 SEALED, 256-row context prefixes declared and excluded from scores; every record binds nested contract sha, split-manifest sha, per-role CSV shas, scored/context counts and exact score dates plus finding-223 terminal custody and the finding-221 viability block; wrong role path/count/sha, outer-as-inner, missing context flag, context counted in score, paired-metric drift and sealed-test materialization refuse BEFORE training; --screen-verdict REQUIRES the typed 16-entry replica proof (--replica-proof, finding 225; replica_terminal_loads is a boolean) and revalidates per-checkpoint + nested identity at aggregation time; --mode decision runs the document-38 decision path (distinct identity/output root, original anchors, 2000-checkpoint ceiling, patience 60/floor 40, paired stopping, best restoration, ONE final outer evaluation) gated on --screen-gate; --decision-verdict emits the document-38 outcomes with per-seed paired effects and per-cell weekly metrics with units; --preflight is the no-training materialization proof",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only under the mode's output root (heartbeats, attempt dirs, nested split CSVs, atomic cell records, locks) and an explicitly named --output payload file; pinned contracts, anchors and manifests are read strictly read-only; --preflight materializes only into a process-lifetime temp dir; verdicts write nothing unless --output is given",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "p1lr_actor_probe.py": {
+   "purpose": "WP0/WP-C (finding AUD-F1-20260817-277): CPU read-only checkpoint probe. A rollout trace cannot separate 'the policy reacted to its input' from 'the input moved', because a rollout only visits the states the market handed it. This probe measures the checkpoint directly: deterministic action across dissimilar observations, repeated stochastic draws from ONE state, actor mean and log-std, critic Q1/Q2 over an action grid, and parameter delta from the zero-update genesis. Synthetic probe vectors are a DIAGNOSTIC and are never a global proof of input independence; a promotable verdict requires real-role observation evidence through pipeline_plugins._policy_behavior.classify_with_observation_evidence. Loads on CPU, refuses sealed artifacts by path and never writes inside a campaign identity.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "p1lr_collect.py": {
+   "purpose": "P1LR sealed collection + typed replica proof (finding 225): fetches each seed batch from its contract-assigned host, validates exactly 16 (seed, cell) records \u2014 uniform experiment identity and contract sha, 16 distinct cell identities, finding-223 terminal custody by deterministic relative resolution and fresh rehash \u2014 seals atomically, replicates to an independent host, recomputes the tree digest THERE, really loads every terminal, and only then writes the typed agent_multi.p1lr_replica_proof.v1 file with 16 entries each bound to (experiment_identity, contract_sha256, seed, cell, terminal_relative_path, terminal_model_sha256, loads=true) \u2014 the ONLY input the screen/decision verdicts accept via --replica-proof; reuses the corrected custody primitives of m0_l1_ladder_collect.py and the factorial collector transports (no duplicated rsync/hash logic); zero/missing/duplicate/swapped/foreign/hash-altered/loads=false entries refuse",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only under its own fresh collection root (staging/seal never overwrite) plus the manifest and the typed proof file; source records and terminals are never mutated",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "p1lr_genesis_artifacts.py": {
+   "purpose": "Zero-update 2,660-input SAC genesis artifacts for the corrected-observation P1LR v2 factorial (order 2026-08-15 \u00a73; AUD-P1LR-20260815-235): per seed {101,202,303,404} it derives the corrected observation dimension from the v2 contract + the held-fixed base config's ORDERED feature columns (refusing feature-set or dimension drift), constructs a SAC model DETERMINISTICALLY on CPU through the real sac_agent plugin against a spaces-only env whose step() RAISES (zero gradient updates and zero replay transitions are structural), proves determinism by a second in-process construction, persists the artifact and records BOTH the container sha256 and the policy-tensor sha256 (same digest family the P1LR runner uses for terminals), proving the tensor identity survives the save/load round trip and that the persisted first layer is exactly 2,660 inputs; writes a typed per-seed metadata file and one manifest proving all four cells of a seed begin from ONE persisted tensor and different seeds are pairwise DISTINCT. The artifact type is zero_update_genesis \u2014 NEVER a trained champion, handoff or promotable evidence. --check verifies the contract's pinned artifacts on this host without building (distribution custody)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "mutability_note": "writes only under the genesis output root (per-seed artifacts + metadata + manifest; an existing artifact is never overwritten \u2014 a persisted genesis identity is immutable) ; the v2 contract, ladder bindings and base config are read strictly read-only; --check writes nothing",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "p1lr_idle_guard.py": {
+   "purpose": "P1LR idle guard for a per-host systemd timer (order 2026-08-11 \u00a77.8, shipped as examples/systemd/p1lr-idle-guard.{service,timer} at a 15-minute cadence): an assigned GPU idle >15 minutes while a P1LR cell is pending on its seed (records incomplete, no runner process, no heartbeat progress, nvidia-smi utilization below threshold) emits ONE state-change-deduplicated incident through the fleet ledger and triggers BOUNDED recovery \u2014 at most N systemctl --user restarts of the seed's unit with exponential backoff, only when the unit exists; a missing unit puts the exact relaunch command in the incident, a typed REFUSED_* heartbeat withholds restarts entirely, a restart-cap exhaustion emits one escalation, and progress resumption emits one recovery notice and resets the budget; unknown GPU utilization never reads as idle. Mode is EXPLICIT and VALIDATED (finding 233): --mode screen|decision derives the output root, the unit name (p1lr-decision@<seed>.service in decision mode) and the cell total through multifront_status.p1lr_mode_binding, every incident payload and the whole report (optionally written with --report-out) are BOUND to the guarded mode's root, and an identity belonging to the other mode's root refuses with exit 2 rather than reporting a false idle seed",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "mutability_note": "reads the run root strictly read-only; writes only its own dedup/backoff state under ~/.local/state/agent-multi/p1lr-idle-guard, an optional --report-out report file, bounded incident-ledger observations/recoveries, and calls systemctl --user restart on the local seed unit at most N times per idle episode",
+   "authority_class": "watchdog",
+   "owner": "General Satoshi III"
+  },
+  "p1lr_policy_behavior_sidecar.py": {
+   "purpose": "WP0/WP-B (finding AUD-F1-20260817-277): read-only policy-behavior sidecar over a RUNNING campaign identity. Resolves the data role from the trace .meta.json and the nested split manifest \u2014 never from the free-text CSV column or the filename \u2014 and REFUSES sealed-test and outer-validation roles on the full resolved path including every parent component. Requires one complete schema-valid value per scored row: a malformed row refuses the measurement and a missing cost stays unavailable, never zero. Hashes the source before and after reading and refuses a file that moved. Binds every measurement to identity, role, attempt, config, trace/meta/manifest hashes and the load-tested model hash; without a model hash the result is explicitly NON-PROMOTABLE. It classifies through pipeline_plugins._policy_behavior and is NOT stopping, aggregation or promotion authority.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "pause_doin_fleet.py": {
+   "purpose": "Pause the DOIN fleet with binding hashes, GPU-owner verification and per-node pause reports",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "plateau_post_intervention_diagnostic.py": {
+   "purpose": "WP1 of order 2026-08-22 (finding PLR-07): deterministic POST_HOC_EXPLORATORY diagnostic over the eight committed screen reports \u2014 first-reduction epoch, exact aligned window, bit-identical prefix proof, per-epoch monitor deltas, best-post/terminal/trapezoidal-AUC deltas with units, terminal fact deltas (unavailable never zero), parameter-movement sums, sign table + dispersion. NO authority: cannot alter the official INCONCLUSIVE, select checkpoints, or create promotion authority.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "plateau_screen_aggregate.py": {
+   "purpose": "Orders 2-3 of AUDIT_SATOSHI_WP3_PLATEAU_LR_2026_08_21: aggregate the bounded 120/40/40-day scheduler mechanism screen. Predeclared decision rule (primary = best eligible monitor value; FOR/AGAINST need >=3/4 seeds same-sign plus median; else INCONCLUSIVE). Wall-clock and thermal facts are descriptive_only and excluded from the causal conclusion (PLR-03). Refuses incomplete screens, mismatched data hashes and reports without an eligible checkpoint. Never promotes a checkpoint.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "plateau_screen_preflight.py": {
+   "purpose": "C4 of order 2026-08-22: replay the proposed early-intervention scheduler (real controller, counterfactual) over the four committed fixed monitor histories; persist predicted first reductions vs historical bests; mechanical fail-closed dispatch rule (>=3 seeds must intervene before their best, else exit 2 REFUSED). Scope: bounded-ETH spec only.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "prepush_sensitivity_gate.py": {
+   "purpose": "Pre-push sensitivity gate: scans outgoing commits for typed sensitivity classes (credentials, account identifiers, signer/key paths, third-party content markers, live SL/TP levels, topology beyond allowlist) with redacted findings and nonzero exit (AUD-SEC-20260810-215)",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "gate",
+   "owner": "General Satoshi III"
+  },
+  "pretrain_branches.py": {
+   "purpose": "WP-PRETRAIN executing runner: CPU branch-wise self-supervised pretraining (masked-patch reconstruction + multi-horizon quantile) with identity-bound artifacts, drift-refusing exact resume, and structural fit_end exclusion of development_outer/sealed data; writes only the declared --output-dir",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "experiment_driver",
+   "owner": "General Satoshi III"
+  },
+  "quarantine_inner_curriculum_successor.py": {
+   "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "rank_disagreement_study.py": {
+   "purpose": "WP1 (order 2026-08-21): zero-GPU rank disagreement study. Scores every persisted epoch under BOTH separated contracts (easy_checkpoint_monitor.v1 vs easy_doin_candidate_fitness.v1), ranks, reports deltas and the nine adversarial fixtures, and mechanically asserts no test fact was loaded. Refuses a report without per-epoch history.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "replicate_decision_evidence.py": {
+   "purpose": "Replicate decision evidence to the declared remote authority with independent remote observation (finding 151 semantics)",
    "lifecycle": "supported",
    "mutability": "mutating",
    "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "resume_doin_fleet.py": {
+   "purpose": "Resume a paused DOIN fleet against recorded pause bindings with rejoin proof",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "campaign_operation",
+   "owner": "General Satoshi III"
+  },
+  "rolling_origin_adaptation.py": {
+   "purpose": "RT rolling-origin/prequential adaptation runner: test-then-train intervals, simulator-executed handover, single-transaction SQLite state, exactly-once replay",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "screen_b_baselines.py": {
+   "purpose": "Screen B rule baselines B0-B3 (doc 40): causal origin materialization with sealed refusal, strict-lag rule positions, GymFx execution, per-bar evidence and pre-registered trial ledger (writes only the declared --output-dir)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "experiment_driver",
+   "owner": "General Satoshi III"
+  },
+  "screen_recovery_controller.py": {
+   "purpose": "Post-outage \u00a7B controller, REC-01..04 corrected: REAL supervise lifecycle (manifest -> classify -> preserve/retry -> preconditions -> launch FROM the hashed canonical launch artifact -> immediate PID record -> heartbeat -> typed terminal reconciliation), SEMANTIC completion (schema/accepted/seed/arm/full-commit/config-hash/ownership/stop-reason \u2014 empty, typed-negative or foreign reports never complete), full-40-hex commit + clean-tree + absent-or-empty non-symlink output binding, and file+parent-directory fsync durability. NOT activated against any live experiment until independently verified. Never touches broker authority or trading services.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "social_intelligence_enrichment.py": {
+   "purpose": "Bounded Hermes enrichment of untrusted social posts into typed, source-linked OLAP facts and human-review candidates",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Musashi"
+  },
+  "social_review_ledger.py": {
+   "purpose": "Append-only owner-review ledger: accept/defer/reject with reason; accepted experiments enter the work queue with provenance, accepted replies become drafts only",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "social_review_packet.py": {
+   "purpose": "Materialize one bounded owner-review packet (experiment/reply/investigate candidates) from the social OLAP; proposes, never executes",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "warmup_context_probe.py": {
+   "purpose": "Read-only SOTA-R06 probe of observation-buffer warmup on the executing pipeline path, with code, config and per-role dataset identities bound into its evidence.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "wp2_sensitivity_dataset.py": {
+   "purpose": "Correction 2 (order 2026-08-20 20:40): deterministic generator/validator for the WP2 activity-plateau sensitivity dataset. --validate discovers every referenced trace, verifies each SHA-256 byte-for-byte, verifies split roles (outer/sealed refused), recomputes annualized rates, quantiles and candidate scores, and compares under the declared canonical comparison; rows for other hosts are typed REMOTE_UNVERIFIABLE_ON_THIS_HOST so full validation is the union of per-host runs. --regenerate rebuilds this host's rows with the exact measurement rule.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "wp4_cpu_smoke.py": {
+   "purpose": "WP4 (order 2026-08-20 20:40): bounded CPU end-to-end smoke of the REAL path \u2014 real PipelinePlugin, real gym_fx_env (implementation origin asserted against the pinned gym-fx runtime and its exact commit before anything trains, correction 3), real SAC agent, real ETH data, the episodic objective as the executing selector with the NAMED diagnostic plateau candidate. Writes its report and per-epoch traces under docs/audits/evidence; the typed no-eligible-checkpoint terminal is a valid smoke outcome. Proposes and never launches the local GPU smoke.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
    "owner": "General Satoshi III"
   }
  },

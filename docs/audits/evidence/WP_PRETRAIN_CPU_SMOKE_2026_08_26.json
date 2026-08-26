@@ -1,0 +1,238 @@
+{
+ "schema": "agent_multi.branch_pretrain.v1",
+ "order": "Data-First SOTA Multibranch @7886de39 \u2014 WP-PRETRAIN",
+ "identity": {
+  "contract_path": "examples/config/pretrain_contract_eth_h4_v1.json",
+  "contract_sha256": "5d9bdf4ce5981cd3804e2c43e791a416c6a70188ea720e03be77187135c4a2e8",
+  "data_source": "dataset:ethusdt_4h_tech_stat_full_model_ready.csv@conventional-sibling-checkout",
+  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "branch_assignment_sha256": "8eb7890fff17bfb291edeb946bfcba335491fb5fe0e031e800216f5cd5c157da",
+  "library_sha256": "68d3fa68e653a27e2260ede7664dc55c7150ab27fa9bbf4ddb9058df3e1c7279",
+  "runner_sha256": "f0f324f838840f5c6513fd391a1658c66978487cfd8ca30488986a1733afbd7e",
+  "code_commit": "d0ccde8370c6f528baa7084bca22a9daa0eeb407",
+  "torch_version": "2.13.0+cu130",
+  "interpreter": "python:3.12.13@env:trading-stack",
+  "seed": 0,
+  "window_size": 32,
+  "fit_end": "2023-12-31T20:00:00"
+ },
+ "dataset": {
+  "rows_in_fit_slice": 13699,
+  "eligible_windows": 4000,
+  "window_stride": 1,
+  "max_windows_applied": 4000,
+  "max_horizon": 12,
+  "boundary_note": "rows after fit_end never loaded; windows with forward targets crossing fit_end dropped"
+ },
+ "objectives": {
+  "masked_patch_reconstruction": {
+   "weight": 1.0,
+   "mask_ratio": 0.25,
+   "mask_span": 4
+  },
+  "multi_horizon_quantile": {
+   "weight": 1.0,
+   "horizons": [
+    1,
+    3,
+    6,
+    12
+   ],
+   "quantiles": [
+    0.1,
+    0.5,
+    0.9
+   ]
+  }
+ },
+ "cli": {
+  "argv": [
+   "pretrain_branches.py",
+   "--contract",
+   "pretrain_contract_eth_h4_v1.json",
+   "--output-dir",
+   "wp_pretrain_cpu_smoke",
+   "--epochs",
+   "3",
+   "--max-windows",
+   "4000"
+  ],
+  "epochs_effective": 3
+ },
+ "progress": {
+  "returns_momentum": {
+   "status": "complete",
+   "losses": [
+    {
+     "epoch": 0,
+     "reconstruction": 0.92045476,
+     "quantile": 0.02103176,
+     "total": 0.94148652,
+     "seconds": 1.435
+    },
+    {
+     "epoch": 1,
+     "reconstruction": 0.74051041,
+     "quantile": 0.01301306,
+     "total": 0.75352347,
+     "seconds": 1.343
+    },
+    {
+     "epoch": 2,
+     "reconstruction": 0.60655835,
+     "quantile": 0.0124377,
+     "total": 0.61899604,
+     "seconds": 0.898
+    }
+   ]
+  },
+  "trend_level": {
+   "status": "complete",
+   "losses": [
+    {
+     "epoch": 0,
+     "reconstruction": 1.01417877,
+     "quantile": 0.06726378,
+     "total": 1.08144254,
+     "seconds": 1.735
+    },
+    {
+     "epoch": 1,
+     "reconstruction": 0.89097883,
+     "quantile": 0.01021221,
+     "total": 0.90119104,
+     "seconds": 1.77
+    },
+    {
+     "epoch": 2,
+     "reconstruction": 0.87727957,
+     "quantile": 0.00949233,
+     "total": 0.8867719,
+     "seconds": 1.75
+    }
+   ]
+  },
+  "volatility_distribution": {
+   "status": "complete",
+   "losses": [
+    {
+     "epoch": 0,
+     "reconstruction": 1.00577262,
+     "quantile": 0.06065994,
+     "total": 1.06643257,
+     "seconds": 7.868
+    },
+    {
+     "epoch": 1,
+     "reconstruction": 0.83805128,
+     "quantile": 0.01287166,
+     "total": 0.85092295,
+     "seconds": 7.784
+    },
+    {
+     "epoch": 2,
+     "reconstruction": 0.78533668,
+     "quantile": 0.0100971,
+     "total": 0.79543377,
+     "seconds": 8.001
+    }
+   ]
+  },
+  "oscillators": {
+   "status": "complete",
+   "losses": [
+    {
+     "epoch": 0,
+     "reconstruction": 1.13251135,
+     "quantile": 0.11035826,
+     "total": 1.24286961,
+     "seconds": 0.322
+    },
+    {
+     "epoch": 1,
+     "reconstruction": 0.93842846,
+     "quantile": 0.04190498,
+     "total": 0.98033344,
+     "seconds": 0.285
+    },
+    {
+     "epoch": 2,
+     "reconstruction": 0.84329574,
+     "quantile": 0.03293439,
+     "total": 0.87623012,
+     "seconds": 0.32
+    }
+   ]
+  },
+  "volume_flow": {
+   "status": "complete",
+   "losses": [
+    {
+     "epoch": 0,
+     "reconstruction": 0.8840705,
+     "quantile": 0.02005391,
+     "total": 0.90412441,
+     "seconds": 0.796
+    },
+    {
+     "epoch": 1,
+     "reconstruction": 0.71847914,
+     "quantile": 0.01004446,
+     "total": 0.7285236,
+     "seconds": 0.799
+    },
+    {
+     "epoch": 2,
+     "reconstruction": 0.56547566,
+     "quantile": 0.01175898,
+     "total": 0.57723464,
+     "seconds": 0.794
+    }
+   ]
+  }
+ },
+ "artifacts": {
+  "returns_momentum": {
+   "encoder_file": "branch_returns_momentum_encoder.pt",
+   "encoder_sha256": "cc4530fb78719e87d01f9f7a76cba19fbeb149f03a5b35f4c31d51de219bf5e5",
+   "heads_file": "branch_returns_momentum_heads.pt",
+   "heads_sha256": "258d4c651b2023e6037883f6ce3f9e22cfc89c8b47a8c9e31dedf11aefb9edb8",
+   "encoder_dim": 32,
+   "parameters": 25376
+  },
+  "trend_level": {
+   "encoder_file": "branch_trend_level_encoder.pt",
+   "encoder_sha256": "f6a1c27f0c4d72a539ffba114abedf55d985b9925f61c921401c423a996a9cd8",
+   "heads_file": "branch_trend_level_heads.pt",
+   "heads_sha256": "aea3dc175e55779ad939da2b4c1be1f11d7ac4e10b182e83a37a653c09ff8b9d",
+   "encoder_dim": 32,
+   "parameters": 18790
+  },
+  "volatility_distribution": {
+   "encoder_file": "branch_volatility_distribution_encoder.pt",
+   "encoder_sha256": "683af5043178574cab4036b36739bc48b2976ca80fdbf9bd89ca44005fc620de",
+   "heads_file": "branch_volatility_distribution_heads.pt",
+   "heads_sha256": "569aad64fd24c8d49cbfa2421f59d5a2cc53159561941e55e2e0ada3c288e9e3",
+   "encoder_dim": 32,
+   "parameters": 19520
+  },
+  "oscillators": {
+   "encoder_file": "branch_oscillators_encoder.pt",
+   "encoder_sha256": "6232ee27c9f63d409a8758f8084c54635d1db30d0134bf373e0c1c682a991195",
+   "heads_file": "branch_oscillators_heads.pt",
+   "heads_sha256": "1947b1de9d85b90e86350cde1b9b5e572f67f6b94b5c96ca0636a8082ad4d07b",
+   "encoder_dim": 32,
+   "parameters": 4448
+  },
+  "volume_flow": {
+   "encoder_file": "branch_volume_flow_encoder.pt",
+   "encoder_sha256": "036f006957c94ce0cfa27bf92abb90c976327071b1cc2f4273819fc23edf357b",
+   "heads_file": "branch_volume_flow_heads.pt",
+   "heads_sha256": "b26b54ae74acabcf05179047c7d4d65eaf76f02a3f949e17891e07994be47a23",
+   "encoder_dim": 64,
+   "parameters": 13824
+  }
+ },
+ "completed": true
+}

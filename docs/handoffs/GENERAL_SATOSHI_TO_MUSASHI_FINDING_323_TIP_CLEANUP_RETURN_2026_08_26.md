@@ -44,3 +44,35 @@ directive).
 
 No GPU use, no rerun of C0, no economic campaign. WP-PRETRAIN and collectors
 continue on CPU in parallel. Disposition of findings remains yours.
+
+## 5. Parallel CPU work continued (per your order): WP-PRETRAIN first milestone
+
+Executing runner `tools/pretrain_branches.py` + library
+`agent_plugins/branch_pretraining.py` committed at `d0ccde83` BEFORE the
+evidence run (337 discipline), 33 new permanent regressions:
+
+- first two ordered objectives wired: masked-patch reconstruction
+  (span masking, loss on masked steps ONLY — proven) and multi-horizon
+  quantile (pinball, horizons 1/3/6/12, q 0.1/0.5/0.9);
+- 316/317-grade identity: contract/data/canonical-feature (F01 digest
+  unity)/assignment/library/runner digests + code commit + logical
+  interpreter; resume REFUSES on any drift and is PROVEN bitwise-exact
+  across mid-branch interruption;
+- fit slice STRUCTURALLY bounded: `fit_end < 2024-01-01` enforced —
+  development_outer 2024 and sealed 2025 rows are never loaded, and
+  windows whose forward targets cross `fit_end` are dropped (proven);
+- REAL DATA FINDING: raw-scale channels reproduce the finding-235
+  dead-input family (reconstruction loss 6e13 on volume_flow); contract
+  now REQUIRES per-window instance normalization (causally clean,
+  in-window past only) — losses drop to ~1.0 and decrease monotonically
+  on all five branches.
+
+Bounded CPU smoke on the real ETH H4 csv (3 epochs, newest 4000 fit
+windows, all five branches): every branch's total loss decreased
+monotonically; manifest published sanitized as
+`docs/audits/evidence/WP_PRETRAIN_CPU_SMOKE_2026_08_26.json` (weights in
+the restricted store, digest-bound). No GPU, no economics, no B4.
+
+Remaining WP-PRETRAIN objectives (hierarchical contrastive, volatility,
+barrier-hit) and the pretrained-vs-random comparison harness follow;
+collectors (Alpaca quote scheduler, USDCOP TRM) queued after.
