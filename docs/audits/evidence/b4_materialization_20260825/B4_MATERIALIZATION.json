@@ -177,7 +177,22 @@
     "n_updates": 0
    }
   },
-  "pairing": "same zero-update init per seed across origins (paired); no cross-origin or P1 warm start"
+  "pairing": "same zero-update init per seed across origins (paired); no cross-origin or P1 warm start",
+  "regeneration_note": "genesis tensors are seed-deterministic against the UNCHANGED v2 observation identity (2660); the 12 zero-update cells materialized 2026-08-25 remain valid and are referenced unchanged \u2014 no 360MB duplicate artifacts were produced"
+ },
+ "cells": {
+  "o2022_seed101": "11cecf01da53ce028d1fb314e1e947cc86562a84f28fe12cb3cbdac5e8db935f",
+  "o2022_seed202": "4c74583984351a18f46b7ab87724d512250a6c2e417f2f5f54d7f686f7de4604",
+  "o2022_seed303": "b8e756f236e6eefeec2c2093d6ecdd8e4764b45004d60480f5da2677070717aa",
+  "o2022_seed404": "bbb6339ee8d3850e67050386f682d9013f0f7a26b7aab57e777ddaaaa25b4643",
+  "o2023_seed101": "7d82170e4c7e801dd94ef0f659bcd93cd5cdc981f6843f4efecce728b0c63ac1",
+  "o2023_seed202": "49d18adf0033d179cf13bfc9f85165454cf1132c2c69a73f3bba848fb751784f",
+  "o2023_seed303": "3f1c2a1e6d47c4aeb4d90ac578a25fe77284b80a7b74ef6654e98180e8990caf",
+  "o2023_seed404": "a270c19aac14a1c8ea04a789bac32811b14427ee1180984e20c2a1e50a20ae14",
+  "o2024_seed101": "c73a94a6fd48271b5e0da29c1d3c9f1951132426275ebed4d73f659f38a8842d",
+  "o2024_seed202": "e4f8b49f5278bce8a2a039803a83bbdd0059ca2accba3fe3a7ea074933b788a8",
+  "o2024_seed303": "5df62ec70501e49fa315ae74f4b096144bc6c7911c5a482caaae9b5b1f4739dd",
+  "o2024_seed404": "49d8a4cadb08071f7683ac72a6b0d391d0fd8fe451fe5def391586d27cad7911"
  },
  "gpu_hours_estimate": {
   "basis": "median seconds/epoch from ACCEPTED P1 phase reports; assumed epochs/arm=120 (P1 normal phases stopped at 101-150 under the same patience contract)",

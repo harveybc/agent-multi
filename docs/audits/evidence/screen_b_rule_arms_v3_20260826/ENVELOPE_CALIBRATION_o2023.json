@@ -1,0 +1,159 @@
+{
+ "origin": 2023,
+ "calibration_year": 2022,
+ "calibration_csv_sha256": "d09079544d7a82309f25fa422e6691315bb4f29f458507cca14ae0c24f80c8c7",
+ "grid_cells": [
+  {
+   "geometry_index": 0,
+   "geometry": {
+    "envelope_mode": "fixed_fraction",
+    "sl_fraction": 0.01,
+    "tp_fraction": 0.02,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "deployed live-seat geometry (mt5_eth_sac_model_runner_v1); DIAGNOSTIC control in the WP3 calibration grid"
+   },
+   "envelope_sha256": "7dae61cde2f56e76312ea67562585add64ca684404a5871df2155adbdceb3955",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -1.7133270324333756,
+    "median_envelope_fires": 882.0,
+    "median_position_events": 1795.0
+   }
+  },
+  {
+   "geometry_index": 1,
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 1.5,
+    "atr_tp_mult": 2.25,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=1.5xATR TP/SL=1.5"
+   },
+   "envelope_sha256": "8c8da6659ecc60354875925a6b88b5d607cef9a8c6eca50cecdc8b7f78fd0e7e",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -0.6265563924985502,
+    "median_envelope_fires": 239.0,
+    "median_position_events": 535.0
+   }
+  },
+  {
+   "geometry_index": 2,
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 1.5,
+    "atr_tp_mult": 3.0,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=1.5xATR TP/SL=2.0"
+   },
+   "envelope_sha256": "a77d109a61984e6dbab31a12573bb631fb5aebb0b0a467738897938b5139dac5",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -1.0306121708103968,
+    "median_envelope_fires": 157.0,
+    "median_position_events": 367.0
+   }
+  },
+  {
+   "geometry_index": 3,
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 2.0,
+    "atr_tp_mult": 3.0,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=2.0xATR TP/SL=1.5"
+   },
+   "envelope_sha256": "a53c01b7bdd239e32520fb2320dd52eb35b4b063981dfa6dd12b0ea67a9754f0",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -0.914007198966317,
+    "median_envelope_fires": 108.0,
+    "median_position_events": 288.0
+   }
+  },
+  {
+   "geometry_index": 4,
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 2.0,
+    "atr_tp_mult": 4.0,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=2.0xATR TP/SL=2.0"
+   },
+   "envelope_sha256": "cc3ca0fccad7665f5565efa5c703c8687cb4b93bae33f4ced33e9539f91a97b4",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -0.5329965011472745,
+    "median_envelope_fires": 75.0,
+    "median_position_events": 225.0
+   }
+  },
+  {
+   "geometry_index": 5,
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 3.0,
+    "atr_tp_mult": 4.5,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=3.0xATR TP/SL=1.5"
+   },
+   "envelope_sha256": "e2a4b6266fe95517a7146971206918bed1446e337ec92e4ce4a005b2b5a81053",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -0.6998762672815639,
+    "median_envelope_fires": 50.5,
+    "median_position_events": 185.0
+   }
+  },
+  {
+   "geometry_index": 6,
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 3.0,
+    "atr_tp_mult": 6.0,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=3.0xATR TP/SL=2.0"
+   },
+   "envelope_sha256": "7e8a6976c3f225228abcfa593a617f8bd2c5ed43004d9d423c50be0cddd7d613",
+   "criterion": {
+    "eligible": true,
+    "composite_median": -0.6860814661729969,
+    "median_envelope_fires": 34.0,
+    "median_position_events": 147.0
+   }
+  }
+ ],
+ "frozen_geometry_index": 4,
+ "frozen_geometry": {
+  "envelope_mode": "atr",
+  "atr_window": 14,
+  "atr_sl_mult": 2.0,
+  "atr_tp_mult": 4.0,
+  "collision_rule": "stop_first_pessimistic",
+  "sizing_mode": "portfolio_fraction",
+  "leverage_cap": 1.0,
+  "source": "WP3 grid SL=2.0xATR TP/SL=2.0"
+ },
+ "frozen_envelope_sha256": "cc3ca0fccad7665f5565efa5c703c8687cb4b93bae33f4ced33e9539f91a97b4",
+ "frozen_before_score_year": true
+}
