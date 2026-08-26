@@ -1160,6 +1160,25 @@ IBKR hold still requires a newly signed effect-bound capability.
 
 ## 2b. Observations Pending Verification (not yet findings)
 
+### 1al. Post-P1 Screen B audit, 2026-08-25
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_POST_P1_SCREEN_B_2026_08_25.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_SCREEN_B_CORRECTION_ORDER_2026_08_25.md`
+
+P1-316/317 are independently verified corrected. Existing Screen B rule
+artifacts are diagnostic only; B4 dispatch and G1 remain blocked.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260825-318 | S2 | open, blocks B4/G1 | Rule arms omit the mandatory shared SL/TP execution envelope | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260825-319 | S2 | open, blocks B3/G1 | B3 scales one ETH rather than targeting portfolio volatility | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260825-320 | S2 | open, blocks G1 | Cost arms omit half-spread and lack evidence-backed primary canon | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260825-321 | S3 | open, blocks statistical authority | Evidence lacks required identity/timing and trial registration is non-idempotent | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260825-322 | S2 | open, blocks B4 dispatch | Observation contract is enforced by driver but undeclared at pipeline application | General Satoshi implements; Musashi verifies |
+| AUD-SEC-20260825-323 | S4 | open, sanitation disposition | Full GPU UUIDs remain in obsolete published branch history | General Satoshi inventories/proposes; owner/Musashi disposes |
+
 | Ref | Observed | Verify in |
 | --- | --- | --- |
 | OBS-20260730-A | Job-0 record `started_at` is 2026-07-29T07:16:30Z (02:16 COT) but the Omega node process start implies ~18:18 COT the same day, a ~16 h gap with `restart_count=0`. Likely the job record marks plan materialization while workers launched after the deployment sequence, but unverified. | `worker_events` table, next delta session |
