@@ -451,6 +451,13 @@
    "mutability": "mixed",
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
+  },
+  "screen_b_baselines.py": {
+   "purpose": "Screen B rule baselines B0-B3 (doc 40): causal origin materialization with sealed refusal, strict-lag rule positions, GymFx execution, per-bar evidence and pre-registered trial ledger (writes only the declared --output-dir)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "experiment_driver",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

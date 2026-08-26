@@ -1,0 +1,116 @@
+"""Pre-execution tests ordered by the post-P1 order §3: formulas, strict
+lag, B0 zero exposure, B1 causal entry, scored-index identity, sealed
+absence."""
+import math
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from tools.screen_b_baselines import (BARS_PER_YEAR, CONTEXT_BARS,
+                                      SIGMA_TARGET, VOL_WINDOW,
+                                      ScreenBError, materialize_origin,
+                                      rule_positions)
+
+
+def _close(n=800, seed=7):
+    rng = np.random.default_rng(seed)
+    return np.exp(np.cumsum(rng.normal(0, 0.01, n))) * 1000.0
+
+
+def test_b0_zero_exposure_everywhere():
+    pos = rule_positions(_close(), "B0", CONTEXT_BARS)
+    assert np.all(pos == 0.0)
+
+
+def test_b1_causal_entry_at_first_scored_bar_only():
+    pos = rule_positions(_close(), "B1", CONTEXT_BARS)
+    assert np.all(pos[:CONTEXT_BARS] == 0.0)      # flat during context
+    assert np.all(pos[CONTEXT_BARS:] == 1.0)      # long from first scored
+
+
+def test_b2a_exact_lookback_180_on_close_t_minus_1():
+    close = _close()
+    t = CONTEXT_BARS + 5
+    pos = rule_positions(close, "B2a", CONTEXT_BARS)
+    expected = np.sign(close[t - 1] - close[t - 1 - 180])
+    assert pos[t] == expected
+
+
+def test_b2b_exact_lookback_540():
+    close = _close()
+    t = CONTEXT_BARS + 3
+    pos = rule_positions(close, "B2b", CONTEXT_BARS)
+    expected = np.sign(close[t - 1] - close[t - 1 - 540])
+    assert pos[t] == expected
+
+
+def test_b3_formula_target_window_annualization_cap():
+    close = _close()
+    t = CONTEXT_BARS + 10
+    pos = rule_positions(close, "B3", CONTEXT_BARS)
+    logret = np.diff(np.log(close), prepend=np.nan)
+    sigma = float(np.std(logret[t - VOL_WINDOW:t], ddof=1)) * math.sqrt(
+        BARS_PER_YEAR)
+    frac = min(1.0, SIGMA_TARGET / sigma)
+    sign = np.sign(close[t - 1] - close[t - 181])
+    assert pos[t] == pytest.approx(sign * frac)
+    assert np.all(np.abs(pos) <= 1.0 + 1e-12)  # leverage cap 1
+
+
+def test_strict_lag_no_t_information():
+    close = _close()
+    t = CONTEXT_BARS + 20
+    for arm in ("B2a", "B2b", "B3"):
+        base = rule_positions(close, arm, CONTEXT_BARS)[t]
+        mutated = close.copy()
+        mutated[t] *= 1.5          # information AT t must not leak
+        assert rule_positions(mutated, arm, CONTEXT_BARS)[t] == base
+        mutated2 = close.copy()
+        mutated2[t - 1] *= 1.5     # t-1 information MAY change pos[t]
+        # (not asserted to change — only that t cannot)
+
+
+def test_lag_sensitivity_to_t_minus_1():
+    close = _close()
+    t = CONTEXT_BARS + 20
+    base = rule_positions(close, "B2a", CONTEXT_BARS)[t]
+    mutated = close.copy()
+    # force the OPPOSITE sign of the base decision (stay positive for log)
+    ref = close[t - 1 - 180]
+    mutated[t - 1] = ref * (0.5 if base > 0 else 2.0)
+    assert rule_positions(mutated, "B2a", CONTEXT_BARS)[t] == -base
+
+
+def _frame(dates):
+    return pd.DataFrame({"DATE_TIME": pd.to_datetime(dates),
+                         "CLOSE": np.linspace(100, 200, len(dates)),
+                         "typical_price": np.linspace(100, 200,
+                                                      len(dates))})
+
+
+def test_origin_materialization_sealed_absence(tmp_path):
+    dates = pd.date_range("2024-06-01", periods=CONTEXT_BARS + 100,
+                          freq="4h")
+    # extends into 2025 -> the 2024 slice would carry sealed rows
+    df = _frame(list(dates) + list(
+        pd.date_range("2025-01-01", periods=10, freq="4h")))
+    with pytest.raises(ScreenBError, match="sealed-period"):
+        materialize_origin(df, 2025, tmp_path)
+
+
+def test_origin_scored_index_and_context(tmp_path):
+    dates = pd.date_range("2021-10-01", periods=CONTEXT_BARS + 400,
+                          freq="4h")
+    df = _frame(dates)
+    o = materialize_origin(df, 2022, tmp_path)
+    assert o["scored_start_index"] == CONTEXT_BARS
+    assert o["scored_rows"] == o["rows"] - CONTEXT_BARS
+    assert len(o["scored_index_sha256"]) == 64
+    assert o["score_start"].startswith("2022-01-01")
+
+
+def test_insufficient_context_refused(tmp_path):
+    dates = pd.date_range("2022-01-01", periods=300, freq="4h")
+    with pytest.raises(ScreenBError, match="context"):
+        materialize_origin(_frame(dates), 2022, tmp_path)
