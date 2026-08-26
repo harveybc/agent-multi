@@ -1,0 +1,96 @@
+{
+ "schema": "agent_multi.cost_manifest.v2",
+ "version": "eth_h4_v2_venue_specific",
+ "generated_utc": "2026-08-26T08:38:11.943397+00:00",
+ "alpaca_ethusd": {
+  "instrument": "ETH/USD",
+  "venue": "alpaca",
+  "commission_fraction_per_side": 0.0025,
+  "commission_basis": "PUBLISHED_REAL_FEE_SCHEDULE (labeled external): Alpaca crypto base-tier TAKER 25 bp \u2014 the business fee of the real product; the Paper simulator charges 0, which is a SIMULATOR OMISSION, not business economics",
+  "paper_simulator_charge_fraction": 0.0,
+  "half_spread_fraction_per_side": 0.00045215,
+  "half_spread_basis": "EVIDENCED: median full spread 9.043 bps over 7650 venue+instrument-attributed ETH/USD paper quotes",
+  "slippage_fraction_per_side": 0.0001,
+  "slippage_basis": "DECLARED_BOUND_NOT_EVIDENCED: 1 bp",
+  "env_binding": {
+   "commission": 0.00295215,
+   "slippage_perc": 0.0001
+  }
+ },
+ "mt5_ethusd": {
+  "instrument": "ETHUSD",
+  "venue": "mt5_demo",
+  "commission_fraction_per_side": 0.0,
+  "commission_basis": "DECLARED_BROKER_MODEL: spread-based CFD pricing; the demo journal reports fees 'unavailable: not journaled per effect' \u2014 commission-zero is a declared model, NOT venue-journaled evidence",
+  "half_spread_fraction_per_side": 0.0010115,
+  "half_spread_basis": "EVIDENCED (n=3, small): median quoted full spread 20.23 bps from attributed mt5_demo ETHUSD fills",
+  "slippage_fraction_per_side": 0.0001,
+  "slippage_basis": "EVIDENCED worst |fill-mid| 10.73 bps minus half-spread, floored at 1 bp declared",
+  "financing_swap": {
+   "status": "REQUIRED_BEFORE_MT5_PRIMARY_G1",
+   "reason": "not journaled on this host; H4 positions cross the charge boundary \u2014 the broker schedule must be evidenced before this contract can govern G1"
+  },
+  "env_binding": {
+   "commission": 0.0010115,
+   "slippage_perc": 0.0001
+  }
+ },
+ "zero_cost": {
+  "role": "VENUE_NEUTRAL_DIAGNOSTIC_ONLY",
+  "env_binding": {
+   "commission": 0.0,
+   "slippage_perc": 0.0
+  }
+ },
+ "l0_lifecycle_rows": {
+  "classification": "OBSERVABILITY_ONLY: rows carry neither venue nor instrument (broker_ids empty) and cannot establish any commission",
+  "n_filled_events": 103
+ },
+ "evidence": {
+  "alpaca_quotes": {
+   "n_quotes": 7650,
+   "full_spread_bps_median": 9.043,
+   "full_spread_bps_p95": 13.489,
+   "source": "/home/harveybc/.local/state/lts/alpaca-paper-lab.sqlite",
+   "table": "quote_observations",
+   "symbol": "ETH/USD"
+  },
+  "mt5_fills": {
+   "rows": [
+    {
+     "venue": "mt5_demo",
+     "instrument": "ETHUSD",
+     "timestamp": "2026-08-16T01:59:44.308371+00:00",
+     "fill_price": 1902.95,
+     "quoted_spread": 3.85,
+     "entry_slippage_vs_mid": -1.075,
+     "fees_field": "unavailable: not journaled per effect"
+    },
+    {
+     "venue": "mt5_demo",
+     "instrument": "ETHUSD",
+     "timestamp": "2026-08-16T01:59:44.308371+00:00",
+     "fill_price": 1910.35,
+     "quoted_spread": 3.6,
+     "entry_slippage_vs_mid": 0.25,
+     "fees_field": "unavailable: not journaled per effect"
+    },
+    {
+     "venue": "mt5_demo",
+     "instrument": "ETHUSD",
+     "timestamp": "2026-08-16T01:59:44.308371+00:00",
+     "fill_price": 1887.2,
+     "quoted_spread": 3.95,
+     "entry_slippage_vs_mid": -2.025,
+     "fees_field": "unavailable: not journaled per effect"
+    }
+   ],
+   "n": 3,
+   "full_spread_bps_median": 20.23,
+   "full_spread_bps_max": 20.93,
+   "slippage_vs_mid_bps_median": 5.65,
+   "slippage_vs_mid_bps_max": 10.73
+  }
+ },
+ "g1_authority": "per-venue primaries pending Musashi ratification; mt5_ethusd additionally blocked by the financing evidence gap; zero_cost diagnostic"
+}

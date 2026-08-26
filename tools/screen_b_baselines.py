@@ -32,7 +32,7 @@ DATA = Path("/home/harveybc/Documents/GitHub/predictor/examples/data/"
 DATA_SHA = ("1b447c66e68495e826c53e2ab2b08ecd3922c8fdc"
             "735747628f8d0435ebe440f")
 COST_MANIFEST = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
-                 "cost_manifest_eth_h4_v1.json")
+                 "cost_manifest_eth_h4_v2.json")
 CONTEXT_BARS = 540
 BARS_PER_YEAR = 2190
 SIGMA_TARGET = 0.15
@@ -42,18 +42,35 @@ ORIGINS = (2022, 2023, 2024)
 ARMS = ("B0", "B1", "B2a", "B2b", "B3")
 SEALED_START = "2025-01-01"
 
-# Deployed protection geometry — inherited, not chosen (C2):
-EXECUTION_ENVELOPE = {
+# Deployed protection geometry — the NAMED DIAGNOSTIC control
+# (finding 328: 1% SL sits inside H4 intrabar noise):
+FIXED_CONTROL_ENVELOPE = {
     "envelope_mode": "fixed_fraction",
     "sl_fraction": 0.01,
     "tp_fraction": 0.02,
     "collision_rule": "stop_first_pessimistic",
     "sizing_mode": "portfolio_fraction",
     "leverage_cap": 1.0,
-    "source": ("lts examples/configs/mt5_eth_sac_model_runner_v1.json "
-               "strategy.stop_fraction=0.01 / take_profit_fraction=0.02 "
-               "(the DEPLOYED native envelope of the live ETH seat)"),
+    "source": ("deployed live-seat geometry "
+               "(mt5_eth_sac_model_runner_v1); DIAGNOSTIC control in "
+               "the WP3 calibration grid"),
 }
+
+# WP3: predeclared causal calibration grid — every cell is a trial.
+ATR_WINDOW = 14
+CALIBRATION_GRID = [dict(FIXED_CONTROL_ENVELOPE)] + [
+    {"envelope_mode": "atr", "atr_window": ATR_WINDOW,
+     "atr_sl_mult": sl, "atr_tp_mult": round(sl * ratio, 3),
+     "collision_rule": "stop_first_pessimistic",
+     "sizing_mode": "portfolio_fraction", "leverage_cap": 1.0,
+     "source": f"WP3 grid SL={sl}xATR TP/SL={ratio}"}
+    for sl in (1.5, 2.0, 3.0) for ratio in (1.5, 2.0)]
+CALIBRATION_ARMS = ("B1", "B2a", "B2b", "B3")
+CALIBRATION_COST_SET = "mt5_ethusd"   # the executing live venue
+# activity gates BEFORE economic ranking (declared):
+MAX_ENVELOPE_FIRES_PER_YEAR = 1000    # pathological churn refusal
+MIN_POSITION_EVENTS_PER_YEAR = 4      # no-activity refusal
+RISK_LAMBDA = 1.0                     # hierarchical composite weight
 
 
 class ScreenBError(SystemExit):
@@ -72,15 +89,19 @@ def _sha_obj(o) -> str:
 def load_cost_sets() -> dict:
     m = json.loads(COST_MANIFEST.read_text())
     return {
-        "primary": {"binding": m["primary"]["env_binding"],
-                    "g1_eligible": True,
-                    "authority": "primary governs G1 (pending Musashi ratification)"},
+        "alpaca_ethusd": {
+            "binding": m["alpaca_ethusd"]["env_binding"],
+            "g1_eligible": True,
+            "authority": ("alpaca venue primary (pending "
+                          "ratification)")},
+        "mt5_ethusd": {
+            "binding": m["mt5_ethusd"]["env_binding"],
+            "g1_eligible": False,   # financing evidence gap blocks G1
+            "authority": ("mt5 venue primary — G1-blocked by the "
+                          "financing/swap evidence gap")},
         "zero_cost": {"binding": m["zero_cost"]["env_binding"],
                       "g1_eligible": False,
-                      "authority": "DIAGNOSTIC_ONLY"},
-        "stress": {"binding": m["stress"]["env_binding"],
-                   "g1_eligible": False,
-                   "authority": "descriptive stress"},
+                      "authority": "VENUE_NEUTRAL_DIAGNOSTIC_ONLY"},
     }, _sha_file(COST_MANIFEST)
 
 
@@ -153,7 +174,8 @@ def sigma_series(close: np.ndarray, scored_start: int) -> np.ndarray:
     return out
 
 
-def base_config(origin: dict, cost_binding: dict) -> dict:
+def base_config(origin: dict, cost_binding: dict,
+                envelope: dict) -> dict:
     launch = json.loads(Path(
         "/home/harveybc/.local/share/agent-multi/"
         "l1_curriculum_campaign_20260823/seed101_N/"
@@ -168,7 +190,7 @@ def base_config(origin: dict, cost_binding: dict) -> dict:
     cfg["continuous_action_threshold"] = 0.0
     cfg["continuous_action_contract"] = "target_exposure_hysteresis_v2"
     cfg["strategy_plugin"] = "shared_execution_envelope"
-    cfg["execution_envelope"] = dict(EXECUTION_ENVELOPE)
+    cfg["execution_envelope"] = dict(envelope)
     cfg.update(cost_binding)
     cfg.pop("env_mode", None)
     return cfg
@@ -236,7 +258,8 @@ def validate_stats_inputs(results: list) -> list:
 
 def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
             cost_binding: dict, cost_authority: str, g1_eligible: bool,
-            cost_sha: str, envelope_sha: str) -> dict:
+            cost_sha: str, envelope: dict, envelope_sha: str,
+            tag: str = "") -> dict:
     sys.path.insert(0, str(REPO))
     from pipeline_plugins.rl_pipeline_with_validation import (
         _load_env_plugin)
@@ -244,7 +267,7 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
     close = df["CLOSE"].to_numpy(dtype=float)
     pos = rule_positions(close, arm, origin["scored_start_index"])
     sig = sigma_series(close, origin["scored_start_index"])
-    cfg = base_config(origin, cost_binding)
+    cfg = base_config(origin, cost_binding, envelope)
     env = _load_env_plugin("gym_fx_env", cfg).make_env(cfg)
     obs, _ = env.reset(seed=0)
     inner = env
@@ -283,13 +306,23 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
         equity_prev = econ
         if term or trunc:
             break
+    # WP1: any lifecycle failure or residual sweep is a TYPED RUN
+    # FAILURE — never accepted evidence.
+    failure = getattr(inner.bridge, "envelope_run_failure", None)
+    sweeps = int(inner.bridge.execution_diagnostics.get(
+        "envelope_residual_sweeps", 0) or 0)
+    if failure or sweeps:
+        raise ScreenBError(
+            f"REFUSED_RUN: envelope lifecycle failure arm={arm} "
+            f"origin={origin['year']} tag={tag!r} failure={failure!r} "
+            f"residual_sweeps={sweeps}")
     final_pos = float(getattr(inner.bridge, "position", 0.0) or 0.0)
     if final_pos != 0.0 and rows:
         rows[-1]["close_reasons"] = (
             (rows[-1]["close_reasons"] + ";" if rows[-1]["close_reasons"]
              else "") + "data_end_liquidation")
     per_bar = pd.DataFrame(rows)
-    csv = out_dir / f"{arm}_{origin['year']}_{cost_set}_per_bar.csv"
+    csv = out_dir / f"{arm}_{origin['year']}_{cost_set}{tag}_per_bar.csv"
     per_bar.to_csv(csv, index=False)
     r = per_bar["net_return"].to_numpy()
     eq = per_bar["economic_equity"].to_numpy()
@@ -341,54 +374,153 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
     }
 
 
+def materialize_calibration_slice(df: pd.DataFrame, year: int,
+                                  out_dir: Path) -> dict:
+    """WP3: fit/monitor-only calibration window = the 12 months BEFORE
+    the origin's score year (context 540 bars). Strictly causal: no
+    scored-year bar enters geometry selection."""
+    return materialize_origin(df, year - 1, out_dir)
+
+
+def envelope_criterion(results: list) -> dict:
+    """Hierarchical activity/economic criterion: activity gates first,
+    then median across arms of (net_return - RISK_LAMBDA * mdd)."""
+    fires = [sum(v for k, v in r["close_reason_counts"].items()
+                 if k.startswith("envelope_close")) for r in results]
+    moves = [r["activity_position_changes"] for r in results]
+    med_fires = statistics.median(fires)
+    med_moves = statistics.median(moves)
+    if med_fires > MAX_ENVELOPE_FIRES_PER_YEAR:
+        return {"eligible": False, "refusal": "pathological_churn",
+                "median_envelope_fires": med_fires}
+    if med_moves < MIN_POSITION_EVENTS_PER_YEAR:
+        return {"eligible": False, "refusal": "no_activity",
+                "median_position_events": med_moves}
+    comp = statistics.median(
+        [r["net_total_return"] - RISK_LAMBDA *
+         (r["max_drawdown_fraction"] or 0.0) for r in results])
+    return {"eligible": True, "composite_median": comp,
+            "median_envelope_fires": med_fires,
+            "median_position_events": med_moves}
+
+
+def calibrate_origin_envelope(df: pd.DataFrame, origin: dict,
+                              out: Path, cost_sets: dict,
+                              cost_sha: str, ledger: Path) -> dict:
+    """Run the predeclared grid on the CALIBRATION slice only; freeze
+    the winner BEFORE the score year. Every cell is a ledger trial."""
+    cal = materialize_calibration_slice(df, origin["year"],
+                                        out / "calibration_origins")
+    spec = cost_sets[CALIBRATION_COST_SET]
+    cells = []
+    rows = []
+    for gi, env_geom in enumerate(CALIBRATION_GRID):
+        esha = _sha_obj(env_geom)
+        for arm in CALIBRATION_ARMS:
+            rows.append({
+                "trial_id": trial_id(arm, cal,
+                                     f"cal_{CALIBRATION_COST_SET}",
+                                     esha, cost_sha),
+                "screen": "B_envelope_calibration", "arm": arm,
+                "origin": origin["year"], "geometry_index": gi,
+                "calibration_year": cal["year"],
+                "registered_before_results": True,
+                "origin_csv_sha256": cal["csv_sha256"],
+                "scored_index_sha256": cal["scored_index_sha256"],
+                "execution_envelope_sha256": esha,
+                "cost_manifest_sha256": cost_sha})
+    register_trials(ledger, rows)
+    for gi, env_geom in enumerate(CALIBRATION_GRID):
+        esha = _sha_obj(env_geom)
+        results = []
+        for arm in CALIBRATION_ARMS:
+            print(f"== cal o{origin['year']} geom{gi} {arm}",
+                  flush=True)
+            results.append(run_arm(
+                cal, arm, out / "calibration_runs",
+                f"cal_{CALIBRATION_COST_SET}", spec["binding"],
+                "calibration (never scored-origin evidence)", False,
+                cost_sha, env_geom, esha, tag=f"_g{gi}"))
+        crit = envelope_criterion(results)
+        cells.append({"geometry_index": gi, "geometry": env_geom,
+                      "envelope_sha256": esha, "criterion": crit})
+    eligible = [c for c in cells if c["criterion"]["eligible"]]
+    if not eligible:
+        raise ScreenBError(
+            f"REFUSED: no eligible envelope geometry for origin "
+            f"{origin['year']} (all cells churn/no-activity)")
+    winner = max(eligible,
+                 key=lambda c: c["criterion"]["composite_median"])
+    record = {"origin": origin["year"],
+              "calibration_year": cal["year"],
+              "calibration_csv_sha256": cal["csv_sha256"],
+              "grid_cells": cells,
+              "frozen_geometry_index": winner["geometry_index"],
+              "frozen_geometry": winner["geometry"],
+              "frozen_envelope_sha256": winner["envelope_sha256"],
+              "frozen_before_score_year": True}
+    (out / f"ENVELOPE_CALIBRATION_o{origin['year']}.json").write_text(
+        json.dumps(record, indent=1))
+    return record
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--output-dir", type=Path, required=True)
     ap.add_argument("--arms", default=",".join(ARMS))
     ap.add_argument("--origins", default=",".join(map(str, ORIGINS)))
-    ap.add_argument("--cost-sets", default="primary,zero_cost,stress")
+    ap.add_argument("--cost-sets",
+                    default="alpaca_ethusd,mt5_ethusd,zero_cost")
     args = ap.parse_args(argv)
     out = args.output_dir
     out.mkdir(parents=True, exist_ok=True)
     cost_sets, cost_sha = load_cost_sets()
-    envelope_sha = _sha_obj(EXECUTION_ENVELOPE)
     df = load_source()
     origins = [materialize_origin(df, int(y), out / "origins")
                for y in args.origins.split(",")]
     arms = args.arms.split(",")
     wanted = args.cost_sets.split(",")
     identity = code_identity()
+    ledger = out / "trial_ledger.jsonl"
+    calibrations = {o["year"]: calibrate_origin_envelope(
+        df, o, out, cost_sets, cost_sha, ledger) for o in origins}
     run_manifest = {
-        "schema": "agent_multi.screen_b_run_manifest.v2",
+        "schema": "agent_multi.screen_b_run_manifest.v3",
         "code_identity": identity,
         "source_data_sha256": DATA_SHA,
         "cost_manifest_sha256": cost_sha,
-        "execution_envelope": EXECUTION_ENVELOPE,
-        "execution_envelope_sha256": envelope_sha,
+        "calibration_grid": CALIBRATION_GRID,
+        "calibration_cost_set": CALIBRATION_COST_SET,
+        "frozen_geometry_by_origin": {
+            y: {"geometry": c["frozen_geometry"],
+                "envelope_sha256": c["frozen_envelope_sha256"],
+                "calibrated_on_year": c["calibration_year"]}
+            for y, c in calibrations.items()},
         "origins": origins,
         "arms": arms, "cost_sets": wanted,
     }
     (out / "RUN_MANIFEST.json").write_text(json.dumps(run_manifest,
                                                       indent=1))
-    ledger = out / "trial_ledger.jsonl"
     pre = []
     for o in origins:
+        esha = calibrations[o["year"]]["frozen_envelope_sha256"]
         for arm in arms:
             for cs in wanted:
                 pre.append({
-                    "trial_id": trial_id(arm, o, cs, envelope_sha,
-                                         cost_sha),
+                    "trial_id": trial_id(arm, o, cs, esha, cost_sha),
                     "screen": "B", "arm": arm, "origin": o["year"],
                     "cost_set": cs,
                     "registered_before_results": True,
                     "origin_csv_sha256": o["csv_sha256"],
                     "scored_index_sha256": o["scored_index_sha256"],
-                    "execution_envelope_sha256": envelope_sha,
+                    "execution_envelope_sha256": esha,
                     "cost_manifest_sha256": cost_sha,
                 })
     register_trials(ledger, pre)
     results = []
     for o in origins:
+        geom = calibrations[o["year"]]["frozen_geometry"]
+        esha = calibrations[o["year"]]["frozen_envelope_sha256"]
         for arm in arms:
             for cs in wanted:
                 spec = cost_sets[cs]
@@ -396,8 +528,8 @@ def main(argv=None) -> int:
                 results.append(run_arm(
                     o, arm, out, cs, spec["binding"],
                     spec["authority"], spec["g1_eligible"],
-                    cost_sha, envelope_sha))
-    packet = {"schema": "agent_multi.screen_b_rule_arms.v2",
+                    cost_sha, geom, esha))
+    packet = {"schema": "agent_multi.screen_b_rule_arms.v3",
               "run_manifest_sha256": _sha_file(out / "RUN_MANIFEST.json"),
               "sealed_2025_used": False,
               "g1_claim": "NOT_EMITTED (B4 absent)",

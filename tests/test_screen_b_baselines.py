@@ -152,10 +152,47 @@ def test_stats_inputs_refuse_diagnostic_arms():
         validate_stats_inputs([diag])
 
 
-def test_envelope_geometry_is_the_deployed_one():
-    from tools.screen_b_baselines import EXECUTION_ENVELOPE
-    assert EXECUTION_ENVELOPE["sl_fraction"] == 0.01
-    assert EXECUTION_ENVELOPE["tp_fraction"] == 0.02
-    assert EXECUTION_ENVELOPE["collision_rule"] == (
-        "stop_first_pessimistic")
-    assert "mt5_eth_sac_model_runner_v1" in EXECUTION_ENVELOPE["source"]
+def test_calibration_grid_is_predeclared_with_fixed_control():
+    from tools.screen_b_baselines import (CALIBRATION_GRID,
+                                          FIXED_CONTROL_ENVELOPE)
+    assert CALIBRATION_GRID[0] == FIXED_CONTROL_ENVELOPE
+    atr_cells = CALIBRATION_GRID[1:]
+    assert len(atr_cells) == 6
+    assert {(c["atr_sl_mult"], round(c["atr_tp_mult"] / c["atr_sl_mult"],
+                                     2)) for c in atr_cells} == {
+        (1.5, 1.5), (1.5, 2.0), (2.0, 1.5), (2.0, 2.0),
+        (3.0, 1.5), (3.0, 2.0)}
+    assert all(c["collision_rule"] == "stop_first_pessimistic"
+               for c in CALIBRATION_GRID)
+
+
+def test_envelope_criterion_gates_before_ranking():
+    from tools.screen_b_baselines import envelope_criterion
+    churny = [{"close_reason_counts": {"envelope_close_sl": 2000},
+               "activity_position_changes": 100,
+               "net_total_return": 1.0, "max_drawdown_fraction": 0.1}] * 4
+    assert envelope_criterion(churny)["refusal"] == "pathological_churn"
+    idle = [{"close_reason_counts": {}, "activity_position_changes": 0,
+             "net_total_return": 0.0, "max_drawdown_fraction": 0.0}] * 4
+    assert envelope_criterion(idle)["refusal"] == "no_activity"
+    ok = [{"close_reason_counts": {"envelope_close_sl": 30},
+           "activity_position_changes": 40,
+           "net_total_return": 0.10, "max_drawdown_fraction": 0.05}] * 4
+    c = envelope_criterion(ok)
+    assert c["eligible"] and abs(c["composite_median"] - 0.05) < 1e-12
+
+
+def test_calibration_slice_is_pre_score_year(tmp_path):
+    import pandas as pd, numpy as np
+    from tools.screen_b_baselines import (CONTEXT_BARS,
+                                          materialize_calibration_slice)
+    dates = pd.date_range("2020-06-01", periods=CONTEXT_BARS + 3000,
+                          freq="4h")
+    df = pd.DataFrame({"DATE_TIME": dates,
+                       "CLOSE": np.linspace(100, 200, len(dates)),
+                       "typical_price": np.linspace(100, 200,
+                                                    len(dates))})
+    cal = materialize_calibration_slice(df, 2022, tmp_path)
+    assert cal["year"] == 2021
+    assert cal["score_start"].startswith("2021-01-01")
+    assert "2022" not in cal["score_end"][:4]

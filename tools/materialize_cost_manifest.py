@@ -70,66 +70,124 @@ def commission_evidence() -> dict:
             "source": str(L0_DB), "table": "lifecycle_events"}
 
 
+def mt5_evidence() -> dict:
+    """Venue+instrument+timestamp attributed MT5 demo ETHUSD facts."""
+    import statistics
+    con = sqlite3.connect(
+        "file:" + str(Path.home() / ".local/state/lts/"
+                      "sim-vs-live-comparison.sqlite") + "?mode=ro",
+        uri=True)
+    con.row_factory = sqlite3.Row
+    rows = []
+    for r in con.execute(
+            "SELECT recorded_at, payload_json FROM comparison_rows "
+            "WHERE venue='mt5_demo' AND symbol='ETHUSD'"):
+        b = json.loads(r["payload_json"])["broker"]
+        rows.append({"venue": "mt5_demo", "instrument": "ETHUSD",
+                     "timestamp": r["recorded_at"],
+                     "fill_price": b["fill_price"],
+                     "quoted_spread": b["quoted_spread"],
+                     "entry_slippage_vs_mid": b["entry_slippage_vs_mid"],
+                     "fees_field": b["fees"]})
+    con.close()
+    if not rows:
+        raise SystemExit("REFUSED: no attributed MT5 ETHUSD evidence")
+    sp = [x["quoted_spread"] / x["fill_price"] * 1e4 for x in rows]
+    sl = [abs(x["entry_slippage_vs_mid"]) / x["fill_price"] * 1e4
+          for x in rows]
+    return {"rows": rows, "n": len(rows),
+            "full_spread_bps_median": round(statistics.median(sp), 2),
+            "full_spread_bps_max": round(max(sp), 2),
+            "slippage_vs_mid_bps_median": round(statistics.median(sl), 2),
+            "slippage_vs_mid_bps_max": round(max(sl), 2)}
+
+
 def main() -> int:
     out = Path(sys.argv[sys.argv.index("--output") + 1]) if "--output" \
-        in sys.argv else Path("cost_manifest_eth_h4_v1.json")
-    sp = spread_stats()
-    comm = commission_evidence()
-    if comm["n_commission_fields"] and comm["max_commission_observed"] != 0.0:
-        raise SystemExit("REFUSED: Demo fills report nonzero commission; "
-                         "the evidenced-zero canon no longer holds")
-    half_med = sp["full_spread_bps_median"] / 2.0
-    half_p95 = sp["full_spread_bps_p95"] / 2.0
+        in sys.argv else Path("cost_manifest_eth_h4_v2.json")
+    sp = spread_stats()          # Alpaca ETH/USD quotes (attributed)
+    mt5 = mt5_evidence()         # MT5 demo ETHUSD fills (attributed)
+    comm = commission_evidence() # L0: observability ONLY (unattributed)
+    alp_half = sp["full_spread_bps_median"] / 2.0
+    mt5_half = mt5["full_spread_bps_median"] / 2.0
+    mt5_slip_extra = max(0.0, mt5["slippage_vs_mid_bps_max"] - mt5_half)
     manifest = {
-        "schema": "agent_multi.cost_manifest.v1",
-        "version": "eth_h4_v1",
+        "schema": "agent_multi.cost_manifest.v2",
+        "version": "eth_h4_v2_venue_specific",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
-        "primary": {
-            "commission_fraction_per_side": 0.0,
-            "commission_basis": ("EVIDENCED: every filled Demo lifecycle "
-                                 "event reports commission=0.0"),
-            "half_spread_fraction_per_side": round(half_med / 1e4, 8),
-            "half_spread_basis": (f"EVIDENCED: median full spread "
-                                  f"{sp['full_spread_bps_median']} bps over "
-                                  f"{sp['n_quotes']} ETH/USD paper quotes"),
-            "slippage_fraction_per_side": 0.0001,
-            "slippage_basis": ("DECLARED_BOUND_NOT_EVIDENCED: 1 bp per "
-                               "side conservative bound; no fill-vs-quote "
-                               "join is available on this host"),
-            "env_binding": {"commission": round(half_med / 1e4, 8),
-                            "slippage_perc": 0.0001,
-                            "note": ("gym-fx models per-side cost via "
-                                     "'commission' (fraction of notional); "
-                                     "half-spread+fee map onto it; "
-                                     "slippage_perc applies per fill")},
-        },
-        "stress": {
+        "alpaca_ethusd": {
+            "instrument": "ETH/USD", "venue": "alpaca",
             "commission_fraction_per_side": 0.0025,
-            "commission_basis": ("EXTERNAL_LABELED: Alpaca live crypto "
-                                 "base-tier taker fee 25 bp — published "
-                                 "schedule bound, not local evidence"),
-            "half_spread_fraction_per_side": round(half_p95 / 1e4, 8),
-            "half_spread_basis": f"EVIDENCED p95: {sp['full_spread_bps_p95']} bps full",
-            "slippage_fraction_per_side": 0.0002,
-            "slippage_basis": "DECLARED_BOUND_NOT_EVIDENCED: 2 bp stress",
-            "env_binding": {"commission": round(
-                0.0025 + half_p95 / 1e4, 8), "slippage_perc": 0.0002},
+            "commission_basis": (
+                "PUBLISHED_REAL_FEE_SCHEDULE (labeled external): Alpaca "
+                "crypto base-tier TAKER 25 bp — the business fee of the "
+                "real product; the Paper simulator charges 0, which is a "
+                "SIMULATOR OMISSION, not business economics"),
+            "paper_simulator_charge_fraction": 0.0,
+            "half_spread_fraction_per_side": round(alp_half / 1e4, 8),
+            "half_spread_basis": (
+                f"EVIDENCED: median full spread "
+                f"{sp['full_spread_bps_median']} bps over "
+                f"{sp['n_quotes']} venue+instrument-attributed ETH/USD "
+                f"paper quotes"),
+            "slippage_fraction_per_side": 0.0001,
+            "slippage_basis": "DECLARED_BOUND_NOT_EVIDENCED: 1 bp",
+            "env_binding": {"commission": round(0.0025 + alp_half / 1e4,
+                                                8),
+                            "slippage_perc": 0.0001},
         },
-        "zero_cost": {"role": "DIAGNOSTIC_ONLY (P1 recipe default)",
+        "mt5_ethusd": {
+            "instrument": "ETHUSD", "venue": "mt5_demo",
+            "commission_fraction_per_side": 0.0,
+            "commission_basis": (
+                "DECLARED_BROKER_MODEL: spread-based CFD pricing; the "
+                "demo journal reports fees 'unavailable: not journaled "
+                "per effect' — commission-zero is a declared model, "
+                "NOT venue-journaled evidence"),
+            "half_spread_fraction_per_side": round(mt5_half / 1e4, 8),
+            "half_spread_basis": (
+                f"EVIDENCED (n={mt5['n']}, small): median quoted full "
+                f"spread {mt5['full_spread_bps_median']} bps from "
+                f"attributed mt5_demo ETHUSD fills"),
+            "slippage_fraction_per_side": round(
+                max(0.0001, mt5_slip_extra / 1e4), 8),
+            "slippage_basis": (
+                f"EVIDENCED worst |fill-mid| {mt5['slippage_vs_mid_bps_max']} "
+                f"bps minus half-spread, floored at 1 bp declared"),
+            "financing_swap": {
+                "status": "REQUIRED_BEFORE_MT5_PRIMARY_G1",
+                "reason": ("not journaled on this host; H4 positions "
+                           "cross the charge boundary — the broker "
+                           "schedule must be evidenced before this "
+                           "contract can govern G1")},
+            "env_binding": {"commission": round(mt5_half / 1e4, 8),
+                            "slippage_perc": round(
+                                max(0.0001, mt5_slip_extra / 1e4), 8)},
+        },
+        "zero_cost": {"role": "VENUE_NEUTRAL_DIAGNOSTIC_ONLY",
                       "env_binding": {"commission": 0.0,
                                       "slippage_perc": 0.0}},
-        "evidence": {"spread": sp, "commission": comm},
-        "g1_authority": ("primary governs G1; zero_cost diagnostic; "
-                         "stress descriptive — pending Musashi "
-                         "ratification"),
+        "l0_lifecycle_rows": {
+            "classification": ("OBSERVABILITY_ONLY: rows carry neither "
+                               "venue nor instrument (broker_ids empty) "
+                               "and cannot establish any commission"),
+            "n_filled_events": comm["n_filled_events"]},
+        "evidence": {"alpaca_quotes": sp, "mt5_fills": mt5},
+        "g1_authority": ("per-venue primaries pending Musashi "
+                         "ratification; mt5_ethusd additionally blocked "
+                         "by the financing evidence gap; zero_cost "
+                         "diagnostic"),
     }
     body = json.dumps(manifest, indent=1)
     out.write_text(body)
-    manifest_sha = hashlib.sha256(body.encode()).hexdigest()
-    print(json.dumps({"written": str(out), "sha256": manifest_sha,
-                      "primary_effective_per_side_bps": round(
-                          (manifest["primary"]["env_binding"]["commission"]
-                           + 0.0001) * 1e4, 3)}))
+    print(json.dumps({
+        "written": str(out),
+        "sha256": hashlib.sha256(body.encode()).hexdigest(),
+        "alpaca_per_side_bps": round((manifest["alpaca_ethusd"][
+            "env_binding"]["commission"] + 0.0001) * 1e4, 2),
+        "mt5_per_side_bps": round((manifest["mt5_ethusd"]["env_binding"][
+            "commission"] + manifest["mt5_ethusd"]["env_binding"][
+            "slippage_perc"]) * 1e4, 2)}))
     return 0
 
 
