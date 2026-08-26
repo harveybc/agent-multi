@@ -25,11 +25,57 @@ def _sha(path: Path) -> str:
 
 def _normalized_pair_contract(record: dict, contract_sha: str) -> dict:
     contract = dict(record["contracts"]["pair_contract"])
+    if "nested_split_contract_sha256" in contract:
+        # v3 (finding P1-316): digest IS the authority — it must match
+        # the verified contract content or the record refuses.
+        if contract["nested_split_contract_sha256"] != contract_sha:
+            raise AggregationError(
+                "pair contract pins a different nested-contract digest "
+                "than the verified file content")
+        return contract
+    # legacy v2: absolute path replaced by the verified content digest
     path = Path(str(contract.pop("nested_split_contract", "")))
     if path.name != "eth_nested_split_contract_v1.json":
         raise AggregationError("unexpected nested split contract path")
     contract["nested_split_contract_sha256"] = contract_sha
     return contract
+
+
+def _verified_state_map(record: dict, manifest_dir: Path,
+                        name: str) -> dict:
+    """Finding P1-317: the state map must be bound by digest.
+
+    v3 records embed {sha256, named_state_sha256}; the evidence file
+    (when present) must hash to the embedded digest and carry the same
+    map. Missing, malformed or hash-mismatched evidence REFUSES. Legacy
+    v2 records fall back to the evidence file alone."""
+    embedded = record.get("selected_manifest")
+    path = manifest_dir / f"{name}_selected_manifest.json"
+    if embedded is not None:
+        emb_map = embedded.get("named_state_sha256")
+        emb_sha = embedded.get("sha256")
+        if not isinstance(emb_map, dict) or not emb_map or not emb_sha:
+            raise AggregationError(
+                f"malformed embedded state map for {name}")
+        if path.is_file():
+            actual = hashlib.sha256(path.read_bytes()).hexdigest()
+            if actual != emb_sha:
+                raise AggregationError(
+                    f"state-map evidence hash mismatch for {name}")
+            file_map = _load(path).get("named_state_sha256") or {}
+            if file_map != emb_map:
+                raise AggregationError(
+                    f"state-map content mismatch for {name}")
+        return emb_map
+    if record.get("schema") == "agent_multi.l1_curriculum_arm.v3":
+        raise AggregationError(
+            f"v3 record without embedded state map for {name}")
+    if not path.is_file():
+        raise AggregationError(f"state map evidence missing for {name}")
+    states = _load(path).get("named_state_sha256") or {}
+    if not states:
+        raise AggregationError(f"state map empty for {name}")
+    return states
 
 
 def _direction(deltas: list[float]) -> str:
@@ -53,7 +99,7 @@ def aggregate(report_dir: Path, manifest_dir: Path,
             if not path.is_file():
                 raise AggregationError(f"missing report: {path.name}")
             record = _load(path)
-            if record.get("schema") != "agent_multi.l1_curriculum_arm.v2":
+            if record.get("schema") not in ("agent_multi.l1_curriculum_arm.v2", "agent_multi.l1_curriculum_arm.v3"):
                 raise AggregationError(f"foreign schema: {path.name}")
             if record.get("outcome") != "ARM_COMPLETE" or record.get(
                     "normal_accepted") is not True:
@@ -76,17 +122,14 @@ def aggregate(report_dir: Path, manifest_dir: Path,
         }
         if len(normalized) != 1:
             raise AggregationError(f"pair identity mismatch for seed {seed}")
-        n_manifest = _load(
-            manifest_dir / f"seed{seed}_N_selected_manifest.json")
-        n_states = n_manifest.get("named_state_sha256") or {}
-        if not n_states:
-            raise AggregationError(f"N state map missing for seed {seed}")
+        n_states = _verified_state_map(records[(seed, "N")],
+                                       manifest_dir, f"seed{seed}_N")
         n_score = records[(seed, "N")]["outer_endpoint"][
             "primary_score_risk_adjusted_return"]
         for arm in ("EN-W", "EN-F"):
-            manifest = _load(
-                manifest_dir / f"seed{seed}_{arm}_selected_manifest.json")
-            states = manifest.get("named_state_sha256") or {}
+            states = _verified_state_map(records[(seed, arm)],
+                                         manifest_dir,
+                                         f"seed{seed}_{arm}")
             if set(states) != set(n_states):
                 raise AggregationError(
                     f"state map keys differ for seed {seed} {arm}")

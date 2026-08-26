@@ -288,10 +288,22 @@ def outer_endpoint(normal_dir: Path, normal_report: dict) -> dict:
 
 def arm_contracts(effective: dict, arm: str) -> dict:
     """Finding 312: canonical contracts. pair fields must be identical
-    across arms; only the allowlisted factors may differ."""
+    across arms; only the allowlisted factors may differ.
+
+    Finding P1-316: the nested split contract enters pair IDENTITY as
+    its verified content sha256; the absolute path is descriptive only
+    and excluded from identity (path-relocated reruns of identical
+    contracts must hash identically)."""
     pair = {k: v for k, v in sorted(effective.items())
             if k not in ARM_FACTOR_ALLOWLIST}
+    contract_path = pair.pop("nested_split_contract", None)
+    if contract_path is not None:
+        pair["nested_split_contract_sha256"] = hashlib.sha256(
+            Path(str(contract_path)).read_bytes()).hexdigest()
+    result_descriptive = {"nested_split_contract_path_descriptive":
+                          str(contract_path) if contract_path else None}
     return {
+        **result_descriptive,
         "pair_contract_sha256": hashlib.sha256(json.dumps(
             pair, sort_keys=True, default=str).encode()).hexdigest(),
         "pair_contract": pair,
@@ -339,7 +351,7 @@ def run_arm(args) -> dict:
                   patience_start=args.l1_patience_start_epoch,
                   nested_contract=args.nested_contract,
                   buffer_size=args.buffer_size)
-    record = {"schema": "agent_multi.l1_curriculum_arm.v2",
+    record = {"schema": "agent_multi.l1_curriculum_arm.v3",
               "arm": args.arm, "seed": args.seed,
               "model_contract": "flat_mlp (feature_extractor_plugin "
                                 "NEVER set)",
@@ -398,6 +410,18 @@ def run_arm(args) -> dict:
         launch["effective_config"], args.arm)
     record["outer_endpoint"] = outer_endpoint(normal_dir,
                                               normal_report)
+    # Finding P1-317: bind the selected state map into the terminal arm
+    # report by digest AND embed it; aggregation refuses when absent.
+    sel = load_bundle_manifest(normal_dir)
+    sel_path = Path(sel["_manifest_path"])
+    record["selected_manifest"] = {
+        "path_descriptive": str(sel_path),
+        "sha256": hashlib.sha256(sel_path.read_bytes()).hexdigest(),
+        "named_state_sha256": dict(sel.get("named_state_sha256") or {}),
+    }
+    if not record["selected_manifest"]["named_state_sha256"]:
+        record["outcome"] = "STATE_MAP_MISSING"
+        return record
     record["normal_accepted"] = normal_report.get("accepted")
     record["outcome"] = ("ARM_COMPLETE" if normal_report.get("accepted")
                          else "NORMAL_NOT_ACCEPTED")
