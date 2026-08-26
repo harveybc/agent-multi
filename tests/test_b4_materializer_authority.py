@@ -20,11 +20,17 @@ GEOM = {"envelope_mode": "atr", "atr_window": 14, "atr_sl_mult": 2.0,
 
 
 def test_full_cell_config_binds_everything():
-    cfg = m.build_cell_config(ORIGIN, 101, GEOM, COST, OBS)
+    cfg = m.build_cell_config(ORIGIN, 101, GEOM, COST, OBS, "e" * 64)
     assert cfg["strategy_plugin"] == "shared_execution_envelope"
-    assert cfg["execution_envelope"] == GEOM
-    assert cfg["commission"] == COST["mt5_ethusd"]["env_binding"][
+    assert cfg["execution_envelope"]["atr_sl_mult"] == GEOM["atr_sl_mult"]
+    assert cfg["execution_envelope"]["entry_cost_headroom"] > 0.006
+    assert cfg["commission"] == COST["alpaca_ethusd"]["env_binding"][
         "commission"]
+    assert cfg["cost_contract_id"] == "alpaca_ethusd"
+    assert len(cfg["cost_manifest_sha256"]) == 64
+    assert cfg["cost_g1_eligible"] is True
+    assert cfg["cost_maker_taker_assumption"] == "taker"
+    assert cfg["execution_envelope_sha256"] == "e" * 64
     assert cfg["require_observation_declaration"] is True
     oc = cfg["observation_contract"]
     assert oc["feature_columns_sha256"] == OBS["feature_columns_sha256"]
@@ -38,8 +44,14 @@ def test_omitted_envelope_refused():
 
 
 def test_omitted_cost_contract_refused():
-    with pytest.raises(SystemExit, match="venue cost"):
+    with pytest.raises(SystemExit, match="alpaca_ethusd"):
         m.build_cell_config(ORIGIN, 101, GEOM, {"zero_cost": {}}, OBS)
+
+
+def test_mt5_or_zero_forced_contract_refused():
+    forced = dict(COST, _force_contract="mt5_ethusd")
+    with pytest.raises(SystemExit, match="not\s+G1-eligible|not \nG1"):
+        m.build_cell_config(ORIGIN, 101, GEOM, forced, OBS)
 
 
 def test_omitted_observation_refused():

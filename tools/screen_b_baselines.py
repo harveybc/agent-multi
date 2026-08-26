@@ -66,7 +66,9 @@ CALIBRATION_GRID = [dict(FIXED_CONTROL_ENVELOPE)] + [
      "source": f"WP3 grid SL={sl}xATR TP/SL={ratio}"}
     for sl in (1.5, 2.0, 3.0) for ratio in (1.5, 2.0)]
 CALIBRATION_ARMS = ("B1", "B2a", "B2b", "B3")
-CALIBRATION_COST_SET = "mt5_ethusd"   # the executing live venue
+CALIBRATION_COST_SET = "alpaca_ethusd"  # N2: the SOLE current G1
+# economy — geometry must be selected under its own economics
+# (finding 330); MT5 stays descriptive and is NOT recalibrated
 # activity gates BEFORE economic ranking (declared):
 MAX_ENVELOPE_FIRES_PER_YEAR = 1000    # pathological churn refusal
 MIN_POSITION_EVENTS_PER_YEAR = 4      # no-activity refusal
@@ -478,7 +480,7 @@ def main(argv=None) -> int:
     ap.add_argument("--arms", default=",".join(ARMS))
     ap.add_argument("--origins", default=",".join(map(str, ORIGINS)))
     ap.add_argument("--cost-sets",
-                    default="alpaca_ethusd,mt5_ethusd,zero_cost")
+                    default="alpaca_ethusd,zero_cost")
     args = ap.parse_args(argv)
     out = args.output_dir
     out.mkdir(parents=True, exist_ok=True)

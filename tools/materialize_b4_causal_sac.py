@@ -147,7 +147,7 @@ COST_MANIFEST = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
 
 def build_cell_config(origin_contract: dict, seed: int,
                       frozen_envelope: dict, cost_manifest: dict,
-                      obs: dict) -> dict:
+                      obs: dict, envelope_sha256: str = "") -> dict:
     """WP4 (finding 326): the FULL contract identity of one B4 cell —
     envelope, venue cost binding, observation declaration and the
     mandatory-declaration flag — exists AT MATERIALIZATION, never
@@ -155,9 +155,14 @@ def build_cell_config(origin_contract: dict, seed: int,
     if not frozen_envelope:
         raise SystemExit("REFUSED: B4 cell without a frozen execution "
                          "envelope (finding 326)")
-    if not cost_manifest.get("mt5_ethusd"):
-        raise SystemExit("REFUSED: B4 cell without a venue cost "
-                         "contract (finding 326)")
+    alp = cost_manifest.get("alpaca_ethusd")
+    if not alp:
+        raise SystemExit("REFUSED: B4 cell without the alpaca_ethusd "
+                         "venue cost contract (findings 326/331)")
+    if cost_manifest.get("_force_contract") in ("mt5_ethusd",
+                                                "zero_cost"):
+        raise SystemExit("REFUSED: MT5/zero-cost contracts are not "
+                         "G1-eligible for B4 cells (finding 331)")
     if not obs:
         raise SystemExit("REFUSED: B4 cell without the v2 observation "
                          "declaration (finding 327)")
@@ -167,10 +172,24 @@ def build_cell_config(origin_contract: dict, seed: int,
         "nested_split_contract_path_descriptive":
             origin_contract["path"],
         "strategy_plugin": "shared_execution_envelope",
-        "execution_envelope": dict(frozen_envelope),
-        # training env executes under the LIVE venue's binding (mt5);
-        # evaluation is re-scored under both venue primaries (declared)
-        **cost_manifest["mt5_ethusd"]["env_binding"],
+        "execution_envelope": {
+            **frozen_envelope,
+            # cost-scaled entry headroom (N3): 2x per-side + margin
+            "entry_cost_headroom": round(2.0 * (
+                alp["env_binding"]["commission"]
+                + alp["env_binding"]["slippage_perc"]) + 0.001, 6)},
+        # N2/N3 (finding 331): training, checkpoint selection AND
+        # scoring all run under the SAME alpaca G1 contract as the
+        # rule comparators.
+        **alp["env_binding"],
+        "cost_contract_id": "alpaca_ethusd",
+        "cost_manifest_sha256": hashlib.sha256(
+            COST_MANIFEST.read_bytes()).hexdigest(),
+        "cost_g1_eligible": True,
+        "cost_fee_tier": alp.get("fee_schedule_source", {}).get(
+            "tier", "Tier 1"),
+        "cost_maker_taker_assumption": "taker",
+        "execution_envelope_sha256": envelope_sha256,
         "feature_columns": list(obs["feature_columns"]),
         "include_price_window": obs["include_price_window"],
         "include_agent_state": obs["include_agent_state"],
@@ -293,7 +312,8 @@ def main(argv=None) -> int:
             for seed in SEEDS:
                 cfg = build_cell_config(
                     oc, seed, frozen_by_origin[oc["year"]]["geometry"],
-                    cost_manifest, obs)
+                    cost_manifest, obs,
+                    frozen_by_origin[oc["year"]]["envelope_sha256"])
                 key = f"o{oc['year']}_seed{seed}"
                 cells_cfg[key] = {
                     "effective_config": cfg,
@@ -302,6 +322,16 @@ def main(argv=None) -> int:
                         default=str).encode()).hexdigest()}
         (out / "B4_CELL_CONFIGS.json").write_text(json.dumps(
             cells_cfg, indent=1))
+        gen_manifest = out / "genesis" / "GENESIS_BINDING.json"
+        gen_manifest.parent.mkdir(parents=True, exist_ok=True)
+        gen_manifest.write_text(json.dumps({
+            "binding": {k: v["config_sha256"]
+                        for k, v in cells_cfg.items()},
+            "note": ("genesis tensors are reusable (seed-deterministic, "
+                     "observation identity unchanged) but each cell's "
+                     "genesis is BOUND to this final cell-config digest "
+                     "(N3); a config change invalidates the binding")},
+            indent=1))
 
     recipe = {"cost_manifest_sha256": hashlib.sha256(
                   COST_MANIFEST.read_bytes()).hexdigest(),
