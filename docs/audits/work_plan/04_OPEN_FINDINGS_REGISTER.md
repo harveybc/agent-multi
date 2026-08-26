@@ -1160,6 +1160,23 @@ IBKR hold still requires a newly signed effect-bound capability.
 
 ## 2b. Observations Pending Verification (not yet findings)
 
+### 1an. Screen B WP1-WP5 return audit, 2026-08-26
+
+Canonical evidence:
+
+- `../AUDIT_SATOSHI_SCREEN_B_WP1_WP5_RETURN_2026_08_26.md`
+- `../../handoffs/MUSASHI_TO_GENERAL_SATOSHI_SCREEN_B_FINAL_NARROW_CORRECTION_ORDER_2026_08_26.md`
+
+The correction is narrowed to entry-bar settlement and one internally
+consistent Alpaca G1 economy. B4 remains undispatched.
+
+| ID | Sev | State | Title | Owner |
+| --- | --- | --- | --- | --- |
+| AUD-F1-20260826-329 | S2 | open, blocks G1/B4 | Entry-bar protection touch settles at next open and is not conservatively priced | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-330 | S2 | open, blocks Alpaca G1 | Envelope is calibrated under MT5 costs then reused for Alpaca | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-331 | S2 | open, blocks B4 | B4 trains under G1-ineligible MT5 economics while G1 authority is Alpaca | General Satoshi implements; Musashi verifies |
+| AUD-F1-20260826-332 | S3 | open, blocks B4 identity | B4 binds numeric costs without immutable venue-contract authority | General Satoshi implements; Musashi verifies |
+
 | Ref | Observed | Verify in |
 | --- | --- | --- |
 | OBS-20260730-A | Job-0 record `started_at` is 2026-07-29T07:16:30Z (02:16 COT) but the Omega node process start implies ~18:18 COT the same day, a ~16 h gap with `restart_count=0`. Likely the job record marks plan materialization while workers launched after the deployment sequence, but unverified. | `worker_events` table, next delta session |
