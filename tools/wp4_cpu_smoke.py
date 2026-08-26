@@ -600,8 +600,10 @@ def main(argv=None) -> int:
                             if eligible else None),
         },
     }
-    out = args.report or (REPO / "docs/audits/evidence/"
-                          "WP4_CPU_SMOKE_REPORT_2026_08_20.json")
+    # The historical 2026-08-20 default CLOBBERED committed evidence on
+    # every later smoke (caught 2026-08-25); reports now default INSIDE
+    # the run's own output dir.
+    out = args.report or (args.output_dir / "wp4_cpu_smoke_report.json")
     out.write_text(json.dumps(report, indent=1, sort_keys=True,
                               default=str) + "\n")
     print(json.dumps({"accepted": accepted,
