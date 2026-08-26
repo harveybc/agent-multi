@@ -1,0 +1,8 @@
+{
+ "337_absent_from_4389e115:tools/cuda_c0_smoke.py": true,
+ "337_absent_from_4389e115:docs/audits/evidence/CUDA_C0_SMOKE_2026_08_26.json": true,
+ "337_untracked_excluded_from_clean_claim": true,
+ "338_reset_after_model_on_device": true,
+ "339_uuid_prefix_in_packet": "612d1e0c",
+ "339_unsalted_uuid_sha_in_packet": true
+}

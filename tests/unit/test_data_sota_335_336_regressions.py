@@ -127,3 +127,22 @@ def test_335_validation_precedes_torch_construction(monkeypatch):
     with pytest.raises(TopologyError):
         PatchTST.build(4, 32, dict(PatchTST.plugin_params,
                                    d_model="64"))
+
+
+def test_339_public_evidence_free_of_persistent_gpu_identifiers():
+    """DATA-SOTA-339: no UUID fragments or UUID hashes in public
+    evidence packets."""
+    import json as _json
+    import re
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "docs/audits/evidence"
+    v2 = root / "CUDA_C0_SMOKE_V2_2026_08_26.json"
+    if not v2.is_file():
+        import pytest as _pt
+        _pt.skip("v2 packet not yet generated")
+    body = v2.read_text()
+    d = _json.loads(body)
+    assert "gpu_uuid_redacted" not in body
+    assert "gpu_uuid_sha256" not in body
+    assert not re.search(r"GPU-[0-9a-f]{8}", body)
+    assert d.get("gpu_model") and "gpu_run_local_ordinal" in d

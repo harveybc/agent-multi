@@ -29,20 +29,53 @@ def sha_obj(o) -> str:
                                      default=str).encode()).hexdigest()
 
 
-def redacted_gpu_identity() -> dict:
-    out = subprocess.run(["nvidia-smi", "--query-gpu=name,uuid",
-                          "--format=csv,noheader"],
+def public_gpu_identity(device_index: int) -> dict:
+    """DATA-SOTA-339: PUBLIC evidence carries the model class and the
+    run-local ordinal ONLY — no UUID fragment, no UUID hash (a hash of
+    a stable private identifier is a pseudonym, not a redaction)."""
+    out = subprocess.run(["nvidia-smi", "--query-gpu=name",
+                          "--format=csv,noheader", "-i",
+                          str(device_index)],
                          capture_output=True, text=True).stdout.strip()
-    name, uuid = [x.strip() for x in out.split(",", 1)]
-    return {"gpu_name": name,
-            "gpu_uuid_redacted": uuid.split("-")[1][:8],
-            "gpu_uuid_sha256": hashlib.sha256(uuid.encode()).hexdigest()}
+    return {"gpu_model": out, "gpu_run_local_ordinal": device_index}
+
+
+DECLARED_OUTPUTS = None  # set in main() after C0_OUTPUT resolves
+
+
+def _tree_status() -> list:
+    out = subprocess.run(["git", "-C", str(REPO), "status",
+                          "--porcelain"],
+                         capture_output=True, text=True).stdout
+    return [line for line in out.splitlines() if line.strip()]
+
+
+def _clean_with_declared_outputs() -> bool:
+    allowed = {str(p) for p in (DECLARED_OUTPUTS or [])}
+    for line in _tree_status():
+        path = line[3:].strip()
+        full = str((REPO / path).resolve())
+        if full not in allowed:
+            return False
+    return True
 
 
 def main() -> int:
     import numpy as np
     import torch
 
+    global DECLARED_OUTPUTS
+    out_declared = Path(os.environ.get(
+        "C0_OUTPUT",
+        str(REPO / "docs/audits/evidence/"
+            "CUDA_C0_SMOKE_V2_2026_08_26.json")))
+    DECLARED_OUTPUTS = [out_declared.resolve()]
+    # preflight: the tree must already be clean (incl. untracked)
+    # BEFORE the run creates its declared output
+    pre = _tree_status()
+    if pre:
+        raise SystemExit(f"REFUSED: tree not clean at preflight "
+                         f"(incl. untracked): {pre[:5]}")
     if not torch.cuda.is_available():
         raise SystemExit("REFUSED: CUDA unavailable")
     eth = os.environ.get("AGENT_MULTI_ETH_CSV") or str(
@@ -102,12 +135,20 @@ def main() -> int:
     }
 
     device = torch.device("cuda:0")
+    # DATA-SOTA-338: measure THROUGH construction — synchronize, clear
+    # cache, reset peaks BEFORE the model exists; baseline reported
+    # separately.
+    torch.cuda.init()
+    torch.cuda.synchronize(device)
+    torch.cuda.empty_cache()
+    free_before, total = torch.cuda.mem_get_info(device)
+    baseline_device_used_mb = round((total - free_before) / 1e6, 1)
+    torch.cuda.reset_peak_memory_stats(device)
     t0 = time.perf_counter()
 
     Extractor = gfe.build_grouped_extractor_class()
     torch.manual_seed(0)
     model = Extractor(env.observation_space, arch).to(device)
-    torch.cuda.reset_peak_memory_stats(device)
     actor_probe = torch.nn.Linear(96, 1).to(device)  # actor-facing path
 
     obs, _ = env.reset(seed=7)
@@ -153,29 +194,44 @@ def main() -> int:
     wall = time.perf_counter() - t0
 
     packet = {
-        "schema": "agent_multi.cuda_c0_smoke.v1",
+        "schema": "agent_multi.cuda_c0_smoke.v2",
+        "replaces_rejected_packet": (
+            "docs/audits/evidence/CUDA_C0_SMOKE_2026_08_26.json "
+            "(REJECTED by AUDIT_SATOSHI_CUDA_C0_RETURN_2026_08_26; "
+            "preserved unmodified as historical evidence)"),
         "dispatch": ("MUSASHI_TO_GENERAL_SATOSHI_CUDA_C0_DISPATCH_"
                      "2026_08_26 (single bounded mechanics smoke)"),
         "code_commit": subprocess.run(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"],
             capture_output=True, text=True).stdout.strip(),
-        "clean_tree": subprocess.run(
-            ["git", "-C", str(REPO), "status", "--porcelain",
-             "--untracked-files=no"],
-            capture_output=True, text=True).stdout.strip() == "",
+        # DATA-SOTA-337: cleanliness INCLUDES untracked files; the only
+        # tolerated entries are the declared output artifacts of THIS
+        # run, verified against the recorded preflight.
+        "tree_status_including_untracked": _tree_status(),
+        "clean_tree_including_untracked": _clean_with_declared_outputs(),
+        "runner_sha256": sha_file(Path(__file__)),
+        "argv_full": list(sys.argv),
+        "interpreter": {"path": sys.executable,
+                        "python": sys.version.split()[0]},
+        "environment_identity": {
+            "CUDA_VISIBLE_DEVICES": os.environ.get(
+                "CUDA_VISIBLE_DEVICES"),
+            "PYTHONPATH": os.environ.get("PYTHONPATH"),
+            "TMPDIR": os.environ.get("TMPDIR")},
         "command": " ".join(sys.argv),
         "data_digest": sha_file(eth),
         "config_sha256": sha_obj(arch),
         "family_digest": model.fusion.family_digest,
         "family_ids_ordered": model.fusion.family_ids,
-        **redacted_gpu_identity(),
+        **public_gpu_identity(0),
         "cuda_version": torch.version.cuda,
         "torch_version": torch.__version__,
         "device": str(device),
         "wall_seconds": round(wall, 3),
-        "peak_allocated_mb": round(
+        "baseline_device_used_mb": baseline_device_used_mb,
+        "peak_allocated_mb_through_construction": round(
             torch.cuda.max_memory_allocated(device) / 1e6, 1),
-        "peak_reserved_mb": round(
+        "peak_reserved_mb_through_construction": round(
             torch.cuda.max_memory_reserved(device) / 1e6, 1),
         "parameter_count": int(sum(p.numel()
                                    for p in model.parameters())),
@@ -187,8 +243,10 @@ def main() -> int:
         "checkpoint_promotion": "NONE",
         "b4_dispatch": "NONE",
     }
-    out_path = REPO / ("docs/audits/evidence/"
-                       "CUDA_C0_SMOKE_2026_08_26.json")
+    out_path = Path(os.environ.get(
+        "C0_OUTPUT",
+        str(REPO / "docs/audits/evidence/"
+            "CUDA_C0_SMOKE_V2_2026_08_26.json")))
     out_path.write_text(json.dumps(packet, indent=1))
     print(json.dumps(packet, indent=1))
     return 0
