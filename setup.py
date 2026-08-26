@@ -37,10 +37,14 @@ setup(
             "gru_branch=feature_branch_plugins.gru_branch:Plugin",
             "tcn_branch=feature_branch_plugins.tcn_branch:Plugin",
             "transformer_branch=feature_branch_plugins.transformer_branch:Plugin",
+            "patchtst_branch=feature_branch_plugins.patchtst_branch:Plugin",
+            "tft_branch=feature_branch_plugins.tft_branch:Plugin",
+            "timesnet_branch=feature_branch_plugins.timesnet_branch:Plugin",
         ],
         "feature_fusion.plugins": [
             "concat_fusion=feature_fusion_plugins.concat_fusion:Plugin",
             "gated_fusion=feature_fusion_plugins.gated_fusion:Plugin",
+            "cross_family_attention=feature_fusion_plugins.cross_family_attention:Plugin",
         ],
         "pretraining_objective.plugins": [
             "next_step_huber=pretraining_objective_plugins.next_step_huber:Plugin",
