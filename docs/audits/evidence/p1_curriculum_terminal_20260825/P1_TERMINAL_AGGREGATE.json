@@ -1,0 +1,123 @@
+{
+  "schema": "agent_multi.l1_curriculum_terminal_aggregate.v1",
+  "reports_complete": 12,
+  "nested_split_contract_sha256": "2b31b7770f815b75b14d8234961d848787ae7c7fde9c03dbc494480fcb4130c6",
+  "identity_normalization": {
+    "field": "nested_split_contract",
+    "rule": "absolute path replaced by verified content sha256"
+  },
+  "rows": [
+    {
+      "seed": 101,
+      "arm": "EN-W",
+      "n_score": -0.5569292861617197,
+      "arm_score": -0.5892942093159077,
+      "delta": -0.03236492315418804,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 101,
+      "arm": "EN-F",
+      "n_score": -0.5569292861617197,
+      "arm_score": -0.09133601751056572,
+      "delta": 0.4655932686511539,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 202,
+      "arm": "EN-W",
+      "n_score": -0.2967365256232497,
+      "arm_score": -0.2967365256232497,
+      "delta": 0.0,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 202,
+      "arm": "EN-F",
+      "n_score": -0.2967365256232497,
+      "arm_score": -0.2967365256232497,
+      "delta": 0.0,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 303,
+      "arm": "EN-W",
+      "n_score": -0.07046733750909609,
+      "arm_score": -0.07046733750909609,
+      "delta": 0.0,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 303,
+      "arm": "EN-F",
+      "n_score": -0.07046733750909609,
+      "arm_score": -0.2862986445041941,
+      "delta": -0.21583130699509803,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 404,
+      "arm": "EN-W",
+      "n_score": -0.5055405999015619,
+      "arm_score": -0.5055405999015619,
+      "delta": 0.0,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    },
+    {
+      "seed": 404,
+      "arm": "EN-F",
+      "n_score": -0.5055405999015619,
+      "arm_score": -0.5055405999015619,
+      "delta": 0.0,
+      "state_tensors": 148,
+      "identical_state_tensors": 148,
+      "easy_treatment_diverged": false
+    }
+  ],
+  "results": {
+    "EN-W": {
+      "deltas": [
+        -0.03236492315418804,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "median_delta": 0.0,
+      "positive_seeds": 0,
+      "negative_seeds": 1,
+      "informative_easy_seeds": 0,
+      "direction_rule_result": "INCONCLUSIVE",
+      "scientific_disposition": "EASY_TREATMENT_INERT"
+    },
+    "EN-F": {
+      "deltas": [
+        0.4655932686511539,
+        0.0,
+        -0.21583130699509803,
+        0.0
+      ],
+      "median_delta": 0.0,
+      "positive_seeds": 1,
+      "negative_seeds": 1,
+      "informative_easy_seeds": 0,
+      "direction_rule_result": "INCONCLUSIVE",
+      "scientific_disposition": "EASY_TREATMENT_INERT"
+    }
+  },
+  "sealed_2025_used": false,
+  "promotion_authorized": false
+}

@@ -431,6 +431,20 @@
    "authority_class": "diagnostic",
    "owner": "General Satoshi III"
   },
+  "aggregate_l1_curriculum_campaign.py": {
+   "purpose": "Fail-closed terminal aggregation for the four-seed N / EN-W / EN-F P1 campaign. Verifies 12 accepted reports, content-based pair identity, selected-state maps, outer-2024 endpoints and the predeclared directional rule; never accesses sealed 2025 or authorizes promotion.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Musashi"
+  },
+  "warmup_context_probe.py": {
+   "purpose": "Read-only SOTA-R06 probe of observation-buffer warmup on the executing pipeline path, with code, config and per-role dataset identities bound into its evidence.",
+   "lifecycle": "supported",
+   "mutability": "mixed",
+   "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
   "l1_curriculum_experiment.py": {
    "purpose": "P1 order 2026-08-23: fixed-LR L1 curriculum arms N / EN-W / EN-F on the FLAT-MLP identity (grouped extractor never enabled). Orchestrates easy->normal phases via the accepted phase runner; fail-closed handoff gate (eligible checkpoint + >=2 mapped normal decision crossings from the executing validation trace); PROVES tensor continuity (exact actor-L1 match easy-selected vs normal-initial), replay disposition per declared arm semantics, and component identity via SB3 zip member hashes. Predeclared direction rule; EN-W and EN-F never merged into one claim. Easy compute reported separately.",
    "lifecycle": "supported",

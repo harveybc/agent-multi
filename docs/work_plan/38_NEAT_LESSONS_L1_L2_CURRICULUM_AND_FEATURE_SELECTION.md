@@ -1206,6 +1206,21 @@ Constraints: no GPU dispatch without explicit authorization; screens B, A, R,
 C each require Musashi design verification BEFORE launch; 2025 absent from
 every materialized development config; rolling development origins mandatory
 (never 2024-only evaluation).
+
+### 23.6 P1 terminal result (2026-08-25)
+
+The fixed-LR 4-seed x 3-arm campaign completed all 12 arms. Under the
+predeclared outer-2024 risk-adjusted-return rule, EN-W deltas versus N were
+`[-0.032365, 0, 0, 0]`; EN-F deltas were
+`[+0.465593, 0, -0.215831, 0]`. Both medians are zero and both directional
+verdicts are `INCONCLUSIVE`.
+
+More decisively, the easy selected state was identical to N in 148/148 named
+state tensors for every seed and both EN arms. The relaxed-solvency treatment
+was inert in 0/4 informative seeds. EN-F endpoint differences are attributable
+only to its replay-carry treatment and cannot support an easy-difficulty
+claim. No P1 checkpoint is promoted. Repeating this same P1 design is retired;
+the dependency graph advances to Screen B.
 ```
 
 ### 23.4 Standing selection-statistics requirement (SOTA-08)
