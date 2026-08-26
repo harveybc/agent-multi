@@ -5,11 +5,12 @@ training system and no candidate architecture is promoted.
 
 ## Owner correction, 2026-08-26
 
-The flat MLP is retired from prospective architecture campaigns. Existing MLP
-results remain an archival lower reference and a mechanics fixture; no new long
-GPU run may use it as a candidate, control, champion, or B4 policy. A trivial
-model can still appear in unit tests that prove wiring, but not in scientific
-comparisons that consume campaign compute.
+The flat MLP is retired as a prospective champion architecture. It remains an
+architectural baseline when a bounded, capacity/compute-declared comparison is
+needed to measure the incremental value of temporal structure. Existing valid
+MLP evidence must be reused first; a new MLP run requires the comparison to show
+why inference from existing evidence is insufficient. It may not become the
+default winner merely because stronger candidates fail a gate.
 
 Data identity precedes topology. No architecture campaign may start until each
 input family has both (a) causally timestamped historical coverage for every

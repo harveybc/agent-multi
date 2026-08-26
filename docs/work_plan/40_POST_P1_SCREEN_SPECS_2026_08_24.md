@@ -144,9 +144,11 @@ below mutates the running campaign.
 
 ## Screen C — Capacity-matched architecture (C5/R08)
 
-- **Owner correction (2026-08-26)**: no new long run of the flat MLP or a
-  deliberately weak shared-GRU control is authorized. Existing flat-MLP
-  evidence is an archival lower reference only. It consumes zero new GPU.
+- **Owner clarification (2026-08-26)**: the flat MLP may be used as an
+  architectural baseline, not as the primary candidate. Reuse existing valid
+  evidence first. Any new run must be bounded, matched on data/update budget and
+  justified as necessary to estimate the value added by temporal structure.
+  A deliberately weak shared-GRU control is not required.
 - **Question**: which strong, data-compatible temporal architecture earns the
   right to enter DOIN optimization? Complexity is evaluated, but the campaign
   does not spend weeks rediscovering that flattened observations discard
@@ -170,6 +172,19 @@ below mutates the running campaign.
   baseline and the other strong arms on paired net Sharpe across ≥2 of 3
   origins and ≥3 of 4 seeds. If none does, improve data/reward/action semantics;
   do not promote the archival MLP by default.
+
+## Economic hurdle (distinct from model baselines)
+
+- Record a predeclared **10% nominal annual COP opportunity-cost hurdle** as the
+  owner's current CDT comparison point. It is not an architecture arm and does
+  not replace flat cash, buy-and-hold, TSMOM or the MLP architecture baseline.
+- Report strategy returns first in the venue/account currency after all costs.
+  Also report a COP view using a timestamped USD/COP conversion series and state
+  whether tax and inflation are included. Never compare a USD return directly
+  with 10% COP without the currency bridge.
+- The hurdle is a reporting threshold, not a reward term, fitness bonus or
+  post-hoc promotion override. Its rate must be versioned by evaluation date;
+  10% is the owner's current planning assumption, not a permanent market fact.
 
 ## Launch preconditions (every screen)
 

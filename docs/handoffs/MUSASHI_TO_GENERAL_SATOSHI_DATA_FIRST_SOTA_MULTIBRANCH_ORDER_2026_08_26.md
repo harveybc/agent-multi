@@ -6,11 +6,17 @@ Authority: owner correction; execute without a new approval phrase
 
 ## 1. Correction of direction
 
-Do not launch B4 or any other long campaign with the flat MLP. It is retained
-only as historical evidence and a unit-test fixture. Do not substitute a small
-GRU merely to create a cheap control. The next learned candidate must preserve
-temporal order, semantic feature families and the exact historical/live data
-contract.
+Do not treat the flat MLP as the primary candidate. It remains a legitimate
+architectural baseline: reuse existing valid evidence first, and run it anew
+only when a bounded matched comparison is required to quantify the value of
+temporal structure. Do not substitute a deliberately weak GRU merely to create
+a cheap control. The next prospective learned candidate must preserve temporal
+order, semantic feature families and the exact historical/live data contract.
+
+Add the owner's 10% nominal annual COP CDT alternative as an economic reporting
+hurdle, separate from every model/strategy baseline. Produce venue-currency and
+COP-converted returns with timestamped FX provenance; do not inject this hurdle
+into training fitness or compare it directly with USD returns.
 
 ## 2. WP-DATA: decide the inputs before the network
 
@@ -85,7 +91,8 @@ Genes include branch type, depth, width, patch/kernel/dilation, attention heads,
 dropout, normalization, fusion, core/head topology, pretraining objectives and
 loss weights. Use hierarchical stages to prevent a combinatorial explosion.
 
-Easy-to-normal returns only after a strong architecture is mechanically valid
+The MLP may appear as a bounded matched baseline but cannot win by default when
+strong models fail. Easy-to-normal returns only after a strong architecture is mechanically valid
 and easy dynamics demonstrably differ from normal. Preserve weights exactly at
 handoff; replay carry remains its own treatment.
 
