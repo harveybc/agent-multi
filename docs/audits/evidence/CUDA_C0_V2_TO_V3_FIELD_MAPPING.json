@@ -1,0 +1,8 @@
+{
+ "schema": "v2 -> v3_public",
+ "interpreter.path": "REMOVED -> interpreter.logical",
+ "environment_identity.PYTHONPATH/TMPDIR": "absolute -> logical labels",
+ "argv_full": "REMOVED -> argv_logical (repo-relative)",
+ "command": "REMOVED (duplicated argv)",
+ "replaces_rejected_packet": "prose pointer -> tombstone reference with v1 digest"
+}

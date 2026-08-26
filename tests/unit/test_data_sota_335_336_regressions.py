@@ -129,20 +129,79 @@ def test_335_validation_precedes_torch_construction(monkeypatch):
                                    d_model="64"))
 
 
-def test_339_public_evidence_free_of_persistent_gpu_identifiers():
-    """DATA-SOTA-339: no UUID fragments or UUID hashes in public
-    evidence packets."""
-    import json as _json
+def test_340_all_public_evidence_free_of_topology_and_identifiers():
+    """DATA-SOTA-339/340: EVERY public evidence packet on this branch
+    is free of operator topology, scratch paths, host names, UUID
+    fragments and persistent UUID hashes."""
     import re
     from pathlib import Path as _P
     root = _P(__file__).resolve().parents[2] / "docs/audits/evidence"
-    v2 = root / "CUDA_C0_SMOKE_V2_2026_08_26.json"
-    if not v2.is_file():
-        import pytest as _pt
-        _pt.skip("v2 packet not yet generated")
-    body = v2.read_text()
-    d = _json.loads(body)
-    assert "gpu_uuid_redacted" not in body
-    assert "gpu_uuid_sha256" not in body
-    assert not re.search(r"GPU-[0-9a-f]{8}", body)
-    assert d.get("gpu_model") and "gpu_run_local_ordinal" in d
+    needles = ("/home/", "/tmp/claude", ".local/state", ".local/share",
+               "harveybc", "omega", "dragon", "gamma")
+    uuid_frag = re.compile(r"GPU-[0-9a-f]{8}")
+    uuid_keys = re.compile(r"gpu_uuid(_redacted|_sha256)?\"")
+    # LEGACY files inherited from pre-front eras: registered in the
+    # history-remediation register (finding-323 item) — other fronts'
+    # audit evidence, not mutated unilaterally by this front.
+    registered_legacy = {
+        "ETH_EASY_ACTIVITY_SMOKE_2026_08_05.json",
+        "HISTORICAL_FITNESS_PROVENANCE_GYMFX_8088F9E.json",
+        "MULTIFRONT_F1_L1_SAMPLE_2026_08_10.json",
+        "MUSASHI_LIVE_MODEL_IDENTITY_AFTER_241_2026_08_12.json",
+        "MUSASHI_POST_OUTAGE_RUNTIME_FACTS_2026_08_11.json",
+        "P1LR_DECISION_FINAL_EVIDENCE_c0e53cf18b7d60dd_2026_08_15.json",
+        "PLATEAU_LR_CPU_SMOKE_2026_08_21.json",
+        "PLATEAU_LR_CUDA_SMOKE_2026_08_21.json",
+        "README_LINK_RESOLUTION_CHECK_2026_08_10.json",
+        "README_LINK_RESOLUTION_CHECK_2026_08_11.json",
+        "README_LINK_RESOLUTION_CHECK_POST_MERGE_2026_08_12.json",
+        "REPOSITORY_PRESENTATION_INVENTORY_2026_08_10.json",
+        "SOCIAL_ENRICHMENT_RETRY_DRYRUN_2026_08_10.json",
+        "SWARM_EFFICIENCY_MEASUREMENT_2026_07_31.json",
+        "SWARM_EFFICIENCY_MEASUREMENT_CLOCKED_2026_07_31.json",
+        "TOOLING_CYCLE_PROVENANCE_2026_08_06.json",
+        "WP2_ACTIVITY_PLATEAU_SENSITIVITY_DATASET_2026_08_20.json",
+        "WP4_CPU_SMOKE_REPORT_2026_08_20.json",
+        "WP4_REWARD_SCALE_CALIBRATION_2026_08_18.json",
+        "frag_dragon.json",
+        "frag_gamma.json",
+        "frag_omega.json",
+    }
+    offenders = []
+    for f in sorted(root.glob("*.json")):
+        if f.name in registered_legacy:
+            continue
+        body = f.read_text()
+        for n in needles:
+            if n in body:
+                offenders.append(f"{f.name}: {n}")
+        if uuid_frag.search(body):
+            offenders.append(f"{f.name}: GPU-uuid fragment")
+        if uuid_keys.search(body):
+            offenders.append(f"{f.name}: uuid-derived key")
+    assert not offenders, offenders
+
+
+def test_340_v3_packet_uses_logical_identities():
+    import json as _json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "docs/audits/evidence"
+    d = _json.loads((root / "CUDA_C0_SMOKE_V3_PUBLIC_2026_08_26.json"
+                     ).read_text())
+    assert d["interpreter"] == {
+        "logical": "python:3.12.13@conda-env:trading-stack"}
+    assert d["argv_logical"] == ["tools/cuda_c0_smoke.py"]
+    assert "argv_full" not in d and "command" not in d
+    assert d["replaces_rejected_packet"]["v1_content_sha256"]
+
+
+def test_340_tombstones_carry_digest_and_reason():
+    import json as _json
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2] / "docs/audits/evidence"
+    for name in ("CUDA_C0_SMOKE_2026_08_26.json",
+                 "CUDA_C0_SMOKE_V2_2026_08_26.json"):
+        d = _json.loads((root / name).read_text())
+        assert d["schema"] == "agent_multi.evidence_tombstone.v1"
+        assert len(d["content_sha256"]) == 64
+        assert d["reason"]

@@ -1,68 +1,8 @@
 {
- "schema": "agent_multi.cuda_c0_smoke.v2",
- "replaces_rejected_packet": "docs/audits/evidence/CUDA_C0_SMOKE_2026_08_26.json (REJECTED by AUDIT_SATOSHI_CUDA_C0_RETURN_2026_08_26; preserved unmodified as historical evidence)",
- "dispatch": "MUSASHI_TO_GENERAL_SATOSHI_CUDA_C0_DISPATCH_2026_08_26 (single bounded mechanics smoke)",
- "code_commit": "62b938b12bee30afd4c07fb2a3b7de0a42ad1a3e",
- "tree_status_including_untracked": [],
- "clean_tree_including_untracked": true,
- "runner_sha256": "9f535ee753712b69979dc82411e5ec9c67a8d078435a59225a237c62569faeb0",
- "argv_full": [
-  "tools/cuda_c0_smoke.py"
- ],
- "interpreter": {
-  "path": "/home/harveybc/anaconda3/envs/trading-stack/bin/python",
-  "python": "3.12.13"
- },
- "environment_identity": {
-  "CUDA_VISIBLE_DEVICES": null,
-  "PYTHONPATH": ".",
-  "TMPDIR": "/tmp/claude-1000/-home-harveybc-Documents-GitHub-predictor/94c1b43d-d764-48d5-885f-68470ae06b5f/scratchpad"
- },
- "command": "tools/cuda_c0_smoke.py",
- "data_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
- "config_sha256": "ce32625b2565c92d8166b77612fa205ba9d27ce57cdf4eca88f2fcc74ff31184",
- "family_digest": "bca0e0d33a5029bcb54efe17e32c66081a1c55e5b54d105d366fb2eb8b09411c",
- "family_ids_ordered": [
-  "returns_momentum",
-  "trend_level",
-  "volatility_distribution",
-  "oscillators",
-  "volume_flow",
-  "account_state"
- ],
- "gpu_model": "NVIDIA GeForce RTX 4070 Laptop GPU",
- "gpu_run_local_ordinal": 0,
- "cuda_version": "13.0",
- "torch_version": "2.13.0+cu130",
- "device": "cuda:0",
- "wall_seconds": 1.15,
- "baseline_device_used_mb": 1616.6,
- "peak_allocated_mb_through_construction": 28.6,
- "peak_reserved_mb_through_construction": 46.1,
- "parameter_count": 115606,
- "output_finite": true,
- "nonzero_gradients": {
-  "returns_momentum": true,
-  "trend_level": true,
-  "volatility_distribution": true,
-  "oscillators": true,
-  "volume_flow": true,
-  "account_state": true,
-  "fusion": true,
-  "actor_facing_probe": true
- },
- "gradient_l1": {
-  "returns_momentum": 1213.3883,
-  "trend_level": 72.0168,
-  "volatility_distribution": 138.2216,
-  "oscillators": 172.2642,
-  "volume_flow": 17.1059,
-  "account_state": 1364.0693,
-  "fusion": 5278.4634,
-  "actor_facing_probe": 177.0623
- },
- "save_load_output_parity": true,
- "economic_comparison": "NONE (mechanics only)",
- "checkpoint_promotion": "NONE",
- "b4_dispatch": "NONE"
+ "schema": "agent_multi.evidence_tombstone.v1",
+ "status": "PUBLIC_BODY_REMOVED",
+ "content_sha256": "b44ca301497c41553932d61fb86df4ab443c99f47e2d378fa573da1921936ba1",
+ "reason": "mechanics ACCEPTED but carried operator/topology paths (340); superseded by the sanitized v3 public packet",
+ "restricted_copy": "local restricted evidence store (non-public), digest-bound",
+ "successor": "CUDA_C0_SMOKE_V3_PUBLIC_2026_08_26.json"
 }
