@@ -479,6 +479,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "cuda_c0_smoke.py": {
+   "purpose": "Single bounded CUDA C0 mechanics smoke of the strong grouped route: device/versions/memory/gradients/parity evidence; no economics, no promotion, no B4",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
