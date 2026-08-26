@@ -1,0 +1,10 @@
+{
+ "schema": "agent_multi.evidence_label.v1",
+ "label": "DIAGNOSTIC_INVALID_FOR_G1_CONTRACT_MISMATCH",
+ "date": "2026-08-25",
+ "authority": "AUDIT_SATOSHI_POST_P1_SCREEN_B_2026_08_25 (Musashi) + MUSASHI_TO_GENERAL_SATOSHI_SCREEN_B_CORRECTION_ORDER_2026_08_25 C1",
+ "findings": ["AUD-F1-20260825-318", "AUD-F1-20260825-319",
+              "AUD-F1-20260825-320", "AUD-F1-20260825-321"],
+ "meaning": "The B0-B3 artifacts in this directory ran WITHOUT the shared protection envelope (318), with B3 targeting a fraction of one coin instead of portfolio volatility (319), under cost arms that satisfy no predeclared venue-backed cost contract (320), and without run-identity/timing facts (321). They are debugging diagnostics only; they may NEVER enter G1, DSR/SPA, or any selection claim.",
+ "files_frozen": "all files in this directory as of branch commit bd3748c7; corrected runs write to a NEW directory"
+}
