@@ -1,0 +1,27 @@
+{
+ "329_identical_live_claims": {
+  "distinct_live_source_strings": 1,
+  "distinct_delay_strings": 1
+ },
+ "330_path_exposure": {
+  "home_paths": 86,
+  "lts_state_paths": 2
+ },
+ "331_patchtst_tail_blind": {
+  "stride_5_last_bar_ignored": true
+ },
+ "332_fusion_truncates": {
+  "extra_branch_silently_ignored": true
+ },
+ "334_timesnet_window1": {
+  "constructs": true,
+  "output_allzero_pre_norm": null,
+  "output_std": 0.0
+ },
+ "334_even_kernel_accepted": true,
+ "333_skippable_and_monkeypatched": {
+  "has_pytest_skip": true,
+  "hardcoded_home_path": true,
+  "loader_monkeypatch": true
+ }
+}

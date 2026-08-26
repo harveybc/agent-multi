@@ -1,6 +1,6 @@
 {
  "schema": "agent_multi.data_inventory.v1",
- "generated_utc": "2026-08-26T15:22:56.337308+00:00",
+ "generated_utc": "2026-08-26T17:08:01.292861+00:00",
  "order": "DATA_FIRST_SOTA_MULTIBRANCH_2026_08_26 \u00a72",
  "current_contract_83": {
   "count": 83,
@@ -23,1411 +23,2490 @@
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "log_return_1": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "return_5": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "log_return_5": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "return_10": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "log_return_10": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "return_20": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "log_return_20": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "return_60": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "log_return_60": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "sma_10": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_10": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "close_sma_ratio_10": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "sma_20": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_20": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "close_sma_ratio_20": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "sma_50": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_50": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "close_sma_ratio_50": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "sma_100": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_100": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "close_sma_ratio_100": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "sma_200": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_200": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "close_sma_ratio_200": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "macd": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "macd_signal": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "macd_hist": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "rsi_7": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "rsi_14": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "rsi_21": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "stoch_k": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "stoch_d": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "williams_r_14": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "cci_14": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roc_10": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roc_20": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roc_60": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "mom_10": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "mom_20": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "bb_upper": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "bb_middle": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "bb_lower": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "bb_pct_b": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "bb_width": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "atr_14": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "natr_14": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "hist_vol_10": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "hist_vol_20": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "hist_vol_60": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_cross_10_50": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "ema_cross_20_100": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "trend_slope_50": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "trend_strength_50": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "obv": {
     "semantic_family": "volume_flow",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "obv_delta_20": {
     "semantic_family": "volume_flow",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "volume_sma_10": {
     "semantic_family": "volume_flow",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "volume_sma_20": {
     "semantic_family": "volume_flow",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "volume_ratio_20": {
     "semantic_family": "volume_flow",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "vwap_60": {
     "semantic_family": "volume_flow",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "mfi_14": {
     "semantic_family": "oscillators",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "statistical__log_return_1": {
     "semantic_family": "returns_momentum",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_mean_ret_20": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_std_ret_20": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_skew_ret_20": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_kurt_ret_20": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_mean_ret_60": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_std_ret_60": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_skew_ret_60": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_kurt_ret_60": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_mean_ret_252": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_std_ret_252": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_skew_ret_252": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "roll_kurt_ret_252": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "realized_var_12": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "realized_var_48": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "autocorr_lag1_100": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "autocorr_lag5_100": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "sqret_autocorr_lag1_100": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "vol_regime_high": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "vol_regime_low": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "hurst_proxy_200": {
     "semantic_family": "volatility_distribution",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    },
    "zscore_close_100": {
     "semantic_family": "trend_level",
     "units": "normalized technical/statistical value (model-ready export; source units baked in)",
     "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-    "publication_delay": "~0 (computed at bar close from closed OHLCV; no external release)",
-    "historical_source": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+    "publication_delay": {
+     "claim": "~0 (computed at bar close from closed OHLCV)",
+     "status": "UNVERIFIED_UNTIL_MEASURED"
+    },
+    "historical_source": "dataset:ethusdt_4h_tech_stat_full_model_ready@1b447c66",
+    "historical_status": "HISTORICAL_MEASURED",
     "first_timestamp": "2017-09-28 04:00:00",
     "last_timestamp": "2025-12-31 20:00:00",
     "missing_fraction": 0.0,
     "causal_transformation": "precomputed at export (max_feature_lookback baked); runtime rolling_zscore window 256 fitted on training data only",
-    "live_source": "derivable at bar close from Alpaca crypto bars AND MT5 CopyRates (both collected live today); parity test REQUIRED before any new field joins",
-    "live_venues": [
-     "alpaca_ethusd",
-     "mt5_ethusd"
-    ],
+    "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+    "live_claim": "derivable at bar close from venue bars; NOT measured \u2014 no same-bar historical-vs-live comparison exists yet for this field",
+    "live_venues": {
+     "alpaca_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     },
+     "mt5_ethusd": {
+      "freshness": "UNKNOWN_UNTIL_COLLECTOR",
+      "coverage": "UNKNOWN_UNTIL_COLLECTOR"
+     }
+    },
+    "v3_eligible": false,
+    "v3_eligibility_rule": "LIVE_PARITY_VERIFIED required: same-bar value reproduces within declared tolerance per venue",
     "license": "own computation over exchange OHLCV"
    }
   }
@@ -1435,7 +2514,7 @@
  "absent_families": {
   "bid_ask_spread_and_depth": {
    "status": "COLLECTED_ALPACA_PAPER",
-   "source": "/home/harveybc/.local/state/lts/alpaca-paper-lab.sqlite:quote_observations",
+   "source": "store:lts/alpaca_paper_lab#quote_observations",
    "fields": [
     "bid",
     "ask",
@@ -1445,16 +2524,16 @@
     "bid_size",
     "ask_size"
    ],
-   "eth_rows": 7731,
+   "eth_rows": 7752,
    "first": "2026-07-30T03:56:18.640286+00:00",
-   "last": "2026-08-26T15:20:47.384239+00:00",
+   "last": "2026-08-26T17:06:14.605717+00:00",
    "coverage_caveat": "session-scoped preflight sampling, NOT a continuous H4-aligned series; a scheduled collector is REQUIRED for training-grade history",
    "mt5_side": "quoted_spread present in n=3 attributed fills (sparse); MT5 quote collector REQUIRED",
    "historical_depth": "REQUIRES_EXTERNAL_SOURCE (exchange L2 history is licensed; e.g. Tardis/Kaiko)"
   },
   "realized_slippage": {
    "status": "COLLECTOR_EXISTS_SPARSE",
-   "source": "/home/harveybc/.local/state/lts/sim-vs-live-comparison.sqlite:comparison_rows",
+   "source": "store:lts/sim_vs_live_comparison#comparison_rows",
    "eth_rows": 3,
    "note": "entry_slippage_vs_mid journaled per live decision; sample grows only with live decisions"
   },
@@ -1476,8 +2555,8 @@
   "cross_asset_context": {
    "status": "PARTIALLY_COLLECTED",
    "collected": {
-    "BTC/USD quotes (alpaca paper)": 7731,
-    "SPY 1d bars": "/home/harveybc/.local/share/lts/live-data/alpaca_iex_spy_1d.csv"
+    "BTC/USD quotes (alpaca paper)": 7752,
+    "SPY 1d bars": "store:lts/live_data#alpaca_iex_spy_1d"
    },
    "needed": "BTC H4 OHLCV history collector (same pipeline as ETH; Alpaca/Binance REST)"
   },
@@ -1532,7 +2611,7 @@
   "coverage: first/last/missingness asserted against this inventory before any training role materializes"
  ],
  "storage_estimate": {
-  "current_dataset": "17.6 MB",
+  "current_dataset_mb": 17.6,
   "eth_1m_history": "~60 MB parquet",
   "btc_h4_history": "~5 MB",
   "quotes_continuous_collector": "~1 MB/day at 1 obs/min per symbol"

@@ -1,14 +1,17 @@
-"""Data-First order §3 acceptance: STRONG grouped route (PatchTST +
-TFT + TimesNet + TCN/GRU + cross-family attention) constructed against
-the REAL GymFxEnv observation — gradients to every branch, tiny-fixture
-overfit through the full extractor, save/load bit parity, param report.
+"""Data-First order §3 acceptance: STRONG grouped route against the
+REAL GymFxEnv (DATA-SOTA-333 corrected):
 
-Entry points for the new plugins are injected via a load_plugin patch
-until the branch merges and the editable install refreshes metadata
-(declared in the return packet)."""
+- the ETH csv path is a PORTABLE contract: env AGENT_MULTI_ETH_CSV,
+  falling back to the conventional sibling-checkout location;
+- Tier-A mode (env TIER_A=1): data absence is a FAILURE, never a skip;
+  without TIER_A the module skips explicitly as the optional variant;
+- plugins resolve through REAL entry points (editable metadata) — no
+  loader monkeypatch.
+"""
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -23,53 +26,41 @@ sys.path.insert(0, str(REPO))
 from pipeline_plugins.rl_pipeline_with_validation import (  # noqa: E402
     _load_env_plugin)
 import agent_plugins.grouped_features_extractor as gfe  # noqa: E402
+
+
+def test_new_plugins_discoverable_through_real_entry_points():
+    from importlib.metadata import entry_points
+    names = {e.name for e in entry_points().select(
+        group="feature_branch.plugins")}
+    assert {"patchtst_branch", "tft_branch",
+            "timesnet_branch"} <= names
+    fusions = {e.name for e in entry_points().select(
+        group="feature_fusion.plugins")}
+    assert "cross_family_attention" in fusions
 from agent_plugins.feature_families import (  # noqa: E402
     semantic_feature_families)
 
-DATA = Path("/home/harveybc/Documents/GitHub/predictor/examples/data/"
-            "project3/ethusdt_4h_tech_stat_full_model_ready.csv")
+def _eth_csv() -> Path:
+    override = os.environ.get("AGENT_MULTI_ETH_CSV")
+    if override:
+        return Path(override)
+    return (REPO.parent.parent / "predictor/examples/data/project3/"
+            "ethusdt_4h_tech_stat_full_model_ready.csv")
+
+
+DATA = _eth_csv()
+TIER_A = os.environ.get("TIER_A") == "1"
 CONFIG = REPO / ("examples/config/"
                  "project3_ethusdt_4h_sac_grouped_features_v1.json")
-
-_LOCAL = {
-    ("feature_branch.plugins", "patchtst_branch"):
-        "feature_branch_plugins.patchtst_branch",
-    ("feature_branch.plugins", "tft_branch"):
-        "feature_branch_plugins.tft_branch",
-    ("feature_branch.plugins", "timesnet_branch"):
-        "feature_branch_plugins.timesnet_branch",
-    ("feature_branch.plugins", "tcn_branch"):
-        "feature_branch_plugins.tcn_branch",
-    ("feature_branch.plugins", "gru_branch"):
-        "feature_branch_plugins.gru_branch",
-    ("feature_branch.plugins", "mlp_branch"):
-        "feature_branch_plugins.mlp_branch",
-    ("feature_fusion.plugins", "cross_family_attention"):
-        "feature_fusion_plugins.cross_family_attention",
-}
-
-
-@pytest.fixture(autouse=True)
-def _inject_local_plugins(monkeypatch):
-    import importlib
-    real = gfe.load_plugin
-
-    def patched(group, name):
-        key = (group, name)
-        if key in _LOCAL:
-            mod = importlib.import_module(_LOCAL[key])
-            plugin = mod.Plugin
-            required = sorted(plugin.plugin_params)
-            return plugin, required
-        return real(group, name)
-
-    monkeypatch.setattr(gfe, "load_plugin", patched)
-
 
 @pytest.fixture(scope="module")
 def real_env_and_arch(tmp_path_factory):
     if not DATA.is_file():
-        pytest.skip("real ETH csv not present")
+        if TIER_A:
+            pytest.fail(f"TIER_A: real ETH csv REQUIRED at {DATA} "
+                        f"(set AGENT_MULTI_ETH_CSV)")
+        pytest.skip("optional variant: real ETH csv not present "
+                    "(Tier-A command sets TIER_A=1)")
     cfg = json.loads(CONFIG.read_text())
     sliced = tmp_path_factory.mktemp("eth") / "eth_700.csv"
     with DATA.open() as src, sliced.open("w") as dst:

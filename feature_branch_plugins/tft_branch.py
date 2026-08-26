@@ -19,11 +19,12 @@ class Plugin:
         import torch
         import torch.nn as nn
 
-        hidden = int(config["hidden"])
-        n_heads = int(config["n_heads"])
-        drop = float(config["dropout"])
-        if hidden % n_heads:
-            raise ValueError("tft_branch hidden must divide n_heads")
+        from feature_branch_plugins._topology import (
+            require_dropout, require_heads_divide, require_window)
+        hidden, n_heads = require_heads_divide(config, "hidden",
+                                               "n_heads")
+        drop = require_dropout(config)
+        require_window(window_size, 2, "tft_branch")
 
         class GRN(nn.Module):
             def __init__(self, inp, out):

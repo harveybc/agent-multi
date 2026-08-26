@@ -21,14 +21,29 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 from agent_plugins.feature_families import semantic_feature_families  # noqa
 
-DATA = Path("/home/harveybc/Documents/GitHub/predictor/examples/data/"
-            "project3/ethusdt_4h_tech_stat_full_model_ready.csv")
+import os
+DATA = Path(os.environ.get(
+    "AGENT_MULTI_ETH_CSV",
+    str(Path.home() / "Documents/GitHub/predictor/examples/data/"
+        "project3/ethusdt_4h_tech_stat_full_model_ready.csv")))
 DATA_SHA = ("1b447c66e68495e826c53e2ab2b08ecd3922c8fdc"
             "735747628f8d0435ebe440f")
 V2_SYSTEM = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
              "systems/ethusdt_4h_l1_system_v2.json")
-ALPACA_DB = Path.home() / ".local/state/lts/alpaca-paper-lab.sqlite"
-SIMLIVE_DB = Path.home() / ".local/state/lts/sim-vs-live-comparison.sqlite"
+ALPACA_DB = Path(os.environ.get(
+    "LTS_ALPACA_LAB_DB",
+    str(Path.home() / ".local/state/lts/alpaca-paper-lab.sqlite")))
+SIMLIVE_DB = Path(os.environ.get(
+    "LTS_SIMLIVE_DB",
+    str(Path.home() / ".local/state/lts/sim-vs-live-comparison.sqlite")))
+
+# DATA-SOTA-330: committed artifacts carry LOGICAL source ids + hashes,
+# never operator filesystem topology.
+SRC_DATASET = ("dataset:ethusdt_4h_tech_stat_full_model_ready"
+               f"@{'1b447c66'}")
+SRC_ALPACA = "store:lts/alpaca_paper_lab#quote_observations"
+SRC_SIMLIVE = "store:lts/sim_vs_live_comparison#comparison_rows"
+SRC_SPY = "store:lts/live_data#alpaca_iex_spy_1d"
 
 
 def current_83_inventory() -> dict:
@@ -45,9 +60,11 @@ def current_83_inventory() -> dict:
             "units": ("normalized technical/statistical value "
                       "(model-ready export; source units baked in)"),
             "sampling_timestamp": "H4 bar close (DATE_TIME column)",
-            "publication_delay": ("~0 (computed at bar close from "
-                                  "closed OHLCV; no external release)"),
-            "historical_source": str(DATA),
+            "publication_delay": {
+                "claim": "~0 (computed at bar close from closed OHLCV)",
+                "status": "UNVERIFIED_UNTIL_MEASURED"},
+            "historical_source": SRC_DATASET,
+            "historical_status": "HISTORICAL_MEASURED",
             "first_timestamp": str(df["DATE_TIME"].iloc[
                 int(s.first_valid_index() or 0)]),
             "last_timestamp": str(df["DATE_TIME"].iloc[-1]),
@@ -57,11 +74,19 @@ def current_83_inventory() -> dict:
                                       "runtime rolling_zscore window "
                                       "256 fitted on training data "
                                       "only"),
-            "live_source": ("derivable at bar close from Alpaca crypto "
-                            "bars AND MT5 CopyRates (both collected "
-                            "live today); parity test REQUIRED before "
-                            "any new field joins"),
-            "live_venues": ["alpaca_ethusd", "mt5_ethusd"],
+            "live_status": "LIVE_DERIVABLE_UNVERIFIED",
+            "live_claim": ("derivable at bar close from venue bars; "
+                           "NOT measured — no same-bar historical-vs-"
+                           "live comparison exists yet for this field"),
+            "live_venues": {
+                "alpaca_ethusd": {"freshness": "UNKNOWN_UNTIL_COLLECTOR",
+                                  "coverage": "UNKNOWN_UNTIL_COLLECTOR"},
+                "mt5_ethusd": {"freshness": "UNKNOWN_UNTIL_COLLECTOR",
+                               "coverage": "UNKNOWN_UNTIL_COLLECTOR"}},
+            "v3_eligible": False,
+            "v3_eligibility_rule": ("LIVE_PARITY_VERIFIED required: "
+                                    "same-bar value reproduces within "
+                                    "declared tolerance per venue"),
             "license": "own computation over exchange OHLCV",
         }
     return {"count": len(cols),
@@ -83,7 +108,7 @@ def measured_absent_families() -> dict:
         "quote_observations WHERE symbol='ETH/USD'").fetchone()
     out["bid_ask_spread_and_depth"] = {
         "status": "COLLECTED_ALPACA_PAPER",
-        "source": str(ALPACA_DB) + ":quote_observations",
+        "source": SRC_ALPACA,
         "fields": ["bid", "ask", "mid", "spread", "spread_bps",
                    "bid_size", "ask_size"],
         "eth_rows": int(row[0]), "first": row[1], "last": row[2],
@@ -110,7 +135,7 @@ def measured_absent_families() -> dict:
     con.close()
     out["realized_slippage"] = {
         "status": "COLLECTOR_EXISTS_SPARSE",
-        "source": str(SIMLIVE_DB) + ":comparison_rows",
+        "source": SRC_SIMLIVE,
         "eth_rows": int(n),
         "note": "entry_slippage_vs_mid journaled per live decision; "
                 "sample grows only with live decisions"}
@@ -141,9 +166,7 @@ def measured_absent_families() -> dict:
     out["cross_asset_context"] = {
         "status": "PARTIALLY_COLLECTED",
         "collected": {"BTC/USD quotes (alpaca paper)": cross["BTC/USD"],
-                      "SPY 1d bars": str(Path.home() /
-                        ".local/share/lts/live-data/"
-                        "alpaca_iex_spy_1d.csv")},
+                      "SPY 1d bars": SRC_SPY},
         "needed": "BTC H4 OHLCV history collector (same pipeline as "
                   "ETH; Alpaca/Binance REST)"}
     # --- calendar/session -------------------------------------------
@@ -212,7 +235,7 @@ def main() -> int:
             "coverage: first/last/missingness asserted against this "
             "inventory before any training role materializes"],
         "storage_estimate": {
-            "current_dataset": f"{DATA.stat().st_size/1e6:.1f} MB",
+            "current_dataset_mb": round(DATA.stat().st_size / 1e6, 1),
             "eth_1m_history": "~60 MB parquet",
             "btc_h4_history": "~5 MB",
             "quotes_continuous_collector": "~1 MB/day at 1 obs/min "

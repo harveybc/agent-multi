@@ -23,16 +23,23 @@ class Plugin:
         import torch
         import torch.nn as nn
 
-        patch_len = int(config["patch_len"])
-        stride = int(config["stride"])
-        d_model = int(config["d_model"])
-        n_heads = int(config["n_heads"])
-        n_layers = int(config["n_layers"])
-        if patch_len < 1 or stride < 1 or patch_len > window_size:
-            raise ValueError("invalid patchtst_branch patching")
-        if d_model % n_heads:
-            raise ValueError("patchtst_branch d_model must divide n_heads")
-        n_patches = 1 + (window_size - patch_len) // stride
+        from feature_branch_plugins._topology import (
+            require_dropout, require_heads_divide, require_patch_coverage,
+            require_positive_int)
+        patch_len = require_positive_int(config, "patch_len")
+        stride = require_positive_int(config, "stride")
+        d_model, n_heads = require_heads_divide(config, "d_model",
+                                                "n_heads")
+        n_layers = require_positive_int(config, "n_layers")
+        require_dropout(config)
+        n_patches = require_patch_coverage(window_size, patch_len,
+                                           stride)
+        # DATA-SOTA-331: patches are ENDPOINT-ANCHORED — the offset
+        # drops the OLDEST remainder bars so the final patch always
+        # ends at the newest observation. Zero-start unfold silently
+        # blinded the model to the newest bars when
+        # (window - patch_len) % stride != 0 (auditor counterexample).
+        tail_offset = (window_size - patch_len) % stride
 
         class Encoder(nn.Module):
             def __init__(self):
@@ -54,6 +61,8 @@ class Plugin:
             def forward(self, values):  # (B, T, F)
                 b, t, f = values.shape
                 x = values.permute(0, 2, 1)          # (B, F, T)
+                if tail_offset:
+                    x = x[..., tail_offset:]
                 patches = x.unfold(-1, patch_len, stride)  # (B,F,P,L)
                 tok = self.embed(patches) + self.pos  # (B, F, P, D)
                 tok = tok.reshape(b * f, -1, d_model)

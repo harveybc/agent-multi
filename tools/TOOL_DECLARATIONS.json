@@ -472,6 +472,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "materialize_data_inventory.py": {
+   "purpose": "WP-DATA machine-readable input inventory: measures the 83-field contract + absent families from local evidence stores; typed live states; logical source ids only",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

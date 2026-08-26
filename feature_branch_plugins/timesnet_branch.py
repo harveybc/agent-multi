@@ -21,11 +21,15 @@ class Plugin:
         import torch
         import torch.nn as nn
 
-        top_k = int(config["top_k"])
-        d_model = int(config["d_model"])
-        kernel = int(config["kernel"])
-        if top_k < 1 or d_model < 1:
-            raise ValueError("invalid timesnet_branch topology")
+        from feature_branch_plugins._topology import (
+            require_dropout, require_odd_kernel, require_positive_int,
+            require_spectral_viability, require_window)
+        top_k = require_positive_int(config, "top_k")
+        d_model = require_positive_int(config, "d_model")
+        kernel = require_odd_kernel(config)
+        require_dropout(config)
+        require_window(window_size, 4, "timesnet_branch")
+        require_spectral_viability(window_size, top_k)
 
         class Encoder(nn.Module):
             def __init__(self):

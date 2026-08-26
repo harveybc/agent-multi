@@ -103,6 +103,15 @@ def build_grouped_extractor_class():
             _, fusion_class, fusion_params = _resolved_component(
                 "feature_fusion.plugins", cfg["fusion"], path="feature_extractor.fusion"
             )
+            # DATA-SOTA-332: ordered family identity travels with the
+            # fusion; plugins that declare family_ids validate against it
+            ordered_families = [str(b.get("name") or f"branch_{i}")
+                                for i, b in enumerate(cfg["branches"])]
+            if state_keys:
+                ordered_families.append("account_state")
+            if "family_ids" in getattr(fusion_class, "plugin_params", {}):
+                fusion_params = {**fusion_params,
+                                 "family_ids": ordered_families}
             fusion, features_dim = fusion_class.build(branch_dims, fusion_params)
             super().__init__(observation_space, features_dim)
             self.temporal_branches = nn.ModuleList(modules[: len(indices)])
