@@ -1,0 +1,204 @@
+{
+ "schema": "agent_multi.b4_causal_sac_materialization.v1",
+ "status": "PREPARED_NOT_LAUNCHED",
+ "origins": [
+  {
+   "year": 2022,
+   "path": "docs/audits/evidence/b4_materialization_20260825/contracts/b4_causal_origin_2022_contract.json",
+   "sha256": "db247c7f56f94172de82917de1c35e878ce8fa4c884211184c5a05ccb733b027",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2021-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2020-01-01T00:00:00",
+     "end": "2021-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2021-01-01T00:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  },
+  {
+   "year": 2023,
+   "path": "docs/audits/evidence/b4_materialization_20260825/contracts/b4_causal_origin_2023_contract.json",
+   "sha256": "c21d009a687bb4147ac1408f34c4d3554b635d1db97f4388c9a3096d3385139c",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2021-01-01T00:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2024-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  },
+  {
+   "year": 2024,
+   "path": "docs/audits/evidence/b4_materialization_20260825/contracts/b4_causal_origin_2024_contract.json",
+   "sha256": "098d5e979d60f5f89deb931b72efca16c935f12770d7ada7dbc83b8403319585",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2024-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2024-01-01T00:00:00",
+     "end": "2025-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  }
+ ],
+ "causal_eligibility": [
+  {
+   "origin": "o2022",
+   "fit_data_end": "2021-01-01",
+   "selection_info_end": "2021-12-31",
+   "eligible": true
+  },
+  {
+   "origin": "o2023",
+   "fit_data_end": "2022-01-01",
+   "selection_info_end": "2022-12-31",
+   "eligible": true
+  },
+  {
+   "origin": "o2024",
+   "fit_data_end": "2023-01-01",
+   "selection_info_end": "2023-12-31",
+   "eligible": true
+  }
+ ],
+ "observation_identity": {
+  "feature_count": 83,
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "agent_state_fields_sha256": "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9f160",
+  "flattened_shape": 2660,
+  "system_contract_sha256": "0ecc3d004b26ef4d913fd06ab585f9ce0885011a4cf4d1cc88d0a743b3e981a7",
+  "status_in_contract": "PROPOSED_AWAITING_OWNER_RATIFICATION"
+ },
+ "recipe_equality_sha256": "d227d58c2cc81a0ca831af8fd0a3164742d497cfc4c402f70ec7154bcfa36e7c",
+ "genesis": {
+  "status": "materialized",
+  "cells": {
+   "o2022_seed101": {
+    "container_sha256": "d43d69e90d155f4cdbcad0a1aaed88392bb2bfe458c5752b522526ed158445f3",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2022_seed202": {
+    "container_sha256": "528744532e354972e0fc358c5fd991039256a3022ff9c074ceb57320a4746010",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2022_seed303": {
+    "container_sha256": "99296e7a94a31b43e48c89ca10b04f080b9f667be0cab614e8576a0119314e85",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2022_seed404": {
+    "container_sha256": "569039980d58021e57862d49a12d285c99bed9f7781f4bdf21ed90443905616e",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   },
+   "o2023_seed101": {
+    "container_sha256": "c6da134a20d88cc04df2f3686bc755d3187de7e91ce4ebb8c998ab7dd209ad7c",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2023_seed202": {
+    "container_sha256": "4a76d122426da0fff45434585b1c57c8956183f4167344ca01686f104c3fc3bb",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2023_seed303": {
+    "container_sha256": "10a217daf434107fe32a2a047f8791d60cbdc5d96b17c9ca9f9cdeb6189ad2f6",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2023_seed404": {
+    "container_sha256": "569039980d58021e57862d49a12d285c99bed9f7781f4bdf21ed90443905616e",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   },
+   "o2024_seed101": {
+    "container_sha256": "c6da134a20d88cc04df2f3686bc755d3187de7e91ce4ebb8c998ab7dd209ad7c",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2024_seed202": {
+    "container_sha256": "4a76d122426da0fff45434585b1c57c8956183f4167344ca01686f104c3fc3bb",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2024_seed303": {
+    "container_sha256": "10a217daf434107fe32a2a047f8791d60cbdc5d96b17c9ca9f9cdeb6189ad2f6",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2024_seed404": {
+    "container_sha256": "569039980d58021e57862d49a12d285c99bed9f7781f4bdf21ed90443905616e",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   }
+  },
+  "pairing": "same zero-update init per seed across origins (paired); no cross-origin or P1 warm start"
+ },
+ "gpu_hours_estimate": {
+  "basis": "median seconds/epoch from ACCEPTED P1 phase reports; assumed epochs/arm=120 (P1 normal phases stopped at 101-150 under the same patience contract)",
+  "per_host_class": {
+   "omega_4070": {
+    "seconds_per_epoch_median": 238.7,
+    "est_hours_per_arm": 7.96
+   },
+   "gamma_5070ti_5090": {
+    "seconds_per_epoch_median": 118.1,
+    "est_hours_per_arm": 3.94
+   }
+  },
+  "arms_total": 12,
+  "est_total_gpu_hours_range": [
+   47.3,
+   95.5
+  ],
+  "caveat": "v2 observation is SMALLER than P1's executed 84 (2,660 vs 2,692 inputs): estimate is mildly conservative; the proposed GPU preflight measures the real rate before dispatch"
+ },
+ "cpu_smoke_command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python tools/wp4_cpu_smoke.py --nested-contract docs/audits/evidence/b4_materialization_20260825/contracts/b4_causal_origin_2024_contract.json --observation-contract /home/harveybc/Documents/GitHub/.worktrees/am-screen-b/examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v2.json --seed 101 --epoch-timesteps 512 --max-epochs 1 --l1-patience 1 --l1-patience-start-epoch 0 --device cpu --output-dir <smoke_dir>",
+ "proposed_gpu_preflight": "ONE bounded arm (o2024, seed 101, max 3 epochs) on omega to measure real seconds/epoch under the v2 observation BEFORE any fleet dispatch \u2014 requires explicit Musashi authorization",
+ "sealed_2025_used": false
+}

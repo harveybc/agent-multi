@@ -239,6 +239,11 @@ def main(argv=None) -> int:
         help="explicit epoch before which patience never counts; "
              "never derived from --max-epochs (correction 2026-08-21)")
     parser.add_argument(
+        "--observation-contract", type=Path, default=None,
+        help="system observation contract JSON (e.g. "
+             "ethusdt_4h_l1_system_v2.json); overrides CSV-header "
+             "feature derivation and refuses identity drift pre-model")
+    parser.add_argument(
         "--nested-contract", type=Path, default=None,
         help="P1 path: the verified nested split contract JSON. "
              "Mutually exclusive with day-based splits — passing any "
@@ -306,9 +311,44 @@ def main(argv=None) -> int:
         return 0
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    features = [c for c in next(_csv.reader(DATA.open()))
-                if c not in _EXCLUDE]
+    if args.observation_contract:
+        # SOTA-C01/F1.3: the observation identity comes from the DECLARED
+        # system contract, never from the CSV header; any drift refuses
+        # before model construction.
+        sysm = json.loads(Path(args.observation_contract).read_text())
+        obs = sysm["observation"]
+        from pipeline_plugins._observation_contract import (
+            feature_columns_sha256)
+        if feature_columns_sha256(obs["feature_columns"]) != obs[
+                "feature_columns_sha256"]:
+            raise SystemExit("REFUSED: observation contract internal "
+                             "digest mismatch")
+        features = list(obs["feature_columns"])
+        header = set(next(_csv.reader(DATA.open())))
+        missing = [c for c in features if c not in header]
+        if missing:
+            raise SystemExit(f"REFUSED: contract features absent from "
+                             f"source CSV: {missing[:5]}")
+    else:
+        features = [c for c in next(_csv.reader(DATA.open()))
+                    if c not in _EXCLUDE]
     config = build_config(args, features)
+    if args.observation_contract:
+        config["include_price_window"] = bool(obs["include_price_window"])
+        config["include_agent_state"] = bool(obs["include_agent_state"])
+        config["agent_state_contract"] = obs.get("agent_state_contract",
+                                                 "live_stationary_v2")
+        sys.path.insert(0, str(REPO))
+        from tools.post_p1_screen_contract import (
+            check_observation_identity)
+        identity = check_observation_identity(
+            {"feature_columns": config["feature_columns"],
+             "include_price_window": config["include_price_window"],
+             "include_agent_state": config["include_agent_state"],
+             "window_size": config["window_size"],
+             "agent_state_fields": obs.get("agent_state_fields")},
+            obs)
+        config["observation_identity"] = identity
     config["_source_data_sha256"] = data_sha
     config_sha = hashlib.sha256(json.dumps(
         config, sort_keys=True, default=str).encode()).hexdigest()

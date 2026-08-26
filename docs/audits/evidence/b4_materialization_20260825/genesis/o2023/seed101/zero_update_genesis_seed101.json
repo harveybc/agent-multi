@@ -1,0 +1,37 @@
+{
+ "action_dim": 1,
+ "artifact_type": "zero_update_genesis",
+ "construction_buffer_size": 100,
+ "construction_deterministic": true,
+ "construction_hyperparameters_inert": "the runner's warm start builds the training model from the CELL's config and copies policy tensors exactly (sac_agent.load_for_training); nothing but the tensor identity leaves this artifact",
+ "container_sha256": "c6da134a20d88cc04df2f3686bc755d3187de7e91ce4ebb8c998ab7dd209ad7c",
+ "contract_schema": "agent_multi.p1_difficulty_lr_factorial.v2",
+ "ent_coef": 0.2,
+ "generated_utc": "2026-08-26T01:39:28.183662+00:00",
+ "identity_preserved_after_save_load": true,
+ "net_arch": [
+  256,
+  256
+ ],
+ "never_a_trained_champion_or_handoff": true,
+ "observation_binding": {
+  "agent_state_dims": 4,
+  "base_config_sha256": "5df24c0d78a89613041406213692af5f180f4af3c220ac69792a60db8ca70e18",
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "feature_count": 83,
+  "window_size": 32
+ },
+ "observation_contract_sha256": "ce3d3d6eecd517905f39b3dfe56b9ff214b6808144b33138a11d9cf4a1193ed4",
+ "observation_dim": 2660,
+ "path": "docs/audits/evidence/b4_materialization_20260825/genesis/o2023/seed101/zero_update_genesis_seed101.zip",
+ "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+ "schema": "agent_multi.p1lr_zero_update_genesis.v1",
+ "seed": 101,
+ "zero_update_proof": {
+  "environment_steps_possible": false,
+  "gradient_updates": 0,
+  "num_timesteps": 0,
+  "proof": "constructed against a spaces-only environment whose step() raises; n_updates, num_timesteps and replay position verified 0 before save",
+  "replay_transitions_written": 0
+ }
+}
