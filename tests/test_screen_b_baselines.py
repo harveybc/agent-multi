@@ -143,8 +143,8 @@ def test_ledger_idempotent_and_refuses_conflicts(tmp_path):
 def test_stats_inputs_refuse_diagnostic_arms():
     from tools.screen_b_baselines import (ScreenBError,
                                           validate_stats_inputs)
-    ok = {"g1_eligible": True, "cost_set": "primary",
-          "cost_authority": "primary governs"}
+    ok = {"g1_eligible": True, "cost_set": "alpaca_ethusd",
+          "cost_authority": "alpaca venue primary"}
     diag = {"g1_eligible": False, "cost_set": "zero_cost",
             "cost_authority": "DIAGNOSTIC_ONLY"}
     assert validate_stats_inputs([ok, diag]) == [ok]

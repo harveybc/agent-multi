@@ -247,9 +247,7 @@ def register_trials(ledger: Path, rows: list) -> None:
 def validate_stats_inputs(results: list) -> list:
     """C5: DSR/SPA inputs may include ONLY g1-eligible,
     non-diagnostic arms."""
-    ok = [r for r in results
-          if r.get("g1_eligible") is True
-          and r.get("cost_set") == "primary"]
+    ok = [r for r in results if r.get("g1_eligible") is True]
     if not ok:
         raise ScreenBError("REFUSED: no g1-eligible arms among the "
                            "statistics inputs")
