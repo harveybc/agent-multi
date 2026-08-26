@@ -153,3 +153,13 @@ Evidence: `docs/audits/evidence/b4_materialization_20260825/`
   binding the declared contract through the pipeline's own
   application layer as well would double-seal it. Proposed as a
   small pre-B4 task, not blocking materialization review.
+
+## Security observation (pre-existing, for your disposition)
+
+The prepush sensitivity sweep over the full divergence vs master
+surfaced FOUR full GPU UUIDs — all in ALREADY-PUBLISHED history on the
+`satoshi/wo4-*` branches (2026-08-15/16 era), NONE in this packet's
+commits (3904a0cd..HEAD greps clean). The topology rule requires 8-hex
+truncation + sha256 in public repos; remediating published branch
+history (deletion/rewrite of origin/satoshi/wo4-*) is a
+disposition-level action I do not take unilaterally.
