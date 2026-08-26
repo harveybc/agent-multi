@@ -1,6 +1,21 @@
 # Grouped SAC Feature Extractor and Pretraining
 
-Status: implemented infrastructure; candidate architectures are not promoted.
+Status: implemented infrastructure only; not yet a complete state-of-the-art
+training system and no candidate architecture is promoted.
+
+## Owner correction, 2026-08-26
+
+The flat MLP is retired from prospective architecture campaigns. Existing MLP
+results remain an archival lower reference and a mechanics fixture; no new long
+GPU run may use it as a candidate, control, champion, or B4 policy. A trivial
+model can still appear in unit tests that prove wiring, but not in scientific
+comparisons that consume campaign compute.
+
+Data identity precedes topology. No architecture campaign may start until each
+input family has both (a) causally timestamped historical coverage for every
+declared fold and (b) a named real-time source available to the Demo trading
+loop. A feature that cannot be reproduced live is not an eligible trading
+input, regardless of its backtest value.
 
 ## Decision
 
@@ -10,16 +25,26 @@ Flattening this structure before SAC destroys both temporal position and
 semantic feature identity. The grouped extractor keeps the dictionary and
 assigns every feature to exactly one semantic family.
 
-The baseline is deliberately a comparison point, not a claim of superiority:
+The first strong candidate is multibranch and preserves temporal and semantic
+structure. The table names starting implementations, not universal winners:
 
 | Family | Current variables | Baseline branch | Alternatives to test |
 |---|---:|---|---|
-| returns and momentum | 16 | causal TCN | GRU, patch Transformer |
-| trend and level | 23 | Transformer | TCN, GRU |
-| bounded oscillators | 9 | GRU | small TCN, MLP |
-| volatility and distribution | 29 | causal TCN | GRU, TimesNet-style branch |
-| volume and flow | 6 | GRU | TCN, MLP |
+| returns and momentum | 16 | PatchTST + causal TCN | iTransformer, GRU |
+| trend and level | 23 | TFT-style variable selection + Transformer | TCN, GRU |
+| bounded oscillators | 9 | GRU | causal TCN |
+| volatility and distribution | 29 | TimesNet-style + causal TCN | PatchTST, GRU |
+| volume and flow | 6 | causal TCN + GRU | Transformer |
 | account and position state | 4 | MLP | gated MLP |
+
+The MLP is appropriate only for the four non-temporal account/position scalars.
+Fusion starts as typed gated fusion with cross-family attention. The SAC actor
+and twin critics consume the fused latent but have separate configurable heads;
+the action surface must represent target exposure and explicit close/hold
+authority, while native SL/TP remains the hard protection envelope. Auxiliary
+heads may predict multi-horizon return quantiles, volatility, barrier-hit
+probability and regime, but none may use future information unavailable at the
+decision timestamp.
 
 DeepLOB is not a candidate for these inputs: it is designed around the spatial
 structure of limit-order-book levels, which this H4 dataset does not contain.
@@ -52,16 +77,19 @@ python tools/materialize_grouped_sac_config.py \
 ## Pretraining design
 
 Pretraining is per semantic branch, using train-only observation windows
-emitted under the same observation contract as RL. Initial objectives are
-next-step Huber regression and direction classification. Reconstruction alone
-is not authoritative because it may preserve high-variance input detail that
-has no value for trading.
+emitted under the same observation contract as RL. The current next-step Huber
+and direction plugins are only a minimum implementation and are not sufficient
+to claim the design is complete. The executing runner must support a declared
+mixture of masked-patch reconstruction, hierarchical contrastive learning,
+multi-horizon quantile returns, volatility and barrier-hit objectives.
+Reconstruction alone is not authoritative because it may preserve
+high-variance detail that has no value for trading.
 
 Three arms are required before adopting pretraining:
 
-1. grouped architecture trained end-to-end from random initialization;
+1. strong grouped architecture trained end-to-end from random initialization;
 2. independently pretrained branches, then end-to-end SAC fine-tuning;
-3. one shared temporal encoder, then end-to-end SAC fine-tuning.
+3. shared multiscale temporal pretraining, then end-to-end SAC fine-tuning.
 
 All arms keep the SAC controller, reward, splits, seed set and compute budget
 fixed. The 2025 test remains sealed. Branch choice is first screened on
@@ -71,16 +99,19 @@ hashes, objective plugin, topology, seed and source commit before loading.
 
 ## Search order
 
-1. Prove the grouped baseline can overfit a tiny train-only fixture and that
+1. Materialize and validate the historical/live data-availability matrix.
+2. Prove the grouped candidate can overfit a tiny train-only fixture and that
    gradients reach every branch.
-2. Compare branch families independently with a cheap factorial; do not search
+3. Wire the pretraining objectives to an executing, artifact-producing runner.
+4. Compare strong branch families independently with a cheap factorial; do not search
    fusion and branches simultaneously.
-3. Freeze branch winners and compare concat versus gated fusion.
-4. Compare no-pretraining, independent pretraining and shared pretraining.
-5. Only then run DOIN topology and parameter optimization, with categorical
+5. Freeze branch winners and compare gated fusion variants.
+6. Compare no-pretraining, independent pretraining and shared pretraining.
+7. Only then run DOIN topology and parameter optimization, with categorical
    genes for branch plugin names and bounded genes for their topology.
-6. Re-run the accepted easy-to-normal SAC curriculum against the flat MLP
-   control. Architecture work does not replace that causal experiment.
+8. Run easy-to-normal only on a strong architecture whose easy dynamics are
+   empirically active. The completed flat-MLP curriculum is archival evidence,
+   not a control that justifies another long run.
 
 ## Research basis
 
@@ -98,4 +129,3 @@ hashes, objective plugin, topology, seed and source commit before loading.
 - Zhang, Zohren and Roberts, *DeepLOB* (IEEE TSP 2019): CNN/LSTM evidence for
   order-book tensors, recorded here mainly to prevent applying it to the wrong
   data type.
-

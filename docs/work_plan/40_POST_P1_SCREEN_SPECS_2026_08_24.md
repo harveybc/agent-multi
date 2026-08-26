@@ -144,20 +144,32 @@ below mutates the running campaign.
 
 ## Screen C — Capacity-matched architecture (C5/R08)
 
-- **Question**: does the grouped extractor earn its complexity at
-  matched capacity? (GKX warning; 18,085 rows.)
-- **Arms**: C1 flat MLP (current control); C2 small shared causal
-  **GRU** over all feature families — GRU is chosen NOW, before any
-  result (single recurrent layer, hidden size set to meet the parameter
-  budget); C3 grouped extractor (TCN/Transformer/GRU branch per family)
-  at C2's parameter budget **±5%**, with matched training-update budget
-  (same gradient steps × batch); C4 grouped+fusion ONLY IF C3 wins
-  across origins and seeds.
+- **Owner correction (2026-08-26)**: no new long run of the flat MLP or a
+  deliberately weak shared-GRU control is authorized. Existing flat-MLP
+  evidence is an archival lower reference only. It consumes zero new GPU.
+- **Question**: which strong, data-compatible temporal architecture earns the
+  right to enter DOIN optimization? Complexity is evaluated, but the campaign
+  does not spend weeks rediscovering that flattened observations discard
+  temporal and semantic structure.
+- **Pre-screen C0 (CPU/single-GPU mechanics only)**: exact historical/live data
+  availability, observation identity, tiny-fixture overfit, gradient arrival
+  at every branch, causal masks, parameter/FLOP/latency report and executing
+  pretraining artifact round-trip. This is not a performance comparison.
+- **Strong arms**: C1 multiscale shared PatchTST/TFT-style encoder; C2 typed
+  grouped extractor with PatchTST/causal-TCN, TFT/Transformer, TimesNet-style
+  and GRU branches selected by input family; C3 C2 plus branch pretraining and
+  gated cross-family attention. All receive matched update and wall-clock
+  budgets; parameter count is reported and controlled within a predeclared
+  band, not forced to equal a weak toy network.
+- **Optional C4**: regime-routed mixture of the best temporal experts, only if
+  per-regime headroom exists before training it.
 - **Mandatory evidence**: parameter count, FLOPs/decision, wall time,
-  inference latency beside every economic metric.
-- **Decision rule (gate G2)**: C3 beats C1 AND C2 on paired net Sharpe
-  across ≥2 of 3 origins and ≥3 of 4 seeds at matched capacity;
-  otherwise the simpler winner feeds the DOIN domain.
+  inference latency, per-family ablations and representation diagnostics beside
+  every economic metric.
+- **Decision rule (gate G2)**: a strong arm must beat the best causal rule
+  baseline and the other strong arms on paired net Sharpe across ≥2 of 3
+  origins and ≥3 of 4 seeds. If none does, improve data/reward/action semantics;
+  do not promote the archival MLP by default.
 
 ## Launch preconditions (every screen)
 
