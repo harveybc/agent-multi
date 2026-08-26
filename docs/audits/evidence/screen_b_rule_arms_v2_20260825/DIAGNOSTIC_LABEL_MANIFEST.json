@@ -1,0 +1,11 @@
+{
+ "schema": "agent_multi.evidence_label.v1",
+ "label": "DIAGNOSTIC_NOT_G1_AUTHORITY",
+ "date": "2026-08-26",
+ "authority": "AUDIT_SATOSHI_SCREEN_B_C1_C7_RETURN_2026_08_26 (Musashi) + second correction order WP5",
+ "findings": ["AUD-F1-20260826-324", "AUD-F1-20260826-325",
+              "AUD-F1-20260826-326", "AUD-F1-20260826-327",
+              "AUD-F1-20260826-328"],
+ "meaning": "The 45 v2 runs executed with one-bar-deferred protection (324: 67 residual sweeps in the B3 primary traces), a venue-blended cost canon (325), and the mis-scaled deployed 1%/2% geometry (328). They document the useful NEGATIVE result and nothing else; they may never enter G1/DSR/SPA.",
+ "files_frozen": "all files in this directory; corrected runs live in screen_b_rule_arms_v3_20260826"
+}
