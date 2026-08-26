@@ -198,7 +198,7 @@
   ],
   "caveat": "v2 observation is SMALLER than P1's executed 84 (2,660 vs 2,692 inputs): estimate is mildly conservative; the proposed GPU preflight measures the real rate before dispatch"
  },
- "cpu_smoke_command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python tools/wp4_cpu_smoke.py --nested-contract docs/audits/evidence/b4_materialization_20260825/contracts/b4_causal_origin_2024_contract.json --observation-contract /home/harveybc/Documents/GitHub/.worktrees/am-screen-b/examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v2.json --seed 101 --epoch-timesteps 512 --max-epochs 1 --l1-patience 1 --l1-patience-start-epoch 0 --device cpu --output-dir <smoke_dir>",
+ "cpu_smoke_command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python tools/wp4_cpu_smoke.py --nested-contract docs/audits/evidence/b4_materialization_20260825/contracts/b4_causal_origin_2024_contract.json --observation-contract /home/harveybc/Documents/GitHub/.worktrees/am-screen-b/examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v2.json --seed 101 --epoch-timesteps 512 --max-epochs 2 --l1-patience 1 --l1-patience-start-epoch 0 --device cpu --selection-metric paired_generalization_weekly_v1 --output-dir <smoke_dir>",
  "proposed_gpu_preflight": "ONE bounded arm (o2024, seed 101, max 3 epochs) on omega to measure real seconds/epoch under the v2 observation BEFORE any fleet dispatch \u2014 requires explicit Musashi authorization",
  "sealed_2025_used": false
 }

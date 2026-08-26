@@ -235,8 +235,9 @@ def main(argv=None) -> int:
             "tools/wp4_cpu_smoke.py --nested-contract "
             f"{origins[-1]['path']} --observation-contract "
             f"{V2_SYSTEM} --seed 101 --epoch-timesteps 512 "
-            "--max-epochs 1 --l1-patience 1 "
+            "--max-epochs 2 --l1-patience 1 "
             "--l1-patience-start-epoch 0 --device cpu "
+            "--selection-metric paired_generalization_weekly_v1 "
             "--output-dir <smoke_dir>"),
         "proposed_gpu_preflight": (
             "ONE bounded arm (o2024, seed 101, max 3 epochs) on omega "
