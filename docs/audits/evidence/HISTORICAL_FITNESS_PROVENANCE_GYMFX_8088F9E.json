@@ -1,67 +1,7 @@
 {
- "schema": "agent_multi.historical_fitness_provenance.v1",
- "order": "MUSASHI_TO_GENERAL_SATOSHI_HIERARCHICAL_ACTIVITY_RISK_REWARD_ORDER_2026_08_18 WP0",
- "source_repo": "gym-fx",
- "source_commit": "8088f9eb680acef58389916d0a898404fab92a62",
- "source_commit_date": "2025-02-01T02:03:25-05:00",
- "verified_by": "General Satoshi III, omega, git cat-file against the exact commit",
- "facts": {
-  "zero_orders_fixed_fitness_minus_200": {
-   "verified": true,
-   "evidence": [
-    {"path": "environment_plugin_automation.py", "lines": "434-435", "text": "if num_orders < 1:\n    self.fitness = -200"},
-    {"path": "environment_plugin_automation_nomc.py", "lines": "407-408", "text": "if num_orders < 1:\n    self.fitness = -200"},
-    {"path": "environment_plugin_automation_nomc_o2_p2_s2.py", "lines": "404-405", "text": "if num_orders < 1:\n    self.fitness = -200"}
-   ]
-  },
-  "active_variants_combined_pf_orders_sharpe_like": {
-   "verified": true,
-   "evidence": [
-    {"path": "environment_plugin_automation.py", "lines": "441-449",
-     "expressions": [
-      "final_reward + (profit_factor*num_orders)*(sqrt_orders + sharpe_ratio)   # 0<=sharpe<=1",
-      "final_reward + (profit_factor*num_orders)*(sqrt_orders)                  # sharpe<0",
-      "final_reward + (profit_factor*num_orders)*(sqrt_orders + sharpe_ratio**2) # sharpe>1"
-     ]},
-    {"path": "environment_plugin_automation_nomc.py", "lines": "414-417",
-     "expressions": [
-      "profit_factor*(1+sharpe_ratio*10)        # profit_factor>0",
-      "abs(profit_factor)*(-1+sharpe_ratio*10)  # otherwise"
-     ]},
-    {"path": "environment_plugin_automation_nomc_o2_p2_s2.py", "lines": "411-419",
-     "expressions": [
-      "num_orders**2 * profit_factor*(1+profit_factor)*(1+sharpe_ratio)**2*sharpe_ratio  # pf>1 (written as num_orders*num_orders*...)",
-      "num_orders**2 * (1+profit_factor)*(1+sharpe_ratio)**2*sharpe_ratio               # 0<pf<=1, sharpe>=0",
-      "sharpe_ratio*(1-profit_factor)                                                    # 0<pf<=1, sharpe<0",
-      "profit_factor**2 * sharpe_ratio                                                   # pf<=0"
-     ]}
-   ],
-   "note": "profit_factor here is balance/initial_balance (a return multiple), not the canonical gross-profit/gross-loss profit factor"
-  },
-  "order_count_functional_forms": {
-   "verified": true,
-   "num_orders_linear": {"path": "environment_plugin_automation.py", "lines": "443,446,449", "form": "profit_factor*num_orders"},
-   "sqrt_num_orders": {"path": "environment_plugin_automation.py", "lines": "433", "text": "sqrt_orders = math.sqrt(num_orders)"},
-   "num_orders_squared": {"path": "environment_plugin_automation_nomc_o2_p2_s2.py", "lines": "412,415", "form": "num_orders*num_orders"},
-   "no_order_count_in_active_branch": {"path": "environment_plugin_automation_nomc.py", "lines": "414-417"}
-  },
-  "min_orders_4_declared_but_terminal_branch_enforced_lt_1": {
-   "verified": true,
-   "declared": {"path": "all three files", "lines": "16", "text": "'min_orders': 4"},
-   "enforced": {"paths": ["environment_plugin_automation.py:434", "environment_plugin_automation_nomc.py:407", "environment_plugin_automation_nomc_o2_p2_s2.py:404"], "text": "if num_orders < 1"},
-   "note": "min_orders was threaded into AutomationEnv.__init__ (line 88) but the shown terminal fitness branch gates only on num_orders < 1"
-  },
-  "statistic_not_canonical_sharpe": {
-   "verified": true,
-   "evidence": {
-    "path": "environment_plugin_automation.py",
-    "lines": "486-493",
-    "text": "hourly/duration-adjusted risk-free rate is computed and then OVERRIDDEN: adjusted_risk_free_rate = 0; sharpe_ratio = (mean_return - adjusted_risk_free_rate) / (1 + return_std)",
-    "why_not_sharpe": "denominator is 1+std (not std), risk-free is forced to zero after computation, and no annualization is applied at this call site; a separate annualized variant exists at lines 81-84 behind the unused 'sharpe_ratio' fitness_function option"
-   },
-   "same_in": ["environment_plugin_automation_nomc.py:456-463", "environment_plugin_automation_nomc_o2_p2_s2.py:456-463"]
-  }
- },
- "preserved_hypothesis": "activity must be structurally required (the -200 branch shows the authors knew inactivity was an attractor) and risk-adjustment belongs in SELECTION; the error to not revive is paying for activity inside fitness (num_orders, sqrt, squared) where it manufactures rank from trade count",
- "disposition": "historical evidence only; the old formulas are not revived (order section 3)"
+ "schema": "agent_multi.evidence_tombstone.v1",
+ "status": "PUBLIC_BODY_REMOVED",
+ "content_sha256": "ebeb10a06f70868efe4a8b68ad1ed3007857e78f238602cca4864500315b28f1",
+ "reason": "finding-323 active-tip cleanup (order 2026-08-26): legacy evidence carrying operator/host topology or GPU identifiers; body preserved in the restricted store, digest-bound; git history NOT rewritten",
+ "restricted_copy": "local restricted evidence store (non-public)"
 }
