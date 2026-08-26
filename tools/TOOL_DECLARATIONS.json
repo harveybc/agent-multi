@@ -458,6 +458,20 @@
    "mutability": "mutating",
    "authority_class": "experiment_driver",
    "owner": "General Satoshi III"
+  },
+  "materialize_b4_causal_sac.py": {
+   "purpose": "B4 causal SAC materialization: origin contracts, causal/sealed/observation refusals, zero-update genesis, GPU estimate \u2014 prepares only, never launches",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "materialize_cost_manifest.py": {
+   "purpose": "Versioned economic cost canon from READ-ONLY Demo evidence (spread quotes, fill commissions); refuses if evidenced-zero commission no longer holds",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

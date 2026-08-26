@@ -1,0 +1,55 @@
+{
+ "schema": "agent_multi.cost_manifest.v1",
+ "version": "eth_h4_v1",
+ "generated_utc": "2026-08-26T04:22:48.642309+00:00",
+ "primary": {
+  "commission_fraction_per_side": 0.0,
+  "commission_basis": "EVIDENCED: every filled Demo lifecycle event reports commission=0.0",
+  "half_spread_fraction_per_side": 0.0004532,
+  "half_spread_basis": "EVIDENCED: median full spread 9.064 bps over 7599 ETH/USD paper quotes",
+  "slippage_fraction_per_side": 0.0001,
+  "slippage_basis": "DECLARED_BOUND_NOT_EVIDENCED: 1 bp per side conservative bound; no fill-vs-quote join is available on this host",
+  "env_binding": {
+   "commission": 0.0004532,
+   "slippage_perc": 0.0001,
+   "note": "gym-fx models per-side cost via 'commission' (fraction of notional); half-spread+fee map onto it; slippage_perc applies per fill"
+  }
+ },
+ "stress": {
+  "commission_fraction_per_side": 0.0025,
+  "commission_basis": "EXTERNAL_LABELED: Alpaca live crypto base-tier taker fee 25 bp \u2014 published schedule bound, not local evidence",
+  "half_spread_fraction_per_side": 0.0006747,
+  "half_spread_basis": "EVIDENCED p95: 13.494 bps full",
+  "slippage_fraction_per_side": 0.0002,
+  "slippage_basis": "DECLARED_BOUND_NOT_EVIDENCED: 2 bp stress",
+  "env_binding": {
+   "commission": 0.0031747,
+   "slippage_perc": 0.0002
+  }
+ },
+ "zero_cost": {
+  "role": "DIAGNOSTIC_ONLY (P1 recipe default)",
+  "env_binding": {
+   "commission": 0.0,
+   "slippage_perc": 0.0
+  }
+ },
+ "evidence": {
+  "spread": {
+   "n_quotes": 7599,
+   "full_spread_bps_median": 9.064,
+   "full_spread_bps_p95": 13.494,
+   "source": "/home/harveybc/.local/state/lts/alpaca-paper-lab.sqlite",
+   "table": "quote_observations",
+   "symbol": "ETH/USD"
+  },
+  "commission": {
+   "n_filled_events": 103,
+   "n_commission_fields": 103,
+   "max_commission_observed": 0.0,
+   "source": "/home/harveybc/.local/state/lts/demo-execution-l0.sqlite",
+   "table": "lifecycle_events"
+  }
+ },
+ "g1_authority": "primary governs G1; zero_cost diagnostic; stress descriptive \u2014 pending Musashi ratification"
+}

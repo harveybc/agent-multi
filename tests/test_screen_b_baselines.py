@@ -114,3 +114,48 @@ def test_insufficient_context_refused(tmp_path):
     dates = pd.date_range("2022-01-01", periods=300, freq="4h")
     with pytest.raises(ScreenBError, match="context"):
         materialize_origin(_frame(dates), 2022, tmp_path)
+
+
+# --- C5: trial identity, idempotency, stats-input validation -------------
+
+def test_trial_ids_deterministic_and_distinct(tmp_path):
+    from tools.screen_b_baselines import trial_id
+    o = {"year": 2022, "csv_sha256": "a" * 64}
+    t1 = trial_id("B1", o, "primary", "e" * 64, "c" * 64)
+    t2 = trial_id("B1", o, "primary", "e" * 64, "c" * 64)
+    t3 = trial_id("B2a", o, "primary", "e" * 64, "c" * 64)
+    assert t1 == t2 and t1 != t3 and len(t1) == 32
+
+
+def test_ledger_idempotent_and_refuses_conflicts(tmp_path):
+    from tools.screen_b_baselines import ScreenBError, register_trials
+    ledger = tmp_path / "ledger.jsonl"
+    row = {"trial_id": "x" * 32, "screen": "B", "arm": "B1",
+           "origin": 2022}
+    register_trials(ledger, [row])
+    register_trials(ledger, [row])          # same content -> skip
+    assert len(ledger.read_text().splitlines()) == 1
+    conflict = dict(row, origin=2023)
+    with pytest.raises(ScreenBError, match="DIFFERENT content"):
+        register_trials(ledger, [conflict])
+
+
+def test_stats_inputs_refuse_diagnostic_arms():
+    from tools.screen_b_baselines import (ScreenBError,
+                                          validate_stats_inputs)
+    ok = {"g1_eligible": True, "cost_set": "primary",
+          "cost_authority": "primary governs"}
+    diag = {"g1_eligible": False, "cost_set": "zero_cost",
+            "cost_authority": "DIAGNOSTIC_ONLY"}
+    assert validate_stats_inputs([ok, diag]) == [ok]
+    with pytest.raises(ScreenBError, match="no g1-eligible"):
+        validate_stats_inputs([diag])
+
+
+def test_envelope_geometry_is_the_deployed_one():
+    from tools.screen_b_baselines import EXECUTION_ENVELOPE
+    assert EXECUTION_ENVELOPE["sl_fraction"] == 0.01
+    assert EXECUTION_ENVELOPE["tp_fraction"] == 0.02
+    assert EXECUTION_ENVELOPE["collision_rule"] == (
+        "stop_first_pessimistic")
+    assert "mt5_eth_sac_model_runner_v1" in EXECUTION_ENVELOPE["source"]
