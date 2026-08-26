@@ -1,0 +1,69 @@
+{
+ "schema": "agent_multi.screen_b_run_manifest.v2",
+ "code_identity": {
+  "agent_multi_commit": "62bec5758fe4283592881ec851c8a27a9615e6bf",
+  "agent_multi_clean_tree": true,
+  "gymfx_origin": "/home/harveybc/Documents/GitHub/gym-fx",
+  "gymfx_commit": "b3e78fe5e0a22a13494106eb5d27907ed00ce83f",
+  "gymfx_clean_tree": true
+ },
+ "source_data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+ "cost_manifest_sha256": "dca6961b8f867699080f3eaa0adc674d17e595f98a2603782b59b1cfe86b3b7e",
+ "execution_envelope": {
+  "envelope_mode": "fixed_fraction",
+  "sl_fraction": 0.01,
+  "tp_fraction": 0.02,
+  "collision_rule": "stop_first_pessimistic",
+  "sizing_mode": "portfolio_fraction",
+  "leverage_cap": 1.0,
+  "source": "lts examples/configs/mt5_eth_sac_model_runner_v1.json strategy.stop_fraction=0.01 / take_profit_fraction=0.02 (the DEPLOYED native envelope of the live ETH seat)"
+ },
+ "execution_envelope_sha256": "eb397d9ad9ab81a23d4cfa0cb14846010c1c157886606bda785411a0a01eac9d",
+ "origins": [
+  {
+   "year": 2022,
+   "csv": "docs/audits/evidence/screen_b_rule_arms_v2_20260825/origins/origin_2022.csv",
+   "csv_sha256": "d09079544d7a82309f25fa422e6691315bb4f29f458507cca14ae0c24f80c8c7",
+   "rows": 2730,
+   "scored_rows": 2190,
+   "scored_start_index": 540,
+   "scored_index_sha256": "8e15d3e317e3c0b4cd71270ffcddcff4b78a3341abcaddfefd74a9ea620809e8",
+   "score_start": "2022-01-01 00:00:00",
+   "score_end": "2022-12-31 20:00:00"
+  },
+  {
+   "year": 2023,
+   "csv": "docs/audits/evidence/screen_b_rule_arms_v2_20260825/origins/origin_2023.csv",
+   "csv_sha256": "6f2bf73f983acb14d05117f81a5f60c7f4d12191fd8ffd95764013ec91911afa",
+   "rows": 2730,
+   "scored_rows": 2190,
+   "scored_start_index": 540,
+   "scored_index_sha256": "9b4d84faf1063f3ad988a2352daf143beb0c3efdccf81ec10f22b9b0388a57be",
+   "score_start": "2023-01-01 00:00:00",
+   "score_end": "2023-12-31 20:00:00"
+  },
+  {
+   "year": 2024,
+   "csv": "docs/audits/evidence/screen_b_rule_arms_v2_20260825/origins/origin_2024.csv",
+   "csv_sha256": "8681cb23efae6487ef61e8f2428f2a19409c15a1f26f2cc7171c2c720fd07db6",
+   "rows": 2736,
+   "scored_rows": 2196,
+   "scored_start_index": 540,
+   "scored_index_sha256": "98a70fa454de7a8b68d9685152697fbb45500da36234b9999a0bcd0b86b86dac",
+   "score_start": "2024-01-01 00:00:00",
+   "score_end": "2024-12-31 20:00:00"
+  }
+ ],
+ "arms": [
+  "B0",
+  "B1",
+  "B2a",
+  "B2b",
+  "B3"
+ ],
+ "cost_sets": [
+  "primary",
+  "zero_cost",
+  "stress"
+ ]
+}

@@ -1,0 +1,60 @@
+{
+ "context_bars": 256,
+ "context_inputs": {
+  "max_feature_lookback": 0,
+  "scaling_window": 256,
+  "window_size": 32
+ },
+ "contract_sha256": "098d5e979d60f5f89deb931b72efca16c935f12770d7ada7dbc83b8403319585",
+ "date_column": "DATE_TIME",
+ "mode": "l1",
+ "roles": {
+  "fit_train": {
+   "context_rows": 0,
+   "context_start": null,
+   "csv": "docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/nested_splits/fit_train.csv",
+   "csv_sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+   "score_end": "2022-12-31 20:00:00",
+   "score_start": "2017-09-28 04:00:00",
+   "scored_rows": 11509,
+   "status": "MATERIALIZED"
+  },
+  "inner_validation": {
+   "context_rows": 256,
+   "context_start": "2022-11-19 08:00:00",
+   "csv": "docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/nested_splits/inner_validation.csv",
+   "csv_sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6",
+   "score_end": "2023-12-31 20:00:00",
+   "score_start": "2023-01-01 00:00:00",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  },
+  "outer_validation": {
+   "context_rows": 256,
+   "context_start": "2023-11-19 08:00:00",
+   "csv": "docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/nested_splits/outer_validation.csv",
+   "csv_sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30",
+   "score_end": "2024-12-31 20:00:00",
+   "score_start": "2024-01-01 00:00:00",
+   "scored_rows": 2196,
+   "status": "MATERIALIZED"
+  },
+  "sealed_test": {
+   "reason": "sealed_test is inaccessible in mode 'l1'",
+   "status": "SEALED"
+  },
+  "train_monitor": {
+   "context_rows": 256,
+   "context_start": "2021-11-19 08:00:00",
+   "csv": "docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/nested_splits/train_monitor.csv",
+   "csv_sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06",
+   "score_end": "2022-12-31 20:00:00",
+   "score_start": "2022-01-01 00:00:00",
+   "scored_rows": 2190,
+   "status": "MATERIALIZED"
+  }
+ },
+ "schema": "agent_multi.nested_split_manifest.v1",
+ "source_csv": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+ "source_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f"
+}

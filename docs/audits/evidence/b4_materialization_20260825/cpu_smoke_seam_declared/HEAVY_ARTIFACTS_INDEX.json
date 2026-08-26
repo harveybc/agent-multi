@@ -1,0 +1,22 @@
+{
+ "best_model.terminal.zip": {
+  "sha256": "83b3590efd5118f7159ffa01672daa74fd71c24c2c665e523a673c2a5b3fde68",
+  "bytes": 32997796,
+  "retained": "locally only (exceeds repo size limits); digest is the evidence"
+ },
+ "best_model.zip": {
+  "sha256": "6b34db0e60ef17fcc9f8bc9987f73623ea42738720b08ce5aa918f08e371f33a",
+  "bytes": 32997600,
+  "retained": "locally only (exceeds repo size limits); digest is the evidence"
+ },
+ "selected_bundle/selected_replay.pkl": {
+  "sha256": "1bb3d9c9de78328dbbbd2ff7d2442984c301c0e5fa699a2eb9e24ae592c8f758",
+  "bytes": 4259228118,
+  "retained": "locally only (exceeds repo size limits); digest is the evidence"
+ },
+ "nested_splits/fit_train.csv": {
+  "sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568",
+  "bytes": 11123278,
+  "retained": "locally only (exceeds repo size limits); digest is the evidence"
+ }
+}

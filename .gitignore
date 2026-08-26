@@ -56,3 +56,6 @@ examples/results/project3_ethusdt_4h_sac_train_val_test_v2/*
 !examples/results/project3_ethusdt_4h_sac_train_val_test_v2/config_out.json
 agent_model.terminal.zip
 docs/audits/evidence/wp4_smoke/*.zip
+docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/selected_bundle/selected_replay.pkl
+docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/*.zip
+docs/audits/evidence/b4_materialization_20260825/cpu_smoke_seam_declared/nested_splits/*.csv
