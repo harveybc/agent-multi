@@ -53,6 +53,7 @@ from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import (
     apply_observation_contract,
     validate_observation_contract,
+    verify_flattened_dimension,
 )
 from .rl_pipeline import (
     _action_summary_fields,
@@ -1082,6 +1083,10 @@ class PipelinePlugin:
         cfg["input_data_file"] = csv_path
         env_plugin = _load_env_plugin(env_plugin_name, cfg)
         env = env_plugin.make_env(cfg)
+        # C6/finding 322: the declared observation contract's flattened
+        # dimension is enforced at EVERY env construction — fit, eval
+        # splits and resume all pass through this seam.
+        verify_flattened_dimension(cfg, getattr(env, "observation_space", None))
         wrap = getattr(agent_plugin, "wrap_env", None)
         if callable(wrap):
             env = wrap(env, cfg)

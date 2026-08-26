@@ -349,6 +349,23 @@ def main(argv=None) -> int:
              "agent_state_fields": obs.get("agent_state_fields")},
             obs)
         config["observation_identity"] = identity
+        # C6 (finding 322): declare the contract INLINE so the PIPELINE
+        # application/validation seam owns observation authority (the
+        # driver check above is defense in depth, not the authority).
+        config["observation_contract"] = {
+            "require_feature_aware_preprocessor": True,
+            "preprocessor_plugin": config.get(
+                "preprocessor_plugin", "feature_window_preprocessor"),
+            "include_price_window": config["include_price_window"],
+            "include_agent_state": config["include_agent_state"],
+            "agent_state_contract": config["agent_state_contract"],
+            "window_size": config["window_size"],
+            "feature_columns_sha256": obs["feature_columns_sha256"],
+            "expected_flattened_dimension": int(
+                obs["flattened_shape"][0]
+                if isinstance(obs.get("flattened_shape"), list)
+                else obs["flattened_shape"]),
+        }
     config["_source_data_sha256"] = data_sha
     config_sha = hashlib.sha256(json.dumps(
         config, sort_keys=True, default=str).encode()).hexdigest()
@@ -441,8 +458,14 @@ def main(argv=None) -> int:
         # Finding 311/order §5: under the nested L1 contract the
         # sealed 2025 role is STRUCTURALLY unmaterialized — the
         # stronger proof is its absence, verified from the manifest.
-        _mnf = json.loads(Path(
-            config["nested_split_manifest"]).read_text())
+        # The pipeline binds the declared observation contract onto an
+        # internal COPY of config (C6), so driver-visible mutations are
+        # gone; the manifest location is the driver's own declared
+        # nested_split_dir — read it from there.
+        _mnf_path = Path(config.get("nested_split_manifest") or (
+            Path(config["nested_split_dir"]) /
+            "nested_split_manifest.json"))
+        _mnf = json.loads(_mnf_path.read_text())
         _sealed_role = (_mnf.get("roles") or {}).get("sealed_test", {})
         sealed_ok = _sealed_role.get("status") != "MATERIALIZED"
     else:

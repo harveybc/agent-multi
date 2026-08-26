@@ -181,7 +181,8 @@ def apply_observation_contract(config: Dict[str, Any]
         str(key) for key in declared
         if str(key) not in OBSERVATION_RUNTIME_KEYS
         and not str(key).startswith("$")
-        and str(key) not in ("feature_columns_sha256",))
+        and str(key) not in ("feature_columns_sha256",
+                             "expected_flattened_dimension"))
     if unknown:
         raise ValueError(
             "observation_contract may only bind observation fields; "
@@ -223,6 +224,41 @@ def apply_observation_contract(config: Dict[str, Any]
                   "onto the runtime config before any env or model was "
                   "constructed",
     }
+
+
+def verify_flattened_dimension(config: Mapping[str, Any],
+                               observation_space) -> Dict[str, Any]:
+    """C6 (finding 322): refuse ANY env whose flattened observation
+    dimension differs from the declared contract expectation.
+
+    Runs at every env construction (fit, eval splits, resume) — a
+    driver-only check does not protect alternate entry paths. When no
+    contract declares ``expected_flattened_dimension`` this is a no-op
+    with a typed facts block, so sealed legacy runs stay byte-stable.
+    """
+    declared, source = declared_observation_contract(config)
+    expected = (declared or {}).get("expected_flattened_dimension")
+    if expected is None:
+        return {"checked": False, "source": source}
+    if observation_space is None:
+        raise ValueError(
+            "observation contract declares a flattened dimension but the "
+            "constructed env exposes no observation_space — REFUSED")
+    try:
+        from gymnasium.spaces.utils import flatdim
+        actual = int(flatdim(observation_space))
+    except Exception as exc:  # pragma: no cover - defensive
+        raise ValueError(
+            f"cannot derive flattened dimension from the observation "
+            f"space for the declared contract check: {exc}")
+    if actual != int(expected):
+        raise ValueError(
+            f"observation contract declares flattened dimension "
+            f"{expected} but the constructed env observes {actual} — "
+            f"REFUSED before model creation (finding 322)")
+    return {"checked": True, "source": source,
+            "expected_flattened_dimension": int(expected),
+            "actual_flattened_dimension": actual}
 
 
 def validate_observation_contract(config: Dict[str, Any]) -> Dict[str, Any]:
