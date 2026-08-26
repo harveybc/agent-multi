@@ -190,7 +190,14 @@ def base_config(origin: dict, cost_binding: dict,
     cfg["continuous_action_threshold"] = 0.0
     cfg["continuous_action_contract"] = "target_exposure_hysteresis_v2"
     cfg["strategy_plugin"] = "shared_execution_envelope"
-    cfg["execution_envelope"] = dict(envelope)
+    env_cfg = dict(envelope)
+    # entry headroom scales with the COST BINDING (a fixed 0.2% was
+    # smaller than alpaca's 30.5 bp/side and margin-rejected every
+    # full-exposure long — counted, then refused, now fixed):
+    per_side = float(cost_binding.get("commission", 0.0)) + float(
+        cost_binding.get("slippage_perc", 0.0))
+    env_cfg["entry_cost_headroom"] = round(2.0 * per_side + 0.001, 6)
+    cfg["execution_envelope"] = env_cfg
     cfg.update(cost_binding)
     cfg.pop("env_mode", None)
     return cfg
@@ -309,11 +316,13 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
     failure = getattr(inner.bridge, "envelope_run_failure", None)
     sweeps = int(inner.bridge.execution_diagnostics.get(
         "envelope_residual_sweeps", 0) or 0)
-    if failure or sweeps:
+    rejections = int(inner.bridge.execution_diagnostics.get(
+        "envelope_order_rejections", 0) or 0)
+    if failure or sweeps or rejections:
         raise ScreenBError(
             f"REFUSED_RUN: envelope lifecycle failure arm={arm} "
             f"origin={origin['year']} tag={tag!r} failure={failure!r} "
-            f"residual_sweeps={sweeps}")
+            f"residual_sweeps={sweeps} order_rejections={rejections}")
     final_pos = float(getattr(inner.bridge, "position", 0.0) or 0.0)
     if final_pos != 0.0 and rows:
         rows[-1]["close_reasons"] = (
