@@ -55,7 +55,37 @@ def main() -> int:
                         default=str(REPO / "docs/audits/evidence/"
                                     "PAIRED_PRETRAIN_COMPARISON_DESIGN_"
                                     "2026_08_27.json"))
+    parser.add_argument("--pretrain-dir", required=True,
+                        help="SEALED five-objective generation "
+                             "(DATA-SOTA-367: prose placeholders "
+                             "refuse; every binding is a digest)")
     args = parser.parse_args()
+
+    # DATA-SOTA-367: the paired genesis binds a REAL sealed generation
+    import json as _json
+
+    from agent_plugins.branch_pretraining import load_generation
+    pretrain_dir = Path(args.pretrain_dir)
+    _ckpt, generation_manifest, generation_number = load_generation(
+        pretrain_dir)
+    if not generation_manifest.get("completed"):
+        raise SystemExit("REFUSED: the pretraining generation is not "
+                         "completed (DATA-SOTA-367)")
+    seal = _json.loads((pretrain_dir / "generation.json").read_text())
+    identity = generation_manifest["identity"]
+    artifacts = generation_manifest["artifacts"]
+    if not artifacts:
+        raise SystemExit("REFUSED: no per-family artifacts in the "
+                         "sealed generation")
+    expected_contract_sha = None
+    try:
+        expected_contract_sha = sha256_file(REPO / FULL5_CONTRACT)
+    except OSError:
+        pass
+    if identity.get("contract_sha256") != expected_contract_sha:
+        raise SystemExit("REFUSED: the sealed generation was not "
+                         "trained under the committed five-objective "
+                         "contract (digest mismatch; DATA-SOTA-367)")
 
     snapshot = snapshot_effective_config(REPO / STRONG_CONFIG)
     shared = {
@@ -67,11 +97,20 @@ def main() -> int:
             snapshot["materialized"]["expected_output_dim"],
         "pretrain_contract": FULL5_CONTRACT,
         "pretrain_contract_sha256": sha256_file(REPO / FULL5_CONTRACT),
-        "pretrain_source": ("the five-objective o2022 generation "
-                            "ACCEPTED by Musashi's audit of this "
-                            "order; bound by its generation seal "
-                            "digest at dispatch time — never an "
-                            "unaudited run"),
+        "pretrain_generation": {
+            "generation_number": generation_number,
+            "seal_manifest_sha256": seal["manifest_sha256"],
+            "seal_checkpoint_sha256": seal["checkpoint_sha256"],
+            "identity_contract_sha256": identity["contract_sha256"],
+            "identity_data_sha256": identity["data_sha256"],
+            "preprocessing_config_digest":
+                identity["preprocessing_config_digest"],
+            "per_family_encoder_digests": {
+                family: entry["encoder_sha256"]
+                for family, entry in artifacts.items()},
+            "eligibility": ("PAIRED_SCREEN_ONLY — pending Musashi's "
+                            "acceptance of the C1-C5 return; no other "
+                            "use")},
         "data_roles": {"origin": "o2022",
                        "fit_end": "2021-12-31T20:00:00",
                        "scored_year": "2022 (trial ledger only)",

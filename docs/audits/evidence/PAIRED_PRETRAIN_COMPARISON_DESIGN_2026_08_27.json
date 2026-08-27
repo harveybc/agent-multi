@@ -9,8 +9,23 @@
   "architecture_digest": "fda91f3706c82c2c7af18b5312a73fcc6350be6b3f6c1151b8b0aff6278a4da5",
   "expected_output_dim": 96,
   "pretrain_contract": "examples/config/pretrain_contract_eth_h4_o2022_full5_v1.json",
-  "pretrain_contract_sha256": "03775e19ebacce29d51c07d2663f5ef6154c4cc001aa55fc52619ca6f0e196a2",
-  "pretrain_source": "the five-objective o2022 generation ACCEPTED by Musashi's audit of this order; bound by its generation seal digest at dispatch time \u2014 never an unaudited run",
+  "pretrain_contract_sha256": "5e96b9d1bf88e565ac7e62ff30d911d6bc036f15e80a4df0d8c456681f85fed4",
+  "pretrain_generation": {
+   "generation_number": 56,
+   "seal_manifest_sha256": "ea950ecbc41800c055d951ce4aadcdf408826c88613289e616adab756741c8de",
+   "seal_checkpoint_sha256": "830f65404f97e8a364bfada30ad741b4900c4dc8567d593fc095c30b88047d3b",
+   "identity_contract_sha256": "5e96b9d1bf88e565ac7e62ff30d911d6bc036f15e80a4df0d8c456681f85fed4",
+   "identity_data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+   "preprocessing_config_digest": "04c0597a7ee166d495f05965a107335462f65b55b1a4915d0d772761861fefe1",
+   "per_family_encoder_digests": {
+    "returns_momentum": "bee71f63ae819b75fe9669ef4401dd960743c80607809d82e83b5bd380a3658b",
+    "trend_level": "f75db8b78ab830e1d376068c9024bb12127c7c75a456609dc017909d7a7b6386",
+    "volatility_distribution": "a3579df737fe6368a994c06a9a6ae2ac6f01e40d7d6769b84171fee509270476",
+    "oscillators": "ebada3d56bd78105c010db87623fedb33830058b6a8b562f01f43fab77fb0443",
+    "volume_flow": "df51c8dbbcefb74893e5bdea8667a3295fb2a7499d37a5f8b4e7be20768445c8"
+   },
+   "eligibility": "PAIRED_SCREEN_ONLY \u2014 pending Musashi's acceptance of the C1-C5 return; no other use"
+  },
   "data_roles": {
    "origin": "o2022",
    "fit_end": "2021-12-31T20:00:00",
@@ -103,9 +118,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "1c6484a9ba187170126e5a7953a8a46fe05872a3a05d2b211da8a7d089729a1c"
+   "genesis_sha256": "c20a0ba7dd66d0358b357b27808c1c5f33eec715e7fbb1d05b2e33227c83d53f"
   },
   {
    "trial_id": "pretrained_frozen_s101",
@@ -118,9 +133,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": false
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "a9c4930f7390cd949b22a86164850d76375659ebb1d8e27d77267fdafa185aab"
+   "genesis_sha256": "16f2cdd8c0ed2dd3c5256579759570a65b7b74867637e09675fa344fdaba17a9"
   },
   {
    "trial_id": "pretrained_finetuned_s101",
@@ -133,9 +148,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "df9fdd93a7ec8b2c4d74af84dbe09408f6e790ae361864d16203b05622ac408b"
+   "genesis_sha256": "89206543c7c28f96c88203ea49a7a1566d5db71a3b8d6c855fd0c44ae0a1ad00"
   },
   {
    "trial_id": "pretrained_frozen_s202",
@@ -148,9 +163,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": false
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "4bad3836e23f351936963710ca041b71e45acbbe435beaac27025187ce21b9d6"
+   "genesis_sha256": "501edacfc7ac10bde8e9f33c71c09f059d8ecb861bbc5862e80fda9bc91e3aa3"
   },
   {
    "trial_id": "pretrained_finetuned_s202",
@@ -163,9 +178,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "4e3d6a70b42b36a09de5d017b3982f8116361402ba1303ecfba0fdba81a18c19"
+   "genesis_sha256": "231ea75ad11fb113ebe8e5bffb0de8e34fa50383cea9645b302d100c92134dde"
   },
   {
    "trial_id": "control_random_init_s202",
@@ -178,9 +193,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "0c52fdf73cc8fe82086686d0d3f700f446d6e7c1f6357ab63bd1e1d9b89aa1c4"
+   "genesis_sha256": "b108c0d421cf66f7bdb28f807044ae911e9655fa2f9169de33f5d0a32601834d"
   },
   {
    "trial_id": "pretrained_finetuned_s303",
@@ -193,9 +208,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "3c5052f70774ad17cbb5092338543192c4d257bb5de381b821995ab221347b5a"
+   "genesis_sha256": "69d051d8512d3ecbd1d4e16a48bd74b83565c7bc760edd4b1d01d1b556c601d3"
   },
   {
    "trial_id": "control_random_init_s303",
@@ -208,9 +223,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "787e0d243dede14e29d665242e58b82fc775e6e881afdf1d72fb5eb29a81417b"
+   "genesis_sha256": "a7685ab63ba0d8c06663acb05df30e9724d4407d8a65f8c484986c13a0fbd6df"
   },
   {
    "trial_id": "pretrained_frozen_s303",
@@ -223,9 +238,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": false
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "caa6aaebeee99bff7d8e5d9f7d115c78ebd0e513257cc29b94e547893e77948c"
+   "genesis_sha256": "cacd50d61aca20672691fbc0c54b7a29ad973aeb1904c1f8af671aab131cb9a0"
   },
   {
    "trial_id": "control_random_init_s404",
@@ -238,9 +253,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "dcace0098fb0b4f8550c70cb27b71212a144f94b5bfa249d3903103e64b10bfd"
+   "genesis_sha256": "373f4955a7d3a05593dd92f0f6f2e33c1db1c24c95c43c8b81783bfeb78ed7db"
   },
   {
    "trial_id": "pretrained_finetuned_s404",
@@ -253,9 +268,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "e5d6b3b2d2fecd8b8e56292c676a1fed6b07db4dffab589b96102f94776ba0c3"
+   "genesis_sha256": "2be3adb85911fb73aab316999cb622674d7f1153206390a2d1f31a88e23140d2"
   },
   {
    "trial_id": "pretrained_frozen_s404",
@@ -268,9 +283,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": false
     },
-    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+    "shared_bindings_sha256": "6d1fdb2e8ec860fde6d2cde84c1ac1a788e72e465a1b896704a54c3bf0f85413"
    },
-   "genesis_sha256": "5f0199472470f1232f873a02cfb2cdcee2c022a43d226f9b4901e55f1f32b4d1"
+   "genesis_sha256": "ee819440d282faa0ef4efd1935fb04e1eb1369376e4ccacd2c378fa38ea4af47"
   }
  ],
  "gpu_estimate": {

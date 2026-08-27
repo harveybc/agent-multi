@@ -1,0 +1,4538 @@
+{
+ "schema": "agent_multi.branch_pretrain.v3",
+ "order": "Data-First SOTA Multibranch @7886de39 \u2014 WP-PRETRAIN, DATA-SOTA-341..352 corrected",
+ "transfer_eligibility": "NOT_TRANSFER_ELIGIBLE_PENDING_INDEPENDENT_ACCEPTANCE",
+ "identity": {
+  "contract_path": "examples/config/pretrain_contract_eth_h4_o2022_full5_v1.json",
+  "contract_sha256": "5e96b9d1bf88e565ac7e62ff30d911d6bc036f15e80a4df0d8c456681f85fed4",
+  "data_source": "dataset:ethusdt_4h_tech_stat_full_model_ready.csv@conventional-sibling-checkout",
+  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "family_ordered_digests_sha256": "58341c80ed346cdf826199b1e23aff51c8d47b8ece4940f3acd7a968be7b522f",
+  "branch_assignment_sha256": "8eb7890fff17bfb291edeb946bfcba335491fb5fe0e031e800216f5cd5c157da",
+  "library_sha256": "344ad02273cf42d04c42ab4a45272a8012e812e25c462311014fff4fb19c5ae0",
+  "runner_sha256": "4ca9800d25b141fa8a8fe16924fd654fcd9dafeb0ca07f46a94b59186ba6515f",
+  "code_commit": "8aeba900a3550d5743a4bb605f74056196452d05",
+  "torch_version": "2.13.0+cu130",
+  "interpreter": "python:3.12.13@env:trading-stack",
+  "seed": 0,
+  "window_size": 32,
+  "fit_end": "2021-12-31T20:00:00+00:00",
+  "score_origin": "o2022",
+  "warmup_bars": 256,
+  "calibration_fraction": 0.15,
+  "monitor_fraction": 0.15,
+  "objective_domain": "runtime_domain_with_target_adapters",
+  "origin_plan_sha256": "9b60956677601b90ff449fe319ebdf5e4b0cea32f5c0a0518c33da7ddd46f42c",
+  "earlier_origin_decision": null,
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "preprocessor_module_sha256": "543914e0b9fa538096601d5284569e45a678768f3272acf18e2218b5100cd9ec",
+  "preprocessing_config_digest": "04c0597a7ee166d495f05965a107335462f65b55b1a4915d0d772761861fefe1",
+  "normalization_policies_digest": "54c1b291e724c445e91c20a3704f6ae2c0607486febdb8ee41a4fe57097f9a80",
+  "objective_balancing_digest": "cec1f2b7946c66aaae356a44eb3a19d408c8a9dfb76270134bc3b13136c894d7",
+  "purge_steps": 12
+ },
+ "dataset": {
+  "rows_in_fit_slice": 9319,
+  "eligible_windows": 9052,
+  "window_stride": 1,
+  "max_windows_applied": null,
+  "max_horizon": 12,
+  "boundary_note": "causal per-origin: rows after fit_end never loaded; targets crossing fit_end dropped"
+ },
+ "partitions": {
+  "train": {
+   "partition": "train",
+   "scored_windows": 6312,
+   "first_step": 256,
+   "last_step": 6567,
+   "first_observed_bar": "2017-11-09 16:00:00",
+   "last_observed_bar": "2020-09-29 04:00:00",
+   "input_context": {
+    "first_context_row": 0,
+    "last_observation_row": 6566,
+    "context_rows_before_first_step": 288,
+    "role": "context_only_shared_causal_past"
+   },
+   "target_range": {
+    "first_target_row": 256,
+    "last_target_row": 6578
+   },
+   "steps_sha256": "101c2eff7c881ae222328cd484a92ad04824893b9cdc7575b4edd63c1641127d"
+  },
+  "calibration": {
+   "partition": "calibration",
+   "scored_windows": 1358,
+   "first_step": 6580,
+   "last_step": 7937,
+   "first_observed_bar": "2020-10-01 08:00:00",
+   "last_observed_bar": "2021-05-15 12:00:00",
+   "input_context": {
+    "first_context_row": 6292,
+    "last_observation_row": 7936,
+    "context_rows_before_first_step": 288,
+    "role": "context_only_shared_causal_past"
+   },
+   "target_range": {
+    "first_target_row": 6580,
+    "last_target_row": 7948
+   },
+   "steps_sha256": "ed28a19251336ad851838de40d55c5a0e4f33f5dc135560175fea5b83a51c829"
+  },
+  "monitor": {
+   "partition": "monitor",
+   "scored_windows": 1358,
+   "first_step": 7950,
+   "last_step": 9307,
+   "first_observed_bar": "2021-05-17 16:00:00",
+   "last_observed_bar": "2021-12-29 20:00:00",
+   "input_context": {
+    "first_context_row": 7662,
+    "last_observation_row": 9306,
+    "context_rows_before_first_step": 288,
+    "role": "context_only_shared_causal_past"
+   },
+   "target_range": {
+    "first_target_row": 7950,
+    "last_target_row": 9318
+   },
+   "steps_sha256": "763eef9f38c4f70a26b8147098c37bfa3acfb6f70c041c3e13b2246bba79c2c2"
+  },
+  "purge": {
+   "purge_steps_each_boundary": 12,
+   "derived_from": "max(horizons) \u2014 mechanical, no free constant",
+   "additional_embargo_steps": 0,
+   "purged_windows_total": 24,
+   "purged_steps_sha256": "0e44eab2476da68cf0f6e0917d55c906188068fe427039ac6ed1cd8ed1e1724d"
+  }
+ },
+ "feature_partition": {
+  "global_ordered_digest": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "family_ordered_digests": {
+   "returns_momentum": "50051ccefdc0f8d0621d5e9b55412a06686e8f85bba0e6ffd0791f3d3dc07eec",
+   "trend_level": "be82008d128de0a4032fbe0e4a90e5e900f1cda39d86cc1f6fa90572159f3d90",
+   "volatility_distribution": "89df66887a2a8a497ab7b52b8a1a034e848a5094993b157166a1a68b46ee9b4e",
+   "oscillators": "d5473e5980b75bdb7122172d8bc473b7c31d81b5237775e96661332bb05535db",
+   "volume_flow": "d94a82b8834808d788ccbdec8483097a5f9d4b72f6e1dde4b47d16cca81bc285"
+  },
+  "coverage": {
+   "feature_count": 83,
+   "family_count": 5,
+   "assignment": {
+    "returns_momentum": [
+     "return_1",
+     "log_return_1",
+     "return_5",
+     "log_return_5",
+     "return_10",
+     "log_return_10",
+     "return_20",
+     "log_return_20",
+     "return_60",
+     "log_return_60",
+     "roc_10",
+     "roc_20",
+     "roc_60",
+     "mom_10",
+     "mom_20",
+     "statistical__log_return_1"
+    ],
+    "trend_level": [
+     "sma_10",
+     "ema_10",
+     "close_sma_ratio_10",
+     "sma_20",
+     "ema_20",
+     "close_sma_ratio_20",
+     "sma_50",
+     "ema_50",
+     "close_sma_ratio_50",
+     "sma_100",
+     "ema_100",
+     "close_sma_ratio_100",
+     "sma_200",
+     "ema_200",
+     "close_sma_ratio_200",
+     "macd",
+     "macd_signal",
+     "macd_hist",
+     "ema_cross_10_50",
+     "ema_cross_20_100",
+     "trend_slope_50",
+     "trend_strength_50",
+     "zscore_close_100"
+    ],
+    "volatility_distribution": [
+     "bb_upper",
+     "bb_middle",
+     "bb_lower",
+     "bb_width",
+     "atr_14",
+     "natr_14",
+     "hist_vol_10",
+     "hist_vol_20",
+     "hist_vol_60",
+     "roll_mean_ret_20",
+     "roll_std_ret_20",
+     "roll_skew_ret_20",
+     "roll_kurt_ret_20",
+     "roll_mean_ret_60",
+     "roll_std_ret_60",
+     "roll_skew_ret_60",
+     "roll_kurt_ret_60",
+     "roll_mean_ret_252",
+     "roll_std_ret_252",
+     "roll_skew_ret_252",
+     "roll_kurt_ret_252",
+     "realized_var_12",
+     "realized_var_48",
+     "autocorr_lag1_100",
+     "autocorr_lag5_100",
+     "sqret_autocorr_lag1_100",
+     "vol_regime_high",
+     "vol_regime_low",
+     "hurst_proxy_200"
+    ],
+    "oscillators": [
+     "rsi_7",
+     "rsi_14",
+     "rsi_21",
+     "stoch_k",
+     "stoch_d",
+     "williams_r_14",
+     "cci_14",
+     "bb_pct_b",
+     "mfi_14"
+    ],
+    "volume_flow": [
+     "obv",
+     "obv_delta_20",
+     "volume_sma_10",
+     "volume_sma_20",
+     "volume_ratio_20",
+     "vwap_60"
+    ]
+   }
+  }
+ },
+ "objectives": {
+  "masked_patch_reconstruction": {
+   "weight": 1.0,
+   "mask_ratio": 0.25,
+   "mask_span": 4
+  },
+  "multi_horizon_quantile": {
+   "weight": 1.0,
+   "horizons": [
+    1,
+    3,
+    6,
+    12
+   ],
+   "quantiles": [
+    0.1,
+    0.5,
+    0.9
+   ]
+  },
+  "hierarchical_contrastive": {
+   "weight": 1.0,
+   "scales": [
+    2,
+    4,
+    8
+   ],
+   "temperature": 0.2,
+   "projection_dim": 32,
+   "negatives": {
+    "source": "train_only",
+    "exclusion_steps": 12,
+    "false_negative_policy": "in-batch train negatives, deterministic via the seeded batch permutation; temporal neighbors within exclusion_steps=12 (the max forward horizon) of the anchor are EXCLUDED as likely semantic duplicates"
+   },
+   "projection_note": "projection head is an EXCLUDED transfer adapter (heads file, never encoder state)"
+  },
+  "volatility": {
+   "weight": 1.0,
+   "horizons": [
+    3,
+    6,
+    12
+   ],
+   "estimator": "realized_vol_close_to_close",
+   "units": "log(vol+epsilon) of per-bar close-to-close realized std over the horizon; no annualization",
+   "annualization": "none",
+   "epsilon": 1e-08,
+   "target_formula": "r_i=log(C[a+i]/C[a+i-1]) for i=1..h from anchor a=t-1; vol=sqrt(mean(r^2)); target=log(vol+eps)"
+  },
+  "barrier_hit": {
+   "weight": 1.0,
+   "horizons": [
+    6,
+    12
+   ],
+   "barrier_scale": {
+    "estimator": "trailing_realized_vol_close_to_close",
+    "lookback": 64,
+    "epsilon": 1e-08
+   },
+   "upper_mult": 2.0,
+   "lower_mult": 2.0,
+   "same_bar_collision": "conservative_adverse_first",
+   "class_weights_from": "calibration_only",
+   "label_classes": "0=first upper hit, 1=first lower hit, 2=neither/censored",
+   "ohlc_columns": {
+    "open": "OPEN",
+    "high": "HIGH",
+    "low": "LOW",
+    "close": "CLOSE"
+   },
+   "label_semantics": "EXECUTABLE intrabar first-touch by HIGH/LOW (DATA-SOTA-364); same-bar collision adverse-first is REACHABLE"
+  }
+ },
+ "objective_domain_note": "DATA-SOTA-350: encoder consumes the runtime tensor for EVERY objective; policies transform reconstruction targets only; heads are objective adapters excluded from transferred encoder weights",
+ "normalization_policies": {
+  "returns_momentum": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "trend_level": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "volatility_distribution": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "oscillators": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "volume_flow": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  }
+ },
+ "objective_balancing": {
+  "method": "inverse_initial_loss",
+  "floor": 1e-06,
+  "note": "DATA-SOTA-345: effective weight = declared / max(initial monitor loss, floor), frozen before epoch 0"
+ },
+ "cli": {
+  "argv": [
+   "pretrain_branches.py",
+   "--contract",
+   "pretrain_contract_eth_h4_o2022_full5_v1.json",
+   "--output-dir",
+   "sealed_full5_generation"
+  ],
+  "epochs_effective": 10,
+  "max_windows_effective": null
+ },
+ "progress": {
+  "returns_momentum": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.16727626,
+     "quantile": 0.15599033,
+     "contrastive": 6.4571476,
+     "volatility": 17.87352562,
+     "barrier": 1.1219933
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0,
+     "contrastive": 1.0,
+     "volatility": 1.0,
+     "barrier": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.85669522,
+     "quantile": 6.41065369,
+     "contrastive": 0.15486714,
+     "volatility": 0.05594867,
+     "barrier": 0.89127092
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.12160014,
+      "quantile": 0.04343957,
+      "contrastive": 2.58888388,
+      "volatility": 6.47113356,
+      "barrier": 1.06700844,
+      "weighted_total": 2.95332355
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.84038526,
+      "quantile": 0.01894095,
+      "contrastive": 4.24165249,
+      "volatility": 0.35944796,
+      "barrier": 1.10402608,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.373779,
+        "quantile": 0.329833,
+        "contrastive": 8.485902,
+        "volatility": 1.539988,
+        "barrier": 0.716191
+       },
+       "cosine:barrier|contrastive": -0.089805,
+       "cosine:barrier|quantile": 0.093026,
+       "cosine:barrier|reconstruction": -0.081418,
+       "cosine:barrier|volatility": 0.036009,
+       "cosine:contrastive|quantile": 0.101578,
+       "cosine:contrastive|reconstruction": -0.11895,
+       "cosine:contrastive|volatility": -0.039796,
+       "cosine:quantile|reconstruction": 0.168697,
+       "cosine:quantile|volatility": 0.13253,
+       "cosine:reconstruction|volatility": 0.001454
+      },
+      "probe_losses": {
+       "reconstruction": 0.80400777,
+       "quantile": 0.01751752,
+       "contrastive": 1.66729009,
+       "volatility": 0.25892738,
+       "barrier": 1.05161738
+      },
+      "representation_std": 2.069718,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.069718,
+       "projection_std": 0.176748,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.548306,
+        "scale_4": 1.601871,
+        "scale_8": 1.851694
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.373779,
+       "quantile": 0.329833,
+       "contrastive": 8.485902,
+       "volatility": 1.539988,
+       "barrier": 0.716191
+      },
+      "cosine:barrier|contrastive": -0.089805,
+      "cosine:barrier|quantile": 0.093026,
+      "cosine:barrier|reconstruction": -0.081418,
+      "cosine:barrier|volatility": 0.036009,
+      "cosine:contrastive|quantile": 0.101578,
+      "cosine:contrastive|reconstruction": -0.11895,
+      "cosine:contrastive|volatility": -0.039796,
+      "cosine:quantile|reconstruction": 0.168697,
+      "cosine:quantile|volatility": 0.13253,
+      "cosine:reconstruction|volatility": 0.001454
+     },
+     "seconds": 3.952
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 0.76965989,
+      "quantile": 0.01689035,
+      "contrastive": 1.71915045,
+      "volatility": 0.44574421,
+      "barrier": 1.04626354,
+      "weighted_total": 1.99132515
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.67547518,
+      "quantile": 0.0166348,
+      "contrastive": 3.73942447,
+      "volatility": 0.33007833,
+      "barrier": 1.08517075,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.336027,
+        "quantile": 0.535284,
+        "contrastive": 4.866967,
+        "volatility": 1.528115,
+        "barrier": 0.840889
+       },
+       "cosine:barrier|contrastive": -0.015613,
+       "cosine:barrier|quantile": 0.06644,
+       "cosine:barrier|reconstruction": -0.108206,
+       "cosine:barrier|volatility": -0.011939,
+       "cosine:contrastive|quantile": -0.002634,
+       "cosine:contrastive|reconstruction": -0.213455,
+       "cosine:contrastive|volatility": 0.060365,
+       "cosine:quantile|reconstruction": 0.059934,
+       "cosine:quantile|volatility": 0.060631,
+       "cosine:reconstruction|volatility": -0.001616
+      },
+      "probe_losses": {
+       "reconstruction": 0.67211998,
+       "quantile": 0.01438402,
+       "contrastive": 0.91447192,
+       "volatility": 0.24005862,
+       "barrier": 1.0413878
+      },
+      "representation_std": 2.158507,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.158507,
+       "projection_std": 0.176749,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.87112,
+        "scale_4": 0.909548,
+        "scale_8": 0.962748
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.336027,
+       "quantile": 0.535284,
+       "contrastive": 4.866967,
+       "volatility": 1.528115,
+       "barrier": 0.840889
+      },
+      "cosine:barrier|contrastive": -0.015613,
+      "cosine:barrier|quantile": 0.06644,
+      "cosine:barrier|reconstruction": -0.108206,
+      "cosine:barrier|volatility": -0.011939,
+      "cosine:contrastive|quantile": -0.002634,
+      "cosine:contrastive|reconstruction": -0.213455,
+      "cosine:contrastive|volatility": 0.060365,
+      "cosine:quantile|reconstruction": 0.059934,
+      "cosine:quantile|volatility": 0.060631,
+      "cosine:reconstruction|volatility": -0.001616
+     },
+     "seconds": 4.452
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.63981224,
+      "quantile": 0.01490039,
+      "contrastive": 1.43684518,
+      "volatility": 0.41999747,
+      "barrier": 1.03740962,
+      "weighted_total": 1.81427677
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.58994442,
+      "quantile": 0.01607293,
+      "contrastive": 3.5327599,
+      "volatility": 0.3392126,
+      "barrier": 1.109653,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.376415,
+        "quantile": 0.802801,
+        "contrastive": 7.276013,
+        "volatility": 1.016592,
+        "barrier": 0.803873
+       },
+       "cosine:barrier|contrastive": -0.039141,
+       "cosine:barrier|quantile": 0.111799,
+       "cosine:barrier|reconstruction": -0.027808,
+       "cosine:barrier|volatility": -0.026493,
+       "cosine:contrastive|quantile": -0.138034,
+       "cosine:contrastive|reconstruction": 0.002532,
+       "cosine:contrastive|volatility": 0.239887,
+       "cosine:quantile|reconstruction": 0.090286,
+       "cosine:quantile|volatility": 0.015106,
+       "cosine:reconstruction|volatility": 0.15412
+      },
+      "probe_losses": {
+       "reconstruction": 0.58557588,
+       "quantile": 0.01475086,
+       "contrastive": 0.88885671,
+       "volatility": 0.22753491,
+       "barrier": 1.04184771
+      },
+      "representation_std": 2.224769,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.224769,
+       "projection_std": 0.176704,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.85937,
+        "scale_4": 0.880331,
+        "scale_8": 0.926869
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.376415,
+       "quantile": 0.802801,
+       "contrastive": 7.276013,
+       "volatility": 1.016592,
+       "barrier": 0.803873
+      },
+      "cosine:barrier|contrastive": -0.039141,
+      "cosine:barrier|quantile": 0.111799,
+      "cosine:barrier|reconstruction": -0.027808,
+      "cosine:barrier|volatility": -0.026493,
+      "cosine:contrastive|quantile": -0.138034,
+      "cosine:contrastive|reconstruction": 0.002532,
+      "cosine:contrastive|volatility": 0.239887,
+      "cosine:quantile|reconstruction": 0.090286,
+      "cosine:quantile|volatility": 0.015106,
+      "cosine:reconstruction|volatility": 0.15412
+     },
+     "seconds": 4.634
+    },
+    {
+     "epoch": 3,
+     "train": {
+      "reconstruction": 0.55923735,
+      "quantile": 0.01405723,
+      "contrastive": 1.33322711,
+      "volatility": 0.41723961,
+      "barrier": 1.03015531,
+      "weighted_total": 1.71717654
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.54065168,
+      "quantile": 0.01561623,
+      "contrastive": 3.41652751,
+      "volatility": 0.35551506,
+      "barrier": 1.1082536,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.399975,
+        "quantile": 0.638493,
+        "contrastive": 7.646071,
+        "volatility": 1.374689,
+        "barrier": 0.835696
+       },
+       "cosine:barrier|contrastive": -0.225221,
+       "cosine:barrier|quantile": -0.09641,
+       "cosine:barrier|reconstruction": -0.109445,
+       "cosine:barrier|volatility": -0.020378,
+       "cosine:contrastive|quantile": 0.225351,
+       "cosine:contrastive|reconstruction": 0.051346,
+       "cosine:contrastive|volatility": 0.021887,
+       "cosine:quantile|reconstruction": 0.012248,
+       "cosine:quantile|volatility": -0.064816,
+       "cosine:reconstruction|volatility": 0.114692
+      },
+      "probe_losses": {
+       "reconstruction": 0.53796875,
+       "quantile": 0.01235325,
+       "contrastive": 0.93219709,
+       "volatility": 0.23235206,
+       "barrier": 1.04370689
+      },
+      "representation_std": 2.222473,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.222473,
+       "projection_std": 0.176796,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.903131,
+        "scale_4": 0.922354,
+        "scale_8": 0.971107
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.399975,
+       "quantile": 0.638493,
+       "contrastive": 7.646071,
+       "volatility": 1.374689,
+       "barrier": 0.835696
+      },
+      "cosine:barrier|contrastive": -0.225221,
+      "cosine:barrier|quantile": -0.09641,
+      "cosine:barrier|reconstruction": -0.109445,
+      "cosine:barrier|volatility": -0.020378,
+      "cosine:contrastive|quantile": 0.225351,
+      "cosine:contrastive|reconstruction": 0.051346,
+      "cosine:contrastive|volatility": 0.021887,
+      "cosine:quantile|reconstruction": 0.012248,
+      "cosine:quantile|volatility": -0.064816,
+      "cosine:reconstruction|volatility": 0.114692
+     },
+     "seconds": 4.521
+    },
+    {
+     "epoch": 4,
+     "train": {
+      "reconstruction": 0.52785257,
+      "quantile": 0.01379652,
+      "contrastive": 1.27236855,
+      "volatility": 0.40965853,
+      "barrier": 1.02292452,
+      "weighted_total": 1.67232433
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.50588793,
+      "quantile": 0.01484752,
+      "contrastive": 3.37727427,
+      "volatility": 0.37370411,
+      "barrier": 1.10200894,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.374524,
+        "quantile": 0.818756,
+        "contrastive": 6.312648,
+        "volatility": 1.921847,
+        "barrier": 0.828384
+       },
+       "cosine:barrier|contrastive": -0.309793,
+       "cosine:barrier|quantile": 0.139422,
+       "cosine:barrier|reconstruction": -0.139911,
+       "cosine:barrier|volatility": -0.050009,
+       "cosine:contrastive|quantile": -0.075863,
+       "cosine:contrastive|reconstruction": 0.046452,
+       "cosine:contrastive|volatility": 0.152129,
+       "cosine:quantile|reconstruction": 0.020998,
+       "cosine:quantile|volatility": 0.103175,
+       "cosine:reconstruction|volatility": 0.157552
+      },
+      "probe_losses": {
+       "reconstruction": 0.50226521,
+       "quantile": 0.01282015,
+       "contrastive": 0.87535208,
+       "volatility": 0.232729,
+       "barrier": 1.02428067
+      },
+      "representation_std": 2.212343,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.212343,
+       "projection_std": 0.176744,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.849159,
+        "scale_4": 0.863277,
+        "scale_8": 0.91362
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.374524,
+       "quantile": 0.818756,
+       "contrastive": 6.312648,
+       "volatility": 1.921847,
+       "barrier": 0.828384
+      },
+      "cosine:barrier|contrastive": -0.309793,
+      "cosine:barrier|quantile": 0.139422,
+      "cosine:barrier|reconstruction": -0.139911,
+      "cosine:barrier|volatility": -0.050009,
+      "cosine:contrastive|quantile": -0.075863,
+      "cosine:contrastive|reconstruction": 0.046452,
+      "cosine:contrastive|volatility": 0.152129,
+      "cosine:quantile|reconstruction": 0.020998,
+      "cosine:quantile|volatility": 0.103175,
+      "cosine:reconstruction|volatility": 0.157552
+     },
+     "seconds": 3.964
+    },
+    {
+     "epoch": 5,
+     "train": {
+      "reconstruction": 0.49091496,
+      "quantile": 0.01365342,
+      "contrastive": 1.23302549,
+      "volatility": 0.40531162,
+      "barrier": 1.01736476,
+      "weighted_total": 1.62847129
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.47842622,
+      "quantile": 0.01477387,
+      "contrastive": 3.32788301,
+      "volatility": 0.33211368,
+      "barrier": 1.12579989,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.373539,
+        "quantile": 0.354991,
+        "contrastive": 5.18461,
+        "volatility": 1.603549,
+        "barrier": 0.908707
+       },
+       "cosine:barrier|contrastive": -0.069702,
+       "cosine:barrier|quantile": 0.112707,
+       "cosine:barrier|reconstruction": 0.00357,
+       "cosine:barrier|volatility": -0.009244,
+       "cosine:contrastive|quantile": -0.01739,
+       "cosine:contrastive|reconstruction": -0.100234,
+       "cosine:contrastive|volatility": 0.128699,
+       "cosine:quantile|reconstruction": 0.043864,
+       "cosine:quantile|volatility": 0.017448,
+       "cosine:reconstruction|volatility": -0.017064
+      },
+      "probe_losses": {
+       "reconstruction": 0.46959198,
+       "quantile": 0.0120053,
+       "contrastive": 0.85903484,
+       "volatility": 0.22392285,
+       "barrier": 1.03698969
+      },
+      "representation_std": 2.123465,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.123465,
+       "projection_std": 0.176681,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.834859,
+        "scale_4": 0.847234,
+        "scale_8": 0.895012
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.373539,
+       "quantile": 0.354991,
+       "contrastive": 5.18461,
+       "volatility": 1.603549,
+       "barrier": 0.908707
+      },
+      "cosine:barrier|contrastive": -0.069702,
+      "cosine:barrier|quantile": 0.112707,
+      "cosine:barrier|reconstruction": 0.00357,
+      "cosine:barrier|volatility": -0.009244,
+      "cosine:contrastive|quantile": -0.01739,
+      "cosine:contrastive|reconstruction": -0.100234,
+      "cosine:contrastive|volatility": 0.128699,
+      "cosine:quantile|reconstruction": 0.043864,
+      "cosine:quantile|volatility": 0.017448,
+      "cosine:reconstruction|volatility": -0.017064
+     },
+     "seconds": 3.902
+    },
+    {
+     "epoch": 6,
+     "train": {
+      "reconstruction": 0.47057579,
+      "quantile": 0.01410628,
+      "contrastive": 1.19316403,
+      "volatility": 0.4007921,
+      "barrier": 1.01138606,
+      "weighted_total": 1.60219521
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.45602214,
+      "quantile": 0.01337685,
+      "contrastive": 3.37926388,
+      "volatility": 0.37283784,
+      "barrier": 1.09881401,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.415521,
+        "quantile": 0.488078,
+        "contrastive": 7.272186,
+        "volatility": 2.051969,
+        "barrier": 0.973691
+       },
+       "cosine:barrier|contrastive": -0.226838,
+       "cosine:barrier|quantile": -0.012164,
+       "cosine:barrier|reconstruction": 0.000497,
+       "cosine:barrier|volatility": 0.020891,
+       "cosine:contrastive|quantile": 0.090023,
+       "cosine:contrastive|reconstruction": 0.104121,
+       "cosine:contrastive|volatility": 0.111528,
+       "cosine:quantile|reconstruction": -0.045151,
+       "cosine:quantile|volatility": 0.041131,
+       "cosine:reconstruction|volatility": 0.063008
+      },
+      "probe_losses": {
+       "reconstruction": 0.44783545,
+       "quantile": 0.0108759,
+       "contrastive": 0.93301743,
+       "volatility": 0.22965835,
+       "barrier": 1.02936924
+      },
+      "representation_std": 2.170304,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.170304,
+       "projection_std": 0.176774,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.907321,
+        "scale_4": 0.916988,
+        "scale_8": 0.974744
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.415521,
+       "quantile": 0.488078,
+       "contrastive": 7.272186,
+       "volatility": 2.051969,
+       "barrier": 0.973691
+      },
+      "cosine:barrier|contrastive": -0.226838,
+      "cosine:barrier|quantile": -0.012164,
+      "cosine:barrier|reconstruction": 0.000497,
+      "cosine:barrier|volatility": 0.020891,
+      "cosine:contrastive|quantile": 0.090023,
+      "cosine:contrastive|reconstruction": 0.104121,
+      "cosine:contrastive|volatility": 0.111528,
+      "cosine:quantile|reconstruction": -0.045151,
+      "cosine:quantile|volatility": 0.041131,
+      "cosine:reconstruction|volatility": 0.063008
+     },
+     "seconds": 4.006
+    },
+    {
+     "epoch": 7,
+     "train": {
+      "reconstruction": 0.44231087,
+      "quantile": 0.01327817,
+      "contrastive": 1.16938594,
+      "volatility": 0.39545044,
+      "barrier": 1.00559795,
+      "weighted_total": 1.563532
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.43763599,
+      "quantile": 0.01513224,
+      "contrastive": 3.26391959,
+      "volatility": 0.33353332,
+      "barrier": 1.11249518,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.350273,
+        "quantile": 0.619498,
+        "contrastive": 4.480173,
+        "volatility": 1.821258,
+        "barrier": 0.984502
+       },
+       "cosine:barrier|contrastive": -0.127342,
+       "cosine:barrier|quantile": 0.089156,
+       "cosine:barrier|reconstruction": 0.010394,
+       "cosine:barrier|volatility": 0.015554,
+       "cosine:contrastive|quantile": 0.064449,
+       "cosine:contrastive|reconstruction": 0.058765,
+       "cosine:contrastive|volatility": 0.042953,
+       "cosine:quantile|reconstruction": 0.07851,
+       "cosine:quantile|volatility": -0.00695,
+       "cosine:reconstruction|volatility": 0.032706
+      },
+      "probe_losses": {
+       "reconstruction": 0.42739922,
+       "quantile": 0.01222341,
+       "contrastive": 0.79272366,
+       "volatility": 0.22387296,
+       "barrier": 1.03134418
+      },
+      "representation_std": 2.091287,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.091287,
+       "projection_std": 0.176791,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.763469,
+        "scale_4": 0.777744,
+        "scale_8": 0.836957
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.350273,
+       "quantile": 0.619498,
+       "contrastive": 4.480173,
+       "volatility": 1.821258,
+       "barrier": 0.984502
+      },
+      "cosine:barrier|contrastive": -0.127342,
+      "cosine:barrier|quantile": 0.089156,
+      "cosine:barrier|reconstruction": 0.010394,
+      "cosine:barrier|volatility": 0.015554,
+      "cosine:contrastive|quantile": 0.064449,
+      "cosine:contrastive|reconstruction": 0.058765,
+      "cosine:contrastive|volatility": 0.042953,
+      "cosine:quantile|reconstruction": 0.07851,
+      "cosine:quantile|volatility": -0.00695,
+      "cosine:reconstruction|volatility": 0.032706
+     },
+     "seconds": 3.95
+    },
+    {
+     "epoch": 8,
+     "train": {
+      "reconstruction": 0.43121558,
+      "quantile": 0.0133717,
+      "contrastive": 1.14934766,
+      "volatility": 0.39375363,
+      "barrier": 1.00088474,
+      "weighted_total": 1.54722729
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.4267759,
+      "quantile": 0.01313986,
+      "contrastive": 3.24211049,
+      "volatility": 0.34474826,
+      "barrier": 1.11139464,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.439583,
+        "quantile": 0.371488,
+        "contrastive": 4.717709,
+        "volatility": 1.272301,
+        "barrier": 0.927436
+       },
+       "cosine:barrier|contrastive": 0.003377,
+       "cosine:barrier|quantile": 0.115232,
+       "cosine:barrier|reconstruction": 0.075991,
+       "cosine:barrier|volatility": 0.080657,
+       "cosine:contrastive|quantile": -0.001159,
+       "cosine:contrastive|reconstruction": 0.041071,
+       "cosine:contrastive|volatility": 0.123812,
+       "cosine:quantile|reconstruction": -0.003662,
+       "cosine:quantile|volatility": 0.031172,
+       "cosine:reconstruction|volatility": 0.099736
+      },
+      "probe_losses": {
+       "reconstruction": 0.4168731,
+       "quantile": 0.0109803,
+       "contrastive": 0.78515738,
+       "volatility": 0.21202917,
+       "barrier": 1.02000773
+      },
+      "representation_std": 2.087353,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.087353,
+       "projection_std": 0.176795,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.754556,
+        "scale_4": 0.768832,
+        "scale_8": 0.832084
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.439583,
+       "quantile": 0.371488,
+       "contrastive": 4.717709,
+       "volatility": 1.272301,
+       "barrier": 0.927436
+      },
+      "cosine:barrier|contrastive": 0.003377,
+      "cosine:barrier|quantile": 0.115232,
+      "cosine:barrier|reconstruction": 0.075991,
+      "cosine:barrier|volatility": 0.080657,
+      "cosine:contrastive|quantile": -0.001159,
+      "cosine:contrastive|reconstruction": 0.041071,
+      "cosine:contrastive|volatility": 0.123812,
+      "cosine:quantile|reconstruction": -0.003662,
+      "cosine:quantile|volatility": 0.031172,
+      "cosine:reconstruction|volatility": 0.099736
+     },
+     "seconds": 3.992
+    },
+    {
+     "epoch": 9,
+     "train": {
+      "reconstruction": 0.42237183,
+      "quantile": 0.01288024,
+      "contrastive": 1.12281453,
+      "volatility": 0.39028793,
+      "barrier": 0.99861021,
+      "weighted_total": 1.53017012
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.41319621,
+      "quantile": 0.01326493,
+      "contrastive": 3.17801595,
+      "volatility": 0.33281404,
+      "barrier": 1.09976697,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.366902,
+        "quantile": 0.369426,
+        "contrastive": 3.441987,
+        "volatility": 1.503773,
+        "barrier": 0.936022
+       },
+       "cosine:barrier|contrastive": -0.072776,
+       "cosine:barrier|quantile": 0.112852,
+       "cosine:barrier|reconstruction": 0.021199,
+       "cosine:barrier|volatility": -0.004568,
+       "cosine:contrastive|quantile": 0.052035,
+       "cosine:contrastive|reconstruction": 0.008327,
+       "cosine:contrastive|volatility": 0.142432,
+       "cosine:quantile|reconstruction": 0.02827,
+       "cosine:quantile|volatility": 0.052759,
+       "cosine:reconstruction|volatility": 0.030396
+      },
+      "probe_losses": {
+       "reconstruction": 0.40051031,
+       "quantile": 0.0106114,
+       "contrastive": 0.7501356,
+       "volatility": 0.21936519,
+       "barrier": 1.00456214
+      },
+      "representation_std": 2.049245,
+      "contrastive_diagnostics": {
+       "embedding_std": 2.049245,
+       "projection_std": 0.176787,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 0.718012,
+        "scale_4": 0.734644,
+        "scale_8": 0.797751
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.366902,
+       "quantile": 0.369426,
+       "contrastive": 3.441987,
+       "volatility": 1.503773,
+       "barrier": 0.936022
+      },
+      "cosine:barrier|contrastive": -0.072776,
+      "cosine:barrier|quantile": 0.112852,
+      "cosine:barrier|reconstruction": 0.021199,
+      "cosine:barrier|volatility": -0.004568,
+      "cosine:contrastive|quantile": 0.052035,
+      "cosine:contrastive|reconstruction": 0.008327,
+      "cosine:contrastive|volatility": 0.142432,
+      "cosine:quantile|reconstruction": 0.02827,
+      "cosine:quantile|volatility": 0.052759,
+      "cosine:reconstruction|volatility": 0.030396
+     },
+     "seconds": 4.065
+    }
+   ]
+  },
+  "trend_level": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.90128362,
+     "quantile": 0.29045844,
+     "contrastive": 6.89364243,
+     "volatility": 16.78999329,
+     "barrier": 1.114393
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0,
+     "contrastive": 1.0,
+     "volatility": 1.0,
+     "barrier": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.52596046,
+     "quantile": 3.44283333,
+     "contrastive": 0.14506119,
+     "volatility": 0.05955929,
+     "barrier": 0.8973495
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.39584275,
+      "quantile": 0.05886424,
+      "contrastive": 3.72977399,
+      "volatility": 9.09188566,
+      "barrier": 1.07813164,
+      "weighted_total": 2.98683036
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.09435105,
+      "quantile": 0.03012086,
+      "contrastive": 5.61570883,
+      "volatility": 3.31628942,
+      "barrier": 1.11230469,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.829485,
+        "quantile": 0.192834,
+        "contrastive": 8.816677,
+        "volatility": 7.092296,
+        "barrier": 0.2214
+       },
+       "cosine:barrier|contrastive": 0.035118,
+       "cosine:barrier|quantile": 0.091299,
+       "cosine:barrier|reconstruction": 0.185827,
+       "cosine:barrier|volatility": -0.109904,
+       "cosine:contrastive|quantile": 0.0166,
+       "cosine:contrastive|reconstruction": -0.647941,
+       "cosine:contrastive|volatility": 0.482632,
+       "cosine:quantile|reconstruction": -0.048883,
+       "cosine:quantile|volatility": 0.107854,
+       "cosine:reconstruction|volatility": -0.787122
+      },
+      "probe_losses": {
+       "reconstruction": 0.90936768,
+       "quantile": 0.02741091,
+       "contrastive": 3.90395474,
+       "volatility": 4.18141031,
+       "barrier": 1.04829836
+      },
+      "representation_std": 1.038765,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.038765,
+       "projection_std": 0.173183,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 3.874515,
+        "scale_4": 3.888846,
+        "scale_8": 3.948503
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.829485,
+       "quantile": 0.192834,
+       "contrastive": 8.816677,
+       "volatility": 7.092296,
+       "barrier": 0.2214
+      },
+      "cosine:barrier|contrastive": 0.035118,
+      "cosine:barrier|quantile": 0.091299,
+      "cosine:barrier|reconstruction": 0.185827,
+      "cosine:barrier|volatility": -0.109904,
+      "cosine:contrastive|quantile": 0.0166,
+      "cosine:contrastive|reconstruction": -0.647941,
+      "cosine:contrastive|volatility": 0.482632,
+      "cosine:quantile|reconstruction": -0.048883,
+      "cosine:quantile|volatility": 0.107854,
+      "cosine:reconstruction|volatility": -0.787122
+     },
+     "seconds": 10.168
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.04842912,
+      "quantile": 0.02499246,
+      "contrastive": 2.75248923,
+      "volatility": 2.36823342,
+      "barrier": 1.05509543,
+      "weighted_total": 2.12459612
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.83167988,
+      "quantile": 0.02078747,
+      "contrastive": 4.69932461,
+      "volatility": 0.75840771,
+      "barrier": 1.09981585,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.705638,
+        "quantile": 0.237165,
+        "contrastive": 14.121995,
+        "volatility": 5.220956,
+        "barrier": 0.253689
+       },
+       "cosine:barrier|contrastive": 0.30134,
+       "cosine:barrier|quantile": -0.067726,
+       "cosine:barrier|reconstruction": 0.161284,
+       "cosine:barrier|volatility": -0.118702,
+       "cosine:contrastive|quantile": 0.138029,
+       "cosine:contrastive|reconstruction": 0.273928,
+       "cosine:contrastive|volatility": -0.242323,
+       "cosine:quantile|reconstruction": 0.246151,
+       "cosine:quantile|volatility": -0.160113,
+       "cosine:reconstruction|volatility": -0.842568
+      },
+      "probe_losses": {
+       "reconstruction": 0.71471345,
+       "quantile": 0.01813601,
+       "contrastive": 2.70351291,
+       "volatility": 1.01676548,
+       "barrier": 1.04957259
+      },
+      "representation_std": 1.101863,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.101863,
+       "projection_std": 0.175491,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.663603,
+        "scale_4": 2.681016,
+        "scale_8": 2.76592
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.705638,
+       "quantile": 0.237165,
+       "contrastive": 14.121995,
+       "volatility": 5.220956,
+       "barrier": 0.253689
+      },
+      "cosine:barrier|contrastive": 0.30134,
+      "cosine:barrier|quantile": -0.067726,
+      "cosine:barrier|reconstruction": 0.161284,
+      "cosine:barrier|volatility": -0.118702,
+      "cosine:contrastive|quantile": 0.138029,
+      "cosine:contrastive|reconstruction": 0.273928,
+      "cosine:contrastive|volatility": -0.242323,
+      "cosine:quantile|reconstruction": 0.246151,
+      "cosine:quantile|volatility": -0.160113,
+      "cosine:reconstruction|volatility": -0.842568
+     },
+     "seconds": 10.049
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.74005601,
+      "quantile": 0.01850155,
+      "contrastive": 2.16307018,
+      "volatility": 0.83896722,
+      "barrier": 1.05338265,
+      "weighted_total": 1.76193617
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.68707711,
+      "quantile": 0.0165202,
+      "contrastive": 4.39414358,
+      "volatility": 0.44591063,
+      "barrier": 1.08240592,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.236605,
+        "quantile": 0.255135,
+        "contrastive": 20.449221,
+        "volatility": 1.924209,
+        "barrier": 0.331971
+       },
+       "cosine:barrier|contrastive": -0.214994,
+       "cosine:barrier|quantile": 0.060447,
+       "cosine:barrier|reconstruction": -0.103055,
+       "cosine:barrier|volatility": -0.066453,
+       "cosine:contrastive|quantile": -0.045551,
+       "cosine:contrastive|reconstruction": 0.276701,
+       "cosine:contrastive|volatility": -0.153472,
+       "cosine:quantile|reconstruction": -0.003423,
+       "cosine:quantile|volatility": -0.11335,
+       "cosine:reconstruction|volatility": 0.451323
+      },
+      "probe_losses": {
+       "reconstruction": 0.66221976,
+       "quantile": 0.01339421,
+       "contrastive": 2.26076007,
+       "volatility": 0.38694561,
+       "barrier": 1.05160999
+      },
+      "representation_std": 1.140754,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.140754,
+       "projection_std": 0.171966,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.240744,
+        "scale_4": 2.250709,
+        "scale_8": 2.290827
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.236605,
+       "quantile": 0.255135,
+       "contrastive": 20.449221,
+       "volatility": 1.924209,
+       "barrier": 0.331971
+      },
+      "cosine:barrier|contrastive": -0.214994,
+      "cosine:barrier|quantile": 0.060447,
+      "cosine:barrier|reconstruction": -0.103055,
+      "cosine:barrier|volatility": -0.066453,
+      "cosine:contrastive|quantile": -0.045551,
+      "cosine:contrastive|reconstruction": 0.276701,
+      "cosine:contrastive|volatility": -0.153472,
+      "cosine:quantile|reconstruction": -0.003423,
+      "cosine:quantile|volatility": -0.11335,
+      "cosine:reconstruction|volatility": 0.451323
+     },
+     "seconds": 10.011
+    },
+    {
+     "epoch": 3,
+     "train": {
+      "reconstruction": 0.64512476,
+      "quantile": 0.01549809,
+      "contrastive": 2.01405431,
+      "volatility": 0.54994744,
+      "barrier": 1.05384646,
+      "weighted_total": 1.6632516
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.64754856,
+      "quantile": 0.01447714,
+      "contrastive": 4.26064539,
+      "volatility": 0.49446678,
+      "barrier": 1.10308361,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.458222,
+        "quantile": 0.092595,
+        "contrastive": 19.215336,
+        "volatility": 0.779416,
+        "barrier": 0.24918
+       },
+       "cosine:barrier|contrastive": 0.046513,
+       "cosine:barrier|quantile": 0.013861,
+       "cosine:barrier|reconstruction": -0.284566,
+       "cosine:barrier|volatility": 0.106976,
+       "cosine:contrastive|quantile": -0.378636,
+       "cosine:contrastive|reconstruction": -0.431524,
+       "cosine:contrastive|volatility": -0.290981,
+       "cosine:quantile|reconstruction": 0.117565,
+       "cosine:quantile|volatility": 0.046359,
+       "cosine:reconstruction|volatility": 0.004823
+      },
+      "probe_losses": {
+       "reconstruction": 0.66429514,
+       "quantile": 0.01057444,
+       "contrastive": 2.16055465,
+       "volatility": 0.35771611,
+       "barrier": 1.04813492
+      },
+      "representation_std": 1.155617,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.155617,
+       "projection_std": 0.174129,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.126411,
+        "scale_4": 2.146781,
+        "scale_8": 2.208473
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.458222,
+       "quantile": 0.092595,
+       "contrastive": 19.215336,
+       "volatility": 0.779416,
+       "barrier": 0.24918
+      },
+      "cosine:barrier|contrastive": 0.046513,
+      "cosine:barrier|quantile": 0.013861,
+      "cosine:barrier|reconstruction": -0.284566,
+      "cosine:barrier|volatility": 0.106976,
+      "cosine:contrastive|quantile": -0.378636,
+      "cosine:contrastive|reconstruction": -0.431524,
+      "cosine:contrastive|volatility": -0.290981,
+      "cosine:quantile|reconstruction": 0.117565,
+      "cosine:quantile|volatility": 0.046359,
+      "cosine:reconstruction|volatility": 0.004823
+     },
+     "seconds": 10.034
+    },
+    {
+     "epoch": 4,
+     "train": {
+      "reconstruction": 0.61546326,
+      "quantile": 0.01423232,
+      "contrastive": 1.88248958,
+      "volatility": 0.5179274,
+      "barrier": 1.05093772,
+      "weighted_total": 1.61969081
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.63281888,
+      "quantile": 0.01383599,
+      "contrastive": 4.18899488,
+      "volatility": 0.50416017,
+      "barrier": 1.09782195,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.867313,
+        "quantile": 0.408761,
+        "contrastive": 31.584469,
+        "volatility": 0.882435,
+        "barrier": 0.283932
+       },
+       "cosine:barrier|contrastive": 0.471064,
+       "cosine:barrier|quantile": -0.042627,
+       "cosine:barrier|reconstruction": -0.363152,
+       "cosine:barrier|volatility": 0.119105,
+       "cosine:contrastive|quantile": 0.131291,
+       "cosine:contrastive|reconstruction": -0.548837,
+       "cosine:contrastive|volatility": 0.03351,
+       "cosine:quantile|reconstruction": -0.095255,
+       "cosine:quantile|volatility": -0.059775,
+       "cosine:reconstruction|volatility": 0.001252
+      },
+      "probe_losses": {
+       "reconstruction": 0.67416006,
+       "quantile": 0.01142355,
+       "contrastive": 1.85609388,
+       "volatility": 0.36228371,
+       "barrier": 1.05619562
+      },
+      "representation_std": 1.16125,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.16125,
+       "projection_std": 0.176722,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.807568,
+        "scale_4": 1.828624,
+        "scale_8": 1.932089
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.867313,
+       "quantile": 0.408761,
+       "contrastive": 31.584469,
+       "volatility": 0.882435,
+       "barrier": 0.283932
+      },
+      "cosine:barrier|contrastive": 0.471064,
+      "cosine:barrier|quantile": -0.042627,
+      "cosine:barrier|reconstruction": -0.363152,
+      "cosine:barrier|volatility": 0.119105,
+      "cosine:contrastive|quantile": 0.131291,
+      "cosine:contrastive|reconstruction": -0.548837,
+      "cosine:contrastive|volatility": 0.03351,
+      "cosine:quantile|reconstruction": -0.095255,
+      "cosine:quantile|volatility": -0.059775,
+      "cosine:reconstruction|volatility": 0.001252
+     },
+     "seconds": 10.181
+    },
+    {
+     "epoch": 5,
+     "train": {
+      "reconstruction": 0.5929272,
+      "quantile": 0.01341677,
+      "contrastive": 1.74674358,
+      "volatility": 0.51350495,
+      "barrier": 1.0481641,
+      "weighted_total": 1.58258615
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.60799885,
+      "quantile": 0.01336044,
+      "contrastive": 4.09036779,
+      "volatility": 0.48201397,
+      "barrier": 1.08691204,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 1.195938,
+        "quantile": 0.165522,
+        "contrastive": 12.514712,
+        "volatility": 0.725343,
+        "barrier": 0.437456
+       },
+       "cosine:barrier|contrastive": 0.136376,
+       "cosine:barrier|quantile": -0.011095,
+       "cosine:barrier|reconstruction": -0.388229,
+       "cosine:barrier|volatility": 0.134008,
+       "cosine:contrastive|quantile": 0.137939,
+       "cosine:contrastive|reconstruction": -0.071965,
+       "cosine:contrastive|volatility": -0.019545,
+       "cosine:quantile|reconstruction": 0.061808,
+       "cosine:quantile|volatility": -0.067422,
+       "cosine:reconstruction|volatility": -0.156323
+      },
+      "probe_losses": {
+       "reconstruction": 0.65287012,
+       "quantile": 0.01028917,
+       "contrastive": 1.5075165,
+       "volatility": 0.3043201,
+       "barrier": 1.06694698
+      },
+      "representation_std": 1.163707,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.163707,
+       "projection_std": 0.176794,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.480777,
+        "scale_4": 1.486334,
+        "scale_8": 1.555439
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 1.195938,
+       "quantile": 0.165522,
+       "contrastive": 12.514712,
+       "volatility": 0.725343,
+       "barrier": 0.437456
+      },
+      "cosine:barrier|contrastive": 0.136376,
+      "cosine:barrier|quantile": -0.011095,
+      "cosine:barrier|reconstruction": -0.388229,
+      "cosine:barrier|volatility": 0.134008,
+      "cosine:contrastive|quantile": 0.137939,
+      "cosine:contrastive|reconstruction": -0.071965,
+      "cosine:contrastive|volatility": -0.019545,
+      "cosine:quantile|reconstruction": 0.061808,
+      "cosine:quantile|volatility": -0.067422,
+      "cosine:reconstruction|volatility": -0.156323
+     },
+     "seconds": 10.155
+    },
+    {
+     "epoch": 6,
+     "train": {
+      "reconstruction": 0.5459483,
+      "quantile": 0.0134299,
+      "contrastive": 1.62879812,
+      "volatility": 0.50709093,
+      "barrier": 1.04508975,
+      "weighted_total": 1.53767224
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.56222731,
+      "quantile": 0.01374175,
+      "contrastive": 3.81365609,
+      "volatility": 0.47697183,
+      "barrier": 1.11544943,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 1.371324,
+        "quantile": 0.410378,
+        "contrastive": 13.664154,
+        "volatility": 0.802359,
+        "barrier": 0.297746
+       },
+       "cosine:barrier|contrastive": 0.309013,
+       "cosine:barrier|quantile": 0.175541,
+       "cosine:barrier|reconstruction": -0.242708,
+       "cosine:barrier|volatility": 0.136381,
+       "cosine:contrastive|quantile": 0.268084,
+       "cosine:contrastive|reconstruction": -0.358637,
+       "cosine:contrastive|volatility": 0.133524,
+       "cosine:quantile|reconstruction": -0.041901,
+       "cosine:quantile|volatility": -0.139988,
+       "cosine:reconstruction|volatility": -0.44991
+      },
+      "probe_losses": {
+       "reconstruction": 0.61312968,
+       "quantile": 0.01085213,
+       "contrastive": 1.49957466,
+       "volatility": 0.2783154,
+       "barrier": 1.0631392
+      },
+      "representation_std": 1.166714,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.166714,
+       "projection_std": 0.176762,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.462675,
+        "scale_4": 1.475331,
+        "scale_8": 1.560718
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 1.371324,
+       "quantile": 0.410378,
+       "contrastive": 13.664154,
+       "volatility": 0.802359,
+       "barrier": 0.297746
+      },
+      "cosine:barrier|contrastive": 0.309013,
+      "cosine:barrier|quantile": 0.175541,
+      "cosine:barrier|reconstruction": -0.242708,
+      "cosine:barrier|volatility": 0.136381,
+      "cosine:contrastive|quantile": 0.268084,
+      "cosine:contrastive|reconstruction": -0.358637,
+      "cosine:contrastive|volatility": 0.133524,
+      "cosine:quantile|reconstruction": -0.041901,
+      "cosine:quantile|volatility": -0.139988,
+      "cosine:reconstruction|volatility": -0.44991
+     },
+     "seconds": 10.142
+    },
+    {
+     "epoch": 7,
+     "train": {
+      "reconstruction": 0.50349117,
+      "quantile": 0.01312732,
+      "contrastive": 1.54872251,
+      "volatility": 0.50364799,
+      "barrier": 1.04467949,
+      "weighted_total": 1.50211068
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.52606851,
+      "quantile": 0.01358505,
+      "contrastive": 3.70921898,
+      "volatility": 0.43926713,
+      "barrier": 1.08820844,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 1.650996,
+        "quantile": 0.218004,
+        "contrastive": 11.812027,
+        "volatility": 0.996743,
+        "barrier": 0.328738
+       },
+       "cosine:barrier|contrastive": 0.187505,
+       "cosine:barrier|quantile": 0.000867,
+       "cosine:barrier|reconstruction": -0.317037,
+       "cosine:barrier|volatility": 0.257805,
+       "cosine:contrastive|quantile": 0.024385,
+       "cosine:contrastive|reconstruction": -0.393226,
+       "cosine:contrastive|volatility": 0.169247,
+       "cosine:quantile|reconstruction": 0.082647,
+       "cosine:quantile|volatility": -0.105907,
+       "cosine:reconstruction|volatility": -0.53826
+      },
+      "probe_losses": {
+       "reconstruction": 0.60275245,
+       "quantile": 0.01060997,
+       "contrastive": 1.36572742,
+       "volatility": 0.27449778,
+       "barrier": 1.0667417
+      },
+      "representation_std": 1.167556,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.167556,
+       "projection_std": 0.176791,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.344165,
+        "scale_4": 1.347279,
+        "scale_8": 1.405738
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 1.650996,
+       "quantile": 0.218004,
+       "contrastive": 11.812027,
+       "volatility": 0.996743,
+       "barrier": 0.328738
+      },
+      "cosine:barrier|contrastive": 0.187505,
+      "cosine:barrier|quantile": 0.000867,
+      "cosine:barrier|reconstruction": -0.317037,
+      "cosine:barrier|volatility": 0.257805,
+      "cosine:contrastive|quantile": 0.024385,
+      "cosine:contrastive|reconstruction": -0.393226,
+      "cosine:contrastive|volatility": 0.169247,
+      "cosine:quantile|reconstruction": 0.082647,
+      "cosine:quantile|volatility": -0.105907,
+      "cosine:reconstruction|volatility": -0.53826
+     },
+     "seconds": 9.992
+    },
+    {
+     "epoch": 8,
+     "train": {
+      "reconstruction": 0.47109653,
+      "quantile": 0.01322548,
+      "contrastive": 1.5159932,
+      "volatility": 0.50472906,
+      "barrier": 1.04408287,
+      "weighted_total": 1.48019156
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.50119603,
+      "quantile": 0.01299346,
+      "contrastive": 3.68504143,
+      "volatility": 0.42925376,
+      "barrier": 1.08604288,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 2.043134,
+        "quantile": 0.268152,
+        "contrastive": 16.541861,
+        "volatility": 1.208887,
+        "barrier": 0.408428
+       },
+       "cosine:barrier|contrastive": 0.201871,
+       "cosine:barrier|quantile": -0.16487,
+       "cosine:barrier|reconstruction": -0.311467,
+       "cosine:barrier|volatility": 0.245406,
+       "cosine:contrastive|quantile": -0.110535,
+       "cosine:contrastive|reconstruction": -0.39569,
+       "cosine:contrastive|volatility": 0.280437,
+       "cosine:quantile|reconstruction": 0.105137,
+       "cosine:quantile|volatility": 0.033691,
+       "cosine:reconstruction|volatility": -0.581324
+      },
+      "probe_losses": {
+       "reconstruction": 0.6068005,
+       "quantile": 0.01043675,
+       "contrastive": 1.31022871,
+       "volatility": 0.27007881,
+       "barrier": 1.07183409
+      },
+      "representation_std": 1.169021,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.169021,
+       "projection_std": 0.17672,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.291957,
+        "scale_4": 1.28747,
+        "scale_8": 1.351259
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 2.043134,
+       "quantile": 0.268152,
+       "contrastive": 16.541861,
+       "volatility": 1.208887,
+       "barrier": 0.408428
+      },
+      "cosine:barrier|contrastive": 0.201871,
+      "cosine:barrier|quantile": -0.16487,
+      "cosine:barrier|reconstruction": -0.311467,
+      "cosine:barrier|volatility": 0.245406,
+      "cosine:contrastive|quantile": -0.110535,
+      "cosine:contrastive|reconstruction": -0.39569,
+      "cosine:contrastive|volatility": 0.280437,
+      "cosine:quantile|reconstruction": 0.105137,
+      "cosine:quantile|volatility": 0.033691,
+      "cosine:reconstruction|volatility": -0.581324
+     },
+     "seconds": 10.05
+    },
+    {
+     "epoch": 9,
+     "train": {
+      "reconstruction": 0.44536325,
+      "quantile": 0.01287702,
+      "contrastive": 1.46676578,
+      "volatility": 0.48860214,
+      "barrier": 1.03878601,
+      "weighted_total": 1.45260257
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.48974353,
+      "quantile": 0.01345968,
+      "contrastive": 3.69579434,
+      "volatility": 0.41827977,
+      "barrier": 1.10303855,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 2.642093,
+        "quantile": 0.202346,
+        "contrastive": 11.757681,
+        "volatility": 0.857278,
+        "barrier": 0.32376
+       },
+       "cosine:barrier|contrastive": 0.11188,
+       "cosine:barrier|quantile": -0.135597,
+       "cosine:barrier|reconstruction": -0.235858,
+       "cosine:barrier|volatility": 0.090149,
+       "cosine:contrastive|quantile": -0.032537,
+       "cosine:contrastive|reconstruction": -0.350467,
+       "cosine:contrastive|volatility": 0.184715,
+       "cosine:quantile|reconstruction": 0.178898,
+       "cosine:quantile|volatility": -0.027058,
+       "cosine:reconstruction|volatility": -0.555724
+      },
+      "probe_losses": {
+       "reconstruction": 0.64027303,
+       "quantile": 0.01050586,
+       "contrastive": 1.30285728,
+       "volatility": 0.24676223,
+       "barrier": 1.07053375
+      },
+      "representation_std": 1.171694,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.171694,
+       "projection_std": 0.176685,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.286393,
+        "scale_4": 1.283872,
+        "scale_8": 1.338307
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 2.642093,
+       "quantile": 0.202346,
+       "contrastive": 11.757681,
+       "volatility": 0.857278,
+       "barrier": 0.32376
+      },
+      "cosine:barrier|contrastive": 0.11188,
+      "cosine:barrier|quantile": -0.135597,
+      "cosine:barrier|reconstruction": -0.235858,
+      "cosine:barrier|volatility": 0.090149,
+      "cosine:contrastive|quantile": -0.032537,
+      "cosine:contrastive|reconstruction": -0.350467,
+      "cosine:contrastive|volatility": 0.184715,
+      "cosine:quantile|reconstruction": 0.178898,
+      "cosine:quantile|volatility": -0.027058,
+      "cosine:reconstruction|volatility": -0.555724
+     },
+     "seconds": 10.015
+    }
+   ]
+  },
+  "volatility_distribution": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.69148374,
+     "quantile": 0.30977729,
+     "contrastive": 5.95379591,
+     "volatility": 15.14183807,
+     "barrier": 1.26128185
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0,
+     "contrastive": 1.0,
+     "volatility": 1.0,
+     "barrier": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.59119693,
+     "quantile": 3.2281256,
+     "contrastive": 0.16796007,
+     "volatility": 0.06604218,
+     "barrier": 0.7928442
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.34626391,
+      "quantile": 0.07007349,
+      "contrastive": 1.85273065,
+      "volatility": 8.22027633,
+      "barrier": 1.04329904,
+      "weighted_total": 2.70335643
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.16255963,
+      "quantile": 0.03693972,
+      "contrastive": 3.73962402,
+      "volatility": 2.48011875,
+      "barrier": 1.11338592,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.909374,
+        "quantile": 0.255074,
+        "contrastive": 39.805344,
+        "volatility": 11.220494,
+        "barrier": 0.758354
+       },
+       "cosine:barrier|contrastive": -0.058902,
+       "cosine:barrier|quantile": 0.188404,
+       "cosine:barrier|reconstruction": 0.192365,
+       "cosine:barrier|volatility": 0.064895,
+       "cosine:contrastive|quantile": 0.027105,
+       "cosine:contrastive|reconstruction": -0.114915,
+       "cosine:contrastive|volatility": 0.332918,
+       "cosine:quantile|reconstruction": 0.072137,
+       "cosine:quantile|volatility": 0.089517,
+       "cosine:reconstruction|volatility": -0.551549
+      },
+      "probe_losses": {
+       "reconstruction": 1.01773322,
+       "quantile": 0.03409998,
+       "contrastive": 2.17397046,
+       "volatility": 3.12280369,
+       "barrier": 1.04410744
+      },
+      "representation_std": 1.045893,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.045893,
+       "projection_std": 0.171573,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.084376,
+        "scale_4": 2.130045,
+        "scale_8": 2.307491
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.909374,
+       "quantile": 0.255074,
+       "contrastive": 39.805344,
+       "volatility": 11.220494,
+       "barrier": 0.758354
+      },
+      "cosine:barrier|contrastive": -0.058902,
+      "cosine:barrier|quantile": 0.188404,
+      "cosine:barrier|reconstruction": 0.192365,
+      "cosine:barrier|volatility": 0.064895,
+      "cosine:contrastive|quantile": 0.027105,
+      "cosine:contrastive|reconstruction": -0.114915,
+      "cosine:contrastive|volatility": 0.332918,
+      "cosine:quantile|reconstruction": 0.072137,
+      "cosine:quantile|volatility": 0.089517,
+      "cosine:reconstruction|volatility": -0.551549
+     },
+     "seconds": 55.695
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.09523462,
+      "quantile": 0.02852336,
+      "contrastive": 1.27701297,
+      "volatility": 1.65401666,
+      "barrier": 0.9907626,
+      "weighted_total": 1.84881876
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.97371721,
+      "quantile": 0.02355141,
+      "contrastive": 3.54862976,
+      "volatility": 0.50187439,
+      "barrier": 1.12119877,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 1.164441,
+        "quantile": 0.137618,
+        "contrastive": 33.004971,
+        "volatility": 7.389448,
+        "barrier": 1.226491
+       },
+       "cosine:barrier|contrastive": -0.063061,
+       "cosine:barrier|quantile": 0.060797,
+       "cosine:barrier|reconstruction": 0.30766,
+       "cosine:barrier|volatility": 0.13989,
+       "cosine:contrastive|quantile": -0.110001,
+       "cosine:contrastive|reconstruction": -0.076644,
+       "cosine:contrastive|volatility": 0.216768,
+       "cosine:quantile|reconstruction": -0.253304,
+       "cosine:quantile|volatility": 0.202544,
+       "cosine:reconstruction|volatility": -0.687869
+      },
+      "probe_losses": {
+       "reconstruction": 0.8010419,
+       "quantile": 0.0207244,
+       "contrastive": 2.14459252,
+       "volatility": 0.6866774,
+       "barrier": 1.06138623
+      },
+      "representation_std": 1.096241,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.096241,
+       "projection_std": 0.175042,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.065904,
+        "scale_4": 2.101058,
+        "scale_8": 2.266816
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 1.164441,
+       "quantile": 0.137618,
+       "contrastive": 33.004971,
+       "volatility": 7.389448,
+       "barrier": 1.226491
+      },
+      "cosine:barrier|contrastive": -0.063061,
+      "cosine:barrier|quantile": 0.060797,
+      "cosine:barrier|reconstruction": 0.30766,
+      "cosine:barrier|volatility": 0.13989,
+      "cosine:contrastive|quantile": -0.110001,
+      "cosine:contrastive|reconstruction": -0.076644,
+      "cosine:contrastive|volatility": 0.216768,
+      "cosine:quantile|reconstruction": -0.253304,
+      "cosine:quantile|volatility": 0.202544,
+      "cosine:reconstruction|volatility": -0.687869
+     },
+     "seconds": 55.739
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.91687412,
+      "quantile": 0.01976876,
+      "contrastive": 1.18317041,
+      "volatility": 0.59416932,
+      "barrier": 0.9725376,
+      "weighted_total": 1.61490564
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.81515902,
+      "quantile": 0.01855841,
+      "contrastive": 3.59077191,
+      "volatility": 0.35331592,
+      "barrier": 1.13570309,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 1.006426,
+        "quantile": 0.138706,
+        "contrastive": 39.12038,
+        "volatility": 6.434176,
+        "barrier": 1.535625
+       },
+       "cosine:barrier|contrastive": -0.055868,
+       "cosine:barrier|quantile": -0.015967,
+       "cosine:barrier|reconstruction": 0.279305,
+       "cosine:barrier|volatility": 0.162477,
+       "cosine:contrastive|quantile": 0.041747,
+       "cosine:contrastive|reconstruction": -0.245983,
+       "cosine:contrastive|volatility": 0.368895,
+       "cosine:quantile|reconstruction": -0.09417,
+       "cosine:quantile|volatility": 0.128892,
+       "cosine:reconstruction|volatility": -0.698014
+      },
+      "probe_losses": {
+       "reconstruction": 0.60942328,
+       "quantile": 0.01511318,
+       "contrastive": 2.41617179,
+       "volatility": 0.3414681,
+       "barrier": 1.05845118
+      },
+      "representation_std": 1.119207,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.119207,
+       "projection_std": 0.176796,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.334959,
+        "scale_4": 2.364932,
+        "scale_8": 2.548624
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 1.006426,
+       "quantile": 0.138706,
+       "contrastive": 39.12038,
+       "volatility": 6.434176,
+       "barrier": 1.535625
+      },
+      "cosine:barrier|contrastive": -0.055868,
+      "cosine:barrier|quantile": -0.015967,
+      "cosine:barrier|reconstruction": 0.279305,
+      "cosine:barrier|volatility": 0.162477,
+      "cosine:contrastive|quantile": 0.041747,
+      "cosine:contrastive|reconstruction": -0.245983,
+      "cosine:contrastive|volatility": 0.368895,
+      "cosine:quantile|reconstruction": -0.09417,
+      "cosine:quantile|volatility": 0.128892,
+      "cosine:reconstruction|volatility": -0.698014
+     },
+     "seconds": 55.823
+    },
+    {
+     "epoch": 3,
+     "train": {
+      "reconstruction": 0.77205484,
+      "quantile": 0.01614087,
+      "contrastive": 1.12901923,
+      "volatility": 0.46077713,
+      "barrier": 0.95720295,
+      "weighted_total": 1.48751489
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.71899188,
+      "quantile": 0.01634546,
+      "contrastive": 3.44387698,
+      "volatility": 0.32801563,
+      "barrier": 1.17754149,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.831367,
+        "quantile": 0.427884,
+        "contrastive": 37.667385,
+        "volatility": 4.857226,
+        "barrier": 1.990219
+       },
+       "cosine:barrier|contrastive": -0.051753,
+       "cosine:barrier|quantile": -0.081609,
+       "cosine:barrier|reconstruction": 0.140533,
+       "cosine:barrier|volatility": 0.255349,
+       "cosine:contrastive|quantile": 0.106673,
+       "cosine:contrastive|reconstruction": -0.292131,
+       "cosine:contrastive|volatility": 0.318859,
+       "cosine:quantile|reconstruction": 0.208113,
+       "cosine:quantile|volatility": -0.083819,
+       "cosine:reconstruction|volatility": -0.733359
+      },
+      "probe_losses": {
+       "reconstruction": 0.52388233,
+       "quantile": 0.01356381,
+       "contrastive": 2.25276804,
+       "volatility": 0.2519677,
+       "barrier": 1.09407592
+      },
+      "representation_std": 1.134159,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.134159,
+       "projection_std": 0.175884,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.177443,
+        "scale_4": 2.203963,
+        "scale_8": 2.376899
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.831367,
+       "quantile": 0.427884,
+       "contrastive": 37.667385,
+       "volatility": 4.857226,
+       "barrier": 1.990219
+      },
+      "cosine:barrier|contrastive": -0.051753,
+      "cosine:barrier|quantile": -0.081609,
+      "cosine:barrier|reconstruction": 0.140533,
+      "cosine:barrier|volatility": 0.255349,
+      "cosine:contrastive|quantile": 0.106673,
+      "cosine:contrastive|reconstruction": -0.292131,
+      "cosine:contrastive|volatility": 0.318859,
+      "cosine:quantile|reconstruction": 0.208113,
+      "cosine:quantile|volatility": -0.083819,
+      "cosine:reconstruction|volatility": -0.733359
+     },
+     "seconds": 56.156
+    },
+    {
+     "epoch": 4,
+     "train": {
+      "reconstruction": 0.68448918,
+      "quantile": 0.01440065,
+      "contrastive": 1.09040043,
+      "volatility": 0.42950533,
+      "barrier": 0.94064537,
+      "weighted_total": 1.40844942
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.65279865,
+      "quantile": 0.01526138,
+      "contrastive": 3.43839478,
+      "volatility": 0.32383901,
+      "barrier": 1.18929362,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.824691,
+        "quantile": 0.291187,
+        "contrastive": 32.307842,
+        "volatility": 2.150925,
+        "barrier": 1.925352
+       },
+       "cosine:barrier|contrastive": 0.044087,
+       "cosine:barrier|quantile": 0.04526,
+       "cosine:barrier|reconstruction": -0.034623,
+       "cosine:barrier|volatility": 0.283798,
+       "cosine:contrastive|quantile": 0.28912,
+       "cosine:contrastive|reconstruction": -0.287577,
+       "cosine:contrastive|volatility": 0.361257,
+       "cosine:quantile|reconstruction": -0.01614,
+       "cosine:quantile|volatility": 0.12654,
+       "cosine:reconstruction|volatility": -0.628648
+      },
+      "probe_losses": {
+       "reconstruction": 0.46997023,
+       "quantile": 0.01064812,
+       "contrastive": 2.07832599,
+       "volatility": 0.20105232,
+       "barrier": 1.07077217
+      },
+      "representation_std": 1.14676,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.14676,
+       "projection_std": 0.176194,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.002213,
+        "scale_4": 2.026269,
+        "scale_8": 2.206495
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.824691,
+       "quantile": 0.291187,
+       "contrastive": 32.307842,
+       "volatility": 2.150925,
+       "barrier": 1.925352
+      },
+      "cosine:barrier|contrastive": 0.044087,
+      "cosine:barrier|quantile": 0.04526,
+      "cosine:barrier|reconstruction": -0.034623,
+      "cosine:barrier|volatility": 0.283798,
+      "cosine:contrastive|quantile": 0.28912,
+      "cosine:contrastive|reconstruction": -0.287577,
+      "cosine:contrastive|volatility": 0.361257,
+      "cosine:quantile|reconstruction": -0.01614,
+      "cosine:quantile|volatility": 0.12654,
+      "cosine:reconstruction|volatility": -0.628648
+     },
+     "seconds": 55.651
+    },
+    {
+     "epoch": 5,
+     "train": {
+      "reconstruction": 0.63316049,
+      "quantile": 0.0131815,
+      "contrastive": 1.06654438,
+      "volatility": 0.41617568,
+      "barrier": 0.92382312,
+      "weighted_total": 1.35594391
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.60983586,
+      "quantile": 0.01536349,
+      "contrastive": 3.46000838,
+      "volatility": 0.3560788,
+      "barrier": 1.21794415,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.982375,
+        "quantile": 0.213344,
+        "contrastive": 31.315138,
+        "volatility": 3.333116,
+        "barrier": 2.471905
+       },
+       "cosine:barrier|contrastive": 0.10382,
+       "cosine:barrier|quantile": -0.029476,
+       "cosine:barrier|reconstruction": -0.043984,
+       "cosine:barrier|volatility": 0.28425,
+       "cosine:contrastive|quantile": -0.04569,
+       "cosine:contrastive|reconstruction": -0.273273,
+       "cosine:contrastive|volatility": 0.356114,
+       "cosine:quantile|reconstruction": 0.067387,
+       "cosine:quantile|volatility": -0.07498,
+       "cosine:reconstruction|volatility": -0.627356
+      },
+      "probe_losses": {
+       "reconstruction": 0.42672497,
+       "quantile": 0.01018114,
+       "contrastive": 2.36689663,
+       "volatility": 0.21137212,
+       "barrier": 1.07521105
+      },
+      "representation_std": 1.155431,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.155431,
+       "projection_std": 0.176472,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.28601,
+        "scale_4": 2.311514,
+        "scale_8": 2.503166
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.982375,
+       "quantile": 0.213344,
+       "contrastive": 31.315138,
+       "volatility": 3.333116,
+       "barrier": 2.471905
+      },
+      "cosine:barrier|contrastive": 0.10382,
+      "cosine:barrier|quantile": -0.029476,
+      "cosine:barrier|reconstruction": -0.043984,
+      "cosine:barrier|volatility": 0.28425,
+      "cosine:contrastive|quantile": -0.04569,
+      "cosine:contrastive|reconstruction": -0.273273,
+      "cosine:contrastive|volatility": 0.356114,
+      "cosine:quantile|reconstruction": 0.067387,
+      "cosine:quantile|volatility": -0.07498,
+      "cosine:reconstruction|volatility": -0.627356
+     },
+     "seconds": 55.982
+    },
+    {
+     "epoch": 6,
+     "train": {
+      "reconstruction": 0.58098041,
+      "quantile": 0.01270809,
+      "contrastive": 1.05870356,
+      "volatility": 0.40112833,
+      "barrier": 0.90940089,
+      "weighted_total": 1.30982167
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.57494426,
+      "quantile": 0.01423229,
+      "contrastive": 3.39941621,
+      "volatility": 0.3622314,
+      "barrier": 1.23142791,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.789565,
+        "quantile": 0.558147,
+        "contrastive": 29.443159,
+        "volatility": 2.335716,
+        "barrier": 2.94423
+       },
+       "cosine:barrier|contrastive": 0.085432,
+       "cosine:barrier|quantile": -0.053269,
+       "cosine:barrier|reconstruction": -0.013154,
+       "cosine:barrier|volatility": 0.294588,
+       "cosine:contrastive|quantile": -0.211498,
+       "cosine:contrastive|reconstruction": -0.196344,
+       "cosine:contrastive|volatility": 0.328824,
+       "cosine:quantile|reconstruction": 0.150434,
+       "cosine:quantile|volatility": -0.28468,
+       "cosine:reconstruction|volatility": -0.525329
+      },
+      "probe_losses": {
+       "reconstruction": 0.39982948,
+       "quantile": 0.01048823,
+       "contrastive": 2.19829345,
+       "volatility": 0.20213234,
+       "barrier": 1.06807947
+      },
+      "representation_std": 1.165479,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.165479,
+       "projection_std": 0.176395,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.118284,
+        "scale_4": 2.14178,
+        "scale_8": 2.334816
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.789565,
+       "quantile": 0.558147,
+       "contrastive": 29.443159,
+       "volatility": 2.335716,
+       "barrier": 2.94423
+      },
+      "cosine:barrier|contrastive": 0.085432,
+      "cosine:barrier|quantile": -0.053269,
+      "cosine:barrier|reconstruction": -0.013154,
+      "cosine:barrier|volatility": 0.294588,
+      "cosine:contrastive|quantile": -0.211498,
+      "cosine:contrastive|reconstruction": -0.196344,
+      "cosine:contrastive|volatility": 0.328824,
+      "cosine:quantile|reconstruction": 0.150434,
+      "cosine:quantile|volatility": -0.28468,
+      "cosine:reconstruction|volatility": -0.525329
+     },
+     "seconds": 56.182
+    },
+    {
+     "epoch": 7,
+     "train": {
+      "reconstruction": 0.54162334,
+      "quantile": 0.01232579,
+      "contrastive": 1.03891667,
+      "volatility": 0.39443483,
+      "barrier": 0.89110499,
+      "weighted_total": 1.26704854
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.55697227,
+      "quantile": 0.01475432,
+      "contrastive": 3.40416145,
+      "volatility": 0.34984666,
+      "barrier": 1.2392323,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.768352,
+        "quantile": 0.41472,
+        "contrastive": 26.812473,
+        "volatility": 5.414911,
+        "barrier": 4.706572
+       },
+       "cosine:barrier|contrastive": 0.197596,
+       "cosine:barrier|quantile": -0.004977,
+       "cosine:barrier|reconstruction": 0.104374,
+       "cosine:barrier|volatility": 0.403766,
+       "cosine:contrastive|quantile": 0.119922,
+       "cosine:contrastive|reconstruction": -0.235894,
+       "cosine:contrastive|volatility": 0.453946,
+       "cosine:quantile|reconstruction": 0.080241,
+       "cosine:quantile|volatility": 0.003918,
+       "cosine:reconstruction|volatility": -0.375424
+      },
+      "probe_losses": {
+       "reconstruction": 0.37446287,
+       "quantile": 0.01001738,
+       "contrastive": 2.2509706,
+       "volatility": 0.22829156,
+       "barrier": 1.18523979
+      },
+      "representation_std": 1.172559,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.172559,
+       "projection_std": 0.175779,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.177618,
+        "scale_4": 2.200437,
+        "scale_8": 2.374857
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.768352,
+       "quantile": 0.41472,
+       "contrastive": 26.812473,
+       "volatility": 5.414911,
+       "barrier": 4.706572
+      },
+      "cosine:barrier|contrastive": 0.197596,
+      "cosine:barrier|quantile": -0.004977,
+      "cosine:barrier|reconstruction": 0.104374,
+      "cosine:barrier|volatility": 0.403766,
+      "cosine:contrastive|quantile": 0.119922,
+      "cosine:contrastive|reconstruction": -0.235894,
+      "cosine:contrastive|volatility": 0.453946,
+      "cosine:quantile|reconstruction": 0.080241,
+      "cosine:quantile|volatility": 0.003918,
+      "cosine:reconstruction|volatility": -0.375424
+     },
+     "seconds": 55.765
+    },
+    {
+     "epoch": 8,
+     "train": {
+      "reconstruction": 0.51007673,
+      "quantile": 0.01182446,
+      "contrastive": 1.02674273,
+      "volatility": 0.37898394,
+      "barrier": 0.87687756,
+      "weighted_total": 1.23243463
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.54018658,
+      "quantile": 0.0143096,
+      "contrastive": 3.38650918,
+      "volatility": 0.35372144,
+      "barrier": 1.27731299,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.716481,
+        "quantile": 0.220818,
+        "contrastive": 25.25292,
+        "volatility": 1.651417,
+        "barrier": 3.29511
+       },
+       "cosine:barrier|contrastive": 0.047764,
+       "cosine:barrier|quantile": 0.009955,
+       "cosine:barrier|reconstruction": -0.141612,
+       "cosine:barrier|volatility": -0.210243,
+       "cosine:contrastive|quantile": -0.184621,
+       "cosine:contrastive|reconstruction": -0.315498,
+       "cosine:contrastive|volatility": 0.091714,
+       "cosine:quantile|reconstruction": -0.046969,
+       "cosine:quantile|volatility": -0.089623,
+       "cosine:reconstruction|volatility": -0.0663
+      },
+      "probe_losses": {
+       "reconstruction": 0.35810024,
+       "quantile": 0.00872246,
+       "contrastive": 2.13224745,
+       "volatility": 0.19391821,
+       "barrier": 1.04914427
+      },
+      "representation_std": 1.182708,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.182708,
+       "projection_std": 0.176443,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.061308,
+        "scale_4": 2.078247,
+        "scale_8": 2.257188
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.716481,
+       "quantile": 0.220818,
+       "contrastive": 25.25292,
+       "volatility": 1.651417,
+       "barrier": 3.29511
+      },
+      "cosine:barrier|contrastive": 0.047764,
+      "cosine:barrier|quantile": 0.009955,
+      "cosine:barrier|reconstruction": -0.141612,
+      "cosine:barrier|volatility": -0.210243,
+      "cosine:contrastive|quantile": -0.184621,
+      "cosine:contrastive|reconstruction": -0.315498,
+      "cosine:contrastive|volatility": 0.091714,
+      "cosine:quantile|reconstruction": -0.046969,
+      "cosine:quantile|volatility": -0.089623,
+      "cosine:reconstruction|volatility": -0.0663
+     },
+     "seconds": 55.617
+    },
+    {
+     "epoch": 9,
+     "train": {
+      "reconstruction": 0.49093027,
+      "quantile": 0.01179345,
+      "contrastive": 1.00958642,
+      "volatility": 0.37125683,
+      "barrier": 0.86018582,
+      "weighted_total": 1.20438934
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.52440715,
+      "quantile": 0.01415772,
+      "contrastive": 3.43374324,
+      "volatility": 0.35248592,
+      "barrier": 1.32822025,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.783252,
+        "quantile": 0.327388,
+        "contrastive": 21.159119,
+        "volatility": 0.864602,
+        "barrier": 2.903523
+       },
+       "cosine:barrier|contrastive": 0.022517,
+       "cosine:barrier|quantile": -0.013772,
+       "cosine:barrier|reconstruction": -0.171445,
+       "cosine:barrier|volatility": -0.079309,
+       "cosine:contrastive|quantile": -0.004693,
+       "cosine:contrastive|reconstruction": -0.327103,
+       "cosine:contrastive|volatility": 0.043249,
+       "cosine:quantile|reconstruction": -0.003377,
+       "cosine:quantile|volatility": -0.031857,
+       "cosine:reconstruction|volatility": -0.160245
+      },
+      "probe_losses": {
+       "reconstruction": 0.34203565,
+       "quantile": 0.00872055,
+       "contrastive": 2.04588914,
+       "volatility": 0.16978042,
+       "barrier": 1.02250409
+      },
+      "representation_std": 1.187642,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.187642,
+       "projection_std": 0.176528,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.972001,
+        "scale_4": 1.990314,
+        "scale_8": 2.175352
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.783252,
+       "quantile": 0.327388,
+       "contrastive": 21.159119,
+       "volatility": 0.864602,
+       "barrier": 2.903523
+      },
+      "cosine:barrier|contrastive": 0.022517,
+      "cosine:barrier|quantile": -0.013772,
+      "cosine:barrier|reconstruction": -0.171445,
+      "cosine:barrier|volatility": -0.079309,
+      "cosine:contrastive|quantile": -0.004693,
+      "cosine:contrastive|reconstruction": -0.327103,
+      "cosine:contrastive|volatility": 0.043249,
+      "cosine:quantile|reconstruction": -0.003377,
+      "cosine:quantile|volatility": -0.031857,
+      "cosine:reconstruction|volatility": -0.160245
+     },
+     "seconds": 55.814
+    }
+   ]
+  },
+  "oscillators": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.35323143,
+     "quantile": 0.41025159,
+     "contrastive": 6.49644279,
+     "volatility": 17.00339508,
+     "barrier": 1.2230711
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0,
+     "contrastive": 1.0,
+     "volatility": 1.0,
+     "barrier": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.7389719,
+     "quantile": 2.43752865,
+     "contrastive": 0.15393039,
+     "volatility": 0.05881178,
+     "barrier": 0.81761396
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.13656321,
+      "quantile": 0.10811908,
+      "contrastive": 2.97864407,
+      "volatility": 9.56315002,
+      "barrier": 1.07928285,
+      "weighted_total": 3.0067981
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.96897811,
+      "quantile": 0.04445733,
+      "contrastive": 4.65195608,
+      "volatility": 3.47540522,
+      "barrier": 1.10611081,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.335635,
+        "quantile": 0.072436,
+        "contrastive": 4.390357,
+        "volatility": 5.907722,
+        "barrier": 0.456157
+       },
+       "cosine:barrier|contrastive": -0.069868,
+       "cosine:barrier|quantile": -0.039979,
+       "cosine:barrier|reconstruction": 0.057394,
+       "cosine:barrier|volatility": 0.028051,
+       "cosine:contrastive|quantile": 0.093288,
+       "cosine:contrastive|reconstruction": 0.050488,
+       "cosine:contrastive|volatility": -0.102553,
+       "cosine:quantile|reconstruction": -0.050258,
+       "cosine:quantile|volatility": -0.149272,
+       "cosine:reconstruction|volatility": -0.377138
+      },
+      "probe_losses": {
+       "reconstruction": 0.85509211,
+       "quantile": 0.04158161,
+       "contrastive": 2.00517154,
+       "volatility": 4.29960299,
+       "barrier": 1.05040872
+      },
+      "representation_std": 0.906774,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.906774,
+       "projection_std": 0.176791,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.637346,
+        "scale_4": 1.853255,
+        "scale_8": 2.524914
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.335635,
+       "quantile": 0.072436,
+       "contrastive": 4.390357,
+       "volatility": 5.907722,
+       "barrier": 0.456157
+      },
+      "cosine:barrier|contrastive": -0.069868,
+      "cosine:barrier|quantile": -0.039979,
+      "cosine:barrier|reconstruction": 0.057394,
+      "cosine:barrier|volatility": 0.028051,
+      "cosine:contrastive|quantile": 0.093288,
+      "cosine:contrastive|reconstruction": 0.050488,
+      "cosine:contrastive|volatility": -0.102553,
+      "cosine:quantile|reconstruction": -0.050258,
+      "cosine:quantile|volatility": -0.149272,
+      "cosine:reconstruction|volatility": -0.377138
+     },
+     "seconds": 1.495
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 0.88731528,
+      "quantile": 0.03592971,
+      "contrastive": 2.15972371,
+      "volatility": 2.30293053,
+      "barrier": 1.0408613,
+      "weighted_total": 2.06219006
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.79076779,
+      "quantile": 0.02840905,
+      "contrastive": 4.239182,
+      "volatility": 0.71568018,
+      "barrier": 1.09859419,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.405643,
+        "quantile": 0.053445,
+        "contrastive": 3.850443,
+        "volatility": 2.427273,
+        "barrier": 0.473495
+       },
+       "cosine:barrier|contrastive": -0.103721,
+       "cosine:barrier|quantile": 0.078603,
+       "cosine:barrier|reconstruction": 0.02321,
+       "cosine:barrier|volatility": 0.07667,
+       "cosine:contrastive|quantile": 0.322107,
+       "cosine:contrastive|reconstruction": -0.136863,
+       "cosine:contrastive|volatility": 0.0234,
+       "cosine:quantile|reconstruction": -0.105267,
+       "cosine:quantile|volatility": -0.069155,
+       "cosine:reconstruction|volatility": -0.167728
+      },
+      "probe_losses": {
+       "reconstruction": 0.70437205,
+       "quantile": 0.02694258,
+       "contrastive": 1.74650896,
+       "volatility": 0.84257072,
+       "barrier": 1.03569293
+      },
+      "representation_std": 1.062032,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.062032,
+       "projection_std": 0.17667,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.451987,
+        "scale_4": 1.613202,
+        "scale_8": 2.174338
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.405643,
+       "quantile": 0.053445,
+       "contrastive": 3.850443,
+       "volatility": 2.427273,
+       "barrier": 0.473495
+      },
+      "cosine:barrier|contrastive": -0.103721,
+      "cosine:barrier|quantile": 0.078603,
+      "cosine:barrier|reconstruction": 0.02321,
+      "cosine:barrier|volatility": 0.07667,
+      "cosine:contrastive|quantile": 0.322107,
+      "cosine:contrastive|reconstruction": -0.136863,
+      "cosine:contrastive|volatility": 0.0234,
+      "cosine:quantile|reconstruction": -0.105267,
+      "cosine:quantile|volatility": -0.069155,
+      "cosine:reconstruction|volatility": -0.167728
+     },
+     "seconds": 1.489
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.74008711,
+      "quantile": 0.02557952,
+      "contrastive": 1.87863683,
+      "volatility": 0.87712947,
+      "barrier": 1.02448661,
+      "weighted_total": 1.78765378
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.69276029,
+      "quantile": 0.02236751,
+      "contrastive": 4.03066444,
+      "volatility": 0.48582435,
+      "barrier": 1.09651971,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.399487,
+        "quantile": 0.06384,
+        "contrastive": 4.240205,
+        "volatility": 1.252521,
+        "barrier": 0.421771
+       },
+       "cosine:barrier|contrastive": -0.099817,
+       "cosine:barrier|quantile": 0.057172,
+       "cosine:barrier|reconstruction": -0.009943,
+       "cosine:barrier|volatility": 0.066657,
+       "cosine:contrastive|quantile": -0.01858,
+       "cosine:contrastive|reconstruction": 0.064707,
+       "cosine:contrastive|volatility": 0.049735,
+       "cosine:quantile|reconstruction": 0.03158,
+       "cosine:quantile|volatility": 0.041054,
+       "cosine:reconstruction|volatility": -0.016309
+      },
+      "probe_losses": {
+       "reconstruction": 0.60188711,
+       "quantile": 0.02072896,
+       "contrastive": 1.5248462,
+       "volatility": 0.38947478,
+       "barrier": 1.02465713
+      },
+      "representation_std": 1.079114,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.079114,
+       "projection_std": 0.176672,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.271987,
+        "scale_4": 1.399945,
+        "scale_8": 1.902606
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.399487,
+       "quantile": 0.06384,
+       "contrastive": 4.240205,
+       "volatility": 1.252521,
+       "barrier": 0.421771
+      },
+      "cosine:barrier|contrastive": -0.099817,
+      "cosine:barrier|quantile": 0.057172,
+      "cosine:barrier|reconstruction": -0.009943,
+      "cosine:barrier|volatility": 0.066657,
+      "cosine:contrastive|quantile": -0.01858,
+      "cosine:contrastive|reconstruction": 0.064707,
+      "cosine:contrastive|volatility": 0.049735,
+      "cosine:quantile|reconstruction": 0.03158,
+      "cosine:quantile|volatility": 0.041054,
+      "cosine:reconstruction|volatility": -0.016309
+     },
+     "seconds": 1.482
+    },
+    {
+     "epoch": 3,
+     "train": {
+      "reconstruction": 0.67305326,
+      "quantile": 0.02082618,
+      "contrastive": 1.71339232,
+      "volatility": 0.67967163,
+      "barrier": 1.0147229,
+      "weighted_total": 1.68149931
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.64413846,
+      "quantile": 0.01922554,
+      "contrastive": 3.87915039,
+      "volatility": 0.42309755,
+      "barrier": 1.09658217,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.38977,
+        "quantile": 0.087501,
+        "contrastive": 4.80068,
+        "volatility": 1.032907,
+        "barrier": 0.45021
+       },
+       "cosine:barrier|contrastive": -0.245162,
+       "cosine:barrier|quantile": 0.008529,
+       "cosine:barrier|reconstruction": 0.03404,
+       "cosine:barrier|volatility": 0.077704,
+       "cosine:contrastive|quantile": 0.060335,
+       "cosine:contrastive|reconstruction": -0.107682,
+       "cosine:contrastive|volatility": 0.170411,
+       "cosine:quantile|reconstruction": -0.024588,
+       "cosine:quantile|volatility": -0.055952,
+       "cosine:reconstruction|volatility": -0.03367
+      },
+      "probe_losses": {
+       "reconstruction": 0.5462628,
+       "quantile": 0.01803977,
+       "contrastive": 1.48053837,
+       "volatility": 0.31325904,
+       "barrier": 1.0184226
+      },
+      "representation_std": 1.069102,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.069102,
+       "projection_std": 0.175746,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.26,
+        "scale_4": 1.366893,
+        "scale_8": 1.814722
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.38977,
+       "quantile": 0.087501,
+       "contrastive": 4.80068,
+       "volatility": 1.032907,
+       "barrier": 0.45021
+      },
+      "cosine:barrier|contrastive": -0.245162,
+      "cosine:barrier|quantile": 0.008529,
+      "cosine:barrier|reconstruction": 0.03404,
+      "cosine:barrier|volatility": 0.077704,
+      "cosine:contrastive|quantile": 0.060335,
+      "cosine:contrastive|reconstruction": -0.107682,
+      "cosine:contrastive|volatility": 0.170411,
+      "cosine:quantile|reconstruction": -0.024588,
+      "cosine:quantile|volatility": -0.055952,
+      "cosine:reconstruction|volatility": -0.03367
+     },
+     "seconds": 1.473
+    },
+    {
+     "epoch": 4,
+     "train": {
+      "reconstruction": 0.62625574,
+      "quantile": 0.01850677,
+      "contrastive": 1.60122677,
+      "volatility": 0.59395302,
+      "barrier": 1.01011896,
+      "weighted_total": 1.61519242
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.61107528,
+      "quantile": 0.01762166,
+      "contrastive": 3.75467491,
+      "volatility": 0.38952851,
+      "barrier": 1.10025096,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.468535,
+        "quantile": 0.098559,
+        "contrastive": 4.345242,
+        "volatility": 0.830526,
+        "barrier": 0.458333
+       },
+       "cosine:barrier|contrastive": -0.07307,
+       "cosine:barrier|quantile": 0.049788,
+       "cosine:barrier|reconstruction": 0.08206,
+       "cosine:barrier|volatility": 0.02639,
+       "cosine:contrastive|quantile": 0.033442,
+       "cosine:contrastive|reconstruction": -0.024649,
+       "cosine:contrastive|volatility": 0.118982,
+       "cosine:quantile|reconstruction": -0.013242,
+       "cosine:quantile|volatility": 0.016643,
+       "cosine:reconstruction|volatility": -0.028732
+      },
+      "probe_losses": {
+       "reconstruction": 0.52907187,
+       "quantile": 0.01626994,
+       "contrastive": 1.36385202,
+       "volatility": 0.27108562,
+       "barrier": 1.02037489
+      },
+      "representation_std": 1.065694,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.065694,
+       "projection_std": 0.176455,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.15366,
+        "scale_4": 1.25982,
+        "scale_8": 1.678077
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.468535,
+       "quantile": 0.098559,
+       "contrastive": 4.345242,
+       "volatility": 0.830526,
+       "barrier": 0.458333
+      },
+      "cosine:barrier|contrastive": -0.07307,
+      "cosine:barrier|quantile": 0.049788,
+      "cosine:barrier|reconstruction": 0.08206,
+      "cosine:barrier|volatility": 0.02639,
+      "cosine:contrastive|quantile": 0.033442,
+      "cosine:contrastive|reconstruction": -0.024649,
+      "cosine:contrastive|volatility": 0.118982,
+      "cosine:quantile|reconstruction": -0.013242,
+      "cosine:quantile|volatility": 0.016643,
+      "cosine:reconstruction|volatility": -0.028732
+     },
+     "seconds": 1.47
+    },
+    {
+     "epoch": 5,
+     "train": {
+      "reconstruction": 0.60564082,
+      "quantile": 0.01683891,
+      "contrastive": 1.52078701,
+      "volatility": 0.54465068,
+      "barrier": 1.00408065,
+      "weighted_total": 1.57567445
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.58769542,
+      "quantile": 0.01623018,
+      "contrastive": 3.68497539,
+      "volatility": 0.37453306,
+      "barrier": 1.10851753,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.449529,
+        "quantile": 0.064418,
+        "contrastive": 3.816472,
+        "volatility": 0.709796,
+        "barrier": 0.555667
+       },
+       "cosine:barrier|contrastive": 0.004583,
+       "cosine:barrier|quantile": -0.004228,
+       "cosine:barrier|reconstruction": 0.307905,
+       "cosine:barrier|volatility": 0.088619,
+       "cosine:contrastive|quantile": 0.002606,
+       "cosine:contrastive|reconstruction": -0.143891,
+       "cosine:contrastive|volatility": 0.141383,
+       "cosine:quantile|reconstruction": 0.068764,
+       "cosine:quantile|volatility": 0.09306,
+       "cosine:reconstruction|volatility": -0.121378
+      },
+      "probe_losses": {
+       "reconstruction": 0.50713557,
+       "quantile": 0.01393856,
+       "contrastive": 1.26215112,
+       "volatility": 0.25144964,
+       "barrier": 1.0323348
+      },
+      "representation_std": 1.055315,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.055315,
+       "projection_std": 0.176637,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.058716,
+        "scale_4": 1.159824,
+        "scale_8": 1.567913
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.449529,
+       "quantile": 0.064418,
+       "contrastive": 3.816472,
+       "volatility": 0.709796,
+       "barrier": 0.555667
+      },
+      "cosine:barrier|contrastive": 0.004583,
+      "cosine:barrier|quantile": -0.004228,
+      "cosine:barrier|reconstruction": 0.307905,
+      "cosine:barrier|volatility": 0.088619,
+      "cosine:contrastive|quantile": 0.002606,
+      "cosine:contrastive|reconstruction": -0.143891,
+      "cosine:contrastive|volatility": 0.141383,
+      "cosine:quantile|reconstruction": 0.068764,
+      "cosine:quantile|volatility": 0.09306,
+      "cosine:reconstruction|volatility": -0.121378
+     },
+     "seconds": 1.496
+    },
+    {
+     "epoch": 6,
+     "train": {
+      "reconstruction": 0.57773755,
+      "quantile": 0.01568509,
+      "contrastive": 1.44957542,
+      "volatility": 0.51668122,
+      "barrier": 1.00267281,
+      "weighted_total": 1.53848462
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.56441897,
+      "quantile": 0.01528586,
+      "contrastive": 3.59952927,
+      "volatility": 0.3644596,
+      "barrier": 1.11445999,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.631819,
+        "quantile": 0.092964,
+        "contrastive": 4.927592,
+        "volatility": 0.852316,
+        "barrier": 0.594634
+       },
+       "cosine:barrier|contrastive": -0.082721,
+       "cosine:barrier|quantile": 0.046692,
+       "cosine:barrier|reconstruction": 0.302952,
+       "cosine:barrier|volatility": 0.068861,
+       "cosine:contrastive|quantile": -0.004222,
+       "cosine:contrastive|reconstruction": -0.151916,
+       "cosine:contrastive|volatility": 0.19928,
+       "cosine:quantile|reconstruction": -0.017255,
+       "cosine:quantile|volatility": -0.002314,
+       "cosine:reconstruction|volatility": -0.116604
+      },
+      "probe_losses": {
+       "reconstruction": 0.49950439,
+       "quantile": 0.01315472,
+       "contrastive": 1.28683043,
+       "volatility": 0.25167206,
+       "barrier": 1.0329597
+      },
+      "representation_std": 1.045981,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.045981,
+       "projection_std": 0.175645,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.114833,
+        "scale_4": 1.197997,
+        "scale_8": 1.547661
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.631819,
+       "quantile": 0.092964,
+       "contrastive": 4.927592,
+       "volatility": 0.852316,
+       "barrier": 0.594634
+      },
+      "cosine:barrier|contrastive": -0.082721,
+      "cosine:barrier|quantile": 0.046692,
+      "cosine:barrier|reconstruction": 0.302952,
+      "cosine:barrier|volatility": 0.068861,
+      "cosine:contrastive|quantile": -0.004222,
+      "cosine:contrastive|reconstruction": -0.151916,
+      "cosine:contrastive|volatility": 0.19928,
+      "cosine:quantile|reconstruction": -0.017255,
+      "cosine:quantile|volatility": -0.002314,
+      "cosine:reconstruction|volatility": -0.116604
+     },
+     "seconds": 1.569
+    },
+    {
+     "epoch": 7,
+     "train": {
+      "reconstruction": 0.55663787,
+      "quantile": 0.01487041,
+      "contrastive": 1.39204667,
+      "volatility": 0.50264559,
+      "barrier": 1.00041023,
+      "weighted_total": 1.50937595
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.54942381,
+      "quantile": 0.01457999,
+      "contrastive": 3.54656482,
+      "volatility": 0.36436298,
+      "barrier": 1.12473595,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.622304,
+        "quantile": 0.059543,
+        "contrastive": 3.729273,
+        "volatility": 0.851931,
+        "barrier": 0.646193
+       },
+       "cosine:barrier|contrastive": 0.041837,
+       "cosine:barrier|quantile": 0.015322,
+       "cosine:barrier|reconstruction": 0.303898,
+       "cosine:barrier|volatility": 0.03104,
+       "cosine:contrastive|quantile": 0.028754,
+       "cosine:contrastive|reconstruction": -0.099097,
+       "cosine:contrastive|volatility": 0.255969,
+       "cosine:quantile|reconstruction": -0.015607,
+       "cosine:quantile|volatility": 0.025554,
+       "cosine:reconstruction|volatility": -0.129173
+      },
+      "probe_losses": {
+       "reconstruction": 0.4768419,
+       "quantile": 0.01186863,
+       "contrastive": 1.21935356,
+       "volatility": 0.25028729,
+       "barrier": 1.0184145
+      },
+      "representation_std": 1.044758,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.044758,
+       "projection_std": 0.176168,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.06272,
+        "scale_4": 1.140165,
+        "scale_8": 1.455176
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.622304,
+       "quantile": 0.059543,
+       "contrastive": 3.729273,
+       "volatility": 0.851931,
+       "barrier": 0.646193
+      },
+      "cosine:barrier|contrastive": 0.041837,
+      "cosine:barrier|quantile": 0.015322,
+      "cosine:barrier|reconstruction": 0.303898,
+      "cosine:barrier|volatility": 0.03104,
+      "cosine:contrastive|quantile": 0.028754,
+      "cosine:contrastive|reconstruction": -0.099097,
+      "cosine:contrastive|volatility": 0.255969,
+      "cosine:quantile|reconstruction": -0.015607,
+      "cosine:quantile|volatility": 0.025554,
+      "cosine:reconstruction|volatility": -0.129173
+     },
+     "seconds": 1.538
+    },
+    {
+     "epoch": 8,
+     "train": {
+      "reconstruction": 0.54998622,
+      "quantile": 0.01432438,
+      "contrastive": 1.34886873,
+      "volatility": 0.49337783,
+      "barrier": 0.99765221,
+      "weighted_total": 1.49368315
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.54005218,
+      "quantile": 0.01423371,
+      "contrastive": 3.49969387,
+      "volatility": 0.36858872,
+      "barrier": 1.12806702,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.490664,
+        "quantile": 0.050493,
+        "contrastive": 4.448626,
+        "volatility": 0.839304,
+        "barrier": 0.661033
+       },
+       "cosine:barrier|contrastive": -0.112833,
+       "cosine:barrier|quantile": -0.001672,
+       "cosine:barrier|reconstruction": 0.198315,
+       "cosine:barrier|volatility": -0.03208,
+       "cosine:contrastive|quantile": 0.028214,
+       "cosine:contrastive|reconstruction": -0.033577,
+       "cosine:contrastive|volatility": 0.26227,
+       "cosine:quantile|reconstruction": 0.057253,
+       "cosine:quantile|volatility": 0.036012,
+       "cosine:reconstruction|volatility": -0.214405
+      },
+      "probe_losses": {
+       "reconstruction": 0.45658734,
+       "quantile": 0.01104422,
+       "contrastive": 1.19462001,
+       "volatility": 0.24931066,
+       "barrier": 1.02012587
+      },
+      "representation_std": 1.054898,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.054898,
+       "projection_std": 0.176193,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.048513,
+        "scale_4": 1.117736,
+        "scale_8": 1.417611
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.490664,
+       "quantile": 0.050493,
+       "contrastive": 4.448626,
+       "volatility": 0.839304,
+       "barrier": 0.661033
+      },
+      "cosine:barrier|contrastive": -0.112833,
+      "cosine:barrier|quantile": -0.001672,
+      "cosine:barrier|reconstruction": 0.198315,
+      "cosine:barrier|volatility": -0.03208,
+      "cosine:contrastive|quantile": 0.028214,
+      "cosine:contrastive|reconstruction": -0.033577,
+      "cosine:contrastive|volatility": 0.26227,
+      "cosine:quantile|reconstruction": 0.057253,
+      "cosine:quantile|volatility": 0.036012,
+      "cosine:reconstruction|volatility": -0.214405
+     },
+     "seconds": 1.48
+    },
+    {
+     "epoch": 9,
+     "train": {
+      "reconstruction": 0.53300669,
+      "quantile": 0.01376674,
+      "contrastive": 1.31166523,
+      "volatility": 0.48852402,
+      "barrier": 0.99536306,
+      "weighted_total": 1.47189263
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.5260002,
+      "quantile": 0.01345899,
+      "contrastive": 3.44492435,
+      "volatility": 0.38745481,
+      "barrier": 1.13181996,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.634425,
+        "quantile": 0.058186,
+        "contrastive": 3.91119,
+        "volatility": 1.019532,
+        "barrier": 0.841708
+       },
+       "cosine:barrier|contrastive": -0.010858,
+       "cosine:barrier|quantile": 0.029339,
+       "cosine:barrier|reconstruction": 0.368016,
+       "cosine:barrier|volatility": 0.050804,
+       "cosine:contrastive|quantile": 0.12652,
+       "cosine:contrastive|reconstruction": 0.013772,
+       "cosine:contrastive|volatility": 0.191996,
+       "cosine:quantile|reconstruction": 0.013844,
+       "cosine:quantile|volatility": 0.044486,
+       "cosine:reconstruction|volatility": -0.129015
+      },
+      "probe_losses": {
+       "reconstruction": 0.45905069,
+       "quantile": 0.01086187,
+       "contrastive": 1.18525016,
+       "volatility": 0.25558138,
+       "barrier": 1.02865517
+      },
+      "representation_std": 1.056331,
+      "contrastive_diagnostics": {
+       "embedding_std": 1.056331,
+       "projection_std": 0.176489,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.050828,
+        "scale_4": 1.121069,
+        "scale_8": 1.383855
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.634425,
+       "quantile": 0.058186,
+       "contrastive": 3.91119,
+       "volatility": 1.019532,
+       "barrier": 0.841708
+      },
+      "cosine:barrier|contrastive": -0.010858,
+      "cosine:barrier|quantile": 0.029339,
+      "cosine:barrier|reconstruction": 0.368016,
+      "cosine:barrier|volatility": 0.050804,
+      "cosine:contrastive|quantile": 0.12652,
+      "cosine:contrastive|reconstruction": 0.013772,
+      "cosine:contrastive|volatility": 0.191996,
+      "cosine:quantile|reconstruction": 0.013844,
+      "cosine:quantile|volatility": 0.044486,
+      "cosine:reconstruction|volatility": -0.129015
+     },
+     "seconds": 1.48
+    }
+   ]
+  },
+  "volume_flow": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.47423851,
+     "quantile": 0.16837187,
+     "contrastive": 6.60770273,
+     "volatility": 16.58321381,
+     "barrier": 1.10203958
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0,
+     "contrastive": 1.0,
+     "volatility": 1.0,
+     "barrier": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.67831629,
+     "quantile": 5.93923435,
+     "contrastive": 0.15133853,
+     "volatility": 0.06030194,
+     "barrier": 0.90740843
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.23656643,
+      "quantile": 0.08094761,
+      "contrastive": 2.31246216,
+      "volatility": 12.83823339,
+      "barrier": 1.0650156,
+      "weighted_total": 3.4100891
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.97766411,
+      "quantile": 0.02594893,
+      "contrastive": 4.25089359,
+      "volatility": 2.36786342,
+      "barrier": 1.11482251,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.561092,
+        "quantile": 0.076407,
+        "contrastive": 7.170082,
+        "volatility": 9.183144,
+        "barrier": 0.12048
+       },
+       "cosine:barrier|contrastive": 0.035388,
+       "cosine:barrier|quantile": 0.139092,
+       "cosine:barrier|reconstruction": -0.061664,
+       "cosine:barrier|volatility": -0.278079,
+       "cosine:contrastive|quantile": 0.019848,
+       "cosine:contrastive|reconstruction": 0.006525,
+       "cosine:contrastive|volatility": -0.172832,
+       "cosine:quantile|reconstruction": -0.25866,
+       "cosine:quantile|volatility": 0.00701,
+       "cosine:reconstruction|volatility": -0.500455
+      },
+      "probe_losses": {
+       "reconstruction": 0.9106496,
+       "quantile": 0.02406578,
+       "contrastive": 2.34463549,
+       "volatility": 2.8137207,
+       "barrier": 1.06563735
+      },
+      "representation_std": 0.587351,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.587351,
+       "projection_std": 0.175308,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 2.275992,
+        "scale_4": 2.309642,
+        "scale_8": 2.448272
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.561092,
+       "quantile": 0.076407,
+       "contrastive": 7.170082,
+       "volatility": 9.183144,
+       "barrier": 0.12048
+      },
+      "cosine:barrier|contrastive": 0.035388,
+      "cosine:barrier|quantile": 0.139092,
+      "cosine:barrier|reconstruction": -0.061664,
+      "cosine:barrier|volatility": -0.278079,
+      "cosine:contrastive|quantile": 0.019848,
+      "cosine:contrastive|reconstruction": 0.006525,
+      "cosine:contrastive|volatility": -0.172832,
+      "cosine:quantile|reconstruction": -0.25866,
+      "cosine:quantile|volatility": 0.00701,
+      "cosine:reconstruction|volatility": -0.500455
+     },
+     "seconds": 4.912
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 0.99897522,
+      "quantile": 0.01861308,
+      "contrastive": 1.67936063,
+      "volatility": 0.79956112,
+      "barrier": 1.05379412,
+      "weighted_total": 2.04675735
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.73289329,
+      "quantile": 0.01593724,
+      "contrastive": 3.84707069,
+      "volatility": 0.34830651,
+      "barrier": 1.08974969,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.461994,
+        "quantile": 0.072793,
+        "contrastive": 8.429068,
+        "volatility": 1.614528,
+        "barrier": 0.081527
+       },
+       "cosine:barrier|contrastive": -0.097408,
+       "cosine:barrier|quantile": -0.0353,
+       "cosine:barrier|reconstruction": -0.080619,
+       "cosine:barrier|volatility": 0.038213,
+       "cosine:contrastive|quantile": 0.101445,
+       "cosine:contrastive|reconstruction": 0.137232,
+       "cosine:contrastive|volatility": -0.279653,
+       "cosine:quantile|reconstruction": 0.015181,
+       "cosine:quantile|volatility": -0.243042,
+       "cosine:reconstruction|volatility": -0.519652
+      },
+      "probe_losses": {
+       "reconstruction": 0.61963946,
+       "quantile": 0.01355706,
+       "contrastive": 1.95516431,
+       "volatility": 0.30533943,
+       "barrier": 1.0491873
+      },
+      "representation_std": 0.671225,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.671225,
+       "projection_std": 0.176302,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.898062,
+        "scale_4": 1.929852,
+        "scale_8": 2.037579
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.461994,
+       "quantile": 0.072793,
+       "contrastive": 8.429068,
+       "volatility": 1.614528,
+       "barrier": 0.081527
+      },
+      "cosine:barrier|contrastive": -0.097408,
+      "cosine:barrier|quantile": -0.0353,
+      "cosine:barrier|reconstruction": -0.080619,
+      "cosine:barrier|volatility": 0.038213,
+      "cosine:contrastive|quantile": 0.101445,
+      "cosine:contrastive|reconstruction": 0.137232,
+      "cosine:contrastive|volatility": -0.279653,
+      "cosine:quantile|reconstruction": 0.015181,
+      "cosine:quantile|volatility": -0.243042,
+      "cosine:reconstruction|volatility": -0.519652
+     },
+     "seconds": 4.908
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.72086034,
+      "quantile": 0.01443104,
+      "contrastive": 1.43728917,
+      "volatility": 0.45836512,
+      "barrier": 1.05154985,
+      "weighted_total": 1.77402334
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.57668078,
+      "quantile": 0.01342919,
+      "contrastive": 3.59051538,
+      "volatility": 0.37164313,
+      "barrier": 1.09893227,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.211102,
+        "quantile": 0.041674,
+        "contrastive": 6.346042,
+        "volatility": 0.489979,
+        "barrier": 0.084084
+       },
+       "cosine:barrier|contrastive": -0.052065,
+       "cosine:barrier|quantile": 0.143834,
+       "cosine:barrier|reconstruction": 0.14063,
+       "cosine:barrier|volatility": -0.102554,
+       "cosine:contrastive|quantile": 0.248938,
+       "cosine:contrastive|reconstruction": 0.157156,
+       "cosine:contrastive|volatility": -0.464504,
+       "cosine:quantile|reconstruction": -0.066113,
+       "cosine:quantile|volatility": -0.053056,
+       "cosine:reconstruction|volatility": -0.523083
+      },
+      "probe_losses": {
+       "reconstruction": 0.46117261,
+       "quantile": 0.01090073,
+       "contrastive": 1.9600302,
+       "volatility": 0.2202971,
+       "barrier": 1.04943538
+      },
+      "representation_std": 0.679779,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.679779,
+       "projection_std": 0.175845,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.929026,
+        "scale_4": 1.94439,
+        "scale_8": 2.006675
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.211102,
+       "quantile": 0.041674,
+       "contrastive": 6.346042,
+       "volatility": 0.489979,
+       "barrier": 0.084084
+      },
+      "cosine:barrier|contrastive": -0.052065,
+      "cosine:barrier|quantile": 0.143834,
+      "cosine:barrier|reconstruction": 0.14063,
+      "cosine:barrier|volatility": -0.102554,
+      "cosine:contrastive|quantile": 0.248938,
+      "cosine:contrastive|reconstruction": 0.157156,
+      "cosine:contrastive|volatility": -0.464504,
+      "cosine:quantile|reconstruction": -0.066113,
+      "cosine:quantile|volatility": -0.053056,
+      "cosine:reconstruction|volatility": -0.523083
+     },
+     "seconds": 4.892
+    },
+    {
+     "epoch": 3,
+     "train": {
+      "reconstruction": 0.63446923,
+      "quantile": 0.01301142,
+      "contrastive": 1.29460495,
+      "volatility": 0.42676057,
+      "barrier": 1.04710462,
+      "weighted_total": 1.67945834
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.53842616,
+      "quantile": 0.01241732,
+      "contrastive": 3.48410225,
+      "volatility": 0.36251533,
+      "barrier": 1.09658921,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.176893,
+        "quantile": 0.028472,
+        "contrastive": 11.05007,
+        "volatility": 0.583564,
+        "barrier": 0.058801
+       },
+       "cosine:barrier|contrastive": 0.0503,
+       "cosine:barrier|quantile": -0.001375,
+       "cosine:barrier|reconstruction": 0.140659,
+       "cosine:barrier|volatility": -0.059789,
+       "cosine:contrastive|quantile": -0.201184,
+       "cosine:contrastive|reconstruction": 0.047777,
+       "cosine:contrastive|volatility": -0.382867,
+       "cosine:quantile|reconstruction": -0.098113,
+       "cosine:quantile|volatility": 0.186861,
+       "cosine:reconstruction|volatility": -0.53934
+      },
+      "probe_losses": {
+       "reconstruction": 0.42566022,
+       "quantile": 0.00974699,
+       "contrastive": 1.80890381,
+       "volatility": 0.22559464,
+       "barrier": 1.04095197
+      },
+      "representation_std": 0.672699,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.672699,
+       "projection_std": 0.174576,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.795879,
+        "scale_4": 1.799164,
+        "scale_8": 1.831668
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.176893,
+       "quantile": 0.028472,
+       "contrastive": 11.05007,
+       "volatility": 0.583564,
+       "barrier": 0.058801
+      },
+      "cosine:barrier|contrastive": 0.0503,
+      "cosine:barrier|quantile": -0.001375,
+      "cosine:barrier|reconstruction": 0.140659,
+      "cosine:barrier|volatility": -0.059789,
+      "cosine:contrastive|quantile": -0.201184,
+      "cosine:contrastive|reconstruction": 0.047777,
+      "cosine:contrastive|volatility": -0.382867,
+      "cosine:quantile|reconstruction": -0.098113,
+      "cosine:quantile|volatility": 0.186861,
+      "cosine:reconstruction|volatility": -0.53934
+     },
+     "seconds": 4.924
+    },
+    {
+     "epoch": 4,
+     "train": {
+      "reconstruction": 0.59570712,
+      "quantile": 0.01221434,
+      "contrastive": 1.2142118,
+      "volatility": 0.42327866,
+      "barrier": 1.04347221,
+      "weighted_total": 1.63275871
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.50131309,
+      "quantile": 0.01183636,
+      "contrastive": 3.34618187,
+      "volatility": 0.36740926,
+      "barrier": 1.08772969,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.183972,
+        "quantile": 0.039966,
+        "contrastive": 6.437553,
+        "volatility": 0.427512,
+        "barrier": 0.083085
+       },
+       "cosine:barrier|contrastive": -0.100713,
+       "cosine:barrier|quantile": -0.074221,
+       "cosine:barrier|reconstruction": 0.280717,
+       "cosine:barrier|volatility": -0.161693,
+       "cosine:contrastive|quantile": -0.071965,
+       "cosine:contrastive|reconstruction": -0.209485,
+       "cosine:contrastive|volatility": -0.045776,
+       "cosine:quantile|reconstruction": -0.111518,
+       "cosine:quantile|volatility": 0.154438,
+       "cosine:reconstruction|volatility": -0.536499
+      },
+      "probe_losses": {
+       "reconstruction": 0.39447394,
+       "quantile": 0.00930639,
+       "contrastive": 1.62784827,
+       "volatility": 0.22332603,
+       "barrier": 1.04734993
+      },
+      "representation_std": 0.664997,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.664997,
+       "projection_std": 0.174655,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.617603,
+        "scale_4": 1.621567,
+        "scale_8": 1.644375
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.183972,
+       "quantile": 0.039966,
+       "contrastive": 6.437553,
+       "volatility": 0.427512,
+       "barrier": 0.083085
+      },
+      "cosine:barrier|contrastive": -0.100713,
+      "cosine:barrier|quantile": -0.074221,
+      "cosine:barrier|reconstruction": 0.280717,
+      "cosine:barrier|volatility": -0.161693,
+      "cosine:contrastive|quantile": -0.071965,
+      "cosine:contrastive|reconstruction": -0.209485,
+      "cosine:contrastive|volatility": -0.045776,
+      "cosine:quantile|reconstruction": -0.111518,
+      "cosine:quantile|volatility": 0.154438,
+      "cosine:reconstruction|volatility": -0.536499
+     },
+     "seconds": 4.892
+    },
+    {
+     "epoch": 5,
+     "train": {
+      "reconstruction": 0.54345153,
+      "quantile": 0.01190122,
+      "contrastive": 1.1425748,
+      "volatility": 0.42151889,
+      "barrier": 1.03855772,
+      "weighted_total": 1.58004618
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.46008617,
+      "quantile": 0.01193387,
+      "contrastive": 3.48889518,
+      "volatility": 0.3392649,
+      "barrier": 1.09567082,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.234269,
+        "quantile": 0.046374,
+        "contrastive": 8.424925,
+        "volatility": 0.712514,
+        "barrier": 0.08726
+       },
+       "cosine:barrier|contrastive": -0.200681,
+       "cosine:barrier|quantile": 0.014982,
+       "cosine:barrier|reconstruction": -0.16157,
+       "cosine:barrier|volatility": -0.093792,
+       "cosine:contrastive|quantile": -0.071578,
+       "cosine:contrastive|reconstruction": 0.153444,
+       "cosine:contrastive|volatility": 0.089885,
+       "cosine:quantile|reconstruction": -0.085813,
+       "cosine:quantile|volatility": 0.285627,
+       "cosine:reconstruction|volatility": -0.302774
+      },
+      "probe_losses": {
+       "reconstruction": 0.35545152,
+       "quantile": 0.00920613,
+       "contrastive": 1.67145026,
+       "volatility": 0.23254804,
+       "barrier": 1.04667783
+      },
+      "representation_std": 0.653413,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.653413,
+       "projection_std": 0.176177,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.658181,
+        "scale_4": 1.664075,
+        "scale_8": 1.692095
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.234269,
+       "quantile": 0.046374,
+       "contrastive": 8.424925,
+       "volatility": 0.712514,
+       "barrier": 0.08726
+      },
+      "cosine:barrier|contrastive": -0.200681,
+      "cosine:barrier|quantile": 0.014982,
+      "cosine:barrier|reconstruction": -0.16157,
+      "cosine:barrier|volatility": -0.093792,
+      "cosine:contrastive|quantile": -0.071578,
+      "cosine:contrastive|reconstruction": 0.153444,
+      "cosine:contrastive|volatility": 0.089885,
+      "cosine:quantile|reconstruction": -0.085813,
+      "cosine:quantile|volatility": 0.285627,
+      "cosine:reconstruction|volatility": -0.302774
+     },
+     "seconds": 4.888
+    },
+    {
+     "epoch": 6,
+     "train": {
+      "reconstruction": 0.50217236,
+      "quantile": 0.01198461,
+      "contrastive": 1.11086358,
+      "volatility": 0.42126755,
+      "barrier": 1.03336606,
+      "weighted_total": 1.54301586
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.4249945,
+      "quantile": 0.01170981,
+      "contrastive": 3.14787698,
+      "volatility": 0.36083195,
+      "barrier": 1.09514022,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.250831,
+        "quantile": 0.027331,
+        "contrastive": 6.86129,
+        "volatility": 0.309906,
+        "barrier": 0.119882
+       },
+       "cosine:barrier|contrastive": 0.221977,
+       "cosine:barrier|quantile": -0.089704,
+       "cosine:barrier|reconstruction": -0.404771,
+       "cosine:barrier|volatility": -0.003361,
+       "cosine:contrastive|quantile": -0.066276,
+       "cosine:contrastive|reconstruction": 0.121886,
+       "cosine:contrastive|volatility": -0.114032,
+       "cosine:quantile|reconstruction": -0.074101,
+       "cosine:quantile|volatility": 0.106989,
+       "cosine:reconstruction|volatility": -0.357572
+      },
+      "probe_losses": {
+       "reconstruction": 0.32311589,
+       "quantile": 0.00904244,
+       "contrastive": 1.42805719,
+       "volatility": 0.22675931,
+       "barrier": 1.04788196
+      },
+      "representation_std": 0.650807,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.650807,
+       "projection_std": 0.175102,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.419813,
+        "scale_4": 1.422282,
+        "scale_8": 1.442077
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.250831,
+       "quantile": 0.027331,
+       "contrastive": 6.86129,
+       "volatility": 0.309906,
+       "barrier": 0.119882
+      },
+      "cosine:barrier|contrastive": 0.221977,
+      "cosine:barrier|quantile": -0.089704,
+      "cosine:barrier|reconstruction": -0.404771,
+      "cosine:barrier|volatility": -0.003361,
+      "cosine:contrastive|quantile": -0.066276,
+      "cosine:contrastive|reconstruction": 0.121886,
+      "cosine:contrastive|volatility": -0.114032,
+      "cosine:quantile|reconstruction": -0.074101,
+      "cosine:quantile|volatility": 0.106989,
+      "cosine:reconstruction|volatility": -0.357572
+     },
+     "seconds": 4.924
+    },
+    {
+     "epoch": 7,
+     "train": {
+      "reconstruction": 0.46599087,
+      "quantile": 0.01167384,
+      "contrastive": 1.05592066,
+      "volatility": 0.41527727,
+      "barrier": 1.02937655,
+      "weighted_total": 1.50433129
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.39648283,
+      "quantile": 0.01197969,
+      "contrastive": 3.17738342,
+      "volatility": 0.34925953,
+      "barrier": 1.09702551,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.231613,
+        "quantile": 0.029844,
+        "contrastive": 5.800278,
+        "volatility": 0.409038,
+        "barrier": 0.140583
+       },
+       "cosine:barrier|contrastive": -0.019229,
+       "cosine:barrier|quantile": -0.11551,
+       "cosine:barrier|reconstruction": -0.463301,
+       "cosine:barrier|volatility": -0.003777,
+       "cosine:contrastive|quantile": -0.034969,
+       "cosine:contrastive|reconstruction": 0.226047,
+       "cosine:contrastive|volatility": 0.030848,
+       "cosine:quantile|reconstruction": 0.020915,
+       "cosine:quantile|volatility": -0.015638,
+       "cosine:reconstruction|volatility": -0.21641
+      },
+      "probe_losses": {
+       "reconstruction": 0.28704813,
+       "quantile": 0.00894186,
+       "contrastive": 1.23861015,
+       "volatility": 0.23455887,
+       "barrier": 1.04787159
+      },
+      "representation_std": 0.64487,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.64487,
+       "projection_std": 0.176367,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.227154,
+        "scale_4": 1.231301,
+        "scale_8": 1.257376
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.231613,
+       "quantile": 0.029844,
+       "contrastive": 5.800278,
+       "volatility": 0.409038,
+       "barrier": 0.140583
+      },
+      "cosine:barrier|contrastive": -0.019229,
+      "cosine:barrier|quantile": -0.11551,
+      "cosine:barrier|reconstruction": -0.463301,
+      "cosine:barrier|volatility": -0.003777,
+      "cosine:contrastive|quantile": -0.034969,
+      "cosine:contrastive|reconstruction": 0.226047,
+      "cosine:contrastive|volatility": 0.030848,
+      "cosine:quantile|reconstruction": 0.020915,
+      "cosine:quantile|volatility": -0.015638,
+      "cosine:reconstruction|volatility": -0.21641
+     },
+     "seconds": 4.898
+    },
+    {
+     "epoch": 8,
+     "train": {
+      "reconstruction": 0.42612066,
+      "quantile": 0.01163024,
+      "contrastive": 1.02434651,
+      "volatility": 0.41499777,
+      "barrier": 1.02788004,
+      "weighted_total": 1.47087461
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.37747988,
+      "quantile": 0.01170898,
+      "contrastive": 3.09602475,
+      "volatility": 0.38301763,
+      "barrier": 1.09552765,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.167382,
+        "quantile": 0.028361,
+        "contrastive": 5.765292,
+        "volatility": 0.527712,
+        "barrier": 0.1359
+       },
+       "cosine:barrier|contrastive": 0.169775,
+       "cosine:barrier|quantile": -0.011307,
+       "cosine:barrier|reconstruction": -0.184945,
+       "cosine:barrier|volatility": -0.059984,
+       "cosine:contrastive|quantile": -0.008423,
+       "cosine:contrastive|reconstruction": -0.068815,
+       "cosine:contrastive|volatility": 0.245694,
+       "cosine:quantile|reconstruction": -0.063235,
+       "cosine:quantile|volatility": 0.003202,
+       "cosine:reconstruction|volatility": 0.039714
+      },
+      "probe_losses": {
+       "reconstruction": 0.26793343,
+       "quantile": 0.00895143,
+       "contrastive": 1.21299648,
+       "volatility": 0.23764013,
+       "barrier": 1.04648066
+      },
+      "representation_std": 0.648141,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.648141,
+       "projection_std": 0.174946,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.204671,
+        "scale_4": 1.207218,
+        "scale_8": 1.2271
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.167382,
+       "quantile": 0.028361,
+       "contrastive": 5.765292,
+       "volatility": 0.527712,
+       "barrier": 0.1359
+      },
+      "cosine:barrier|contrastive": 0.169775,
+      "cosine:barrier|quantile": -0.011307,
+      "cosine:barrier|reconstruction": -0.184945,
+      "cosine:barrier|volatility": -0.059984,
+      "cosine:contrastive|quantile": -0.008423,
+      "cosine:contrastive|reconstruction": -0.068815,
+      "cosine:contrastive|volatility": 0.245694,
+      "cosine:quantile|reconstruction": -0.063235,
+      "cosine:quantile|volatility": 0.003202,
+      "cosine:reconstruction|volatility": 0.039714
+     },
+     "seconds": 4.989
+    },
+    {
+     "epoch": 9,
+     "train": {
+      "reconstruction": 0.40456265,
+      "quantile": 0.01145642,
+      "contrastive": 1.00237915,
+      "volatility": 0.40939098,
+      "barrier": 1.02233782,
+      "weighted_total": 1.44652739
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.36131155,
+      "quantile": 0.01219972,
+      "contrastive": 3.03780866,
+      "volatility": 0.36202815,
+      "barrier": 1.10149503,
+      "quantile_crossing_rate": 0.0
+     },
+     "mechanics_probe": {
+      "probe": "train_tail_frozen",
+      "windows": 128,
+      "gradient_diagnostics": {
+       "norms": {
+        "reconstruction": 0.197729,
+        "quantile": 0.064779,
+        "contrastive": 5.584454,
+        "volatility": 0.30555,
+        "barrier": 0.148015
+       },
+       "cosine:barrier|contrastive": 0.065906,
+       "cosine:barrier|quantile": 0.171784,
+       "cosine:barrier|reconstruction": -0.184327,
+       "cosine:barrier|volatility": -0.012792,
+       "cosine:contrastive|quantile": -0.170955,
+       "cosine:contrastive|reconstruction": -0.032663,
+       "cosine:contrastive|volatility": 0.193129,
+       "cosine:quantile|reconstruction": -0.010427,
+       "cosine:quantile|volatility": -0.095358,
+       "cosine:reconstruction|volatility": -0.068412
+      },
+      "probe_losses": {
+       "reconstruction": 0.24953032,
+       "quantile": 0.00920831,
+       "contrastive": 1.20328128,
+       "volatility": 0.23074655,
+       "barrier": 1.04332423
+      },
+      "representation_std": 0.641973,
+      "contrastive_diagnostics": {
+       "embedding_std": 0.641973,
+       "projection_std": 0.176005,
+       "effective_negatives_mean": 104.22,
+       "per_scale": {
+        "scale_2": 1.193953,
+        "scale_4": 1.196274,
+        "scale_8": 1.219618
+       }
+      }
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.197729,
+       "quantile": 0.064779,
+       "contrastive": 5.584454,
+       "volatility": 0.30555,
+       "barrier": 0.148015
+      },
+      "cosine:barrier|contrastive": 0.065906,
+      "cosine:barrier|quantile": 0.171784,
+      "cosine:barrier|reconstruction": -0.184327,
+      "cosine:barrier|volatility": -0.012792,
+      "cosine:contrastive|quantile": -0.170955,
+      "cosine:contrastive|reconstruction": -0.032663,
+      "cosine:contrastive|volatility": 0.193129,
+      "cosine:quantile|reconstruction": -0.010427,
+      "cosine:quantile|volatility": -0.095358,
+      "cosine:reconstruction|volatility": -0.068412
+     },
+     "seconds": 4.932
+    }
+   ]
+  }
+ },
+ "artifacts": {
+  "returns_momentum": {
+   "encoder_file": "branch_returns_momentum_encoder.pt",
+   "encoder_sha256": "bee71f63ae819b75fe9669ef4401dd960743c80607809d82e83b5bd380a3658b",
+   "heads_file": "branch_returns_momentum_heads.pt",
+   "heads_sha256": "54e5dc08075f6a739bfb5ad3cba7f7ff3e4be3f057cf4603b88d52b690b1f75f",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 25376
+  },
+  "trend_level": {
+   "encoder_file": "branch_trend_level_encoder.pt",
+   "encoder_sha256": "f75db8b78ab830e1d376068c9024bb12127c7c75a456609dc017909d7a7b6386",
+   "heads_file": "branch_trend_level_heads.pt",
+   "heads_sha256": "cc6785d49fa3fcaa7132182ad84813f30a3f46e1834dc1d24b489b6cc79178b6",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 18790
+  },
+  "volatility_distribution": {
+   "encoder_file": "branch_volatility_distribution_encoder.pt",
+   "encoder_sha256": "a3579df737fe6368a994c06a9a6ae2ac6f01e40d7d6769b84171fee509270476",
+   "heads_file": "branch_volatility_distribution_heads.pt",
+   "heads_sha256": "74821b9b9985a0dfe8902437c926c4545d70f52dda49b15d9f891726db9592f6",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 19520
+  },
+  "oscillators": {
+   "encoder_file": "branch_oscillators_encoder.pt",
+   "encoder_sha256": "ebada3d56bd78105c010db87623fedb33830058b6a8b562f01f43fab77fb0443",
+   "heads_file": "branch_oscillators_heads.pt",
+   "heads_sha256": "a28acfd0e3d45bbc32900cce01cb6613662faaee6c6099224bd10bdf770b420f",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 4448
+  },
+  "volume_flow": {
+   "encoder_file": "branch_volume_flow_encoder.pt",
+   "encoder_sha256": "df51c8dbbcefb74893e5bdea8667a3295fb2a7499d37a5f8b4e7be20768445c8",
+   "heads_file": "branch_volume_flow_heads.pt",
+   "heads_sha256": "ea1ef476a89137f358393c3354aeca313f436e46ecae08724d49ba79bd20d56a",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 64,
+   "parameters": 13824
+  }
+ },
+ "barrier_class_weights_calibration_only": [
+  [
+   0.8260340632603407,
+   1.014947683109118,
+   1.2435897435897436
+  ],
+  [
+   0.6357677902621723,
+   0.8336402701043585,
+   4.394822006472492
+  ]
+ ],
+ "completed": true
+}

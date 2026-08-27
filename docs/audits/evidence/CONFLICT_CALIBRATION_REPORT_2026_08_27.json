@@ -1,0 +1,1417 @@
+{
+ "schema": "agent_multi.conflict_calibration.v1",
+ "order": "C4 (DATA-SOTA-368)",
+ "predeclaration_sha256": "444bfa9d28b33bf7f5a8bf220806967fe79c356cb2b40e84649b65c307241ef2",
+ "contract_sha256": "5e96b9d1bf88e565ac7e62ff30d911d6bc036f15e80a4df0d8c456681f85fed4",
+ "budget": {
+  "epochs": 8,
+  "max_windows": 2400,
+  "runs": "5 solos + 1 joint, identical budget, identical frozen train-tail probe (seeded)"
+ },
+ "families": {
+  "returns_momentum": {
+   "pair_statistics": {
+    "barrier|contrastive": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.0711,
+     "p25": -0.1309,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "barrier|quantile": {
+     "sign_negative_frequency": 0.75,
+     "median": -0.0393,
+     "p25": -0.0425,
+     "max_consecutive_negative": 4,
+     "epochs": 8
+    },
+    "barrier|reconstruction": {
+     "sign_negative_frequency": 0.5,
+     "median": -0.0086,
+     "p25": -0.0656,
+     "max_consecutive_negative": 3,
+     "epochs": 8
+    },
+    "barrier|volatility": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.041,
+     "p25": -0.0445,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "contrastive|quantile": {
+     "sign_negative_frequency": 0.75,
+     "median": -0.0249,
+     "p25": -0.0489,
+     "max_consecutive_negative": 2,
+     "epochs": 8
+    },
+    "contrastive|reconstruction": {
+     "sign_negative_frequency": 0.125,
+     "median": 0.1333,
+     "p25": 0.0364,
+     "max_consecutive_negative": 1,
+     "epochs": 8
+    },
+    "contrastive|volatility": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.141,
+     "p25": -0.1692,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "quantile|reconstruction": {
+     "sign_negative_frequency": 0.375,
+     "median": 0.0363,
+     "p25": -0.1181,
+     "max_consecutive_negative": 3,
+     "epochs": 8
+    },
+    "quantile|volatility": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.029,
+     "p25": 0.0065,
+     "max_consecutive_negative": 1,
+     "epochs": 8
+    },
+    "reconstruction|volatility": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.0534,
+     "p25": -0.4908,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    }
+   },
+   "weighted_gradient_norms_by_epoch": [
+    {
+     "reconstruction": 0.762948,
+     "quantile": 1.591355,
+     "contrastive": 0.944723,
+     "volatility": 1.139695,
+     "barrier": 0.800145
+    },
+    {
+     "reconstruction": 0.803555,
+     "quantile": 0.918553,
+     "contrastive": 1.284796,
+     "volatility": 1.164855,
+     "barrier": 0.746557
+    },
+    {
+     "reconstruction": 0.411299,
+     "quantile": 1.539398,
+     "contrastive": 1.805352,
+     "volatility": 0.283445,
+     "barrier": 0.887041
+    },
+    {
+     "reconstruction": 0.255128,
+     "quantile": 2.732147,
+     "contrastive": 1.052536,
+     "volatility": 0.271676,
+     "barrier": 0.858027
+    },
+    {
+     "reconstruction": 0.222078,
+     "quantile": 1.081186,
+     "contrastive": 1.397868,
+     "volatility": 0.23927,
+     "barrier": 0.773037
+    },
+    {
+     "reconstruction": 0.237717,
+     "quantile": 3.035731,
+     "contrastive": 1.556794,
+     "volatility": 0.262181,
+     "barrier": 0.898339
+    },
+    {
+     "reconstruction": 0.216736,
+     "quantile": 2.039157,
+     "contrastive": 1.454367,
+     "volatility": 0.284777,
+     "barrier": 0.91343
+    },
+    {
+     "reconstruction": 0.243149,
+     "quantile": 2.760142,
+     "contrastive": 1.431392,
+     "volatility": 0.299723,
+     "barrier": 0.970989
+    }
+   ],
+   "probe_losses_by_epoch": [
+    {
+     "reconstruction": 0.92689025,
+     "quantile": 0.04977907,
+     "contrastive": 2.21916652,
+     "volatility": 11.5716095,
+     "barrier": 1.10027742
+    },
+    {
+     "reconstruction": 0.89248413,
+     "quantile": 0.035776,
+     "contrastive": 1.69236946,
+     "volatility": 4.89037323,
+     "barrier": 1.06964993
+    },
+    {
+     "reconstruction": 0.75860482,
+     "quantile": 0.02014993,
+     "contrastive": 1.59555638,
+     "volatility": 0.37624905,
+     "barrier": 1.07434165
+    },
+    {
+     "reconstruction": 0.67946988,
+     "quantile": 0.0170116,
+     "contrastive": 1.22076643,
+     "volatility": 0.32370472,
+     "barrier": 1.072335
+    },
+    {
+     "reconstruction": 0.62931895,
+     "quantile": 0.0135035,
+     "contrastive": 1.11734307,
+     "volatility": 0.28070602,
+     "barrier": 1.05645943
+    },
+    {
+     "reconstruction": 0.59975272,
+     "quantile": 0.01492951,
+     "contrastive": 1.16305482,
+     "volatility": 0.29820928,
+     "barrier": 1.07143438
+    },
+    {
+     "reconstruction": 0.57076883,
+     "quantile": 0.01362215,
+     "contrastive": 1.09458077,
+     "volatility": 0.33223519,
+     "barrier": 1.06738901
+    },
+    {
+     "reconstruction": 0.54552478,
+     "quantile": 0.01406277,
+     "contrastive": 1.06845772,
+     "volatility": 0.33060056,
+     "barrier": 1.06789207
+    }
+   ],
+   "solo_vs_joint": {
+    "reconstruction": {
+     "solo_probe_first_to_final": [
+      0.6580829,
+      0.3965528
+     ],
+     "joint_probe_first_to_final": [
+      0.92689025,
+      0.54552478
+     ],
+     "joint_over_solo_final_ratio": 1.3757
+    },
+    "quantile": {
+     "solo_probe_first_to_final": [
+      0.05206377,
+      0.01479957
+     ],
+     "joint_probe_first_to_final": [
+      0.04977907,
+      0.01406277
+     ],
+     "joint_over_solo_final_ratio": 0.9502
+    },
+    "contrastive": {
+     "solo_probe_first_to_final": [
+      1.82432616,
+      0.84539896
+     ],
+     "joint_probe_first_to_final": [
+      2.21916652,
+      1.06845772
+     ],
+     "joint_over_solo_final_ratio": 1.2639
+    },
+    "volatility": {
+     "solo_probe_first_to_final": [
+      0.84183091,
+      0.29592329
+     ],
+     "joint_probe_first_to_final": [
+      11.5716095,
+      0.33060056
+     ],
+     "joint_over_solo_final_ratio": 1.1172
+    },
+    "barrier": {
+     "solo_probe_first_to_final": [
+      1.04795551,
+      0.894885
+     ],
+     "joint_probe_first_to_final": [
+      1.10027742,
+      1.06789207
+     ],
+     "joint_over_solo_final_ratio": 1.1933
+    }
+   },
+   "representation_std_by_epoch": [
+    0.907388,
+    1.312265,
+    1.981819,
+    1.929577,
+    1.963612,
+    1.995256,
+    2.01042,
+    2.014874
+   ],
+   "effective_negatives_by_epoch": [
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22
+   ]
+  },
+  "trend_level": {
+   "pair_statistics": {
+    "barrier|contrastive": {
+     "sign_negative_frequency": 0.0,
+     "median": 0.1374,
+     "p25": 0.0796,
+     "max_consecutive_negative": 0,
+     "epochs": 8
+    },
+    "barrier|quantile": {
+     "sign_negative_frequency": 0.0,
+     "median": 0.3036,
+     "p25": 0.1177,
+     "max_consecutive_negative": 0,
+     "epochs": 8
+    },
+    "barrier|reconstruction": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.1343,
+     "p25": -0.1886,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "barrier|volatility": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.1169,
+     "p25": -0.2551,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "contrastive|quantile": {
+     "sign_negative_frequency": 0.375,
+     "median": 0.1378,
+     "p25": -0.0275,
+     "max_consecutive_negative": 1,
+     "epochs": 8
+    },
+    "contrastive|reconstruction": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.1986,
+     "p25": -0.2454,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "contrastive|volatility": {
+     "sign_negative_frequency": 0.0,
+     "median": 0.1329,
+     "p25": 0.0687,
+     "max_consecutive_negative": 0,
+     "epochs": 8
+    },
+    "quantile|reconstruction": {
+     "sign_negative_frequency": 0.75,
+     "median": -0.0596,
+     "p25": -0.105,
+     "max_consecutive_negative": 3,
+     "epochs": 8
+    },
+    "quantile|volatility": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.1747,
+     "p25": -0.2478,
+     "max_consecutive_negative": 7,
+     "epochs": 8
+    },
+    "reconstruction|volatility": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.6258,
+     "p25": -0.6587,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    }
+   },
+   "weighted_gradient_norms_by_epoch": [
+    {
+     "reconstruction": 0.596627,
+     "quantile": 2.108809,
+     "contrastive": 0.798087,
+     "volatility": 1.090832,
+     "barrier": 0.35434
+    },
+    {
+     "reconstruction": 0.683475,
+     "quantile": 1.608684,
+     "contrastive": 1.775674,
+     "volatility": 0.579704,
+     "barrier": 0.288378
+    },
+    {
+     "reconstruction": 0.580968,
+     "quantile": 1.049227,
+     "contrastive": 1.468873,
+     "volatility": 0.424065,
+     "barrier": 0.283018
+    },
+    {
+     "reconstruction": 0.559332,
+     "quantile": 0.577148,
+     "contrastive": 2.233893,
+     "volatility": 0.344745,
+     "barrier": 0.342213
+    },
+    {
+     "reconstruction": 0.695585,
+     "quantile": 0.757579,
+     "contrastive": 2.753776,
+     "volatility": 0.286817,
+     "barrier": 0.374069
+    },
+    {
+     "reconstruction": 0.628162,
+     "quantile": 0.60542,
+     "contrastive": 2.65742,
+     "volatility": 0.280069,
+     "barrier": 0.35654
+    },
+    {
+     "reconstruction": 0.642683,
+     "quantile": 0.975629,
+     "contrastive": 3.026942,
+     "volatility": 0.29848,
+     "barrier": 0.356254
+    },
+    {
+     "reconstruction": 0.508263,
+     "quantile": 0.561526,
+     "contrastive": 4.79833,
+     "volatility": 0.320997,
+     "barrier": 0.426426
+    }
+   ],
+   "probe_losses_by_epoch": [
+    {
+     "reconstruction": 1.73338485,
+     "quantile": 0.06206353,
+     "contrastive": 4.45151091,
+     "volatility": 10.71316242,
+     "barrier": 1.11142266
+    },
+    {
+     "reconstruction": 1.37963498,
+     "quantile": 0.04573428,
+     "contrastive": 3.69001389,
+     "volatility": 7.04561949,
+     "barrier": 1.10329771
+    },
+    {
+     "reconstruction": 1.08283532,
+     "quantile": 0.0353695,
+     "contrastive": 3.44031596,
+     "volatility": 5.03132105,
+     "barrier": 1.10626709
+    },
+    {
+     "reconstruction": 0.88623875,
+     "quantile": 0.02899749,
+     "contrastive": 3.3032887,
+     "volatility": 3.50269413,
+     "barrier": 1.11356795
+    },
+    {
+     "reconstruction": 0.77632284,
+     "quantile": 0.02575003,
+     "contrastive": 2.81443048,
+     "volatility": 2.333287,
+     "barrier": 1.11542761
+    },
+    {
+     "reconstruction": 0.6647979,
+     "quantile": 0.02287312,
+     "contrastive": 2.33293343,
+     "volatility": 1.58684957,
+     "barrier": 1.11427045
+    },
+    {
+     "reconstruction": 0.5766986,
+     "quantile": 0.02176955,
+     "contrastive": 2.19861603,
+     "volatility": 1.1294533,
+     "barrier": 1.11408722
+    },
+    {
+     "reconstruction": 0.50164163,
+     "quantile": 0.01957827,
+     "contrastive": 2.2523756,
+     "volatility": 0.83523703,
+     "barrier": 1.12309885
+    }
+   ],
+   "solo_vs_joint": {
+    "reconstruction": {
+     "solo_probe_first_to_final": [
+      1.27109897,
+      0.32850987
+     ],
+     "joint_probe_first_to_final": [
+      1.73338485,
+      0.50164163
+     ],
+     "joint_over_solo_final_ratio": 1.527
+    },
+    "quantile": {
+     "solo_probe_first_to_final": [
+      0.08080694,
+      0.0125041
+     ],
+     "joint_probe_first_to_final": [
+      0.06206353,
+      0.01957827
+     ],
+     "joint_over_solo_final_ratio": 1.5657
+    },
+    "contrastive": {
+     "solo_probe_first_to_final": [
+      3.15524077,
+      1.33419812
+     ],
+     "joint_probe_first_to_final": [
+      4.45151091,
+      2.2523756
+     ],
+     "joint_over_solo_final_ratio": 1.6882
+    },
+    "volatility": {
+     "solo_probe_first_to_final": [
+      6.86956167,
+      0.36605886
+     ],
+     "joint_probe_first_to_final": [
+      10.71316242,
+      0.83523703
+     ],
+     "joint_over_solo_final_ratio": 2.2817
+    },
+    "barrier": {
+     "solo_probe_first_to_final": [
+      1.11640513,
+      1.10060835
+     ],
+     "joint_probe_first_to_final": [
+      1.11142266,
+      1.12309885
+     ],
+     "joint_over_solo_final_ratio": 1.0204
+    }
+   },
+   "representation_std_by_epoch": [
+    0.998385,
+    1.006054,
+    1.019163,
+    1.03498,
+    1.051414,
+    1.067578,
+    1.081326,
+    1.094083
+   ],
+   "effective_negatives_by_epoch": [
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22
+   ]
+  },
+  "volatility_distribution": {
+   "pair_statistics": {
+    "barrier|contrastive": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.1177,
+     "p25": -0.1565,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "barrier|quantile": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.108,
+     "p25": -0.2123,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "barrier|reconstruction": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.1138,
+     "p25": -0.1924,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "barrier|volatility": {
+     "sign_negative_frequency": 0.0,
+     "median": 0.0412,
+     "p25": 0.0332,
+     "max_consecutive_negative": 0,
+     "epochs": 8
+    },
+    "contrastive|quantile": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.0399,
+     "p25": -0.0812,
+     "max_consecutive_negative": 3,
+     "epochs": 8
+    },
+    "contrastive|reconstruction": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.2021,
+     "p25": -0.231,
+     "max_consecutive_negative": 7,
+     "epochs": 8
+    },
+    "contrastive|volatility": {
+     "sign_negative_frequency": 0.0,
+     "median": 0.3541,
+     "p25": 0.1977,
+     "max_consecutive_negative": 0,
+     "epochs": 8
+    },
+    "quantile|reconstruction": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.0571,
+     "p25": 0.0236,
+     "max_consecutive_negative": 1,
+     "epochs": 8
+    },
+    "quantile|volatility": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.0469,
+     "p25": -0.1522,
+     "max_consecutive_negative": 3,
+     "epochs": 8
+    },
+    "reconstruction|volatility": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.2477,
+     "p25": -0.3089,
+     "max_consecutive_negative": 7,
+     "epochs": 8
+    }
+   },
+   "weighted_gradient_norms_by_epoch": [
+    {
+     "reconstruction": 0.465384,
+     "quantile": 2.831904,
+     "contrastive": 3.339964,
+     "volatility": 2.519765,
+     "barrier": 0.803722
+    },
+    {
+     "reconstruction": 0.379694,
+     "quantile": 1.6309,
+     "contrastive": 5.018014,
+     "volatility": 1.194503,
+     "barrier": 0.597698
+    },
+    {
+     "reconstruction": 0.32669,
+     "quantile": 1.299118,
+     "contrastive": 6.530682,
+     "volatility": 0.708841,
+     "barrier": 0.623949
+    },
+    {
+     "reconstruction": 0.296577,
+     "quantile": 2.021345,
+     "contrastive": 7.72751,
+     "volatility": 0.570119,
+     "barrier": 0.652883
+    },
+    {
+     "reconstruction": 0.309377,
+     "quantile": 1.162842,
+     "contrastive": 8.471886,
+     "volatility": 0.448731,
+     "barrier": 0.677489
+    },
+    {
+     "reconstruction": 0.334582,
+     "quantile": 0.984877,
+     "contrastive": 8.124072,
+     "volatility": 0.381958,
+     "barrier": 0.728574
+    },
+    {
+     "reconstruction": 0.372705,
+     "quantile": 1.476913,
+     "contrastive": 8.649792,
+     "volatility": 0.327985,
+     "barrier": 0.756706
+    },
+    {
+     "reconstruction": 0.406066,
+     "quantile": 1.118672,
+     "contrastive": 8.490942,
+     "volatility": 0.291914,
+     "barrier": 0.885759
+    }
+   ],
+   "probe_losses_by_epoch": [
+    {
+     "reconstruction": 1.31988788,
+     "quantile": 0.07067937,
+     "contrastive": 3.0230248,
+     "volatility": 10.11130047,
+     "barrier": 1.08394766
+    },
+    {
+     "reconstruction": 1.12519741,
+     "quantile": 0.04966134,
+     "contrastive": 2.53144217,
+     "volatility": 6.60507393,
+     "barrier": 1.08065474
+    },
+    {
+     "reconstruction": 0.9835453,
+     "quantile": 0.0399767,
+     "contrastive": 1.89876664,
+     "volatility": 4.39131832,
+     "barrier": 1.08657885
+    },
+    {
+     "reconstruction": 0.91069984,
+     "quantile": 0.0340604,
+     "contrastive": 2.17895389,
+     "volatility": 2.98667526,
+     "barrier": 1.0842514
+    },
+    {
+     "reconstruction": 0.87582695,
+     "quantile": 0.02791528,
+     "contrastive": 2.16436744,
+     "volatility": 1.93363154,
+     "barrier": 1.08084369
+    },
+    {
+     "reconstruction": 0.84753746,
+     "quantile": 0.02401569,
+     "contrastive": 2.03291059,
+     "volatility": 1.24859238,
+     "barrier": 1.07598317
+    },
+    {
+     "reconstruction": 0.82200354,
+     "quantile": 0.02183919,
+     "contrastive": 1.85582769,
+     "volatility": 0.80973202,
+     "barrier": 1.06661844
+    },
+    {
+     "reconstruction": 0.8011502,
+     "quantile": 0.0200349,
+     "contrastive": 1.78490126,
+     "volatility": 0.55446392,
+     "barrier": 1.0567534
+    }
+   ],
+   "solo_vs_joint": {
+    "reconstruction": {
+     "solo_probe_first_to_final": [
+      1.16118467,
+      0.58188319
+     ],
+     "joint_probe_first_to_final": [
+      1.31988788,
+      0.8011502
+     ],
+     "joint_over_solo_final_ratio": 1.3768
+    },
+    "quantile": {
+     "solo_probe_first_to_final": [
+      0.05587349,
+      0.01253216
+     ],
+     "joint_probe_first_to_final": [
+      0.07067937,
+      0.0200349
+     ],
+     "joint_over_solo_final_ratio": 1.5987
+    },
+    "contrastive": {
+     "solo_probe_first_to_final": [
+      2.58384538,
+      1.71941864
+     ],
+     "joint_probe_first_to_final": [
+      3.0230248,
+      1.78490126
+     ],
+     "joint_over_solo_final_ratio": 1.0381
+    },
+    "volatility": {
+     "solo_probe_first_to_final": [
+      2.79801488,
+      0.22331727
+     ],
+     "joint_probe_first_to_final": [
+      10.11130047,
+      0.55446392
+     ],
+     "joint_over_solo_final_ratio": 2.4829
+    },
+    "barrier": {
+     "solo_probe_first_to_final": [
+      1.05367124,
+      0.87198627
+     ],
+     "joint_probe_first_to_final": [
+      1.08394766,
+      1.0567534
+     ],
+     "joint_over_solo_final_ratio": 1.2119
+    }
+   },
+   "representation_std_by_epoch": [
+    0.99916,
+    1.008726,
+    1.023897,
+    1.040788,
+    1.056825,
+    1.072094,
+    1.084804,
+    1.096109
+   ],
+   "effective_negatives_by_epoch": [
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22
+   ]
+  },
+  "oscillators": {
+   "pair_statistics": {
+    "barrier|contrastive": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.0964,
+     "p25": -0.1353,
+     "max_consecutive_negative": 4,
+     "epochs": 8
+    },
+    "barrier|quantile": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.0657,
+     "p25": 0.0445,
+     "max_consecutive_negative": 2,
+     "epochs": 8
+    },
+    "barrier|reconstruction": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.0061,
+     "p25": 0.0022,
+     "max_consecutive_negative": 2,
+     "epochs": 8
+    },
+    "barrier|volatility": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.0713,
+     "p25": -0.0936,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "contrastive|quantile": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.0108,
+     "p25": 0.0032,
+     "max_consecutive_negative": 1,
+     "epochs": 8
+    },
+    "contrastive|reconstruction": {
+     "sign_negative_frequency": 0.0,
+     "median": 0.2452,
+     "p25": 0.1999,
+     "max_consecutive_negative": 0,
+     "epochs": 8
+    },
+    "contrastive|volatility": {
+     "sign_negative_frequency": 0.5,
+     "median": -0.0381,
+     "p25": -0.1135,
+     "max_consecutive_negative": 4,
+     "epochs": 8
+    },
+    "quantile|reconstruction": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.0685,
+     "p25": -0.1877,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "quantile|volatility": {
+     "sign_negative_frequency": 0.5,
+     "median": 0.0111,
+     "p25": -0.0477,
+     "max_consecutive_negative": 2,
+     "epochs": 8
+    },
+    "reconstruction|volatility": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.1997,
+     "p25": -0.2861,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    }
+   },
+   "weighted_gradient_norms_by_epoch": [
+    {
+     "reconstruction": 0.303951,
+     "quantile": 0.741496,
+     "contrastive": 0.627042,
+     "volatility": 0.803079,
+     "barrier": 0.816442
+    },
+    {
+     "reconstruction": 0.238556,
+     "quantile": 0.234973,
+     "contrastive": 0.484867,
+     "volatility": 0.537769,
+     "barrier": 0.607449
+    },
+    {
+     "reconstruction": 0.197353,
+     "quantile": 0.198578,
+     "contrastive": 0.49046,
+     "volatility": 0.406185,
+     "barrier": 0.510772
+    },
+    {
+     "reconstruction": 0.158783,
+     "quantile": 0.143062,
+     "contrastive": 0.636626,
+     "volatility": 0.330331,
+     "barrier": 0.505012
+    },
+    {
+     "reconstruction": 0.150103,
+     "quantile": 0.144368,
+     "contrastive": 0.921735,
+     "volatility": 0.265263,
+     "barrier": 0.491194
+    },
+    {
+     "reconstruction": 0.151534,
+     "quantile": 0.143732,
+     "contrastive": 0.675141,
+     "volatility": 0.216956,
+     "barrier": 0.478892
+    },
+    {
+     "reconstruction": 0.150777,
+     "quantile": 0.204063,
+     "contrastive": 1.015273,
+     "volatility": 0.180497,
+     "barrier": 0.483167
+    },
+    {
+     "reconstruction": 0.143813,
+     "quantile": 0.217874,
+     "contrastive": 1.169436,
+     "volatility": 0.160643,
+     "barrier": 0.488172
+    }
+   ],
+   "probe_losses_by_epoch": [
+    {
+     "reconstruction": 0.92139614,
+     "quantile": 0.10298818,
+     "contrastive": 3.18371081,
+     "volatility": 11.75898838,
+     "barrier": 1.13566303
+    },
+    {
+     "reconstruction": 0.83735532,
+     "quantile": 0.05556417,
+     "contrastive": 2.79824424,
+     "volatility": 8.50992203,
+     "barrier": 1.10103536
+    },
+    {
+     "reconstruction": 0.77475971,
+     "quantile": 0.04819329,
+     "contrastive": 2.42357612,
+     "volatility": 5.9546299,
+     "barrier": 1.05589271
+    },
+    {
+     "reconstruction": 0.72876233,
+     "quantile": 0.04154808,
+     "contrastive": 2.15001988,
+     "volatility": 4.09597826,
+     "barrier": 1.03581476
+    },
+    {
+     "reconstruction": 0.6937626,
+     "quantile": 0.03669978,
+     "contrastive": 1.9982847,
+     "volatility": 2.69302201,
+     "barrier": 1.02181244
+    },
+    {
+     "reconstruction": 0.66696036,
+     "quantile": 0.03271062,
+     "contrastive": 1.85326564,
+     "volatility": 1.81146729,
+     "barrier": 1.0094955
+    },
+    {
+     "reconstruction": 0.64030856,
+     "quantile": 0.02986883,
+     "contrastive": 1.83763254,
+     "volatility": 1.28031957,
+     "barrier": 1.00171995
+    },
+    {
+     "reconstruction": 0.61754638,
+     "quantile": 0.02802164,
+     "contrastive": 1.79935801,
+     "volatility": 0.98835039,
+     "barrier": 0.99429637
+    }
+   ],
+   "solo_vs_joint": {
+    "reconstruction": {
+     "solo_probe_first_to_final": [
+      0.94043005,
+      0.70327604
+     ],
+     "joint_probe_first_to_final": [
+      0.92139614,
+      0.61754638
+     ],
+     "joint_over_solo_final_ratio": 0.8781
+    },
+    "quantile": {
+     "solo_probe_first_to_final": [
+      0.07757598,
+      0.02040251
+     ],
+     "joint_probe_first_to_final": [
+      0.10298818,
+      0.02802164
+     ],
+     "joint_over_solo_final_ratio": 1.3734
+    },
+    "contrastive": {
+     "solo_probe_first_to_final": [
+      2.51870131,
+      1.55648625
+     ],
+     "joint_probe_first_to_final": [
+      3.18371081,
+      1.79935801
+     ],
+     "joint_over_solo_final_ratio": 1.156
+    },
+    "volatility": {
+     "solo_probe_first_to_final": [
+      7.58031321,
+      0.36335775
+     ],
+     "joint_probe_first_to_final": [
+      11.75898838,
+      0.98835039
+     ],
+     "joint_over_solo_final_ratio": 2.72
+    },
+    "barrier": {
+     "solo_probe_first_to_final": [
+      1.02904558,
+      0.92453337
+     ],
+     "joint_probe_first_to_final": [
+      1.13566303,
+      0.99429637
+     ],
+     "joint_over_solo_final_ratio": 1.0755
+    }
+   },
+   "representation_std_by_epoch": [
+    0.721543,
+    0.762233,
+    0.81809,
+    0.862961,
+    0.920727,
+    0.960661,
+    0.987035,
+    0.999429
+   ],
+   "effective_negatives_by_epoch": [
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22
+   ]
+  },
+  "volume_flow": {
+   "pair_statistics": {
+    "barrier|contrastive": {
+     "sign_negative_frequency": 1.0,
+     "median": -0.142,
+     "p25": -0.2443,
+     "max_consecutive_negative": 8,
+     "epochs": 8
+    },
+    "barrier|quantile": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.0237,
+     "p25": -0.0449,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "barrier|reconstruction": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.0549,
+     "p25": -0.0687,
+     "max_consecutive_negative": 4,
+     "epochs": 8
+    },
+    "barrier|volatility": {
+     "sign_negative_frequency": 0.75,
+     "median": -0.079,
+     "p25": -0.1946,
+     "max_consecutive_negative": 6,
+     "epochs": 8
+    },
+    "contrastive|quantile": {
+     "sign_negative_frequency": 0.125,
+     "median": 0.3124,
+     "p25": 0.0475,
+     "max_consecutive_negative": 1,
+     "epochs": 8
+    },
+    "contrastive|reconstruction": {
+     "sign_negative_frequency": 0.875,
+     "median": -0.2097,
+     "p25": -0.332,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    },
+    "contrastive|volatility": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.1517,
+     "p25": 0.0793,
+     "max_consecutive_negative": 2,
+     "epochs": 8
+    },
+    "quantile|reconstruction": {
+     "sign_negative_frequency": 0.75,
+     "median": -0.0379,
+     "p25": -0.1643,
+     "max_consecutive_negative": 4,
+     "epochs": 8
+    },
+    "quantile|volatility": {
+     "sign_negative_frequency": 0.25,
+     "median": 0.4917,
+     "p25": 0.4069,
+     "max_consecutive_negative": 2,
+     "epochs": 8
+    },
+    "reconstruction|volatility": {
+     "sign_negative_frequency": 0.625,
+     "median": -0.1383,
+     "p25": -0.2267,
+     "max_consecutive_negative": 5,
+     "epochs": 8
+    }
+   },
+   "weighted_gradient_norms_by_epoch": [
+    {
+     "reconstruction": 0.30442,
+     "quantile": 1.027595,
+     "contrastive": 0.764475,
+     "volatility": 0.57993,
+     "barrier": 0.164531
+    },
+    {
+     "reconstruction": 0.4742,
+     "quantile": 1.578738,
+     "contrastive": 1.203699,
+     "volatility": 0.76701,
+     "barrier": 0.169211
+    },
+    {
+     "reconstruction": 0.349375,
+     "quantile": 0.476907,
+     "contrastive": 1.808951,
+     "volatility": 0.565844,
+     "barrier": 0.20869
+    },
+    {
+     "reconstruction": 0.355345,
+     "quantile": 0.709041,
+     "contrastive": 2.537156,
+     "volatility": 0.266406,
+     "barrier": 0.150775
+    },
+    {
+     "reconstruction": 0.436733,
+     "quantile": 0.650842,
+     "contrastive": 2.99937,
+     "volatility": 0.164091,
+     "barrier": 0.157437
+    },
+    {
+     "reconstruction": 0.236026,
+     "quantile": 0.548276,
+     "contrastive": 3.295323,
+     "volatility": 0.129931,
+     "barrier": 0.160175
+    },
+    {
+     "reconstruction": 0.193861,
+     "quantile": 0.613624,
+     "contrastive": 3.095911,
+     "volatility": 0.131475,
+     "barrier": 0.177227
+    },
+    {
+     "reconstruction": 0.312945,
+     "quantile": 0.381214,
+     "contrastive": 2.835303,
+     "volatility": 0.140787,
+     "barrier": 0.167102
+    }
+   ],
+   "probe_losses_by_epoch": [
+    {
+     "reconstruction": 1.51476562,
+     "quantile": 0.06973338,
+     "contrastive": 2.72424793,
+     "volatility": 15.1095953,
+     "barrier": 1.1096158
+    },
+    {
+     "reconstruction": 1.19131148,
+     "quantile": 0.06162648,
+     "contrastive": 2.40521312,
+     "volatility": 10.18666077,
+     "barrier": 1.10872793
+    },
+    {
+     "reconstruction": 0.89666694,
+     "quantile": 0.02899601,
+     "contrastive": 1.93431962,
+     "volatility": 4.61174726,
+     "barrier": 1.12354255
+    },
+    {
+     "reconstruction": 0.77968132,
+     "quantile": 0.02216132,
+     "contrastive": 1.79035342,
+     "volatility": 1.62189138,
+     "barrier": 1.102525
+    },
+    {
+     "reconstruction": 0.73247153,
+     "quantile": 0.01810571,
+     "contrastive": 1.74568903,
+     "volatility": 0.73974508,
+     "barrier": 1.10477471
+    },
+    {
+     "reconstruction": 0.64121711,
+     "quantile": 0.01626358,
+     "contrastive": 1.59228516,
+     "volatility": 0.48682639,
+     "barrier": 1.10493743
+    },
+    {
+     "reconstruction": 0.60076958,
+     "quantile": 0.01418116,
+     "contrastive": 1.3067795,
+     "volatility": 0.41003266,
+     "barrier": 1.11463857
+    },
+    {
+     "reconstruction": 0.59067202,
+     "quantile": 0.01209038,
+     "contrastive": 1.22469616,
+     "volatility": 0.39289722,
+     "barrier": 1.10550547
+    }
+   ],
+   "solo_vs_joint": {
+    "reconstruction": {
+     "solo_probe_first_to_final": [
+      1.06190109,
+      0.36636874
+     ],
+     "joint_probe_first_to_final": [
+      1.51476562,
+      0.59067202
+     ],
+     "joint_over_solo_final_ratio": 1.6122
+    },
+    "quantile": {
+     "solo_probe_first_to_final": [
+      0.09483964,
+      0.01330014
+     ],
+     "joint_probe_first_to_final": [
+      0.06973338,
+      0.01209038
+     ],
+     "joint_over_solo_final_ratio": 0.909
+    },
+    "contrastive": {
+     "solo_probe_first_to_final": [
+      2.93296242,
+      1.41101122
+     ],
+     "joint_probe_first_to_final": [
+      2.72424793,
+      1.22469616
+     ],
+     "joint_over_solo_final_ratio": 0.868
+    },
+    "volatility": {
+     "solo_probe_first_to_final": [
+      14.61171436,
+      0.27739754
+     ],
+     "joint_probe_first_to_final": [
+      15.1095953,
+      0.39289722
+     ],
+     "joint_over_solo_final_ratio": 1.4164
+    },
+    "barrier": {
+     "solo_probe_first_to_final": [
+      1.12165451,
+      1.0887599
+     ],
+     "joint_probe_first_to_final": [
+      1.1096158,
+      1.10550547
+     ],
+     "joint_over_solo_final_ratio": 1.0154
+    }
+   },
+   "representation_std_by_epoch": [
+    0.315725,
+    0.451039,
+    0.598047,
+    0.681266,
+    0.70108,
+    0.715133,
+    0.720407,
+    0.715966
+   ],
+   "effective_negatives_by_epoch": [
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22,
+    104.22
+   ]
+  }
+ },
+ "dispositions": {
+  "returns_momentum": {
+   "barrier|contrastive": "TRANSIENT_DISAGREEMENT",
+   "barrier|quantile": "TRANSIENT_DISAGREEMENT",
+   "barrier|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "barrier|volatility": "TRANSIENT_DISAGREEMENT",
+   "contrastive|quantile": "TRANSIENT_DISAGREEMENT",
+   "contrastive|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "contrastive|volatility": "TRANSIENT_DISAGREEMENT",
+   "quantile|reconstruction": "MATERIAL_CONFLICT_DEGRADATION: reconstruction (dominated)",
+   "quantile|volatility": "TRANSIENT_DISAGREEMENT",
+   "reconstruction|volatility": "TRANSIENT_DISAGREEMENT"
+  },
+  "trend_level": {
+   "barrier|contrastive": "TRANSIENT_DISAGREEMENT",
+   "barrier|quantile": "TRANSIENT_DISAGREEMENT",
+   "barrier|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "barrier|volatility": "TRANSIENT_DISAGREEMENT",
+   "contrastive|quantile": "TRANSIENT_DISAGREEMENT",
+   "contrastive|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "contrastive|volatility": "TRANSIENT_DISAGREEMENT",
+   "quantile|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "quantile|volatility": "TRANSIENT_DISAGREEMENT",
+   "reconstruction|volatility": "MATERIAL_CONFLICT_DEGRADATION: reconstruction,volatility"
+  },
+  "volatility_distribution": {
+   "barrier|contrastive": "MATERIAL_CONFLICT_DEGRADATION: barrier (dominated)",
+   "barrier|quantile": "TRANSIENT_DISAGREEMENT",
+   "barrier|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "barrier|volatility": "TRANSIENT_DISAGREEMENT",
+   "contrastive|quantile": "MATERIAL_CONFLICT_DEGRADATION: quantile (dominated)",
+   "contrastive|reconstruction": "MATERIAL_CONFLICT_DEGRADATION: reconstruction (dominated)",
+   "contrastive|volatility": "MATERIAL_CONFLICT_DEGRADATION: volatility (dominated)",
+   "quantile|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "quantile|volatility": "TRANSIENT_DISAGREEMENT",
+   "reconstruction|volatility": "TRANSIENT_DISAGREEMENT"
+  },
+  "oscillators": {
+   "barrier|contrastive": "TRANSIENT_DISAGREEMENT",
+   "barrier|quantile": "TRANSIENT_DISAGREEMENT",
+   "barrier|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "barrier|volatility": "TRANSIENT_DISAGREEMENT",
+   "contrastive|quantile": "TRANSIENT_DISAGREEMENT",
+   "contrastive|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "contrastive|volatility": "TRANSIENT_DISAGREEMENT",
+   "quantile|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "quantile|volatility": "TRANSIENT_DISAGREEMENT",
+   "reconstruction|volatility": "TRANSIENT_DISAGREEMENT"
+  },
+  "volume_flow": {
+   "barrier|contrastive": "TRANSIENT_DISAGREEMENT",
+   "barrier|quantile": "TRANSIENT_DISAGREEMENT",
+   "barrier|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "barrier|volatility": "TRANSIENT_DISAGREEMENT",
+   "contrastive|quantile": "TRANSIENT_DISAGREEMENT",
+   "contrastive|reconstruction": "MATERIAL_CONFLICT_DEGRADATION: reconstruction (dominated)",
+   "contrastive|volatility": "MATERIAL_CONFLICT_DEGRADATION: volatility (dominated)",
+   "quantile|reconstruction": "TRANSIENT_DISAGREEMENT",
+   "quantile|volatility": "TRANSIENT_DISAGREEMENT",
+   "reconstruction|volatility": "TRANSIENT_DISAGREEMENT"
+  }
+ },
+ "rule_applied": {
+  "TRANSIENT_DISAGREEMENT": "pair negative-sign frequency < 0.5 OR median cosine >= -0.3",
+  "PERSISTENT_TENSION_NO_HARM": "sign frequency >= 0.6 AND median < -0.3, AND neither objective of the pair degrades (joint final probe loss <= 1.2 x its solo final probe loss)",
+  "MATERIAL_CONFLICT_DEGRADATION": "an objective's joint final probe loss > 1.2 x its solo final probe loss AND (its weighted-gradient share < 1/5 of the pair partner in >= half the epochs OR a pair median < -0.5 with sign frequency >= 0.75)",
+  "DOMINANCE": "one objective's weighted gradient norm > 5x EVERY other objective in >= 6 of 8 epochs",
+  "note": "monitor results are NEVER consulted; no threshold retuning after the run; the disposition names outcomes, it does not auto-remove objectives \u2014 removal stays with Musashi"
+ }
+}

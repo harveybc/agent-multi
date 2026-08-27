@@ -1,0 +1,61 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-364..368",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "8aeba900a3550d5743a4bb605f74056196452d05",
+ "cases": {
+  "364": {
+   "pre_wick_scenario_label_now": "upper",
+   "verdict": "CORRECTED: intrabar HIGH/LOW first-touch; collision reachable+adverse-first; bad OHLC refuses; no close-only fallback (signature)"
+  },
+  "365": {
+   "verdict": "CORRECTED: frozen train-tail mechanics probe carries every gate fact; monitor descriptive-only; adversarial mutation regression proves monitor cannot change eligibility"
+  },
+  "366": {
+   "verdict": "CORRECTED: calibration-only per-horizon support with predeclared rule; deficient horizons refuse individually (regression with engineered constant horizons)"
+  },
+  "367": {
+   "paired_binding": {
+    "generation_number": 56,
+    "seal_manifest_sha256": "ea950ecbc41800c055d951ce4aadcdf408826c88613289e616adab756741c8de",
+    "seal_checkpoint_sha256": "830f65404f97e8a364bfada30ad741b4900c4dc8567d593fc095c30b88047d3b",
+    "identity_contract_sha256": "5e96b9d1bf88e565ac7e62ff30d911d6bc036f15e80a4df0d8c456681f85fed4",
+    "identity_data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "preprocessing_config_digest": "04c0597a7ee166d495f05965a107335462f65b55b1a4915d0d772761861fefe1",
+    "per_family_encoder_digests": {
+     "returns_momentum": "bee71f63ae819b75fe9669ef4401dd960743c80607809d82e83b5bd380a3658b",
+     "trend_level": "f75db8b78ab830e1d376068c9024bb12127c7c75a456609dc017909d7a7b6386",
+     "volatility_distribution": "a3579df737fe6368a994c06a9a6ae2ac6f01e40d7d6769b84171fee509270476",
+     "oscillators": "ebada3d56bd78105c010db87623fedb33830058b6a8b562f01f43fab77fb0443",
+     "volume_flow": "df51c8dbbcefb74893e5bdea8667a3295fb2a7499d37a5f8b4e7be20768445c8"
+    },
+    "eligibility": "PAIRED_SCREEN_ONLY \u2014 pending Musashi's acceptance of the C1-C5 return; no other use"
+   },
+   "verdict": "CORRECTED: design binds the REAL sealed generation (seal, contract, data, preprocessing, per-family encoder digests); prose refuses; 12 genesis re-digested"
+  },
+  "368": {
+   "predeclared_budget": "8 epochs x 2400 windows, rule committed at 09781882 BEFORE the run",
+   "non_transient_dispositions": {
+    "returns_momentum": {
+     "quantile|reconstruction": "MATERIAL_CONFLICT_DEGRADATION: reconstruction (dominated)"
+    },
+    "trend_level": {
+     "reconstruction|volatility": "MATERIAL_CONFLICT_DEGRADATION: reconstruction,volatility"
+    },
+    "volatility_distribution": {
+     "barrier|contrastive": "MATERIAL_CONFLICT_DEGRADATION: barrier (dominated)",
+     "contrastive|quantile": "MATERIAL_CONFLICT_DEGRADATION: quantile (dominated)",
+     "contrastive|reconstruction": "MATERIAL_CONFLICT_DEGRADATION: reconstruction (dominated)",
+     "contrastive|volatility": "MATERIAL_CONFLICT_DEGRADATION: volatility (dominated)"
+    },
+    "volume_flow": {
+     "contrastive|reconstruction": "MATERIAL_CONFLICT_DEGRADATION: reconstruction (dominated)",
+     "contrastive|volatility": "MATERIAL_CONFLICT_DEGRADATION: volatility (dominated)"
+    }
+   },
+   "headline": "MATERIAL_CONFLICT_DEGRADATION in 4/5 families under the predeclared rule \u2014 notably the contrastive objective DOMINATES and degrades barrier/quantile/reconstruction/volatility in volatility_distribution, and reconstruction degrades 1.38x in returns_momentum; objective-set disposition remains with Musashi",
+   "verdict": "EXECUTED per predeclaration; disposition reported, nothing auto-removed"
+  }
+ }
+}
