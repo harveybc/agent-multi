@@ -424,6 +424,13 @@
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
+  "pretrain_objective_screen.py": {
+   "purpose": "WP2 multi-objective mechanics screen: each objective alone / all together / resume replay parity, with typed rejections (constant targets, zero encoder gradient, collapse, non-finite, purge leakage, persistent gradient conflict); mechanics only, weights never chosen from monitor",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "quarantine_inner_curriculum_successor.py": {
    "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
    "lifecycle": "supported",

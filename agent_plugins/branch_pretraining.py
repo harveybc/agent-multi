@@ -424,7 +424,8 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
                                     "> 0")
 
     objectives = contract.get("objectives") or {}
-    known = {"masked_patch_reconstruction", "multi_horizon_quantile"}
+    known = {"masked_patch_reconstruction", "multi_horizon_quantile",
+             "hierarchical_contrastive", "volatility", "barrier_hit"}
     unknown = set(objectives) - known
     if unknown:
         raise PretrainContractError(
@@ -480,6 +481,117 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
         if len(set(horizons)) != len(horizons):
             raise PretrainContractError("horizons must be unique")
 
+    def _unique_horizons(spec, label):
+        try:
+            hs = require_int_list(spec, "horizons", 1)
+        except TopologyError as exc:
+            raise PretrainContractError(f"{label}: {exc}") from exc
+        if len(set(hs)) != len(hs):
+            raise PretrainContractError(f"{label}.horizons must be "
+                                        f"unique")
+        return hs
+
+    if "hierarchical_contrastive" in objectives:
+        spec = objectives["hierarchical_contrastive"]
+        try:
+            scales = require_int_list(spec, "scales", 1)
+            strict_real(spec.get("temperature"), "temperature")
+            strict_int(spec.get("projection_dim"), "projection_dim", 1)
+        except TopologyError as exc:
+            raise PretrainContractError(str(exc)) from exc
+        if float(spec["temperature"]) <= 0:
+            raise PretrainContractError("temperature must be > 0")
+        if len(set(scales)) != len(scales) or any(
+                sc < 2 or sc > window // 2 for sc in scales):
+            raise PretrainContractError(
+                f"scales must be unique ints in [2, window//2] "
+                f"(causal in-window smoothing views), got {scales}")
+        negatives = spec.get("negatives") or {}
+        try:
+            strict_int(negatives.get("exclusion_steps"),
+                       "negatives.exclusion_steps", 0)
+        except TopologyError as exc:
+            raise PretrainContractError(str(exc)) from exc
+        if str(negatives.get("source") or "") != "train_only":
+            raise PretrainContractError(
+                "negatives.source must be 'train_only' (negatives "
+                "never come from calibration/monitor)")
+        if not str(negatives.get("false_negative_policy") or "").strip():
+            raise PretrainContractError(
+                "negatives.false_negative_policy must be declared")
+
+    if "volatility" in objectives:
+        spec = objectives["volatility"]
+        _unique_horizons(spec, "volatility")
+        if str(spec.get("estimator") or "") !=                 "realized_vol_close_to_close":
+            raise PretrainContractError(
+                "volatility.estimator must be EXPLICITLY "
+                "'realized_vol_close_to_close' — no default target "
+                "formula")
+        if not str(spec.get("units") or "").strip():
+            raise PretrainContractError(
+                "volatility.units must be declared")
+        annualization = spec.get("annualization")
+        if annualization != "none" and not (
+                isinstance(annualization, dict)
+                and isinstance(annualization.get("periods_per_year"),
+                               int)
+                and not isinstance(annualization.get(
+                    "periods_per_year"), bool)
+                and annualization["periods_per_year"] >= 1):
+            raise PretrainContractError(
+                "volatility.annualization must be 'none' or "
+                "{periods_per_year: int>=1} — declared, never implied")
+        try:
+            eps = strict_real(spec.get("epsilon"), "volatility.epsilon")
+        except TopologyError as exc:
+            raise PretrainContractError(str(exc)) from exc
+        if eps <= 0:
+            raise PretrainContractError("volatility.epsilon must be > 0")
+
+    if "barrier_hit" in objectives:
+        spec = objectives["barrier_hit"]
+        _unique_horizons(spec, "barrier_hit")
+        scale = spec.get("barrier_scale") or {}
+        if str(scale.get("estimator") or "") !=                 "trailing_realized_vol_close_to_close":
+            raise PretrainContractError(
+                "barrier_scale.estimator must be EXPLICITLY "
+                "'trailing_realized_vol_close_to_close' (past-only)")
+        try:
+            lookback = strict_int(scale.get("lookback"),
+                                  "barrier_scale.lookback", 2)
+            strict_real(scale.get("epsilon"), "barrier_scale.epsilon")
+            upper = strict_real(spec.get("upper_mult"), "upper_mult")
+            lower = strict_real(spec.get("lower_mult"), "lower_mult")
+        except TopologyError as exc:
+            raise PretrainContractError(str(exc)) from exc
+        if upper <= 0 or lower <= 0:
+            raise PretrainContractError(
+                "upper_mult and lower_mult must be > 0")
+        if lookback > warmup:
+            raise PretrainContractError(
+                f"barrier_scale.lookback {lookback} exceeds "
+                f"warmup_bars {warmup}: the past-only scale must fit "
+                f"inside the causal warmup")
+        if str(spec.get("same_bar_collision") or "") !=                 "conservative_adverse_first":
+            raise PretrainContractError(
+                "same_bar_collision must be EXPLICITLY "
+                "'conservative_adverse_first'")
+        if str(spec.get("class_weights_from") or "") !=                 "calibration_only":
+            raise PretrainContractError(
+                "class_weights_from must be 'calibration_only'")
+
+    # DATA-SOTA-353 + WP1: the purge horizon is the maximum FORWARD
+    # horizon across ALL objectives
+    all_horizons = [1]
+    if "multi_horizon_quantile" in objectives:
+        all_horizons += list(objectives["multi_horizon_quantile"][
+            "horizons"])
+    if "volatility" in objectives:
+        all_horizons += list(objectives["volatility"]["horizons"])
+    if "barrier_hit" in objectives:
+        all_horizons += list(objectives["barrier_hit"]["horizons"])
+
     return {"window_size": window, "window_stride": stride, "seed": seed,
             "epochs": epochs, "batch_size": batch, "lr": lr,
             "fit_end": fit_end, "warmup_bars": warmup,
@@ -490,6 +602,7 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             "predecessor_origin_id": predecessor_origin_id,
             "objective_domain": domain,
             "balancing_floor": floor,
+            "max_horizon_all_objectives": max(all_horizons),
             "normalization_policies": parsed_policies,
             "partition": partition}
 
@@ -864,3 +977,195 @@ def load_generation(out_dir: Path):
 def canonical_feature_digest(columns) -> str:
     # F01 digest unity: the pipeline's canonical serialization, reused.
     return feature_columns_sha256(columns)
+
+
+# ------------------------- WP1 objectives (order 2026-08-27, post-transfer)
+
+def realized_volatility_targets(close_values, steps, horizons,
+                                epsilon: float, periods_per_year):
+    """(N, H) log realized volatility, STRICTLY FORWARD from the last
+    observed bar a = t-1 of step t: r_i = log(close[a+i]/close[a+i-1]),
+    vol_h = sqrt(mean(r_1..r_h ^2)) (per-bar close-to-close realized
+    std), annualized by sqrt(periods_per_year) when declared, target =
+    log(vol + epsilon). Formula is the contract's declared estimator —
+    never a default."""
+    import numpy as np
+
+    close = np.asarray(close_values, dtype=np.float64)
+    if (close <= 0).any():
+        raise PretrainContractError("non-positive close in fit slice")
+    log_close = np.log(close)
+    returns = np.diff(log_close)  # returns[i] = log(close[i+1]/close[i])
+    anchor = np.asarray(steps) - 1
+    columns = []
+    for h in horizons:
+        window_returns = np.stack(
+            [returns[anchor + i] for i in range(h)], axis=1)
+        vol = np.sqrt((window_returns ** 2).mean(axis=1))
+        if periods_per_year is not None:
+            vol = vol * np.sqrt(float(periods_per_year))
+        columns.append(np.log(vol + epsilon))
+    return np.stack(columns, axis=1).astype(np.float32)
+
+
+def barrier_hit_labels(close_values, steps, horizons, lookback: int,
+                       upper_mult: float, lower_mult: float,
+                       epsilon: float):
+    """(N, H) int64 labels: 0 = first UPPER hit, 1 = first LOWER hit,
+    2 = neither/censored. Barrier levels derive from PAST-ONLY trailing
+    realized vol over ``lookback`` bars ending AT the anchor a = t-1.
+    A same-bar collision (both barriers crossed by one close — with
+    close-only labeling structurally impossible, but enforced for a
+    future OHLC upgrade) resolves by the declared conservative rule:
+    ADVERSE (lower) first."""
+    import numpy as np
+
+    close = np.asarray(close_values, dtype=np.float64)
+    if (close <= 0).any():
+        raise PretrainContractError("non-positive close in fit slice")
+    log_close = np.log(close)
+    returns = np.diff(log_close)
+    anchor = np.asarray(steps) - 1
+    trailing = np.stack(
+        [returns[anchor - lookback + i] for i in range(lookback)],
+        axis=1)
+    scale = np.sqrt((trailing ** 2).mean(axis=1)) + epsilon
+    upper_level = close[anchor] * (1.0 + upper_mult * scale)
+    lower_level = close[anchor] * (1.0 - lower_mult * scale)
+    n = len(anchor)
+    labels = np.full((n, len(horizons)), 2, dtype=np.int64)
+    max_h = max(horizons)
+    future = np.stack([close[anchor + i] for i in range(1, max_h + 1)],
+                      axis=1)  # (N, max_h)
+    upper_hit = future >= upper_level[:, None]
+    lower_hit = future <= lower_level[:, None]
+    for row in range(n):
+        first_upper = np.argmax(upper_hit[row]) if upper_hit[row].any() \
+            else max_h + 1
+        first_lower = np.argmax(lower_hit[row]) if lower_hit[row].any() \
+            else max_h + 1
+        for col, h in enumerate(horizons):
+            up = first_upper if first_upper < h else max_h + 1
+            lo = first_lower if first_lower < h else max_h + 1
+            if up == max_h + 1 and lo == max_h + 1:
+                labels[row, col] = 2
+            elif lo <= up:  # conservative_adverse_first on collision
+                labels[row, col] = 1
+            else:
+                labels[row, col] = 0
+    return labels
+
+
+def frozen_class_weights(labels, n_classes: int = 3):
+    """DATA-SOTA-349 discipline for barrier classes: balance weights
+    derive from the CALIBRATION labels only and are frozen. Absent
+    classes get weight 1.0 (recorded)."""
+    import numpy as np
+
+    labels = np.asarray(labels)
+    weights = []
+    for col in range(labels.shape[1]):
+        counts = np.bincount(labels[:, col], minlength=n_classes)
+        total = counts.sum()
+        weights.append([float(total / (n_classes * c)) if c > 0 else 1.0
+                        for c in counts])
+    return weights  # (H, n_classes)
+
+
+def causal_scale_view(windows, scale: int):
+    """Causal in-window smoothing view for the hierarchical contrastive
+    objective: average-pool along time at ``scale`` then upsample back
+    (repeat) to the original length. Uses ONLY values inside the
+    window — no future, calibration or monitor access."""
+    import torch
+
+    b, t, c = windows.shape
+    usable = (t // scale) * scale
+    pooled = windows[:, t - usable:, :].reshape(
+        b, usable // scale, scale, c).mean(dim=2)
+    smoothed = pooled.repeat_interleave(scale, dim=1)
+    if smoothed.shape[1] < t:  # left-pad with the oldest smoothed value
+        pad = smoothed[:, :1, :].expand(b, t - smoothed.shape[1], c)
+        smoothed = torch.cat([pad, smoothed], dim=1)
+    return smoothed
+
+
+def build_projection_head(dim: int, projection_dim: int):
+    """Contrastive projection head — an EXCLUDED transfer adapter."""
+    import torch.nn as nn
+
+    return nn.Sequential(nn.Linear(dim, dim), nn.ReLU(),
+                         nn.Linear(dim, projection_dim))
+
+
+def hierarchical_contrastive_loss(encoder, projection, windows,
+                                  batch_positions, scales,
+                                  temperature: float,
+                                  exclusion_steps: int):
+    """InfoNCE over causal multi-scale views. Positives: (window,
+    smoothed view) of the SAME training window per declared scale.
+    Negatives: the OTHER train windows in the batch, deterministically,
+    minus temporal neighbors within ``exclusion_steps`` of the anchor
+    (the declared false-negative policy). Returns (loss, diagnostics:
+    embedding_std, effective_negatives_mean, per_scale)."""
+    import torch
+    import torch.nn.functional as F
+
+    anchor_embedding = encoder(windows)
+    anchor_z = F.normalize(projection(anchor_embedding), dim=-1)
+    positions = torch.as_tensor(batch_positions)
+    distance = (positions[:, None] - positions[None, :]).abs()
+    negative_mask = distance > exclusion_steps  # excludes self too
+    effective_negatives = negative_mask.sum(dim=1).float()
+    total = torch.zeros((), dtype=anchor_z.dtype)
+    per_scale = {}
+    for scale in scales:
+        view_z = F.normalize(
+            projection(encoder(causal_scale_view(windows, scale))),
+            dim=-1)
+        logits = anchor_z @ view_z.T / temperature       # (B, B)
+        positive = torch.diagonal(logits)
+        masked = logits.masked_fill(~negative_mask, float("-inf"))
+        denominator = torch.logsumexp(
+            torch.cat([positive.unsqueeze(1), masked], dim=1), dim=1)
+        scale_loss = (denominator - positive).mean()
+        per_scale[f"scale_{scale}"] = round(
+            float(scale_loss.detach()), 6)
+        total = total + scale_loss
+    loss = total / len(scales)
+    diagnostics = {
+        "embedding_std": round(float(anchor_embedding.std()), 6),
+        "projection_std": round(float(anchor_z.std()), 6),
+        "effective_negatives_mean": round(
+            float(effective_negatives.mean()), 2),
+        "per_scale": per_scale}
+    return loss, diagnostics
+
+
+def build_volatility_head(dim: int, n_horizons: int):
+    import torch.nn as nn
+
+    return nn.Linear(dim, n_horizons)
+
+
+def build_barrier_head(dim: int, n_horizons: int, n_classes: int = 3):
+    import torch.nn as nn
+
+    return nn.Linear(dim, n_horizons * n_classes)
+
+
+def barrier_loss(pred, labels, class_weights):
+    """pred (B, H*3) -> per-horizon 3-class CE with FROZEN
+    calibration-derived weights."""
+    import torch
+    import torch.nn.functional as F
+
+    b = pred.shape[0]
+    n_h = labels.shape[1]
+    logits = pred.view(b, n_h, 3)
+    total = torch.zeros((), dtype=pred.dtype)
+    for col in range(n_h):
+        weight = torch.tensor(class_weights[col], dtype=pred.dtype)
+        total = total + F.cross_entropy(logits[:, col, :],
+                                        labels[:, col], weight=weight)
+    return total / n_h

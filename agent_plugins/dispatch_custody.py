@@ -98,6 +98,7 @@ def durable_write_bytes(path: Path, payload: bytes, *,
                 f"exclusive write target already exists (no-clobber): "
                 f"{path.name}") from exc
         try:
+            os.fchmod(fd, 0o600)  # DATA-SOTA-363: umask-proof
             os.write(fd, payload)
             os.fsync(fd)
         finally:
@@ -105,6 +106,7 @@ def durable_write_bytes(path: Path, payload: bytes, *,
     else:
         tmp = path.with_name(path.name + ".tmp")
         with open(tmp, "wb") as fh:
+            os.fchmod(fh.fileno(), 0o600)  # DATA-SOTA-363: before rename
             fh.write(payload)
             fh.flush()
             os.fsync(fh.fileno())
@@ -127,13 +129,18 @@ class DispatchLedger:
     def _marker_path(self, key: str) -> Path:
         return self.root / f"{key}.completion-intent.json"
 
+    def _ack_path(self, key: str) -> Path:
+        return self.root / f"{key}.completion-ack.json"
+
     def completion_uncertain(self, key: str) -> bool:
-        """DATA-SOTA-361: a lingering completion-intent marker means a
-        completion acknowledgement FAILED at some durability boundary.
-        The marker is authoritative over any completed-looking
-        canonical state; only an independent recovery tool may resolve
-        it — never the ordinary execution path."""
-        return self._marker_path(key).exists()
+        """DATA-SOTA-361/362: append-only protocol — the intent marker
+        is PERMANENT; a completion is certain only when the separately
+        fsynced ACK exists beside it. Intent without ACK means a
+        completion acknowledgement failed at some durability boundary;
+        it is authoritative over any completed-looking canonical state
+        and only an independent recovery tool may resolve it."""
+        return (self._marker_path(key).exists()
+                and not self._ack_path(key).exists())
 
     def read(self, key: str) -> dict[str, Any] | None:
         path = self._record_path(key)
@@ -275,19 +282,22 @@ class DispatchLedger:
             "evidence_schema": expected_schema,
             "run_id": run_id,
             "dispatch_id": dispatch_id})
+        # DATA-SOTA-362: APPEND-ONLY acknowledgement — the intent is
+        # retained permanently; renderability requires the separately
+        # fsynced no-clobber ACK. A failure while writing the ACK
+        # removes the partial file (single-fault cleanup) so the
+        # dispatch stays completion_uncertain.
+        ack = {"schema": "agent_multi.completion_ack.v1",
+               "key": key, "evidence_sha256": digest,
+               "expected_schema": expected_schema,
+               "run_id": run_id, "dispatch_id": dispatch_id}
         try:
-            os.unlink(self._marker_path(key))
-            _fsync_directory(self.root)
+            durable_write_bytes(self._ack_path(key),
+                                json.dumps(ack, indent=1).encode(),
+                                exclusive=True)
         except Exception:
-            # DATA-SOTA-361: the completion record is durable, but the
-            # marker removal is NOT — restore the marker (best effort)
-            # so the dispatch stays completion_uncertain in-process,
-            # matching what a crash-recovery would observe.
             try:
-                if not self._marker_path(key).exists():
-                    with open(self._marker_path(key), "x",
-                              encoding="utf-8") as fh:
-                        fh.write(json.dumps(marker, indent=1))
+                os.unlink(self._ack_path(key))
             except Exception:
                 pass
             raise
@@ -303,6 +313,7 @@ class DispatchLedger:
             "completion_uncertain": marker_path.exists(),
             "canonical_state": (self.read(key) or {}).get("state"),
         }
+        report["ack_present"] = self._ack_path(key).exists()
         if marker_path.exists():
             marker = json.loads(marker_path.read_text())
             report["marker"] = marker
@@ -327,10 +338,36 @@ class DispatchLedger:
                 "acknowledgement failed at a durability boundary; the "
                 "intent marker is authoritative over any "
                 "completed-looking canonical state (DATA-SOTA-361)")
+        # DATA-SOTA-362: renderability REQUIRES matching intent + ACK
+        marker_path = self._marker_path(key)
+        ack_path = self._ack_path(key)
+        if not marker_path.exists() or not ack_path.exists():
+            raise ExecutionCustodyError(
+                "render refused: append-only completion requires BOTH "
+                "the permanent intent and its fsynced ACK "
+                "(DATA-SOTA-362); legacy or partial completions do not "
+                "render")
+        marker = json.loads(marker_path.read_text())
+        ack = json.loads(ack_path.read_text())
+        agreement = (
+            marker.get("expected_evidence_sha256")
+            == ack.get("evidence_sha256")
+            and marker.get("run_id") == ack.get("run_id")
+            and marker.get("dispatch_id") == ack.get("dispatch_id")
+            and marker.get("expected_schema")
+            == ack.get("expected_schema"))
+        if not agreement:
+            raise ExecutionCustodyError(
+                "render refused: intent/ACK disagreement "
+                "(DATA-SOTA-362)")
         record = self.read(key)
         if record is None:
             raise ExecutionCustodyError(
                 "render refused: no ledger record for this key")
+        if record.get("evidence_sha256") != ack.get("evidence_sha256"):
+            raise ExecutionCustodyError(
+                "render refused: ledger/ACK evidence digest "
+                "disagreement (DATA-SOTA-362)")
         if record.get("state") != "completed":
             raise ExecutionCustodyError(
                 f"render refused: state {record.get('state')!r} is not "

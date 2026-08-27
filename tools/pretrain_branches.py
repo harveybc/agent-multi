@@ -38,12 +38,14 @@ sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
     PretrainContractError, assert_purged_boundaries,
-    balance_objective_weights,
-    build_monotone_quantile_head, build_step_index,
-    canonical_feature_digest, collect_preprocessed_windows,
-    forward_log_return_targets, load_fit_slice, load_generation,
-    masked_reconstruction_loss, objective_gradient_diagnostics,
-    partition_evidence, pinball_loss, quantile_crossing_rate,
+    balance_objective_weights, barrier_hit_labels, barrier_loss,
+    build_barrier_head, build_monotone_quantile_head, build_projection_head,
+    build_step_index, build_volatility_head, canonical_feature_digest,
+    collect_preprocessed_windows, forward_log_return_targets,
+    frozen_class_weights, hierarchical_contrastive_loss, load_fit_slice,
+    load_generation, masked_reconstruction_loss,
+    objective_gradient_diagnostics, partition_evidence, pinball_loss,
+    quantile_crossing_rate, realized_volatility_targets,
     reconstruction_target, refuse_on_identity_drift, resume_identity,
     sample_span_mask, sha256_file, sha256_obj, three_way_split,
     validate_contract, verify_earlier_origin_decision, write_generation,
@@ -130,6 +132,15 @@ def main() -> int:
 
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    manifest_path = out_dir / "pretrain_manifest.json"
+    if args.resume and manifest_path.exists():
+        # the EFFECTIVE dataset bound is part of the run identity: a
+        # resume must rebuild the exact same eligible-step set
+        _peek_cli = json.loads(manifest_path.read_text())["cli"]
+        epochs = _peek_cli["epochs_effective"]
+        if args.max_windows is None:
+            max_windows = _peek_cli.get("max_windows_effective",
+                                        max_windows)
 
     df, columns, close_col = load_fit_slice(data_path, contract)
 
@@ -205,9 +216,14 @@ def main() -> int:
     objectives = contract["objectives"]
     rec_spec = objectives.get("masked_patch_reconstruction")
     quant_spec = objectives.get("multi_horizon_quantile")
+    contrastive_spec = objectives.get("hierarchical_contrastive")
+    vol_spec = objectives.get("volatility")
+    barrier_spec = objectives.get("barrier_hit")
     horizons = list(quant_spec["horizons"]) if quant_spec else [1]
     quantiles = list(quant_spec["quantiles"]) if quant_spec else [0.5]
-    max_horizon = max(horizons)
+    # WP1: the purge horizon is the max forward horizon over ALL
+    # objectives, derived mechanically by the validator
+    max_horizon = parsed["max_horizon_all_objectives"]
 
     window = parsed["window_size"]
     steps = build_step_index(len(df), parsed["warmup_bars"],
@@ -230,10 +246,29 @@ def main() -> int:
     train_idx = np.array([step_pos[t] for t in train_steps])
     calibration_idx = np.array([step_pos[t] for t in calibration_steps])
     monitor_idx = np.array([step_pos[t] for t in monitor_steps])
+    steps_array = np.asarray(steps)
     targets_all = None
     if quant_spec:
         targets_all = torch.tensor(forward_log_return_targets(
             df[close_col].to_numpy(), steps, horizons))
+    vol_targets_all = None
+    if vol_spec:
+        annualization = vol_spec["annualization"]
+        vol_targets_all = torch.tensor(realized_volatility_targets(
+            df[close_col].to_numpy(), steps,
+            list(vol_spec["horizons"]), float(vol_spec["epsilon"]),
+            None if annualization == "none"
+            else annualization["periods_per_year"]))
+    barrier_labels_all = None
+    barrier_class_weights = None
+    if barrier_spec:
+        barrier_labels_all = torch.tensor(barrier_hit_labels(
+            df[close_col].to_numpy(), steps,
+            list(barrier_spec["horizons"]),
+            int(barrier_spec["barrier_scale"]["lookback"]),
+            float(barrier_spec["upper_mult"]),
+            float(barrier_spec["lower_mult"]),
+            float(barrier_spec["barrier_scale"]["epsilon"])))
 
     stamps = df[str(contract.get("date_column") or "DATE_TIME")].tolist()
     context_rows = int(parsed["window_size"]) + int(
@@ -251,8 +286,6 @@ def main() -> int:
         "additional_embargo_steps": 0,
         "purged_windows_total": len(purged_steps),
         "purged_steps_sha256": sha256_obj(purged_steps)}
-
-    manifest_path = out_dir / "pretrain_manifest.json"
 
     if args.resume:
         ckpt, manifest, generation = load_generation(out_dir)
@@ -295,7 +328,8 @@ def main() -> int:
             "objective_balancing": contract["objective_balancing"],
             "cli": {"argv": [Path(a).name if os.sep in str(a) else str(a)
                              for a in sys.argv],
-                    "epochs_effective": epochs},
+                    "epochs_effective": epochs,
+                    "max_windows_effective": max_windows},
             "progress": {b["name"]: {"status": "pending",
                                      "effective_weights": None,
                                      "losses": []}
@@ -321,6 +355,18 @@ def main() -> int:
         declared_weights["reconstruction"] = float(rec_spec["weight"])
     if quant_spec:
         declared_weights["quantile"] = float(quant_spec["weight"])
+    if contrastive_spec:
+        declared_weights["contrastive"] = float(
+            contrastive_spec["weight"])
+    if vol_spec:
+        declared_weights["volatility"] = float(vol_spec["weight"])
+    if barrier_spec:
+        declared_weights["barrier"] = float(barrier_spec["weight"])
+        # DATA-SOTA-349 discipline: class balance from CALIBRATION only
+        barrier_class_weights = frozen_class_weights(
+            barrier_labels_all[calibration_idx].numpy())
+        manifest.setdefault("barrier_class_weights_calibration_only",
+                            barrier_class_weights)
 
     for bi in range(start_branch, len(assignment)):
         spec = assignment[bi]
@@ -340,6 +386,15 @@ def main() -> int:
         if quant_spec:
             heads["quantile"] = build_monotone_quantile_head(
                 dim, len(horizons), len(quantiles))
+        if contrastive_spec:
+            heads["projection"] = build_projection_head(
+                dim, int(contrastive_spec["projection_dim"]))
+        if vol_spec:
+            heads["volatility"] = build_volatility_head(
+                dim, len(vol_spec["horizons"]))
+        if barrier_spec:
+            heads["barrier"] = build_barrier_head(
+                dim, len(barrier_spec["horizons"]))
         opt = torch.optim.Adam(
             list(encoder.parameters()) + list(heads.parameters()),
             lr=parsed["lr"])
@@ -356,12 +411,9 @@ def main() -> int:
         calibration_mask = sample_span_mask(
             len(calibration_idx), window, mask_ratio, mask_span,
             calibration_gen)
-        monitor_targets = (targets_all[monitor_idx]
-                           if quant_spec else None)
-        calibration_targets = (targets_all[calibration_idx]
-                               if quant_spec else None)
+        last_diagnostics = {}
 
-        def objective_losses(values, mask, targets):
+        def objective_losses(values, mask, idx):
             losses = {}
             if rec_spec:
                 target = reconstruction_target(values, mask, policy)
@@ -370,14 +422,33 @@ def main() -> int:
                     mask)
             if quant_spec:
                 pred = heads["quantile"](encoder(values))
-                losses["quantile"] = pinball_loss(pred, targets,
-                                                  quantiles)
+                losses["quantile"] = pinball_loss(
+                    pred, targets_all[idx], quantiles)
+            if contrastive_spec:
+                loss, diag = hierarchical_contrastive_loss(
+                    encoder, heads["projection"], values,
+                    steps_array[idx].tolist(),
+                    list(contrastive_spec["scales"]),
+                    float(contrastive_spec["temperature"]),
+                    int(contrastive_spec["negatives"][
+                        "exclusion_steps"]))
+                losses["contrastive"] = loss
+                last_diagnostics["contrastive"] = diag
+            if vol_spec:
+                pred = heads["volatility"](encoder(values))
+                losses["volatility"] = torch.nn.functional.mse_loss(
+                    pred, vol_targets_all[idx])
+            if barrier_spec:
+                pred = heads["barrier"](encoder(values))
+                losses["barrier"] = barrier_loss(
+                    pred, barrier_labels_all[idx],
+                    barrier_class_weights)
             return losses
 
         def monitor_report():
             with torch.no_grad():
                 losses = objective_losses(monitor_windows, monitor_mask,
-                                          monitor_targets)
+                                          monitor_idx)
                 report = {k: round(float(v), 8)
                           for k, v in losses.items()}
                 embedding = encoder(monitor_windows)
@@ -387,6 +458,10 @@ def main() -> int:
                     pred = heads["quantile"](embedding)
                     report["quantile_crossing_rate"] = \
                         quantile_crossing_rate(pred)
+                if contrastive_spec and "contrastive" in \
+                        last_diagnostics:
+                    report["contrastive_diagnostics"] = \
+                        last_diagnostics["contrastive"]
             return report
 
         epoch0 = 0
@@ -412,7 +487,7 @@ def main() -> int:
             with torch.no_grad():
                 initial = {k: float(v) for k, v in objective_losses(
                     calibration_windows, calibration_mask,
-                    calibration_targets).items()}
+                    calibration_idx).items()}
             effective = balance_objective_weights(
                 initial, declared_weights, parsed["balancing_floor"])
             manifest["progress"][spec["name"]]["effective_weights"] = {
@@ -436,8 +511,7 @@ def main() -> int:
                 values = branch_windows[sel]
                 mask = sample_span_mask(values.shape[0], window,
                                         mask_ratio, mask_span, gen)
-                targets = targets_all[sel] if quant_spec else None
-                losses = objective_losses(values, mask, targets)
+                losses = objective_losses(values, mask, sel)
                 total = sum(effective[k] * v for k, v in losses.items())
                 if not torch.isfinite(total):
                     raise PretrainContractError(
@@ -447,17 +521,15 @@ def main() -> int:
                 total.backward()
                 opt.step()
                 for k, v in losses.items():
-                    sums[k] += float(v)
-                sums["weighted_total"] += float(total)
+                    sums[k] += float(v.detach())
+                sums["weighted_total"] += float(total.detach())
                 batches += 1
             # DATA-SOTA-345 diagnostics on the fixed monitor probe
             probe = monitor_windows[:batch_size]
             probe_mask = monitor_mask[:batch_size]
-            probe_targets = (monitor_targets[:batch_size]
-                             if quant_spec else None)
             grad_report = objective_gradient_diagnostics(
                 encoder, objective_losses(probe, probe_mask,
-                                          probe_targets))
+                                          monitor_idx[:batch_size]))
             record = {"epoch": epoch,
                       "train": {k: round(v / batches, 8)
                                 for k, v in sums.items()},

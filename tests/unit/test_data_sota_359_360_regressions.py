@@ -259,7 +259,8 @@ class TestDataSota360EvidenceAuthenticity:
     def test_fabricated_packet_without_ledger_refuses(self, tmp_path):
         """The PRE counterexample: arbitrary JSON rendered rc=0."""
         ledger, key = make_ledger(tmp_path)
-        with pytest.raises(ExecutionCustodyError, match="no ledger"):
+        with pytest.raises(ExecutionCustodyError,
+                           match="requires BOTH|no ledger"):
             ledger.verified_render(key)
 
     def test_substituted_evidence_refuses(self, tmp_path):

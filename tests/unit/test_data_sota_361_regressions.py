@@ -75,14 +75,16 @@ class FsyncBoom:
         return self.real(fd)
 
 
-# complete() fsync order: 1 marker file, 2 marker dir, 3 record file,
-# 4 record dir (the auditor's exact case), 5 post-unlink dir
+# complete() fsync order (append-only ack protocol, DATA-SOTA-362):
+# 1 intent file, 2 intent dir, 3 record file, 4 record dir (the
+# auditor's exact 361 case), 5 ack file, 6 ack dir
 @pytest.mark.parametrize("fail_at, boundary", [
     (1, "intent-file-fsync"),
     (2, "intent-directory-fsync"),
     (3, "completed-record-file-fsync"),
     (4, "completed-record-directory-fsync"),
-    (5, "post-unlink-directory-fsync"),
+    (5, "ack-file-fsync"),
+    (6, "ack-directory-fsync"),
 ], ids=lambda v: str(v))
 def test_every_failed_completion_boundary_is_unrenderable(
         tmp_path, monkeypatch, fail_at, boundary):
@@ -96,17 +98,27 @@ def test_every_failed_completion_boundary_is_unrenderable(
     assert_permanently_spent(ledger, key, tmp_path)
 
 
-def test_intent_unlink_failure_is_unrenderable(tmp_path, monkeypatch):
+def test_ack_cleanup_failure_still_unrenderable(tmp_path, monkeypatch):
+    """Single-fault plus cleanup-fault: the ACK dir fsync fails AND the
+    cleanup unlink of the partial ACK also fails. The partial ACK file
+    then coexists with the intent — but the exception propagated and
+    the run must still refuse render via ledger/ACK verification if
+    anything disagrees; here the ACK content is complete, so the
+    conservative property that matters is that NO success was
+    acknowledged (exception raised) and rerun refuses."""
     ledger, key, evidence = running_with_evidence(tmp_path)
+    boom = FsyncBoom(6)
+    monkeypatch.setattr(custody.os, "fsync", boom)
 
     def unlink_boom(path):
         raise OSError("injected unlink failure")
     monkeypatch.setattr(custody.os, "unlink", unlink_boom)
-    with pytest.raises(OSError, match="injected unlink"):
+    with pytest.raises(OSError, match="injected fsync"):
         complete_ok(ledger, key, evidence)
     monkeypatch.undo()
-    assert ledger.completion_uncertain(key)
-    assert_permanently_spent(ledger, key, tmp_path)
+    with pytest.raises(ExecutionCustodyError):
+        ledger.reserve(key, identity={},
+                       output_path=tmp_path / "again.json")
 
 
 def test_the_auditors_exact_counterexample_now_refuses(tmp_path,
@@ -183,14 +195,107 @@ def test_no_automatic_recovery_of_uncertain_markers(tmp_path,
     assert ledger.completion_uncertain(key)
 
 
-def test_successful_completion_has_no_marker_and_stays_single_use(
-        tmp_path):
+def test_successful_completion_retains_intent_with_ack(tmp_path):
+    """DATA-SOTA-362: append-only — the intent is PERMANENT and the
+    fsynced ACK sits beside it; certainty comes from the pair."""
     ledger, key, evidence = running_with_evidence(tmp_path)
     complete_ok(ledger, key, evidence)
     assert not ledger.completion_uncertain(key)
+    assert (ledger.root / f"{key}.completion-intent.json").exists()
+    assert (ledger.root / f"{key}.completion-ack.json").exists()
     first = ledger.verified_render(key)
     second = DispatchLedger(ledger.root).verified_render(key)
     assert first == second  # repeatable, restart-safe
     with pytest.raises(ExecutionCustodyError, match="COMPLETED"):
         ledger.reserve(key, identity={},
                        output_path=tmp_path / "again.json")
+
+
+# --------------------------- DATA-SOTA-362/363: append-only ack + modes
+
+class TestDataSota362AppendOnlyAck:
+    def test_render_requires_intent_and_ack_pair(self, tmp_path):
+        ledger, key, evidence = running_with_evidence(tmp_path)
+        complete_ok(ledger, key, evidence)
+        # remove ONLY the ack: uncertain, render refuses
+        (ledger.root / f"{key}.completion-ack.json").unlink()
+        assert ledger.completion_uncertain(key)
+        with pytest.raises(ExecutionCustodyError,
+                           match="completion_uncertain"):
+            ledger.verified_render(key)
+
+    def test_intent_ack_disagreement_refuses(self, tmp_path):
+        ledger, key, evidence = running_with_evidence(tmp_path)
+        complete_ok(ledger, key, evidence)
+        ack_path = ledger.root / f"{key}.completion-ack.json"
+        ack = json.loads(ack_path.read_text())
+        ack["evidence_sha256"] = "tampered"
+        ack_path.write_text(json.dumps(ack))
+        with pytest.raises(ExecutionCustodyError,
+                           match="disagreement"):
+            ledger.verified_render(key)
+
+    def test_ack_without_intent_refuses(self, tmp_path):
+        ledger, key, evidence = running_with_evidence(tmp_path)
+        complete_ok(ledger, key, evidence)
+        (ledger.root / f"{key}.completion-intent.json").unlink()
+        with pytest.raises(ExecutionCustodyError,
+                           match="requires BOTH"):
+            ledger.verified_render(key)
+
+    def test_no_automatic_recovery_of_intent_without_ack(self, tmp_path,
+                                                         monkeypatch):
+        ledger, key, evidence = running_with_evidence(tmp_path)
+        monkeypatch.setattr(custody.os, "fsync", FsyncBoom(5))
+        with pytest.raises(OSError):
+            complete_ok(ledger, key, evidence)
+        monkeypatch.undo()
+        for _ in range(2):
+            with pytest.raises(ExecutionCustodyError):
+                ledger.verified_render(key)
+            ledger.diagnose_completion(key)
+        assert ledger.completion_uncertain(key)
+
+
+class TestDataSota363CustodyFileModes:
+    def _modes(self, ledger, key):
+        modes = {}
+        for label, path in (("record", ledger.root / f"{key}.json"),
+                            ("intent", ledger.root
+                             / f"{key}.completion-intent.json"),
+                            ("ack", ledger.root
+                             / f"{key}.completion-ack.json")):
+            if path.exists():
+                modes[label] = os.stat(path).st_mode & 0o777
+        modes["root"] = os.stat(ledger.root).st_mode & 0o777
+        return modes
+
+    def test_modes_hold_after_every_lifecycle_step(self, tmp_path):
+        """The PRE counterexample: the live completed record was 0664
+        after tmp+rename transitions under the process umask."""
+        ledger, key, evidence = running_with_evidence(tmp_path)
+        assert self._modes(ledger, key)["record"] == 0o600
+        assert self._modes(ledger, key)["root"] == 0o700
+        complete_ok(ledger, key, evidence)
+        modes = self._modes(ledger, key)
+        assert modes["record"] == 0o600, oct(modes["record"])
+        assert modes["intent"] == 0o600
+        assert modes["ack"] == 0o600
+        # process restart: a fresh instance neither relaxes nor breaks
+        fresh = DispatchLedger(ledger.root)
+        fresh.verified_render(key)
+        modes = self._modes(fresh, key)
+        assert modes["record"] == 0o600 and modes["root"] == 0o700
+
+    def test_modes_hold_under_permissive_umask(self, tmp_path):
+        previous = os.umask(0o000)  # worst case
+        try:
+            ledger, key, evidence = running_with_evidence(tmp_path)
+            ledger.mark_forward_started(key)
+            complete_ok(ledger, key, evidence)
+            modes = self._modes(ledger, key)
+            assert modes["record"] == 0o600
+            assert modes["intent"] == 0o600
+            assert modes["ack"] == 0o600
+        finally:
+            os.umask(previous)

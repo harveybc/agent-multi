@@ -1,0 +1,21 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-362..363",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "0ebd32d080e89b6123d20365c3b6ab67236edc2b",
+ "cases": {
+  "363": {
+   "claim": "ledger record mode drifts 0600 -> 0664 on atomic transition (umask tmp+rename)",
+   "mode_after_reserve": "0o600",
+   "mode_after_transition": "0o664",
+   "live_completed_record_mode": "0o664",
+   "verdict": "REPRODUCED"
+  },
+  "362": {
+   "claim": "post-unlink marker restoration is best-effort and NOT itself file/dir-fsynced; destructive marker removal makes crash persistence ambiguous",
+   "restore_uses_plain_open_no_fsync": true,
+   "verdict": "REPRODUCED (structural; cited from the acceptance audit)"
+  }
+ }
+}
