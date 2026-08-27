@@ -1,0 +1,18 @@
+{
+ "schema": "agent_multi.conflict_calibration_predeclaration.v1",
+ "order": "post-transfer correction order C4 (DATA-SOTA-368)",
+ "declared_before_execution": true,
+ "budget": {"epochs": 8, "max_windows": 2400,
+  "runs": "5 solos + 1 joint, identical budget, identical frozen train-tail probe (seeded)"},
+ "reported_per_epoch_per_family": [
+  "pairwise cosine on the frozen probe: sign frequency, median, lower quartile (p25), max consecutive-negative persistence",
+  "weighted gradient norm per objective (effective_weight x probe grad norm)",
+  "per-objective PROBE loss in solo vs joint training",
+  "representation variance and contrastive effective negatives"],
+ "disposition_rule_fixed_before_the_run": {
+  "TRANSIENT_DISAGREEMENT": "pair negative-sign frequency < 0.5 OR median cosine >= -0.3",
+  "PERSISTENT_TENSION_NO_HARM": "sign frequency >= 0.6 AND median < -0.3, AND neither objective of the pair degrades (joint final probe loss <= 1.2 x its solo final probe loss)",
+  "MATERIAL_CONFLICT_DEGRADATION": "an objective's joint final probe loss > 1.2 x its solo final probe loss AND (its weighted-gradient share < 1/5 of the pair partner in >= half the epochs OR a pair median < -0.5 with sign frequency >= 0.75)",
+  "DOMINANCE": "one objective's weighted gradient norm > 5x EVERY other objective in >= 6 of 8 epochs",
+  "note": "monitor results are NEVER consulted; no threshold retuning after the run; the disposition names outcomes, it does not auto-remove objectives — removal stays with Musashi"}
+}
