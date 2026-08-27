@@ -169,6 +169,14 @@ def synthetic_csv(path: Path, hours: int = 400,
         frame["f2"] = np.asarray(frame["f2"], dtype=float)
         frame["f2"][nan_at] = np.nan
     frame["CLOSE"] = close
+    open_ = np.concatenate([[close[0]], close[:-1]])
+    body_max = np.maximum(open_, close)
+    body_min = np.minimum(open_, close)
+    frame["OPEN"] = open_
+    frame["HIGH"] = body_max * (1 + np.abs(
+        rng.normal(0, 0.002, hours)))
+    frame["LOW"] = body_min * (1 - np.abs(
+        rng.normal(0, 0.002, hours)))
     pd.DataFrame(frame).to_csv(path, index=False)
     return stamps
 

@@ -1,0 +1,49 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-364..368",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "4997594cbd29380ed8e252eecd5bf76b4211298f",
+ "cases": {
+  "364": {
+   "claim": "close-only labels miss intrabar (HIGH/LOW) barrier touches that the executable envelope trades",
+   "scenario": "HIGH[a+4]=130 wick through the upper barrier; close returns to ~100",
+   "close_only_label": 2,
+   "close_only_meaning": "neither",
+   "envelope_semantics": "the deployed bracket triggers intrabar on HIGH/LOW: this is a REAL upper hit",
+   "same_bar_collision": "structurally unreachable with one close per bar (audit confirmed)",
+   "verdict": "REPRODUCED: real trade labelled 'neither' (false negative)"
+  },
+  "365": {
+   "claim": "mechanics gates consume monitor-probe facts: the monitor governs objective acceptance",
+   "screen_reads_monitor_fit_tail_for_gates": true,
+   "runner_grad_diagnostics_on_monitor_probe": true,
+   "verdict": "REPRODUCED (structural): collapse + gradient gates read monitor_fit_tail/monitor-probe diagnostics"
+  },
+  "366": {
+   "claim": "aggregate class check passes although horizon 1 is CONSTANT",
+   "aggregate_distribution": {
+    "0": 50,
+    "1": 30,
+    "2": 120
+   },
+   "aggregate_classes": 3,
+   "horizon_0_classes": 1,
+   "current_gate_would_accept": true,
+   "verdict": "REPRODUCED: (N,H) flattened; per-horizon degeneracy invisible"
+  },
+  "367": {
+   "claim": "paired genesis bound to prose, not a real sealed generation",
+   "pretrain_source_field": "the five-objective o2022 generation ACCEPTED by Musashi's audit of this order; bound by it",
+   "contains_generation_digest": false,
+   "verdict": "REPRODUCED: templates, not launch identities"
+  },
+  "368": {
+   "claim": "2 epochs x 1200 windows cannot establish non-persistence; the all-epochs<-0.8 rule misses stable ~-0.7 conflicts",
+   "epochs_in_real_screen": 2,
+   "windows": 1200,
+   "worst_pair": "returns_momentum reconstruction|volatility min -0.71648 mean -0.5419",
+   "verdict": "REPRODUCED (cited from the audit's independent verification)"
+  }
+ }
+}

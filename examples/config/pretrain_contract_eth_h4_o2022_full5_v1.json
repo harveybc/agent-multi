@@ -324,7 +324,14 @@
    "lower_mult": 2.0,
    "same_bar_collision": "conservative_adverse_first",
    "class_weights_from": "calibration_only",
-   "label_classes": "0=first upper hit, 1=first lower hit, 2=neither/censored"
+   "label_classes": "0=first upper hit, 1=first lower hit, 2=neither/censored",
+   "ohlc_columns": {
+    "open": "OPEN",
+    "high": "HIGH",
+    "low": "LOW",
+    "close": "CLOSE"
+   },
+   "label_semantics": "EXECUTABLE intrabar first-touch by HIGH/LOW (DATA-SOTA-364); same-bar collision adverse-first is REACHABLE"
   }
  },
  "objective_balancing": {

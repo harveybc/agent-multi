@@ -262,9 +262,11 @@ def main() -> int:
     barrier_labels_all = None
     barrier_class_weights = None
     if barrier_spec:
+        ohlc = barrier_spec["ohlc_columns"]
         barrier_labels_all = torch.tensor(barrier_hit_labels(
-            df[close_col].to_numpy(), steps,
-            list(barrier_spec["horizons"]),
+            df[ohlc["open"]].to_numpy(), df[ohlc["high"]].to_numpy(),
+            df[ohlc["low"]].to_numpy(), df[ohlc["close"]].to_numpy(),
+            steps, list(barrier_spec["horizons"]),
             int(barrier_spec["barrier_scale"]["lookback"]),
             float(barrier_spec["upper_mult"]),
             float(barrier_spec["lower_mult"]),
@@ -347,6 +349,9 @@ def main() -> int:
     # fixed masks: monitor (reporting) and calibration (weight fitting)
     monitor_gen = torch.Generator().manual_seed(parsed["seed"] + 2)
     calibration_gen = torch.Generator().manual_seed(parsed["seed"] + 3)
+    # DATA-SOTA-365: the MECHANICS PROBE is a frozen TRAIN-TAIL slice —
+    # every mechanics gate consumes it; the monitor stays descriptive
+    probe_gen = torch.Generator().manual_seed(parsed["seed"] + 4)
     batch_size = parsed["batch_size"]
     n_train = len(train_idx)
     epoch_generations_this_invocation = 0
@@ -411,6 +416,10 @@ def main() -> int:
         calibration_mask = sample_span_mask(
             len(calibration_idx), window, mask_ratio, mask_span,
             calibration_gen)
+        probe_idx = train_idx[-batch_size:]
+        probe_windows = branch_windows[probe_idx]
+        probe_mask = sample_span_mask(
+            len(probe_idx), window, mask_ratio, mask_span, probe_gen)
         last_diagnostics = {}
 
         def objective_losses(values, mask, idx):
@@ -446,22 +455,38 @@ def main() -> int:
             return losses
 
         def monitor_report():
+            """DESCRIPTIVE ONLY (DATA-SOTA-365): losses and crossing —
+            never consumed by any mechanics gate."""
             with torch.no_grad():
                 losses = objective_losses(monitor_windows, monitor_mask,
                                           monitor_idx)
                 report = {k: round(float(v), 8)
                           for k, v in losses.items()}
-                embedding = encoder(monitor_windows)
-                report["representation_std"] = round(
-                    float(embedding.std()), 6)
                 if quant_spec:
-                    pred = heads["quantile"](embedding)
+                    pred = heads["quantile"](encoder(monitor_windows))
                     report["quantile_crossing_rate"] = \
                         quantile_crossing_rate(pred)
-                if contrastive_spec and "contrastive" in \
-                        last_diagnostics:
-                    report["contrastive_diagnostics"] = \
-                        last_diagnostics["contrastive"]
+            return report
+
+        def mechanics_probe_report():
+            """Frozen TRAIN-TAIL probe (DATA-SOTA-365): gradient,
+            collapse and contrastive facts for the mechanics gates."""
+            report = {"probe": "train_tail_frozen",
+                      "windows": int(len(probe_idx))}
+            report["gradient_diagnostics"] = \
+                objective_gradient_diagnostics(
+                    encoder, objective_losses(probe_windows, probe_mask,
+                                              probe_idx))
+            with torch.no_grad():
+                report["probe_losses"] = {
+                    k: round(float(v), 8) for k, v in objective_losses(
+                        probe_windows, probe_mask, probe_idx).items()}
+                embedding = encoder(probe_windows)
+                report["representation_std"] = round(
+                    float(embedding.std()), 6)
+            if contrastive_spec and "contrastive" in last_diagnostics:
+                report["contrastive_diagnostics"] = \
+                    last_diagnostics["contrastive"]
             return report
 
         epoch0 = 0
@@ -473,6 +498,9 @@ def main() -> int:
             monitor_gen.set_state(ckpt["monitor_generator_state"])
             calibration_gen.set_state(
                 ckpt["calibration_generator_state"])
+            if "probe_generator_state" in ckpt:
+                probe_gen.set_state(ckpt["probe_generator_state"])
+                probe_mask = ckpt["probe_mask"]
             torch.set_rng_state(ckpt["torch_rng_state"])
             # the fixed masks above were drawn from FRESH generators;
             # the checkpointed masks are the branch's real ones
@@ -524,17 +552,14 @@ def main() -> int:
                     sums[k] += float(v.detach())
                 sums["weighted_total"] += float(total.detach())
                 batches += 1
-            # DATA-SOTA-345 diagnostics on the fixed monitor probe
-            probe = monitor_windows[:batch_size]
-            probe_mask = monitor_mask[:batch_size]
-            grad_report = objective_gradient_diagnostics(
-                encoder, objective_losses(probe, probe_mask,
-                                          monitor_idx[:batch_size]))
+            probe_record = mechanics_probe_report()
             record = {"epoch": epoch,
                       "train": {k: round(v / batches, 8)
                                 for k, v in sums.items()},
                       "monitor_fit_tail": monitor_report(),
-                      "gradient_diagnostics": grad_report,
+                      "mechanics_probe": probe_record,
+                      "gradient_diagnostics":
+                          probe_record["gradient_diagnostics"],
                       "seconds": round(time.perf_counter() - t0, 3)}
             manifest["progress"][spec["name"]]["losses"].append(record)
             generation += 1
@@ -551,6 +576,8 @@ def main() -> int:
                      calibration_gen.get_state(),
                  "monitor_mask": monitor_mask,
                  "calibration_mask": calibration_mask,
+                 "probe_generator_state": probe_gen.get_state(),
+                 "probe_mask": probe_mask,
                  "torch_rng_state": torch.get_rng_state(),
                  "effective_weights": effective},
                 manifest, generation)
@@ -603,6 +630,8 @@ def main() -> int:
                  calibration_gen.get_state(),
              "monitor_mask": monitor_mask,
              "calibration_mask": calibration_mask,
+             "probe_generator_state": probe_gen.get_state(),
+             "probe_mask": probe_mask,
              "torch_rng_state": torch.get_rng_state(),
              "effective_weights": effective},
             manifest, generation)

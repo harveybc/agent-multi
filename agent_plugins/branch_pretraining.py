@@ -580,6 +580,13 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
         if str(spec.get("class_weights_from") or "") !=                 "calibration_only":
             raise PretrainContractError(
                 "class_weights_from must be 'calibration_only'")
+        ohlc = spec.get("ohlc_columns") or {}
+        if sorted(ohlc.keys()) != ["close", "high", "low", "open"] or \
+                not all(str(v).strip() for v in ohlc.values()):
+            raise PretrainContractError(
+                "barrier_hit.ohlc_columns must declare open/high/low/"
+                "close column names — labels are EXECUTABLE intrabar "
+                "first-touch, close-only data refuses (DATA-SOTA-364)")
 
     # DATA-SOTA-353 + WP1: the purge horizon is the maximum FORWARD
     # horizon across ALL objectives
@@ -619,6 +626,11 @@ def load_fit_slice(csv_path, contract: dict[str, Any]):
     columns = list(contract["feature_columns"])
     usecols = [date_col] + columns + (
         [close_col] if close_col not in columns else [])
+    barrier = (contract.get("objectives") or {}).get("barrier_hit")
+    if barrier:
+        for name in barrier["ohlc_columns"].values():
+            if name not in usecols:
+                usecols.append(name)
     df = pd.read_csv(csv_path, usecols=usecols)
     stamps = pd.to_datetime(df[date_col], utc=True)
     df = df.loc[stamps <= parsed["fit_end"]]
@@ -626,8 +638,11 @@ def load_fit_slice(csv_path, contract: dict[str, Any]):
         raise PretrainContractError(
             f"no rows at or before fit_end="
             f"{parsed['fit_end'].isoformat()}")
-    if df[columns + [close_col]].isna().any().any():
-        bad = df[columns + [close_col]].isna().any()
+    check_cols = columns + [close_col] + (
+        [c for c in barrier["ohlc_columns"].values()
+         if c not in columns + [close_col]] if barrier else [])
+    if df[check_cols].isna().any().any():
+        bad = df[check_cols].isna().any()
         raise PretrainContractError(
             f"NaNs in fit slice columns: {sorted(bad[bad].index)}")
     return df.reset_index(drop=True), columns, close_col
@@ -1008,37 +1023,79 @@ def realized_volatility_targets(close_values, steps, horizons,
     return np.stack(columns, axis=1).astype(np.float32)
 
 
-def barrier_hit_labels(close_values, steps, horizons, lookback: int,
-                       upper_mult: float, lower_mult: float,
-                       epsilon: float):
-    """(N, H) int64 labels: 0 = first UPPER hit, 1 = first LOWER hit,
-    2 = neither/censored. Barrier levels derive from PAST-ONLY trailing
-    realized vol over ``lookback`` bars ending AT the anchor a = t-1.
-    A same-bar collision (both barriers crossed by one close — with
-    close-only labeling structurally impossible, but enforced for a
-    future OHLC upgrade) resolves by the declared conservative rule:
-    ADVERSE (lower) first."""
+def validate_ohlc(open_, high, low, close):
+    """DATA-SOTA-364: OHLC must be finite, non-inverted and aligned
+    (high >= max(open, close), low <= min(open, close)) — anything else
+    REFUSES; there is NO close-only fallback."""
     import numpy as np
 
-    close = np.asarray(close_values, dtype=np.float64)
-    if (close <= 0).any():
-        raise PretrainContractError("non-positive close in fit slice")
-    log_close = np.log(close)
+    arrays = {"open": np.asarray(open_, dtype=np.float64),
+              "high": np.asarray(high, dtype=np.float64),
+              "low": np.asarray(low, dtype=np.float64),
+              "close": np.asarray(close, dtype=np.float64)}
+    n = len(arrays["close"])
+    for name, arr in arrays.items():
+        if len(arr) != n:
+            raise PretrainContractError(
+                f"misaligned OHLC: {name} has {len(arr)} rows, close "
+                f"has {n} (DATA-SOTA-364)")
+        if not np.isfinite(arr).all():
+            raise PretrainContractError(
+                f"non-finite OHLC values in {name} (DATA-SOTA-364)")
+        if (arr <= 0).any():
+            raise PretrainContractError(
+                f"non-positive OHLC values in {name}")
+    if (arrays["high"] < arrays["low"]).any():
+        raise PretrainContractError(
+            "inverted OHLC: high < low (DATA-SOTA-364)")
+    body_max = np.maximum(arrays["open"], arrays["close"])
+    body_min = np.minimum(arrays["open"], arrays["close"])
+    if (arrays["high"] < body_max).any() or             (arrays["low"] > body_min).any():
+        raise PretrainContractError(
+            "misaligned OHLC: high/low do not contain the open/close "
+            "body (DATA-SOTA-364)")
+    return arrays
+
+
+def barrier_hit_labels(open_, high, low, close, steps, horizons,
+                       lookback: int, upper_mult: float,
+                       lower_mult: float, epsilon: float):
+    """(N, H) int64 EXECUTABLE first-touch labels (DATA-SOTA-364):
+    0 = first UPPER hit, 1 = first LOWER hit, 2 = neither/censored.
+
+    Barrier scale: PAST-ONLY trailing realized vol (close-to-close)
+    over ``lookback`` bars ending at the anchor a = t-1; barriers fixed
+    at close[a]. The walk over (a, a+h] uses timestamp-aligned
+    HIGH/LOW: future HIGH >= upper hits the upper barrier, future LOW
+    <= lower hits the lower barrier — exactly how the shared execution
+    envelope triggers intrabar (gap-throughs included, since
+    high >= open). Both barriers inside ONE bar resolve by the declared
+    conservative rule: ADVERSE (lower) first. Close-only data REFUSES
+    — no fallback."""
+    import numpy as np
+
+    arrays = validate_ohlc(open_, high, low, close)
+    close_arr = arrays["close"]
+    log_close = np.log(close_arr)
     returns = np.diff(log_close)
     anchor = np.asarray(steps) - 1
     trailing = np.stack(
         [returns[anchor - lookback + i] for i in range(lookback)],
         axis=1)
     scale = np.sqrt((trailing ** 2).mean(axis=1)) + epsilon
-    upper_level = close[anchor] * (1.0 + upper_mult * scale)
-    lower_level = close[anchor] * (1.0 - lower_mult * scale)
+    upper_level = close_arr[anchor] * (1.0 + upper_mult * scale)
+    lower_level = close_arr[anchor] * (1.0 - lower_mult * scale)
     n = len(anchor)
-    labels = np.full((n, len(horizons)), 2, dtype=np.int64)
     max_h = max(horizons)
-    future = np.stack([close[anchor + i] for i in range(1, max_h + 1)],
-                      axis=1)  # (N, max_h)
-    upper_hit = future >= upper_level[:, None]
-    lower_hit = future <= lower_level[:, None]
+    future_high = np.stack(
+        [arrays["high"][anchor + i] for i in range(1, max_h + 1)],
+        axis=1)
+    future_low = np.stack(
+        [arrays["low"][anchor + i] for i in range(1, max_h + 1)],
+        axis=1)
+    upper_hit = future_high >= upper_level[:, None]
+    lower_hit = future_low <= lower_level[:, None]
+    labels = np.full((n, len(horizons)), 2, dtype=np.int64)
     for row in range(n):
         first_upper = np.argmax(upper_hit[row]) if upper_hit[row].any() \
             else max_h + 1
@@ -1049,7 +1106,7 @@ def barrier_hit_labels(close_values, steps, horizons, lookback: int,
             lo = first_lower if first_lower < h else max_h + 1
             if up == max_h + 1 and lo == max_h + 1:
                 labels[row, col] = 2
-            elif lo <= up:  # conservative_adverse_first on collision
+            elif lo <= up:  # same-bar collision: adverse-first
                 labels[row, col] = 1
             else:
                 labels[row, col] = 0

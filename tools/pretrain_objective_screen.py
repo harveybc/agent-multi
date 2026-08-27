@@ -53,47 +53,76 @@ def run_runner(contract_file: Path, out_dir: Path, epochs: int,
 
 
 def target_degeneracy(contract: dict, data_csv: Path) -> dict:
-    """Reject constant targets BEFORE training: compute target spread
-    per forward-looking objective on the eligible steps."""
+    """DATA-SOTA-365/366: target-support gates consume the CALIBRATION
+    partition ONLY, per horizon, with a PREDECLARED minimum-support
+    rule based on calibration size — aggregation across horizons is
+    forbidden."""
+    import math
+
     import numpy as np
 
     from agent_plugins.branch_pretraining import (
         barrier_hit_labels, build_step_index, forward_log_return_targets,
-        load_fit_slice, realized_volatility_targets, validate_contract)
+        load_fit_slice, realized_volatility_targets, three_way_split,
+        validate_contract)
     parsed = validate_contract(contract)
     df, _cols, close_col = load_fit_slice(data_csv, contract)
     steps = build_step_index(len(df), parsed["warmup_bars"],
                              parsed["window_stride"],
                              parsed["max_horizon_all_objectives"],
                              contract.get("max_windows"))
+    _train, calibration, _monitor, _purged = three_way_split(
+        steps, parsed["calibration_fraction"],
+        parsed["monitor_fraction"],
+        parsed["max_horizon_all_objectives"])
     close = df[close_col].to_numpy()
-    report = {}
+    n_calibration = len(calibration)
+    min_support = max(10, math.ceil(0.01 * n_calibration))
+    report = {"support_partition": "calibration_only",
+              "n_calibration": n_calibration,
+              "predeclared_min_support_per_class_per_horizon":
+                  f"max(10, ceil(0.01*n_calibration)) = {min_support}",
+              "rejections": []}
     objectives = contract["objectives"]
     if "multi_horizon_quantile" in objectives:
         t = forward_log_return_targets(
-            close, steps, objectives["multi_horizon_quantile"][
-                "horizons"])
+            close, calibration,
+            objectives["multi_horizon_quantile"]["horizons"])
         report["quantile_target_std"] = round(float(np.std(t)), 8)
     if "volatility" in objectives:
         spec = objectives["volatility"]
         annualization = spec["annualization"]
         t = realized_volatility_targets(
-            close, steps, spec["horizons"], float(spec["epsilon"]),
+            close, calibration, spec["horizons"],
+            float(spec["epsilon"]),
             None if annualization == "none"
             else annualization["periods_per_year"])
         report["volatility_target_std"] = round(float(np.std(t)), 8)
     if "barrier_hit" in objectives:
         spec = objectives["barrier_hit"]
+        ohlc = spec["ohlc_columns"]
         labels = barrier_hit_labels(
-            close, steps, spec["horizons"],
+            df[ohlc["open"]].to_numpy(), df[ohlc["high"]].to_numpy(),
+            df[ohlc["low"]].to_numpy(), df[ohlc["close"]].to_numpy(),
+            calibration, spec["horizons"],
             int(spec["barrier_scale"]["lookback"]),
             float(spec["upper_mult"]), float(spec["lower_mult"]),
             float(spec["barrier_scale"]["epsilon"]))
-        distribution = {int(k): int(v) for k, v in
-                        zip(*__import__("numpy").unique(
-                            labels, return_counts=True))}
-        report["barrier_label_distribution"] = distribution
-        report["barrier_classes_present"] = len(distribution)
+        per_horizon = {}
+        for col, h in enumerate(spec["horizons"]):
+            counts = {int(k): int(v) for k, v in zip(
+                *np.unique(labels[:, col], return_counts=True))}
+            fractions = {k: round(v / n_calibration, 4)
+                         for k, v in counts.items()}
+            per_horizon[f"h{h}"] = {"counts": counts,
+                                    "fractions": fractions}
+            for cls in (0, 1, 2):
+                if counts.get(cls, 0) < min_support:
+                    report["rejections"].append(
+                        f"barrier horizon h{h}: class {cls} support "
+                        f"{counts.get(cls, 0)} < {min_support} "
+                        f"(DATA-SOTA-366)")
+        report["barrier_per_horizon"] = per_horizon
     return report
 
 
@@ -107,16 +136,19 @@ def evaluate_manifest(manifest: dict) -> dict:
                 if name != "weighted_total" and not (
                         value == value and abs(value) != float("inf")):
                     rejections.append(f"{family}: non-finite {name}")
-            monitor = record["monitor_fit_tail"]
-            if monitor.get("representation_std", 1.0) < COLLAPSE_FLOOR:
+            # DATA-SOTA-365: EVERY mechanics gate consumes the frozen
+            # TRAIN-TAIL mechanics probe; monitor_fit_tail is never
+            # read here
+            probe = record["mechanics_probe"]
+            if probe.get("representation_std", 1.0) < COLLAPSE_FLOOR:
                 rejections.append(
                     f"{family}: representation collapse "
-                    f"({monitor.get('representation_std')})")
-            contrastive = monitor.get("contrastive_diagnostics")
+                    f"({probe.get('representation_std')})")
+            contrastive = probe.get("contrastive_diagnostics")
             if contrastive and contrastive.get(
                     "projection_std", 1.0) < COLLAPSE_FLOOR:
                 rejections.append(f"{family}: projection collapse")
-            norms = record["gradient_diagnostics"]["norms"]
+            norms = probe["gradient_diagnostics"]["norms"]
             for objective, norm in norms.items():
                 if norm == 0:
                     rejections.append(
@@ -125,7 +157,8 @@ def evaluate_manifest(manifest: dict) -> dict:
         # gradient conflict: persistent across ALL epochs
         pair_history: dict[str, list] = {}
         for record in progress["losses"]:
-            for key, value in record["gradient_diagnostics"].items():
+            for key, value in record["mechanics_probe"][
+                    "gradient_diagnostics"].items():
                 if key.startswith("cosine:"):
                     pair_history.setdefault(key, []).append(value)
         conflict_table[family] = {
@@ -188,10 +221,7 @@ def main() -> int:
               "target_degeneracy": target_degeneracy(
                   contract, Path(args.data_csv)),
               "stages": {}, "rejections": []}
-    if report["target_degeneracy"].get("barrier_classes_present",
-                                       3) < 2:
-        report["rejections"].append("barrier targets degenerate "
-                                    "(<2 classes present)")
+    report["rejections"] += report["target_degeneracy"]["rejections"]
     for key, value in report["target_degeneracy"].items():
         if key.endswith("_std") and value == 0:
             report["rejections"].append(f"constant targets: {key}")
