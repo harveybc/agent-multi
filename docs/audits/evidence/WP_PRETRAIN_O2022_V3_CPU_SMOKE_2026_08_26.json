@@ -1,0 +1,722 @@
+{
+ "schema": "agent_multi.branch_pretrain.v3",
+ "order": "Data-First SOTA Multibranch @7886de39 \u2014 WP-PRETRAIN, DATA-SOTA-341..352 corrected",
+ "transfer_eligibility": "NOT_TRANSFER_ELIGIBLE_PENDING_INDEPENDENT_ACCEPTANCE",
+ "identity": {
+  "contract_path": "examples/config/pretrain_contract_eth_h4_o2022_v3.json",
+  "contract_sha256": "9f149bf02afc86ef656b6d3be2c982f8fefc66f081e1aefdc52634bb27d23c39",
+  "data_source": "dataset:ethusdt_4h_tech_stat_full_model_ready.csv@conventional-sibling-checkout",
+  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "family_ordered_digests_sha256": "58341c80ed346cdf826199b1e23aff51c8d47b8ece4940f3acd7a968be7b522f",
+  "branch_assignment_sha256": "8eb7890fff17bfb291edeb946bfcba335491fb5fe0e031e800216f5cd5c157da",
+  "library_sha256": "8eae6f87d12b94887347ef1ed96f3cb65a675a6223ec1007845c38d7d31f9ec4",
+  "runner_sha256": "c94beadb6be860c37f30cb419af767b60bdac03d88d679f6312273d0d353388b",
+  "code_commit": "9fbd181e3f3c6855151552699f0d5bfd8c870420",
+  "torch_version": "2.13.0+cu130",
+  "interpreter": "python:3.12.13@env:trading-stack",
+  "seed": 0,
+  "window_size": 32,
+  "fit_end": "2021-12-31T20:00:00+00:00",
+  "score_origin": "o2022",
+  "warmup_bars": 256,
+  "calibration_fraction": 0.15,
+  "monitor_fraction": 0.15,
+  "objective_domain": "runtime_domain_with_target_adapters",
+  "earlier_origin_decision": null,
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "preprocessor_module_sha256": "543914e0b9fa538096601d5284569e45a678768f3272acf18e2218b5100cd9ec",
+  "preprocessing_config_digest": "04c0597a7ee166d495f05965a107335462f65b55b1a4915d0d772761861fefe1",
+  "normalization_policies_digest": "54c1b291e724c445e91c20a3704f6ae2c0607486febdb8ee41a4fe57097f9a80",
+  "objective_balancing_digest": "cec1f2b7946c66aaae356a44eb3a19d408c8a9dfb76270134bc3b13136c894d7"
+ },
+ "dataset": {
+  "rows_in_fit_slice": 9319,
+  "eligible_windows": 4000,
+  "window_stride": 1,
+  "max_windows_applied": 4000,
+  "max_horizon": 12,
+  "boundary_note": "causal per-origin: rows after fit_end never loaded; targets crossing fit_end dropped"
+ },
+ "partitions": {
+  "train": {
+   "partition": "train",
+   "windows": 2800,
+   "first_step": 5308,
+   "last_step": 8107,
+   "first_observed_bar": "2020-03-03 08:00:00",
+   "last_observed_bar": "2021-06-12 20:00:00",
+   "steps_sha256": "2e9b6c865228cd19e3726dce9d5ad7068cff0b513ecda2d3395261943f411bd9"
+  },
+  "calibration": {
+   "partition": "calibration",
+   "windows": 600,
+   "first_step": 8108,
+   "last_step": 8707,
+   "first_observed_bar": "2021-06-13 00:00:00",
+   "last_observed_bar": "2021-09-20 20:00:00",
+   "steps_sha256": "c31d0aa7781aaab0278bf0b4803043f1c2ddf7728680e517d54e728154d37d8f"
+  },
+  "monitor": {
+   "partition": "monitor",
+   "windows": 600,
+   "first_step": 8708,
+   "last_step": 9307,
+   "first_observed_bar": "2021-09-21 00:00:00",
+   "last_observed_bar": "2021-12-29 20:00:00",
+   "steps_sha256": "f2c08fe645e22f0a47e2764713ec5823d3c64c4bccd388f48456b9e9ad1f1146"
+  }
+ },
+ "feature_partition": {
+  "global_ordered_digest": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "family_ordered_digests": {
+   "returns_momentum": "50051ccefdc0f8d0621d5e9b55412a06686e8f85bba0e6ffd0791f3d3dc07eec",
+   "trend_level": "be82008d128de0a4032fbe0e4a90e5e900f1cda39d86cc1f6fa90572159f3d90",
+   "volatility_distribution": "89df66887a2a8a497ab7b52b8a1a034e848a5094993b157166a1a68b46ee9b4e",
+   "oscillators": "d5473e5980b75bdb7122172d8bc473b7c31d81b5237775e96661332bb05535db",
+   "volume_flow": "d94a82b8834808d788ccbdec8483097a5f9d4b72f6e1dde4b47d16cca81bc285"
+  },
+  "coverage": {
+   "feature_count": 83,
+   "family_count": 5,
+   "assignment": {
+    "returns_momentum": [
+     "return_1",
+     "log_return_1",
+     "return_5",
+     "log_return_5",
+     "return_10",
+     "log_return_10",
+     "return_20",
+     "log_return_20",
+     "return_60",
+     "log_return_60",
+     "roc_10",
+     "roc_20",
+     "roc_60",
+     "mom_10",
+     "mom_20",
+     "statistical__log_return_1"
+    ],
+    "trend_level": [
+     "sma_10",
+     "ema_10",
+     "close_sma_ratio_10",
+     "sma_20",
+     "ema_20",
+     "close_sma_ratio_20",
+     "sma_50",
+     "ema_50",
+     "close_sma_ratio_50",
+     "sma_100",
+     "ema_100",
+     "close_sma_ratio_100",
+     "sma_200",
+     "ema_200",
+     "close_sma_ratio_200",
+     "macd",
+     "macd_signal",
+     "macd_hist",
+     "ema_cross_10_50",
+     "ema_cross_20_100",
+     "trend_slope_50",
+     "trend_strength_50",
+     "zscore_close_100"
+    ],
+    "volatility_distribution": [
+     "bb_upper",
+     "bb_middle",
+     "bb_lower",
+     "bb_width",
+     "atr_14",
+     "natr_14",
+     "hist_vol_10",
+     "hist_vol_20",
+     "hist_vol_60",
+     "roll_mean_ret_20",
+     "roll_std_ret_20",
+     "roll_skew_ret_20",
+     "roll_kurt_ret_20",
+     "roll_mean_ret_60",
+     "roll_std_ret_60",
+     "roll_skew_ret_60",
+     "roll_kurt_ret_60",
+     "roll_mean_ret_252",
+     "roll_std_ret_252",
+     "roll_skew_ret_252",
+     "roll_kurt_ret_252",
+     "realized_var_12",
+     "realized_var_48",
+     "autocorr_lag1_100",
+     "autocorr_lag5_100",
+     "sqret_autocorr_lag1_100",
+     "vol_regime_high",
+     "vol_regime_low",
+     "hurst_proxy_200"
+    ],
+    "oscillators": [
+     "rsi_7",
+     "rsi_14",
+     "rsi_21",
+     "stoch_k",
+     "stoch_d",
+     "williams_r_14",
+     "cci_14",
+     "bb_pct_b",
+     "mfi_14"
+    ],
+    "volume_flow": [
+     "obv",
+     "obv_delta_20",
+     "volume_sma_10",
+     "volume_sma_20",
+     "volume_ratio_20",
+     "vwap_60"
+    ]
+   }
+  }
+ },
+ "objectives": {
+  "masked_patch_reconstruction": {
+   "weight": 1.0,
+   "mask_ratio": 0.25,
+   "mask_span": 4
+  },
+  "multi_horizon_quantile": {
+   "weight": 1.0,
+   "horizons": [
+    1,
+    3,
+    6,
+    12
+   ],
+   "quantiles": [
+    0.1,
+    0.5,
+    0.9
+   ]
+  }
+ },
+ "objective_domain_note": "DATA-SOTA-350: encoder consumes the runtime tensor for EVERY objective; policies transform reconstruction targets only; heads are objective adapters excluded from transferred encoder weights",
+ "normalization_policies": {
+  "returns_momentum": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "trend_level": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "volatility_distribution": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "oscillators": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "volume_flow": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  }
+ },
+ "objective_balancing": {
+  "method": "inverse_initial_loss",
+  "floor": 1e-06,
+  "note": "DATA-SOTA-345: effective weight = declared / max(initial monitor loss, floor), frozen before epoch 0"
+ },
+ "cli": {
+  "argv": [
+   "pretrain_branches.py",
+   "--contract",
+   "pretrain_contract_eth_h4_o2022_v3.json",
+   "--output-dir",
+   "wp_pretrain_o2022_v3_smoke",
+   "--epochs",
+   "3",
+   "--max-windows",
+   "4000"
+  ],
+  "epochs_effective": 3
+ },
+ "progress": {
+  "returns_momentum": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 0.84631765,
+     "quantile": 0.15587638
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 1.18158944,
+     "quantile": 6.41534002
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.16772133,
+      "quantile": 0.06196424,
+      "weighted_total": 1.77728891
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.01677358,
+      "quantile": 0.04332374,
+      "representation_std": 0.563067,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.325105,
+       "quantile": 0.233022
+      },
+      "cosine:quantile|reconstruction": -0.126376
+     },
+     "seconds": 0.693
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 0.97691586,
+      "quantile": 0.03746051,
+      "weighted_total": 1.39463541
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.87561637,
+      "quantile": 0.03087669,
+      "representation_std": 0.875194,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.294826,
+       "quantile": 0.2364
+      },
+      "cosine:quantile|reconstruction": -0.079134
+     },
+     "seconds": 0.588
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.811146,
+      "quantile": 0.02762138,
+      "weighted_total": 1.13564215
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.74448931,
+      "quantile": 0.02007683,
+      "representation_std": 1.164613,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.245295,
+       "quantile": 0.244161
+      },
+      "cosine:quantile|reconstruction": -0.059038
+     },
+     "seconds": 0.566
+    }
+   ]
+  },
+  "trend_level": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.55650616,
+     "quantile": 0.44552511
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.64246453,
+     "quantile": 2.2445424
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.47670531,
+      "quantile": 0.11464062,
+      "weighted_total": 1.20604648
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.2208904,
+      "quantile": 0.04665871,
+      "representation_std": 0.993515,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.455589,
+       "quantile": 0.359978
+      },
+      "cosine:quantile|reconstruction": -0.111966
+     },
+     "seconds": 1.386
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.13820767,
+      "quantile": 0.03597961,
+      "weighted_total": 0.81201579
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.09517896,
+      "quantile": 0.03125314,
+      "representation_std": 0.992466,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.867613,
+       "quantile": 0.160781
+      },
+      "cosine:quantile|reconstruction": -0.092679
+     },
+     "seconds": 1.388
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.93886799,
+      "quantile": 0.03046984,
+      "weighted_total": 0.67158021
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.83504862,
+      "quantile": 0.03561513,
+      "representation_std": 1.000408,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.92014,
+       "quantile": 0.15951
+      },
+      "cosine:quantile|reconstruction": -0.568376
+     },
+     "seconds": 1.319
+    }
+   ]
+  },
+  "volatility_distribution": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.51752698,
+     "quantile": 0.26899379
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.65896687,
+     "quantile": 3.71755787
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.46349612,
+      "quantile": 0.08957959,
+      "weighted_total": 1.29741274
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.34368086,
+      "quantile": 0.04823226,
+      "representation_std": 0.982744,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.543522,
+       "quantile": 0.407065
+      },
+      "cosine:quantile|reconstruction": 0.057011
+     },
+     "seconds": 6.38
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.1829756,
+      "quantile": 0.03358888,
+      "weighted_total": 0.90441029
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.1903404,
+      "quantile": 0.02862189,
+      "representation_std": 0.9779,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.689626,
+       "quantile": 0.391822
+      },
+      "cosine:quantile|reconstruction": -0.391478
+     },
+     "seconds": 6.397
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 1.0061592,
+      "quantile": 0.02490537,
+      "weighted_total": 0.75561272
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.09444225,
+      "quantile": 0.02561241,
+      "representation_std": 0.987993,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.986767,
+       "quantile": 0.287032
+      },
+      "cosine:quantile|reconstruction": -0.4322
+     },
+     "seconds": 6.283
+    }
+   ]
+  },
+  "oscillators": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.55601478,
+     "quantile": 0.36805019
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.64266742,
+     "quantile": 2.71702076
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.24592286,
+      "quantile": 0.14020673,
+      "weighted_total": 1.18165863
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.0713979,
+      "quantile": 0.066666,
+      "representation_std": 0.802246,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.337026,
+       "quantile": 0.116557
+      },
+      "cosine:quantile|reconstruction": 0.001059
+     },
+     "seconds": 0.229
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.01301917,
+      "quantile": 0.05836643,
+      "weighted_total": 0.8096172
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.96713817,
+      "quantile": 0.04982297,
+      "representation_std": 0.734194,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.226814,
+       "quantile": 0.078203
+      },
+      "cosine:quantile|reconstruction": -0.135532
+     },
+     "seconds": 0.202
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.97343585,
+      "quantile": 0.04511963,
+      "weighted_total": 0.74818646
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.92031312,
+      "quantile": 0.03949316,
+      "representation_std": 0.737361,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.249598,
+       "quantile": 0.062884
+      },
+      "cosine:quantile|reconstruction": -0.033521
+     },
+     "seconds": 0.202
+    }
+   ]
+  },
+  "volume_flow": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_calibration_losses": {
+     "reconstruction": 1.16535926,
+     "quantile": 0.16768754
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.85810448,
+     "quantile": 5.96347247
+    },
+    "calibrated_on": "calibration partition only (DATA-SOTA-349)"
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.29700832,
+      "quantile": 0.1185947,
+      "weighted_total": 1.82020483
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.01865113,
+      "quantile": 0.11231024,
+      "representation_std": 0.29152,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.173187,
+       "quantile": 0.196033
+      },
+      "cosine:quantile|reconstruction": -0.739666
+     },
+     "seconds": 0.599
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.02276246,
+      "quantile": 0.05725627,
+      "weighted_total": 1.21908322
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.01332211,
+      "quantile": 0.04120941,
+      "representation_std": 0.37365,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.81711,
+       "quantile": 0.08106
+      },
+      "cosine:quantile|reconstruction": -0.18127
+     },
+     "seconds": 0.586
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.88632703,
+      "quantile": 0.03052325,
+      "weighted_total": 0.94258573
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.87997729,
+      "quantile": 0.03511545,
+      "representation_std": 0.409698,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.714629,
+       "quantile": 0.110841
+      },
+      "cosine:quantile|reconstruction": -0.729455
+     },
+     "seconds": 0.583
+    }
+   ]
+  }
+ },
+ "artifacts": {
+  "returns_momentum": {
+   "encoder_file": "branch_returns_momentum_encoder.pt",
+   "encoder_sha256": "52874a741333618f3f2be5cd1f802f674692cc6cb13704da3ead47ac9631e893",
+   "heads_file": "branch_returns_momentum_heads.pt",
+   "heads_sha256": "aa1f9526be35c67196378ff2c572f85d9144c7598bac36633252132aaa603eef",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 25376
+  },
+  "trend_level": {
+   "encoder_file": "branch_trend_level_encoder.pt",
+   "encoder_sha256": "9f53676f570623511b889dacc4a7500277d281df3167ad6e1da77683de17c6de",
+   "heads_file": "branch_trend_level_heads.pt",
+   "heads_sha256": "9bbafbcd38e4f0faf24bf84766cc4dcf7ddad93e4dbc255e4c4044e22372957f",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 18790
+  },
+  "volatility_distribution": {
+   "encoder_file": "branch_volatility_distribution_encoder.pt",
+   "encoder_sha256": "85e6c66e04bafc2953953adac119b9bf1ce4bfd54cbcbad4799aaba3a253ef39",
+   "heads_file": "branch_volatility_distribution_heads.pt",
+   "heads_sha256": "3ea39504ed91fb95c12596ef3f605c76422949f988db61be4c6d1ec906079f9f",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 19520
+  },
+  "oscillators": {
+   "encoder_file": "branch_oscillators_encoder.pt",
+   "encoder_sha256": "627b916e698ef1b502449918a2d15e2450ef76aae25993a99c30b107cf952327",
+   "heads_file": "branch_oscillators_heads.pt",
+   "heads_sha256": "014132854f8272af031025e2241810824bac43160ed83a50768ad95fced400ca",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 32,
+   "parameters": 4448
+  },
+  "volume_flow": {
+   "encoder_file": "branch_volume_flow_encoder.pt",
+   "encoder_sha256": "5edf47f41f5360f76e91d03311e11bfcba18dd62b05ea6c79b25b83ea43be5a9",
+   "heads_file": "branch_volume_flow_heads.pt",
+   "heads_sha256": "b6518b56038e724b9e099697d1df8ef11725a41631e075f0864cb4e4ffbed1fd",
+   "adapters_excluded_from_transfer": true,
+   "encoder_dim": 64,
+   "parameters": 13824
+  }
+ },
+ "completed": true
+}

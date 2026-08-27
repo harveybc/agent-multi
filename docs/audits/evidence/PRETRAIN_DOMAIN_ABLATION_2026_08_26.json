@@ -1,0 +1,269 @@
+{
+ "schema": "agent_multi.pretrain_domain_ablation.v1",
+ "order": "DATA-SOTA-350 WP2 (order @e9af87a3)",
+ "authority": "DIAGNOSTIC_ONLY \u2014 no winner selection, no promotion, no SAC transfer",
+ "base_contract": "examples/config/pretrain_contract_eth_h4_o2022_v3.json",
+ "base_contract_sha256": "9f149bf02afc86ef656b6d3be2c982f8fefc66f081e1aefdc52634bb27d23c39",
+ "bounded": {
+  "epochs": 2,
+  "max_windows": 1200
+ },
+ "zscore_families_in_adapters_arm": [
+  "volume_flow",
+  "returns_momentum"
+ ],
+ "arms": {
+  "adapters": {
+   "contract_sha256": "7921ac08d10a5cfc37095549562ecfcf7801c858231db49e4412a3682d59e70e",
+   "objective_domain": "runtime_domain_with_target_adapters",
+   "summary": {
+    "returns_momentum": {
+     "train_final": {
+      "reconstruction": 1.45716669,
+      "quantile": 0.05497909,
+      "weighted_total": 1.25759787
+     },
+     "monitor_final": {
+      "reconstruction": 1.52600753,
+      "quantile": 0.04931038,
+      "representation_std": 0.559448,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.382735,
+       "quantile": 0.251158
+      },
+      "cosine:quantile|reconstruction": -0.200169
+     },
+     "effective_weights": {
+      "reconstruction": 0.63051832,
+      "quantile": 6.16284381
+     }
+    },
+    "trend_level": {
+     "train_final": {
+      "reconstruction": 1.33791755,
+      "quantile": 0.06503715,
+      "weighted_total": 0.91219056
+     },
+     "monitor_final": {
+      "reconstruction": 1.26103294,
+      "quantile": 0.06934591,
+      "representation_std": 0.998345,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.447444,
+       "quantile": 0.372347
+      },
+      "cosine:quantile|reconstruction": 0.293814
+     },
+     "effective_weights": {
+      "reconstruction": 0.57317534,
+      "quantile": 2.23455641
+     }
+    },
+    "volatility_distribution": {
+     "train_final": {
+      "reconstruction": 1.33025013,
+      "quantile": 0.06578751,
+      "weighted_total": 1.01983592
+     },
+     "monitor_final": {
+      "reconstruction": 1.66221344,
+      "quantile": 0.07019227,
+      "representation_std": 0.989242,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.97147,
+       "quantile": 0.848191
+      },
+      "cosine:quantile|reconstruction": 0.110109
+     },
+     "effective_weights": {
+      "reconstruction": 0.59700445,
+      "quantile": 3.43029638
+     }
+    },
+    "oscillators": {
+     "train_final": {
+      "reconstruction": 1.27387905,
+      "quantile": 0.10864343,
+      "weighted_total": 1.07459205
+     },
+     "monitor_final": {
+      "reconstruction": 1.10786235,
+      "quantile": 0.08656617,
+      "representation_std": 0.875769,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.469211,
+       "quantile": 0.209879
+      },
+      "cosine:quantile|reconstruction": 0.064794
+     },
+     "effective_weights": {
+      "reconstruction": 0.59020974,
+      "quantile": 2.97060069
+     }
+    },
+    "volume_flow": {
+     "train_final": {
+      "reconstruction": 1.50379198,
+      "quantile": 0.11766469,
+      "weighted_total": 1.6157644
+     },
+     "monitor_final": {
+      "reconstruction": 1.60970688,
+      "quantile": 0.15053035,
+      "representation_std": 0.22792,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.101985,
+       "quantile": 0.269566
+      },
+      "cosine:quantile|reconstruction": -0.229064
+     },
+     "effective_weights": {
+      "reconstruction": 0.61253388,
+      "quantile": 5.90356243
+     }
+    }
+   }
+  },
+  "single": {
+   "contract_sha256": "cfe0261f97229d68bb4798e636c6f3eb32bd1e45b82bad4e7d65c57bc56b3104",
+   "objective_domain": "single_domain_raw_targets",
+   "summary": {
+    "returns_momentum": {
+     "train_final": {
+      "reconstruction": 0.88013471,
+      "quantile": 0.05520019,
+      "weighted_total": 1.06830576
+     },
+     "monitor_final": {
+      "reconstruction": 1.0664314,
+      "quantile": 0.04940858,
+      "representation_std": 0.540625,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.419623,
+       "quantile": 0.222776
+      },
+      "cosine:quantile|reconstruction": -0.254034
+     },
+     "effective_weights": {
+      "reconstruction": 0.82727751,
+      "quantile": 6.16284381
+     }
+    },
+    "trend_level": {
+     "train_final": {
+      "reconstruction": 1.33791755,
+      "quantile": 0.06503715,
+      "weighted_total": 0.91219056
+     },
+     "monitor_final": {
+      "reconstruction": 1.26103294,
+      "quantile": 0.06934591,
+      "representation_std": 0.998345,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.447444,
+       "quantile": 0.372347
+      },
+      "cosine:quantile|reconstruction": 0.293814
+     },
+     "effective_weights": {
+      "reconstruction": 0.57317534,
+      "quantile": 2.23455641
+     }
+    },
+    "volatility_distribution": {
+     "train_final": {
+      "reconstruction": 1.33025013,
+      "quantile": 0.06578751,
+      "weighted_total": 1.01983592
+     },
+     "monitor_final": {
+      "reconstruction": 1.66221344,
+      "quantile": 0.07019227,
+      "representation_std": 0.989242,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.97147,
+       "quantile": 0.848191
+      },
+      "cosine:quantile|reconstruction": 0.110109
+     },
+     "effective_weights": {
+      "reconstruction": 0.59700445,
+      "quantile": 3.43029638
+     }
+    },
+    "oscillators": {
+     "train_final": {
+      "reconstruction": 1.27387905,
+      "quantile": 0.10864343,
+      "weighted_total": 1.07459205
+     },
+     "monitor_final": {
+      "reconstruction": 1.10786235,
+      "quantile": 0.08656617,
+      "representation_std": 0.875769,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.469211,
+       "quantile": 0.209879
+      },
+      "cosine:quantile|reconstruction": 0.064794
+     },
+     "effective_weights": {
+      "reconstruction": 0.59020974,
+      "quantile": 2.97060069
+     }
+    },
+    "volume_flow": {
+     "train_final": {
+      "reconstruction": 1.03404836,
+      "quantile": 0.11760188,
+      "weighted_total": 1.51139339
+     },
+     "monitor_final": {
+      "reconstruction": 1.32174206,
+      "quantile": 0.14868493,
+      "representation_std": 0.229904,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_final": {
+      "norms": {
+       "reconstruction": 0.213619,
+       "quantile": 0.273145
+      },
+      "cosine:quantile|reconstruction": -0.511941
+     },
+     "effective_weights": {
+      "reconstruction": 0.79021769,
+      "quantile": 5.90356243
+     }
+    }
+   }
+  }
+ }
+}

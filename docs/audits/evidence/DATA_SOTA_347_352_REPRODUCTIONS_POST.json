@@ -1,0 +1,67 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-347..352",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "9fbd181e3f3c6855151552699f0d5bfd8c870420",
+ "lts_commit": "b6bef6c6560d641110cc4b38ce818c2b3561ae64",
+ "cases": {
+  "347": {
+   "garbage_date": "REFUSED: fit_end='2021-13-45T99:99:99' is not a valid ISO-8601 timestamp: month must be in 1..12",
+   "yes_gate": "REFUSED: origin o2023 requires a typed earlier_origin_decision object \u2014 a bare string cannot mint an origin (DATA-SOTA-",
+   "full_chain_verification": "verify_earlier_origin_decision loads+digest-verifies+orders+dates the artifact (8 regressions)"
+  },
+  "348": {
+   "partial_coverage": "REFUSED: features without a branch (incomplete partition, DATA-SOTA-348): ['f3', 'f6']",
+   "reordered_family": "REFUSED: branch a features are not in canonical global column order (DATA-SOTA-348: reordered identities refuse): ['f2'",
+   "committed_v3_83_coverage": 83
+  },
+  "349": {
+   "weights_calibrated_on": "calibration partition only (DATA-SOTA-349)",
+   "partitions": {
+    "train": {
+     "windows": 2800,
+     "first_observed_bar": "2020-03-03 08:00:00",
+     "last_observed_bar": "2021-06-12 20:00:00",
+     "steps_sha256": "2e9b6c865228cd19e3726dce9d5ad7068cff0b513ecda2d3395261943f411bd9"
+    },
+    "calibration": {
+     "windows": 600,
+     "first_observed_bar": "2021-06-13 00:00:00",
+     "last_observed_bar": "2021-09-20 20:00:00",
+     "steps_sha256": "c31d0aa7781aaab0278bf0b4803043f1c2ddf7728680e517d54e728154d37d8f"
+    },
+    "monitor": {
+     "windows": 600,
+     "first_observed_bar": "2021-09-21 00:00:00",
+     "last_observed_bar": "2021-12-29 20:00:00",
+     "steps_sha256": "f2c08fe645e22f0a47e2764713ec5823d3c64c4bccd388f48456b9e9ad1f1146"
+    }
+   },
+   "monitor_role": "reporting/checkpointing only; initial_calibration_losses field replaces initial_monitor_losses"
+  },
+  "350": {
+   "encoder_input_identical_across_policies": true,
+   "adapters_excluded": "runner refuses key overlap; artifacts flag adapters_excluded_from_transfer",
+   "ablation_evidence": "docs/audits/evidence/PRETRAIN_DOMAIN_ABLATION_2026_08_26.json (diagnostic only)"
+  },
+  "351": {
+   "boom_status": "failed_unexpected",
+   "canonical_rows": 1,
+   "membership_sessions": 2,
+   "crossed_quote": "crossed_quote",
+   "zero_failure_bound": "REFUSED",
+   "verdict": "CORRECTED"
+  },
+  "352": {
+   "garbage_date": "REFUSED: vigenciadesde='garbage-date' is not a valid ISO date",
+   "inverted_interval": "REFUSED: inverted validity interval: vigencia_desde 2026-08-27 > vigencia_hasta",
+   "real_store_future_effective_guard": "TYPED_UNAVAILABLE: no TRM validity interval contains 2026-08-26 (future-effective publications are ",
+   "real_store_as_of_on_validity_day": {
+    "as_of": "2026-08-27",
+    "valor_cop_per_usd": 3118.24,
+    "vigencia_desde": "2026-08-27"
+   }
+  }
+ }
+}
