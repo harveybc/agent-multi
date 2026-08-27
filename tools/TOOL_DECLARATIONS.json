@@ -424,6 +424,13 @@
    "authority_class": "experiment_driver",
    "owner": "General Satoshi III"
   },
+  "pretrain_conflict_calibration.py": {
+   "purpose": "C4 bounded conflict calibration (DATA-SOTA-368): 5 solos + joint at the predeclared budget on the identical frozen train-tail probe; reports cosine sign-frequency/median/p25/persistence, weighted gradient norms, solo-vs-joint probe losses, representation variance, effective negatives; applies the FIXED predeclared disposition (monitor never consulted; removal authority stays with the auditor)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "pretrain_domain_ablation.py": {
    "purpose": "Bounded CPU objective-domain ablation for WP-PRETRAIN (DATA-SOTA-350): runs the executing runner under adapters vs single-domain contracts and reports losses/gradient diagnostics/representation scale; diagnostic only, selects no winner, never touches SAC",
    "lifecycle": "supported",
