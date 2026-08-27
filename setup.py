@@ -41,6 +41,14 @@ setup(
             "tft_branch=feature_branch_plugins.tft_branch:Plugin",
             "timesnet_branch=feature_branch_plugins.timesnet_branch:Plugin",
         ],
+        "pretrain_balancing.plugins": [
+            "inverse_initial_loss=pretrain_optimizer_plugins.balancing_inverse_initial_loss:Plugin",
+            "frozen_gradient_norm=pretrain_optimizer_plugins.balancing_frozen_gradient_norm:Plugin",
+        ],
+        "pretrain_combiner.plugins": [
+            "ordinary_sum=pretrain_optimizer_plugins.combiner_ordinary_sum:Plugin",
+            "pcgrad=pretrain_optimizer_plugins.combiner_pcgrad:Plugin",
+        ],
         "feature_fusion.plugins": [
             "concat_fusion=feature_fusion_plugins.concat_fusion:Plugin",
             "gated_fusion=feature_fusion_plugins.gated_fusion:Plugin",

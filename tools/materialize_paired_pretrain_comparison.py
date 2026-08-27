@@ -72,6 +72,16 @@ def main() -> int:
         raise SystemExit("REFUSED: the pretraining generation is not "
                          "completed (DATA-SOTA-367)")
     seal = _json.loads((pretrain_dir / "generation.json").read_text())
+    register_path = (REPO / "docs/audits/evidence/"
+                     "GENERATION_QUARANTINE_REGISTER.json")
+    if register_path.exists():
+        register = _json.loads(register_path.read_text())
+        entry = (register.get("entries") or {}).get(
+            seal.get("manifest_sha256"))
+        if entry:
+            raise SystemExit(
+                f"REFUSED: generation QUARANTINED as {entry['class']} "
+                f"(M0) — it can never become a treatment artifact")
     identity = generation_manifest["identity"]
     artifacts = generation_manifest["artifacts"]
     if not artifacts:

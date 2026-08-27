@@ -1,7 +1,7 @@
 {
  "schema": "agent_multi.paired_pretrain_comparison_design.v1",
  "order": "post-transfer objectives order 2026-08-27 WP3",
- "status": "MATERIALIZED_NOT_LAUNCHED \u2014 no GPU authority; Musashi dispatches the smallest informative screen",
+ "status": "REJECTED_MULTITASK_CONFLICT_DIAGNOSTIC_ONLY (M0 quarantine; preserved unchanged as failure-mode evidence)",
  "identifiability_screen": "NOT RUN \u2014 both treatment arms retained prospectively (the order permits only prospective elimination)",
  "shared_bindings": {
   "strong_config": "examples/config/project3_ethusdt_4h_sac_grouped_strong_v1.json",
@@ -24,7 +24,7 @@
     "oscillators": "ebada3d56bd78105c010db87623fedb33830058b6a8b562f01f43fab77fb0443",
     "volume_flow": "df51c8dbbcefb74893e5bdea8667a3295fb2a7499d37a5f8b4e7be20768445c8"
    },
-   "eligibility": "PAIRED_SCREEN_ONLY \u2014 pending Musashi's acceptance of the C1-C5 return; no other use"
+   "eligibility": "REJECTED_MULTITASK_CONFLICT_DIAGNOSTIC_ONLY"
   },
   "data_roles": {
    "origin": "o2022",

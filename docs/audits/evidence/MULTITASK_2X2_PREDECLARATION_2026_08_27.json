@@ -1,0 +1,28 @@
+{
+ "schema": "agent_multi.multitask_2x2_predeclaration.v1",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_MULTITASK_GRADIENT_MECHANISM_ORDER_2026_08_27 M2",
+ "declared_before_execution": true,
+ "shared": {"objectives": "the same five (full5 contract)", "seed": "contract seed 0",
+  "data": "o2022 fit slice via the executing preprocessor", "probe": "frozen train-tail (seed+4)",
+  "budget": {"epochs": 8, "max_windows": 2400},
+  "identical_within_family": "same torch seed => identical initialization; same batch generator => identical batch order"},
+ "cells": [
+  {"id": "control", "balancing": "inverse_initial_loss", "combiner": "ordinary_sum"},
+  {"id": "gradnorm_sum", "balancing": "frozen_gradient_norm", "combiner": "ordinary_sum"},
+  {"id": "invloss_pcgrad", "balancing": "inverse_initial_loss", "combiner": "pcgrad"},
+  {"id": "gradnorm_pcgrad", "balancing": "frozen_gradient_norm", "combiner": "pcgrad"}],
+ "solo_references": "computed ONCE (control settings, single objective each), shared by every cell",
+ "reported_per_cell": [
+  "objective probe-loss ratio joint/solo (final epoch, frozen probe)",
+  "weighted gradient share by objective (per epoch)",
+  "pre/post cosine distributions and projection frequency (combiner reports)",
+  "representation variance and contrastive effective negatives",
+  "runtime and peak memory (descriptive only)"],
+ "material_degradation_definition": "objective-family pair with joint/solo final probe-loss ratio > 1.2",
+ "winner_rule_lexicographic": [
+  "1) minimize the COUNT of materially degraded objective-family pairs",
+  "2) then minimize the WORST joint/solo ratio",
+  "3) then minimize the MEDIAN joint/solo ratio"],
+ "tie_tolerance": "equal counts AND ratio criteria within 0.02 -> INCONCLUSIVE (never broken by runtime)",
+ "forbidden": "monitor and economic returns are never consulted; no post-hoc threshold or weight tuning; if NO cell removes material degradation -> M3 routing ablation is materialized as a NEW experiment"
+}

@@ -80,6 +80,7 @@ BASE_CONTRACT = {
     },
     "objective_balancing": {"method": "inverse_initial_loss",
                             "floor": 1e-6},
+    "gradient_combiner": {"plugin": "ordinary_sum"},
     "partition_fractions": {"calibration": 0.2, "monitor": 0.2},
     "optimizer": {"lr": 0.001, "batch_size": 32},
     "epochs": 2, "seed": 3, "max_windows": None,

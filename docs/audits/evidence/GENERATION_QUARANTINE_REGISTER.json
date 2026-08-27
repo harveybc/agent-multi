@@ -1,0 +1,26 @@
+{
+ "schema": "agent_multi.generation_quarantine_register.v1",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_MULTITASK_GRADIENT_MECHANISM_ORDER_2026_08_27 M0",
+ "entries": {
+  "ea950ecbc41800c055d951ce4aadcdf408826c88613289e616adab756741c8de": {
+   "class": "REJECTED_MULTITASK_CONFLICT_DIAGNOSTIC_ONLY",
+   "generation_number": 56,
+   "reason": "AUDIT 364-368: 4/5 families materially degraded under joint training; valid failure-mode evidence, NOT an eligible treatment artifact",
+   "genesis_records_quarantined": [
+    "c20a0ba7dd66d0358b357b27808c1c5f33eec715e7fbb1d05b2e33227c83d53f",
+    "16f2cdd8c0ed2dd3c5256579759570a65b7b74867637e09675fa344fdaba17a9",
+    "89206543c7c28f96c88203ea49a7a1566d5db71a3b8d6c855fd0c44ae0a1ad00",
+    "501edacfc7ac10bde8e9f33c71c09f059d8ecb861bbc5862e80fda9bc91e3aa3",
+    "231ea75ad11fb113ebe8e5bffb0de8e34fa50383cea9645b302d100c92134dde",
+    "b108c0d421cf66f7bdb28f807044ae911e9655fa2f9169de33f5d0a32601834d",
+    "69d051d8512d3ecbd1d4e16a48bd74b83565c7bc760edd4b1d01d1b556c601d3",
+    "a7685ab63ba0d8c06663acb05df30e9724d4407d8a65f8c484986c13a0fbd6df",
+    "cacd50d61aca20672691fbc0c54b7a29ad973aeb1904c1f8af671aab131cb9a0",
+    "373f4955a7d3a05593dd92f0f6f2e33c1db1c24c95c43c8b81783bfeb78ed7db",
+    "2be3adb85911fb73aab316999cb622674d7f1153206390a2d1f31a88e23140d2",
+    "ee819440d282faa0ef4efd1935fb04e1eb1369376e4ccacd2c378fa38ea4af47"
+   ],
+   "preservation": "sealed artifacts UNCHANGED (restricted store + committed manifest); never silently relabelled"
+  }
+ }
+}

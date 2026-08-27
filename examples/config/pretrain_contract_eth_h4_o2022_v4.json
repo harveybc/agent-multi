@@ -318,5 +318,8 @@
    "predecessor_origin_id": "o2023"
   }
  ],
- "purge_note": "DATA-SOTA-353: purge of max(horizons) steps at each partition boundary, derived mechanically; additional embargo 0 (declared)"
+ "purge_note": "DATA-SOTA-353: purge of max(horizons) steps at each partition boundary, derived mechanically; additional embargo 0 (declared)",
+ "gradient_combiner": {
+  "plugin": "ordinary_sum"
+ }
 }

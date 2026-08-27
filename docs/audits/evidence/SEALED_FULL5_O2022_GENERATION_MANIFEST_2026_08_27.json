@@ -1,7 +1,7 @@
 {
  "schema": "agent_multi.branch_pretrain.v3",
  "order": "Data-First SOTA Multibranch @7886de39 \u2014 WP-PRETRAIN, DATA-SOTA-341..352 corrected",
- "transfer_eligibility": "NOT_TRANSFER_ELIGIBLE_PENDING_INDEPENDENT_ACCEPTANCE",
+ "transfer_eligibility": "REJECTED_MULTITASK_CONFLICT_DIAGNOSTIC_ONLY (M0; evidence copy \u2014 the sealed artifact itself is preserved unchanged)",
  "identity": {
   "contract_path": "examples/config/pretrain_contract_eth_h4_o2022_full5_v1.json",
   "contract_sha256": "5e96b9d1bf88e565ac7e62ff30d911d6bc036f15e80a4df0d8c456681f85fed4",

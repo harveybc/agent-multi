@@ -213,6 +213,26 @@ def main() -> int:
             contract["objective_balancing"]),
     }
 
+    balancing_class, _ = load_plugin("pretrain_balancing.plugins",
+                                     parsed["balancing_method"])
+    combiner_class, _ = load_plugin(
+        "pretrain_combiner.plugins",
+        parsed["gradient_combiner"]["plugin"])
+    from agent_plugins.component_config import deep_merge_strict as _dm
+    combiner_params = _dm(combiner_class.plugin_params,
+                          parsed["gradient_combiner"].get("params"),
+                          path="gradient_combiner.params")
+    balancing_params = _dm(balancing_class.plugin_params,
+                           {"floor": parsed["balancing_floor"]},
+                           path="objective_balancing")
+    identity["balancing_method"] = parsed["balancing_method"]
+    identity["gradient_combiner"] = sha256_obj(
+        {"plugin": parsed["gradient_combiner"]["plugin"],
+         "params": combiner_params})
+    HEAD_MAP = {"reconstruction": "reconstruction",
+                "quantile": "quantile", "contrastive": "projection",
+                "volatility": "volatility", "barrier": "barrier"}
+
     objectives = contract["objectives"]
     rec_spec = objectives.get("masked_patch_reconstruction")
     quant_spec = objectives.get("multi_horizon_quantile")
@@ -400,9 +420,15 @@ def main() -> int:
         if barrier_spec:
             heads["barrier"] = build_barrier_head(
                 dim, len(barrier_spec["horizons"]))
-        opt = torch.optim.Adam(
-            list(encoder.parameters()) + list(heads.parameters()),
-            lr=parsed["lr"])
+        # M1: STRICT head/encoder separation — projection can never
+        # mix one head into another, and the combiner touches ONLY the
+        # encoder gradients
+        encoder_parameters = [q for q in encoder.parameters()
+                              if q.requires_grad]
+        encoder_opt = torch.optim.Adam(encoder_parameters,
+                                       lr=parsed["lr"])
+        head_opt = torch.optim.Adam(heads.parameters(),
+                                    lr=parsed["lr"])
 
         branch_windows = torch.tensor(
             all_windows[:, :, ch_idx].copy())  # (N, T, C)
@@ -493,7 +519,9 @@ def main() -> int:
         if ckpt is not None and bi == start_branch:
             encoder.load_state_dict(ckpt["encoder_state"])
             heads.load_state_dict(ckpt["heads_state"])
-            opt.load_state_dict(ckpt["optimizer_state"])
+            encoder_opt.load_state_dict(
+                ckpt["encoder_optimizer_state"])
+            head_opt.load_state_dict(ckpt["head_optimizer_state"])
             gen.set_state(ckpt["generator_state"])
             monitor_gen.set_state(ckpt["monitor_generator_state"])
             calibration_gen.set_state(
@@ -510,22 +538,41 @@ def main() -> int:
             epoch0 = start_epoch
             ckpt = None
         else:
-            # DATA-SOTA-349: weights calibrate ONCE on the CALIBRATION
-            # partition; the monitor never calibrates anything.
+            # DATA-SOTA-349/M1: balancing inputs come from the
+            # CALIBRATION partition ONLY, before epoch 0, frozen.
             with torch.no_grad():
                 initial = {k: float(v) for k, v in objective_losses(
                     calibration_windows, calibration_mask,
                     calibration_idx).items()}
-            effective = balance_objective_weights(
-                initial, declared_weights, parsed["balancing_floor"])
+            calibration_norms = {}
+            cal_batch = calibration_windows[:batch_size]
+            cal_mask_batch = calibration_mask[:batch_size]
+            cal_losses = objective_losses(cal_batch, cal_mask_batch,
+                                          calibration_idx[:batch_size])
+            for name, loss in cal_losses.items():
+                grads = torch.autograd.grad(
+                    loss, encoder_parameters, retain_graph=True,
+                    allow_unused=True)
+                flat = torch.cat([g.reshape(-1) for g in grads
+                                  if g is not None])
+                calibration_norms[name] = float(flat.norm())
+            effective, balancing_provenance = balancing_class.compute(
+                declared_weights=declared_weights,
+                initial_calibration_losses=initial,
+                calibration_gradient_norms=calibration_norms,
+                params=balancing_params)
             manifest["progress"][spec["name"]]["effective_weights"] = {
                 "initial_calibration_losses": {
                     k: round(v, 8) for k, v in initial.items()},
+                "calibration_encoder_gradient_norms": {
+                    k: round(v, 8)
+                    for k, v in calibration_norms.items()},
                 "declared": declared_weights,
                 "effective": {k: round(v, 8)
                               for k, v in effective.items()},
+                "balancing_provenance": balancing_provenance,
                 "calibrated_on": "calibration partition only "
-                                 "(DATA-SOTA-349)"}
+                                 "(DATA-SOTA-349/M1)"}
 
         manifest["progress"][spec["name"]]["status"] = "training"
         for epoch in range(epoch0, epochs):
@@ -533,6 +580,9 @@ def main() -> int:
             perm = torch.randperm(n_train, generator=gen)
             sums = {k: 0.0 for k in declared_weights}
             sums["weighted_total"] = 0.0
+            combiner_sums = {"projections": 0, "pre_dot": 0.0,
+                             "post_dot": 0.0, "pre_negative": 0,
+                             "post_negative": 0}
             batches = 0
             for lo in range(0, n_train, batch_size):
                 sel = train_idx[perm[lo:lo + batch_size].numpy()]
@@ -545,9 +595,49 @@ def main() -> int:
                     raise PretrainContractError(
                         f"non-finite loss in {spec['name']} epoch "
                         f"{epoch}: typed run failure")
-                opt.zero_grad()
-                total.backward()
-                opt.step()
+                encoder_opt.zero_grad()
+                head_opt.zero_grad()
+                weighted_flat = {}
+                for name, loss in losses.items():
+                    weighted = effective[name] * loss
+                    head_module = heads[HEAD_MAP[name]]
+                    head_grads = torch.autograd.grad(
+                        weighted, list(head_module.parameters()),
+                        retain_graph=True, allow_unused=True)
+                    for parameter, grad in zip(
+                            head_module.parameters(), head_grads):
+                        if grad is not None:
+                            parameter.grad = (grad if parameter.grad
+                                              is None else
+                                              parameter.grad + grad)
+                    enc_grads = torch.autograd.grad(
+                        weighted, encoder_parameters,
+                        retain_graph=True, allow_unused=True)
+                    weighted_flat[name] = torch.cat(
+                        [g.reshape(-1) if g is not None
+                         else torch.zeros(q.numel())
+                         for g, q in zip(enc_grads,
+                                         encoder_parameters)])
+                combined, combine_report = combiner_class.combine(
+                    weighted_flat, combiner_params)
+                offset = 0
+                for parameter in encoder_parameters:
+                    numel = parameter.numel()
+                    parameter.grad = combined[
+                        offset:offset + numel].view_as(parameter)
+                    offset += numel
+                encoder_opt.step()
+                head_opt.step()
+                combiner_sums["projections"] += combine_report.get(
+                    "projections", 0)
+                combiner_sums["pre_dot"] += combine_report.get(
+                    "pre_dot_mean", 0.0)
+                combiner_sums["post_dot"] += combine_report.get(
+                    "post_dot_mean", 0.0)
+                combiner_sums["pre_negative"] += combine_report.get(
+                    "pre_negative_pairs", 0)
+                combiner_sums["post_negative"] += combine_report.get(
+                    "post_negative_pairs", 0)
                 for k, v in losses.items():
                     sums[k] += float(v.detach())
                 sums["weighted_total"] += float(total.detach())
@@ -556,6 +646,22 @@ def main() -> int:
             record = {"epoch": epoch,
                       "train": {k: round(v / batches, 8)
                                 for k, v in sums.items()},
+                      "gradient_combination": {
+                          "combiner":
+                              parsed["gradient_combiner"]["plugin"],
+                          "projections_per_batch": round(
+                              combiner_sums["projections"] / batches,
+                              3),
+                          "pre_dot_mean": round(
+                              combiner_sums["pre_dot"] / batches, 8),
+                          "post_dot_mean": round(
+                              combiner_sums["post_dot"] / batches, 8),
+                          "pre_negative_pairs_per_batch": round(
+                              combiner_sums["pre_negative"] / batches,
+                              3),
+                          "post_negative_pairs_per_batch": round(
+                              combiner_sums["post_negative"] / batches,
+                              3)},
                       "monitor_fit_tail": monitor_report(),
                       "mechanics_probe": probe_record,
                       "gradient_diagnostics":
@@ -569,7 +675,8 @@ def main() -> int:
                  "epochs_done_in_branch": epoch + 1,
                  "encoder_state": encoder.state_dict(),
                  "heads_state": heads.state_dict(),
-                 "optimizer_state": opt.state_dict(),
+                 "encoder_optimizer_state": encoder_opt.state_dict(),
+                 "head_optimizer_state": head_opt.state_dict(),
                  "generator_state": gen.get_state(),
                  "monitor_generator_state": monitor_gen.get_state(),
                  "calibration_generator_state":
@@ -623,7 +730,8 @@ def main() -> int:
              "epochs_done_in_branch": epochs,
              "encoder_state": encoder.state_dict(),
              "heads_state": heads.state_dict(),
-             "optimizer_state": opt.state_dict(),
+             "encoder_optimizer_state": encoder_opt.state_dict(),
+             "head_optimizer_state": head_opt.state_dict(),
              "generator_state": gen.get_state(),
              "monitor_generator_state": monitor_gen.get_state(),
              "calibration_generator_state":
@@ -643,7 +751,8 @@ def main() -> int:
                       "branch_index": len(assignment),
                       "epochs_done_in_branch": 0,
                       "encoder_state": {}, "heads_state": {},
-                      "optimizer_state": {},
+                      "encoder_optimizer_state": {},
+                      "head_optimizer_state": {},
                       "generator_state": gen.get_state(),
                       "monitor_generator_state":
                           monitor_gen.get_state(),

@@ -410,10 +410,19 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
 
     # ---- DATA-SOTA-345/349: predeclared calibration-set balancing
     balancing = contract.get("objective_balancing") or {}
-    if str(balancing.get("method") or "") != "inverse_initial_loss":
+    if str(balancing.get("method") or "") not in (
+            "inverse_initial_loss", "frozen_gradient_norm"):
         raise PretrainContractError(
             "objective_balancing.method must be 'inverse_initial_loss' "
-            "(the predeclared bounded balancing rule; DATA-SOTA-345)")
+            "(control) or 'frozen_gradient_norm' (M1 treatment) — "
+            "resolved through pretrain_balancing.plugins")
+    combiner = contract.get("gradient_combiner") or {}
+    if str(combiner.get("plugin") or "") not in ("ordinary_sum",
+                                                 "pcgrad"):
+        raise PretrainContractError(
+            "gradient_combiner.plugin must be 'ordinary_sum' or "
+            "'pcgrad' (M1; resolved through "
+            "pretrain_combiner.plugins)")
     try:
         floor = strict_real(balancing.get("floor"),
                             "objective_balancing.floor")
@@ -609,6 +618,8 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             "predecessor_origin_id": predecessor_origin_id,
             "objective_domain": domain,
             "balancing_floor": floor,
+            "balancing_method": str(balancing["method"]),
+            "gradient_combiner": dict(combiner),
             "max_horizon_all_objectives": max(all_horizons),
             "normalization_policies": parsed_policies,
             "partition": partition}

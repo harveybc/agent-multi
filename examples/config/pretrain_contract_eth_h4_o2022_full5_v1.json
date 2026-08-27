@@ -371,5 +371,8 @@
    "predecessor_origin_id": "o2023"
   }
  ],
- "purge_note": "purge = max forward horizon across ALL objectives (12), derived mechanically; additional embargo 0 (declared)"
+ "purge_note": "purge = max forward horizon across ALL objectives (12), derived mechanically; additional embargo 0 (declared)",
+ "gradient_combiner": {
+  "plugin": "ordinary_sum"
+ }
 }

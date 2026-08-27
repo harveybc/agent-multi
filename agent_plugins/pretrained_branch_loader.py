@@ -55,6 +55,24 @@ def verify_source(pretrain_dir: Path, repo_root: Path,
     """Run the full identity chain; returns {manifest, contract,
     parsed, partition, code_identity_report} or refuses."""
     _ckpt, manifest, _generation = load_generation(pretrain_dir)
+    # M0 quarantine (order 2026-08-27): a generation whose seal is in
+    # the quarantine register NEVER loads, whatever its manifest says
+    import hashlib as _hashlib
+
+    seal_path = pretrain_dir / "generation.json"
+    seal = json.loads(seal_path.read_text())
+    register_path = (Path(__file__).resolve().parents[1]
+                     / "docs/audits/evidence/"
+                       "GENERATION_QUARANTINE_REGISTER.json")
+    if register_path.exists():
+        register = json.loads(register_path.read_text())
+        entry = (register.get("entries") or {}).get(
+            seal.get("manifest_sha256"))
+        if entry:
+            raise TransferLoadError(
+                f"generation QUARANTINED as {entry['class']}: "
+                f"{entry.get('reason', '')[:80]} — loading refused "
+                f"(M0)")
     identity = manifest.get("identity") or {}
     contract_path = repo_root / str(identity.get("contract_path") or "")
     if not contract_path.is_file():
