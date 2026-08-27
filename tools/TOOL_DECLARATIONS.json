@@ -228,6 +228,13 @@
    "authority_class": "discovery",
    "owner": "General Satoshi III"
   },
+  "load_pretrained_branches_smoke.py": {
+   "purpose": "ONE bounded CPU transfer-loader smoke: full sealed-identity chain verification, encoder-only strict load by named family digest, adapter/optimizer exclusion, bit parity by re-serialization, one finite forward on the real GymFxEnv observation; MECHANICS_ONLY_NOT_ECONOMICALLY_ELIGIBLE, never GPU/economics/promotion",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "m0_l1_boundary_action_replay.py": {
    "purpose": "Same-artifact threshold replay diagnostic (WP2 order 2026-08-11 \u00a76; roles corrected per finding 224): flat-hold replay of the sealed D2 post-easy artifact and the D0 anchor over the APPROVED nested evidence roles \u2014 train_monitor 2022 and inner_validation 2023, 2190 scored + 256 context rows each, pinned per-role CSV shas verified before facts \u2014 with the forced-hold context prefix excluded from every scored fact; deterministic raw actions with thresholds 0.0/0.1 applied analytically to one hashed scored action vector; typed outcomes decide whether the 0.1 deadband exposes a pre-existing collapse or causes mapping collapse with variation retained; legacy 42-row/2196-row outputs under boundary_action_replay_20260811 are preserved read-only (writes there refuse); corrected outputs default to boundary_action_replay_nested_20260812; no learning, no selection, never decision-eligible",
    "lifecycle": "supported",
