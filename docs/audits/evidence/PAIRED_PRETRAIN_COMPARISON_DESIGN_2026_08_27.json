@@ -1,0 +1,283 @@
+{
+ "schema": "agent_multi.paired_pretrain_comparison_design.v1",
+ "order": "post-transfer objectives order 2026-08-27 WP3",
+ "status": "MATERIALIZED_NOT_LAUNCHED \u2014 no GPU authority; Musashi dispatches the smallest informative screen",
+ "identifiability_screen": "NOT RUN \u2014 both treatment arms retained prospectively (the order permits only prospective elimination)",
+ "shared_bindings": {
+  "strong_config": "examples/config/project3_ethusdt_4h_sac_grouped_strong_v1.json",
+  "strong_config_sha256": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
+  "architecture_digest": "fda91f3706c82c2c7af18b5312a73fcc6350be6b3f6c1151b8b0aff6278a4da5",
+  "expected_output_dim": 96,
+  "pretrain_contract": "examples/config/pretrain_contract_eth_h4_o2022_full5_v1.json",
+  "pretrain_contract_sha256": "03775e19ebacce29d51c07d2663f5ef6154c4cc001aa55fc52619ca6f0e196a2",
+  "pretrain_source": "the five-objective o2022 generation ACCEPTED by Musashi's audit of this order; bound by its generation seal digest at dispatch time \u2014 never an unaudited run",
+  "data_roles": {
+   "origin": "o2022",
+   "fit_end": "2021-12-31T20:00:00",
+   "scored_year": "2022 (trial ledger only)",
+   "development_outer_2024": "UNTOUCHED",
+   "sealed_2025": "STRUCTURALLY_UNAVAILABLE"
+  },
+  "observation_authority": {
+   "require_observation_declaration": true,
+   "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+   "window_size": 32
+  },
+  "execution_envelope": {
+   "source": "ALPACA-frozen o2022 envelope from the B4 causal calibration (ATR 3.0/6.0), shared_execution_envelope plugin",
+   "cost_manifest": "examples/config/cost_manifest_eth_h4_v2.json",
+   "cost_contract": "alpaca_ethusd ~30.5bp/side (sole G1-eligible economy)",
+   "headroom": 0.0071
+  },
+  "sac": {
+   "learning_rate": 0.0003,
+   "policy": "MultiInputPolicy",
+   "budget_total_timesteps": 260000,
+   "stopping": "early patience 40 evaluations on the in-trial monitor; no monitor-based weight/architecture selection",
+   "train_seed": "per arm-seed cell"
+  },
+  "evaluation": {
+   "primary_endpoint": "risk-adjusted scored-2022 return: mean per-bar log return / std of per-bar log returns (annualized sqrt(2190)), computed ONCE per arm-seed through the trial ledger",
+   "paired_effect": "mean over seeds of (treatment - control)",
+   "dispersion": "IQR of the paired differences across seeds"
+  }
+ },
+ "predeclared": {
+  "minimum_activity": ">= 12 position changes in the scored year, else the cell is ACTIVITY_REFUSED (excluded, reported)",
+  "constant_policy_refusal": "std of raw actions over the scored year < 1e-4 refuses the cell",
+  "dead_actor_refusal": "finding-235 family: zero action variance across distinct observations refuses the cell",
+  "inconclusive": "|paired effect| < 0.5 * std of paired differences, OR >= 2 seeds refused in any arm -> outcome INCONCLUSIVE; no reseeding, no post-hoc endpoint change",
+  "no_selection": "no outer-2024/sealed-2025 access; no monitor-driven weight choice; endpoints frozen by this design before any dispatch"
+ },
+ "arms": {
+  "control_random_init": {
+   "encoder_init": "random (seeded)",
+   "temporal_branches_trainable": true
+  },
+  "pretrained_frozen": {
+   "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+   "temporal_branches_trainable": false
+  },
+  "pretrained_finetuned": {
+   "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+   "temporal_branches_trainable": true
+  }
+ },
+ "seeds": [
+  101,
+  202,
+  303,
+  404
+ ],
+ "arm_order_counterbalanced": {
+  "101": [
+   "control_random_init",
+   "pretrained_frozen",
+   "pretrained_finetuned"
+  ],
+  "202": [
+   "pretrained_frozen",
+   "pretrained_finetuned",
+   "control_random_init"
+  ],
+  "303": [
+   "pretrained_finetuned",
+   "control_random_init",
+   "pretrained_frozen"
+  ],
+  "404": [
+   "control_random_init",
+   "pretrained_finetuned",
+   "pretrained_frozen"
+  ]
+ },
+ "trial_ledger": [
+  {
+   "trial_id": "control_random_init_s101",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "control_random_init",
+    "seed": 101,
+    "execution_position": 0,
+    "mechanism": {
+     "encoder_init": "random (seeded)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "1c6484a9ba187170126e5a7953a8a46fe05872a3a05d2b211da8a7d089729a1c"
+  },
+  {
+   "trial_id": "pretrained_frozen_s101",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_frozen",
+    "seed": 101,
+    "execution_position": 1,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": false
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "a9c4930f7390cd949b22a86164850d76375659ebb1d8e27d77267fdafa185aab"
+  },
+  {
+   "trial_id": "pretrained_finetuned_s101",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_finetuned",
+    "seed": 101,
+    "execution_position": 2,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "df9fdd93a7ec8b2c4d74af84dbe09408f6e790ae361864d16203b05622ac408b"
+  },
+  {
+   "trial_id": "pretrained_frozen_s202",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_frozen",
+    "seed": 202,
+    "execution_position": 0,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": false
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "4bad3836e23f351936963710ca041b71e45acbbe435beaac27025187ce21b9d6"
+  },
+  {
+   "trial_id": "pretrained_finetuned_s202",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_finetuned",
+    "seed": 202,
+    "execution_position": 1,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "4e3d6a70b42b36a09de5d017b3982f8116361402ba1303ecfba0fdba81a18c19"
+  },
+  {
+   "trial_id": "control_random_init_s202",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "control_random_init",
+    "seed": 202,
+    "execution_position": 2,
+    "mechanism": {
+     "encoder_init": "random (seeded)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "0c52fdf73cc8fe82086686d0d3f700f446d6e7c1f6357ab63bd1e1d9b89aa1c4"
+  },
+  {
+   "trial_id": "pretrained_finetuned_s303",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_finetuned",
+    "seed": 303,
+    "execution_position": 0,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "3c5052f70774ad17cbb5092338543192c4d257bb5de381b821995ab221347b5a"
+  },
+  {
+   "trial_id": "control_random_init_s303",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "control_random_init",
+    "seed": 303,
+    "execution_position": 1,
+    "mechanism": {
+     "encoder_init": "random (seeded)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "787e0d243dede14e29d665242e58b82fc775e6e881afdf1d72fb5eb29a81417b"
+  },
+  {
+   "trial_id": "pretrained_frozen_s303",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_frozen",
+    "seed": 303,
+    "execution_position": 2,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": false
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "caa6aaebeee99bff7d8e5d9f7d115c78ebd0e513257cc29b94e547893e77948c"
+  },
+  {
+   "trial_id": "control_random_init_s404",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "control_random_init",
+    "seed": 404,
+    "execution_position": 0,
+    "mechanism": {
+     "encoder_init": "random (seeded)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "dcace0098fb0b4f8550c70cb27b71212a144f94b5bfa249d3903103e64b10bfd"
+  },
+  {
+   "trial_id": "pretrained_finetuned_s404",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_finetuned",
+    "seed": 404,
+    "execution_position": 1,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": true
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "e5d6b3b2d2fecd8b8e56292c676a1fed6b07db4dffab589b96102f94776ba0c3"
+  },
+  {
+   "trial_id": "pretrained_frozen_s404",
+   "genesis": {
+    "schema": "agent_multi.paired_trial_genesis.v1",
+    "arm": "pretrained_frozen",
+    "seed": 404,
+    "execution_position": 2,
+    "mechanism": {
+     "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
+     "temporal_branches_trainable": false
+    },
+    "shared_bindings_sha256": "94f9f35d0defa958556139ef243b8ad104bd192722082e147011c1857f4bfdde"
+   },
+   "genesis_sha256": "5f0199472470f1232f873a02cfb2cdcee2c022a43d226f9b4901e55f1f32b4d1"
+  }
+ ],
+ "gpu_estimate": {
+  "runs": 12,
+  "basis": "P1 lineage: ~7-9 h per 2e4x2e3-step phase on one RTX-class GPU; 260k-step budget per cell",
+  "estimated_hours_per_cell": "6-10",
+  "estimated_total_gpu_hours": "72-120 (sequential on one GPU: 3-5 days; two GPUs: half)"
+ },
+ "proposed_gpu_command_NOT_LAUNCHED": "CUDA_VISIBLE_DEVICES=<assigned> PYTHONPATH=. python tools/dispatch_paired_pretrain_comparison.py --design docs/audits/evidence/PAIRED_PRETRAIN_COMPARISON_DESIGN_2026_08_27.json --pretrain-dir <accepted five-objective generation> --seed <seed> --arm <arm>   # driver to be implemented ONLY under Musashi's GPU dispatch"
+}

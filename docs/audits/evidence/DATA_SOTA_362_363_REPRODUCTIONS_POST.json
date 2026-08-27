@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-362..363",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "554cd47269d720f7fdb6772bc71a3eb22548877f",
+ "cases": {
+  "363": {
+   "filesystem_modes_after_full_lifecycle_under_umask_000": {
+    "record": "0o600",
+    "intent": "0o600",
+    "ack": "0o600",
+    "root": "0o700"
+   },
+   "verdict": "CORRECTED: fchmod 0600 on every custody file incl. tmp-before-rename; root 0700; regressions inspect actual modes after every step + restart"
+  },
+  "362": {
+   "protocol": "append-only \u2014 intent PERMANENT, separately fsynced no-clobber ACK; certainty = intent+ACK pair",
+   "intent_without_ack_render": "REFUSED: render refused: completion_uncertain \u2014 a completion acknowledgement fa",
+   "verdict": "CORRECTED: renderability requires matching intent+ACK+completed record+evidence digest; no automatic recovery"
+  }
+ }
+}

@@ -307,6 +307,13 @@
    "authority_class": "campaign_operation",
    "owner": "General Satoshi III"
   },
+  "materialize_paired_pretrain_comparison.py": {
+   "purpose": "WP3 paired random-vs-pretrained comparison design: identical strong-architecture/roles/seeds/optimizer/envelope/cost/stopping bindings, three arms (control, frozen, finetuned), four counterbalanced seeds, predeclared endpoints/refusals/INCONCLUSIVE, trial ledger, GPU estimate; MATERIALIZED_NOT_LAUNCHED, never dispatches",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "materialize_rt1a_grid.py": {
    "purpose": "Materialize the RT1-A reduced factorial grid (owner-ratified arms); MATERIALIZED_NOT_EXECUTED until gates are met",
    "lifecycle": "campaign_frozen",

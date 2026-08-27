@@ -1,0 +1,68 @@
+{
+ "schema": "agent_multi.transfer_state_key_inventory.v1",
+ "order": "post-transfer objectives order WP4 item 5",
+ "source": "five-objective joint o2022 bounded screen (restricted store, digest-bound)",
+ "families": {
+  "oscillators": {
+   "encoder_keys": 10,
+   "head_adapter_keys": 12,
+   "head_adapter_groups": [
+    "barrier",
+    "projection",
+    "quantile",
+    "reconstruction",
+    "volatility"
+   ],
+   "overlap": []
+  },
+  "returns_momentum": {
+   "encoder_keys": 18,
+   "head_adapter_keys": 12,
+   "head_adapter_groups": [
+    "barrier",
+    "projection",
+    "quantile",
+    "reconstruction",
+    "volatility"
+   ],
+   "overlap": []
+  },
+  "trend_level": {
+   "encoder_keys": 35,
+   "head_adapter_keys": 12,
+   "head_adapter_groups": [
+    "barrier",
+    "projection",
+    "quantile",
+    "reconstruction",
+    "volatility"
+   ],
+   "overlap": []
+  },
+  "volatility_distribution": {
+   "encoder_keys": 8,
+   "head_adapter_keys": 12,
+   "head_adapter_groups": [
+    "barrier",
+    "projection",
+    "quantile",
+    "reconstruction",
+    "volatility"
+   ],
+   "overlap": []
+  },
+  "volume_flow": {
+   "encoder_keys": 4,
+   "head_adapter_keys": 12,
+   "head_adapter_groups": [
+    "barrier",
+    "projection",
+    "quantile",
+    "reconstruction",
+    "volatility"
+   ],
+   "overlap": []
+  }
+ },
+ "every_head_excluded": true
+}

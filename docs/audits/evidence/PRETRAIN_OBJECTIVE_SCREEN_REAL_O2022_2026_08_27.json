@@ -1,0 +1,502 @@
+{
+ "schema": "agent_multi.pretrain_objective_screen.v1",
+ "order": "post-transfer objectives order 2026-08-27 WP2",
+ "mode": "real_bounded_o2022",
+ "contract": "pretrain_contract_eth_h4_o2022_full5_v1.json",
+ "contract_sha256": "03775e19ebacce29d51c07d2663f5ef6154c4cc001aa55fc52619ca6f0e196a2",
+ "bounded": {
+  "epochs": 2,
+  "max_windows": 1200
+ },
+ "target_degeneracy": {
+  "quantile_target_std": 0.05015449,
+  "volatility_target_std": 0.66424197,
+  "barrier_label_distribution": {
+   "0": 5829,
+   "1": 5174,
+   "2": 7101
+  },
+  "barrier_classes_present": 3
+ },
+ "stages": {
+  "solo_masked_patch_reconstruction": {
+   "families": {
+    "returns_momentum": {
+     "reconstruction": 0.79636981,
+     "weighted_total": 0.63639458
+    },
+    "trend_level": {
+     "reconstruction": 1.27975208,
+     "weighted_total": 0.6869261
+    },
+    "volatility_distribution": {
+     "reconstruction": 1.23218635,
+     "weighted_total": 0.69522904
+    },
+    "oscillators": {
+     "reconstruction": 1.13859529,
+     "weighted_total": 0.72618133
+    },
+    "volume_flow": {
+     "reconstruction": 1.022788,
+     "weighted_total": 0.87782672
+    }
+   },
+   "rejections": []
+  },
+  "solo_multi_horizon_quantile": {
+   "families": {
+    "returns_momentum": {
+     "quantile": 0.06096573,
+     "weighted_total": 0.29865313
+    },
+    "trend_level": {
+     "quantile": 0.08024757,
+     "weighted_total": 0.17577134
+    },
+    "volatility_distribution": {
+     "quantile": 0.06245699,
+     "weighted_total": 0.29075565
+    },
+    "oscillators": {
+     "quantile": 0.08258487,
+     "weighted_total": 0.34969109
+    },
+    "volume_flow": {
+     "quantile": 0.14371936,
+     "weighted_total": 0.68051564
+    }
+   },
+   "rejections": []
+  },
+  "solo_hierarchical_contrastive": {
+   "families": {
+    "returns_momentum": {
+     "contrastive": 2.45355821,
+     "weighted_total": 0.54177545
+    },
+    "trend_level": {
+     "contrastive": 3.59278706,
+     "weighted_total": 0.72097732
+    },
+    "volatility_distribution": {
+     "contrastive": 1.92751687,
+     "weighted_total": 0.47980882
+    },
+    "oscillators": {
+     "contrastive": 2.68342357,
+     "weighted_total": 0.67684685
+    },
+    "volume_flow": {
+     "contrastive": 2.78614695,
+     "weighted_total": 0.62766041
+    }
+   },
+   "rejections": []
+  },
+  "solo_volatility": {
+   "families": {
+    "returns_momentum": {
+     "volatility": 1.84352333,
+     "weighted_total": 0.09455697
+    },
+    "trend_level": {
+     "volatility": 7.49857453,
+     "weighted_total": 0.37114223
+    },
+    "volatility_distribution": {
+     "volatility": 3.21223068,
+     "weighted_total": 0.18904251
+    },
+    "oscillators": {
+     "volatility": 8.23659011,
+     "weighted_total": 0.41457272
+    },
+    "volume_flow": {
+     "volatility": 16.03671428,
+     "weighted_total": 0.80736724
+    }
+   },
+   "rejections": []
+  },
+  "solo_barrier_hit": {
+   "families": {
+    "returns_momentum": {
+     "barrier": 1.07157128,
+     "weighted_total": 0.93540908
+    },
+    "trend_level": {
+     "barrier": 1.09067467,
+     "weighted_total": 0.94476942
+    },
+    "volatility_distribution": {
+     "barrier": 1.0199828,
+     "weighted_total": 0.86405694
+    },
+    "oscillators": {
+     "barrier": 1.08787537,
+     "weighted_total": 0.78585706
+    },
+    "volume_flow": {
+     "barrier": 1.0755899,
+     "weighted_total": 0.98296707
+    }
+   },
+   "rejections": []
+  },
+  "joint": {
+   "effective_weights": {
+    "returns_momentum": {
+     "reconstruction": 0.93285457,
+     "quantile": 6.09811212,
+     "contrastive": 0.23739501,
+     "volatility": 0.04966005,
+     "barrier": 0.8686314
+    },
+    "trend_level": {
+     "reconstruction": 0.52953844,
+     "quantile": 3.45576759,
+     "contrastive": 0.21266833,
+     "volatility": 0.05206742,
+     "barrier": 0.89620253
+    },
+    "volatility_distribution": {
+     "reconstruction": 0.6014997,
+     "quantile": 3.1814111,
+     "contrastive": 0.24641879,
+     "volatility": 0.05316625,
+     "barrier": 0.74993601
+    },
+    "oscillators": {
+     "reconstruction": 0.66287619,
+     "quantile": 2.49150268,
+     "contrastive": 0.23153959,
+     "volatility": 0.0532983,
+     "barrier": 0.83290023
+    },
+    "volume_flow": {
+     "reconstruction": 0.84070876,
+     "quantile": 5.58967524,
+     "contrastive": 0.23134636,
+     "volatility": 0.0533147,
+     "barrier": 0.91427774
+    }
+   },
+   "gradient_conflict_table": {
+    "returns_momentum": {
+     "cosine:barrier|contrastive": {
+      "min": 0.196142,
+      "mean": 0.209
+     },
+     "cosine:barrier|quantile": {
+      "min": 0.033617,
+      "mean": 0.0812
+     },
+     "cosine:barrier|reconstruction": {
+      "min": -0.066617,
+      "mean": -0.0512
+     },
+     "cosine:barrier|volatility": {
+      "min": -0.040238,
+      "mean": -0.0298
+     },
+     "cosine:contrastive|quantile": {
+      "min": 0.023737,
+      "mean": 0.0576
+     },
+     "cosine:contrastive|reconstruction": {
+      "min": -0.011064,
+      "mean": 0.0118
+     },
+     "cosine:contrastive|volatility": {
+      "min": -0.119183,
+      "mean": -0.1
+     },
+     "cosine:quantile|reconstruction": {
+      "min": -0.334323,
+      "mean": -0.2055
+     },
+     "cosine:quantile|volatility": {
+      "min": -0.105773,
+      "mean": 0.0023
+     },
+     "cosine:reconstruction|volatility": {
+      "min": -0.71648,
+      "mean": -0.5419
+     }
+    },
+    "trend_level": {
+     "cosine:barrier|contrastive": {
+      "min": 0.103162,
+      "mean": 0.1334
+     },
+     "cosine:barrier|quantile": {
+      "min": 0.036908,
+      "mean": 0.1714
+     },
+     "cosine:barrier|reconstruction": {
+      "min": -0.178786,
+      "mean": -0.1672
+     },
+     "cosine:barrier|volatility": {
+      "min": -0.113755,
+      "mean": -0.0921
+     },
+     "cosine:contrastive|quantile": {
+      "min": -0.080912,
+      "mean": 0.0787
+     },
+     "cosine:contrastive|reconstruction": {
+      "min": -0.242343,
+      "mean": -0.139
+     },
+     "cosine:contrastive|volatility": {
+      "min": 0.1311,
+      "mean": 0.1714
+     },
+     "cosine:quantile|reconstruction": {
+      "min": -0.222456,
+      "mean": -0.0745
+     },
+     "cosine:quantile|volatility": {
+      "min": -0.107773,
+      "mean": -0.0354
+     },
+     "cosine:reconstruction|volatility": {
+      "min": -0.489458,
+      "mean": -0.4175
+     }
+    },
+    "volatility_distribution": {
+     "cosine:barrier|contrastive": {
+      "min": -0.069121,
+      "mean": -0.0456
+     },
+     "cosine:barrier|quantile": {
+      "min": 0.1903,
+      "mean": 0.2183
+     },
+     "cosine:barrier|reconstruction": {
+      "min": -0.070656,
+      "mean": -0.0594
+     },
+     "cosine:barrier|volatility": {
+      "min": 0.106644,
+      "mean": 0.1227
+     },
+     "cosine:contrastive|quantile": {
+      "min": -0.056889,
+      "mean": -0.0333
+     },
+     "cosine:contrastive|reconstruction": {
+      "min": -0.243391,
+      "mean": -0.1844
+     },
+     "cosine:contrastive|volatility": {
+      "min": -0.099831,
+      "mean": -0.0762
+     },
+     "cosine:quantile|reconstruction": {
+      "min": -0.069519,
+      "mean": 0.0439
+     },
+     "cosine:quantile|volatility": {
+      "min": -0.219279,
+      "mean": -0.1927
+     },
+     "cosine:reconstruction|volatility": {
+      "min": -0.437802,
+      "mean": -0.386
+     }
+    },
+    "oscillators": {
+     "cosine:barrier|contrastive": {
+      "min": -0.157138,
+      "mean": -0.1223
+     },
+     "cosine:barrier|quantile": {
+      "min": -0.068949,
+      "mean": -0.0076
+     },
+     "cosine:barrier|reconstruction": {
+      "min": 0.066899,
+      "mean": 0.0736
+     },
+     "cosine:barrier|volatility": {
+      "min": -0.327692,
+      "mean": -0.2698
+     },
+     "cosine:contrastive|quantile": {
+      "min": -0.043673,
+      "mean": -0.0179
+     },
+     "cosine:contrastive|reconstruction": {
+      "min": -0.006545,
+      "mean": 0.0292
+     },
+     "cosine:contrastive|volatility": {
+      "min": -0.053741,
+      "mean": -0.0491
+     },
+     "cosine:quantile|reconstruction": {
+      "min": -0.285406,
+      "mean": -0.2228
+     },
+     "cosine:quantile|volatility": {
+      "min": -0.421444,
+      "mean": -0.3487
+     },
+     "cosine:reconstruction|volatility": {
+      "min": -0.169833,
+      "mean": -0.1433
+     }
+    },
+    "volume_flow": {
+     "cosine:barrier|contrastive": {
+      "min": 0.100949,
+      "mean": 0.1333
+     },
+     "cosine:barrier|quantile": {
+      "min": -0.00201,
+      "mean": 0.0131
+     },
+     "cosine:barrier|reconstruction": {
+      "min": -0.042904,
+      "mean": -0.0132
+     },
+     "cosine:barrier|volatility": {
+      "min": 0.074967,
+      "mean": 0.0808
+     },
+     "cosine:contrastive|quantile": {
+      "min": 0.138152,
+      "mean": 0.1413
+     },
+     "cosine:contrastive|reconstruction": {
+      "min": -0.319525,
+      "mean": -0.2742
+     },
+     "cosine:contrastive|volatility": {
+      "min": 0.097123,
+      "mean": 0.138
+     },
+     "cosine:quantile|reconstruction": {
+      "min": -0.540048,
+      "mean": -0.3955
+     },
+     "cosine:quantile|volatility": {
+      "min": 0.10317,
+      "mean": 0.2567
+     },
+     "cosine:reconstruction|volatility": {
+      "min": -0.527778,
+      "mean": -0.4231
+     }
+    }
+   },
+   "monitor_final": {
+    "returns_momentum": {
+     "reconstruction": 1.17405522,
+     "quantile": 0.0515524,
+     "contrastive": 2.72352386,
+     "volatility": 11.9753437,
+     "barrier": 1.08950758,
+     "representation_std": 0.96516,
+     "quantile_crossing_rate": 0.0,
+     "contrastive_diagnostics": {
+      "embedding_std": 0.96516,
+      "projection_std": 0.17621,
+      "effective_negatives_mean": 155.87,
+      "per_scale": {
+       "scale_2": 2.5986,
+       "scale_4": 2.662008,
+       "scale_8": 2.909964
+      }
+     }
+    },
+    "trend_level": {
+     "reconstruction": 1.23056734,
+     "quantile": 0.0554358,
+     "contrastive": 4.35647678,
+     "volatility": 11.93775082,
+     "barrier": 1.1238842,
+     "representation_std": 0.996817,
+     "quantile_crossing_rate": 0.0,
+     "contrastive_diagnostics": {
+      "embedding_std": 0.996817,
+      "projection_std": 0.173982,
+      "effective_negatives_mean": 155.87,
+      "per_scale": {
+       "scale_2": 4.33081,
+       "scale_4": 4.344005,
+       "scale_8": 4.394616
+      }
+     }
+    },
+    "volatility_distribution": {
+     "reconstruction": 1.65825236,
+     "quantile": 0.07495303,
+     "contrastive": 3.13216782,
+     "volatility": 12.56625843,
+     "barrier": 1.11277223,
+     "representation_std": 0.994522,
+     "quantile_crossing_rate": 0.0,
+     "contrastive_diagnostics": {
+      "embedding_std": 0.994522,
+      "projection_std": 0.171735,
+      "effective_negatives_mean": 155.87,
+      "per_scale": {
+       "scale_2": 3.092636,
+       "scale_4": 3.110397,
+       "scale_8": 3.19347
+      }
+     }
+    },
+    "oscillators": {
+     "reconstruction": 1.07286119,
+     "quantile": 0.11074873,
+     "contrastive": 3.31409001,
+     "volatility": 12.14384842,
+     "barrier": 1.16076541,
+     "representation_std": 0.745916,
+     "quantile_crossing_rate": 0.0,
+     "contrastive_diagnostics": {
+      "embedding_std": 0.745916,
+      "projection_std": 0.176783,
+      "effective_negatives_mean": 155.87,
+      "per_scale": {
+       "scale_2": 2.967548,
+       "scale_4": 3.212134,
+       "scale_8": 3.762588
+      }
+     }
+    },
+    "volume_flow": {
+     "reconstruction": 1.31752717,
+     "quantile": 0.14700739,
+     "contrastive": 2.84057808,
+     "volatility": 17.51648521,
+     "barrier": 1.09139657,
+     "representation_std": 0.254195,
+     "quantile_crossing_rate": 0.0,
+     "contrastive_diagnostics": {
+      "embedding_std": 0.254195,
+      "projection_std": 0.174807,
+      "effective_negatives_mean": 155.87,
+      "per_scale": {
+       "scale_2": 2.791369,
+       "scale_4": 2.820124,
+       "scale_8": 2.910242
+      }
+     }
+    }
+   },
+   "rejections": []
+  },
+  "resume_parity": {
+   "bitwise_artifact_equality": true
+  }
+ },
+ "rejections": [],
+ "verdict": "MECHANICS_PASS (no economic claim)"
+}
