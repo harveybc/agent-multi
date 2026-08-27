@@ -229,7 +229,7 @@
    "owner": "General Satoshi III"
   },
   "load_pretrained_branches_smoke.py": {
-   "purpose": "ONE bounded CPU transfer-loader smoke: full sealed-identity chain verification, encoder-only strict load by named family digest, adapter/optimizer exclusion, bit parity by re-serialization, one finite forward on the real GymFxEnv observation; MECHANICS_ONLY_NOT_ECONOMICALLY_ELIGIBLE, never GPU/economics/promotion",
+   "purpose": "Transfer-loader CPU smoke v2 (357/358 corrected): canonical materialized architecture only (no authored dicts), derived accounting with conservation assertion, durable single-use dispatch-ledger custody (atomic reservation, unique no-clobber output, completed/uncertain refuse), model-free --render mode; MECHANICS_ONLY, never GPU/economics/promotion",
    "lifecycle": "supported",
    "mutability": "mutating",
    "authority_class": "evidence_producer",

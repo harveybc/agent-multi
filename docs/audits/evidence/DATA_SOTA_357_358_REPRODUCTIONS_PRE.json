@@ -1,0 +1,95 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-357..358",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "0bb97ccf",
+ "cases": {
+  "357_hardcoded_architecture": {
+   "claim": "smoke authored state_branch/fusion instead of consuming the config",
+   "hardcoded_state_branch_in_committed_tool": true,
+   "hardcoded_fusion_in_committed_tool": true,
+   "rejected_keys_literal": true,
+   "verdict": "REPRODUCED"
+  },
+  "357_masked_architecture_mismatch": {
+   "claim": "AMPLIFICATION (self-reported): had the smoke consumed the supplied config's feature_extractor_config, the transfer would have REFUSED \u2014 the config declares the WEAK route",
+   "config_declared_branches": [
+    [
+     "returns_momentum",
+     "tcn_branch"
+    ],
+    [
+     "trend_level",
+     "transformer_branch"
+    ],
+    [
+     "oscillators",
+     "gru_branch"
+    ],
+    [
+     "volatility_distribution",
+     "tcn_branch"
+    ],
+    [
+     "volume_flow",
+     "gru_branch"
+    ]
+   ],
+   "pretrain_contract_branches": [
+    [
+     "returns_momentum",
+     "patchtst_branch"
+    ],
+    [
+     "trend_level",
+     "tft_branch"
+    ],
+    [
+     "volatility_distribution",
+     "timesnet_branch"
+    ],
+    [
+     "oscillators",
+     "tcn_branch"
+    ],
+    [
+     "volume_flow",
+     "gru_branch"
+    ]
+   ],
+   "config_fusion": {
+    "plugin": "gated_fusion",
+    "params": {
+     "common_dim": 64,
+     "output_dim": 128
+    }
+   },
+   "mismatched_families": [
+    [
+     "returns_momentum",
+     "tcn_branch"
+    ],
+    [
+     "trend_level",
+     "transformer_branch"
+    ],
+    [
+     "oscillators",
+     "gru_branch"
+    ],
+    [
+     "volatility_distribution",
+     "tcn_branch"
+    ]
+   ],
+   "verdict": "REPRODUCED: the reported family digest proved compatibility with a smoke-authored architecture, not the config's"
+  },
+  "358_no_execution_custody": {
+   "claim": "no durable single-use enforcement: the tool ran twice at 0bb97ccf's parent commit, second run overwrote the same evidence path; no ledger, no no-clobber, no run identity",
+   "ledger_exists_in_committed_tree": false,
+   "evidence_path_fixed_in_tool": true,
+   "verdict": "REPRODUCED (historical incident already disclosed in the return packet)"
+  }
+ }
+}

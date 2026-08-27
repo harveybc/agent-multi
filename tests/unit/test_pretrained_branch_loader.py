@@ -190,10 +190,19 @@ class TestEncoderOnlyStrictLoad:
     def test_clean_load_bit_parity_and_repeat_identical(self, verifiable):
         source = _verify(verifiable)
         extractor, contract = self._extractor_for(verifiable)
-        report = load_family_encoders(verifiable["dir"],
-                                      source["manifest"], contract,
-                                      extractor)
+        result = load_family_encoders(verifiable["dir"],
+                                       source["manifest"], contract,
+                                       extractor)
+        report = result["families"]
+        accounting = result["accounting"]
         assert all(f["bit_parity"] for f in report.values())
+        # DATA-SOTA-357: accounting is DERIVED with conservation
+        assert accounting["offered_tensors"] == \
+            accounting["loaded_tensors"] > 0
+        assert accounting["rejected_total_derived"] == 0
+        assert "DERIVED" in accounting["conservation"]
+        assert all(v["bytes"] > 0
+                   for v in accounting["loaded_per_family"].values())
         x = torch.randn(2, contract["window_size"], 3)
         with torch.no_grad():
             first = extractor.temporal_branches[0](x)

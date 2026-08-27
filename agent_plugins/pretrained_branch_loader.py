@@ -184,6 +184,15 @@ def refuse_non_encoder_payload(state: Any, family: str) -> None:
                 f"as transfer state — refused as a category")
 
 
+def state_accounting(state: dict[str, Any]) -> dict[str, int]:
+    import torch
+
+    tensors = [v for v in state.values() if torch.is_tensor(v)]
+    return {"tensors": len(state),
+            "bytes": int(sum(t.numel() * t.element_size()
+                             for t in tensors))}
+
+
 def strict_load_encoder(module, state: dict[str, Any],
                         family: str) -> int:
     """Strict key/shape/dtype load. Returns the number of tensors
@@ -216,17 +225,64 @@ def strict_load_encoder(module, state: dict[str, Any],
     return len(expected)
 
 
+def verify_architecture_matches_contract(materialized: dict[str, Any],
+                                         contract: dict[str, Any]
+                                         ) -> None:
+    """DATA-SOTA-357: the transfer target is the EFFECTIVE configured
+    architecture. Every temporal branch of the sealed contract must
+    equal the materialized architecture's branch EXACTLY (name, plugin,
+    params, ordered features) — a weak-route or otherwise different
+    architecture refuses instead of being silently replaced."""
+    arch_branches = materialized["architecture"]["branches"]
+    contract_branches = contract["branches"]
+    if len(arch_branches) != len(contract_branches):
+        raise TransferLoadError(
+            f"architecture/contract branch count mismatch: "
+            f"{len(arch_branches)} vs {len(contract_branches)}")
+    for index, (arch, sealed) in enumerate(zip(arch_branches,
+                                               contract_branches)):
+        for field in ("name", "plugin"):
+            if str(arch.get(field)) != str(sealed.get(field)):
+                raise TransferLoadError(
+                    f"branch[{index}] {field} mismatch: effective "
+                    f"architecture declares {arch.get(field)!r}, "
+                    f"sealed contract {sealed.get(field)!r} — the "
+                    f"pretrained encoders do NOT fit the configured "
+                    f"architecture (DATA-SOTA-357)")
+        if (arch.get("params") or {}) != (sealed.get("params") or {}):
+            raise TransferLoadError(
+                f"branch[{index}] ({arch.get('name')}) params differ "
+                f"between effective architecture and sealed contract")
+        if list(arch.get("features") or []) != list(
+                sealed.get("features") or []):
+            raise TransferLoadError(
+                f"branch[{index}] ({arch.get('name')}) ordered "
+                f"features differ between effective architecture and "
+                f"sealed contract")
+
+
 def load_family_encoders(pretrain_dir: Path, manifest: dict[str, Any],
                          contract: dict[str, Any],
                          extractor) -> dict[str, Any]:
     """Load every temporal branch encoder from its digest-bound file;
-    prove bit parity by re-serialization comparison."""
+    prove bit parity by re-serialization comparison. Returns per-family
+    reports plus a DERIVED accounting object with a conservation
+    assertion (DATA-SOTA-357: never a printed literal)."""
     import io
 
     import torch
 
     artifacts = manifest.get("artifacts") or {}
     report: dict[str, Any] = {}
+    accounting = {"offered_tensors": 0, "offered_bytes": 0,
+                  "loaded_tensors": 0, "loaded_bytes": 0,
+                  "loaded_per_family": {},
+                  "rejected_keys_by_reason": {},
+                  "excluded_categories": [
+                      "objective_heads/adapters (separate artifact, "
+                      "never offered)",
+                      "optimizer/replay/calibration payloads (typed "
+                      "category refusal before key comparison)"]}
     for index, branch in enumerate(contract["branches"]):
         family = str(branch["name"])
         entry = artifacts.get(family)
@@ -244,8 +300,15 @@ def load_family_encoders(pretrain_dir: Path, manifest: dict[str, Any],
                 f"not match the sealed family digest — a valid tensor "
                 f"under the WRONG family refuses")
         state = torch.load(encoder_path, weights_only=True)
+        offered = state_accounting(state)
+        accounting["offered_tensors"] += offered["tensors"]
+        accounting["offered_bytes"] += offered["bytes"]
         module = extractor.temporal_branches[index]
         loaded = strict_load_encoder(module, state, family)
+        accounting["loaded_tensors"] += loaded
+        accounting["loaded_bytes"] += offered["bytes"]
+        accounting["loaded_per_family"][family] = {
+            "tensors": loaded, "bytes": offered["bytes"]}
         # bit parity: re-serialize the LOADED module and compare every
         # tensor against the sealed source state
         buffer = io.BytesIO()
@@ -263,7 +326,20 @@ def load_family_encoders(pretrain_dir: Path, manifest: dict[str, Any],
             "bit_parity": True,
             "family_feature_digest": canonical_feature_digest(
                 list(branch["features"]))}
-    return report
+    rejected_total = sum(accounting["rejected_keys_by_reason"].values())
+    if accounting["offered_tensors"] != (accounting["loaded_tensors"]
+                                         + rejected_total):
+        raise TransferLoadError(
+            f"accounting conservation violated: offered "
+            f"{accounting['offered_tensors']} != loaded "
+            f"{accounting['loaded_tensors']} + rejected "
+            f"{rejected_total}")
+    accounting["conservation"] = (
+        f"offered({accounting['offered_tensors']}) == "
+        f"loaded({accounting['loaded_tensors']}) + "
+        f"rejected({rejected_total}) — DERIVED, asserted")
+    accounting["rejected_total_derived"] = rejected_total
+    return {"families": report, "accounting": accounting}
 
 
 def check_finite_forward(output, label: str = "forward output"):

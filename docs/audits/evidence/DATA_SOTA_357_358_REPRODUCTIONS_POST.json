@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-357..358",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "0bb97ccf5961100e31ba420b53cf6016d7c6a283",
+ "cases": {
+  "357": {
+   "hardcoded_dicts_in_tool": false,
+   "rejected_keys_literal_in_tool": false,
+   "weak_config_transfer": "REFUSED: branch[0] plugin mismatch: effective architecture declares 'tcn_branch', sealed contract 'patchtst_b",
+   "strong_config_architecture_digest": "fda91f3706c82c2c7af18b5312a73fcc6350be6b3f6c1151b8b0aff6278a4da5",
+   "sac_route_digest_equal": true,
+   "accounting": "DERIVED with asserted conservation (offered == loaded + rejected); regression proves it",
+   "verdict": "CORRECTED"
+  },
+  "358": {
+   "ledger": "durable single-use dispatch ledger (atomic O_EXCL reservation pre-construction, unique no-clobber non-symlink output, reserved->running->completed/failed_before_forward/interrupted; completed/uncertain refuse; renderer model-free)",
+   "historical_deviation_recorded": "ledger key 8e3e72f881d622ed state DISCLOSED_PROTOCOL_DEVIATION, first-run metrics NOT_PRESERVED",
+   "verdict": "CORRECTED"
+  }
+ }
+}
