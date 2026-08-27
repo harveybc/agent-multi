@@ -234,5 +234,7 @@
    "parameters": 13824
   }
  },
- "completed": true
+ "completed": true,
+ "status": "MECHANICS_ONLY_NOT_TRANSFER_ELIGIBLE",
+ "status_authority": "AUDIT_FINDING_323_AND_WP_PRETRAIN_MILESTONE_1_2026_08_26 (DATA-SOTA-341..346); these five artifacts must never load into SAC"
 }

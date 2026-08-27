@@ -1,32 +1,48 @@
-"""WP-PRETRAIN library (Data-First order @7886de39): branch-wise
-self-supervised pretraining for the strong grouped route.
+"""WP-PRETRAIN library v2 (Data-First order @7886de39; DATA-SOTA-341..346
+corrected).
 
-Discipline inherited from P1-316/317 and DATA-SOTA-329..340:
+Discipline:
 
-* the pretraining slice is STRUCTURALLY bounded — rows after ``fit_end``
-  are never loaded into memory, ``fit_end`` must precede 2024-01-01
-  (2024 is ``development_outer``; sealed 2025 is structurally absent),
-  and windows whose forward targets would cross ``fit_end`` are dropped;
-* every identity field (contract digest, data digest, canonical
-  feature-column digest, code identity) is bound into the artifact and
-  resume REFUSES on any drift;
-* no objective sees future inputs: encoder input is the in-window past
-  only; targets are strictly-forward log-returns of the close.
+* 341 — pretraining roles are CAUSAL PER ORIGIN: the contract binds a
+  ``score_origin`` and ``fit_end`` must precede its score-year start, so
+  monitor/inner-validation/outer/sealed years are all structurally
+  absent (rows after ``fit_end`` are never loaded). Origins after the
+  first additionally require a frozen earlier-origin decision reference.
+* 342 — pretraining windows come from the SAME executing preprocessor
+  plugin (entry point ``preprocessor.plugins``) the GymFxEnv calls, with
+  the same config; parity is proven by regression against env-emitted
+  tensors.
+* 343 — when a window-level normalization policy is used for masked
+  reconstruction, statistics are computed over VISIBLE steps only:
+  masked raw values cannot influence visible model inputs.
+* 344 — normalization is a TYPED PER-FAMILY policy set declared in the
+  contract and applied through the call path (eps included).
+* 345 — objective weighting follows a predeclared bounded balancing
+  rule (inverse initial loss on the monitor split), with per-objective
+  monitor losses, gradient norms/cosines and quantile-crossing
+  measurement; the quantile head is monotone BY CONSTRUCTION.
+* 346 — resume identity binds EVERY executing identity field, and
+  checkpoint+manifest are written as atomic fsynced generations sealed
+  by digest; torn generations refuse.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import os
+from pathlib import Path
 from typing import Any
 
 from pipeline_plugins._observation_contract import feature_columns_sha256
 
+FIRST_ORIGIN = "o2022"
 DEVELOPMENT_OUTER_START = "2024-01-01"
+NORMALIZATION_POLICIES = ("identity_preprocessed", "window_zscore_visible")
 
 
 class PretrainContractError(ValueError):
-    """Typed refusal: the pretraining contract or its resume identity
-    is invalid. Never construct, never train."""
+    """Typed refusal: the pretraining contract, its resume identity or
+    its artifact generation is invalid. Never construct, never train."""
 
 
 def sha256_file(path) -> str:
@@ -45,8 +61,9 @@ def sha256_obj(obj: Any) -> str:
 
 def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
     from feature_branch_plugins._topology import (TopologyError,
+                                                  require_int_list,
                                                   strict_int, strict_real)
-    if contract.get("schema") != "agent_multi.pretrain_contract.v1":
+    if contract.get("schema") != "agent_multi.pretrain_contract.v2":
         raise PretrainContractError(
             f"unsupported pretrain contract schema "
             f"{contract.get('schema')!r}")
@@ -56,29 +73,121 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
                             "window_stride", 1)
         seed = strict_int(contract.get("seed"), "seed", 0)
         epochs = strict_int(contract.get("epochs"), "epochs", 1)
+        warmup = strict_int(contract.get("warmup_bars"), "warmup_bars", 2)
         batch = strict_int(
             (contract.get("optimizer") or {}).get("batch_size"),
             "optimizer.batch_size", 1)
         lr = strict_real((contract.get("optimizer") or {}).get("lr"),
                          "optimizer.lr")
+        monitor_fraction = strict_real(contract.get("monitor_fraction"),
+                                       "monitor_fraction")
     except TopologyError as exc:
         raise PretrainContractError(str(exc)) from exc
     if lr <= 0:
         raise PretrainContractError(f"optimizer.lr must be > 0, got {lr}")
+    if not (0.0 < monitor_fraction <= 0.5):
+        raise PretrainContractError(
+            f"monitor_fraction must lie in (0, 0.5], got "
+            f"{monitor_fraction}")
+
+    # ---- DATA-SOTA-341: causal per-origin role boundary
+    origin = contract.get("score_origin") or {}
+    origin_id = str(origin.get("origin_id") or "")
+    score_start = str(origin.get("score_start") or "")
+    if not origin_id or not score_start:
+        raise PretrainContractError(
+            "score_origin.origin_id and score_origin.score_start are "
+            "required (DATA-SOTA-341: pretraining is causal per origin)")
     fit_end = str(contract.get("fit_end") or "")
     if not fit_end:
         raise PretrainContractError("fit_end is required")
+    if fit_end[:10] >= score_start[:10]:
+        raise PretrainContractError(
+            f"fit_end={fit_end} does not precede score_origin "
+            f"{origin_id} score_start={score_start}: monitor and inner "
+            f"validation years are reserved (DATA-SOTA-341)")
     if fit_end[:10] >= DEVELOPMENT_OUTER_START:
         raise PretrainContractError(
-            f"fit_end={fit_end} reaches development_outer (2024+): "
-            f"pretraining fits end before {DEVELOPMENT_OUTER_START}; "
+            f"fit_end={fit_end} reaches development_outer (2024+); "
             f"sealed 2025 is structurally excluded")
+    if origin_id != FIRST_ORIGIN and not str(
+            contract.get("earlier_origin_decision_frozen") or "").strip():
+        raise PretrainContractError(
+            f"origin {origin_id} requires earlier_origin_decision_frozen"
+            f": later origins expand only after the earlier decision is "
+            f"frozen (DATA-SOTA-341)")
+
+    # ---- DATA-SOTA-342: executing observation pipeline binding
+    pipe = contract.get("observation_pipeline") or {}
+    if str(pipe.get("preprocessor_plugin") or "") != \
+            "feature_window_preprocessor":
+        raise PretrainContractError(
+            "observation_pipeline.preprocessor_plugin must name the "
+            "executing preprocessor (feature_window_preprocessor); "
+            "pretraining windows must come from the same transform the "
+            "env applies (DATA-SOTA-342)")
+    if not str(pipe.get("source_config") or ""):
+        raise PretrainContractError(
+            "observation_pipeline.source_config is required "
+            "(DATA-SOTA-342)")
+
+    branches = contract.get("branches") or []
+    if not branches:
+        raise PretrainContractError("branches must not be empty")
+
+    # ---- DATA-SOTA-344: typed per-family normalization policies
+    policies = contract.get("normalization_policies")
+    if not isinstance(policies, dict) or not policies:
+        raise PretrainContractError(
+            "normalization_policies is required: every branch family "
+            "declares a typed policy (DATA-SOTA-344)")
+    names = [str(b.get("name")) for b in branches]
+    if sorted(policies) != sorted(names):
+        raise PretrainContractError(
+            f"normalization_policies must cover the branch families "
+            f"exactly: policies for {sorted(policies)}, branches "
+            f"{sorted(names)} (DATA-SOTA-344)")
+    parsed_policies: dict[str, dict[str, Any]] = {}
+    for family, spec in policies.items():
+        policy = str((spec or {}).get("policy") or "")
+        if policy not in NORMALIZATION_POLICIES:
+            raise PretrainContractError(
+                f"normalization_policies[{family}].policy must be one "
+                f"of {NORMALIZATION_POLICIES}, got {policy!r}")
+        eps = None
+        if policy == "window_zscore_visible":
+            try:
+                eps = strict_real(spec.get("eps"),
+                                  f"normalization_policies[{family}].eps")
+            except TopologyError as exc:
+                raise PretrainContractError(str(exc)) from exc
+            if eps <= 0:
+                raise PretrainContractError(
+                    f"normalization_policies[{family}].eps must be > 0")
+        parsed_policies[str(family)] = {"policy": policy, "eps": eps}
+
+    # ---- DATA-SOTA-345: predeclared bounded objective balancing
+    balancing = contract.get("objective_balancing") or {}
+    if str(balancing.get("method") or "") != "inverse_initial_loss":
+        raise PretrainContractError(
+            "objective_balancing.method must be 'inverse_initial_loss' "
+            "(the predeclared bounded balancing rule; DATA-SOTA-345)")
+    try:
+        floor = strict_real(balancing.get("floor"),
+                            "objective_balancing.floor")
+    except TopologyError as exc:
+        raise PretrainContractError(str(exc)) from exc
+    if floor <= 0:
+        raise PretrainContractError("objective_balancing.floor must be "
+                                    "> 0")
+
     objectives = contract.get("objectives") or {}
     known = {"masked_patch_reconstruction", "multi_horizon_quantile"}
     unknown = set(objectives) - known
     if unknown:
         raise PretrainContractError(
-            f"unknown objectives {sorted(unknown)}; wired: {sorted(known)}")
+            f"unknown objectives {sorted(unknown)}; wired: "
+            f"{sorted(known)}")
     if not objectives:
         raise PretrainContractError("at least one objective is required")
     for name, spec in objectives.items():
@@ -105,7 +214,6 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
                 f"mask_span={span} must be < window_size={window}")
     if "multi_horizon_quantile" in objectives:
         spec = objectives["multi_horizon_quantile"]
-        from feature_branch_plugins._topology import require_int_list
         try:
             horizons = require_int_list(spec, "horizons", 1)
         except TopologyError as exc:
@@ -113,6 +221,7 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
         quantiles = spec.get("quantiles")
         if not isinstance(quantiles, (list, tuple)) or not quantiles:
             raise PretrainContractError("quantiles must be non-empty")
+        previous = 0.0
         for q in quantiles:
             try:
                 q = strict_real(q, "quantile")
@@ -121,27 +230,27 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             if not (0.0 < q < 1.0):
                 raise PretrainContractError(
                     f"quantiles must lie in (0, 1), got {q}")
+            if q <= previous:
+                raise PretrainContractError(
+                    "quantiles must be strictly increasing (the "
+                    "monotone head orders its outputs by quantile)")
+            previous = q
         if len(set(horizons)) != len(horizons):
             raise PretrainContractError("horizons must be unique")
-    if not contract.get("branches"):
-        raise PretrainContractError("branches must not be empty")
-    norm = contract.get("input_normalization") or {}
-    if norm.get("mode") != "per_window_channel_zscore":
-        raise PretrainContractError(
-            "input_normalization.mode must be 'per_window_channel_zscore'"
-            " in v1: raw-scale channels are refused (finding-235 family)")
+
     return {"window_size": window, "window_stride": stride, "seed": seed,
             "epochs": epochs, "batch_size": batch, "lr": lr,
-            "fit_end": fit_end}
+            "fit_end": fit_end, "warmup_bars": warmup,
+            "monitor_fraction": monitor_fraction,
+            "origin_id": origin_id, "score_start": score_start,
+            "balancing_floor": floor,
+            "normalization_policies": parsed_policies}
 
 
 def load_fit_slice(csv_path, contract: dict[str, Any]):
-    """Load ONLY the pretraining fit slice.
-
-    The dataframe returned physically ends at ``fit_end``; later rows —
-    development_outer 2024 and sealed 2025 — never enter memory, so no
-    downstream bug can peek at them.
-    """
+    """Load ONLY the causal per-origin fit slice: rows after ``fit_end``
+    (reserved monitor/validation years, development_outer, sealed) are
+    never loaded into memory."""
     import pandas as pd
 
     parsed = validate_contract(contract)
@@ -163,35 +272,59 @@ def load_fit_slice(csv_path, contract: dict[str, Any]):
     return df.reset_index(drop=True), columns, close_col
 
 
-def build_window_index(n_rows: int, window: int, stride: int,
-                       max_horizon: int,
-                       max_windows: int | None) -> list[int]:
-    """End-indices t of eligible windows: the window [t-window+1, t] is
-    fully in-slice AND every forward target close[t+h] is too — windows
-    near fit_end whose targets would cross the boundary are DROPPED."""
-    first = window - 1
-    last = n_rows - 1 - max_horizon
-    ends = list(range(first, last + 1, stride))
-    if not ends:
+def build_step_index(n_rows: int, warmup_bars: int, stride: int,
+                     max_horizon: int,
+                     max_windows: int | None) -> list[int]:
+    """Eligible preprocessor steps t: the executing window covers rows
+    [t-window, t) so the last OBSERVED bar is t-1; require full scaler
+    warmup (t >= warmup_bars) and every forward target close[t-1+h]
+    inside the fit slice (t-1+max_horizon <= n_rows-1)."""
+    first = warmup_bars
+    last = n_rows - max_horizon
+    steps = list(range(first, last + 1, stride))
+    if not steps:
         raise PretrainContractError(
-            f"no eligible window: {n_rows} rows, window {window}, "
+            f"no eligible step: {n_rows} rows, warmup {warmup_bars}, "
             f"max horizon {max_horizon}")
-    if max_windows is not None and len(ends) > max_windows:
-        ends = ends[-max_windows:]  # keep the newest fit-slice windows
-    return ends
+    if max_windows is not None and len(steps) > max_windows:
+        steps = steps[-max_windows:]  # keep the newest fit-slice steps
+    return steps
 
 
-def instance_normalize(windows, eps: float = 1e-5):
-    """Per-window per-channel z-score over the window's own T steps.
+def collect_preprocessed_windows(df, contract: dict[str, Any],
+                                 env_config: dict[str, Any],
+                                 steps: list[int]):
+    """DATA-SOTA-342: emit pretraining windows through the SAME
+    executing preprocessor plugin the GymFxEnv calls, with the same
+    config — one shared transform, not a reimplementation."""
+    import numpy as np
 
-    Causally clean (statistics come from the in-window PAST only) and
-    scale-invariant: raw-scale price/volume channels otherwise make
-    masked reconstruction meaningless and drown the quantile term
-    (observed 6e13 vs 0.1 on the real ETH H4 csv — the finding-235
-    raw-price failure family)."""
-    mean = windows.mean(dim=1, keepdim=True)
-    std = windows.std(dim=1, keepdim=True, unbiased=False)
-    return (windows - mean) / (std + eps)
+    from app.plugin_loader import load_plugin
+
+    plugin_name = contract["observation_pipeline"]["preprocessor_plugin"]
+    plugin_class, _ = load_plugin("preprocessor.plugins", plugin_name)
+    preprocessor = plugin_class()
+    neutral = {"initial_cash": 1000.0, "equity": 1000.0, "price": 0.0,
+               "position": 0, "position_units": 0.0, "entry_price": 0.0,
+               "holding_bars": 0, "bar_index": 0, "total_bars": len(df)}
+    windows = []
+    for t in steps:
+        obs = preprocessor.make_observation(
+            data=df, step=t, bridge_state={**neutral, "bar_index": t},
+            config=env_config)
+        windows.append(np.asarray(obs["features"], dtype=np.float32))
+    return np.stack(windows, axis=0)  # (N, T, F)
+
+
+def monitor_split(steps: list[int], monitor_fraction: float):
+    """DATA-SOTA-345: the NEWEST fit-tail steps are held out as the
+    monitor set and never trained on."""
+    n_monitor = max(1, int(round(len(steps) * monitor_fraction)))
+    if n_monitor >= len(steps):
+        raise PretrainContractError(
+            f"monitor split consumes every window ({n_monitor} of "
+            f"{len(steps)})")
+    return steps[:-n_monitor], steps[-n_monitor:]
 
 
 def sample_span_mask(batch: int, window: int, ratio: float, span: int,
@@ -212,16 +345,64 @@ def sample_span_mask(batch: int, window: int, ratio: float, span: int,
     return mask
 
 
-def masked_reconstruction_loss(encoder, head, windows, mask):
-    """Encode the MASKED window, reconstruct, score ONLY masked steps."""
+def masked_visible_normalize(windows, mask, eps: float):
+    """DATA-SOTA-343: normalization statistics come from VISIBLE steps
+    only — changing masked raw values cannot change any visible
+    normalized input. eps is the DECLARED contract value
+    (DATA-SOTA-344), applied here, not a hardcoded default."""
     import torch
 
-    masked_in = windows.masked_fill(mask.unsqueeze(-1), 0.0)
-    pred = head(encoder(masked_in)).view(windows.shape)
-    diff = (pred - windows)[mask]
+    visible = (~mask).unsqueeze(-1).to(windows.dtype)   # (B, T, 1)
+    count = visible.sum(dim=1, keepdim=True)
+    mean = (windows * visible).sum(dim=1, keepdim=True) / count
+    var = (((windows - mean) ** 2) * visible).sum(dim=1,
+                                                  keepdim=True) / count
+    return (windows - mean) / (torch.sqrt(var) + eps)
+
+
+def apply_family_policy(windows, mask, policy: dict[str, Any]):
+    """Typed per-family normalization (DATA-SOTA-344): returns the
+    tensor the reconstruction objective operates on."""
+    if policy["policy"] == "identity_preprocessed":
+        return windows  # executing preprocessor output, untouched
+    return masked_visible_normalize(windows, mask, float(policy["eps"]))
+
+
+def masked_reconstruction_loss(encoder, head, values, mask):
+    """Encode the MASKED tensor, reconstruct, score ONLY masked steps."""
+    import torch
+
+    masked_in = values.masked_fill(mask.unsqueeze(-1), 0.0)
+    pred = head(encoder(masked_in)).view(values.shape)
+    diff = (pred - values)[mask]
     if diff.numel() == 0:
-        return torch.zeros((), dtype=windows.dtype)
+        return torch.zeros((), dtype=values.dtype)
     return (diff ** 2).mean()
+
+
+def build_monotone_quantile_head(dim: int, n_horizons: int,
+                                 n_quantiles: int):
+    """DATA-SOTA-345: quantile outputs are monotone BY CONSTRUCTION —
+    the first output is the lowest quantile and the rest are cumulative
+    softplus increments, so crossing is structurally impossible."""
+    import torch
+    import torch.nn as nn
+
+    class MonotoneQuantileHead(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.proj = nn.Linear(dim, n_horizons * n_quantiles)
+
+        def forward(self, embedding):
+            raw = self.proj(embedding).view(-1, n_horizons, n_quantiles)
+            base = raw[..., :1]
+            if n_quantiles == 1:
+                return base
+            steps = torch.nn.functional.softplus(raw[..., 1:])
+            return torch.cat([base, base + torch.cumsum(steps, dim=-1)],
+                             dim=-1)
+
+    return MonotoneQuantileHead()
 
 
 def pinball_loss(pred, target, quantiles):
@@ -234,23 +415,70 @@ def pinball_loss(pred, target, quantiles):
     return torch.maximum(q * err, (q - 1.0) * err).mean()
 
 
-def forward_log_return_targets(close_values, ends, horizons):
-    """(N, H) strictly-forward log returns log(close[t+h] / close[t])."""
+def quantile_crossing_rate(pred) -> float:
+    """Fraction of adjacent quantile pairs where a higher quantile
+    predicts BELOW a lower one (measured even though the monotone head
+    makes it structurally zero)."""
+    import torch
+
+    if pred.shape[-1] < 2:
+        return 0.0
+    crossings = (pred[..., 1:] < pred[..., :-1])
+    return float(crossings.float().mean())
+
+
+def forward_log_return_targets(close_values, steps, horizons):
+    """(N, H) strictly-forward log returns from the LAST OBSERVED bar of
+    each executing window: log(close[t-1+h] / close[t-1]) for step t
+    (the window covers rows [t-window, t))."""
     import numpy as np
 
     close = np.asarray(close_values, dtype=np.float64)
     if (close <= 0).any():
         raise PretrainContractError("non-positive close in fit slice")
-    ends = np.asarray(ends)
-    cols = [np.log(close[ends + h] / close[ends]) for h in horizons]
+    anchor = np.asarray(steps) - 1
+    cols = [np.log(close[anchor + h] / close[anchor]) for h in horizons]
     return np.stack(cols, axis=1).astype(np.float32)
 
 
+def objective_gradient_diagnostics(encoder, losses: dict[str, Any]):
+    """DATA-SOTA-345: per-objective gradient norm over the SHARED
+    encoder parameters plus pairwise cosine (gradient conflict)."""
+    import torch
+
+    grads = {}
+    params = [p for p in encoder.parameters() if p.requires_grad]
+    for name, loss in losses.items():
+        g = torch.autograd.grad(loss, params, retain_graph=True,
+                                allow_unused=True)
+        flat = torch.cat([x.reshape(-1) for x in g if x is not None])
+        grads[name] = flat
+    report: dict[str, Any] = {
+        "norms": {k: round(float(v.norm()), 6) for k, v in grads.items()}}
+    names = sorted(grads)
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            denom = float(grads[a].norm() * grads[b].norm())
+            cos = float(grads[a] @ grads[b]) / denom if denom > 0 else 0.0
+            report[f"cosine:{a}|{b}"] = round(cos, 6)
+    return report
+
+
+def balance_objective_weights(initial_losses: dict[str, float],
+                              declared: dict[str, float],
+                              floor: float) -> dict[str, float]:
+    """Predeclared bounded balancing (DATA-SOTA-345): effective weight =
+    declared / max(initial monitor loss, floor), frozen before epoch 0."""
+    return {name: declared[name] / max(float(initial_losses[name]), floor)
+            for name in declared}
+
+
+# ------------------------------------------------------------ durability
+
 def resume_identity(manifest: dict[str, Any]) -> dict[str, Any]:
-    keys = ("contract_sha256", "data_sha256", "feature_columns_sha256",
-            "library_sha256", "branch_assignment_sha256", "seed",
-            "window_size", "fit_end")
-    return {k: manifest["identity"][k] for k in keys}
+    """DATA-SOTA-346: EVERY identity field binds resume — nothing about
+    the executing code, data, contract or environment may drift."""
+    return dict(manifest["identity"])
 
 
 def refuse_on_identity_drift(saved: dict[str, Any],
@@ -263,6 +491,66 @@ def refuse_on_identity_drift(saved: dict[str, Any],
             "resume identity drift REFUSED: "
             + "; ".join(f"{k}: saved={a!r} current={b!r}"
                         for k, (a, b) in sorted(drift.items())))
+
+
+def _fsync_write_bytes(path: Path, payload: bytes) -> None:
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "wb") as fh:
+        fh.write(payload)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+
+
+def write_generation(out_dir: Path, checkpoint_obj: dict[str, Any],
+                     manifest_obj: dict[str, Any],
+                     generation: int) -> None:
+    """DATA-SOTA-346: checkpoint + manifest land as ONE atomic fsynced
+    generation sealed by digest; a reader can always detect a torn
+    pair."""
+    import io
+
+    import torch
+
+    buffer = io.BytesIO()
+    torch.save(checkpoint_obj, buffer)
+    ckpt_bytes = buffer.getvalue()
+    manifest_bytes = json.dumps(manifest_obj, indent=1).encode()
+    _fsync_write_bytes(out_dir / "checkpoint.pt", ckpt_bytes)
+    _fsync_write_bytes(out_dir / "pretrain_manifest.json",
+                       manifest_bytes)
+    seal = {"schema": "agent_multi.pretrain_generation.v1",
+            "generation": generation,
+            "checkpoint_sha256": hashlib.sha256(ckpt_bytes).hexdigest(),
+            "manifest_sha256": hashlib.sha256(
+                manifest_bytes).hexdigest()}
+    _fsync_write_bytes(out_dir / "generation.json",
+                       json.dumps(seal, indent=1).encode())
+
+
+def load_generation(out_dir: Path):
+    """Verify the generation seal; a torn checkpoint/manifest pair is a
+    typed refusal, never a silent resume."""
+    import torch
+
+    seal_path = out_dir / "generation.json"
+    ckpt_path = out_dir / "checkpoint.pt"
+    manifest_path = out_dir / "pretrain_manifest.json"
+    if not (seal_path.is_file() and ckpt_path.is_file()
+            and manifest_path.is_file()):
+        raise PretrainContractError(
+            "resume REFUSED: no sealed generation in output dir")
+    seal = json.loads(seal_path.read_text())
+    actual_ckpt = sha256_file(ckpt_path)
+    actual_manifest = sha256_file(manifest_path)
+    if (seal.get("checkpoint_sha256") != actual_ckpt
+            or seal.get("manifest_sha256") != actual_manifest):
+        raise PretrainContractError(
+            "resume REFUSED: TORN GENERATION — checkpoint/manifest do "
+            "not match the generation seal (DATA-SOTA-346)")
+    return (torch.load(ckpt_path, weights_only=False),
+            json.loads(manifest_path.read_text()),
+            int(seal["generation"]))
 
 
 def canonical_feature_digest(columns) -> str:

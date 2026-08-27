@@ -1,0 +1,101 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-341..346",
+ "date": "2026-08-26",
+ "code_commit": "73514a3b861db01b439b451c5d53704422254287",
+ "cases": {
+  "341": {
+   "claim": "v1 contract fit_end=2023-12-31 loads reserved validation years into pretraining fit",
+   "rows_total": 13699,
+   "rows_2022_monitor": 2190,
+   "rows_2023_inner_validation": 2190,
+   "verdict": "REPRODUCED: both reserved years present in fit slice"
+  },
+  "342": {
+   "claim": "v1 pretraining tensor (per-window zscore of raw csv) != executing preprocessor tensor (rolling-256 zscore, binaries passthrough)",
+   "step_probed": 600,
+   "max_abs_diff": 4.2083821296691895,
+   "mean_abs_diff": 0.8341294527053833,
+   "binary_columns_scaled_by_v1_but_passthrough_at_runtime": [
+    "ema_cross_10_50",
+    "ema_cross_20_100",
+    "vol_regime_high",
+    "vol_regime_low"
+   ],
+   "verdict": "REPRODUCED: distributions materially differ"
+  },
+  "343": {
+   "claim": "v1 instance_normalize computes stats over the FULL window: masked raw values contaminate visible normalized inputs",
+   "visible_input_max_abs_change_when_only_masked_values_change": 3.1595652103424072,
+   "verdict": "REPRODUCED"
+  },
+  "344": {
+   "claim": "runner calls instance_normalize without contract eps; contract eps changes digest but not execution",
+   "runner_call_sites": [
+    "batch_windows = instance_normalize(torch.tensor("
+   ],
+   "contract_declares_eps": 1e-05,
+   "call_passes_eps": false,
+   "verdict": "REPRODUCED: eps ignored at the executing call site"
+  },
+  "345": {
+   "claim": "weight 1.0/1.0 with reconstruction dominating total loss by 1-2 orders of magnitude; no monitor split, no gradient diagnostics, crossing unmeasured",
+   "rec_over_quant_ratio_final_epoch": {
+    "returns_momentum": 48.8,
+    "trend_level": 92.4,
+    "volatility_distribution": 77.8,
+    "oscillators": 25.6,
+    "volume_flow": 48.1
+   },
+   "declared_weights": {
+    "masked_patch_reconstruction": 1.0,
+    "multi_horizon_quantile": 1.0
+   },
+   "monitor_split_present": false,
+   "verdict": "REPRODUCED"
+  },
+  "346_identity": {
+   "claim": "resume_identity omits runner_sha256/code_commit/torch_version/normalization identity",
+   "manifest_identity_keys": [
+    "branch_assignment_sha256",
+    "code_commit",
+    "contract_path",
+    "contract_sha256",
+    "data_sha256",
+    "data_source",
+    "feature_columns_sha256",
+    "fit_end",
+    "interpreter",
+    "library_sha256",
+    "runner_sha256",
+    "seed",
+    "torch_version",
+    "window_size"
+   ],
+   "resume_identity_keys": [
+    "branch_assignment_sha256",
+    "contract_sha256",
+    "data_sha256",
+    "feature_columns_sha256",
+    "fit_end",
+    "library_sha256",
+    "seed",
+    "window_size"
+   ],
+   "omitted": [
+    "code_commit",
+    "contract_path",
+    "data_source",
+    "interpreter",
+    "runner_sha256",
+    "torch_version"
+   ],
+   "verdict": "REPRODUCED"
+  },
+  "346_durability": {
+   "claim": "checkpoint.pt and pretrain_manifest.json written independently (no fsync, no generation seal): a torn pair is accepted by --resume",
+   "evidence": "runner v1 writes torch.save(...) then manifest_path.write_text(...) with no atomic generation binding; corrupting the manifest after a checkpoint does not refuse resume",
+   "verdict": "REPRODUCED (see frozen regression test for the executable torn-pair case)"
+  }
+ }
+}

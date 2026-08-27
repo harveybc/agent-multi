@@ -1,0 +1,70 @@
+{
+ "schema": "agent_multi.pretrain_normalization_policy_evidence.v1",
+ "date": "2026-08-26",
+ "order": "DATA-SOTA-344 typed per-family policies",
+ "source": "executing feature_window_preprocessor over the o2022 fit slice (rolling_zscore 256, binaries passthrough, clip disabled by config)",
+ "probe_windows": 245,
+ "families": {
+  "returns_momentum": {
+   "n_channels": 16,
+   "binary_channels": [],
+   "mean": 0.0107,
+   "std": 1.0313,
+   "p01": -2.616,
+   "p99": 2.624,
+   "abs_max": 9.531,
+   "assigned_policy": "identity_preprocessed",
+   "justification": "channels arrive causally normalized by the executing rolling-256 z-score at ~unit scale; re-normalizing per window would re-break pretrain/runtime parity (DATA-SOTA-342)"
+  },
+  "trend_level": {
+   "n_channels": 23,
+   "binary_channels": [
+    "ema_cross_10_50",
+    "ema_cross_20_100"
+   ],
+   "mean": 0.1215,
+   "std": 1.165,
+   "p01": -2.405,
+   "p99": 2.658,
+   "abs_max": 6.745,
+   "assigned_policy": "identity_preprocessed",
+   "justification": "channels arrive causally normalized by the executing rolling-256 z-score at ~unit scale; re-normalizing per window would re-break pretrain/runtime parity (DATA-SOTA-342)"
+  },
+  "oscillators": {
+   "n_channels": 9,
+   "binary_channels": [],
+   "mean": 0.0014,
+   "std": 1.0032,
+   "p01": -2.178,
+   "p99": 2.136,
+   "abs_max": 5.892,
+   "assigned_policy": "identity_preprocessed",
+   "justification": "channels arrive causally normalized by the executing rolling-256 z-score at ~unit scale; re-normalizing per window would re-break pretrain/runtime parity (DATA-SOTA-342)"
+  },
+  "volatility_distribution": {
+   "n_channels": 29,
+   "binary_channels": [
+    "vol_regime_high",
+    "vol_regime_low"
+   ],
+   "mean": 0.0551,
+   "std": 1.1208,
+   "p01": -2.22,
+   "p99": 2.847,
+   "abs_max": 10.0,
+   "assigned_policy": "identity_preprocessed",
+   "justification": "channels arrive causally normalized by the executing rolling-256 z-score at ~unit scale; re-normalizing per window would re-break pretrain/runtime parity (DATA-SOTA-342)"
+  },
+  "volume_flow": {
+   "n_channels": 6,
+   "binary_channels": [],
+   "mean": 0.111,
+   "std": 1.1656,
+   "p01": -2.245,
+   "p99": 3.066,
+   "abs_max": 9.868,
+   "assigned_policy": "identity_preprocessed",
+   "justification": "channels arrive causally normalized by the executing rolling-256 z-score at ~unit scale; re-normalizing per window would re-break pretrain/runtime parity (DATA-SOTA-342)"
+  }
+ }
+}

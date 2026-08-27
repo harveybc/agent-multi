@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""WP-PRETRAIN executing runner (Data-First order @7886de39): CPU
-branch-wise self-supervised pretraining of the strong grouped route.
+"""WP-PRETRAIN executing runner v2 (Data-First order @7886de39;
+DATA-SOTA-341..346 corrected).
 
-First two ordered objectives are wired: masked-patch reconstruction and
-multi-horizon quantile. The artifact carries 316/317-grade identity
-(contract/data/feature/code digests, seed, fit boundary) and resume
-REFUSES on any identity drift. Rows after ``fit_end`` are never loaded:
-development_outer 2024 and sealed 2025 stay structurally absent.
+CPU branch-wise self-supervised pretraining of the strong grouped
+route, with: causal per-origin fit boundary (341), windows emitted by
+the SAME executing preprocessor plugin the GymFxEnv calls (342),
+mask-safe visible-only normalization statistics (343), typed per-family
+normalization policies with the declared eps applied (344), predeclared
+inverse-initial-loss objective balancing + monitor split + gradient
+norms/cosines + structurally monotone quantile head with measured
+crossing (345), and complete resume identity over atomic fsynced
+digest-sealed checkpoint generations (346).
+
+Artifacts are NOT_TRANSFER_ELIGIBLE until independently accepted; no
+encoder from this runner loads into SAC without that acceptance.
 
 Public-evidence discipline: the manifest records LOGICAL identities
 only — no absolute paths, no host names, no operator name.
@@ -14,6 +21,8 @@ only — no absolute paths, no host names, no operator name.
 from __future__ import annotations
 
 import argparse
+import inspect
+import io
 import json
 import os
 import subprocess
@@ -25,11 +34,19 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
-    PretrainContractError, build_window_index, canonical_feature_digest,
-    forward_log_return_targets, instance_normalize, load_fit_slice,
-    masked_reconstruction_loss, pinball_loss, refuse_on_identity_drift,
-    resume_identity, sample_span_mask, sha256_file, sha256_obj,
-    validate_contract)
+    PretrainContractError, apply_family_policy,
+    balance_objective_weights, build_monotone_quantile_head,
+    build_step_index, canonical_feature_digest,
+    collect_preprocessed_windows, forward_log_return_targets,
+    load_fit_slice, load_generation, masked_reconstruction_loss,
+    monitor_split, objective_gradient_diagnostics, pinball_loss,
+    quantile_crossing_rate, refuse_on_identity_drift, resume_identity,
+    sample_span_mask, sha256_file, sha256_obj, validate_contract,
+    write_generation, _fsync_write_bytes)
+
+PREPROCESSING_IDENTITY_KEYS = (
+    "window_size", "feature_scaling", "feature_scaling_window",
+    "feature_binary_columns", "feature_clip")
 
 
 def resolve_data_path() -> tuple[Path, str]:
@@ -54,20 +71,31 @@ def repo_relative(path: Path) -> str:
         return f"external:{path.name}"
 
 
+def save_module_fsync(module, path: Path) -> str:
+    import torch
+
+    buffer = io.BytesIO()
+    torch.save(module.state_dict(), buffer)
+    payload = buffer.getvalue()
+    _fsync_write_bytes(path, payload)
+    return sha256_file(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--contract", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--resume", action="store_true",
-                        help="continue from checkpoint.pt in output-dir; "
-                             "refuses on any identity drift")
+                        help="continue from the sealed generation in "
+                             "output-dir; refuses on identity drift or "
+                             "a torn generation")
     parser.add_argument("--epochs", type=int, default=None,
                         help="override contract epochs (recorded)")
     parser.add_argument("--max-windows", type=int, default=None,
                         help="override contract max_windows (recorded)")
     parser.add_argument("--stop-after-epochs", type=int, default=None,
                         help="bounded interruption: exit cleanly after N "
-                             "epoch checkpoints (resume continues the "
+                             "epoch generations (resume continues the "
                              "exact trajectory)")
     args = parser.parse_args()
 
@@ -94,6 +122,31 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     df, columns, close_col = load_fit_slice(data_path, contract)
+
+    # DATA-SOTA-342: the executing observation pipeline is the window
+    # source. The source config must carry the same feature identity.
+    source_config_path = Path(
+        contract["observation_pipeline"]["source_config"])
+    if not source_config_path.is_absolute():
+        source_config_path = REPO / source_config_path
+    env_config = json.loads(source_config_path.read_text())
+    if canonical_feature_digest(env_config.get("feature_columns")) != \
+            canonical_feature_digest(columns):
+        raise PretrainContractError(
+            "observation_pipeline.source_config feature_columns differ "
+            "from the contract feature identity (DATA-SOTA-342)")
+    plugin_name = contract["observation_pipeline"]["preprocessor_plugin"]
+    plugin_class, _ = load_plugin("preprocessor.plugins", plugin_name)
+    preprocessing_identity = {
+        key: env_config.get(key, plugin_class.plugin_params.get(key))
+        for key in PREPROCESSING_IDENTITY_KEYS}
+    if int(preprocessing_identity["window_size"]) != \
+            int(parsed["window_size"]):
+        raise PretrainContractError(
+            f"contract window_size={parsed['window_size']} differs from "
+            f"the executing preprocessor window "
+            f"{preprocessing_identity['window_size']} (DATA-SOTA-342)")
+
     branches = contract["branches"]
     assignment = [{"name": b["name"], "plugin": b["plugin"],
                    "params": b.get("params") or {},
@@ -130,38 +183,50 @@ def main() -> int:
         "seed": parsed["seed"],
         "window_size": parsed["window_size"],
         "fit_end": parsed["fit_end"],
+        "score_origin": parsed["origin_id"],
+        "warmup_bars": parsed["warmup_bars"],
+        "monitor_fraction": parsed["monitor_fraction"],
+        "preprocessor_plugin": plugin_name,
+        "preprocessor_module_sha256": sha256_file(
+            Path(inspect.getfile(plugin_class))),
+        "preprocessing_config_digest": sha256_obj(
+            preprocessing_identity),
+        "normalization_policies_digest": sha256_obj(
+            parsed["normalization_policies"]),
+        "objective_balancing_digest": sha256_obj(
+            contract["objective_balancing"]),
     }
 
     objectives = contract["objectives"]
     rec_spec = objectives.get("masked_patch_reconstruction")
     quant_spec = objectives.get("multi_horizon_quantile")
     horizons = list(quant_spec["horizons"]) if quant_spec else [1]
+    quantiles = list(quant_spec["quantiles"]) if quant_spec else [0.5]
     max_horizon = max(horizons)
 
     window = parsed["window_size"]
-    ends = build_window_index(len(df), window, parsed["window_stride"],
-                              max_horizon, max_windows)
-    features = df[columns].to_numpy(dtype=np.float32)
-    windows_view = np.lib.stride_tricks.sliding_window_view(
-        features, window, axis=0)  # (N-w+1, F, w)
-    targets = None
+    steps = build_step_index(len(df), parsed["warmup_bars"],
+                             parsed["window_stride"], max_horizon,
+                             max_windows)
+    train_steps, monitor_steps = monitor_split(
+        steps, parsed["monitor_fraction"])
+    all_windows = collect_preprocessed_windows(df, contract, env_config,
+                                               steps)
+    step_pos = {t: i for i, t in enumerate(steps)}
+    train_idx = np.array([step_pos[t] for t in train_steps])
+    monitor_idx = np.array([step_pos[t] for t in monitor_steps])
+    targets_all = None
     if quant_spec:
-        targets = torch.tensor(forward_log_return_targets(
-            df[close_col].to_numpy(), ends, horizons))
+        targets_all = torch.tensor(forward_log_return_targets(
+            df[close_col].to_numpy(), steps, horizons))
 
     manifest_path = out_dir / "pretrain_manifest.json"
-    ckpt_path = out_dir / "checkpoint.pt"
 
     if args.resume:
-        if not ckpt_path.is_file() or not manifest_path.is_file():
-            raise PretrainContractError(
-                "resume REFUSED: no checkpoint/manifest in output dir")
-        manifest = json.loads(manifest_path.read_text())
+        ckpt, manifest, generation = load_generation(out_dir)
         refuse_on_identity_drift(resume_identity(manifest),
-                                 resume_identity({"identity": identity}))
-        ckpt = torch.load(ckpt_path, weights_only=False)
-        refuse_on_identity_drift(ckpt["identity"],
-                                 resume_identity({"identity": identity}))
+                                 identity)
+        refuse_on_identity_drift(ckpt["identity"], identity)
         start_branch = ckpt["branch_index"]
         start_epoch = ckpt["epochs_done_in_branch"]
     else:
@@ -171,160 +236,257 @@ def main() -> int:
                 "choose a fresh directory (existing artifacts are never "
                 "silently overwritten)")
         manifest = {
-            "schema": "agent_multi.branch_pretrain.v1",
+            "schema": "agent_multi.branch_pretrain.v2",
             "order": ("Data-First SOTA Multibranch @7886de39 — "
-                      "WP-PRETRAIN"),
+                      "WP-PRETRAIN, DATA-SOTA-341..346 corrected"),
+            "transfer_eligibility": (
+                "NOT_TRANSFER_ELIGIBLE_PENDING_INDEPENDENT_ACCEPTANCE"),
             "identity": {**identity},
             "dataset": {
                 "rows_in_fit_slice": int(len(df)),
-                "eligible_windows": len(ends),
+                "eligible_windows": len(steps),
+                "train_windows": len(train_steps),
+                "monitor_windows_fit_tail": len(monitor_steps),
                 "window_stride": parsed["window_stride"],
                 "max_windows_applied": max_windows,
                 "max_horizon": max_horizon,
-                "boundary_note": ("rows after fit_end never loaded; "
-                                  "windows with forward targets crossing "
-                                  "fit_end dropped"),
+                "boundary_note": ("causal per-origin: rows after "
+                                  "fit_end never loaded; targets "
+                                  "crossing fit_end dropped; monitor = "
+                                  "newest fit-tail, never trained"),
             },
             "objectives": objectives,
+            "normalization_policies": contract["normalization_policies"],
+            "objective_balancing": contract["objective_balancing"],
             "cli": {"argv": [Path(a).name if os.sep in str(a) else str(a)
                              for a in sys.argv],
                     "epochs_effective": epochs},
-            "progress": {b["name"]: {"status": "pending", "losses": []}
+            "progress": {b["name"]: {"status": "pending",
+                                     "effective_weights": None,
+                                     "losses": []}
                          for b in assignment},
             "artifacts": {},
         }
         ckpt = None
+        generation = 0
         start_branch = 0
         start_epoch = 0
-    # resume-supplied manifests keep their recorded epochs_effective
     epochs = manifest["cli"]["epochs_effective"]
 
     torch.manual_seed(parsed["seed"])
     gen = torch.Generator().manual_seed(parsed["seed"] + 1)
-    epoch_checkpoints_this_invocation = 0
+    # DATA-SOTA-345: FIXED monitor mask (comparable across epochs)
+    monitor_gen = torch.Generator().manual_seed(parsed["seed"] + 2)
     batch_size = parsed["batch_size"]
-    n = len(ends)
-    start_idx = np.asarray(ends) - window + 1
+    n_train = len(train_idx)
+    epoch_generations_this_invocation = 0
+    declared_weights = {}
+    if rec_spec:
+        declared_weights["reconstruction"] = float(rec_spec["weight"])
+    if quant_spec:
+        declared_weights["quantile"] = float(quant_spec["weight"])
 
     for bi in range(start_branch, len(assignment)):
         spec = assignment[bi]
+        policy = parsed["normalization_policies"][spec["name"]]
         ch_idx = [columns.index(f) for f in spec["features"]]
-        plugin_class, _ = load_plugin("feature_branch.plugins",
-                                      spec["plugin"])
+        plugin_class_b, _ = load_plugin("feature_branch.plugins",
+                                        spec["plugin"])
         from agent_plugins.component_config import deep_merge_strict
-        params = deep_merge_strict(plugin_class.plugin_params,
+        params = deep_merge_strict(plugin_class_b.plugin_params,
                                    spec["params"],
                                    path=f"branches[{bi}].params")
-        encoder, dim = plugin_class.build(len(ch_idx), window, params)
+        encoder, dim = plugin_class_b.build(len(ch_idx), window, params)
         heads = torch.nn.ModuleDict()
         if rec_spec:
             heads["reconstruction"] = torch.nn.Linear(
                 dim, window * len(ch_idx))
         if quant_spec:
-            heads["quantile"] = torch.nn.Linear(
-                dim, len(horizons) * len(quant_spec["quantiles"]))
+            heads["quantile"] = build_monotone_quantile_head(
+                dim, len(horizons), len(quantiles))
         opt = torch.optim.Adam(
             list(encoder.parameters()) + list(heads.parameters()),
             lr=parsed["lr"])
+
+        branch_windows = torch.tensor(
+            all_windows[:, :, ch_idx].copy())  # (N, T, C)
+        monitor_windows = branch_windows[monitor_idx]
+        monitor_mask = sample_span_mask(
+            len(monitor_idx), window,
+            float(rec_spec["mask_ratio"]) if rec_spec else 0.25,
+            int(rec_spec["mask_span"]) if rec_spec else 4, monitor_gen)
+        monitor_targets = (targets_all[monitor_idx]
+                           if quant_spec else None)
+
+        def objective_losses(values, mask, targets):
+            losses = {}
+            if rec_spec:
+                normalized = apply_family_policy(values, mask, policy)
+                losses["reconstruction"] = masked_reconstruction_loss(
+                    encoder, heads["reconstruction"], normalized, mask)
+            if quant_spec:
+                pred = heads["quantile"](encoder(values))
+                losses["quantile"] = pinball_loss(pred, targets,
+                                                  quantiles)
+            return losses
+
+        def monitor_report():
+            with torch.no_grad():
+                losses = objective_losses(monitor_windows, monitor_mask,
+                                          monitor_targets)
+                report = {k: round(float(v), 8)
+                          for k, v in losses.items()}
+                if quant_spec:
+                    pred = heads["quantile"](encoder(monitor_windows))
+                    report["quantile_crossing_rate"] = \
+                        quantile_crossing_rate(pred)
+            return report
+
         epoch0 = 0
         if ckpt is not None and bi == start_branch:
             encoder.load_state_dict(ckpt["encoder_state"])
             heads.load_state_dict(ckpt["heads_state"])
             opt.load_state_dict(ckpt["optimizer_state"])
             gen.set_state(ckpt["generator_state"])
+            monitor_gen.set_state(ckpt["monitor_generator_state"])
             torch.set_rng_state(ckpt["torch_rng_state"])
+            # the fixed monitor mask above was drawn from the FRESH
+            # generator; the checkpointed mask is the branch's real one
+            monitor_mask = ckpt["monitor_mask"]
+            effective = ckpt["effective_weights"]
             epoch0 = start_epoch
             ckpt = None
+        else:
+            # DATA-SOTA-345: predeclared bounded balancing, frozen from
+            # INITIAL monitor losses before any training step.
+            with torch.no_grad():
+                initial = {k: float(v) for k, v in objective_losses(
+                    monitor_windows, monitor_mask,
+                    monitor_targets).items()}
+            effective = balance_objective_weights(
+                initial, declared_weights, parsed["balancing_floor"])
+            manifest["progress"][spec["name"]]["effective_weights"] = {
+                "initial_monitor_losses": {k: round(v, 8)
+                                           for k, v in initial.items()},
+                "declared": declared_weights,
+                "effective": {k: round(v, 8)
+                              for k, v in effective.items()}}
 
         manifest["progress"][spec["name"]]["status"] = "training"
         for epoch in range(epoch0, epochs):
             t0 = time.perf_counter()
-            perm = torch.randperm(n, generator=gen)
-            sums = {"reconstruction": 0.0, "quantile": 0.0,
-                    "total": 0.0}
+            perm = torch.randperm(n_train, generator=gen)
+            sums = {k: 0.0 for k in declared_weights}
+            sums["weighted_total"] = 0.0
             batches = 0
-            for lo in range(0, n, batch_size):
-                idx = perm[lo:lo + batch_size]
-                batch_windows = instance_normalize(torch.tensor(
-                    windows_view[start_idx[idx.numpy()]][:, ch_idx, :]
-                ).permute(0, 2, 1).contiguous())  # (B, T, C) normalized
-                loss = torch.zeros(())
-                if rec_spec:
-                    mask = sample_span_mask(
-                        batch_windows.shape[0], window,
-                        float(rec_spec["mask_ratio"]),
-                        int(rec_spec["mask_span"]), gen)
-                    rec = masked_reconstruction_loss(
-                        encoder, heads["reconstruction"], batch_windows,
-                        mask)
-                    sums["reconstruction"] += float(rec)
-                    loss = loss + float(rec_spec["weight"]) * rec
-                if quant_spec:
-                    pred = heads["quantile"](encoder(batch_windows)).view(
-                        -1, len(horizons), len(quant_spec["quantiles"]))
-                    ql = pinball_loss(pred, targets[idx],
-                                      quant_spec["quantiles"])
-                    sums["quantile"] += float(ql)
-                    loss = loss + float(quant_spec["weight"]) * ql
-                if not torch.isfinite(loss):
+            for lo in range(0, n_train, batch_size):
+                sel = train_idx[perm[lo:lo + batch_size].numpy()]
+                values = branch_windows[sel]
+                mask = sample_span_mask(
+                    values.shape[0], window,
+                    float(rec_spec["mask_ratio"]) if rec_spec else 0.25,
+                    int(rec_spec["mask_span"]) if rec_spec else 4, gen)
+                targets = targets_all[sel] if quant_spec else None
+                losses = objective_losses(values, mask, targets)
+                total = sum(effective[k] * v for k, v in losses.items())
+                if not torch.isfinite(total):
                     raise PretrainContractError(
                         f"non-finite loss in {spec['name']} epoch "
                         f"{epoch}: typed run failure")
                 opt.zero_grad()
-                loss.backward()
+                total.backward()
                 opt.step()
-                sums["total"] += float(loss)
+                for k, v in losses.items():
+                    sums[k] += float(v)
+                sums["weighted_total"] += float(total)
                 batches += 1
+            # DATA-SOTA-345 diagnostics on the fixed monitor probe
+            probe = monitor_windows[:batch_size]
+            probe_mask = monitor_mask[:batch_size]
+            probe_targets = (monitor_targets[:batch_size]
+                             if quant_spec else None)
+            grad_report = objective_gradient_diagnostics(
+                encoder, objective_losses(probe, probe_mask,
+                                          probe_targets))
             record = {"epoch": epoch,
-                      **{k: round(v / batches, 8)
-                         for k, v in sums.items()},
+                      "train": {k: round(v / batches, 8)
+                                for k, v in sums.items()},
+                      "monitor_fit_tail": monitor_report(),
+                      "gradient_diagnostics": grad_report,
                       "seconds": round(time.perf_counter() - t0, 3)}
             manifest["progress"][spec["name"]]["losses"].append(record)
-            torch.save({"identity": resume_identity(
-                            {"identity": identity}),
-                        "branch_index": bi,
-                        "epochs_done_in_branch": epoch + 1,
-                        "encoder_state": encoder.state_dict(),
-                        "heads_state": heads.state_dict(),
-                        "optimizer_state": opt.state_dict(),
-                        "generator_state": gen.get_state(),
-                        "torch_rng_state": torch.get_rng_state()},
-                       ckpt_path)
-            manifest_path.write_text(json.dumps(manifest, indent=1))
+            generation += 1
+            write_generation(
+                out_dir,
+                {"identity": identity, "branch_index": bi,
+                 "epochs_done_in_branch": epoch + 1,
+                 "encoder_state": encoder.state_dict(),
+                 "heads_state": heads.state_dict(),
+                 "optimizer_state": opt.state_dict(),
+                 "generator_state": gen.get_state(),
+                 "monitor_generator_state": monitor_gen.get_state(),
+                 "monitor_mask": monitor_mask,
+                 "torch_rng_state": torch.get_rng_state(),
+                 "effective_weights": effective},
+                manifest, generation)
             print(f"[{spec['name']}] epoch {epoch}: "
-                  f"total {record['total']:.6f} "
-                  f"(rec {record['reconstruction']:.6f} "
-                  f"quant {record['quantile']:.6f}) "
+                  f"train {record['train']} | monitor "
+                  f"{record['monitor_fit_tail']} "
                   f"{record['seconds']}s")
-            epoch_checkpoints_this_invocation += 1
+            epoch_generations_this_invocation += 1
             if (args.stop_after_epochs is not None
-                    and epoch_checkpoints_this_invocation
+                    and epoch_generations_this_invocation
                     >= args.stop_after_epochs):
                 print(f"INTERRUPTED after "
-                      f"{epoch_checkpoints_this_invocation} epoch "
-                      f"checkpoints; resume with --resume")
+                      f"{epoch_generations_this_invocation} epoch "
+                      f"generations; resume with --resume")
                 return 0
 
         enc_file = out_dir / f"branch_{spec['name']}_encoder.pt"
         heads_file = out_dir / f"branch_{spec['name']}_heads.pt"
-        torch.save(encoder.state_dict(), enc_file)
-        torch.save(heads.state_dict(), heads_file)
+        enc_sha = save_module_fsync(encoder, enc_file)
+        heads_sha = save_module_fsync(heads, heads_file)
         manifest["progress"][spec["name"]]["status"] = "complete"
         manifest["artifacts"][spec["name"]] = {
             "encoder_file": enc_file.name,
-            "encoder_sha256": sha256_file(enc_file),
+            "encoder_sha256": enc_sha,
             "heads_file": heads_file.name,
-            "heads_sha256": sha256_file(heads_file),
+            "heads_sha256": heads_sha,
             "encoder_dim": int(dim),
             "parameters": int(sum(p.numel()
                                   for p in encoder.parameters())),
         }
-        manifest_path.write_text(json.dumps(manifest, indent=1))
+        generation += 1
+        write_generation(
+            out_dir,
+            {"identity": identity, "branch_index": bi,
+             "epochs_done_in_branch": epochs,
+             "encoder_state": encoder.state_dict(),
+             "heads_state": heads.state_dict(),
+             "optimizer_state": opt.state_dict(),
+             "generator_state": gen.get_state(),
+             "monitor_generator_state": monitor_gen.get_state(),
+             "torch_rng_state": torch.get_rng_state(),
+             "effective_weights": effective},
+            manifest, generation)
 
     manifest["completed"] = True
-    manifest_path.write_text(json.dumps(manifest, indent=1))
+    generation += 1
+    write_generation(out_dir,
+                     {"identity": identity,
+                      "branch_index": len(assignment),
+                      "epochs_done_in_branch": 0,
+                      "encoder_state": {}, "heads_state": {},
+                      "optimizer_state": {},
+                      "generator_state": gen.get_state(),
+                      "monitor_generator_state":
+                          monitor_gen.get_state(),
+                      "torch_rng_state": torch.get_rng_state(),
+                      "effective_weights": {}},
+                     manifest, generation)
     print(f"COMPLETE: {len(assignment)} branches -> "
-          f"{repo_relative(out_dir)}")
+          f"{repo_relative(out_dir)} "
+          f"(transfer_eligibility: NOT_TRANSFER_ELIGIBLE)")
     return 0
 
 

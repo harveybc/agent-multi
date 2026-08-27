@@ -1,11 +1,12 @@
-"""WP-PRETRAIN regressions (Data-First order @7886de39).
+"""WP-PRETRAIN v2 regressions (Data-First order @7886de39;
+DATA-SOTA-341..346 corrected — the finding-specific frozen
+counterexamples live in test_data_sota_341_346_regressions.py).
 
-Every discipline the runner claims is proven here: structural fit-end
-exclusion (development_outer 2024 / sealed 2025 never in memory),
+Proven here: contract v2 refusals, causal per-origin fit boundary,
 strictly-forward targets, masked-only reconstruction scoring, pinball
-asymmetry, scale-invariant instance normalization (finding-235 raw-price
-family), identity-drift refusal, EXACT resume, and manifest
-sanitization (no absolute paths / operator topology in the artifact).
+asymmetry, monitor split, end-to-end runner behavior with the executing
+preprocessor, EXACT resume across interruption (complete artifact set),
+torn-generation refusal, and manifest sanitization.
 """
 from __future__ import annotations
 
@@ -24,19 +25,33 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
-    PretrainContractError, build_window_index, forward_log_return_targets,
-    instance_normalize, load_fit_slice, masked_reconstruction_loss,
+    PretrainContractError, build_step_index, forward_log_return_targets,
+    load_fit_slice, masked_reconstruction_loss, monitor_split,
     pinball_loss, refuse_on_identity_drift, sample_span_mask,
     validate_contract)
 
+SOURCE_CONFIG = {
+    "window_size": 16,
+    "feature_columns": ["f1", "f2", "f3", "f4", "f5", "f6"],
+    "feature_binary_columns": [],
+    "feature_scaling": "rolling_zscore",
+    "feature_scaling_window": 32,
+    "include_price_window": False,
+    "include_agent_state": False,
+}
+
 BASE_CONTRACT = {
-    "schema": "agent_multi.pretrain_contract.v1",
+    "schema": "agent_multi.pretrain_contract.v2",
+    "score_origin": {"origin_id": "o2022",
+                     "score_start": "2024-01-01"},
+    "fit_end": "2023-12-31T23:00:00",
+    "observation_pipeline": {
+        "preprocessor_plugin": "feature_window_preprocessor",
+        "source_config": "<set-by-fixture>",
+    },
     "date_column": "DATE_TIME", "close_column": "CLOSE",
     "feature_columns": ["f1", "f2", "f3", "f4", "f5", "f6"],
-    "window_size": 16, "window_stride": 1,
-    "fit_end": "2023-12-31T23:00:00",
-    "input_normalization": {"mode": "per_window_channel_zscore",
-                            "eps": 1e-5},
+    "window_size": 16, "window_stride": 1, "warmup_bars": 34,
     "branches": [
         {"name": "alpha", "plugin": "gru_branch",
          "params": {"hidden_size": 8},
@@ -45,6 +60,10 @@ BASE_CONTRACT = {
          "params": {"channels": [8, 8]},
          "features": ["f4", "f5", "f6"]},
     ],
+    "normalization_policies": {
+        "alpha": {"policy": "identity_preprocessed"},
+        "beta": {"policy": "window_zscore_visible", "eps": 1e-5},
+    },
     "objectives": {
         "masked_patch_reconstruction":
             {"weight": 1.0, "mask_ratio": 0.25, "mask_span": 4},
@@ -52,6 +71,9 @@ BASE_CONTRACT = {
             {"weight": 1.0, "horizons": [1, 3],
              "quantiles": [0.1, 0.5, 0.9]},
     },
+    "objective_balancing": {"method": "inverse_initial_loss",
+                            "floor": 1e-6},
+    "monitor_fraction": 0.2,
     "optimizer": {"lr": 0.001, "batch_size": 32},
     "epochs": 2, "seed": 3, "max_windows": None,
 }
@@ -66,19 +88,26 @@ def contract_with(**overrides):
 # ---------------------------------------------------------------- contract
 
 @pytest.mark.parametrize("mutation, fragment", [
-    ({"schema": "other.v9"}, "unsupported"),
-    ({"fit_end": "2024-06-01T00:00:00"}, "development_outer"),
-    ({"fit_end": "2025-01-02T00:00:00"}, "development_outer"),
+    ({"schema": "agent_multi.pretrain_contract.v1"}, "unsupported"),
+    ({"fit_end": "2024-06-01T00:00:00"}, "does not precede"),
     ({"fit_end": ""}, "fit_end is required"),
+    ({"score_origin": {}}, "score_origin"),
+    ({"observation_pipeline": {}}, "executing preprocessor"),
     ({"objectives": {}}, "at least one objective"),
-    ({"objectives": {"contrastive": {"weight": 1.0}}}, "unknown objectives"),
+    ({"objectives": {"contrastive": {"weight": 1.0}}},
+     "unknown objectives"),
     ({"epochs": True}, "non-boolean integer"),
     ({"branches": []}, "branches must not be empty"),
-    ({"input_normalization": {}}, "per_window_channel_zscore"),
-    ({"input_normalization": {"mode": "none"}}, "finding-235"),
-], ids=["schema", "fit-2024", "fit-2025", "fit-missing", "no-objective",
-        "unknown-objective", "bool-epochs", "no-branch", "norm-missing",
-        "norm-none"])
+    ({"normalization_policies": None}, "normalization_policies"),
+    ({"normalization_policies": {"alpha":
+        {"policy": "identity_preprocessed"}}}, "cover the branch"),
+    ({"objective_balancing": {}}, "inverse_initial_loss"),
+    ({"monitor_fraction": 0.0}, "monitor_fraction"),
+    ({"warmup_bars": 1}, "warmup_bars"),
+], ids=["v1-schema", "fit-not-before-score", "fit-missing",
+        "origin-missing", "pipeline-missing", "no-objective",
+        "unknown-objective", "bool-epochs", "no-branch", "no-policies",
+        "policy-gap", "no-balancing", "monitor-0", "warmup-1"])
 def test_contract_refusals(mutation, fragment):
     with pytest.raises(PretrainContractError, match=fragment):
         validate_contract(contract_with(**mutation))
@@ -103,7 +132,11 @@ def test_reconstruction_spec_refusals(spec, fragment):
     ({"weight": 1.0, "horizons": [1], "quantiles": [0.0]}, "quantiles"),
     ({"weight": 1.0, "horizons": [1], "quantiles": [1.0]}, "quantiles"),
     ({"weight": 1.0, "horizons": [], "quantiles": [0.5]}, "horizons"),
-], ids=["dup-horizon", "q0", "q1", "no-horizon"])
+    ({"weight": 1.0, "horizons": [1],
+      "quantiles": [0.5, 0.5]}, "strictly increasing"),
+    ({"weight": 1.0, "horizons": [1],
+      "quantiles": [0.9, 0.1]}, "strictly increasing"),
+], ids=["dup-horizon", "q0", "q1", "no-horizon", "dup-q", "unsorted-q"])
 def test_quantile_spec_refusals(spec, fragment):
     contract = contract_with()
     contract["objectives"]["multi_horizon_quantile"] = spec
@@ -130,7 +163,7 @@ def synthetic_csv(path: Path, hours: int = 400,
     return stamps
 
 
-def test_fit_slice_structurally_excludes_2024_and_sealed_2025(tmp_path):
+def test_fit_slice_structurally_excludes_rows_after_fit_end(tmp_path):
     csv = tmp_path / "d.csv"
     stamps = synthetic_csv(csv, hours=600)  # crosses into 2024
     assert str(stamps[-1]) >= "2024-01-01"
@@ -148,30 +181,38 @@ def test_fit_slice_refuses_nan(tmp_path):
         load_fit_slice(csv, contract_with())
 
 
-def test_window_index_drops_targets_crossing_fit_end():
-    ends = build_window_index(100, window=16, stride=1, max_horizon=12,
-                              max_windows=None)
-    assert ends[0] == 15
-    assert ends[-1] == 100 - 1 - 12  # newest window whose h=12 target
-    assert (100 - 1) not in ends     # is still inside the fit slice
+def test_step_index_drops_targets_crossing_fit_end():
+    steps = build_step_index(300, warmup_bars=256, stride=1,
+                             max_horizon=12, max_windows=None)
+    assert steps[0] == 256
+    # last observed bar t-1 plus max horizon must stay inside the slice
+    assert steps[-1] == 300 - 12
     with pytest.raises(PretrainContractError, match="no eligible"):
-        build_window_index(20, window=16, stride=1, max_horizon=12,
-                           max_windows=None)
+        build_step_index(260, warmup_bars=256, stride=1, max_horizon=12,
+                         max_windows=None)
 
 
-def test_window_index_max_windows_keeps_newest():
-    ends = build_window_index(100, 16, 1, 2, max_windows=5)
-    assert ends == [93, 94, 95, 96, 97]
+def test_step_index_max_windows_keeps_newest():
+    steps = build_step_index(300, 256, 1, 2, max_windows=5)
+    assert steps == [294, 295, 296, 297, 298]
 
 
-def test_targets_are_strictly_forward_log_returns():
+def test_monitor_split_holds_out_newest_fit_tail():
+    train, monitor = monitor_split(list(range(100)), 0.2)
+    assert monitor == list(range(80, 100))  # NEWEST windows
+    assert train == list(range(80))
+    with pytest.raises(PretrainContractError, match="monitor split"):
+        monitor_split([1], 0.5)  # the only window → refuse degenerate
+
+
+def test_targets_anchor_on_last_observed_bar():
     close = np.array([100.0, 110.0, 121.0, 133.1, 146.41])
-    got = forward_log_return_targets(close, ends=[0, 1], horizons=[1, 3])
+    # step t=2 observes rows [t-w, 2): last observed bar is index 1
+    got = forward_log_return_targets(close, steps=[2], horizons=[1, 3])
     expect = np.log(1.1)
-    assert np.allclose(got, [[expect, 3 * expect], [expect, 3 * expect]],
-                       atol=1e-6)
+    assert np.allclose(got, [[expect, 3 * expect]], atol=1e-6)
     with pytest.raises(PretrainContractError, match="non-positive"):
-        forward_log_return_targets(np.array([1.0, -1.0, 2.0]), [0], [1])
+        forward_log_return_targets(np.array([1.0, -1.0, 2.0]), [1], [1])
 
 
 # ------------------------------------------------------------- objectives
@@ -221,16 +262,6 @@ def test_pinball_asymmetry_and_median_case():
     assert float(pinball_loss(over, target, [0.5])) == pytest.approx(0.5)
 
 
-def test_instance_normalization_is_scale_and_shift_invariant():
-    x = torch.randn(5, 16, 3)
-    y = instance_normalize(x)
-    z = instance_normalize(x * 1000.0 + 7.0)
-    assert torch.allclose(y, z, atol=1e-3)
-    assert torch.allclose(y.mean(dim=1), torch.zeros(5, 3), atol=1e-5)
-    flat = instance_normalize(torch.full((2, 16, 1), 42.0))
-    assert torch.isfinite(flat).all()  # constant channel stays finite
-
-
 # ---------------------------------------------------------------- identity
 
 def test_identity_drift_refusal_names_the_field():
@@ -263,14 +294,18 @@ def runner_case(tmp_path_factory):
     root = tmp_path_factory.mktemp("pretrain")
     csv = root / "synthetic.csv"
     synthetic_csv(csv, hours=260)
+    source = root / "source_config.json"
+    source.write_text(json.dumps(SOURCE_CONFIG))
+    contract = contract_with()
+    contract["observation_pipeline"]["source_config"] = str(source)
     contract_file = root / "contract.json"
-    contract_file.write_text(json.dumps(contract_with()))
+    contract_file.write_text(json.dumps(contract))
     return csv, contract_file, root
 
 
-def _encoder_states(out_dir: Path):
+def _artifact_states(out_dir: Path):
     return {p.name: torch.load(p, weights_only=True)
-            for p in sorted(out_dir.glob("branch_*_encoder.pt"))}
+            for p in sorted(out_dir.glob("branch_*.pt"))}
 
 
 def test_runner_end_to_end_and_exact_resume(runner_case):
@@ -279,27 +314,52 @@ def test_runner_end_to_end_and_exact_resume(runner_case):
     run_runner(csv, contract_file, full, "--epochs", "2")
     manifest = json.loads((full / "pretrain_manifest.json").read_text())
     assert manifest["completed"] is True
+    assert manifest["transfer_eligibility"].startswith(
+        "NOT_TRANSFER_ELIGIBLE")
+    assert (full / "generation.json").is_file()
     for name in ("alpha", "beta"):
-        losses = manifest["progress"][name]["losses"]
+        progress = manifest["progress"][name]
+        losses = progress["losses"]
         assert [r["epoch"] for r in losses] == [0, 1]
-        assert all(np.isfinite(r["total"]) for r in losses)
+        for r in losses:
+            assert np.isfinite(r["train"]["weighted_total"])
+            assert set(r["monitor_fit_tail"]) >= {
+                "reconstruction", "quantile", "quantile_crossing_rate"}
+            assert r["monitor_fit_tail"]["quantile_crossing_rate"] == 0.0
+            assert r["gradient_diagnostics"]["norms"]
+        weights = progress["effective_weights"]
+        assert weights["effective"].keys() == {"reconstruction",
+                                               "quantile"}
         assert manifest["artifacts"][name]["encoder_sha256"]
 
     # interrupt mid-second-branch, then resume the exact trajectory
     split = root / "split"
     proc = run_runner(csv, contract_file, split, "--epochs", "2",
                       "--stop-after-epochs", "3")
-    assert "INTERRUPTED after 3 epoch checkpoints" in proc.stdout
+    assert "INTERRUPTED after 3 epoch generations" in proc.stdout
     assert "completed" not in json.loads(
         (split / "pretrain_manifest.json").read_text())
     run_runner(csv, contract_file, split, "--resume")
 
-    ref, got = _encoder_states(full), _encoder_states(split)
+    # DATA-SOTA-346: the COMPLETE artifact set matches bit-for-bit —
+    # encoders, heads, artifact digests and per-epoch loss records.
+    ref, got = _artifact_states(full), _artifact_states(split)
     assert ref.keys() == got.keys()
     for name in ref:
         for key in ref[name]:
             assert torch.equal(ref[name][key], got[name][key]), (
                 f"resume not EXACT at {name}:{key}")
+    resumed = json.loads((split / "pretrain_manifest.json").read_text())
+    assert resumed["artifacts"] == manifest["artifacts"]
+
+    def strip_wall_clock(progress):
+        clean = json.loads(json.dumps(progress))
+        for branch in clean.values():
+            for record in branch["losses"]:
+                record.pop("seconds", None)
+        return clean
+    assert strip_wall_clock(resumed["progress"]) == \
+        strip_wall_clock(manifest["progress"])
 
 
 def test_runner_refuses_resume_on_data_drift(runner_case, tmp_path):
@@ -311,6 +371,20 @@ def test_runner_refuses_resume_on_data_drift(runner_case, tmp_path):
                       expect_rc=1)
     assert "identity drift REFUSED" in proc.stderr
     assert "data_sha256" in proc.stderr
+
+
+def test_runner_refuses_torn_generation(runner_case):
+    csv, contract_file, root = runner_case
+    out = root / "full2"
+    manifest_path = out / "pretrain_manifest.json"
+    original = manifest_path.read_text()
+    try:
+        manifest_path.write_text(original + " ")  # torn pair
+        proc = run_runner(csv, contract_file, out, "--resume",
+                          expect_rc=1)
+        assert "TORN GENERATION" in proc.stderr
+    finally:
+        manifest_path.write_text(original)
 
 
 def test_runner_refuses_silent_overwrite(runner_case):
@@ -328,3 +402,8 @@ def test_manifest_is_sanitized_no_absolute_paths(runner_case):
     manifest = json.loads(text)
     assert manifest["identity"]["interpreter"].startswith("python:")
     assert "/" not in manifest["identity"]["interpreter"]
+    # DATA-SOTA-346: resume identity binds the executing identities
+    for key in ("runner_sha256", "code_commit", "torch_version",
+                "preprocessor_module_sha256",
+                "normalization_policies_digest"):
+        assert key in manifest["identity"]

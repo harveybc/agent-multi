@@ -197,3 +197,47 @@ def test_strong_route_parameter_report(real_env_and_arch):
                   for i, b in enumerate(model.temporal_branches)}
     assert total > 0 and all(v > 0 for v in per_branch.values())
     print("PARAM_REPORT", {"total": total, **per_branch})
+
+
+def test_pretrain_windows_bitwise_match_real_env_observations(
+        real_env_and_arch):
+    """DATA-SOTA-342: the WP-PRETRAIN collector and the REAL GymFxEnv
+    emit the SAME feature tensor at the same bar — bitwise, per family.
+    The collector consumes the runner's own fit-slice dataframe, so this
+    also proves the runner's CSV parsing matches the env's loader."""
+    env, arch = real_env_and_arch
+    from agent_plugins.branch_pretraining import (
+        collect_preprocessed_windows, load_fit_slice)
+
+    cfg = json.loads(CONFIG.read_text())
+    contract = json.loads(
+        (REPO / "examples/config/"
+         "pretrain_contract_eth_h4_o2022_v2.json").read_text())
+    # the sliced fixture covers 2017 bars only; keep every row while
+    # preserving the causal-origin validator (fit_end << score_start)
+    contract["fit_end"] = "2018-06-30T00:00:00"
+    sliced_csv = Path(env.config["input_data_file"])
+    df, cols, _close = load_fit_slice(sliced_csv, contract)
+    assert cols == list(cfg["feature_columns"])
+
+    obs, _ = env.reset(seed=7)
+    observed = [(int(env.bridge.bar_index),
+                 np.asarray(obs["features"], dtype=np.float32))]
+    for _ in range(4):
+        obs, _r, term, _tr, _i = env.step([0.0])
+        observed.append((int(env.bridge.bar_index),
+                         np.asarray(obs["features"], dtype=np.float32)))
+        if term:
+            break
+    steps = [t for t, _ in observed]
+    windows = collect_preprocessed_windows(df, contract, cfg, steps)
+    fams = semantic_feature_families(cols)
+    for i, (t, env_features) in enumerate(observed):
+        assert np.array_equal(windows[i], env_features), (
+            f"bar {t}: pretraining tensor diverges from the executing "
+            f"env observation")
+        for family, members in fams.items():
+            idx = [cols.index(m) for m in members]
+            assert np.array_equal(windows[i][:, idx],
+                                  env_features[:, idx]), (
+                f"bar {t}, family {family}: tensors diverge")
