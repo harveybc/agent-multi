@@ -1,0 +1,122 @@
+{
+ "schema": "agent_multi.transfer_loader_smoke.v1",
+ "dispatch": "MUSASHI_TO_GENERAL_SATOSHI_TRANSFER_LOADER_CPU_SMOKE_DISPATCH_2026_08_27 (exactly one bounded CPU smoke)",
+ "status": "MECHANICS_ONLY_NOT_ECONOMICALLY_ELIGIBLE",
+ "pretrain_dir": "external:wp_pretrain_o2022_v4_smoke",
+ "arch_config": "examples/config/project3_ethusdt_4h_sac_grouped_features_v1.json",
+ "data_source": "dataset:ethusdt_4h_tech_stat_full_model_ready.csv@conventional-sibling-checkout",
+ "interpreter": "python:3.12.13@env:trading-stack",
+ "device": "cpu (CUDA_VISIBLE_DEVICES empty)",
+ "code_identity": {
+  "sealed_code_commit": "d3a3b9c9aa30d16b549e9910aca1780e5172b150",
+  "current_code_commit": "76e5e072e5a522701b9babc87d0ea55fd2ce2542",
+  "commits_equal": false,
+  "library_sha_equal": true,
+  "runner_sha_equal": true
+ },
+ "sealed_identity_verified": [
+  "generation_seal",
+  "contract_v4_digest",
+  "source_data_digest",
+  "ordered_83_feature_partition",
+  "family_ordered_digests",
+  "branch_topology_digest",
+  "origin_plan_digest",
+  "normalization_policies_digest",
+  "preprocessor_module_sha",
+  "preprocessing_config_digest",
+  "training_code_file_shas"
+ ],
+ "families": {
+  "returns_momentum": {
+   "encoder_file": "branch_returns_momentum_encoder.pt",
+   "encoder_sha256": "ab4014ac292c1ce2bf257db1d6cfb7bf2484367e6c7c266ed322efb0b2a00e0a",
+   "tensors_loaded": 18,
+   "bit_parity": true,
+   "family_feature_digest": "50051ccefdc0f8d0621d5e9b55412a06686e8f85bba0e6ffd0791f3d3dc07eec"
+  },
+  "trend_level": {
+   "encoder_file": "branch_trend_level_encoder.pt",
+   "encoder_sha256": "7ec7bc64acaff8e0fcbb15c3df95848c07cda1a1565b5f38ac6c621353b26b53",
+   "tensors_loaded": 35,
+   "bit_parity": true,
+   "family_feature_digest": "be82008d128de0a4032fbe0e4a90e5e900f1cda39d86cc1f6fa90572159f3d90"
+  },
+  "volatility_distribution": {
+   "encoder_file": "branch_volatility_distribution_encoder.pt",
+   "encoder_sha256": "d8455de14bbaac8a9490f385fb8d9060b3fd9608d83d4de0af20f5c5a7c25828",
+   "tensors_loaded": 8,
+   "bit_parity": true,
+   "family_feature_digest": "89df66887a2a8a497ab7b52b8a1a034e848a5094993b157166a1a68b46ee9b4e"
+  },
+  "oscillators": {
+   "encoder_file": "branch_oscillators_encoder.pt",
+   "encoder_sha256": "de68dc0ec89be6d5b9b62834958e3355138d4ad30b3ce7a4f9c33e34c370a082",
+   "tensors_loaded": 10,
+   "bit_parity": true,
+   "family_feature_digest": "d5473e5980b75bdb7122172d8bc473b7c31d81b5237775e96661332bb05535db"
+  },
+  "volume_flow": {
+   "encoder_file": "branch_volume_flow_encoder.pt",
+   "encoder_sha256": "d07efb5ce1fd0e3dd1b0d04c069a8406617074c54ed6cad2fddd07b2a0596c99",
+   "tensors_loaded": 4,
+   "bit_parity": true,
+   "family_feature_digest": "d94a82b8834808d788ccbdec8483097a5f9d4b72f6e1dde4b47d16cca81bc285"
+  }
+ },
+ "tensors_loaded_total": 75,
+ "rejected_keys_total": 0,
+ "state_branch_and_fusion": "random-init, DECLARED untransferred",
+ "ordered_families": [
+  "returns_momentum",
+  "trend_level",
+  "volatility_distribution",
+  "oscillators",
+  "volume_flow",
+  "account_state"
+ ],
+ "family_digest": "bca0e0d33a5029bcb54efe17e32c66081a1c55e5b54d105d366fb2eb8b09411c",
+ "observation_shapes": {
+  "features": [
+   3,
+   32,
+   83
+  ],
+  "prices": [
+   3,
+   32
+  ],
+  "returns": [
+   3,
+   32
+  ],
+  "position": [
+   3,
+   1
+  ],
+  "equity_norm": [
+   3,
+   1
+  ],
+  "unrealized_pnl_norm": [
+   3,
+   1
+  ],
+  "holding_duration_norm": [
+   3,
+   1
+  ]
+ },
+ "forward_output_shape": [
+  3,
+  96
+ ],
+ "forward_output_finite": true,
+ "deterministic_repeat_forward_equal": true,
+ "wall_seconds": 1.313,
+ "peak_host_memory_mb": 801.1,
+ "gpu": "NONE",
+ "economics": "NONE",
+ "promotion": "NONE",
+ "collector_activation": "NONE"
+}
