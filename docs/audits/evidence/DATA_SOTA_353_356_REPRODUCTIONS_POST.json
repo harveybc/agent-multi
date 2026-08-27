@@ -1,0 +1,52 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-353..356",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "d3a3b9c9aa30d16b549e9910aca1780e5172b150",
+ "lts_commit": "24aa6203bbf485405e00b927cd795cf3d0a353d2",
+ "cases": {
+  "353": {
+   "purge": {
+    "purge_steps_each_boundary": 12,
+    "derived_from": "max(horizons) \u2014 mechanical, no free constant",
+    "additional_embargo_steps": 0,
+    "purged_windows_total": 24,
+    "purged_steps_sha256": "c926880c379245fff0da38f67a7a9a35840425ce09ecbe262820a5617043b706"
+   },
+   "last_train_target_row": 8094,
+   "first_calibration_anchor": 8095,
+   "last_calibration_target_row": 8706,
+   "first_monitor_anchor": 8707,
+   "boundaries_disjoint": true,
+   "verdict": "CORRECTED: target ranges strictly precede next-partition anchors; purge 12 mechanical; embargo 0 declared"
+  },
+  "354": {
+   "conflicting_payload": "TYPED_REFUSAL: canonical quote conflict for (alpaca, ETH/USD, 2026-08-27T00:00:00Z): stored pay",
+   "olap_canonical_query_output": [
+    [
+     "alpaca",
+     "BTC/USD",
+     1,
+     2.0
+    ],
+    [
+     "alpaca",
+     "ETH/USD",
+     1,
+     99.5
+    ]
+   ],
+   "verdict": "CORRECTED"
+  },
+  "355": {
+   "dir_fsync_after_rename": true,
+   "injected_failure_regressions": "file-fsync, rename, DIRECTORY-fsync \u2014 none reports success",
+   "verdict": "CORRECTED"
+  },
+  "356": {
+   "o2024_from_o2022_decision": "REFUSED: earlier_origin_decision references 'o2022' but the IMMEDIATE predecessor of o2024 is 'o2023' \u2014 skipping an unr",
+   "verdict": "CORRECTED: immediate predecessor o2023 is mandatory; plan digest bound to resume identity"
+  }
+ }
+}
