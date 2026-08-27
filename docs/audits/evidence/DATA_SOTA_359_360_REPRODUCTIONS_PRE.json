@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-359..360",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "b53635d9115768c53258975a30b3b6b8becca4e6",
+ "cases": {
+  "359": {
+   "claim": "TOCTOU: the tool reads the config path multiple times; a mutation after the custody re-check but before the env read changes runtime fields while evidence keeps the first digest",
+   "config_path_reads_in_tool": 3,
+   "env_config_from_third_read": true,
+   "verdict": "REPRODUCED (3 reads: materialize, re-materialize, env cfg)"
+  },
+  "360": {
+   "claim": "custody can acknowledge unverifiable evidence",
+   "completed_to_running_accepted": true,
+   "completion_record_has_evidence_digest": false,
+   "renderer_accepted_fabricated_packet_rc": 0,
+   "ledger_writes_parent_dir_fsynced": false,
+   "verdict": "REPRODUCED: illegal transition silently accepted; no evidence digest; fabricated packet rendered rc=0; no dir fsync"
+  }
+ }
+}

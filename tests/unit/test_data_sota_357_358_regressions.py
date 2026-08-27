@@ -56,7 +56,8 @@ class TestDataSota357CanonicalArchitecture:
         assert '"state_branch": {"plugin"' not in source
         assert '"fusion": {"plugin"' not in source
         assert '"rejected_keys_total": 0' not in source
-        assert "materialize_from_file" in source
+        # since 359 the canonical route is the one-read snapshot
+        assert "snapshot_effective_config" in source
 
     def test_weak_config_would_have_refused_the_transfer(self):
         """The masked mismatch (self-reported amplification): the v1
@@ -162,7 +163,8 @@ class TestDataSota357CanonicalArchitecture:
 
 class TestDataSota358SingleUseCustody:
     KEY_FIELDS = dict(dispatch_id="d", generation_digest="g",
-                      architecture_digest="a", data_digest="x",
+                      architecture_digest="a",
+                      config_snapshot_digest="s", data_digest="x",
                       code_identity={"c": 1})
 
     def _ledger(self, tmp_path):
@@ -183,8 +185,10 @@ class TestDataSota358SingleUseCustody:
     def test_uncertain_states_are_spent(self, tmp_path, state):
         ledger, key = self._ledger(tmp_path)
         ledger.reserve(key, identity={}, output_path=tmp_path / "e1.json")
-        if state != "reserved":
-            ledger.transition(key, state)
+        if state in ("running", "interrupted"):
+            ledger.transition(key, "running")
+        if state == "interrupted":
+            ledger.transition(key, "interrupted")
         with pytest.raises(ExecutionCustodyError, match="UNCERTAIN"):
             ledger.reserve(key, identity={},
                            output_path=tmp_path / "e2.json")
@@ -222,20 +226,18 @@ class TestDataSota358SingleUseCustody:
         with pytest.raises(ExecutionCustodyError, match="symlink"):
             ledger.reserve(key, identity={}, output_path=link)
 
-    def test_renderer_never_constructs_a_model(self, tmp_path,
-                                               monkeypatch):
-        from tools import load_pretrained_branches_smoke as tool
-        evidence = tmp_path / "done.json"
-        evidence.write_text(json.dumps(
-            {"schema": "agent_multi.transfer_loader_smoke.v2",
-             "status": "MECHANICS_ONLY", "run_id": "abc",
-             "forward_output_shape": [3, 96]}))
-
-        def boom(*args, **kwargs):
-            raise AssertionError("renderer constructed a model")
-        monkeypatch.setattr(tool, "construct_extractor", boom)
-        monkeypatch.setattr(tool, "load_family_encoders", boom)
-        assert tool.render(evidence) == 0  # rerunnable, model-free
+    def test_renderer_is_ledger_keyed_and_model_free(self, tmp_path):
+        """v3 (359/360): rendering goes through verified_render on a
+        completed ledger record; the tool's render branch touches only
+        the custody layer (structural proof: no model call before the
+        execution-mode gate)."""
+        source = (REPO / "tools/load_pretrained_branches_smoke.py"
+                  ).read_text()
+        render_branch = source.split("if args.render is not None:")[1]
+        render_branch = render_branch.split("if not args.pretrain_dir")[0]
+        for banned in ("construct_extractor", "load_family_encoders",
+                       "torch", "make_env"):
+            assert banned not in render_branch
 
     def test_deviation_record_is_written_once_with_known_facts(
             self, tmp_path):

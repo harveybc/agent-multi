@@ -138,3 +138,31 @@ def assert_same_materialization(a: dict[str, Any],
             f"architecture digest divergence between routes: "
             f"{a['architecture_digest'][:12]} vs "
             f"{b['architecture_digest'][:12]}")
+
+
+def snapshot_effective_config(config_path: Path) -> dict[str, Any]:
+    """DATA-SOTA-359: read the effective config bytes EXACTLY ONCE into
+    an immutable snapshot. Everything downstream — file digest, parsed
+    config, canonical architecture materialization and env config —
+    derives from that single read; execution must never consume a later
+    read of the mutable path. A pre-existing symlink config path
+    refuses."""
+    path = Path(config_path)
+    if path.is_symlink():
+        raise ArchitectureError(
+            f"config path is a symlink — refused (DATA-SOTA-359): "
+            f"{path.name}")
+    raw = path.read_bytes()          # THE single read
+    import hashlib
+    digest = hashlib.sha256(raw).hexdigest()
+    parsed = json.loads(raw.decode("utf-8"))
+    materialized = materialize_from_config(parsed)
+    materialized["config_sha256"] = digest
+    return {
+        "schema": "agent_multi.effective_config_snapshot.v1",
+        "source": path.name,
+        "config_sha256": digest,
+        "config": deepcopy(parsed),
+        "materialized": materialized,
+        "env_config": deepcopy(parsed),
+    }

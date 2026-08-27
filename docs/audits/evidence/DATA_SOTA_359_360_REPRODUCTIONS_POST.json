@@ -1,0 +1,22 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-359..360",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "b53635d9115768c53258975a30b3b6b8becca4e6",
+ "cases": {
+  "359": {
+   "tool_single_read": true,
+   "snapshot_digest_in_dispatch_key": true,
+   "strong_config_snapshot_digest": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
+   "verdict": "CORRECTED: one read, snapshot digest bound to dispatch key/ledger/evidence"
+  },
+  "360": {
+   "completed_to_running": "REFUSED: illegal transition: 'completed' is terminal (DATA-SOTA-360)",
+   "fabricated_render": "REFUSED: render refused: no ledger record for this key",
+   "record_has_evidence_sha256": true,
+   "durable_writes": "every ledger write fsyncs record file AND parent dir (spy + injected-failure regressions)",
+   "verdict": "CORRECTED"
+  }
+ }
+}
