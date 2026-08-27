@@ -41,9 +41,15 @@ SOURCE_CONFIG = {
 }
 
 BASE_CONTRACT = {
-    "schema": "agent_multi.pretrain_contract.v3",
+    "schema": "agent_multi.pretrain_contract.v4",
     "score_origin": {"origin_id": "o2022",
                      "score_start": "2024-01-01"},
+    "origin_plan": [
+        {"origin_id": "o2022", "score_start": "2024-01-01",
+         "predecessor_origin_id": None},
+        {"origin_id": "o2023", "score_start": "2025-01-01",
+         "predecessor_origin_id": "o2022"},
+    ],
     "objective_domain": "runtime_domain_with_target_adapters",
     "fit_end": "2023-12-31T23:00:00",
     "observation_pipeline": {
@@ -89,7 +95,7 @@ def contract_with(**overrides):
 # ---------------------------------------------------------------- contract
 
 @pytest.mark.parametrize("mutation, fragment", [
-    ({"schema": "agent_multi.pretrain_contract.v2"}, "unsupported"),
+    ({"schema": "agent_multi.pretrain_contract.v3"}, "unsupported"),
     ({"fit_end": "2024-06-01T00:00:00"}, "does not precede"),
     ({"fit_end": ""}, "non-empty ISO-8601"),
     ({"score_origin": {}}, "score_origin"),
@@ -107,7 +113,7 @@ def contract_with(**overrides):
     ({"partition_fractions": {"calibration": 0.2, "monitor": 0.0}},
      "partition_fractions.monitor"),
     ({"warmup_bars": 1}, "warmup_bars"),
-], ids=["v2-schema", "fit-not-before-score", "fit-missing",
+], ids=["v3-schema", "fit-not-before-score", "fit-missing",
         "origin-missing", "pipeline-missing", "no-objective",
         "unknown-objective", "bool-epochs", "no-branch", "no-policies",
         "no-domain", "policy-gap", "no-balancing", "monitor-0",
@@ -201,14 +207,15 @@ def test_step_index_max_windows_keeps_newest():
     assert steps == [294, 295, 296, 297, 298]
 
 
-def test_three_way_split_is_chronological_and_disjoint():
-    train, calibration, monitor = three_way_split(
-        list(range(100)), 0.2, 0.2)
-    assert train == list(range(60))            # OLDEST block
-    assert calibration == list(range(60, 80))  # middle
+def test_three_way_split_is_chronological_disjoint_and_purged():
+    train, calibration, monitor, purged = three_way_split(
+        list(range(100)), 0.2, 0.2, purge_steps=3)
     assert monitor == list(range(80, 100))     # NEWEST fit-tail
+    assert calibration == list(range(57, 77))  # purge 77..79
+    assert train == list(range(54))            # purge 54..56
+    assert purged == list(range(54, 57)) + list(range(77, 80))
     with pytest.raises(PretrainContractError, match="no training"):
-        three_way_split([1, 2], 0.4, 0.4)
+        three_way_split(list(range(10)), 0.4, 0.4, purge_steps=3)
 
 
 def test_targets_anchor_on_last_observed_bar():
@@ -325,13 +332,24 @@ def test_runner_end_to_end_and_exact_resume(runner_case):
     assert (full / "generation.json").is_file()
     # DATA-SOTA-349: three chronological partitions, digest-bound
     parts = manifest["partitions"]
-    assert set(parts) == {"train", "calibration", "monitor"}
-    assert (parts["train"]["last_step"]
-            < parts["calibration"]["first_step"]
-            <= parts["calibration"]["last_step"]
-            < parts["monitor"]["first_step"])
-    for part in parts.values():
-        assert part["windows"] > 0 and part["steps_sha256"]
+    assert set(parts) == {"train", "calibration", "monitor", "purge"}
+    max_h = manifest["dataset"]["max_horizon"]
+    # DATA-SOTA-353: purged boundaries — the last target row of each
+    # partition PRECEDES the next partition's first scored anchor
+    assert (parts["train"]["target_range"]["last_target_row"]
+            < parts["calibration"]["first_step"] - 1)
+    assert (parts["calibration"]["target_range"]["last_target_row"]
+            < parts["monitor"]["first_step"] - 1)
+    assert parts["purge"]["purge_steps_each_boundary"] == max_h
+    assert parts["purge"]["additional_embargo_steps"] == 0
+    assert parts["purge"]["purged_windows_total"] == 2 * max_h
+    for name in ("train", "calibration", "monitor"):
+        part = parts[name]
+        assert part["scored_windows"] > 0 and part["steps_sha256"]
+        assert part["input_context"]["role"] == \
+            "context_only_shared_causal_past"
+        assert part["target_range"]["last_target_row"] == \
+            part["last_step"] - 1 + max_h
     for name in ("alpha", "beta"):
         progress = manifest["progress"][name]
         losses = progress["losses"]

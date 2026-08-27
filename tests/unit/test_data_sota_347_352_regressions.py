@@ -55,6 +55,12 @@ class TestDataSota347VerifiedOriginAuthority:
         contract = contract_with(
             score_origin={"origin_id": "o2023",
                           "score_start": "2023-01-01"},
+            origin_plan=[
+                {"origin_id": "o2022", "score_start": "2022-01-01",
+                 "predecessor_origin_id": None},
+                {"origin_id": "o2023", "score_start": "2023-01-01",
+                 "predecessor_origin_id": "o2022"},
+            ],
             fit_end="2022-12-31T20:00:00",
             materialized_at="2022-12-15T00:00:00Z")
         contract["earlier_origin_decision"] = {
@@ -155,7 +161,7 @@ class TestDataSota348CompleteOrderedPartition:
 
     def test_committed_v3_contract_covers_all_83_exactly_once(self):
         v3 = json.loads((REPO / "examples/config/"
-                         "pretrain_contract_eth_h4_o2022_v3.json"
+                         "pretrain_contract_eth_h4_o2022_v4.json"
                          ).read_text())
         report = validate_branch_partition(v3["feature_columns"],
                                            v3["branches"])
@@ -169,10 +175,15 @@ class TestDataSota348CompleteOrderedPartition:
 class TestDataSota349HonestCalibration:
     def test_partitions_are_chronologically_ordered_and_disjoint(self):
         steps = list(range(100, 300))
-        train, calibration, monitor = three_way_split(steps, 0.15, 0.15)
-        assert train + calibration + monitor == steps
+        train, calibration, monitor, purged = three_way_split(
+            steps, 0.15, 0.15, purge_steps=12)
+        rebuilt = sorted(train + calibration + monitor + purged)
+        assert rebuilt == steps
         assert max(train) < min(calibration)
         assert max(calibration) < min(monitor)
+        # DATA-SOTA-353: purge of max(horizons) at each boundary
+        assert min(calibration) - max(train) == 13
+        assert min(monitor) - max(calibration) == 13
 
     def test_runner_calibrates_on_calibration_not_monitor(self):
         """Structural regression on the executing runner source: the

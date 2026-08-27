@@ -37,7 +37,8 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
-    FIRST_ORIGIN, PretrainContractError, balance_objective_weights,
+    PretrainContractError, assert_purged_boundaries,
+    balance_objective_weights,
     build_monotone_quantile_head, build_step_index,
     canonical_feature_digest, collect_preprocessed_windows,
     forward_log_return_targets, load_fit_slice, load_generation,
@@ -112,8 +113,9 @@ def main() -> int:
     contract = json.loads(contract_path.read_text())
     parsed = validate_contract(contract)
     origin_decision = None
-    if parsed["origin_id"] != FIRST_ORIGIN:
-        # DATA-SOTA-347: loaded, digest-verified, anterior decision
+    if parsed["predecessor_origin_id"] is not None:
+        # DATA-SOTA-347/356: loaded, digest-verified decision of the
+        # EXACT immediate predecessor
         origin_decision = verify_earlier_origin_decision(contract, REPO)
     epochs = args.epochs if args.epochs is not None else parsed["epochs"]
     if epochs < 1:
@@ -187,6 +189,7 @@ def main() -> int:
         "calibration_fraction": parsed["calibration_fraction"],
         "monitor_fraction": parsed["monitor_fraction"],
         "objective_domain": parsed["objective_domain"],
+        "origin_plan_sha256": sha256_obj(parsed["origin_plan"]),
         "earlier_origin_decision": origin_decision,
         "preprocessor_plugin": plugin_name,
         "preprocessor_module_sha256": sha256_file(
@@ -210,9 +213,17 @@ def main() -> int:
     steps = build_step_index(len(df), parsed["warmup_bars"],
                              parsed["window_stride"], max_horizon,
                              max_windows)
-    train_steps, calibration_steps, monitor_steps = three_way_split(
+    # DATA-SOTA-353: purge derived MECHANICALLY from max(horizons);
+    # it binds resume identity like every other executing fact
+    purge_steps = max_horizon
+    identity["purge_steps"] = purge_steps
+    (train_steps, calibration_steps, monitor_steps,
+     purged_steps) = three_way_split(
         steps, parsed["calibration_fraction"],
-        parsed["monitor_fraction"])
+        parsed["monitor_fraction"], purge_steps)
+    assert_purged_boundaries(train_steps, calibration_steps,
+                             monitor_steps, max_horizon,
+                             parsed["window_stride"])
     all_windows = collect_preprocessed_windows(df, contract, env_config,
                                                steps)
     step_pos = {t: i for i, t in enumerate(steps)}
@@ -225,11 +236,21 @@ def main() -> int:
             df[close_col].to_numpy(), steps, horizons))
 
     stamps = df[str(contract.get("date_column") or "DATE_TIME")].tolist()
+    context_rows = int(parsed["window_size"]) + int(
+        preprocessing_identity.get("feature_scaling_window") or 0)
     partitions_evidence = {
-        name: partition_evidence(name, part, stamps)
+        name: partition_evidence(name, part, stamps,
+                                 parsed["window_size"], max_horizon,
+                                 context_rows)
         for name, part in (("train", train_steps),
                            ("calibration", calibration_steps),
                            ("monitor", monitor_steps))}
+    partitions_evidence["purge"] = {
+        "purge_steps_each_boundary": purge_steps,
+        "derived_from": "max(horizons) — mechanical, no free constant",
+        "additional_embargo_steps": 0,
+        "purged_windows_total": len(purged_steps),
+        "purged_steps_sha256": sha256_obj(purged_steps)}
 
     manifest_path = out_dir / "pretrain_manifest.json"
 

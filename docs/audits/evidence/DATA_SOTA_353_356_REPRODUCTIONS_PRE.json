@@ -1,0 +1,41 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-353..356",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "1207df8496694382e7921ac68ff6d228f74377ff",
+ "lts_commit": "b6bef6c6560d641110cc4b38ce818c2b3561ae64",
+ "cases": {
+  "353": {
+   "claim": "no purge: preceding-partition targets cross into the next partition",
+   "max_horizon": 12,
+   "train_last_step": 8107,
+   "calibration_first_step": 8108,
+   "last_train_target_row": 8118,
+   "first_calibration_anchor_row": 8107,
+   "train_targets_overlapping_calibration_anchors": 11,
+   "calibration_last_step": 8707,
+   "monitor_first_step": 8708,
+   "calibration_targets_overlapping_monitor_anchors": 11,
+   "verdict": "REPRODUCED: 11-row target overlap at both boundaries (adjacent ranges, horizon 12)"
+  },
+  "354": {
+   "claim": "conflicting canonical payload ignored; OLAP reads only legacy table",
+   "conflicting_payload_result": "SILENTLY_IGNORED",
+   "stored_bid_after_conflict": 100.0,
+   "olap_view_rows_after_canonical_write": 0,
+   "verdict": "REPRODUCED"
+  },
+  "355": {
+   "claim": "manifest rename not directory-durable",
+   "atomic_write_calls_dir_fsync": false,
+   "verdict": "REPRODUCED: os.replace is the last durability action; the parent directory entry is never fsynced"
+  },
+  "356": {
+   "claim": "later origin skips the unresolved immediate predecessor",
+   "o2024_minted_from_o2022_decision": true,
+   "o2023_status": "unresolved, silently skipped",
+   "verdict": "REPRODUCED"
+  }
+ }
+}

@@ -45,6 +45,10 @@ class TestDataSota341CausalPerOriginRoles:
         contract = contract_with(
             score_origin={"origin_id": "o2022",
                           "score_start": "2022-01-01"},
+            origin_plan=[
+                {"origin_id": "o2022", "score_start": "2022-01-01",
+                 "predecessor_origin_id": None},
+            ],
             fit_end="2021-12-31T20:00:00")
         parsed = validate_contract(contract)
         assert parsed["origin_id"] == "o2022"
@@ -53,6 +57,12 @@ class TestDataSota341CausalPerOriginRoles:
         contract = contract_with(
             score_origin={"origin_id": "o2023",
                           "score_start": "2023-01-01"},
+            origin_plan=[
+                {"origin_id": "o2022", "score_start": "2022-01-01",
+                 "predecessor_origin_id": None},
+                {"origin_id": "o2023", "score_start": "2023-01-01",
+                 "predecessor_origin_id": "o2022"},
+            ],
             fit_end="2022-12-31T20:00:00")
         with pytest.raises(PretrainContractError,
                            match="typed earlier_origin_decision"):
@@ -83,13 +93,21 @@ class TestDataSota341CausalPerOriginRoles:
         with pytest.raises(PretrainContractError, match="unsupported"):
             validate_contract(v2)
 
-    def test_committed_o2022_v3_contract_validates(self):
+    def test_committed_o2022_v3_contract_superseded(self):
         v3 = json.loads((REPO / "examples/config/"
                          "pretrain_contract_eth_h4_o2022_v3.json"
                          ).read_text())
-        parsed = validate_contract(v3)
+        with pytest.raises(PretrainContractError, match="unsupported"):
+            validate_contract(v3)
+
+    def test_committed_o2022_v4_contract_validates(self):
+        v4 = json.loads((REPO / "examples/config/"
+                         "pretrain_contract_eth_h4_o2022_v4.json"
+                         ).read_text())
+        parsed = validate_contract(v4)
         assert parsed["fit_end"].year == 2021
         assert parsed["origin_id"] == "o2022"
+        assert parsed["predecessor_origin_id"] is None
 
 
 # ------------------------------------------- 342: executing preprocessor
@@ -224,13 +242,13 @@ class TestDataSota344TypedNormalizationPolicies:
             (REPO / "docs/audits/evidence/"
              "PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
              ).read_text())
-        v3 = json.loads((REPO / "examples/config/"
-                         "pretrain_contract_eth_h4_o2022_v3.json"
+        v4 = json.loads((REPO / "examples/config/"
+                         "pretrain_contract_eth_h4_o2022_v4.json"
                          ).read_text())
-        for family in v3["normalization_policies"]:
+        for family in v4["normalization_policies"]:
             stats = evidence["families"][family]
             assert stats["assigned_policy"] == \
-                v3["normalization_policies"][family]["policy"]
+                v4["normalization_policies"][family]["policy"]
             # the identity policy is justified by ~unit scale
             assert abs(stats["mean"]) < 0.5 and 0.5 < stats["std"] < 2.0
 

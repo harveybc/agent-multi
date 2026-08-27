@@ -8,6 +8,7 @@ keep the provenance manifest free of absolute paths.
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -179,3 +180,69 @@ class TestDataSota352TemporalContract:
         manifest = json.loads(
             (tmp_path / "trm_provenance.json").read_text())
         assert "as_of_rule" in manifest
+
+
+# --------------------------------- DATA-SOTA-355: durable manifest
+
+class TestDataSota355DurableManifest:
+    ROWS = [{"valor": "4000", "vigenciadesde": "2026-08-21"}]
+
+    def _collect(self, tmp_path):
+        return _collect(tmp_path / "trm.sqlite", None, None, True,
+                        fetcher=lambda s, e, latest: self.ROWS)
+
+    def test_parent_directory_is_fsynced_after_rename(self, tmp_path,
+                                                      monkeypatch):
+        import tools.collect_usdcop_trm as trm
+        fsynced_fds = []
+        opened_dirs = []
+        real_open, real_fsync = trm.os.open, trm.os.fsync
+
+        def spy_open(path, flags):
+            fd = real_open(path, flags)
+            opened_dirs.append((fd, str(path)))
+            return fd
+
+        def spy_fsync(fd):
+            fsynced_fds.append(fd)
+            return real_fsync(fd)
+        monkeypatch.setattr(trm.os, "open", spy_open)
+        monkeypatch.setattr(trm.os, "fsync", spy_fsync)
+        self._collect(tmp_path)
+        dir_fds = [fd for fd, path in opened_dirs
+                   if str(tmp_path) in path]
+        assert dir_fds and set(dir_fds) <= set(fsynced_fds), (
+            "parent directory was not fsynced after the rename")
+
+    @pytest.mark.parametrize("target, exc", [
+        ("fsync", OSError("injected fsync failure")),
+        ("replace", OSError("injected rename failure")),
+    ], ids=["file-or-dir-fsync-fails", "rename-fails"])
+    def test_injected_failures_never_report_success(self, tmp_path,
+                                                    monkeypatch,
+                                                    target, exc):
+        import tools.collect_usdcop_trm as trm
+
+        def boom(*args, **kwargs):
+            raise exc
+        monkeypatch.setattr(trm.os, target, boom)
+        with pytest.raises(OSError, match="injected"):
+            self._collect(tmp_path)
+        # no acknowledged manifest may exist after the failure
+        assert not (tmp_path / "trm_provenance.json").exists()
+
+    def test_directory_fsync_failure_never_reports_success(
+            self, tmp_path, monkeypatch):
+        import tools.collect_usdcop_trm as trm
+        real_fsync = trm.os.fsync
+
+        def dir_only_boom(fd):
+            # file fsync succeeds; the DIRECTORY fsync (fd from os.open)
+            # fails — exactly the 355 scenario
+            import stat
+            if stat.S_ISDIR(os.fstat(fd).st_mode):
+                raise OSError("injected directory fsync failure")
+            return real_fsync(fd)
+        monkeypatch.setattr(trm.os, "fsync", dir_only_boom)
+        with pytest.raises(OSError, match="directory fsync"):
+            self._collect(tmp_path)

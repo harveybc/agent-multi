@@ -182,12 +182,20 @@ def trm_as_of(store_path: Path, timestamp) -> dict:
 
 
 def _atomic_write_text(path: Path, text: str) -> None:
+    """DATA-SOTA-355: file fsync + atomic rename + PARENT-DIRECTORY
+    fsync — without the last step a power loss can drop the renamed
+    directory entry after success was reported."""
     tmp = path.with_name(path.name + ".tmp")
     with open(tmp, "w", encoding="utf-8") as fh:
         fh.write(text)
         fh.flush()
         os.fsync(fh.fileno())
     os.replace(tmp, path)
+    dir_fd = os.open(str(path.parent), os.O_RDONLY)
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
 
 
 def collect(store_path: Path, start: str | None, end: str | None,

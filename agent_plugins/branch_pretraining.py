@@ -142,10 +142,17 @@ def validate_branch_partition(columns: list[str],
 
 def verify_earlier_origin_decision(contract: dict[str, Any],
                                    repo_root: Path) -> dict[str, Any]:
-    """DATA-SOTA-347: a later origin materializes only against a
+    """DATA-SOTA-347/356: a later origin materializes only against a
     LOADED, digest-verified, chronologically anterior frozen decision
-    of the previous origin — never a bare string."""
+    of its EXACT immediate predecessor — never a bare string, never a
+    skipped origin."""
+    parsed = validate_contract(contract)
     origin = contract["score_origin"]
+    predecessor = parsed.get("predecessor_origin_id")
+    if predecessor is None:
+        raise PretrainContractError(
+            f"origin {origin.get('origin_id')} is the first plan "
+            f"origin; no earlier decision applies")
     decision = contract.get("earlier_origin_decision")
     if not isinstance(decision, dict):
         raise PretrainContractError(
@@ -171,6 +178,11 @@ def verify_earlier_origin_decision(contract: dict[str, Any],
         raise PretrainContractError(
             f"decision artifact schema must be "
             f"{ORIGIN_DECISION_SCHEMA}, got {manifest.get('schema')!r}")
+    if str(decision["origin_id"]) != predecessor:
+        raise PretrainContractError(
+            f"earlier_origin_decision references "
+            f"{decision['origin_id']!r} but the IMMEDIATE predecessor "
+            f"is {predecessor!r} (DATA-SOTA-356)")
     if str(manifest.get("origin_id")) != str(decision["origin_id"]):
         raise PretrainContractError(
             f"decision artifact origin {manifest.get('origin_id')!r} "
@@ -210,7 +222,7 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
     from feature_branch_plugins._topology import (TopologyError,
                                                   require_int_list,
                                                   strict_int, strict_real)
-    if contract.get("schema") != "agent_multi.pretrain_contract.v3":
+    if contract.get("schema") != "agent_multi.pretrain_contract.v4":
         raise PretrainContractError(
             f"unsupported pretrain contract schema "
             f"{contract.get('schema')!r}")
@@ -267,7 +279,53 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
         raise PretrainContractError(
             f"fit_end={fit_end.isoformat()} reaches development_outer "
             f"(2024+); sealed 2025 is structurally excluded")
-    if origin_id != FIRST_ORIGIN:
+    # ---- DATA-SOTA-356: ordered origin plan with exact predecessors
+    plan = contract.get("origin_plan")
+    if not isinstance(plan, list) or not plan:
+        raise PretrainContractError(
+            "origin_plan is required: an ordered list of origins with "
+            "exact predecessor_origin_id (DATA-SOTA-356)")
+    seen_ids: list[str] = []
+    previous_start = None
+    for number, entry in enumerate(plan):
+        entry_id = str((entry or {}).get("origin_id") or "")
+        if not entry_id:
+            raise PretrainContractError(
+                f"origin_plan[{number}].origin_id is required")
+        if entry_id in seen_ids:
+            raise PretrainContractError(
+                f"origin_plan contains duplicate origin {entry_id}")
+        entry_start = parse_iso_utc(entry.get("score_start"),
+                                    f"origin_plan[{number}].score_start")
+        if previous_start is not None and entry_start <= previous_start:
+            raise PretrainContractError(
+                f"origin_plan score_starts must strictly increase; "
+                f"{entry_id} does not follow chronologically")
+        declared_pred = entry.get("predecessor_origin_id")
+        expected_pred = seen_ids[-1] if seen_ids else None
+        if declared_pred != expected_pred:
+            raise PretrainContractError(
+                f"origin_plan[{number}] ({entry_id}) declares "
+                f"predecessor {declared_pred!r}; the immediate "
+                f"predecessor is {expected_pred!r} (DATA-SOTA-356)")
+        seen_ids.append(entry_id)
+        previous_start = entry_start
+    if origin_id not in seen_ids:
+        raise PretrainContractError(
+            f"score_origin {origin_id} is not declared in origin_plan "
+            f"(unknown origin refuses; DATA-SOTA-356)")
+    predecessor_origin_id = (
+        None if origin_id == seen_ids[0]
+        else seen_ids[seen_ids.index(origin_id) - 1])
+    plan_start = parse_iso_utc(
+        plan[seen_ids.index(origin_id)]["score_start"],
+        "origin_plan score_start")
+    if plan_start != score_start:
+        raise PretrainContractError(
+            f"score_origin.score_start {score_start.isoformat()} "
+            f"differs from origin_plan ({plan_start.isoformat()})")
+
+    if predecessor_origin_id is not None:
         if not isinstance(contract.get("earlier_origin_decision"),
                           dict):
             raise PretrainContractError(
@@ -276,6 +334,14 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
                 f"cannot mint an origin (DATA-SOTA-347)")
         parse_iso_utc(contract.get("materialized_at"),
                       "materialized_at")
+        declared = str(contract["earlier_origin_decision"].get(
+            "origin_id") or "")
+        if declared != predecessor_origin_id:
+            raise PretrainContractError(
+                f"earlier_origin_decision references {declared!r} but "
+                f"the IMMEDIATE predecessor of {origin_id} is "
+                f"{predecessor_origin_id!r} — skipping an unresolved "
+                f"origin refuses (DATA-SOTA-356)")
 
     # ---- DATA-SOTA-342: executing observation pipeline binding
     pipe = contract.get("observation_pipeline") or {}
@@ -420,6 +486,8 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             "calibration_fraction": calibration_fraction,
             "monitor_fraction": monitor_fraction,
             "origin_id": origin_id, "score_start": score_start,
+            "origin_plan": plan,
+            "predecessor_origin_id": predecessor_origin_id,
             "objective_domain": domain,
             "balancing_floor": floor,
             "normalization_policies": parsed_policies,
@@ -497,33 +565,72 @@ def collect_preprocessed_windows(df, contract: dict[str, Any],
 
 
 def three_way_split(steps: list[int], calibration_fraction: float,
-                    monitor_fraction: float):
-    """DATA-SOTA-349: chronological train / calibration / monitor.
-    Train is the OLDEST block, calibration follows, monitor is the
-    NEWEST fit-tail. Weights calibrate on calibration ONLY; training
-    never touches calibration or monitor; monitor only checkpoints and
-    reports."""
+                    monitor_fraction: float, purge_steps: int):
+    """DATA-SOTA-349/353: chronological PURGED train / calibration /
+    monitor. ``purge_steps`` is derived MECHANICALLY by the caller as
+    ``max(horizons)`` — never a free constant — so the final target row
+    of each partition precedes the first scored anchor of the next.
+    Returns (train, calibration, monitor, purged)."""
+    from feature_branch_plugins._topology import TopologyError, strict_int
+    try:
+        purge_steps = strict_int(purge_steps, "purge_steps", 1)
+    except TopologyError as exc:
+        raise PretrainContractError(str(exc)) from exc
     n = len(steps)
     n_monitor = max(1, int(round(n * monitor_fraction)))
     n_calibration = max(1, int(round(n * calibration_fraction)))
-    n_train = n - n_monitor - n_calibration
-    if n_train < 1:
+    calibration_end = n - n_monitor - purge_steps
+    train_end = calibration_end - n_calibration - purge_steps
+    if train_end < 1:
         raise PretrainContractError(
-            f"three-way split leaves no training window ({n} steps, "
-            f"{n_calibration} calibration, {n_monitor} monitor)")
-    train = steps[:n_train]
-    calibration = steps[n_train:n_train + n_calibration]
-    monitor = steps[n_train + n_calibration:]
-    return train, calibration, monitor
+            f"purged three-way split leaves no training window "
+            f"({n} steps, {n_calibration} calibration, {n_monitor} "
+            f"monitor, purge {purge_steps} at each boundary)")
+    train = steps[:train_end]
+    calibration = steps[calibration_end - n_calibration:calibration_end]
+    monitor = steps[n - n_monitor:]
+    purged = (steps[train_end:calibration_end - n_calibration]
+              + steps[calibration_end:n - n_monitor])
+    return train, calibration, monitor, purged
 
 
-def partition_evidence(name: str, steps: list[int], stamps) -> dict:
-    """Row ranges, counts and digest for one chronological partition
-    (DATA-SOTA-349)."""
-    return {"partition": name, "windows": len(steps),
+def assert_purged_boundaries(train: list[int], calibration: list[int],
+                             monitor: list[int], max_horizon: int,
+                             stride: int) -> None:
+    """DATA-SOTA-353: the last target row of a partition must PRECEDE
+    the first scored anchor row of the next (target of step t anchors
+    at t-1 and extends to t-1+max_horizon; anchor of step t' is
+    t'-1)."""
+    for name, left, right in (("train->calibration", train, calibration),
+                              ("calibration->monitor", calibration,
+                               monitor)):
+        if left[-1] - 1 + max_horizon >= right[0] - 1:
+            raise PretrainContractError(
+                f"target overlap at {name}: last target row "
+                f"{left[-1] - 1 + max_horizon} does not precede first "
+                f"scored anchor {right[0] - 1} (DATA-SOTA-353)")
+
+
+def partition_evidence(name: str, steps: list[int], stamps,
+                       window_size: int, max_horizon: int,
+                       context_rows: int) -> dict:
+    """DATA-SOTA-349/353: scored windows, INPUT-CONTEXT range and
+    TARGET range bound separately per partition. Context rows are
+    shared causal PAST (observation window + scaler history) — they are
+    context-only and never counted as scored windows or metrics."""
+    return {"partition": name,
+            "scored_windows": len(steps),
             "first_step": steps[0], "last_step": steps[-1],
             "first_observed_bar": str(stamps[steps[0] - 1]),
             "last_observed_bar": str(stamps[steps[-1] - 1]),
+            "input_context": {
+                "first_context_row": max(0, steps[0] - context_rows),
+                "last_observation_row": steps[-1] - 1,
+                "context_rows_before_first_step": context_rows,
+                "role": "context_only_shared_causal_past"},
+            "target_range": {
+                "first_target_row": steps[0],
+                "last_target_row": steps[-1] - 1 + max_horizon},
             "steps_sha256": sha256_obj(steps)}
 
 
