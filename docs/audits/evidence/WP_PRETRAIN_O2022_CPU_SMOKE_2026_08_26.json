@@ -1,0 +1,556 @@
+{
+ "schema": "agent_multi.branch_pretrain.v2",
+ "order": "Data-First SOTA Multibranch @7886de39 \u2014 WP-PRETRAIN, DATA-SOTA-341..346 corrected",
+ "transfer_eligibility": "NOT_TRANSFER_ELIGIBLE_PENDING_INDEPENDENT_ACCEPTANCE",
+ "identity": {
+  "contract_path": "examples/config/pretrain_contract_eth_h4_o2022_v2.json",
+  "contract_sha256": "a27833e857ec059f5ee16acf4ba78b503ab2bf0fbe69cabb624a75a46274000a",
+  "data_source": "dataset:ethusdt_4h_tech_stat_full_model_ready.csv@conventional-sibling-checkout",
+  "data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "branch_assignment_sha256": "8eb7890fff17bfb291edeb946bfcba335491fb5fe0e031e800216f5cd5c157da",
+  "library_sha256": "9a21dcd68324528108feed3e4c35c7277708e2c27082f5bf171f77676c590d4e",
+  "runner_sha256": "7fc7f7a6b9507c0435f5243865ba9a3f2ec377959213ee7ae165fe82b47bf49c",
+  "code_commit": "482ad91b88352675aaa97e8b1b7cf8afe96ff829",
+  "torch_version": "2.13.0+cu130",
+  "interpreter": "python:3.12.13@env:trading-stack",
+  "seed": 0,
+  "window_size": 32,
+  "fit_end": "2021-12-31T20:00:00",
+  "score_origin": "o2022",
+  "warmup_bars": 256,
+  "monitor_fraction": 0.15,
+  "preprocessor_plugin": "feature_window_preprocessor",
+  "preprocessor_module_sha256": "543914e0b9fa538096601d5284569e45a678768f3272acf18e2218b5100cd9ec",
+  "preprocessing_config_digest": "04c0597a7ee166d495f05965a107335462f65b55b1a4915d0d772761861fefe1",
+  "normalization_policies_digest": "54c1b291e724c445e91c20a3704f6ae2c0607486febdb8ee41a4fe57097f9a80",
+  "objective_balancing_digest": "cec1f2b7946c66aaae356a44eb3a19d408c8a9dfb76270134bc3b13136c894d7"
+ },
+ "dataset": {
+  "rows_in_fit_slice": 9319,
+  "eligible_windows": 4000,
+  "train_windows": 3400,
+  "monitor_windows_fit_tail": 600,
+  "window_stride": 1,
+  "max_windows_applied": 4000,
+  "max_horizon": 12,
+  "boundary_note": "causal per-origin: rows after fit_end never loaded; targets crossing fit_end dropped; monitor = newest fit-tail, never trained"
+ },
+ "objectives": {
+  "masked_patch_reconstruction": {
+   "weight": 1.0,
+   "mask_ratio": 0.25,
+   "mask_span": 4
+  },
+  "multi_horizon_quantile": {
+   "weight": 1.0,
+   "horizons": [
+    1,
+    3,
+    6,
+    12
+   ],
+   "quantiles": [
+    0.1,
+    0.5,
+    0.9
+   ]
+  }
+ },
+ "normalization_policies": {
+  "returns_momentum": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "trend_level": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "volatility_distribution": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "oscillators": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  },
+  "volume_flow": {
+   "policy": "identity_preprocessed",
+   "evidence": "docs/audits/evidence/PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
+  }
+ },
+ "objective_balancing": {
+  "method": "inverse_initial_loss",
+  "floor": 1e-06,
+  "note": "DATA-SOTA-345: effective weight = declared / max(initial monitor loss, floor), frozen before epoch 0"
+ },
+ "cli": {
+  "argv": [
+   "pretrain_branches.py",
+   "--contract",
+   "pretrain_contract_eth_h4_o2022_v2.json",
+   "--output-dir",
+   "wp_pretrain_o2022_smoke",
+   "--epochs",
+   "3",
+   "--max-windows",
+   "4000"
+  ],
+  "epochs_effective": 3
+ },
+ "progress": {
+  "returns_momentum": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_monitor_losses": {
+     "reconstruction": 1.08601427,
+     "quantile": 0.15836084
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.92079821,
+     "quantile": 6.31469249
+    }
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.08555039,
+      "quantile": 0.05965829,
+      "weighted_total": 1.37629663
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.00344479,
+      "quantile": 0.03953458,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.330031,
+       "quantile": 0.26109
+      },
+      "cosine:quantile|reconstruction": -0.07698
+     },
+     "seconds": 0.836
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 0.90706984,
+      "quantile": 0.03290685,
+      "weighted_total": 1.04302498
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.83453035,
+      "quantile": 0.02459411,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.273671,
+       "quantile": 0.269436
+      },
+      "cosine:quantile|reconstruction": -0.068758
+     },
+     "seconds": 0.622
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.72681342,
+      "quantile": 0.02131573,
+      "weighted_total": 0.80385081
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.71066725,
+      "quantile": 0.01726815,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.24473,
+       "quantile": 0.514139
+      },
+      "cosine:quantile|reconstruction": 0.117379
+     },
+     "seconds": 0.597
+    }
+   ]
+  },
+  "trend_level": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_monitor_losses": {
+     "reconstruction": 1.46477234,
+     "quantile": 0.44296068
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.68269995,
+     "quantile": 2.25753672
+    }
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.43418258,
+      "quantile": 0.1014725,
+      "weighted_total": 1.20819422
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.16981053,
+      "quantile": 0.03639722,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.5186,
+       "quantile": 0.278115
+      },
+      "cosine:quantile|reconstruction": -0.004577
+     },
+     "seconds": 1.493
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.08739328,
+      "quantile": 0.03389508,
+      "weighted_total": 0.81888269
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.92361253,
+      "quantile": 0.03365309,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.892254,
+       "quantile": 0.165679
+      },
+      "cosine:quantile|reconstruction": -0.383881
+     },
+     "seconds": 1.488
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.81709783,
+      "quantile": 0.03059091,
+      "weighted_total": 0.62689272
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.695032,
+      "quantile": 0.02821027,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.299579,
+       "quantile": 0.104624
+      },
+      "cosine:quantile|reconstruction": -0.132711
+     },
+     "seconds": 1.5
+    }
+   ]
+  },
+  "volatility_distribution": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_monitor_losses": {
+     "reconstruction": 1.63882327,
+     "quantile": 0.31736952
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.61019392,
+     "quantile": 3.15090119
+    }
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.4073257,
+      "quantile": 0.08078037,
+      "weighted_total": 1.11327252
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.28361332,
+      "quantile": 0.03833719,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.575694,
+       "quantile": 0.358259
+      },
+      "cosine:quantile|reconstruction": 0.381944
+     },
+     "seconds": 7.504
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.10557021,
+      "quantile": 0.02998909,
+      "weighted_total": 0.76910487
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.1224004,
+      "quantile": 0.02687923,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.826509,
+       "quantile": 0.335646
+      },
+      "cosine:quantile|reconstruction": -0.472394
+     },
+     "seconds": 7.52
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.95053797,
+      "quantile": 0.02295382,
+      "weighted_total": 0.65233768
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.01868081,
+      "quantile": 0.02346186,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 1.013716,
+       "quantile": 0.386767
+      },
+      "cosine:quantile|reconstruction": -0.164357
+     },
+     "seconds": 7.455
+    }
+   ]
+  },
+  "oscillators": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_monitor_losses": {
+     "reconstruction": 1.44571793,
+     "quantile": 0.36276147
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.69169786,
+     "quantile": 2.75663236
+    }
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.22501541,
+      "quantile": 0.12571489,
+      "weighted_total": 1.19389023
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 1.03336108,
+      "quantile": 0.06098455,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.272197,
+       "quantile": 0.089684
+      },
+      "cosine:quantile|reconstruction": 0.030757
+     },
+     "seconds": 0.271
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 1.00589717,
+      "quantile": 0.05293838,
+      "weighted_total": 0.84170854
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.94404292,
+      "quantile": 0.04396221,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.23502,
+       "quantile": 0.071439
+      },
+      "cosine:quantile|reconstruction": -0.088816
+     },
+     "seconds": 0.256
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.93699363,
+      "quantile": 0.03939772,
+      "weighted_total": 0.75672149
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.88502187,
+      "quantile": 0.03403305,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.254431,
+       "quantile": 0.057766
+      },
+      "cosine:quantile|reconstruction": -0.210256
+     },
+     "seconds": 0.245
+    }
+   ]
+  },
+  "volume_flow": {
+   "status": "complete",
+   "effective_weights": {
+    "initial_monitor_losses": {
+     "reconstruction": 1.1630913,
+     "quantile": 0.16993561
+    },
+    "declared": {
+     "reconstruction": 1.0,
+     "quantile": 1.0
+    },
+    "effective": {
+     "reconstruction": 0.85977773,
+     "quantile": 5.88458168
+    }
+   },
+   "losses": [
+    {
+     "epoch": 0,
+     "train": {
+      "reconstruction": 1.22242933,
+      "quantile": 0.11145858,
+      "weighted_total": 1.70690463
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.99862021,
+      "quantile": 0.0858431,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.230409,
+       "quantile": 0.174866
+      },
+      "cosine:quantile|reconstruction": -0.754634
+     },
+     "seconds": 0.695
+    },
+    {
+     "epoch": 1,
+     "train": {
+      "reconstruction": 0.95531568,
+      "quantile": 0.04336608,
+      "weighted_total": 1.07655042
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.94247264,
+      "quantile": 0.03344336,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.842373,
+       "quantile": 0.100368
+      },
+      "cosine:quantile|reconstruction": -0.731329
+     },
+     "seconds": 0.709
+    },
+    {
+     "epoch": 2,
+     "train": {
+      "reconstruction": 0.75348295,
+      "quantile": 0.02797317,
+      "weighted_total": 0.81243825
+     },
+     "monitor_fit_tail": {
+      "reconstruction": 0.77962923,
+      "quantile": 0.03052506,
+      "quantile_crossing_rate": 0.0
+     },
+     "gradient_diagnostics": {
+      "norms": {
+       "reconstruction": 0.409336,
+       "quantile": 0.064715
+      },
+      "cosine:quantile|reconstruction": -0.616709
+     },
+     "seconds": 0.705
+    }
+   ]
+  }
+ },
+ "artifacts": {
+  "returns_momentum": {
+   "encoder_file": "branch_returns_momentum_encoder.pt",
+   "encoder_sha256": "ede57485faff9f72a794f25c1cfb5079eb7688e9b37302b02270b227cce7398f",
+   "heads_file": "branch_returns_momentum_heads.pt",
+   "heads_sha256": "32ac751dc58151373d96debe25ea8279a1d2574120eb28f63c0f4e1885aed876",
+   "encoder_dim": 32,
+   "parameters": 25376
+  },
+  "trend_level": {
+   "encoder_file": "branch_trend_level_encoder.pt",
+   "encoder_sha256": "0cc9b09c4726208bd57b3d7bfec33e1dfd01315f294364eb27b7c908a4c8d63e",
+   "heads_file": "branch_trend_level_heads.pt",
+   "heads_sha256": "06da177daa4ac0a288d489a365b13ce8a7c3fc95435be7798ae7963356b20678",
+   "encoder_dim": 32,
+   "parameters": 18790
+  },
+  "volatility_distribution": {
+   "encoder_file": "branch_volatility_distribution_encoder.pt",
+   "encoder_sha256": "8f5d7f72ef1c0f99d61793f9b916af025f19cc91c66add44b43e758509f8e4e1",
+   "heads_file": "branch_volatility_distribution_heads.pt",
+   "heads_sha256": "7b59cf0577fcee71427efef455b2172eb0d71e2aeab894ae7a1e43f65e1213cc",
+   "encoder_dim": 32,
+   "parameters": 19520
+  },
+  "oscillators": {
+   "encoder_file": "branch_oscillators_encoder.pt",
+   "encoder_sha256": "8da2eeda2af1b19273594970a94729e8b2dd66c5e4980810c145ea0d4bc9059a",
+   "heads_file": "branch_oscillators_heads.pt",
+   "heads_sha256": "6fba38fed2de91c26c4bab3a63a84c0271416c641dc6e77fec2109e43e1f701e",
+   "encoder_dim": 32,
+   "parameters": 4448
+  },
+  "volume_flow": {
+   "encoder_file": "branch_volume_flow_encoder.pt",
+   "encoder_sha256": "082c8cfcd6bab01a584e172cabe920801ce5e85700a4380a987b31bf6add4abd",
+   "heads_file": "branch_volume_flow_heads.pt",
+   "heads_sha256": "d93a5f412b66efd01c6ffb64f523a1ae72dc9c5790bef610f2396bdcb3985005",
+   "encoder_dim": 64,
+   "parameters": 13824
+  }
+ },
+ "completed": true
+}

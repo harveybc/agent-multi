@@ -65,6 +65,13 @@
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   },
+  "collect_usdcop_trm.py": {
+   "purpose": "USDCOP TRM collector from the official datos.gov.co open dataset into a local reference store with provenance; REPORTING_ONLY authority (COP hurdle never enters fitness) stamped in rows and manifest",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "config_doctor.py": {
    "purpose": "Read-only facade over app/config_validation.py shared validators; reports typed findings, never mutates, never authorizes",
    "lifecycle": "supported",
