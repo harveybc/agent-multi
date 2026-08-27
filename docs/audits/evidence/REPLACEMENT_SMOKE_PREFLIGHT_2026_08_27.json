@@ -1,0 +1,20 @@
+{
+ "schema": "agent_multi.replacement_smoke_preflight.v1",
+ "dispatch": "MUSASHI strong-config replacement smoke 2026-08-27",
+ "implementation_commit": "9cfef3bd",
+ "dispatch_key": "fbb547c16e00379d04d2727895310093054e448e5ed65f4d51ddcd60c1e72ffb",
+ "run_id": "fbb547c16e00379d",
+ "no_existing_ledger_record": true,
+ "no_existing_intent_marker": true,
+ "no_existing_output": true,
+ "sealed_generation_digest": "4925c32637175162",
+ "config_snapshot_digest": "e6c05b51b8dde81f",
+ "architecture_digest": "fda91f3706c82c2c",
+ "code_identity": {
+  "sealed_code_commit": "d3a3b9c9aa30d16b549e9910aca1780e5172b150",
+  "current_code_commit": "9cfef3bdc5c21af61af7ecea08ae3e755eb1e4e0",
+  "commits_equal": false,
+  "library_sha_equal": true,
+  "runner_sha_equal": true
+ }
+}
