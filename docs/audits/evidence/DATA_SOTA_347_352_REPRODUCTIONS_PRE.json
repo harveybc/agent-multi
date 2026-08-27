@@ -1,0 +1,59 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-347..352",
+ "phase": "PRE",
+ "date": "2026-08-26",
+ "agent_multi_commit": "f59aa4958d71cb1a5f8ec8fa791d8a4a28e59831",
+ "lts_commit": "cb0d6042bebc8afc921fc43aadcd35368e333d8c",
+ "cases": {
+  "347": {
+   "claim": "origin authority is syntactic",
+   "garbage_date": "ACCEPTED (defect): impossible calendar date 2021-13-45 validated",
+   "yes_gate": "ACCEPTED (defect): string 'yes' passes as a frozen decision artifact",
+   "verdict": "REPRODUCED"
+  },
+  "348": {
+   "claim": "runner accepts partial coverage",
+   "columns": 6,
+   "claimed": 4,
+   "runner_check_passes_with_2_features_dropped": true,
+   "verdict": "REPRODUCED"
+  },
+  "349": {
+   "claim": "same held-out set sets inverse-loss weights AND is reported as monitor",
+   "initial_monitor_losses_used_for_weights": {
+    "reconstruction": 1.08601427,
+    "quantile": 0.15836084
+   },
+   "same_set_reported_as_monitor_fit_tail_epoch0": {
+    "reconstruction": 1.00344479,
+    "quantile": 0.03953458,
+    "quantile_crossing_rate": 0.0
+   },
+   "verdict": "REPRODUCED (structural: one split, two roles)"
+  },
+  "350": {
+   "claim": "encoder receives differently transformed versions of the same family",
+   "rec_input_std": 0.9999,
+   "quant_input_std": 3.1829,
+   "max_abs_diff": 13.3919,
+   "verdict": "REPRODUCED (design permits domain mixing)"
+  },
+  "351": {
+   "claim": "sessions can lie; restarts duplicate; invalid quotes stored",
+   "boom_status": "completed",
+   "boom_exc": "RuntimeError",
+   "rows_for_same_broker_time": 2,
+   "crossed_quote_stored": -50.0,
+   "zero_failure_bound": "ACCEPTED (defect)",
+   "verdict": "REPRODUCED"
+  },
+  "352": {
+   "claim": "TRM temporal validity not fail-closed",
+   "garbage_date": "('garbage-da', 'garbage-da', 4100.0, 'COP') (ACCEPTED, defect)",
+   "inverted_interval": "('2026-08-27', '2026-08-20', 4100.0, 'COP') (ACCEPTED, defect)",
+   "as_of_api_exists": false,
+   "verdict": "REPRODUCED"
+  }
+ }
+}

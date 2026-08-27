@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""USDCOP TRM collector (WP-DATA, Data-First order @7886de39).
+"""USDCOP TRM collector (WP-DATA, Data-First order @7886de39;
+DATA-SOTA-352 corrected).
 
 Collects Colombia's official Tasa Representativa del Mercado from the
 open-data Socrata dataset (datos.gov.co, dataset 32sa-8pi3, no
@@ -10,17 +11,30 @@ nominal-annual hurdle is a reporting layer; TRM values NEVER enter any
 fitness, objective, gate or promotion decision. Every run stamps that
 authority into its provenance manifest.
 
+DATA-SOTA-352 temporal contract:
+* validity dates parse STRICTLY (impossible dates refuse), intervals
+  must be ordered (vigencia_desde <= vigencia_hasta), values finite
+  positive COP-per-USD;
+* the provenance manifest is written atomically (fsync + rename);
+* consumption goes through ONE as-of API — ``trm_as_of(store, ts)``
+  returns exactly the observation whose validity interval contains the
+  reporting timestamp, a typed Unavailable when none does, and a typed
+  Ambiguous when intervals overlap. A future-effective publication is
+  stored but NEVER returned early.
+
 Sanitization: manifests record logical store identities only.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import math
+import os
 import sqlite3
 import sys
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -36,6 +50,33 @@ DEFAULT_STORE = (Path.home() / ".local/share/agent-multi/"
 
 class TrmCollectorError(RuntimeError):
     """Typed refusal: malformed source rows or invalid arguments."""
+
+
+class TrmUnavailable(TrmCollectorError):
+    """Typed as-of result: no stored TRM interval contains the
+    reporting timestamp (future-effective rows are never used early)."""
+
+
+class TrmAmbiguous(TrmCollectorError):
+    """Typed as-of result: more than one stored interval contains the
+    reporting timestamp (overlapping validity)."""
+
+
+def parse_validity_date(value, label: str) -> date:
+    """DATA-SOTA-352: strict calendar parsing — 'garbage-da' and
+    2026-02-30 refuse instead of being sliced into the store."""
+    text = str(value or "")
+    day = text[:10]
+    try:
+        parsed = date.fromisoformat(day)
+    except ValueError as exc:
+        raise TrmCollectorError(
+            f"{label}={text!r} is not a valid ISO date") from exc
+    rest = text[10:]
+    if rest and not rest.startswith(("T", " ")):
+        raise TrmCollectorError(
+            f"{label}={text!r} has a malformed time suffix")
+    return parsed
 
 
 def fetch_rows(start: str | None, end: str | None, latest: bool,
@@ -60,14 +101,27 @@ def fetch_rows(start: str | None, end: str | None, latest: bool,
 def normalize_row(row: dict) -> tuple:
     try:
         valor = float(row["valor"])
-        desde = str(row["vigenciadesde"])[:10]
-        hasta = str(row.get("vigenciahasta") or row["vigenciadesde"])[:10]
-        unidad = str(row.get("unidad") or "COP")
     except (KeyError, TypeError, ValueError) as exc:
         raise TrmCollectorError(f"malformed TRM row {row!r}") from exc
-    if valor <= 0:
-        raise TrmCollectorError(f"non-positive TRM value {valor}")
-    return desde, hasta, valor, unidad
+    if not math.isfinite(valor) or valor <= 0:
+        raise TrmCollectorError(
+            f"TRM value must be finite positive COP-per-USD, got "
+            f"{valor!r}")
+    if "vigenciadesde" not in row:
+        raise TrmCollectorError(f"malformed TRM row {row!r}")
+    desde = parse_validity_date(row["vigenciadesde"], "vigenciadesde")
+    hasta = parse_validity_date(
+        row.get("vigenciahasta") or row["vigenciadesde"],
+        "vigenciahasta")
+    if desde > hasta:
+        raise TrmCollectorError(
+            f"inverted validity interval: vigencia_desde {desde} > "
+            f"vigencia_hasta {hasta} (DATA-SOTA-352)")
+    unidad = str(row.get("unidad") or "COP")
+    if unidad.upper() != "COP":
+        raise TrmCollectorError(
+            f"unexpected TRM unit {unidad!r} (expected COP)")
+    return desde.isoformat(), hasta.isoformat(), valor, unidad
 
 
 def ensure_store(path: Path) -> sqlite3.Connection:
@@ -85,6 +139,55 @@ def ensure_store(path: Path) -> sqlite3.Connection:
         )""")
     connection.commit()
     return connection
+
+
+def trm_as_of(store_path: Path, timestamp) -> dict:
+    """DATA-SOTA-352: THE single consumption API. Returns the one TRM
+    observation whose validity interval contains ``timestamp``'s date;
+    raises TrmUnavailable when none applies (a future-effective
+    publication is never returned early) and TrmAmbiguous when stored
+    intervals overlap."""
+    if isinstance(timestamp, str):
+        try:
+            timestamp = datetime.fromisoformat(timestamp)
+        except ValueError as exc:
+            raise TrmCollectorError(
+                f"invalid as-of timestamp {timestamp!r}") from exc
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    as_of_day = timestamp.date().isoformat()
+    connection = sqlite3.connect(store_path)
+    try:
+        rows = connection.execute(
+            "SELECT vigencia_desde, vigencia_hasta, valor_cop_per_usd,"
+            " unidad, retrieved_at FROM trm_observations WHERE"
+            " vigencia_desde <= ? AND vigencia_hasta >= ?",
+            (as_of_day, as_of_day)).fetchall()
+    finally:
+        connection.close()
+    if not rows:
+        raise TrmUnavailable(
+            f"no TRM validity interval contains {as_of_day} "
+            f"(future-effective publications are never used early)")
+    if len(rows) > 1:
+        raise TrmAmbiguous(
+            f"{len(rows)} overlapping TRM intervals contain "
+            f"{as_of_day}: "
+            f"{sorted((r[0], r[1]) for r in rows)}")
+    row = rows[0]
+    return {"as_of": as_of_day, "vigencia_desde": row[0],
+            "vigencia_hasta": row[1], "valor_cop_per_usd": row[2],
+            "unidad": row[3], "retrieved_at": row[4],
+            "authority": AUTHORITY}
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(text)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
 
 
 def collect(store_path: Path, start: str | None, end: str | None,
@@ -131,10 +234,13 @@ def collect(store_path: Path, start: str | None, end: str | None,
         "rows_upserted": upserted,
         "range_collected": {"first": span[0], "last": span[1]},
         "rows_in_store": int(total),
+        "as_of_rule": ("consume ONLY via trm_as_of(store, timestamp); "
+                       "future-effective rows are stored but never "
+                       "returned early (DATA-SOTA-352)"),
     }
     manifest_path = store_path.with_name(
         store_path.stem + "_provenance.json")
-    manifest_path.write_text(json.dumps(manifest, indent=1))
+    _atomic_write_text(manifest_path, json.dumps(manifest, indent=1))
     return manifest
 
 
@@ -145,10 +251,16 @@ def main() -> int:
     parser.add_argument("--end", help="YYYY-MM-DD")
     parser.add_argument("--latest", action="store_true",
                         help="fetch only the newest published TRM")
+    parser.add_argument("--as-of", dest="as_of",
+                        help="report the TRM applicable at this ISO "
+                             "timestamp (reads the store, no fetch)")
     args = parser.parse_args()
+    if args.as_of:
+        print(json.dumps(trm_as_of(args.store, args.as_of), indent=1))
+        return 0
     if not args.latest and not args.start:
-        raise SystemExit("REFUSED: pass --start (bounded backfill) or "
-                         "--latest")
+        raise SystemExit("REFUSED: pass --start (bounded backfill), "
+                         "--latest, or --as-of")
     manifest = collect(args.store, args.start, args.end, args.latest)
     print(json.dumps(manifest, indent=1))
     return 0

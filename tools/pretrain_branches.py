@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-"""WP-PRETRAIN executing runner v2 (Data-First order @7886de39;
-DATA-SOTA-341..346 corrected).
+"""WP-PRETRAIN executing runner v3 (Data-First order @7886de39;
+DATA-SOTA-341..346 and 347..352 corrected).
 
 CPU branch-wise self-supervised pretraining of the strong grouped
-route, with: causal per-origin fit boundary (341), windows emitted by
-the SAME executing preprocessor plugin the GymFxEnv calls (342),
-mask-safe visible-only normalization statistics (343), typed per-family
-normalization policies with the declared eps applied (344), predeclared
-inverse-initial-loss objective balancing + monitor split + gradient
-norms/cosines + structurally monotone quantile head with measured
-crossing (345), and complete resume identity over atomic fsynced
-digest-sealed checkpoint generations (346).
+route, with: verified causal origin chain (347), complete ordered
+feature partition bound by digests (348), chronological
+train/calibration/monitor partitions — weights calibrate on calibration
+only, monitor only checkpoints/reports (349), ONE input domain — the
+transferred encoder always consumes the exact runtime-preprocessed
+tensor, normalization policies transform reconstruction TARGETS only
+and heads are objective adapters excluded from transfer (350) — plus
+the whole 341..346 discipline (executing-preprocessor windows,
+mask-safe target statistics, monotone quantile head, gradient
+diagnostics, complete resume identity over atomic digest-sealed
+generations).
 
 Artifacts are NOT_TRANSFER_ELIGIBLE until independently accepted; no
 encoder from this runner loads into SAC without that acceptance.
@@ -34,15 +37,16 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
-    PretrainContractError, apply_family_policy,
-    balance_objective_weights, build_monotone_quantile_head,
-    build_step_index, canonical_feature_digest,
-    collect_preprocessed_windows, forward_log_return_targets,
-    load_fit_slice, load_generation, masked_reconstruction_loss,
-    monitor_split, objective_gradient_diagnostics, pinball_loss,
-    quantile_crossing_rate, refuse_on_identity_drift, resume_identity,
-    sample_span_mask, sha256_file, sha256_obj, validate_contract,
-    write_generation, _fsync_write_bytes)
+    FIRST_ORIGIN, PretrainContractError, balance_objective_weights,
+    build_monotone_quantile_head, build_step_index,
+    canonical_feature_digest, collect_preprocessed_windows,
+    forward_log_return_targets, load_fit_slice, load_generation,
+    masked_reconstruction_loss, objective_gradient_diagnostics,
+    partition_evidence, pinball_loss, quantile_crossing_rate,
+    reconstruction_target, refuse_on_identity_drift, resume_identity,
+    sample_span_mask, sha256_file, sha256_obj, three_way_split,
+    validate_contract, verify_earlier_origin_decision, write_generation,
+    _fsync_write_bytes)
 
 PREPROCESSING_IDENTITY_KEYS = (
     "window_size", "feature_scaling", "feature_scaling_window",
@@ -107,6 +111,10 @@ def main() -> int:
     contract_path = Path(args.contract)
     contract = json.loads(contract_path.read_text())
     parsed = validate_contract(contract)
+    origin_decision = None
+    if parsed["origin_id"] != FIRST_ORIGIN:
+        # DATA-SOTA-347: loaded, digest-verified, anterior decision
+        origin_decision = verify_earlier_origin_decision(contract, REPO)
     epochs = args.epochs if args.epochs is not None else parsed["epochs"]
     if epochs < 1:
         raise PretrainContractError(f"epochs must be >= 1, got {epochs}")
@@ -147,30 +155,21 @@ def main() -> int:
             f"the executing preprocessor window "
             f"{preprocessing_identity['window_size']} (DATA-SOTA-342)")
 
-    branches = contract["branches"]
+    # DATA-SOTA-348: complete ordered partition, digests bound
+    partition = parsed["partition"]
     assignment = [{"name": b["name"], "plugin": b["plugin"],
                    "params": b.get("params") or {},
-                   "features": list(b["features"])} for b in branches]
-    claimed: set[str] = set()
-    for spec in assignment:
-        unknown = [f for f in spec["features"] if f not in columns]
-        if unknown:
-            raise PretrainContractError(
-                f"branch {spec['name']} features not in contract "
-                f"columns: {unknown}")
-        overlap = claimed.intersection(spec["features"])
-        if overlap:
-            raise PretrainContractError(
-                f"features assigned to multiple branches: "
-                f"{sorted(overlap)}")
-        claimed.update(spec["features"])
+                   "features": list(b["features"])}
+                  for b in contract["branches"]]
 
     identity = {
         "contract_path": repo_relative(contract_path),
         "contract_sha256": sha256_file(contract_path),
         "data_source": data_logical,
         "data_sha256": sha256_file(data_path),
-        "feature_columns_sha256": canonical_feature_digest(columns),
+        "feature_columns_sha256": partition["global_ordered_digest"],
+        "family_ordered_digests_sha256": sha256_obj(
+            partition["family_ordered_digests"]),
         "branch_assignment_sha256": sha256_obj(assignment),
         "library_sha256": sha256_file(
             REPO / "agent_plugins/branch_pretraining.py"),
@@ -182,10 +181,13 @@ def main() -> int:
         "interpreter": logical_interpreter(),
         "seed": parsed["seed"],
         "window_size": parsed["window_size"],
-        "fit_end": parsed["fit_end"],
+        "fit_end": parsed["fit_end"].isoformat(),
         "score_origin": parsed["origin_id"],
         "warmup_bars": parsed["warmup_bars"],
+        "calibration_fraction": parsed["calibration_fraction"],
         "monitor_fraction": parsed["monitor_fraction"],
+        "objective_domain": parsed["objective_domain"],
+        "earlier_origin_decision": origin_decision,
         "preprocessor_plugin": plugin_name,
         "preprocessor_module_sha256": sha256_file(
             Path(inspect.getfile(plugin_class))),
@@ -208,24 +210,32 @@ def main() -> int:
     steps = build_step_index(len(df), parsed["warmup_bars"],
                              parsed["window_stride"], max_horizon,
                              max_windows)
-    train_steps, monitor_steps = monitor_split(
-        steps, parsed["monitor_fraction"])
+    train_steps, calibration_steps, monitor_steps = three_way_split(
+        steps, parsed["calibration_fraction"],
+        parsed["monitor_fraction"])
     all_windows = collect_preprocessed_windows(df, contract, env_config,
                                                steps)
     step_pos = {t: i for i, t in enumerate(steps)}
     train_idx = np.array([step_pos[t] for t in train_steps])
+    calibration_idx = np.array([step_pos[t] for t in calibration_steps])
     monitor_idx = np.array([step_pos[t] for t in monitor_steps])
     targets_all = None
     if quant_spec:
         targets_all = torch.tensor(forward_log_return_targets(
             df[close_col].to_numpy(), steps, horizons))
 
+    stamps = df[str(contract.get("date_column") or "DATE_TIME")].tolist()
+    partitions_evidence = {
+        name: partition_evidence(name, part, stamps)
+        for name, part in (("train", train_steps),
+                           ("calibration", calibration_steps),
+                           ("monitor", monitor_steps))}
+
     manifest_path = out_dir / "pretrain_manifest.json"
 
     if args.resume:
         ckpt, manifest, generation = load_generation(out_dir)
-        refuse_on_identity_drift(resume_identity(manifest),
-                                 identity)
+        refuse_on_identity_drift(resume_identity(manifest), identity)
         refuse_on_identity_drift(ckpt["identity"], identity)
         start_branch = ckpt["branch_index"]
         start_epoch = ckpt["epochs_done_in_branch"]
@@ -236,26 +246,30 @@ def main() -> int:
                 "choose a fresh directory (existing artifacts are never "
                 "silently overwritten)")
         manifest = {
-            "schema": "agent_multi.branch_pretrain.v2",
+            "schema": "agent_multi.branch_pretrain.v3",
             "order": ("Data-First SOTA Multibranch @7886de39 — "
-                      "WP-PRETRAIN, DATA-SOTA-341..346 corrected"),
+                      "WP-PRETRAIN, DATA-SOTA-341..352 corrected"),
             "transfer_eligibility": (
                 "NOT_TRANSFER_ELIGIBLE_PENDING_INDEPENDENT_ACCEPTANCE"),
             "identity": {**identity},
             "dataset": {
                 "rows_in_fit_slice": int(len(df)),
                 "eligible_windows": len(steps),
-                "train_windows": len(train_steps),
-                "monitor_windows_fit_tail": len(monitor_steps),
                 "window_stride": parsed["window_stride"],
                 "max_windows_applied": max_windows,
                 "max_horizon": max_horizon,
                 "boundary_note": ("causal per-origin: rows after "
                                   "fit_end never loaded; targets "
-                                  "crossing fit_end dropped; monitor = "
-                                  "newest fit-tail, never trained"),
+                                  "crossing fit_end dropped"),
             },
+            "partitions": partitions_evidence,
+            "feature_partition": partition,
             "objectives": objectives,
+            "objective_domain_note": (
+                "DATA-SOTA-350: encoder consumes the runtime tensor "
+                "for EVERY objective; policies transform "
+                "reconstruction targets only; heads are objective "
+                "adapters excluded from transferred encoder weights"),
             "normalization_policies": contract["normalization_policies"],
             "objective_balancing": contract["objective_balancing"],
             "cli": {"argv": [Path(a).name if os.sep in str(a) else str(a)
@@ -275,8 +289,9 @@ def main() -> int:
 
     torch.manual_seed(parsed["seed"])
     gen = torch.Generator().manual_seed(parsed["seed"] + 1)
-    # DATA-SOTA-345: FIXED monitor mask (comparable across epochs)
+    # fixed masks: monitor (reporting) and calibration (weight fitting)
     monitor_gen = torch.Generator().manual_seed(parsed["seed"] + 2)
+    calibration_gen = torch.Generator().manual_seed(parsed["seed"] + 3)
     batch_size = parsed["batch_size"]
     n_train = len(train_idx)
     epoch_generations_this_invocation = 0
@@ -311,19 +326,27 @@ def main() -> int:
         branch_windows = torch.tensor(
             all_windows[:, :, ch_idx].copy())  # (N, T, C)
         monitor_windows = branch_windows[monitor_idx]
+        calibration_windows = branch_windows[calibration_idx]
+        mask_ratio = float(rec_spec["mask_ratio"]) if rec_spec else 0.25
+        mask_span = int(rec_spec["mask_span"]) if rec_spec else 4
         monitor_mask = sample_span_mask(
-            len(monitor_idx), window,
-            float(rec_spec["mask_ratio"]) if rec_spec else 0.25,
-            int(rec_spec["mask_span"]) if rec_spec else 4, monitor_gen)
+            len(monitor_idx), window, mask_ratio, mask_span,
+            monitor_gen)
+        calibration_mask = sample_span_mask(
+            len(calibration_idx), window, mask_ratio, mask_span,
+            calibration_gen)
         monitor_targets = (targets_all[monitor_idx]
                            if quant_spec else None)
+        calibration_targets = (targets_all[calibration_idx]
+                               if quant_spec else None)
 
         def objective_losses(values, mask, targets):
             losses = {}
             if rec_spec:
-                normalized = apply_family_policy(values, mask, policy)
+                target = reconstruction_target(values, mask, policy)
                 losses["reconstruction"] = masked_reconstruction_loss(
-                    encoder, heads["reconstruction"], normalized, mask)
+                    encoder, heads["reconstruction"], values, target,
+                    mask)
             if quant_spec:
                 pred = heads["quantile"](encoder(values))
                 losses["quantile"] = pinball_loss(pred, targets,
@@ -336,8 +359,11 @@ def main() -> int:
                                           monitor_targets)
                 report = {k: round(float(v), 8)
                           for k, v in losses.items()}
+                embedding = encoder(monitor_windows)
+                report["representation_std"] = round(
+                    float(embedding.std()), 6)
                 if quant_spec:
-                    pred = heads["quantile"](encoder(monitor_windows))
+                    pred = heads["quantile"](embedding)
                     report["quantile_crossing_rate"] = \
                         quantile_crossing_rate(pred)
             return report
@@ -349,28 +375,33 @@ def main() -> int:
             opt.load_state_dict(ckpt["optimizer_state"])
             gen.set_state(ckpt["generator_state"])
             monitor_gen.set_state(ckpt["monitor_generator_state"])
+            calibration_gen.set_state(
+                ckpt["calibration_generator_state"])
             torch.set_rng_state(ckpt["torch_rng_state"])
-            # the fixed monitor mask above was drawn from the FRESH
-            # generator; the checkpointed mask is the branch's real one
+            # the fixed masks above were drawn from FRESH generators;
+            # the checkpointed masks are the branch's real ones
             monitor_mask = ckpt["monitor_mask"]
+            calibration_mask = ckpt["calibration_mask"]
             effective = ckpt["effective_weights"]
             epoch0 = start_epoch
             ckpt = None
         else:
-            # DATA-SOTA-345: predeclared bounded balancing, frozen from
-            # INITIAL monitor losses before any training step.
+            # DATA-SOTA-349: weights calibrate ONCE on the CALIBRATION
+            # partition; the monitor never calibrates anything.
             with torch.no_grad():
                 initial = {k: float(v) for k, v in objective_losses(
-                    monitor_windows, monitor_mask,
-                    monitor_targets).items()}
+                    calibration_windows, calibration_mask,
+                    calibration_targets).items()}
             effective = balance_objective_weights(
                 initial, declared_weights, parsed["balancing_floor"])
             manifest["progress"][spec["name"]]["effective_weights"] = {
-                "initial_monitor_losses": {k: round(v, 8)
-                                           for k, v in initial.items()},
+                "initial_calibration_losses": {
+                    k: round(v, 8) for k, v in initial.items()},
                 "declared": declared_weights,
                 "effective": {k: round(v, 8)
-                              for k, v in effective.items()}}
+                              for k, v in effective.items()},
+                "calibrated_on": "calibration partition only "
+                                 "(DATA-SOTA-349)"}
 
         manifest["progress"][spec["name"]]["status"] = "training"
         for epoch in range(epoch0, epochs):
@@ -382,10 +413,8 @@ def main() -> int:
             for lo in range(0, n_train, batch_size):
                 sel = train_idx[perm[lo:lo + batch_size].numpy()]
                 values = branch_windows[sel]
-                mask = sample_span_mask(
-                    values.shape[0], window,
-                    float(rec_spec["mask_ratio"]) if rec_spec else 0.25,
-                    int(rec_spec["mask_span"]) if rec_spec else 4, gen)
+                mask = sample_span_mask(values.shape[0], window,
+                                        mask_ratio, mask_span, gen)
                 targets = targets_all[sel] if quant_spec else None
                 losses = objective_losses(values, mask, targets)
                 total = sum(effective[k] * v for k, v in losses.items())
@@ -425,7 +454,10 @@ def main() -> int:
                  "optimizer_state": opt.state_dict(),
                  "generator_state": gen.get_state(),
                  "monitor_generator_state": monitor_gen.get_state(),
+                 "calibration_generator_state":
+                     calibration_gen.get_state(),
                  "monitor_mask": monitor_mask,
+                 "calibration_mask": calibration_mask,
                  "torch_rng_state": torch.get_rng_state(),
                  "effective_weights": effective},
                 manifest, generation)
@@ -446,12 +478,20 @@ def main() -> int:
         heads_file = out_dir / f"branch_{spec['name']}_heads.pt"
         enc_sha = save_module_fsync(encoder, enc_file)
         heads_sha = save_module_fsync(heads, heads_file)
+        # DATA-SOTA-350: adapters are excluded from transfer — the
+        # encoder artifact must share NO parameter key with the heads.
+        overlap = set(encoder.state_dict()) & set(heads.state_dict())
+        if overlap:
+            raise PretrainContractError(
+                f"objective adapters leak into the transferred "
+                f"encoder: {sorted(overlap)}")
         manifest["progress"][spec["name"]]["status"] = "complete"
         manifest["artifacts"][spec["name"]] = {
             "encoder_file": enc_file.name,
             "encoder_sha256": enc_sha,
             "heads_file": heads_file.name,
             "heads_sha256": heads_sha,
+            "adapters_excluded_from_transfer": True,
             "encoder_dim": int(dim),
             "parameters": int(sum(p.numel()
                                   for p in encoder.parameters())),
@@ -466,6 +506,10 @@ def main() -> int:
              "optimizer_state": opt.state_dict(),
              "generator_state": gen.get_state(),
              "monitor_generator_state": monitor_gen.get_state(),
+             "calibration_generator_state":
+                 calibration_gen.get_state(),
+             "monitor_mask": monitor_mask,
+             "calibration_mask": calibration_mask,
              "torch_rng_state": torch.get_rng_state(),
              "effective_weights": effective},
             manifest, generation)
@@ -481,6 +525,9 @@ def main() -> int:
                       "generator_state": gen.get_state(),
                       "monitor_generator_state":
                           monitor_gen.get_state(),
+                      "calibration_generator_state":
+                          calibration_gen.get_state(),
+                      "monitor_mask": None, "calibration_mask": None,
                       "torch_rng_state": torch.get_rng_state(),
                       "effective_weights": {}},
                      manifest, generation)

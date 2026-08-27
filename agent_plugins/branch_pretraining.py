@@ -1,43 +1,48 @@
-"""WP-PRETRAIN library v2 (Data-First order @7886de39; DATA-SOTA-341..346
-corrected).
+"""WP-PRETRAIN library v3 (Data-First order @7886de39;
+DATA-SOTA-341..346 and 347..352 corrected).
 
-Discipline:
+Discipline added by 347..352 on top of the 341..346 corrections:
 
-* 341 — pretraining roles are CAUSAL PER ORIGIN: the contract binds a
-  ``score_origin`` and ``fit_end`` must precede its score-year start, so
-  monitor/inner-validation/outer/sealed years are all structurally
-  absent (rows after ``fit_end`` are never loaded). Origins after the
-  first additionally require a frozen earlier-origin decision reference.
-* 342 — pretraining windows come from the SAME executing preprocessor
-  plugin (entry point ``preprocessor.plugins``) the GymFxEnv calls, with
-  the same config; parity is proven by regression against env-emitted
-  tensors.
-* 343 — when a window-level normalization policy is used for masked
-  reconstruction, statistics are computed over VISIBLE steps only:
-  masked raw values cannot influence visible model inputs.
-* 344 — normalization is a TYPED PER-FAMILY policy set declared in the
-  contract and applied through the call path (eps included).
-* 345 — objective weighting follows a predeclared bounded balancing
-  rule (inverse initial loss on the monitor split), with per-objective
-  monitor losses, gradient norms/cosines and quantile-crossing
-  measurement; the quantile head is monotone BY CONSTRUCTION.
-* 346 — resume identity binds EVERY executing identity field, and
-  checkpoint+manifest are written as atomic fsynced generations sealed
-  by digest; torn generations refuse.
+* 347 — origin authority is VERIFIED, not syntactic: every temporal
+  field parses as strict timezone-aware ISO (naive == UTC, impossible
+  calendar dates refuse) and later origins require a typed
+  ``earlier_origin_decision`` whose referenced manifest is loaded,
+  digest-verified, origin-ordered and chronologically anterior to this
+  contract's materialization.
+* 348 — the branch assignment is a COMPLETE ORDERED PARTITION of
+  ``feature_columns``: every feature exactly once, families non-empty,
+  within-family order canonical (global column order); the global and
+  per-family ordered digests are persisted and bound to identity.
+* 349 — the causal fit period splits chronologically into
+  train / calibration / monitor: objective weights calibrate ONCE on
+  calibration, training touches only train, monitor only checkpoints
+  and reports; boundaries, counts and digests are persisted.
+* 350 — ONE input domain: the transferred encoder always consumes the
+  exact runtime-preprocessed tensor (masking is corruption, not a
+  domain change); normalization policies apply to reconstruction
+  TARGETS only (objective-side adapters, excluded from transfer).
+* 341..346 — causal per-origin fit boundary, executing-preprocessor
+  windows, mask-safe visible-only target statistics, typed per-family
+  policies with declared eps, monotone quantile head + diagnostics,
+  complete resume identity over atomic digest-sealed generations.
 """
 from __future__ import annotations
 
 import hashlib
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from pipeline_plugins._observation_contract import feature_columns_sha256
 
 FIRST_ORIGIN = "o2022"
-DEVELOPMENT_OUTER_START = "2024-01-01"
+DEVELOPMENT_OUTER_START = "2024-01-01T00:00:00+00:00"
 NORMALIZATION_POLICIES = ("identity_preprocessed", "window_zscore_visible")
+OBJECTIVE_DOMAINS = ("runtime_domain_with_target_adapters",
+                     "single_domain_raw_targets")
+ORIGIN_DECISION_SCHEMA = "agent_multi.origin_decision.v1"
 
 
 class PretrainContractError(ValueError):
@@ -59,11 +64,153 @@ def sha256_obj(obj: Any) -> str:
                                      default=str).encode()).hexdigest()
 
 
+def parse_iso_utc(value: Any, label: str) -> datetime:
+    """DATA-SOTA-347: strict timezone-aware ISO parsing. Impossible
+    calendar dates and non-strings refuse; a naive timestamp is
+    declared UTC."""
+    if not isinstance(value, str) or not value.strip():
+        raise PretrainContractError(
+            f"{label} must be a non-empty ISO-8601 string, got "
+            f"{value!r}")
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError as exc:
+        raise PretrainContractError(
+            f"{label}={value!r} is not a valid ISO-8601 timestamp: "
+            f"{exc}") from exc
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+# --------------------------------------------------- 348: partition
+
+def validate_branch_partition(columns: list[str],
+                              branches: list[dict[str, Any]]
+                              ) -> dict[str, Any]:
+    """DATA-SOTA-348: the branch assignment must be a COMPLETE ordered
+    partition of ``columns`` — every feature exactly once, no empty
+    family, and within-family order canonical (the global column
+    order), so a reordered identity cannot masquerade as the same
+    assignment."""
+    if not columns:
+        raise PretrainContractError("feature_columns must not be empty")
+    position = {name: i for i, name in enumerate(columns)}
+    claimed: dict[str, str] = {}
+    family_digests: dict[str, str] = {}
+    for number, branch in enumerate(branches):
+        family = str(branch.get("name") or "")
+        features = list(branch.get("features") or [])
+        if not family:
+            raise PretrainContractError(
+                f"branches[{number}] has no name")
+        if not features:
+            raise PretrainContractError(
+                f"branch {family} claims no features (empty family)")
+        unknown = [f for f in features if f not in position]
+        if unknown:
+            raise PretrainContractError(
+                f"branch {family} features not in feature_columns: "
+                f"{unknown}")
+        for name in features:
+            if name in claimed:
+                raise PretrainContractError(
+                    f"feature {name} assigned to both "
+                    f"{claimed[name]} and {family}")
+            claimed[name] = family
+        order = [position[f] for f in features]
+        if order != sorted(order):
+            raise PretrainContractError(
+                f"branch {family} features are not in canonical global "
+                f"column order (DATA-SOTA-348: reordered identities "
+                f"refuse): {features}")
+        family_digests[family] = feature_columns_sha256(features)
+    missing = [name for name in columns if name not in claimed]
+    if missing:
+        raise PretrainContractError(
+            f"features without a branch (incomplete partition, "
+            f"DATA-SOTA-348): {missing}")
+    return {"global_ordered_digest": feature_columns_sha256(columns),
+            "family_ordered_digests": family_digests,
+            "coverage": {"feature_count": len(columns),
+                         "family_count": len(branches),
+                         "assignment": {b["name"]: list(b["features"])
+                                        for b in branches}}}
+
+
+# --------------------------------------------------- 347: origin chain
+
+def verify_earlier_origin_decision(contract: dict[str, Any],
+                                   repo_root: Path) -> dict[str, Any]:
+    """DATA-SOTA-347: a later origin materializes only against a
+    LOADED, digest-verified, chronologically anterior frozen decision
+    of the previous origin — never a bare string."""
+    origin = contract["score_origin"]
+    decision = contract.get("earlier_origin_decision")
+    if not isinstance(decision, dict):
+        raise PretrainContractError(
+            f"origin {origin['origin_id']} requires a typed "
+            f"earlier_origin_decision object (DATA-SOTA-347)")
+    for key in ("origin_id", "decided_at", "artifact",
+                "artifact_sha256"):
+        if not str(decision.get(key) or "").strip():
+            raise PretrainContractError(
+                f"earlier_origin_decision.{key} is required")
+    artifact_path = repo_root / str(decision["artifact"])
+    if not artifact_path.is_file():
+        raise PretrainContractError(
+            f"earlier_origin_decision.artifact absent: "
+            f"{decision['artifact']}")
+    actual_sha = sha256_file(artifact_path)
+    if actual_sha != str(decision["artifact_sha256"]):
+        raise PretrainContractError(
+            f"earlier_origin_decision digest mismatch: declared "
+            f"{decision['artifact_sha256']}, actual {actual_sha}")
+    manifest = json.loads(artifact_path.read_text())
+    if manifest.get("schema") != ORIGIN_DECISION_SCHEMA:
+        raise PretrainContractError(
+            f"decision artifact schema must be "
+            f"{ORIGIN_DECISION_SCHEMA}, got {manifest.get('schema')!r}")
+    if str(manifest.get("origin_id")) != str(decision["origin_id"]):
+        raise PretrainContractError(
+            f"decision artifact origin {manifest.get('origin_id')!r} "
+            f"differs from referenced {decision['origin_id']!r}")
+    earlier_start = parse_iso_utc(manifest.get("score_start"),
+                                  "decision artifact score_start")
+    this_start = parse_iso_utc(origin["score_start"],
+                               "score_origin.score_start")
+    if earlier_start >= this_start:
+        raise PretrainContractError(
+            f"referenced origin {decision['origin_id']} does not "
+            f"precede {origin['origin_id']} "
+            f"({earlier_start.isoformat()} >= {this_start.isoformat()})")
+    decided_at = parse_iso_utc(decision["decided_at"],
+                               "earlier_origin_decision.decided_at")
+    frozen_at = parse_iso_utc(manifest.get("decided_at"),
+                              "decision artifact decided_at")
+    if decided_at != frozen_at:
+        raise PretrainContractError(
+            f"decided_at mismatch: contract "
+            f"{decided_at.isoformat()} vs artifact "
+            f"{frozen_at.isoformat()}")
+    materialized_at = parse_iso_utc(
+        contract.get("materialized_at"), "materialized_at")
+    if decided_at >= materialized_at:
+        raise PretrainContractError(
+            f"the earlier decision ({decided_at.isoformat()}) must "
+            f"predate this origin's materialization "
+            f"({materialized_at.isoformat()})")
+    return {"artifact": str(decision["artifact"]),
+            "artifact_sha256": actual_sha,
+            "origin_id": str(decision["origin_id"]),
+            "decided_at": decided_at.isoformat()}
+
+
 def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
     from feature_branch_plugins._topology import (TopologyError,
                                                   require_int_list,
                                                   strict_int, strict_real)
-    if contract.get("schema") != "agent_multi.pretrain_contract.v2":
+    if contract.get("schema") != "agent_multi.pretrain_contract.v3":
         raise PretrainContractError(
             f"unsupported pretrain contract schema "
             f"{contract.get('schema')!r}")
@@ -79,43 +226,56 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             "optimizer.batch_size", 1)
         lr = strict_real((contract.get("optimizer") or {}).get("lr"),
                          "optimizer.lr")
-        monitor_fraction = strict_real(contract.get("monitor_fraction"),
-                                       "monitor_fraction")
+        fractions = contract.get("partition_fractions") or {}
+        calibration_fraction = strict_real(
+            fractions.get("calibration"),
+            "partition_fractions.calibration")
+        monitor_fraction = strict_real(
+            fractions.get("monitor"), "partition_fractions.monitor")
     except TopologyError as exc:
         raise PretrainContractError(str(exc)) from exc
     if lr <= 0:
         raise PretrainContractError(f"optimizer.lr must be > 0, got {lr}")
-    if not (0.0 < monitor_fraction <= 0.5):
+    # ---- DATA-SOTA-349: chronological three-way partition
+    for label, value in (("calibration", calibration_fraction),
+                         ("monitor", monitor_fraction)):
+        if not (0.0 < value <= 0.4):
+            raise PretrainContractError(
+                f"partition_fractions.{label} must lie in (0, 0.4], "
+                f"got {value}")
+    if calibration_fraction + monitor_fraction >= 0.8:
         raise PretrainContractError(
-            f"monitor_fraction must lie in (0, 0.5], got "
-            f"{monitor_fraction}")
+            "train partition would fall below 20% of eligible windows")
 
-    # ---- DATA-SOTA-341: causal per-origin role boundary
+    # ---- DATA-SOTA-341/347: causal per-origin boundary, strict ISO
     origin = contract.get("score_origin") or {}
     origin_id = str(origin.get("origin_id") or "")
-    score_start = str(origin.get("score_start") or "")
-    if not origin_id or not score_start:
+    if not origin_id:
         raise PretrainContractError(
-            "score_origin.origin_id and score_origin.score_start are "
-            "required (DATA-SOTA-341: pretraining is causal per origin)")
-    fit_end = str(contract.get("fit_end") or "")
-    if not fit_end:
-        raise PretrainContractError("fit_end is required")
-    if fit_end[:10] >= score_start[:10]:
+            "score_origin.origin_id is required (DATA-SOTA-341)")
+    score_start = parse_iso_utc(origin.get("score_start"),
+                                "score_origin.score_start")
+    fit_end = parse_iso_utc(contract.get("fit_end"), "fit_end")
+    if fit_end >= score_start:
         raise PretrainContractError(
-            f"fit_end={fit_end} does not precede score_origin "
-            f"{origin_id} score_start={score_start}: monitor and inner "
-            f"validation years are reserved (DATA-SOTA-341)")
-    if fit_end[:10] >= DEVELOPMENT_OUTER_START:
+            f"fit_end={fit_end.isoformat()} does not precede "
+            f"score_origin {origin_id} score_start="
+            f"{score_start.isoformat()}: monitor and inner validation "
+            f"years are reserved (DATA-SOTA-341)")
+    if fit_end >= parse_iso_utc(DEVELOPMENT_OUTER_START,
+                                "development_outer boundary"):
         raise PretrainContractError(
-            f"fit_end={fit_end} reaches development_outer (2024+); "
-            f"sealed 2025 is structurally excluded")
-    if origin_id != FIRST_ORIGIN and not str(
-            contract.get("earlier_origin_decision_frozen") or "").strip():
-        raise PretrainContractError(
-            f"origin {origin_id} requires earlier_origin_decision_frozen"
-            f": later origins expand only after the earlier decision is "
-            f"frozen (DATA-SOTA-341)")
+            f"fit_end={fit_end.isoformat()} reaches development_outer "
+            f"(2024+); sealed 2025 is structurally excluded")
+    if origin_id != FIRST_ORIGIN:
+        if not isinstance(contract.get("earlier_origin_decision"),
+                          dict):
+            raise PretrainContractError(
+                f"origin {origin_id} requires a typed "
+                f"earlier_origin_decision object — a bare string "
+                f"cannot mint an origin (DATA-SOTA-347)")
+        parse_iso_utc(contract.get("materialized_at"),
+                      "materialized_at")
 
     # ---- DATA-SOTA-342: executing observation pipeline binding
     pipe = contract.get("observation_pipeline") or {}
@@ -131,11 +291,21 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             "observation_pipeline.source_config is required "
             "(DATA-SOTA-342)")
 
+    # ---- DATA-SOTA-350: one declared objective input domain
+    domain = str(contract.get("objective_domain") or "")
+    if domain not in OBJECTIVE_DOMAINS:
+        raise PretrainContractError(
+            f"objective_domain must be one of {OBJECTIVE_DOMAINS} "
+            f"(DATA-SOTA-350: domains are never mixed silently), got "
+            f"{domain!r}")
+
     branches = contract.get("branches") or []
     if not branches:
         raise PretrainContractError("branches must not be empty")
+    partition = validate_branch_partition(
+        list(contract.get("feature_columns") or []), branches)
 
-    # ---- DATA-SOTA-344: typed per-family normalization policies
+    # ---- DATA-SOTA-344: typed per-family TARGET policies
     policies = contract.get("normalization_policies")
     if not isinstance(policies, dict) or not policies:
         raise PretrainContractError(
@@ -154,6 +324,12 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
             raise PretrainContractError(
                 f"normalization_policies[{family}].policy must be one "
                 f"of {NORMALIZATION_POLICIES}, got {policy!r}")
+        if (domain == "single_domain_raw_targets"
+                and policy != "identity_preprocessed"):
+            raise PretrainContractError(
+                f"objective_domain single_domain_raw_targets requires "
+                f"identity_preprocessed policies; {family} declares "
+                f"{policy}")
         eps = None
         if policy == "window_zscore_visible":
             try:
@@ -166,7 +342,7 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
                     f"normalization_policies[{family}].eps must be > 0")
         parsed_policies[str(family)] = {"policy": policy, "eps": eps}
 
-    # ---- DATA-SOTA-345: predeclared bounded objective balancing
+    # ---- DATA-SOTA-345/349: predeclared calibration-set balancing
     balancing = contract.get("objective_balancing") or {}
     if str(balancing.get("method") or "") != "inverse_initial_loss":
         raise PretrainContractError(
@@ -241,10 +417,13 @@ def validate_contract(contract: dict[str, Any]) -> dict[str, Any]:
     return {"window_size": window, "window_stride": stride, "seed": seed,
             "epochs": epochs, "batch_size": batch, "lr": lr,
             "fit_end": fit_end, "warmup_bars": warmup,
+            "calibration_fraction": calibration_fraction,
             "monitor_fraction": monitor_fraction,
             "origin_id": origin_id, "score_start": score_start,
+            "objective_domain": domain,
             "balancing_floor": floor,
-            "normalization_policies": parsed_policies}
+            "normalization_policies": parsed_policies,
+            "partition": partition}
 
 
 def load_fit_slice(csv_path, contract: dict[str, Any]):
@@ -260,11 +439,12 @@ def load_fit_slice(csv_path, contract: dict[str, Any]):
     usecols = [date_col] + columns + (
         [close_col] if close_col not in columns else [])
     df = pd.read_csv(csv_path, usecols=usecols)
-    stamps = pd.to_datetime(df[date_col])
-    df = df.loc[stamps <= pd.Timestamp(parsed["fit_end"])]
+    stamps = pd.to_datetime(df[date_col], utc=True)
+    df = df.loc[stamps <= parsed["fit_end"]]
     if df.empty:
         raise PretrainContractError(
-            f"no rows at or before fit_end={parsed['fit_end']}")
+            f"no rows at or before fit_end="
+            f"{parsed['fit_end'].isoformat()}")
     if df[columns + [close_col]].isna().any().any():
         bad = df[columns + [close_col]].isna().any()
         raise PretrainContractError(
@@ -316,15 +496,35 @@ def collect_preprocessed_windows(df, contract: dict[str, Any],
     return np.stack(windows, axis=0)  # (N, T, F)
 
 
-def monitor_split(steps: list[int], monitor_fraction: float):
-    """DATA-SOTA-345: the NEWEST fit-tail steps are held out as the
-    monitor set and never trained on."""
-    n_monitor = max(1, int(round(len(steps) * monitor_fraction)))
-    if n_monitor >= len(steps):
+def three_way_split(steps: list[int], calibration_fraction: float,
+                    monitor_fraction: float):
+    """DATA-SOTA-349: chronological train / calibration / monitor.
+    Train is the OLDEST block, calibration follows, monitor is the
+    NEWEST fit-tail. Weights calibrate on calibration ONLY; training
+    never touches calibration or monitor; monitor only checkpoints and
+    reports."""
+    n = len(steps)
+    n_monitor = max(1, int(round(n * monitor_fraction)))
+    n_calibration = max(1, int(round(n * calibration_fraction)))
+    n_train = n - n_monitor - n_calibration
+    if n_train < 1:
         raise PretrainContractError(
-            f"monitor split consumes every window ({n_monitor} of "
-            f"{len(steps)})")
-    return steps[:-n_monitor], steps[-n_monitor:]
+            f"three-way split leaves no training window ({n} steps, "
+            f"{n_calibration} calibration, {n_monitor} monitor)")
+    train = steps[:n_train]
+    calibration = steps[n_train:n_train + n_calibration]
+    monitor = steps[n_train + n_calibration:]
+    return train, calibration, monitor
+
+
+def partition_evidence(name: str, steps: list[int], stamps) -> dict:
+    """Row ranges, counts and digest for one chronological partition
+    (DATA-SOTA-349)."""
+    return {"partition": name, "windows": len(steps),
+            "first_step": steps[0], "last_step": steps[-1],
+            "first_observed_bar": str(stamps[steps[0] - 1]),
+            "last_observed_bar": str(stamps[steps[-1] - 1]),
+            "steps_sha256": sha256_obj(steps)}
 
 
 def sample_span_mask(batch: int, window: int, ratio: float, span: int,
@@ -348,7 +548,7 @@ def sample_span_mask(batch: int, window: int, ratio: float, span: int,
 def masked_visible_normalize(windows, mask, eps: float):
     """DATA-SOTA-343: normalization statistics come from VISIBLE steps
     only — changing masked raw values cannot change any visible
-    normalized input. eps is the DECLARED contract value
+    normalized value. eps is the DECLARED contract value
     (DATA-SOTA-344), applied here, not a hardcoded default."""
     import torch
 
@@ -360,21 +560,23 @@ def masked_visible_normalize(windows, mask, eps: float):
     return (windows - mean) / (torch.sqrt(var) + eps)
 
 
-def apply_family_policy(windows, mask, policy: dict[str, Any]):
-    """Typed per-family normalization (DATA-SOTA-344): returns the
-    tensor the reconstruction objective operates on."""
+def reconstruction_target(values, mask, policy: dict[str, Any]):
+    """DATA-SOTA-350: the policy transforms the reconstruction TARGET
+    only. The encoder always consumes the runtime-preprocessed tensor;
+    no per-objective input domain exists."""
     if policy["policy"] == "identity_preprocessed":
-        return windows  # executing preprocessor output, untouched
-    return masked_visible_normalize(windows, mask, float(policy["eps"]))
+        return values  # executing preprocessor output, untouched
+    return masked_visible_normalize(values, mask, float(policy["eps"]))
 
 
-def masked_reconstruction_loss(encoder, head, values, mask):
-    """Encode the MASKED tensor, reconstruct, score ONLY masked steps."""
+def masked_reconstruction_loss(encoder, head, values, target, mask):
+    """Encode the MASKED runtime tensor, reconstruct the (possibly
+    policy-transformed) target, score ONLY masked steps."""
     import torch
 
     masked_in = values.masked_fill(mask.unsqueeze(-1), 0.0)
-    pred = head(encoder(masked_in)).view(values.shape)
-    diff = (pred - values)[mask]
+    pred = head(encoder(masked_in)).view(target.shape)
+    diff = (pred - target)[mask]
     if diff.numel() == 0:
         return torch.zeros((), dtype=values.dtype)
     return (diff ** 2).mean()
@@ -419,8 +621,6 @@ def quantile_crossing_rate(pred) -> float:
     """Fraction of adjacent quantile pairs where a higher quantile
     predicts BELOW a lower one (measured even though the monotone head
     makes it structurally zero)."""
-    import torch
-
     if pred.shape[-1] < 2:
         return 0.0
     crossings = (pred[..., 1:] < pred[..., :-1])
@@ -467,8 +667,9 @@ def objective_gradient_diagnostics(encoder, losses: dict[str, Any]):
 def balance_objective_weights(initial_losses: dict[str, float],
                               declared: dict[str, float],
                               floor: float) -> dict[str, float]:
-    """Predeclared bounded balancing (DATA-SOTA-345): effective weight =
-    declared / max(initial monitor loss, floor), frozen before epoch 0."""
+    """Predeclared bounded balancing (DATA-SOTA-345/349): effective
+    weight = declared / max(initial CALIBRATION loss, floor), frozen
+    before epoch 0. The monitor never calibrates."""
     return {name: declared[name] / max(float(initial_losses[name]), floor)
             for name in declared}
 

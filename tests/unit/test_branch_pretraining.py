@@ -26,8 +26,8 @@ sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
     PretrainContractError, build_step_index, forward_log_return_targets,
-    load_fit_slice, masked_reconstruction_loss, monitor_split,
-    pinball_loss, refuse_on_identity_drift, sample_span_mask,
+    load_fit_slice, masked_reconstruction_loss, pinball_loss,
+    refuse_on_identity_drift, sample_span_mask, three_way_split,
     validate_contract)
 
 SOURCE_CONFIG = {
@@ -41,9 +41,10 @@ SOURCE_CONFIG = {
 }
 
 BASE_CONTRACT = {
-    "schema": "agent_multi.pretrain_contract.v2",
+    "schema": "agent_multi.pretrain_contract.v3",
     "score_origin": {"origin_id": "o2022",
                      "score_start": "2024-01-01"},
+    "objective_domain": "runtime_domain_with_target_adapters",
     "fit_end": "2023-12-31T23:00:00",
     "observation_pipeline": {
         "preprocessor_plugin": "feature_window_preprocessor",
@@ -73,7 +74,7 @@ BASE_CONTRACT = {
     },
     "objective_balancing": {"method": "inverse_initial_loss",
                             "floor": 1e-6},
-    "monitor_fraction": 0.2,
+    "partition_fractions": {"calibration": 0.2, "monitor": 0.2},
     "optimizer": {"lr": 0.001, "batch_size": 32},
     "epochs": 2, "seed": 3, "max_windows": None,
 }
@@ -88,9 +89,9 @@ def contract_with(**overrides):
 # ---------------------------------------------------------------- contract
 
 @pytest.mark.parametrize("mutation, fragment", [
-    ({"schema": "agent_multi.pretrain_contract.v1"}, "unsupported"),
+    ({"schema": "agent_multi.pretrain_contract.v2"}, "unsupported"),
     ({"fit_end": "2024-06-01T00:00:00"}, "does not precede"),
-    ({"fit_end": ""}, "fit_end is required"),
+    ({"fit_end": ""}, "non-empty ISO-8601"),
     ({"score_origin": {}}, "score_origin"),
     ({"observation_pipeline": {}}, "executing preprocessor"),
     ({"objectives": {}}, "at least one objective"),
@@ -99,15 +100,18 @@ def contract_with(**overrides):
     ({"epochs": True}, "non-boolean integer"),
     ({"branches": []}, "branches must not be empty"),
     ({"normalization_policies": None}, "normalization_policies"),
+    ({"objective_domain": "mixed_freely"}, "objective_domain"),
     ({"normalization_policies": {"alpha":
         {"policy": "identity_preprocessed"}}}, "cover the branch"),
     ({"objective_balancing": {}}, "inverse_initial_loss"),
-    ({"monitor_fraction": 0.0}, "monitor_fraction"),
+    ({"partition_fractions": {"calibration": 0.2, "monitor": 0.0}},
+     "partition_fractions.monitor"),
     ({"warmup_bars": 1}, "warmup_bars"),
-], ids=["v1-schema", "fit-not-before-score", "fit-missing",
+], ids=["v2-schema", "fit-not-before-score", "fit-missing",
         "origin-missing", "pipeline-missing", "no-objective",
         "unknown-objective", "bool-epochs", "no-branch", "no-policies",
-        "policy-gap", "no-balancing", "monitor-0", "warmup-1"])
+        "no-domain", "policy-gap", "no-balancing", "monitor-0",
+        "warmup-1"])
 def test_contract_refusals(mutation, fragment):
     with pytest.raises(PretrainContractError, match=fragment):
         validate_contract(contract_with(**mutation))
@@ -197,12 +201,14 @@ def test_step_index_max_windows_keeps_newest():
     assert steps == [294, 295, 296, 297, 298]
 
 
-def test_monitor_split_holds_out_newest_fit_tail():
-    train, monitor = monitor_split(list(range(100)), 0.2)
-    assert monitor == list(range(80, 100))  # NEWEST windows
-    assert train == list(range(80))
-    with pytest.raises(PretrainContractError, match="monitor split"):
-        monitor_split([1], 0.5)  # the only window → refuse degenerate
+def test_three_way_split_is_chronological_and_disjoint():
+    train, calibration, monitor = three_way_split(
+        list(range(100)), 0.2, 0.2)
+    assert train == list(range(60))            # OLDEST block
+    assert calibration == list(range(60, 80))  # middle
+    assert monitor == list(range(80, 100))     # NEWEST fit-tail
+    with pytest.raises(PretrainContractError, match="no training"):
+        three_way_split([1, 2], 0.4, 0.4)
 
 
 def test_targets_anchor_on_last_observed_bar():
@@ -242,13 +248,13 @@ def test_reconstruction_loss_scores_only_masked_positions():
         def forward(self, x):
             return self.out
     loss = masked_reconstruction_loss(
-        torch.nn.Identity(), Oracle(), windows, mask)
+        torch.nn.Identity(), Oracle(), windows, windows, mask)
     assert float(loss) == pytest.approx(0.0, abs=1e-9)
     inverted = masked_reconstruction_loss(
         torch.nn.Identity(),
         type("Zero", (torch.nn.Module,),
              {"forward": lambda self, x: torch.zeros(4, 24)})(),
-        windows, mask)
+        windows, windows, mask)
     assert float(inverted) > 0
 
 
@@ -317,6 +323,15 @@ def test_runner_end_to_end_and_exact_resume(runner_case):
     assert manifest["transfer_eligibility"].startswith(
         "NOT_TRANSFER_ELIGIBLE")
     assert (full / "generation.json").is_file()
+    # DATA-SOTA-349: three chronological partitions, digest-bound
+    parts = manifest["partitions"]
+    assert set(parts) == {"train", "calibration", "monitor"}
+    assert (parts["train"]["last_step"]
+            < parts["calibration"]["first_step"]
+            <= parts["calibration"]["last_step"]
+            < parts["monitor"]["first_step"])
+    for part in parts.values():
+        assert part["windows"] > 0 and part["steps_sha256"]
     for name in ("alpha", "beta"):
         progress = manifest["progress"][name]
         losses = progress["losses"]
@@ -330,6 +345,8 @@ def test_runner_end_to_end_and_exact_resume(runner_case):
         weights = progress["effective_weights"]
         assert weights["effective"].keys() == {"reconstruction",
                                                "quantile"}
+        assert "calibration" in weights["calibrated_on"]
+        assert "initial_calibration_losses" in weights
         assert manifest["artifacts"][name]["encoder_sha256"]
 
     # interrupt mid-second-branch, then resume the exact trajectory

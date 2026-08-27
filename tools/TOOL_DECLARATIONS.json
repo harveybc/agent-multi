@@ -410,6 +410,13 @@
    "authority_class": "experiment_driver",
    "owner": "General Satoshi III"
   },
+  "pretrain_domain_ablation.py": {
+   "purpose": "Bounded CPU objective-domain ablation for WP-PRETRAIN (DATA-SOTA-350): runs the executing runner under adapters vs single-domain contracts and reports losses/gradient diagnostics/representation scale; diagnostic only, selects no winner, never touches SAC",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "quarantine_inner_curriculum_successor.py": {
    "purpose": "Quarantine-only: supersede the invalid M0 mechanism_pass successor append-only with validated launch ineligibility, typed consumer inventory and correction envelope (findings 159/166-168); never edits historical M0 evidence",
    "lifecycle": "supported",

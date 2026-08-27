@@ -63,7 +63,7 @@ def test_collect_is_idempotent_and_updates_in_place(tmp_path):
 @pytest.mark.parametrize("row, fragment", [
     ({"vigenciadesde": "2026-08-24"}, "malformed"),
     ({"valor": "abc", "vigenciadesde": "2026-08-24"}, "malformed"),
-    ({"valor": "-1", "vigenciadesde": "2026-08-24"}, "non-positive"),
+    ({"valor": "-1", "vigenciadesde": "2026-08-24"}, "finite positive"),
 ], ids=["missing-valor", "non-numeric", "negative"])
 def test_malformed_rows_refuse(row, fragment):
     with pytest.raises(TrmCollectorError, match=fragment):
@@ -85,3 +85,97 @@ def test_provenance_manifest_is_sanitized(tmp_path):
     manifest = json.loads(manifest_text)
     assert manifest["store"].startswith("store:agent-multi-local/")
     assert manifest["source_dataset"] == "32sa-8pi3"
+
+
+# --------------------------------- DATA-SOTA-352: temporal contract
+
+from tools.collect_usdcop_trm import (  # noqa: E402
+    TrmAmbiguous, TrmUnavailable, collect as _collect, trm_as_of)
+
+
+class TestDataSota352TemporalContract:
+    def test_garbage_and_impossible_dates_refuse(self):
+        """The PRE counterexample: 'garbage-da' was sliced and stored."""
+        for bad in ("garbage-date", "2026-02-30T00:00:00.000",
+                    "2026-13-01", "2026-08-27X00:00"):
+            with pytest.raises(TrmCollectorError,
+                               match="ISO date|time suffix"):
+                normalize_row({"valor": "4100", "vigenciadesde": bad})
+
+    def test_inverted_interval_refuses(self):
+        with pytest.raises(TrmCollectorError, match="inverted"):
+            normalize_row({"valor": "4100",
+                           "vigenciadesde": "2026-08-27T00:00:00.000",
+                           "vigenciahasta": "2026-08-20T00:00:00.000"})
+
+    def test_non_finite_and_wrong_unit_refuse(self):
+        with pytest.raises(TrmCollectorError, match="finite positive"):
+            normalize_row({"valor": "inf",
+                           "vigenciadesde": "2026-08-27"})
+        with pytest.raises(TrmCollectorError, match="unit"):
+            normalize_row({"valor": "4100",
+                           "vigenciadesde": "2026-08-27",
+                           "unidad": "USD"})
+
+    @staticmethod
+    def _seed(tmp_path, rows):
+        store = tmp_path / "trm.sqlite"
+        _collect(store, None, None, True,
+                 fetcher=lambda s, e, latest: rows)
+        return store
+
+    def test_as_of_weekend_span_returns_the_covering_row(self, tmp_path):
+        # Friday publication valid through the weekend (hasta Monday)
+        store = self._seed(tmp_path, [
+            {"valor": "4000", "vigenciadesde": "2026-08-21",
+             "vigenciahasta": "2026-08-24"},
+            {"valor": "4050", "vigenciadesde": "2026-08-25",
+             "vigenciahasta": "2026-08-25"}])
+        sunday = trm_as_of(store, "2026-08-23T15:00:00Z")
+        assert sunday["valor_cop_per_usd"] == 4000
+        assert "REPORTING_ONLY" in sunday["authority"]
+
+    def test_as_of_never_uses_future_effective_rows_early(self, tmp_path):
+        """The PRE counterexample: the newest publication (vigencia
+        2026-08-27) was collected on 08-26 with no as-of guard."""
+        store = self._seed(tmp_path, [
+            {"valor": "4111", "vigenciadesde": "2026-08-27",
+             "vigenciahasta": "2026-08-27"}])
+        with pytest.raises(TrmUnavailable, match="never used early"):
+            trm_as_of(store, "2026-08-26T20:00:00Z")
+        assert trm_as_of(store, "2026-08-27T00:00:00Z")[
+            "valor_cop_per_usd"] == 4111
+
+    def test_as_of_gap_is_typed_unavailable(self, tmp_path):
+        store = self._seed(tmp_path, [
+            {"valor": "4000", "vigenciadesde": "2026-08-21",
+             "vigenciahasta": "2026-08-21"}])
+        with pytest.raises(TrmUnavailable):
+            trm_as_of(store, "2026-08-23T00:00:00Z")
+
+    def test_as_of_overlap_is_typed_ambiguous(self, tmp_path):
+        store = self._seed(tmp_path, [
+            {"valor": "4000", "vigenciadesde": "2026-08-21",
+             "vigenciahasta": "2026-08-25"},
+            {"valor": "4050", "vigenciadesde": "2026-08-24",
+             "vigenciahasta": "2026-08-26"}])
+        with pytest.raises(TrmAmbiguous, match="overlapping"):
+            trm_as_of(store, "2026-08-24T12:00:00Z")
+
+    def test_revised_row_is_what_as_of_returns(self, tmp_path):
+        store = self._seed(tmp_path, [
+            {"valor": "4000", "vigenciadesde": "2026-08-21",
+             "vigenciahasta": "2026-08-21"}])
+        _collect(store, None, None, True, fetcher=lambda s, e, latest: [
+            {"valor": "4009.99", "vigenciadesde": "2026-08-21",
+             "vigenciahasta": "2026-08-21"}])
+        assert trm_as_of(store, "2026-08-21T12:00:00Z")[
+            "valor_cop_per_usd"] == 4009.99
+
+    def test_provenance_manifest_written_atomically(self, tmp_path):
+        store = self._seed(tmp_path, [
+            {"valor": "4000", "vigenciadesde": "2026-08-21"}])
+        assert not list(tmp_path.glob("*.tmp"))
+        manifest = json.loads(
+            (tmp_path / "trm_provenance.json").read_text())
+        assert "as_of_rule" in manifest

@@ -19,11 +19,11 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
-    PretrainContractError, apply_family_policy,
-    balance_objective_weights, build_monotone_quantile_head,
-    load_generation, masked_visible_normalize,
-    objective_gradient_diagnostics, quantile_crossing_rate,
-    resume_identity, validate_contract, write_generation)
+    PretrainContractError, balance_objective_weights,
+    build_monotone_quantile_head, load_generation,
+    masked_visible_normalize, objective_gradient_diagnostics,
+    quantile_crossing_rate, reconstruction_target, resume_identity,
+    validate_contract, write_generation)
 from tests.unit.test_branch_pretraining import contract_with  # noqa: E402
 
 
@@ -49,16 +49,23 @@ class TestDataSota341CausalPerOriginRoles:
         parsed = validate_contract(contract)
         assert parsed["origin_id"] == "o2022"
 
-    def test_later_origin_requires_frozen_earlier_decision(self):
+    def test_later_origin_requires_typed_earlier_decision(self):
         contract = contract_with(
             score_origin={"origin_id": "o2023",
                           "score_start": "2023-01-01"},
             fit_end="2022-12-31T20:00:00")
         with pytest.raises(PretrainContractError,
-                           match="earlier_origin_decision_frozen"):
+                           match="typed earlier_origin_decision"):
             validate_contract(contract)
-        contract["earlier_origin_decision_frozen"] = (
-            "o2022 decision frozen at <commit>")
+        # DATA-SOTA-347: a bare string can no longer mint an origin
+        contract["earlier_origin_decision_frozen"] = "yes"
+        with pytest.raises(PretrainContractError,
+                           match="typed earlier_origin_decision"):
+            validate_contract(contract)
+        contract["earlier_origin_decision"] = {
+            "origin_id": "o2022", "decided_at": "2022-12-01T00:00:00Z",
+            "artifact": "decision.json", "artifact_sha256": "00"}
+        contract["materialized_at"] = "2022-12-15T00:00:00Z"
         assert validate_contract(contract)["origin_id"] == "o2023"
 
     def test_committed_v1_contract_can_no_longer_run(self):
@@ -69,12 +76,19 @@ class TestDataSota341CausalPerOriginRoles:
         with pytest.raises(PretrainContractError, match="unsupported"):
             validate_contract(v1)
 
-    def test_committed_o2022_v2_contract_validates(self):
+    def test_committed_v2_contract_can_no_longer_run(self):
         v2 = json.loads((REPO / "examples/config/"
                          "pretrain_contract_eth_h4_o2022_v2.json"
                          ).read_text())
-        parsed = validate_contract(v2)
-        assert parsed["fit_end"][:4] == "2021"
+        with pytest.raises(PretrainContractError, match="unsupported"):
+            validate_contract(v2)
+
+    def test_committed_o2022_v3_contract_validates(self):
+        v3 = json.loads((REPO / "examples/config/"
+                         "pretrain_contract_eth_h4_o2022_v3.json"
+                         ).read_text())
+        parsed = validate_contract(v3)
+        assert parsed["fit_end"].year == 2021
         assert parsed["origin_id"] == "o2022"
 
 
@@ -149,17 +163,20 @@ class TestDataSota343MaskStatisticLeakage:
         mask = torch.zeros(3, 16, dtype=torch.bool)
         mask[:, 5:9] = True
         perturbed[:, 5:9, :] += 1000.0
+        visible = ~mask
         for policy in ({"policy": "identity_preprocessed", "eps": None},
                        {"policy": "window_zscore_visible",
                         "eps": 1e-5}):
-            a = apply_family_policy(base, mask, policy).masked_fill(
-                mask.unsqueeze(-1), 0.0)
-            b = apply_family_policy(perturbed, mask,
-                                    policy).masked_fill(
-                mask.unsqueeze(-1), 0.0)
-            assert torch.equal(a, b), (
+            a = reconstruction_target(base, mask, policy)
+            b = reconstruction_target(perturbed, mask, policy)
+            assert torch.equal(a[visible], b[visible]), (
                 f"{policy['policy']}: masked raw values leaked into "
-                f"visible inputs")
+                f"visible target values")
+            # the encoder INPUT is policy-independent by construction
+            assert torch.equal(
+                base.masked_fill(mask.unsqueeze(-1), 0.0)[visible],
+                perturbed.masked_fill(mask.unsqueeze(-1),
+                                      0.0)[visible])
 
     def test_visible_only_statistics_are_actually_visible_only(self):
         windows = torch.randn(2, 12, 3)
@@ -180,10 +197,10 @@ class TestDataSota344TypedNormalizationPolicies:
         windows = torch.randn(2, 16, 3)
         mask = torch.zeros(2, 16, dtype=torch.bool)
         mask[:, 2:5] = True
-        small = apply_family_policy(
+        small = reconstruction_target(
             windows, mask, {"policy": "window_zscore_visible",
                             "eps": 1e-5})
-        large = apply_family_policy(
+        large = reconstruction_target(
             windows, mask, {"policy": "window_zscore_visible",
                             "eps": 1.0})
         assert not torch.allclose(small, large)
@@ -207,13 +224,13 @@ class TestDataSota344TypedNormalizationPolicies:
             (REPO / "docs/audits/evidence/"
              "PRETRAIN_NORMALIZATION_POLICY_EVIDENCE_2026_08_26.json"
              ).read_text())
-        v2 = json.loads((REPO / "examples/config/"
-                         "pretrain_contract_eth_h4_o2022_v2.json"
+        v3 = json.loads((REPO / "examples/config/"
+                         "pretrain_contract_eth_h4_o2022_v3.json"
                          ).read_text())
-        for family in v2["normalization_policies"]:
+        for family in v3["normalization_policies"]:
             stats = evidence["families"][family]
             assert stats["assigned_policy"] == \
-                v2["normalization_policies"][family]["policy"]
+                v3["normalization_policies"][family]["policy"]
             # the identity policy is justified by ~unit scale
             assert abs(stats["mean"]) < 0.5 and 0.5 < stats["std"] < 2.0
 

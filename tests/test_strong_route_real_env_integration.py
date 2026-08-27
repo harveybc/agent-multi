@@ -212,7 +212,7 @@ def test_pretrain_windows_bitwise_match_real_env_observations(
     cfg = json.loads(CONFIG.read_text())
     contract = json.loads(
         (REPO / "examples/config/"
-         "pretrain_contract_eth_h4_o2022_v2.json").read_text())
+         "pretrain_contract_eth_h4_o2022_v3.json").read_text())
     # the sliced fixture covers 2017 bars only; keep every row while
     # preserving the causal-origin validator (fit_end << score_start)
     contract["fit_end"] = "2018-06-30T00:00:00"
