@@ -201,9 +201,15 @@ def main() -> int:
                             expected_schema=EVIDENCE_SCHEMA,
                             run_id=run_id, dispatch_id=DISPATCH_ID)
         except Exception:
-            # DATA-SOTA-360: a failed completion write leaves the run
-            # SPENT — never rerunnable, never acknowledged
-            ledger.transition(key, "spent")
+            # DATA-SOTA-360/361: a failed completion acknowledgement
+            # leaves the COMPLETION-INTENT MARKER in place — the
+            # dispatch is completion_uncertain and can neither rerun
+            # nor render, whatever the canonical state; the spent
+            # transition is best-effort only.
+            try:
+                ledger.transition(key, "spent")
+            except Exception:
+                pass
             raise
         print(json.dumps(packet, indent=1))
         return 0

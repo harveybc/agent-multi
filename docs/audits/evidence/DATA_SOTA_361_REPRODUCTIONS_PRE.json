@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-361",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "d390d2e1692cdc7596e3cdf617c2275d82aa0635",
+ "cases": {
+  "361": {
+   "claim": "failed completion can still render as completed (auditor's independent counterexample, reproduced verbatim)",
+   "sequence": [
+    "reserve",
+    "running",
+    "valid evidence written",
+    "inject failure ONLY on parent-directory fsync during complete()"
+   ],
+   "complete_error": "OSError: injected dir fsync failure",
+   "visible_state": "completed",
+   "render_after_failed_completion": "RENDERED (defect): schema=s",
+   "committed_regression_weakness": "tolerated state completed-or-running and asserted only re-reservation refusal \u2014 'rerun refused' without 'render refused'",
+   "verdict": "REPRODUCED"
+  }
+ }
+}

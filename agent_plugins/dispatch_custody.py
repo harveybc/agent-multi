@@ -124,6 +124,17 @@ class DispatchLedger:
     def _record_path(self, key: str) -> Path:
         return self.root / f"{key}.json"
 
+    def _marker_path(self, key: str) -> Path:
+        return self.root / f"{key}.completion-intent.json"
+
+    def completion_uncertain(self, key: str) -> bool:
+        """DATA-SOTA-361: a lingering completion-intent marker means a
+        completion acknowledgement FAILED at some durability boundary.
+        The marker is authoritative over any completed-looking
+        canonical state; only an independent recovery tool may resolve
+        it — never the ordinary execution path."""
+        return self._marker_path(key).exists()
+
     def read(self, key: str) -> dict[str, Any] | None:
         path = self._record_path(key)
         if path.is_symlink():
@@ -153,6 +164,11 @@ class DispatchLedger:
             raise ExecutionCustodyError(
                 f"output path already exists (no-clobber): "
                 f"{output_path.name}")
+        if self.completion_uncertain(key):
+            raise ExecutionCustodyError(
+                "dispatch identity is COMPLETION_UNCERTAIN — a prior "
+                "completion acknowledgement failed; permanently spent "
+                "for the ordinary path (DATA-SOTA-361)")
         existing = self.read(key)
         attempt = 1
         if existing is not None:
@@ -226,14 +242,32 @@ class DispatchLedger:
     def complete(self, key: str, evidence_path: Path,
                  *, expected_schema: str, run_id: str,
                  dispatch_id: str) -> None:
-        """DATA-SOTA-360: completion ONLY after durable evidence; binds
-        the evidence SHA-256, schema, run id and dispatch id. If this
-        write fails the caller must treat the run as SPENT."""
+        """DATA-SOTA-360/361: completion ONLY after durable evidence,
+        under a durable completion-intent sidecar. Sequence:
+
+        1. create + fsync (file AND directory) the no-clobber intent
+           marker carrying the expected evidence identity;
+        2. commit the completed ledger record durably;
+        3. unlink the marker, then fsync the directory again;
+        4. only then acknowledge success.
+
+        ANY failure leaves the marker: the dispatch is permanently
+        COMPLETION_UNCERTAIN — neither rerunnable nor renderable by the
+        ordinary path, whatever the canonical state looks like."""
         evidence_path = Path(evidence_path)
         if not evidence_path.is_file():
             raise ExecutionCustodyError(
                 "evidence absent at completion time")
         digest = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+        marker = {"schema": "agent_multi.completion_intent.v1",
+                  "key": key,
+                  "expected_evidence_path": str(evidence_path),
+                  "expected_evidence_sha256": digest,
+                  "expected_schema": expected_schema,
+                  "run_id": run_id, "dispatch_id": dispatch_id}
+        durable_write_bytes(self._marker_path(key),
+                            json.dumps(marker, indent=1).encode(),
+                            exclusive=True)
         self.transition(key, "completed", {
             "evidence": f"external:{evidence_path.name}",
             "evidence_path_local": str(evidence_path),
@@ -241,12 +275,58 @@ class DispatchLedger:
             "evidence_schema": expected_schema,
             "run_id": run_id,
             "dispatch_id": dispatch_id})
+        try:
+            os.unlink(self._marker_path(key))
+            _fsync_directory(self.root)
+        except Exception:
+            # DATA-SOTA-361: the completion record is durable, but the
+            # marker removal is NOT — restore the marker (best effort)
+            # so the dispatch stays completion_uncertain in-process,
+            # matching what a crash-recovery would observe.
+            try:
+                if not self._marker_path(key).exists():
+                    with open(self._marker_path(key), "x",
+                              encoding="utf-8") as fh:
+                        fh.write(json.dumps(marker, indent=1))
+            except Exception:
+                pass
+            raise
+
+    def diagnose_completion(self, key: str) -> dict[str, Any]:
+        """Read-only diagnostic for a COMPLETION_UNCERTAIN dispatch:
+        reports expected vs actual digests and states, mutates NOTHING.
+        Resolution is outside the ordinary path (independent recovery
+        tooling under separate authority)."""
+        marker_path = self._marker_path(key)
+        report: dict[str, Any] = {
+            "key": key,
+            "completion_uncertain": marker_path.exists(),
+            "canonical_state": (self.read(key) or {}).get("state"),
+        }
+        if marker_path.exists():
+            marker = json.loads(marker_path.read_text())
+            report["marker"] = marker
+            evidence = Path(marker.get("expected_evidence_path") or "")
+            report["evidence_exists"] = evidence.is_file()
+            if evidence.is_file():
+                actual = hashlib.sha256(
+                    evidence.read_bytes()).hexdigest()
+                report["actual_evidence_sha256"] = actual
+                report["digests_match"] = (
+                    actual == marker.get("expected_evidence_sha256"))
+        return report
 
     def verified_render(self, key: str) -> dict[str, Any]:
         """DATA-SOTA-360: model-free presentation from the LEDGER KEY
         only. Verifies completed state, evidence existence, digest,
         schema, run id, dispatch id and bound identities before
         returning the packet. Freely repeatable."""
+        if self.completion_uncertain(key):
+            raise ExecutionCustodyError(
+                "render refused: completion_uncertain — a completion "
+                "acknowledgement failed at a durability boundary; the "
+                "intent marker is authoritative over any "
+                "completed-looking canonical state (DATA-SOTA-361)")
         record = self.read(key)
         if record is None:
             raise ExecutionCustodyError(

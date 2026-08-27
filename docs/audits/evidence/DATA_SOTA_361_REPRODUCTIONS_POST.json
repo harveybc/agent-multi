@@ -1,0 +1,25 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-361",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "d390d2e1692cdc7596e3cdf617c2275d82aa0635",
+ "cases": {
+  "361": {
+   "auditors_exact_sequence": {
+    "complete_error": "OSError: injected dir fsync failure",
+    "canonical_state_may_look": "running",
+    "marker_authoritative": true,
+    "render_after_failed_completion": "REFUSED: render refused: completion_uncertain \u2014 a completion acknowledgement failed at a durability",
+    "rerun_after_failed_completion": "REFUSED: dispatch identity is COMPLETION_UNCERTAIN \u2014 a prior completion acknowl",
+    "render_after_process_restart": "REFUSED (fresh instance): render refused: completion_uncertain \u2014 a completion acknowle"
+   },
+   "diagnostic_read_only": {
+    "completion_uncertain": true,
+    "digests_match": true
+   },
+   "all_six_boundaries_regressed": "intent file/dir fsync, record file/dir fsync, unlink, post-unlink dir fsync \u2014 each asserts rerun refused AND render refused incl. fresh ledger instance",
+   "verdict": "CORRECTED: rerun refused AND render refused after any failed completion acknowledgement"
+  }
+ }
+}
