@@ -40,8 +40,10 @@ sys.path.insert(0, str(REPO))
 from agent_plugins.branch_pretraining import (  # noqa: E402
     load_generation, sha256_file, sha256_obj)
 from agent_plugins.dispatch_authorization import (  # noqa: E402
-    AuthorizationRefused, executable_manifest,
-    executable_manifest_digest, verify_authorization,
+    AuthorizationRefused, bounded_extractor_forward,
+    cudnn_micro_preflight, executable_manifest,
+    executable_manifest_digest, resolve_required_entry_points,
+    verify_authorization, verify_device_binding,
     verify_worktree_identity)
 from agent_plugins.dispatch_custody import (  # noqa: E402
     DispatchLedger, dispatch_key)
@@ -385,7 +387,8 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
                  logical_slot: str,
                  slot_binding: dict | None = None,
                  identity_proof: dict | None = None,
-                 authorization_sha256: str | None = None) -> dict:
+                 authorization_sha256: str | None = None,
+                 environment_preflight: dict | None = None) -> dict:
     """Run ONE cell through the accepted nested trainer under custody.
     Every attempt is a NEW identity (non-resumable by construction):
     the nonce is minted FIRST and every artifact lives inside the
@@ -465,6 +468,7 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
             "dry_run_budget": (dict(DRY_RUN_BUDGET) if dry_run
                                else None),
             "custody_key": key,
+            "environment_preflight": environment_preflight,
             "logical_slot": logical_slot,
             "device_class_sanitized": device_class,
             "slot_binding": ({k: slot_binding[k] for k in
@@ -593,11 +597,19 @@ def main() -> int:
                 "CUDA is visible — the CPU dry run must be "
                 "structurally unable to touch a GPU (run under "
                 "CUDA_VISIBLE_DEVICES=\"\")")
+        # DATA-SOTA-382: the EXECUTING environment must prove its
+        # entry-point metadata and run a bounded forward on the
+        # selected device BEFORE any attempt exists
+        preflight = {
+            **resolve_required_entry_points(REPO),
+            "bounded_forward": bounded_extractor_forward(REPO, "cpu"),
+        }
         record = execute_cell(design, cell, Path(args.pretrain_dir),
                               Path(args.output_root), device="cpu",
                               dry_run=True,
                               logical_slot=args.logical_slot,
-                              slot_binding=slot_binding)
+                              slot_binding=slot_binding,
+                              environment_preflight=preflight)
         print(json.dumps({"status": "CPU_DRY_RUN_COMPLETED",
                           "custody_key": record["custody_key"][:16],
                           "stop_reason":
@@ -635,13 +647,27 @@ def main() -> int:
     if not torch.cuda.is_available():
         raise DispatchRefused(
             "no CUDA visibility — the operator has not granted a GPU")
+    # DATA-SOTA-383: physical binding + cuDNN micro-preflight BEFORE
+    # any custody reservation — failure refuses without spending an
+    # attempt identity
+    device_binding = verify_device_binding(args.logical_slot)
+    micro = cudnn_micro_preflight("cuda")
+    # DATA-SOTA-382: entry-point metadata + bounded forward on the
+    # BOUND device, still before the attempt exists
+    preflight = {
+        **resolve_required_entry_points(REPO),
+        "bounded_forward": bounded_extractor_forward(REPO, "cuda"),
+        "device_binding": device_binding,
+        "cudnn_micro_preflight": micro,
+    }
     record = execute_cell(
         design, cell, Path(args.pretrain_dir),
         Path(args.output_root), device="cuda", dry_run=False,
         logical_slot=args.logical_slot, slot_binding=slot_binding,
         identity_proof=identity_proof,
         authorization_sha256=sha256_file(
-            Path(args.gpu_authorized_by_musashi)))
+            Path(args.gpu_authorized_by_musashi)),
+        environment_preflight=preflight)
     print(json.dumps({"status": "CELL_COMPLETED",
                       "custody_key": record["custody_key"][:16],
                       "logical_slot": args.logical_slot},

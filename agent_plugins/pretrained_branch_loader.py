@@ -328,13 +328,27 @@ def load_family_encoders(pretrain_dir: Path, manifest: dict[str, Any],
         accounting["loaded_per_family"][family] = {
             "tensors": loaded, "bytes": offered["bytes"]}
         # bit parity: re-serialize the LOADED module and compare every
-        # tensor against the sealed source state
+        # tensor against the sealed source state. DATA-SOTA-381: the
+        # target module may live on CUDA while the sealed state loads
+        # on CPU — torch.equal across devices raises, which blocked
+        # every treatment cell on the GPU fleet. The comparison happens
+        # in ONE common domain by moving EXCLUSIVELY the verification
+        # copy of the sealed tensor to the target tensor's device;
+        # dtype and content are never altered (a device transfer of an
+        # identical-dtype tensor is bit-exact), and the module's own
+        # tensors never move.
         buffer = io.BytesIO()
         torch.save(module.state_dict(), buffer)
         buffer.seek(0)
         reloaded = torch.load(buffer, weights_only=True)
         for key in state:
-            if not torch.equal(reloaded[key], state[key]):
+            sealed = state[key]
+            if reloaded[key].dtype != sealed.dtype:
+                raise TransferLoadError(
+                    f"{family}: post-load dtype drift at {key} "
+                    f"({reloaded[key].dtype} != {sealed.dtype})")
+            verification_copy = sealed.to(reloaded[key].device)
+            if not torch.equal(reloaded[key], verification_copy):
                 raise TransferLoadError(
                     f"{family}: post-load bit parity FAILED at {key}")
         report[family] = {

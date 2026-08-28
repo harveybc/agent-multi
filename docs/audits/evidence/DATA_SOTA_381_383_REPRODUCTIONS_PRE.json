@@ -1,0 +1,17 @@
+{
+ "schema": "agent_multi.data_sota_381_383_pre.v1",
+ "findings": [
+  "DATA-SOTA-381",
+  "DATA-SOTA-382",
+  "DATA-SOTA-383"
+ ],
+ "381_reproduction": {
+  "context": "REAL sealed candidate generation loaded into the REAL strong grouped extractor moved to CUDA (single local RTX-class device), exactly the treatment path of the failed dispatch",
+  "exception_type": "RuntimeError",
+  "exception_text": "Expected all tensors to be on the same device, but got other is on cpu, different from other tensors on cuda:0 (when checking argument in method wrapper_CUDA__equal)",
+  "device_of_target": "cuda:0",
+  "device_of_sealed_state": "cpu (torch.load of the encoder file)"
+ },
+ "382_pre": "preflight verified file hashes only; entry-point metadata (distribution/version/resolved file per plugin) was never resolved via importlib.metadata, so a host whose installed metadata resolved plugins elsewhere passed preflight and failed inside the pipeline",
+ "383_pre": "driver required device_count()==1 but never verified the visible device's physical class/local identity against the slot; no cuDNN micro-preflight existed (transient conv2d failure on first concurrent use burned an attempt)"
+}

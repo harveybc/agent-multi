@@ -192,8 +192,13 @@ def executable_manifest(repo: Path) -> dict[str, str]:
                                         "20260826/ENVELOPE_"
                                         "CALIBRATION_o2022.json"),
     }
-    return {name: _sha_file(path)
-            for name, path in sorted(files.items())}
+    manifest = {name: _sha_file(path)
+                for name, path in sorted(files.items())}
+    # DATA-SOTA-382: the executing environment's entry-point metadata
+    # is part of the executable identity — PYTHONPATH alone is not
+    manifest["entry_point_metadata"] = resolve_required_entry_points(
+        repo)["entry_point_metadata_digest"]
+    return manifest
 
 
 def executable_manifest_digest(manifest: dict[str, str]) -> str:
@@ -228,3 +233,230 @@ def verify_worktree_identity(repo: Path, *,
             "present) — an unpinned tree never executes "
             "(DATA-SOTA-379):\n" + status[:800])
     return {"head": head, "clean": True}
+
+
+# --- DATA-SOTA-382: executing environmental preflight ----------------
+
+REQUIRED_ENTRY_POINTS = (
+    ("pipeline.plugins", "rl_pipeline_with_validation"),
+    ("agent.plugins", "sac_agent"),
+    ("env.plugins", "gym_fx_env"),
+    ("preprocessor.plugins", "feature_window_preprocessor"),
+    ("strategy.plugins", "shared_execution_envelope"),
+    ("feature_branch.plugins", "patchtst_branch"),
+    ("feature_branch.plugins", "tft_branch"),
+    ("feature_branch.plugins", "timesnet_branch"),
+    ("feature_branch.plugins", "tcn_branch"),
+    ("feature_branch.plugins", "gru_branch"),
+    ("feature_branch.plugins", "mlp_branch"),
+    ("feature_fusion.plugins", "cross_family_attention"),
+)
+
+
+def resolve_required_entry_points(repo: Path) -> dict[str, Any]:
+    """DATA-SOTA-382: the preflight must prove that the EXECUTING
+    environment's installed entry-point metadata resolves every
+    required plugin — `PYTHONPATH` visibility alone proved nothing on
+    the fleet. Missing metadata, duplicated registrations, or a
+    resolution outside the pinned worktree/installation roots refuse.
+    Returns per-plugin {distribution, version, file, sha256} plus a
+    canonical digest of the whole resolution."""
+    import importlib
+    import importlib.metadata as md
+    import site
+    import sysconfig
+
+    repo = Path(repo).resolve()
+    allowed_roots = [repo]
+    for root in {sysconfig.get_paths().get("purelib"),
+                 sysconfig.get_paths().get("platlib"),
+                 *site.getsitepackages()}:
+        if root:
+            allowed_roots.append(Path(root).resolve())
+    # editable installs execute from their checkout: pin the sibling
+    # checkout roots (…/GitHub and …/GitHub/.worktrees layouts)
+    allowed_roots.append(repo.parent.resolve())
+    allowed_roots.append(repo.parent.parent.resolve())
+    resolution: dict[str, Any] = {}
+    for group, name in REQUIRED_ENTRY_POINTS:
+        matches = [ep for ep in md.entry_points(group=group)
+                   if ep.name == name]
+        if not matches:
+            raise AuthorizationRefused(
+                f"entry point {group}:{name} is NOT registered in the "
+                "executing environment's installed metadata — "
+                "PYTHONPATH visibility alone does not execute "
+                "(DATA-SOTA-382)")
+        if len(matches) > 1:
+            dists = sorted({(ep.dist.name if ep.dist else "?")
+                            for ep in matches})
+            raise AuthorizationRefused(
+                f"entry point {group}:{name} is registered "
+                f"{len(matches)} times (distributions {dists}) — a "
+                "duplicated registration makes resolution "
+                "order-dependent and refuses (DATA-SOTA-382)")
+        ep = matches[0]
+        module = importlib.import_module(
+            ep.value.split(":")[0])
+        resolved = Path(module.__file__).resolve()
+        if not any(str(resolved).startswith(str(root) + "/")
+                   or resolved == root
+                   for root in allowed_roots):
+            raise AuthorizationRefused(
+                f"{group}:{name} resolves to {resolved.name} OUTSIDE "
+                "the pinned worktree/installation roots — refused "
+                "(DATA-SOTA-382)")
+        resolution[f"{group}:{name}"] = {
+            "distribution": ep.dist.name if ep.dist else None,
+            "version": ep.dist.version if ep.dist else None,
+            "file": str(resolved),
+            "sha256": _sha_file(resolved),
+        }
+    digest = hashlib.sha256(json.dumps(
+        {k: {"distribution": v["distribution"],
+             "version": v["version"], "sha256": v["sha256"]}
+         for k, v in resolution.items()},
+        sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    return {"entry_points": resolution,
+            "entry_point_metadata_digest": digest}
+
+
+def bounded_extractor_forward(repo: Path, device: str) -> dict[str, Any]:
+    """DATA-SOTA-382: instantiate the SAME architecture materializer
+    the trainer uses and run one bounded forward on the SELECTED
+    device — construction-only proof that the resolved environment
+    actually executes there."""
+    import torch
+
+    from agent_plugins.grouped_architecture import (
+        materialize_from_config, snapshot_effective_config)
+    from agent_plugins.grouped_features_extractor import (
+        build_grouped_extractor_class)
+
+    snapshot = snapshot_effective_config(
+        Path(repo) / "examples/config/"
+        "project3_ethusdt_4h_sac_grouped_strong_v1.json")
+    materialized = snapshot["materialized"]
+    architecture = materialized["architecture"]
+    window = int(snapshot["env_config"]["window_size"])
+    feature_count = len(snapshot["env_config"]["feature_columns"])
+    state_keys = architecture.get("state_keys") or []
+    import gymnasium as gym
+    import numpy as np
+    spaces = {"features": gym.spaces.Box(-np.inf, np.inf,
+                                         (window, feature_count),
+                                         dtype=np.float32)}
+    for key in state_keys:
+        # live_stationary_v2: each agent-state key is one scalar box
+        spaces[key] = gym.spaces.Box(-np.inf, np.inf, (1,),
+                                     dtype=np.float32)
+    observation_space = gym.spaces.Dict(spaces)
+    extractor_cls = build_grouped_extractor_class()
+    torch.manual_seed(0)
+    extractor = extractor_cls(observation_space,
+                              architecture=architecture).to(device)
+    extractor.eval()
+    batch = {key: torch.zeros((2,) + space.shape,
+                              device=device)
+             for key, space in spaces.items()}
+    with torch.no_grad():
+        out = extractor(batch)
+    if not torch.isfinite(out).all():
+        raise AuthorizationRefused(
+            "bounded preflight forward produced non-finite output "
+            "(DATA-SOTA-382)")
+    return {"device": device, "output_shape": list(out.shape),
+            "architecture_digest": materialized[
+                "architecture_digest"]}
+
+
+# --- DATA-SOTA-383: proven device binding + cuDNN micro-preflight ----
+
+PRIVATE_BINDING_PATH = (Path.home() / ".local/share/agent-multi/"
+                        "restricted_evidence/"
+                        "paired_sac_fleet_private_binding_20260828"
+                        ".json")
+
+
+def verify_device_binding(logical_slot: str,
+                          binding_path: Path | None = None
+                          ) -> dict[str, Any]:
+    """DATA-SOTA-383: `CUDA_VISIBLE_DEVICES` proves visibility, not
+    identity — on one fleet host ordinal 0 is a different physical
+    class for PyTorch than for nvidia-smi. The OPERATOR's private
+    plan (restricted store, never committed) binds each logical slot
+    to an expected physical class and a local device identity; after
+    the environment is applied, PyTorch must see exactly ONE device
+    whose class and local identity match the slot. Public evidence
+    receives ONLY the sanitized class and the slot."""
+    import torch
+
+    if torch.cuda.device_count() != 1:
+        raise AuthorizationRefused(
+            f"{torch.cuda.device_count()} CUDA devices visible — "
+            "exactly ONE per cell process (DATA-SOTA-380/383)")
+    path = Path(binding_path or PRIVATE_BINDING_PATH)
+    if not path.is_file():
+        raise AuthorizationRefused(
+            "operator private device-binding plan is absent — GPU "
+            "execution requires the slot→physical binding "
+            "(DATA-SOTA-383)")
+    plan = json.loads(path.read_text())
+    entry = (plan.get("slots") or {}).get(logical_slot)
+    if not entry:
+        raise AuthorizationRefused(
+            f"slot {logical_slot!r} is not in the operator binding "
+            "plan (DATA-SOTA-383)")
+    name = torch.cuda.get_device_name(0)
+    expected_class = str(entry.get("expected_device_class") or "")
+    if not expected_class or "TO_BE" in expected_class.upper():
+        raise AuthorizationRefused(
+            "operator binding plan is unfilled for "
+            f"{logical_slot} (DATA-SOTA-383)")
+    if expected_class not in name:
+        raise AuthorizationRefused(
+            f"visible device class {name!r} does not match the "
+            f"slot's expected class {expected_class!r} — wrong "
+            "physical device (DATA-SOTA-383)")
+    expected_local = entry.get("local_identity")
+    if expected_local:
+        props = torch.cuda.get_device_properties(0)
+        local = str(getattr(props, "uuid", "")) or None
+        if local != str(expected_local):
+            raise AuthorizationRefused(
+                "visible device local identity does not match the "
+                f"slot binding for {logical_slot} — wrong physical "
+                "device (DATA-SOTA-383); identities stay in the "
+                "restricted plan and are never published")
+    # sanitized: class + slot ONLY — no UUID, no bus id, no host
+    return {"logical_slot": logical_slot,
+            "device_class_sanitized": name,
+            "local_identity_verified": bool(expected_local)}
+
+
+def cudnn_micro_preflight(device: str = "cuda") -> dict[str, Any]:
+    """DATA-SOTA-383: a REAL Conv2d forward/backward plus device
+    synchronization on the bound device BEFORE any custody
+    reservation — a transient cuDNN failure refuses without spending
+    an attempt identity."""
+    import time
+
+    import torch
+
+    start = time.perf_counter()
+    conv = torch.nn.Conv2d(3, 8, 3).to(device)
+    x = torch.randn(8, 3, 32, 32, device=device, requires_grad=True)
+    y = conv(x)
+    loss = y.square().mean()
+    loss.backward()
+    if device.startswith("cuda"):
+        torch.cuda.synchronize()
+    if not (torch.isfinite(y).all()
+            and torch.isfinite(x.grad).all()
+            and all(torch.isfinite(p.grad).all()
+                    for p in conv.parameters())):
+        raise AuthorizationRefused(
+            "cuDNN micro-preflight produced non-finite tensors — "
+            "the device is not fit for the cell (DATA-SOTA-383)")
+    return {"device": device, "conv2d_forward_backward_ok": True,
+            "wall_ms": round((time.perf_counter() - start) * 1e3, 1)}

@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.data_sota_381_383_post.v1",
+ "findings": [
+  "DATA-SOTA-381",
+  "DATA-SOTA-382",
+  "DATA-SOTA-383"
+ ],
+ "corrections": {
+  "381": "loader parity now compares in ONE common domain: exclusively the VERIFICATION copy of each sealed tensor moves to the target tensor's device (dtype checked first, content never altered; a device transfer of an identical-dtype tensor is bit-exact; module tensors never move). Reproduced PRE with the REAL generation + REAL strong extractor on CUDA (literal 'Expected all tensors to be on the same device'); POST: bounded single-GPU smoke loads the treatment into actor+critic+critic_target with bit parity, 73 trainable optimizer-resident encoder params per network, then runs 64 real env timesteps with 32 REAL gradient updates and a finite post-update predict \u2014 verdict CUDA_TREATMENT_PATH_EXECUTES (R1_CUDA_TREATMENT_SMOKE_2026_08_28.json)",
+  "382": "resolve_required_entry_points resolves ALL 12 required plugins (pipeline, agent, env, preprocessor, strategy, five branches + state mlp, fusion) via importlib.metadata.entry_points BEFORE any attempt exists: missing metadata, duplicated registrations and resolutions outside the pinned worktree/installation roots refuse; per-plugin distribution/version/file/sha256 persisted; bounded strong-extractor forward executes on the SELECTED device; the entry-point metadata digest is now PART of the executable allowlist",
+  "383": "operator PRIVATE binding plan (restricted store, never committed) maps each logical slot to expected physical class + local device identity; after CUDA_VISIBLE_DEVICES the driver verifies exactly ONE visible device whose class and local identity match the slot (unfilled plan refuses); a REAL Conv2d forward/backward + synchronize micro-preflight runs BEFORE custody reservation so a transient cuDNN failure refuses without spending an attempt; public evidence carries ONLY sanitized class + slot"
+ },
+ "authorization_revocation": "authorization 820b348e remains byte-untouched and is REVOKED FOR FUTURE ATTEMPTS BY IDENTITY: it binds reviewed commit 45f4f8a4 and allowlist digest f3cce8af63fe6ea2..., while the corrected tree carries a new HEAD and allowlist digest aedf1c1778bebbde... \u2014 verify_authorization refuses it as stale on every field mismatch",
+ "regenerated_authority": {
+  "launch_manifests": "v3 (executable allowlist WITH entry_point_metadata + R2/R3 preflight bindings + --logical-slot command)",
+  "template": "regenerated with the new manifest digests and allowlist digest; Musashi fills commit/timestamp/audit digest for the v2 authorization",
+  "new_executable_allowlist_digest": "aedf1c1778bebbde",
+  "entry_point_metadata_digest": "9ce32098209c2233"
+ },
+ "verification_only_per_slot": "all four slots re-verified post-regeneration with the SAME new allowlist digest (outputs in the return packet)",
+ "regression_suite": "tests/unit/test_data_sota_381_383_regressions.py \u2014 19 passed with a real single GPU, 16 passed + 3 CUDA-skips without one",
+ "failed_gpu_attempts": "preserved as immutable non-resumable siblings; no result from them is reused; the scientific clock restarts at the v2 dispatch"
+}

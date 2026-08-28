@@ -1,0 +1,35 @@
+{
+ "schema": "agent_multi.r1_cuda_treatment_smoke.v1",
+ "finding": "DATA-SOTA-381",
+ "device_class_sanitized": "NVIDIA GeForce RTX 4070 Laptop GPU",
+ "cudnn_micro_preflight": {
+  "device": "cuda",
+  "conv2d_forward_backward_ok": true,
+  "wall_ms": 1055.5
+ },
+ "treatment_seal": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+ "transfer_bit_parity_all_extractors": true,
+ "transfer_trainability": {
+  "actor": {
+   "encoder_params": 73,
+   "all_requires_grad": true,
+   "all_in_optimizer": true
+  },
+  "critic": {
+   "encoder_params": 73,
+   "all_requires_grad": true,
+   "all_in_optimizer": true
+  },
+  "critic_target": {
+   "polyak_tracked": true,
+   "note": "SB3 SAC target network \u2014 never optimizer-trained, identical semantics in both arms"
+  }
+ },
+ "extractor_parameter_devices": [
+  "cuda:0"
+ ],
+ "timesteps_run": 64,
+ "gradient_updates_real": 32,
+ "post_update_predict_finite": true,
+ "verdict": "CUDA_TREATMENT_PATH_EXECUTES"
+}

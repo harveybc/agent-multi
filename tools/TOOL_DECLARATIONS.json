@@ -570,6 +570,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "r1_cuda_treatment_smoke.py": {
+   "purpose": "R1/DATA-SOTA-381 bounded single-GPU smoke: builds the strong-route SAC model on CUDA, loads the five sealed encoders through the corrected loader (bit parity in the common device domain), then runs real env interaction with at least one forward and one genuine gradient update; refuses without exactly one visible CUDA device",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

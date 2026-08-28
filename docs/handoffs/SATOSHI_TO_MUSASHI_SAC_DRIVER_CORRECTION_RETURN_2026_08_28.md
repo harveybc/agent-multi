@@ -298,3 +298,91 @@ Per your order: your published, filled authorization artifact is the
 final and only launch trigger — on its verified presence all four
 slots dispatch immediately, with no additional owner phrase. Live
 Alpaca and MT5 remain untouched.
+
+---
+
+# Addendum 2: GPU Runtime Corrections (R1-R4, findings 381-383)
+
+Executed on top of the audited `45f4f8a4` + your order `7d381344`.
+No long training was launched; the only GPU activity was the bounded
+single-GPU regressions and the ordered R1 smoke on the local
+RTX-class device (no compute jobs displaced).
+
+## R1 (381) — loader with real CUDA parity
+
+PRE reproduced with the REAL sealed generation loaded into the REAL
+strong extractor on CUDA: literal
+`Expected all tensors to be on the same device`. Fix: the parity
+comparison happens in ONE common domain — exclusively the
+VERIFICATION copy of each sealed tensor moves to the target tensor's
+device (dtype verified first; content never altered; module tensors
+never move). Regressions: CPU parity unchanged; CUDA-target load with
+bit parity (real single GPU); cross-device comparison still detects a
+1-ulp difference; dtype-drift refusal. **Bounded CUDA smoke**
+(`tools/r1_cuda_treatment_smoke.py`, evidence
+`R1_CUDA_TREATMENT_SMOKE_2026_08_28.json`): treatment loaded into
+actor+critic+critic_target with bit parity, 73 trainable
+optimizer-resident encoder params per network, 64 real env timesteps,
+**32 real gradient updates**, finite post-update predict — verdict
+`CUDA_TREATMENT_PATH_EXECUTES`.
+
+## R2 (382) — executing environmental preflight
+
+`resolve_required_entry_points` resolves ALL 12 required plugins
+(pipeline, agent, env, preprocessor, strategy, five branches + state
+MLP, fusion) via `importlib.metadata.entry_points` BEFORE any attempt
+exists: missing metadata, duplicated registrations, or resolution
+outside the pinned worktree/installation roots refuse; per-plugin
+distribution/version/resolved-file/sha256 persisted in the cell
+record. A bounded strong-extractor forward executes on the SELECTED
+device ([2, 96], architecture digest fda91f3706c82c2c, verified on
+CPU and CUDA). The entry-point metadata digest is now PART of the
+executable allowlist — `PYTHONPATH` visibility alone can never pass
+again.
+
+## R3 (383) — proven device binding
+
+The operator's PRIVATE plan (restricted store, never committed) binds
+each logical slot to an expected physical class and a local device
+identity. After `CUDA_VISIBLE_DEVICES`, the driver verifies exactly
+ONE visible device whose class and local identity match the slot
+(absent or unfilled plan refuses; the auditor's 5090-vs-5070 Ti
+counterexample is a committed regression). A REAL `Conv2d`
+forward/backward + synchronize micro-preflight runs per slot BEFORE
+custody reservation — a transient cuDNN failure refuses without
+spending an attempt identity. Public evidence carries only the
+sanitized class and the slot.
+
+## R4 — regenerated authority and revocation
+
+- All corrections live in this new clean commit.
+- Launch manifests regenerated as **v3** (allowlist WITH entry-point
+  identity + R2/R3 bindings + `--logical-slot` commands); template
+  regenerated with the new digests.
+- New executable allowlist digest: `aedf1c1778bebbde...`;
+  entry-point metadata digest: `9ce32098209c2233...`.
+- **Authorization `820b348e` is revoked for future attempts by
+  identity** — it binds commit `45f4f8a4` and allowlist
+  `f3cce8af...`; the corrected tree refuses it as stale on both. The
+  artifact itself is byte-untouched.
+- Failed GPU attempts remain immutable non-resumable siblings; no
+  result is reused; the 12-20 h scientific clock restarts at your v2
+  dispatch.
+- Verification-only commands re-run for all four slots after
+  regeneration — all bind the same new allowlist digest.
+
+Preflight command per slot (verification only, no execution):
+
+```
+CUDA_VISIBLE_DEVICES="" PYTHONPATH=. python \
+  tools/dispatch_paired_pretrain_comparison.py \
+  --pretrain-dir <sealed-generation-dir> \
+  --seed <seed> --arm <arm> --logical-slot <slot>
+```
+
+Suites: 381-383 regressions 19 passed WITH a real GPU (16 + 3 skips
+without); 377-380 (25), driver, transfer-init, loader — green;
+sanitization 103/103; full suite in the §7 report. On your
+independent reproduction, publish the filled **v2** authorization —
+its verified presence launches all four slots in parallel, each pair
+keeping its original counterbalanced order.
