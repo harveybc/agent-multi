@@ -1,0 +1,53 @@
+{
+ "schema": "agent_multi.trade_reconciliation_post.v2",
+ "order": "steps-1-2 correction order 2026-08-28 (10 points, audit findings 1-6)",
+ "supersedes": "TRADE_RECONCILIATION_REPRODUCTIONS_POST.json (preserved with marker)",
+ "single_stream_economics": {
+  "fix": "gym-fx satoshi/trade-reconciliation-20260828@61a3dea \u2014 every closure event carries event_id/source/reason/side/size/entry/exit/gross/costs/net; record_trade_close idempotent by event identity; summary derives total/won/lost/breakeven/avg-net/costs/reason-counts from the ONE stream with conservation ASSERTED; ALL analyzer results under analyzer_*_diagnostic; trade_stats_authority='closed_trade_stream_v2'",
+  "consumer_refusal": "pipeline _win_pct refuses any summary carrying trade facts without the single-stream authority marker (mixed-population regression proves it); persisted win% by role now derives numerator and denominator from the same population"
+ },
+ "bounded_cpu_active": {
+  "cell": "control_random_init_s101 dry-run budget, custody b3642c120013c184",
+  "splits": {
+   "train": {
+    "total": 24,
+    "won": 10,
+    "lost": 14,
+    "breakeven": 0,
+    "exact": true
+   },
+   "train_tail": {
+    "total": 33,
+    "won": 15,
+    "lost": 18,
+    "breakeven": 0,
+    "exact": true
+   },
+   "validation": {
+    "total": 38,
+    "won": 8,
+    "lost": 30,
+    "breakeven": 0,
+    "exact": true
+   }
+  },
+  "identities": "won+lost+breakeven == total, source and reason sums == total, final_cumulative == total, authority marker present \u2014 ALL EXACT in every split"
+ },
+ "bounded_cuda_active": {
+  "verdict": "CUDA_ACTIVE_RECONCILIATION_EXACT",
+  "mechanism": "scripted deterministic actions (order point 6) with a REAL treatment CUDA forward per step (100 forwards); persisting reversal forces a bt lifecycle close and the reversal short settles ON its entry bar",
+  "populations": {
+   "bt_trade_closed": 2,
+   "envelope_direct_settlement": 2
+  },
+  "identities": "0 won + 4 lost + 0 breakeven == 4 total; sources 2+2 == 4; reasons 2+2 == 4; final_cumulative == 4 \u2014 zero-trade insufficiency RESOLVED",
+  "evidence": "TRADE_RECONCILIATION_CUDA_ACTIVE_CHECK_2026_08_28.json"
+ },
+ "architecture_manifest_v2": {
+  "file": "RUNTIME_ARCHITECTURE_MANIFEST_V2_2026_08_28.json",
+  "sections": "runtime_measured (94 ordered hook records, introspected topology, leaf-parameter conservation 113,558, EMPIRICAL per-bar influence) | module_declared_contracts (reduction semantics bound to module digests) | literature_comparison_declaration (REVIEWED, corrected)",
+  "empirical_finding": "oscillators/TCN influences exactly 7 of 32 bars \u2014 matching the INTROSPECTED theoretical receptive field; the other four branches influence all 32",
+  "correction_map": "ARCHITECTURE_MANIFEST_CORRECTION_MAP_2026_08_28.json (field-level v1->v2 with executing-code evidence); v1 preserved with superseded marker"
+ },
+ "regressions": "gym-fx 11 stream tests (incl. direct-settlement WIN and LOSS, duplicate-event idempotence) suite 142; agent-multi 5 (pipeline-route conservation + mixed-population refusal)"
+}

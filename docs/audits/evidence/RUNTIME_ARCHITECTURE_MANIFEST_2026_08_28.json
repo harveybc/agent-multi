@@ -352,5 +352,7 @@
   "transferred": "five temporal-branch encoder state_dicts by family-digest-bound files into actor, critic AND critic_target extractors (separate extractors, share_features_extractor false)",
   "excluded": "objective heads/adapters, optimizer/replay/calibration payloads (typed category refusal), the state MLP and the fusion (randomly initialized, identified as such)"
  },
- "entry_point_identity": "729331c9391bbb3e0ff2e7126e078dd2b3c152ea472e07f597d5b70f6669d0f9"
+ "entry_point_identity": "729331c9391bbb3e0ff2e7126e078dd2b3c152ea472e07f597d5b70f6669d0f9",
+ "superseded_by": "RUNTIME_ARCHITECTURE_MANIFEST_V2_2026_08_28.json",
+ "superseded_reason": "steps-1-2 correction order 2026-08-28: the STYLE_NOTES and sequence_reduction prose contradicted the executing modules; layer shapes recorded only root outputs; receptive fields were config-derived; content preserved unmodified below this marker"
 }

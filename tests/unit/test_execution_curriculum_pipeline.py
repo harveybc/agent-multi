@@ -155,6 +155,7 @@ def test_final_result_surfaces_robust_validation_fitness() -> None:
                 "scenario_weekly_rap_dispersion": 0.0002,
                 "max_drawdown_fraction": 0.02,
                 "trades_total": 5,
+                "trade_stats_authority": "closed_trade_stream_v2",
                 "final_equity": 11_000.0,
             }
 

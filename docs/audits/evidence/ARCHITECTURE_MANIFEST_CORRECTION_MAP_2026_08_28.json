@@ -1,0 +1,42 @@
+{
+ "schema": "agent_multi.architecture_manifest_correction_map.v1",
+ "from": "RUNTIME_ARCHITECTURE_MANIFEST_2026_08_28.json (superseded, preserved)",
+ "to": "RUNTIME_ARCHITECTURE_MANIFEST_V2_2026_08_28.json",
+ "corrections": {
+  "branches[patchtst].differences": {
+   "v1_claim": "channel-MIXING patch embedding; mean-pool over patch tokens",
+   "v2_corrected": "channel-INDEPENDENT patching (unfold per channel, tokens per batch x channel); FINAL patch token selected per channel then linear head over channel concat; endpoint-anchored patches; CAUSAL patch mask",
+   "evidence": "executing forward(): x.unfold per channel, tok.reshape(b*f,...), enc[:, -1, :] \u2014 module digest bound in v2 module_declared_contracts"
+  },
+  "branches[tft].differences": {
+   "v1_claim": "no variable selection, no recurrence; mean reduction",
+   "v2_corrected": "GRN-softmax variable selection over features + GRU temporal core + causal multi-head attention + output GRN; FINAL timestep selected",
+   "evidence": "executing forward(): var_grn->softmax weights, nn.GRU core, [:, -1, :]"
+  },
+  "branches[timesnet].differences": {
+   "v1_claim": "amplitude-weighted aggregation then mean pooling",
+   "v2_corrected": "FINAL CELL of each folded period map (conv[0,:,-1,-1]) selected before amplitude-softmax weighting; LayerNorm",
+   "evidence": "executing forward(): conv[0, :, -1, -1]"
+  },
+  "sequence_reduction": {
+   "v1_claim": "hard-coded strings labeled as runtime facts",
+   "v2_corrected": "module_declared_contracts section: reduction semantics reviewed from the exact executing source and bound to each module file sha256; empirical per-bar influence measured separately",
+   "evidence": "v2 sections module_declared_contracts + runtime_measured.branches[*].empirical_temporal_influence"
+  },
+  "layer_output_shapes": {
+   "v1_claim": "only family::root and fusion::root outputs (internal hook records discarded)",
+   "v2_corrected": "FULL ordered hook log: 94 records with qualified path, module type, input/output shapes, dtype, device and own-parameter counts; leaf-parameter conservation asserted (identity-deduplicated 113,558 == named sum)",
+   "evidence": "v2 runtime_measured.layer_by_layer_hook_log"
+  },
+  "effective_receptive_field": {
+   "v1_claim": "TCN RF computed from branch config params with fallback constants; other branches DECLARED full-window without proof",
+   "v2_corrected": "TCN RF from INTROSPECTED Conv1d kernels/dilations (= 7 bars); EMPIRICAL one-position perturbation over all 32 bars per branch: oscillators/TCN influences exactly 7 bars (matching theory), the other four branches influence all 32; theoretical and empirical reported separately",
+   "evidence": "v2 runtime_measured.branches[*].{introspected_topology, theoretical_receptive_field, empirical_temporal_influence}"
+  },
+  "literature_comparison": {
+   "v1_claim": "labeled as part of a runtime-derived manifest",
+   "v2_corrected": "separate literature_comparison_declaration section explicitly marked REVIEWED_DECLARATION, NOT runtime-derived",
+   "evidence": "v2 top-level sections"
+  }
+ }
+}

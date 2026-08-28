@@ -78,5 +78,7 @@
   "gym_fx": "tests/test_trade_reconciliation_stream.py (8: zero/one/entry-bar direct/multi-cycle PRE counterexample/last-bar open/simultaneous-close counts ONE/interrupted-episode reset/derived-never-incremented); envelope 28/28; full gym-fx 139",
   "agent_multi": "tests/unit/test_trade_reconciliation_regressions.py (3: exact-agreement, guard-still-bites, source conservation)"
  },
- "campaign_disposition": "failed affected-fleet-slot attempts preserved unchanged as immutable non-resumable siblings; the corrected campaign uses fresh siblings; launch manifests v4 + template regenerated with the post-fix executable allowlist (0f142b6e264b1209)"
+ "campaign_disposition": "failed affected-fleet-slot attempts preserved unchanged as immutable non-resumable siblings; the corrected campaign uses fresh siblings; launch manifests v4 + template regenerated with the post-fix executable allowlist (0f142b6e264b1209)",
+ "superseded_by": "TRADE_RECONCILIATION_REPRODUCTIONS_POST_V2_2026_08_28.json",
+ "superseded_reason": "steps-1-2 correction order: the v1 fix left won/lost/avg analyzer-derived (mixed populations) and its CUDA evidence covered only the zero-trade case; content preserved unmodified"
 }

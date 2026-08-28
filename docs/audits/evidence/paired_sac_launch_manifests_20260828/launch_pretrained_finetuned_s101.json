@@ -1,5 +1,5 @@
 {
- "schema": "agent_multi.paired_sac_launch_manifest.v4",
+ "schema": "agent_multi.paired_sac_launch_manifest.v5",
  "authored_before_execution": true,
  "gpu_logical_slot": "gpu_slot_0",
  "within_slot_position": 1,
@@ -15,17 +15,17 @@
   "envelope_calibration": "7d583eb7ec16c5ecf04cf590420725a71a44b2b95d5539aef44baa67cdc813a7",
   "grouped_architecture": "e11bd07457231ec160e5f24e1e12e2333f2d5877787d384c837d4c8a91519ee4",
   "grouped_features_extractor": "76b8f638548fa039e2fa8e4dac7a3f7e0277aa4cdf576e17e7272d9cd0ac921c",
-  "nested_pipeline": "ecce8bc958681116b76bdae6e710e3cf4b71a9830443e3f06f252912b3b6ab02",
+  "nested_pipeline": "d1d59f84b945a913d3355dcd50bcde7359a8e2268e7c206161553d868f797206",
   "nested_splits": "8083f761fa1a35ff4824e36c91ec4d0968a32acc69cf00f3c2578ff90bb512ed",
   "observation_contract": "1db321893f48e3866ca134948672f289316669decd0e8b0067516f0322a838c7",
   "pretrained_branch_loader": "e284fd12db2f45066d768296d21056bb003d48f7bd3c41098e348f4ea0440b76",
   "sac_agent": "f0889d7a0be8d98243e44b101eb44ea422e9e9472e14019dc4331652030957af",
   "split_contract": "a11284aa6e8b9654efb696752f372340330689d22f54ab1478fc66a11693c128",
-  "strategy_shared_execution_envelope": "441a9ed38887f7199bbf5a87fb70a5b4634f240e2bf759c20a11ae21dd807612",
+  "strategy_shared_execution_envelope": "c88a3ec82022a6128171ac3ceb557697a6624016ae241aa0128ff430872f5b21",
   "strong_config": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
-  "entry_point_metadata": "729331c9391bbb3e0ff2e7126e078dd2b3c152ea472e07f597d5b70f6669d0f9"
+  "entry_point_metadata": "5c252bd431c0bdb2c66651c05da7f684776e74ad3c50235a77333bee7e909a8e"
  },
- "executable_allowlist_digest": "0f142b6e264b1209326c5efa19a684f92b3d8f900699ea30433f350bb118203c",
+ "executable_allowlist_digest": "4531ba952cb1a9c0caf894833c9d495126629e4a75eff6751625f3a07a756884",
  "environmental_preflight": "R2/DATA-SOTA-382: the driver resolves all 12 required entry points via importlib.metadata (missing/duplicated/out-of-root refuses), runs a bounded strong-extractor forward on the bound device, and binds the entry-point metadata digest into the executable identity",
  "device_binding": "R3/DATA-SOTA-383: --logical-slot verified against the operator's PRIVATE slot->physical binding (class + local identity) after CUDA_VISIBLE_DEVICES; exactly one visible device; a real Conv2d forward/backward micro-preflight runs BEFORE custody reservation \u2014 failure refuses without spending an attempt",
  "thermal_telemetry": "tools/gpu_temperature_watchdog.py active on the executing host for the full cell duration",
@@ -79,5 +79,5 @@
   "status": "MATERIALIZED_NOT_LAUNCHED",
   "cell_sha256": "6a2dd4dad4dc2dde2091026706a504f24cc1f558e9c26d13b475b2cb2f385a1e"
  },
- "trade_reconciliation": "runtime order 2026-08-28 \u00a72: trades_total and closed_trades_cumulative both derive from the bridge's authoritative closed-trade event stream (gym-fx satoshi/trade-reconciliation-20260828@51c8f32); disagreement refuses the epoch"
+ "trade_reconciliation": "steps-1-2 correction 2026-08-28: single authoritative economically complete close stream (gym-fx @61a3dea); all stats one population; mixed summaries refuse; epoch gate refuses disagreement"
 }

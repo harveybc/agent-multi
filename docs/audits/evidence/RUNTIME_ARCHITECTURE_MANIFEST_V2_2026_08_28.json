@@ -1,0 +1,3387 @@
+{
+ "schema": "agent_multi.runtime_architecture_manifest.v2",
+ "classification": "MECHANICS_ONLY",
+ "supersedes": "RUNTIME_ARCHITECTURE_MANIFEST_2026_08_28.json",
+ "status_claim": "EXPERIMENTAL CANDIDATE \u2014 not a proven SOTA trading extractor; branch names are '-style'; no reference parity claimed",
+ "runtime_measured": {
+  "derivation": "constructed via the canonical materializer at this commit; forward hooks on EVERY submodule; one probe forward; per-branch perturbation sweeps",
+  "architecture_digest": "fda91f3706c82c2c7af18b5312a73fcc6350be6b3f6c1151b8b0aff6278a4da5",
+  "config_sha256": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
+  "input_window_bars_h4": 32,
+  "feature_count": 83,
+  "branches": [
+   {
+    "family": "returns_momentum",
+    "plugin": "patchtst_branch",
+    "ordered_features": [
+     "return_1",
+     "log_return_1",
+     "return_5",
+     "log_return_5",
+     "return_10",
+     "log_return_10",
+     "return_20",
+     "log_return_20",
+     "return_60",
+     "log_return_60",
+     "roc_10",
+     "roc_20",
+     "roc_60",
+     "mom_10",
+     "mom_20",
+     "statistical__log_return_1"
+    ],
+    "input_window_bars": 32,
+    "trainable_parameters": 25376,
+    "latent_dimension": 32,
+    "compression_ratio_input_values_to_latent": 16.0,
+    "introspected_topology": {
+     "conv1d": [],
+     "conv2d": [],
+     "gru": [],
+     "attention": [
+      {
+       "path": "encoder.layers.0.self_attn",
+       "num_heads": 4,
+       "embed_dim": 32
+      }
+     ],
+     "transformer": [
+      {
+       "path": "encoder",
+       "num_layers": 1
+      }
+     ],
+     "registered_mask_buffers": [
+      {
+       "buffer": "causal_mask",
+       "shape": [
+        4,
+        4
+       ]
+      }
+     ]
+    },
+    "theoretical_receptive_field": {
+     "bars": 32,
+     "basis": "recurrence/attention/FFT-fold reach the whole window STRUCTURALLY; empirical influence is measured separately"
+    },
+    "empirical_temporal_influence": {
+     "per_bar_l2_delta": [
+      0.11838337,
+      0.10303952,
+      0.1870508,
+      0.10157306,
+      0.17112368,
+      0.13089371,
+      0.11808947,
+      0.1079637,
+      0.09711876,
+      0.10210696,
+      0.20006885,
+      0.12816267,
+      0.13150971,
+      0.0924013,
+      0.11663372,
+      0.12399771,
+      0.1125619,
+      0.10829934,
+      0.17898661,
+      0.12131274,
+      0.12191059,
+      0.11167333,
+      0.12579937,
+      0.10328683,
+      0.5864445,
+      0.60317689,
+      0.84232318,
+      0.69918025,
+      0.82212186,
+      0.88411564,
+      0.65102524,
+      0.58337158
+     ],
+     "bars_with_nonzero_influence": 32,
+     "first_influential_bar": 0,
+     "last_influential_bar": 31,
+     "newest_bar_influential": true,
+     "method": "add +1.0 to every feature at ONE bar of a fixed random probe; L2 of the output change; threshold 1e-9 relative to the max delta"
+    }
+   },
+   {
+    "family": "trend_level",
+    "plugin": "tft_branch",
+    "ordered_features": [
+     "sma_10",
+     "ema_10",
+     "close_sma_ratio_10",
+     "sma_20",
+     "ema_20",
+     "close_sma_ratio_20",
+     "sma_50",
+     "ema_50",
+     "close_sma_ratio_50",
+     "sma_100",
+     "ema_100",
+     "close_sma_ratio_100",
+     "sma_200",
+     "ema_200",
+     "close_sma_ratio_200",
+     "macd",
+     "macd_signal",
+     "macd_hist",
+     "ema_cross_10_50",
+     "ema_cross_20_100",
+     "trend_slope_50",
+     "trend_strength_50",
+     "zscore_close_100"
+    ],
+    "input_window_bars": 32,
+    "trainable_parameters": 18790,
+    "latent_dimension": 32,
+    "compression_ratio_input_values_to_latent": 23.0,
+    "introspected_topology": {
+     "conv1d": [],
+     "conv2d": [],
+     "gru": [
+      {
+       "path": "gru",
+       "layers": 1,
+       "hidden_size": 32,
+       "bidirectional": false
+      }
+     ],
+     "attention": [
+      {
+       "path": "attn",
+       "num_heads": 4,
+       "embed_dim": 32
+      }
+     ],
+     "transformer": [],
+     "registered_mask_buffers": [
+      {
+       "buffer": "causal_mask",
+       "shape": [
+        32,
+        32
+       ]
+      }
+     ]
+    },
+    "theoretical_receptive_field": {
+     "bars": 32,
+     "basis": "recurrence/attention/FFT-fold reach the whole window STRUCTURALLY; empirical influence is measured separately"
+    },
+    "empirical_temporal_influence": {
+     "per_bar_l2_delta": [
+      0.04179454,
+      0.01500741,
+      0.01037203,
+      0.01479042,
+      0.03489507,
+      0.01672234,
+      0.03239019,
+      0.02397637,
+      0.02735321,
+      0.0213514,
+      0.02718006,
+      0.01581207,
+      0.03486823,
+      0.02624841,
+      0.00964593,
+      0.02142917,
+      0.02768134,
+      0.00938375,
+      0.01469104,
+      0.01157669,
+      0.02637606,
+      0.02363634,
+      0.02616096,
+      0.01350447,
+      0.01720949,
+      0.04221239,
+      0.02547506,
+      0.1049955,
+      0.0696889,
+      0.30048177,
+      0.49307433,
+      0.84013504
+     ],
+     "bars_with_nonzero_influence": 32,
+     "first_influential_bar": 0,
+     "last_influential_bar": 31,
+     "newest_bar_influential": true,
+     "method": "add +1.0 to every feature at ONE bar of a fixed random probe; L2 of the output change; threshold 1e-9 relative to the max delta"
+    }
+   },
+   {
+    "family": "volatility_distribution",
+    "plugin": "timesnet_branch",
+    "ordered_features": [
+     "bb_upper",
+     "bb_middle",
+     "bb_lower",
+     "bb_width",
+     "atr_14",
+     "natr_14",
+     "hist_vol_10",
+     "hist_vol_20",
+     "hist_vol_60",
+     "roll_mean_ret_20",
+     "roll_std_ret_20",
+     "roll_skew_ret_20",
+     "roll_kurt_ret_20",
+     "roll_mean_ret_60",
+     "roll_std_ret_60",
+     "roll_skew_ret_60",
+     "roll_kurt_ret_60",
+     "roll_mean_ret_252",
+     "roll_std_ret_252",
+     "roll_skew_ret_252",
+     "roll_kurt_ret_252",
+     "realized_var_12",
+     "realized_var_48",
+     "autocorr_lag1_100",
+     "autocorr_lag5_100",
+     "sqret_autocorr_lag1_100",
+     "vol_regime_high",
+     "vol_regime_low",
+     "hurst_proxy_200"
+    ],
+    "input_window_bars": 32,
+    "trainable_parameters": 19520,
+    "latent_dimension": 32,
+    "compression_ratio_input_values_to_latent": 29.0,
+    "introspected_topology": {
+     "conv1d": [],
+     "conv2d": [
+      {
+       "path": "conv.0",
+       "kernel_size": [
+        3,
+        3
+       ],
+       "padding": [
+        1,
+        1
+       ]
+      },
+      {
+       "path": "conv.3",
+       "kernel_size": [
+        3,
+        3
+       ],
+       "padding": [
+        1,
+        1
+       ]
+      }
+     ],
+     "gru": [],
+     "attention": [],
+     "transformer": [],
+     "registered_mask_buffers": []
+    },
+    "theoretical_receptive_field": {
+     "bars": 32,
+     "basis": "recurrence/attention/FFT-fold reach the whole window STRUCTURALLY; empirical influence is measured separately"
+    },
+    "empirical_temporal_influence": {
+     "per_bar_l2_delta": [
+      3.41901493,
+      3.5081141,
+      3.65269828,
+      3.69707966,
+      2.72801352,
+      0.03068353,
+      0.12609379,
+      0.15836391,
+      0.05198782,
+      0.13134807,
+      3.64077091,
+      3.9259088,
+      3.51258278,
+      3.45062828,
+      0.89268374,
+      0.8569141,
+      0.22362417,
+      0.42722633,
+      3.92833042,
+      1.06611061,
+      0.15097705,
+      4.05376434,
+      4.11950588,
+      4.05383062,
+      3.73531866,
+      4.19924927,
+      0.27582505,
+      3.89814496,
+      0.1751736,
+      3.56231093,
+      2.5488503,
+      1.77846432
+     ],
+     "bars_with_nonzero_influence": 32,
+     "first_influential_bar": 0,
+     "last_influential_bar": 31,
+     "newest_bar_influential": true,
+     "method": "add +1.0 to every feature at ONE bar of a fixed random probe; L2 of the output change; threshold 1e-9 relative to the max delta"
+    }
+   },
+   {
+    "family": "oscillators",
+    "plugin": "tcn_branch",
+    "ordered_features": [
+     "rsi_7",
+     "rsi_14",
+     "rsi_21",
+     "stoch_k",
+     "stoch_d",
+     "williams_r_14",
+     "cci_14",
+     "bb_pct_b",
+     "mfi_14"
+    ],
+    "input_window_bars": 32,
+    "trainable_parameters": 4448,
+    "latent_dimension": 32,
+    "compression_ratio_input_values_to_latent": 9.0,
+    "introspected_topology": {
+     "conv1d": [
+      {
+       "path": "blocks.0.conv",
+       "kernel_size": [
+        3
+       ],
+       "dilation": [
+        1
+       ],
+       "in_channels": 9,
+       "out_channels": 32
+      },
+      {
+       "path": "blocks.0.skip",
+       "kernel_size": [
+        1
+       ],
+       "dilation": [
+        1
+       ],
+       "in_channels": 9,
+       "out_channels": 32
+      },
+      {
+       "path": "blocks.1.conv",
+       "kernel_size": [
+        3
+       ],
+       "dilation": [
+        2
+       ],
+       "in_channels": 32,
+       "out_channels": 32
+      }
+     ],
+     "conv2d": [],
+     "gru": [],
+     "attention": [],
+     "transformer": [],
+     "registered_mask_buffers": []
+    },
+    "theoretical_receptive_field": {
+     "bars": 7,
+     "basis": "INTROSPECTED Conv1d kernels/dilations: 1 + sum((k-1)*d) = 7, clipped to the window"
+    },
+    "empirical_temporal_influence": {
+     "per_bar_l2_delta": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.02505255,
+      1.32896733,
+      1.33501422,
+      1.30557036,
+      2.20374584,
+      2.33623886,
+      2.87218642
+     ],
+     "bars_with_nonzero_influence": 7,
+     "first_influential_bar": 25,
+     "last_influential_bar": 31,
+     "newest_bar_influential": true,
+     "method": "add +1.0 to every feature at ONE bar of a fixed random probe; L2 of the output change; threshold 1e-9 relative to the max delta"
+    }
+   },
+   {
+    "family": "volume_flow",
+    "plugin": "gru_branch",
+    "ordered_features": [
+     "obv",
+     "obv_delta_20",
+     "volume_sma_10",
+     "volume_sma_20",
+     "volume_ratio_20",
+     "vwap_60"
+    ],
+    "input_window_bars": 32,
+    "trainable_parameters": 13824,
+    "latent_dimension": 64,
+    "compression_ratio_input_values_to_latent": 3.0,
+    "introspected_topology": {
+     "conv1d": [],
+     "conv2d": [],
+     "gru": [
+      {
+       "path": "gru",
+       "layers": 1,
+       "hidden_size": 64,
+       "bidirectional": false
+      }
+     ],
+     "attention": [],
+     "transformer": [],
+     "registered_mask_buffers": []
+    },
+    "theoretical_receptive_field": {
+     "bars": 32,
+     "basis": "recurrence/attention/FFT-fold reach the whole window STRUCTURALLY; empirical influence is measured separately"
+    },
+    "empirical_temporal_influence": {
+     "per_bar_l2_delta": [
+      2.3e-07,
+      3.7e-07,
+      5e-07,
+      9.1e-07,
+      1.45e-06,
+      2.5e-06,
+      3.65e-06,
+      5.7e-06,
+      8.23e-06,
+      1.476e-05,
+      2.174e-05,
+      4.27e-05,
+      6.3e-05,
+      9.802e-05,
+      0.00017741,
+      0.00026392,
+      0.00050913,
+      0.00071413,
+      0.00113919,
+      0.00184122,
+      0.0030065,
+      0.00457706,
+      0.00759028,
+      0.01200125,
+      0.01995264,
+      0.03132226,
+      0.04723733,
+      0.08073794,
+      0.1285477,
+      0.22546715,
+      0.37263003,
+      0.66757697
+     ],
+     "bars_with_nonzero_influence": 32,
+     "first_influential_bar": 0,
+     "last_influential_bar": 31,
+     "newest_bar_influential": true,
+     "method": "add +1.0 to every feature at ONE bar of a fixed random probe; L2 of the output change; threshold 1e-9 relative to the max delta"
+    }
+   }
+  ],
+  "state_branch": {
+   "family": "agent_state",
+   "plugin": {
+    "plugin": "mlp_branch",
+    "params": {
+     "hidden_dims": [
+      32
+     ],
+     "output_dim": 16
+    }
+   },
+   "note": "randomly initialized, NOT pretrained",
+   "state_keys": [
+    "position",
+    "equity_norm",
+    "unrealized_pnl_norm",
+    "holding_duration_norm"
+   ],
+   "trainable_parameters": 688
+  },
+  "fusion": {
+   "declared": {
+    "plugin": "cross_family_attention",
+    "params": {
+     "d_model": 32,
+     "n_heads": 4,
+     "output_dim": 96
+    }
+   },
+   "note": "randomly initialized, NOT pretrained",
+   "trainable_parameters": 30912,
+   "output_dimension": 96,
+   "introspected_topology": {
+    "conv1d": [],
+    "conv2d": [],
+    "gru": [],
+    "attention": [
+     {
+      "path": "attn",
+      "num_heads": 4,
+      "embed_dim": 32
+     }
+    ],
+    "transformer": [],
+    "registered_mask_buffers": []
+   }
+  },
+  "total_trainable_extractor_parameters": 113558,
+  "leaf_parameter_conservation": "identity-deduplicated leaf sum 113558 == named-parameter sum 113558 \u2014 no shared-module double counting",
+  "layer_by_layer_hook_log": [
+   {
+    "call_index": 0,
+    "owner": "returns_momentum",
+    "qualified_path": "embed",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       16,
+       4,
+       8
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      16,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 288
+   },
+   {
+    "call_index": 1,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.norm1",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 2,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.self_attn",
+    "module_type": "MultiheadAttention",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     "NoneType"
+    ],
+    "own_parameters": 3168
+   },
+   {
+    "call_index": 3,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.dropout1",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 4,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.norm2",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 5,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.linear1",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      64
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 2112
+   },
+   {
+    "call_index": 6,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.dropout",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       64
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      64
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 7,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.linear2",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       64
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 2080
+   },
+   {
+    "call_index": 8,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0.dropout2",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 9,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder.layers.0",
+    "module_type": "TransformerEncoderLayer",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 10,
+    "owner": "returns_momentum",
+    "qualified_path": "encoder",
+    "module_type": "TransformerEncoder",
+    "input": [
+     {
+      "shape": [
+       32,
+       4,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      32,
+      4,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 11,
+    "owner": "returns_momentum",
+    "qualified_path": "head",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       512
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 16416
+   },
+   {
+    "call_index": 12,
+    "owner": "returns_momentum",
+    "qualified_path": "<root>",
+    "module_type": "Encoder",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       16
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 128
+   },
+   {
+    "call_index": 13,
+    "owner": "trend_level",
+    "qualified_path": "var_grn.fc1",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 552
+   },
+   {
+    "call_index": 14,
+    "owner": "trend_level",
+    "qualified_path": "var_grn.fc2",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 552
+   },
+   {
+    "call_index": 15,
+    "owner": "trend_level",
+    "qualified_path": "var_grn.drop",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 16,
+    "owner": "trend_level",
+    "qualified_path": "var_grn.gate",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 552
+   },
+   {
+    "call_index": 17,
+    "owner": "trend_level",
+    "qualified_path": "var_grn.skip",
+    "module_type": "Identity",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 18,
+    "owner": "trend_level",
+    "qualified_path": "var_grn.norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 46
+   },
+   {
+    "call_index": 19,
+    "owner": "trend_level",
+    "qualified_path": "var_grn",
+    "module_type": "GRN",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 20,
+    "owner": "trend_level",
+    "qualified_path": "feat_embed",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23,
+       1
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      23,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 21,
+    "owner": "trend_level",
+    "qualified_path": "post_select.fc1",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 22,
+    "owner": "trend_level",
+    "qualified_path": "post_select.fc2",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 23,
+    "owner": "trend_level",
+    "qualified_path": "post_select.drop",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 24,
+    "owner": "trend_level",
+    "qualified_path": "post_select.gate",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 25,
+    "owner": "trend_level",
+    "qualified_path": "post_select.skip",
+    "module_type": "Identity",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 26,
+    "owner": "trend_level",
+    "qualified_path": "post_select.norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 27,
+    "owner": "trend_level",
+    "qualified_path": "post_select",
+    "module_type": "GRN",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 28,
+    "owner": "trend_level",
+    "qualified_path": "gru",
+    "module_type": "GRU",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       1,
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "own_parameters": 6336
+   },
+   {
+    "call_index": 29,
+    "owner": "trend_level",
+    "qualified_path": "attn",
+    "module_type": "MultiheadAttention",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     "NoneType"
+    ],
+    "own_parameters": 3168
+   },
+   {
+    "call_index": 30,
+    "owner": "trend_level",
+    "qualified_path": "out_grn.fc1",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 31,
+    "owner": "trend_level",
+    "qualified_path": "out_grn.fc2",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 32,
+    "owner": "trend_level",
+    "qualified_path": "out_grn.drop",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 33,
+    "owner": "trend_level",
+    "qualified_path": "out_grn.gate",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 34,
+    "owner": "trend_level",
+    "qualified_path": "out_grn.skip",
+    "module_type": "Identity",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 35,
+    "owner": "trend_level",
+    "qualified_path": "out_grn.norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 36,
+    "owner": "trend_level",
+    "qualified_path": "out_grn",
+    "module_type": "GRN",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 37,
+    "owner": "trend_level",
+    "qualified_path": "<root>",
+    "module_type": "Encoder",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       23
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 38,
+    "owner": "volatility_distribution",
+    "qualified_path": "embed",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       29
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 960
+   },
+   {
+    "call_index": 39,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.0",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 40,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.1",
+    "module_type": "GELU",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 41,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.2",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 42,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.3",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 43,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv",
+    "module_type": "Sequential",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 44,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.0",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 45,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.1",
+    "module_type": "GELU",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 46,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.2",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 47,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.3",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 48,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv",
+    "module_type": "Sequential",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       10,
+       3
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      10,
+      3
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 49,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.0",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 50,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.1",
+    "module_type": "GELU",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 51,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.2",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 52,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.3",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 53,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv",
+    "module_type": "Sequential",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 54,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.0",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 55,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.1",
+    "module_type": "GELU",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 56,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.2",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 57,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv.3",
+    "module_type": "Conv2d",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 9248
+   },
+   {
+    "call_index": 58,
+    "owner": "volatility_distribution",
+    "qualified_path": "conv",
+    "module_type": "Sequential",
+    "input": [
+     {
+      "shape": [
+       1,
+       32,
+       16,
+       2
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      1,
+      32,
+      16,
+      2
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 59,
+    "owner": "volatility_distribution",
+    "qualified_path": "norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 60,
+    "owner": "volatility_distribution",
+    "qualified_path": "<root>",
+    "module_type": "Encoder",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       29
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 61,
+    "owner": "oscillators",
+    "qualified_path": "blocks.0.skip",
+    "module_type": "Conv1d",
+    "input": [
+     {
+      "shape": [
+       2,
+       9,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 320
+   },
+   {
+    "call_index": 62,
+    "owner": "oscillators",
+    "qualified_path": "blocks.0.conv",
+    "module_type": "Conv1d",
+    "input": [
+     {
+      "shape": [
+       2,
+       9,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      34
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 896
+   },
+   {
+    "call_index": 63,
+    "owner": "oscillators",
+    "qualified_path": "blocks.0.norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 64,
+    "owner": "oscillators",
+    "qualified_path": "blocks.0.drop",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 65,
+    "owner": "oscillators",
+    "qualified_path": "blocks.0.act",
+    "module_type": "ReLU",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 66,
+    "owner": "oscillators",
+    "qualified_path": "blocks.0",
+    "module_type": "CausalBlock",
+    "input": [
+     {
+      "shape": [
+       2,
+       9,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 67,
+    "owner": "oscillators",
+    "qualified_path": "blocks.1.skip",
+    "module_type": "Identity",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 68,
+    "owner": "oscillators",
+    "qualified_path": "blocks.1.conv",
+    "module_type": "Conv1d",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      36
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 3104
+   },
+   {
+    "call_index": 69,
+    "owner": "oscillators",
+    "qualified_path": "blocks.1.norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 70,
+    "owner": "oscillators",
+    "qualified_path": "blocks.1.drop",
+    "module_type": "Dropout",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 71,
+    "owner": "oscillators",
+    "qualified_path": "blocks.1.act",
+    "module_type": "ReLU",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 72,
+    "owner": "oscillators",
+    "qualified_path": "blocks.1",
+    "module_type": "CausalBlock",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 73,
+    "owner": "oscillators",
+    "qualified_path": "blocks",
+    "module_type": "Sequential",
+    "input": [
+     {
+      "shape": [
+       2,
+       9,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 74,
+    "owner": "oscillators",
+    "qualified_path": "<root>",
+    "module_type": "Encoder",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       9
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 75,
+    "owner": "volume_flow",
+    "qualified_path": "gru",
+    "module_type": "GRU",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       6
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": [
+     {
+      "shape": [
+       2,
+       32,
+       64
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       1,
+       2,
+       64
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "own_parameters": 13824
+   },
+   {
+    "call_index": 76,
+    "owner": "volume_flow",
+    "qualified_path": "<root>",
+    "module_type": "Encoder",
+    "input": [
+     {
+      "shape": [
+       2,
+       32,
+       6
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      64
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 77,
+    "owner": "agent_state",
+    "qualified_path": "0",
+    "module_type": "Flatten",
+    "input": [
+     {
+      "shape": [
+       2,
+       1,
+       4
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      4
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 78,
+    "owner": "agent_state",
+    "qualified_path": "1",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       4
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 160
+   },
+   {
+    "call_index": 79,
+    "owner": "agent_state",
+    "qualified_path": "2",
+    "module_type": "ReLU",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 80,
+    "owner": "agent_state",
+    "qualified_path": "3",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      16
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 528
+   },
+   {
+    "call_index": 81,
+    "owner": "agent_state",
+    "qualified_path": "4",
+    "module_type": "ReLU",
+    "input": [
+     {
+      "shape": [
+       2,
+       16
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      16
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 82,
+    "owner": "agent_state",
+    "qualified_path": "<root>",
+    "module_type": "Sequential",
+    "input": [
+     {
+      "shape": [
+       2,
+       1,
+       4
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      16
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 0
+   },
+   {
+    "call_index": 83,
+    "owner": "fusion",
+    "qualified_path": "proj.0",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 84,
+    "owner": "fusion",
+    "qualified_path": "proj.1",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 85,
+    "owner": "fusion",
+    "qualified_path": "proj.2",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 86,
+    "owner": "fusion",
+    "qualified_path": "proj.3",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 87,
+    "owner": "fusion",
+    "qualified_path": "proj.4",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       64
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 2080
+   },
+   {
+    "call_index": 88,
+    "owner": "fusion",
+    "qualified_path": "proj.5",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       16
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 544
+   },
+   {
+    "call_index": 89,
+    "owner": "fusion",
+    "qualified_path": "attn",
+    "module_type": "MultiheadAttention",
+    "input": [
+     {
+      "shape": [
+       2,
+       6,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       2,
+       6,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     {
+      "shape": [
+       2,
+       6,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": [
+     {
+      "shape": [
+       2,
+       6,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     },
+     "NoneType"
+    ],
+    "own_parameters": 3168
+   },
+   {
+    "call_index": 90,
+    "owner": "fusion",
+    "qualified_path": "gate",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       6,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      6,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 1056
+   },
+   {
+    "call_index": 91,
+    "owner": "fusion",
+    "qualified_path": "norm",
+    "module_type": "LayerNorm",
+    "input": [
+     {
+      "shape": [
+       2,
+       6,
+       32
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      6,
+      32
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 64
+   },
+   {
+    "call_index": 92,
+    "owner": "fusion",
+    "qualified_path": "out",
+    "module_type": "Linear",
+    "input": [
+     {
+      "shape": [
+       2,
+       192
+      ],
+      "dtype": "torch.float32",
+      "device": "cpu"
+     }
+    ],
+    "output": {
+     "shape": [
+      2,
+      96
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 18528
+   },
+   {
+    "call_index": 93,
+    "owner": "fusion",
+    "qualified_path": "<root>",
+    "module_type": "Fusion",
+    "input": [
+     [
+      [
+       "str",
+       {
+        "shape": [
+         2,
+         32
+        ],
+        "dtype": "torch.float32",
+        "device": "cpu"
+       }
+      ],
+      [
+       "str",
+       {
+        "shape": [
+         2,
+         32
+        ],
+        "dtype": "torch.float32",
+        "device": "cpu"
+       }
+      ],
+      [
+       "str",
+       {
+        "shape": [
+         2,
+         32
+        ],
+        "dtype": "torch.float32",
+        "device": "cpu"
+       }
+      ],
+      [
+       "str",
+       {
+        "shape": [
+         2,
+         32
+        ],
+        "dtype": "torch.float32",
+        "device": "cpu"
+       }
+      ],
+      [
+       "str",
+       {
+        "shape": [
+         2,
+         64
+        ],
+        "dtype": "torch.float32",
+        "device": "cpu"
+       }
+      ],
+      [
+       "str",
+       {
+        "shape": [
+         2,
+         16
+        ],
+        "dtype": "torch.float32",
+        "device": "cpu"
+       }
+      ]
+     ]
+    ],
+    "output": {
+     "shape": [
+      2,
+      96
+     ],
+     "dtype": "torch.float32",
+     "device": "cpu"
+    },
+    "own_parameters": 192
+   }
+  ],
+  "dropout_values_present": [
+   0.0
+  ],
+  "normalization_layers_present": [
+   "LayerNorm"
+  ],
+  "entry_point_metadata_digest": "5c252bd431c0bdb2c66651c05da7f684776e74ad3c50235a77333bee7e909a8e"
+ },
+ "module_declared_contracts": {
+  "status": "explicit module contracts reviewed from the exact executing source, bound to each file digest",
+  "contracts": {
+   "patchtst_branch": {
+    "module_file": "feature_branch_plugins/patchtst_branch.py",
+    "module_sha256": "22047a7692047fee47b259afb9bc3b3b00b9bfa84ce6c1e9c636d9526e476b45",
+    "reduction_semantics": "per channel: causal-masked transformer over endpoint-anchored patch tokens; SELECTS THE FINAL PATCH TOKEN (enc[:, -1, :]) per channel, concatenates channels, linear head to d_model"
+   },
+   "tft_branch": {
+    "module_file": "feature_branch_plugins/tft_branch.py",
+    "module_sha256": "a5135240489348d83cd7238c4177c0ab1388c8d0691b6459b227e20a34539d87",
+    "reduction_semantics": "GRN-softmax variable-selection weights over features, per-feature embedding summed by those weights, GRU temporal core, causal multi-head self-attention, output GRN on core+attended; SELECTS THE FINAL TIMESTEP ([:, -1, :])"
+   },
+   "timesnet_branch": {
+    "module_file": "feature_branch_plugins/timesnet_branch.py",
+    "module_sha256": "94acf2bc45cf28aebb72ae9a8f24eba1710dfe6b3d44c93b22aaece38c8bc7c5",
+    "reduction_semantics": "FFT amplitude top-k period selection; per period: fold to (cycles, period), two Conv2d + GELU, SELECT THE FINAL CELL (conv[0, :, -1, -1]); amplitude-softmax weighted sum over periods, LayerNorm"
+   },
+   "tcn_branch": {
+    "module_file": "feature_branch_plugins/tcn_branch.py",
+    "module_sha256": "319b30b949a7f3b523072e67b2ec0647a6e85a808acea0360d112258bb41150f",
+    "reduction_semantics": "last causal step of the dilated conv stack"
+   },
+   "gru_branch": {
+    "module_file": "feature_branch_plugins/gru_branch.py",
+    "module_sha256": "1b18da83734ae8567499dc1eeb3e1e129a08d2ea8c4a57becf36743f6a5bbb48",
+    "reduction_semantics": "last hidden state of the unidirectional GRU"
+   },
+   "mlp_branch": {
+    "module_file": "feature_branch_plugins/mlp_branch.py",
+    "module_sha256": "16ee4eea6f3583ef8f1363b52cd74f1f615d8b736d592de911e198c31e971744",
+    "reduction_semantics": "feed-forward over concatenated state scalars (no temporal axis)"
+   }
+  }
+ },
+ "literature_comparison_declaration": {
+  "status": "REVIEWED_DECLARATION \u2014 corrected against the executing code at the digests bound in module_declared_contracts; NOT runtime-derived",
+  "patchtst_branch": {
+   "style_name": "PatchTST-style",
+   "reference": "Nie et al. 2023",
+   "shared_with_reference": [
+    "channel-INDEPENDENT patching (unfold per channel, tokens per (batch x channel) sequence)",
+    "transformer encoder over patch tokens"
+   ],
+   "differences": [
+    "endpoint-anchored patch offset drops the OLDEST remainder bars (DATA-SOTA-331), not zero-start unfold",
+    "CAUSAL mask across patch tokens (the reference uses unmasked encoding)",
+    "final-patch-token selection + linear head over concatenated per-channel tokens, not the reference flatten head",
+    "no RevIN (preprocessing is the rolling-zscore feature contract)"
+   ]
+  },
+  "tft_branch": {
+   "style_name": "TFT-style",
+   "reference": "Lim et al. 2021",
+   "shared_with_reference": [
+    "GRN-softmax VARIABLE SELECTION over input features",
+    "recurrent temporal core (GRU)",
+    "interpretable multi-head attention with gated residual combination"
+   ],
+   "differences": [
+    "no static covariate encoders, no encoder-decoder split, no quantile output heads",
+    "single GRU layer instead of LSTM encoder-decoder",
+    "final-timestep selection as the branch representation"
+   ]
+  },
+  "timesnet_branch": {
+   "style_name": "TimesNet-style",
+   "reference": "Wu et al. 2023",
+   "shared_with_reference": [
+    "FFT amplitude top-k period discovery",
+    "1D->2D folding by period and 2D convolution",
+    "amplitude-weighted aggregation over periods"
+   ],
+   "differences": [
+    "ONE TimesBlock-like stage with a two-layer plain Conv2d (not stacked blocks with inception towers)",
+    "final-cell selection per folded map before weighting (not full 2D->1D unfolding)"
+   ]
+  },
+  "tcn_branch": {
+   "style_name": "causal TCN",
+   "reference": "Bai et al. 2018",
+   "differences": [
+    "left-padded causal Conv1d stack, additive skip when channels match; no weight-norm"
+   ]
+  },
+  "gru_branch": {
+   "style_name": "unidirectional GRU",
+   "reference": "standard nn.GRU",
+   "differences": [
+    "last-hidden reduction"
+   ]
+  }
+ },
+ "training_facts": {
+  "initialization": "PyTorch defaults under manual_seed(train_seed) at SAC construction; the treatment overwrites the five temporal branches from the sealed generation with bit parity",
+  "optimizers": {
+   "sac": "Adam lr 3e-4 (design binding); extractor params inside each network's optimizer; target critic polyak-tracked",
+   "pretraining": {
+    "balancing": {
+     "method": "inverse_initial_loss",
+     "floor": 1e-06,
+     "note": "DATA-SOTA-345: effective weight = declared / max(initial monitor loss, floor), frozen before epoch 0"
+    },
+    "gradient_combiner": {
+     "plugin": "pcgrad"
+    }
+   }
+  },
+  "pretraining_objectives": [
+   "barrier_hit",
+   "hierarchical_contrastive",
+   "masked_patch_reconstruction",
+   "multi_horizon_quantile",
+   "volatility"
+  ],
+  "transfer": {
+   "transferred": "five temporal-branch encoders into actor+critic+critic_target (separate extractors)",
+   "excluded": "heads/adapters, optimizer/replay/calibration payloads, state MLP, fusion"
+  }
+ }
+}

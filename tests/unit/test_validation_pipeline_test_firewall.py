@@ -13,6 +13,7 @@ def test_final_evaluation_does_not_open_protected_test_when_disabled(monkeypatch
             "total_return": 0.02,
             "max_drawdown_fraction": 0.01,
             "trades_total": 2,
+            "trade_stats_authority": "closed_trade_stream_v2",
         }
 
     monkeypatch.setattr(pipeline, "_eval_on_split", fake_eval)

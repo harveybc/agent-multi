@@ -1,4 +1,4 @@
-"""Runtime order 2026-08-28 §2: the gamma reconciliation defect
+"""Runtime order 2026-08-28 §2: the fleet reconciliation defect
 (closed_trades_cumulative > trades_total) reproduced and corrected
 THROUGH THE EXECUTING PIPELINE ROUTE (_load_env_plugin + the strict
 reconcile primitive) — the exact PRE counterexample as a permanent
@@ -81,7 +81,7 @@ class TestGammaReconciliationCounterexample:
         final = rows[-1]["closed_trades_cumulative"]
         assert final >= 3  # multiple settlement cycles occurred
         assert summary["trades_total"] == final
-        # the strict primitive that refused on gamma now reconciles
+        # the strict primitive that refused on the fleet now reconciles
         # with ZERO settlement — the counts derive from one stream
         recon = trace_mod.reconcile_trace_trades(
             rows, summary["trades_total"],
@@ -106,5 +106,40 @@ class TestGammaReconciliationCounterexample:
         assert sum(sources.values()) == summary["trades_total"]
         assert sources.get("envelope_direct_settlement", 0) >= 1
         # the analyzer's undercount is preserved as a diagnostic
-        assert summary["analyzer_trades_total"] <= \
+        # under its explicit namespace (steps-1-2 correction)
+        assert summary["analyzer_trades_total_diagnostic"] <= \
             summary["trades_total"]
+
+
+class TestSingleStreamEconomics:
+    """Steps-1-2 correction order 2026-08-28 (finding 1): every
+    authoritative statistic from ONE stream; analyzer facts live only
+    under the diagnostic namespace; mixed summaries refuse."""
+
+    def test_authoritative_stats_conserve_through_the_pipeline(
+            self, tmp_path):
+        _rows, summary = _drive(_entry_bar_settlement_env(tmp_path))
+        assert summary["trade_stats_authority"] == \
+            "closed_trade_stream_v2"
+        assert summary["trades_won"] + summary["trades_lost"] + \
+            summary["trades_breakeven"] == summary["trades_total"]
+        assert sum(summary["closed_trades_by_source"].values()) == \
+            summary["trades_total"]
+        assert sum(summary["close_reason_counts"].values()) == \
+            summary["trades_total"]
+        # SL settlements are LOST trades in the authoritative stats,
+        # invisible to the analyzer diagnostic
+        assert summary["trades_lost"] >= 1
+        assert "analyzer_trades_won_diagnostic" in summary
+
+    def test_win_pct_refuses_mixed_population_summaries(self):
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _win_pct)
+        legacy = {"trades_total": 10, "trades_won": 25}  # impossible
+        with pytest.raises(ValueError, match="mixed-population"):
+            _win_pct(legacy)
+        authoritative = {"trades_total": 10, "trades_won": 4,
+                         "trade_stats_authority":
+                             "closed_trade_stream_v2"}
+        assert _win_pct(authoritative) == pytest.approx(40.0)
+        assert _win_pct({}) == 0.0  # no trade facts at all: not mixed

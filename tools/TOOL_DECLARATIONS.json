@@ -591,6 +591,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "trade_reconciliation_cuda_active_check.py": {
+   "purpose": "steps-1-2 correction point 6: bounded CUDA ACTIVE check (MECHANICS_ONLY) \u2014 real treatment forwards on one CUDA device with a deterministic SCRIPTED action sequence forcing BOTH closure populations (bt lifecycle close + envelope direct settlement); all conservation identities must end exact; refuses without exactly one visible GPU",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

@@ -166,6 +166,19 @@ def _load_env_plugin(name: str, config: Dict[str, Any]):
 
 
 def _win_pct(summary: Dict[str, Any]) -> float:
+    # Steps-1-2 correction order 2026-08-28 (finding 1): the win rate
+    # once mixed an analyzer-subset numerator with an authoritative
+    # denominator. A summary that does not declare the single-stream
+    # authority is a MIXED-POPULATION summary and REFUSES — false
+    # evidence never flows into records, reports, OLAP or selection.
+    if "trades_total" in summary and summary.get(
+            "trade_stats_authority") != "closed_trade_stream_v2":
+        raise ValueError(
+            "mixed-population trade summary refused: trades_won/"
+            "trades_total must both derive from the authoritative "
+            "closed-trade stream (trade_stats_authority="
+            "'closed_trade_stream_v2'); legacy analyzer-mixed "
+            "summaries are not evidence")
     won = summary.get("trades_won")
     total = summary.get("trades_total")
     try:
