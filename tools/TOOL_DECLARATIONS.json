@@ -93,6 +93,13 @@
    "authority_class": "discovery",
    "owner": "General Satoshi III"
   },
+  "dispatch_paired_pretrain_comparison.py": {
+   "purpose": "P4 paired SAC dispatch driver: CPU dry-run verifies design digest, candidate seal + quarantine + per-family encoder digests + architecture identity and materializes the per-cell genesis; GPU execution REFUSED by construction (requires Musashi's dispatch doc + CUDA + a training loop deliberately unimplemented until that dispatch is audited in); NOT_LAUNCHED",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
   "engineering_surface_index.py": {
    "purpose": "Generate the engineering surface index (this system); discovered facts + reviewed declarations, typed outcomes",
    "lifecycle": "supported",

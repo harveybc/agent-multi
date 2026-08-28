@@ -33,20 +33,17 @@ from agent_plugins.grouped_architecture import (  # noqa: E402
 STRONG_CONFIG = ("examples/config/"
                  "project3_ethusdt_4h_sac_grouped_strong_v1.json")
 FULL5_CONTRACT = ("examples/config/"
-                  "pretrain_contract_eth_h4_o2022_full5_v1.json")
+                  "pretrain_contract_eth_h4_o2022_full5_pcgrad_v1.json")
 COST_MANIFEST = "examples/config/cost_manifest_eth_h4_v2.json"
 SEEDS = (101, 202, 303, 404)
-ARMS = ("control_random_init", "pretrained_frozen",
-        "pretrained_finetuned")
-# counterbalanced: each arm appears in every position across seeds
-ARM_ORDER = {101: ("control_random_init", "pretrained_frozen",
-                   "pretrained_finetuned"),
-             202: ("pretrained_frozen", "pretrained_finetuned",
-                   "control_random_init"),
-             303: ("pretrained_finetuned", "control_random_init",
-                   "pretrained_frozen"),
-             404: ("control_random_init", "pretrained_finetuned",
-                   "pretrained_frozen")}
+# P4 (final probe order): TWO arms — the frozen-encoder arm is
+# DEFERRED unless fine-tuned pretraining shows signal
+ARMS = ("control_random_init", "pretrained_finetuned")
+# counterbalanced: each order appears twice across the four seeds
+ARM_ORDER = {101: ("control_random_init", "pretrained_finetuned"),
+             202: ("pretrained_finetuned", "control_random_init"),
+             303: ("pretrained_finetuned", "control_random_init"),
+             404: ("control_random_init", "pretrained_finetuned")}
 
 
 def main() -> int:
@@ -118,9 +115,8 @@ def main() -> int:
             "per_family_encoder_digests": {
                 family: entry["encoder_sha256"]
                 for family, entry in artifacts.items()},
-            "eligibility": ("PAIRED_SCREEN_ONLY — pending Musashi's "
-                            "acceptance of the C1-C5 return; no other "
-                            "use")},
+            "eligibility": ("PAIRED_SCREEN_CANDIDATE_PENDING_AUDIT "
+                            "(P4, final probe order) — no other use")},
         "data_roles": {"origin": "o2022",
                        "fit_end": "2021-12-31T20:00:00",
                        "scored_year": "2022 (trial ledger only)",
@@ -176,15 +172,13 @@ def main() -> int:
     arm_mechanisms = {
         "control_random_init": {"encoder_init": "random (seeded)",
                                 "temporal_branches_trainable": True},
-        "pretrained_frozen": {
-            "encoder_init": "load_pretrained_branches (encoder-only, "
-                            "family-digest bound, custody route)",
-            "temporal_branches_trainable": False},
         "pretrained_finetuned": {
             "encoder_init": "load_pretrained_branches (encoder-only, "
                             "family-digest bound, custody route)",
             "temporal_branches_trainable": True},
     }
+    deferred = {"pretrained_frozen": "DEFERRED unless fine-tuned "
+                                     "pretraining shows signal (P4)"}
     trials = []
     for seed in SEEDS:
         for position, arm in enumerate(ARM_ORDER[seed]):
@@ -201,10 +195,7 @@ def main() -> int:
         "order": "post-transfer objectives order 2026-08-27 WP3",
         "status": "MATERIALIZED_NOT_LAUNCHED — no GPU authority; "
                   "Musashi dispatches the smallest informative screen",
-        "identifiability_screen": ("NOT RUN — both treatment arms "
-                                   "retained prospectively (the order "
-                                   "permits only prospective "
-                                   "elimination)"),
+        "deferred_arms": deferred,
         "shared_bindings": shared,
         "predeclared": predeclared,
         "arms": arm_mechanisms,
@@ -213,12 +204,12 @@ def main() -> int:
                                       for k, v in ARM_ORDER.items()},
         "trial_ledger": trials,
         "gpu_estimate": {
-            "runs": 12,
+            "runs": 8,
             "basis": "P1 lineage: ~7-9 h per 2e4x2e3-step phase on "
                      "one RTX-class GPU; 260k-step budget per cell",
             "estimated_hours_per_cell": "6-10",
-            "estimated_total_gpu_hours": "72-120 (sequential on one "
-                                         "GPU: 3-5 days; two GPUs: "
+            "estimated_total_gpu_hours": "48-80 (sequential on one "
+                                         "GPU: 2-3.5 days; two GPUs: "
                                          "half)"},
         "proposed_gpu_command_NOT_LAUNCHED": (
             "CUDA_VISIBLE_DEVICES=<assigned> PYTHONPATH=. python "
