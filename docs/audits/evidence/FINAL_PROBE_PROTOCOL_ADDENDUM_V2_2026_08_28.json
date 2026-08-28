@@ -1,0 +1,9 @@
+{
+ "schema": "agent_multi.final_probe_protocol_addendum.v2",
+ "amends": ["FINAL_PROBE_PROTOCOL_PREDECLARATION_2026_08_28.json", "FINAL_PROBE_PROTOCOL_ADDENDUM_2026_08_28.json"],
+ "trigger_disclosed": "second P3 invocation: returns_momentum completed all 10 probes IN-PROCESS (no scores emitted, none observed — the run wrote no output), then died at trend_level's solo_barrier probing its OWN task (seed 9012 could not improve >=1%; isolation diagnostic shows the same protocol fits reconstruction fine on both seeds — this is a marginal SPECIALIST ceiling, plausibly a collapsed single-task encoder)",
+ "clarification": {
+  "solo_ceilings": "a SOLO specialist whose OWN-task adapter fails the fit gate (or shows material seed instability) makes THAT probe DIAGNOSTIC_INVALID for ranking in the affected family — consistent with 372: solos are diagnostic ceilings, not gates; raw losses are preserved; the screen never dies on a ceiling",
+  "routes_unchanged": "ROUTE probes keep the full predeclared refusals (fit failure or instability on a route probe still refuses that route)"},
+ "no_scores_seen": true
+}
