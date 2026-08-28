@@ -1237,3 +1237,51 @@ def barrier_loss(pred, labels, class_weights):
         total = total + F.cross_entropy(logits[:, col, :],
                                         labels[:, col], weight=weight)
     return total / n_h
+
+
+def five_way_split(steps: list[int], fractions: dict[str, float],
+                   purge_steps: int):
+    """R1 (routing order 2026-08-27): ordered PURGED partitions inside
+    the causal fit domain — encoder_training (oldest) | calibration |
+    probe_fit | probe_score | monitor (newest) — with a purge of
+    ``purge_steps`` between EVERY adjacent pair so no row or forward
+    target crosses a boundary. Returns (blocks dict, purged list)."""
+    from feature_branch_plugins._topology import TopologyError, strict_int
+    try:
+        purge_steps = strict_int(purge_steps, "purge_steps", 1)
+    except TopologyError as exc:
+        raise PretrainContractError(str(exc)) from exc
+    n = len(steps)
+    sizes = {}
+    for name in ("calibration", "probe_fit", "probe_score", "monitor"):
+        fraction = float(fractions.get(name, 0.0))
+        if not (0.0 < fraction <= 0.3):
+            raise PretrainContractError(
+                f"five_way fractions.{name} must lie in (0, 0.3], got "
+                f"{fraction}")
+        sizes[name] = max(1, int(round(n * fraction)))
+    tail = (sizes["calibration"] + sizes["probe_fit"]
+            + sizes["probe_score"] + sizes["monitor"] + 4 * purge_steps)
+    n_train = n - tail
+    if n_train < 1:
+        raise PretrainContractError(
+            f"five-way split leaves no encoder-training window "
+            f"({n} steps, tail {tail})")
+    blocks = {}
+    cursor = 0
+    purged: list[int] = []
+    blocks["encoder_training"] = steps[:n_train]
+    cursor = n_train
+    for name in ("calibration", "probe_fit", "probe_score", "monitor"):
+        purged += steps[cursor:cursor + purge_steps]
+        cursor += purge_steps
+        blocks[name] = steps[cursor:cursor + sizes[name]]
+        cursor += sizes[name]
+    for left, right in (("encoder_training", "calibration"),
+                        ("calibration", "probe_fit"),
+                        ("probe_fit", "probe_score"),
+                        ("probe_score", "monitor")):
+        if blocks[left][-1] - 1 + purge_steps >= blocks[right][0] - 1:
+            raise PretrainContractError(
+                f"five-way purge violated at {left}->{right}")
+    return blocks, purged

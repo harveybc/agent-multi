@@ -22,5 +22,13 @@
    ],
    "preservation": "sealed artifacts UNCHANGED (restricted store + committed manifest); never silently relabelled"
   }
+ },
+ "design_entries": {
+  "5418d57f3b4e33ca20a1c072d8bfa5ac2bc41bf94005882eaddbfcbeb646989b": {
+   "class": "REJECTED_CARDINALITY_BIASED_NOT_EXECUTED",
+   "artifact": "docs/audits/evidence/OBJECTIVE_ROUTING_ABLATION_DESIGN_2026_08_27.json",
+   "reason": "DATA-SOTA-369/370: within-trained-objective ranking rewards deleting objectives; drop_contrastive prose/design mismatch",
+   "preservation": "digest + file preserved unchanged; M2 report untouched"
+  }
  }
 }

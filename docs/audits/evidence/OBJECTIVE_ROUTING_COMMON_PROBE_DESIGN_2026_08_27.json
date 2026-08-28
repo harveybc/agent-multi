@@ -1,0 +1,101 @@
+{
+ "schema": "agent_multi.objective_routing_common_probe_design.v1",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_OBJECTIVE_ROUTING_COMMON_PROBE_ORDER_2026_08_27",
+ "declared_before_execution": true,
+ "supersedes": "OBJECTIVE_ROUTING_ABLATION_DESIGN_2026_08_27.json (REJECTED_CARDINALITY_BIASED_NOT_EXECUTED, quarantined R0, digest preserved)",
+ "mechanism": {
+  "balancing": "inverse_initial_loss",
+  "combiner": "pcgrad",
+  "label": "FIXED_MECHANISM_NOT_M2_WINNER"
+ },
+ "partitions_five_way": {
+  "scheme": "five_way_probe",
+  "fractions": {
+   "calibration": 0.1,
+   "probe_fit": 0.12,
+   "probe_score": 0.12,
+   "monitor": 0.12
+  },
+  "purge": "max(horizons)=12 between EVERY adjacent pair",
+  "monitor_role": "descriptive only; monitor, 2022 score year, outer 2024 and sealed 2025 structurally unavailable to route selection"
+ },
+ "budget": {
+  "epochs": 8,
+  "max_windows": 2400
+ },
+ "arms_per_family": {
+  "full5_control": [
+   "reconstruction",
+   "quantile",
+   "contrastive",
+   "volatility",
+   "barrier"
+  ],
+  "predictive3": [
+   "quantile",
+   "volatility",
+   "barrier"
+  ],
+  "self_supervised2": [
+   "reconstruction",
+   "contrastive"
+  ],
+  "evidence_pruned": {
+   "returns_momentum": [
+    "quantile",
+    "volatility",
+    "barrier"
+   ],
+   "trend_level": [
+    "barrier"
+   ],
+   "volatility_distribution": [
+    "contrastive"
+   ],
+   "oscillators": [
+    "reconstruction",
+    "contrastive",
+    "barrier"
+   ],
+   "volume_flow": [
+    "quantile",
+    "contrastive",
+    "volatility",
+    "barrier"
+   ]
+  }
+ },
+ "arm_hypotheses": {
+  "full5_control": "joint training baseline",
+  "predictive3": "supervised forward-prediction only",
+  "self_supervised2": "self-supervised representation only",
+  "evidence_pruned": "EXPLORATORY (prospectively frozen from the M2 best cell's degraded pairs) \u2014 never confirmatory"
+ },
+ "common_probe_protocol": {
+  "surface": "ALL FIVE probes for EVERY route \u2014 cardinality never changes the exam (DATA-SOTA-369)",
+  "encoder": "FROZEN structurally (adapters fit on cached embeddings)",
+  "adapters": {
+   "seed": 1234,
+   "optimizer": "Adam",
+   "lr": 0.001,
+   "steps": 300,
+   "batch_size": 128,
+   "projection_dim": 32,
+   "stopping": "fixed step count, no early stop",
+   "capacity": "single linear (rec/vol/barrier), monotone quantile head, 2-layer projection"
+  },
+  "contrastive_probe": "retrieval InfoNCE between intact and masked-view embeddings, temperature 0.2, exclusion 12",
+  "barrier_probe_class_weights": "frozen from probe-fit labels (declared)",
+  "refusals": "missing/degenerate probe, non-convergent adapter, encoder output std < 1e-4 -> ROUTE REFUSED (surface never shrinks)"
+ },
+ "solo_references": "5 solo runs (single objective, same mechanism/budget/partitions) probed through the SAME surface; reference for probe k = solo-k encoder's own-task probe score, per family, bound BEFORE route ranking",
+ "ranking_per_family_lexicographic": [
+  "1) count of common probes degraded beyond the frozen 1.2 rule (route probe score / solo reference)",
+  "2) worst normalized probe ratio",
+  "3) median normalized probe ratio"
+ ],
+ "tie_tolerance": "0.02 -> INCONCLUSIVE",
+ "trained_objective_count": "REPORTED, never rewarded",
+ "acceptance": "a route is mechanically acceptable only if NO common probe is materially degraded AND representation/activity gates pass; if none acceptable -> STOP, negative result, no post-hoc tuning",
+ "design_sha256_of_arms": "815b9aee557fcef00090dc491a0b32e7d9f3e5b22a1e11706cb95728a169ff1d"
+}

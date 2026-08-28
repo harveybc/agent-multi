@@ -1,0 +1,31 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-369..370",
+ "phase": "PRE",
+ "date": "2026-08-27",
+ "agent_multi_commit": "6ae22b85a288c4bce2cb774f849da50e315aedbc",
+ "m3_v1_design_sha256": "5418d57f3b4e33ca20a1c072d8bfa5ac2bc41bf94005882eaddbfcbeb646989b",
+ "cases": {
+  "369": {
+   "claim": "v1 ranking counts degraded objectives WITHIN each arm's trained set: a one-objective arm faces a smaller exam",
+   "trend_level_harmed_pruned_arm": [
+    "barrier"
+   ],
+   "cardinality": 1,
+   "structural_bias": "an arm training only ['barrier'] is near its solo reference by construction -> 0 degraded pairs -> wins without proving a better representation",
+   "verdict": "REPRODUCED (structural, from the committed v1 design)"
+  },
+  "370": {
+   "claim": "prose says contrastive removed only where evidence showed harm; the design carries a UNIVERSAL drop_contrastive arm in all five families",
+   "design_note": "removed only in arms where evidence showed harm; retained in full5/harmed-pruned arms where it did not harm (per the aud",
+   "drop_contrastive_present_in": [
+    "returns_momentum",
+    "trend_level",
+    "volatility_distribution",
+    "oscillators",
+    "volume_flow"
+   ],
+   "verdict": "REPRODUCED: design and prose carry different hypotheses"
+  }
+ }
+}

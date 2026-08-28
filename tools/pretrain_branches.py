@@ -253,10 +253,25 @@ def main() -> int:
     # it binds resume identity like every other executing fact
     purge_steps = max_horizon
     identity["purge_steps"] = purge_steps
-    (train_steps, calibration_steps, monitor_steps,
-     purged_steps) = three_way_split(
-        steps, parsed["calibration_fraction"],
-        parsed["monitor_fraction"], purge_steps)
+    probe_blocks = None
+    scheme = (contract.get("partition_scheme") or {})
+    if scheme.get("scheme") == "five_way_probe":
+        # R1 (routing order): probe blocks live INSIDE the causal fit
+        # domain; the runner records them, never touches them
+        from agent_plugins.branch_pretraining import five_way_split
+        blocks, purged_steps = five_way_split(
+            steps, scheme["fractions"], purge_steps)
+        train_steps = blocks["encoder_training"]
+        calibration_steps = blocks["calibration"]
+        monitor_steps = blocks["monitor"]
+        probe_blocks = {"probe_fit": blocks["probe_fit"],
+                        "probe_score": blocks["probe_score"]}
+        identity["partition_scheme"] = sha256_obj(scheme)
+    else:
+        (train_steps, calibration_steps, monitor_steps,
+         purged_steps) = three_way_split(
+            steps, parsed["calibration_fraction"],
+            parsed["monitor_fraction"], purge_steps)
     assert_purged_boundaries(train_steps, calibration_steps,
                              monitor_steps, max_horizon,
                              parsed["window_stride"])
@@ -302,6 +317,14 @@ def main() -> int:
         for name, part in (("train", train_steps),
                            ("calibration", calibration_steps),
                            ("monitor", monitor_steps))}
+    if probe_blocks is not None:
+        for name, part in probe_blocks.items():
+            partitions_evidence[name] = partition_evidence(
+                name, part, stamps, parsed["window_size"], max_horizon,
+                context_rows)
+            partitions_evidence[name]["role"] = (
+                "PROBE block — untouched by the runner; separate "
+                "digest (R1)")
     partitions_evidence["purge"] = {
         "purge_steps_each_boundary": purge_steps,
         "derived_from": "max(horizons) — mechanical, no free constant",
