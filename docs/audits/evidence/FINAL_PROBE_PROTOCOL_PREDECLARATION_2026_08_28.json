@@ -1,0 +1,33 @@
+{
+ "schema": "agent_multi.final_probe_protocol_predeclaration.v1",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_FINAL_PROBE_AND_DOWNSTREAM_SAC_PREFLIGHT_ORDER_2026_08_27 (P1/P2)",
+ "declared_before_execution": true,
+ "note": "probe-training mechanics, not economic hyperparameters; frozen before any probe-score is seen",
+ "adapter_fitting_P1": {
+  "adapter_train_val_split": "probe_fit block split causally: oldest 70% adapter-train, purge max(horizons)=12 steps, newest remainder adapter-val; probe-score untouched until final scoring",
+  "max_steps": 2000, "min_steps": 200,
+  "validation_cadence_steps": 20, "patience_steps": 200,
+  "best_state": "checkpoint and restore the best adapter by adapter-val loss",
+  "finite_curves": "every train/val loss finite, else probe refusal",
+  "minimum_improvement": "best adapter-val loss <= 0.99 x initial-adapter val loss (1% declared), else ADAPTER_FAILED_TO_FIT -> probe refusal",
+  "adapter_seeds": [1234, 5678, 9012],
+  "aggregation": "median probe-score across the three seeds; dispersion = max - min",
+  "seed_instability_refusal": "(max - min) / |median| > 0.5 -> MATERIAL_SEED_INSTABILITY -> probe refusal (never select the best seed)",
+  "optimizer": {"name": "Adam", "lr": 1e-3, "batch_size": 128}
+ },
+ "neutral_skill_P2": {
+  "references": {"random": "untrained strong-architecture encoder (fixed construction seed 0) = neutral floor (skill 0)",
+                 "solo": "existing solo specialist encoders = diagnostic ceilings (skill 1), NOT an eligibility gate"},
+  "skill_formula": "(loss_random - loss_route) / (loss_random - loss_solo), computed per probe per family on seed-median losses",
+  "denominator_refusal": "loss_solo >= loss_random (ill-ordered) OR denominator < 0.05 x loss_random (near-zero) -> that probe is DIAGNOSTIC_INVALID for ranking (raw losses preserved and reported)",
+  "worse_than_random": "median skill < -0.05 on a predictive probe (quantile/volatility/barrier) = materially worse than random",
+  "ranking_per_family": [
+   "1) eligibility: NO predictive probe materially worse than random across adapter seeds",
+   "2) maximize median normalized skill across quantile+volatility+barrier",
+   "3) then median skill across all five probes",
+   "4) ties within 0.02 skill tolerance -> INCONCLUSIVE"],
+  "diagnostics": "reconstruction and contrastive remain representation diagnostics; the three forward probes lead",
+  "fallback": "a family with every route worse than random on a predictive probe takes full5 as the CONSERVATIVE DIAGNOSTIC candidate, never labeled proven-optimal"
+ },
+ "P3_identity_rule": "routes are NOT retrained; the existing R5 route/solo training identities are reused verbatim (their run manifests and encoder digests bind the identities)"
+}
