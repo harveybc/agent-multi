@@ -329,7 +329,8 @@ def common_probe_surface_v2(*, embeddings_fit, embeddings_score,
                             contrastive_temperature: float,
                             adapter_train_pos, adapter_val_pos,
                             protocol: dict[str, Any],
-                            floor_mode: bool = False) -> dict[str, Any]:
+                            floor_mode: bool = False,
+                            only_tasks=None) -> dict[str, Any]:
     """P1-validated surface: every probe adapter fits on the causal
     adapter-train segment, early-stops on adapter-val, restores its
     best state, and only then scores on the untouched probe-score
@@ -444,6 +445,8 @@ def common_probe_surface_v2(*, embeddings_fit, embeddings_score,
     }
     report["probes"] = {}
     for task, spec in tasks.items():
+        if only_tasks is not None and task not in only_tasks:
+            continue
         try:
             report["probes"][task] = fit_adapter_validated(
                 spec["build"], spec["fit"], spec["val"], spec["score"],

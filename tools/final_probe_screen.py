@@ -145,7 +145,8 @@ def main() -> int:
         encoder, _dim = plugin_class.build(len(ch_idx), window, params)
         return encoder, ch_idx
 
-    def probe(family, state_path=None, floor_mode=False):
+    def probe(family, state_path=None, floor_mode=False,
+              only_tasks=None):
         torch.manual_seed(0)  # random floor: fixed construction seed
         encoder, ch_idx = build_encoder(family)
         if state_path is not None:
@@ -176,7 +177,8 @@ def main() -> int:
             positions_score=positions_score,
             contrastive_exclusion=12, contrastive_temperature=0.2,
             adapter_train_pos=train_pos, adapter_val_pos=val_pos,
-            protocol=fit_protocol, floor_mode=floor_mode)
+            protocol=fit_protocol, floor_mode=floor_mode,
+            only_tasks=only_tasks)
 
     pruned = design["arms_per_family"]["evidence_pruned"]
     pruned_tag = {family: "pruned_" + "_".join(sorted(objectives))
@@ -191,9 +193,12 @@ def main() -> int:
         rows = {}
         rows["random_floor"] = probe(family, None, floor_mode=True)
         for short in LONG:
+            # predeclaration: the solo reference is the specialist's
+            # OWN-task ceiling only — foreign probes are out of scope
             rows[f"solo_{short}"] = probe(
                 family, workdir / f"solo_{short}"
-                / f"branch_{family}_encoder.pt")
+                / f"branch_{family}_encoder.pt",
+                only_tasks=[short])
         arm_dirs = {"full5_control": "full5_control",
                     "predictive3": "predictive3",
                     "self_supervised2": "self_supervised2",
