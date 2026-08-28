@@ -1,0 +1,287 @@
+{
+ "schema": "agent_multi.final_probe_screen.v1",
+ "order": "P3",
+ "predeclaration_sha256": "6f6be4c5c3f1ee65b88641357fe67c297c721555fb0a139d2d0ac9db1d78186a",
+ "route_identities": "REUSED from the R5 run dirs verbatim (no retraining)",
+ "families": {
+  "returns_momentum": {
+   "random_floor_raw": {
+    "reconstruction": 0.50298977,
+    "quantile": 0.01358802,
+    "contrastive": 2.43486357,
+    "volatility": 0.56795126,
+    "barrier": 1.10627365
+   },
+   "solo_ceiling_raw": {
+    "reconstruction": 0.3823908,
+    "quantile": 0.01285993,
+    "contrastive": 2.49145937,
+    "volatility": 0.24108173,
+    "barrier": 1.14442611
+   },
+   "arms": {
+    "full5_control": {
+     "raw_probe_medians": {
+      "reconstruction": 0.42762598,
+      "quantile": 0.01323094,
+      "contrastive": 2.52540994,
+      "volatility": 0.2878902,
+      "barrier": 1.12150955
+     },
+     "skills": {
+      "reconstruction": 0.6249,
+      "quantile": 0.4904,
+      "volatility": 0.8568
+     },
+     "diagnostic_invalid": {
+      "contrastive": "DIAGNOSTIC_INVALID: ill-ordered (solo >= random)",
+      "barrier": "DIAGNOSTIC_INVALID: ill-ordered (solo >= random)"
+     },
+     "eligible_no_predictive_worse_than_random": true,
+     "median_predictive_skill": 0.6736,
+     "median_all_skill": 0.6249,
+     "dispersions": {
+      "reconstruction": 0.00141037,
+      "quantile": 0.00344101,
+      "contrastive": 0.21026993,
+      "volatility": 0.0166145,
+      "barrier": 0.00534248
+     }
+    },
+    "predictive3": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 5678): best val 0.967404 did not improve >= 1% over initial 0.967404"
+    },
+    "self_supervised2": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 9012): best val 15.385378 did not improve >= 1% over initial 15.385378"
+    },
+    "evidence_pruned": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 5678): best val 0.967404 did not improve >= 1% over initial 0.967404"
+    }
+   }
+  },
+  "trend_level": {
+   "random_floor_raw": {
+    "reconstruction": 1.17667711,
+    "quantile": 0.01594501,
+    "contrastive": 4.15725946,
+    "volatility": 0.29837376,
+    "barrier": 1.12678885
+   },
+   "solo_ceiling_raw": {
+    "reconstruction": 0.81799513,
+    "quantile": 0.01146466,
+    "contrastive": 4.0068903,
+    "volatility": 0.24586649,
+    "barrier": null
+   },
+   "arms": {
+    "full5_control": {
+     "raw_probe_medians": {
+      "reconstruction": 1.0707922,
+      "quantile": 0.02016955,
+      "contrastive": 4.19195747,
+      "volatility": 0.2960797,
+      "barrier": 1.12371111
+     },
+     "skills": {
+      "reconstruction": 0.2952,
+      "quantile": -0.9429,
+      "volatility": 0.0437
+     },
+     "diagnostic_invalid": {
+      "contrastive": "DIAGNOSTIC_INVALID: near-zero denominator",
+      "barrier": "DIAGNOSTIC_INVALID: unreliable random floor (addendum)"
+     },
+     "eligible_no_predictive_worse_than_random": false,
+     "median_predictive_skill": -0.4496,
+     "median_all_skill": 0.0437,
+     "dispersions": {
+      "reconstruction": 0.01096356,
+      "quantile": 0.00164965,
+      "contrastive": 0.12425518,
+      "volatility": 0.0095962,
+      "barrier": 0.00434375
+     }
+    },
+    "predictive3": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 5678): best val 3.945288 did not improve >= 1% over initial 3.966635"
+    },
+    "self_supervised2": {
+     "raw_probe_medians": {
+      "reconstruction": 0.84741735,
+      "quantile": 0.0737955,
+      "contrastive": 4.22217321,
+      "volatility": 5.51275206,
+      "barrier": 1.22095096
+     },
+     "skills": {
+      "reconstruction": 0.918,
+      "quantile": -12.912,
+      "volatility": -99.3077
+     },
+     "diagnostic_invalid": {
+      "contrastive": "DIAGNOSTIC_INVALID: near-zero denominator",
+      "barrier": "DIAGNOSTIC_INVALID: unreliable random floor (addendum)"
+     },
+     "eligible_no_predictive_worse_than_random": false,
+     "median_predictive_skill": -56.1099,
+     "median_all_skill": -12.912,
+     "dispersions": {
+      "reconstruction": 0.01237333,
+      "quantile": 0.01134666,
+      "contrastive": 0.46086264,
+      "volatility": 0.56651497,
+      "barrier": 0.10584641
+     }
+    },
+    "evidence_pruned": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 9012): best val 0.957595 did not improve >= 1% over initial 0.957595"
+    }
+   }
+  },
+  "volatility_distribution": {
+   "random_floor_raw": {
+    "reconstruction": 1.35685825,
+    "quantile": null,
+    "contrastive": 3.84858036,
+    "volatility": 1.30572593,
+    "barrier": 1.17710161
+   },
+   "solo_ceiling_raw": {
+    "reconstruction": 1.14045286,
+    "quantile": null,
+    "contrastive": 3.5775795,
+    "volatility": 0.5957967,
+    "barrier": null
+   },
+   "arms": {
+    "full5_control": {
+     "ROUTE_REFUSED": "MATERIAL_SEED_INSTABILITY: dispersion 0.044693 > 0.5 x |median| 0.054412 \u2014 the best seed is never selected"
+    },
+    "predictive3": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 5678): best val 0.996310 did not improve >= 1% over initial 0.996310"
+    },
+    "self_supervised2": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 1234): best val 0.944767 did not improve >= 1% over initial 0.944767"
+    },
+    "evidence_pruned": {
+     "ROUTE_REFUSED": "MATERIAL_SEED_INSTABILITY: dispersion 0.113998 > 0.5 x |median| 0.155933 \u2014 the best seed is never selected"
+    }
+   }
+  },
+  "oscillators": {
+   "random_floor_raw": {
+    "reconstruction": 0.76180595,
+    "quantile": 0.01093242,
+    "contrastive": 2.7767694,
+    "volatility": 0.33469808,
+    "barrier": 1.15139222
+   },
+   "solo_ceiling_raw": {
+    "reconstruction": 0.69018555,
+    "quantile": 0.01012985,
+    "contrastive": 2.73241138,
+    "volatility": 0.34303039,
+    "barrier": null
+   },
+   "arms": {
+    "full5_control": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 1234): best val 1.077676 did not improve >= 1% over initial 1.077676"
+    },
+    "predictive3": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 1234): best val 1.126914 did not improve >= 1% over initial 1.126914"
+    },
+    "self_supervised2": {
+     "ROUTE_REFUSED": "MATERIAL_SEED_INSTABILITY: dispersion 0.922321 > 0.5 x |median| 0.989779 \u2014 the best seed is never selected"
+    },
+    "evidence_pruned": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 1234): best val 0.935371 did not improve >= 1% over initial 0.935371"
+    }
+   }
+  },
+  "volume_flow": {
+   "random_floor_raw": {
+    "reconstruction": 0.63765699,
+    "quantile": 0.04848804,
+    "contrastive": 2.91867542,
+    "volatility": 4.35006285,
+    "barrier": 1.11928034
+   },
+   "solo_ceiling_raw": {
+    "reconstruction": 0.58868414,
+    "quantile": 0.01395322,
+    "contrastive": 2.86713529,
+    "volatility": 3.97415662,
+    "barrier": null
+   },
+   "arms": {
+    "full5_control": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 5678): best val 0.998419 did not improve >= 1% over initial 0.998419"
+    },
+    "predictive3": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 1234): best val 1.035186 did not improve >= 1% over initial 1.035186"
+    },
+    "self_supervised2": {
+     "raw_probe_medians": {
+      "reconstruction": 0.57470649,
+      "quantile": 0.08957421,
+      "contrastive": 2.84530377,
+      "volatility": 6.32195759,
+      "barrier": 1.10504615
+     },
+     "skills": {
+      "reconstruction": 1.2854,
+      "quantile": -1.1897,
+      "volatility": -5.2457
+     },
+     "diagnostic_invalid": {
+      "contrastive": "DIAGNOSTIC_INVALID: near-zero denominator",
+      "barrier": "DIAGNOSTIC_INVALID: unreliable random floor (addendum)"
+     },
+     "eligible_no_predictive_worse_than_random": false,
+     "median_predictive_skill": -3.2177,
+     "median_all_skill": -1.1897,
+     "dispersions": {
+      "reconstruction": 0.00316221,
+      "quantile": 0.00576763,
+      "contrastive": 0.1034596,
+      "volatility": 0.6038394,
+      "barrier": 0.01181483
+     }
+    },
+    "evidence_pruned": {
+     "ROUTE_REFUSED": "ADAPTER_FAILED_TO_FIT (seed 5678): best val 1.035712 did not improve >= 1% over initial 1.035712"
+    }
+   }
+  }
+ },
+ "verdicts": {
+  "returns_momentum": "SELECTED: full5_control (median predictive skill 0.6736)",
+  "trend_level": "NO_ELIGIBLE_ROUTE (a predictive probe is materially worse than random in every arm) -> full5_control as CONSERVATIVE DIAGNOSTIC candidate, not proven optimal",
+  "volatility_distribution": "NO_ELIGIBLE_ROUTE (a predictive probe is materially worse than random in every arm) -> full5_control as CONSERVATIVE DIAGNOSTIC candidate, not proven optimal",
+  "oscillators": "NO_ELIGIBLE_ROUTE (a predictive probe is materially worse than random in every arm) -> full5_control as CONSERVATIVE DIAGNOSTIC candidate, not proven optimal",
+  "volume_flow": "NO_ELIGIBLE_ROUTE (a predictive probe is materially worse than random in every arm) -> full5_control as CONSERVATIVE DIAGNOSTIC candidate, not proven optimal"
+ },
+ "selected": {
+  "returns_momentum": {
+   "arm": "full5_control",
+   "label": "SELECTED"
+  },
+  "trend_level": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  },
+  "volatility_distribution": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  },
+  "oscillators": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  },
+  "volume_flow": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  }
+ }
+}
