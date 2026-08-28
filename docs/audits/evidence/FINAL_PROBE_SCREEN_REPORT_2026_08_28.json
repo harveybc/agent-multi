@@ -283,5 +283,7 @@
    "arm": "full5_control",
    "label": "CONSERVATIVE_DIAGNOSTIC"
   }
- }
+ },
+ "verdict_status": "DIAGNOSTIC_PROTOCOL_INVALID_374_376",
+ "verdict_note": "verdicts/selected below are VOID (AUDIT 2026-08-28: refused-route fallback, marginal-floor skill inflation, 2-of-3 predictive eligibility); raw measurements preserved unaltered"
 }

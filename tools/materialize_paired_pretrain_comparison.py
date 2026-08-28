@@ -115,8 +115,14 @@ def main() -> int:
             "per_family_encoder_digests": {
                 family: entry["encoder_sha256"]
                 for family, entry in artifacts.items()},
-            "eligibility": ("PAIRED_SCREEN_CANDIDATE_PENDING_AUDIT "
-                            "(P4, final probe order) — no other use")},
+            "eligibility": (
+                "EXPLORATORY_PAIRED_SAC_TREATMENT_SELECTED_BY_AUDITOR "
+                "(2026-08-28) — explicitly NOT selected by probe "
+                "performance (probe screen "
+                "DIAGNOSTIC_PROTOCOL_INVALID_374_376); the paired "
+                "SAC experiment itself decides whether it provides "
+                "useful initialization; every economic claim "
+                "prohibited until it completes")},
         "data_roles": {"origin": "o2022",
                        "fit_end": "2021-12-31T20:00:00",
                        "scored_year": "2022 (trial ledger only)",
@@ -192,7 +198,8 @@ def main() -> int:
                            "genesis_sha256": sha256_obj(genesis)})
     design = {
         "schema": "agent_multi.paired_pretrain_comparison_design.v1",
-        "order": "post-transfer objectives order 2026-08-27 WP3",
+        "order": ("SAC driver correction order 2026-08-28 C2 "
+                  "(regenerated from the auditor relabel)"),
         "status": "MATERIALIZED_NOT_LAUNCHED — no GPU authority; "
                   "Musashi dispatches the smallest informative screen",
         "deferred_arms": deferred,
@@ -212,13 +219,14 @@ def main() -> int:
                                          "GPU: 2-3.5 days; two GPUs: "
                                          "half)"},
         "proposed_gpu_command_NOT_LAUNCHED": (
-            "CUDA_VISIBLE_DEVICES=<assigned> PYTHONPATH=. python "
-            "tools/dispatch_paired_pretrain_comparison.py "
-            "--design docs/audits/evidence/"
-            "PAIRED_PRETRAIN_COMPARISON_DESIGN_2026_08_27.json "
-            "--pretrain-dir <accepted five-objective generation> "
-            "--seed <seed> --arm <arm>   # driver to be implemented "
-            "ONLY under Musashi's GPU dispatch"),
+            "CUDA_VISIBLE_DEVICES=<logical-slot> PYTHONPATH=. "
+            "python tools/dispatch_paired_pretrain_comparison.py "
+            "--pretrain-dir <sealed five-objective generation> "
+            "--seed <seed> --arm <arm> --execute "
+            "--output-root <cell-output-root> "
+            "--gpu-authorized-by-musashi <acceptance-doc>   "
+            "# fires ONLY with Musashi's written acceptance "
+            "(order 2026-08-28 C5) and CUDA visibility"),
     }
     output = Path(args.output)
     output.write_text(json.dumps(design, indent=1))

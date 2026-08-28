@@ -1,6 +1,6 @@
 {
  "schema": "agent_multi.paired_pretrain_comparison_design.v1",
- "order": "post-transfer objectives order 2026-08-27 WP3",
+ "order": "SAC driver correction order 2026-08-28 C2 (regenerated from the auditor relabel)",
  "status": "MATERIALIZED_NOT_LAUNCHED \u2014 no GPU authority; Musashi dispatches the smallest informative screen",
  "deferred_arms": {
   "pretrained_frozen": "DEFERRED unless fine-tuned pretraining shows signal (P4)"
@@ -26,7 +26,7 @@
     "oscillators": "30c7f8058bf2622639e12204b1573de5635daaf65526eaa06c34e3a57f43d396",
     "volume_flow": "d229795131f8d1d7c240ff21ec0df3e163959aeddc99c96e5b7ead1503cb7a7c"
    },
-   "eligibility": "PAIRED_SCREEN_CANDIDATE_PENDING_AUDIT (P4, final probe order) \u2014 no other use"
+   "eligibility": "EXPLORATORY_PAIRED_SAC_TREATMENT_SELECTED_BY_AUDITOR (2026-08-28) \u2014 explicitly NOT selected by probe performance (probe screen DIAGNOSTIC_PROTOCOL_INVALID_374_376); the paired SAC experiment itself decides whether it provides useful initialization; every economic claim prohibited until it completes"
   },
   "data_roles": {
    "origin": "o2022",
@@ -112,9 +112,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "3c1c8af009b9073d3295aa87d43d0c050978a5d23f1454f4e063926074e8eaab"
+   "genesis_sha256": "0fc9db3b7df99d70b4e51dd4485d4907a04c6789bf0433bc903b4b3fa2cce6be"
   },
   {
    "trial_id": "pretrained_finetuned_s101",
@@ -127,9 +127,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "065ff834970de83d74900381cf336e694ce6a707d45aba7103fc74792de9f966"
+   "genesis_sha256": "669f8077aca9dbdfd9a9981f28dc19c80eb53ed51a78bcd78c888688b9784865"
   },
   {
    "trial_id": "pretrained_finetuned_s202",
@@ -142,9 +142,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "c1fc910db5c41699acb06213a406f97c394a3012630fe4c6bb6dae857972f190"
+   "genesis_sha256": "c75944d2585e44d86c355d44552b6bd3998e007efc2f86be19a35fdc5822c735"
   },
   {
    "trial_id": "control_random_init_s202",
@@ -157,9 +157,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "fcf2c5a1de0262974af0c7001bbe6cf32c3054a107ac98cb33c076d6139987eb"
+   "genesis_sha256": "852a291cf2b0014daf9d79c513e18e69799b1685dd94c2b170e8ba9b3197cfe0"
   },
   {
    "trial_id": "pretrained_finetuned_s303",
@@ -172,9 +172,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "80897b7e373f82471061f35b979ce233285cd6215c66b78463534e9a3c83bbce"
+   "genesis_sha256": "e9bc8af5698852e92e532137eed2a90ecd88612a633da37bb72f8861e4fad90e"
   },
   {
    "trial_id": "control_random_init_s303",
@@ -187,9 +187,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "2aef25098b8583561bbe6e122640324e31eaf0ec7614c0b19fa040cd7058830e"
+   "genesis_sha256": "fff5f208fdb1532c0563dd73f13784436f0c20823506acfa6a85bfe162f4cb2d"
   },
   {
    "trial_id": "control_random_init_s404",
@@ -202,9 +202,9 @@
      "encoder_init": "random (seeded)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "eb3cb0151ee79c83f9b22d336cc1c2dc7f1cd1028b7a5a943e4ee536d961213c"
+   "genesis_sha256": "f29e37858930ce03946b4c383edba933592e3d3d9bf892bfd01e6497b009f641"
   },
   {
    "trial_id": "pretrained_finetuned_s404",
@@ -217,9 +217,9 @@
      "encoder_init": "load_pretrained_branches (encoder-only, family-digest bound, custody route)",
      "temporal_branches_trainable": true
     },
-    "shared_bindings_sha256": "55cbbdbfeec1002b298aea8181edb50e52ee2d9a4cf7ee42d62e3dfe60db69e4"
+    "shared_bindings_sha256": "6d04f8c429fc420e07574664e60fac82b5ae5619903df7967e3cc10a10a19b3f"
    },
-   "genesis_sha256": "6843c4757092abe5acb4ea5ff85ff218f55ec32aa400aef0aaa8cc2a2535b9d9"
+   "genesis_sha256": "8e259fe57a4f5ceab4b53c89b188bdbb4208ea1bf91155f37222f86c6283c422"
   }
  ],
  "gpu_estimate": {
@@ -228,5 +228,5 @@
   "estimated_hours_per_cell": "6-10",
   "estimated_total_gpu_hours": "48-80 (sequential on one GPU: 2-3.5 days; two GPUs: half)"
  },
- "proposed_gpu_command_NOT_LAUNCHED": "CUDA_VISIBLE_DEVICES=<assigned> PYTHONPATH=. python tools/dispatch_paired_pretrain_comparison.py --design docs/audits/evidence/PAIRED_PRETRAIN_COMPARISON_DESIGN_2026_08_27.json --pretrain-dir <accepted five-objective generation> --seed <seed> --arm <arm>   # driver to be implemented ONLY under Musashi's GPU dispatch"
+ "proposed_gpu_command_NOT_LAUNCHED": "CUDA_VISIBLE_DEVICES=<logical-slot> PYTHONPATH=. python tools/dispatch_paired_pretrain_comparison.py --pretrain-dir <sealed five-objective generation> --seed <seed> --arm <arm> --execute --output-root <cell-output-root> --gpu-authorized-by-musashi <acceptance-doc>   # fires ONLY with Musashi's written acceptance (order 2026-08-28 C5) and CUDA visibility"
 }

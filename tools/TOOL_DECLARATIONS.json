@@ -94,7 +94,7 @@
    "owner": "General Satoshi III"
   },
   "dispatch_paired_pretrain_comparison.py": {
-   "purpose": "P4 paired SAC dispatch driver: CPU dry-run verifies design digest, candidate seal + quarantine + per-family encoder digests + architecture identity and materializes the per-cell genesis; GPU execution REFUSED by construction (requires Musashi's dispatch doc + CUDA + a training loop deliberately unimplemented until that dispatch is audited in); NOT_LAUNCHED",
+   "purpose": "C3 paired SAC dispatch driver: verification mode materializes the per-cell genesis; --execute-cpu-dry-run runs a bounded both-arm CPU acceptance cell through the accepted nested trainer (rl_pipeline_with_validation + sac_agent grouped strong route); --execute is the full-budget run, REFUSED without Musashi's written acceptance document AND CUDA visibility; every attempt is a fresh non-resumable custody identity; venue-credential keys refuse",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "discovery",
@@ -562,6 +562,13 @@
    "lifecycle": "supported",
    "mutability": "mixed",
    "authority_class": "diagnostic",
+   "owner": "General Satoshi III"
+  },
+  "paired_arm_identity_probe.py": {
+   "purpose": "C4 adversarial identity probe: constructs BOTH paired arms' SAC models for one seed on CPU (construction only, no training, refuses if CUDA visible) and proves same-seed determinism, bitwise non-branch tensor identity between arms, sealed-artifact parity of transferred encoders, and encoder trainability",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
    "owner": "General Satoshi III"
   }
  },

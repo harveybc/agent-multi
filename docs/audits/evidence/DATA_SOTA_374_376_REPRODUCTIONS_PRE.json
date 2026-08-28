@@ -1,0 +1,56 @@
+{
+ "schema": "agent_multi.data_sota_374_376_pre.v1",
+ "findings": [
+  "DATA-SOTA-374",
+  "DATA-SOTA-375",
+  "DATA-SOTA-376"
+ ],
+ "frozen_before_edit_note": "raw counterexamples extracted from the published report BEFORE the selector edit (report itself unaltered except tombstone fields)",
+ "counterexample_374": {
+  "volatility_distribution": {
+   "full5_control": "ROUTE_REFUSED",
+   "predictive3": "ROUTE_REFUSED",
+   "self_supervised2": "ROUTE_REFUSED",
+   "evidence_pruned": "ROUTE_REFUSED"
+  },
+  "oscillators": {
+   "full5_control": "ROUTE_REFUSED",
+   "predictive3": "ROUTE_REFUSED",
+   "self_supervised2": "ROUTE_REFUSED",
+   "evidence_pruned": "ROUTE_REFUSED"
+  },
+  "volume_flow": {
+   "full5_control": "ROUTE_REFUSED",
+   "predictive3": "ROUTE_REFUSED",
+   "evidence_pruned": "ROUTE_REFUSED"
+  }
+ },
+ "old_selected_374": {
+  "volatility_distribution": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  },
+  "oscillators": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  },
+  "volume_flow": {
+   "arm": "full5_control",
+   "label": "CONSERVATIVE_DIAGNOSTIC"
+  }
+ },
+ "counterexample_376": {
+  "family": "returns_momentum",
+  "full5_skills": {
+   "reconstruction": 0.6249,
+   "quantile": 0.4904,
+   "volatility": 0.8568
+  },
+  "full5_diagnostic_invalid": {
+   "contrastive": "DIAGNOSTIC_INVALID: ill-ordered (solo >= random)",
+   "barrier": "DIAGNOSTIC_INVALID: ill-ordered (solo >= random)"
+  },
+  "old_verdict": "SELECTED: full5_control (median predictive skill 0.6736)"
+ },
+ "counterexample_375": "first addendum permitted floor_fit_marginal scores to anchor skill; provenance reduced to raw scalars in the report"
+}

@@ -473,3 +473,94 @@ def common_probe_surface_v2(*, embeddings_fit, embeddings_score,
                     "refusal_recorded": str(refusal)[:100]}
     report["barrier_probe_support"] = support
     return report
+
+
+PREDICTIVE_TASKS = ("quantile", "volatility", "barrier")
+
+
+def select_routes(families: dict) -> dict:
+    """C1 (DATA-SOTA-374/376) — the SELECTION AUTHORITY as one pure,
+    regression-testable function over already-measured facts:
+
+    * a ROUTE_REFUSED arm is NOT EVALUABLE and can never enter
+      ``selected`` — including through any fallback;
+    * eligibility requires ALL THREE predictive skills present, finite
+      and >= -0.05; an arm missing any predictive skill is
+      INCOMPLETE_EVIDENCE, never eligible and never fallback material;
+    * the conservative full5 fallback applies ONLY when full5 itself is
+      fully evaluable (all three predictive skills valid) but worse
+      than random — 'valid but worse than random' is distinguished
+      from 'not evaluable'.
+    """
+    import statistics
+
+    verdicts = {}
+    selected = {}
+    for family, payload in families.items():
+        arms = payload["arms"]
+        evaluable = {}
+        incomplete = {}
+        for arm, facts in arms.items():
+            if "ROUTE_REFUSED" in facts:
+                continue
+            skills = facts.get("skills") or {}
+            predictive = {t: skills.get(t) for t in PREDICTIVE_TASKS}
+            if any(v is None or v != v for v in predictive.values()):
+                incomplete[arm] = [t for t, v in predictive.items()
+                                   if v is None or v != v]
+                continue
+            evaluable[arm] = {
+                "predictive": predictive,
+                "eligible": all(v >= -0.05
+                                for v in predictive.values()),
+                "median_predictive": round(statistics.median(
+                    predictive.values()), 4),
+                "median_all": round(statistics.median(
+                    [v for v in skills.values()
+                     if v is not None]), 4)}
+        eligible = {a: f for a, f in evaluable.items() if f["eligible"]}
+        if eligible:
+            ranked = sorted(eligible.items(),
+                            key=lambda kv: (-kv[1]["median_predictive"],
+                                            -kv[1]["median_all"]))
+            best_arm, best = ranked[0]
+            ties = [a for a, f in ranked[1:]
+                    if abs(f["median_predictive"]
+                           - best["median_predictive"]) <= 0.02
+                    and abs(f["median_all"] - best["median_all"])
+                    <= 0.02]
+            if ties:
+                verdicts[family] = (f"INCONCLUSIVE: {best_arm} ties "
+                                    f"{ties}")
+                selected[family] = None
+            else:
+                verdicts[family] = (
+                    f"SELECTED: {best_arm} (median predictive skill "
+                    f"{best['median_predictive']})")
+                selected[family] = {"arm": best_arm,
+                                    "label": "SELECTED"}
+        elif evaluable:
+            if "full5_control" in evaluable:
+                verdicts[family] = (
+                    "WORSE_THAN_RANDOM on a predictive probe in every "
+                    "evaluable arm -> full5_control as CONSERVATIVE "
+                    "DIAGNOSTIC candidate (full5 itself fully "
+                    "evaluable), not proven optimal")
+                selected[family] = {"arm": "full5_control",
+                                    "label": "CONSERVATIVE_DIAGNOSTIC"}
+            else:
+                verdicts[family] = (
+                    "NOT_EVALUABLE_FOR_SELECTION: no eligible arm and "
+                    "full5_control is not fully evaluable — no "
+                    "candidate can come from this probe")
+                selected[family] = None
+        elif incomplete:
+            verdicts[family] = (
+                f"INCOMPLETE_EVIDENCE: no arm has all three predictive "
+                f"probes valid (missing e.g. {incomplete})")
+            selected[family] = None
+        else:
+            verdicts[family] = ("NOT_EVALUABLE_FOR_SELECTION: every "
+                                "arm ROUTE_REFUSED")
+            selected[family] = None
+    return {"verdicts": verdicts, "selected": selected}

@@ -1,0 +1,38 @@
+{
+ "schema": "agent_multi.nested_split_contract.v1",
+ "$doc": "o2022 paired pretrain-vs-random SAC comparison roles (SAC driver correction order 2026-08-28 C3). fit_train ends at the pretraining origin fit_end (last bar 2021-12-31T20:00); train_monitor is the last in-fit year (early-patience assessments); inner_validation is the SCORED 2022 year (trial-ledger primary endpoint); outer_validation 2023 is materialized by the l1 materializer but no pipeline evaluation consumes it; 2024 AND sealed 2025 both live inside sealed_test, which mode l1 structurally refuses to materialize — development-outer 2024 and sealed 2025 are unavailable by construction, not by promise. Row counts are ASSERTIONS verified against the pinned file.",
+ "source_csv": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+ "source_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+ "date_column": "DATE_TIME",
+ "window_size": 32,
+ "scaling_window": 256,
+ "max_feature_lookback": 0,
+ "roles": {
+  "fit_train": {
+   "start": "2017-09-28T04:00:00",
+   "end": "2022-01-01T00:00:00"
+  },
+  "train_monitor": {
+   "start": "2021-01-01T00:00:00",
+   "end": "2022-01-01T00:00:00"
+  },
+  "inner_validation": {
+   "start": "2022-01-01T00:00:00",
+   "end": "2023-01-01T00:00:00"
+  },
+  "outer_validation": {
+   "start": "2023-01-01T00:00:00",
+   "end": "2024-01-01T00:00:00"
+  },
+  "sealed_test": {
+   "start": "2024-01-01T00:00:00",
+   "end": "2026-01-01T00:00:00"
+  }
+ },
+ "expected_rows": {
+  "fit_train": 9319,
+  "train_monitor": 2190,
+  "inner_validation": 2190,
+  "outer_validation": 2190
+ }
+}

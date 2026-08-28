@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.data_sota_374_376_post.v1",
+ "corrected_authority": "agent_plugins.objective_routing.select_routes (pure function; tool tools/final_probe_screen.py now delegates)",
+ "authority_over_published_raw_facts": {
+  "verdicts": {
+   "returns_momentum": "INCOMPLETE_EVIDENCE: no arm has all three predictive probes valid (missing e.g. {'full5_control': ['barrier']})",
+   "trend_level": "INCOMPLETE_EVIDENCE: no arm has all three predictive probes valid (missing e.g. {'full5_control': ['barrier'], 'self_supervised2': ['barrier']})",
+   "volatility_distribution": "NOT_EVALUABLE_FOR_SELECTION: every arm ROUTE_REFUSED",
+   "oscillators": "NOT_EVALUABLE_FOR_SELECTION: every arm ROUTE_REFUSED",
+   "volume_flow": "INCOMPLETE_EVIDENCE: no arm has all three predictive probes valid (missing e.g. {'self_supervised2': ['barrier']})"
+  },
+  "selected": {
+   "returns_momentum": null,
+   "trend_level": null,
+   "volatility_distribution": null,
+   "oscillators": null,
+   "volume_flow": null
+  }
+ },
+ "floor_rule": "floor_fit_marginal or floor_diagnostic_invalid -> task DIAGNOSTIC_INVALID, never a skill anchor; full per-task floor provenance persisted as random_floor_provenance",
+ "tombstone": "DIAGNOSTIC_PROTOCOL_INVALID_374_376",
+ "regression_suite": "tests/unit/test_data_sota_374_376_regressions.py (8 tests, exact published counterexamples)"
+}

@@ -1614,6 +1614,33 @@ class PipelinePlugin:
                         }
                 else:
                     model = agent_plugin.build(train_env, config)
+                # C3 (SAC driver correction order 2026-08-28): the
+                # treatment arm of the paired pretrain comparison
+                # initializes the grouped extractors from a sealed
+                # pretraining generation INSIDE the accepted trainer —
+                # after cold construction, before the first update.
+                # Transfer init and warm start never combine: one is a
+                # genesis initialization, the other a trained artifact.
+                if config.get("pretrained_branch_generation_dir"):
+                    if warm_start_model or config.get(
+                            "warm_start_bundle"):
+                        raise ValueError(
+                            "pretrained_branch_generation_dir and warm "
+                            "start are mutually exclusive — refusing")
+                    from agent_plugins.pretrained_branch_loader import (
+                        load_into_sac_policy)
+                    _mat = getattr(agent_plugin,
+                                   "_materialized_architecture", None)
+                    model.pretrained_branch_transfer_evidence = (
+                        load_into_sac_policy(
+                            model,
+                            Path(str(config[
+                                "pretrained_branch_generation_dir"])),
+                            Path(__file__).resolve().parents[1],
+                            Path(str(config["input_data_file"])),
+                            expected_seal_manifest_sha256=config.get(
+                                "pretrained_branch_expected_seal"),
+                            materialized=_mat))
                 pretrain_summary = None
                 pretrain_behavior = getattr(agent_plugin, "pretrain_behavior", None)
                 if callable(pretrain_behavior) and bool(config.get("oracle_behavior_pretrain_enabled", False)):
@@ -2431,6 +2458,8 @@ class PipelinePlugin:
                     final["oracle_behavior_pretrain"] = pretrain_summary
                     final["warm_start_transfer_evidence"] = getattr(
                         model, "warm_start_transfer_evidence", None)
+                    final["pretrained_branch_transfer_evidence"] = getattr(
+                        model, "pretrained_branch_transfer_evidence", None)
                     final["observation_contract"] = (
                         observation_contract_application)
                     final["actor_liveness_history"] = actor_liveness_history
@@ -2488,6 +2517,8 @@ class PipelinePlugin:
                 # the model object; export it or it dies with the model.
                 final["warm_start_transfer_evidence"] = getattr(
                     model, "warm_start_transfer_evidence", None)
+                final["pretrained_branch_transfer_evidence"] = getattr(
+                    model, "pretrained_branch_transfer_evidence", None)
                 final["observation_contract"] = (
                     observation_contract_application)
                 final["actor_liveness_history"] = actor_liveness_history

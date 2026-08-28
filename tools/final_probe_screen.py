@@ -24,7 +24,7 @@ sys.path.insert(0, str(REPO))
 from agent_plugins.branch_pretraining import sha256_file  # noqa: E402
 from agent_plugins.objective_routing import (  # noqa: E402
     ProbeRefusal, common_probe_surface_v2, normalized_skill,
-    split_adapter_train_val)
+    select_routes, split_adapter_train_val)
 
 PREDECLARATION = (REPO / "docs/audits/evidence/"
                   "FINAL_PROBE_PROTOCOL_PREDECLARATION_2026_08_28.json")
@@ -217,8 +217,14 @@ def main() -> int:
             except ProbeRefusal as refusal:
                 rows[arm] = {"ROUTE_REFUSED": str(refusal)}
         # P2 skill per arm
-        random_scores = {task: rows["random_floor"]["probes"][task][
-            "probe_score_median"] for task in LONG}
+        floor_probes = rows["random_floor"]["probes"]
+        # DATA-SOTA-375: a marginal/unstable floor can NEVER anchor
+        # skill — the task becomes DIAGNOSTIC_INVALID; provenance kept
+        random_scores = {task: (None if floor_probes[task].get(
+            "floor_fit_marginal") or floor_probes[task].get(
+            "floor_diagnostic_invalid")
+            else floor_probes[task]["probe_score_median"])
+            for task in LONG}
         solo_scores = {task: rows[f"solo_{task}"]["probes"][task][
             "probe_score_median"] for task in LONG}
         floor_invalid = {task for task in LONG
@@ -246,61 +252,23 @@ def main() -> int:
                     invalid[task] = reason
                 else:
                     skills[task] = skill
-            predictive_skills = [skills[t] for t in PREDICTIVE
-                                 if t in skills]
-            eligible = all(s >= -0.05 for s in predictive_skills)
             arm_facts[arm] = {
                 "raw_probe_medians": {t: facts["probes"][t][
                     "probe_score_median"] for t in LONG},
                 "skills": skills, "diagnostic_invalid": invalid,
-                "eligible_no_predictive_worse_than_random": eligible,
-                "median_predictive_skill": round(statistics.median(
-                    predictive_skills), 4) if predictive_skills
-                else None,
-                "median_all_skill": round(statistics.median(
-                    list(skills.values())), 4) if skills else None,
                 "dispersions": {t: facts["probes"][t]["dispersion"]
                                 for t in LONG}}
         report["families"][family] = {
+            "random_floor_provenance": floor_probes,
             "random_floor_raw": random_scores,
             "solo_ceiling_raw": solo_scores,
             "arms": arm_facts}
-        ranked = sorted(
-            [(arm, facts) for arm, facts in arm_facts.items()
-             if "ROUTE_REFUSED" not in facts
-             and facts["eligible_no_predictive_worse_than_random"]
-             and facts["median_predictive_skill"] is not None],
-            key=lambda kv: (-kv[1]["median_predictive_skill"],
-                            -(kv[1]["median_all_skill"] or -9)))
-        if not ranked:
-            report["verdicts"][family] = (
-                "NO_ELIGIBLE_ROUTE (a predictive probe is materially "
-                "worse than random in every arm) -> full5_control as "
-                "CONSERVATIVE DIAGNOSTIC candidate, not proven optimal")
-            report["selected"][family] = {
-                "arm": "full5_control", "label": "CONSERVATIVE_DIAGNOSTIC"}
-            continue
-        best_arm, best = ranked[0]
-        ties = [arm for arm, facts in ranked[1:]
-                if abs(facts["median_predictive_skill"]
-                       - best["median_predictive_skill"]) <= 0.02
-                and abs((facts["median_all_skill"] or 0)
-                        - (best["median_all_skill"] or 0)) <= 0.02]
-        if ties:
-            report["verdicts"][family] = (
-                f"INCONCLUSIVE: {best_arm} ties {ties} -> "
-                f"full5_control as CONSERVATIVE DIAGNOSTIC candidate"
-                if "full5_control" in [best_arm] + ties else
-                f"INCONCLUSIVE: {best_arm} ties {ties}")
-            report["selected"][family] = {
-                "arm": best_arm if not ties else "full5_control",
-                "label": "INCONCLUSIVE_TIE_CONSERVATIVE"}
-        else:
-            report["verdicts"][family] = (
-                f"SELECTED: {best_arm} (median predictive skill "
-                f"{best['median_predictive_skill']})")
-            report["selected"][family] = {"arm": best_arm,
-                                          "label": "SELECTED"}
+    # DATA-SOTA-374/376: selection authority is the pure function —
+    # refused arms can never be selected, eligibility needs all three
+    # predictive skills valid
+    authority = select_routes(report["families"])
+    report["verdicts"] = authority["verdicts"]
+    report["selected"] = authority["selected"]
     Path(args.output).write_text(json.dumps(report, indent=1))
     print(json.dumps(report["verdicts"], indent=1))
     print(json.dumps({f: s for f, s in report["selected"].items()},

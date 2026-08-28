@@ -1,0 +1,58 @@
+{
+ "schema": "agent_multi.paired_sac_launch_manifest.v1",
+ "authored_before_execution": true,
+ "gpu_logical_slot": "gpu_slot_1",
+ "within_slot_position": 1,
+ "worktree_policy": "read-only git worktree pinned to the commit carrying this manifest; no in-place edits during the campaign",
+ "thermal_telemetry": "tools/gpu_temperature_watchdog.py active on the executing host for the full cell duration",
+ "terminal_validation": "custody verified_render(key) + cell record schema agent_multi.paired_sac_cell_record.v1 + predeclared refusal taxonomy",
+ "command": "CUDA_VISIBLE_DEVICES=<slot-binding> PYTHONPATH=. python tools/dispatch_paired_pretrain_comparison.py --pretrain-dir <sealed-generation-dir> --seed 202 --arm control_random_init --execute --output-root <campaign-output-root> --gpu-authorized-by-musashi <acceptance-doc>",
+ "cell_genesis": {
+  "schema": "agent_multi.paired_sac_cell_genesis.v1",
+  "trial_id": "control_random_init_s202",
+  "genesis_sha256": "852a291cf2b0014daf9d79c513e18e69799b1685dd94c2b170e8ba9b3197cfe0",
+  "arm": "control_random_init",
+  "seed": 202,
+  "mechanism": {
+   "encoder_init": "random (seeded)",
+   "temporal_branches_trainable": true
+  },
+  "strong_config": "examples/config/project3_ethusdt_4h_sac_grouped_strong_v1.json",
+  "architecture_digest": "fda91f3706c82c2c7af18b5312a73fcc6350be6b3f6c1151b8b0aff6278a4da5",
+  "pretrain_generation_seal": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+  "sac": {
+   "learning_rate": 0.0003,
+   "policy": "MultiInputPolicy",
+   "budget_total_timesteps": 260000,
+   "stopping": "early patience 40 evaluations on the in-trial monitor; no monitor-based weight/architecture selection",
+   "train_seed": "per arm-seed cell"
+  },
+  "envelope": {
+   "source": "ALPACA-frozen o2022 envelope from the B4 causal calibration (ATR 3.0/6.0), shared_execution_envelope plugin",
+   "cost_manifest": "examples/config/cost_manifest_eth_h4_v2.json",
+   "cost_contract": "alpaca_ethusd ~30.5bp/side (sole G1-eligible economy)",
+   "headroom": 0.0071
+  },
+  "data_roles": {
+   "origin": "o2022",
+   "fit_end": "2021-12-31T20:00:00",
+   "scored_year": "2022 (trial ledger only)",
+   "development_outer_2024": "UNTOUCHED",
+   "sealed_2025": "STRUCTURALLY_UNAVAILABLE"
+  },
+  "evaluation": {
+   "primary_endpoint": "risk-adjusted scored-2022 return: mean per-bar log return / std of per-bar log returns (annualized sqrt(2190)), computed ONCE per arm-seed through the trial ledger",
+   "paired_effect": "mean over seeds of (treatment - control)",
+   "dispersion": "IQR of the paired differences across seeds"
+  },
+  "predeclared_refusals": {
+   "minimum_activity": ">= 12 position changes in the scored year, else the cell is ACTIVITY_REFUSED (excluded, reported)",
+   "constant_policy_refusal": "std of raw actions over the scored year < 1e-4 refuses the cell",
+   "dead_actor_refusal": "finding-235 family: zero action variance across distinct observations refuses the cell",
+   "inconclusive": "|paired effect| < 0.5 * std of paired differences, OR >= 2 seeds refused in any arm -> outcome INCONCLUSIVE; no reseeding, no post-hoc endpoint change",
+   "no_selection": "no outer-2024/sealed-2025 access; no monitor-driven weight choice; endpoints frozen by this design before any dispatch"
+  },
+  "status": "MATERIALIZED_NOT_LAUNCHED",
+  "cell_sha256": "de4ea66b412348145a8781fefe8034f94847ace64fc5f2a296d9b2f5e8702a4e"
+ }
+}

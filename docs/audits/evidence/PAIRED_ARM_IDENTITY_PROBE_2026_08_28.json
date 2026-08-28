@@ -1,0 +1,30 @@
+{
+ "schema": "agent_multi.paired_arm_identity_probe.v1",
+ "seed": 101,
+ "same_seed_construction_deterministic": true,
+ "policy_tensors_total": 337,
+ "non_branch_tensors": 112,
+ "non_branch_identical_between_arms": 112,
+ "non_branch_DIFFERING_between_arms": [],
+ "temporal_branch_tensors": 225,
+ "temporal_branch_tensors_changed_by_transfer": 219,
+ "transfer_bit_parity_all_extractors": true,
+ "transfer_trainability": {
+  "actor": {
+   "encoder_params": 73,
+   "all_requires_grad": true,
+   "all_in_optimizer": true
+  },
+  "critic": {
+   "encoder_params": 73,
+   "all_requires_grad": true,
+   "all_in_optimizer": true
+  },
+  "critic_target": {
+   "polyak_tracked": true,
+   "note": "SB3 SAC target network \u2014 never optimizer-trained, identical semantics in both arms"
+  }
+ },
+ "treatment_encoders_trainable": true,
+ "verdict": "INITIALIZATION_IS_THE_ONLY_DIFFERENCE"
+}

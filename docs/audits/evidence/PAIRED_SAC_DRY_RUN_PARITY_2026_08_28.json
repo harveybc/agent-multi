@@ -1,0 +1,73 @@
+{
+ "schema": "agent_multi.paired_sac_dry_run_parity.v1",
+ "order": "SAC driver correction order 2026-08-28 C4",
+ "seed": 101,
+ "arms": {
+  "control_random_init": {
+   "custody_key_prefix": "251cc8b0b5ca4c67",
+   "stop_reason": "max_epochs_budget",
+   "history_epochs": 2,
+   "transfer_evidence": null,
+   "wall_minutes_cpu_derived_from_mtimes": 19.7
+  },
+  "pretrained_finetuned": {
+   "custody_key_prefix": "257ce5d5374a0d23",
+   "stop_reason": "max_epochs_budget",
+   "history_epochs": 2,
+   "transfer_seal": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+   "transfer_bit_parity_all_extractors": true,
+   "transfer_trainability": {
+    "actor": {
+     "encoder_params": 73,
+     "all_requires_grad": true,
+     "all_in_optimizer": true
+    },
+    "critic": {
+     "encoder_params": 73,
+     "all_requires_grad": true,
+     "all_in_optimizer": true
+    },
+    "critic_target": {
+     "polyak_tracked": true,
+     "note": "SB3 SAC target network \u2014 never optimizer-trained, identical semantics in both arms"
+    }
+   },
+   "wall_minutes_cpu_derived_from_mtimes": 19.7
+  }
+ },
+ "config_identity": {
+  "keys_only_in_treatment": [
+   "pretrained_branch_expected_seal",
+   "pretrained_branch_generation_dir"
+  ],
+  "expected_keys_only_in_treatment": [
+   "pretrained_branch_expected_seal",
+   "pretrained_branch_generation_dir"
+  ],
+  "differing_shared_keys": [
+   "nested_split_dir",
+   "results_file",
+   "save_config",
+   "save_model"
+  ],
+  "differing_non_path_keys": [],
+  "verdict": "INITIALIZATION_IS_THE_ONLY_TREATMENT"
+ },
+ "tensor_level_proof": "docs/audits/evidence/PAIRED_ARM_IDENTITY_PROBE_2026_08_28.json (same-seed construction deterministic; 112/112 non-branch tensors bitwise identical between arms; 219/225 temporal-branch tensors changed by the transfer, the 6 unchanged are fixed construction-time buffers e.g. positional encodings; loader bit-parity proves the loaded state equals the sealed artifacts)",
+ "dry_run_budget_disclosed": {
+  "total_timesteps": 2600,
+  "epoch_timesteps": 1300,
+  "max_epochs": 2,
+  "l1_patience": 2,
+  "learning_starts": 128,
+  "buffer_size": 4000,
+  "batch_size": 64
+ },
+ "wall_seconds_field_note": "the wall_seconds record field was added to the driver AFTER these two attempts launched; walls above are derived from artifact mtimes and the GPU campaign records will carry wall_seconds directly",
+ "custody_note": "two earlier attempts refused on observation-contract guards and one SIGTERM'd attempt were closed as terminal interrupted records with disclosure; every attempt used a fresh identity (non-resumable, order C3)",
+ "primary_endpoint_sample_DIAGNOSTIC_ONLY": {
+  "note": "2-epoch bounded budget \u2014 NO economic claim; recorded only to show the endpoint plumbing works",
+  "control_val_risk_adjusted_total_return": -0.36083771789277785,
+  "treatment_val_risk_adjusted_total_return": -0.34127449109094665
+ }
+}

@@ -367,3 +367,96 @@ def check_finite_forward(output, label: str = "forward output"):
         raise TransferLoadError(
             f"{label} contains NaN/Inf — typed run failure")
     return output
+
+
+def load_into_sac_policy(model, pretrain_dir: Path, repo_root: Path,
+                         data_path: Path, *,
+                         expected_seal_manifest_sha256: str | None = None,
+                         materialized: dict[str, Any] | None = None
+                         ) -> dict[str, Any]:
+    """C3 (SAC driver correction order 2026-08-28): initialize an
+    already-constructed SB3 SAC model's grouped feature extractors from
+    a sealed pretraining generation — the ONLY treatment difference in
+    the paired comparison.
+
+    * runs the full identity chain (verify_source: seal, contract
+      revalidation, data digest, quarantine register) before touching
+      the model;
+    * refuses a shared actor/critic extractor — the accepted strong
+      route builds separate extractors (share_features_extractor
+      False) and the design binds that;
+    * loads the five family encoders into actor, critic AND
+      critic_target extractors, each with per-tensor bit parity against
+      the sealed artifacts (tensor parity BEFORE the first update);
+    * proves trainability: every temporal-branch parameter of actor and
+      critic requires_grad AND belongs to that network's optimizer
+      param groups (critic_target is polyak-tracked by SAC semantics,
+      identical in both arms, and is recorded as such);
+    * heads/optimizers from pretraining are never offered (encoder-only
+      files; typed category refusal inside load_family_encoders).
+    """
+    source = verify_source(Path(pretrain_dir), Path(repo_root),
+                           Path(data_path))
+    contract = source["contract"]
+    manifest = source["manifest"]
+    seal = json.loads(
+        (Path(pretrain_dir) / "generation.json").read_text())
+    if expected_seal_manifest_sha256 and \
+            seal["manifest_sha256"] != expected_seal_manifest_sha256:
+        raise TransferLoadError(
+            "sealed generation manifest digest "
+            f"{seal['manifest_sha256'][:12]} does not match the design "
+            "binding — the cell refuses before any weight moves")
+    if materialized is not None:
+        verify_architecture_matches_contract(materialized, contract)
+    policy = model.policy
+    actor_ex = policy.actor.features_extractor
+    critic_ex = policy.critic.features_extractor
+    target_ex = policy.critic_target.features_extractor
+    if actor_ex is critic_ex:
+        raise TransferLoadError(
+            "actor and critic share one features extractor — the "
+            "design requires share_features_extractor False (separate "
+            "extractors); refusing")
+    reports: dict[str, Any] = {}
+    for name, extractor in (("actor", actor_ex),
+                            ("critic", critic_ex),
+                            ("critic_target", target_ex)):
+        if not hasattr(extractor, "temporal_branches"):
+            raise TransferLoadError(
+                f"{name}: features extractor is not the grouped route")
+        reports[name] = load_family_encoders(
+            Path(pretrain_dir), manifest, contract, extractor)
+    trainability: dict[str, Any] = {}
+    for name, network, extractor in (
+            ("actor", policy.actor, actor_ex),
+            ("critic", policy.critic, critic_ex)):
+        optimizer_param_ids = {
+            id(p) for group in network.optimizer.param_groups
+            for p in group["params"]}
+        branch_params = [p for branch in extractor.temporal_branches
+                         for p in branch.parameters()]
+        if not branch_params:
+            raise TransferLoadError(f"{name}: no encoder parameters")
+        frozen = sum(1 for p in branch_params if not p.requires_grad)
+        outside = sum(1 for p in branch_params
+                      if id(p) not in optimizer_param_ids)
+        if frozen or outside:
+            raise TransferLoadError(
+                f"{name}: {frozen} encoder params frozen, {outside} "
+                f"outside the optimizer — all encoder parameters must "
+                f"remain trainable (order C3)")
+        trainability[name] = {
+            "encoder_params": len(branch_params),
+            "all_requires_grad": True,
+            "all_in_optimizer": True}
+    trainability["critic_target"] = {
+        "polyak_tracked": True,
+        "note": "SB3 SAC target network — never optimizer-trained, "
+                "identical semantics in both arms"}
+    return {
+        "seal_manifest_sha256": seal["manifest_sha256"],
+        "extractors": reports,
+        "trainability": trainability,
+        "code_identity": source["code_identity_report"],
+    }

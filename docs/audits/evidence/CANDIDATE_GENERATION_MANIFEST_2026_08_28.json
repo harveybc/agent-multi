@@ -5077,5 +5077,6 @@
    2.513888888888889
   ]
  ],
- "completed": true
+ "completed": true,
+ "transfer_eligibility_relabel_2026_08_28": "EXPLORATORY_PAIRED_SAC_TREATMENT_SELECTED_BY_AUDITOR \u2014 explicitly NOT selected by probe performance (probe screen DIAGNOSTIC_PROTOCOL_INVALID_374_376); auditor disposition 2026-08-28; sealed generation bytes UNALTERED (seal a466c9f86b481cf2...)"
 }

@@ -190,5 +190,13 @@ class TestIsolation:
     def test_ranking_is_cardinality_invariant(self):
         source = (REPO / "tools/final_probe_screen.py").read_text()
         assert "for task in LONG" in source  # every probe, always
-        assert "trained_objectives" not in source.split(
-            "def main")[1].split("ranked = sorted")[1].split("]")[0]
+        # C1 (374-376): selection authority moved into the pure
+        # select_routes function; the 369 invariant — ranking never
+        # keys on trained-objective cardinality — must hold THERE
+        assert "select_routes(report" in source
+        import inspect
+
+        from agent_plugins.objective_routing import select_routes
+        authority = inspect.getsource(select_routes)
+        assert "trained_objectives" not in authority
+        assert "median" in authority  # skill medians, not counts
