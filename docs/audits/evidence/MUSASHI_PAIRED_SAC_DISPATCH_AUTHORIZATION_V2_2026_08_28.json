@@ -1,0 +1,32 @@
+{
+ "schema": "agent_multi.paired_sac_dispatch_authorization.v1",
+ "campaign_id": "paired_pretrain_sac_eth_o2022_20260828",
+ "trial_ids": [
+  "control_random_init_s101",
+  "pretrained_finetuned_s101",
+  "pretrained_finetuned_s202",
+  "control_random_init_s202",
+  "pretrained_finetuned_s303",
+  "control_random_init_s303",
+  "control_random_init_s404",
+  "pretrained_finetuned_s404"
+ ],
+ "reviewed_correction_commit": "0e3b7c957cd157503195eed788a1cef05fc322e1",
+ "paired_design_sha256": "9e86f2b32c220f29af5d84fd3cb4409091a4b0f87f7844d2549272514b8acc8b",
+ "candidate_seal_manifest_sha256": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+ "launch_manifest_sha256": {
+  "control_random_init_s101": "1280cf235bbc2341bff68a26303de20c309841a88f8a3b16bc3f7fd274baff9c",
+  "pretrained_finetuned_s101": "f4a1593a63c400f016b212aa0134e956360bd300d225398c647378612ebb5e7e",
+  "pretrained_finetuned_s202": "59e403538d1413fc981acd17414fee8c63a219508feff9e53dbd4bd9b264db70",
+  "control_random_init_s202": "776b426ea8353d1e96286f2d60dbe58c57b790bc81e568a9bd7375409dc2c0ad",
+  "pretrained_finetuned_s303": "373366ac1a23398ec69a6e8198f5d0ba931fc6ed41ef33da2d25041f2acc6448",
+  "control_random_init_s303": "8eb46d9cb3c4c309144d374c1a137f9aee93501fff6282d0f7abc200ab2e59b9",
+  "control_random_init_s404": "73b4cf94216fc1288aca3215382187e42aed2639a0e0f35b40d0b248af8c8a7b",
+  "pretrained_finetuned_s404": "3083c045aaacac35381124630fc400e5e4306944340c0178c5f225cbe4eca418"
+ },
+ "executable_allowlist_sha256": "aedf1c1778bebbde6391a025fb43fd893b75d6d5e0b5af109c324f962de85b29",
+ "authorization_scope": "EXECUTE_EIGHT_PAIRED_SAC_CELLS",
+ "issued_utc": "2026-08-28T17:23:03Z",
+ "auditor": "General Musashi",
+ "audit_order_commit_digest": "db4219d272fec80e5dab8183083978c5ebe87e4255c810e01d8f8b781f51a91d"
+}
