@@ -143,6 +143,13 @@
    "authority_class": "discovery",
    "owner": "General Musashi"
   },
+  "final_probe_screen.py": {
+   "purpose": "P3 final CPU routing evaluation under the validated neutral probe protocol: reuses EXISTING R5 route/solo identities verbatim (no retraining), adds the random floor, validated adapter fitting (train/val split+purge, early stop, best-restore, 3 seeds, instability refusal), P2 skill ranking with predictive-probe eligibility and full5 conservative fallback",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
   "fleet_status_context.py": {
    "purpose": "Hermes runtime-facts context block generator (Musashi order 2026-08-04)",
    "lifecycle": "supported",

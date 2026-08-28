@@ -204,3 +204,247 @@ def common_probe_surface(*, embeddings_fit, embeddings_score,
                 f"probe adapter for {task} did not converge on "
                 f"probe-fit — route refused, surface never shrinks")
     return report
+
+
+# ---------------- P1/P2 validated protocol (final probe order 2026-08-28)
+
+def split_adapter_train_val(fit_indices, purge_steps: int,
+                            train_fraction: float = 0.7):
+    """P1: split the probe-fit block CAUSALLY into adapter-train
+    (oldest 70%) and adapter-val (newest remainder) with a purge
+    between them; probe-score stays untouched until final scoring."""
+    import numpy as np
+
+    fit_indices = np.asarray(fit_indices)
+    n = len(fit_indices)
+    n_train = int(n * train_fraction)
+    if n_train < 1 or n - n_train - purge_steps < 1:
+        raise ProbeRefusal("adapter train/val split leaves an empty "
+                           "block")
+    return fit_indices[:n_train], fit_indices[n_train + purge_steps:]
+
+
+def fit_adapter_validated(build_adapter, fit_loss_fn, val_loss_fn,
+                          score_fn, protocol: dict):
+    """P1 (DATA-SOTA-371): per fixed seed — early-stopped, best-state
+    restored, finite-curve, minimum-improvement adapter fit; median +
+    dispersion across seeds; material seed instability REFUSES."""
+    import copy
+
+    import torch
+
+    seeds = list(protocol["adapter_seeds"])
+    max_steps = int(protocol["max_steps"])
+    min_steps = int(protocol["min_steps"])
+    cadence = int(protocol["validation_cadence_steps"])
+    patience = int(protocol["patience_steps"])
+    scores = []
+    curves = []
+    for seed in seeds:
+        torch.manual_seed(seed)
+        adapter = build_adapter()
+        optimizer = torch.optim.Adam(adapter.parameters(),
+                                     lr=float(protocol["lr"]))
+        generator = torch.Generator().manual_seed(seed + 1)
+        with torch.no_grad():
+            initial_val = float(val_loss_fn(adapter))
+        best_val = initial_val
+        best_state = copy.deepcopy(adapter.state_dict())
+        best_step = 0
+        history = {"initial_val": round(initial_val, 8), "val": []}
+        step = 0
+        while step < max_steps:
+            loss = fit_loss_fn(adapter, generator)
+            if not torch.isfinite(loss):
+                raise ProbeRefusal(
+                    f"non-finite adapter train loss (seed {seed})")
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            step += 1
+            if step % cadence == 0:
+                with torch.no_grad():
+                    val = float(val_loss_fn(adapter))
+                if val != val or abs(val) == float("inf"):
+                    raise ProbeRefusal(
+                        f"non-finite adapter val loss (seed {seed})")
+                history["val"].append(round(val, 8))
+                if val < best_val:
+                    best_val = val
+                    best_state = copy.deepcopy(adapter.state_dict())
+                    best_step = step
+                if (step >= min_steps
+                        and step - best_step >= patience):
+                    break
+        adapter.load_state_dict(best_state)
+        if best_val > initial_val * (1.0 - float(
+                protocol["minimum_improvement_fraction"])):
+            raise ProbeRefusal(
+                f"ADAPTER_FAILED_TO_FIT (seed {seed}): best val "
+                f"{best_val:.6f} did not improve >= "
+                f"{protocol['minimum_improvement_fraction']:.0%} over "
+                f"initial {initial_val:.6f}")
+        with torch.no_grad():
+            scores.append(float(score_fn(adapter)))
+        history.update({"best_val": round(best_val, 8),
+                        "best_step": best_step,
+                        "stopped_at": step})
+        curves.append(history)
+    ordered = sorted(scores)
+    median = ordered[len(ordered) // 2]
+    dispersion = ordered[-1] - ordered[0]
+    if abs(median) > 0 and dispersion / abs(median) > 0.5:
+        raise ProbeRefusal(
+            f"MATERIAL_SEED_INSTABILITY: dispersion {dispersion:.6f} "
+            f"> 0.5 x |median| {abs(median):.6f} — the best seed is "
+            f"never selected")
+    return {"probe_score_median": round(median, 8),
+            "probe_scores_by_seed": [round(s, 8) for s in scores],
+            "dispersion": round(dispersion, 8),
+            "curves": curves}
+
+
+def normalized_skill(loss_random: float, loss_route: float,
+                     loss_solo: float):
+    """P2 (DATA-SOTA-372): skill with random=0 and solo=1; ill-ordered
+    or near-zero denominators are DIAGNOSTIC_INVALID for ranking (raw
+    losses always preserved by the caller)."""
+    denominator = loss_random - loss_solo
+    if loss_solo >= loss_random:
+        return None, "DIAGNOSTIC_INVALID: ill-ordered (solo >= random)"
+    if denominator < 0.05 * abs(loss_random):
+        return None, "DIAGNOSTIC_INVALID: near-zero denominator"
+    return round((loss_random - loss_route) / denominator, 4), None
+
+
+def common_probe_surface_v2(*, embeddings_fit, embeddings_score,
+                            masked_embeddings_fit,
+                            masked_embeddings_score, windows_fit,
+                            windows_score, mask_fit, mask_score,
+                            quantile_targets_fit, quantile_targets_score,
+                            quantile_quantiles, volatility_targets_fit,
+                            volatility_targets_score, barrier_labels_fit,
+                            barrier_labels_score, positions_fit,
+                            positions_score, contrastive_exclusion: int,
+                            contrastive_temperature: float,
+                            adapter_train_pos, adapter_val_pos,
+                            protocol: dict[str, Any]) -> dict[str, Any]:
+    """P1-validated surface: every probe adapter fits on the causal
+    adapter-train segment, early-stops on adapter-val, restores its
+    best state, and only then scores on the untouched probe-score
+    block; three fixed seeds, median + dispersion, instability
+    refusal. Positions index INTO the fit arrays."""
+    import torch
+    import torch.nn.functional as F
+
+    dim = int(embeddings_fit.shape[1])
+    window_numel = int(windows_fit.shape[1] * windows_fit.shape[2])
+    batch = int(protocol["batch_size"])
+    train_pos = torch.as_tensor(adapter_train_pos)
+    val_pos = torch.as_tensor(adapter_val_pos)
+    report: dict[str, Any] = {"encoder_output_std": round(
+        float(embeddings_score.std()), 6)}
+    if report["encoder_output_std"] < 1e-4:
+        raise ProbeRefusal("degenerate encoder output variance")
+
+    def sampler(generator):
+        pick = torch.randint(0, len(train_pos),
+                             (min(batch, len(train_pos)),),
+                             generator=generator)
+        return train_pos[pick]
+
+    def rec_loss(a, idx):
+        pred = a(masked_embeddings_fit[idx]).view(
+            -1, windows_fit.shape[1], windows_fit.shape[2])
+        diff = (pred - windows_fit[idx])[mask_fit[idx]]
+        return (diff ** 2).mean()
+
+    def info_nce(a, anchor_e, view_e, positions):
+        z_a = F.normalize(a(anchor_e), dim=-1)
+        z_v = F.normalize(a(view_e), dim=-1)
+        logits = z_a @ z_v.T / contrastive_temperature
+        distance = (positions[:, None] - positions[None, :]).abs()
+        negative_mask = distance > contrastive_exclusion
+        positive = torch.diagonal(logits)
+        masked = logits.masked_fill(~negative_mask, float("-inf"))
+        denominator = torch.logsumexp(
+            torch.cat([positive.unsqueeze(1), masked], dim=1), dim=1)
+        return (denominator - positive).mean()
+
+    weights = frozen_class_weights(
+        barrier_labels_fit[train_pos].numpy())
+    import numpy as np
+    support = {}
+    for col in range(barrier_labels_score.shape[1]):
+        counts = {int(k): int(v) for k, v in zip(*np.unique(
+            barrier_labels_score[:, col].numpy(), return_counts=True))}
+        support[f"h{col}"] = counts
+        if len(counts) < 2:
+            raise ProbeRefusal(
+                f"degenerate barrier probe support at horizon index "
+                f"{col}: {counts}")
+    from agent_plugins.branch_pretraining import barrier_loss
+    tasks = {
+        "reconstruction": {
+            "build": lambda: torch.nn.Linear(dim, window_numel),
+            "fit": lambda a, g: rec_loss(a, sampler(g)),
+            "val": lambda a: rec_loss(a, val_pos),
+            "score": lambda a: ((a(masked_embeddings_score).view(
+                windows_score.shape) - windows_score)[mask_score]
+                ** 2).mean()},
+        "quantile": {
+            "build": lambda: build_monotone_quantile_head(
+                dim, quantile_targets_fit.shape[1],
+                len(quantile_quantiles)),
+            "fit": lambda a, g: (lambda idx: pinball_loss(
+                a(embeddings_fit[idx]), quantile_targets_fit[idx],
+                quantile_quantiles))(sampler(g)),
+            "val": lambda a: pinball_loss(
+                a(embeddings_fit[val_pos]),
+                quantile_targets_fit[val_pos], quantile_quantiles),
+            "score": lambda a: pinball_loss(
+                a(embeddings_score), quantile_targets_score,
+                quantile_quantiles)},
+        "contrastive": {
+            "build": lambda: build_projection_head(
+                dim, int(protocol["projection_dim"])),
+            "fit": lambda a, g: (lambda idx: info_nce(
+                a, embeddings_fit[idx], masked_embeddings_fit[idx],
+                positions_fit[idx]))(sampler(g)),
+            "val": lambda a: info_nce(
+                a, embeddings_fit[val_pos],
+                masked_embeddings_fit[val_pos],
+                positions_fit[val_pos]),
+            "score": lambda a: info_nce(
+                a, embeddings_score, masked_embeddings_score,
+                positions_score)},
+        "volatility": {
+            "build": lambda: torch.nn.Linear(
+                dim, volatility_targets_fit.shape[1]),
+            "fit": lambda a, g: (lambda idx: F.mse_loss(
+                a(embeddings_fit[idx]),
+                volatility_targets_fit[idx]))(sampler(g)),
+            "val": lambda a: F.mse_loss(
+                a(embeddings_fit[val_pos]),
+                volatility_targets_fit[val_pos]),
+            "score": lambda a: F.mse_loss(
+                a(embeddings_score), volatility_targets_score)},
+        "barrier": {
+            "build": lambda: torch.nn.Linear(
+                dim, barrier_labels_fit.shape[1] * 3),
+            "fit": lambda a, g: (lambda idx: barrier_loss(
+                a(embeddings_fit[idx]), barrier_labels_fit[idx],
+                weights))(sampler(g)),
+            "val": lambda a: barrier_loss(
+                a(embeddings_fit[val_pos]),
+                barrier_labels_fit[val_pos], weights),
+            "score": lambda a: barrier_loss(
+                a(embeddings_score), barrier_labels_score, weights)},
+    }
+    report["probes"] = {}
+    for task, spec in tasks.items():
+        report["probes"][task] = fit_adapter_validated(
+            spec["build"], spec["fit"], spec["val"], spec["score"],
+            protocol)
+    report["barrier_probe_support"] = support
+    return report
