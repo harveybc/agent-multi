@@ -194,11 +194,18 @@ def main() -> int:
         rows["random_floor"] = probe(family, None, floor_mode=True)
         for short in LONG:
             # predeclaration: the solo reference is the specialist's
-            # OWN-task ceiling only — foreign probes are out of scope
-            rows[f"solo_{short}"] = probe(
-                family, workdir / f"solo_{short}"
-                / f"branch_{family}_encoder.pt",
-                only_tasks=[short])
+            # OWN-task ceiling only — foreign probes are out of scope.
+            # Addendum v2: a ceiling that cannot fit its own task makes
+            # that probe DIAGNOSTIC_INVALID, never kills the screen.
+            try:
+                rows[f"solo_{short}"] = probe(
+                    family, workdir / f"solo_{short}"
+                    / f"branch_{family}_encoder.pt",
+                    only_tasks=[short])
+            except ProbeRefusal as refusal:
+                rows[f"solo_{short}"] = {"probes": {short: {
+                    "probe_score_median": None,
+                    "ceiling_diagnostic_invalid": str(refusal)[:120]}}}
         arm_dirs = {"full5_control": "full5_control",
                     "predictive3": "predictive3",
                     "self_supervised2": "self_supervised2",
@@ -212,10 +219,11 @@ def main() -> int:
         # P2 skill per arm
         random_scores = {task: rows["random_floor"]["probes"][task][
             "probe_score_median"] for task in LONG}
-        floor_invalid = {task for task in LONG
-                         if random_scores[task] is None}
         solo_scores = {task: rows[f"solo_{task}"]["probes"][task][
             "probe_score_median"] for task in LONG}
+        floor_invalid = {task for task in LONG
+                         if random_scores[task] is None
+                         or solo_scores.get(task) is None}
         arm_facts = {}
         for arm in arm_dirs:
             facts = rows[arm]
