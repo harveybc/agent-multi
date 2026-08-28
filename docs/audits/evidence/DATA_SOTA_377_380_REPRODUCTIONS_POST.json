@@ -1,0 +1,46 @@
+{
+ "schema": "agent_multi.data_sota_377_380_post.v1",
+ "findings": [
+  "DATA-SOTA-377",
+  "DATA-SOTA-378",
+  "DATA-SOTA-379",
+  "DATA-SOTA-380"
+ ],
+ "corrections": {
+  "377": "typed artifact agent_multi.paired_sac_dispatch_authorization.v1 (agent_plugins/dispatch_authorization.py): parse-as-JSON-or-refuse, unknown/missing-field refusal, field-by-field equality against live campaign facts (campaign id, 8 trial ids, design digest, candidate seal, per-manifest digests, allowlist digest, scope, auditor), 40-hex commit + unfilled-template refusal \u2014 ALL before any CUDA probe or model construction; /etc/hosts counterexample regression included; committed TEMPLATE never authorizes (regression proves it)",
+  "378": "make_attempt_dir mints the nonce FIRST and creates output_root/trial_id/attempt_<nonce>/ exclusively (pre-existence, symlink refusals; parent fsynced); ALL split/model/result/config/history/evidence paths live inside it; terminal evidence binds the attempt directory digest inventory; interrupted attempts stay immutable, a retry gets a new sibling",
+  "379": "executable_manifest binds 18 canonical file hashes (driver, nested trainer, splits, observation contract, SAC agent, grouped materializer+extractor, loader, custody, authorization module, installed gym_fx env + shared_execution_envelope strategy, split contract, strong config, cost manifest, design, candidate manifest, envelope calibration), computed from bytes at call time \u2014 no sidecar authority; the driver hashes at preflight AND again immediately before construction (drift refuses); GPU path additionally enforces exact 40-hex HEAD == authorization.reviewed_correction_commit plus tracked+untracked cleanliness; identity persisted in custody and the terminal record",
+  "380": "--logical-slot REQUIRED for execution: fleet-plan slot/seed/trial/within-slot-position and launch-manifest genesis binding all verified; GPU processes require torch.cuda.device_count() == 1 exactly; evidence records ONLY sanitized device class + logical slot"
+ },
+ "launch_manifests": "regenerated as v2 with per-file executable allowlist + digest and --logical-slot in the exact command; digests bound into the authorization TEMPLATE",
+ "executable_allowlist_digest": "f3cce8af63fe6ea29b35e718e6e872cecfa1331611a79c224ab498f49422e1f6",
+ "verification_only_per_slot": {
+  "gpu_slot_0": {
+   "seed": 101,
+   "arm": "control_random_init",
+   "manifest": "59212b3342b89c8a",
+   "position": 0
+  },
+  "gpu_slot_1": {
+   "seed": 202,
+   "arm": "pretrained_finetuned",
+   "manifest": "b5abbffbb292d51f",
+   "position": 0
+  },
+  "gpu_slot_2": {
+   "seed": 303,
+   "arm": "pretrained_finetuned",
+   "manifest": "b1620e04950192e4",
+   "position": 0
+  },
+  "gpu_slot_3": {
+   "seed": 404,
+   "arm": "control_random_init",
+   "manifest": "d4d729c288432d05",
+   "position": 0
+  },
+  "note": "all four verified with the SAME executable allowlist digest; no model, env or GPU was constructed"
+ },
+ "regression_suite": "tests/unit/test_data_sota_377_380_regressions.py (25 tests, model-free)",
+ "no_cpu_sac_rerun": "per H5 the 40-minute CPU dry-run was NOT repeated; the accepted C4 parity evidence stands"
+}

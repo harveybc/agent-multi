@@ -39,6 +39,10 @@ sys.path.insert(0, str(REPO))
 
 from agent_plugins.branch_pretraining import (  # noqa: E402
     load_generation, sha256_file, sha256_obj)
+from agent_plugins.dispatch_authorization import (  # noqa: E402
+    AuthorizationRefused, executable_manifest,
+    executable_manifest_digest, verify_authorization,
+    verify_worktree_identity)
 from agent_plugins.dispatch_custody import (  # noqa: E402
     DispatchLedger, dispatch_key)
 from agent_plugins.grouped_architecture import (  # noqa: E402
@@ -55,6 +59,11 @@ ENVELOPE_CALIBRATION = ("docs/audits/evidence/"
                         "ENVELOPE_CALIBRATION_o2022.json")
 COST_MANIFEST = ("examples/config/phase_3_eth_sac_dynamics/"
                  "cost_manifest_eth_h4_v2.json")
+FLEET_PLAN = (REPO / "docs/audits/evidence/"
+              "PAIRED_SAC_FLEET_PLAN_2026_08_28.json")
+MANIFEST_DIR = (REPO / "docs/audits/evidence/"
+                "paired_sac_launch_manifests_20260828")
+CAMPAIGN_ID = "paired_pretrain_sac_eth_o2022_20260828"
 # assessment cadence: 100 assessments cover the 260k budget; patience
 # 40 (design binding) can therefore actually fire
 EPOCH_TIMESTEPS = 2600
@@ -153,7 +162,8 @@ def frozen_o2022_envelope() -> dict:
 
 def build_cell_config(design: dict, cell: dict, pretrain_dir: Path,
                       output_root: Path, *, device: str,
-                      dry_run_budget: dict | None = None) -> dict:
+                      dry_run_budget: dict | None = None,
+                      attempt_nonce: str | None = None) -> dict:
     """The FULL runtime config of one cell — pure and importable so the
     adversarial identity tests can prove that, for one seed, the
     resolved configs of the two arms differ ONLY in the initialization
@@ -164,7 +174,11 @@ def build_cell_config(design: dict, cell: dict, pretrain_dir: Path,
     shared = design["shared_bindings"]
     envelope = frozen_o2022_envelope()
     cost_manifest = json.loads((REPO / COST_MANIFEST).read_text())
+    # DATA-SOTA-378: every artifact of an attempt lives in its own
+    # exclusive attempt directory; attempts never share a path
     cell_dir = output_root / cell["trial_id"]
+    if attempt_nonce is not None:
+        cell_dir = cell_dir / f"attempt_{attempt_nonce}"
     cfg.update({
         # accepted nested trainer + typed split roles
         "pipeline_plugin": "rl_pipeline_with_validation",
@@ -240,6 +254,119 @@ def assert_no_venue_keys(cfg: dict) -> None:
                 "config — this driver never opens a venue socket")
 
 
+def make_attempt_dir(output_root: Path, trial_id: str,
+                     attempt_nonce: str) -> Path:
+    """DATA-SOTA-378: exclusive creation BEFORE pipeline construction.
+    Pre-existing, non-empty or symlinked destinations refuse; the
+    parent directory is fsynced so the attempt boundary is durable."""
+    output_root = Path(output_root)
+    trial_dir = output_root / trial_id
+    trial_dir.mkdir(parents=True, exist_ok=True)
+    for probe in (output_root, trial_dir):
+        if probe.is_symlink():
+            raise DispatchRefused(
+                f"{probe} is a symlink — attempt isolation refuses "
+                "(DATA-SOTA-378)")
+    attempt_dir = trial_dir / f"attempt_{attempt_nonce}"
+    if attempt_dir.is_symlink() or attempt_dir.exists():
+        raise DispatchRefused(
+            f"attempt directory {attempt_dir.name} already exists — "
+            "a fresh attempt NEVER reuses or overwrites a prior "
+            "attempt's paths (DATA-SOTA-378)")
+    os.mkdir(attempt_dir)
+    fd = os.open(trial_dir, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    return attempt_dir
+
+
+def attempt_inventory(attempt_dir: Path,
+                      exclude: set[str] | None = None) -> dict:
+    """Digest inventory of every file the attempt produced — bound
+    into the terminal evidence (DATA-SOTA-378)."""
+    exclude = exclude or set()
+    inventory = {}
+    for path in sorted(Path(attempt_dir).rglob("*")):
+        if path.is_file():
+            rel = str(path.relative_to(attempt_dir))
+            if rel not in exclude:
+                inventory[rel] = sha256_file(path)
+    return inventory
+
+
+def verify_slot_binding(cell: dict, logical_slot: str) -> dict:
+    """DATA-SOTA-380: the logical slot is a REQUIRED, verified input —
+    wrong slot, seed, arm or within-slot position refuses; the cell's
+    launch manifest must bind the same genesis."""
+    plan = json.loads(FLEET_PLAN.read_text())
+    assignment = next((a for a in plan["assignments"]
+                       if a["slot"] == logical_slot), None)
+    if assignment is None:
+        raise DispatchRefused(
+            f"unknown logical slot {logical_slot!r} (DATA-SOTA-380)")
+    if int(assignment["seed"]) != int(cell["seed"]):
+        raise DispatchRefused(
+            f"slot {logical_slot} carries seed {assignment['seed']}, "
+            f"not {cell['seed']} — wrong slot for this cell "
+            "(DATA-SOTA-380)")
+    if cell["trial_id"] not in assignment["cells_in_order"]:
+        raise DispatchRefused(
+            f"{cell['trial_id']} is not assigned to {logical_slot} "
+            "(DATA-SOTA-380)")
+    position = assignment["cells_in_order"].index(cell["trial_id"])
+    manifest_path = MANIFEST_DIR / f"launch_{cell['trial_id']}.json"
+    if not manifest_path.is_file():
+        raise DispatchRefused(
+            f"launch manifest absent for {cell['trial_id']}")
+    manifest = json.loads(manifest_path.read_text())
+    if manifest["gpu_logical_slot"] != logical_slot:
+        raise DispatchRefused(
+            "launch manifest binds slot "
+            f"{manifest['gpu_logical_slot']!r}, not {logical_slot!r} "
+            "(DATA-SOTA-380)")
+    if int(manifest["within_slot_position"]) != position:
+        raise DispatchRefused(
+            "within-slot execution position mismatch between fleet "
+            "plan and launch manifest (DATA-SOTA-380)")
+    genesis = manifest["cell_genesis"]
+    if genesis["cell_sha256"] != cell["cell_sha256"] or             genesis["genesis_sha256"] != cell["genesis_sha256"]:
+        raise DispatchRefused(
+            "launch-manifest genesis differs from the verified cell "
+            "— stale manifest refuses (DATA-SOTA-380)")
+    if genesis["arm"] != cell["arm"] or             int(genesis["seed"]) != int(cell["seed"]):
+        raise DispatchRefused(
+            "launch-manifest arm/seed mismatch (DATA-SOTA-380)")
+    return {"manifest": manifest,
+            "manifest_sha256": sha256_file(manifest_path),
+            "within_slot_position": position}
+
+
+def verify_executable_identity(manifest: dict) -> dict:
+    """DATA-SOTA-379: the executing file set must equal the canonical
+    allowlist bound in the launch manifest — computed from bytes NOW,
+    never from a sidecar."""
+    actual = executable_manifest(REPO)
+    expected = manifest.get("executable_allowlist_sha256")
+    if not expected:
+        raise DispatchRefused(
+            "launch manifest carries no executable allowlist — "
+            "refused (DATA-SOTA-379)")
+    drift = {name: (expected.get(name, "<absent>")[:12],
+                    actual.get(name, "<absent>")[:12])
+             for name in set(expected) | set(actual)
+             if expected.get(name) != actual.get(name)}
+    if drift:
+        raise DispatchRefused(
+            f"executable identity drift vs the launch manifest: "
+            f"{drift} — a modified executable never runs under an "
+            "accepted genesis (DATA-SOTA-379)")
+    return {"executable_allowlist_sha256": actual,
+            "executable_allowlist_digest":
+                executable_manifest_digest(actual)}
+
+
 DRY_RUN_BUDGET = {
     # bounded CPU acceptance budget (C4) — every value disclosed in
     # the cell record; the full run drops this dict entirely
@@ -254,17 +381,27 @@ DRY_RUN_BUDGET = {
 
 
 def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
-                 output_root: Path, *, device: str,
-                 dry_run: bool) -> dict:
+                 output_root: Path, *, device: str, dry_run: bool,
+                 logical_slot: str,
+                 slot_binding: dict | None = None,
+                 identity_proof: dict | None = None,
+                 authorization_sha256: str | None = None) -> dict:
     """Run ONE cell through the accepted nested trainer under custody.
-    Every attempt is a NEW identity (non-resumable by construction)."""
+    Every attempt is a NEW identity (non-resumable by construction):
+    the nonce is minted FIRST and every artifact lives inside the
+    exclusive attempt directory (DATA-SOTA-378)."""
     from app.plugin_loader import load_plugin
 
+    attempt_nonce = os.urandom(8).hex()
+    attempt_dir = make_attempt_dir(output_root, cell["trial_id"],
+                                   attempt_nonce)
     cfg = build_cell_config(
         design, cell, pretrain_dir, output_root, device=device,
-        dry_run_budget=DRY_RUN_BUDGET if dry_run else None)
-    attempt_nonce = os.urandom(8).hex()
+        dry_run_budget=DRY_RUN_BUDGET if dry_run else None,
+        attempt_nonce=attempt_nonce)
     snapshot_sha = cfg.pop("_snapshot_config_sha256")
+    # DATA-SOTA-379: hash the executable tree at preflight...
+    executables_preflight = executable_manifest(REPO)
     key = dispatch_key(
         dispatch_id=(f"paired_sac_{cell['trial_id']}"
                      f"_attempt_{attempt_nonce}"),
@@ -272,10 +409,10 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
         architecture_digest=cell["architecture_digest"],
         config_snapshot_digest=snapshot_sha,
         data_digest=sha256_file(Path(cfg["input_data_file"])),
-        code_identity={"driver": sha256_file(Path(__file__))})
-    cell_dir = output_root / cell["trial_id"]
-    cell_dir.mkdir(parents=True, exist_ok=True)
-    evidence_path = cell_dir / f"cell_record_{attempt_nonce}.json"
+        code_identity={
+            "executable_allowlist_digest":
+                executable_manifest_digest(executables_preflight)})
+    evidence_path = attempt_dir / f"cell_record_{attempt_nonce}.json"
     ledger = DispatchLedger()
     ledger.reserve(key, identity={
         "dispatch_id": f"paired_sac_{cell['trial_id']}",
@@ -284,12 +421,33 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
         "genesis_sha256": cell["genesis_sha256"],
         "cell_sha256": cell["cell_sha256"],
         "arm": cell["arm"], "seed": cell["seed"],
+        "logical_slot": logical_slot,
+        "executable_allowlist_digest":
+            executable_manifest_digest(executables_preflight),
+        "worktree_identity": identity_proof,
+        "authorization_sha256": authorization_sha256,
         "mode": "cpu_dry_run" if dry_run else "full_budget",
     }, output_path=evidence_path)
     ledger.transition(key, "running")
     import time
     wall_start = time.perf_counter()
     try:
+        # ...and again immediately before construction: any drift
+        # between preflight and model construction refuses
+        executables_now = executable_manifest(REPO)
+        if executables_now != executables_preflight:
+            raise DispatchRefused(
+                "executable tree changed between preflight and model "
+                "construction — refused (DATA-SOTA-379)")
+        device_class = None
+        if device == "cuda":
+            import torch
+            if torch.cuda.device_count() != 1:
+                raise DispatchRefused(
+                    f"{torch.cuda.device_count()} CUDA devices "
+                    "visible — exactly ONE device per cell process "
+                    "(DATA-SOTA-380)")
+            device_class = torch.cuda.get_device_name(0)
         agent_cls, _ = load_plugin("agent.plugins", "sac_agent")
         pipeline_cls, _ = load_plugin(
             "pipeline.plugins", "rl_pipeline_with_validation")
@@ -307,6 +465,17 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
             "dry_run_budget": (dict(DRY_RUN_BUDGET) if dry_run
                                else None),
             "custody_key": key,
+            "logical_slot": logical_slot,
+            "device_class_sanitized": device_class,
+            "slot_binding": ({k: slot_binding[k] for k in
+                              ("manifest_sha256",
+                               "within_slot_position")}
+                             if slot_binding else None),
+            "worktree_identity": identity_proof,
+            "authorization_sha256": authorization_sha256,
+            "executable_allowlist_sha256": executables_preflight,
+            "executable_allowlist_digest":
+                executable_manifest_digest(executables_preflight),
             "wall_seconds": round(time.perf_counter() - wall_start, 1),
             "resolved_overrides": {
                 k: cfg[k] for k in sorted(cfg)
@@ -336,6 +505,11 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
                                                "num_timesteps"),
                 "learning_starts": cfg.get("learning_starts")},
         }
+        # DATA-SOTA-378: bind the attempt directory's digest
+        # inventory into the terminal evidence (the record itself is
+        # excluded by construction — it is being written)
+        record["attempt_directory_inventory"] = attempt_inventory(
+            attempt_dir, exclude={evidence_path.name})
         evidence_path.write_text(json.dumps(record, indent=1,
                                             default=str))
         ledger.complete(
@@ -370,13 +544,36 @@ def main() -> int:
                         help="full-budget run; requires "
                              "--gpu-authorized-by-musashi and CUDA")
     parser.add_argument("--gpu-authorized-by-musashi", default=None,
-                        metavar="DISPATCH_DOC")
+                        metavar="AUTHORIZATION_ARTIFACT",
+                        help="typed agent_multi.paired_sac_dispatch_"
+                             "authorization.v1 artifact published by "
+                             "Musashi — content-verified field by "
+                             "field (DATA-SOTA-377)")
+    parser.add_argument("--logical-slot", default=None,
+                        metavar="gpu_slot_N",
+                        help="REQUIRED for execution modes: the fleet "
+                             "plan's logical slot for this cell "
+                             "(DATA-SOTA-380)")
     args = parser.parse_args()
     design = json.loads(DESIGN_PATH.read_text())
     cell = verify_cell(design, Path(args.pretrain_dir), args.seed,
                        args.arm)
     print(json.dumps(cell, indent=1))
     if not (args.execute or args.execute_cpu_dry_run):
+        if args.logical_slot:
+            binding = verify_slot_binding(cell, args.logical_slot)
+            identity = verify_executable_identity(
+                binding["manifest"])
+            print(json.dumps({
+                "verification_only": True,
+                "logical_slot": args.logical_slot,
+                "within_slot_position":
+                    binding["within_slot_position"],
+                "launch_manifest_sha256":
+                    binding["manifest_sha256"],
+                "executable_allowlist_digest":
+                    identity["executable_allowlist_digest"],
+            }, indent=1))
         print("NOT_LAUNCHED: verification only — execution requires "
               "--execute-cpu-dry-run (CPU) or --execute (GPU, "
               "Musashi-authorized)", file=sys.stderr)
@@ -385,6 +582,10 @@ def main() -> int:
         raise DispatchRefused("choose ONE execution mode")
     if not args.output_root:
         raise DispatchRefused("execution requires --output-root")
+    if not args.logical_slot:
+        raise DispatchRefused(
+            "execution requires --logical-slot (DATA-SOTA-380)")
+    slot_binding = verify_slot_binding(cell, args.logical_slot)
     import torch
     if args.execute_cpu_dry_run:
         if torch.cuda.is_available():
@@ -394,7 +595,9 @@ def main() -> int:
                 "CUDA_VISIBLE_DEVICES=\"\")")
         record = execute_cell(design, cell, Path(args.pretrain_dir),
                               Path(args.output_root), device="cpu",
-                              dry_run=True)
+                              dry_run=True,
+                              logical_slot=args.logical_slot,
+                              slot_binding=slot_binding)
         print(json.dumps({"status": "CPU_DRY_RUN_COMPLETED",
                           "custody_key": record["custody_key"][:16],
                           "stop_reason":
@@ -404,20 +607,44 @@ def main() -> int:
     if args.gpu_authorized_by_musashi is None:
         raise DispatchRefused(
             "full-budget execution requires "
-            "--gpu-authorized-by-musashi <dispatch-doc> naming "
-            "Musashi's written acceptance (order C5)")
-    dispatch_doc = Path(args.gpu_authorized_by_musashi)
-    if not dispatch_doc.is_file():
-        raise DispatchRefused(
-            "authorization document does not exist — refused")
+            "--gpu-authorized-by-musashi <authorization-artifact> — "
+            "the typed artifact Musashi publishes after reproducing "
+            "the return (order H5)")
+    # DATA-SOTA-377: typed, content-bound authorization — verified
+    # field by field BEFORE any CUDA probe or model construction
+    manifest_digests = {
+        trial["trial_id"]: sha256_file(
+            MANIFEST_DIR / f"launch_{trial['trial_id']}.json")
+        for trial in design["trial_ledger"]}
+    identity = verify_executable_identity(slot_binding["manifest"])
+    authorization = verify_authorization(
+        Path(args.gpu_authorized_by_musashi),
+        campaign_id=CAMPAIGN_ID,
+        trial_ids=[t["trial_id"] for t in design["trial_ledger"]],
+        paired_design_sha256=sha256_file(DESIGN_PATH),
+        candidate_seal_manifest_sha256=cell[
+            "pretrain_generation_seal"],
+        launch_manifest_sha256=manifest_digests,
+        executable_allowlist_sha256=identity[
+            "executable_allowlist_digest"])
+    # DATA-SOTA-379: exact HEAD + clean tree, equal to the
+    # authorization's reviewed commit
+    identity_proof = verify_worktree_identity(
+        REPO, expected_commit=authorization[
+            "reviewed_correction_commit"])
     if not torch.cuda.is_available():
         raise DispatchRefused(
             "no CUDA visibility — the operator has not granted a GPU")
-    record = execute_cell(design, cell, Path(args.pretrain_dir),
-                          Path(args.output_root), device="cuda",
-                          dry_run=False)
+    record = execute_cell(
+        design, cell, Path(args.pretrain_dir),
+        Path(args.output_root), device="cuda", dry_run=False,
+        logical_slot=args.logical_slot, slot_binding=slot_binding,
+        identity_proof=identity_proof,
+        authorization_sha256=sha256_file(
+            Path(args.gpu_authorized_by_musashi)))
     print(json.dumps({"status": "CELL_COMPLETED",
-                      "custody_key": record["custody_key"][:16]},
+                      "custody_key": record["custody_key"][:16],
+                      "logical_slot": args.logical_slot},
                      indent=1))
     return 0
 
@@ -425,6 +652,6 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main())
-    except DispatchRefused as exc:
+    except (DispatchRefused, AuthorizationRefused) as exc:
         print(f"DISPATCH REFUSED: {exc}", file=sys.stderr)
         raise SystemExit(2)

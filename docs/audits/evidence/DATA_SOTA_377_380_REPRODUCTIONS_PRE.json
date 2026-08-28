@@ -1,0 +1,19 @@
+{
+ "schema": "agent_multi.data_sota_377_380_pre.v1",
+ "findings": [
+  "DATA-SOTA-377",
+  "DATA-SOTA-378",
+  "DATA-SOTA-379",
+  "DATA-SOTA-380"
+ ],
+ "frozen_at_commit": "49f825aa",
+ "377_path_existence_gate": "    if not dispatch_doc.is_file():\n        raise DispatchRefused(\n            \"authorization document does not exist \u2014 refused\")\n    if not torch.cuda.is_available():",
+ "377_no_content_verification": "the driver never reads the document's content; any existing file satisfies the gate (auditor counterexample: /etc/hosts)",
+ "378_fixed_output_paths": "    cell_dir = output_root / cell[\"trial_id\"]\n    cfg.update({",
+ "378_overwrite_exposure": "save_model/results_file/save_config/nested_split_dir live under output_root/trial_id shared by ALL attempts; only the evidence filename carries the nonce",
+ "379_code_identity_driver_only": "        code_identity={\"driver\": sha256_file(Path(__file__))})\n    cell_dir = output_root / cell[\"trial_id\"]",
+ "379_no_head_or_tree_proof": "no HEAD binding, no cleanliness check, no executable-file allowlist; launch manifests state the worktree policy in prose only",
+ "380_gpu_gate": "        if torch.cuda.is_available():\n            raise DispatchRefused(\n                \"CUDA is visible \u2014 the CPU dry run must be \"",
+ "380_no_slot_binding": "no --logical-slot argument; no exactly-one-device requirement; no device class in evidence",
+ "driver_sha256_pre": "1eac82a087e00a7603b6ad8bb58395d9301a0f6e4f3db770091cb8ac96621a38"
+}

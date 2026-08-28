@@ -59,8 +59,10 @@ def test_gpu_execution_stays_gated():
               ).read_text()
     assert "gpu-authorized-by-musashi" in source
     assert "NOT_LAUNCHED" in source
-    # the full-budget path refuses without the written dispatch doc
-    assert "authorization document does not exist" in source
+    # the full-budget path verifies the TYPED authorization artifact
+    # (H1/377) before any CUDA probe or model construction
+    assert "verify_authorization" in source
+    assert "verify_worktree_identity" in source
     # and the CPU dry run refuses when a GPU is visible
     assert "CUDA is visible" in source
 

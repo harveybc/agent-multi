@@ -39,7 +39,7 @@
  ],
  "counterbalancing": "one seed per slot; within-slot arm order is the design's counterbalanced order (C-T / T-C / T-C / C-T), so arm and execution position are orthogonal across the fleet and any slot-level drift (thermal, clock, driver state) hits both arms symmetrically",
  "worktree_policy": "each slot executes from its own read-only git worktree pinned to the correction commit; no fetch, no checkout, no edit during the campaign; the driver re-verifies design/seal/architecture digests per cell before construction",
- "launch_manifests": "docs/audits/evidence/paired_sac_launch_manifests_20260828/ (eight files, authored and committed BEFORE any execution; each binds slot, within-slot position, exact command shape and the full verified cell genesis)",
+ "launch_manifests": "docs/audits/evidence/paired_sac_launch_manifests_20260828/ (eight v2 files, authored and committed BEFORE any execution; each binds slot, within-slot position, the exact command WITH --logical-slot, the full verified cell genesis, and the canonical executable allowlist \u2014 18 file digests, allowlist digest f3cce8af63fe6ea2...)",
  "thermal_telemetry": "tools/gpu_temperature_watchdog.py runs on every executing host for the entire campaign; its log is part of each slot's terminal evidence",
  "terminal_report_validation": "per cell: custody verified_render(key) must succeed (intent+ACK+completed+digest agreement), the cell record must satisfy schema agent_multi.paired_sac_cell_record.v1, and predeclared refusals (activity, constant-policy, dead-actor) are typed outcomes \u2014 a cell that ends any other way is INVALID and reported, never retried under the same identity",
  "interruption_policy": "non-resumable (order C3): any interruption yields a fresh attempt identity; the interrupted custody record stays terminal forever",
@@ -50,5 +50,6 @@
   "per_cell_gpu_hours": "6-10",
   "per_slot_wall_hours": "12-20 (two counterbalanced cells sequential per slot)",
   "fleet_wall_estimate": "12-20 h with all four logical slots executing in parallel; 48-80 GPU-hours total across the eight cells \u2014 consistent with the design's predeclared envelope"
- }
+ },
+ "authorization": "GPU execution requires the typed artifact agent_multi.paired_sac_dispatch_authorization.v1 (template committed at docs/audits/evidence/PAIRED_SAC_DISPATCH_AUTHORIZATION_TEMPLATE_2026_08_28.json); the driver verifies every field, the executable allowlist, exact HEAD equality and worktree cleanliness before any CUDA probe or model construction; exactly ONE CUDA device must be visible per cell process (DATA-SOTA-377/379/380)"
 }

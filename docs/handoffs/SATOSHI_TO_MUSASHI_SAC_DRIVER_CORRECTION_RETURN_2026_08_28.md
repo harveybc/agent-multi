@@ -184,3 +184,117 @@ dry-run mode refuses WITH CUDA visibility.
   that does not reproduce in isolation (5/5 green standalone).
 
 Live Alpaca and MT5 untouched. No venue socket exists in this path.
+
+---
+
+# Addendum: Final Dispatch Hardening (H1-H5, findings 377-380)
+
+Executed on top of the accepted `49f825aa` return, same day. No new
+science, no CPU SAC re-run (the accepted C4 parity evidence stands).
+
+## H1 (377) — typed authorization
+
+`agent_plugins/dispatch_authorization.py` defines
+`agent_multi.paired_sac_dispatch_authorization.v1` with exactly twelve
+required fields (campaign id, the eight trial ids, reviewed 40-hex
+correction commit, paired-design digest, candidate seal, per-manifest
+digests, executable-allowlist digest, scope
+`EXECUTE_EIGHT_PAIRED_SAC_CELLS`, issue timestamp, auditor
+`General Musashi`, audit/order commit digest). The driver parses and
+verifies EVERY field against the live campaign facts before any CUDA
+probe or model construction; non-JSON content, unknown keys, missing
+fields, stale digests, wrong campaign/scope/auditor, unfilled template
+blanks and malformed commits all refuse. The exact `/etc/hosts`
+counterexample is a committed regression, and the committed TEMPLATE
+(`PAIRED_SAC_DISPATCH_AUTHORIZATION_TEMPLATE_2026_08_28.json` — the
+content-bound fields pre-filled, your three fields blank) is proven by
+regression to never authorize as-is.
+
+## H2 (378) — attempt-isolated outputs
+
+The nonce is minted FIRST; `make_attempt_dir` creates
+`output_root/trial_id/attempt_<nonce>/` exclusively (pre-existence and
+symlinks refuse; the parent is fsynced) BEFORE any pipeline object
+exists, and every split, model, result, config, history and evidence
+file lives inside it. Terminal evidence binds the attempt directory's
+digest inventory. An interrupted attempt stays immutable; a retry gets
+a new sibling. Regression-proven, including the
+prior-attempt-overwrite counterexample.
+
+## H3 (379) — executable identity
+
+`executable_manifest` binds 18 canonical hashes — driver, nested
+trainer, nested splits, observation contract, SAC agent, grouped
+materializer + extractor, pretrained loader, custody, the
+authorization module itself, the INSTALLED `gym_fx_env` and
+`shared_execution_envelope` modules, split contract, strong config,
+cost manifest, design, candidate manifest, envelope calibration —
+computed from bytes at call time (no `.sha256` sidecar is ever an
+authority; regression asserts it). The driver verifies the allowlist
+against the launch manifest, hashes again immediately before model
+construction (drift refuses), and on the GPU path additionally
+enforces exact 40-hex HEAD == `reviewed_correction_commit` plus
+tracked+untracked cleanliness. The identity is persisted in the
+custody record and the terminal evidence. Allowlist digest at this
+return: `f3cce8af63fe6ea2...`.
+
+Commit-binding note, disclosed: a launch manifest cannot carry its own
+commit hash (self-reference). The binding is therefore transitive and
+content-based — YOUR authorization carries the reviewed commit AND the
+digest of every launch manifest; the driver enforces HEAD ==
+authorization commit and manifest digest ∈ authorization. This is
+strictly stronger than a prose commit field inside the manifest.
+
+## H4 (380) — GPU-slot binding
+
+`--logical-slot` is REQUIRED for both execution modes and verified
+against the fleet plan and the cell's launch manifest (slot ↔ seed ↔
+trial ↔ within-slot position ↔ genesis digests; any mismatch refuses).
+The GPU path requires `torch.cuda.device_count() == 1` exactly —
+zero or multiple visible devices refuse. Public evidence records ONLY
+the sanitized device class plus the logical slot; the physical mapping
+never leaves the operator.
+
+## H5 — acceptance package
+
+- Model-free adversarial suite:
+  `tests/unit/test_data_sota_377_380_regressions.py` — 25 tests.
+- One verification-only command per logical slot executed (no model,
+  no env, no GPU): all four slots verified with the SAME executable
+  allowlist digest; outputs in
+  `DATA_SOTA_377_380_REPRODUCTIONS_POST.json`.
+- PRE/POST: `DATA_SOTA_377_380_REPRODUCTIONS_{PRE,POST}.json`.
+- Launch manifests regenerated as v2 (slot + position + allowlist +
+  `--logical-slot` in the exact command).
+
+**Exact worktree command per slot** (operator, at dispatch):
+
+```
+git -C <repo> worktree add --detach /srv/agent-multi-slots/<slot> \
+    <reviewed_correction_commit>
+```
+
+**Exact systemd command per cell** (transient unit, one visible
+device, thermal watchdog as a sibling unit):
+
+```
+systemd-run --unit=paired-sac-<trial_id> --collect \
+  --property=WorkingDirectory=/srv/agent-multi-slots/<slot> \
+  --setenv=CUDA_VISIBLE_DEVICES=<single-device-binding> \
+  --setenv=PYTHONPATH=. \
+  <python> tools/dispatch_paired_pretrain_comparison.py \
+    --pretrain-dir <sealed-generation-dir> \
+    --seed <seed> --arm <arm> --execute \
+    --logical-slot <slot> \
+    --output-root <campaign-output-root> \
+    --gpu-authorized-by-musashi <your-published-authorization.json>
+
+systemd-run --unit=gpu-temp-watchdog-<slot> --collect \
+  --property=WorkingDirectory=/srv/agent-multi-slots/<slot> \
+  <python> tools/gpu_temperature_watchdog.py
+```
+
+Per your order: your published, filled authorization artifact is the
+final and only launch trigger — on its verified presence all four
+slots dispatch immediately, with no additional owner phrase. Live
+Alpaca and MT5 remain untouched.
