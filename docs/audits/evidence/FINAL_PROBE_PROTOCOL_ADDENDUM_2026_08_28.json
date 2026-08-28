@@ -1,0 +1,11 @@
+{
+ "schema": "agent_multi.final_probe_protocol_addendum.v1",
+ "amends": "FINAL_PROBE_PROTOCOL_PREDECLARATION_2026_08_28.json",
+ "committed_before_any_route_or_solo_probe_score_was_seen": true,
+ "trigger_disclosed": "the initial P3 invocation refused at the FIRST probe of the FIRST family's RANDOM floor (reconstruction, seed 9012: adapter could not improve >=1% on random embeddings) — before ANY route or solo encoder was scored; the run produced no other output",
+ "clarification": {
+  "scope_of_minimum_improvement_refusal": "ROUTE and SOLO encoders only — there ADAPTER_FAILED_TO_FIT distinguishes representation failure from an underfitted adapter (DATA-SOTA-371)",
+  "random_floor": "a floor probe whose adapter cannot reach the 1% improvement records its best-restored val-selected score WITH flag floor_fit_marginal=true — an unfittable probe on random embeddings IS the expected floor signal; refusing it would abolish the reference P2 mandates",
+  "floor_seed_instability": "if the FLOOR itself shows material seed instability on a probe, that probe becomes DIAGNOSTIC_INVALID for ranking (raw losses preserved) — an unreliable floor cannot anchor skill"},
+ "unchanged": "route/solo refusals, seeds, budgets, ranking rule, tie tolerance, worse-than-random threshold — all exactly as predeclared"
+}
