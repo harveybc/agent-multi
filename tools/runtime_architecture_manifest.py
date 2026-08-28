@@ -299,16 +299,47 @@ def main() -> int:
     for h in hooks:
         h.remove()
 
-    # leaf-parameter conservation: every parameter counted exactly
-    # once by identity — no double counting of shared modules
-    seen: set = set()
-    leaf_total = 0
-    for p in extractor.parameters():
-        if id(p) not in seen:
-            seen.add(id(p))
-            leaf_total += p.numel()
-    named_total = sum(p.numel() for p in extractor.parameters())
-    assert leaf_total == named_total, "shared-parameter double count"
+    # parameter conservation by UNION of identities across the ACTUAL
+    # components (final hardening finding 3): per-component identity
+    # sets, explicit shared identities, union total == extractor total
+    def _identity_set(module):
+        return {id(param): param.numel()
+                for param in module.parameters()}
+
+    component_sets = {}
+    for index, branch in enumerate(branches):
+        component_sets[branch["name"]] = _identity_set(
+            extractor.temporal_branches[index])
+    if state_keys and extractor.state_branch is not None:
+        component_sets["agent_state"] = _identity_set(
+            extractor.state_branch)
+    component_sets["fusion"] = _identity_set(extractor.fusion)
+    union: dict = {}
+    overlap_count = 0
+    shared_pairs = []
+    for name, ids in component_sets.items():
+        for pid, numel in ids.items():
+            if pid in union:
+                overlap_count += 1
+                shared_pairs.append({"parameter_id_owner_first":
+                                     union[pid][1], "also_in": name})
+            else:
+                union[pid] = (numel, name)
+    union_total = sum(numel for numel, _ in union.values())
+    extractor_total = {id(param): param.numel()
+                       for param in extractor.parameters()}
+    leaf_total = sum(extractor_total.values())
+    conservation = {
+        "component_totals": {name: sum(ids.values())
+                             for name, ids in component_sets.items()},
+        "union_total": union_total,
+        "extractor_total": leaf_total,
+        "shared_parameter_identities": overlap_count,
+        "shared_pairs": shared_pairs,
+        "union_equals_extractor": union_total == leaf_total,
+    }
+    assert conservation["union_equals_extractor"], conservation
+    named_total = leaf_total
 
     def params_of(module):
         return sum(p.numel() for p in module.parameters())
@@ -365,10 +396,7 @@ def main() -> int:
                 extractor.fusion),
         },
         "total_trainable_extractor_parameters": leaf_total,
-        "leaf_parameter_conservation": (
-            f"identity-deduplicated leaf sum {leaf_total} == "
-            f"named-parameter sum {named_total} — no shared-module "
-            "double counting"),
+        "parameter_conservation_by_identity_union": conservation,
         "layer_by_layer_hook_log": hook_log,
         "dropout_values_present": sorted({
             float(m.p) for m in extractor.modules()

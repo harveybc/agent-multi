@@ -561,7 +561,22 @@
    }
   },
   "total_trainable_extractor_parameters": 113558,
-  "leaf_parameter_conservation": "identity-deduplicated leaf sum 113558 == named-parameter sum 113558 \u2014 no shared-module double counting",
+  "parameter_conservation_by_identity_union": {
+   "component_totals": {
+    "returns_momentum": 25376,
+    "trend_level": 18790,
+    "volatility_distribution": 19520,
+    "oscillators": 4448,
+    "volume_flow": 13824,
+    "agent_state": 688,
+    "fusion": 30912
+   },
+   "union_total": 113558,
+   "extractor_total": 113558,
+   "shared_parameter_identities": 0,
+   "shared_pairs": [],
+   "union_equals_extractor": true
+  },
   "layer_by_layer_hook_log": [
    {
     "call_index": 0,
@@ -3262,7 +3277,7 @@
   "normalization_layers_present": [
    "LayerNorm"
   ],
-  "entry_point_metadata_digest": "5c252bd431c0bdb2c66651c05da7f684776e74ad3c50235a77333bee7e909a8e"
+  "entry_point_metadata_digest": "a66225aca2da7a9a5e8e6f2e72f56f147854406813e8ed32d53607d845ba095d"
  },
  "module_declared_contracts": {
   "status": "explicit module contracts reviewed from the exact executing source, bound to each file digest",

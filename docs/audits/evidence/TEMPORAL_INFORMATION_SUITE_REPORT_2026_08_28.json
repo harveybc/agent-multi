@@ -1,0 +1,271 @@
+{
+ "schema": "agent_multi.temporal_information_suite.v1",
+ "classification": "REPRESENTATION_DIAGNOSTIC",
+ "candidate_seal": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+ "window": 32,
+ "bars": 1200,
+ "families": {
+  "returns_momentum": {
+   "feature_count": 16,
+   "structural_controls": {
+    "future_immutability": {
+     "control": "future_immutability",
+     "passed": true,
+     "comparison": "bitwise torch.equal on the window ending before the mutation"
+    },
+    "newest_bar_sensitivity": {
+     "control": "newest_bar_sensitivity",
+     "passed": true,
+     "l2_delta": 1.11916018
+    },
+    "time_reversal": {
+     "control": "time_reversal",
+     "passed": true,
+     "relative_l2_delta": 0.419248
+    },
+    "save_load_bit_exact": {
+     "control": "save_load_bit_exact",
+     "passed": true
+    }
+   },
+   "synthetic_probes": {
+    "pretrained_next_bar_r2": 0.8348,
+    "random_encoder_next_bar_r2": 0.792,
+    "shuffled_time_next_bar_r2": -0.0636,
+    "phase_surrogate_next_bar_r2": 0.8452,
+    "noise_target_r2_must_be_near_zero": -0.0155
+   },
+   "effective_rank": {
+    "effective_rank": 14.919,
+    "dimension": 32,
+    "top1_variance_share": 0.2337,
+    "collapse_flag": false
+   },
+   "lagged_memory_r2": {
+    "lag_1": 0.869,
+    "lag_2": 0.8709,
+    "lag_4": 0.8558,
+    "lag_8": 0.8608,
+    "lag_16": 0.8611
+   },
+   "temporal_gate": {
+    "structural_controls_pass": true,
+    "random_encoder_ceiling_saturated": false,
+    "beats_shuffled_time_and_random_encoder": true,
+    "no_false_predictive_success": true,
+    "verdict": "PASS"
+   }
+  },
+  "trend_level": {
+   "feature_count": 23,
+   "structural_controls": {
+    "future_immutability": {
+     "control": "future_immutability",
+     "passed": true,
+     "comparison": "bitwise torch.equal on the window ending before the mutation"
+    },
+    "newest_bar_sensitivity": {
+     "control": "newest_bar_sensitivity",
+     "passed": true,
+     "l2_delta": 1.56640875
+    },
+    "time_reversal": {
+     "control": "time_reversal",
+     "passed": true,
+     "relative_l2_delta": 0.104346
+    },
+    "save_load_bit_exact": {
+     "control": "save_load_bit_exact",
+     "passed": true
+    }
+   },
+   "synthetic_probes": {
+    "pretrained_next_bar_r2": 0.1958,
+    "random_encoder_next_bar_r2": 0.1197,
+    "shuffled_time_next_bar_r2": -0.1779,
+    "phase_surrogate_next_bar_r2": 0.3153,
+    "noise_target_r2_must_be_near_zero": -0.0663
+   },
+   "effective_rank": {
+    "effective_rank": 3.418,
+    "dimension": 32,
+    "top1_variance_share": 0.5632,
+    "collapse_flag": false
+   },
+   "lagged_memory_r2": {
+    "lag_1": 0.2372,
+    "lag_2": 0.2401,
+    "lag_4": 0.2805,
+    "lag_8": 0.2478,
+    "lag_16": 0.2475
+   },
+   "temporal_gate": {
+    "structural_controls_pass": true,
+    "random_encoder_ceiling_saturated": false,
+    "beats_shuffled_time_and_random_encoder": true,
+    "no_false_predictive_success": true,
+    "verdict": "PASS"
+   }
+  },
+  "volatility_distribution": {
+   "feature_count": 29,
+   "structural_controls": {
+    "future_immutability": {
+     "control": "future_immutability",
+     "passed": true,
+     "comparison": "bitwise torch.equal on the window ending before the mutation"
+    },
+    "newest_bar_sensitivity": {
+     "control": "newest_bar_sensitivity",
+     "passed": true,
+     "l2_delta": 3.11452818
+    },
+    "time_reversal": {
+     "control": "time_reversal",
+     "passed": true,
+     "relative_l2_delta": 1.426889
+    },
+    "save_load_bit_exact": {
+     "control": "save_load_bit_exact",
+     "passed": true
+    }
+   },
+   "synthetic_probes": {
+    "pretrained_next_bar_r2": 0.6263,
+    "random_encoder_next_bar_r2": 0.4963,
+    "shuffled_time_next_bar_r2": -0.0375,
+    "phase_surrogate_next_bar_r2": 0.5577,
+    "noise_target_r2_must_be_near_zero": -0.0362
+   },
+   "effective_rank": {
+    "effective_rank": 13.034,
+    "dimension": 32,
+    "top1_variance_share": 0.2343,
+    "collapse_flag": false
+   },
+   "lagged_memory_r2": {
+    "lag_1": 0.7582,
+    "lag_2": 0.6595,
+    "lag_4": 0.4441,
+    "lag_8": 0.7669,
+    "lag_16": 0.7665
+   },
+   "temporal_gate": {
+    "structural_controls_pass": true,
+    "random_encoder_ceiling_saturated": false,
+    "beats_shuffled_time_and_random_encoder": true,
+    "no_false_predictive_success": true,
+    "verdict": "PASS"
+   }
+  },
+  "oscillators": {
+   "feature_count": 9,
+   "structural_controls": {
+    "future_immutability": {
+     "control": "future_immutability",
+     "passed": true,
+     "comparison": "bitwise torch.equal on the window ending before the mutation"
+    },
+    "newest_bar_sensitivity": {
+     "control": "newest_bar_sensitivity",
+     "passed": true,
+     "l2_delta": 1.39068162
+    },
+    "time_reversal": {
+     "control": "time_reversal",
+     "passed": true,
+     "relative_l2_delta": 0.711993
+    },
+    "save_load_bit_exact": {
+     "control": "save_load_bit_exact",
+     "passed": true
+    }
+   },
+   "synthetic_probes": {
+    "pretrained_next_bar_r2": 0.8494,
+    "random_encoder_next_bar_r2": 0.647,
+    "shuffled_time_next_bar_r2": -0.0263,
+    "phase_surrogate_next_bar_r2": 0.6834,
+    "noise_target_r2_must_be_near_zero": -0.0916
+   },
+   "effective_rank": {
+    "effective_rank": 11.155,
+    "dimension": 32,
+    "top1_variance_share": 0.2998,
+    "collapse_flag": false
+   },
+   "lagged_memory_r2": {
+    "lag_1": 0.8543,
+    "lag_2": 0.8327,
+    "lag_4": 0.8169,
+    "lag_8": 0.8697,
+    "lag_16": 0.8709
+   },
+   "temporal_gate": {
+    "structural_controls_pass": true,
+    "random_encoder_ceiling_saturated": false,
+    "beats_shuffled_time_and_random_encoder": true,
+    "no_false_predictive_success": true,
+    "verdict": "PASS"
+   }
+  },
+  "volume_flow": {
+   "feature_count": 6,
+   "structural_controls": {
+    "future_immutability": {
+     "control": "future_immutability",
+     "passed": true,
+     "comparison": "bitwise torch.equal on the window ending before the mutation"
+    },
+    "newest_bar_sensitivity": {
+     "control": "newest_bar_sensitivity",
+     "passed": true,
+     "l2_delta": 0.59327978
+    },
+    "time_reversal": {
+     "control": "time_reversal",
+     "passed": true,
+     "relative_l2_delta": 0.200171
+    },
+    "save_load_bit_exact": {
+     "control": "save_load_bit_exact",
+     "passed": true
+    }
+   },
+   "synthetic_probes": {
+    "pretrained_next_bar_r2": 0.9994,
+    "random_encoder_next_bar_r2": 1.0,
+    "shuffled_time_next_bar_r2": -0.2337,
+    "phase_surrogate_next_bar_r2": 0.9995,
+    "noise_target_r2_must_be_near_zero": -0.0943
+   },
+   "effective_rank": {
+    "effective_rank": 5.952,
+    "dimension": 64,
+    "top1_variance_share": 0.3715,
+    "collapse_flag": false
+   },
+   "lagged_memory_r2": {
+    "lag_1": 0.9999,
+    "lag_2": 0.9999,
+    "lag_4": 0.9999,
+    "lag_8": 0.9999,
+    "lag_16": 0.9999
+   },
+   "temporal_gate": {
+    "structural_controls_pass": true,
+    "random_encoder_ceiling_saturated": true,
+    "beats_shuffled_time_and_random_encoder": false,
+    "no_false_predictive_success": true,
+    "verdict": "CEILING_SATURATED_INCONCLUSIVE"
+   }
+  }
+ },
+ "summary": {
+  "returns_momentum": "PASS",
+  "trend_level": "PASS",
+  "volatility_distribution": "PASS",
+  "oscillators": "PASS",
+  "volume_flow": "CEILING_SATURATED_INCONCLUSIVE"
+ }
+}

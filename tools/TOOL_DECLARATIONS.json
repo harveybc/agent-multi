@@ -598,6 +598,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "temporal_information_suite.py": {
+   "purpose": "order b06ec0c7 \u00a74: temporal-information acceptance suite (REPRESENTATION_DIAGNOSTIC) \u2014 per-family structural controls (bitwise future immutability, newest-bar sensitivity, time reversal, save/load bit-exactness) + synthetic-signal causal ridge probes vs shuffled-time/random-encoder/phase-surrogate controls with 374-376 ceiling-saturation discipline, effective rank and lagged-memory diagnostics; CPU bounded",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
