@@ -328,7 +328,8 @@ def common_probe_surface_v2(*, embeddings_fit, embeddings_score,
                             positions_score, contrastive_exclusion: int,
                             contrastive_temperature: float,
                             adapter_train_pos, adapter_val_pos,
-                            protocol: dict[str, Any]) -> dict[str, Any]:
+                            protocol: dict[str, Any],
+                            floor_mode: bool = False) -> dict[str, Any]:
     """P1-validated surface: every probe adapter fits on the causal
     adapter-train segment, early-stops on adapter-val, restores its
     best state, and only then scores on the untouched probe-score
@@ -443,8 +444,29 @@ def common_probe_surface_v2(*, embeddings_fit, embeddings_score,
     }
     report["probes"] = {}
     for task, spec in tasks.items():
-        report["probes"][task] = fit_adapter_validated(
-            spec["build"], spec["fit"], spec["val"], spec["score"],
-            protocol)
+        try:
+            report["probes"][task] = fit_adapter_validated(
+                spec["build"], spec["fit"], spec["val"], spec["score"],
+                protocol)
+        except ProbeRefusal as refusal:
+            if not floor_mode:
+                raise
+            # protocol ADDENDUM 2026-08-28: an unfittable/unstable
+            # probe on the RANDOM floor is the floor's own signal
+            if "MATERIAL_SEED_INSTABILITY" in str(refusal):
+                report["probes"][task] = {
+                    "probe_score_median": None,
+                    "floor_diagnostic_invalid": str(refusal)}
+            else:
+                import torch as _torch
+
+                _torch.manual_seed(int(protocol["adapter_seeds"][0]))
+                fallback = spec["build"]()
+                with _torch.no_grad():
+                    score = float(spec["score"](fallback))
+                report["probes"][task] = {
+                    "probe_score_median": round(score, 8),
+                    "floor_fit_marginal": True,
+                    "refusal_recorded": str(refusal)[:100]}
     report["barrier_probe_support"] = support
     return report

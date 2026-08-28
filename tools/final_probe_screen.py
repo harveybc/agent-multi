@@ -145,7 +145,7 @@ def main() -> int:
         encoder, _dim = plugin_class.build(len(ch_idx), window, params)
         return encoder, ch_idx
 
-    def probe(family, state_path=None):
+    def probe(family, state_path=None, floor_mode=False):
         torch.manual_seed(0)  # random floor: fixed construction seed
         encoder, ch_idx = build_encoder(family)
         if state_path is not None:
@@ -176,7 +176,7 @@ def main() -> int:
             positions_score=positions_score,
             contrastive_exclusion=12, contrastive_temperature=0.2,
             adapter_train_pos=train_pos, adapter_val_pos=val_pos,
-            protocol=fit_protocol)
+            protocol=fit_protocol, floor_mode=floor_mode)
 
     pruned = design["arms_per_family"]["evidence_pruned"]
     pruned_tag = {family: "pruned_" + "_".join(sorted(objectives))
@@ -189,7 +189,7 @@ def main() -> int:
               "families": {}, "verdicts": {}, "selected": {}}
     for family in FAMILIES:
         rows = {}
-        rows["random_floor"] = probe(family, None)
+        rows["random_floor"] = probe(family, None, floor_mode=True)
         for short in LONG:
             rows[f"solo_{short}"] = probe(
                 family, workdir / f"solo_{short}"
@@ -207,6 +207,8 @@ def main() -> int:
         # P2 skill per arm
         random_scores = {task: rows["random_floor"]["probes"][task][
             "probe_score_median"] for task in LONG}
+        floor_invalid = {task for task in LONG
+                         if random_scores[task] is None}
         solo_scores = {task: rows[f"solo_{task}"]["probes"][task][
             "probe_score_median"] for task in LONG}
         arm_facts = {}
@@ -218,6 +220,10 @@ def main() -> int:
             skills = {}
             invalid = {}
             for task in LONG:
+                if task in floor_invalid:
+                    invalid[task] = ("DIAGNOSTIC_INVALID: unreliable "
+                                     "random floor (addendum)")
+                    continue
                 route_score = facts["probes"][task][
                     "probe_score_median"]
                 skill, reason = normalized_skill(
