@@ -1,0 +1,34 @@
+{
+ "schema": "agent_multi.finding_reproductions.v1",
+ "findings": "DATA-SOTA-369..370",
+ "phase": "POST",
+ "date": "2026-08-27",
+ "agent_multi_commit": "bc900634c945f9d05c049b3403b481c994187f4d",
+ "cases": {
+  "369": {
+   "common_surface": "every route scored on ALL FIVE probes regardless of trained set",
+   "proof_smaller_exam_gone": {
+    "trend_level_evidence_pruned_trained": [
+     "barrier"
+    ],
+    "but_scored_on": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "reconstruction",
+     "volatility"
+    ],
+    "its_degraded_common_probes": [
+     "reconstruction",
+     "quantile",
+     "volatility"
+    ]
+   },
+   "verdict": "CORRECTED: the one-objective trend_level arm now faces the full exam \u2014 and shows degraded common probes instead of a free win"
+  },
+  "370": {
+   "arms": "universal full5_control/predictive3/self_supervised2 answer interpretable hypotheses; evidence_pruned labeled EXPLORATORY; no universal drop_contrastive exists",
+   "verdict": "CORRECTED: design and prose carry one hypothesis set"
+  }
+ }
+}

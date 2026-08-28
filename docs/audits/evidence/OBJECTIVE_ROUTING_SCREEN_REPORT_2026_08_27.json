@@ -1,0 +1,499 @@
+{
+ "schema": "agent_multi.objective_routing_screen.v1",
+ "order": "R5",
+ "design_sha256": "16a10eaf652c4b5e60f82e4d6bb350bed5fba69dc2ad816b84217f78a095d30c",
+ "mechanism_label": "FIXED_MECHANISM_NOT_M2_WINNER",
+ "solo_references": {
+  "returns_momentum": {
+   "reconstruction": 0.39199924,
+   "quantile": 0.01704278,
+   "contrastive": 2.56540585,
+   "volatility": 0.24557815,
+   "barrier": 1.16944695
+  },
+  "trend_level": {
+   "reconstruction": 0.79910046,
+   "quantile": 0.01328719,
+   "contrastive": 3.74398971,
+   "volatility": 0.31564623,
+   "barrier": 1.16509914
+  },
+  "volatility_distribution": {
+   "reconstruction": 1.1360774,
+   "quantile": 0.02943121,
+   "contrastive": 3.27289009,
+   "volatility": 0.82787859,
+   "barrier": 1.2516551
+  },
+  "oscillators": {
+   "reconstruction": 0.70996767,
+   "quantile": 0.02385318,
+   "contrastive": 2.6203382,
+   "volatility": 0.52333593,
+   "barrier": 1.16881084
+  },
+  "volume_flow": {
+   "reconstruction": 0.56020206,
+   "quantile": 0.01628928,
+   "contrastive": 2.7022438,
+   "volatility": 3.96065497,
+   "barrier": 1.13362384
+  }
+ },
+ "families": {
+  "returns_momentum": {
+   "full5_control": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "reconstruction",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.2452,
+     "quantile": 1.204,
+     "contrastive": 1.047,
+     "volatility": 1.1264,
+     "barrier": 0.9636
+    },
+    "degraded_common_probes": [
+     "reconstruction",
+     "quantile"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 1.2452,
+    "median_ratio": 1.1264,
+    "encoder_output_std": 1.989409
+   },
+   "predictive3": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.7835,
+     "quantile": 1.1532,
+     "contrastive": 1.1422,
+     "volatility": 0.9778,
+     "barrier": 0.9658
+    },
+    "degraded_common_probes": [
+     "reconstruction"
+    ],
+    "degraded_count": 1,
+    "worst_ratio": 1.7835,
+    "median_ratio": 1.1422,
+    "encoder_output_std": 2.53569
+   },
+   "self_supervised2": {
+    "trained_objectives_reported_not_rewarded": [
+     "contrastive",
+     "reconstruction"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.0407,
+     "quantile": 3.6838,
+     "contrastive": 0.899,
+     "volatility": 69.3859,
+     "barrier": 1.0269
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 69.3859,
+    "median_ratio": 1.0407,
+    "encoder_output_std": 1.097849
+   },
+   "evidence_pruned": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.7835,
+     "quantile": 1.1532,
+     "contrastive": 1.1422,
+     "volatility": 0.9778,
+     "barrier": 0.9658
+    },
+    "degraded_common_probes": [
+     "reconstruction"
+    ],
+    "degraded_count": 1,
+    "worst_ratio": 1.7835,
+    "median_ratio": 1.1422,
+    "encoder_output_std": 2.53569
+   }
+  },
+  "trend_level": {
+   "full5_control": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "reconstruction",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.204,
+     "quantile": 1.0336,
+     "contrastive": 1.0592,
+     "volatility": 0.9821,
+     "barrier": 0.9779
+    },
+    "degraded_common_probes": [
+     "reconstruction"
+    ],
+    "degraded_count": 1,
+    "worst_ratio": 1.204,
+    "median_ratio": 1.0336,
+    "encoder_output_std": 1.078405
+   },
+   "predictive3": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.4146,
+     "quantile": 0.7808,
+     "contrastive": 1.2048,
+     "volatility": 0.9876,
+     "barrier": 0.9507
+    },
+    "degraded_common_probes": [
+     "reconstruction",
+     "contrastive"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 1.4146,
+    "median_ratio": 0.9876,
+    "encoder_output_std": 1.078058
+   },
+   "self_supervised2": {
+    "trained_objectives_reported_not_rewarded": [
+     "contrastive",
+     "reconstruction"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 0.9939,
+     "quantile": 3.4424,
+     "contrastive": 1.0105,
+     "volatility": 16.6594,
+     "barrier": 0.9805
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 16.6594,
+    "median_ratio": 1.0105,
+    "encoder_output_std": 1.015474
+   },
+   "evidence_pruned": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.2001,
+     "quantile": 2.6082,
+     "contrastive": 1.0506,
+     "volatility": 2.9688,
+     "barrier": 1.0
+    },
+    "degraded_common_probes": [
+     "reconstruction",
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 3,
+    "worst_ratio": 2.9688,
+    "median_ratio": 1.2001,
+    "encoder_output_std": 0.996611
+   }
+  },
+  "volatility_distribution": {
+   "full5_control": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "reconstruction",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.0505,
+     "quantile": 1.3399,
+     "contrastive": 1.0413,
+     "volatility": 1.2926,
+     "barrier": 0.977
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 1.3399,
+    "median_ratio": 1.0505,
+    "encoder_output_std": 1.052139
+   },
+   "predictive3": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.1251,
+     "quantile": 2.722,
+     "contrastive": 1.2075,
+     "volatility": 2.6988,
+     "barrier": 0.909
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "contrastive",
+     "volatility"
+    ],
+    "degraded_count": 3,
+    "worst_ratio": 2.722,
+    "median_ratio": 1.2075,
+    "encoder_output_std": 1.089651
+   },
+   "self_supervised2": {
+    "trained_objectives_reported_not_rewarded": [
+     "contrastive",
+     "reconstruction"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 0.9656,
+     "quantile": 2.6992,
+     "contrastive": 1.0395,
+     "volatility": 7.1065,
+     "barrier": 0.9974
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 7.1065,
+    "median_ratio": 1.0395,
+    "encoder_output_std": 0.980814
+   },
+   "evidence_pruned": {
+    "trained_objectives_reported_not_rewarded": [
+     "contrastive"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 0.9852,
+     "quantile": 6.6099,
+     "contrastive": 1.0,
+     "volatility": 15.5389,
+     "barrier": 1.1757
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 15.5389,
+    "median_ratio": 1.1757,
+    "encoder_output_std": 1.008624
+   }
+  },
+  "oscillators": {
+   "full5_control": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "reconstruction",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.0012,
+     "quantile": 1.3402,
+     "contrastive": 1.0114,
+     "volatility": 0.9223,
+     "barrier": 1.0182
+    },
+    "degraded_common_probes": [
+     "quantile"
+    ],
+    "degraded_count": 1,
+    "worst_ratio": 1.3402,
+    "median_ratio": 1.0114,
+    "encoder_output_std": 1.022344
+   },
+   "predictive3": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.1917,
+     "quantile": 1.1302,
+     "contrastive": 1.0692,
+     "volatility": 1.0183,
+     "barrier": 0.9347
+    },
+    "degraded_common_probes": [],
+    "degraded_count": 0,
+    "worst_ratio": 1.1917,
+    "median_ratio": 1.0692,
+    "encoder_output_std": 1.076388
+   },
+   "self_supervised2": {
+    "trained_objectives_reported_not_rewarded": [
+     "contrastive",
+     "reconstruction"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 0.9493,
+     "quantile": 1.1802,
+     "contrastive": 0.972,
+     "volatility": 2.1629,
+     "barrier": 1.0116
+    },
+    "degraded_common_probes": [
+     "volatility"
+    ],
+    "degraded_count": 1,
+    "worst_ratio": 2.1629,
+    "median_ratio": 1.0116,
+    "encoder_output_std": 0.684463
+   },
+   "evidence_pruned": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "reconstruction"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 0.9805,
+     "quantile": 1.214,
+     "contrastive": 1.0099,
+     "volatility": 1.7406,
+     "barrier": 1.0295
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 1.7406,
+    "median_ratio": 1.0295,
+    "encoder_output_std": 0.718566
+   }
+  },
+  "volume_flow": {
+   "full5_control": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "reconstruction",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.5062,
+     "quantile": 1.2635,
+     "contrastive": 1.0618,
+     "volatility": 0.2159,
+     "barrier": 1.0055
+    },
+    "degraded_common_probes": [
+     "reconstruction",
+     "quantile"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 1.5062,
+    "median_ratio": 1.0618,
+    "encoder_output_std": 0.70791
+   },
+   "predictive3": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.6243,
+     "quantile": 0.6417,
+     "contrastive": 1.2084,
+     "volatility": 0.0541,
+     "barrier": 0.9867
+    },
+    "degraded_common_probes": [
+     "reconstruction",
+     "contrastive"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 1.6243,
+    "median_ratio": 0.9867,
+    "encoder_output_std": 0.848628
+   },
+   "self_supervised2": {
+    "trained_objectives_reported_not_rewarded": [
+     "contrastive",
+     "reconstruction"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 0.9461,
+     "quantile": 4.1509,
+     "contrastive": 1.0532,
+     "volatility": 1.9931,
+     "barrier": 0.9832
+    },
+    "degraded_common_probes": [
+     "quantile",
+     "volatility"
+    ],
+    "degraded_count": 2,
+    "worst_ratio": 4.1509,
+    "median_ratio": 1.0532,
+    "encoder_output_std": 0.491966
+   },
+   "evidence_pruned": {
+    "trained_objectives_reported_not_rewarded": [
+     "barrier",
+     "contrastive",
+     "quantile",
+     "volatility"
+    ],
+    "normalized_probe_ratios": {
+     "reconstruction": 1.5272,
+     "quantile": 1.2021,
+     "contrastive": 1.2455,
+     "volatility": 0.2871,
+     "barrier": 0.9716
+    },
+    "degraded_common_probes": [
+     "reconstruction",
+     "quantile",
+     "contrastive"
+    ],
+    "degraded_count": 3,
+    "worst_ratio": 1.5272,
+    "median_ratio": 1.2021,
+    "encoder_output_std": 0.71293
+   }
+  }
+ },
+ "verdicts": {
+  "returns_momentum": "INCONCLUSIVE: predictive3 ties ['evidence_pruned']",
+  "trend_level": "NO_ACCEPTABLE_ROUTE: best full5_control with 1 degraded common probes",
+  "volatility_distribution": "NO_ACCEPTABLE_ROUTE: best full5_control with 2 degraded common probes",
+  "oscillators": "ACCEPTABLE: predictive3 (zero degraded common probes)",
+  "volume_flow": "NO_ACCEPTABLE_ROUTE: best full5_control with 2 degraded common probes"
+ }
+}
