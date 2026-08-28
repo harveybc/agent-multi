@@ -1,0 +1,44 @@
+{
+ "schema": "agent_multi.trade_reconciliation_cuda_check.v1",
+ "classification": "MECHANICS_ONLY",
+ "device_class_sanitized": "NVIDIA GeForce RTX 4070 Laptop GPU",
+ "arm": "control_random_init",
+ "seed": 101,
+ "budget_disclosed": {
+  "total_timesteps": 2600,
+  "epoch_timesteps": 1300,
+  "max_epochs": 2,
+  "l1_patience": 2,
+  "learning_starts": 128,
+  "buffer_size": 4000,
+  "batch_size": 64
+ },
+ "stop_reason": "max_epochs_budget",
+ "splits": {
+  "train": {
+   "trades_total": 0,
+   "analyzer_trades_total": 0,
+   "closed_trades_by_source": {},
+   "open_position_at_end": false,
+   "terminal_settlement": 0,
+   "final_cumulative": 0
+  },
+  "train_tail": {
+   "trades_total": 0,
+   "analyzer_trades_total": 0,
+   "closed_trades_by_source": {},
+   "open_position_at_end": false,
+   "terminal_settlement": 0,
+   "final_cumulative": 0
+  },
+  "validation": {
+   "trades_total": 0,
+   "analyzer_trades_total": 0,
+   "closed_trades_by_source": {},
+   "open_position_at_end": false,
+   "terminal_settlement": 0,
+   "final_cumulative": 0
+  }
+ },
+ "verdict": "CUDA_RECONCILIATION_EXACT"
+}

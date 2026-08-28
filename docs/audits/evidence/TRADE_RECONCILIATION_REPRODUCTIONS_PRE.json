@@ -1,0 +1,50 @@
+{
+ "schema": "agent_multi.trade_reconciliation_pre.v1",
+ "order": "feature-extractor information audit \u00a72 (2026-08-28)",
+ "defect": "closed_trades_cumulative exceeds trades_total (both affected fleet slots, first paired dispatch)",
+ "deterministic_reproduction_real_route": {
+  "harness": "_load_env_plugin('gym_fx_env') + shared_execution_envelope, synthetic 26-bar CSV where every bar from 8 pierces the 5% stop intrabar; four long entries, each settles ON its entry bar",
+  "per_step_info_trades": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
+   2,
+   2,
+   2,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3,
+   3
+  ],
+  "bridge_final": 3,
+  "summary_trades_total": 2,
+  "analyzer_won_lost": [
+   0,
+   1
+  ],
+  "refusal": "TraceReconciliationError: trace running counter 3 exceeds the summary trades_total 2 \u2014 incoherent accounting"
+ },
+ "root_cause": "SUMMARY CONSTRUCTION / dual stream: the trace counter comes from bridge.trade_count (incremented by bt notify_trade closes AND by the envelope's _settle_position direct broker accounting), while summary trades_total comes from backtrader's TradeAnalyzer (total.total). An entry-bar direct settlement zeroes the broker position via position.update() WITHOUT a bt order, so backtrader's Trade object stays logically open and the analyzer undercounts subsequent cycles; the two streams diverge exactly when the envelope settles on the entry bar \u2014 which is why 2-epoch CPU dry-runs (policy never at 3xATR) stayed coherent and both affected fleet slots (trained policies) refused",
+ "candidates_excluded": {
+  "terminal_liquidation": "produces summary GREATER than trace by at most the open positions \u2014 the bounded settlement path, opposite sign",
+  "episode_reset": "eval rollouts are single-episode (while-not-done); the monotonicity guard would fire on a reset, not the exceeds guard",
+  "rejected_superseded_orders": "rejections are counted in diagnostics, not in bridge.trade_count",
+  "trace_timing": "per-step info values are monotone in the reproduction; the divergence is in the totals, not row timing"
+ }
+}

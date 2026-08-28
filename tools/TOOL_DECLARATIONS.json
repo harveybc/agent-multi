@@ -577,6 +577,20 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "trade_reconciliation_cuda_check.py": {
+   "purpose": "runtime order 2026-08-28 \u00a72 bounded CUDA end-to-end check (MECHANICS_ONLY): one dry-run-budget cell through the accepted nested trainer on a single CUDA device, outside the campaign driver, proving the authoritative closed-trade stream reconciles exactly on device; refuses without exactly one visible GPU",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "runtime_architecture_manifest.py": {
+   "purpose": "feature-extractor audit \u00a73: machine-readable architecture manifest derived from the EXECUTING modules via the canonical materializer + forward hooks \u2014 per-branch features/receptive field/shapes/params/latents/reduction/causality, -style reference differences, pretraining objectives and transfer behavior; MECHANICS_ONLY",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

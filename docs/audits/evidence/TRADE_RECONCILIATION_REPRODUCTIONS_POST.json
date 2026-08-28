@@ -1,0 +1,82 @@
+{
+ "schema": "agent_multi.trade_reconciliation_post.v1",
+ "order": "feature-extractor information audit \u00a72 (2026-08-28)",
+ "fix": "gym-fx satoshi/trade-reconciliation-20260828@51c8f32 \u2014 bridge.closed_trade_stream is the ONE authoritative closed-trade event stream; bt trade-cycle closes and envelope direct settlements both append via record_trade_close(); trade_count DERIVED as len(stream) (no independent increment, regression-asserted); summary trades_total derives from the SAME stream; analyzer count preserved as analyzer_trades_total diagnostic; closed_trades_by_source breakdown; open_position_at_end explicit",
+ "exact_derived_counts_pre_counterexample": {
+  "scenario": "four long entries on a flat series whose bars pierce the 5% stop intrabar from bar 8 (entry-bar direct settlements), real pipeline env route",
+  "pre": {
+   "trace_final": 3,
+   "summary_trades_total": 2,
+   "refusal": "TraceReconciliationError: trace running counter 3 exceeds the summary trades_total 2"
+  },
+  "post": {
+   "trace_final": 3,
+   "summary_trades_total": 3,
+   "by_source": {
+    "bt_trade_closed": 1,
+    "envelope_direct_settlement": 2
+   },
+   "settlement": 0,
+   "exact": true
+  }
+ },
+ "bounded_cpu_end_to_end": {
+  "cell": "control_random_init_s101, dry-run budget (2,600 steps), custody dddfa999670f6f9d, stop max_epochs_budget",
+  "splits": {
+   "train": {
+    "trades_total": 24,
+    "final_cumulative": 24,
+    "analyzer_diag": 25,
+    "settlement": 0,
+    "exact": true
+   },
+   "train_tail": {
+    "trades_total": 33,
+    "final_cumulative": 33,
+    "analyzer_diag": 34,
+    "settlement": 0,
+    "exact": true
+   },
+   "validation": {
+    "trades_total": 38,
+    "final_cumulative": 38,
+    "analyzer_diag": 39,
+    "settlement": 0,
+    "exact": true
+   }
+  },
+  "note": "the historical '+1 terminal settlement' is now explained: it was the analyzer's OPENED count including the still-open phantom trade, not a real settlement; the stream reports the open position explicitly instead"
+ },
+ "bounded_cuda_end_to_end": {
+  "verdict": "CUDA_RECONCILIATION_EXACT",
+  "cell": "control_random_init_s101 dry-run budget on one RTX-class device (MECHANICS_ONLY, outside the campaign driver)",
+  "splits": {
+   "train": {
+    "trades_total": 0,
+    "final_cumulative": 0,
+    "settlement": 0,
+    "exact": true
+   },
+   "train_tail": {
+    "trades_total": 0,
+    "final_cumulative": 0,
+    "settlement": 0,
+    "exact": true
+   },
+   "validation": {
+    "trades_total": 0,
+    "final_cumulative": 0,
+    "settlement": 0,
+    "exact": true
+   }
+  },
+  "disclosure": "the bounded-budget CUDA policy produced ZERO trades (GPU RNG stream differs from CPU), so this run proves device-side mechanical coherence of the zero case; settlement-cycle coherence is proven by the CPU end-to-end run (24/33/38 exact) and the deterministic gym-fx regressions, and the epoch gate refuses any disagreement during the real campaign",
+  "evidence": "TRADE_RECONCILIATION_CUDA_CHECK_2026_08_28.json"
+ },
+ "epoch_gate": "reconcile_trace_trades keeps refusing any disagreement before an epoch is accepted (divergent-total regression proves the guard still bites)",
+ "regressions": {
+  "gym_fx": "tests/test_trade_reconciliation_stream.py (8: zero/one/entry-bar direct/multi-cycle PRE counterexample/last-bar open/simultaneous-close counts ONE/interrupted-episode reset/derived-never-incremented); envelope 28/28; full gym-fx 139",
+  "agent_multi": "tests/unit/test_trade_reconciliation_regressions.py (3: exact-agreement, guard-still-bites, source conservation)"
+ },
+ "campaign_disposition": "failed affected-fleet-slot attempts preserved unchanged as immutable non-resumable siblings; the corrected campaign uses fresh siblings; launch manifests v4 + template regenerated with the post-fix executable allowlist (0f142b6e264b1209)"
+}

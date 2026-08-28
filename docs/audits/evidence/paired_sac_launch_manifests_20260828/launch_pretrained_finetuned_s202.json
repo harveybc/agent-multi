@@ -1,5 +1,5 @@
 {
- "schema": "agent_multi.paired_sac_launch_manifest.v3",
+ "schema": "agent_multi.paired_sac_launch_manifest.v4",
  "authored_before_execution": true,
  "gpu_logical_slot": "gpu_slot_1",
  "within_slot_position": 0,
@@ -21,11 +21,11 @@
   "pretrained_branch_loader": "e284fd12db2f45066d768296d21056bb003d48f7bd3c41098e348f4ea0440b76",
   "sac_agent": "f0889d7a0be8d98243e44b101eb44ea422e9e9472e14019dc4331652030957af",
   "split_contract": "a11284aa6e8b9654efb696752f372340330689d22f54ab1478fc66a11693c128",
-  "strategy_shared_execution_envelope": "f6940d8ed594dee69ba58ac499749bd7355728bf5c888d42198936a0dce3e88b",
+  "strategy_shared_execution_envelope": "441a9ed38887f7199bbf5a87fb70a5b4634f240e2bf759c20a11ae21dd807612",
   "strong_config": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
-  "entry_point_metadata": "9ce32098209c2233a266b89e09fe733d4775fa515d664a7e494a59c54b39a7c5"
+  "entry_point_metadata": "729331c9391bbb3e0ff2e7126e078dd2b3c152ea472e07f597d5b70f6669d0f9"
  },
- "executable_allowlist_digest": "aedf1c1778bebbde6391a025fb43fd893b75d6d5e0b5af109c324f962de85b29",
+ "executable_allowlist_digest": "0f142b6e264b1209326c5efa19a684f92b3d8f900699ea30433f350bb118203c",
  "environmental_preflight": "R2/DATA-SOTA-382: the driver resolves all 12 required entry points via importlib.metadata (missing/duplicated/out-of-root refuses), runs a bounded strong-extractor forward on the bound device, and binds the entry-point metadata digest into the executable identity",
  "device_binding": "R3/DATA-SOTA-383: --logical-slot verified against the operator's PRIVATE slot->physical binding (class + local identity) after CUDA_VISIBLE_DEVICES; exactly one visible device; a real Conv2d forward/backward micro-preflight runs BEFORE custody reservation \u2014 failure refuses without spending an attempt",
  "thermal_telemetry": "tools/gpu_temperature_watchdog.py active on the executing host for the full cell duration",
@@ -78,5 +78,6 @@
   },
   "status": "MATERIALIZED_NOT_LAUNCHED",
   "cell_sha256": "6c1e1ff46b895dc0328ecb97c837d84dba6b58a871d82c63490e238fc5dd8a0b"
- }
+ },
+ "trade_reconciliation": "runtime order 2026-08-28 \u00a72: trades_total and closed_trades_cumulative both derive from the bridge's authoritative closed-trade event stream (gym-fx satoshi/trade-reconciliation-20260828@51c8f32); disagreement refuses the epoch"
 }

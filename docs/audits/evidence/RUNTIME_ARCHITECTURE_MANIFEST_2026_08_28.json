@@ -1,0 +1,356 @@
+{
+ "schema": "agent_multi.runtime_architecture_manifest.v1",
+ "classification": "MECHANICS_ONLY",
+ "status_claim": "EXPERIMENTAL CANDIDATE \u2014 not a proven SOTA trading extractor (order \u00a71); branch names are '-style': exact reference parity is NOT demonstrated",
+ "derived_from": "executing modules via the canonical materializer + forward hooks; no config prose copied",
+ "architecture_digest": "fda91f3706c82c2c7af18b5312a73fcc6350be6b3f6c1151b8b0aff6278a4da5",
+ "config_sha256": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
+ "input_window_bars_h4": 32,
+ "feature_count": 83,
+ "branches": [
+  {
+   "family": "returns_momentum",
+   "plugin": "patchtst_branch",
+   "style_name": "PatchTST-style",
+   "reference": "Nie et al. 2023 (A Time Series is Worth 64 Words)",
+   "differences": [
+    "channel-MIXING patch embedding (one Linear over patch_len*n_features), NOT the paper's channel-independent per-variate patching",
+    "no RevIN instance normalization (preprocessing is the rolling-zscore feature contract instead)",
+    "learned positional embedding over patches; mean-pool over patch tokens instead of the paper's flatten head",
+    "pre-norm TransformerEncoder as packaged by PyTorch"
+   ],
+   "ordered_features": [
+    "return_1",
+    "log_return_1",
+    "return_5",
+    "log_return_5",
+    "return_10",
+    "log_return_10",
+    "return_20",
+    "log_return_20",
+    "return_60",
+    "log_return_60",
+    "roc_10",
+    "roc_20",
+    "roc_60",
+    "mom_10",
+    "mom_20",
+    "statistical__log_return_1"
+   ],
+   "feature_count": 16,
+   "input_window_bars": 32,
+   "effective_receptive_field": {
+    "bars": 32,
+    "basis": "global mixing (attention/FFT/recurrence) over the full window"
+   },
+   "declared_params": {
+    "d_model": 32,
+    "n_heads": 4,
+    "n_layers": 1
+   },
+   "trainable_parameters": 25376,
+   "latent_dimension": 32,
+   "compression_ratio_input_values_to_latent": 16.0,
+   "sequence_reduction": "mean over patch tokens",
+   "causality": "no future access by construction: window ends at the decision bar; TCN left-pads; attention/FFT mix within the window only (within-window global mixing, not masked step-causal)",
+   "layer_output_shapes": [
+    {
+     "module": "Encoder",
+     "output_shape": [
+      2,
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "family": "trend_level",
+   "plugin": "tft_branch",
+   "style_name": "TFT-style",
+   "reference": "Lim et al. 2021 (Temporal Fusion Transformers)",
+   "differences": [
+    "GRN gating + a single interpretable multi-head attention block only \u2014 no variable-selection networks, no static covariate encoders, no LSTM encoder-decoder, no quantile output heads",
+    "self-attention over the raw projected sequence with mean reduction"
+   ],
+   "ordered_features": [
+    "sma_10",
+    "ema_10",
+    "close_sma_ratio_10",
+    "sma_20",
+    "ema_20",
+    "close_sma_ratio_20",
+    "sma_50",
+    "ema_50",
+    "close_sma_ratio_50",
+    "sma_100",
+    "ema_100",
+    "close_sma_ratio_100",
+    "sma_200",
+    "ema_200",
+    "close_sma_ratio_200",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "ema_cross_10_50",
+    "ema_cross_20_100",
+    "trend_slope_50",
+    "trend_strength_50",
+    "zscore_close_100"
+   ],
+   "feature_count": 23,
+   "input_window_bars": 32,
+   "effective_receptive_field": {
+    "bars": 32,
+    "basis": "global mixing (attention/FFT/recurrence) over the full window"
+   },
+   "declared_params": {
+    "hidden": 32,
+    "n_heads": 4
+   },
+   "trainable_parameters": 18790,
+   "latent_dimension": 32,
+   "compression_ratio_input_values_to_latent": 23.0,
+   "sequence_reduction": "mean over time",
+   "causality": "no future access by construction: window ends at the decision bar; TCN left-pads; attention/FFT mix within the window only (within-window global mixing, not masked step-causal)",
+   "layer_output_shapes": [
+    {
+     "module": "Encoder",
+     "output_shape": [
+      2,
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "family": "volatility_distribution",
+   "plugin": "timesnet_branch",
+   "style_name": "TimesNet-style",
+   "reference": "Wu et al. 2023 (TimesNet)",
+   "differences": [
+    "single TimesBlock-like stage: FFT top-k period folding with one Conv2d inception-lite kernel per period, NOT the paper's stacked TimesBlocks with 2D inception towers",
+    "amplitude-weighted aggregation then mean pooling"
+   ],
+   "ordered_features": [
+    "bb_upper",
+    "bb_middle",
+    "bb_lower",
+    "bb_width",
+    "atr_14",
+    "natr_14",
+    "hist_vol_10",
+    "hist_vol_20",
+    "hist_vol_60",
+    "roll_mean_ret_20",
+    "roll_std_ret_20",
+    "roll_skew_ret_20",
+    "roll_kurt_ret_20",
+    "roll_mean_ret_60",
+    "roll_std_ret_60",
+    "roll_skew_ret_60",
+    "roll_kurt_ret_60",
+    "roll_mean_ret_252",
+    "roll_std_ret_252",
+    "roll_skew_ret_252",
+    "roll_kurt_ret_252",
+    "realized_var_12",
+    "realized_var_48",
+    "autocorr_lag1_100",
+    "autocorr_lag5_100",
+    "sqret_autocorr_lag1_100",
+    "vol_regime_high",
+    "vol_regime_low",
+    "hurst_proxy_200"
+   ],
+   "feature_count": 29,
+   "input_window_bars": 32,
+   "effective_receptive_field": {
+    "bars": 32,
+    "basis": "global mixing (attention/FFT/recurrence) over the full window"
+   },
+   "declared_params": {
+    "d_model": 32,
+    "top_k": 2
+   },
+   "trainable_parameters": 19520,
+   "latent_dimension": 32,
+   "compression_ratio_input_values_to_latent": 29.0,
+   "sequence_reduction": "mean over time",
+   "causality": "no future access by construction: window ends at the decision bar; TCN left-pads; attention/FFT mix within the window only (within-window global mixing, not masked step-causal)",
+   "layer_output_shapes": [
+    {
+     "module": "Encoder",
+     "output_shape": [
+      2,
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "family": "oscillators",
+   "plugin": "tcn_branch",
+   "style_name": "causal TCN",
+   "reference": "Bai et al. 2018 (generic temporal conv)",
+   "differences": [
+    "left-padded causal Conv1d stack with exponential dilation; no weight-norm, no residual gating beyond additive skip when channels match"
+   ],
+   "ordered_features": [
+    "rsi_7",
+    "rsi_14",
+    "rsi_21",
+    "stoch_k",
+    "stoch_d",
+    "williams_r_14",
+    "cci_14",
+    "bb_pct_b",
+    "mfi_14"
+   ],
+   "feature_count": 9,
+   "input_window_bars": 32,
+   "effective_receptive_field": {
+    "bars": 7,
+    "basis": "dilated causal conv stack: 1 + sum((k-1)*b^l) = 7, clipped to the window"
+   },
+   "declared_params": {
+    "channels": [
+     32,
+     32
+    ]
+   },
+   "trainable_parameters": 4448,
+   "latent_dimension": 32,
+   "compression_ratio_input_values_to_latent": 9.0,
+   "sequence_reduction": "last causal step",
+   "causality": "no future access by construction: window ends at the decision bar; TCN left-pads; attention/FFT mix within the window only (within-window global mixing, not masked step-causal)",
+   "layer_output_shapes": [
+    {
+     "module": "Encoder",
+     "output_shape": [
+      2,
+      32
+     ]
+    }
+   ]
+  },
+  {
+   "family": "volume_flow",
+   "plugin": "gru_branch",
+   "style_name": "unidirectional GRU",
+   "reference": "standard nn.GRU",
+   "differences": [
+    "last-hidden-state reduction"
+   ],
+   "ordered_features": [
+    "obv",
+    "obv_delta_20",
+    "volume_sma_10",
+    "volume_sma_20",
+    "volume_ratio_20",
+    "vwap_60"
+   ],
+   "feature_count": 6,
+   "input_window_bars": 32,
+   "effective_receptive_field": {
+    "bars": 32,
+    "basis": "global mixing (attention/FFT/recurrence) over the full window"
+   },
+   "declared_params": {},
+   "trainable_parameters": 13824,
+   "latent_dimension": 64,
+   "compression_ratio_input_values_to_latent": 3.0,
+   "sequence_reduction": "last hidden state",
+   "causality": "no future access by construction: window ends at the decision bar; TCN left-pads; attention/FFT mix within the window only (within-window global mixing, not masked step-causal)",
+   "layer_output_shapes": [
+    {
+     "module": "Encoder",
+     "output_shape": [
+      2,
+      64
+     ]
+    }
+   ]
+  }
+ ],
+ "state_branch": {
+  "family": "agent_state",
+  "plugin": {
+   "plugin": "mlp_branch",
+   "params": {
+    "hidden_dims": [
+     32
+    ],
+    "output_dim": 16
+   }
+  },
+  "style_name": "randomly initialized state MLP (NOT pretrained)",
+  "state_keys": [
+   "position",
+   "equity_norm",
+   "unrealized_pnl_norm",
+   "holding_duration_norm"
+  ],
+  "trainable_parameters": 688
+ },
+ "fusion": {
+  "plugin": "cross_family_attention",
+  "style_name": "cross-family attention fusion (randomly initialized, NOT pretrained)",
+  "declared": {
+   "plugin": "cross_family_attention",
+   "params": {
+    "d_model": 32,
+    "n_heads": 4,
+    "output_dim": 96
+   }
+  },
+  "trainable_parameters": 30912,
+  "output_dimension": 96,
+  "layer_output_shapes": [
+   {
+    "module": "Fusion",
+    "output_shape": [
+     2,
+     96
+    ]
+   }
+  ]
+ },
+ "total_trainable_extractor_parameters": 113558,
+ "expected_order_reference_params": "the order (\u00a73) cites approximately 115.6k; the RUNTIME-measured count is 113,558 trainable extractor parameters (five temporal branches 81,958 + state MLP 688 + fusion 30,912) \u2014 the measured value is authoritative; the ~2k delta likely reflects a prior estimate including head/adapter parameters that never transfer",
+ "initialization": "PyTorch module defaults under torch.manual_seed(train_seed) at SAC construction; treatment arm then overwrites the five temporal branches from the sealed generation (bit parity)",
+ "dropout_values_present": [
+  0.0
+ ],
+ "normalization_layers_present": [
+  "LayerNorm"
+ ],
+ "optimizer_settings_runtime": {
+  "sac": {
+   "actor_and_critic": "Adam lr 3e-4 (design binding), extractor params inside each network's optimizer",
+   "target_critic": "polyak-tracked, never optimizer-trained"
+  },
+  "pretraining": {
+   "encoder": "Adam (dual-optimizer strict head/encoder separation)",
+   "combiner": {
+    "method": "inverse_initial_loss",
+    "floor": 1e-06,
+    "note": "DATA-SOTA-345: effective weight = declared / max(initial monitor loss, floor), frozen before epoch 0"
+   },
+   "gradient_combiner": {
+    "plugin": "pcgrad"
+   }
+  }
+ },
+ "pretraining_objectives": [
+  "barrier_hit",
+  "hierarchical_contrastive",
+  "masked_patch_reconstruction",
+  "multi_horizon_quantile",
+  "volatility"
+ ],
+ "transfer_behavior": {
+  "transferred": "five temporal-branch encoder state_dicts by family-digest-bound files into actor, critic AND critic_target extractors (separate extractors, share_features_extractor false)",
+  "excluded": "objective heads/adapters, optimizer/replay/calibration payloads (typed category refusal), the state MLP and the fusion (randomly initialized, identified as such)"
+ },
+ "entry_point_identity": "729331c9391bbb3e0ff2e7126e078dd2b3c152ea472e07f597d5b70f6669d0f9"
+}
