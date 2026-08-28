@@ -1,0 +1,3179 @@
+{
+ "schema": "agent_multi.multitask_2x2_screen.v1",
+ "order": "M2",
+ "predeclaration_sha256": "92d460fc6b744f2d8b34476f5bef03cfcb22611dbce62454be23c7c0c9f7f029",
+ "contract_sha256": "02a6bd2557b444b3310966a1515b3290825b50c885a546348ba120d0d4be4f76",
+ "solo_references": {
+  "reconstruction": {
+   "returns_momentum": 0.3965528,
+   "trend_level": 0.32850987,
+   "volatility_distribution": 0.58188319,
+   "oscillators": 0.70327604,
+   "volume_flow": 0.36636874
+  },
+  "quantile": {
+   "returns_momentum": 0.01479957,
+   "trend_level": 0.0125041,
+   "volatility_distribution": 0.01253216,
+   "oscillators": 0.02040251,
+   "volume_flow": 0.01330014
+  },
+  "contrastive": {
+   "returns_momentum": 0.84539896,
+   "trend_level": 1.33419812,
+   "volatility_distribution": 1.71941864,
+   "oscillators": 1.55648625,
+   "volume_flow": 1.41101122
+  },
+  "volatility": {
+   "returns_momentum": 0.29592329,
+   "trend_level": 0.36605886,
+   "volatility_distribution": 0.22331727,
+   "oscillators": 0.36335775,
+   "volume_flow": 0.27739754
+  },
+  "barrier": {
+   "returns_momentum": 0.894885,
+   "trend_level": 1.10060835,
+   "volatility_distribution": 0.87198627,
+   "oscillators": 0.92453337,
+   "volume_flow": 1.0887599
+  }
+ },
+ "cells": {
+  "control": {
+   "balancing": "inverse_initial_loss",
+   "combiner": "ordinary_sum",
+   "joint_over_solo_ratios": {
+    "returns_momentum:reconstruction": 1.3754,
+    "returns_momentum:quantile": 0.9038,
+    "returns_momentum:contrastive": 1.2604,
+    "returns_momentum:volatility": 1.1349,
+    "returns_momentum:barrier": 1.1941,
+    "trend_level:reconstruction": 1.5269,
+    "trend_level:quantile": 1.5652,
+    "trend_level:contrastive": 1.6902,
+    "trend_level:volatility": 2.2814,
+    "trend_level:barrier": 1.0205,
+    "volatility_distribution:reconstruction": 1.3768,
+    "volatility_distribution:quantile": 1.5987,
+    "volatility_distribution:contrastive": 1.0381,
+    "volatility_distribution:volatility": 2.4829,
+    "volatility_distribution:barrier": 1.2119,
+    "oscillators:reconstruction": 0.8781,
+    "oscillators:quantile": 1.3726,
+    "oscillators:contrastive": 1.1559,
+    "oscillators:volatility": 2.7199,
+    "oscillators:barrier": 1.0757,
+    "volume_flow:reconstruction": 1.6123,
+    "volume_flow:quantile": 0.9073,
+    "volume_flow:contrastive": 0.8683,
+    "volume_flow:volatility": 1.4166,
+    "volume_flow:barrier": 1.0154
+   },
+   "materially_degraded_pairs": [
+    "returns_momentum:reconstruction",
+    "returns_momentum:contrastive",
+    "trend_level:reconstruction",
+    "trend_level:quantile",
+    "trend_level:contrastive",
+    "trend_level:volatility",
+    "volatility_distribution:reconstruction",
+    "volatility_distribution:quantile",
+    "volatility_distribution:volatility",
+    "volatility_distribution:barrier",
+    "oscillators:quantile",
+    "oscillators:volatility",
+    "volume_flow:reconstruction",
+    "volume_flow:volatility"
+   ],
+   "weighted_gradient_shares_by_epoch": {
+    "returns_momentum": [
+     {
+      "reconstruction": 0.762948,
+      "quantile": 1.591355,
+      "contrastive": 0.944723,
+      "volatility": 1.139695,
+      "barrier": 0.800145
+     },
+     {
+      "reconstruction": 0.803553,
+      "quantile": 0.918553,
+      "contrastive": 1.284792,
+      "volatility": 1.164856,
+      "barrier": 0.746557
+     },
+     {
+      "reconstruction": 0.411302,
+      "quantile": 1.539398,
+      "contrastive": 1.80536,
+      "volatility": 0.283443,
+      "barrier": 0.887042
+     },
+     {
+      "reconstruction": 0.255108,
+      "quantile": 2.732134,
+      "contrastive": 1.052655,
+      "volatility": 0.271674,
+      "barrier": 0.858034
+     },
+     {
+      "reconstruction": 0.222079,
+      "quantile": 1.08672,
+      "contrastive": 1.397907,
+      "volatility": 0.23928,
+      "barrier": 0.77303
+     },
+     {
+      "reconstruction": 0.236668,
+      "quantile": 3.030025,
+      "contrastive": 1.551951,
+      "volatility": 0.263342,
+      "barrier": 0.89914
+     },
+     {
+      "reconstruction": 0.217865,
+      "quantile": 1.969856,
+      "contrastive": 1.471655,
+      "volatility": 0.276638,
+      "barrier": 0.913453
+     },
+     {
+      "reconstruction": 0.244077,
+      "quantile": 2.559705,
+      "contrastive": 1.429654,
+      "volatility": 0.304383,
+      "barrier": 0.977651
+     }
+    ],
+    "trend_level": [
+     {
+      "reconstruction": 0.596627,
+      "quantile": 2.108809,
+      "contrastive": 0.798087,
+      "volatility": 1.090832,
+      "barrier": 0.35434
+     },
+     {
+      "reconstruction": 0.683475,
+      "quantile": 1.608684,
+      "contrastive": 1.775675,
+      "volatility": 0.579704,
+      "barrier": 0.288378
+     },
+     {
+      "reconstruction": 0.580968,
+      "quantile": 1.049227,
+      "contrastive": 1.468874,
+      "volatility": 0.424065,
+      "barrier": 0.283018
+     },
+     {
+      "reconstruction": 0.559332,
+      "quantile": 0.577148,
+      "contrastive": 2.233897,
+      "volatility": 0.344745,
+      "barrier": 0.342213
+     },
+     {
+      "reconstruction": 0.695586,
+      "quantile": 0.757579,
+      "contrastive": 2.753818,
+      "volatility": 0.286816,
+      "barrier": 0.374069
+     },
+     {
+      "reconstruction": 0.628046,
+      "quantile": 0.605416,
+      "contrastive": 2.668992,
+      "volatility": 0.280078,
+      "barrier": 0.356523
+     },
+     {
+      "reconstruction": 0.644443,
+      "quantile": 1.008793,
+      "contrastive": 3.033963,
+      "volatility": 0.298067,
+      "barrier": 0.356347
+     },
+     {
+      "reconstruction": 0.508201,
+      "quantile": 0.549974,
+      "contrastive": 4.801919,
+      "volatility": 0.320866,
+      "barrier": 0.42647
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "reconstruction": 0.465384,
+      "quantile": 2.831904,
+      "contrastive": 3.339965,
+      "volatility": 2.519765,
+      "barrier": 0.803722
+     },
+     {
+      "reconstruction": 0.379694,
+      "quantile": 1.6309,
+      "contrastive": 5.018015,
+      "volatility": 1.194503,
+      "barrier": 0.597698
+     },
+     {
+      "reconstruction": 0.32669,
+      "quantile": 1.299118,
+      "contrastive": 6.530679,
+      "volatility": 0.708841,
+      "barrier": 0.623949
+     },
+     {
+      "reconstruction": 0.296577,
+      "quantile": 2.021345,
+      "contrastive": 7.727509,
+      "volatility": 0.57012,
+      "barrier": 0.652883
+     },
+     {
+      "reconstruction": 0.309377,
+      "quantile": 1.162842,
+      "contrastive": 8.471886,
+      "volatility": 0.448731,
+      "barrier": 0.677489
+     },
+     {
+      "reconstruction": 0.334581,
+      "quantile": 0.984873,
+      "contrastive": 8.124072,
+      "volatility": 0.381958,
+      "barrier": 0.728575
+     },
+     {
+      "reconstruction": 0.372705,
+      "quantile": 1.476913,
+      "contrastive": 8.649793,
+      "volatility": 0.327985,
+      "barrier": 0.756706
+     },
+     {
+      "reconstruction": 0.406066,
+      "quantile": 1.118672,
+      "contrastive": 8.490944,
+      "volatility": 0.291914,
+      "barrier": 0.885759
+     }
+    ],
+    "oscillators": [
+     {
+      "reconstruction": 0.303951,
+      "quantile": 0.741496,
+      "contrastive": 0.627042,
+      "volatility": 0.803079,
+      "barrier": 0.816442
+     },
+     {
+      "reconstruction": 0.238556,
+      "quantile": 0.234973,
+      "contrastive": 0.484867,
+      "volatility": 0.537769,
+      "barrier": 0.607449
+     },
+     {
+      "reconstruction": 0.197353,
+      "quantile": 0.198578,
+      "contrastive": 0.49046,
+      "volatility": 0.406185,
+      "barrier": 0.510772
+     },
+     {
+      "reconstruction": 0.158783,
+      "quantile": 0.143062,
+      "contrastive": 0.636626,
+      "volatility": 0.330331,
+      "barrier": 0.505012
+     },
+     {
+      "reconstruction": 0.15011,
+      "quantile": 0.144368,
+      "contrastive": 0.921928,
+      "volatility": 0.265256,
+      "barrier": 0.491195
+     },
+     {
+      "reconstruction": 0.152013,
+      "quantile": 0.144393,
+      "contrastive": 0.675003,
+      "volatility": 0.217054,
+      "barrier": 0.478724
+     },
+     {
+      "reconstruction": 0.150782,
+      "quantile": 0.213837,
+      "contrastive": 1.017428,
+      "volatility": 0.180448,
+      "barrier": 0.483345
+     },
+     {
+      "reconstruction": 0.143677,
+      "quantile": 0.207841,
+      "contrastive": 1.167916,
+      "volatility": 0.160676,
+      "barrier": 0.489462
+     }
+    ],
+    "volume_flow": [
+     {
+      "reconstruction": 0.30442,
+      "quantile": 1.027595,
+      "contrastive": 0.764475,
+      "volatility": 0.57993,
+      "barrier": 0.164531
+     },
+     {
+      "reconstruction": 0.4742,
+      "quantile": 1.578738,
+      "contrastive": 1.203699,
+      "volatility": 0.76701,
+      "barrier": 0.169211
+     },
+     {
+      "reconstruction": 0.349375,
+      "quantile": 0.476907,
+      "contrastive": 1.808951,
+      "volatility": 0.565844,
+      "barrier": 0.20869
+     },
+     {
+      "reconstruction": 0.355345,
+      "quantile": 0.709041,
+      "contrastive": 2.537157,
+      "volatility": 0.266406,
+      "barrier": 0.150775
+     },
+     {
+      "reconstruction": 0.436732,
+      "quantile": 0.650842,
+      "contrastive": 2.999413,
+      "volatility": 0.164091,
+      "barrier": 0.157437
+     },
+     {
+      "reconstruction": 0.236022,
+      "quantile": 0.548276,
+      "contrastive": 3.295051,
+      "volatility": 0.129926,
+      "barrier": 0.160174
+     },
+     {
+      "reconstruction": 0.193826,
+      "quantile": 0.613612,
+      "contrastive": 3.098138,
+      "volatility": 0.131421,
+      "barrier": 0.177208
+     },
+     {
+      "reconstruction": 0.313208,
+      "quantile": 0.381237,
+      "contrastive": 2.836532,
+      "volatility": 0.140835,
+      "barrier": 0.167131
+     }
+    ]
+   },
+   "gradient_combination_by_epoch": {
+    "returns_momentum": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "trend_level": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "oscillators": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "volume_flow": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ]
+   },
+   "representation_std_by_epoch": {
+    "returns_momentum": [
+     0.907388,
+     1.312264,
+     1.98182,
+     1.929575,
+     1.963606,
+     1.994518,
+     2.015287,
+     2.017761
+    ],
+    "trend_level": [
+     0.998385,
+     1.006054,
+     1.019163,
+     1.03498,
+     1.051414,
+     1.067579,
+     1.081321,
+     1.094086
+    ],
+    "volatility_distribution": [
+     0.99916,
+     1.008726,
+     1.023897,
+     1.040788,
+     1.056825,
+     1.072094,
+     1.084804,
+     1.096109
+    ],
+    "oscillators": [
+     0.721543,
+     0.762233,
+     0.81809,
+     0.862961,
+     0.920734,
+     0.960655,
+     0.987069,
+     0.999416
+    ],
+    "volume_flow": [
+     0.315725,
+     0.451039,
+     0.598047,
+     0.681266,
+     0.701081,
+     0.715134,
+     0.720415,
+     0.715963
+    ]
+   },
+   "effective_negatives_by_epoch": {
+    "returns_momentum": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "trend_level": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volatility_distribution": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "oscillators": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volume_flow": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ]
+   },
+   "runtime_seconds_descriptive": 183.6
+  },
+  "gradnorm_sum": {
+   "balancing": "frozen_gradient_norm",
+   "combiner": "ordinary_sum",
+   "joint_over_solo_ratios": {
+    "returns_momentum:reconstruction": 1.2096,
+    "returns_momentum:quantile": 1.2514,
+    "returns_momentum:contrastive": 1.3216,
+    "returns_momentum:volatility": 1.1192,
+    "returns_momentum:barrier": 1.1745,
+    "trend_level:reconstruction": 1.2644,
+    "trend_level:quantile": 2.4126,
+    "trend_level:contrastive": 1.5878,
+    "trend_level:volatility": 4.7731,
+    "trend_level:barrier": 1.0277,
+    "volatility_distribution:reconstruction": 1.1029,
+    "volatility_distribution:quantile": 2.2027,
+    "volatility_distribution:contrastive": 0.9402,
+    "volatility_distribution:volatility": 4.9433,
+    "volatility_distribution:barrier": 1.2233,
+    "oscillators:reconstruction": 0.8569,
+    "oscillators:quantile": 1.7174,
+    "oscillators:contrastive": 1.0167,
+    "oscillators:volatility": 3.642,
+    "oscillators:barrier": 1.0885,
+    "volume_flow:reconstruction": 1.433,
+    "volume_flow:quantile": 1.5833,
+    "volume_flow:contrastive": 0.805,
+    "volume_flow:volatility": 2.8857,
+    "volume_flow:barrier": 1.014
+   },
+   "materially_degraded_pairs": [
+    "returns_momentum:reconstruction",
+    "returns_momentum:quantile",
+    "returns_momentum:contrastive",
+    "trend_level:reconstruction",
+    "trend_level:quantile",
+    "trend_level:contrastive",
+    "trend_level:volatility",
+    "volatility_distribution:quantile",
+    "volatility_distribution:volatility",
+    "volatility_distribution:barrier",
+    "oscillators:quantile",
+    "oscillators:volatility",
+    "volume_flow:reconstruction",
+    "volume_flow:quantile",
+    "volume_flow:volatility"
+   ],
+   "weighted_gradient_shares_by_epoch": {
+    "returns_momentum": [
+     {
+      "reconstruction": 0.824508,
+      "quantile": 0.416246,
+      "contrastive": 0.84724,
+      "volatility": 0.903677,
+      "barrier": 0.653926
+     },
+     {
+      "reconstruction": 0.933328,
+      "quantile": 0.296002,
+      "contrastive": 0.862644,
+      "volatility": 1.058246,
+      "barrier": 0.69304
+     },
+     {
+      "reconstruction": 0.678032,
+      "quantile": 0.636175,
+      "contrastive": 0.985761,
+      "volatility": 0.72166,
+      "barrier": 0.833144
+     },
+     {
+      "reconstruction": 0.513204,
+      "quantile": 0.35436,
+      "contrastive": 0.978507,
+      "volatility": 0.168927,
+      "barrier": 0.949056
+     },
+     {
+      "reconstruction": 0.448637,
+      "quantile": 0.2698,
+      "contrastive": 0.92785,
+      "volatility": 0.253955,
+      "barrier": 0.826493
+     },
+     {
+      "reconstruction": 0.573486,
+      "quantile": 0.414629,
+      "contrastive": 0.823697,
+      "volatility": 0.223509,
+      "barrier": 0.822863
+     },
+     {
+      "reconstruction": 0.524024,
+      "quantile": 0.303985,
+      "contrastive": 0.76512,
+      "volatility": 0.2269,
+      "barrier": 0.92543
+     },
+     {
+      "reconstruction": 0.778644,
+      "quantile": 0.408664,
+      "contrastive": 0.869435,
+      "volatility": 0.272488,
+      "barrier": 0.904805
+     }
+    ],
+    "trend_level": [
+     {
+      "reconstruction": 1.427306,
+      "quantile": 0.684789,
+      "contrastive": 5.3419,
+      "volatility": 0.814617,
+      "barrier": 1.031634
+     },
+     {
+      "reconstruction": 1.129752,
+      "quantile": 0.281515,
+      "contrastive": 4.197701,
+      "volatility": 0.59036,
+      "barrier": 1.182897
+     },
+     {
+      "reconstruction": 0.969799,
+      "quantile": 0.33941,
+      "contrastive": 1.577182,
+      "volatility": 0.499888,
+      "barrier": 1.167102
+     },
+     {
+      "reconstruction": 0.901125,
+      "quantile": 0.275381,
+      "contrastive": 5.473812,
+      "volatility": 0.440988,
+      "barrier": 1.113008
+     },
+     {
+      "reconstruction": 0.909094,
+      "quantile": 0.428077,
+      "contrastive": 4.23206,
+      "volatility": 0.432049,
+      "barrier": 1.020962
+     },
+     {
+      "reconstruction": 0.742994,
+      "quantile": 0.425612,
+      "contrastive": 5.595229,
+      "volatility": 0.422948,
+      "barrier": 1.056971
+     },
+     {
+      "reconstruction": 0.56421,
+      "quantile": 0.235924,
+      "contrastive": 7.724385,
+      "volatility": 0.454592,
+      "barrier": 1.017202
+     },
+     {
+      "reconstruction": 0.461954,
+      "quantile": 0.205279,
+      "contrastive": 11.865248,
+      "volatility": 0.456013,
+      "barrier": 1.242179
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "reconstruction": 0.667613,
+      "quantile": 0.487242,
+      "contrastive": 0.85897,
+      "volatility": 0.518306,
+      "barrier": 0.236902
+     },
+     {
+      "reconstruction": 0.399106,
+      "quantile": 0.249746,
+      "contrastive": 1.469235,
+      "volatility": 0.354759,
+      "barrier": 0.19601
+     },
+     {
+      "reconstruction": 0.394681,
+      "quantile": 0.155475,
+      "contrastive": 2.056919,
+      "volatility": 0.238791,
+      "barrier": 0.185661
+     },
+     {
+      "reconstruction": 0.383327,
+      "quantile": 0.141287,
+      "contrastive": 1.900657,
+      "volatility": 0.192995,
+      "barrier": 0.206252
+     },
+     {
+      "reconstruction": 0.412565,
+      "quantile": 0.164732,
+      "contrastive": 1.956485,
+      "volatility": 0.172251,
+      "barrier": 0.256061
+     },
+     {
+      "reconstruction": 0.389483,
+      "quantile": 0.115498,
+      "contrastive": 2.076521,
+      "volatility": 0.164835,
+      "barrier": 0.248692
+     },
+     {
+      "reconstruction": 0.453212,
+      "quantile": 0.082196,
+      "contrastive": 1.660447,
+      "volatility": 0.160582,
+      "barrier": 0.317576
+     },
+     {
+      "reconstruction": 0.438299,
+      "quantile": 0.092137,
+      "contrastive": 2.308157,
+      "volatility": 0.15875,
+      "barrier": 0.375557
+     }
+    ],
+    "oscillators": [
+     {
+      "reconstruction": 0.477936,
+      "quantile": 0.460744,
+      "contrastive": 0.81903,
+      "volatility": 0.627378,
+      "barrier": 0.669695
+     },
+     {
+      "reconstruction": 0.330921,
+      "quantile": 0.201019,
+      "contrastive": 1.006596,
+      "volatility": 0.465821,
+      "barrier": 0.531626
+     },
+     {
+      "reconstruction": 0.298903,
+      "quantile": 0.140264,
+      "contrastive": 1.496572,
+      "volatility": 0.375576,
+      "barrier": 0.473838
+     },
+     {
+      "reconstruction": 0.277401,
+      "quantile": 0.113483,
+      "contrastive": 1.719263,
+      "volatility": 0.312795,
+      "barrier": 0.47686
+     },
+     {
+      "reconstruction": 0.276728,
+      "quantile": 0.100768,
+      "contrastive": 1.817928,
+      "volatility": 0.264319,
+      "barrier": 0.450942
+     },
+     {
+      "reconstruction": 0.285308,
+      "quantile": 0.087394,
+      "contrastive": 1.178192,
+      "volatility": 0.227371,
+      "barrier": 0.44292
+     },
+     {
+      "reconstruction": 0.296617,
+      "quantile": 0.091518,
+      "contrastive": 1.644727,
+      "volatility": 0.193796,
+      "barrier": 0.428656
+     },
+     {
+      "reconstruction": 0.278581,
+      "quantile": 0.093141,
+      "contrastive": 1.740484,
+      "volatility": 0.168591,
+      "barrier": 0.4429
+     }
+    ],
+    "volume_flow": [
+     {
+      "reconstruction": 2.446296,
+      "quantile": 0.842393,
+      "contrastive": 1.625527,
+      "volatility": 1.625609,
+      "barrier": 1.043565
+     },
+     {
+      "reconstruction": 2.647319,
+      "quantile": 2.077842,
+      "contrastive": 2.838473,
+      "volatility": 1.667183,
+      "barrier": 1.125697
+     },
+     {
+      "reconstruction": 1.912594,
+      "quantile": 0.752449,
+      "contrastive": 3.324837,
+      "volatility": 1.0939,
+      "barrier": 1.121752
+     },
+     {
+      "reconstruction": 1.261664,
+      "quantile": 0.5233,
+      "contrastive": 2.742754,
+      "volatility": 0.998927,
+      "barrier": 0.883269
+     },
+     {
+      "reconstruction": 0.948649,
+      "quantile": 0.298798,
+      "contrastive": 4.574808,
+      "volatility": 0.820909,
+      "barrier": 0.965811
+     },
+     {
+      "reconstruction": 1.031198,
+      "quantile": 0.316184,
+      "contrastive": 5.022048,
+      "volatility": 0.712403,
+      "barrier": 0.926097
+     },
+     {
+      "reconstruction": 0.859968,
+      "quantile": 0.290938,
+      "contrastive": 5.173022,
+      "volatility": 0.711252,
+      "barrier": 1.022865
+     },
+     {
+      "reconstruction": 1.095669,
+      "quantile": 0.419908,
+      "contrastive": 5.87267,
+      "volatility": 0.729551,
+      "barrier": 1.044594
+     }
+    ]
+   },
+   "gradient_combination_by_epoch": {
+    "returns_momentum": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "trend_level": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "oscillators": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "volume_flow": [
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "ordinary_sum",
+      "projections_per_batch": 0.0,
+      "pre_dot_mean": 0.0,
+      "post_dot_mean": 0.0,
+      "pre_negative_pairs_per_batch": 0.0,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ]
+   },
+   "representation_std_by_epoch": {
+    "returns_momentum": [
+     0.693935,
+     1.001039,
+     1.51706,
+     1.752125,
+     1.717379,
+     1.747642,
+     1.755757,
+     1.764284
+    ],
+    "trend_level": [
+     0.992364,
+     0.991747,
+     1.001657,
+     1.016944,
+     1.030205,
+     1.043571,
+     1.057471,
+     1.0688
+    ],
+    "volatility_distribution": [
+     0.985221,
+     0.971894,
+     0.969734,
+     0.98091,
+     0.998565,
+     1.016966,
+     1.034631,
+     1.051219
+    ],
+    "oscillators": [
+     0.688946,
+     0.68085,
+     0.701969,
+     0.734168,
+     0.77702,
+     0.815349,
+     0.838126,
+     0.856185
+    ],
+    "volume_flow": [
+     0.314372,
+     0.575085,
+     0.674769,
+     0.705031,
+     0.724293,
+     0.730154,
+     0.730885,
+     0.72978
+    ]
+   },
+   "effective_negatives_by_epoch": {
+    "returns_momentum": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "trend_level": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volatility_distribution": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "oscillators": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volume_flow": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ]
+   },
+   "runtime_seconds_descriptive": 182.1
+  },
+  "invloss_pcgrad": {
+   "balancing": "inverse_initial_loss",
+   "combiner": "pcgrad",
+   "joint_over_solo_ratios": {
+    "returns_momentum:reconstruction": 1.3454,
+    "returns_momentum:quantile": 0.8347,
+    "returns_momentum:contrastive": 1.2732,
+    "returns_momentum:volatility": 1.0545,
+    "returns_momentum:barrier": 1.1829,
+    "trend_level:reconstruction": 1.4427,
+    "trend_level:quantile": 1.5821,
+    "trend_level:contrastive": 1.6407,
+    "trend_level:volatility": 1.9139,
+    "trend_level:barrier": 1.0158,
+    "volatility_distribution:reconstruction": 1.2959,
+    "volatility_distribution:quantile": 1.5722,
+    "volatility_distribution:contrastive": 0.9439,
+    "volatility_distribution:volatility": 2.1322,
+    "volatility_distribution:barrier": 1.2378,
+    "oscillators:reconstruction": 0.8823,
+    "oscillators:quantile": 1.3043,
+    "oscillators:contrastive": 1.164,
+    "oscillators:volatility": 2.0742,
+    "oscillators:barrier": 1.0738,
+    "volume_flow:reconstruction": 1.6314,
+    "volume_flow:quantile": 0.9681,
+    "volume_flow:contrastive": 1.0013,
+    "volume_flow:volatility": 1.1834,
+    "volume_flow:barrier": 1.0138
+   },
+   "materially_degraded_pairs": [
+    "returns_momentum:reconstruction",
+    "returns_momentum:contrastive",
+    "trend_level:reconstruction",
+    "trend_level:quantile",
+    "trend_level:contrastive",
+    "trend_level:volatility",
+    "volatility_distribution:reconstruction",
+    "volatility_distribution:quantile",
+    "volatility_distribution:volatility",
+    "volatility_distribution:barrier",
+    "oscillators:quantile",
+    "oscillators:volatility",
+    "volume_flow:reconstruction"
+   ],
+   "weighted_gradient_shares_by_epoch": {
+    "returns_momentum": [
+     {
+      "reconstruction": 0.865024,
+      "quantile": 1.799859,
+      "contrastive": 1.146965,
+      "volatility": 1.19415,
+      "barrier": 0.770781
+     },
+     {
+      "reconstruction": 0.71188,
+      "quantile": 1.386916,
+      "contrastive": 1.3539,
+      "volatility": 1.025149,
+      "barrier": 0.801206
+     },
+     {
+      "reconstruction": 0.281706,
+      "quantile": 2.158661,
+      "contrastive": 1.744599,
+      "volatility": 0.108564,
+      "barrier": 0.890804
+     },
+     {
+      "reconstruction": 0.257413,
+      "quantile": 2.211555,
+      "contrastive": 1.157099,
+      "volatility": 0.232082,
+      "barrier": 0.860531
+     },
+     {
+      "reconstruction": 0.202351,
+      "quantile": 1.929292,
+      "contrastive": 1.425211,
+      "volatility": 0.209754,
+      "barrier": 0.797193
+     },
+     {
+      "reconstruction": 0.236641,
+      "quantile": 1.989018,
+      "contrastive": 1.440083,
+      "volatility": 0.250142,
+      "barrier": 0.847201
+     },
+     {
+      "reconstruction": 0.200273,
+      "quantile": 2.199118,
+      "contrastive": 1.253691,
+      "volatility": 0.289558,
+      "barrier": 0.91012
+     },
+     {
+      "reconstruction": 0.241926,
+      "quantile": 2.123605,
+      "contrastive": 1.341542,
+      "volatility": 0.284784,
+      "barrier": 0.941906
+     }
+    ],
+    "trend_level": [
+     {
+      "reconstruction": 0.612362,
+      "quantile": 2.425621,
+      "contrastive": 0.774252,
+      "volatility": 1.168443,
+      "barrier": 0.358402
+     },
+     {
+      "reconstruction": 0.660625,
+      "quantile": 1.626846,
+      "contrastive": 1.806528,
+      "volatility": 0.600937,
+      "barrier": 0.380506
+     },
+     {
+      "reconstruction": 0.56044,
+      "quantile": 1.140808,
+      "contrastive": 1.278869,
+      "volatility": 0.424788,
+      "barrier": 0.311281
+     },
+     {
+      "reconstruction": 0.557176,
+      "quantile": 0.817597,
+      "contrastive": 1.861672,
+      "volatility": 0.370634,
+      "barrier": 0.372885
+     },
+     {
+      "reconstruction": 0.638564,
+      "quantile": 0.941955,
+      "contrastive": 3.537526,
+      "volatility": 0.342169,
+      "barrier": 0.37412
+     },
+     {
+      "reconstruction": 0.600269,
+      "quantile": 0.80249,
+      "contrastive": 4.247518,
+      "volatility": 0.332003,
+      "barrier": 0.35979
+     },
+     {
+      "reconstruction": 0.48125,
+      "quantile": 0.656031,
+      "contrastive": 4.421921,
+      "volatility": 0.343123,
+      "barrier": 0.386598
+     },
+     {
+      "reconstruction": 0.335102,
+      "quantile": 0.772243,
+      "contrastive": 4.951157,
+      "volatility": 0.331687,
+      "barrier": 0.402224
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "reconstruction": 0.45177,
+      "quantile": 2.967808,
+      "contrastive": 3.382064,
+      "volatility": 2.537117,
+      "barrier": 0.755033
+     },
+     {
+      "reconstruction": 0.376395,
+      "quantile": 0.780585,
+      "contrastive": 6.011356,
+      "volatility": 1.212788,
+      "barrier": 0.507132
+     },
+     {
+      "reconstruction": 0.303688,
+      "quantile": 0.797673,
+      "contrastive": 7.600987,
+      "volatility": 0.725402,
+      "barrier": 0.513023
+     },
+     {
+      "reconstruction": 0.296746,
+      "quantile": 0.745452,
+      "contrastive": 7.85043,
+      "volatility": 0.508081,
+      "barrier": 0.573925
+     },
+     {
+      "reconstruction": 0.312558,
+      "quantile": 0.879741,
+      "contrastive": 8.217599,
+      "volatility": 0.395803,
+      "barrier": 0.634179
+     },
+     {
+      "reconstruction": 0.329161,
+      "quantile": 0.586306,
+      "contrastive": 8.858158,
+      "volatility": 0.318366,
+      "barrier": 0.673639
+     },
+     {
+      "reconstruction": 0.359248,
+      "quantile": 0.685059,
+      "contrastive": 11.465756,
+      "volatility": 0.246431,
+      "barrier": 0.700601
+     },
+     {
+      "reconstruction": 0.378642,
+      "quantile": 0.972383,
+      "contrastive": 7.142513,
+      "volatility": 0.197941,
+      "barrier": 0.86051
+     }
+    ],
+    "oscillators": [
+     {
+      "reconstruction": 0.296571,
+      "quantile": 0.790484,
+      "contrastive": 0.558119,
+      "volatility": 0.801583,
+      "barrier": 0.807456
+     },
+     {
+      "reconstruction": 0.229685,
+      "quantile": 0.257415,
+      "contrastive": 0.497605,
+      "volatility": 0.51195,
+      "barrier": 0.595879
+     },
+     {
+      "reconstruction": 0.183392,
+      "quantile": 0.198537,
+      "contrastive": 0.484604,
+      "volatility": 0.374393,
+      "barrier": 0.48481
+     },
+     {
+      "reconstruction": 0.146864,
+      "quantile": 0.131925,
+      "contrastive": 0.690958,
+      "volatility": 0.305181,
+      "barrier": 0.478675
+     },
+     {
+      "reconstruction": 0.137632,
+      "quantile": 0.158864,
+      "contrastive": 1.038979,
+      "volatility": 0.23489,
+      "barrier": 0.46832
+     },
+     {
+      "reconstruction": 0.147258,
+      "quantile": 0.133049,
+      "contrastive": 0.787955,
+      "volatility": 0.181255,
+      "barrier": 0.456136
+     },
+     {
+      "reconstruction": 0.149911,
+      "quantile": 0.120525,
+      "contrastive": 1.128098,
+      "volatility": 0.14575,
+      "barrier": 0.464398
+     },
+     {
+      "reconstruction": 0.147211,
+      "quantile": 0.180058,
+      "contrastive": 1.120047,
+      "volatility": 0.126965,
+      "barrier": 0.465027
+     }
+    ],
+    "volume_flow": [
+     {
+      "reconstruction": 0.304431,
+      "quantile": 1.029656,
+      "contrastive": 0.75402,
+      "volatility": 0.580374,
+      "barrier": 0.166666
+     },
+     {
+      "reconstruction": 0.454659,
+      "quantile": 2.059318,
+      "contrastive": 1.171352,
+      "volatility": 0.744696,
+      "barrier": 0.175184
+     },
+     {
+      "reconstruction": 0.273889,
+      "quantile": 0.526996,
+      "contrastive": 1.727242,
+      "volatility": 0.464452,
+      "barrier": 0.205973
+     },
+     {
+      "reconstruction": 0.375421,
+      "quantile": 0.510183,
+      "contrastive": 2.551423,
+      "volatility": 0.238786,
+      "barrier": 0.136373
+     },
+     {
+      "reconstruction": 0.309411,
+      "quantile": 0.357741,
+      "contrastive": 3.007069,
+      "volatility": 0.137922,
+      "barrier": 0.14798
+     },
+     {
+      "reconstruction": 0.237198,
+      "quantile": 0.472717,
+      "contrastive": 3.344375,
+      "volatility": 0.105509,
+      "barrier": 0.152872
+     },
+     {
+      "reconstruction": 0.193035,
+      "quantile": 0.530502,
+      "contrastive": 3.179647,
+      "volatility": 0.108673,
+      "barrier": 0.181731
+     },
+     {
+      "reconstruction": 0.457954,
+      "quantile": 0.384328,
+      "contrastive": 3.364053,
+      "volatility": 0.095643,
+      "barrier": 0.170564
+     }
+    ]
+   },
+   "gradient_combination_by_epoch": {
+    "returns_momentum": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.231,
+      "pre_dot_mean": -0.1099358,
+      "post_dot_mean": 0.09241049,
+      "pre_negative_pairs_per_batch": 5.923,
+      "post_negative_pairs_per_batch": 1.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.846,
+      "pre_dot_mean": -0.09387349,
+      "post_dot_mean": 0.03324724,
+      "pre_negative_pairs_per_batch": 6.385,
+      "post_negative_pairs_per_batch": 2.846
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.385,
+      "pre_dot_mean": -0.02311991,
+      "post_dot_mean": 0.04159117,
+      "pre_negative_pairs_per_batch": 5.615,
+      "post_negative_pairs_per_batch": 1.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.231,
+      "pre_dot_mean": -0.00273245,
+      "post_dot_mean": 0.0266949,
+      "pre_negative_pairs_per_batch": 5.154,
+      "post_negative_pairs_per_batch": 0.154
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 7.769,
+      "pre_dot_mean": 0.01234528,
+      "post_dot_mean": 0.03972178,
+      "pre_negative_pairs_per_batch": 3.846,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 7.846,
+      "pre_dot_mean": 0.01850846,
+      "post_dot_mean": 0.04870283,
+      "pre_negative_pairs_per_batch": 3.846,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 7.0,
+      "pre_dot_mean": 0.01821948,
+      "post_dot_mean": 0.03508216,
+      "pre_negative_pairs_per_batch": 3.538,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.308,
+      "pre_dot_mean": 0.0058507,
+      "post_dot_mean": 0.03018478,
+      "pre_negative_pairs_per_batch": 4.769,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "trend_level": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.846,
+      "pre_dot_mean": -0.07485923,
+      "post_dot_mean": 0.10242058,
+      "pre_negative_pairs_per_batch": 5.923,
+      "post_negative_pairs_per_batch": 0.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.846,
+      "pre_dot_mean": -0.0295681,
+      "post_dot_mean": 0.0351845,
+      "pre_negative_pairs_per_batch": 5.846,
+      "post_negative_pairs_per_batch": 1.923
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.077,
+      "pre_dot_mean": -0.01342382,
+      "post_dot_mean": 0.0161981,
+      "pre_negative_pairs_per_batch": 5.462,
+      "post_negative_pairs_per_batch": 2.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.615,
+      "pre_dot_mean": -0.00414945,
+      "post_dot_mean": 0.01721436,
+      "pre_negative_pairs_per_batch": 5.615,
+      "post_negative_pairs_per_batch": 1.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.231,
+      "pre_dot_mean": -0.0060416,
+      "post_dot_mean": 0.01807222,
+      "pre_negative_pairs_per_batch": 5.846,
+      "post_negative_pairs_per_batch": 1.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.538,
+      "pre_dot_mean": -0.00065919,
+      "post_dot_mean": 0.01874913,
+      "pre_negative_pairs_per_batch": 5.308,
+      "post_negative_pairs_per_batch": 1.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.077,
+      "pre_dot_mean": -0.00331396,
+      "post_dot_mean": 0.02298506,
+      "pre_negative_pairs_per_batch": 5.077,
+      "post_negative_pairs_per_batch": 1.462
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.615,
+      "pre_dot_mean": 0.00800193,
+      "post_dot_mean": 0.02504376,
+      "pre_negative_pairs_per_batch": 4.462,
+      "post_negative_pairs_per_batch": 0.615
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.846,
+      "pre_dot_mean": -0.34100054,
+      "post_dot_mean": 0.59502736,
+      "pre_negative_pairs_per_batch": 6.385,
+      "post_negative_pairs_per_batch": 1.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.538,
+      "pre_dot_mean": -0.13715955,
+      "post_dot_mean": 0.11710294,
+      "pre_negative_pairs_per_batch": 6.615,
+      "post_negative_pairs_per_batch": 1.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.846,
+      "pre_dot_mean": -0.02706461,
+      "post_dot_mean": 0.05386842,
+      "pre_negative_pairs_per_batch": 6.462,
+      "post_negative_pairs_per_batch": 1.846
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.769,
+      "pre_dot_mean": -0.01017706,
+      "post_dot_mean": 0.03950713,
+      "pre_negative_pairs_per_batch": 6.231,
+      "post_negative_pairs_per_batch": 2.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.538,
+      "pre_dot_mean": -0.01239988,
+      "post_dot_mean": 0.03403941,
+      "pre_negative_pairs_per_batch": 6.538,
+      "post_negative_pairs_per_batch": 2.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.615,
+      "pre_dot_mean": -0.00917888,
+      "post_dot_mean": 0.04046827,
+      "pre_negative_pairs_per_batch": 6.154,
+      "post_negative_pairs_per_batch": 2.308
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.0,
+      "pre_dot_mean": -0.00677225,
+      "post_dot_mean": 0.03565919,
+      "pre_negative_pairs_per_batch": 5.846,
+      "post_negative_pairs_per_batch": 1.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.077,
+      "pre_dot_mean": 0.01610035,
+      "post_dot_mean": 0.06430872,
+      "pre_negative_pairs_per_batch": 5.231,
+      "post_negative_pairs_per_batch": 1.154
+     }
+    ],
+    "oscillators": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.308,
+      "pre_dot_mean": 0.00970984,
+      "post_dot_mean": 0.09110085,
+      "pre_negative_pairs_per_batch": 5.077,
+      "post_negative_pairs_per_batch": 0.462
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.077,
+      "pre_dot_mean": -0.02659198,
+      "post_dot_mean": 0.02151265,
+      "pre_negative_pairs_per_batch": 6.923,
+      "post_negative_pairs_per_batch": 2.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.538,
+      "pre_dot_mean": -0.01021468,
+      "post_dot_mean": 0.00886528,
+      "pre_negative_pairs_per_batch": 7.077,
+      "post_negative_pairs_per_batch": 1.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.077,
+      "pre_dot_mean": -0.00443344,
+      "post_dot_mean": 0.00695519,
+      "pre_negative_pairs_per_batch": 6.846,
+      "post_negative_pairs_per_batch": 1.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.769,
+      "pre_dot_mean": -0.00286404,
+      "post_dot_mean": 0.00668533,
+      "pre_negative_pairs_per_batch": 6.923,
+      "post_negative_pairs_per_batch": 0.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.615,
+      "pre_dot_mean": -0.00062574,
+      "post_dot_mean": 0.00440998,
+      "pre_negative_pairs_per_batch": 6.308,
+      "post_negative_pairs_per_batch": 0.462
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.846,
+      "pre_dot_mean": -0.00109375,
+      "post_dot_mean": 0.00478033,
+      "pre_negative_pairs_per_batch": 6.0,
+      "post_negative_pairs_per_batch": 0.615
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.385,
+      "pre_dot_mean": -0.0010047,
+      "post_dot_mean": 0.00485341,
+      "pre_negative_pairs_per_batch": 5.692,
+      "post_negative_pairs_per_batch": 0.462
+     }
+    ],
+    "volume_flow": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.308,
+      "pre_dot_mean": 0.0043604,
+      "post_dot_mean": 0.01223142,
+      "pre_negative_pairs_per_batch": 4.692,
+      "post_negative_pairs_per_batch": 0.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.077,
+      "pre_dot_mean": -0.01997586,
+      "post_dot_mean": 0.02983719,
+      "pre_negative_pairs_per_batch": 6.077,
+      "post_negative_pairs_per_batch": 0.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.615,
+      "pre_dot_mean": -0.03122565,
+      "post_dot_mean": 0.02787391,
+      "pre_negative_pairs_per_batch": 6.154,
+      "post_negative_pairs_per_batch": 1.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.077,
+      "pre_dot_mean": -0.02052732,
+      "post_dot_mean": 0.01632888,
+      "pre_negative_pairs_per_batch": 5.769,
+      "post_negative_pairs_per_batch": 1.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.308,
+      "pre_dot_mean": -0.00573326,
+      "post_dot_mean": 0.01124149,
+      "pre_negative_pairs_per_batch": 5.615,
+      "post_negative_pairs_per_batch": 1.615
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.385,
+      "pre_dot_mean": 0.00049263,
+      "post_dot_mean": 0.00690298,
+      "pre_negative_pairs_per_batch": 5.462,
+      "post_negative_pairs_per_batch": 1.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.0,
+      "pre_dot_mean": 0.00025881,
+      "post_dot_mean": 0.00770555,
+      "pre_negative_pairs_per_batch": 5.538,
+      "post_negative_pairs_per_batch": 0.462
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.462,
+      "pre_dot_mean": 0.00206118,
+      "post_dot_mean": 0.00814894,
+      "pre_negative_pairs_per_batch": 6.154,
+      "post_negative_pairs_per_batch": 0.462
+     }
+    ]
+   },
+   "representation_std_by_epoch": {
+    "returns_momentum": [
+     0.989988,
+     1.466677,
+     2.044115,
+     1.942452,
+     1.987254,
+     2.000726,
+     2.011964,
+     2.025774
+    ],
+    "trend_level": [
+     0.994416,
+     1.001437,
+     1.017678,
+     1.036932,
+     1.057161,
+     1.077012,
+     1.095583,
+     1.111326
+    ],
+    "volatility_distribution": [
+     0.9894,
+     0.99263,
+     1.002466,
+     1.01935,
+     1.039132,
+     1.058291,
+     1.076123,
+     1.092274
+    ],
+    "oscillators": [
+     0.714404,
+     0.756924,
+     0.819419,
+     0.873905,
+     0.937839,
+     0.988467,
+     1.02102,
+     1.037902
+    ],
+    "volume_flow": [
+     0.313033,
+     0.473672,
+     0.635889,
+     0.707991,
+     0.74039,
+     0.762243,
+     0.762815,
+     0.75854
+    ]
+   },
+   "effective_negatives_by_epoch": {
+    "returns_momentum": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "trend_level": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volatility_distribution": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "oscillators": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volume_flow": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ]
+   },
+   "runtime_seconds_descriptive": 181.7
+  },
+  "gradnorm_pcgrad": {
+   "balancing": "frozen_gradient_norm",
+   "combiner": "pcgrad",
+   "joint_over_solo_ratios": {
+    "returns_momentum:reconstruction": 1.2519,
+    "returns_momentum:quantile": 1.1943,
+    "returns_momentum:contrastive": 1.2945,
+    "returns_momentum:volatility": 1.0031,
+    "returns_momentum:barrier": 1.1816,
+    "trend_level:reconstruction": 1.2977,
+    "trend_level:quantile": 1.8751,
+    "trend_level:contrastive": 1.5078,
+    "trend_level:volatility": 2.5474,
+    "trend_level:barrier": 1.024,
+    "volatility_distribution:reconstruction": 1.139,
+    "volatility_distribution:quantile": 1.9776,
+    "volatility_distribution:contrastive": 0.8691,
+    "volatility_distribution:volatility": 2.8083,
+    "volatility_distribution:barrier": 1.2435,
+    "oscillators:reconstruction": 0.8649,
+    "oscillators:quantile": 1.5303,
+    "oscillators:contrastive": 1.0627,
+    "oscillators:volatility": 2.2997,
+    "oscillators:barrier": 1.0919,
+    "volume_flow:reconstruction": 1.5251,
+    "volume_flow:quantile": 1.1069,
+    "volume_flow:contrastive": 0.867,
+    "volume_flow:volatility": 1.4658,
+    "volume_flow:barrier": 1.0148
+   },
+   "materially_degraded_pairs": [
+    "returns_momentum:reconstruction",
+    "returns_momentum:contrastive",
+    "trend_level:reconstruction",
+    "trend_level:quantile",
+    "trend_level:contrastive",
+    "trend_level:volatility",
+    "volatility_distribution:quantile",
+    "volatility_distribution:volatility",
+    "volatility_distribution:barrier",
+    "oscillators:quantile",
+    "oscillators:volatility",
+    "volume_flow:reconstruction",
+    "volume_flow:volatility"
+   ],
+   "weighted_gradient_shares_by_epoch": {
+    "returns_momentum": [
+     {
+      "reconstruction": 1.953821,
+      "quantile": 0.352863,
+      "contrastive": 0.987338,
+      "volatility": 1.032556,
+      "barrier": 0.681487
+     },
+     {
+      "reconstruction": 1.262712,
+      "quantile": 0.554866,
+      "contrastive": 0.915618,
+      "volatility": 0.756882,
+      "barrier": 0.796027
+     },
+     {
+      "reconstruction": 0.464477,
+      "quantile": 0.359286,
+      "contrastive": 1.128932,
+      "volatility": 0.315981,
+      "barrier": 0.821566
+     },
+     {
+      "reconstruction": 0.522979,
+      "quantile": 0.38479,
+      "contrastive": 1.17278,
+      "volatility": 0.160158,
+      "barrier": 0.852295
+     },
+     {
+      "reconstruction": 0.404733,
+      "quantile": 0.270765,
+      "contrastive": 0.901715,
+      "volatility": 0.224832,
+      "barrier": 0.782322
+     },
+     {
+      "reconstruction": 0.549176,
+      "quantile": 0.454046,
+      "contrastive": 1.024165,
+      "volatility": 0.179765,
+      "barrier": 0.787006
+     },
+     {
+      "reconstruction": 0.499828,
+      "quantile": 0.353559,
+      "contrastive": 0.867791,
+      "volatility": 0.189444,
+      "barrier": 0.879276
+     },
+     {
+      "reconstruction": 0.680596,
+      "quantile": 0.412597,
+      "contrastive": 1.044853,
+      "volatility": 0.233778,
+      "barrier": 0.882831
+     }
+    ],
+    "trend_level": [
+     {
+      "reconstruction": 1.430901,
+      "quantile": 0.559864,
+      "contrastive": 5.150864,
+      "volatility": 0.718736,
+      "barrier": 0.967781
+     },
+     {
+      "reconstruction": 1.350541,
+      "quantile": 0.343608,
+      "contrastive": 4.600127,
+      "volatility": 0.40715,
+      "barrier": 1.223618
+     },
+     {
+      "reconstruction": 1.111091,
+      "quantile": 0.388929,
+      "contrastive": 2.867496,
+      "volatility": 0.311752,
+      "barrier": 1.013539
+     },
+     {
+      "reconstruction": 0.999772,
+      "quantile": 0.442552,
+      "contrastive": 7.993948,
+      "volatility": 0.298813,
+      "barrier": 0.998893
+     },
+     {
+      "reconstruction": 0.999018,
+      "quantile": 0.296769,
+      "contrastive": 8.749497,
+      "volatility": 0.272418,
+      "barrier": 0.997077
+     },
+     {
+      "reconstruction": 0.903916,
+      "quantile": 0.312161,
+      "contrastive": 3.476304,
+      "volatility": 0.279761,
+      "barrier": 0.967468
+     },
+     {
+      "reconstruction": 0.684431,
+      "quantile": 0.110333,
+      "contrastive": 5.647351,
+      "volatility": 0.307903,
+      "barrier": 1.047439
+     },
+     {
+      "reconstruction": 0.567285,
+      "quantile": 0.159644,
+      "contrastive": 9.553654,
+      "volatility": 0.263226,
+      "barrier": 1.143259
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "reconstruction": 0.665046,
+      "quantile": 0.359262,
+      "contrastive": 0.866459,
+      "volatility": 0.53765,
+      "barrier": 0.246164
+     },
+     {
+      "reconstruction": 0.435212,
+      "quantile": 0.228257,
+      "contrastive": 1.70659,
+      "volatility": 0.305051,
+      "barrier": 0.180006
+     },
+     {
+      "reconstruction": 0.398846,
+      "quantile": 0.168314,
+      "contrastive": 2.356722,
+      "volatility": 0.195476,
+      "barrier": 0.17497
+     },
+     {
+      "reconstruction": 0.405711,
+      "quantile": 0.112996,
+      "contrastive": 2.176644,
+      "volatility": 0.147975,
+      "barrier": 0.202787
+     },
+     {
+      "reconstruction": 0.435037,
+      "quantile": 0.099667,
+      "contrastive": 2.407075,
+      "volatility": 0.123133,
+      "barrier": 0.239634
+     },
+     {
+      "reconstruction": 0.439326,
+      "quantile": 0.124755,
+      "contrastive": 2.478554,
+      "volatility": 0.101988,
+      "barrier": 0.238665
+     },
+     {
+      "reconstruction": 0.486057,
+      "quantile": 0.139863,
+      "contrastive": 2.758816,
+      "volatility": 0.086674,
+      "barrier": 0.30715
+     },
+     {
+      "reconstruction": 0.451043,
+      "quantile": 0.180683,
+      "contrastive": 2.042819,
+      "volatility": 0.083322,
+      "barrier": 0.344978
+     }
+    ],
+    "oscillators": [
+     {
+      "reconstruction": 0.465896,
+      "quantile": 0.464396,
+      "contrastive": 0.823129,
+      "volatility": 0.610958,
+      "barrier": 0.672682
+     },
+     {
+      "reconstruction": 0.340446,
+      "quantile": 0.18514,
+      "contrastive": 0.956673,
+      "volatility": 0.410909,
+      "barrier": 0.502113
+     },
+     {
+      "reconstruction": 0.293915,
+      "quantile": 0.108182,
+      "contrastive": 1.161825,
+      "volatility": 0.31959,
+      "barrier": 0.434672
+     },
+     {
+      "reconstruction": 0.270213,
+      "quantile": 0.094447,
+      "contrastive": 1.615066,
+      "volatility": 0.254658,
+      "barrier": 0.437217
+     },
+     {
+      "reconstruction": 0.271607,
+      "quantile": 0.081065,
+      "contrastive": 1.979271,
+      "volatility": 0.20451,
+      "barrier": 0.418685
+     },
+     {
+      "reconstruction": 0.287626,
+      "quantile": 0.076331,
+      "contrastive": 1.447908,
+      "volatility": 0.163196,
+      "barrier": 0.408601
+     },
+     {
+      "reconstruction": 0.297896,
+      "quantile": 0.085359,
+      "contrastive": 2.227455,
+      "volatility": 0.131867,
+      "barrier": 0.42365
+     },
+     {
+      "reconstruction": 0.271102,
+      "quantile": 0.074386,
+      "contrastive": 2.100865,
+      "volatility": 0.109998,
+      "barrier": 0.431265
+     }
+    ],
+    "volume_flow": [
+     {
+      "reconstruction": 2.439727,
+      "quantile": 0.842438,
+      "contrastive": 1.637151,
+      "volatility": 1.617847,
+      "barrier": 1.046471
+     },
+     {
+      "reconstruction": 3.202205,
+      "quantile": 1.534144,
+      "contrastive": 2.780499,
+      "volatility": 1.879932,
+      "barrier": 1.128974
+     },
+     {
+      "reconstruction": 1.927847,
+      "quantile": 0.55881,
+      "contrastive": 3.612987,
+      "volatility": 1.026793,
+      "barrier": 1.219286
+     },
+     {
+      "reconstruction": 2.224119,
+      "quantile": 0.37476,
+      "contrastive": 3.697148,
+      "volatility": 0.749657,
+      "barrier": 0.820956
+     },
+     {
+      "reconstruction": 1.569667,
+      "quantile": 0.389193,
+      "contrastive": 5.245721,
+      "volatility": 0.617629,
+      "barrier": 0.993766
+     },
+     {
+      "reconstruction": 1.403702,
+      "quantile": 0.318592,
+      "contrastive": 6.175805,
+      "volatility": 0.380494,
+      "barrier": 1.008847
+     },
+     {
+      "reconstruction": 1.306353,
+      "quantile": 0.261402,
+      "contrastive": 6.195542,
+      "volatility": 0.329493,
+      "barrier": 1.078508
+     },
+     {
+      "reconstruction": 1.947911,
+      "quantile": 0.276406,
+      "contrastive": 6.090299,
+      "volatility": 0.310118,
+      "barrier": 1.13519
+     }
+    ]
+   },
+   "gradient_combination_by_epoch": {
+    "returns_momentum": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.769,
+      "pre_dot_mean": -0.12645287,
+      "post_dot_mean": 0.02682527,
+      "pre_negative_pairs_per_batch": 7.231,
+      "post_negative_pairs_per_batch": 2.923
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.308,
+      "pre_dot_mean": -0.13648746,
+      "post_dot_mean": 0.01156622,
+      "pre_negative_pairs_per_batch": 7.0,
+      "post_negative_pairs_per_batch": 3.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.385,
+      "pre_dot_mean": -0.01824843,
+      "post_dot_mean": 0.01614265,
+      "pre_negative_pairs_per_batch": 5.077,
+      "post_negative_pairs_per_batch": 1.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.769,
+      "pre_dot_mean": -0.00143896,
+      "post_dot_mean": 0.01377752,
+      "pre_negative_pairs_per_batch": 5.538,
+      "post_negative_pairs_per_batch": 0.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 7.846,
+      "pre_dot_mean": 0.00740247,
+      "post_dot_mean": 0.01560112,
+      "pre_negative_pairs_per_batch": 4.0,
+      "post_negative_pairs_per_batch": 0.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 8.769,
+      "pre_dot_mean": 0.00525768,
+      "post_dot_mean": 0.01104039,
+      "pre_negative_pairs_per_batch": 4.385,
+      "post_negative_pairs_per_batch": 0.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.462,
+      "pre_dot_mean": 0.00452795,
+      "post_dot_mean": 0.01246223,
+      "pre_negative_pairs_per_batch": 4.769,
+      "post_negative_pairs_per_batch": 0.077
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 8.385,
+      "pre_dot_mean": 0.00275735,
+      "post_dot_mean": 0.01123271,
+      "pre_negative_pairs_per_batch": 4.154,
+      "post_negative_pairs_per_batch": 0.0
+     }
+    ],
+    "trend_level": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.0,
+      "pre_dot_mean": -0.05885524,
+      "post_dot_mean": 0.06343384,
+      "pre_negative_pairs_per_batch": 6.769,
+      "post_negative_pairs_per_batch": 2.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.462,
+      "pre_dot_mean": -0.03877036,
+      "post_dot_mean": 0.02233309,
+      "pre_negative_pairs_per_batch": 6.692,
+      "post_negative_pairs_per_batch": 2.462
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.077,
+      "pre_dot_mean": -0.01435576,
+      "post_dot_mean": 0.02368885,
+      "pre_negative_pairs_per_batch": 5.308,
+      "post_negative_pairs_per_batch": 1.615
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.769,
+      "pre_dot_mean": 0.01251687,
+      "post_dot_mean": 0.05722969,
+      "pre_negative_pairs_per_batch": 5.154,
+      "post_negative_pairs_per_batch": 1.154
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.308,
+      "pre_dot_mean": 0.03928766,
+      "post_dot_mean": 0.08683176,
+      "pre_negative_pairs_per_batch": 4.615,
+      "post_negative_pairs_per_batch": 0.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 8.769,
+      "pre_dot_mean": 0.02512746,
+      "post_dot_mean": 0.10574497,
+      "pre_negative_pairs_per_batch": 4.385,
+      "post_negative_pairs_per_batch": 0.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.923,
+      "pre_dot_mean": 0.02159295,
+      "post_dot_mean": 0.10537607,
+      "pre_negative_pairs_per_batch": 5.308,
+      "post_negative_pairs_per_batch": 0.385
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 7.385,
+      "pre_dot_mean": 0.04100343,
+      "post_dot_mean": 0.08527205,
+      "pre_negative_pairs_per_batch": 3.615,
+      "post_negative_pairs_per_batch": 0.462
+     }
+    ],
+    "volatility_distribution": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 15.769,
+      "pre_dot_mean": -0.01985251,
+      "post_dot_mean": 0.03081854,
+      "pre_negative_pairs_per_batch": 7.231,
+      "post_negative_pairs_per_batch": 2.154
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.308,
+      "pre_dot_mean": -0.01086129,
+      "post_dot_mean": 0.00655993,
+      "pre_negative_pairs_per_batch": 6.923,
+      "post_negative_pairs_per_batch": 2.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.846,
+      "pre_dot_mean": -0.00601976,
+      "post_dot_mean": 0.00417978,
+      "pre_negative_pairs_per_batch": 6.692,
+      "post_negative_pairs_per_batch": 2.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.538,
+      "pre_dot_mean": -0.00377156,
+      "post_dot_mean": 0.00486424,
+      "pre_negative_pairs_per_batch": 5.0,
+      "post_negative_pairs_per_batch": 1.769
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.077,
+      "pre_dot_mean": -0.0046035,
+      "post_dot_mean": 0.00479927,
+      "pre_negative_pairs_per_batch": 5.615,
+      "post_negative_pairs_per_batch": 1.769
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.923,
+      "pre_dot_mean": -0.00318112,
+      "post_dot_mean": 0.00491258,
+      "pre_negative_pairs_per_batch": 5.154,
+      "post_negative_pairs_per_batch": 0.923
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.231,
+      "pre_dot_mean": -0.00272658,
+      "post_dot_mean": 0.00465702,
+      "pre_negative_pairs_per_batch": 5.385,
+      "post_negative_pairs_per_batch": 1.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.692,
+      "pre_dot_mean": -0.00077199,
+      "post_dot_mean": 0.00586794,
+      "pre_negative_pairs_per_batch": 4.846,
+      "post_negative_pairs_per_batch": 0.846
+     }
+    ],
+    "oscillators": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 10.308,
+      "pre_dot_mean": 0.00036517,
+      "post_dot_mean": 0.05729753,
+      "pre_negative_pairs_per_batch": 5.154,
+      "post_negative_pairs_per_batch": 1.231
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.769,
+      "pre_dot_mean": -0.0219829,
+      "post_dot_mean": 0.01753585,
+      "pre_negative_pairs_per_batch": 6.692,
+      "post_negative_pairs_per_batch": 2.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 15.231,
+      "pre_dot_mean": -0.01072287,
+      "post_dot_mean": 0.01089439,
+      "pre_negative_pairs_per_batch": 7.462,
+      "post_negative_pairs_per_batch": 1.923
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 14.231,
+      "pre_dot_mean": -0.00523466,
+      "post_dot_mean": 0.00898072,
+      "pre_negative_pairs_per_batch": 6.923,
+      "post_negative_pairs_per_batch": 1.538
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.615,
+      "pre_dot_mean": -0.00332048,
+      "post_dot_mean": 0.00968353,
+      "pre_negative_pairs_per_batch": 6.769,
+      "post_negative_pairs_per_batch": 0.846
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.231,
+      "pre_dot_mean": 3.23e-05,
+      "post_dot_mean": 0.00783601,
+      "pre_negative_pairs_per_batch": 6.077,
+      "post_negative_pairs_per_batch": 1.0
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.538,
+      "pre_dot_mean": -0.00298498,
+      "post_dot_mean": 0.00832313,
+      "pre_negative_pairs_per_batch": 6.692,
+      "post_negative_pairs_per_batch": 0.462
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.538,
+      "pre_dot_mean": -0.00331392,
+      "post_dot_mean": 0.00948109,
+      "pre_negative_pairs_per_batch": 5.692,
+      "post_negative_pairs_per_batch": 0.077
+     }
+    ],
+    "volume_flow": [
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 9.385,
+      "pre_dot_mean": 0.02136488,
+      "post_dot_mean": 0.06522345,
+      "pre_negative_pairs_per_batch": 4.615,
+      "post_negative_pairs_per_batch": 0.154
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.154,
+      "pre_dot_mean": -0.0177352,
+      "post_dot_mean": 0.20457851,
+      "pre_negative_pairs_per_batch": 6.231,
+      "post_negative_pairs_per_batch": 0.308
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.308,
+      "pre_dot_mean": -0.32477565,
+      "post_dot_mean": 0.19754479,
+      "pre_negative_pairs_per_batch": 5.769,
+      "post_negative_pairs_per_batch": 0.846
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 13.077,
+      "pre_dot_mean": -0.51350429,
+      "post_dot_mean": 0.16928662,
+      "pre_negative_pairs_per_batch": 6.231,
+      "post_negative_pairs_per_batch": 1.308
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.077,
+      "pre_dot_mean": -0.11984337,
+      "post_dot_mean": 0.1042078,
+      "pre_negative_pairs_per_batch": 5.769,
+      "post_negative_pairs_per_batch": 0.923
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.538,
+      "pre_dot_mean": -0.05062282,
+      "post_dot_mean": 0.08218139,
+      "pre_negative_pairs_per_batch": 6.154,
+      "post_negative_pairs_per_batch": 0.769
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 11.462,
+      "pre_dot_mean": -0.03290166,
+      "post_dot_mean": 0.07832404,
+      "pre_negative_pairs_per_batch": 5.538,
+      "post_negative_pairs_per_batch": 0.846
+     },
+     {
+      "combiner": "pcgrad",
+      "projections_per_batch": 12.308,
+      "pre_dot_mean": -0.0072823,
+      "post_dot_mean": 0.05799515,
+      "pre_negative_pairs_per_batch": 5.846,
+      "post_negative_pairs_per_batch": 0.462
+     }
+    ]
+   },
+   "representation_std_by_epoch": {
+    "returns_momentum": [
+     1.025584,
+     1.554165,
+     1.848761,
+     1.890944,
+     1.872966,
+     1.914799,
+     1.924967,
+     1.923073
+    ],
+    "trend_level": [
+     0.990778,
+     0.995892,
+     1.013758,
+     1.035575,
+     1.055687,
+     1.074201,
+     1.091908,
+     1.104978
+    ],
+    "volatility_distribution": [
+     0.985083,
+     0.972993,
+     0.974941,
+     0.991895,
+     1.014347,
+     1.037586,
+     1.060209,
+     1.080923
+    ],
+    "oscillators": [
+     0.691312,
+     0.712776,
+     0.747195,
+     0.789622,
+     0.847121,
+     0.892912,
+     0.92315,
+     0.94776
+    ],
+    "volume_flow": [
+     0.31141,
+     0.516788,
+     0.683699,
+     0.718581,
+     0.739588,
+     0.76232,
+     0.764317,
+     0.760544
+    ]
+   },
+   "effective_negatives_by_epoch": {
+    "returns_momentum": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "trend_level": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volatility_distribution": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "oscillators": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ],
+    "volume_flow": [
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22,
+     104.22
+    ]
+   },
+   "runtime_seconds_descriptive": 181.2
+  }
+ },
+ "summary": {
+  "control": {
+   "degraded_count": 14,
+   "worst_ratio": 2.7199,
+   "median_ratio": 1.2604
+  },
+  "gradnorm_sum": {
+   "degraded_count": 15,
+   "worst_ratio": 4.9433,
+   "median_ratio": 1.2514
+  },
+  "invloss_pcgrad": {
+   "degraded_count": 13,
+   "worst_ratio": 2.1322,
+   "median_ratio": 1.2378
+  },
+  "gradnorm_pcgrad": {
+   "degraded_count": 13,
+   "worst_ratio": 2.8083,
+   "median_ratio": 1.2435
+  }
+ },
+ "mechanical_selection": {
+  "rule": [
+   "1) minimize the COUNT of materially degraded objective-family pairs",
+   "2) then minimize the WORST joint/solo ratio",
+   "3) then minimize the MEDIAN joint/solo ratio"
+  ],
+  "verdict": "NO_CELL_REMOVES_MATERIAL_DEGRADATION: best is invloss_pcgrad with 13 degraded pairs -> M3 routing ablation",
+  "winner": null
+ }
+}

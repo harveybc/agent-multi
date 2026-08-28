@@ -1,0 +1,176 @@
+{
+ "schema": "agent_multi.objective_routing_ablation_design.v1",
+ "order": "MULTITASK_GRADIENT_MECHANISM_ORDER M3 \u2014 a NEW experiment, not an interpretation of M2",
+ "status": "MATERIALIZED_NOT_LAUNCHED \u2014 execution only on Musashi's word",
+ "trigger": "M2 verdict NO_CELL_REMOVES_MATERIAL_DEGRADATION (best invloss_pcgrad, 13 degraded pairs); no post-hoc tuning performed",
+ "m2_report_sha256": "6f6489f4e03f0f25613beb4c90773c9a73a69334e5d3b2a9ff0317528a8c57b6",
+ "optimizer_contract_for_all_arms": {
+  "balancing": "inverse_initial_loss",
+  "combiner": "pcgrad",
+  "basis": "the lexicographic best M2 cell, fixed prospectively for every arm"
+ },
+ "protocol": {
+  "budget": {
+   "epochs": 8,
+   "max_windows": 2400
+  },
+  "probe": "frozen train-tail (identical seeds/batches per family)",
+  "per_family_winner_rule": "lexicographic within family: (1) count of materially degraded objectives (ratio>1.2 vs the M2 solo references), (2) worst ratio, (3) median; ties within 0.02 INCONCLUSIVE",
+  "solo_references": "REUSED from the M2 screen (same budget/probe) \u2014 no re-run, digest-bound",
+  "forbidden": "monitor/economics never consulted; arms fixed by THIS design before any run"
+ },
+ "arms_per_family": {
+  "returns_momentum": {
+   "materially_degraded_under_best_cell": [
+    "reconstruction",
+    "contrastive"
+   ],
+   "prospective_arms": {
+    "full5_baseline": [
+     "reconstruction",
+     "quantile",
+     "contrastive",
+     "volatility",
+     "barrier"
+    ],
+    "drop_contrastive": [
+     "reconstruction",
+     "quantile",
+     "volatility",
+     "barrier"
+    ],
+    "accepted_two_lineage": [
+     "reconstruction",
+     "quantile"
+    ],
+    "harmed_pruned": [
+     "quantile",
+     "volatility",
+     "barrier"
+    ]
+   }
+  },
+  "trend_level": {
+   "materially_degraded_under_best_cell": [
+    "reconstruction",
+    "quantile",
+    "contrastive",
+    "volatility"
+   ],
+   "prospective_arms": {
+    "full5_baseline": [
+     "reconstruction",
+     "quantile",
+     "contrastive",
+     "volatility",
+     "barrier"
+    ],
+    "drop_contrastive": [
+     "reconstruction",
+     "quantile",
+     "volatility",
+     "barrier"
+    ],
+    "accepted_two_lineage": [
+     "reconstruction",
+     "quantile"
+    ],
+    "harmed_pruned": [
+     "barrier"
+    ]
+   }
+  },
+  "volatility_distribution": {
+   "materially_degraded_under_best_cell": [
+    "reconstruction",
+    "quantile",
+    "volatility",
+    "barrier"
+   ],
+   "prospective_arms": {
+    "full5_baseline": [
+     "reconstruction",
+     "quantile",
+     "contrastive",
+     "volatility",
+     "barrier"
+    ],
+    "drop_contrastive": [
+     "reconstruction",
+     "quantile",
+     "volatility",
+     "barrier"
+    ],
+    "accepted_two_lineage": [
+     "reconstruction",
+     "quantile"
+    ],
+    "harmed_pruned": [
+     "contrastive"
+    ]
+   }
+  },
+  "oscillators": {
+   "materially_degraded_under_best_cell": [
+    "quantile",
+    "volatility"
+   ],
+   "prospective_arms": {
+    "full5_baseline": [
+     "reconstruction",
+     "quantile",
+     "contrastive",
+     "volatility",
+     "barrier"
+    ],
+    "drop_contrastive": [
+     "reconstruction",
+     "quantile",
+     "volatility",
+     "barrier"
+    ],
+    "accepted_two_lineage": [
+     "reconstruction",
+     "quantile"
+    ],
+    "harmed_pruned": [
+     "reconstruction",
+     "contrastive",
+     "barrier"
+    ]
+   }
+  },
+  "volume_flow": {
+   "materially_degraded_under_best_cell": [
+    "reconstruction"
+   ],
+   "prospective_arms": {
+    "full5_baseline": [
+     "reconstruction",
+     "quantile",
+     "contrastive",
+     "volatility",
+     "barrier"
+    ],
+    "drop_contrastive": [
+     "reconstruction",
+     "quantile",
+     "volatility",
+     "barrier"
+    ],
+    "accepted_two_lineage": [
+     "reconstruction",
+     "quantile"
+    ],
+    "harmed_pruned": [
+     "quantile",
+     "contrastive",
+     "volatility",
+     "barrier"
+    ]
+   }
+  }
+ },
+ "note_on_contrastive": "removed only in arms where evidence showed harm; retained in full5/harmed-pruned arms where it did not harm (per the audit's caution)",
+ "design_sha256_of_arms": "7607ef8b9d68422131ae5922e1294fff20f7c6e59497cb80140fa04ff809376c"
+}
