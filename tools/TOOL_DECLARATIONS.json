@@ -612,6 +612,20 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "positive_skill_screen.py": {
+   "purpose": "order @b6b949ab section C: bounded positive-skill window/bottleneck screen \u2014 supervised encoder+head cells over {32,64,128,256}x{16,32,64,96,128} with successive halving, survivor decisions on 4 seeds x 2 rolling origins with paired CIs vs trailing-vol persistence and matched random encoders; USABLE_PREDICTIVE_VALUE requires POSITIVE monitor R2; REPRESENTATION_DIAGNOSTIC",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "fusion_screen.py": {
+   "purpose": "order @b6b949ab section D: bounded fusion screen over frozen sealed-branch embeddings \u2014 random frozen fusion, branch concatenation, probe-trained current-style and gated fusions, fine-tuned branches+fusion; predeclared advance gate: positive OOS monitor skill on >=1 target without degrading others vs the best non-fused branch; REPRESENTATION_DIAGNOSTIC",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
