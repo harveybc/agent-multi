@@ -35,5 +35,19 @@
   },
   "within_window_order_matters_everywhere": "volatility_vs_shuffled positive in ALL families (0.039-0.118) \u2014 temporal order inside the window carries real predictive structure for every family",
   "classification": "REPRESENTATION_DIAGNOSTIC \u2014 feeds the branch selection for the window/bottleneck screen; no economic authority"
- }
+ },
+ "label_correction_2026_08_28": {
+  "order": "@b6b949ab section B (audit finding 1)",
+  "family_labels": {
+   "returns_momentum": "RELATIVE_SIGNAL_DETECTED_VS_CONTROLS + USABLE_PREDICTIVE_VALUE_NOT_DEMONSTRATED (monitor volatility R2 -0.0880 is nonpositive)",
+   "trend_level": "RELATIVE_SIGNAL_DETECTED_VS_CONTROLS + USABLE_PREDICTIVE_VALUE_NOT_DEMONSTRATED (monitor R2 -0.2173)",
+   "volatility_distribution": "RELATIVE_SIGNAL_DETECTED_VS_CONTROLS + USABLE_PREDICTIVE_VALUE_NOT_DEMONSTRATED (monitor R2 -0.0978)",
+   "oscillators": "UNRESOLVED_UNDER_THIS_CANDIDATE + USABLE_PREDICTIVE_VALUE_NOT_DEMONSTRATED \u2014 only this encoder/pretraining/probe combination failed to demonstrate incremental value; never intrinsically useless",
+   "volume_flow": "UNRESOLVED_UNDER_THIS_CANDIDATE + USABLE_PREDICTIVE_VALUE_NOT_DEMONSTRATED \u2014 same scope limit"
+  },
+  "fused_label": "SUSPECTED_INFORMATION_BOTTLENECK \u2014 random fusion shows no incremental pretrained value (-0.0893 vs -0.0891); the representation SAC consumes has not demonstrated the relative signals survive fusion",
+  "reading_rule": "negative out-of-sample R2 means worse than predicting the monitor mean: relative margins vs controls support RELATIVE_SIGNAL_DETECTED_VS_CONTROLS only, never 'carries value' and never branch selection for trading; the three relative-signal branches are CANDIDATES for the window/bottleneck screen, not winners",
+  "raw_values": "unaltered"
+ },
+ "fill_lineage_final": "gym-fx @1794d1d: trade-history lineage is the PRIMARY join key (set_tradehistory); reconciliation is a consistency check; ambiguity by ORDER IDENTITY (economically identical candidates with distinct refs refuse without lineage); order_ref typed event field; partial fills refused as undefined; 154 gym-fx tests"
 }

@@ -1,0 +1,82 @@
+{
+ "schema": "agent_multi.positive_skill_screen_predeclaration.v1",
+ "order": "@b6b949ab sections C+D",
+ "committed_before_execution": true,
+ "section_c_window_bottleneck": {
+  "grid": {
+   "windows": [
+    32,
+    64,
+    128,
+    256
+   ],
+   "latents": [
+    16,
+    32,
+    64,
+    96,
+    128
+   ]
+  },
+  "families_full_grid": [
+   "returns_momentum",
+   "trend_level",
+   "volatility_distribution"
+  ],
+  "families_cheap_control": {
+   "oscillators": [
+    [
+     32,
+     32
+    ]
+   ],
+   "volume_flow": [
+    [
+     32,
+     32
+    ]
+   ]
+  },
+  "invalid_cells": "topology-refusing combinations (heads/divisibility, patch coverage, spectral viability) are ABSENT from the materialized domain, never launched",
+  "cell_protocol": "family encoder plugin at the cell's latent width, minimal layers; SUPERVISED joint encoder+linear-head training on the predeclared target over the fit role; ridge/checkpoint selection ONLY on calibration; scored ONLY on monitor",
+  "primary_target": "realized volatility h6 (the only objective with relative signal in the v2 suite)",
+  "baselines_per_cell": [
+   "constant monitor-mean (R2 0 by definition)",
+   "trailing-vol persistence (past-14-bar realized vol as single ridge predictor)",
+   "order-invariant pooled mean+std causal baseline",
+   "matched UNTRAINED random encoder (same architecture, same head protocol)"
+  ],
+  "successive_halving": "equal minimum budget 300 Adam updates for EVERY cell -> rank by calibration score -> top 50% advance to 900 -> top 25% to 2700; halving ranks are MECHANICAL pruning only",
+  "decision_protocol_on_survivors": "the surviving cells (top 25% per family) rerun with 4 encoder seeds x 2 rolling causal monitor origins (both inside the o2022 fit slice; sealed years untouched); paired effects with t-based 95% CIs",
+  "gate_USABLE_PREDICTIVE_VALUE": "monitor R2 > 0 (positive absolute skill vs constant) AND paired mean margin over trailing-vol persistence >= 0.02 with CI low > 0 AND margin over the matched random encoder >= 0.02 with CI low > 0",
+  "recorded_per_cell": [
+   "parameter count",
+   "wall seconds",
+   "peak RSS"
+  ]
+ },
+ "section_d_fusion": {
+  "inputs": "frozen branch embeddings from the SEALED candidate (branch-level diagnostics preserved separately)",
+  "variants_matched_capacity": [
+   "random_current_fusion_frozen",
+   "branch_concatenation (no fusion params)",
+   "current_fusion_probe_trained",
+   "gated_softmax_fusion_probe_trained",
+   "fine_tuned_branches_plus_fusion (bounded updates)"
+  ],
+  "capacity_matching": "trainable-parameter counts reported; probe-trained variants capped at the current fusion's 30,912 params +/-5% where applicable",
+  "targets": [
+   "realized volatility h6 (primary)",
+   "median quantile pinball h6",
+   "barrier upper-hit accuracy"
+  ],
+  "gate": "a fused candidate advances ONLY with positive out-of-sample monitor skill on >= 1 predeclared target AND no other target degraded by more than 0.02 vs the best non-fused branch baseline",
+  "seeds": [
+   101,
+   202,
+   303,
+   404
+  ],
+  "classification": "REPRESENTATION_DIAGNOSTIC / ECONOMIC authority none; no long SAC or DOIN campaign"
+ }
+}
