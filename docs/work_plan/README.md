@@ -286,6 +286,11 @@ adding value.
     config validators with a read-only doctor facade, and pinned non-mutating
     Ruff checks. Measure correctness and disagreement before expanding to other
     repositories or adding another dependency.
+25. Enforce the symbol-specific weekly/holiday exposure contract before further
+    economic promotion: wind down without new risk, opportunistic model close,
+    deterministic forced flatten, expected-closure-aware monitoring and a
+    stability-gated reopen blackout. Calibrate timing causally and keep weekend
+    retraining cadence as an isolated treatment.
 
 The detailed gates and deliverables are in [08 Implementation Roadmap](08_IMPLEMENTATION_ROADMAP.md).
 
