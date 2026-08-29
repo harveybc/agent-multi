@@ -1,0 +1,33 @@
+{
+ "schema": "agent_multi.temporal_suite_v2_predeclaration.v1",
+ "order": "temporal-suite scientific correction (order @c1a319c0, Priority B)",
+ "committed_before_execution": true,
+ "decision_rule": {
+  "structural_controls": "all four (future immutability bitwise, newest-bar sensitivity, time reversal, save/load) must PASS \u2014 unchanged, already accepted",
+  "synthetic_predictive_gate": "per family: paired difference DeltaR2 = pretrained - control computed over 4 signal seeds for EACH control (4-seed random encoders averaged per signal seed, within-window permutation, per-window phase scramble, order-invariant pooled baseline); gate requires for EVERY informative control: mean(DeltaR2) >= 0.05 (predeclared minimum practical effect) AND t-based 95% CI lower bound > 0 over the 4 paired differences",
+  "phase_control": "per-window random circular shift destroys the stable phase->target relation while preserving per-window amplitude content; the target (next bar of the periodic channel) is phase-dependent BY CONSTRUCTION, so this control is IN the decision rule; if a family's random-encoder ceiling saturates (R2 >= 0.95) the family is CEILING_SATURATED_INCONCLUSIVE for the synthetic gate",
+  "sample_target_identity": "within-window permutation preserves each window's target and value multiset; IDENTICAL chronological train/validation indices for every treatment; the old global permutation is retained ONLY as global_sample_misalignment_negative and is NOT in the decision rule",
+  "real_data_gate": "per family AND fused: causal ridge probes for quantile (0.1/0.5/0.9 pinball), realized volatility (R2) and barrier hit (accuracy vs base rate) with ISOLATED chronological roles fit/calibration/monitor (ridge lambda selected ONLY on calibration; scored ONLY on monitor); a probe is informative when the pretrained embedding beats BOTH the 4-seed random-encoder mean and the within-window shuffled control by the same predeclared margin (>= 0.02 absolute on the probe's scale) on the monitor role",
+  "lag_memory": "chronological out-of-sample (fit 70 early / score 30 late), ridge on fit only, vs naive last-bar (autoregressive) baseline, random encoder and within-window shuffled controls; in-sample fits are dead"
+ },
+ "seeds": {
+  "signal_seeds": [
+   11,
+   22,
+   33,
+   44
+  ],
+  "encoder_seeds": [
+   101,
+   202,
+   303,
+   404
+  ]
+ },
+ "bounds": {
+  "synthetic_bars": 1200,
+  "real_max_windows": 2500,
+  "real_window_stride": 3
+ },
+ "classification": "REPRESENTATION_DIAGNOSTIC only \u2014 no economic or promotion authority; verdict vocabulary: PASS / FAIL / CEILING_SATURATED_INCONCLUSIVE / NOT_INFORMATIVE"
+}

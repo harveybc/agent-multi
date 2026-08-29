@@ -605,6 +605,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "temporal_information_suite_v2.py": {
+   "purpose": "temporal-suite scientific correction (order @c1a319c0 Priority B): predeclared decision rule; within-window permutation with sample-target identity, per-window phase scramble IN the rule, 4x4 seeds with paired CIs and minimum effects, OOS lag memory with AR baseline, REAL-data causal quantile/vol/barrier probes on isolated fit/cal/monitor roles per family + fused, masked reconstruction and per-band spectral error; REPRESENTATION_DIAGNOSTIC",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

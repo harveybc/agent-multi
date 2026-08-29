@@ -252,3 +252,125 @@ def probe_r2(embeddings: np.ndarray, targets: np.ndarray,
     residual = float(((y[split:] - predicted) ** 2).sum())
     total = float(((y[split:] - y[split:].mean()) ** 2).sum()) or 1.0
     return round(1.0 - residual / total, 4)
+
+
+# ---------------------------------------------------------------- #
+# v2 primitives (scientific correction order 2026-08-28)           #
+# ---------------------------------------------------------------- #
+
+def within_window_permutation(windows: np.ndarray,
+                              seed: int = 0) -> np.ndarray:
+    """Finding 2: permute bars WITHIN each causal window — every
+    window keeps its target and its value multiset; only temporal
+    ORDER inside the window is destroyed. (N, T, F) -> (N, T, F)."""
+    rng = np.random.default_rng(seed)
+    out = windows.copy()
+    for i in range(len(out)):
+        out[i] = out[i][rng.permutation(out.shape[1])]
+    return out
+
+
+def per_window_phase_scramble(windows: np.ndarray,
+                              seed: int = 0) -> np.ndarray:
+    """Finding 1: independent random circular shift per window —
+    preserves each window's amplitude content, destroys any STABLE
+    phase->target relation across samples."""
+    rng = np.random.default_rng(seed)
+    out = windows.copy()
+    shifts = rng.integers(1, windows.shape[1], size=len(windows))
+    for i, shift in enumerate(shifts):
+        out[i] = np.roll(out[i], int(shift), axis=0)
+    return out
+
+
+def order_invariant_pooled_embedding(windows: np.ndarray
+                                     ) -> np.ndarray:
+    """Explicitly order-invariant baseline: per-feature mean and std
+    over the window — any performance it reaches needs NO temporal
+    order at all."""
+    return np.concatenate([windows.mean(axis=1),
+                           windows.std(axis=1)], axis=1)
+
+
+def make_windows(series: np.ndarray, window: int) -> np.ndarray:
+    return np.stack([series[i - window:i]
+                     for i in range(window, len(series) + 1)]
+                    ).astype(np.float32)
+
+
+def encode_windows(encoder, windows: np.ndarray,
+                   batch: int = 512) -> np.ndarray:
+    import torch
+
+    encoder.eval()
+    chunks = []
+    with torch.no_grad():
+        for start in range(0, len(windows), batch):
+            part = torch.tensor(windows[start:start + batch],
+                                dtype=torch.float32)
+            chunks.append(encoder(part).numpy())
+    return np.concatenate(chunks, axis=0)
+
+
+def ridge_fit_cal_score(train_x, train_y, cal_x, cal_y, test_x,
+                        test_y, *, lambdas=(1e-4, 1e-2, 1.0, 100.0),
+                        metric: Callable | None = None) -> dict:
+    """Chronological three-role ridge: lambda selected ONLY on the
+    calibration role, scored ONLY on the held-out role."""
+    def r2(pred, y):
+        residual = float(((y - pred) ** 2).sum())
+        total = float(((y - y.mean()) ** 2).sum()) or 1.0
+        return 1.0 - residual / total
+
+    score = metric or r2
+
+    def fit(x, y, lam):
+        xb = np.hstack([x, np.ones((len(x), 1))])
+        gram = xb.T @ xb + lam * np.eye(xb.shape[1])
+        return np.linalg.solve(gram, xb.T @ y)
+
+    def predict(x, coef):
+        return np.hstack([x, np.ones((len(x), 1))]) @ coef
+
+    best_lam, best_cal = None, -np.inf
+    for lam in lambdas:
+        coef = fit(train_x, train_y, lam)
+        cal_score = score(predict(cal_x, coef), cal_y)
+        if cal_score > best_cal:
+            best_cal, best_lam = cal_score, lam
+    coef = fit(np.vstack([train_x, cal_x]),
+               np.concatenate([train_y, cal_y]), best_lam)
+    return {"score": round(float(score(predict(test_x, coef),
+                                       test_y)), 4),
+            "lambda": best_lam}
+
+
+def pinball_loss_score(pred, y, quantile: float) -> float:
+    """NEGATIVE mean pinball loss (higher is better)."""
+    diff = y - pred
+    loss = np.maximum(quantile * diff, (quantile - 1.0) * diff)
+    return -float(loss.mean())
+
+
+def paired_stats(deltas: "list[float]") -> dict:
+    """Mean, sd and t-based 95% CI over paired per-seed differences
+    (n=4 -> t=3.182)."""
+    arr = np.asarray(deltas, dtype=float)
+    n = len(arr)
+    mean = float(arr.mean())
+    sd = float(arr.std(ddof=1)) if n > 1 else 0.0
+    t_value = {2: 12.706, 3: 4.303, 4: 3.182, 5: 2.776}.get(n, 2.0)
+    half = t_value * sd / np.sqrt(n) if n > 1 else 0.0
+    return {"n": n, "mean": round(mean, 4), "sd": round(sd, 4),
+            "ci95_low": round(mean - half, 4),
+            "ci95_high": round(mean + half, 4),
+            "per_seed": [round(d, 4) for d in deltas]}
+
+
+def chronological_roles(n: int, fractions=(0.6, 0.2, 0.2)) -> tuple:
+    """Contiguous fit/calibration/monitor index ranges — IDENTICAL
+    for every treatment by construction."""
+    fit_end = int(n * fractions[0])
+    cal_end = fit_end + int(n * fractions[1])
+    return (np.arange(0, fit_end), np.arange(fit_end, cal_end),
+            np.arange(cal_end, n))

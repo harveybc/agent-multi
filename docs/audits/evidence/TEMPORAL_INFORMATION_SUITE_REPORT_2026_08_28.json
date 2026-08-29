@@ -53,7 +53,8 @@
     "random_encoder_ceiling_saturated": false,
     "beats_shuffled_time_and_random_encoder": true,
     "no_false_predictive_success": true,
-    "verdict": "PASS"
+    "verdict": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+    "original_verdict_tombstoned": "PASS"
    }
   },
   "trend_level": {
@@ -104,7 +105,8 @@
     "random_encoder_ceiling_saturated": false,
     "beats_shuffled_time_and_random_encoder": true,
     "no_false_predictive_success": true,
-    "verdict": "PASS"
+    "verdict": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+    "original_verdict_tombstoned": "PASS"
    }
   },
   "volatility_distribution": {
@@ -155,7 +157,8 @@
     "random_encoder_ceiling_saturated": false,
     "beats_shuffled_time_and_random_encoder": true,
     "no_false_predictive_success": true,
-    "verdict": "PASS"
+    "verdict": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+    "original_verdict_tombstoned": "PASS"
    }
   },
   "oscillators": {
@@ -206,7 +209,8 @@
     "random_encoder_ceiling_saturated": false,
     "beats_shuffled_time_and_random_encoder": true,
     "no_false_predictive_success": true,
-    "verdict": "PASS"
+    "verdict": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+    "original_verdict_tombstoned": "PASS"
    }
   },
   "volume_flow": {
@@ -262,10 +266,12 @@
   }
  },
  "summary": {
-  "returns_momentum": "PASS",
-  "trend_level": "PASS",
-  "volatility_distribution": "PASS",
-  "oscillators": "PASS",
+  "returns_momentum": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+  "trend_level": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+  "volatility_distribution": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+  "oscillators": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
   "volume_flow": "CEILING_SATURATED_INCONCLUSIVE"
- }
+ },
+ "verdict_status": "SYNTHETIC_MECHANICS_ONLY_PENDING_REAL_PROBES",
+ "verdict_note": "AUDIT 2026-08-28 (findings 1-4): the four PASS labels are scientifically INVALID \u2014 the phase-surrogate control was excluded from the verdict despite contradicting it, the shuffled-time control destroyed sample/target identity, the single synthetic task with one seed lacks paired uncertainty, and lagged-memory R2 was in-sample. Raw measurements preserved unaltered; structural controls (future immutability, newest-bar, reversal, save/load) remain accepted; volume_flow ceiling classification remains accepted."
 }

@@ -396,6 +396,12 @@ def main() -> int:
                 extractor.fusion),
         },
         "total_trainable_extractor_parameters": leaf_total,
+        "parameter_accounting_note": (
+            "EXTRACTOR-WIDE UNIQUE parameters (identity-deduplicated) "
+            "— component sums count overlapping submodules once via "
+            "the identity union below; MECHANICS ACCOUNTING ONLY, no "
+            "claim about appropriate model capacity (audit 2026-08-28 "
+            "finding 7)"),
         "parameter_conservation_by_identity_union": conservation,
         "layer_by_layer_hook_log": hook_log,
         "dropout_values_present": sorted({

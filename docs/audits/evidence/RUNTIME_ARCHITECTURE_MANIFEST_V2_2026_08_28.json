@@ -561,6 +561,7 @@
    }
   },
   "total_trainable_extractor_parameters": 113558,
+  "parameter_accounting_note": "EXTRACTOR-WIDE UNIQUE parameters (identity-deduplicated) \u2014 component sums count overlapping submodules once via the identity union below; MECHANICS ACCOUNTING ONLY, no claim about appropriate model capacity (audit 2026-08-28 finding 7)",
   "parameter_conservation_by_identity_union": {
    "component_totals": {
     "returns_momentum": 25376,
