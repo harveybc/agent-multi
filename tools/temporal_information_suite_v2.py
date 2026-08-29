@@ -234,7 +234,7 @@ def main() -> int:
     fit_i = fit_i[:-PURGE] if len(fit_i) > PURGE else fit_i
     cal_i = cal_i[:-PURGE] if len(cal_i) > PURGE else cal_i
 
-    def real_probes(embed_fn, label):
+    def real_probes(embed_fn, label=None):
         x = embed_fn(windows_real_family)
         out = {}
         out["quantile_pinball_neg"] = {

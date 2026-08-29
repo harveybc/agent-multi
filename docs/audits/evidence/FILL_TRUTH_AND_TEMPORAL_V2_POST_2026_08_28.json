@@ -1,0 +1,39 @@
+{
+ "schema": "agent_multi.fill_truth_and_temporal_v2_post.v1",
+ "order": "@c1a319c0 (Priority A fill-truth + Priority B scientific correction)",
+ "supersedes": [
+  "TRADE_RECONCILIATION_REPRODUCTIONS_POST_V2_2026_08_28.json (marker added there separately? no \u2014 this file supersedes the fill sections)"
+ ],
+ "priority_a": {
+  "fill_truth": "gym-fx satoshi/trade-reconciliation-20260828@e4ca6e8 \u2014 notify_order captures immutable completed-fill evidence (price/size/commission/order-ref/bar); notify_trade joins BY RECONCILIATION: exactly the unconsumed fill whose derived gross matches Backtrader's trade PnL joins and is CONSUMED (two same-bar closes can never share one fill); no reconciling candidate refuses (stale/missing), several distinct reconciling candidates refuse (ambiguous); the observation price is out of the close path entirely",
+  "root_cause_of_eval_collapse": "the first last-fill join let a second same-bar close inherit the wrong fill and fail reconciliation at fit_train step 7759 \u2014 found by the strict guard itself, fixed by the consuming reconciliation join",
+  "episode_local_idempotence": "docstring states the exact-replay index is in-memory and episode-scoped; durable attempt identity is the outer custody runner's responsibility (finding 6)",
+  "regressions": "gap fill records the ACTUAL gap price with exact fill-gross reconciliation; breakeven classified; reversal lineages distinct; conflicting/malformed refusals; suite gym-fx 151",
+  "cuda_active_v3": "CUDA_ACTIVE_RECONCILIATION_EXACT under the hardened+fill-truth stream \u2014 2 bt lifecycle + 2 direct settlements, all conservation identities exact (TRADE_RECONCILIATION_CUDA_ACTIVE_CHECK_V3_2026_08_28.json)",
+  "manifest_finding_7": "parameter accounting labeled EXTRACTOR-WIDE UNIQUE with identity-union reconciliation; mechanics accounting only, no capacity claim"
+ },
+ "priority_b": {
+  "predeclaration": "TEMPORAL_SUITE_V2_PREDECLARATION_2026_08_28.json committed at 88014a76 BEFORE execution",
+  "synthetic_verdicts": {
+   "returns_momentum": "PASS",
+   "trend_level": "PASS",
+   "volatility_distribution": "PASS",
+   "oscillators": "FAIL",
+   "volume_flow": "CEILING_SATURATED_INCONCLUSIVE"
+  },
+  "oscillators_failure_detail": "fails ONLY the random-encoder gate (paired mean Delta 0.0325 < predeclared 0.05, CI low 0.0159) \u2014 temporal ORDER matters enormously for the TCN (within-window 0.87, phase 0.92, pooled 0.85 all pass) but PRETRAINING adds under the minimum effect over a random TCN on the synthetic task",
+  "real_data_margins": {
+   "volatility_vs_random": {
+    "returns_momentum": 0.0305,
+    "trend_level": 0.052,
+    "volatility_distribution": 0.1141,
+    "oscillators": 0.0061,
+    "volume_flow": -0.223,
+    "fused": -0.0002
+   },
+   "reading": "pretraining is INFORMATIVE (>= 0.02) for realized volatility in returns_momentum, trend_level and volatility_distribution; NOT informative for oscillators; volume_flow is WORSE than random on real data; quantile-q0.5 and barrier margins are ~0 everywhere (consistent with the M2 multitask-conflict findings); the fused stage is not pretrained and shows no pretrained-vs-random difference \u2014 as declared"
+  },
+  "within_window_order_matters_everywhere": "volatility_vs_shuffled positive in ALL families (0.039-0.118) \u2014 temporal order inside the window carries real predictive structure for every family",
+  "classification": "REPRESENTATION_DIAGNOSTIC \u2014 feeds the branch selection for the window/bottleneck screen; no economic authority"
+ }
+}

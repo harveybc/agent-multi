@@ -1,5 +1,5 @@
 {
- "schema": "agent_multi.paired_sac_launch_manifest.v6",
+ "schema": "agent_multi.paired_sac_launch_manifest.v7",
  "authored_before_execution": true,
  "gpu_logical_slot": "gpu_slot_0",
  "within_slot_position": 1,
@@ -8,13 +8,15 @@
   "candidate_manifest": "cfd225fe0b9f77e8b40f3d5b434d25a0f1f6302e2334f6d351041e4f16084c99",
   "cost_manifest": "dc27f1d476a9786859534ea4e71e82f05c00c4720cc272b8920cfcb18d50956e",
   "design": "9e86f2b32c220f29af5d84fd3cb4409091a4b0f87f7844d2549272514b8acc8b",
-  "dispatch_authorization": "0ad5e302aee006babbe9403eeabbe829574e121682ef30bc568e8c5e5e71c9ae",
+  "dispatch_authorization": "3abcdd5655477043e20cb66f16dd1b4cf1e8e393aa31c5aa5cf9e15501ec5570",
   "dispatch_custody": "7bf215584f7f8a041d599f9da3a57e3ed67fb4cd400e5a687550d91dbc0e0fe8",
   "driver": "162f76b54142e38f7c7cd4e703a83c9b2dca99b5544cf5733db8f621dc7754fd",
   "env_gym_fx": "39265d2527689d5930dfb616c9008cb1bb0f5e7b1b600a70fda18a72f952897e",
   "envelope_calibration": "7d583eb7ec16c5ecf04cf590420725a71a44b2b95d5539aef44baa67cdc813a7",
   "grouped_architecture": "e11bd07457231ec160e5f24e1e12e2333f2d5877787d384c837d4c8a91519ee4",
   "grouped_features_extractor": "76b8f638548fa039e2fa8e4dac7a3f7e0277aa4cdf576e17e7272d9cd0ac921c",
+  "gym_fx_core_bridge": "9a62da823ba66bab585f6e335e96023c0dcd7b25dbc3925f783218a607d5bc5b",
+  "gym_fx_core_env": "5ab8cac35ab2963bda90f541664c706bf907a5fbf5ed7124b11958a3f600a32d",
   "nested_pipeline": "d1d59f84b945a913d3355dcd50bcde7359a8e2268e7c206161553d868f797206",
   "nested_splits": "8083f761fa1a35ff4824e36c91ec4d0968a32acc69cf00f3c2578ff90bb512ed",
   "observation_contract": "1db321893f48e3866ca134948672f289316669decd0e8b0067516f0322a838c7",
@@ -25,7 +27,7 @@
   "strong_config": "e6c05b51b8dde81f41b141de7933a0d73bf6eccf2e3b19dca3a2d1d3e3c90b8b",
   "entry_point_metadata": "a66225aca2da7a9a5e8e6f2e72f56f147854406813e8ed32d53607d845ba095d"
  },
- "executable_allowlist_digest": "58bf752c972df00867c6cdac23f46a6aa29662e7fa71a0f1ff271b54e0dc103d",
+ "executable_allowlist_digest": "550ccf9747eca448eb8dd853551c40273bdf434c46db452afa70726463031b5d",
  "environmental_preflight": "R2/DATA-SOTA-382: the driver resolves all 12 required entry points via importlib.metadata (missing/duplicated/out-of-root refuses), runs a bounded strong-extractor forward on the bound device, and binds the entry-point metadata digest into the executable identity",
  "device_binding": "R3/DATA-SOTA-383: --logical-slot verified against the operator's PRIVATE slot->physical binding (class + local identity) after CUDA_VISIBLE_DEVICES; exactly one visible device; a real Conv2d forward/backward micro-preflight runs BEFORE custody reservation \u2014 failure refuses without spending an attempt",
  "thermal_telemetry": "tools/gpu_temperature_watchdog.py active on the executing host for the full cell duration",
@@ -79,5 +81,5 @@
   "status": "MATERIALIZED_NOT_LAUNCHED",
   "cell_sha256": "6a2dd4dad4dc2dde2091026706a504f24cc1f558e9c26d13b475b2cb2f385a1e"
  },
- "trade_reconciliation": "final close-event hardening 2026-08-28: lineage-scoped idempotent identities, conflict refusal, strict economic validation, no fallback derivations (gym-fx @b5d3fdb); epoch gate refuses disagreement"
+ "trade_reconciliation": "fill-truth with reconciling consuming join (gym-fx @e4ca6e8); single-population validated economics; epoch gate refuses disagreement"
 }

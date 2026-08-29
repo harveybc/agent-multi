@@ -1,0 +1,1057 @@
+{
+ "schema": "agent_multi.temporal_information_suite.v2",
+ "classification": "REPRESENTATION_DIAGNOSTIC",
+ "predeclaration": "TEMPORAL_SUITE_V2_PREDECLARATION_2026_08_28.json",
+ "candidate_seal": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+ "window": 32,
+ "synthetic": {
+  "returns_momentum": {
+   "raw_per_seed": [
+    {
+     "signal_seed": 11,
+     "pretrained": 0.8478,
+     "random_mean": 0.75785,
+     "within_window": -0.0478,
+     "phase_scramble": -0.0912,
+     "pooled": -0.0331,
+     "global_sample_misalignment_negative": -0.0423
+    },
+    {
+     "signal_seed": 22,
+     "pretrained": 0.8511,
+     "random_mean": 0.7491249999999999,
+     "within_window": -0.0705,
+     "phase_scramble": -0.0154,
+     "pooled": -0.0138,
+     "global_sample_misalignment_negative": -0.045
+    },
+    {
+     "signal_seed": 33,
+     "pretrained": 0.8477,
+     "random_mean": 0.7435,
+     "within_window": -0.0198,
+     "phase_scramble": -0.0596,
+     "pooled": -0.0258,
+     "global_sample_misalignment_negative": 0.0125
+    },
+    {
+     "signal_seed": 44,
+     "pretrained": 0.849,
+     "random_mean": 0.7556,
+     "within_window": -0.0271,
+     "phase_scramble": -0.0518,
+     "pooled": -0.0102,
+     "global_sample_misalignment_negative": -0.059
+    }
+   ],
+   "paired_gates": {
+    "random_encoder": {
+     "n": 4,
+     "mean": 0.0974,
+     "sd": 0.0068,
+     "ci95_low": 0.0866,
+     "ci95_high": 0.1082,
+     "per_seed": [
+      0.0899,
+      0.102,
+      0.1042,
+      0.0934
+     ],
+     "passes": true
+    },
+    "within_window": {
+     "n": 4,
+     "mean": 0.8902,
+     "sd": 0.024,
+     "ci95_low": 0.852,
+     "ci95_high": 0.9284,
+     "per_seed": [
+      0.8956,
+      0.9216,
+      0.8675,
+      0.8761
+     ],
+     "passes": true
+    },
+    "phase_scramble": {
+     "n": 4,
+     "mean": 0.9034,
+     "sd": 0.0297,
+     "ci95_low": 0.8561,
+     "ci95_high": 0.9507,
+     "per_seed": [
+      0.939,
+      0.8665,
+      0.9073,
+      0.9008
+     ],
+     "passes": true
+    },
+    "pooled": {
+     "n": 4,
+     "mean": 0.8696,
+     "sd": 0.0095,
+     "ci95_low": 0.8544,
+     "ci95_high": 0.8848,
+     "per_seed": [
+      0.8809,
+      0.8649,
+      0.8735,
+      0.8592
+     ],
+     "passes": true
+    }
+   },
+   "random_ceiling_saturated": false,
+   "verdict": "PASS"
+  },
+  "trend_level": {
+   "raw_per_seed": [
+    {
+     "signal_seed": 11,
+     "pretrained": 0.2262,
+     "random_mean": -0.010474999999999998,
+     "within_window": -0.0616,
+     "phase_scramble": -0.0717,
+     "pooled": -0.0713,
+     "global_sample_misalignment_negative": -0.0096
+    },
+    {
+     "signal_seed": 22,
+     "pretrained": 0.2379,
+     "random_mean": 0.03385,
+     "within_window": -0.0537,
+     "phase_scramble": -0.0531,
+     "pooled": -0.0638,
+     "global_sample_misalignment_negative": -0.1054
+    },
+    {
+     "signal_seed": 33,
+     "pretrained": 0.1968,
+     "random_mean": -0.037825,
+     "within_window": -0.0769,
+     "phase_scramble": -0.061,
+     "pooled": -0.0467,
+     "global_sample_misalignment_negative": -0.0031
+    },
+    {
+     "signal_seed": 44,
+     "pretrained": 0.0462,
+     "random_mean": -0.07947499999999999,
+     "within_window": -0.0298,
+     "phase_scramble": -0.0039,
+     "pooled": -0.0495,
+     "global_sample_misalignment_negative": -0.0522
+    }
+   ],
+   "paired_gates": {
+    "random_encoder": {
+     "n": 4,
+     "mean": 0.2003,
+     "sd": 0.0519,
+     "ci95_low": 0.1177,
+     "ci95_high": 0.2828,
+     "per_seed": [
+      0.2367,
+      0.2041,
+      0.2346,
+      0.1257
+     ],
+     "passes": true
+    },
+    "within_window": {
+     "n": 4,
+     "mean": 0.2323,
+     "sd": 0.1045,
+     "ci95_low": 0.0661,
+     "ci95_high": 0.3985,
+     "per_seed": [
+      0.2878,
+      0.2916,
+      0.2737,
+      0.076
+     ],
+     "passes": true
+    },
+    "phase_scramble": {
+     "n": 4,
+     "mean": 0.2242,
+     "sd": 0.1174,
+     "ci95_low": 0.0374,
+     "ci95_high": 0.411,
+     "per_seed": [
+      0.2979,
+      0.291,
+      0.2578,
+      0.0501
+     ],
+     "passes": true
+    },
+    "pooled": {
+     "n": 4,
+     "mean": 0.2346,
+     "sd": 0.0963,
+     "ci95_low": 0.0814,
+     "ci95_high": 0.3878,
+     "per_seed": [
+      0.2975,
+      0.3017,
+      0.2435,
+      0.0957
+     ],
+     "passes": true
+    }
+   },
+   "random_ceiling_saturated": false,
+   "verdict": "PASS"
+  },
+  "volatility_distribution": {
+   "raw_per_seed": [
+    {
+     "signal_seed": 11,
+     "pretrained": 0.6085,
+     "random_mean": 0.48724999999999996,
+     "within_window": -0.0149,
+     "phase_scramble": -0.0204,
+     "pooled": -0.1549,
+     "global_sample_misalignment_negative": -0.0311
+    },
+    {
+     "signal_seed": 22,
+     "pretrained": 0.6408,
+     "random_mean": 0.47812499999999997,
+     "within_window": -0.0554,
+     "phase_scramble": -0.0324,
+     "pooled": -0.0895,
+     "global_sample_misalignment_negative": -0.0413
+    },
+    {
+     "signal_seed": 33,
+     "pretrained": 0.6728,
+     "random_mean": 0.4787,
+     "within_window": -0.0259,
+     "phase_scramble": -0.04,
+     "pooled": -0.0883,
+     "global_sample_misalignment_negative": -0.0555
+    },
+    {
+     "signal_seed": 44,
+     "pretrained": 0.6838,
+     "random_mean": 0.47509999999999997,
+     "within_window": -0.0347,
+     "phase_scramble": -0.0421,
+     "pooled": -0.0941,
+     "global_sample_misalignment_negative": -0.0496
+    }
+   ],
+   "paired_gates": {
+    "random_encoder": {
+     "n": 4,
+     "mean": 0.1717,
+     "sd": 0.0387,
+     "ci95_low": 0.1101,
+     "ci95_high": 0.2333,
+     "per_seed": [
+      0.1213,
+      0.1627,
+      0.1941,
+      0.2087
+     ],
+     "passes": true
+    },
+    "within_window": {
+     "n": 4,
+     "mean": 0.6842,
+     "sd": 0.0417,
+     "ci95_low": 0.6178,
+     "ci95_high": 0.7506,
+     "per_seed": [
+      0.6234,
+      0.6962,
+      0.6987,
+      0.7185
+     ],
+     "passes": true
+    },
+    "phase_scramble": {
+     "n": 4,
+     "mean": 0.6852,
+     "sd": 0.0437,
+     "ci95_low": 0.6157,
+     "ci95_high": 0.7547,
+     "per_seed": [
+      0.6289,
+      0.6732,
+      0.7128,
+      0.7259
+     ],
+     "passes": true
+    },
+    "pooled": {
+     "n": 4,
+     "mean": 0.7582,
+     "sd": 0.02,
+     "ci95_low": 0.7263,
+     "ci95_high": 0.79,
+     "per_seed": [
+      0.7634,
+      0.7303,
+      0.7611,
+      0.7779
+     ],
+     "passes": true
+    }
+   },
+   "random_ceiling_saturated": false,
+   "verdict": "PASS"
+  },
+  "oscillators": {
+   "raw_per_seed": [
+    {
+     "signal_seed": 11,
+     "pretrained": 0.8369,
+     "random_mean": 0.8010999999999999,
+     "within_window": -0.0211,
+     "phase_scramble": -0.1044,
+     "pooled": -0.0047,
+     "global_sample_misalignment_negative": -0.0094
+    },
+    {
+     "signal_seed": 22,
+     "pretrained": 0.8558,
+     "random_mean": 0.8194,
+     "within_window": -0.0245,
+     "phase_scramble": -0.0707,
+     "pooled": -0.0023,
+     "global_sample_misalignment_negative": -0.0565
+    },
+    {
+     "signal_seed": 33,
+     "pretrained": 0.8654,
+     "random_mean": 0.824675,
+     "within_window": -0.0285,
+     "phase_scramble": -0.041,
+     "pooled": -0.0023,
+     "global_sample_misalignment_negative": 0.0127
+    },
+    {
+     "signal_seed": 44,
+     "pretrained": 0.8332,
+     "random_mean": 0.815975,
+     "within_window": -0.0137,
+     "phase_scramble": -0.0867,
+     "pooled": -0.0054,
+     "global_sample_misalignment_negative": -0.0388
+    }
+   ],
+   "paired_gates": {
+    "random_encoder": {
+     "n": 4,
+     "mean": 0.0325,
+     "sd": 0.0104,
+     "ci95_low": 0.0159,
+     "ci95_high": 0.0491,
+     "per_seed": [
+      0.0358,
+      0.0364,
+      0.0407,
+      0.0172
+     ],
+     "passes": false
+    },
+    "within_window": {
+     "n": 4,
+     "mean": 0.8698,
+     "sd": 0.0213,
+     "ci95_low": 0.836,
+     "ci95_high": 0.9036,
+     "per_seed": [
+      0.858,
+      0.8803,
+      0.8939,
+      0.8469
+     ],
+     "passes": true
+    },
+    "phase_scramble": {
+     "n": 4,
+     "mean": 0.9235,
+     "sd": 0.0145,
+     "ci95_low": 0.9004,
+     "ci95_high": 0.9466,
+     "per_seed": [
+      0.9413,
+      0.9265,
+      0.9064,
+      0.9199
+     ],
+     "passes": true
+    },
+    "pooled": {
+     "n": 4,
+     "mean": 0.8515,
+     "sd": 0.0138,
+     "ci95_low": 0.8296,
+     "ci95_high": 0.8734,
+     "per_seed": [
+      0.8416,
+      0.8581,
+      0.8677,
+      0.8386
+     ],
+     "passes": true
+    }
+   },
+   "random_ceiling_saturated": false,
+   "verdict": "FAIL"
+  },
+  "volume_flow": {
+   "raw_per_seed": [
+    {
+     "signal_seed": 11,
+     "pretrained": 0.9994,
+     "random_mean": 1.0,
+     "within_window": -0.0455,
+     "phase_scramble": -0.1129,
+     "pooled": -0.0038,
+     "global_sample_misalignment_negative": -0.0213
+    },
+    {
+     "signal_seed": 22,
+     "pretrained": 0.9995,
+     "random_mean": 1.0,
+     "within_window": -0.0594,
+     "phase_scramble": -0.1108,
+     "pooled": 0.0,
+     "global_sample_misalignment_negative": -0.0253
+    },
+    {
+     "signal_seed": 33,
+     "pretrained": 0.9994,
+     "random_mean": 1.0,
+     "within_window": -0.0584,
+     "phase_scramble": -0.1148,
+     "pooled": 0.0004,
+     "global_sample_misalignment_negative": -0.0028
+    },
+    {
+     "signal_seed": 44,
+     "pretrained": 0.9996,
+     "random_mean": 1.0,
+     "within_window": -0.0686,
+     "phase_scramble": -0.0686,
+     "pooled": -0.001,
+     "global_sample_misalignment_negative": -0.0924
+    }
+   ],
+   "paired_gates": {
+    "random_encoder": {
+     "n": 4,
+     "mean": -0.0005,
+     "sd": 0.0001,
+     "ci95_low": -0.0007,
+     "ci95_high": -0.0004,
+     "per_seed": [
+      -0.0006,
+      -0.0005,
+      -0.0006,
+      -0.0004
+     ],
+     "passes": false
+    },
+    "within_window": {
+     "n": 4,
+     "mean": 1.0574,
+     "sd": 0.0096,
+     "ci95_low": 1.0422,
+     "ci95_high": 1.0727,
+     "per_seed": [
+      1.0449,
+      1.0589,
+      1.0578,
+      1.0682
+     ],
+     "passes": true
+    },
+    "phase_scramble": {
+     "n": 4,
+     "mean": 1.1012,
+     "sd": 0.0221,
+     "ci95_low": 1.0661,
+     "ci95_high": 1.1364,
+     "per_seed": [
+      1.1123,
+      1.1103,
+      1.1142,
+      1.0682
+     ],
+     "passes": true
+    },
+    "pooled": {
+     "n": 4,
+     "mean": 1.0006,
+     "sd": 0.0019,
+     "ci95_low": 0.9976,
+     "ci95_high": 1.0036,
+     "per_seed": [
+      1.0032,
+      0.9995,
+      0.999,
+      1.0006
+     ],
+     "passes": true
+    }
+   },
+   "random_ceiling_saturated": true,
+   "verdict": "CEILING_SATURATED_INCONCLUSIVE"
+  }
+ },
+ "real_data": {
+  "returns_momentum": {
+   "pretrained": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0192,
+     "q0.5": -0.0197,
+     "q0.9": -0.0201
+    },
+    "volatility_r2": -0.088,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "random_encoder_mean": {
+    "volatility_r2": -0.1185,
+    "quantile_pinball_neg_q0.5": -0.0196,
+    "barrier_accuracy": 0.6585
+   },
+   "within_window_shuffled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0193,
+     "q0.5": -0.0196,
+     "q0.9": -0.0199
+    },
+    "volatility_r2": -0.1848,
+    "barrier_accuracy": 0.662,
+    "barrier_accuracy_minus_base": 0.002
+   },
+   "order_invariant_pooled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0192,
+     "q0.5": -0.0196,
+     "q0.9": -0.0197
+    },
+    "volatility_r2": -0.1715,
+    "barrier_accuracy": 0.662,
+    "barrier_accuracy_minus_base": 0.002
+   },
+   "margins": {
+    "volatility_vs_random": 0.0305,
+    "volatility_vs_shuffled": 0.0968,
+    "quantile_q0.5_vs_random": -0.0001,
+    "barrier_vs_random": 0.0015
+   },
+   "informative": {
+    "volatility_vs_random": true,
+    "volatility_vs_shuffled": true,
+    "quantile_q0.5_vs_random": false,
+    "barrier_vs_random": false
+   },
+   "masked_newest_bar_reconstruction_r2": {
+    "return_1": 0.002,
+    "log_return_1": 0.0024,
+    "return_5": 0.7382,
+    "log_return_5": 0.7373,
+    "return_10": 0.8255,
+    "log_return_10": 0.8272,
+    "return_20": 0.8588,
+    "log_return_20": 0.8602,
+    "return_60": 0.9267,
+    "log_return_60": 0.928,
+    "roc_10": 0.8255,
+    "roc_20": 0.8588,
+    "roc_60": 0.9267,
+    "mom_10": 0.8198,
+    "mom_20": 0.8473,
+    "statistical__log_return_1": 0.0024
+   },
+   "lag_memory_oos": {
+    "lag_2": {
+     "pretrained": 0.4175,
+     "ar_last_bar_baseline": 0.0012,
+     "random_encoder": 0.9416,
+     "within_window_shuffled": 0.0041
+    },
+    "lag_4": {
+     "pretrained": 0.5453,
+     "ar_last_bar_baseline": 0.0001,
+     "random_encoder": 0.921,
+     "within_window_shuffled": 0.0137
+    },
+    "lag_8": {
+     "pretrained": 0.4484,
+     "ar_last_bar_baseline": -0.0012,
+     "random_encoder": 0.4599,
+     "within_window_shuffled": 0.0028
+    },
+    "lag_16": {
+     "pretrained": 0.3019,
+     "ar_last_bar_baseline": -0.0014,
+     "random_encoder": 0.5231,
+     "within_window_shuffled": 0.0114
+    }
+   },
+   "spectral_normalized_error_by_band": {
+    "low": 0.3482,
+    "mid": 0.3895,
+    "high": 0.426
+   }
+  },
+  "trend_level": {
+   "pretrained": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0192,
+     "q0.5": -0.0196,
+     "q0.9": -0.0197
+    },
+    "volatility_r2": -0.2173,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "random_encoder_mean": {
+    "volatility_r2": -0.2693,
+    "quantile_pinball_neg_q0.5": -0.0196,
+    "barrier_accuracy": 0.6595
+   },
+   "within_window_shuffled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0195,
+     "q0.5": -0.0197,
+     "q0.9": -0.0201
+    },
+    "volatility_r2": -0.2563,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "order_invariant_pooled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0196,
+     "q0.5": -0.0196,
+     "q0.9": -0.0195
+    },
+    "volatility_r2": -0.0545,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "margins": {
+    "volatility_vs_random": 0.052,
+    "volatility_vs_shuffled": 0.039,
+    "quantile_q0.5_vs_random": 0.0,
+    "barrier_vs_random": 0.0005
+   },
+   "informative": {
+    "volatility_vs_random": true,
+    "volatility_vs_shuffled": true,
+    "quantile_q0.5_vs_random": false,
+    "barrier_vs_random": false
+   },
+   "masked_newest_bar_reconstruction_r2": {
+    "sma_10": 0.9303,
+    "ema_10": 0.9285,
+    "close_sma_ratio_10": 0.1241,
+    "sma_20": 0.953,
+    "ema_20": 0.948,
+    "close_sma_ratio_20": 0.3896,
+    "sma_50": 0.9725,
+    "ema_50": 0.9734,
+    "close_sma_ratio_50": 0.6314,
+    "sma_100": 0.9255,
+    "ema_100": 0.9635,
+    "close_sma_ratio_100": 0.6318,
+    "sma_200": 0.6111,
+    "ema_200": 0.7491,
+    "close_sma_ratio_200": 0.4979,
+    "macd": 0.7458,
+    "macd_signal": 0.7951,
+    "macd_hist": 0.4278,
+    "ema_cross_10_50": 0.7044,
+    "ema_cross_20_100": 0.7227,
+    "trend_slope_50": 0.6636,
+    "trend_strength_50": 0.216,
+    "zscore_close_100": 0.5723
+   },
+   "lag_memory_oos": {
+    "lag_2": {
+     "pretrained": 0.9398,
+     "ar_last_bar_baseline": 0.9924,
+     "random_encoder": 0.8694,
+     "within_window_shuffled": 0.8072
+    },
+    "lag_4": {
+     "pretrained": 0.941,
+     "ar_last_bar_baseline": 0.9723,
+     "random_encoder": 0.8757,
+     "within_window_shuffled": 0.8301
+    },
+    "lag_8": {
+     "pretrained": 0.9397,
+     "ar_last_bar_baseline": 0.9073,
+     "random_encoder": 0.883,
+     "within_window_shuffled": 0.8691
+    },
+    "lag_16": {
+     "pretrained": 0.947,
+     "ar_last_bar_baseline": 0.7612,
+     "random_encoder": 0.8839,
+     "within_window_shuffled": 0.9135
+    }
+   },
+   "spectral_normalized_error_by_band": {
+    "low": 0.1979,
+    "mid": 0.5785,
+    "high": 0.5145
+   }
+  },
+  "volatility_distribution": {
+   "pretrained": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0197,
+     "q0.5": -0.0197,
+     "q0.9": -0.0197
+    },
+    "volatility_r2": -0.0978,
+    "barrier_accuracy": 0.658,
+    "barrier_accuracy_minus_base": -0.002
+   },
+   "random_encoder_mean": {
+    "volatility_r2": -0.2119,
+    "quantile_pinball_neg_q0.5": -0.0196,
+    "barrier_accuracy": 0.659
+   },
+   "within_window_shuffled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0194,
+     "q0.5": -0.0196,
+     "q0.9": -0.0197
+    },
+    "volatility_r2": -0.2153,
+    "barrier_accuracy": 0.658,
+    "barrier_accuracy_minus_base": -0.002
+   },
+   "order_invariant_pooled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0199,
+     "q0.5": -0.0195,
+     "q0.9": -0.0191
+    },
+    "volatility_r2": -0.1012,
+    "barrier_accuracy": 0.628,
+    "barrier_accuracy_minus_base": -0.032
+   },
+   "margins": {
+    "volatility_vs_random": 0.1141,
+    "volatility_vs_shuffled": 0.1175,
+    "quantile_q0.5_vs_random": -0.0001,
+    "barrier_vs_random": -0.001
+   },
+   "informative": {
+    "volatility_vs_random": true,
+    "volatility_vs_shuffled": true,
+    "quantile_q0.5_vs_random": false,
+    "barrier_vs_random": false
+   },
+   "masked_newest_bar_reconstruction_r2": {
+    "bb_upper": 0.905,
+    "bb_middle": 0.9155,
+    "bb_lower": 0.8969,
+    "bb_width": 0.5603,
+    "atr_14": 0.549,
+    "natr_14": 0.4527,
+    "hist_vol_10": 0.4006,
+    "hist_vol_20": 0.631,
+    "hist_vol_60": 0.8499,
+    "roll_mean_ret_20": 0.4378,
+    "roll_std_ret_20": 0.631,
+    "roll_skew_ret_20": 0.571,
+    "roll_kurt_ret_20": 0.3909,
+    "roll_mean_ret_60": 0.7862,
+    "roll_std_ret_60": 0.8499,
+    "roll_skew_ret_60": 0.7151,
+    "roll_kurt_ret_60": 0.6403,
+    "roll_mean_ret_252": 0.7431,
+    "roll_std_ret_252": 0.8497,
+    "roll_skew_ret_252": 0.8025,
+    "roll_kurt_ret_252": 0.6418,
+    "realized_var_12": 0.4628,
+    "realized_var_48": 0.7945,
+    "autocorr_lag1_100": 0.6925,
+    "autocorr_lag5_100": 0.8196,
+    "sqret_autocorr_lag1_100": 0.7864,
+    "vol_regime_high": 0.4864,
+    "vol_regime_low": 0.3927,
+    "hurst_proxy_200": 0.7125
+   },
+   "lag_memory_oos": {
+    "lag_2": {
+     "pretrained": 0.9148,
+     "ar_last_bar_baseline": 0.9917,
+     "random_encoder": 0.8826,
+     "within_window_shuffled": 0.7652
+    },
+    "lag_4": {
+     "pretrained": 0.9211,
+     "ar_last_bar_baseline": 0.971,
+     "random_encoder": 0.8838,
+     "within_window_shuffled": 0.789
+    },
+    "lag_8": {
+     "pretrained": 0.9199,
+     "ar_last_bar_baseline": 0.9115,
+     "random_encoder": 0.8719,
+     "within_window_shuffled": 0.8314
+    },
+    "lag_16": {
+     "pretrained": 0.8718,
+     "ar_last_bar_baseline": 0.7851,
+     "random_encoder": 0.7885,
+     "within_window_shuffled": 0.8751
+    }
+   },
+   "spectral_normalized_error_by_band": {
+    "low": 0.2312,
+    "mid": 0.7388,
+    "high": 0.934
+   }
+  },
+  "oscillators": {
+   "pretrained": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0193,
+     "q0.5": -0.0195,
+     "q0.9": -0.0196
+    },
+    "volatility_r2": -0.1598,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "random_encoder_mean": {
+    "volatility_r2": -0.1659,
+    "quantile_pinball_neg_q0.5": -0.0196,
+    "barrier_accuracy": 0.6585
+   },
+   "within_window_shuffled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0193,
+     "q0.5": -0.0196,
+     "q0.9": -0.0199
+    },
+    "volatility_r2": -0.2037,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "order_invariant_pooled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0192,
+     "q0.5": -0.0195,
+     "q0.9": -0.0202
+    },
+    "volatility_r2": -0.2046,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "margins": {
+    "volatility_vs_random": 0.0061,
+    "volatility_vs_shuffled": 0.0439,
+    "quantile_q0.5_vs_random": 0.0001,
+    "barrier_vs_random": 0.0015
+   },
+   "informative": {
+    "volatility_vs_random": false,
+    "volatility_vs_shuffled": true,
+    "quantile_q0.5_vs_random": false,
+    "barrier_vs_random": false
+   },
+   "masked_newest_bar_reconstruction_r2": {
+    "rsi_7": 0.6201,
+    "rsi_14": 0.7525,
+    "rsi_21": 0.8029,
+    "stoch_k": 0.6004,
+    "stoch_d": 0.8891,
+    "williams_r_14": 0.6004,
+    "cci_14": 0.6417,
+    "bb_pct_b": 0.6408,
+    "mfi_14": 0.7978
+   },
+   "lag_memory_oos": {
+    "lag_2": {
+     "pretrained": 0.8378,
+     "ar_last_bar_baseline": 0.5398,
+     "random_encoder": 0.8935,
+     "within_window_shuffled": 0.1054
+    },
+    "lag_4": {
+     "pretrained": 0.8478,
+     "ar_last_bar_baseline": 0.252,
+     "random_encoder": 0.8516,
+     "within_window_shuffled": 0.1338
+    },
+    "lag_8": {
+     "pretrained": 0.6683,
+     "ar_last_bar_baseline": 0.0453,
+     "random_encoder": 0.5854,
+     "within_window_shuffled": 0.2114
+    },
+    "lag_16": {
+     "pretrained": 0.5756,
+     "ar_last_bar_baseline": 0.0001,
+     "random_encoder": 0.4913,
+     "within_window_shuffled": 0.3159
+    }
+   },
+   "spectral_normalized_error_by_band": {
+    "low": 0.146,
+    "mid": 0.2922,
+    "high": 0.5196
+   }
+  },
+  "volume_flow": {
+   "pretrained": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0194,
+     "q0.5": -0.0197,
+     "q0.9": -0.021
+    },
+    "volatility_r2": -0.2089,
+    "barrier_accuracy": 0.654,
+    "barrier_accuracy_minus_base": -0.006
+   },
+   "random_encoder_mean": {
+    "volatility_r2": 0.0141,
+    "quantile_pinball_neg_q0.5": -0.0197,
+    "barrier_accuracy": 0.6565
+   },
+   "within_window_shuffled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0196,
+     "q0.5": -0.0197,
+     "q0.9": -0.0215
+    },
+    "volatility_r2": -0.2655,
+    "barrier_accuracy": 0.656,
+    "barrier_accuracy_minus_base": -0.004
+   },
+   "order_invariant_pooled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0194,
+     "q0.5": -0.0196,
+     "q0.9": -0.0199
+    },
+    "volatility_r2": -0.2573,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "margins": {
+    "volatility_vs_random": -0.223,
+    "volatility_vs_shuffled": 0.0566,
+    "quantile_q0.5_vs_random": 0.0,
+    "barrier_vs_random": -0.0025
+   },
+   "informative": {
+    "volatility_vs_random": false,
+    "volatility_vs_shuffled": true,
+    "quantile_q0.5_vs_random": false,
+    "barrier_vs_random": false
+   },
+   "masked_newest_bar_reconstruction_r2": {
+    "obv": 0.9552,
+    "obv_delta_20": 0.8227,
+    "volume_sma_10": 0.925,
+    "volume_sma_20": 0.9683,
+    "volume_ratio_20": 0.1119,
+    "vwap_60": 0.9902
+   },
+   "lag_memory_oos": {
+    "lag_2": {
+     "pretrained": 0.978,
+     "ar_last_bar_baseline": 0.9566,
+     "random_encoder": 0.9906,
+     "within_window_shuffled": 0.8805
+    },
+    "lag_4": {
+     "pretrained": 0.9725,
+     "ar_last_bar_baseline": 0.9116,
+     "random_encoder": 0.9882,
+     "within_window_shuffled": 0.8935
+    },
+    "lag_8": {
+     "pretrained": 0.958,
+     "ar_last_bar_baseline": 0.8251,
+     "random_encoder": 0.9659,
+     "within_window_shuffled": 0.9269
+    },
+    "lag_16": {
+     "pretrained": 0.93,
+     "ar_last_bar_baseline": 0.6604,
+     "random_encoder": 0.9069,
+     "within_window_shuffled": 0.9151
+    }
+   },
+   "spectral_normalized_error_by_band": {
+    "low": 0.1291,
+    "mid": 0.2719,
+    "high": 0.3202
+   }
+  },
+  "fused": {
+   "pretrained": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0198,
+     "q0.5": -0.0196,
+     "q0.9": -0.0186
+    },
+    "volatility_r2": -0.0893,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "random_extractor": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.0197,
+     "q0.5": -0.0196,
+     "q0.9": -0.0195
+    },
+    "volatility_r2": -0.0891,
+    "barrier_accuracy": 0.66,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "within_window_shuffled": {
+    "quantile_pinball_neg": {
+     "q0.1": -0.02,
+     "q0.5": -0.0196,
+     "q0.9": -0.0193
+    },
+    "volatility_r2": -0.1407,
+    "barrier_accuracy": 0.67,
+    "barrier_accuracy_minus_base": 0.01
+   },
+   "margins": {
+    "volatility_vs_random": -0.0002,
+    "volatility_vs_shuffled": 0.0514
+   }
+  }
+ },
+ "summary": {
+  "synthetic": {
+   "returns_momentum": "PASS",
+   "trend_level": "PASS",
+   "volatility_distribution": "PASS",
+   "oscillators": "FAIL",
+   "volume_flow": "CEILING_SATURATED_INCONCLUSIVE"
+  },
+  "real_volatility_margins_vs_random": {
+   "returns_momentum": 0.0305,
+   "trend_level": 0.052,
+   "volatility_distribution": 0.1141,
+   "oscillators": 0.0061,
+   "volume_flow": -0.223,
+   "fused": -0.0002
+  }
+ }
+}

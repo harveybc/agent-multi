@@ -171,6 +171,13 @@ def executable_manifest(repo: Path) -> dict[str, str]:
         "env_gym_fx": _module_file("env_plugins.gym_fx_env"),
         "strategy_shared_execution_envelope":
             _module_file("strategy_plugins.shared_execution_envelope"),
+        # the EXECUTING gym-fx core (fill-truth order 2026-08-28):
+        # trade accounting lives in these files — they are part of the
+        # executable identity like every other executing module
+        "gym_fx_core_env":
+            _module_file("gym_fx").parent.parent / "app/env.py",
+        "gym_fx_core_bridge":
+            _module_file("gym_fx").parent.parent / "app/bt_bridge.py",
         "split_contract": repo / ("examples/config/"
                                   "phase_3_eth_sac_dynamics/splits/"
                                   "eth_nested_split_contract_o2022_"

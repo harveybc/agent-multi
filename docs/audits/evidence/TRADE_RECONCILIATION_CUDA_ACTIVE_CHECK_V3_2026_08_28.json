@@ -1,0 +1,26 @@
+{
+ "schema": "agent_multi.trade_reconciliation_cuda_active_check.v1",
+ "classification": "MECHANICS_ONLY",
+ "policy": "SCRIPTED deterministic actions (order point 6); the treatment model executed a REAL CUDA forward per step but its action was not applied",
+ "device_class_sanitized": "NVIDIA GeForce RTX 4070 Laptop GPU",
+ "treatment_seal": "a466c9f86b481cf20e23f6d69178868e65551ffcc8378353edda5b4b1b85d281",
+ "cuda_forwards_executed": 100,
+ "trades_total": 4,
+ "trades_won": 0,
+ "trades_lost": 4,
+ "trades_breakeven": 0,
+ "closed_trades_by_source": {
+  "bt_trade_closed": 2,
+  "envelope_direct_settlement": 2
+ },
+ "close_reason_counts": {
+  "backtrader trade lifecycle close (fill order_ref=6)": 1,
+  "backtrader trade lifecycle close (fill order_ref=10)": 1,
+  "entry_bar_settlement_at_level": 2
+ },
+ "terminal_settlement": 0,
+ "final_cumulative": 4,
+ "conservation_identities_exact": true,
+ "both_closure_populations_present": true,
+ "verdict": "CUDA_ACTIVE_RECONCILIATION_EXACT"
+}
