@@ -1,0 +1,29 @@
+{
+ "schema": "agent_multi.weekly_flat_code_inventory.v1",
+ "purpose": "WP0.3: existing calendar/force-close/explicit-close/watchdog/venue-reconciliation authority BEFORE adding new authority (order @45c49003)",
+ "existing": {
+  "calendar": {
+   "gym-fx app/oanda_calendar.py": "OANDA FX weekly calendar helper (DST-aware America/New_York policy) \u2014 FX-specific, NOT venue-symbol session evidence; predates plan 42's session authority"
+  },
+  "force_flat": {
+   "gym-fx app/env.py": "event_context_force_flat + is_force_flat_window observation (economic-calendar EVENT overlay, config-gated) \u2014 plan 42 explicitly separates economic-calendar overlays from closure authority; NOT a weekly flatten"
+  },
+  "explicit_close": {
+   "gym-fx strategy_plugins/shared_execution_envelope.py": "policy_close taxonomy (action 3 / target-flat), envelope children cancellation, direct settlement accounting \u2014 usable by the overlay's opportunistic-close path",
+   "gym-fx strategy_plugins/direct_atr_sltp.py": "legacy ATR SL/TP strategy with close paths"
+  },
+  "watchdogs": {
+   "lts (fleet host) lts-mt5-bridge-watchdog.timer": "5-min deterministic bridge watchdog \u2014 proven blind to bar staleness semantics (2026-08-29 investigation): no EXPECTED_MARKET_CLOSED vs FEED_STALE_DURING_OPEN_WINDOW distinction",
+   "agent-multi tools/gpu_temperature_watchdog.py & friends": "host thermal/idle watchdogs (training fleet, not venue)"
+  },
+  "venue_reconciliation": {
+   "lts app/mt5_model_runner.py reconcile_completed_lifecycles": "AUD-F2-20260804-104 deal/history reconciliation of completed lifecycles",
+   "lts alpaca/ibkr runners": "per-venue adapters with their own reconciliation paths"
+  },
+  "session_evidence": "NO SymbolInfoSessionTrade/SymbolInfoSessionQuote publication exists anywhere (grep-verified) \u2014 the EA/bridge session envelope of WP1 is genuinely new authority"
+ },
+ "pre_reproducers_absence": {
+  "weekly_flatten": "grep -rn 'wind_down\\|forced_flatten\\|WIND_DOWN\\|FORCED_FLATTEN' over gym-fx and lts returns ZERO strategy/runner hits \u2014 no weekly flatten authority exists",
+  "calendar_aware_stale_alert": "the 2026-08-29 investigation: 34h of missing ETHUSD bars during the weekend produced zero watchdog alerts AND a real open-window break would look identical \u2014 no calendar-aware staleness taxonomy exists"
+ }
+}

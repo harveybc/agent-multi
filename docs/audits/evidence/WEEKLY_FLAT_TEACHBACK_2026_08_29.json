@@ -1,0 +1,15 @@
+{
+ "schema": "agent_multi.weekly_flat_teachback.v1",
+ "source": "work plan 42 (@45c49003), taught back for auditor verification",
+ "state_machine": {
+  "NORMAL_TRADING": "entries/reductions/exits allowed; normal inference and risk limits; no weekly restriction",
+  "WIND_DOWN": "starts wind_down_hours before next known closure; NO new risk-increasing parent/pending order; existing pending entries CANCELLED; inference continues on fresh closed bars; model MAY close opportunistically; every opportunity/decision/spread/unrealized-PnL recorded",
+  "FORCED_FLATTEN": "starts forced_flatten_hours before the final liquid interval; cancel pendings FIRST, then close every position under a bounded retry policy; requires FRESH DIRECT venue reconciliation proving zero positions AND zero orders; failure is a critical typed incident, never a reported success",
+  "EXPECTED_MARKET_CLOSED": "no actionable inference or orders; stale bars EXPECTED under the bound session calendar; watchdog keeps checking terminal/account/brackets/heartbeat; retraining may run on data available BEFORE closure only",
+  "REOPEN_BLACKOUT": "no new entries after reopen; accidentally carried exposure keeps native protection under a separately declared recovery policy; collect spread/gap/vol/quote-continuity/closed-bar evidence; exit only after BOTH minimum time/bars AND stability predicates pass"
+ },
+ "current_position_exception": "the ETH short already carried into THIS closed weekend is NOT retroactively covered: no EA modification and no blind first-tick close while closed; at reopen -> typed carried-position recovery state (preserve accepted SL/TP, block new entries, observe direct spread/gap/freshness, close per the approved recovery contract, verify flat); this weekend is NOT evidence for the prevention policy",
+ "training_semantics": "preserve real gaps (never synthesize weekend bars); session state derives from the calendar available at that historical time; closed intervals carry account state without actionable steps or fabricated rewards; wind-down bars trainable for hold/reduce/close only; forced closure uses the live cost envelope; blackout bars are observable context that forbids entry; reward attribution separates voluntary close / forced close / avoided gap PnL / forgone PnL / execution cost; episode boundaries must NOT erase exposure before the forced-flatten assertion; pre-close and post-reopen observations STAY in the dataset (the ENVIRONMENT enforces legality, the model learns when closing pays)",
+ "distinct_from_retraining_cadence": "weekly exposure is an independent deterministic risk overlay; retraining cadence is ORTHOGONAL (governed by Screen R, work plan 40): cutoff = last accepted bar before closure, train/verify DURING closure without activating, activate only after blackout exit + warm-up + artifact parity, failed retraining leaves the prior model active; weekend-compute gains are never attributed to cadence alone",
+ "policy_default": "capability MANDATORY for every strategy/venue; config-toggleable ONLY for paired experiments; live deployment defaults enabled and may not silently inherit false"
+}

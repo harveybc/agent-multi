@@ -1,0 +1,24 @@
+{
+ "schema": "agent_multi.mt5_weekend_investigation.v1",
+ "date": "2026-08-29",
+ "classification": "OPERATIONS_EVIDENCE (read-only investigation; nothing modified)",
+ "finding": "MT5 runner/bridge ARE ACTIVE on the fleet KVM host (VM + authenticated bridge v2 + ETH model runner + 5-min watchdog timer); the local workstation never hosts them",
+ "health_verified": {
+  "terminal": "connected; 2s heartbeat age; build 6090; ping 98ms; trade_allowed true",
+  "account_demo": {
+   "balance": 9996.95,
+   "equity": 9997.01,
+   "open_positions": 1,
+   "pending_orders": 0,
+   "position": "ETH short, broker-accepted SL/TP, carried into the weekend"
+  },
+  "runner": "15s loop, state monitoring, control target_preserves_open_exposure, account binding verified by fingerprint"
+ },
+ "staleness_root_cause": {
+  "observed": "last ETHUSD H4 bar 2026-08-28T13:00Z while snapshots stayed seconds-fresh (~34h at investigation time)",
+  "verdict": "EXPECTED broker weekend close, NOT a failure: identical 52h bar gaps on both prior weekends (Fri 17:00 -> Sun 21:00 UTC) in the same snapshot history; ETHUSD bars resume ~Sunday 21:00 UTC",
+  "runner_behavior": "CORRECT fail-safe: preserves exposure, refuses to revise the terminal due-bar decision on stale data"
+ },
+ "real_gap_found": "the bridge watchdog cannot distinguish EXPECTED_MARKET_CLOSED from FEED_STALE_DURING_OPEN_WINDOW: 34h without bars produced zero alerts, and a genuine Tuesday feed break would look identical \u2014 this motivates work plan 42 \u00a79",
+ "restoration": "NONE performed (nothing broken); owner's verify-before-restore condition satisfied by the read-only verification above"
+}
