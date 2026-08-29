@@ -1,0 +1,110 @@
+{
+ "schema": "agent_multi.positive_skill_screen.v1",
+ "classification": "REPRESENTATION_DIAGNOSTIC",
+ "predeclaration": "POSITIVE_SKILL_SCREEN_PREDECLARATION_2026_08_28.json",
+ "primary_target": "realized volatility h6",
+ "cells": {
+  "returns_momentum|w32|d16": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": -0.2824,
+   "calibration_r2": 0.0309,
+   "parameters": 6561,
+   "wall_s": 4.3,
+   "peak_rss_mb_delta": 0.0
+  },
+  "returns_momentum|w32|d32": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": -0.1936,
+   "calibration_r2": 0.0075,
+   "parameters": 25409,
+   "wall_s": 6.0,
+   "peak_rss_mb_delta": 0.0
+  },
+  "returns_momentum|w32|d64": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2787,
+   "calibration_r2": -0.039,
+   "parameters": 99969,
+   "wall_s": 14.2,
+   "peak_rss_mb_delta": 0.0
+  },
+  "returns_momentum|w32|d96": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.2721,
+   "calibration_r2": -0.1216,
+   "parameters": 223681,
+   "wall_s": 28.1,
+   "peak_rss_mb_delta": 43.9
+  },
+  "returns_momentum|w32|d128": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.2433,
+   "calibration_r2": -0.076,
+   "parameters": 396545,
+   "wall_s": 43.9,
+   "peak_rss_mb_delta": 24.5
+  },
+  "returns_momentum|w64|d16": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": -0.3422,
+   "calibration_r2": 0.0294,
+   "parameters": 6625,
+   "wall_s": 7.4,
+   "peak_rss_mb_delta": 0.0
+  },
+  "returns_momentum|w64|d32": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": -0.2097,
+   "calibration_r2": 0.0259,
+   "parameters": 25537,
+   "wall_s": 12.9,
+   "peak_rss_mb_delta": 0.0
+  },
+  "returns_momentum|w64|d64": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2696,
+   "calibration_r2": 0.049,
+   "parameters": 100225,
+   "wall_s": 36.9,
+   "peak_rss_mb_delta": 23.7
+  },
+  "returns_momentum|w64|d96": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.4328,
+   "calibration_r2": -0.0842,
+   "parameters": 224065,
+   "wall_s": 69.3,
+   "peak_rss_mb_delta": 84.3
+  }
+ },
+ "halving": {},
+ "survivor_decisions": {},
+ "invalid_cells": []
+}

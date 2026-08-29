@@ -1,0 +1,30 @@
+{
+ "schema": "agent_multi.experiment_runtime_incident.v1",
+ "order": "@95e088da (observable and resumable experiment runtime)",
+ "incident_primary": {
+  "what": "first positive-skill screen (order @b6b949ab section C)",
+  "command": "python tools/positive_skill_screen.py --pretrain-dir <agent-scratch>/candidate_generation --output docs/audits/evidence/POSITIVE_SKILL_SCREEN_REPORT_2026_08_28.json (OMP_NUM_THREADS=3, CPU only)",
+  "pid": 3550302,
+  "started_local": "2026-08-28 ~20:57",
+  "elapsed": "approximately 18h50m at termination",
+  "resources": "~2.9 CPU cores sustained (271-288%), ~2.1-2.2 GB RSS, single process, 7 threads",
+  "termination_disposition": "paused for inspection and TERMINATED BY THE AUDITOR (Musashi); the executing agent had hypothesized an OOM SIGKILL from the absence of a traceback \u2014 that hypothesis was WRONG and is retracted here",
+  "output": "NO completed-cell result, NO progress journal, NO checkpoint, NO defensible ETA; final-write-only design; stdout piped through grep/tail to the agent harness only",
+  "scientific_result": "none; no partial completion is claimed; nothing reconstructed from memory"
+ },
+ "incident_secondary_disclosure": {
+  "what": "the agent relaunched a checkpoint-hardened but still MONOLITHIC runner minutes before receiving the permanent order",
+  "pid": 4191609,
+  "elapsed": "~5 minutes",
+  "termination_disposition": "SIGTERM by the agent immediately upon reading the permanent order; its partial checkpoint (a handful of round-1 cells) is NOT claimed and will not seed the new runtime (fresh attempt identities only)"
+ },
+ "root_design_faults_acknowledged": [
+  "finiteness without observability",
+  "CPU utilization treated as progress evidence",
+  "atomic-result persistence absent",
+  "no heartbeat, no per-unit timeout, no watchdog, no status command",
+  "inputs on volatile agent /tmp scratch",
+  "sole stdout pipe to an interactive agent"
+ ],
+ "disposition": "execution design REJECTED and retired as a driver; the three-layer runtime (materializer / single-unit worker / supervisor+aggregator+status) replaces it; the SCIENTIFIC rule of the predeclared screen is unchanged"
+}
