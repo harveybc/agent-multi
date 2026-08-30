@@ -1,0 +1,27 @@
+{
+ "schema": "agent_multi.weekly_flat_f1_f4_post.v1",
+ "order": "@8acade57 (F1-F4 final correction; C5 pending)",
+ "audited_commits": {
+  "gym_fx": "9915138",
+  "agent_multi": "815e756a"
+ },
+ "pre_reproduced_before_editing": {
+  "F1_direct_construct_invalid": "ExposureFacts(nan,'long',None,-9,-4,'bad') CONSTRUCTED (signed=nan, pending_orders=-4, mapping='bad')",
+  "F2_mismatched_calendar": "policy calendar_identity='cal-A' with calendar digest 'cal-DIFFERENT' ACCEPTED and 'cal-DIFFERENT' published as authoritative",
+  "F3_pending_entry_survives": "enabled policy with cancel_pending_on_wind_down=false: pending long entry passed through wind-down, cancel_pending=false",
+  "F4_wrong_symbol_migration_reused": "BTCUSD migration normalized ETHUSD exposure and returned CARRIED_POSITION_RECOVERY_ACTIVE TWICE for the same closure"
+ },
+ "post": {
+  "F1": "every evidence type enforces its invariants in __post_init__ (SessionCalendar, ReopenEvidence, ExposureFacts, CarriedPositionMigration); direct constructors with invalid values now REFUSE; frozen invalid data is no longer constructable; intervals must already be canonical UTC (build() is the only path)",
+  "F2": "session_state REQUIRES exact equality between policy calendar_identity and calendar digest before any derivation, and optionally binds venue/account_fingerprint/symbol at the adapter boundary; every state block publishes venue, symbol and account_fingerprint; cross-calendar/symbol/account substitution refuses",
+  "F3": "cancel_pending_on_wind_down=false is REJECTED AT MATERIALIZATION while enabled (the invalid cell cannot exist); ExposureFacts distinguishes protective_orders from entry_orders so native SL/TP brackets are NEVER cancelled by the overlay; cancel_scope='pending_entry_orders_only' recorded",
+  "F4": "CarriedPositionMigration is bound to venue+account+symbol+position_identity+ONE closure interval and requires native_protection_confirmed; MigrationLedger provides durable one-use custody with an atomic consume() that refuses reuse across closures; wrong symbol/account/position/unprotected records refuse"
+ },
+ "suites": {
+  "focused": "39/39 (was 31/31 with these bypasses absent)",
+  "full_gym_fx": "193 passed"
+ },
+ "C5_status": "PENDING \u2014 real GymFxEnv path semantics not yet claimed",
+ "live_parity": "NOT CLAIMED \u2014 WP3 real LTS Alpaca/MT5 adapter paths remain blocked",
+ "untouched": "current MT5 position, EA, bridge, runner; no deployment"
+}
