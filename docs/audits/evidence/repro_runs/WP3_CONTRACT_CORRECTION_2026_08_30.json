@@ -1,0 +1,109 @@
+{
+ "order": "agent-multi@b42f01aa — WP3 C1-C8 contract correction, implementation/read-only only",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "eb47ee0",
+ "post_commit": "59f89be",
+ "note": "PRE reproduced and frozen BEFORE any edit. Three authority bypasses confirmed, all mine.",
+
+ "PRE": {
+  "C1_stale_payload_fresh_wrapper": {
+   "internal_observed_at": "2020-01-01T00:00:00+00:00",
+   "envelope_observed_at": "2026-08-28T14:59:55+00:00",
+   "accepted_under_120s_policy": true,
+   "verdict": "freshness was computed from the ENVELOPE timestamp, supplied outside the bytes and never bound to the signed internal one."
+  },
+  "C2_identity_not_bound_to_facts": {
+   "envelope_symbol": "USDCAD",
+   "internal_symbols": ["BTCUSD"],
+   "envelope_accepted": true,
+   "exposure_would_sum": 0.1,
+   "account_session_internal_vs_envelope_compared": false,
+   "verdict": "verify compared only the ENVELOPE against the policy; a foreign-symbol position was summed into exposure."
+  },
+  "C3_coercion_defeats_the_validators": {
+   "volume_true": {"accepted": true, "signed_quantity": 1.0},
+   "volume_whitespace_string": {"accepted": true, "signed_quantity": 0.5},
+   "coercion_sites": ["float(row[\"volume\"])", "float(row[\"stop_loss\"])", "float(row[\"take_profit\"])", "float(row[\"price_open\"])"],
+   "verdict": "float() ran before require_real, so a bool became a 1.0-lot position."
+  },
+  "C4_authority_identity_optional": {
+   "signature": "(root, *, expected_code_identity: Optional[str] = None)",
+   "default_is_none": true,
+   "dry_run_passes_a_digest": false,
+   "any_checkout_loads": true
+  },
+  "C5_wp3_3_absent": {"live_custody_module": [], "verdict": "loading the accepted custody MODULE is not materialising a deployable custody. I reported it as covered and it was not."},
+  "C6_mt5_contract_rejects_ea_bytes": {"model_fields": ["price_open", "profit", "side", "stop_loss", "symbol", "take_profit", "ticket", "volume"], "ea_emits_time_open_unix": true, "strict_model_accepts": false},
+  "C7_no_alpaca_capture": {"venues_covered": ["mt5_demo"]}
+ },
+
+ "POST": {
+  "C1_freshness_comes_from_the_bytes": {
+   "envelope_parameter_removed": true,
+   "stale_payload_fresh_wrapper": {"refused": true, "message": "evidence is 210092400.000s old and the policy allows 120.000s — stale evidence is refused"},
+   "future_payload": "refused",
+   "transport_stamp_mismatch": {"refused": true, "message": "transport timestamp 2026-08-28T14:00:00+00:00 does not match the payload's … — a transport stamp is a check on the body, never a substitute for it"},
+   "mechanism": "VenueDirectEvidence.parse no longer accepts observed_at at all; every parser must produce one from the payload, and that is the only timestamp the age is computed from."
+  },
+  "C2_identity_is_bound_to_the_facts": {
+   "foreign_symbol": {"refused": true, "message": "payload carries symbols ['BTCUSD'] but the policy binds 'USDCAD' — a foreign or mixed-symbol payload is refused, never filtered"},
+   "mixed_symbols": "refused — never filtered, never summed",
+   "internal_account_fingerprint": {"refused": true, "message": "the payload states account fingerprint 'a3c7e052beed3c62' but the policy binds … — the envelope may not vouch for an account the facts contradict"},
+   "duplicate_identity": {"refused": true, "message": "position identity '100001' appears twice — duplicate identities refuse"},
+   "alpaca_leg_reusing_the_parent_id": "refused",
+   "cross_envelope_coherence": "the dry run requires every envelope in ONE decision to name the same venue, account and symbol",
+   "adversary_used": "the envelope AGREES with the policy while the facts do not — the case the envelope check alone cannot catch"
+  },
+  "C3_per_venue_numeric_grammars": {
+   "mt5_refusals": {"bool": "refused", "string": "refused", "whitespace": "refused", "exponent": "refused", "NaN/Infinity words": "refused", "None/list": "refused"},
+   "mt5_message": "position[0].volume: a JSON number is required, got bool True — no coercion",
+   "alpaca": "documented numeric STRINGS through an explicit finite decimal grammar: optional sign, no leading zeros, optional fraction. Whitespace, exponents, non-finite words, 0x forms, bare numbers and bools all refuse.",
+   "no_float_on_untrusted_input": true
+  },
+  "C4_authority_pinning_is_mandatory": {
+   "has_default": false,
+   "omitted": {"refused": true, "error": "TypeError", "message": "load_authority() missing 1 required keyword-only argument: 'expected_code_identity'"},
+   "unpinned_or_malformed": {"refused": true, "message": "expected_code_identity must be the reviewed 64-character hex digest … an unpinned authority is refused"},
+   "dry_run_config_without_the_digest": {"exit_code": 2, "outcome": "REFUSED", "reason": "the dry-run config must pin authority_code_identity"},
+   "recomputed_from_disk": "a copied checkout that drifted by one appended line refuses against its own earlier digest"
+  },
+  "C5_deployable_live_custody": {
+   "module": "app/live_flatten_custody.py",
+   "does_not_reimplement": "the audited FlattenObligationStore is used as-is through the authority binding, so O_EXCL, 0700/0600, symlink refusal, the monotone acknowledgement, digest-verified reads, locked transitions and the episode-identity rule all come from the accepted implementation",
+   "venue_contract_added": "an obligation binds venue, account fingerprint, symbol, position identity, evidence-policy digest, calendar identity and authority code identity; any of them differing refuses on recover AND on confirm",
+   "discharge": "requires DIRECT venue evidence re-verified against the venue policy showing zero positions AND zero orders. A plain mapping, stale evidence, remaining exposure and simulator provenance all refuse",
+   "fail_closed": "restart recovers; several open obligations raise LiveCustodyDispositionRequired; a foreign episode cannot advance",
+   "read_only": "the module holds no client and no credential, asserted by a test",
+   "observed_root_mode": "0o700"
+  },
+  "C6_mt5_contract_repaired": {
+   "declares_time_open_unix": true,
+   "strict_and_range_checked": "int, strict=True, gt=0 — a string, a bool, zero and a negative all refuse",
+   "end_to_end": "a test drives the REAL FastAPI app in process: EA bytes -> POST /v1/snapshot -> persistence -> read back from SQLite -> WP3 parser, with opened_at_unix surviving intact",
+   "still_refuses": "a snapshot missing the field returns 422, and an unknown extra field still returns 422",
+   "fixtures_corrected": "two existing tests encoded the broken contract and were updated to the EA's real shape",
+   "guard": "a test asserts the EA source still emits the field, so a future divergence is caught rather than repeated"
+  },
+  "C7_alpaca_capture_BLOCKED_and_declared": {
+   "status": "BLOCKED by a standing repository constraint, stated rather than worked around",
+   "reason": "the durable Alpaca evidence lives under the operator's private state tree, which this repository's own contributor rules forbid reading, copying or quoting into a public tree; and opening a connection to take a fresh one is exactly what the order forbids. This package holds no credential and no client.",
+   "delivered_instead": "a synthetic Alpaca capture set that asserts TYPED ABSENCE — an empty position book and an empty order book — with the limitation written in a NOTE.md beside the data. No bracket is invented, because a fabricated bracket would be a claim about an account nobody observed.",
+   "cost_stated": "the Alpaca bracket shape is exercised only by unit fixtures and by this repository's own existing order fixtures, never by a recorded payload.",
+   "uncovered_shapes": "order_class simple/oco/oto/mleg all refuse with 'does not state a role' rather than being guessed",
+   "unblocking_action": "an operator exporting a sanitized read-only snapshot from the private evidence tree. Owner action, proposed and not performed."
+  }
+ },
+
+ "suites": {
+  "lts unit": "847 passed (was 768 before WP3; 104 of these are WP3)",
+  "wp3 evidence": 78,
+  "wp3 adapter/watchdog/dry-run": 72,
+  "wp3 contract and custody": 29,
+  "writes_performed": 0
+ },
+
+ "authorization_respected": "No deployment, no service start/stop/restart, no command sent, no MT5 position touched, no training. The MT5 contract repair changes a pydantic model and its tests only; nothing was deployed and no bridge was restarted.",
+
+ "not_done": "WP4 and any live activation remain blocked. C7 is incomplete and declared as such rather than reported as covered."
+}
