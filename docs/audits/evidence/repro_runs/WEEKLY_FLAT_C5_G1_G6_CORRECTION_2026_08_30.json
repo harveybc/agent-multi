@@ -1,0 +1,120 @@
+{
+ "order": "agent-multi@29768ba2 — G1-G6 correction of the rejected C5",
+ "subject_repository": "gym-fx",
+ "pre_commit": "c43de82",
+ "note": "PRE was reproduced and frozen BEFORE any correction. Every PRE entry is a defect Musashi named; the matching POST entry is the corrected behaviour.",
+
+ "PRE": {
+  "C5_1_action_domains_mixed": {
+   "method": "short exposure, then request long during WIND_DOWN",
+   "observed": {"state": "WIND_DOWN", "mapped": "reversal", "risk_increasing": true, "overlay": "masked_risk_increase", "session_action_after_overlay": 1},
+   "verdict": "the masked reversal EXECUTED. The adapter set the submitted command back to `before` whenever a position existed, so it ran the very command it reported masking.",
+   "second_consequence": "with position -1 and command id 2 (go short), classify_action read 2 as 'target exposure +2' and reported an unchanged short as a REVERSAL, in NORMAL_TRADING. Mixing the domains corrupted the classification everywhere, not only under a mask.",
+   "third_consequence": "session_raw_model_action recorded 2.0 for a model output of -1.0 — the coerced command id, not the model's own value."
+  },
+  "C5_2_blackout_never_exits": {
+   "bars_after_first_blackout": 13,
+   "distinct_states_after_reopen": ["REOPEN_BLACKOUT"],
+   "reopen_evidence_ever_materialized": false,
+   "verdict": "session_state was always called without ReopenEvidence, which correctly fails closed FOREVER. No spread, gap, volatility, closed-bar or stability evidence existed."
+  },
+  "C5_3_fabricated_closure_bars": {
+   "verdict": "the fixture emitted regular 4-hour bars straight through the declared closure and the env stepped through them with reward forced to 0.0 — a synthesized tradable weekend bar, which work plan 42 prohibits, plus a suppressed reward that could hide a real account change."
+  },
+  "C5_4_pending_entry_hidden": {
+   "open_order_count": 3, "signed_exposure": 99.8,
+   "protective_orders": 3, "entry_orders": 0,
+   "coercive_fallbacks": ["position_units ... or 0.0", "position ... or 0", "open_order_count ... or 0"],
+   "reconciliation_gate_called": false,
+   "verdict": "every open order was labelled protective whenever a position existed, so a simultaneous pending entry was invisible and never cancelled; and the forced flatten was accepted on a reported position without the shared typed gate."
+  },
+  "C5_5_vacuous_termination_test": {
+   "guarded_by": "if last[\"info\"][\"position\"] != 0:",
+   "verdict": "the contract was asserted only inside that guard and nothing forced the fixture to terminate exposed, so the test passed without proving anything."
+  }
+ },
+
+ "POST": {
+  "G1_action_contract": {
+   "trajectory": [
+    {"requested": -1.0, "raw_model_output": -1.0, "mapped_command": 2, "kind": "entry_from_flat", "overlay": "pass_through", "submitted_to_plugin": 2, "exposure": 0.0},
+    {"requested": -1.0, "raw_model_output": -1.0, "mapped_command": 2, "kind": "hold", "risk_increasing": false, "overlay": "pass_through", "submitted_to_plugin": 2, "exposure": -99.8},
+    {"requested": 1.0, "raw_model_output": 1.0, "mapped_command": 1, "kind": "reversal", "risk_increasing": true, "overlay": "masked_risk_increase", "submitted_to_plugin": 0, "exposure": -99.8},
+    {"requested": 1.0, "raw_model_output": 1.0, "mapped_command": 1, "kind": "reversal", "overlay": "forced_close", "submitted_to_plugin": 3, "exposure": -99.8}
+   ],
+   "all_masked_steps_submit_hold": true,
+   "raw_output_is_the_model_value_not_the_command_id": true,
+   "mechanism": "classify_discrete_command adapts the env's command domain {0 hold, 1 long, 2 short, 3 close} against signed exposure. Command ids are never fed to classify_action. A masked entry, enlargement or reversal submits HOLD. The state-driven policy stays the single authority: overlay_action now accepts a validated cross-domain classification instead of being reimplemented per domain.",
+   "domain_note": "both continuous contracts of _coerce_action collapse into the same discrete domain, so enlargement and reduction are NOT expressible in this env and never appear. Asserted, not assumed."
+  },
+  "G2_causal_reopen_evidence": {
+   "blackout_bars": 3, "exits": true, "exit_step": 9,
+   "evidence_at_exit": {"closed_bars": 2, "stability_streak": 2, "hours_since_reopen": 12.0},
+   "missing_spread_input": {"streaks": [0], "reasons": ["spread_unavailable"], "state": "REOPEN_BLACKOUT"},
+   "mechanism": "ReopenEvidence is materialized from PAST-ONLY observations: fully closed bars since the bound reopen, spread against a past-only baseline, opening gap in sigmas of past-only returns, realized-volatility ratio, and quote continuity. Baseline windows are BOUND IN POLICY (reopen_baseline_bars, reopen_gap_sigma_bars, reopen_realized_vol_bars, all required). A failing check resets the streak to zero; a missing input fails the check and never passes it.",
+   "continuity_note": "the expected bar spacing is derived from the baseline bars themselves, not from an optional `timeframe` config label — depending on that label was the same silent-inertness failure mode as F-A. A DECLARED timeframe contradicting the data is a typed contradiction, not a tie broken in its favour."
+  },
+  "G3_real_missing_session_semantics": {
+   "bars_inside_closure": 0, "gap_hours": 28.0, "expected_bar_hours": 4.0,
+   "fabricated_bar_refused": true,
+   "refusal": "bar 6 at 2024-01-02 00:00:00+00:00 falls inside a declared session closure: the simulator must perform no step during a closure, and a fabricated tradable bar inside one is prohibited",
+   "reward_suppression_removed": true,
+   "mechanism": "the fixture is a real historical timestamp gap with no rows inside the closure. EXPECTED_MARKET_CLOSED can therefore only arise from data contradicting the bound calendar, which is now SessionDataContradictionError. No reward is zeroed anywhere."
+  },
+  "G4_order_inventory_and_gate": {
+   "real_bracket_legs": [{"ref": 38, "parent_ref": null, "side": "sell", "size": 99.8, "exectype": "Stop", "reduce_only": true}, {"ref": 39, "parent_ref": null, "side": "sell", "size": 99.8, "exectype": "Limit", "reduce_only": true}],
+   "entry_orders": 0, "protective_orders": 2,
+   "synthetic_pending_entry_alongside_a_bracket": {"entry_orders": 1, "protective_orders": 1, "pending_entry_side": "long"},
+   "coercive_fallbacks_remaining": [],
+   "flatten_gate": {"flat_confirmed": false, "fresh": true, "positions": 1, "orders": 2, "incident": "FORCED_FLATTEN_FAILED: exposure remains"},
+   "mechanism": "BTBridgeStrategy publishes a typed open_order_inventory with ref, parent_ref, side, size, exectype and reduce_only. Unavailable inventory is a typed refusal, never an empty tuple that would read as 'no pending entries'. The forced flatten runs reconciliation_gate and reports its typed incident instead of being accepted on a reported position.",
+   "self_reported_defect": "my FIRST G4 implementation derived reduce_only purely from the parent/child link. Verified against the real broker: backtrader does NOT keep .parent populated on live child orders — both resting legs report parent None — so that derivation labelled every protective STOP and LIMIT a pending ENTRY, and the wind-down overlay would have cancelled the very protection it exists to preserve. Corrected to real reduce-only semantics: a parent link is definitive when present, otherwise an order is reduce-only exactly when it can only shrink the position (opposite side, resting exectype, size not exceeding the position). An opposite-side order LARGER than the position would flip it and stays an entry."
+  },
+  "G5_non_vacuous_lifecycle": {
+   "terminated": true, "position_at_termination": 1,
+   "survived": true, "carried_exposure": 99.8,
+   "requires_migration": true,
+   "mechanism": "the exposed case uses a calendar with no closure inside the sample, so the episode is GUARANTEED to end holding; the test asserts position != 0 before asserting the contract. The flat counterpart asserts position == 0 the same way. Every overlay branch is asserted to be exercised."
+  },
+  "G6_foundations": {
+   "F_A": "FIXED. _bar_timestamp resolves the date from the COLUMN or the DatetimeIndex, and both the OANDA helper and the session clock share it. Proven: all eleven fields are live and not constant zeros, the four binary windows toggle {0,1} across a week, the two layouts are bit-identical (repr-equal per field) for equivalent inputs, and DST correctness survives the index layout.",
+   "F_B": "FIXED. include_price_window is resolved ONCE from the actual EMITTER (the preprocessor's own params) and pinned into the config both sides read, so the declared space and the emitted observation agree by construction. No observation CONTENT changes; only the declaration is repaired. observation_space.contains(obs) now holds across eight representative configurations, on reset and across steps. The underlying default mismatch is pinned by a test so the repair cannot be reverted to 'the defaults agree'.",
+   "F_C": "AUTHORITY BLOCK added, executable. tests/test_session_exposure_engine_parity.py::TestKnownEngineEconomicDivergence asserts economic_comparison_authorized is False and enumerates the blocking findings: bar alignment, unsupported timeframes, sizing regime, order book.",
+   "F_D": "REFUSAL added. require_supported_timeframe refuses any timeframe above 15 minutes at NautilusGymFxEnv construction, with an explicit message that H1 and H4 are not supported and no Nautilus result at those timeframes carries authority. M1/M5/M15 still construct."
+  }
+ },
+
+ "new_finding_F_E": {
+  "claim": "NautilusGymFxEnv never published bridge.position_units. It stayed at its reset 0.0 while bridge.position reported long or short.",
+  "evidence": "surfaced by the new typed refusal: 'position_units is 0.0 but position is 1 — contradictory exposure facts refuse'. simulation_engines/nautilus_gym.py published only bridge.position, derived from current_units.",
+  "impact": "bridge_state feeds position_units straight into the preprocessor, so EVERY Nautilus observation reported a flat account regardless of the real exposure.",
+  "scope": "PRE-EXISTING. FIXED here because it blocked the parity harness entirely; open_order_inventory is now also stated explicitly on that path rather than left at its reset value.",
+  "status": "reported for disposition"
+ },
+
+ "claim_map": [
+  {"claim": "A masked entry, enlargement or reversal never reaches the broker", "proof": "test_masked_reversal_submits_hold_not_the_masked_command, test_masked_entry_from_flat_submits_hold — assert the PLUGIN command (bridge.action_slot) and the economic effect (position), not only the diagnostic label", "scope": "continuous and discrete modes"},
+  {"claim": "Command ids are never classified as target exposures", "proof": "test_short_while_short_is_a_hold_not_a_reversal, test_unknown_command_refuses, classify_discrete_command requires the discrete_command_v1 mapping", "scope": "all states"},
+  {"claim": "The blackout exits on causal evidence and only on causal evidence", "proof": "test_blackout_exits_exactly_when_evidence_accumulates, test_the_streak_resets_on_an_unstable_bar, test_missing_spread_evidence_fails_closed, test_no_future_bar_influences_a_check, test_check_is_deterministic_across_resets, test_insufficient_history_never_passes", "scope": "post-reopen bars only"},
+  {"claim": "The simulator performs no step inside a closure", "proof": "test_no_bar_exists_inside_the_declared_closure, test_no_step_ever_reports_expected_market_closed, test_a_fabricated_bar_inside_a_closure_is_refused", "scope": "any bound calendar"},
+  {"claim": "No reward is zeroed to conceal an economic change", "proof": "test_reward_is_never_zeroed_to_conceal_an_economic_change — asserts a zero reward implies zero pnl", "scope": "every step of the fixture"},
+  {"claim": "A pending entry is never hidden behind a protective bracket", "proof": "test_pending_entry_is_distinguished_from_protective_children, test_real_bracket_legs_are_protective_not_pending_entries, test_an_oversized_opposite_order_is_not_reduce_only, test_a_same_side_resting_order_is_a_pending_entry", "scope": "backtrader path; the Nautilus path rests no orders at all"},
+  {"claim": "No unavailable value is coerced to zero at the authority boundary", "proof": "test_no_coercive_fallbacks_remain, test_unavailable_inventory_refuses, test_contradictory_exposure_facts_refuse", "scope": "the three exposure/inventory helpers"},
+  {"claim": "A forced flatten is an ATTEMPT until the shared gate confirms it", "proof": "test_forced_close_runs_the_shared_reconciliation_gate (flat_confirmed is False at submission), test_the_gate_refuses_while_exposure_remains", "scope": "backtrader path"},
+  {"claim": "Termination preserves open exposure", "proof": "test_termination_while_exposed_preserves_the_exposure asserts position != 0 BEFORE asserting the contract; the flat counterpart asserts position == 0", "scope": "both branches, separately"},
+  {"claim": "The session state machine is byte-identical across engines", "proof": "test_state_machine_and_evidence_are_byte_identical — eleven fields, every shared bar, no exception", "scope": "M15 only, per F-D"},
+  {"claim": "The decision function never forks between engines", "proof": "test_the_decision_function_never_forks_between_engines — wherever the exposure sign agrees the decision is byte-equal; every divergence is explained by a pinned economic difference", "scope": "M15 only, per F-D"},
+  {"claim": "NO cross-engine ECONOMIC comparison is authorized", "proof": "TestKnownEngineEconomicDivergence, TestKnownCrossEngineBarOffset — executable authority block", "scope": "standing until all four blocking findings are resolved"}
+ ],
+
+ "suites": {
+  "session_env": "tests/test_session_exposure_env.py — 41 passed",
+  "session_pure": "tests/test_session_exposure.py — 37 passed",
+  "parity": "tests/test_session_exposure_engine_parity.py — 17 passed",
+  "foundations": "tests/test_env_foundations.py — 17 passed",
+  "custody": "tests/test_migration_custody.py — 40 passed",
+  "full": "gym-fx tests — 306 passed, 68 warnings (was 256 before this correction)"
+ },
+
+ "not_done": "No deployment. The live MT5 position was not touched. No training launched. WP3, WP4 and long compute remain blocked pending independent acceptance."
+}
