@@ -1,0 +1,118 @@
+{
+ "order": "agent-multi@924032e1 — D1-D5, final flatten custody",
+ "subject_repository": "gym-fx",
+ "pre_commit": "22cf7d8",
+ "note": "PRE reproduced and frozen BEFORE any edit. All six findings confirmed.",
+
+ "PRE": {
+  "D1_empty_account_certifies_the_old_close": {
+   "exposure_at_request": 99.8,
+   "verdict": "reset() creates a new bridge and broker born flat, the previous episode's obligation is recovered, and that zero/zero DISCHARGES it. The evidence proves the new episode is empty, not that the old exposure was ever closed."
+  },
+  "D2_no_digest_verification": {
+   "tampered": "signed_exposure_at_request 1.0 -> 999.0, digest untouched",
+   "read_returns": 999.0,
+   "outstanding_returns": [999.0],
+   "read_recomputes_digest": false,
+   "verdict": "an alteration could change identity, state or evidence with no refusal."
+  },
+  "D3_open_transitions_not_durable": {
+   "source": ["tmp = path.with_suffix('.json.upd')", "tmp.write_text(...)", "tmp.replace(path)"],
+   "uses_O_EXCL": false, "uses_fsync": false, "uses_lock": false,
+   "verdict": "requested -> in_flight had no exclusive temporary, no fchmod, no fsync of file or directory and no expected-state check under a lock."
+  },
+  "D4_permissions_and_symlinks": {
+   "root_mode": "0o775", "record_mode": "0o600",
+   "record_symlink_refused": false,
+   "record_symlink_read": "o-1",
+   "outstanding_walks_symlink": 2,
+   "verdict": "the root did not enforce 0700 and a symlinked record was followed on read and walked by outstanding()."
+  },
+  "D5_multiple_obligations_irresolvable": {
+   "count": 3,
+   "recovery_picks": ["latest = outstanding[-1]"],
+   "verdict": "only the last obligation was resumed; confirming it left the earlier ones listed while _session_flatten stayed terminal and never advanced, so they were irresolvable."
+  },
+  "D6_no_real_process_restart": {
+   "uses_subprocess": false,
+   "verdict": "the 'process restart' test built a second Python object inside the SAME process."
+  }
+ },
+
+ "POST": {
+  "D1_economically_valid_recovery": {
+   "disposition_chosen": "terminate the abandoned obligation as interrupted_unresolved — terminal, recorded, and explicitly NOT a close — AND raise a blocking recovery state for the new episode that masks every risk increase.",
+   "frozen_counterexample": {
+    "exposure_at_request": 99.8,
+    "new_episode_units": 0.0,
+    "record_state": "interrupted_unresolved",
+    "closure_claimed": false,
+    "is_a_success_state": false,
+    "steps_after_reset": "every bar: recovery_active true, overlay blocked_by_flatten_recovery, submitted 0"
+   },
+   "store_level_refusal": "confirm() and mark_in_flight() require the SAME episode_identity that opened the obligation: 'opened by episode ep-A and cannot be advanced by episode ep-B — a different account state never observed the exposure this obligation names'.",
+   "normal_path_untouched": {"confirmed": true, "state": "flatten_confirmed", "outstanding": []}
+  },
+
+  "D2_integrity_on_every_read": {
+   "tampered_read": {"refused": true, "error": "FlattenIntegrityError", "message": "o-1: record digest mismatch — stored aaa305d5ca2c… but the content hashes to 1c375a70c943… — the record was altered"},
+   "outstanding_state": "integrity_failed",
+   "digest_recomputed_on_every_read": true,
+   "rule": "an altered, unreadable or unknown-state record is refused and counts as OUTSTANDING, never as a discharge.",
+   "stated_limit": "the digest is an integrity check, not an authenticity one: a consistently reforged record is self-consistent. A test states that limit plainly rather than letting it be assumed away."
+  },
+
+  "D3_one_durable_protocol": {
+   "single_write_path": "every creation and every transition goes through _durable_write",
+   "root_mode": "0o700", "record_mode": "0o600",
+   "under_umask_000": {"root_mode": "0o700", "record_mode": "0o600"},
+   "transition_uses_exclusive_lock": true,
+   "expected_state_and_integrity_verified_under_the_lock": true,
+   "symlink_refusal": "root, record, temporary, lock and the unacknowledged marker",
+   "self_reported_defect": "my first version of this protocol still acknowledged a half-durable transition: os.replace makes the new content visible immediately, so a FAILING PARENT-DIRECTORY FSYNC — or a crash between the rename and that fsync — left a transition that looked complete but was never durable. My own D4 test caught it. An UNACKNOWLEDGED marker is now planted before the rename and removed only after the directory fsync succeeds; while it exists every read of that record refuses and the obligation stays unresolved."
+  },
+
+  "D3_multiplicity": {
+   "store": {"refused": true, "error": "FlattenDispositionRequired", "message": "3 open flatten obligations under <root>: ['m-1', 'm-2', 'm-3'] — no automatic resolution exists; an operator must dispose of them"},
+   "env_recovery_reason": "multiple_open_obligations",
+   "requires_operator_disposition": true,
+   "submitted": 0,
+   "still_outstanding": 3,
+   "rule": "zero or one open obligation has a defined meaning; several do not, so nothing is picked silently and nothing is resolved."
+  },
+
+  "identity_binding": "every obligation carries venue, account_fingerprint, symbol, position_identity, episode_identity, code_identity and an optional checkpoint_identity, all required non-empty strings.",
+  "states": {"terminal": ["flatten_confirmed", "flatten_failed", "interrupted_unresolved"], "success": ["flatten_confirmed"]}
+ },
+
+ "D4_adversarial_acceptance": {
+  "mutation_of_every_field": "13 parametrized cases, each refused with a digest mismatch",
+  "mutation_of_the_digest": "refused",
+  "unknown_state": "refused",
+  "symlinked_root": "refused at construction",
+  "symlinked_record": "refused on read and reported integrity_failed by outstanding()",
+  "planted_temporary_symlink": "refused, and the symlink target is verified untouched",
+  "planted_lock_symlink": "refused",
+  "umask_000": "root 0700 and record 0600 enforced",
+  "failing_file_fsync": "nothing is created at all",
+  "failing_directory_fsync": "record content unchanged, marker present, every later read refuses, outstanding() reports integrity_failed",
+  "no_temporary_or_lock_survives_success": "verified",
+  "two_processes_racing_each_transition": "confirm, interrupt and fail elect exactly one winner; mark_in_flight is deliberately idempotent and the exactly-once property is proven by a single recorded in_flight_at_bar",
+  "held_lock_blocks_a_competing_transition": "verified, state unchanged",
+  "real_writer_and_recoverer_processes": "a subprocess opens and marks in-flight then EXITS; a second subprocess reads the same root and sees the obligation with its exposure intact",
+  "real_env_writer_and_env_recoverer_processes": "a GymFxEnv in one process leaves an in-flight obligation and exits; a GymFxEnv in another process recovers it, is blocked (overlay blocked_by_flatten_recovery, submitted 0) and the record reads interrupted_unresolved",
+  "multiple_open_obligations": "refused for operator disposition; discharging one restores a defined meaning",
+  "new_empty_broker_cannot_confirm_old_exposure": "frozen counterexample, refused at both the store and the env",
+  "terminal_immutable": "confirm, fail, mark_in_flight and interrupt all refuse on a terminal record",
+  "restart_reads_are_repeatable": "two fresh stores over the same root return identical outstanding sets"
+ },
+
+ "suites": {
+  "flatten_custody": "tests/test_flatten_custody.py — 44 passed",
+  "session_env": "tests/test_session_exposure_env.py — 105 passed",
+  "migration_custody": "tests/test_migration_custody.py — 40 passed",
+  "full": "gym-fx tests — 414 passed, 68 warnings (was 370)"
+ },
+
+ "not_done": "No deployment. The live MT5 position was not touched. No training launched. Cancellation, reopening and training were not reopened. WP3 remains blocked pending independent acceptance of D1-D4, and WP3 must use direct venue evidence and its own deployable custody, not simulator_bar_local."
+}
