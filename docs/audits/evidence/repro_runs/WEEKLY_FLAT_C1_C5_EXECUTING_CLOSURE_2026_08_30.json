@@ -1,0 +1,116 @@
+{
+ "order": "agent-multi@64e812c2 — C1-C6, executing weekly closure semantics",
+ "subject_repository": "gym-fx",
+ "pre_commit": "23e36d1",
+ "note": "PRE reproduced and frozen BEFORE any edit. All five of Musashi's findings confirmed.",
+
+ "PRE": {
+  "F1_cancellation_never_executed": {
+   "cancel_pending_published": true,
+   "broker_cancel_called": false,
+   "bridge_has_cancel_channel": false,
+   "verdict": "the overlay only wrote the boolean into info. No code path cancelled a pending entry, so it could survive wind-down and fill inside the forbidden window."
+  },
+  "F2_reconciliation_before_the_close": {
+   "observed": [["FORCED_FLATTEN", "forced_close", 3, {"flat_confirmed": false, "positions": 1, "orders": 2, "incident": "FORCED_FLATTEN_FAILED: exposure remains"}]],
+   "any_confirmation_after_the_fill": false,
+   "lifecycle_states_present": [],
+   "verdict": "the gate ran inside the overlay on the PRE-close exposure and order book, before CLOSE reached the strategy plugin. No post-fill check existed, so no flatten was ever proven complete."
+  },
+  "F3_role_inferred_by_geometry": {
+   "adversary": "an INDEPENDENT reversal entry, opposite the position and of exactly its size",
+   "record": {"ref": 77, "parent_ref": null, "side": "sell", "size": 99.8, "exectype": "Stop", "reduce_only": true},
+   "bridge_has_role_registry": false,
+   "verdict": "classified reduce_only=True and therefore counted as PROTECTION, so the wind-down cancellation would have skipped the very order it had to cancel."
+  },
+  "F4_reopen_evidence_not_observable": {
+   "observation_fields": ["session_wind_down", "session_forced_flatten", "session_market_closed", "session_reopen_blackout", "session_hours_to_next_close", "session_hours_since_reopen"],
+   "evidence_fields_in_observation": [],
+   "vol_ratio_denominator": "vol_ratio = recent_vol / sigma",
+   "verdict": "six state/time fields only. Spread, gap, volatility and continuity were computed and discarded, so the agent could not tell why it was still blocked. The volatility ratio divided by the GAP return sigma, not by an independently windowed realized-volatility baseline."
+  },
+  "F5_termination_coerces": {
+   "coercive_lines": ["position_units ... or 0.0", "position ... or 0", "episode_seq ... or 0", "bar_index ... or 0"],
+   "verdict": "absent, boolean, NaN or wrongly typed exposure became a FLAT account instead of refusing, silently discarding a carried position."
+  }
+ },
+
+ "POST": {
+  "C1_authoritative_role_registry": {
+   "mechanism": "BTBridge.register_order_role binds a broker order identity to entry / protective_stop / protective_take_profit / close AT CREATION. The shared execution envelope registers every order it submits, including its closes. _describe_order reads the role from that registry; geometry is recorded for diagnosis and never decides. Re-registering a ref with a different role is a typed conflict.",
+   "same_geometry_opposite_roles": {
+    "unregistered": {"role": null, "reduce_only": null},
+    "registered_as_entry": {"role": "entry", "reduce_only": false},
+    "registered_as_protection": {"role": "protective_stop", "reduce_only": true}
+   },
+   "live_registry": {"1": "entry", "2": "protective_stop", "3": "protective_take_profit", "4": "protective_stop", "5": "protective_take_profit"},
+   "ambiguity": "an order absent from the registry has role None, and the overlay REFUSES to act rather than defaulting to 'not an entry'."
+  },
+  "C2_executing_cancellation": {
+   "mechanism": "the overlay writes the entry refs to bridge.cancel_entry_request; BTBridgeStrategy._process_cancel_requests runs BEFORE the action is applied and cancels them against the broker. It RE-VERIFIES each ref against the registry and refuses anything that is not a registered entry, so protective legs can never be cancelled by this path. Terminal broker verdicts are recorded per ref in notify_order.",
+   "observed_outcomes": {"cancelled": "terminal Canceled/Expired", "rejected": "ENTRY_CANCELLATION_REJECTED", "filled_before_cancel": "ENTRY_FILLED_DESPITE_CANCELLATION", "still_open": "counted as pending, never assumed gone", "gone_without_verdict": "CANCELLATION_UNVERIFIED", "refused_role_*": "CANCELLATION_REFUSED_WRONG_ROLE"},
+   "brackets_survive": "verified: through every WIND_DOWN bar the inventory is exactly {protective_stop, protective_take_profit}; the CLOSE retires them, not the session overlay."
+  },
+  "C3_post_fill_lifecycle": {
+   "phases": ["flatten_requested", "flatten_in_flight", "flatten_confirmed"],
+   "trajectory": [
+    {"step": 4, "bar": 5, "state": "WIND_DOWN", "overlay": "pass_through", "submitted": 1, "phase": null, "orders": [[15, "protective_stop"], [16, "protective_take_profit"]]},
+    {"step": 5, "bar": 6, "state": "FORCED_FLATTEN", "overlay": "forced_close", "submitted": 3, "phase": "flatten_in_flight", "confirmed": false, "post_fill": {"flat_confirmed": false, "positions": 1, "orders": 0, "incident": "FORCED_FLATTEN_FAILED: exposure remains"}},
+    {"step": 6, "bar": 7, "state": "REOPEN_BLACKOUT", "submitted": 1, "phase": "flatten_confirmed", "confirmed": true, "confirmed_at_bar": 7, "post_fill": {"flat_confirmed": true, "positions": 0, "orders": 0, "incident": null}}
+   ],
+   "pre_dispatch_is_diagnostic_only": "at the closing bar the pre-dispatch view reports orders=2 (the legs still resting) while the post-fill authority reports orders=0 and positions=1. They are MEANT to disagree; only the post-fill view may confirm.",
+   "final_state": {"policy_close_events": 1, "closed_trade_stream_length": 1, "trade_count": 1, "positions": 0, "orders": 0, "pnl_identity_holds": true},
+   "call_path": [
+    "GymFxEnv.step -> _apply_session_exposure_overlay   [decides; sets bridge.cancel_entry_request; phase=flatten_requested; the pre-dispatch view is DIAGNOSTIC ONLY]",
+    "bridge.action_slot = 3 -> action_ready.set()",
+    "BTBridgeStrategy.next -> _process_cancel_requests   [cancels ONLY refs the registry calls 'entry'; protective legs refused]",
+    "BTBridgeStrategy.next -> _apply_action(3) -> shared_execution_envelope.Plugin.apply_action   [close through the SHARED cost/fill envelope]",
+    "BTBridgeStrategy._publish_obs   [republishes exposure and the role-tagged order inventory]",
+    "GymFxEnv.step, after _wait_obs -> _session_post_fill_reconciliation   [the ONLY authority: in_flight until fresh evidence shows zero positions AND zero orders]",
+    "GymFxEnv.step -> _session_cancellation_outcomes   [OBSERVED terminal verdict per cancelled ref]"
+   ],
+   "terminal": "a confirmed flatten is retired, so it can never report the agent's NEXT position as its own failure. A restart clears it entirely."
+  },
+  "C4_observable_evidence_and_independent_baseline": {
+   "new_observation_fields": ["session_reopen_bar_progress", "session_reopen_stability_progress", "session_spread_ratio_norm", "session_gap_sigma_norm", "session_vol_ratio_norm", "session_quote_continuous"],
+   "bounds": "every field is finite and in [0,1], declared with a matching Box(0,1) space, and FAIL-CLOSED: an absent input reads as the worst value — 1.0 for a threshold ratio, 0.0 for continuity — so missing evidence can only make the regime look less safe.",
+   "independent_baseline": {"recent_vol": 0.0015013222600730792, "baseline_vol": 0.0011453089629859508, "vol_ratio": 1.3108447664278826, "ratio_equals_recent_over_baseline": true, "gap_sigma": 1.6286922528148833},
+   "window_placement": "the baseline window sits strictly BEFORE the recent window and is disjoint from it; a bar outside both windows provably does not move the ratio."
+  },
+  "C5_strict_termination_boundaries": {
+   "coercive_lines_remaining": [],
+   "refusals": {
+    "None": "SessionEvidenceError: position_units is unavailable (None) — signed exposure refuses",
+    "True": "SessionEvidenceError: position_units is unavailable (True) — signed exposure refuses",
+    "nan": "SessionEvidenceError: position_units is not usable exposure evidence: non-finite value",
+    "inf": "SessionEvidenceError: position_units is not usable exposure evidence: non-finite value",
+    "'1.0'": "SessionEvidenceError: position_units is unavailable ('1.0') — signed exposure refuses"
+   },
+   "counters": "episode_seq and bar_index go through require_count; None or a non-count refuses."
+  }
+ },
+
+ "mandatory_cases_from_the_order": {
+  "long": "TestC3PostFillFlattenLifecycle::test_the_three_phases_occur_in_order[long]",
+  "short": "TestC3PostFillFlattenLifecycle::test_the_three_phases_occur_in_order[short]",
+  "position_with_two_brackets": "test_protective_brackets_survive_wind_down_until_the_close, test_real_bracket_legs_are_protective_not_pending_entries",
+  "independent_pending_entry_plus_brackets": "test_role_comes_from_the_registry_not_from_geometry, test_pending_entries_are_actually_cancelled",
+  "fill_delayed_one_bar": "test_the_fill_is_delayed_by_one_bar — confirmed_at_bar == in_flight bar + 1",
+  "close_rejected": "test_a_rejected_close_never_confirms — stays in_flight with a typed incident",
+  "cancellation_rejected": "test_a_rejected_cancellation_is_a_typed_incident, test_an_entry_that_filled_despite_cancellation_is_reported, test_the_strategy_reverifies_the_role_before_cancelling",
+  "restart_during_in_flight": "test_a_restart_during_in_flight_inherits_nothing",
+  "exact_final_result": "test_the_final_state_is_exactly_flat_with_one_close_event — zero positions, zero orders, exactly one economic close event with costs and a holding PnL identity"
+ },
+
+ "suites": {
+  "session_env": "tests/test_session_exposure_env.py — 74 passed",
+  "session_pure": "tests/test_session_exposure.py — 37 passed",
+  "parity": "tests/test_session_exposure_engine_parity.py — 17 passed",
+  "foundations": "tests/test_env_foundations.py — 17 passed",
+  "custody": "tests/test_migration_custody.py — 40 passed",
+  "envelope": "tests/test_shared_execution_envelope.py — 28 passed",
+  "full": "gym-fx tests — 339 passed, 68 warnings (was 306)"
+ },
+
+ "not_done": "No deployment. The live MT5 position was not touched. No training launched. No live parity claimed. WP3 and WP4 remain blocked pending independent acceptance of this package."
+}
