@@ -1,0 +1,35 @@
+{
+ "schema": "agent_multi.weekly_flat_f4_durable_custody.v1",
+ "order": "@c933da64 D1-D3 (F4 rejected: an in-memory dict is not custody)",
+ "pre_reproduced_before_editing": {
+  "first_watchdog_call": "CARRIED_POSITION_RECOVERY_ACTIVE",
+  "second_call_same_ledger": "CARRIED_POSITION_RECOVERY_ACTIVE (REUSE PERMITTED \u2014 consume() treated the same closure key as idempotent)",
+  "call_with_fresh_ledger": "CARRIED_POSITION_RECOVERY_ACTIVE (memory forgotten across instances)",
+  "authority_boundary": "watchdog_state mutated authorization state (ledger.is_consumed became True after a MONITORING call)",
+  "weak_test_disclosed": "my test_f4_migration_is_one_use called the watchdog ONCE and therefore never tested reuse \u2014 a test that cannot fail is not a test"
+ },
+ "post": {
+  "D1_authority_separation": "watchdog_state is STRICTLY READ-ONLY: it takes recovery_claim_active as an input FACT and no custody object at all (asserted by signature inspection); MigrationLedger is DELETED from session_exposure; the recovery controller (app/migration_custody.py) owns every transition",
+  "D2_durable_state_machine": "prepared -> active -> completed|failed with terminal immutability; records bind migration id, venue, account, symbol, position identity, closure interval, native-protection evidence digest and policy/code identity, plus a record_digest verified on every read; single claimant elected by O_EXCL creation on the FINAL path; write protocol = exclusive temp + fsync + fchmod 0600 + rename + parent-dir fsync; symlink refusal on root and path; root chmod 0700",
+  "D3_adversarial_acceptance": {
+   "1_two_claims_one_process": "exactly one winner (second refuses 'already claimed')",
+   "2_two_concurrent_PROCESSES": "real subprocess race \u2014 exactly one WON, one LOST",
+   "3_restart": "fresh instances see active and both terminal states",
+   "4_second_claim_same_closure": "refuses ('terminal')",
+   "5_other_closure_position_symbol_account_venue": "all refuse and leave NO record behind",
+   "6_missing_or_empty_protection_evidence": "refuses",
+   "7_interrupted_writes": "stray .tmp is not a claim; tampered digest refuses instead of being trusted",
+   "8_watchdog_purity": "three identical reads, byte-identical custody directory before and after, signature carries no custody object",
+   "9_finish_requires_fresh_direct_reconciliation": "empty, stale and non-flat evidence all refuse; terminal states immutable",
+   "10_no_live_position_touched": "source contains no venue client, socket or broker identifier (asserted)"
+  }
+ },
+ "suites": {
+  "custody": "12/12",
+  "focused_session": "36/36",
+  "full_gym_fx": "203 passed"
+ },
+ "C5_status": "UNBLOCKED by this correction; NOT yet executed \u2014 the real GymFxEnv semantics package follows",
+ "live_parity": "NOT CLAIMED (WP3 blocked)",
+ "untouched": "current MT5 position, EA, bridge, runner; custody mechanism NOT deployed"
+}
