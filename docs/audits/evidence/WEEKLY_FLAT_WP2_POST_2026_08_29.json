@@ -1,0 +1,41 @@
+{
+ "schema": "agent_multi.weekly_flat_wp2_post.v1",
+ "order": "@e303e386 C1-C6",
+ "claim_map": {
+  "C1_signed_exposure": {
+   "status": "DONE",
+   "what": "ExposureFacts is frozen+validated with signed_exposure/side/pending_entry_side/pending_entry_size/pending_orders/action_mapping; classify_action returns typed kinds (entry_from_flat, enlargement, reversal, reduction, close, hold, hold_flat) with risk_increasing derived from signed facts; ambiguous/non-finite/bool/str actions REFUSE; side contradicting signed exposure REFUSES",
+   "proved_by": "TestSignedExposure (long/short enlargement, reduction, close, reversal, entry-from-flat, partial-fill exposure, pending-entry consistency) + AUDIT-PRE test_pre3"
+  },
+  "C2_calendar_derived": {
+   "status": "DONE",
+   "what": "SessionCalendar is frozen and validated (tz-aware UTC canonicalization, ordered, non-overlapping, close_at<reopen_at, bound to venue/account/symbol/calendar_digest); current closure, most recent reopen and next closure DERIVE from the interval set; nullable adapter hints are cross-checked only (adapter_hint_disagrees) and cannot authorize trading; missing reopen evidence after a known closure FAILS CLOSED into REOPEN_BLACKOUT",
+   "proved_by": "TestCalendarAuthority (exact boundaries, server-time conversion, holiday adjacency, contradictory/overlapping intervals, stale calendar, lying hint, restart determinism) + AUDIT-PRE test_pre5"
+  },
+  "C3_watchdog_precedence": {
+   "status": "DONE",
+   "what": "precedence TERMINAL_DISCONNECTED > SESSION_EVIDENCE_UNAVAILABLE > ACCOUNT_OR_BRACKET_FAULT > FORCED_FLATTEN_FAILED > exposure incidents > EXPECTED_MARKET_CLOSED > FEED_STALE_DURING_OPEN_WINDOW > REOPEN_BLACKOUT_ACTIVE > healthy; closure suppresses ONLY bar staleness; new UNEXPECTED_EXPOSURE_DURING_CLOSURE; CARRIED_POSITION_RECOVERY_ACTIVE bound to a ONE-USE migration record tied to ONE closure interval",
+   "proved_by": "TestWatchdogPrecedence + AUDIT-PRE test_pre4",
+   "self_reported_defect": "my first migration record covered ANY later closure (opened_before <= started); my own regression caught it; fixed by binding covers_closure_started_at to the exact interval"
+  },
+  "C4_strict_typed": {
+   "status": "DONE",
+   "what": "require_real/require_count/require_enum/require_identity/require_utc reject bool, str, NaN, inf, fractional counts, negatives and None; reconciliation_gate raises typed SessionPolicyError instead of raw TypeError; every enumeration (state, side, action_mapping, session_source, recovery, holiday policy) validated; the six remaining float() calls are POST-validation only (verified by inspection), no int()/or-0 fallbacks",
+   "proved_by": "AUDIT-PRE test_pre1/test_pre2/test_pre6 + enum/identity refusals"
+  },
+  "C5_real_env_call_path": {
+   "status": "PENDING",
+   "what": "NOT claimed: proving through the real GymFxEnv call path that closed intervals create no actionable step or fabricated reward, account state carries forward, wind-down/blackout observations exist, forced closes use the shared cost/fill envelope and episode termination cannot erase exposure before flat assertion",
+   "honest_statement": "the pure authority is corrected and tested; environment integration is the NEXT unit of work and WP2 is NOT claimed complete until it exists"
+  },
+  "C6_return_package": {
+   "status": "DONE for C1-C4",
+   "pre": "WEEKLY_FLAT_WP2_PRE_2026_08_29.json (six counterexamples reproduced BEFORE any edit)",
+   "post": "this document",
+   "suites": "focused 31/31 (was 21/21 with the adversaries absent); full gym-fx 185 passed",
+   "live_parity": "PENDING: only the pure gym-fx core exists; LTS Alpaca/MT5 adapters and parity evidence remain WP3 and are NOT claimed"
+  }
+ },
+ "auditor_correction_accepted": "the claim that sim/live already share an executing authority was WRONG and is withdrawn: only the pure core exists",
+ "untouched": "current MT5 position, EA, bridge and runner \u2014 no deployment, no live change"
+}

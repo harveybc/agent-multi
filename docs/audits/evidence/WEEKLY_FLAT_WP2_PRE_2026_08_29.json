@@ -1,0 +1,43 @@
+{
+ "schema": "agent_multi.weekly_flat_wp2_pre.v1",
+ "order": "@e303e386 (weekly-flat WP2 correction C1-C6)",
+ "audited_commits": {
+  "agent_multi": "650d1333",
+  "gym_fx": "bec4d1a"
+ },
+ "frozen_before_any_edit": true,
+ "reproduced_counterexamples": {
+  "C4_string_numeric_accepted": {
+   "input": "wind_down_hours='36'",
+   "result": "ACCEPTED (float() coercion)"
+  },
+  "C4_nan_accepted": {
+   "input": "max_gap_sigma=NaN",
+   "result": "ACCEPTED (NaN passes > 0 comparison)"
+  },
+  "C1_open_position_reversal_passthrough": {
+   "input": "WIND_DOWN, open_position=True, raw_action=-1.0",
+   "result": {
+    "overlay": "pass_through",
+    "final_action": -1.0
+   },
+   "fault": "_is_risk_increasing returns False for EVERY action when open_position=True; evidence carries neither side nor signed exposure, so reduction/enlargement/reversal are indistinguishable"
+  },
+  "C3_closed_market_hides_exposure": {
+   "input": "EXPECTED_MARKET_CLOSED with 1 position and 1 pending order",
+   "result": "EXPECTED_MARKET_CLOSED",
+   "fault": "closure checked before exposure; expected closure must suppress ONLY bar staleness"
+  },
+  "C2_blackout_skipped": {
+   "input": "one hour after reopen, time_since_reopen_hours=None",
+   "result": "NORMAL_TRADING",
+   "fault": "_next_closure discards the ended interval; blackout depends on an OPTIONAL adapter hint instead of the bound interval set"
+  },
+  "C4_reconciliation_raw_typeerror": {
+   "input": "reconciliation_gate(None, 0, age=5)",
+   "result": "TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'",
+   "fault": "raw TypeError as policy behavior instead of a typed refusal"
+  }
+ },
+ "suite_state_at_pre": "21/21 focused tests passed \u2014 these adversaries were ABSENT from my battery; passing tests never proved the absent cases"
+}
