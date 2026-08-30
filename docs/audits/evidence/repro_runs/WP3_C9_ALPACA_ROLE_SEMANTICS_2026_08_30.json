@@ -1,0 +1,104 @@
+{
+ "order": "agent-multi@95a344d5 — WP3-C9 real Alpaca capture and role correction",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "30aabe8",
+ "post_commit": "fd7c052",
+ "note": "PRE reproduced and frozen BEFORE any edit, against the categorical shape the owner-authorized read-only capture observed. The finding is mine, and it is the INVERSE of one already caught in the simulator: there an independent reversal passed for protection; here protection passed for an entry, and the wind-down would have cancelled it.",
+
+ "PRE": {
+  "recorded_categorical_shape": {
+   "position": "one SPY SHORT",
+   "order": "one open SPY BUY",
+   "status": "new",
+   "order_class": "bracket",
+   "type": "limit",
+   "position_intent": "buy_to_close",
+   "legs": null
+  },
+  "C9_1_recorded_shape_as_returned": {
+   "parsed": false,
+   "message": "alpaca.order[0]: unknown fields ['position_intent'] — an unrecognised field may carry meaning this parser does not model"
+  },
+  "C9_2_without_position_intent": {
+   "parsed": false,
+   "message": "order[0].legs not a list"
+  },
+  "C9_3_normalised_null_legs": {
+   "parsed": true,
+   "roles": ["entry"],
+   "entry_orders": 1,
+   "protective_orders": 0
+  },
+  "verdict": "the real payload did not parse at all, and the two 'clean it up first' steps that make it parse — strip the venue's own semantics, normalise null to an empty list — are exactly what produced the misclassification. A protective take-profit was read as an ENTRY.",
+  "geometry_would_also_be_wrong": "a BUY standing against a SHORT looks exactly like a reversal, so side and quantity could not have rescued it either.",
+  "downstream_consequence_reproduced": {
+   "state": "WIND_DOWN",
+   "overlay": "masked_risk_increase",
+   "effects": ["cancel_pending_entries"],
+   "cancel_order_identities": ["synthetic-order-0001"],
+   "protective_order_identity_in_the_cancel_list": true,
+   "meaning": "WIND_DOWN would have offered the protective take-profit for cancellation while reporting a false pending entry."
+  },
+  "contract_today": {"requires_position_intent": false, "assumes_bracket_means_entry": true, "coerces_legs": true}
+ },
+
+ "POST": {
+  "role_from_declared_intent": {
+   "recorded_shape_roles": ["protective_take_profit"],
+   "position_intent": "buy_to_close",
+   "entry_orders": 0,
+   "protective_orders": 1,
+   "rule": "opening intents are entries; a closing bracket limit order is a protective take-profit; a closing bracket stop or stop-limit is a protective stop; anything else refuses. Side must agree with the intent's buy/sell half or the venue's own facts disagree and it refuses."
+  },
+  "two_shapes_supported_explicitly": {
+   "opening_intent_with_nested_legs": "the object is the entry and each leg is protection typed by its own type",
+   "closing_intent_with_null_or_empty_legs": "the object is itself the protective child",
+   "opening_intent_without_legs": "refused — not a shape this parser models",
+   "closing_intent_carrying_legs": "refused — a protective child has no children of its own",
+   "legs_of_any_other_kind": "refused — must be null or a list"
+  },
+  "no_normalisation_before_the_contract": "asserted by a test that the parser source contains neither `legs or []` nor `legs = []`; null and [] reach the contract as the venue sent them.",
+  "wind_down_preserves_protection": {
+   "recorded_shape": {"overlay": "masked_risk_increase", "effects": ["none"], "cancel_order_identities": [], "preserve_protection": true},
+   "mixed_book": {"cancel_order_identities": ["parent-order-id"], "effects": ["submit_decision", "cancel_pending_entries"], "protection_preserved": true},
+   "forced_flatten": {"overlay": "forced_close", "cancel_order_identities": ["parent-order-id"], "effects": ["cancel_pending_entries", "request_close"]}
+  },
+  "self_reported_second_defect": {
+   "found_by": "my own WIND_DOWN assertions while writing this battery",
+   "claim": "cancelling pending entries is a consequence of the session STATE, not of the model's command, but the adapter honoured decision['cancel_pending'] only inside the masked branch. A pending entry therefore survived WIND_DOWN whenever the model's command happened not to be risk-increasing.",
+   "fix": "every branch now honours it, and the reason string says the cancellation follows from the state and not from the command."
+  },
+  "mutation_check": "ignoring the declared intent and treating every bracket as an entry broke 69 tests across the evidence and adapter suites; the suites returned to green when reverted."
+ },
+
+ "recorded_fixture": {
+  "path": "examples/captures/wp3_alpaca_recorded/",
+  "observed_facts_preserved": ["one SPY short position", "one open SPY buy order", "status new", "order_class bracket", "type limit", "position_intent buy_to_close", "legs null/empty"],
+  "substituted": ["every identifier: account id, account number, asset id, order id", "every price and quantity", "every timestamp", "the account fingerprint, derived from a synthetic id"],
+  "NOTE": "separates the two categories explicitly so nobody has to guess which is which, and records that the durable local lifecycle is supporting provenance only — no fact in the fixture is taken from it.",
+  "earlier_synthetic_set": "kept and declared superseded; it still proves the typed-absence path, where an account with nothing open parses and binds without a fabricated fact.",
+  "sanitization": "no real identifier, price, quantity, timestamp, credential, host or private path appears in this repository."
+ },
+
+ "test_coverage_added": {
+  "long_and_short_positions": "the recorded SHORT with a buy_to_close child, and the mirror LONG with a sell_to_close stop child",
+  "stop_and_take_profit_children": "limit -> protective_take_profit; stop and stop_limit -> protective_stop",
+  "unfilled_parents": "the nested-legs shape still parses as entry plus two typed protective legs",
+  "duplicate_ids": "refused across both shapes, including a leg reusing its parent's id",
+  "contradictory_combinations": "side against intent, closing intent with legs, opening intent without legs, closing order of an untyped kind",
+  "missing_intent": "refused as a missing contract field",
+  "unknown_intents": "eight values including uppercase, empty, bool and int — all refused",
+  "wind_down_behaviour": "cancels only true pending entries and preserves all protective children, asserted for WIND_DOWN and FORCED_FLATTEN and for a protection-only book"
+ },
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 109,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 77,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 926,
+  "dry_run_over_the_recorded_fixture": {"writes_performed": 0, "session_state": "WIND_DOWN", "final_command": 0, "cancel_order_identities": [], "preserve_protection": true}
+ },
+
+ "boundaries_respected": "No deployment or service change. No venue write, order command or position change. No WP4 dispatch. No claim of live parity: C9 awaits independent reproduction, and C7 is not claimed accepted."
+}
