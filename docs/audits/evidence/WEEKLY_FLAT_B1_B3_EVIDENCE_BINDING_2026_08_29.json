@@ -1,0 +1,31 @@
+{
+ "schema": "agent_multi.weekly_flat_b1_b3_evidence_binding.v1",
+ "order": "@687e43fd (B1 one representation, B2 policy-owned freshness, B3 adversarial acceptance)",
+ "audited_commit": "gym-fx@aea393b",
+ "pre_reproduced_before_editing": {
+  "B1a_split_protection": "payload {'sl_accepted': False} with separate field stop_loss_accepted=True -> claim became ACTIVE",
+  "B1b_split_counts": "payload {'positions': 7, 'orders': 9} with separate fields positions_total=0, orders_total=0 -> custody COMPLETED",
+  "B2_self_declared_freshness": "evidence observed 365 days earlier with max_age_seconds=99,999,999 and source 'whatever-i-want' -> claim became ACTIVE"
+ },
+ "post": {
+  "B1": "interpreted values are NO LONGER constructor arguments. DirectEvidence.parse selects an allowlisted parser by (venue, evidence_type, schema_version) and derives every authority-bearing fact EXCLUSIVELY from the canonical payload bytes; __post_init__ RE-DERIVES the facts and refuses any mismatch, so a forged _facts tuple cannot be smuggled in; unknown, missing and extra authority-bearing fields refuse; the digest covers exactly the canonical bytes; signature inspection proves no interpreted field can be supplied",
+  "B2": "EvidencePolicy is a validated POLICY-side contract carrying venue/account/symbol, allowlisted sources, maximum age and schema version; the envelope has NO max_age field at all (asserted); evidence reports observed_at and can never extend its own lifetime; source must be in the policy allowlist; parser digest, schema version, source and evidence id are bound into the custody record",
+  "B3": {
+   "1_payload_sl_false_vs_claimed_true": "unconstructable \u2014 the fact IS the payload; require_protection refuses",
+   "2_nonzero_counts_vs_claimed_zero": "refuses with 'not flat'; the record stays active",
+   "3_one_year_old_evidence": "refuses against the POLICY maximum",
+   "4_unknown_source_or_schema": "source outside the allowlist refuses; unknown schema has no parser",
+   "5_missing_extra_duplicate_fields": "all refuse typed",
+   "6_payload_mutation_after_construction": "no effect \u2014 the envelope holds canonical bytes",
+   "7_parser_substitution_under_same_digest": "refuses on parser digest",
+   "8_identity_and_time_boundaries": "exactly at the limit is fresh, one second past refuses, future evidence refuses, forged facts refuse"
+  },
+  "E1_not_weakened": "the barrier-synchronized claim race and the completed-vs-failed terminal race were re-run under the new evidence contract and still elect exactly one winner"
+ },
+ "suites": {
+  "custody": "31/31",
+  "full_gym_fx": "222 passed"
+ },
+ "C5_status": "NEXT \u2014 real GymFxEnv semantics, combined package",
+ "untouched": "live MT5 position, EA, bridge, runner; nothing deployed"
+}

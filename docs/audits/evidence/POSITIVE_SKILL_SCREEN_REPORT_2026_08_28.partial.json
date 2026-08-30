@@ -239,11 +239,11 @@
    "family": "trend_level",
    "window": 32,
    "latent": 32,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.1367,
    "calibration_r2": 0.0881,
    "parameters": 18823,
-   "wall_s": 54.3,
+   "wall_s": 173.5,
    "peak_rss_mb_delta": 0.0
   },
   "trend_level|w32|d64": {
@@ -272,11 +272,11 @@
    "family": "trend_level",
    "window": 32,
    "latent": 128,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.3287,
    "calibration_r2": 0.1106,
    "parameters": 266791,
-   "wall_s": 269.0,
+   "wall_s": 865.7,
    "peak_rss_mb_delta": 0.0
   },
   "trend_level|w64|d16": {
@@ -448,11 +448,11 @@
    "family": "volatility_distribution",
    "window": 32,
    "latent": 16,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.0502,
    "calibration_r2": 0.0093,
    "parameters": 5169,
-   "wall_s": 197.3,
+   "wall_s": 651.4000000000001,
    "peak_rss_mb_delta": 0.0
   },
   "volatility_distribution|w32|d32": {
@@ -558,11 +558,11 @@
    "family": "volatility_distribution",
    "window": 128,
    "latent": 16,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": 0.0087,
    "calibration_r2": 0.0119,
    "parameters": 5169,
-   "wall_s": 113.9,
+   "wall_s": 371.0,
    "peak_rss_mb_delta": 0.0
   },
   "volatility_distribution|w128|d32": {
@@ -613,11 +613,11 @@
    "family": "volatility_distribution",
    "window": 256,
    "latent": 16,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.0427,
    "calibration_r2": 0.0108,
    "parameters": 5169,
-   "wall_s": 135.5,
+   "wall_s": 438.0,
    "peak_rss_mb_delta": 0.0
   },
   "volatility_distribution|w256|d32": {
