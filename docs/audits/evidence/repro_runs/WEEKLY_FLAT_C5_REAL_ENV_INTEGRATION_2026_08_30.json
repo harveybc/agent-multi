@@ -1,0 +1,75 @@
+{
+ "order": "C5 — weekly session exposure through the REAL GymFxEnv path",
+ "subject_repository": "gym-fx",
+ "base_commit": "452cbf1",
+ "interpreter": "python 3.12 (trading-stack), nautilus_trader available",
+
+ "pre_state": {
+  "finding": "app/session_exposure.py was NOT WIRED to the environment at all. Verified by search: outside its own module and its unit tests, the only importers were app/direct_evidence.py and app/migration_custody.py, both of which use its validators, not its state machine. No env code path consulted it, so none of the C5 guarantees existed in production.",
+  "second_mechanism": "A parallel, weaker session mechanism did exist in strategy_plugins/direct_atr_sltp.py::_session_state — minute-of-week arithmetic, not DST-aware, not derived from any calendar evidence. It is untouched here and is now the second session authority in the repository."
+ },
+
+ "post_wiring": {
+  "overlay_seam": "app/env.py step(): _apply_session_exposure_overlay runs after _coerce_action and _apply_event_context_overlay, before the action reaches bridge.action_slot.",
+  "forced_close_route": "FORCED_FLATTEN with a position submits action 3, so the close travels bridge.action_slot -> BTBridgeStrategy._apply_action -> shared_execution_envelope.Plugin.apply_action and is economically settled with a policy_close event. flatten_step/force_flat_request was DELIBERATELY NOT used: app/bt_bridge.py returns before the plugin dispatch, which would settle outside the envelope and emit no close event and no trade cost.",
+  "closed_interval": "EXPECTED_MARKET_CLOSED submits action 0, records session_no_actionable_step, and forces reward to exactly 0.0. The bar still advances, so account state carries forward.",
+  "observation": "six gated fields — session_wind_down, session_forced_flatten, session_market_closed, session_reopen_blackout, session_hours_to_next_close, session_hours_since_reopen — declared with the same spaces.Dict idiom as the existing conditional blocks and emitted under the same boolean.",
+  "termination": "when an episode terminates holding exposure, info carries session_exposure_survived_termination, session_carried_exposure and session_carried_position_requires_migration. Termination is an episode boundary, not a venue event.",
+  "four_records": "session_raw_model_action, session_mapped_action, session_overlay and session_final_action are kept distinct, plus session_action_after_overlay as a fifth record of what was actually submitted.",
+  "default": "session_exposure_enabled defaults to False, so every pre-existing config keeps its exact observation space and behaviour. Proven by test_disabled_by_default_keeps_the_legacy_contract."
+ },
+
+ "observed_state_trajectory_through_the_real_env": [
+  {"step": 0, "bar": 1, "state": "NORMAL_TRADING", "overlay": "pass_through", "position": 0, "reward": 0.0},
+  {"step": 3, "bar": 4, "state": "NORMAL_TRADING", "overlay": "pass_through", "position": 1, "reward": 0.0},
+  {"step": 4, "bar": 5, "state": "WIND_DOWN", "overlay": "pass_through", "position": 1, "reward": 0.0},
+  {"step": 5, "bar": 6, "state": "FORCED_FLATTEN", "overlay": "forced_close", "position": 1, "reward": 0.0},
+  {"step": 6, "bar": 7, "state": "EXPECTED_MARKET_CLOSED", "overlay": "no_actionable_step", "position": 0, "reward": 0.0},
+  {"step": 12, "bar": 13, "state": "REOPEN_BLACKOUT", "overlay": "masked_entry_during_blackout", "position": 0, "reward": 0.0}
+ ],
+
+ "sim_core_parity": {
+  "harness_did_not_exist": "VERIFIED. Nothing in the repository compared GymFxEnv with NautilusGymFxEnv. The README's 'bit-identical' sentence is about run-to-run determinism of ONE engine. tests/test_nautilus_bakeoff.py exercises the Nautilus replay adapter alone (self-determinism by result_hash/event_hash plus an independent fill oracle). tests/test_simulation_engine_contracts.py uses no env. tests/test_nautilus_gym_bridge.py asserts only the Gym API shape on the Nautilus env. tools/simulation_engine_benchmark.py runs both but only times them.",
+  "harness_now_exists": "tests/test_session_exposure_engine_parity.py, 6 tests.",
+  "proven_identical": "The session decision trace (15 fields), the five-state sequence, the six session observation fields and the no-actionable-step reward suppression are BYTE-EQUAL across engines when aligned by bar_index, because they live in shared GymFxEnv code that NautilusGymFxEnv does not override.",
+  "proven_NOT_identical": "The forced-close settlement. simulation_engines/nautilus_gym.py GymBridgeStrategy.on_bar maps action 3 to a Decimal(0) target and issues a market order; it never reaches shared_execution_envelope.Plugin.apply_action. The Nautilus forced close therefore produces no policy_close event and no envelope-computed trade cost. Pinned by an explicit test that FAILS the moment the envelope reaches the Nautilus path, rather than asserting a parity that does not hold."
+ },
+
+ "findings_for_disposition": {
+  "note": "Reported, not closed. Musashi disposes.",
+  "F_A_calendar_helper_silently_inert": {
+   "claim": "app/env.py::_oanda_calendar_features reads the timestamp only from self.dataframe.columns, but the default data feed promotes the date column to the DataFrame INDEX. Under that feed the column is absent, so the helper takes its ts=None branch and every one of the eleven OANDA calendar observation and info fields is a neutral zero.",
+   "evidence": "GymFxEnv built from a config with date_column='DATE_TIME': env._date_column in env.dataframe.columns is False; columns are ['OPEN','HIGH','LOW','CLOSE','VOLUME','feat'] and the index is a DatetimeIndex.",
+   "impact": "Any run relying on broker_market_open, hours_to_friday_close or is_force_flat_window as an observation has been training on constant zeros.",
+   "scope": "PRE-EXISTING, not introduced by C5. The session path was corrected (_session_now falls back to the DatetimeIndex); the OANDA helper was NOT modified — out of C5 scope and it would change the observation content of existing runs.",
+   "status": "OPEN"
+  },
+  "F_B_declared_space_diverges_from_emitted_observation": {
+   "claim": "build_base_observation_space defaults include_price_window to `not feature_columns`, while feature_window_preprocessor defaults it to its own params. On a feature-column config that does not set the key, the env DECLARES a space without prices/returns and then EMITS them, so observation_space.contains(obs) is False.",
+   "evidence": "Reproduced with the session overlay entirely absent: space keys ['equity_norm','features','position','steps_remaining_norm','unrealized_pnl_norm'] versus observation keys that additionally contain 'prices' and 'returns'.",
+   "scope": "PRE-EXISTING. Recorded as a permanent regression in tests/test_session_exposure_env.py::TestPreExistingObservationSpaceDivergence so it cannot be lost. NOT fixed here: correcting either side changes the observation contract of every feature-column config.",
+   "status": "OPEN"
+  },
+  "F_C_cross_engine_one_bar_offset": {
+   "claim": "For the same step number, NautilusGymFxEnv reports a bar_index exactly one greater than GymFxEnv.",
+   "evidence": "With session_exposure_enabled=False on both engines, offsets over five steps are [1,1,1,1,1] (core 1..5, sim 2..6).",
+   "impact": "Every time-derived feature is shifted by one bar between engines, and no economic comparison of the two engines is valid until this is resolved. It is also why the new parity harness keys on bar_index rather than step number.",
+   "scope": "PRE-EXISTING, reproduced with the session overlay disabled so it cannot be attributed to C5.",
+   "status": "OPEN"
+  },
+  "F_D_nautilus_cannot_run_the_production_timeframes": {
+   "claim": "simulation_engines/nautilus_adapter._to_nautilus_data hardcodes MINUTE aggregation as f'{instrument}-{timeframe_minutes}-MINUTE-MID-EXTERNAL'. In this nautilus_trader build BarType.from_str accepts steps 1, 5 and 15 and REFUSES 60 and 240.",
+   "impact": "H1 and H4 — the timeframes this platform actually trades — cannot run on the Nautilus engine at all. The parity claim above is therefore established at M15, not at the production timeframe.",
+   "scope": "PRE-EXISTING.",
+   "status": "OPEN"
+  }
+ },
+
+ "suites": {
+  "c5_env": "tests/test_session_exposure_env.py — 19 passed",
+  "c5_parity": "tests/test_session_exposure_engine_parity.py — 6 passed",
+  "full": "gym-fx tests — 256 passed, 60 warnings (was 231 before C5, 222 before P1-P3)"
+ },
+
+ "not_done": "No deployment. The live MT5 position was not touched. WP3 live adapters, WP4 and long compute remain blocked."
+}
