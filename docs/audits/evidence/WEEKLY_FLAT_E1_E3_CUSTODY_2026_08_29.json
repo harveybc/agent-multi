@@ -1,0 +1,30 @@
+{
+ "schema": "agent_multi.weekly_flat_e1_e3.v1",
+ "order": "@\u2026D2/D3 final correction (E1 atomic terminals, E2 typed evidence, E3 concurrency/crash/fabrication)",
+ "pre_reproduced_before_editing": {
+  "E2a_fabricated_protection_digest": "native_protection_digest='not-a-digest-or-fresh-evidence' AUTHORIZED the claim (state=active)",
+  "E2b_string_yes_completes": "{'flat_confirmed':'yes','fresh':'yes'} COMPLETED custody (state=completed)",
+  "E1a_dishonest_state": "'prepared' declared in STATES but no record ever produced it",
+  "E1b_non_atomic_update": "_durable_update used O_TRUNC with no process exclusion and no expected-state verification",
+  "E1c_read_follows_symlinks": "read() had no symlink refusal after creation"
+ },
+ "post": {
+  "E1": "terminal transitions elect ONE process through an O_EXCL transition lock; the record's state is re-verified UNDER the lock (expected-state identity); a competing transition observes the winner and PRESERVES it; update temporaries are exclusively created (O_EXCL, never O_TRUNC); file and parent fsync; symlink refusal at EVERY read/write boundary; 'prepared' REMOVED from the declared machine (only states actually produced are declared); an empty final placeholder from a crash between exclusive creation and replacement is classified INTERRUPTED_CLAIM_UNCERTAIN with operator disposition required \u2014 never silently recovered",
+  "E2": "app/direct_evidence.py defines immutable validated envelopes NativeProtectionEvidence and ReconciliationEvidence binding venue, account, symbol, position id, observed_at UTC, source, evidence id, RAW payload and its digest, and max age; the digest is RE-HASHED from the raw payload at claim/finish so a fabricated digest is unconstructable; strict bools and strict integer ZERO counts; strings, bool-as-count, NaN, missing, stale and identity-mismatched evidence all refuse typed; completed requires fresh strict zero positions AND zero orders; failed PRESERVES the non-flat/stale evidence and can never become completed",
+  "E3": {
+   "1_barrier_claim_race": "Popen + filesystem barrier: both processes reach the claim together, exactly one WON",
+   "2_completed_vs_failed_race": "exactly one immutable terminal winner; the loser cannot overwrite",
+   "3_two_completions_different_evidence": "the winner's evidence block is preserved byte-identical",
+   "4_placeholder_restart": "INTERRUPTED_CLAIM_UNCERTAIN raised; a new claim over it also refuses",
+   "5_symlinked_record": "read and finish both refuse without following the link",
+   "6_two_fabricated_evidence_examples": "both PRE examples frozen as regressions; the record stays 'active' after the refused completion",
+   "extra": "strict-type refusals, stale/identity mismatch leaving NO record, failed-preserves-evidence immutability"
+  }
+ },
+ "suites": {
+  "custody": "22/22",
+  "full_gym_fx": "213 passed"
+ },
+ "C5_status": "NEXT \u2014 real GymFxEnv semantics, to be returned as the combined package",
+ "untouched": "live MT5 position, EA, bridge, runner; nothing deployed"
+}

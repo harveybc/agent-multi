@@ -8,11 +8,11 @@
    "family": "returns_momentum",
    "window": 32,
    "latent": 16,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.2824,
    "calibration_r2": 0.0309,
    "parameters": 6561,
-   "wall_s": 18.0,
+   "wall_s": 58.9,
    "peak_rss_mb_delta": 0.0
   },
   "returns_momentum|w32|d32": {
@@ -63,11 +63,11 @@
    "family": "returns_momentum",
    "window": 64,
    "latent": 16,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.3422,
    "calibration_r2": 0.0294,
    "parameters": 6625,
-   "wall_s": 40.199999999999996,
+   "wall_s": 133.7,
    "peak_rss_mb_delta": 0.0
   },
   "returns_momentum|w64|d32": {
@@ -85,11 +85,11 @@
    "family": "returns_momentum",
    "window": 64,
    "latent": 64,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.2696,
    "calibration_r2": 0.049,
    "parameters": 100225,
-   "wall_s": 127.1,
+   "wall_s": 395.1,
    "peak_rss_mb_delta": 23.7
   },
   "returns_momentum|w64|d96": {
@@ -118,22 +118,22 @@
    "family": "returns_momentum",
    "window": 128,
    "latent": 16,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.3996,
    "calibration_r2": 0.0757,
    "parameters": 6753,
-   "wall_s": 68.6,
+   "wall_s": 251.1,
    "peak_rss_mb_delta": 0.0
   },
   "returns_momentum|w128|d32": {
    "family": "returns_momentum",
    "window": 128,
    "latent": 32,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.2315,
    "calibration_r2": 0.0365,
    "parameters": 25793,
-   "wall_s": 56.2,
+   "wall_s": 361.5,
    "peak_rss_mb_delta": 0.0
   },
   "returns_momentum|w128|d64": {
@@ -261,11 +261,11 @@
    "family": "trend_level",
    "window": 32,
    "latent": 96,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.2363,
    "calibration_r2": 0.12,
    "parameters": 151367,
-   "wall_s": 147.3,
+   "wall_s": 433.90000000000003,
    "peak_rss_mb_delta": 0.0
   },
   "trend_level|w32|d128": {
@@ -283,22 +283,22 @@
    "family": "trend_level",
    "window": 64,
    "latent": 16,
-   "budget": 900,
-   "monitor_r2": -0.2968,
-   "calibration_r2": 0.1137,
+   "budget": 2700,
+   "monitor_r2": -0.3036,
+   "calibration_r2": 0.1235,
    "parameters": 6167,
-   "wall_s": 88.1,
+   "wall_s": 290.4,
    "peak_rss_mb_delta": 0.0
   },
   "trend_level|w64|d32": {
    "family": "trend_level",
    "window": 64,
    "latent": 32,
-   "budget": 900,
+   "budget": 2700,
    "monitor_r2": -0.3271,
    "calibration_r2": 0.1205,
    "parameters": 18823,
-   "wall_s": 146.4,
+   "wall_s": 465.20000000000005,
    "peak_rss_mb_delta": 0.0
   },
   "trend_level|w64|d64": {
@@ -635,22 +635,22 @@
    "family": "volatility_distribution",
    "window": 256,
    "latent": 64,
-   "budget": 300,
+   "budget": 900,
    "monitor_r2": -0.4534,
    "calibration_r2": -0.1164,
    "parameters": 75969,
-   "wall_s": 116.9,
+   "wall_s": 471.9,
    "peak_rss_mb_delta": 0.0
   },
   "volatility_distribution|w256|d96": {
    "family": "volatility_distribution",
    "window": 256,
    "latent": 96,
-   "budget": 300,
+   "budget": 900,
    "monitor_r2": -0.1686,
    "calibration_r2": -0.0921,
    "parameters": 169249,
-   "wall_s": 186.3,
+   "wall_s": 752.5,
    "peak_rss_mb_delta": 0.0
   },
   "volatility_distribution|w256|d128": {
@@ -687,7 +687,40 @@
    "peak_rss_mb_delta": 0.0
   }
  },
- "halving": {},
+ "halving": {
+  "round2_survivors": [
+   "returns_momentum|w64|d64",
+   "returns_momentum|w128|d32",
+   "returns_momentum|w32|d16",
+   "returns_momentum|w64|d16",
+   "returns_momentum|w64|d32",
+   "returns_momentum|w32|d32",
+   "returns_momentum|w128|d16",
+   "returns_momentum|w256|d32",
+   "returns_momentum|w128|d64",
+   "returns_momentum|w32|d64",
+   "trend_level|w32|d128",
+   "trend_level|w64|d96",
+   "trend_level|w128|d128",
+   "trend_level|w32|d96",
+   "trend_level|w64|d128",
+   "trend_level|w128|d96",
+   "trend_level|w256|d96",
+   "trend_level|w32|d32",
+   "trend_level|w64|d16",
+   "trend_level|w64|d32",
+   "volatility_distribution|w128|d16",
+   "volatility_distribution|w256|d16",
+   "volatility_distribution|w32|d16",
+   "volatility_distribution|w64|d16",
+   "volatility_distribution|w32|d32",
+   "volatility_distribution|w64|d32",
+   "volatility_distribution|w256|d32",
+   "volatility_distribution|w128|d32",
+   "volatility_distribution|w256|d96",
+   "volatility_distribution|w256|d64"
+  ]
+ },
  "survivor_decisions": {},
  "invalid_cells": []
 }
