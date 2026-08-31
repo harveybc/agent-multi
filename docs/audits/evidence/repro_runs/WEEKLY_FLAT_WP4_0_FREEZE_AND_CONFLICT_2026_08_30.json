@@ -1,0 +1,57 @@
+{
+ "order": "agent-multi@ab5ce68d — weekly-flat WP4 materialization and benchmark",
+ "status": "WP4.0 EXECUTED; WP4.1-WP4.4 STOPPED — the W0-W2 label conflict is returned per the order's own instruction ('If the existing authoritative plan defines these labels differently, stop and return the conflict; do not silently remap them.')",
+
+ "WP4_0_frozen_identities": {
+  "weekly_flat_authority": {"repository": "gym-fx", "commit": "2c60b84", "branch": "satoshi/trade-reconciliation-20260828"},
+  "authority_code_identity_as_load_authority_computes_it": "25dec77ad836f63212cd496a3b312e5aea0f2be9fa1a58f59225644c574b5da5",
+  "gym_fx_file_sha256": {
+   "app/session_exposure.py": "0a33065805b3304372a3b58a018506214aecfc3879d5a556b029e30b827132e2",
+   "app/flatten_custody.py": "689a3e5c54692bf3273ea269fb94dd46f0bd7f5f9506e2d81e0d237bff5c7012",
+   "app/oanda_calendar.py": "f433d5a0ddcabbed6ba7bcaf26c101012b575524971b51372551a42cca332e11",
+   "app/env.py": "994c83888a1831b9164c0dab2a408828d7463ddcf85b05c97c56ed95910c70b1",
+   "app/direct_evidence.py": "afdcb3a57393dd6a0552a253a27e711a7b5df3c222682dc6f60d610e6bb66ec6",
+   "app/migration_custody.py": "f3703f3a1c9a1b22b31883e14560991b44ab656b39a46698960abae6b5b6cefe"
+  },
+  "wp3_executor_identity": {"repository": "lts", "commit": "83dff62", "branch": "satoshi/wp3-live-adapters-20260830"},
+  "lts_file_sha256": {
+   "app/effect_executor.py": "9b65f2e1d754bed273d8eb1c0c88aadd47559e9e754b2ed801f33df6395a554f",
+   "app/venue_direct_evidence.py": "43b40b7928ec217db7584929f55c1221ff3f08264e1e9d20672bfef929ef3edc",
+   "app/session_authority_adapter.py": "7c909e3a37bf05649e1dc4df83c8a8cab6e04e2abe80cfdbc6529c5e50cdb7b3",
+   "app/live_flatten_custody.py": "f282ce77a13f093aef6ec29d966032f72a1f5cfbac8bc7e7125da691352ffef4",
+   "app/session_watchdog.py": "1beba31469e3eb651db5f1889b523e5b704c3f2f9be545faa497be5f0d3eb9ad"
+  },
+  "work_plan_42_sha256": {"artefact": "agent-multi@45c49003:docs/work_plan/42_WEEKLY_SESSION_EXPOSURE_AND_REOPEN_POLICY.md", "sha256": "26cfe85b15acbf286be8560669217f6ee5a6cf58311c161f2f48d5eb431bef2d"},
+  "policy_calendar_observation_cost_contracts": "all live inside the frozen gym-fx files above: validate_policy + REQUIRED_KEYS (policy), SESSION_SOURCES + calendar-identity binding (calendar/session), the env observation/action publication and execution-cost envelope (app/env.py). No separate mutable copy exists to freeze.",
+  "held_lock_handle_validation": {
+   "pre_commit": "e423548",
+   "post_commit": "83dff62",
+   "PRE": {
+    "foreign_holder": "a release invoked with a handle for a lock held by pid 99999 WROTE its intent, moved the lock to released:<epoch> and wrote the completion — both run lock and route lock",
+    "malformed_epochs": "an int, a 3-character string and uppercase hex were accepted straight into release-artefact FILENAMES",
+    "path_traversal_epoch": "failed only incidentally (name did not resolve), not by validation"
+   },
+   "POST": "the handle is validated BEFORE any intent is written: tuple shape, canonical 32-hex epoch, this plan's/route's own lock file, and descriptor-verified content reading exactly held:<this-pid>:<epoch>. Foreign holder, six malformed epochs, four malformed shapes, alien lock path, epoch/content mismatch and traversal epochs all refuse typed with NOTHING written; the legitimate cycle still releases.",
+   "mutation": "skipping the content proof broke 3 tests; skipping the epoch grammar broke 5; green on revert",
+   "counts": {"executor": 174, "evidence": 125, "adapter": 102, "custody": 72, "full": 1141}
+  }
+ },
+
+ "W0_W2_LABEL_CONFLICT": {
+  "order_defines": {
+   "W0": "weekly exposure overlay disabled, baseline behavior",
+   "W1": "weekly flatten/wind-down enabled under the frozen calendar contract",
+   "W2": "W1 plus causal reopen blackout/evidence gate"
+  },
+  "work_plan_42_defines": {
+   "W0": "overlay comparison — a PAIRED experiment holding BOTH the disabled diagnostic control AND the enabled deterministic overlay (same model, entries, costs, data, seeds)",
+   "W1": "wind-down timing SWEEP: wind_down_hours {12,24,36,48} x forced_flatten_hours {1,2,4,8}",
+   "W2": "reopen calibration SWEEP: blackout hours {1,2,4,8,12}, closed bars {1,2,3}, stability checks {1,2,3}"
+  },
+  "conflict_1_labels": "the order's labels name an incremental one-factor ladder of three cells; plan 42's identical labels name three experiment FAMILIES (a paired comparison and two hyperparameter sweeps). These are different objects under the same names.",
+  "conflict_2_representability": "the order's W1 cell — wind-down enabled WITHOUT the reopen blackout/evidence gate — is not expressible in the accepted policy surface: gym-fx validate_policy hard-requires reopen_min_closed_bars >= 1 and stability_consecutive_checks >= 1, and REOPEN_BLACKOUT is an integral state of the accepted five-state machine, not a separable factor. Materializing order-W1 would require either adding a new disable switch (a policy change, not materialization) or reinterpreting the policy in a driver — which the order itself forbids.",
+  "returned_for_disposition": "Musashi resolves the labels. Two obvious consistent readings, NOT chosen by me: (a) cells = plan-42 W0's two arms (disabled control vs enabled full overlay at the §4 defaults) plus one W2-family cell varying only reopen parameters; or (b) amend plan 42 to define the incremental ladder and extend the accepted policy surface with an explicit, validated blackout-disable field. Nothing was materialized, no label was remapped, no benchmark was run."
+ },
+
+ "boundaries": "No deployment, services, venue connections, commands, position changes, GPU training, checkpoint promotion or live activation. CPU-only scope untouched because no cell was materialized."
+}
