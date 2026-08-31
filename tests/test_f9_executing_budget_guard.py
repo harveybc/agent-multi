@@ -49,12 +49,14 @@ class TestGuardBounds:
         """The guard reads SB3's ACTUAL _n_updates, never a
         timesteps-minus-learning_starts inference."""
         config = {"budget_max_updates": 1000}
-        _check_executing_budget(config, model(10**6, updates=1000),
+        _check_executing_budget(config, model(10**6, updates=999),
                                 started_wall=time.time())
+        # F9.2: >= semantics — REACHING the bound stops, so the
+        # counter can never exceed it
         with pytest.raises(ExecutingBudgetExceeded,
-                           match="ACTUAL counter reads 1001"):
+                           match="ACTUAL counter reads 1000"):
             _check_executing_budget(config,
-                                    model(10, updates=1001),
+                                    model(10, updates=1000),
                                     started_wall=time.time())
 
     def test_wall_budget_stops(self):
@@ -120,11 +122,11 @@ class TestF91IntraSegmentCallback:
 
     def test_updates_crossing_stops_mid_segment(self):
         cb = self._callback({"budget_max_updates": 1000})
-        cb.model._n_updates = 1000
+        cb.model._n_updates = 999
         assert cb._on_step() is True
-        cb.model._n_updates = 1001
+        cb.model._n_updates = 1000
         assert cb._on_step() is False
-        assert "ACTUAL counter reads 1001" in cb.budget_stop
+        assert "ACTUAL counter reads 1000" in cb.budget_stop
 
     def test_wall_crossing_stops_mid_segment(self):
         cb = self._callback({"budget_max_wall_seconds": 1.0},
@@ -143,6 +145,8 @@ class TestF91IntraSegmentCallback:
     @pytest.mark.parametrize("bad", [
         -1, 0, float("nan"), float("inf"), True, 1.5])
     def test_invalid_budget_values_refuse_not_disable(self, bad):
+        # (budget_max_env_steps stays strictly positive; the F9.2
+        # zero-updates allowance is tested separately)
         """A malformed bound can never silently disable the guard."""
         from pipeline_plugins.rl_pipeline_with_validation import (
             _check_executing_budget)
@@ -171,3 +175,99 @@ class TestF91IntraSegmentCallback:
         assert cb_at < learn_at
         assert "_budget_cb.budget_stop" in source[learn_at:
                                                  learn_at + 1200]
+
+
+# ================================================================== #
+# F9.2: real SAC, gradient_steps > 1, the counter never exceeds      #
+# ================================================================== #
+
+def _tiny_env():
+    import gymnasium as gym
+    import numpy as np
+
+    class Tiny(gym.Env):
+        observation_space = gym.spaces.Box(-1.0, 1.0, (2,),
+                                           dtype=np.float32)
+        action_space = gym.spaces.Box(-1.0, 1.0, (1,),
+                                      dtype=np.float32)
+
+        def reset(self, *, seed=None, options=None):
+            super().reset(seed=seed)
+            return np.zeros(2, dtype=np.float32), {}
+
+        def step(self, action):
+            obs = np.zeros(2, dtype=np.float32)
+            return obs, 0.0, False, False, {}
+
+    return Tiny()
+
+
+def _real_sac(gradient_steps, learning_starts=8):
+    from stable_baselines3 import SAC
+    return SAC("MlpPolicy", _tiny_env(), device="cpu", seed=1,
+               learning_starts=learning_starts, train_freq=1,
+               gradient_steps=gradient_steps, batch_size=8,
+               buffer_size=200,
+               policy_kwargs=dict(net_arch=[8]), verbose=0)
+
+
+def _learn_under_budget(model, config, timesteps=120):
+    from pipeline_plugins.rl_pipeline_with_validation import (
+        make_executing_budget_callback)
+    cb = make_executing_budget_callback(config, time.time())
+    model.learn(total_timesteps=timesteps, callback=cb,
+                log_interval=10_000)
+    return cb
+
+
+class TestF92RealSacIntegration:
+
+    def test_counter_never_exceeds_with_gradient_steps_4(self):
+        """REAL SB3 SAC, gradient_steps=4, budget 10: without the
+        rollout-end cap a block would land on 12. The cap trims the
+        final block (4+4+2) and >= stops the run: the ACTUAL
+        counter ends EXACTLY at the bound and never beyond."""
+        model = _real_sac(gradient_steps=4)
+        cb = _learn_under_budget(
+            model, {"budget_max_updates": 10})
+        assert int(model._n_updates) == 10
+        assert cb.budget_stop and "reached" in cb.budget_stop
+
+    def test_configured_gradient_steps_survive_as_identity(self):
+        model = _real_sac(gradient_steps=4)
+        cb = _learn_under_budget(
+            model, {"budget_max_updates": 10})
+        assert cb.configured_gradient_steps == 4
+        assert int(model.gradient_steps) == 4, (
+            "the configured value is the identity and is restored "
+            "after the run")
+
+    def test_budget_zero_permits_no_update_ever(self):
+        model = _real_sac(gradient_steps=4)
+        _learn_under_budget(model, {"budget_max_updates": 0},
+                            timesteps=40)
+        assert int(model._n_updates) == 0
+
+    def test_budget_one_permits_exactly_one(self):
+        model = _real_sac(gradient_steps=4)
+        _learn_under_budget(model, {"budget_max_updates": 1})
+        assert int(model._n_updates) == 1
+
+    def test_start_just_below_the_bound(self):
+        """Resume-style: the counter arrives one under the bound —
+        exactly one more update is permitted."""
+        model = _real_sac(gradient_steps=4)
+        model._n_updates = 9
+        _learn_under_budget(model, {"budget_max_updates": 10})
+        assert int(model._n_updates) == 10
+
+    @pytest.mark.parametrize("preset", [10, 15])
+    def test_resume_at_or_over_the_bound_adds_zero(self, preset):
+        model = _real_sac(gradient_steps=4)
+        model._n_updates = preset
+        cb = _learn_under_budget(model,
+                                 {"budget_max_updates": 10})
+        assert int(model._n_updates) == preset, (
+            "a counter already at or over the bound must gain "
+            "NOTHING")
+        assert cb.budget_stop
