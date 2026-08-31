@@ -102,3 +102,72 @@ class TestGuardIsWiredIntoTheEpochLoop:
         assert before < learn_at < after, (
             "the guard must run before AND after the learn segment")
         assert source.index("for epoch in range") > before or True
+
+
+# ================================================================== #
+# F9.1: the guard as an INTRA-segment executing callback             #
+# ================================================================== #
+
+class TestF91IntraSegmentCallback:
+
+    def _callback(self, config, started=None):
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            make_executing_budget_callback)
+        cb = make_executing_budget_callback(
+            config, started if started is not None else time.time())
+        cb.model = model()          # BaseCallback model slot
+        return cb
+
+    def test_updates_crossing_stops_mid_segment(self):
+        cb = self._callback({"budget_max_updates": 1000})
+        cb.model._n_updates = 1000
+        assert cb._on_step() is True
+        cb.model._n_updates = 1001
+        assert cb._on_step() is False
+        assert "ACTUAL counter reads 1001" in cb.budget_stop
+
+    def test_wall_crossing_stops_mid_segment(self):
+        cb = self._callback({"budget_max_wall_seconds": 1.0},
+                            started=time.time() - 5.0)
+        assert cb._on_step() is False
+        assert "wall budget" in cb.budget_stop
+
+    def test_stop_file_stops_mid_segment(self, tmp_path):
+        stop = tmp_path / "STOP"
+        cb = self._callback({"budget_stop_file": str(stop)})
+        assert cb._on_step() is True
+        stop.write_text("x")
+        assert cb._on_step() is False
+        assert "external stop request" in cb.budget_stop
+
+    @pytest.mark.parametrize("bad", [
+        -1, 0, float("nan"), float("inf"), True, 1.5])
+    def test_invalid_budget_values_refuse_not_disable(self, bad):
+        """A malformed bound can never silently disable the guard."""
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _check_executing_budget)
+        config = {"budget_max_env_steps": bad}
+        with pytest.raises(ExecutingBudgetExceeded,
+                           match="invalid budget value"):
+            _check_executing_budget(config, model(),
+                                    started_wall=time.time())
+
+    def test_invalid_fractional_update_budget_refuses(self):
+        from pipeline_plugins.rl_pipeline_with_validation import (
+            _check_executing_budget)
+        with pytest.raises(ExecutingBudgetExceeded,
+                           match="invalid budget value"):
+            _check_executing_budget({"budget_max_updates": 10.5},
+                                    model(),
+                                    started_wall=time.time())
+
+    def test_the_callback_rides_every_learn_segment(self):
+        import inspect
+        import pipeline_plugins.rl_pipeline_with_validation as mod
+        source = inspect.getsource(mod.PipelinePlugin)
+        learn_at = source.index("model.learn(")
+        cb_at = source.rindex("make_executing_budget_callback", 0,
+                              learn_at)
+        assert cb_at < learn_at
+        assert "_budget_cb.budget_stop" in source[learn_at:
+                                                 learn_at + 1200]
