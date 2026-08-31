@@ -670,6 +670,57 @@ def _format_table(rows: List[Tuple[str, Dict[str, Any]]]) -> str:
     return "\n".join(out)
 
 
+# ------------------------------------------------------------------ #
+# F9 (order agent-multi@22218df1): the EXECUTING budget guard.       #
+# The first strong preflight exceeded its authorization because      #
+# only total_timesteps was bounded while the epoch loop obeys        #
+# epoch/patience settings. This guard is checked BEFORE AND AFTER    #
+# every learn segment against cumulative environment steps, the      #
+# ACTUAL optimizer update counter, wall time and an external stop    #
+# request — and no epoch, patience or timestep configuration can     #
+# override it: when a budget key is present, exceeding it stops      #
+# the loop with a typed reason, unconditionally.                     #
+# ------------------------------------------------------------------ #
+
+class ExecutingBudgetExceeded(RuntimeError):
+    """Typed stop: an executing budget bound was reached."""
+
+
+def _check_executing_budget(config, model, *, started_wall,
+                            next_segment_timesteps=0):
+    import os as _os
+    import time as _time
+    budget_steps = config.get("budget_max_env_steps")
+    budget_updates = config.get("budget_max_updates")
+    budget_wall = config.get("budget_max_wall_seconds")
+    stop_file = config.get("budget_stop_file")
+    if budget_steps is None and budget_updates is None and \
+            budget_wall is None and stop_file is None:
+        return
+    steps = int(getattr(model, "num_timesteps", 0) or 0)
+    updates = int(getattr(model, "_n_updates", 0) or 0)
+    if stop_file and _os.path.exists(str(stop_file)):
+        raise ExecutingBudgetExceeded(
+            "external stop request (budget_stop_file present) — "
+            f"stopped at {steps} env steps / {updates} updates")
+    if budget_wall is not None and \
+            _time.time() - started_wall > float(budget_wall):
+        raise ExecutingBudgetExceeded(
+            f"wall budget {budget_wall}s exceeded at {steps} env "
+            f"steps / {updates} updates")
+    if budget_steps is not None and \
+            steps + int(next_segment_timesteps) > int(budget_steps):
+        raise ExecutingBudgetExceeded(
+            f"environment-step budget {budget_steps} would be "
+            f"exceeded (at {steps}, next segment "
+            f"{next_segment_timesteps}) — the epoch/patience "
+            "configuration cannot override the authorization")
+    if budget_updates is not None and updates > int(budget_updates):
+        raise ExecutingBudgetExceeded(
+            f"optimizer-update budget {budget_updates} exceeded: "
+            f"the ACTUAL counter reads {updates}")
+
+
 class PipelinePlugin:
     plugin_params: Dict[str, Any] = {
         # split widths (years)
@@ -1931,7 +1982,18 @@ class PipelinePlugin:
                     return actor, critic, ent
 
                 stop_reason = "max_epochs_budget"
+                _budget_wall_started = __import__("time").time()
                 for epoch in range(1, max_epochs + 1):
+                    # F9: the executing budget outranks every
+                    # epoch/patience setting, before each segment...
+                    try:
+                        _check_executing_budget(
+                            config, model,
+                            started_wall=_budget_wall_started,
+                            next_segment_timesteps=epoch_ts)
+                    except ExecutingBudgetExceeded as exc:
+                        stop_reason = f"executing_budget: {exc}"
+                        break
                     _set_env_training_progress(
                         train_env,
                         _training_progress_for_epoch(
@@ -1955,6 +2017,16 @@ class PipelinePlugin:
                         callback=make_progress_callback(config, total_progress_timesteps),
                     )
                     a_a, c_a, e_a = _policy_checksum(model)
+                    # ...and immediately after it
+                    try:
+                        _check_executing_budget(
+                            config, model,
+                            started_wall=_budget_wall_started)
+                    except ExecutingBudgetExceeded as exc:
+                        stop_reason = f"executing_budget: {exc}"
+                        nts_after = int(getattr(model,
+                                                "num_timesteps", 0))
+                        break
                     nts_after = int(getattr(model, "num_timesteps", 0))
                     rb_after = int(getattr(getattr(model, "replay_buffer", None), "size", lambda: 0)()) if hasattr(model, "replay_buffer") else 0
 
