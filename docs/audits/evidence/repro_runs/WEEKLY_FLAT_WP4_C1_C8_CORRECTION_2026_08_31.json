@@ -1,0 +1,340 @@
+{
+ "order": "agent-multi@051ef265 \u2014 weekly-flat WP4 corrections C1-C8",
+ "subject_repository": "gym-fx",
+ "branch": "satoshi/trade-reconciliation-20260828",
+ "pre_commit": "ad6fb51",
+ "post_commit": "ef01105",
+ "PRE_frozen_findings": {
+  "C1": "the driver verified only 2 of the 6 frozen gym-fx files; a consistently re-digested cell RAN on its self-digest alone; the manifest enumerated no cells",
+  "C2": "the run RNG mixed in the cell digest \u2014 paired W0 cells never received the same action stream",
+  "C3": "sine prices around one artificial 48h gap; no historical hash, no holiday",
+  "C4": "zero cancellations in every smoke; no resting pending entry exercised",
+  "C5": "no_bar_inside_closure hard-coded True; the trades variable dead",
+  "C6": "W2 labeled complete with thresholds silently frozen; G2 baselines neither justified nor ablated",
+  "C7": "statistics predeclared on five per-seed means",
+  "C8": "best_of_3 reported; GPU cost language extrapolated without an update benchmark"
+ },
+ "POST": {
+  "C1_redigested_cell": "refused: cell 'w1_wd24_ff4': digest ec0f165df6b2fab2\u2026 does not match the manife",
+  "C1_files_verified": 6,
+  "C1_manifest_enumerates_cells": 93,
+  "C2_tape_seed_only": true,
+  "C2_paired_prefix": {
+   "first_treatment_step": 14,
+   "identical_prefix_steps": 14
+  },
+  "C3_historical_evidence": {
+   "source_sha256_verified": "359bd825708dd690",
+   "weekend_closures": 3,
+   "holiday_or_exception": 2,
+   "holiday_evidence": "present",
+   "instrumentation_declared": [
+    "SPREAD",
+    "feat"
+   ]
+  },
+  "C3_fifth_state_probe": true,
+  "C4_states": {
+   "NORMAL_TRADING": 28,
+   "WIND_DOWN": 16,
+   "FORCED_FLATTEN": 2,
+   "REOPEN_BLACKOUT": 76
+  },
+  "C4_overlays": {
+   "pass_through": 83,
+   "masked_risk_increase": 9,
+   "forced_close": 2,
+   "masked_entry_during_blackout": 28
+  },
+  "C5_conservation": {
+   "bar_timestamps_inside_closures": 0,
+   "suppressed_reward_steps": [],
+   "close_event_conservation": {
+    "trades_total": 8,
+    "won": 2,
+    "lost": 6,
+    "breakeven": 0,
+    "holds": true
+   },
+   "gross_minus_costs_equals_net": {
+    "violations": 0
+   },
+   "equity_reconciliation": {
+    "initial": 10000.0,
+    "final": 9764.430192641465,
+    "net_pnl_total": -225.151475,
+    "open_position_at_end": true,
+    "gap": -10.418332,
+    "holds_when_flat": true
+   },
+   "close_reason_counts": {
+    "backtrader trade lifecycle close": 8
+   },
+   "trade_costs_total": 0.0,
+   "holds": true
+  },
+  "C5_rows_digest": "91ffc22ecab6f5a2",
+  "C6_families": {
+   "W0": 2,
+   "W1": 16,
+   "W2a": 45,
+   "W2b": 27,
+   "G2B": 3
+  },
+  "C8_no_best_of": true
+ },
+ "benchmark_median_iqr": {
+  "w0_control_disabled": {
+   "median_sps": 1939.59,
+   "iqr": [
+    1815.48,
+    1952.0
+   ],
+   "states": {},
+   "conservation": true
+  },
+  "w0_overlay_enabled": {
+   "median_sps": 347.68,
+   "iqr": [
+    345.02,
+    351.18
+   ],
+   "states": {
+    "NORMAL_TRADING": 28,
+    "WIND_DOWN": 16,
+    "FORCED_FLATTEN": 2,
+    "REOPEN_BLACKOUT": 76
+   },
+   "conservation": true
+  },
+  "w1_wd12_ff1": {
+   "median_sps": 352.5,
+   "iqr": [
+    351.79,
+    354.96
+   ],
+   "states": {
+    "NORMAL_TRADING": 40,
+    "WIND_DOWN": 6,
+    "REOPEN_BLACKOUT": 76
+   },
+   "conservation": true
+  },
+  "w1_wd48_ff8": {
+   "median_sps": 356.41,
+   "iqr": [
+    356.31,
+    357.46
+   ],
+   "states": {
+    "NORMAL_TRADING": 23,
+    "WIND_DOWN": 19,
+    "FORCED_FLATTEN": 4,
+    "REOPEN_BLACKOUT": 76
+   },
+   "conservation": true
+  },
+  "w1_wd36_ff4": {
+   "median_sps": 355.48,
+   "iqr": [
+    351.59,
+    359.03
+   ],
+   "states": {
+    "NORMAL_TRADING": 28,
+    "WIND_DOWN": 16,
+    "FORCED_FLATTEN": 2,
+    "REOPEN_BLACKOUT": 76
+   },
+   "conservation": true
+  },
+  "w2a_h1_b1_c1": {
+   "median_sps": 345.32,
+   "iqr": [
+    344.83,
+    347.58
+   ],
+   "states": {
+    "NORMAL_TRADING": 52,
+    "WIND_DOWN": 25,
+    "FORCED_FLATTEN": 4,
+    "REOPEN_BLACKOUT": 41
+   },
+   "conservation": true
+  },
+  "w2a_h12_b3_c3": {
+   "median_sps": 352.5,
+   "iqr": [
+    349.07,
+    353.52
+   ],
+   "states": {
+    "NORMAL_TRADING": 28,
+    "WIND_DOWN": 16,
+    "FORCED_FLATTEN": 2,
+    "REOPEN_BLACKOUT": 76
+   },
+   "conservation": true
+  },
+  "w2a_h4_b1_c3": {
+   "median_sps": 353.83,
+   "iqr": [
+    352.91,
+    356.41
+   ],
+   "states": {
+    "NORMAL_TRADING": 28,
+    "WIND_DOWN": 16,
+    "FORCED_FLATTEN": 2,
+    "REOPEN_BLACKOUT": 76
+   },
+   "conservation": true
+  },
+  "w2b_s1.5_g2_v1.5": {
+   "median_sps": 362.88,
+   "iqr": [
+    360.52,
+    363.53
+   ],
+   "states": {
+    "NORMAL_TRADING": 20,
+    "WIND_DOWN": 11,
+    "FORCED_FLATTEN": 1,
+    "REOPEN_BLACKOUT": 90
+   },
+   "conservation": true
+  },
+  "w2b_s2.5_g4_v2.5": {
+   "median_sps": 354.14,
+   "iqr": [
+    350.17,
+    357.25
+   ],
+   "states": {
+    "NORMAL_TRADING": 35,
+    "WIND_DOWN": 23,
+    "FORCED_FLATTEN": 2,
+    "REOPEN_BLACKOUT": 62
+   },
+   "conservation": true
+  },
+  "g2b_base2": {
+   "median_sps": 402.37,
+   "iqr": [
+    398.69,
+    402.64
+   ],
+   "states": {
+    "NORMAL_TRADING": 14,
+    "WIND_DOWN": 8,
+    "FORCED_FLATTEN": 1,
+    "REOPEN_BLACKOUT": 99
+   },
+   "conservation": true
+  },
+  "g2b_base8": {
+   "median_sps": 316.14,
+   "iqr": [
+    314.68,
+    318.12
+   ],
+   "states": {
+    "NORMAL_TRADING": 44,
+    "WIND_DOWN": 24,
+    "FORCED_FLATTEN": 3,
+    "REOPEN_BLACKOUT": 51
+   },
+   "conservation": true
+  }
+ },
+ "benchmark_notes": "5 repeats per representative, single CPU core, env throughput ONLY. The G2B ablation shows the baseline window is treatment-bearing exactly as C6 argued: 99 vs 51 blackout steps between base2 and base8.",
+ "historical_window": {
+  "source": {
+   "path": "/home/harveybc/Documents/GitHub/financial-data/market_data/forex/g10/eurusd/4h.parquet",
+   "sha256": "359bd825708dd6906ccd0b2359e7f8dc7313fdcecf09629ee14e609ba6ecbd25",
+   "role": "historical market bars \u2014 HistData EURUSD, resampled to 4h in the financial-data lake; read-only source of truth for timestamps and prices"
+  },
+  "instrumentation_channels": {
+   "SPREAD": "constant 0.0002 \u2014 NOT historical: the source carries no spread; declared instrumentation for the stability gate",
+   "feat": "normalized close \u2014 derived from historical closes, not an independent historical channel"
+  },
+  "window": {
+   "start": "2023-12-12 00:00:00+00:00",
+   "end": "2024-01-10 00:00:00+00:00",
+   "bars": 122
+  },
+  "closures_derived_from_observed_gaps": [
+   {
+    "start": "2023-12-15 20:00:00+00:00",
+    "end": "2023-12-17 16:00:00+00:00",
+    "hours": 44.0,
+    "kind": "weekend"
+   },
+   {
+    "start": "2023-12-22 20:00:00+00:00",
+    "end": "2023-12-24 16:00:00+00:00",
+    "hours": 44.0,
+    "kind": "weekend"
+   },
+   {
+    "start": "2023-12-25 04:00:00+00:00",
+    "end": "2023-12-25 16:00:00+00:00",
+    "hours": 12.0,
+    "kind": "holiday_or_exception"
+   },
+   {
+    "start": "2023-12-29 20:00:00+00:00",
+    "end": "2024-01-01 16:00:00+00:00",
+    "hours": 68.0,
+    "kind": "holiday_or_exception"
+   },
+   {
+    "start": "2024-01-05 20:00:00+00:00",
+    "end": "2024-01-07 16:00:00+00:00",
+    "hours": 44.0,
+    "kind": "weekend"
+   }
+  ],
+  "weekend_closures": 3,
+  "holiday_or_exception_closures": 2,
+  "holiday_evidence": "present",
+  "calendar_note": "closure intervals derived MECHANICALLY from the observed missing intervals (gap > one bar); the broker's historical calendar is not available, and this derivation is declared rather than presented as venue authority",
+  "fixture_csv_sha256": "53d3a68c99ccfb01fbf508a6ddca51751fe6d905d06dba502c82b9dc511d43be",
+  "digest": "7285a0af5f9fe40a50e2460ad946839a283a10d1e0cb80b68f40f6dc6f5e0f86"
+ },
+ "self_reported_defects": [
+  "the frozen provenance sha256 I transcribed carried one extra character; the driver's own hash check refused my typo before anything ran, and the constant was corrected against the published provenance",
+  "my first corrected battery did not bite on two of its own claims: disabling the paired-drift refusal and hard-coding conservation 'holds' both left it green. The drift check was refactored into an assertable seam and the conservation tests now call the real derivation; both mutations now fail exactly the tests that claim them",
+  "the first POST probe used a crude substring check and flagged C2 falsely \u2014 the string cell['digest'] appears as result METADATA, not as RNG seeding; the probe was corrected to check the real property (no RNG in recorded_run, RNG only in action_tape)"
+ ],
+ "mutation_check": {
+  "manifest_binding_skipped": 1,
+  "drift_seam_disabled": 1,
+  "source_hash_unchecked": 1,
+  "conservation_hardcoded": 4,
+  "restored": "green"
+ },
+ "suites": {
+  "tests/test_wp4_materializer.py": 39,
+  "full gym-fx": 456
+ },
+ "C7_statistical_protocol_v2_predeclared": {
+  "economic_unit": "the paired closure-week; adjacent-week and regime dependence acknowledged and handled by blocking",
+  "pairing": "identical closure weeks, identical seed-only action tapes, identical windows across every cell of a family and every seed",
+  "differentials": "per-closure-week paired net-return-after-costs differentials versus the comparator cell",
+  "inference": "stationary block bootstrap (Politis-Romano) over closure weeks, expected block length 4 weeks, 10000 resamples; per-seed week series are aggregated hierarchically to week level FIRST; seed dispersion is reported separately from market-time uncertainty and never enters the week-level SE",
+  "minimum_support": "at least 30 eligible closure-weeks in fit/calibration, else INCONCLUSIVE \u2014 never a winner",
+  "precision_rule": "a selection requires the bootstrap 90% CI half-width of the winning differential to be at most half its point estimate; otherwise INCONCLUSIVE",
+  "selection_and_evaluation": "W1 selects on fit/calibration only, freezes ONE timing, and is evaluated on a later untouched decision window; W2a begins only after that freeze and W2b only after W2a, each with its own calibration/decision separation; no dataset both chooses and judges its winner",
+  "family_level_procedure": "Hansen SPA with the same stationary bootstrap over each full family (16 W1 / 45 W2a / 27 W2b) against the section-4 default cell; Holm-Bonferroni retained as descriptive only, never as the selection correction",
+  "tie_rule": "ties within ONE stationary-bootstrap SE of the closure-week differential (hierarchical, never seed-level) resolve toward larger wind_down_hours then larger forced_flatten_hours (W1) and toward the longer blackout (W2a)",
+  "trial_ledger": "all 93 materialized cells are recorded trials; any cell ever attempted stays in the ledger"
+ },
+ "proposed_sac_preflight_NOT_LAUNCHED": {
+  "purpose": "measure SAC update throughput so compute estimates stop being parametric guesses",
+  "shape": "ONE cell (w0_overlay_enabled), ONE seed, CPU only, <= 20000 env steps and <= 20000 SAC updates, wall-clock bounded at 2 hours, config digest persisted before execution, observable and stoppable per runtime order 95e088da",
+  "returns": "env steps/s and SAC updates/s separately, peak memory, and the resulting staged W0/W1/W2a estimates",
+  "authorization": "requires Musashi's independent acceptance before launch"
+ },
+ "boundaries": "No GPU, no training (the preflight is proposed, not launched), no complete economic sweep, no deployment, no services, no venue connections, no commands, no position changes, no checkpoint promotion, no live activation."
+}
