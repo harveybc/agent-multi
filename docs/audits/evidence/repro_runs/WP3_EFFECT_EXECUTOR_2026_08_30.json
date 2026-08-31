@@ -1,0 +1,56 @@
+{
+ "order": "agent-multi@036ed36e — WP3 effect executor, implementation and effect-free tests only",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "4b038d4",
+ "post_commit": "26e856d",
+
+ "PRE": {
+  "absence": "permits_dependent_effects() had NO executing consumer — grep over app/ and tools/ found only its definition and its tests. The gate existed and nothing drove it, which is exactly why C10 acceptance withheld live parity."
+ },
+
+ "POST": {
+  "module": "app/effect_executor.py — one shared orchestration layer consumed by both venue adapters; it reimplements no weekly-flat policy.",
+  "enforced_sequence": [
+   "1. the plan (directive digest, policy digest, authority identity, effect list) is persisted durably BEFORE any effect",
+   "2. cancel_pending_entries runs first, restricted to the directive's named identities, each re-verified as an ENTRY in fresh direct order evidence immediately before the cancel — a protective identity is refused twice and can never reach the port",
+   "3. terminal venue outcomes feed permits_dependent_effects(); rejection, fill-before-cancel, still-open, unknown disappearance, stale evidence and a missing verdict each STOP the plan",
+   "4. the directive, policy and authority identities are re-checked immediately before the dependent effect, with the authority re-hashed from disk",
+   "5. a forced flatten opens the accepted live custody BEFORE the close; the obligation id derives from the plan id so a resumed plan can never mint a sibling; confirmation requires fresh direct zero/zero evidence or the plan stays unresolved",
+   "6. every transition and acknowledgement is journaled idempotently in a digest-chained O_EXCL/fsync journal; replay verifies the whole chain and refuses a broken one"
+  ],
+  "asymmetric_effect_semantics": {
+   "submit_decision": "adds risk — strictly at-most-once. A requested decision with no journaled acknowledgement is an ambiguous window: resume fails closed as unresolved and NEVER re-issues, because 'we do not know whether the venue received it' must not become a doubled order.",
+   "request_close": "reduce-only and judged solely by direct zero/zero evidence — an unacknowledged request may be re-issued safely.",
+   "cancel_order": "reduce-only on the order book — an acknowledged cancellation is never re-issued; an unacknowledged one may be."
+  },
+  "election": "the plan claim is an exclusive create, and the scratch name carries pid AND thread id so concurrent invocations contend at the FINAL exclusive create — the actual election point. Duplicate invocation refuses with PlanAlreadyClaimed; a barrier-synchronised concurrent pair elects exactly one effect (total submits == 1)."
+ },
+
+ "acceptance_tests": {
+  "count": 27,
+  "long_and_short": "parent entry plus both protective children on long and short Alpaca books — only the parent identity is ever cancelled",
+  "gate_failures": "rejected, filled_before_cancel, still_open, gone_without_verdict, missing verdict and partial cancellation (unresolved identity NAMED) each stop the plan with zero dependent effects; a stale snapshot stops before any cancellation is issued",
+  "crash_boundaries": {
+   "before_cancellation": "resume completes; cancel issued exactly once",
+   "between_cancellation_and_verdict": "resume never re-issues the acknowledged cancel; completes",
+   "after_verdict_before_dependent_effect": "resume runs the decision exactly once",
+   "ambiguous_submit_window": "requested, never acknowledged — resume returns unresolved and the port shows ZERO submits",
+   "after_close_before_confirmation": "resume does not re-request the acknowledged close, confirms on flat evidence, and the custody store holds exactly ONE obligation — no sibling"
+  },
+  "tampered_journal": "one altered record breaks the digest chain and resume refuses",
+  "both_venues": "Alpaca and MT5 directives from equivalent exposure carry the SAME overlay, final command and effects while each cancels its own representation (parent-order-id vs ticket 200001), and the executor drives both",
+  "no_write": "the executor imports no network client (structural scan); a protection-only plan completes with zero port calls on the refusing interface; a write plan stops loudly at WriteAttempted; the refusing dry-run interface is the only shipped port and now satisfies the executor protocol",
+  "mutation_check": "disabling the gate, re-issuing the ambiguous submit and skipping the live-book protective check broke 8 tests together; green on revert"
+ },
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 27,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 994
+ },
+
+ "boundaries": "Implementation and tests only. No service install/restart, no live activation, no venue connection, no order command; existing Alpaca and MT5 positions untouched. WP4 stays blocked until this executor is independently reproduced."
+}
