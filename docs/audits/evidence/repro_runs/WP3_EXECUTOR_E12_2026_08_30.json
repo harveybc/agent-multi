@@ -1,0 +1,71 @@
+{
+ "order": "agent-multi@0d9fd60b — WP3 receipt-ledger E12 final hardening",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "b495950",
+ "post_commit": "fd6ec6d",
+ "note": "PRE reproduced and frozen BEFORE any edit. The finding is mine — my own F1 lesson repeated: I invented another durable protocol instead of reusing the accepted one.",
+
+ "PRE": {
+  "unacknowledged_write": {
+   "sequence": "rename succeeded, directory fsync failed, register raised",
+   "record_visible": ["00000001.json"],
+   "fresh_process_verdict": "IDEMPOTENT-ACCEPTED — treated as fully authoritative",
+   "verdict": "no intent or acknowledgement classified the state as uncertain."
+  },
+  "no_integrity": {
+   "record_has_schema": false,
+   "record_has_digest": false,
+   "forged_seq_90_record": "steered max-sequence: a legitimate seq 50 was refused because the forgery claimed 90."
+  },
+  "identity_and_routes": {
+   "non_hex_collector_code": "ACCEPTED",
+   "route_collision": "'v|a_s' and 'v_a|s' COLLIDED into the single directory v_a_s",
+   "lock_creation_directory_durable": false
+  }
+ },
+
+ "POST": {
+  "monotone_acknowledgement": {
+   "mechanism": "per-record ack file: PENDING before anything lands, the record digest only after the record is durable — both in-place updates that no later directory fsync can strand. The accepted protocol, not a new invention.",
+   "exact_counterexample": "a fresh process now classifies the visible record with a PENDING ack as REGISTRATION_UNCERTAIN: it authorizes nothing and blocks the route for operator disposition.",
+   "ack_fsync_failure": "restores PENDING, so an unverified acknowledgement cannot read as acknowledged even in the live namespace",
+   "ack_without_record": "uncertain"
+  },
+  "record_integrity": {
+   "schema": "lts.receipt_ledger.record.v1, exact eight fields",
+   "verified_on_every_read": ["schema", "content digest", "canonical route match", "sequence-filename agreement", "0600 mode", "symlink refusal"],
+   "mutating_any_field": "refuses (eight parametrized cases)",
+   "consistently_reforged_record": "still fails — the acknowledgement names the ORIGINAL digest"
+  },
+  "lock": "monotone route lock (held→releasing→released, never unlinked) with durable creation; a lock whose durability failed stays held for operator disposition",
+  "identities_and_routes": {
+   "collector_code_identity": "canonical 64-hex on receipt AND policy",
+   "route_directories": "named by sha256 of the canonical route; the route string lives inside every verified record; the colliding routes now land in two directories, each record naming its own route"
+  },
+  "failure_injection_matrix": {
+   "route_dir_fsync": "clean — nothing became visible, a later registration is legal",
+   "lock_dir_fsync": "lock stays held; every later claimant refuses",
+   "intent_fsync": "REGISTRATION_UNCERTAIN",
+   "post_rename_dir_fsync": "REGISTRATION_UNCERTAIN",
+   "acknowledgement_fsync": "PENDING restored → REGISTRATION_UNCERTAIN",
+   "each_read_by": "a FRESH ReceiptLedger process"
+  },
+  "two_real_processes": "file-barrier race registers exactly one",
+  "executor": "refuses with 'registration refused' whenever the route is uncertain; zero effects issued"
+ },
+
+ "self_reported_defect": "my first E12 edit spliced the new ledger into the wrong place and left the OLD class defined later in the module, so Python resolved the old one and the new battery correctly failed everywhere. The stale duplicate was removed and the parser seals re-verified.",
+
+ "mutation_check": "trusting acks blindly, skipping the record digest and reverting routes to character replacement broke 6 tests; green on revert.",
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 122,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1089
+ },
+
+ "boundaries": "C7-C10 and E1-E10 preserved. Implementation and effect-free tests only: no services, no venue connections, no commands, no position changes. WP4 and live activation remain blocked pending independent reproduction."
+}
