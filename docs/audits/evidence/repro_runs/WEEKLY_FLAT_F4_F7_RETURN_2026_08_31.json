@@ -1,0 +1,139 @@
+{
+ "order": "agent-multi@a678fd55 \u2014 weekly-flat post-preflight F4-F7",
+ "repositories": {
+  "gym-fx": {
+   "branch": "satoshi/trade-reconciliation-20260828",
+   "commit": "0f42155"
+  },
+  "lts": {
+   "branch": "satoshi/wp3-live-adapters-20260830",
+   "commit": "79eb261"
+  }
+ },
+ "F4_execution_latency_feasibility": {
+  "PRE": "the reproduced H4 failure: ff=4h triggers at the LAST bar and the next-bar fill lands after the gap (frozen in the F1-F3 packet)",
+  "contract": {
+   "decision_at": "bar_close",
+   "submission_latency_bars": 0,
+   "fill_at": "next_bar_open",
+   "reconcile_at": "fill_bar_step",
+   "close_retry_budget_bars": 0,
+   "safety_margin_hours": 0.0
+  },
+  "rule": "the flatten first triggers at the largest bar-grid multiple <= ff; the worst-case fill bar (1 + latency + retries later) must itself be an open bar plus margin",
+  "consequences": {
+   "W1": "16 -> 4 cells (only ff=8h admissible on H4); 12 LEDGERED rejections with the typed contract reason",
+   "live_safe_default": "section-4 four hours is STRUCTURALLY_INELIGIBLE_FOR_H4_NEXT_BAR; every enabled arm uses the smallest ELIGIBLE predeclared value (8h), recorded on the manifest \u2014 never silently four",
+   "trials": "84 cells in the manifest/ledger, 12 rejections"
+  },
+  "tests": "exact boundary (8.0 in / 7.9 and 4.0 out), delayed fill and retry budget tighten mechanically, H1 multi-bar sizes, holiday interval carried, ledgered-rejection regression",
+  "mutation": "bypassing the rule broke 8 tests"
+ },
+ "F5_probation_policy_identity": {
+  "change": "release_probation_factor is a REQUIRED typed policy field, validated, materialized, and published in state telemetry FROM THE POLICY VALUE; 2 stays the mandatory provisional live minimum; PROB ablation {1,2,3} bounded and non-live for factor 1 (no one-bar release window is live-eligible)",
+  "restart": "the env derives the qualification/probation streak causally from bar history every step \u2014 dual-env lockstep test asserts identical phase",
+  "mutation": "ignoring the policy value broke 7 tests",
+  "cross_repo_note": "the surface change broke every live-loaded lts session fixture; repaired and declared (lts@79eb261)"
+ },
+ "F6_strong_architecture_preflight": {
+  "status": "COMPLETED",
+  "path": "CANONICAL: sac_agent + rl_pipeline_with_validation + agent_plugins/grouped_architecture at the hardened revision agent-multi@45f4f8a4, clean worktree; plugin resolution verified inside the worktree",
+  "observation_contract": "declared VERBATIM as the campaign driver's build_cell_config (findings 235/327): feature-aware, raw price window forbidden, content-bound feature-column sha \u2014 the accepted gate refused two launches until mirrored exactly",
+  "pretrained_loading": "disabled explicitly by the canonical control_random_init semantics (pretrained keys ABSENT; asserted)",
+  "bounds_and_result": {
+   "env_steps": 2000,
+   "optimizer_update_counter": 1000,
+   "wall_seconds_training": 393.5,
+   "peak_rss_kb": 1196732,
+   "tensor_device_identity": {
+    "devices": [
+     "cpu"
+    ],
+    "dtypes": [
+     "torch.float32"
+    ]
+   },
+   "total_policy_params": 796359,
+   "typed_outcome": "INACTIVE TERMINAL RESULT (predeclared typed refusal: no activity-eligible checkpoint under the bounded budget) \u2014 correct and expected for a 2000-step random-init throughput run; ZERO economic authority, the terminal zip is NON-promotable"
+  },
+  "per_branch": {
+   "actor_head": {
+    "params": 91137,
+    "grad_norm": 0.0,
+    "tensors_with_grad": 0
+   },
+   "critic_head": {
+    "params": 182274,
+    "grad_norm": 28.735339,
+    "tensors_with_grad": 12
+   },
+   "critic_target": {
+    "params": 182274,
+    "grad_norm": 0.0,
+    "tensors_with_grad": 0
+   },
+   "cross_family_fusion": {
+    "params": 92736,
+    "grad_norm": 16.835801,
+    "tensors_with_grad": 23
+   },
+   "family_0_returns_momentum": {
+    "params": 76128,
+    "grad_norm": 3.343871,
+    "tensors_with_grad": 17
+   },
+   "family_1_trend_level": {
+    "params": 56370,
+    "grad_norm": 1.432442,
+    "tensors_with_grad": 34
+   },
+   "family_2_volatility_distribution": {
+    "params": 58560,
+    "grad_norm": 5.150715,
+    "tensors_with_grad": 8
+   },
+   "family_3_oscillators": {
+    "params": 13344,
+    "grad_norm": 5.212829,
+    "tensors_with_grad": 10
+   },
+   "family_4_volume_flow": {
+    "params": 41472,
+    "grad_norm": 1.251335,
+    "tensors_with_grad": 4
+   },
+   "state_branch": {
+    "params": 2064,
+    "grad_norm": 0.95907,
+    "tensors_with_grad": 4
+   }
+  },
+  "extractor_family_order": [
+   "returns_momentum",
+   "trend_level",
+   "volatility_distribution",
+   "oscillators",
+   "volume_flow",
+   "account_state"
+  ],
+  "gradient_probe": "diagnostic critic backward on one observation-space batch; gradients recorded then ZEROED \u2014 no optimizer step, no save",
+  "self_reported_defects": [
+   "my FIRST bounded launch set only total_timesteps; the nested trainer's budget lives in epoch_timesteps/max_epochs/patience (exactly why the accepted C4 dry-run budget sets ALL of them) and the loop ran past the bound \u2014 STOPPED fail-closed at 3680s via the stop file and disclosed; the corrected budget (2 epochs x 1000 steps, learning_starts 1000) landed exactly on 2000 steps / 1000 updates",
+   "the agent plugin does not retain the model on an attribute, so the in-process introspection block came back empty; the counters, devices, params and per-branch gradients were introspected post-hoc from the pipeline's own terminal zip and merged, disclosed"
+  ],
+  "sb3_mlp_run_relabelled": "the earlier executed preflight is preserved as SB3_MLP_PLUMBING_ONLY per the audit; its 128 updates/s is NOT a strong-extractor estimate"
+ },
+ "F7_mt5_session_evidence": {
+  "inventory_finding": "the MT5 bridge payload schemas carry NO session/calendar fields \u2014 the EA has never published SymbolInfoSessionTrade/Quote, so historical-time MT5 ETHUSD session evidence DOES NOT EXIST downstream of the EA; nothing was fabricated, no service touched, the private state tree untouched",
+  "delivered": "lts@79eb261: app/mt5_session_evidence.py \u2014 strict typed collector schema (lts.mt5_session_evidence.v1) with per-day trade/quote intervals in server time, GMT offset, terminal build, EA version, acquisition source pinned to the terminal API; identity+freshness fail closed; sanitized digest-bound export separating COLLECTION gaps from authority; structural no-write test (no trading surface exists); 19 tests",
+  "status": "COORDINATED_WINDOW_REQUIRED \u2014 activation needs an EA change and the running EA protects an open position; the runbook is the activation contract. Economic WP4 remains VENUE_SESSION_HISTORY_UNAVAILABLE."
+ },
+ "suites": {
+  "gym-fx focused wp4": 69,
+  "gym-fx full": 505,
+  "lts new F7": 19,
+  "lts full": 1160,
+  "custody races": "800/800 single winner (F3, prior packet)"
+ },
+ "boundaries": "No economic grids, checkpoint promotion, trading-service changes, order commands, live position changes or weekly-flat live activation. The strong preflight saved no promotable checkpoint."
+}
