@@ -1,0 +1,75 @@
+{
+ "order": "agent-multi@2ca1da78 — WP3 E14 append-only recovery",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "a038a91",
+ "post_commit": "b79cf9a",
+ "note": "PRE reproduced and frozen BEFORE any edit, on the exact branch the order names: the final witness 'done' write reaches modeled storage, its fsync fails, the restoration also fails. Same-process visibility never counted as persistence.",
+
+ "PRE": {
+  "ack_final_witness": {
+   "caller_classification": "ReceiptUncertainError",
+   "live_witness_after_failed_restoration": "authorizing",
+   "branch_done_reached_storage": "AUTHORITATIVE — idempotent-accepted",
+   "branch_nothing_reached_storage": "refused: ReceiptUncertainError",
+   "verdict": "recovery depended on WHICH un-guaranteed bytes happened to land: the done-reached branch authorized the transition the caller was told is uncertain, contradicting E13's own claim that every crash branch fails closed."
+  },
+  "route_lock_final_witness": {
+   "caller_classification": "ReceiptLedgerError",
+   "branch_released_and_done_reached_storage": "ENTERED and registered over the rejected release"
+  },
+  "run_lock_final_witness": {
+   "caller_classification": "ExecutorError",
+   "branch_released_and_done_reached_storage": "ENTERED over the release the caller saw fail"
+  },
+  "contract_defect": "the model assumed an fsync error proves the preceding bytes did not persist; completion was an OVERWRITE of the durable intent; nothing bound a completion to its generation."
+ },
+
+ "POST": {
+  "design": "append-only. An immutable, generation-bound intent record is durable BEFORE the transition; success is a SEPARATE exclusive self-integral completion record persisted only after all protected data is durable; nothing is overwritten or deleted to establish success; NO restoration write exists or is trusted (asserted at source level). Recovery evaluates the PHYSICAL state.",
+  "receipt_acknowledgement": {
+   "intent": "<seq>.json.aw — sealed JSON {schema, route, seq, generation, record_digest}, written once",
+   "completion": "<seq>.json.done — same fields, same generation, exclusive create after the digest acknowledgement is durable",
+   "branch_completion_fully_reached_storage": "recovered COMPLETED — idempotent accept of the physically complete record, though the caller was told uncertain",
+   "branch_completion_partially_durable": "REGISTRATION_UNCERTAIN (torn artefact authorizes nothing)",
+   "branch_digest_reached_storage_no_completion": "REGISTRATION_UNCERTAIN",
+   "stale_generation": "a completion naming another generation refuses; a completion transplanted from another sequence refuses"
+  },
+  "locks": {
+   "content": "held:<pid>:<epoch> -> releasing:<epoch> -> released:<epoch>, in place, never unlinked",
+   "records": "rel.<epoch> intent durable before the lock moves; reldone.<epoch> completion only after released is durable",
+   "entry_rule": "a claimant enters ONLY over released:<epoch> whose epoch-bound completion verifies, revalidated descriptor-first under the reclaim election",
+   "branch_completion_reached_storage": "claimant ENTERS — the release physically completed (route lock: next registration proceeds; run lock: completed plan resumes)",
+   "branch_released_reached_storage_no_completion": "REFUSED for both locks — the PRE counterexamples die",
+   "bare_unepoched_released": "refused: not a completed epoch release",
+   "stale_epoch_completion": "refused: a stale completion never releases a new holder"
+  },
+  "boundary_map": "seven directory-fsync boundaries: 1 route-dir=clean, 2 lock-acquire=lock_held, 3 intent=uncertain, 4 post-rename=uncertain, 5 completion=COMPLETE (the physically complete record stands, next sequence registers), 6 release-intent=lock_held, 7 release-completion=clean — each read by a FRESH process",
+  "contention": "two REAL processes over the recovered-complete state: at least one idempotently accepts, none double-registers; two real processes over an uncertain route and over an uncompleted release: all fail closed",
+  "descriptor_checks": "E13's no-follow, owner, regular-file and 0600 checks preserved and extended to completion records (symlink and wrong-mode parametrizations include .json.done)"
+ },
+
+ "mutation_check": {
+  "trust_record_without_completion": "2 tests failed",
+  "reclaims_trust_bare_released_without_completion": "5 tests failed",
+  "ignore_generation_binding": "1 test failed",
+  "leave_malformed_completion_unclassified": "1 test failed",
+  "restored": "green on revert"
+ },
+
+ "self_reported_notes": [
+  "my first PRE probe for the acknowledgement failed the INTENT-phase fsync instead of the final witness write and raised a raw OSError without reproducing; the arming was corrected (fail only the final 'done', then the restoration) and the PRE then reproduced all three findings exactly.",
+  "lock content now carries its epoch, so four accepted-battery assertions that compared the literal string 'released' were updated to released:<epoch> plus completion checks — behaviours preserved, format evolved with the protocol; disclosed rather than silently rewritten.",
+  "the two-process uncertain-route contention keeps its E13 finding: the claimant that loses the lock race refuses on the held lock rather than classifying the route — both outcomes fail closed and the assertion states exactly that."
+ ],
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 151,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1118
+ },
+
+ "boundaries": "C7-C10 and E1-E13 behaviours preserved. Final durability model scope only: no venue connection, no services, no commands, no position changes, no WP4 dispatch, no training. Per the order's gate, E14 acceptance would close effect-free WP3 and may unlock WP4 implementation/materialization and benchmarks only — live activation and all venue effects remain separately blocked. That acceptance is Musashi's, not mine."
+}
