@@ -1,0 +1,62 @@
+{
+ "order": "agent-multi@de1183c8 — WP3 E15 release intent binding",
+ "subject_repository": "lts",
+ "branch": "satoshi/wp3-live-adapters-20260830",
+ "pre_commit": "b79cf9a",
+ "post_commit": "e423548",
+ "note": "PRE reproduced and frozen BEFORE any edit — the auditor's reproducer run verbatim on the route lock and mirrored on the run lock.",
+
+ "PRE": {
+  "route_lock": {
+   "steps": "valid registration completed; register.lock.rel.<epoch> deleted; fresh ReceiptLedger registers the next sequence",
+   "observed": "BYPASS: accepted without release intent — seq 2 registered"
+  },
+  "run_lock": {
+   "steps": "valid plan executed; run.lock.rel.<epoch> deleted; fresh executor resumes",
+   "observed": "BYPASS: entered without release intent — plan resumed as completed"
+  },
+  "structural_omission": {
+   "completed_release_check_reads_the_intent": false,
+   "completion_fields": ["schema", "scope", "epoch"],
+   "binds_intent_digest": false,
+   "binds_holder": false,
+   "meaning": "the record meant to establish the release's generation and holder was not load-bearing: the completion authorized alone."
+  }
+ },
+
+ "POST": {
+  "binding": "the completion record carries intent_digest — the self-digest of the exact immutable release-intent record — and holder_pid. Recovery and reclaim descriptor-read BOTH records, verify each self-digest, verify intent-digest equality from the completion, and match scope, epoch and holder before admitting a claimant, revalidated under the reclaim election.",
+  "exact_reproducer_rerun": {
+   "route_lock": "refused: ReceiptLedgerError — 'a completion without its intent never authorizes'",
+   "run_lock": "refused: PlanLockHeld — same"
+  },
+  "adversarial_battery": {
+   "missing_intent": "refuses, both locks (the PRE bypass, dead)",
+   "mutated_intent": "a consistently REFORGED intent is self-integral but is no longer the record the completion names — refuses, both locks",
+   "completion_naming_another_intent_digest": "refuses",
+   "holder_mismatch": "a reforged completion naming the TRUE intent digest with a different holder fails the holder binding — refuses",
+   "ABA_transplanted_pair": "a full intent+completion pair from a prior epoch under the current epoch's names still names its own epoch inside — refuses",
+   "wrong_mode_and_raced_symlink_on_intent": "refuse descriptor-first, with every path-time is_symlink() disabled",
+   "generation_mismatch": "preserved from E14 (stale epoch completion refuses)",
+   "two_real_processes_over_the_bypass_state": "both refuse, both naming the missing intent",
+   "clean_cycle": "legitimate reclaim still admits; the artefacts verifiably carry intent_digest == intent.digest and matching holder"
+  }
+ },
+
+ "mutation_check": {
+  "trust_completion_without_intent_both_locks": "3 tests failed",
+  "drop_intent_digest_equality_both_locks": "3 tests failed",
+  "drop_holder_binding_both_locks": "1 test failed",
+  "restored": "green on revert"
+ },
+
+ "commands_and_counts": {
+  "pytest tests/unit/test_wp3_effect_executor.py -q": 161,
+  "pytest tests/unit/test_wp3_venue_direct_evidence.py -q": 125,
+  "pytest tests/unit/test_wp3_session_adapter.py -q": 102,
+  "pytest tests/unit/test_wp3_contract_and_custody.py -q": 72,
+  "pytest tests/unit -q": 1128
+ },
+
+ "boundaries": "Lock release intent/completion binding scope only. Append-only recovery semantics and C7-C10/E1-E14 behaviours preserved (all prior batteries pass unmodified). No venue connection, no services, no commands, no position changes, no WP4 dispatch, no training. Per the order's gate, E15 acceptance closes effect-free WP3 and unlocks WP4 implementation/materialization and benchmarks only — that acceptance is Musashi's; live activation remains separately blocked."
+}
