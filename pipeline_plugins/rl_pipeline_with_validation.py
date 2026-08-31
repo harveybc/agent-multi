@@ -699,13 +699,35 @@ class ExecutingBudgetExceeded(RuntimeError):
     """Typed stop: an executing budget bound was reached."""
 
 
+def _validated_budget(config, key, *, kind):
+    """F9.1: an INVALID budget value is a typed refusal, never a
+    silently disabled guard."""
+    value = config.get(key)
+    if value is None:
+        return None
+    import math as _math
+    if isinstance(value, bool) or not isinstance(
+            value, (int, float)) or not _math.isfinite(value) \
+            or value <= 0 or (kind == "int"
+                              and int(value) != value):
+        raise ExecutingBudgetExceeded(
+            f"invalid budget value {key}={value!r} — a budget must "
+            "be a finite positive number; refusing to run rather "
+            "than running unguarded")
+    return value
+
+
 def _check_executing_budget(config, model, *, started_wall,
                             next_segment_timesteps=0):
     import os as _os
     import time as _time
-    budget_steps = config.get("budget_max_env_steps")
-    budget_updates = config.get("budget_max_updates")
-    budget_wall = config.get("budget_max_wall_seconds")
+    budget_steps = _validated_budget(config, "budget_max_env_steps",
+                                     kind="int")
+    budget_updates = _validated_budget(config, "budget_max_updates",
+                                       kind="int")
+    budget_wall = _validated_budget(config,
+                                    "budget_max_wall_seconds",
+                                    kind="float")
     stop_file = config.get("budget_stop_file")
     if budget_steps is None and budget_updates is None and \
             budget_wall is None and stop_file is None:
@@ -732,6 +754,33 @@ def _check_executing_budget(config, model, *, started_wall,
         raise ExecutingBudgetExceeded(
             f"optimizer-update budget {budget_updates} exceeded: "
             f"the ACTUAL counter reads {updates}")
+
+
+def make_executing_budget_callback(config, started_wall):
+    """F9.1: the guard as an INTRA-segment limit. The pre/post
+    checks bound the segment boundaries, but a single learn segment
+    can cross the update, wall or stop bounds internally — this
+    executing callback checks them on EVERY environment step and
+    stops the learn loop the moment one is crossed. It is created
+    unconditionally whenever any budget key is present, and nothing
+    in epoch or patience configuration can detach it."""
+    from stable_baselines3.common.callbacks import BaseCallback
+
+    class ExecutingBudgetCallback(BaseCallback):
+        def __init__(self):
+            super().__init__()
+            self.budget_stop = None
+
+        def _on_step(self) -> bool:
+            try:
+                _check_executing_budget(
+                    config, self.model, started_wall=started_wall)
+            except ExecutingBudgetExceeded as exc:
+                self.budget_stop = str(exc)
+                return False
+            return True
+
+    return ExecutingBudgetCallback()
 
 
 class PipelinePlugin:
@@ -2023,12 +2072,21 @@ class PipelinePlugin:
                     # On epoch 1 we set up cleanly; on subsequent epochs use
                     # reset_num_timesteps=False to *continue* training on the
                     # same SAC instance without re-initializing the schedule.
+                    # F9.1: the executing budget rides INSIDE the
+                    # segment as a callback and stops learn the
+                    # moment a bound is crossed
+                    _budget_cb = make_executing_budget_callback(
+                        config, _budget_wall_started)
                     model.learn(
                         total_timesteps=epoch_ts,
                         reset_num_timesteps=(epoch == 1),
                         log_interval=max(1, epoch_ts // 1000),
-                        callback=make_progress_callback(config, total_progress_timesteps),
+                        callback=[make_progress_callback(config, total_progress_timesteps), _budget_cb],
                     )
+                    if _budget_cb.budget_stop:
+                        stop_reason = ("executing_budget: "
+                                       + _budget_cb.budget_stop)
+                        break
                     a_a, c_a, e_a = _policy_checksum(model)
                     # ...and immediately after it
                     try:
