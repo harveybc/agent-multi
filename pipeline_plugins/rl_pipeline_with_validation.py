@@ -699,21 +699,26 @@ class ExecutingBudgetExceeded(RuntimeError):
     """Typed stop: an executing budget bound was reached."""
 
 
-def _validated_budget(config, key, *, kind):
+def _validated_budget(config, key, *, kind,
+                      allow_zero=False):
     """F9.1: an INVALID budget value is a typed refusal, never a
-    silently disabled guard."""
+    silently disabled guard. F9.2: budget_max_updates may be ZERO
+    (no updates permitted at all); every other budget stays
+    strictly positive."""
     value = config.get(key)
     if value is None:
         return None
     import math as _math
+    floor_ok = (value >= 0) if allow_zero else (value > 0)
     if isinstance(value, bool) or not isinstance(
             value, (int, float)) or not _math.isfinite(value) \
-            or value <= 0 or (kind == "int"
-                              and int(value) != value):
+            or not floor_ok or (kind == "int"
+                                and int(value) != value):
         raise ExecutingBudgetExceeded(
             f"invalid budget value {key}={value!r} — a budget must "
-            "be a finite positive number; refusing to run rather "
-            "than running unguarded")
+            "be a finite " + ("nonnegative" if allow_zero else
+                              "positive") + " number; refusing to "
+            "run rather than running unguarded")
     return value
 
 
@@ -724,7 +729,7 @@ def _check_executing_budget(config, model, *, started_wall,
     budget_steps = _validated_budget(config, "budget_max_env_steps",
                                      kind="int")
     budget_updates = _validated_budget(config, "budget_max_updates",
-                                       kind="int")
+                                       kind="int", allow_zero=True)
     budget_wall = _validated_budget(config,
                                     "budget_max_wall_seconds",
                                     kind="float")
@@ -750,10 +755,12 @@ def _check_executing_budget(config, model, *, started_wall,
             f"exceeded (at {steps}, next segment "
             f"{next_segment_timesteps}) — the epoch/patience "
             "configuration cannot override the authorization")
-    if budget_updates is not None and updates > int(budget_updates):
+    if budget_updates is not None and \
+            updates >= int(budget_updates):
         raise ExecutingBudgetExceeded(
-            f"optimizer-update budget {budget_updates} exceeded: "
-            f"the ACTUAL counter reads {updates}")
+            f"optimizer-update budget {budget_updates} reached: "
+            f"the ACTUAL counter reads {updates} — stopping at >= "
+            "so the counter can never exceed the bound")
 
 
 def make_executing_budget_callback(config, started_wall):
@@ -767,9 +774,43 @@ def make_executing_budget_callback(config, started_wall):
     from stable_baselines3.common.callbacks import BaseCallback
 
     class ExecutingBudgetCallback(BaseCallback):
+        """F9.2: besides stopping at >=, the callback CAPS the
+        remaining gradient steps immediately before every training
+        block (on_rollout_end fires between collection and train),
+        so with gradient_steps > 1 the ACTUAL counter can never
+        overshoot the bound inside a block. The CONFIGURED value
+        stays the identity: it is recorded, never overwritten in
+        config, and restored on the model when the run ends."""
+
         def __init__(self):
             super().__init__()
             self.budget_stop = None
+            self.configured_gradient_steps = None
+
+        def _remaining_updates(self):
+            budget = _validated_budget(
+                config, "budget_max_updates", kind="int",
+                allow_zero=True)
+            if budget is None:
+                return None
+            done = int(getattr(self.model, "_n_updates", 0) or 0)
+            return max(0, int(budget) - done)
+
+        def _on_rollout_end(self) -> None:
+            remaining = self._remaining_updates()
+            if remaining is None:
+                return
+            if self.configured_gradient_steps is None:
+                self.configured_gradient_steps = int(
+                    getattr(self.model, "gradient_steps", 1))
+            self.model.gradient_steps = min(
+                self.configured_gradient_steps, remaining)
+
+        def _on_training_end(self) -> None:
+            if self.configured_gradient_steps is not None:
+                # the configured value is the IDENTITY — restore it
+                self.model.gradient_steps = \
+                    self.configured_gradient_steps
 
         def _on_step(self) -> bool:
             try:
