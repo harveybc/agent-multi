@@ -1,0 +1,270 @@
+{
+ "order": "agent-multi@c4b0ecf9 \u2014 weekly-flat WP4 C9-C14 corrections",
+ "subject_repository": "gym-fx",
+ "branch": "satoshi/trade-reconciliation-20260828",
+ "pre_commit": "ef01105",
+ "post_commit": "5dd0fad",
+ "PRE": {
+  "C9": {
+   "open_position_at_end": true,
+   "equity_gap": -10.418332,
+   "holds_when_flat_exempts_open_positions": true,
+   "top_level_holds": true,
+   "holds_conjunction_includes_equity": false,
+   "holds_expression": "inside == 0 and not suppressed and trades_total == won + lost + breakeven and not gross_net_violations"
+  },
+  "C10": {
+   "scenario_asserts_only_cancel_submitted": true
+  },
+  "C11": {
+   "absolute_home_path_in_driver": true,
+   "evidence_contains_home_path": true
+  },
+  "C12": {
+   "fixture_role_restricted_to_mechanics": false,
+   "venue_session_history_status_declared": false
+  },
+  "C13": {
+   "joint_confirmation_predeclared": false
+  },
+  "C14": {
+   "executable_stats_validator_exists": false
+  }
+ },
+ "POST": {
+  "C9": {
+   "holds_is_the_full_conjunction": false,
+   "invariants": [
+    "no_bar_inside_closure",
+    "no_suppressed_rewards",
+    "close_event_conservation",
+    "gross_minus_costs_equals_net",
+    "flat_terminal_exposure",
+    "zero_pending_entries_at_end",
+    "protective_inventory_valid_while_exposed",
+    "zero_unresolved_incidents",
+    "no_exposure_across_closure (enabled arms)",
+    "exact_equity_reconciliation"
+   ],
+   "open_position_exemption_removed": true,
+   "failed_invariants_published": true
+  },
+  "C10": {
+   "terminal_verdict_asserted": true,
+   "request_only_states_failures": true
+  },
+  "C11": {
+   "absolute_home_path_in_tools": false,
+   "resolves_via": "WP4_DATA_ROOT (fail closed when unset)",
+   "sanitization_scan_in_battery": true
+  },
+  "C12": {
+   "fixture_role": "generic_gap_mechanics_fixture_only",
+   "economic_status": "VENUE_SESSION_HISTORY_UNAVAILABLE"
+  },
+  "C13": {
+   "constructor_exists": true,
+   "manifest_predeclares": true
+  },
+  "C14": {
+   "module": "tools/wp4_stats.py",
+   "surface": [
+    "Any",
+    "Mapping",
+    "Optional",
+    "Sequence",
+    "StatsProtocolError",
+    "WeekRecord",
+    "bootstrap_mean",
+    "compliance_gate",
+    "dataclass",
+    "evaluate_cell",
+    "judge_frozen_winner",
+    "select_winner"
+   ],
+   "battery": "tests/test_wp4_stats.py -> 19 passed"
+  }
+ },
+ "eligibility_landscape": {
+  "eligible_demonstration": {
+   "cell": "w1_wd48_ff8",
+   "window": "plain consecutive weekends",
+   "tape_seed": 5,
+   "verdict": "ELIGIBLE",
+   "detail": "every invariant holds: flat end, zero pending entries, protection valid, zero unresolved incidents, equity exact"
+  },
+  "holiday_window_representatives": {
+   "w0_control_disabled": {
+    "verdict": "ELIGIBLE",
+    "failed": [],
+    "median_sps": 2411.07,
+    "iqr": [
+     2341.65,
+     2500.0
+    ]
+   },
+   "w0_overlay_enabled": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 339.08,
+    "iqr": [
+     337.95,
+     339.74
+    ]
+   },
+   "w1_wd12_ff1": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 341.83,
+    "iqr": [
+     340.88,
+     343.95
+    ]
+   },
+   "w1_wd48_ff8": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 340.02,
+    "iqr": [
+     339.08,
+     341.45
+    ]
+   },
+   "w1_wd36_ff4": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 340.88,
+    "iqr": [
+     338.89,
+     341.74
+    ]
+   },
+   "w2a_h1_b1_c1": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 339.74,
+    "iqr": [
+     331.61,
+     340.02
+    ]
+   },
+   "w2a_h12_b3_c3": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 341.16,
+    "iqr": [
+     340.4,
+     343.57
+    ]
+   },
+   "w2a_h4_b1_c3": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 337.3,
+    "iqr": [
+     336.46,
+     337.86
+    ]
+   },
+   "w2b_s1.5_g2_v1.5": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 342.02,
+    "iqr": [
+     339.27,
+     342.89
+    ]
+   },
+   "w2b_s2.5_g4_v2.5": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 337.02,
+    "iqr": [
+     334.52,
+     338.7
+    ]
+   },
+   "g2b_base2": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 388.04,
+    "iqr": [
+     387.3,
+     390.03
+    ]
+   },
+   "g2b_base8": {
+    "verdict": "INELIGIBLE",
+    "failed": [
+     "no_exposure_across_closure"
+    ],
+    "median_sps": 303.78,
+    "iqr": [
+     303.63,
+     304.77
+    ]
+   }
+  },
+  "reading": "every enabled representative on the holiday cluster reads INELIGIBLE with exactly no_exposure_across_closure named \u2014 the refusal is published, never weakened; the diagnostic control is not judged by the closure contract it exists to measure."
+ },
+ "mechanism_findings_for_auditor_disposition": {
+  "F-WP4-1_blackout_precedence": "in the ACCEPTED five-state machine, REOPEN_BLACKOUT takes precedence over WIND_DOWN/FORCED_FLATTEN: exposure held through a blackout crosses the next governed closure with no flatten attempt. Reproduced on the real Dec-2023 holiday cluster AND on a plain weekend (rows frozen in the run artefacts; e.g. blackout persisting to the bar before the Dec-29 closure with an open position and final_action=0).",
+  "F-WP4-2_blackout_oscillation_entry": "a one-bar NORMAL_TRADING blip between blackout re-entries admits an entry that then rides an indefinite blackout: reversals are masked (correctly), so only an explicit model close can flatten it \u2014 combined with F-WP4-1 this carried the position across two closures.",
+  "F-WP4-3_flatten_custody_double_winner": {
+   "claim": "the accepted flatten-custody two-process election intermittently admits TWO winners of the in_flight transition when the processes observe different bars",
+   "evidence": "test_two_processes_racing_concurrently[in_flight-flatten_in_flight]: both children returned winner=true with bar=7 and bar=8",
+   "rates": {
+    "pristine gym-fx@2c60b84": "9 failures / 25 repeats",
+    "corrected tree": "12 / 40"
+   },
+   "provenance": "pre-existing in the accepted commit \u2014 NOT a regression from this work; surfaced by repeated full-suite runs. The file is identity-frozen under WP4.0, so the correction is the auditor's to order."
+  },
+  "note": "none of the frozen accepted files were modified; the findings are frozen as evidence and the eligibility contract truthfully refuses the affected runs."
+ },
+ "sanitization_scan": {
+  "scope": "tools/wp4_*.py, tests/test_wp4*.py, examples/wp4_weekly_flat/*.json, this packet",
+  "rule": "no /home path, no operator username, no hosts",
+  "result": "CLEAN \u2014 enforced by a battery test that runs with the suite",
+  "data_resolution": "WP4_DATA_ROOT environment variable; unset fails closed"
+ },
+ "suites": {
+  "tests/test_wp4_materializer.py": 60,
+  "tests/test_wp4_stats.py": 19,
+  "full gym-fx": "496 passing; the accepted custody race (F-WP4-3) fails intermittently by its own pre-existing defect"
+ },
+ "mutation_check": {
+  "crossing_invariant_dropped": 1,
+  "unresolved_incidents_ignored": 2,
+  "seeds_treated_as_weeks": 4,
+  "trial_ledger_check_dropped": 1,
+  "winner_reuse_allowed": 1,
+  "restored": "green"
+ },
+ "proposed_sac_preflight_command": {
+  "authorization_required": "Musashi's acceptance of C9-C14",
+  "command": "cd <gym-fx checkout> && WP4_DATA_ROOT=<financial-data root> timeout 7200 python tools/wp4_sac_preflight.py --cell w0_overlay_enabled --manifest examples/wp4_weekly_flat/manifest.json --expected-manifest-digest <manifest digest from the reviewed materialization> --seed 5 --max-env-steps 20000 --max-updates 20000 --device cpu --out <scratch>/sac_preflight.json",
+  "note": "the tool does not exist yet by design \u2014 it is written only after acceptance, against the reviewed manifest digest, measuring env steps/s and SAC updates/s separately with zero economic conclusion, observable and stoppable per runtime order 95e088da.",
+  "bounds": "<=20000 env steps, <=20000 updates, <=2h wall, one cell, one seed, CPU only"
+ },
+ "boundaries": "No GPU, no training (preflight only proposed), no economic grids, no deployment, no services, no venue connections, no commands, no position changes, no checkpoint promotion, no live activation."
+}
