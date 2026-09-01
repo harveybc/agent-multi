@@ -65,3 +65,28 @@ precondition is absent.
 Acceptance of C17 may close the effect-free collector preflight implementation.
 Actual collector activation remains a separate coordinated-window decision and
 may authorize only the read-only session-evidence collector.
+
+## C17 return disposition
+
+Reviewed return identities:
+
+- `lts@71355ab`
+- return package `agent-multi@d052f93b`
+
+**C17: ACCEPTED.** `_read_descriptor_first` now returns the complete bytes and
+their digest from one descriptor verified with `O_NOFOLLOW` and `fstat`. The
+acta is parsed directly from those returned bytes; `evaluate()` no longer
+reopens the verified structured artifact by path. The committed adversaries
+cover symlink and rename replacement, malformed verified bytes, digest
+mismatch, and the clean path. This closes the remaining acta TOCTOU finding and
+completes the effect-free collector preflight implementation.
+
+Independent test rerun was attempted but the auditor shell's system Python does
+not contain `sqlalchemy`, so pytest could not import `tests/conftest.py`. No
+independent green-suite claim is made; acceptance is based on source/diff review
+and the sealed 34-test / 1,194-test evidence in the return package.
+
+This acceptance does not activate anything. The verdict remains
+`COORDINATED_WINDOW_REQUIRED` until fresh evidence proves zero positions, zero
+orders, and every sealed precondition. A future GO authorizes only the read-only
+MT5 session-evidence collector, never weekly-flat trading logic or training.
