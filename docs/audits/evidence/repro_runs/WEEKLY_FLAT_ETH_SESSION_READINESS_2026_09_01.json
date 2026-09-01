@@ -1,0 +1,36 @@
+{
+ "schema": "gymfx.wp4.session_readiness.v1",
+ "inventory": {
+  "bars": 18085,
+  "span": [
+   "2017-09-28 04:00:00+00:00",
+   "2025-12-31 20:00:00+00:00"
+  ],
+  "weekend_units": 0,
+  "holiday_or_shortened_units": 8,
+  "dst_crossing_units": 0,
+  "authority_note": "every unit here is OBSERVED_GAP, stamped GAP_OBSERVED_NOT_SESSION_AUTHORITY; none is session authority"
+ },
+ "observed_unit_count": 8,
+ "verdict": {
+  "state": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
+  "collector_active": false,
+  "authoritative_paired_weeks": 0,
+  "observed_nonauthoritative_gaps": 8,
+  "paired_week_accounting": {
+   "minimum_required": 30,
+   "authoritative_paired_weeks_available": 0,
+   "exact_deficit": 30,
+   "status": "INCONCLUSIVE",
+   "note": "observed gaps do NOT count; only broker session envelopes (and operator-calendar exceptions) are authoritative paired weekly units"
+  },
+  "economic_grid_authorized": false,
+  "note": "no W1/W2 economic grid may start from this package; it quantifies missing evidence only"
+ },
+ "provenance_classes": [
+  "BROKER_SESSION_ENVELOPE",
+  "OPERATOR_EXCEPTION_CALENDAR",
+  "OBSERVED_GAP"
+ ],
+ "digest": "e1694b6a65626539878d93d18a5b0a22118b5e2ebba90d3e6f42be7b7ffabd4b"
+}

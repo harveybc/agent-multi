@@ -1,0 +1,60 @@
+{
+ "order": "agent-multi@0ca5f7af \u2014 MT5 session collector safe window + offline parallel (P0-P3)",
+ "execution_boundary_declaration": {
+  "P0_P1_P2_collector_activation": "NOT EXECUTED BY ME \u2014 and correctly so. These require re-acquiring fresh direct evidence from the LIVE MT5 terminal, the real operator kit (sealed EA-source/compiled/bridge backup, Musashi's sealed review acta binding the exact session-publication diff, a tested rollback script), and QUIESCING/DEPLOYING/RESTARTING the EA that protects the position. I hold no venue connection (forbidden), do not possess that operator kit, and service change/restart on the live position-protecting EA is outside my permanent boundaries. The C17 preflight is a JUDGE that evaluates operator-supplied descriptor-bound evidence; it neither reads the venue nor fabricates a kit. Fabricating a kit to force a GO is exactly the sin C15-C17 hardened against, so I did not. The dispatch signal in section 1 (zero/zero at 20:49:20Z) is an observation, not the activation proof, and re-acquisition + the sealed kit must come from the operator.",
+  "what_the_operator_needs_to_run_the_judge": "python lts/tools/collector_activation_preflight.py with --snapshot (fresh SnapshotPayload), --heartbeat (fresh HeartbeatPayload, build 6090), --expected-account-fingerprint/-server-fingerprint/-symbol ETHUSD/-terminal-build 6090, --expected-reviewer-identity (Musashi's fixed identity), --backup-manifest (sealed, real ea_source/ea_compiled/bridge_config under --backup-root), --ea-diff-review (the sealed acta naming the exact diff), --rollback-evidence (tested, zero order effects, bound to the backup seal). Only GO_READ_ONLY_COLLECTOR_ONLY passes; any position/order returns COORDINATED_WINDOW_REQUIRED.",
+  "status": "COORDINATED_WINDOW_REQUIRED \u2014 the account being flat at one instant is not the operator kit; activation remains an operator/Musashi coordinated action I am structurally and by-boundary unable to perform."
+ },
+ "P3_offline_history_EXECUTED": {
+  "repository": {
+   "gym-fx": {
+    "branch": "satoshi/trade-reconciliation-20260828",
+    "commit": "405de9a"
+   }
+  },
+  "module": "tools/wp4_session_readiness.py",
+  "provenance_classes_kept_separate": [
+   "BROKER_SESSION_ENVELOPE (authoritative; none until collector active)",
+   "OPERATOR_EXCEPTION_CALENDAR (authoritative for named exceptions)",
+   "OBSERVED_GAP (calibration only, stamped GAP_OBSERVED_NOT_SESSION_AUTHORITY)"
+  ],
+  "never_promoted": "refuse_provenance_promotion refuses using an observed gap as session authority",
+  "per_unit_metrics": "last pre-close, first reopen, gap hours, first-open gap return, pre-close spread, reopen realized vol, quote continuity; weekend vs holiday/shortened classification; DST-crossing flag",
+  "join_contract": "SessionEnvelopeInterval/build_join_contract/join_bar_to_session refuse overlap, missing timezone, contradictory intervals and LOOK-AHEAD (a bar judged only by session evidence known at the bar's own time)",
+  "eth_h4_finding": {
+   "dataset": "ethusdt 4h (24/7 crypto spot) \u2014 the ONLY available ETH H4 history",
+   "bars": 18085,
+   "weekend_units": 0,
+   "holiday_or_shortened_units": 8,
+   "observed_gaps_total": 8,
+   "authoritative_paired_weeks": 0,
+   "exact_deficit_to_30": 30,
+   "verdict": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
+   "digest": "e1694b6a65626539878d93d18a5b0a22118b5e2ebba90d3e6f42be7b7ffabd4b"
+  },
+  "eurusd_corroboration": "EURUSD 4h carries >=8 real weekend gaps in one quarter, proving the inventory finds true closures \u2014 yet without the collector they remain OBSERVED_GAP, never authoritative paired weeks",
+  "deterministic_fixtures": [
+   "ordinary weekend",
+   "holiday-shortened",
+   "DST shift",
+   "stale Tuesday feed",
+   "missing authority"
+  ],
+  "verdict": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY \u2014 the exact full 30-week deficit stands; no W1/W2 economic grid may start from this package",
+  "tests": 21,
+  "mutations": {
+   "promote_observed_gap": 1,
+   "allow_look_ahead": 1,
+   "authority_without_collector": 1,
+   "restored": "green"
+  },
+  "suites": {
+   "readiness": 21,
+   "gym-fx full": 533
+  },
+  "process_cpu_seconds": 0.306,
+  "cpu_note": "single logical core; percent-of-one-core = cpu/wall; the offline package completes in well under a second, far inside the 3-hour wall limit"
+ },
+ "observability": "the offline work is sub-second deterministic analysis \u2014 phase OFFLINE_HISTORY, no opaque background process, nothing left running; no stop-file needed because no long-running command was launched",
+ "boundaries": "No GPU, no SAC/pretraining, no WP4 economic grid, no checkpoint promotion, no weekly-flat action, no venue order/close/cancel, no private paths/hosts/account ids/raw payloads in this package, no process left running. The live system was never touched."
+}
