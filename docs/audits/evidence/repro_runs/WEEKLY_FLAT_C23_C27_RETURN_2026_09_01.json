@@ -1,0 +1,85 @@
+{
+ "order": "agent-multi@758d6799 \u2014 C18-C22 REVISE / C23-C27 close the authority",
+ "repository": {
+  "gym-fx": {
+   "branch": "satoshi/trade-reconciliation-20260828",
+   "commit": "30db3f5"
+  }
+ },
+ "PRE_counterexamples_frozen_via_public_apis": {
+  "1_forged_bundle_accepted": {
+   "intervals_derived": 30,
+   "collector_active": true
+  },
+  "2_scalar_in_dict": {
+   "state": "AUTHORITATIVE_SUPPORT_SUFFICIENT_FOR_CALIBRATION"
+  },
+  "3_remote_bars_certify": {
+   "supported_paired_weeks": 30,
+   "note": "8 remote bars, 30 intervals all supported"
+  },
+  "4_distinct_auth_same_digest": {
+   "same_observed_frame": true,
+   "distinct_authoritative_populations": true,
+   "package_digests_equal": false,
+   "note": "package binds only the observed ledger, not authority"
+  },
+  "5_topology_accepted": {
+   "source": {
+    "logical_id": "/home/secret/checkout/eth.csv",
+    "source_digest": "not-a-digest"
+   }
+  }
+ },
+ "corrections": {
+  "C23_external_trust_root": "authority is verified against a DETACHED Ed25519 signature over the canonical export/receipt body under a public key FIXED BY THE REVIEWED ORDER (private key never in a public repo). A self-consistent synthetic bundle cannot sign under the fixed key and refuses; exporter/parser/code identity, venue/account/symbol, activation identity+freshness and acquisition range are verified executably, never on the producer's own label.",
+  "C24_single_derivation_path": "build_readiness_package has no authoritative/paired/collector_active parameters; it takes evidence BYTES + trust and derives activation->intervals->local pairing->count->verdict internally; the count is recomputed from verified records at the point of use",
+  "C25_local_causal_pairing": "each interval binds the exact adjacent pre-close and post-reopen bars on the declared grid (row timestamps+digests recorded); a bar inside the authoritative closure REFUSES (not silent supported=False); paired intervals must lie within the acquisition range; 8 remote bars can no longer certify 30 weeks",
+  "C26_full_binding": "the digest binds trust digest, activation proof, export digest, ordered authoritative intervals, the pairing ledger (per-side bar timestamps+digests), the separate observed-gap ledger, the VERIFIED source digest (hashed from source bytes, not prose), column contract, timezone, bar width, metric window; authoritative_pairing_digest and observed_gap_ledger_digest named separately; distinct equal-cardinality populations change the digest",
+  "C27_strict_schemas": "duplicate JSON keys and non-finite constants refuse; canonical 64-hex digests and RFC3339 UTC; non-positive/bool/string prices in economic roles refuse; quote continuity needs ordered sufficient quotes under a bound spacing contract else UNAVAILABLE; logical ids reject absolute/traversal/host; Tier-A fails closed"
+ },
+ "acceptance_battery_all_10": {
+  "five_PRE_refuse_or_nonauthoritative": true,
+  "self_signed_30_bundle_does_not_activate": true,
+  "substitute_trust_root_exporter_parser_receipt_export_refuses": true,
+  "duplicate_extra_missing_fields_refuse": true,
+  "29_local_windows_deficit_1__30_sufficient_not_grid": true,
+  "remove_local_bar_reduces__remote_bars_do_not_restore": true,
+  "bar_inside_closure_refuses": true,
+  "distinct_populations_change_digest": true,
+  "quote_evidence_absent_or_unordered_stays_UNAVAILABLE": true,
+  "tier_a_false_root_fails_not_skip": true
+ },
+ "real_data_conclusion": {
+  "relabel": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
+  "kind_counts": {
+   "midweek_outage_shaped": 1,
+   "other_observed_gap": 7
+  },
+  "weekend_shaped_broker_closures": 0,
+  "verdict": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
+  "exact_deficit_to_30": 30,
+  "source_digest_verified_from_bytes": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "observed_gap_ledger_digest": "63c3db03c53bd1796b1b872ad3417c379db597f7884c1a1775f44d29fc1f66ca",
+  "package_digest": "d514eae1ef88c3d12f44dbeff9745eac685ccb23cc7d0c8cea8fcf36120c563b"
+ },
+ "mutation_check": {
+  "signature_unchecked": 3,
+  "bar_inside_allowed": 1,
+  "remote_bar_counting": 3,
+  "pairing_unbound": 1,
+  "dup_keys_allowed": 1,
+  "restored": "green",
+  "note": "counts verified from terminal output before writing"
+ },
+ "suites": {
+  "session_readiness": 30,
+  "gym-fx full": 542
+ },
+ "commands": {
+  "focused": "WP4_TIER_A_ROOT=<workspace> pytest tests/test_wp4_session_readiness.py -q -> 30",
+  "full": "WP4_TIER_A_ROOT=<workspace> WP4_DATA_ROOT=<financial-data> pytest -q -> 542",
+  "tier_a_fail_closed": "unset WP4_TIER_A_ROOT -> the Tier-A test FAILS, never skips"
+ },
+ "boundaries": "No live preflight, deployment, restart, venue connection, command, position, GPU, SAC, economic W1/W2 grid or checkpoint promotion. The spot conclusion stands; P0-P2 remain COORDINATED_WINDOW_REQUIRED until the real operator kit produces a separate GO."
+}

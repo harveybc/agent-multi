@@ -1,5 +1,5 @@
 {
- "schema": "gymfx.wp4.session_readiness.v2",
+ "schema": "gymfx.wp4.session_readiness.v3",
  "source": {
   "logical_id": "predictor:project3/ethusdt_4h_tech_stat",
   "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f"
@@ -20,8 +20,9 @@
   },
   "dst_crossing_units": 0
  },
- "unit_ledger_digest": "a3c8cdc14720d592a3938882dde73155fce32a44eaeadde30c635ae1665986fb",
- "observed_unit_count": 8,
+ "observed_gap_ledger_digest": "63c3db03c53bd1796b1b872ad3417c379db597f7884c1a1775f44d29fc1f66ca",
+ "observed_gap_count": 8,
+ "authoritative": null,
  "verdict": {
   "state": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
   "collector_active": false,
@@ -32,14 +33,13 @@
    "status": "INCONCLUSIVE"
   },
   "observed_nonauthoritative_gaps": 8,
-  "economic_grid_authorized": false,
-  "note": "no W1/W2 economic grid may start from this package; it quantifies missing evidence only"
+  "economic_grid_authorized": false
  },
  "provenance_classes": [
   "BROKER_SESSION_ENVELOPE",
   "OPERATOR_EXCEPTION_CALENDAR",
   "OBSERVED_GAP"
  ],
- "digest": "a6770bd7546cf52584ec3836617abbc95b88d213ae44389ffeeeb702e68e88ad",
- "eth_conclusion": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY"
+ "eth_conclusion_when_spot": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
+ "digest": "d514eae1ef88c3d12f44dbeff9745eac685ccb23cc7d0c8cea8fcf36120c563b"
 }
