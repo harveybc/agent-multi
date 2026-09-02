@@ -1,29 +1,37 @@
 {
- "schema": "gymfx.wp4.session_readiness.v1",
- "inventory": {
+ "schema": "gymfx.wp4.session_readiness.v2",
+ "source": {
+  "logical_id": "predictor:project3/ethusdt_4h_tech_stat",
+  "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f"
+ },
+ "column_role_contract_digest": "b0a91c1541eecdc1a8aac00ab997eb17ef776e24b256c35657c8aa778b153e5f",
+ "bar_hours": 4.0,
+ "timezone": "UTC",
+ "realized_vol_window_bars": 3,
+ "inventory_summary": {
   "bars": 18085,
   "span": [
-   "2017-09-28 04:00:00+00:00",
-   "2025-12-31 20:00:00+00:00"
+   "2017-09-28T04:00:00+00:00",
+   "2025-12-31T20:00:00+00:00"
   ],
-  "weekend_units": 0,
-  "holiday_or_shortened_units": 8,
-  "dst_crossing_units": 0,
-  "authority_note": "every unit here is OBSERVED_GAP, stamped GAP_OBSERVED_NOT_SESSION_AUTHORITY; none is session authority"
+  "kind_counts": {
+   "midweek_outage_shaped": 1,
+   "other_observed_gap": 7
+  },
+  "dst_crossing_units": 0
  },
+ "unit_ledger_digest": "a3c8cdc14720d592a3938882dde73155fce32a44eaeadde30c635ae1665986fb",
  "observed_unit_count": 8,
  "verdict": {
   "state": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
   "collector_active": false,
-  "authoritative_paired_weeks": 0,
-  "observed_nonauthoritative_gaps": 8,
   "paired_week_accounting": {
    "minimum_required": 30,
-   "authoritative_paired_weeks_available": 0,
+   "supported_paired_weeks": 0,
    "exact_deficit": 30,
-   "status": "INCONCLUSIVE",
-   "note": "observed gaps do NOT count; only broker session envelopes (and operator-calendar exceptions) are authoritative paired weekly units"
+   "status": "INCONCLUSIVE"
   },
+  "observed_nonauthoritative_gaps": 8,
   "economic_grid_authorized": false,
   "note": "no W1/W2 economic grid may start from this package; it quantifies missing evidence only"
  },
@@ -32,5 +40,6 @@
   "OPERATOR_EXCEPTION_CALENDAR",
   "OBSERVED_GAP"
  ],
- "digest": "e1694b6a65626539878d93d18a5b0a22118b5e2ebba90d3e6f42be7b7ffabd4b"
+ "digest": "a6770bd7546cf52584ec3836617abbc95b88d213ae44389ffeeeb702e68e88ad",
+ "eth_conclusion": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY"
 }

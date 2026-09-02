@@ -1,0 +1,99 @@
+{
+ "order": "agent-multi@d198451c \u2014 P3 REVISE / C18-C22 session-readiness correction",
+ "disposition_received": "REVISE (negative ETH finding accepted as diagnostic; implementation refused: scalar-minted authority + false metric names + topology)",
+ "repository": {
+  "gym-fx": {
+   "branch": "satoshi/trade-reconciliation-20260828",
+   "commit": "d08fa5f"
+  }
+ },
+ "PRE_counterexamples_frozen": {
+  "1_forged_sufficiency": {
+   "call": "data_readiness_verdict(collector_active=True, authoritative_units=30, observed_units=0)",
+   "state": "AUTHORITATIVE_SUPPORT_SUFFICIENT_FOR_CALIBRATION",
+   "no_evidence_required": true
+  },
+  "2_tue_56h_is_weekend": {
+   "gap_hours": 48.0,
+   "kind": "weekend"
+  },
+  "3_gap_uses_close_not_open": {
+   "reopened_OPEN": 150.0,
+   "reopened_CLOSE": 120.0,
+   "pre_close": 100.0,
+   "reported_gap_return": 0.2,
+   "gap_from_close_120_over_100": 0.2,
+   "would_be_from_open_150": 0.5
+  },
+  "4_volume_as_volatility": {
+   "VOLUME_passed_as_vol_col": 999.0,
+   "reported_realized_vol": 999.0
+  },
+  "5_trivial_quote_continuity": {
+   "no_quote_evidence_consumed": true,
+   "reported_continuity_ok": true
+  },
+  "6_digest_omits_units": {
+   "same_observed_count": true,
+   "distinct_unit_data": true,
+   "package_digests_differ": true,
+   "note": "if counts equal and only counts are hashed, distinct populations can collide"
+  },
+  "7_enum_confers_authority": {
+   "constructed_from_string_alone": true,
+   "no_sealed_export_verified": true
+  },
+  "8_public_topology_and_skips": {
+   "home_paths_in_public_tests": true,
+   "tier_a_uses_skip": true
+  }
+ },
+ "corrections": {
+  "C18_evidence_derived_authority": "no public API accepts collector_active or an authoritative count; load_authoritative_intervals verifies a sealed export + sealed activation receipt bound to venue/account/symbol, refuses a transplanted receipt, derives physical intervals from verified bytes, dedups by identity, refuses overlaps/duplicates/conflicts; paired week = authoritative interval with required eligible pre/post bars, count derived from records; the forged 30+True path is impossible by signature",
+  "C19_truthful_metrics": "opening_gap_return = reopen OPEN / pre-close CLOSE - 1 (never close/close); realized vol = RMS of close-to-close log returns over a declared positive window, units stated, not annualized, no caller vol column; spread and quote-continuity typed UNAVAILABLE without a declared spread field or quote timestamps",
+  "C20_geometry_taxonomy": "weekend_shaped_observed_gap (Fri->Sun/Mon and >=40h) vs midweek_outage_shaped vs other_observed_gap; Tuesday 56h is never weekend; holiday only from an operator-exception artifact; every gap field stamped GAP_OBSERVED_NOT_SESSION_AUTHORITY",
+  "C21_bound_ledger_no_topology": "package binds the per-unit ledger digest + source digest + logical id + column-role contract + timezone + bar width + metric window; mutating any unit changes identity; all /home paths removed; Tier-A fails closed via WP4_TIER_A_ROOT, never skips; sanitization scan",
+  "C22_strict_inputs_one_path": "no bool-as-number, no errors='coerce' on authority data, unique UTC timestamps, finite numeric OHLC, declared roles, positive finite bar width; sort only after uniqueness; single wired authority path; economic_grid_authorized stays false"
+ },
+ "acceptance_battery": {
+  "29_weeks": "INCONCLUSIVE deficit 1",
+  "30_weeks": "sufficient readiness, NOT grid authorization",
+  "remove_matched_bar_or_receipt": "reduces support or refuses",
+  "duplicate_or_transplanted": "counts once / refuses",
+  "open_close_volume_quote_adversaries": "all explicitly tested",
+  "tuesday_56h": "midweek_outage_shaped, never weekend",
+  "ledger_mutation": "bites the package digest",
+  "tier_a_false_root": "fails, not skips"
+ },
+ "real_data_conclusion": {
+  "relabel": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
+  "kind_counts": {
+   "midweek_outage_shaped": 1,
+   "other_observed_gap": 7
+  },
+  "weekend_shaped_broker_closures": 0,
+  "verdict": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
+  "exact_deficit_to_30": 30,
+  "package_digest": "a6770bd7546cf52584ec3836617abbc95b88d213ae44389ffeeeb702e68e88ad",
+  "unit_ledger_digest": "a3c8cdc14720d592a3938882dde73155fce32a44eaeadde30c635ae1665986fb",
+  "source": {
+   "logical_id": "predictor:project3/ethusdt_4h_tech_stat",
+   "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f"
+  }
+ },
+ "mutation_check": {
+  "seal_unchecked": 1,
+  "receipt_binding_dropped": 1,
+  "opening_gap_ignores_open": 2,
+  "duration_only_weekend": 1,
+  "ledger_digest_unbound": 1,
+  "restored": "green",
+  "note": "counts verified from terminal output before writing (corrective policy from the prior window, held this time)"
+ },
+ "suites": {
+  "session_readiness": 28,
+  "gym-fx full": 540
+ },
+ "process_cpu_seconds": 0.319,
+ "boundaries": "No live preflight, collector deployment, service operation, venue connection, GPU, model construction, SAC/pretraining, economic W1/W2 grid or checkpoint promotion. P0-P2 remain COORDINATED_WINDOW_REQUIRED until the real operator kit is supplied to C17."
+}
