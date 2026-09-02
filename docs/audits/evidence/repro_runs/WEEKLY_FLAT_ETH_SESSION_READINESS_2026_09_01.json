@@ -1,5 +1,5 @@
 {
- "schema": "gymfx.wp4.session_readiness.v3",
+ "schema": "gymfx.wp4.session_readiness.v4",
  "source": {
   "logical_id": "predictor:project3/ethusdt_4h_tech_stat",
   "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f"
@@ -7,6 +7,9 @@
  "column_role_contract_digest": "b0a91c1541eecdc1a8aac00ab997eb17ef776e24b256c35657c8aa778b153e5f",
  "bar_hours": 4.0,
  "timezone": "UTC",
+ "evaluation_as_of": "2026-09-01T00:00:00+00:00",
+ "trust_manifest_digest": "55b8cfc4301080e3d0e7758ef3174abfcb3e1fe45b8583d076e2ad675be511b8",
+ "trust_status": "NOT_PROVISIONED_NON_AUTHORIZING",
  "realized_vol_window_bars": 3,
  "inventory_summary": {
   "bars": 18085,
@@ -41,5 +44,5 @@
   "OBSERVED_GAP"
  ],
  "eth_conclusion_when_spot": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
- "digest": "d514eae1ef88c3d12f44dbeff9745eac685ccb23cc7d0c8cea8fcf36120c563b"
+ "digest": "de9a2b1602ed4fb7f338a9ec0cabdf71c6c63883cfada4de2b67aa1ca7b250f8"
 }

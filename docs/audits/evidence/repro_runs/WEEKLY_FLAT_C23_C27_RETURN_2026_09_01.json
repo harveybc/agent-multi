@@ -26,7 +26,7 @@
   },
   "5_topology_accepted": {
    "source": {
-    "logical_id": "/home/secret/checkout/eth.csv",
+    "logical_id": "<REDACTED_ABSOLUTE_PATH_TOKEN>",
     "source_digest": "not-a-digest"
    }
   }

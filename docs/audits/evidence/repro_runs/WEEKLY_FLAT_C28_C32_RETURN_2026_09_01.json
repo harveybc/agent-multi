@@ -1,0 +1,80 @@
+{
+ "order": "agent-multi@41f99b92 \u2014 C23-C27 REVISE / C28-C32 close authority provisioning",
+ "repository": {
+  "gym-fx": {
+   "branch": "satoshi/trade-reconciliation-20260828",
+   "commit": "bf561df"
+  }
+ },
+ "PRE_counterexamples_frozen_via_public_apis": {
+  "1_caller_supplied_trust": {
+   "state": "AUTHORITATIVE_SUPPORT_SUFFICIENT_FOR_CALIBRATION",
+   "supported": 30
+  },
+  "2_frame_independent_of_bytes": {
+   "same_bytes": true,
+   "distinct_frames": true,
+   "package_digests_equal": true
+  },
+  "3_future_interval_accepted": {
+   "now": "2024-06-01T00:00:00+00:00",
+   "last_reopen": "2024-07-29T00:00:00+00:00",
+   "supported": 30
+  },
+  "4_bar_at_close_boundary": {
+   "refused": false,
+   "supported": 1
+  },
+  "5_bool_spacing": {
+   "value": false,
+   "expected_spacing_seconds": true
+  }
+ },
+ "corrections": {
+  "C28_trust_root_fixed_by_executing_path": "production build_readiness_package takes NO trust parameter; it loads the committed manifest (examples/wp4_trust/session_trust_manifest.json) and verifies it against the code-pinned digest. The manifest ships NOT_PROVISIONED_NON_AUTHORIZING with no key, so no bundle can activate. Trust injection lives only in the explicit *_TEST_ONLY doors the production path never calls. The provisioning key ceremony (operator private key in restricted storage; only public key + code digests published; Musashi fixes a new manifest+pin; exporter signs without exposing the key) is the separate act that would flip it.",
+  "C29_single_data_population": "VerifiedSource.from_csv_bytes parses the frame FROM the hashed bytes; no detached frame can be handed in; distinct rows -> distinct source digests even without gaps; the frame cannot be swapped after hashing",
+  "C30_as_of_temporal_contract": "signed export declares exported_at and observed_through; the chain activated_at<=observed_through<=exported_at<=evaluation_as_of and acquisition_end<=observed_through is verified; every authoritative reopen <= observed_through; every bar used <= evaluation_as_of (from the reviewed invocation, bound into the package); future evidence REFUSES",
+  "C31_exact_interval_semantics": "closure is [close_at, reopen_at); a bar with close_at<=ts<reopen_at refuses; the bar at reopen_at is the first valid post; last pre-close is close_at - bar_width; same for sessions and exceptions",
+  "C32_strict_remaining_boundaries": "expected_spacing_seconds must be real positive finite (bool/string/zero/NaN/inf -> UNAVAILABLE); manifest fields validated with canonical code digests and real-positive age; operator exceptions validate exact schema, close<reopen, acquisition range and full binding; the absolute-path counterexample keeps a sanitized token; a needle-free sanitization scan of module+manifest is a test; the prior C23-C27 evidence file was scrubbed of its literal /home path"
+ },
+ "acceptance_battery_all_10": {
+  "1_substitute_signer_and_trust_together_stays_inert": true,
+  "2_absent_notprovisioned_redigested_other_order_manifest_refuse": true,
+  "3_no_production_key_injection_parameter": true,
+  "4_distinct_bytes_or_rows_change_identity__cannot_decouple_frame": true,
+  "5_future_intervals_or_bars_refuse": true,
+  "6_bar_at_close_refuses__bar_at_reopen_is_valid_post": true,
+  "7_bool_string_zero_nan_inf_spacing_refuse": true,
+  "8_inverted_future_out_of_range_wrong_schema_exceptions_refuse": true,
+  "9_29_local_windows_deficit_1__30_sufficient_only_under_isolated_fixture_manifest": true,
+  "10_tier_a_false_root_fails_not_skip": true
+ },
+ "real_data_conclusion": {
+  "relabel": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
+  "trust_status": "NOT_PROVISIONED_NON_AUTHORIZING",
+  "collector_active": false,
+  "kind_counts": {
+   "midweek_outage_shaped": 1,
+   "other_observed_gap": 7
+  },
+  "weekend_shaped_broker_closures": 0,
+  "verdict": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
+  "exact_deficit_to_30": 30,
+  "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "package_digest": "de9a2b1602ed4fb7f338a9ec0cabdf71c6c63883cfada4de2b67aa1ca7b250f8"
+ },
+ "mutation_check": {
+  "not_provisioned_authorizes": 4,
+  "pin_unchecked": 1,
+  "as_of_unenforced": 1,
+  "close_boundary_open": 1,
+  "frame_decoupled": 6,
+  "restored": "green",
+  "note": "counts read from terminal output before writing"
+ },
+ "suites": {
+  "session_readiness": 30,
+  "gym-fx full": 542
+ },
+ "boundaries": "No key generation, restricted storage, collector activation, live preflight, service, venue, command, position, GPU, SAC or economic grid. The key ceremony and P0-P2 require the operator and separate authorization; this cycle leaves authority fail-closed under a pinned NOT_PROVISIONED manifest."
+}
