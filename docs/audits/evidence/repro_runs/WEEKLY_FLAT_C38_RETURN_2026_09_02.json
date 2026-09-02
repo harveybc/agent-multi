@@ -1,0 +1,52 @@
+{
+  "packet": "WEEKLY_FLAT_C38_RETURN",
+  "date": "2026-09-02",
+  "order": "agent-multi@89a17515 (Musashi C38, branch musashi/audit-session-readiness-c36-c37-20260902; C36/C37 accepted in mechanics)",
+  "subject_repository": "gym-fx",
+  "branch": "satoshi/trade-reconciliation-20260828",
+  "commit": "6d779af",
+  "base_reproduced_against": "gym-fx@9353e0a",
+  "scope": "CPU, offline; no key generation, no manifest change, no collector, no EA/bridge/runner restart, no SAC/GPU/grid",
+  "pre_frozen": {
+    "c38a_exact": "the sufficient 30-week body stamped in production shape, with authoritative.required_pre_bars removed and the digest recomputed, was ACCEPTED by _check_consumable_consistency; consumer-style access then raised KeyError 'required_pre_bars'.",
+    "c38a_variants_accepted_by_old_gate": [
+      "missing required_post_bars", "required_pre_bars=True (bool)", "required_post_bars='4' (string)",
+      "bar_hours='4.0' (string)", "realized_vol_window_bars=True", "verdict extra key",
+      "accounting missing exact_deficit", "inventory_summary missing bars", "source extra key",
+      "evaluation_as_of=12345 (int)", "pairing_records of raw strings", "(baseline intact package accepted — correct)"
+    ],
+    "c38b": "no test executed build_readiness_package -> verify_consumable_readiness -> consumable=True under any provisioned manifest; only the halves were proven."
+  },
+  "corrections": {
+    "c38_2_nested_schemas": {
+      "exact_field_sets": "top level plus source, inventory_summary, authoritative (13 fields), verdict, paired_week_accounting, every pairing_record, every paired bar row — missing/extra keys refuse naming the block and keys.",
+      "typed_values": "canonical digests, logical ids, RFC3339 UTC (impossible dates passing the regex refuse typed — pandas parse wrapped), positive non-bool ints, positive finite reals, strict bools with expected values, ordered no-duplicate interval/record lists.",
+      "concordances": "kind_counts total == observed_gap_count == verdict.observed_nonauthoritative_gaps; len(pairing_records) == len(authoritative_intervals); supported record count == accounting.supported_paired_weeks >= 30; exact_deficit recomputed; authoritative_pairing_digest recomputed over the records; as-of chain activated<=observed<=exported<=evaluation; package/authoritative evaluation_as_of concordant; provenance triple exact ordered; eth spot conclusion exact; supported records carry exactly required_pre/post bars per side.",
+      "exception_boundary": "malformed packages always produce ReadinessError naming the field; fuzz corpus (None/int/str/list/half-shapes/all-None dict) proves no KeyError/TypeError/AttributeError escapes; adversarial CSV bytes refuse typed in from_csv_bytes and frame(); no defaults, no silent normalization, no blanket except."
+    },
+    "c38_3_provisioned_e2e": {
+      "mechanism": "ephemeral Ed25519 key + sealed provisioned manifest in a test temp root; pin fixed ONLY by monkeypatching the internal module constants; no public trust/pin/digest parameter added; no TEST_ONLY door.",
+      "proof": "build_readiness_package -> verify_consumable_readiness returns consumable=True, state AUTHORITATIVE_SUPPORT_SUFFICIENT_FOR_CALIBRATION, with the rederivation digest enforced.",
+      "mutations_refuse_typed": ["tampered export signature", "different source bytes (rederivation mismatch)", "re-digested nested lie (supported 29)", "forged fixture_marker on the provisioned package", "manifest/pin disagreement (TrustError 'pinned')", "missing rederivation evidence", "committed NOT_PROVISIONED manifest with FULL evidence still refuses NOT_PROVISIONED_NON_CONSUMABLE"]
+    }
+  },
+  "post": "the intact sufficient package still passes the gate (baseline); the exact counterexample and all 14 probe variants refuse typed naming the field; no raw exception observed.",
+  "mutation_checks": [
+    {"id": "M1", "target": "nested exact-fields check neutered", "result": "9 failed, 83 passed"},
+    {"id": "M2", "target": "strict-bool validator coerces truthy ints", "result": "2 failed, 90 passed"},
+    {"id": "M3", "target": "rederivation match disabled", "result": "3 failed, 89 passed"},
+    {"id": "M4", "target": "typed date-parse wrap removed (raw pandas ValueError)", "result": "1 failed, 91 passed"},
+    {"id": "M5", "target": "pairing-ledger digest concordance disabled", "result": "1 failed, 91 passed"}
+  ],
+  "suites": {
+    "focused": "92 passed, 1 warning (tests/test_wp4_session_readiness.py)",
+    "full_gymfx": "604 passed, 69 warnings",
+    "tier_a_fail_closed": "1 failed (fails closed) with WP4_TIER_A_ROOT unset",
+    "count_discipline": "all counts copied from terminal output of runs at the final commit state"
+  },
+  "self_reported": "one test-helper defect caught during development: the fixture-marker E2E mutation was silently undone by my own stamping helper (which re-forces fixture_marker=False), making the case vacuous; rebuilt the forged package by hand so the mutation actually reaches the consumer. Disclosed.",
+  "sanitization": "clean — module, battery, seam and manifest carry no home-directory prefix, operator name, host, or private IP.",
+  "boundaries_respected": "no productive key generated, pinned manifest untouched (still NOT_PROVISIONED), no collector, no EA/bridge/runner restart, no SAC, no GPU, no economic grid, no DOIN resumption.",
+  "deliver_and_stop": "C38 delivered; no ceremony or activation prepared. Awaiting independent acceptance.",
+  "disposition": "AWAITING_MUSASHI"
+}
