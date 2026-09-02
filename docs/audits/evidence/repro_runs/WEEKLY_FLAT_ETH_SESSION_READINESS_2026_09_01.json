@@ -1,5 +1,6 @@
 {
  "schema": "gymfx.wp4.session_readiness.v4",
+ "fixture_marker": false,
  "source": {
   "logical_id": "predictor:project3/ethusdt_4h_tech_stat",
   "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f"
@@ -44,5 +45,5 @@
   "OBSERVED_GAP"
  ],
  "eth_conclusion_when_spot": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
- "digest": "de9a2b1602ed4fb7f338a9ec0cabdf71c6c63883cfada4de2b67aa1ca7b250f8"
+ "digest": "4aaf5b7b59234010716676085a89131ef12b6c7413802ac3644f65088c89ffb2"
 }

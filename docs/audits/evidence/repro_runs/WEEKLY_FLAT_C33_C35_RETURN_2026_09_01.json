@@ -1,0 +1,91 @@
+{
+  "packet": "WEEKLY_FLAT_C33_C35_RETURN",
+  "date": "2026-09-01",
+  "order": "agent-multi@1c2cb805 (Musashi C33-C35, branch musashi/wp4-session-readiness-c33-c35-20260901)",
+  "subject_repository": "gym-fx",
+  "branch": "satoshi/trade-reconciliation-20260828",
+  "commit": "36caaef",
+  "base_reproduced_against": "gym-fx@bf561df",
+  "scope": "CPU, offline, no venue, no key, no collector, no live, no GPU, no SAC, no grid, no promotion; object boundaries and consumption only",
+  "pre_frozen_counterexamples": [
+    {
+      "id": "C33-PRE",
+      "claim": "VerifiedSource direct constructor accepts fabricated components",
+      "observation": "VerifiedSource(raw=..., digest='d', roles=..., logical_id=...) constructed a source with source_digest 'd' with no bytes binding; the fabricated object reached build."
+    },
+    {
+      "id": "C34-PRE",
+      "claim": "in-place mutation of source.frame changes the analysis without changing source digest",
+      "observation": "source.frame.loc[2,'DATE_TIME']='2024-01-05 00:00:00' changed observed_gap_count 0 -> 1 while source_digest stayed unchanged (the frame was a reusable mutable authority)."
+    },
+    {
+      "id": "C35-PRE",
+      "claim": "the TEST_ONLY door produces collector_active under production schema with no fixture marker",
+      "observation": "build_readiness_package_with_trust_TEST_ONLY and load_trust_manifest_TEST_ONLY shipped in the distributed module and accepted an arbitrary ResolvedTrust, emitting the production schema."
+    }
+  ],
+  "corrections": {
+    "C33": {
+      "single_construction_path": "VerifiedSource.__init__ refuses unless handed a private _SOURCE_FACTORY_TOKEN; the only public entry is from_csv_bytes(raw, roles, source_logical_id).",
+      "immutable_fields": "__slots__ + __setattr__ that raises 'immutable'; bytes, digest, logical_id, roles, usecols cannot be reassigned after construction.",
+      "digest_recomputed": "source_digest is always sha256 of the private bytes; never accepted from a caller.",
+      "revalidated_at_use": "revalidate() re-checks digest==bytes and re-runs require_logical_id at the last point of use inside _build_package."
+    },
+    "C34": {
+      "copy_on_read": "frame() re-parses a fresh pd.read_csv(io.BytesIO(self._raw), usecols=...) copy on every call; no cached/shared reference is exposed.",
+      "mutation_isolation": "mutating a returned frame copy cannot alter a later build (verified).",
+      "digest_semantics": "package digest changes when the bytes change and is deterministic when they do not."
+    },
+    "C35": {
+      "fixtures_relocated": "trust-injecting loaders/builders moved to tests/_wp4_trust_fixture.py (under tests/, not distributed); resolve_fixture_manifest + build_fixture_readiness drive the private _resolve_manifest/_build_package with fixture=True.",
+      "no_production_trust_injection": "the sole production API build_readiness_package loads the pinned NOT_PROVISIONED manifest itself and takes NO trust parameter; structural scan finds no public (non-underscore) function accepting trust/resolved_trust.",
+      "distinct_fixture_state": "_build_package(fixture=True) emits FIXTURE_SCHEMA 'gymfx.wp4.session_readiness.fixture.v4' and fixture_marker true; it refuses to run fixture=True with the pinned production trust and refuses fixture=False with a non-pinned trust.",
+      "consumption_verifier": "verify_consumable_readiness refuses unless production schema, fixture_marker is False, digest intact, trust_manifest_digest == pin, trust_status == PROVISIONED_AUTHORIZING, economic_grid_authorized is False.",
+      "removed": "build_readiness_package_with_trust_TEST_ONLY and load_trust_manifest_TEST_ONLY deleted from the module."
+    }
+  },
+  "mutation_checks": [
+    {"id": "M1", "target": "C33 factory-token guard disabled (if token is not _SOURCE_FACTORY_TOKEN -> if False)", "result": "2 failed, 41 passed"},
+    {"id": "M2", "target": "C34 frame() returns a cached shared reference instead of a fresh copy", "result": "22 failed, 21 passed"},
+    {"id": "M3", "target": "C35 fixture=False accepts a non-pinned trust (production build guard disabled)", "result": "1 failed, 44 passed (after battery reinforced with test_non_pinned_trust_cannot_build_production)"},
+    {"id": "M4", "target": "C35 consumer fixture_marker check disabled", "result": "1 failed, 44 passed (after battery reinforced with test_consumer_rejects_fixture_marker_alone)"}
+  ],
+  "self_reported": "M3 and M4 did NOT bite the battery as first written (43 passed under both mutations) — a blind spot: no test isolated production refusal of a non-pinned trust nor the fixture_marker check alone (schema check masked it). Two targeted tests were added and both mutations now bite. Disclosed unprompted.",
+  "suites": {
+    "focused": "45 passed (tests/test_wp4_session_readiness.py)",
+    "full_gymfx": "555 passed, 68 warnings",
+    "tier_a_fail_closed": "TestTierAEthConclusion fails closed (1 failed) when WP4_TIER_A_ROOT is unset — never skips"
+  },
+  "real_eth_evidence": {
+    "input": "predictor:project3/ethusdt_4h_tech_stat (ethusdt_4h_tech_stat_full_model_ready.csv)",
+    "regenerated_via": "production build_readiness_package on gym-fx@36caaef",
+    "source_digest": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "column_role_contract_digest": "b0a91c1541eecdc1a8aac00ab997eb17ef776e24b256c35657c8aa778b153e5f",
+    "trust_status": "NOT_PROVISIONED_NON_AUTHORIZING",
+    "state": "HISTORICAL_BACKFILL_NON_AUTHORITATIVE_ONLY",
+    "collector_active": false,
+    "economic_grid_authorized": false,
+    "exact_deficit": 30,
+    "bars": 18085,
+    "span": ["2017-09-28T04:00:00+00:00", "2025-12-31T20:00:00+00:00"],
+    "eth_conclusion_when_spot": "SPOT_HISTORY_NOT_MT5_SESSION_AUTHORITY",
+    "package_digest": "4aaf5b7b59234010",
+    "preservation": "source/roles/span/state/deficit/conclusion identical to WEEKLY_FLAT_ETH_SESSION_READINESS_2026_09_01; only the package digest changed, because the C35 schema now carries fixture_marker:false.",
+    "consumer_refuses_production": "verify_consumable_readiness refuses this package: trust_status NOT_PROVISIONED_NON_AUTHORIZING is not PROVISIONED_AUTHORIZING (acceptance #8 — the production path stays non-authoritative)."
+  },
+  "sanitization": "clean — no /home, operator name, host, private IP, or absolute-path topology in module, manifest, fixture seam, tests, or the regenerated evidence JSON (logical id only).",
+  "acceptance_10_point": {
+    "1_direct_ctor_refuses": "PASS — VerifiedSource(token-less) raises 'no public constructor'",
+    "2_noncanonical_digest_and_path_identity_refuse_in_build": "PASS — require_canonical_digest / require_logical_id enforced at build via revalidate()",
+    "3_mutating_a_frame_copy_does_not_change_next_package": "PASS (M2 shows a shared reference would fail 22 tests)",
+    "4_no_mutable_reference_to_internal_frame": "PASS — frame() copy-on-read, __slots__/__setattr__ immutable",
+    "5_structural_scan_finds_no_production_builder_loader_taking_trust": "PASS — only _-prefixed internals take trust; test_no_public_builder_accepts_trust green",
+    "6_fixture_package_fails_the_production_verifier": "PASS — verify_consumable_readiness refuses fixture schema/marker",
+    "7_wrong_manifest_digest_or_status_or_fixture_schema_refuses_in_consumption": "PASS",
+    "8_current_production_path_non_authoritative": "PASS — NOT_PROVISIONED, consumer refuses, collector_active false",
+    "9_thirty_historical_weeks_under_isolated_fixture_exercise_pairing_and_signature_without_a_production_artifact": "PASS — fixture path emits fixture schema only",
+    "10_focused_full_and_sanitization_green": "PASS — 45 / 555 / clean"
+  },
+  "boundaries_respected": "no key generation, no restricted storage, no collector, no live/preflight, no service, no venue, no order/position command, no GPU, no SAC, no economic grid, no checkpoint promotion. Object boundaries and offline consumption only.",
+  "disposition": "AWAITING_MUSASHI"
+}
