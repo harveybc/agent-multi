@@ -73,7 +73,7 @@
     "preservation": "source/roles/span/state/deficit/conclusion identical to WEEKLY_FLAT_ETH_SESSION_READINESS_2026_09_01; only the package digest changed, because the C35 schema now carries fixture_marker:false.",
     "consumer_refuses_production": "verify_consumable_readiness refuses this package: trust_status NOT_PROVISIONED_NON_AUTHORIZING is not PROVISIONED_AUTHORIZING (acceptance #8 — the production path stays non-authoritative)."
   },
-  "sanitization": "clean — no /home, operator name, host, private IP, or absolute-path topology in module, manifest, fixture seam, tests, or the regenerated evidence JSON (logical id only).",
+  "sanitization": "clean — no home-directory prefix, operator name, host, private IP, or absolute-path topology in module, manifest, fixture seam, tests, or the regenerated evidence JSON (logical id only).",
   "acceptance_10_point": {
     "1_direct_ctor_refuses": "PASS — VerifiedSource(token-less) raises 'no public constructor'",
     "2_noncanonical_digest_and_path_identity_refuse_in_build": "PASS — require_canonical_digest / require_logical_id enforced at build via revalidate()",
