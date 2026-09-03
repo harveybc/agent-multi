@@ -1,0 +1,403 @@
+{
+ "schema": "agent_multi.target_identifiability_units.v1",
+ "ledger_digest": "e753a9f5c8a800e1b1871ec6c09a126156b7eeec46749d50a2c24b6cd38e5788",
+ "role_geometry": {
+  "sufficient": true,
+  "n": 2200,
+  "frontier": 1533,
+  "embargo_rows": 2,
+  "cal_len": 176,
+  "score_len": 216,
+  "windows": {
+   "w4": {
+    "fit": [
+     0,
+     1139
+    ],
+    "cal": [
+     1139,
+     1315
+    ],
+    "score": [
+     1317,
+     1533
+    ]
+   },
+   "w3": {
+    "fit": [
+     0,
+     921
+    ],
+    "cal": [
+     921,
+     1097
+    ],
+    "score": [
+     1099,
+     1315
+    ]
+   },
+   "w2": {
+    "fit": [
+     0,
+     703
+    ],
+    "cal": [
+     703,
+     879
+    ],
+    "score": [
+     881,
+     1097
+    ]
+   },
+   "w1": {
+    "fit": [
+     0,
+     485
+    ],
+    "cal": [
+     485,
+     661
+    ],
+    "score": [
+     663,
+     879
+    ]
+   }
+  }
+ },
+ "final_heartbeat": {
+  "schema": "agent_multi.experiment_runtime_status.v2",
+  "timestamp": 1788479593.5828464,
+  "current_unit": "09b777c2beeb16972294",
+  "active_units": [
+   {
+    "unit": "09b777c2beeb16972294",
+    "pid": 226247,
+    "attempt": 1,
+    "elapsed_s": 13.9,
+    "stratum": "direct_temporal|direct_temporal|64|0|5000"
+   },
+   {
+    "unit": "9b34a4e3fb9924a6234d",
+    "pid": 226248,
+    "attempt": 1,
+    "elapsed_s": 13.9,
+    "stratum": "direct_temporal|direct_temporal|64|0|5000"
+   },
+   {
+    "unit": "15fc4dded2e13c623c78",
+    "pid": 226465,
+    "attempt": 1,
+    "elapsed_s": 9.9,
+    "stratum": "direct_temporal|direct_temporal|64|0|5000"
+   }
+  ],
+  "device_class": "cuda+cpu",
+  "counts_by_state": {
+   "COMPLETED": 22,
+   "RUNNING": 3,
+   "PENDING": 3
+  },
+  "completed_total": "22/28",
+  "last_durable_completion": 1788479582.131384,
+  "eta": {
+   "stratified": {
+    "calibrated_ar1|calibrated_ar1|64|0|5000": {
+     "median_s": 0.3,
+     "p90_s": 0.4,
+     "measured": 3,
+     "remaining": 1
+    },
+    "direct_temporal|direct_temporal|64|0|5000": {
+     "median_s": 15.2,
+     "p90_s": 17.7,
+     "measured": 12,
+     "remaining": 4
+    },
+    "literal_persistence|literal_persistence|64|0|5000": {
+     "median_s": 0.3,
+     "p90_s": 0.5,
+     "measured": 3,
+     "remaining": 1
+    }
+   },
+   "unmeasured_strata": [],
+   "workers_assumed": 3,
+   "eta_interval_s": [
+    20.5,
+    24.0
+   ],
+   "assumptions": [
+    "per-stratum median/p90 over completed comparable units only",
+    "divided by 3 workers with ideal packing (real packing can only be worse than the lower bound, better than serial)",
+    "unmeasured strata excluded and listed \u2014 the interval is a lower bound until they measure"
+   ],
+   "pooled_unstratified_diagnostic": {
+    "median_unit_s": 15.0,
+    "p90_unit_s": 22.1,
+    "remaining_units": 6,
+    "note": "POOLED across strata \u2014 diagnostic only, never the published ETA"
+   }
+  },
+  "phase": "diagnostic",
+  "elapsed_s": 120.3,
+  "temporal_pending_reason": null,
+  "entry_points_verified": true
+ },
+ "units": {
+  "011a1325e5c84e2dbe9c": {
+   "arm": "direct_temporal",
+   "window": "w2",
+   "seed": 303,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.4595,
+   "wall_s": 14.3
+  },
+  "03e02cac02ce0d882553": {
+   "arm": "calibrated_ar1",
+   "window": "w3",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": 0.0151,
+   "wall_s": 0.0
+  },
+  "09b777c2beeb16972294": {
+   "arm": "direct_temporal",
+   "window": "w1",
+   "seed": 303,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -1.9375,
+   "wall_s": 16.8
+  },
+  "0c2d27ff9d16e9b4a21d": {
+   "arm": "direct_temporal",
+   "window": "w2",
+   "seed": 202,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.6888,
+   "wall_s": 14.8
+  },
+  "0f282fd8b997161c191c": {
+   "arm": "literal_persistence",
+   "window": "w4",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.3062,
+   "wall_s": 0.0
+  },
+  "15fc4dded2e13c623c78": {
+   "arm": "direct_temporal",
+   "window": "w4",
+   "seed": 202,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.5107,
+   "wall_s": 15.3
+  },
+  "22a8907f5700f60f8812": {
+   "arm": "direct_linear",
+   "window": "w3",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -2.6918,
+   "wall_s": 28.9
+  },
+  "2cf1696433edd51ed763": {
+   "arm": "direct_linear",
+   "window": "w1",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -10.5314,
+   "wall_s": 21.7
+  },
+  "33b5aa9a5f13d6f46151": {
+   "arm": "direct_temporal",
+   "window": "w2",
+   "seed": 404,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -1.2649,
+   "wall_s": 14.9
+  },
+  "3a307d82ad419f88647e": {
+   "arm": "direct_temporal",
+   "window": "w4",
+   "seed": 303,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.4166,
+   "wall_s": 17.5
+  },
+  "3f548a193cc2e106e842": {
+   "arm": "direct_temporal",
+   "window": "w3",
+   "seed": 303,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.1916,
+   "wall_s": 16.8
+  },
+  "525dbb1c1fa3fa12f7cc": {
+   "arm": "direct_temporal",
+   "window": "w1",
+   "seed": 101,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -3.832,
+   "wall_s": 14.8
+  },
+  "54b986834300afe68335": {
+   "arm": "direct_temporal",
+   "window": "w3",
+   "seed": 404,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.2195,
+   "wall_s": 13.3
+  },
+  "56301e1f559b3f0005a8": {
+   "arm": "calibrated_ar1",
+   "window": "w1",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": 0.2031,
+   "wall_s": 0.0
+  },
+  "60c53846a5c43bb6ee3b": {
+   "arm": "direct_temporal",
+   "window": "w2",
+   "seed": 101,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.8027,
+   "wall_s": 16.0
+  },
+  "65461e9416bc09335ed4": {
+   "arm": "direct_temporal",
+   "window": "w4",
+   "seed": 101,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.3227,
+   "wall_s": 17.5
+  },
+  "83169fd733da0bf823e6": {
+   "arm": "direct_temporal",
+   "window": "w4",
+   "seed": 404,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.4926,
+   "wall_s": 8.9
+  },
+  "8b68e489b25f5d6c376a": {
+   "arm": "direct_temporal",
+   "window": "w1",
+   "seed": 202,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -2.1506,
+   "wall_s": 13.2
+  },
+  "965049c618660491ef41": {
+   "arm": "literal_persistence",
+   "window": "w3",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.4005,
+   "wall_s": 0.0
+  },
+  "9b34a4e3fb9924a6234d": {
+   "arm": "direct_temporal",
+   "window": "w1",
+   "seed": 404,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -3.6265,
+   "wall_s": 16.7
+  },
+  "ae9f14a7bc2e7a08bda8": {
+   "arm": "direct_temporal",
+   "window": "w3",
+   "seed": 202,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.2035,
+   "wall_s": 14.1
+  },
+  "b76ae4b07a9decfccb5f": {
+   "arm": "calibrated_ar1",
+   "window": "w2",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.0957,
+   "wall_s": 0.0
+  },
+  "ba07fbc8917771e9e934": {
+   "arm": "direct_linear",
+   "window": "w4",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -3.1986,
+   "wall_s": 33.6
+  },
+  "c05ade8fb17ee05d9e6c": {
+   "arm": "literal_persistence",
+   "window": "w2",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.5177,
+   "wall_s": 0.0
+  },
+  "d2524f22cbea63c1a33b": {
+   "arm": "direct_temporal",
+   "window": "w3",
+   "seed": 101,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.212,
+   "wall_s": 15.7
+  },
+  "d9540988ba01d3f79ecb": {
+   "arm": "calibrated_ar1",
+   "window": "w4",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": 0.0678,
+   "wall_s": 0.0
+  },
+  "eb76881cee51e94be13c": {
+   "arm": "direct_linear",
+   "window": "w2",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -2.5648,
+   "wall_s": 10.8
+  },
+  "eb9e2535913e9944f069": {
+   "arm": "literal_persistence",
+   "window": "w1",
+   "seed": 0,
+   "state": "COMPLETED",
+   "attempt": 1,
+   "score_r2": -0.0741,
+   "wall_s": 0.0
+  }
+ }
+}

@@ -1,0 +1,144 @@
+{
+ "schema": "agent_multi.target_identifiability_interpretation.v1",
+ "predeclaration": "docs/audits/evidence/TARGET_IDENTIFIABILITY_PREDECLARATION_N1_2026_09_03.json",
+ "problems_preserved": [],
+ "verdict": "PREDICTABILITY_NOT_DEMONSTRATED",
+ "per_window": {
+  "w1": {
+   "temporal_seeds": {
+    "101": -3.832,
+    "202": -2.1506,
+    "303": -1.9375,
+    "404": -3.6265
+   },
+   "literal_persistence": -0.0741,
+   "calibrated_ar1": 0.2031,
+   "direct_linear": -10.5314,
+   "direct_temporal": -2.8866,
+   "temporal_seed_dispersion": 0.9804
+  },
+  "w2": {
+   "temporal_seeds": {
+    "101": -0.8027,
+    "202": -0.6888,
+    "303": -0.4595,
+    "404": -1.2649
+   },
+   "literal_persistence": -0.5177,
+   "calibrated_ar1": -0.0957,
+   "direct_linear": -2.5648,
+   "direct_temporal": -0.804,
+   "temporal_seed_dispersion": 0.3388
+  },
+  "w3": {
+   "temporal_seeds": {
+    "101": -0.212,
+    "202": -0.2035,
+    "303": -0.1916,
+    "404": -0.2195
+   },
+   "literal_persistence": -0.4005,
+   "calibrated_ar1": 0.0151,
+   "direct_linear": -2.6918,
+   "direct_temporal": -0.2067,
+   "temporal_seed_dispersion": 0.012
+  },
+  "w4": {
+   "temporal_seeds": {
+    "101": -0.3227,
+    "202": -0.5107,
+    "303": -0.4166,
+    "404": -0.4926
+   },
+   "literal_persistence": -0.3062,
+   "calibrated_ar1": 0.0678,
+   "direct_linear": -3.1986,
+   "direct_temporal": -0.4356,
+   "temporal_seed_dispersion": 0.0856
+  }
+ },
+ "paired_analysis": {
+  "calibrated_ar1": {
+   "per_window": {
+    "w1": 0.2031,
+    "w2": -0.0957,
+    "w3": 0.0151,
+    "w4": 0.0678
+   },
+   "diffs_vs_literal": [
+    0.2772,
+    0.422,
+    0.4156,
+    0.374
+   ],
+   "mean_diff": 0.3722,
+   "ci95": [
+    0.2659,
+    0.4785
+   ],
+   "t_stat": 11.142,
+   "all_windows_positive": false
+  },
+  "direct_linear": {
+   "per_window": {
+    "w1": -10.5314,
+    "w2": -2.5648,
+    "w3": -2.6918,
+    "w4": -3.1986
+   },
+   "diffs_vs_literal": [
+    -10.4573,
+    -2.0471,
+    -2.2913,
+    -2.8924
+   ],
+   "mean_diff": -4.422,
+   "ci95": [
+    -10.8483,
+    2.0043
+   ],
+   "t_stat": -2.19,
+   "all_windows_positive": false,
+   "holm_p": 0.9419,
+   "advances": false
+  },
+  "direct_temporal": {
+   "per_window": {
+    "w1": -2.8866,
+    "w2": -0.804,
+    "w3": -0.2067,
+    "w4": -0.4356
+   },
+   "diffs_vs_literal": [
+    -2.8125,
+    -0.2863,
+    0.1938,
+    -0.1294
+   ],
+   "mean_diff": -0.7586,
+   "ci95": [
+    -2.9602,
+    1.443
+   ],
+   "t_stat": -1.096,
+   "all_windows_positive": false,
+   "holm_p": 1.0,
+   "advances": false
+  }
+ },
+ "holm_pvalues": {
+  "direct_temporal": 1.0,
+  "direct_linear": 0.9419
+ },
+ "calibrated_ar1_note": "a stronger baseline reported SEPARATELY \u2014 never a replacement for literal persistence",
+ "frozen_historical_context": {
+  "best_branch": "all 25 screen-v2 survivors NOT_DEMONSTRATED (accepted report)",
+  "fusion": "all 5 variants DOES_NOT_ADVANCE"
+ },
+ "decision_trace": {
+  "advancing_direct_arms": [],
+  "all_window_positive_without_license": [],
+  "margin": 0.02,
+  "t_crit_df3": 3.182
+ }
+}

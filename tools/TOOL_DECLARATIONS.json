@@ -649,7 +649,7 @@
    "owner": "General Satoshi III"
   },
   "target_identifiability_audit.py": {
-   "purpose": "TARGET_REPRESENTATION_IDENTIFIABILITY_AUDIT runner (order @1649e7c0 \u00a77 N0, predeclared): compares trailing-vol persistence, direct ridge on causal raw inputs, and a direct end-to-end GRU (no candidate extractor) under causal folds INSIDE the fit/calibration slice that never reuse the consumed screen-v2 monitors; frozen screen-v2 branches and fusion enter as citations only. Implements materialize/worker/preflight on the C1-corrected runtime; the FULL diagnostic has no entry point (separate order required).",
+   "purpose": "TARGET_REPRESENTATION_IDENTIFIABILITY_AUDIT N1 full runner (order @89d099aa; predeclaration v2 supersedes N0): four causal score-window units ending strictly before the first consumed screen-v2 monitor row (69.7%, stricter than the ordered 85%), derived embargo ceil(6/4)=2 rows, arms literal-persistence (no coefficient) / calibrated AR1 / direct ridge / direct GRU (four frozen seeds, <=5000 updates, bound CUDA with no CPU fallback); frozen screen-v2 evidence is context only. Bounded supervisor (minute status, stop-file with terminate+reap, infra-only resume, six-hour ceiling) + aggregate recomputed from terminal unit records with exact pairing, all-seed enforcement, preserved failures and an executable decision table. No checkpoint promotable.",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "discovery",

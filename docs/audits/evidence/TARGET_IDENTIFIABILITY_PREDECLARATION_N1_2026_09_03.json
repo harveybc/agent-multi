@@ -1,0 +1,71 @@
+{
+  "schema": "agent_multi.target_identifiability_predeclaration.v2",
+  "work_plan_unit": "TARGET_REPRESENTATION_IDENTIFIABILITY_AUDIT",
+  "order": "agent-multi@89d099aa (N1); supersedes-without-rewriting TARGET_REPRESENTATION_IDENTIFIABILITY_PREDECLARATION_2026_09_03.json (N0, preserved unchanged)",
+  "committed_before_any_full_run_result": true,
+  "question": "is useful out-of-sample signal for realized volatility h6 detectable from the available causal inputs before compression, or is predictability beyond persistence not demonstrated on the available data?",
+
+  "field_map_from_n0": {
+    "statistical_unit": "N0 said '(fold x arm)'; N1.1.1 corrects it: the unit is the CAUSAL SCORE WINDOW; arms are paired treatments within each unit",
+    "folds": "N0 declared two folds A/B; N1.1.2 replaces them with FOUR non-overlapping causal score windows; N0's fold B score [65%,75%) partially overlapped the consumed origin-0 monitor [69.7%,85%) — disclosed; N1 windows all end strictly BEFORE 69.7% (stricter than the order's 85% boundary, because screen v2 consumed BOTH monitor regions)",
+    "arms": "N0's arm '1_persistence' was a FITTED ridge on the trailing predictor; N1.1.5 splits it honestly into literal_persistence (no fitted coefficient) and calibrated_ar1 (the fitted one-variable autoregression); N0 arms 2 and 3 unchanged in substance; N0 arms 4 and 5 remain frozen historical context, never pooled (N1.1.7)",
+    "embargo": "N0 declared purge_bars=12 without derivation; N1.1.4 derives the embargo in SAMPLED-ROW units: ceil(target_horizon 6 bars / sampling stride 4 bars) = 2 rows, applied between calibration and score AND between consecutive score windows",
+    "multiplicity": "unchanged: Holm over the two direct arms; N1.1.3 adds: with fewer than four valid units the only legal inferential verdict is INCONCLUSIVE_INSUFFICIENT_UNITS",
+    "budget_seeds_device": "unchanged from N0: <=5000 updates per temporal (window, seed) unit; frozen seeds 101/202/303/404; CUDA for the temporal arm per the measured benchmark; CPU for persistence/ar1/linear"
+  },
+
+  "statistical_unit": "the causal score window; four units; arms are paired treatments within each unit; every score observation belongs to exactly one unit",
+
+  "role_geometry": {
+    "derivation": "n = number of sampled rows in the immutable npz; origin0_limit = floor(0.85*n); consumed_frontier = floor(origin0_limit*0.82) — the START of screen v2's origin-0 monitor (both consumed monitor regions [frontier, n) are excluded entirely); embargo_rows = ceil(6/4) = 2; cal_len = floor(0.08*n); L = floor((frontier - floor(0.30*n) - 3*embargo_rows)/4)",
+    "windows": "for k = 4..1: score_k = [e_k - L, e_k) with e_4 = frontier and e_{k-1} = start_k - embargo_rows; cal_k = [start_k - cal_len - embargo_rows, start_k - embargo_rows); fit_k = [0, start_k - cal_len - embargo_rows)",
+    "nominal_n2200": {
+      "window_1": {"fit": [0, 485], "cal": [485, 661], "score": [663, 879]},
+      "window_2": {"fit": [0, 703], "cal": [703, 879], "score": [881, 1097]},
+      "window_3": {"fit": [0, 921], "cal": [921, 1097], "score": [1099, 1315]},
+      "window_4": {"fit": [0, 1139], "cal": [1139, 1315], "score": [1317, 1533]}
+    },
+    "properties": "training expands forward; every calibration window precedes its score window with the derived embargo; score windows are pairwise disjoint with embargo gaps so no label crosses a score boundary; exact source-index ranges are persisted per unit in the ledger",
+    "walk_forward_disclosure": "later windows' fit/cal ranges include earlier windows' score rows — inherent to expanding-window designs; each unit's own score rows are untouched by its own fit/cal; the paired estimator treats windows as the units"
+  },
+
+  "insufficient_units_rule": "if fewer than four valid score windows materialize from the real n, execute the mechanics and return INCONCLUSIVE_INSUFFICIENT_UNITS; no Holm-adjusted inference is claimed from fewer than four units",
+
+  "arms": {
+    "literal_persistence": "prediction = the trailing realized volatility value itself; NO fitted coefficient; the materiality baseline",
+    "calibrated_ar1": "one-variable ridge autoregression target ~ trailing, fitted on the fit role with calibration-selected lambda; reported SEPARATELY as a stronger baseline, never as a replacement for literal persistence",
+    "direct_linear": "ridge on the flattened causal feature window (all 83 columns x 64 rows), fitted on fit, lambda selected on calibration",
+    "direct_temporal": "gru_branch over all 83 features + linear head, end to end, <=5000 Adam updates, checkpoint selection on calibration only; four frozen seeds per window",
+    "frozen_best_branch": "HISTORICAL CONTEXT ONLY from the accepted screen-v2 report (measured on consumed roles); never pooled with N1 units, never a paired observation",
+    "frozen_fusion": "HISTORICAL CONTEXT ONLY, same rule"
+  },
+  "identical_consumption": "direct_linear and direct_temporal consume exactly the same immutable npz (windows, target, trailing), the same score units and the same roles; no fold-level target or feature scaling exists (the causal rolling normalization is row-local and upstream); the npz digest binds this in the ledger and is re-verified at claim time",
+
+  "estimator_and_decision": {
+    "per_window_skill": "R2 over the window's score rows (1 - SSE/SST vs the window mean)",
+    "per_window_temporal_score": "the mean of the four seed R2 values; all four seeds are REQUIRED for the unit to count; seed dispersion reported",
+    "paired_difference": "d_k = R2_arm(k) - R2_literal_persistence(k) over the four windows",
+    "interval": "two-sided t-based 95% CI on mean(d), df=3",
+    "materiality_margin": 0.02,
+    "advance_rule": "an arm ADVANCES iff (a) R2_arm(k) > 0 on ALL four windows, (b) mean(d) >= 0.02, (c) CI low > 0, and (d) Holm-adjusted one-sided p < 0.05 across the two direct arms",
+    "missing_unit_rule": "any FAILED, TIMED_OUT or missing unit, or any temporal unit without all four seeds, is preserved in the verdict and forces INCONCLUSIVE with the named cause",
+    "decision_table": {
+      "PREDICTABILITY_NOT_DEMONSTRATED": "neither direct arm advances and no direct arm has all-window-positive skill",
+      "REPRESENTATION_BOTTLENECK_DEMONSTRATED": "at least one direct arm ADVANCES (frozen branch evidence is negative as a fixed historical fact)",
+      "FUSION_BOTTLENECK_DEMONSTRATED": "frozen branch evidence advances and frozen fusion does not (historically unreachable; kept for completeness)",
+      "INCONCLUSIVE_DISCORDANT": "no arm advances but at least one direct arm shows all-window-positive skill without margin or significance",
+      "INCONCLUSIVE_INSUFFICIENT_UNITS": "fewer than four valid units",
+      "INCONCLUSIVE_INFRASTRUCTURE": "unresolved failed/timed-out/missing units"
+    }
+  },
+
+  "execution": {
+    "devices": "persistence/ar1/linear on CPU; temporal on ONE explicitly bound CUDA device after device + entry-point + immutable-input preflights; if no reviewed CUDA slot is free the temporal units stay PENDING with a typed reason (no silent CPU fallback)",
+    "budget": "<=5000 optimizer updates per temporal (window, seed) unit; 16 temporal units + 12 CPU units = 28 units",
+    "campaign_wall_ceiling_s": 21600,
+    "unit_timeout_s": 3600,
+    "retry": "no automatic retry after a terminal scientific result (FAILED is terminal); infrastructure interruptions (INTERRUPTED/TIMED_OUT) resume only through the same ledgered identity",
+    "stop_file": "run_root/STOP — the supervisor terminates and reaps workers before marking interrupted",
+    "no_promotion": "no checkpoint from this diagnostic is promotable"
+  }
+}
