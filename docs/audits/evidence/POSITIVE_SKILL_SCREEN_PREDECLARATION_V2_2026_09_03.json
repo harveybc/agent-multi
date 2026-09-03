@@ -44,6 +44,6 @@
   "runtime": {
     "layers": "materializer (prospective ledger + digests + immutable npz inputs) / worker (exactly one atomic unit per invocation) / supervisor (scheduling, heartbeat <= 60 s, watchdog, per-unit timeout from benchmark, campaign wall ceiling, machine-readable status, graceful cancel) / aggregator (complete verified units only)",
     "benchmark_before_campaign": "one CPU and one CUDA benchmark cell (heaviest family at w256/d128) decide the device per measured throughput; no full screen starts without a measured per-cell ETA and campaign p90",
-    "run_root": "~/.local/share/agent-multi/positive_skill_screen_v2_20260903 (outside /tmp)"
+    "run_root": "durable agent-multi state store, run id positive_skill_screen_v2_20260903 (host-local, outside /tmp)"
   }
 }

@@ -160,18 +160,34 @@ def test_aggregation_refuses_missing_duplicated_foreign(tmp_path):
 def test_eta_updates_after_each_comparable_unit(tmp_path):
     run, uids = make_run(tmp_path)
     status0 = run.heartbeat(current_unit=None)
-    assert status0["eta"] is None
+    # v2 (R1): with zero completed units, the ETA DECLARES every
+    # stratum unmeasured instead of guessing — richer than None
+    assert status0["eta"]["stratified"] == {}
+    assert status0["eta"]["unmeasured_strata"]
     run_one_unit(run, uids[0], ok_executor,
                  expected_digests=DIGESTS, timeout_s=30)
     status1 = run.heartbeat(current_unit=uids[1])
     assert status1["eta"] is not None
-    assert status1["eta"]["remaining_units"] == 2
+    remaining = sum(v["remaining"] for v in
+                    status1["eta"]["stratified"].values()) + \
+        sum(u["remaining"] for u in
+            status1["eta"]["unmeasured_strata"])
+    assert remaining == 2
     run_one_unit(run, uids[1], ok_executor,
                  expected_digests=DIGESTS, timeout_s=30)
     status2 = run.heartbeat(current_unit=uids[2])
-    assert status2["eta"]["remaining_units"] == 1
-    for key in ("median_unit_s", "p90_unit_s", "eta_pessimistic_s"):
-        assert key in status2["eta"]
+    remaining2 = sum(v["remaining"] for v in
+                     status2["eta"]["stratified"].values()) + \
+        sum(u["remaining"] for u in
+            status2["eta"]["unmeasured_strata"])
+    assert remaining2 == 1
+    # v2 (R1): the interval + per-stratum medians replace the pooled
+    # fields; the pooled figure survives only as a diagnostic
+    assert status2["eta"]["eta_interval_s"][0] >= 0
+    stratum = next(iter(status2["eta"]["stratified"].values()))
+    for key in ("median_s", "p90_s", "measured", "remaining"):
+        assert key in stratum
+    assert status2["eta"]["pooled_unstratified_diagnostic"]
 
 
 def test_fsync_failure_never_reports_completion(tmp_path, monkeypatch):

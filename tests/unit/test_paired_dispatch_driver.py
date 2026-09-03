@@ -91,7 +91,10 @@ class TestArmConfigIdentity:
     INIT_KEYS = {"pretrained_branch_generation_dir",
                  "pretrained_branch_expected_seal"}
     PATH_KEYS = {"save_model", "results_file", "save_config",
-                 "nested_split_dir"}
+                 "nested_split_dir",
+                 # Musashi corrections 3/4 (2026-09-03): the runtime
+                 # dir and the stop-file are per-attempt PATHS
+                 "cell_runtime_dir", "budget_stop_file"}
 
     @staticmethod
     def _cell(design, seed, arm):

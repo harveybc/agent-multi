@@ -4,5 +4,5 @@
               "POSITIVE_SKILL_SCREEN_REPORT_2026_08_28.json"],
   "disposition": "NO_SCIENTIFIC_AUTHORITY_RETIRED_EXECUTOR",
   "reason": "Musashi correction 1 (2026-09-03): both files were produced by the retired monolithic executor (prohibited by the PERMANENT order @95e088da). 62 cells, 15 survivor decisions, no fusion section, oscillators/volume_flow reduced to single cheap cells. Raw values preserved unchanged for the record; NOTHING in them is consumable. The authoritative rerun is the observable-runtime v2 screen (POSITIVE_SKILL_SCREEN_PREDECLARATION_V2_2026_09_03.json).",
-  "replacement": "positive_skill_screen_v2 campaign under ~/.local/share/agent-multi/positive_skill_screen_v2_20260903 (run root), final report POSITIVE_SKILL_SCREEN_V2_REPORT.json"
+  "replacement": "positive_skill_screen_v2 campaign under the durable agent-multi state store, run id positive_skill_screen_v2_20260903 (host-local, outside /tmp); final report POSITIVE_SKILL_SCREEN_V2_REPORT.json"
 }

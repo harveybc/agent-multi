@@ -94,7 +94,7 @@
    "owner": "General Satoshi III"
   },
   "dispatch_paired_pretrain_comparison.py": {
-   "purpose": "C3 paired SAC dispatch driver: verification mode materializes the per-cell genesis; --execute-cpu-dry-run runs a bounded both-arm CPU acceptance cell through the accepted nested trainer (rl_pipeline_with_validation + sac_agent grouped strong route); --execute is the full-budget run, REFUSED without Musashi's written acceptance document AND CUDA visibility; every attempt is a fresh non-resumable custody identity; venue-credential keys refuse",
+   "purpose": "C3 paired SAC dispatch driver: verification mode materializes the per-cell genesis; --execute-cpu-dry-run runs a bounded both-arm CPU acceptance cell through the accepted nested trainer (rl_pipeline_with_validation + sac_agent grouped strong route); --execute is the full-budget run, REFUSED without Musashi's written acceptance document AND CUDA visibility; attempts are OBSERVABLE and RESUMABLE (Musashi correction 3, 2026-09-03): --resume-attempt restores the SAME custody identity exactly; --status-attempt reads the heartbeat; --scientific-gate PASS artifact is REQUIRED for execution (correction 2); the executing budget guard rides in every cell (correction 4); venue-credential keys refuse",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "discovery",
@@ -622,6 +622,20 @@
   },
   "fusion_screen.py": {
    "purpose": "order @b6b949ab section D: bounded fusion screen over frozen sealed-branch embeddings \u2014 random frozen fusion, branch concatenation, probe-trained current-style and gated fusions, fine-tuned branches+fusion; predeclared advance gate: positive OOS monitor skill on >=1 target without degrading others vs the best non-fused branch; REPRESENTATION_DIAGNOSTIC",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "positive_skill_screen_v2.py": {
+   "purpose": "Observable resumable positive-skill + fusion screen (Musashi correction 1, 2026-09-03; permanent order @95e088da): materializer builds prospective ledgers of atomic units + immutable digest-bound npz inputs; worker executes exactly ONE unit per invocation; supervisor schedules with heartbeat, stratified ETA, kill+reap watchdog (thermal/identity-drift/disk), durable GLOBAL campaign wall and machine-readable status; aggregate consumes complete verified units only. REPRESENTATION_DIAGNOSTIC \u2014 no SAC, no economics.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "sac_scientific_gate.py": {
+   "purpose": "Scientific gate before the paired SAC dispatch (Musashi correction 2, 2026-09-03): evaluates the v2 screen report's fusion decisions into a typed SAC_GATE_PASS / SAC_GATE_FAIL_NEGATIVE_RESULT artifact digest-bound to the report; the dispatch driver refuses execution without a PASS. Refuses reports from the retired monolithic executor.",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "discovery",

@@ -351,7 +351,9 @@ def materialize_phase(root: Path, phase: str, pretrain_dir: Path,
                                  max_windows=max_windows,
                                  stride=stride)
     digests = {**digests, "code": code_digest(),
-               "config": sha_file(REPO / PREDECLARATION)}
+               "config": sha_file(REPO / PREDECLARATION),
+               "pretrain_generation": sha_file(
+                   Path(pretrain_dir) / "generation.json")}
     fam_meta = _family_columns(pretrain_dir)
     units, invalid = [], []
 
@@ -801,14 +803,33 @@ def worker_main(args) -> int:
                        allow_volatile_for_tests=args.volatile_ok)
     ledger = run.ledger()
     fam_meta = ledger["family_meta"]
-    expected = {"code": code_digest(),
-                "config": sha_file(REPO / PREDECLARATION)}
     identity = None
     for unit in ledger["units"]:
         if unit["unit_id"] == args.unit:
             identity = unit["identity"]
     if identity is None:
         raise RuntimePreflightError(f"unit {args.unit} not in ledger")
+    # R1 (2026-09-03): re-hash EVERY input immediately before the
+    # unit executes — code, predeclaration, the unit's own npz, the
+    # source csv and the sealed generation. Any drift vs the ledger
+    # refuses at claim time.
+    expected = {"code": code_digest(),
+                "config": sha_file(REPO / PREDECLARATION)}
+    if identity["treatment"] in ("cell", "survivor_trained",
+                                 "survivor_random", "persistence"):
+        expected[f"input_w{identity['window']}"] = sha_file(
+            _window_npz(root, identity["window"]))
+    else:
+        expected["input_fusion"] = sha_file(
+            root / "inputs" / "fusion_inputs.npz")
+    split_contract = json.loads(
+        (REPO / "examples/config/phase_3_eth_sac_dynamics/splits/"
+         "eth_nested_split_contract_o2022_paired_v1.json"
+         ).read_text())
+    expected["data_csv"] = sha_file(
+        Path(split_contract["source_csv"]))
+    expected["pretrain_generation"] = sha_file(
+        Path(args.pretrain_dir) / "generation.json")
     timeout = float(args.timeout or ledger.get("unit_timeout_s")
                     or 3600)
 
@@ -997,11 +1018,23 @@ def aggregate_final(root: Path) -> dict:
 # supervisor                                                         #
 # ------------------------------------------------------------------ #
 
+def _campaign_start(root: Path) -> float:
+    """R1 (2026-09-03): ONE durable campaign start; the wall budget
+    covers the WHOLE campaign, not each phase."""
+    marker = root / "campaign_start.json"
+    if not marker.exists():
+        atomic_write_json(marker, {"started_at": time.time()})
+    return float(json.loads(marker.read_text())["started_at"])
+
+
 def supervise(args) -> int:
     root = Path(args.run_root)
     pretrain_dir = Path(args.pretrain_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    campaign_t0 = _campaign_start(root)
     stop = {"flag": False}
     children: list = []
+    child_pids: dict = {}
 
     def on_term(_sig, _frame):
         stop["flag"] = True
@@ -1011,6 +1044,21 @@ def supervise(args) -> int:
 
     signal.signal(signal.SIGTERM, on_term)
     signal.signal(signal.SIGINT, on_term)
+
+    def kill_child(pid):
+        """terminate AND reap — only a confirmed-dead child allows a
+        TIMED_OUT release (R1 race fix)."""
+        for proc in children:
+            if proc.pid == pid:
+                if proc.poll() is None:
+                    proc.terminate()
+                    try:
+                        proc.wait(timeout=30)
+                    except subprocess.TimeoutExpired:
+                        proc.kill()
+                        proc.wait(timeout=30)
+                return proc.poll() is not None
+        return not Path(f"/proc/{pid}").exists()
 
     def phase_complete(phase: str) -> bool:
         run = RunDirectory(root / phase)
@@ -1033,8 +1081,8 @@ def supervise(args) -> int:
         run = RunDirectory(phase_dir)
         preflight_or_refuse(run, args.wall_ceiling,
                             args.unit_timeout)
-        started = time.time()
         last_beat = 0.0
+        thermal_pause_until = 0.0
         while not stop["flag"]:
             states = run.states()
             pending = [u for u, s in states.items()
@@ -1046,7 +1094,9 @@ def supervise(args) -> int:
             if not pending and not running:
                 break
             children[:] = [p for p in children if p.poll() is None]
-            while (len(children) < args.workers and pending
+            spawning_allowed = time.time() >= thermal_pause_until
+            while (spawning_allowed
+                   and len(children) < args.workers and pending
                    and not stop["flag"]):
                 uid = pending.pop(0)
                 cmd = [sys.executable, str(REPO / "tools" /
@@ -1068,17 +1118,43 @@ def supervise(args) -> int:
                     env=env))
             if time.time() - last_beat >= args.heartbeat_s:
                 current = running[0] if running else None
-                run.heartbeat(current_unit=current,
-                              extra={"phase": phase,
-                                     "workers": len(children),
-                                     "campaign_root": str(root)})
-                for alert in run.watchdog():
+                bench_path = root / "benchmark.json"
+                device = (json.loads(bench_path.read_text())
+                          ["decision"] if bench_path.exists()
+                          else "cpu")
+                run.heartbeat(
+                    current_unit=current,
+                    workers=args.workers,
+                    device_class=device,
+                    extra={"phase": phase,
+                           "workers_alive": len(children),
+                           "campaign_root": str(root),
+                           "campaign_elapsed_s": round(
+                               time.time() - campaign_t0, 1),
+                           "campaign_wall_ceiling_s":
+                               args.wall_ceiling})
+                alerts = run.watchdog(
+                    kill_child=kill_child,
+                    expected_digests={
+                        "code": code_digest(),
+                        "config": sha_file(REPO / PREDECLARATION)})
+                for alert in alerts:
                     print(f"[watchdog] {json.dumps(alert)}",
                           flush=True)
+                    if alert["type"] == "thermal":
+                        thermal_pause_until = time.time() + 300
+                        print("[watchdog] thermal pause: no new "
+                              "units for 300s", flush=True)
+                    if alert["type"] == "identity_drift":
+                        print("[watchdog] IDENTITY DRIFT — no new "
+                              "units; finishing the running ones "
+                              "and stopping", flush=True)
+                        stop["flag"] = True
                 last_beat = time.time()
-            if time.time() - started > args.wall_ceiling:
-                print("[ceiling] campaign wall ceiling reached — "
-                      "graceful stop", flush=True)
+            if time.time() - campaign_t0 > args.wall_ceiling:
+                print("[ceiling] GLOBAL campaign wall ceiling "
+                      "reached — graceful stop, results preserved, "
+                      "no hot budget extension", flush=True)
                 on_term(None, None)
                 break
             time.sleep(2.0)
