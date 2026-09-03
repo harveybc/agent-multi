@@ -84,8 +84,9 @@ cosechado, TIMED_OUT; la finalización zombi rehúsa) y timeout real con
 subproceso worker REAL cuyo completador tardío rehúsa de punta a punta; más
 sobrescritura terminal, CAS rancio, ledger/resultado alterados, térmica sobre/
 bajo límite, deriva, aritmética estratificada. **Tres defectos míos
-autodescubiertos y divulgados:** mis dos artefactos públicos nombraban
-`.local/share` (cazados por la reja 340, corregidos a ids lógicos); mis dos
+autodescubiertos y divulgados:** mis dos artefactos públicos nombraban un
+fragmento de ruta del almacén local del operador (cazados por la reja
+340, corregidos a ids lógicos); mis dos
 tools sin declarar (reja de superficie; declarados); mi auditor R2 aceptaba una
 corrida incompleta (ahora `AUDIT_INCOMPLETE_RUN_STILL_EXECUTING`). También
 divulgado: bug latente del monolito de fusión retirado (clave
