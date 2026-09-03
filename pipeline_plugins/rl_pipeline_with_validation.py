@@ -48,6 +48,7 @@ from . import _lexicographic_selection as _lex
 from . import _paired_generalization as _paired
 from . import _return_trace as _trace_mod
 from . import _sac_plateau_lr as _plateau
+from . import _cell_runtime
 from . import _checkpoint_bundle as _bundle
 from ._weekly_metrics import canonical_weekly_metrics_from_trace
 from ._observation_contract import (
@@ -2086,7 +2087,47 @@ class PipelinePlugin:
 
                 stop_reason = "max_epochs_budget"
                 _budget_wall_started = __import__("time").time()
-                for epoch in range(1, max_epochs + 1):
+                # ---- Musashi correction 3 (2026-09-03): observable
+                # resumable cell runtime. Heartbeat + ETA every
+                # epoch; resume bundle (model, optimizers, replay,
+                # counters, RNG, patience, evaluations) periodically
+                # and on improvement; exact restore on resume.
+                _cell_rt = _cell_runtime.CellRuntime(config,
+                                                     max_epochs)
+                _rt_config_sha = hashlib.sha256(
+                    json.dumps(config, sort_keys=True,
+                               default=str).encode()).hexdigest()
+                _rt_start_epoch = 1
+                _rt_resume_facts = None
+                if config.get("resume_from_cell_runtime"):
+                    _saved = _cell_rt.read_state()
+                    if _saved is None:
+                        raise _cell_runtime.CellRuntimeError(
+                            "resume_from_cell_runtime requested but "
+                            "no resume bundle exists in "
+                            f"{config.get('cell_runtime_dir')!r}")
+                    _rt_resume_facts = _cell_rt.restore_into(
+                        model, _saved,
+                        expected_config_sha256=_rt_config_sha)
+                    _rt_start_epoch = _rt_resume_facts["start_epoch"]
+                    best_composite = float(_saved["best_composite"])
+                    no_improve = int(_saved["no_improve"])
+                    activity_ineligible_streak = int(
+                        _saved.get("activity_ineligible_streak", 0))
+                    best_checkpoint_saved = bool(
+                        _saved.get("best_checkpoint_saved", False))
+                    history.extend(_saved.get("history", []))
+                    actor_liveness_history.extend(
+                        _saved.get("actor_liveness_history", []))
+                    _budget_wall_started = (
+                        __import__("time").time()
+                        - float(_saved.get("elapsed_s", 0.0)))
+                    print(f"[resume] exact-state restore from epoch "
+                          f"{_rt_resume_facts['resumed_from_epoch']}"
+                          f" — continuing at {_rt_start_epoch}",
+                          flush=True)
+                for epoch in range(_rt_start_epoch, max_epochs + 1):
+                    _rt_epoch_t0 = __import__("time").time()
                     # F9: the executing budget outranks every
                     # epoch/patience setting, before each segment...
                     try:
@@ -2458,6 +2499,37 @@ class PipelinePlugin:
                         "val_balance": _safe_float(val_summary.get("final_equity")),
                     })
 
+                    # ---- correction 3: heartbeat + periodic resume
+                    # bundle, AFTER the epoch's state is final
+                    _cell_rt.epoch_durations.append(
+                        __import__("time").time() - _rt_epoch_t0)
+                    _rt_last_artifact = None
+                    if _cell_rt.enabled and (
+                            improved
+                            or epoch % _cell_rt.every == 0
+                            or epoch == max_epochs):
+                        _rt_last_artifact = _cell_rt.write_bundle(
+                            epoch=epoch, model=model, state={
+                                "best_composite": best_composite,
+                                "no_improve": no_improve,
+                                "activity_ineligible_streak":
+                                    activity_ineligible_streak,
+                                "best_checkpoint_saved":
+                                    best_checkpoint_saved,
+                                "history": history,
+                                "actor_liveness_history":
+                                    actor_liveness_history,
+                                "config_sha256": _rt_config_sha,
+                            })
+                    _cell_rt.heartbeat(
+                        epoch=epoch, best_composite=best_composite,
+                        no_improve=no_improve, patience=l1_patience,
+                        stop_reason=None,
+                        last_artifact=_rt_last_artifact,
+                        extra={"num_timesteps": nts_after,
+                               "improved_this_epoch": improved,
+                               "resumed": _rt_resume_facts
+                               is not None})
                     # AUD-F1-20260806-127: the label must distinguish
                     # "still warming up" from "produced no eligible
                     # trading activity", which are different states.
@@ -2561,6 +2633,18 @@ class PipelinePlugin:
                             f"[train] ACTIVITY STOP at epoch {epoch}:"
                             f" {activity_stop_reason}", flush=True)
                         break
+
+                # correction 3: terminal heartbeat carries the final
+                # stop_reason so status readers see WHY it ended
+                if _cell_rt.enabled:
+                    _cell_rt.heartbeat(
+                        epoch=int(locals().get("epoch", 0) or 0),
+                        best_composite=best_composite,
+                        no_improve=no_improve, patience=l1_patience,
+                        stop_reason=stop_reason,
+                        last_artifact=str(
+                            _cell_rt.dir / _cell_runtime.STATE_NAME),
+                        extra={"terminal": True})
 
                 saved_replay_fact = None
                 _save_replay = config.get("save_replay_buffer")

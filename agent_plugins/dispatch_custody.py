@@ -246,6 +246,43 @@ class DispatchLedger:
         record["forward_started"] = True
         self._commit(key, record)
 
+    def resume(self, key: str, *,
+               resume_evidence: dict[str, Any]) -> None:
+        """Musashi correction 3 (2026-09-03): the ONE evidenced door
+        out of ``interrupted``. The generic transition machine keeps
+        interrupted terminal; an exact-state SAC resume re-enters
+        ``running`` ONLY when:
+
+        * the record is exactly ``interrupted``;
+        * ``forward_started`` is durably True (the attempt actually
+          trained — a pre-forward failure retries via reserve, never
+          via resume);
+        * a resume-bundle digest is bound into the evidence.
+
+        Every resume appends to an append-only ``resume_history`` —
+        the attempt keeps its identity instead of minting a sibling."""
+        record = self.read(key)
+        if record is None:
+            raise ExecutionCustodyError(
+                f"no ledger record for {key[:12]}")
+        if record.get("state") != "interrupted":
+            raise ExecutionCustodyError(
+                f"resume requires state 'interrupted', found "
+                f"{record.get('state')!r}")
+        if not record.get("forward_started"):
+            raise ExecutionCustodyError(
+                "resume refused: forward never started — retry via "
+                "reserve, not resume")
+        for field in ("resume_state_sha256", "resumed_from_epoch"):
+            if field not in resume_evidence:
+                raise ExecutionCustodyError(
+                    f"resume evidence missing {field}")
+        history = list(record.get("resume_history") or [])
+        history.append(dict(resume_evidence))
+        record["resume_history"] = history
+        record["state"] = "running"
+        self._commit(key, record)
+
     def complete(self, key: str, evidence_path: Path,
                  *, expected_schema: str, run_id: str,
                  dispatch_id: str) -> None:

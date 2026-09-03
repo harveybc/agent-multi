@@ -1,0 +1,49 @@
+{
+  "schema": "agent_multi.positive_skill_screen_predeclaration.v2",
+  "order": "Musashi corrections 2026-09-03 item 1 (redo under the observable runtime) on top of @b6b949ab sections C+D and the PERMANENT runtime order @95e088da",
+  "committed_before_execution": true,
+  "supersedes": "POSITIVE_SKILL_SCREEN_PREDECLARATION_2026_08_28.json",
+  "what_changed_vs_v1": {
+    "execution": "three-layer observable runtime (materializer / one-unit worker / supervisor-aggregator) on agent_plugins/experiment_runtime.py; the retired monolithic executors tools/positive_skill_screen.py and tools/fusion_screen.py are imported ONLY for their pure scientific functions and are never executed as runners",
+    "scope": "oscillators and volume_flow are PROMOTED from single cheap-control cells to the FULL window x latent grid (Musashi correction 1: their tests were almost entirely absent)",
+    "scientific_rule": "UNCHANGED from v1: same budgets, same halving fractions, same targets, same baselines, same gates, same seeds, same purge"
+  },
+  "section_c_window_bottleneck": {
+    "grid": {"windows": [32, 64, 128, 256], "latents": [16, 32, 64, 96, 128]},
+    "families_full_grid": ["returns_momentum", "trend_level", "volatility_distribution", "oscillators", "volume_flow"],
+    "invalid_cells": "topology-refusing combinations are ABSENT from the materialized domain with typed reasons, never launched",
+    "cell_protocol": "family encoder plugin at the cell latent width; SUPERVISED joint encoder+linear-head training on realized volatility h6 over the fit role; checkpoint selection ONLY on calibration; scored ONLY on monitor",
+    "primary_target": "realized volatility h6",
+    "budgets": {"round1": 300, "round2": 900, "round3": 2700},
+    "halving": "per family, by calibration R2, top 50% advance to round2, top 25% (of round1) to round3; halving decisions persisted as separate artifacts BEFORE the next round is materialized",
+    "survivor_decision_protocol": "every round-3 cell reruns with 4 encoder seeds x 2 rolling causal monitor origins; paired t-based 95% CIs vs trailing-vol persistence and vs the matched untrained random encoder (head-only training, seed+5000)",
+    "gate_USABLE_PREDICTIVE_VALUE": "ALL monitor R2 > 0 AND paired mean margin vs persistence >= 0.02 with CI low > 0 AND margin vs matched random encoder >= 0.02 with CI low > 0",
+    "seeds": [101, 202, 303, 404],
+    "origins": [0, 1],
+    "purge_bars": 12,
+    "data": {"max_windows": 2200, "stride": 4, "split_contract": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_o2022_paired_v1.json"}
+  },
+  "section_d_fusion": {
+    "inputs": "frozen branch embeddings from the SEALED candidate generation (restricted store, digest-bound into the run inputs)",
+    "units": {
+      "branch_baseline": "one per family (5): ridge probes on the frozen branch embedding",
+      "random_fusion_frozen": 1,
+      "branch_concatenation": 1,
+      "current_fusion_probe_trained": "4 seeds",
+      "gated_softmax_probe_trained": "4 seeds",
+      "fine_tuned_branches_plus_fusion": "4 seeds, 600 bounded updates"
+    },
+    "targets": ["realized volatility h6 (primary)", "median quantile pinball h6", "barrier upper-hit accuracy minus base rate"],
+    "gate": "a fused variant ADVANCES only with positive out-of-sample monitor skill on >= 1 predeclared target AND no other target degraded by more than 0.02 vs the best non-fused branch baseline, in EVERY seed",
+    "budget_probe_trained": 900,
+    "budget_fine_tuned": 600,
+    "seeds": [101, 202, 303, 404],
+    "purge_bars": 12
+  },
+  "sac_gate_consequence": "Musashi correction 2: if NO fusion variant ADVANCES under the section D gate, the eight paired-SAC cells are NOT dispatched; the negative result is returned or a different extractor is explicitly designed. The gate artifact is consumed by the SAC dispatch driver as a REFUSAL precondition.",
+  "runtime": {
+    "layers": "materializer (prospective ledger + digests + immutable npz inputs) / worker (exactly one atomic unit per invocation) / supervisor (scheduling, heartbeat <= 60 s, watchdog, per-unit timeout from benchmark, campaign wall ceiling, machine-readable status, graceful cancel) / aggregator (complete verified units only)",
+    "benchmark_before_campaign": "one CPU and one CUDA benchmark cell (heaviest family at w256/d128) decide the device per measured throughput; no full screen starts without a measured per-cell ETA and campaign p90",
+    "run_root": "~/.local/share/agent-multi/positive_skill_screen_v2_20260903 (outside /tmp)"
+  }
+}

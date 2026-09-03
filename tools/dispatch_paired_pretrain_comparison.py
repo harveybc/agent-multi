@@ -19,10 +19,14 @@ Modes:
   written dispatch AND CUDA is visible. Musashi's acceptance of the C5
   packet is that document (order 2026-08-28 C5).
 
-Every execution attempt is NON-RESUMABLE: each invocation mints a new
-attempt identity (custody dispatch key) and cold-starts; no resume
-path exists in this driver (order C3 — resumption would require a
-proven full replay/optimizer/RNG restore, which no artifact provides).
+Execution attempts are OBSERVABLE and RESUMABLE (Musashi correction 3,
+2026-09-03, superseding the C3-era non-resumable rule): a fresh
+dispatch mints a new attempt identity (custody dispatch key); an
+INTERRUPTED attempt resumes THE SAME identity via
+``--resume-attempt <dir>``, restoring model, optimizers, replay
+buffer, counters, RNG, patience and evaluation histories exactly from
+the attempt's resume bundle; ``--status-attempt <dir>`` reads the
+machine-readable heartbeat without touching any process.
 No venue socket: the cell config is refused if any live-credential key
 is present.
 """
@@ -241,6 +245,19 @@ def build_cell_config(design: dict, cell: dict, pretrain_dir: Path,
     if dry_run_budget:
         cfg.update(dict(dry_run_budget))
         cfg["dry_run_budget_disclosed"] = dict(dry_run_budget)
+    # Musashi correction 3 (2026-09-03): observable resumable cell
+    # runtime — heartbeat/status/ETA + periodic exact-resume bundle
+    cfg["cell_runtime_dir"] = str(cell_dir / "runtime")
+    cfg["resume_checkpoint_every_epochs"] = 5
+    # Musashi correction 4 (2026-09-03): the ACCEPTED executing
+    # budget guard rides in EVERY cell — steps, updates, wall clock
+    # and external stop-file, enforced inside the trainer
+    _total = int(cfg["total_timesteps"])
+    cfg["budget_max_env_steps"] = _total
+    cfg["budget_max_updates"] = _total
+    cfg["budget_max_wall_seconds"] = float(
+        shared["sac"].get("cell_wall_ceiling_seconds", 43200.0))
+    cfg["budget_stop_file"] = str(cell_dir / "STOP")
     assert_no_venue_keys(cfg)
     cfg["_snapshot_config_sha256"] = snapshot["config_sha256"]
     return cfg
@@ -388,16 +405,35 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
                  slot_binding: dict | None = None,
                  identity_proof: dict | None = None,
                  authorization_sha256: str | None = None,
-                 environment_preflight: dict | None = None) -> dict:
+                 environment_preflight: dict | None = None,
+                 resume_attempt_dir: Path | None = None) -> dict:
     """Run ONE cell through the accepted nested trainer under custody.
-    Every attempt is a NEW identity (non-resumable by construction):
-    the nonce is minted FIRST and every artifact lives inside the
-    exclusive attempt directory (DATA-SOTA-378)."""
+
+    Musashi correction 3 (2026-09-03): cells are OBSERVABLE and
+    RESUMABLE. A fresh dispatch mints a new attempt identity (nonce
+    FIRST, every artifact inside the exclusive attempt directory,
+    DATA-SOTA-378); an interrupted attempt resumes THE SAME identity
+    through the evidenced custody door (interrupted -> running),
+    restoring model, optimizers, replay buffer, counters, RNG,
+    patience and the evaluation histories exactly from the attempt's
+    resume bundle. Heartbeat/status/ETA in runtime/status.json."""
     from app.plugin_loader import load_plugin
 
-    attempt_nonce = os.urandom(8).hex()
-    attempt_dir = make_attempt_dir(output_root, cell["trial_id"],
-                                   attempt_nonce)
+    if resume_attempt_dir is not None:
+        attempt_dir = Path(resume_attempt_dir)
+        name = attempt_dir.name
+        if not name.startswith("attempt_"):
+            raise DispatchRefused(
+                f"{attempt_dir} is not an attempt directory")
+        attempt_nonce = name[len("attempt_"):]
+        if not (attempt_dir / "custody_key.json").exists():
+            raise DispatchRefused(
+                "resume refused: the attempt carries no "
+                "custody_key.json")
+    else:
+        attempt_nonce = os.urandom(8).hex()
+        attempt_dir = make_attempt_dir(output_root, cell["trial_id"],
+                                       attempt_nonce)
     cfg = build_cell_config(
         design, cell, pretrain_dir, output_root, device=device,
         dry_run_budget=DRY_RUN_BUDGET if dry_run else None,
@@ -417,21 +453,47 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
                 executable_manifest_digest(executables_preflight)})
     evidence_path = attempt_dir / f"cell_record_{attempt_nonce}.json"
     ledger = DispatchLedger()
-    ledger.reserve(key, identity={
-        "dispatch_id": f"paired_sac_{cell['trial_id']}",
-        "attempt_nonce": attempt_nonce,
-        "trial_id": cell["trial_id"],
-        "genesis_sha256": cell["genesis_sha256"],
-        "cell_sha256": cell["cell_sha256"],
-        "arm": cell["arm"], "seed": cell["seed"],
-        "logical_slot": logical_slot,
-        "executable_allowlist_digest":
-            executable_manifest_digest(executables_preflight),
-        "worktree_identity": identity_proof,
-        "authorization_sha256": authorization_sha256,
-        "mode": "cpu_dry_run" if dry_run else "full_budget",
-    }, output_path=evidence_path)
-    ledger.transition(key, "running")
+    if resume_attempt_dir is not None:
+        # correction 3: same identity, evidenced resume door
+        stored = json.loads(
+            (attempt_dir / "custody_key.json").read_text())
+        if stored["custody_key"] != key:
+            raise DispatchRefused(
+                "resume refused: the recomputed dispatch key does "
+                "not equal the stored one — design/cell/config/code "
+                "identity drifted since the interrupted attempt")
+        resume_state = (attempt_dir / "runtime" /
+                        "resume_state.json")
+        if not resume_state.exists():
+            raise DispatchRefused(
+                "resume refused: no resume bundle in the attempt's "
+                "runtime directory")
+        saved = json.loads(resume_state.read_text())
+        ledger.resume(key, resume_evidence={
+            "resume_state_sha256": sha256_file(resume_state),
+            "resumed_from_epoch": saved["epoch"],
+            "resumed_at_wall": __import__("time").time()})
+        cfg["resume_from_cell_runtime"] = True
+    else:
+        ledger.reserve(key, identity={
+            "dispatch_id": f"paired_sac_{cell['trial_id']}",
+            "attempt_nonce": attempt_nonce,
+            "trial_id": cell["trial_id"],
+            "genesis_sha256": cell["genesis_sha256"],
+            "cell_sha256": cell["cell_sha256"],
+            "arm": cell["arm"], "seed": cell["seed"],
+            "logical_slot": logical_slot,
+            "executable_allowlist_digest":
+                executable_manifest_digest(executables_preflight),
+            "worktree_identity": identity_proof,
+            "authorization_sha256": authorization_sha256,
+            "mode": "cpu_dry_run" if dry_run else "full_budget",
+        }, output_path=evidence_path)
+        ledger.transition(key, "running")
+        (attempt_dir / "custody_key.json").write_text(json.dumps(
+            {"custody_key": key,
+             "trial_id": cell["trial_id"],
+             "attempt_nonce": attempt_nonce}, indent=1))
     import time
     wall_start = time.perf_counter()
     try:
@@ -526,8 +588,10 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
         try:
             ledger.transition(key, "interrupted", {
                 "interruption": f"{type(exc).__name__}: {exc}",
-                "non_resumable": "order C3 — a new attempt identity "
-                                 "is required"})
+                "resumable": "Musashi correction 3 (2026-09-03): "
+                             "resume THE SAME attempt via "
+                             "--resume-attempt <dir> — exact state "
+                             "from runtime/resume_state.json"})
         except Exception:
             pass
         raise
@@ -558,7 +622,41 @@ def main() -> int:
                         help="REQUIRED for execution modes: the fleet "
                              "plan's logical slot for this cell "
                              "(DATA-SOTA-380)")
+    parser.add_argument("--scientific-gate", default=None,
+                        metavar="GATE_ARTIFACT",
+                        help="REQUIRED for execution modes (Musashi "
+                             "correction 2): a SAC_GATE_PASS "
+                             "artifact from tools/sac_scientific_"
+                             "gate.py bound to the observable-"
+                             "runtime screen report")
+    parser.add_argument("--resume-attempt", default=None,
+                        metavar="ATTEMPT_DIR",
+                        help="resume an INTERRUPTED attempt exactly "
+                             "(same custody identity; model, "
+                             "optimizers, replay, counters, RNG, "
+                             "patience, evaluations restored)")
+    parser.add_argument("--status-attempt", default=None,
+                        metavar="ATTEMPT_DIR",
+                        help="print the machine-readable runtime "
+                             "status of an attempt and exit — no "
+                             "process attachment")
     args = parser.parse_args()
+    if args.status_attempt:
+        adir = Path(args.status_attempt)
+        out = {"attempt_dir": str(adir)}
+        sp = adir / "runtime" / "status.json"
+        out["runtime_status"] = (json.loads(sp.read_text())
+                                 if sp.exists() else None)
+        kp = adir / "custody_key.json"
+        if kp.exists():
+            stored = json.loads(kp.read_text())
+            out["custody_key"] = stored["custody_key"][:16]
+            rec = DispatchLedger().read(stored["custody_key"])
+            out["custody_state"] = (rec or {}).get("state")
+            out["resume_history"] = (rec or {}).get(
+                "resume_history")
+        print(json.dumps(out, indent=1, default=str))
+        return 0
     design = json.loads(DESIGN_PATH.read_text())
     cell = verify_cell(design, Path(args.pretrain_dir), args.seed,
                        args.arm)
@@ -589,6 +687,23 @@ def main() -> int:
     if not args.logical_slot:
         raise DispatchRefused(
             "execution requires --logical-slot (DATA-SOTA-380)")
+    # Musashi correction 2 (2026-09-03): the SCIENTIFIC GATE comes
+    # before any SAC spend — the fused representation must have
+    # demonstrated branch-signal conservation in the observable
+    # screen, or the eight cells are NOT launched.
+    if not args.scientific_gate:
+        raise DispatchRefused(
+            "execution requires --scientific-gate <artifact> "
+            "(Musashi correction 2): no fusion evidence, no SAC")
+    from tools.sac_scientific_gate import verify_gate_for_dispatch
+    try:
+        gate = verify_gate_for_dispatch(Path(args.scientific_gate))
+    except SystemExit as exc:
+        raise DispatchRefused(str(exc))
+    print(json.dumps({"scientific_gate": gate["gate"],
+                      "advancing_fusion_variants":
+                          gate["advancing_fusion_variants"]},
+                     indent=1))
     slot_binding = verify_slot_binding(cell, args.logical_slot)
     import torch
     if args.execute_cpu_dry_run:
@@ -609,7 +724,10 @@ def main() -> int:
                               dry_run=True,
                               logical_slot=args.logical_slot,
                               slot_binding=slot_binding,
-                              environment_preflight=preflight)
+                              environment_preflight=preflight,
+                              resume_attempt_dir=(
+                                  Path(args.resume_attempt)
+                                  if args.resume_attempt else None))
         print(json.dumps({"status": "CPU_DRY_RUN_COMPLETED",
                           "custody_key": record["custody_key"][:16],
                           "stop_reason":
@@ -667,7 +785,9 @@ def main() -> int:
         identity_proof=identity_proof,
         authorization_sha256=sha256_file(
             Path(args.gpu_authorized_by_musashi)),
-        environment_preflight=preflight)
+        environment_preflight=preflight,
+        resume_attempt_dir=(Path(args.resume_attempt)
+                            if args.resume_attempt else None))
     print(json.dumps({"status": "CELL_COMPLETED",
                       "custody_key": record["custody_key"][:16],
                       "logical_slot": args.logical_slot},
