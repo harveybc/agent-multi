@@ -1,0 +1,20 @@
+{
+  "schema": "agent_multi.screen_v2_repro_probe_predeclaration.v1",
+  "order": "@65ee8488 §4 R2",
+  "committed_before_any_probe_execution": true,
+  "probes": [
+    {"label": "fast", "unit": "returns_momentum|w32|d16 @ budget 300, seed 101, origin 1"},
+    {"label": "heavy", "unit": "volatility_distribution|w256|d128 @ budget 300, seed 101, origin 1"}
+  ],
+  "runtime": "the R1-corrected worker (branch satoshi/screen-v2-runtime-audit-20260903), CUDA — the same measured device the campaign used; NEW diagnostic run root, never the frozen campaign's",
+  "tolerance_declared_before_results": {
+    "monitor_r2_abs": 0.005,
+    "calibration_r2_abs": 0.005,
+    "rationale": "CUDA kernels do not promise bitwise equality across invocations; 5e-3 is an order of magnitude below the 0.02 material threshold and below every halving margin observed in the frozen round ranks"
+  },
+  "invariance_requirements": [
+    "substituting the probe values into the frozen round-1 ranking must not change ANY halving advance set (round1->2, round2->3)",
+    "no survivor gate quantity may cross the predeclared 0.02 threshold under the probe deltas"
+  ],
+  "verdict_rule": "both probes within tolerance AND both invariances hold -> reproducibility PASS; any verdict-changing variation -> RERUN_REQUIRED_NONDETERMINISTIC_BOUNDARY"
+}
