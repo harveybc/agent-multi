@@ -1,0 +1,43 @@
+{
+ "schema": "agent_multi.sac_scientific_gate.v1",
+ "gate": "SAC_GATE_FAIL_NEGATIVE_RESULT",
+ "advancing_fusion_variants": [],
+ "fusion_decisions": {
+  "random_fusion_frozen": "DOES_NOT_ADVANCE",
+  "branch_concatenation": "DOES_NOT_ADVANCE",
+  "current_fusion_probe_trained": "DOES_NOT_ADVANCE",
+  "gated_softmax_probe_trained": "DOES_NOT_ADVANCE",
+  "fine_tuned_branches_plus_fusion": "DOES_NOT_ADVANCE"
+ },
+ "survivor_verdicts": {
+  "oscillators|w128|d16": "NOT_DEMONSTRATED",
+  "oscillators|w128|d64": "NOT_DEMONSTRATED",
+  "oscillators|w256|d64": "NOT_DEMONSTRATED",
+  "oscillators|w32|d64": "NOT_DEMONSTRATED",
+  "oscillators|w64|d64": "NOT_DEMONSTRATED",
+  "returns_momentum|w128|d16": "NOT_DEMONSTRATED",
+  "returns_momentum|w128|d32": "NOT_DEMONSTRATED",
+  "returns_momentum|w32|d16": "NOT_DEMONSTRATED",
+  "returns_momentum|w64|d16": "NOT_DEMONSTRATED",
+  "returns_momentum|w64|d64": "NOT_DEMONSTRATED",
+  "trend_level|w32|d128": "NOT_DEMONSTRATED",
+  "trend_level|w32|d32": "NOT_DEMONSTRATED",
+  "trend_level|w32|d96": "NOT_DEMONSTRATED",
+  "trend_level|w64|d16": "NOT_DEMONSTRATED",
+  "trend_level|w64|d32": "NOT_DEMONSTRATED",
+  "volatility_distribution|w128|d16": "NOT_DEMONSTRATED",
+  "volatility_distribution|w256|d16": "NOT_DEMONSTRATED",
+  "volatility_distribution|w32|d16": "NOT_DEMONSTRATED",
+  "volatility_distribution|w32|d32": "NOT_DEMONSTRATED",
+  "volatility_distribution|w64|d16": "NOT_DEMONSTRATED",
+  "volume_flow|w128|d128": "NOT_DEMONSTRATED",
+  "volume_flow|w256|d128": "NOT_DEMONSTRATED",
+  "volume_flow|w32|d128": "NOT_DEMONSTRATED",
+  "volume_flow|w32|d16": "NOT_DEMONSTRATED",
+  "volume_flow|w64|d128": "NOT_DEMONSTRATED"
+ },
+ "usable_branches": [],
+ "screen_report": "run id positive_skill_screen_v2_20260903 / POSITIVE_SKILL_SCREEN_V2_REPORT.json (durable state store)",
+ "screen_report_sha256": "147dcce4897a6f5b56d67fa0ec1e31e0ffaa8aa3e73ac0b1537d853807669a0e",
+ "consequence": "the eight paired-SAC cells are NOT dispatched; return the negative result or explicitly design another extractor (Musashi correction 2)"
+}

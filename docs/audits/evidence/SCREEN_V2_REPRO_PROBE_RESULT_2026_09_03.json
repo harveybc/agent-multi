@@ -1,0 +1,34 @@
+{
+ "schema": "agent_multi.screen_v2_repro_probe_result.v1",
+ "predeclaration": "SCREEN_V2_REPRO_PROBE_PREDECLARATION_2026_09_03.json",
+ "device": "cuda (campaign benchmark decision)",
+ "runtime": "R1-corrected worker @2ed718fa; NEW diagnostic run root; frozen campaign untouched",
+ "probes": {
+  "returns_momentum|w32|d16@300": {
+   "frozen": {
+    "monitor_r2": -0.2824,
+    "calibration_r2": 0.0309
+   },
+   "probe": {
+    "monitor_r2": -0.2824,
+    "calibration_r2": 0.0309
+   },
+   "abs_delta": 0.0
+  },
+  "volatility_distribution|w256|d128@300": {
+   "frozen": {
+    "monitor_r2": -0.8828,
+    "calibration_r2": -0.1579
+   },
+   "probe": {
+    "monitor_r2": -0.8828,
+    "calibration_r2": -0.1579
+   },
+   "abs_delta": 0.0
+  }
+ },
+ "tolerance": 0.005,
+ "max_abs_delta": 0.0,
+ "invariance": "with delta 0, no halving advance set can change and no survivor gate quantity can cross 0.02 \u2014 both invariances hold trivially",
+ "verdict": "REPRODUCIBILITY_PASS"
+}

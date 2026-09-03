@@ -1,0 +1,2670 @@
+{
+ "schema": "agent_multi.positive_skill_screen.v2",
+ "classification": "REPRESENTATION_DIAGNOSTIC",
+ "predeclaration": "POSITIVE_SKILL_SCREEN_PREDECLARATION_V2_2026_09_03.json",
+ "primary_target": "realized volatility h6",
+ "cells": {
+  "returns_momentum|w32|d16": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.2824,
+   "calibration_r2": 0.0309,
+   "parameters": 6561,
+   "wall_s": 33.6,
+   "peak_rss_mb_delta": 469.2,
+   "result_digest": "c5e24f0bd43bc4644e6a7c8239b1ec5a132ad92c797ffd0b9232fdd6e83e0442"
+  },
+  "returns_momentum|w32|d32": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.1936,
+   "calibration_r2": 0.0075,
+   "parameters": 25409,
+   "wall_s": 8.8,
+   "peak_rss_mb_delta": 494.2,
+   "result_digest": "8571d66a0039001a8f2ce208b71a6d4a10dc30458eda80d6b789b58efacffcc0"
+  },
+  "returns_momentum|w32|d64": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 64,
+   "budget": 900,
+   "monitor_r2": -0.2786,
+   "calibration_r2": -0.0389,
+   "parameters": 99969,
+   "wall_s": 9.9,
+   "peak_rss_mb_delta": 488.8,
+   "result_digest": "4dcb2ebfd9d7add898931473239fde369d46a5f37de83a6b4c7e58f18fa2e7f1"
+  },
+  "returns_momentum|w32|d96": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.2652,
+   "calibration_r2": -0.1174,
+   "parameters": 223681,
+   "wall_s": 4.3,
+   "peak_rss_mb_delta": 535.1,
+   "result_digest": "872b98100ff06de059e61d45c0fef8e99eafacadf51b156f0126d2427df56ca3"
+  },
+  "returns_momentum|w32|d128": {
+   "family": "returns_momentum",
+   "window": 32,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.2433,
+   "calibration_r2": -0.076,
+   "parameters": 396545,
+   "wall_s": 4.7,
+   "peak_rss_mb_delta": 534.9,
+   "result_digest": "52b024c02d4473f2ecf5cb1f478882836a3a96f5fa797c91923ce99be0157970"
+  },
+  "returns_momentum|w64|d16": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.3422,
+   "calibration_r2": 0.0294,
+   "parameters": 6625,
+   "wall_s": 35.3,
+   "peak_rss_mb_delta": 495.8,
+   "result_digest": "c664cd590e17e4b436978f5aa2a6e6631b4ee20c8d248d5256456c3b94fea39f"
+  },
+  "returns_momentum|w64|d32": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.2097,
+   "calibration_r2": 0.0259,
+   "parameters": 25537,
+   "wall_s": 10.0,
+   "peak_rss_mb_delta": 521.1,
+   "result_digest": "0744e679f486ad653260c5e13516268ac31d4c2d09bfabc491bbdba82845c712"
+  },
+  "returns_momentum|w64|d64": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 64,
+   "budget": 2700,
+   "monitor_r2": -0.2699,
+   "calibration_r2": 0.0495,
+   "parameters": 100225,
+   "wall_s": 51.7,
+   "peak_rss_mb_delta": 491.5,
+   "result_digest": "034c3ac4e876234c6e6398e910ee2804f1d5dab5fdefc9090c9cf43d745ba814"
+  },
+  "returns_momentum|w64|d96": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.4331,
+   "calibration_r2": -0.0842,
+   "parameters": 224065,
+   "wall_s": 6.1,
+   "peak_rss_mb_delta": 560.9,
+   "result_digest": "3d4c0eaba57e1af43791f56d60da4bfa6e5778b6d9048f1dca56a6e576a4c77d"
+  },
+  "returns_momentum|w64|d128": {
+   "family": "returns_momentum",
+   "window": 64,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.3332,
+   "calibration_r2": -0.0712,
+   "parameters": 397057,
+   "wall_s": 7.4,
+   "peak_rss_mb_delta": 562.1,
+   "result_digest": "a7b8fcfe5f7eb4913578225e84a9b4328054ea62f51bfdc79117ce8d4de86410"
+  },
+  "returns_momentum|w128|d16": {
+   "family": "returns_momentum",
+   "window": 128,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.3996,
+   "calibration_r2": 0.0758,
+   "parameters": 6753,
+   "wall_s": 16.1,
+   "peak_rss_mb_delta": 549.3,
+   "result_digest": "ca4ffc9bd06d9acfed2ed95521daf4ecc5e76971b2642fd6b78af3ac6c2f027f"
+  },
+  "returns_momentum|w128|d32": {
+   "family": "returns_momentum",
+   "window": 128,
+   "latent": 32,
+   "budget": 2700,
+   "monitor_r2": -0.2322,
+   "calibration_r2": 0.0363,
+   "parameters": 25793,
+   "wall_s": 24.9,
+   "peak_rss_mb_delta": 549.2,
+   "result_digest": "87fb017f116731a10933444c155f93579b2ac8b031deefd376c6090172424cad"
+  },
+  "returns_momentum|w128|d64": {
+   "family": "returns_momentum",
+   "window": 128,
+   "latent": 64,
+   "budget": 900,
+   "monitor_r2": -0.2847,
+   "calibration_r2": -0.0113,
+   "parameters": 100737,
+   "wall_s": 9.4,
+   "peak_rss_mb_delta": 573.6,
+   "result_digest": "8217ef669e544cab1317c213486c35937544484ef62ca1e83ef08d5abe1dcb30"
+  },
+  "returns_momentum|w128|d96": {
+   "family": "returns_momentum",
+   "window": 128,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.3002,
+   "calibration_r2": -0.0689,
+   "parameters": 224833,
+   "wall_s": 4.9,
+   "peak_rss_mb_delta": 619.7,
+   "result_digest": "794ffab969e565d6cfc4c2f92565c0ed79d9887e90ca1c7ea5e0f61fc705ace6"
+  },
+  "returns_momentum|w128|d128": {
+   "family": "returns_momentum",
+   "window": 128,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.31,
+   "calibration_r2": -0.1037,
+   "parameters": 398081,
+   "wall_s": 5.9,
+   "peak_rss_mb_delta": 620.4,
+   "result_digest": "273f12d140ee072d4f96c232ca49834ab6233c41ff18058e148fe7e5db4dbea3"
+  },
+  "returns_momentum|w256|d16": {
+   "family": "returns_momentum",
+   "window": 256,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": -0.1765,
+   "calibration_r2": -0.1167,
+   "parameters": 7009,
+   "wall_s": 2.8,
+   "peak_rss_mb_delta": 721.2,
+   "result_digest": "25ec0bfb9e4e83016b257a5a17eb2fdadd3574ae65c28975afbb8aa81a060b47"
+  },
+  "returns_momentum|w256|d32": {
+   "family": "returns_momentum",
+   "window": 256,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.125,
+   "calibration_r2": -0.008,
+   "parameters": 26305,
+   "wall_s": 11.0,
+   "peak_rss_mb_delta": 675.4,
+   "result_digest": "6161d87a5aa3caa61c7aadb62adce4da8a83dad73f0b69353c0665b0fa262f26"
+  },
+  "returns_momentum|w256|d64": {
+   "family": "returns_momentum",
+   "window": 256,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.246,
+   "calibration_r2": -0.0461,
+   "parameters": 101761,
+   "wall_s": 5.9,
+   "peak_rss_mb_delta": 721.0,
+   "result_digest": "f966280c9ccf37962f6ae3efb75ad411abdb839e51d61ab4064092300d21eced"
+  },
+  "returns_momentum|w256|d96": {
+   "family": "returns_momentum",
+   "window": 256,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.2339,
+   "calibration_r2": -0.12,
+   "parameters": 226369,
+   "wall_s": 8.7,
+   "peak_rss_mb_delta": 721.5,
+   "result_digest": "9364a8816b3468028c22085c3551d8d0a976ae0939f8e0a52e00a7ad90c3e1e0"
+  },
+  "returns_momentum|w256|d128": {
+   "family": "returns_momentum",
+   "window": 256,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.3441,
+   "calibration_r2": -0.1014,
+   "parameters": 400129,
+   "wall_s": 11.4,
+   "peak_rss_mb_delta": 721.7,
+   "result_digest": "59a5559a8206f2d090c85e64fabd2fe44a5d648fa5c4592d52c2a83e94e6645c"
+  },
+  "trend_level|w32|d16": {
+   "family": "trend_level",
+   "window": 32,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": 0.0055,
+   "calibration_r2": -0.0091,
+   "parameters": 6167,
+   "wall_s": 1.7,
+   "peak_rss_mb_delta": 581.8,
+   "result_digest": "bf27e47ff21b378bd37f90cda611ae1bac037d1826c869f7d9d3aa4898c60ad9"
+  },
+  "trend_level|w32|d32": {
+   "family": "trend_level",
+   "window": 32,
+   "latent": 32,
+   "budget": 2700,
+   "monitor_r2": -0.1368,
+   "calibration_r2": 0.0881,
+   "parameters": 18823,
+   "wall_s": 18.4,
+   "peak_rss_mb_delta": 515.5,
+   "result_digest": "618af39586fc10a47b3b4c323053e31f8efc8e6c6ed102ccfbeb50df14a2c9a6"
+  },
+  "trend_level|w32|d64": {
+   "family": "trend_level",
+   "window": 32,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.223,
+   "calibration_r2": -0.0391,
+   "parameters": 68711,
+   "wall_s": 2.2,
+   "peak_rss_mb_delta": 577.5,
+   "result_digest": "1fc70639334373875da21ffdf85b0ae428a6bb57a9ee8886e030acc4ee772a01"
+  },
+  "trend_level|w32|d96": {
+   "family": "trend_level",
+   "window": 32,
+   "latent": 96,
+   "budget": 2700,
+   "monitor_r2": -0.2428,
+   "calibration_r2": 0.1326,
+   "parameters": 151367,
+   "wall_s": 22.1,
+   "peak_rss_mb_delta": 510.8,
+   "result_digest": "bdf71e4bc379348f4af6016818063e277af54575f986d24a2ee9a9d34fba6f25"
+  },
+  "trend_level|w32|d128": {
+   "family": "trend_level",
+   "window": 32,
+   "latent": 128,
+   "budget": 2700,
+   "monitor_r2": -0.2266,
+   "calibration_r2": 0.0886,
+   "parameters": 266791,
+   "wall_s": 41.1,
+   "peak_rss_mb_delta": 510.5,
+   "result_digest": "e9500f2e42b00f1e407f62565a1c7e117143c13c077eec5b35691b7aa7e15ae9"
+  },
+  "trend_level|w64|d16": {
+   "family": "trend_level",
+   "window": 64,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.3036,
+   "calibration_r2": 0.1235,
+   "parameters": 6167,
+   "wall_s": 12.4,
+   "peak_rss_mb_delta": 543.6,
+   "result_digest": "29884fbe6407130356fe353e613214154762c87cef5aaf788daed44b1054a26f"
+  },
+  "trend_level|w64|d32": {
+   "family": "trend_level",
+   "window": 64,
+   "latent": 32,
+   "budget": 2700,
+   "monitor_r2": -0.3305,
+   "calibration_r2": 0.1223,
+   "parameters": 18823,
+   "wall_s": 32.4,
+   "peak_rss_mb_delta": 543.8,
+   "result_digest": "58ec79a39d15f43901e10c64437d676bd421525293f6f548e3ce98b872cf0ba5"
+  },
+  "trend_level|w64|d64": {
+   "family": "trend_level",
+   "window": 64,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2622,
+   "calibration_r2": -0.0287,
+   "parameters": 68711,
+   "wall_s": 4.0,
+   "peak_rss_mb_delta": 606.2,
+   "result_digest": "adb6fdfa1ca28c62aaf735cf29e3293debd00178e0165df0ba5a9ad3948720a6"
+  },
+  "trend_level|w64|d96": {
+   "family": "trend_level",
+   "window": 64,
+   "latent": 96,
+   "budget": 900,
+   "monitor_r2": -0.378,
+   "calibration_r2": 0.0659,
+   "parameters": 151367,
+   "wall_s": 15.6,
+   "peak_rss_mb_delta": 561.3,
+   "result_digest": "2a0e105daae78ee6a552609d0fdf7995b33649a3e67ee7f647ac35c68228c73e"
+  },
+  "trend_level|w64|d128": {
+   "family": "trend_level",
+   "window": 64,
+   "latent": 128,
+   "budget": 900,
+   "monitor_r2": -0.3757,
+   "calibration_r2": 0.0572,
+   "parameters": 266791,
+   "wall_s": 20.4,
+   "peak_rss_mb_delta": 561.3,
+   "result_digest": "78a7cca4e4f26e6848b0ccfe94797e97df954cb918b313013d2f9ab47e09c938"
+  },
+  "trend_level|w128|d16": {
+   "family": "trend_level",
+   "window": 128,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": 0.0064,
+   "calibration_r2": -0.0097,
+   "parameters": 6167,
+   "wall_s": 3.3,
+   "peak_rss_mb_delta": 667.3,
+   "result_digest": "d046c0bca90dcbf2a35aeb4109665a97413b4577aa9d6331de3d3f113ef51427"
+  },
+  "trend_level|w128|d32": {
+   "family": "trend_level",
+   "window": 128,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": 0.0088,
+   "calibration_r2": -0.0089,
+   "parameters": 18823,
+   "wall_s": 2.8,
+   "peak_rss_mb_delta": 668.0,
+   "result_digest": "d5aa64e82bdaa8f6a0af8bbff27980cf6d908bed63d674129053d83e4ad92f85"
+  },
+  "trend_level|w128|d64": {
+   "family": "trend_level",
+   "window": 128,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2162,
+   "calibration_r2": -0.0168,
+   "parameters": 68711,
+   "wall_s": 4.5,
+   "peak_rss_mb_delta": 668.6,
+   "result_digest": "4402054ce8be077f49781e6b21b8674468a9484b0b82f12913a604cc449c1614"
+  },
+  "trend_level|w128|d96": {
+   "family": "trend_level",
+   "window": 128,
+   "latent": 96,
+   "budget": 900,
+   "monitor_r2": -0.1108,
+   "calibration_r2": 0.0523,
+   "parameters": 151367,
+   "wall_s": 23.0,
+   "peak_rss_mb_delta": 622.9,
+   "result_digest": "ef11a08d2bc9d38d0d2fde4666e59a44911904677fbc0364126edc3a5757c390"
+  },
+  "trend_level|w128|d128": {
+   "family": "trend_level",
+   "window": 128,
+   "latent": 128,
+   "budget": 900,
+   "monitor_r2": -0.1255,
+   "calibration_r2": 0.0435,
+   "parameters": 266791,
+   "wall_s": 22.8,
+   "peak_rss_mb_delta": 623.1,
+   "result_digest": "1d4de85cd9e7bf27318f1d4c018e6ba0c5e0672ba875ccecfc86227fb19b47fa"
+  },
+  "trend_level|w256|d16": {
+   "family": "trend_level",
+   "window": 256,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": 0.0077,
+   "calibration_r2": -0.0099,
+   "parameters": 6167,
+   "wall_s": 6.5,
+   "peak_rss_mb_delta": 781.0,
+   "result_digest": "e840a9a0adf7fd2099cbf5de393b47a8f19e079902b8b0d765c311c0fd40654c"
+  },
+  "trend_level|w256|d32": {
+   "family": "trend_level",
+   "window": 256,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": 0.008,
+   "calibration_r2": -0.0081,
+   "parameters": 18823,
+   "wall_s": 7.3,
+   "peak_rss_mb_delta": 781.1,
+   "result_digest": "a6719b39147e867163e5fab2140428b0da9f9231bcfb160118d22f68a82ff2ad"
+  },
+  "trend_level|w256|d64": {
+   "family": "trend_level",
+   "window": 256,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2158,
+   "calibration_r2": -0.0312,
+   "parameters": 68711,
+   "wall_s": 9.0,
+   "peak_rss_mb_delta": 782.1,
+   "result_digest": "4a46afef439881b986643ce3f0aaa0dea9e47d408505882a8f09dbaf4b0540da"
+  },
+  "trend_level|w256|d96": {
+   "family": "trend_level",
+   "window": 256,
+   "latent": 96,
+   "budget": 900,
+   "monitor_r2": -0.2592,
+   "calibration_r2": 0.0231,
+   "parameters": 151367,
+   "wall_s": 37.4,
+   "peak_rss_mb_delta": 737.1,
+   "result_digest": "8a1b70d6a7ce51a1cad341168a78a076df15fd2e78139aa1100962af9b186662"
+  },
+  "trend_level|w256|d128": {
+   "family": "trend_level",
+   "window": 256,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.2114,
+   "calibration_r2": -0.0571,
+   "parameters": 266791,
+   "wall_s": 17.6,
+   "peak_rss_mb_delta": 782.1,
+   "result_digest": "2165555d5a1826524dea9245aa06209ef14d03a22bb8f009ce33ef06d30d147c"
+  },
+  "volatility_distribution|w32|d16": {
+   "family": "volatility_distribution",
+   "window": 32,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.0502,
+   "calibration_r2": 0.0093,
+   "parameters": 5169,
+   "wall_s": 941.2,
+   "peak_rss_mb_delta": 706.9,
+   "result_digest": "cc4ab55d388b3277791f0788a818898e94882817e3a6d603ceb7f88f6600f8d8"
+  },
+  "volatility_distribution|w32|d32": {
+   "family": "volatility_distribution",
+   "window": 32,
+   "latent": 32,
+   "budget": 2700,
+   "monitor_r2": -0.0621,
+   "calibration_r2": 0.0057,
+   "parameters": 19553,
+   "wall_s": 952.7,
+   "peak_rss_mb_delta": 700.4,
+   "result_digest": "46ccb98500ec8836401b1511b2a5f0571e3a2ba2f693b02fc970f52d306e5b30"
+  },
+  "volatility_distribution|w32|d64": {
+   "family": "volatility_distribution",
+   "window": 32,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.3165,
+   "calibration_r2": -0.1837,
+   "parameters": 75969,
+   "wall_s": 108.9,
+   "peak_rss_mb_delta": 756.8,
+   "result_digest": "cb9ea05e86bb4dae49056aa0272926278c33703dca2a146a415afe0535f481ac"
+  },
+  "volatility_distribution|w32|d96": {
+   "family": "volatility_distribution",
+   "window": 32,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1892,
+   "calibration_r2": -0.203,
+   "parameters": 169249,
+   "wall_s": 112.0,
+   "peak_rss_mb_delta": 759.8,
+   "result_digest": "e35901361f981e7caf90d4bd49fd81d1b5d653c1b57a7040c689879f6529b68b"
+  },
+  "volatility_distribution|w32|d128": {
+   "family": "volatility_distribution",
+   "window": 32,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.6488,
+   "calibration_r2": -0.2803,
+   "parameters": 299393,
+   "wall_s": 131.0,
+   "peak_rss_mb_delta": 759.2,
+   "result_digest": "08f928db5fd3b3ab821efb45511e4f44f9bdc332c30f10a960bd549b8238dcc1"
+  },
+  "volatility_distribution|w64|d16": {
+   "family": "volatility_distribution",
+   "window": 64,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.0542,
+   "calibration_r2": 0.0077,
+   "parameters": 5169,
+   "wall_s": 802.5,
+   "peak_rss_mb_delta": 735.6,
+   "result_digest": "cdd98cd0e61ea07ed5d2faaaccb2adf13856e4163c0d57ae3d2991799e30d41e"
+  },
+  "volatility_distribution|w64|d32": {
+   "family": "volatility_distribution",
+   "window": 64,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.0262,
+   "calibration_r2": -0.0014,
+   "parameters": 19553,
+   "wall_s": 305.2,
+   "peak_rss_mb_delta": 754.5,
+   "result_digest": "26ffa2b4c0aeebee6ee8ef63a56d69d4c34f3b051c6bd1aa65f13476429261c8"
+  },
+  "volatility_distribution|w64|d64": {
+   "family": "volatility_distribution",
+   "window": 64,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.4114,
+   "calibration_r2": -0.1504,
+   "parameters": 75969,
+   "wall_s": 133.7,
+   "peak_rss_mb_delta": 795.8,
+   "result_digest": "419ba0fcbf5763c6049723d42e7a247099adb07f78c9f4634731ce299a91704a"
+  },
+  "volatility_distribution|w64|d96": {
+   "family": "volatility_distribution",
+   "window": 64,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.2036,
+   "calibration_r2": -0.1679,
+   "parameters": 169249,
+   "wall_s": 135.4,
+   "peak_rss_mb_delta": 794.8,
+   "result_digest": "f0dd0c14d35a9bb643c11ca99a8a46528a0be1d62fada28802728dda55964909"
+  },
+  "volatility_distribution|w64|d128": {
+   "family": "volatility_distribution",
+   "window": 64,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.7936,
+   "calibration_r2": -0.2122,
+   "parameters": 299393,
+   "wall_s": 131.8,
+   "peak_rss_mb_delta": 791.0,
+   "result_digest": "024a93dcd5440ae520c100211f943f5b3657b7cd772c4f0b73f0282fd0643098"
+  },
+  "volatility_distribution|w128|d16": {
+   "family": "volatility_distribution",
+   "window": 128,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": 0.0087,
+   "calibration_r2": 0.0119,
+   "parameters": 5169,
+   "wall_s": 471.8,
+   "peak_rss_mb_delta": 789.6,
+   "result_digest": "adb159ba532dcc0ffe5f836c28b495cec4daa6e1b3042cdd66fd9c484cec9c82"
+  },
+  "volatility_distribution|w128|d32": {
+   "family": "volatility_distribution",
+   "window": 128,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.1699,
+   "calibration_r2": -0.0617,
+   "parameters": 19553,
+   "wall_s": 166.2,
+   "peak_rss_mb_delta": 808.6,
+   "result_digest": "90ec1ba204c42cd0d9d7a66a8bbdf52614e10935fcc086ac24f0633160852161"
+  },
+  "volatility_distribution|w128|d64": {
+   "family": "volatility_distribution",
+   "window": 128,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.4052,
+   "calibration_r2": -0.3151,
+   "parameters": 75969,
+   "wall_s": 59.3,
+   "peak_rss_mb_delta": 877.7,
+   "result_digest": "52a458823bb5b508b0a6833a8dcae879641bfd247e98bce06f9a5660314dc6e4"
+  },
+  "volatility_distribution|w128|d96": {
+   "family": "volatility_distribution",
+   "window": 128,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1396,
+   "calibration_r2": -0.1395,
+   "parameters": 169249,
+   "wall_s": 77.3,
+   "peak_rss_mb_delta": 854.4,
+   "result_digest": "5619778a0c17f3b06a360f552f189ba0d791dcf246a3f03ec9b1b9851f60aa59"
+  },
+  "volatility_distribution|w128|d128": {
+   "family": "volatility_distribution",
+   "window": 128,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.5606,
+   "calibration_r2": -0.1194,
+   "parameters": 299393,
+   "wall_s": 61.7,
+   "peak_rss_mb_delta": 850.2,
+   "result_digest": "130f0aba4637782d1ff40671c66471a8274d3b2a8eb99f49b669ab47f0958ae4"
+  },
+  "volatility_distribution|w256|d16": {
+   "family": "volatility_distribution",
+   "window": 256,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.0427,
+   "calibration_r2": 0.0108,
+   "parameters": 5169,
+   "wall_s": 475.8,
+   "peak_rss_mb_delta": 909.6,
+   "result_digest": "da9bad9f68cfdceb9b0e1bfb8f7479f1d8fe92d5179414405f6f449b6cc7f23f"
+  },
+  "volatility_distribution|w256|d32": {
+   "family": "volatility_distribution",
+   "window": 256,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.0446,
+   "calibration_r2": -0.0322,
+   "parameters": 19553,
+   "wall_s": 208.8,
+   "peak_rss_mb_delta": 929.1,
+   "result_digest": "3a476a9cf094414c4f0836bbe46b04c3ea28eac2daa456be850e66d6a54ab373"
+  },
+  "volatility_distribution|w256|d64": {
+   "family": "volatility_distribution",
+   "window": 256,
+   "latent": 64,
+   "budget": 900,
+   "monitor_r2": -0.4534,
+   "calibration_r2": -0.1164,
+   "parameters": 75969,
+   "wall_s": 169.8,
+   "peak_rss_mb_delta": 927.6,
+   "result_digest": "f072acec8496426459ca9ee0e111b8ee7fe5331e3440f6bba5ec2c0d135f84d7"
+  },
+  "volatility_distribution|w256|d96": {
+   "family": "volatility_distribution",
+   "window": 256,
+   "latent": 96,
+   "budget": 900,
+   "monitor_r2": -0.1687,
+   "calibration_r2": -0.0922,
+   "parameters": 169249,
+   "wall_s": 203.9,
+   "peak_rss_mb_delta": 928.8,
+   "result_digest": "4aca065578aa80cbf11d254549b57d37d2acd343e6d7c2f864cbaf243b27c3ef"
+  },
+  "volatility_distribution|w256|d128": {
+   "family": "volatility_distribution",
+   "window": 256,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.8828,
+   "calibration_r2": -0.1579,
+   "parameters": 299393,
+   "wall_s": 85.7,
+   "peak_rss_mb_delta": 975.0,
+   "result_digest": "302e8b7d9e222e5ae710db00cec72c5854bea7539f085283d0af9fb7ab4592de"
+  },
+  "oscillators|w32|d16": {
+   "family": "oscillators",
+   "window": 32,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": -0.267,
+   "calibration_r2": -0.2607,
+   "parameters": 1473,
+   "wall_s": 0.8,
+   "peak_rss_mb_delta": 646.9,
+   "result_digest": "ffd378201a5783d1060c9016713f3c0e30d0cbbf48adebde8d4aad896e113f41"
+  },
+  "oscillators|w32|d32": {
+   "family": "oscillators",
+   "window": 32,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": -0.2403,
+   "calibration_r2": -0.2627,
+   "parameters": 4481,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 642.9,
+   "result_digest": "9893b526072b901317ed58817984e7ab0dbe2ca51ea40fd94b56929be3168ae6"
+  },
+  "oscillators|w32|d64": {
+   "family": "oscillators",
+   "window": 32,
+   "latent": 64,
+   "budget": 2700,
+   "monitor_r2": -0.0755,
+   "calibration_r2": -0.1731,
+   "parameters": 15105,
+   "wall_s": 7.7,
+   "peak_rss_mb_delta": 561.4,
+   "result_digest": "1acf52adc1a60fbd094176fc6e917a3cc18c8dbb3dec1f7aca4daaed59c1ddca"
+  },
+  "oscillators|w32|d96": {
+   "family": "oscillators",
+   "window": 32,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1888,
+   "calibration_r2": -0.2591,
+   "parameters": 31873,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 632.6,
+   "result_digest": "558193fdfd7aff4fedd86fdc0541cf38b789715fe7042c534fb9014bc394cec2"
+  },
+  "oscillators|w32|d128": {
+   "family": "oscillators",
+   "window": 32,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.2199,
+   "calibration_r2": -0.2682,
+   "parameters": 54785,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 622.4,
+   "result_digest": "a6e846b9b39a795992bb126f5de2b343048f298759c055b164287fa6285fc921"
+  },
+  "oscillators|w64|d16": {
+   "family": "oscillators",
+   "window": 64,
+   "latent": 16,
+   "budget": 300,
+   "monitor_r2": -0.267,
+   "calibration_r2": -0.2607,
+   "parameters": 1473,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 661.0,
+   "result_digest": "7ef43a37550489124e60b51de8ff757578168daf9ee1068eca37cbb18b7d5b05"
+  },
+  "oscillators|w64|d32": {
+   "family": "oscillators",
+   "window": 64,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": -0.2403,
+   "calibration_r2": -0.2627,
+   "parameters": 4481,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 656.6,
+   "result_digest": "56bae1c9ef19d98de03739d994d8c782d37896432f1404dbc75ede67bacf68b9"
+  },
+  "oscillators|w64|d64": {
+   "family": "oscillators",
+   "window": 64,
+   "latent": 64,
+   "budget": 2700,
+   "monitor_r2": -0.0755,
+   "calibration_r2": -0.1731,
+   "parameters": 15105,
+   "wall_s": 8.9,
+   "peak_rss_mb_delta": 585.7,
+   "result_digest": "4e858b8c034de84b2fb0d76bd53986de59193b874e5cf801bc6e755c28e86a8d"
+  },
+  "oscillators|w64|d96": {
+   "family": "oscillators",
+   "window": 64,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1888,
+   "calibration_r2": -0.2592,
+   "parameters": 31873,
+   "wall_s": 1.0,
+   "peak_rss_mb_delta": 657.4,
+   "result_digest": "1b3c64db87f790f04cbc98f780ecde26b871c1c2cf0f83aba60892df6fef662b"
+  },
+  "oscillators|w64|d128": {
+   "family": "oscillators",
+   "window": 64,
+   "latent": 128,
+   "budget": 300,
+   "monitor_r2": -0.22,
+   "calibration_r2": -0.2682,
+   "parameters": 54785,
+   "wall_s": 1.2,
+   "peak_rss_mb_delta": 655.8,
+   "result_digest": "c4da19b3650402c2847987be8af9c913db0366d11a57271b477a1a8333c9d4f1"
+  },
+  "oscillators|w128|d16": {
+   "family": "oscillators",
+   "window": 128,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.2624,
+   "calibration_r2": -0.2304,
+   "parameters": 1473,
+   "wall_s": 3.9,
+   "peak_rss_mb_delta": 640.1,
+   "result_digest": "08375c682abc2461a00c4c067a1b79a62dd8cd6bafcae2cef77009ff5d3ddda8"
+  },
+  "oscillators|w128|d32": {
+   "family": "oscillators",
+   "window": 128,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.1673,
+   "calibration_r2": -0.2318,
+   "parameters": 4481,
+   "wall_s": 1.8,
+   "peak_rss_mb_delta": 660.0,
+   "result_digest": "fe2768e2b19c23fb2ca8a757dbf11a9bd51cdca88be10218402fe72eb1d123c2"
+  },
+  "oscillators|w128|d64": {
+   "family": "oscillators",
+   "window": 128,
+   "latent": 64,
+   "budget": 2700,
+   "monitor_r2": -0.0764,
+   "calibration_r2": -0.1772,
+   "parameters": 15105,
+   "wall_s": 9.5,
+   "peak_rss_mb_delta": 641.1,
+   "result_digest": "f37d4c38e1587ddb76c95cd52442ae642030ab3cccad4d662adf593f5a2c1ce2"
+  },
+  "oscillators|w128|d96": {
+   "family": "oscillators",
+   "window": 128,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1829,
+   "calibration_r2": -0.2824,
+   "parameters": 31873,
+   "wall_s": 1.0,
+   "peak_rss_mb_delta": 711.8,
+   "result_digest": "b17975e5f5180086a89415ef494c0baf3b9aac8e18aa9a272a1e34658313c2ec"
+  },
+  "oscillators|w128|d128": {
+   "family": "oscillators",
+   "window": 128,
+   "latent": 128,
+   "budget": 900,
+   "monitor_r2": -0.2269,
+   "calibration_r2": -0.2329,
+   "parameters": 54785,
+   "wall_s": 2.8,
+   "peak_rss_mb_delta": 664.7,
+   "result_digest": "024a01777863c455296fbe5fad0a1f82edb37a15aca85469ed0222217ffaf181"
+  },
+  "oscillators|w256|d16": {
+   "family": "oscillators",
+   "window": 256,
+   "latent": 16,
+   "budget": 900,
+   "monitor_r2": -0.2624,
+   "calibration_r2": -0.2304,
+   "parameters": 1473,
+   "wall_s": 1.7,
+   "peak_rss_mb_delta": 763.3,
+   "result_digest": "e083d60e6aa68ba70033b5812900743ea08821c887f3023b95f41ab00dfd1861"
+  },
+  "oscillators|w256|d32": {
+   "family": "oscillators",
+   "window": 256,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.1673,
+   "calibration_r2": -0.2318,
+   "parameters": 4481,
+   "wall_s": 2.2,
+   "peak_rss_mb_delta": 759.2,
+   "result_digest": "760c21ba194d3f0b8aecec0a8a7bf1d562cde60a4ea85946e20ddcb879ec2c5a"
+  },
+  "oscillators|w256|d64": {
+   "family": "oscillators",
+   "window": 256,
+   "latent": 64,
+   "budget": 2700,
+   "monitor_r2": -0.0764,
+   "calibration_r2": -0.1772,
+   "parameters": 15105,
+   "wall_s": 6.7,
+   "peak_rss_mb_delta": 739.7,
+   "result_digest": "ae06ecdece29cd50cf28a5f68d5543a7b1206847b7118fc5c5ef1ed4354a65fc"
+  },
+  "oscillators|w256|d96": {
+   "family": "oscillators",
+   "window": 256,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1829,
+   "calibration_r2": -0.2824,
+   "parameters": 31873,
+   "wall_s": 1.8,
+   "peak_rss_mb_delta": 811.2,
+   "result_digest": "a8c7445d86f5f9c2f4a2b950845720764a3aa73ade1a583937974bfd9b215b54"
+  },
+  "oscillators|w256|d128": {
+   "family": "oscillators",
+   "window": 256,
+   "latent": 128,
+   "budget": 900,
+   "monitor_r2": -0.2269,
+   "calibration_r2": -0.2329,
+   "parameters": 54785,
+   "wall_s": 6.2,
+   "peak_rss_mb_delta": 763.5,
+   "result_digest": "12d9ac58fa27526ad63748ea5ceb1dcfa255b22fa43922c9578bb085062d5436"
+  },
+  "volume_flow|w32|d16": {
+   "family": "volume_flow",
+   "window": 32,
+   "latent": 16,
+   "budget": 2700,
+   "monitor_r2": -0.023,
+   "calibration_r2": -0.0012,
+   "parameters": 1169,
+   "wall_s": 3.9,
+   "peak_rss_mb_delta": 412.1,
+   "result_digest": "8f6ef1b287bb225cb49559e75e14d8cba8e51189654d3b658a6fce00f1df95c5"
+  },
+  "volume_flow|w32|d32": {
+   "family": "volume_flow",
+   "window": 32,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.1434,
+   "calibration_r2": -0.1479,
+   "parameters": 3873,
+   "wall_s": 1.3,
+   "peak_rss_mb_delta": 433.8,
+   "result_digest": "4a56633aa45cf784c545c4bb274c3c4817018e8d7a2f45cf296af79acecb8e74"
+  },
+  "volume_flow|w32|d64": {
+   "family": "volume_flow",
+   "window": 32,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2831,
+   "calibration_r2": -0.1693,
+   "parameters": 13889,
+   "wall_s": 0.6,
+   "peak_rss_mb_delta": 474.3,
+   "result_digest": "69c67d0ccffa57d30be73c3cf48c65d9f23952a97e6001a5b03f723ba9d82df2"
+  },
+  "volume_flow|w32|d96": {
+   "family": "volume_flow",
+   "window": 32,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1488,
+   "calibration_r2": -0.199,
+   "parameters": 30049,
+   "wall_s": 0.6,
+   "peak_rss_mb_delta": 473.8,
+   "result_digest": "c191439e51a46f37f047c00857a06fa15c7db63cadf43ef4e718ae4881cb5808"
+  },
+  "volume_flow|w32|d128": {
+   "family": "volume_flow",
+   "window": 32,
+   "latent": 128,
+   "budget": 2700,
+   "monitor_r2": 0.0069,
+   "calibration_r2": 0.0495,
+   "parameters": 52353,
+   "wall_s": 8.4,
+   "peak_rss_mb_delta": 407.2,
+   "result_digest": "e1b797793fb3f3b62f030d6660e12b8d568cad30aff217c6008ebdee44d5010c"
+  },
+  "volume_flow|w64|d16": {
+   "family": "volume_flow",
+   "window": 64,
+   "latent": 16,
+   "budget": 900,
+   "monitor_r2": -0.0199,
+   "calibration_r2": -0.0058,
+   "parameters": 1169,
+   "wall_s": 1.3,
+   "peak_rss_mb_delta": 457.8,
+   "result_digest": "d932c88868b9f3b461bb90ac57db3933ae71bbd6c1804d1761ddf72eec263d72"
+  },
+  "volume_flow|w64|d32": {
+   "family": "volume_flow",
+   "window": 64,
+   "latent": 32,
+   "budget": 900,
+   "monitor_r2": -0.1384,
+   "calibration_r2": -0.1517,
+   "parameters": 3873,
+   "wall_s": 1.3,
+   "peak_rss_mb_delta": 458.1,
+   "result_digest": "5fc4861cadadd59ea78f61b1e4f33b3a88d85ba62ac48da1bd681eb51300a35c"
+  },
+  "volume_flow|w64|d64": {
+   "family": "volume_flow",
+   "window": 64,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2761,
+   "calibration_r2": -0.1652,
+   "parameters": 13889,
+   "wall_s": 0.7,
+   "peak_rss_mb_delta": 498.2,
+   "result_digest": "7253a4c975e0c3f24975c2bc304eb242aedcd47e164396d6dab0d0cb653c99cf"
+  },
+  "volume_flow|w64|d96": {
+   "family": "volume_flow",
+   "window": 64,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1532,
+   "calibration_r2": -0.1948,
+   "parameters": 30049,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 497.2,
+   "result_digest": "999e1740141d06afe14e9ae11dee18c8ef900ae691876e95bd769204386359da"
+  },
+  "volume_flow|w64|d128": {
+   "family": "volume_flow",
+   "window": 64,
+   "latent": 128,
+   "budget": 2700,
+   "monitor_r2": 0.0079,
+   "calibration_r2": 0.0519,
+   "parameters": 52353,
+   "wall_s": 7.4,
+   "peak_rss_mb_delta": 430.5,
+   "result_digest": "7813dcf8851a98a0fb097c17e77b427a0ad8e9a4e8abb689ecc36ba786d7038f"
+  },
+  "volume_flow|w128|d16": {
+   "family": "volume_flow",
+   "window": 128,
+   "latent": 16,
+   "budget": 900,
+   "monitor_r2": -0.0171,
+   "calibration_r2": -0.0031,
+   "parameters": 1169,
+   "wall_s": 1.3,
+   "peak_rss_mb_delta": 505.6,
+   "result_digest": "6d6d3ed93a05f62408ed5e811abba870fa26119d4b40298d821f186166c35ff0"
+  },
+  "volume_flow|w128|d32": {
+   "family": "volume_flow",
+   "window": 128,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": -0.1388,
+   "calibration_r2": -0.1695,
+   "parameters": 3873,
+   "wall_s": 0.6,
+   "peak_rss_mb_delta": 551.2,
+   "result_digest": "5b4ca9b6e5cf8817632b5ee1bc12fbf3be3aa08365628c2fd6ac0f3fe3f76e7e"
+  },
+  "volume_flow|w128|d64": {
+   "family": "volume_flow",
+   "window": 128,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2759,
+   "calibration_r2": -0.1722,
+   "parameters": 13889,
+   "wall_s": 0.7,
+   "peak_rss_mb_delta": 550.6,
+   "result_digest": "91ac54f53b0f5f5596a6fda347a601b04120416678d52e75117e7b9131deb84d"
+  },
+  "volume_flow|w128|d96": {
+   "family": "volume_flow",
+   "window": 128,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1277,
+   "calibration_r2": -0.1963,
+   "parameters": 30049,
+   "wall_s": 0.8,
+   "peak_rss_mb_delta": 551.1,
+   "result_digest": "2991495d34905da7061ead7cd0c7991b79db73d68755db43aa47d578d8f6e276"
+  },
+  "volume_flow|w128|d128": {
+   "family": "volume_flow",
+   "window": 128,
+   "latent": 128,
+   "budget": 2700,
+   "monitor_r2": 0.0024,
+   "calibration_r2": 0.0773,
+   "parameters": 52353,
+   "wall_s": 10.6,
+   "peak_rss_mb_delta": 484.0,
+   "result_digest": "64d52891ec72ea23399a386fe6c4748869f0e79fbbf8b7bcfd0b916f8f3457db"
+  },
+  "volume_flow|w256|d16": {
+   "family": "volume_flow",
+   "window": 256,
+   "latent": 16,
+   "budget": 900,
+   "monitor_r2": -0.0172,
+   "calibration_r2": -0.0031,
+   "parameters": 1169,
+   "wall_s": 1.3,
+   "peak_rss_mb_delta": 601.3,
+   "result_digest": "87046e673af3cbf8f5888a694d513cb692a50eddfc3d8b3b29527b9ae3e146d7"
+  },
+  "volume_flow|w256|d32": {
+   "family": "volume_flow",
+   "window": 256,
+   "latent": 32,
+   "budget": 300,
+   "monitor_r2": -0.1388,
+   "calibration_r2": -0.1695,
+   "parameters": 3873,
+   "wall_s": 0.7,
+   "peak_rss_mb_delta": 646.9,
+   "result_digest": "d6ff8558e0d2077c8e1d4105d338e3721ffd13e9c956d28d696402798d230e0d"
+  },
+  "volume_flow|w256|d64": {
+   "family": "volume_flow",
+   "window": 256,
+   "latent": 64,
+   "budget": 300,
+   "monitor_r2": -0.2759,
+   "calibration_r2": -0.1722,
+   "parameters": 13889,
+   "wall_s": 0.9,
+   "peak_rss_mb_delta": 646.7,
+   "result_digest": "dc33023493b27f70048071347afc1204dec6bcd5a0e522ea5e3d5ceda520609f"
+  },
+  "volume_flow|w256|d96": {
+   "family": "volume_flow",
+   "window": 256,
+   "latent": 96,
+   "budget": 300,
+   "monitor_r2": -0.1277,
+   "calibration_r2": -0.1963,
+   "parameters": 30049,
+   "wall_s": 1.3,
+   "peak_rss_mb_delta": 646.9,
+   "result_digest": "6d98823983a123322c909fd6c3f23fe8b7cbc1cbb160f9b49c0b1526ceead7fc"
+  },
+  "volume_flow|w256|d128": {
+   "family": "volume_flow",
+   "window": 256,
+   "latent": 128,
+   "budget": 2700,
+   "monitor_r2": 0.0024,
+   "calibration_r2": 0.0772,
+   "parameters": 52353,
+   "wall_s": 18.1,
+   "peak_rss_mb_delta": 579.9,
+   "result_digest": "501ed73620074e25931d59a61fefa90a9be65b000bfc111f4c5f888b42ffccb2"
+  }
+ },
+ "halving": {
+  "round1_advance": [
+   "oscillators|w128|d128",
+   "oscillators|w128|d16",
+   "oscillators|w128|d32",
+   "oscillators|w128|d64",
+   "oscillators|w256|d128",
+   "oscillators|w256|d16",
+   "oscillators|w256|d32",
+   "oscillators|w256|d64",
+   "oscillators|w32|d64",
+   "oscillators|w64|d64",
+   "returns_momentum|w128|d16",
+   "returns_momentum|w128|d32",
+   "returns_momentum|w128|d64",
+   "returns_momentum|w256|d32",
+   "returns_momentum|w32|d16",
+   "returns_momentum|w32|d32",
+   "returns_momentum|w32|d64",
+   "returns_momentum|w64|d16",
+   "returns_momentum|w64|d32",
+   "returns_momentum|w64|d64",
+   "trend_level|w128|d128",
+   "trend_level|w128|d96",
+   "trend_level|w256|d96",
+   "trend_level|w32|d128",
+   "trend_level|w32|d32",
+   "trend_level|w32|d96",
+   "trend_level|w64|d128",
+   "trend_level|w64|d16",
+   "trend_level|w64|d32",
+   "trend_level|w64|d96",
+   "volatility_distribution|w128|d16",
+   "volatility_distribution|w128|d32",
+   "volatility_distribution|w256|d16",
+   "volatility_distribution|w256|d32",
+   "volatility_distribution|w256|d64",
+   "volatility_distribution|w256|d96",
+   "volatility_distribution|w32|d16",
+   "volatility_distribution|w32|d32",
+   "volatility_distribution|w64|d16",
+   "volatility_distribution|w64|d32",
+   "volume_flow|w128|d128",
+   "volume_flow|w128|d16",
+   "volume_flow|w256|d128",
+   "volume_flow|w256|d16",
+   "volume_flow|w32|d128",
+   "volume_flow|w32|d16",
+   "volume_flow|w32|d32",
+   "volume_flow|w64|d128",
+   "volume_flow|w64|d16",
+   "volume_flow|w64|d32"
+  ],
+  "round2_advance": [
+   "oscillators|w128|d16",
+   "oscillators|w128|d64",
+   "oscillators|w256|d64",
+   "oscillators|w32|d64",
+   "oscillators|w64|d64",
+   "returns_momentum|w128|d16",
+   "returns_momentum|w128|d32",
+   "returns_momentum|w32|d16",
+   "returns_momentum|w64|d16",
+   "returns_momentum|w64|d64",
+   "trend_level|w32|d128",
+   "trend_level|w32|d32",
+   "trend_level|w32|d96",
+   "trend_level|w64|d16",
+   "trend_level|w64|d32",
+   "volatility_distribution|w128|d16",
+   "volatility_distribution|w256|d16",
+   "volatility_distribution|w32|d16",
+   "volatility_distribution|w32|d32",
+   "volatility_distribution|w64|d16",
+   "volume_flow|w128|d128",
+   "volume_flow|w256|d128",
+   "volume_flow|w32|d128",
+   "volume_flow|w32|d16",
+   "volume_flow|w64|d128"
+  ]
+ },
+ "survivor_decisions": {
+  "oscillators|w128|d16": {
+   "monitor_r2_all_runs": [
+    -0.2703,
+    -0.2416,
+    -0.3245,
+    -0.3015,
+    -0.2624,
+    -0.1356,
+    -0.1473,
+    -0.329
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.394,
+    "sd": 0.1489,
+    "ci95_low": -0.4993,
+    "ci95_high": -0.2888,
+    "per_seed": [
+     -0.5049,
+     -0.4762,
+     -0.5591,
+     -0.5361,
+     -0.3128,
+     -0.186,
+     -0.1977,
+     -0.3794
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.3501,
+    "sd": 0.1045,
+    "ci95_low": 0.2763,
+    "ci95_high": 0.424,
+    "per_seed": [
+     0.4172,
+     0.3051,
+     0.2813,
+     0.3273,
+     0.4291,
+     0.3923,
+     0.4905,
+     0.1581
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "oscillators|w128|d64": {
+   "monitor_r2_all_runs": [
+    -0.224,
+    -0.2591,
+    -0.377,
+    -0.4799,
+    -0.0764,
+    -0.2745,
+    -0.2282,
+    -0.2274
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.4108,
+    "sd": 0.1945,
+    "ci95_low": -0.5484,
+    "ci95_high": -0.2733,
+    "per_seed": [
+     -0.4586,
+     -0.4937,
+     -0.6116,
+     -0.7145,
+     -0.1268,
+     -0.3249,
+     -0.2786,
+     -0.2778
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0631,
+    "sd": 0.128,
+    "ci95_low": -0.0274,
+    "ci95_high": 0.1537,
+    "per_seed": [
+     0.1225,
+     0.048,
+     -0.0164,
+     -0.1614,
+     0.2733,
+     0.0015,
+     0.1247,
+     0.1129
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "oscillators|w256|d64": {
+   "monitor_r2_all_runs": [
+    -0.2232,
+    -0.3381,
+    -0.3761,
+    -0.469,
+    -0.0764,
+    -0.2746,
+    -0.2282,
+    -0.2275
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.4191,
+    "sd": 0.1988,
+    "ci95_low": -0.5597,
+    "ci95_high": -0.2785,
+    "per_seed": [
+     -0.4578,
+     -0.5727,
+     -0.6107,
+     -0.7036,
+     -0.1268,
+     -0.325,
+     -0.2786,
+     -0.2779
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0548,
+    "sd": 0.1298,
+    "ci95_low": -0.037,
+    "ci95_high": 0.1466,
+    "per_seed": [
+     0.1233,
+     -0.031,
+     -0.0155,
+     -0.1505,
+     0.2733,
+     0.0014,
+     0.1247,
+     0.1128
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "oscillators|w32|d64": {
+   "monitor_r2_all_runs": [
+    -0.3425,
+    -0.2526,
+    -0.3626,
+    -0.3323,
+    -0.0755,
+    -0.2567,
+    -0.2254,
+    -0.2313
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.4024,
+    "sd": 0.1768,
+    "ci95_low": -0.5274,
+    "ci95_high": -0.2773,
+    "per_seed": [
+     -0.5771,
+     -0.4872,
+     -0.5972,
+     -0.5669,
+     -0.1259,
+     -0.3071,
+     -0.2758,
+     -0.2817
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0679,
+    "sd": 0.1128,
+    "ci95_low": -0.0118,
+    "ci95_high": 0.1477,
+    "per_seed": [
+     0.0165,
+     0.0575,
+     -0.046,
+     -0.0421,
+     0.292,
+     0.0077,
+     0.1284,
+     0.1295
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "oscillators|w64|d64": {
+   "monitor_r2_all_runs": [
+    -0.3408,
+    -0.2502,
+    -0.3603,
+    -0.3325,
+    -0.0755,
+    -0.2567,
+    -0.2254,
+    -0.2313
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.4016,
+    "sd": 0.1761,
+    "ci95_low": -0.5261,
+    "ci95_high": -0.2771,
+    "per_seed": [
+     -0.5754,
+     -0.4848,
+     -0.5949,
+     -0.5671,
+     -0.1259,
+     -0.3071,
+     -0.2758,
+     -0.2817
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0687,
+    "sd": 0.1124,
+    "ci95_low": -0.0108,
+    "ci95_high": 0.1482,
+    "per_seed": [
+     0.0182,
+     0.0599,
+     -0.0437,
+     -0.0423,
+     0.292,
+     0.0077,
+     0.1284,
+     0.1295
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "returns_momentum|w128|d16": {
+   "monitor_r2_all_runs": [
+    -0.3004,
+    0.0253,
+    -0.0657,
+    -0.053,
+    -0.3996,
+    -0.2669,
+    -0.3009,
+    -0.2331
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.3418,
+    "sd": 0.1037,
+    "ci95_low": -0.4151,
+    "ci95_high": -0.2684,
+    "per_seed": [
+     -0.535,
+     -0.2093,
+     -0.3003,
+     -0.2876,
+     -0.45,
+     -0.3173,
+     -0.3513,
+     -0.2835
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 2.5144,
+    "sd": 0.5962,
+    "ci95_low": 2.0928,
+    "ci95_high": 2.936,
+    "per_seed": [
+     2.1699,
+     2.3601,
+     3.1464,
+     2.211,
+     1.9016,
+     2.4949,
+     3.676,
+     2.1553
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "returns_momentum|w128|d32": {
+   "monitor_r2_all_runs": [
+    -0.0846,
+    -0.0484,
+    -0.0585,
+    -0.0707,
+    -0.2322,
+    -0.2936,
+    -0.4435,
+    -0.1829
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.3193,
+    "sd": 0.0775,
+    "ci95_low": -0.3741,
+    "ci95_high": -0.2645,
+    "per_seed": [
+     -0.3192,
+     -0.283,
+     -0.2931,
+     -0.3053,
+     -0.2826,
+     -0.344,
+     -0.4939,
+     -0.2333
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 1.1133,
+    "sd": 0.4566,
+    "ci95_low": 0.7904,
+    "ci95_high": 1.4362,
+    "per_seed": [
+     1.7012,
+     0.7659,
+     1.0578,
+     1.513,
+     1.594,
+     0.6527,
+     0.4912,
+     1.1305
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "returns_momentum|w32|d16": {
+   "monitor_r2_all_runs": [
+    0.0045,
+    0.0843,
+    0.0155,
+    -0.1331,
+    -0.2824,
+    -0.1686,
+    -0.2287,
+    -0.1482
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2496,
+    "sd": 0.0722,
+    "ci95_low": -0.3006,
+    "ci95_high": -0.1986,
+    "per_seed": [
+     -0.2301,
+     -0.1503,
+     -0.2191,
+     -0.3677,
+     -0.3328,
+     -0.219,
+     -0.2791,
+     -0.1986
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 2.6418,
+    "sd": 0.5694,
+    "ci95_low": 2.2392,
+    "ci95_high": 3.0444,
+    "per_seed": [
+     2.6287,
+     2.2844,
+     3.2458,
+     2.1949,
+     2.1438,
+     2.7705,
+     3.689,
+     2.1774
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "returns_momentum|w64|d16": {
+   "monitor_r2_all_runs": [
+    -0.0572,
+    -0.0113,
+    0.0544,
+    0.0652,
+    -0.3422,
+    -0.2067,
+    -0.3225,
+    -0.1797
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2675,
+    "sd": 0.0816,
+    "ci95_low": -0.3252,
+    "ci95_high": -0.2098,
+    "per_seed": [
+     -0.2918,
+     -0.2459,
+     -0.1802,
+     -0.1694,
+     -0.3926,
+     -0.2571,
+     -0.3729,
+     -0.2301
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 2.6542,
+    "sd": 0.5895,
+    "ci95_low": 2.2373,
+    "ci95_high": 3.071,
+    "per_seed": [
+     2.3652,
+     2.294,
+     3.4104,
+     2.3696,
+     2.167,
+     2.634,
+     3.7362,
+     2.2569
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "returns_momentum|w64|d64": {
+   "monitor_r2_all_runs": [
+    0.0277,
+    0.107,
+    -0.0227,
+    0.1464,
+    -0.2699,
+    -0.3673,
+    -0.1671,
+    -0.3733
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2574,
+    "sd": 0.1236,
+    "ci95_low": -0.3448,
+    "ci95_high": -0.17,
+    "per_seed": [
+     -0.2069,
+     -0.1276,
+     -0.2573,
+     -0.0882,
+     -0.3203,
+     -0.4177,
+     -0.2175,
+     -0.4237
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.3213,
+    "sd": 0.1782,
+    "ci95_low": 0.1952,
+    "ci95_high": 0.4473,
+    "per_seed": [
+     0.0897,
+     0.3765,
+     0.3588,
+     0.3106,
+     0.3267,
+     0.4407,
+     0.607,
+     0.06
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "trend_level|w32|d128": {
+   "monitor_r2_all_runs": [
+    -0.035,
+    -0.0784,
+    -0.0317,
+    0.0189,
+    -0.2266,
+    -0.3039,
+    -0.2641,
+    -0.4822
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.3179,
+    "sd": 0.096,
+    "ci95_low": -0.3858,
+    "ci95_high": -0.25,
+    "per_seed": [
+     -0.2696,
+     -0.313,
+     -0.2663,
+     -0.2157,
+     -0.277,
+     -0.3543,
+     -0.3145,
+     -0.5326
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": -0.0164,
+    "sd": 0.1138,
+    "ci95_low": -0.0968,
+    "ci95_high": 0.0641,
+    "per_seed": [
+     0.0113,
+     -0.0033,
+     0.0366,
+     0.1305,
+     0.0305,
+     -0.0771,
+     0.0004,
+     -0.2597
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "trend_level|w32|d32": {
+   "monitor_r2_all_runs": [
+    -0.2311,
+    0.0805,
+    -0.2092,
+    0.1301,
+    -0.1368,
+    -0.2169,
+    -0.286,
+    -0.5181
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.3159,
+    "sd": 0.166,
+    "ci95_low": -0.4333,
+    "ci95_high": -0.1986,
+    "per_seed": [
+     -0.4657,
+     -0.1541,
+     -0.4438,
+     -0.1045,
+     -0.1872,
+     -0.2673,
+     -0.3364,
+     -0.5685
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.076,
+    "sd": 0.1719,
+    "ci95_low": -0.0455,
+    "ci95_high": 0.1976,
+    "per_seed": [
+     -0.1184,
+     0.2571,
+     0.0216,
+     0.3628,
+     -0.0471,
+     0.1887,
+     -0.0012,
+     -0.0552
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "trend_level|w32|d96": {
+   "monitor_r2_all_runs": [
+    0.0491,
+    -0.0643,
+    -0.1012,
+    0.0648,
+    -0.2428,
+    -0.5324,
+    -0.3919,
+    -0.5549
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.3642,
+    "sd": 0.1656,
+    "ci95_low": -0.4813,
+    "ci95_high": -0.2471,
+    "per_seed": [
+     -0.1855,
+     -0.2989,
+     -0.3358,
+     -0.1698,
+     -0.2932,
+     -0.5828,
+     -0.4423,
+     -0.6053
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": -0.0492,
+    "sd": 0.1738,
+    "ci95_low": -0.1721,
+    "ci95_high": 0.0737,
+    "per_seed": [
+     0.1079,
+     0.0166,
+     -0.0028,
+     0.1692,
+     0.0193,
+     -0.2915,
+     -0.1066,
+     -0.306
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "trend_level|w64|d16": {
+   "monitor_r2_all_runs": [
+    -0.1205,
+    -0.0467,
+    0.104,
+    0.048,
+    -0.3036,
+    -0.2231,
+    -0.2143,
+    -0.3136
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2762,
+    "sd": 0.084,
+    "ci95_low": -0.3356,
+    "ci95_high": -0.2168,
+    "per_seed": [
+     -0.3551,
+     -0.2813,
+     -0.1306,
+     -0.1866,
+     -0.354,
+     -0.2735,
+     -0.2647,
+     -0.364
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.1258,
+    "sd": 0.1208,
+    "ci95_low": 0.0404,
+    "ci95_high": 0.2112,
+    "per_seed": [
+     0.1668,
+     0.0984,
+     0.2184,
+     0.1165,
+     0.2554,
+     0.1656,
+     0.1291,
+     -0.1437
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "trend_level|w64|d32": {
+   "monitor_r2_all_runs": [
+    -0.2291,
+    0.062,
+    -0.2024,
+    0.0806,
+    -0.3305,
+    -0.467,
+    -0.3985,
+    -0.2716
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.3621,
+    "sd": 0.1356,
+    "ci95_low": -0.458,
+    "ci95_high": -0.2662,
+    "per_seed": [
+     -0.4637,
+     -0.1726,
+     -0.437,
+     -0.154,
+     -0.3809,
+     -0.5174,
+     -0.4489,
+     -0.322
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": -0.0064,
+    "sd": 0.1861,
+    "ci95_low": -0.138,
+    "ci95_high": 0.1252,
+    "per_seed": [
+     -0.1164,
+     0.1992,
+     -0.0436,
+     0.2627,
+     -0.2388,
+     -0.1128,
+     -0.1571,
+     0.1558
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volatility_distribution|w128|d16": {
+   "monitor_r2_all_runs": [
+    -0.0516,
+    -0.1756,
+    -0.0047,
+    -0.0661,
+    0.0087,
+    -0.0133,
+    -0.006,
+    -0.0227
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.1839,
+    "sd": 0.1422,
+    "ci95_low": -0.2845,
+    "ci95_high": -0.0833,
+    "per_seed": [
+     -0.2862,
+     -0.4102,
+     -0.2393,
+     -0.3007,
+     -0.0417,
+     -0.0637,
+     -0.0564,
+     -0.0731
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.5632,
+    "sd": 0.494,
+    "ci95_low": 0.2139,
+    "ci95_high": 0.9125,
+    "per_seed": [
+     0.7307,
+     -0.0314,
+     0.0345,
+     0.3548,
+     0.7935,
+     0.4888,
+     0.6,
+     1.5346
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volatility_distribution|w256|d16": {
+   "monitor_r2_all_runs": [
+    0.1313,
+    -0.073,
+    -0.9341,
+    -0.1426,
+    -0.0427,
+    -0.0035,
+    -0.0065,
+    -0.0155
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2783,
+    "sd": 0.3804,
+    "ci95_low": -0.5473,
+    "ci95_high": -0.0094,
+    "per_seed": [
+     -0.1033,
+     -0.3076,
+     -1.1687,
+     -0.3772,
+     -0.0931,
+     -0.0539,
+     -0.0569,
+     -0.0659
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.3866,
+    "sd": 0.538,
+    "ci95_low": 0.0062,
+    "ci95_high": 0.767,
+    "per_seed": [
+     0.5693,
+     0.0072,
+     -0.7212,
+     0.5222,
+     0.7228,
+     0.5155,
+     0.4023,
+     1.0744
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volatility_distribution|w32|d16": {
+   "monitor_r2_all_runs": [
+    0.0895,
+    -0.007,
+    -0.1166,
+    -0.0157,
+    -0.0502,
+    -0.0886,
+    0.0174,
+    -0.0044
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.1645,
+    "sd": 0.1086,
+    "ci95_low": -0.2413,
+    "ci95_high": -0.0876,
+    "per_seed": [
+     -0.1451,
+     -0.2416,
+     -0.3512,
+     -0.2503,
+     -0.1006,
+     -0.139,
+     -0.033,
+     -0.0548
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.4596,
+    "sd": 0.3969,
+    "ci95_low": 0.1789,
+    "ci95_high": 0.7403,
+    "per_seed": [
+     0.7461,
+     0.0013,
+     -0.0344,
+     0.2677,
+     0.7277,
+     0.4281,
+     0.4069,
+     1.1336
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volatility_distribution|w32|d32": {
+   "monitor_r2_all_runs": [
+    0.0327,
+    -0.0391,
+    0.0155,
+    0.0433,
+    -0.0621,
+    -0.1608,
+    -0.0591,
+    -0.012
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.1727,
+    "sd": 0.0705,
+    "ci95_low": -0.2226,
+    "ci95_high": -0.1228,
+    "per_seed": [
+     -0.2019,
+     -0.2737,
+     -0.2191,
+     -0.1913,
+     -0.1125,
+     -0.2112,
+     -0.1095,
+     -0.0624
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.5119,
+    "sd": 0.3586,
+    "ci95_low": 0.2584,
+    "ci95_high": 0.7655,
+    "per_seed": [
+     0.4121,
+     -0.0562,
+     0.2012,
+     0.7556,
+     1.106,
+     0.3769,
+     0.683,
+     0.6168
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volatility_distribution|w64|d16": {
+   "monitor_r2_all_runs": [
+    0.1394,
+    -0.0034,
+    -0.029,
+    0.0011,
+    -0.0542,
+    -0.0921,
+    0.0193,
+    -0.0031
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.1452,
+    "sd": 0.0895,
+    "ci95_low": -0.2085,
+    "ci95_high": -0.082,
+    "per_seed": [
+     -0.0952,
+     -0.238,
+     -0.2636,
+     -0.2335,
+     -0.1046,
+     -0.1425,
+     -0.0311,
+     -0.0535
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.5853,
+    "sd": 0.5534,
+    "ci95_low": 0.194,
+    "ci95_high": 0.9766,
+    "per_seed": [
+     0.7861,
+     0.1083,
+     0.0604,
+     0.3873,
+     0.698,
+     0.3944,
+     0.4414,
+     1.8065
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volume_flow|w128|d128": {
+   "monitor_r2_all_runs": [
+    -0.1124,
+    -0.07,
+    -0.1167,
+    -0.1208,
+    0.0024,
+    0.0396,
+    0.0227,
+    0.0121
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.1854,
+    "sd": 0.1659,
+    "ci95_low": -0.3027,
+    "ci95_high": -0.0681,
+    "per_seed": [
+     -0.347,
+     -0.3046,
+     -0.3513,
+     -0.3554,
+     -0.048,
+     -0.0108,
+     -0.0277,
+     -0.0383
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0568,
+    "sd": 0.1104,
+    "ci95_low": -0.0213,
+    "ci95_high": 0.1349,
+    "per_seed": [
+     -0.1074,
+     0.0182,
+     0.1723,
+     -0.0623,
+     0.0034,
+     0.0983,
+     0.1884,
+     0.1435
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volume_flow|w256|d128": {
+   "monitor_r2_all_runs": [
+    -0.2289,
+    -0.1305,
+    -0.1089,
+    -0.0777,
+    0.0024,
+    0.0396,
+    0.0227,
+    0.0121
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2011,
+    "sd": 0.1869,
+    "ci95_low": -0.3333,
+    "ci95_high": -0.069,
+    "per_seed": [
+     -0.4635,
+     -0.3651,
+     -0.3435,
+     -0.3123,
+     -0.048,
+     -0.0108,
+     -0.0277,
+     -0.0383
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.041,
+    "sd": 0.1399,
+    "ci95_low": -0.0579,
+    "ci95_high": 0.14,
+    "per_seed": [
+     -0.2239,
+     -0.0423,
+     0.1801,
+     -0.0192,
+     0.0034,
+     0.0983,
+     0.1884,
+     0.1435
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volume_flow|w32|d128": {
+   "monitor_r2_all_runs": [
+    -0.1701,
+    -0.1816,
+    -0.2063,
+    -0.1177,
+    0.0069,
+    0.0157,
+    -0.0059,
+    0.0213
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2222,
+    "sd": 0.1955,
+    "ci95_low": -0.3605,
+    "ci95_high": -0.084,
+    "per_seed": [
+     -0.4047,
+     -0.4162,
+     -0.4409,
+     -0.3523,
+     -0.0435,
+     -0.0347,
+     -0.0563,
+     -0.0291
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0126,
+    "sd": 0.1305,
+    "ci95_low": -0.0796,
+    "ci95_high": 0.1049,
+    "per_seed": [
+     -0.2055,
+     -0.1332,
+     0.0897,
+     -0.0375,
+     0.0093,
+     0.08,
+     0.1496,
+     0.1487
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volume_flow|w32|d16": {
+   "monitor_r2_all_runs": [
+    -0.1175,
+    -0.0938,
+    -0.1069,
+    -0.0721,
+    -0.023,
+    -0.0056,
+    -0.0644,
+    0.0012
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2028,
+    "sd": 0.1403,
+    "ci95_low": -0.3019,
+    "ci95_high": -0.1036,
+    "per_seed": [
+     -0.3521,
+     -0.3284,
+     -0.3415,
+     -0.3067,
+     -0.0734,
+     -0.056,
+     -0.1148,
+     -0.0492
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 1.6881,
+    "sd": 1.0644,
+    "ci95_low": 0.9355,
+    "ci95_high": 2.4408,
+    "per_seed": [
+     3.0309,
+     0.8385,
+     0.9743,
+     1.9133,
+     3.4838,
+     0.7399,
+     0.8386,
+     1.6858
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  },
+  "volume_flow|w64|d128": {
+   "monitor_r2_all_runs": [
+    -0.1676,
+    -0.179,
+    -0.2166,
+    -0.1076,
+    0.0079,
+    0.0229,
+    0.0099,
+    0.0231
+   ],
+   "all_positive_absolute_skill": false,
+   "paired_vs_persistence": {
+    "n": 8,
+    "mean": -0.2184,
+    "sd": 0.1989,
+    "ci95_low": -0.359,
+    "ci95_high": -0.0777,
+    "per_seed": [
+     -0.4022,
+     -0.4136,
+     -0.4512,
+     -0.3422,
+     -0.0425,
+     -0.0275,
+     -0.0405,
+     -0.0273
+    ]
+   },
+   "paired_vs_random_encoder": {
+    "n": 8,
+    "mean": 0.0165,
+    "sd": 0.1314,
+    "ci95_low": -0.0764,
+    "ci95_high": 0.1094,
+    "per_seed": [
+     -0.203,
+     -0.1306,
+     0.0794,
+     -0.0274,
+     0.0103,
+     0.0872,
+     0.1654,
+     0.1505
+    ]
+   },
+   "verdict": "NOT_DEMONSTRATED"
+  }
+ },
+ "invalid_cells": [],
+ "fusion": {
+  "branch_baselines": {
+   "returns_momentum": {
+    "volatility_r2": -0.0366,
+    "quantile_q0.5_pinball_neg": -0.0195,
+    "barrier_accuracy_minus_base": -0.0046
+   },
+   "trend_level": {
+    "volatility_r2": -0.2072,
+    "quantile_q0.5_pinball_neg": -0.0194,
+    "barrier_accuracy_minus_base": 0.0
+   },
+   "volatility_distribution": {
+    "volatility_r2": -0.1498,
+    "quantile_q0.5_pinball_neg": -0.0208,
+    "barrier_accuracy_minus_base": -0.0137
+   },
+   "oscillators": {
+    "volatility_r2": -0.1771,
+    "quantile_q0.5_pinball_neg": -0.0195,
+    "barrier_accuracy_minus_base": -0.0023
+   },
+   "volume_flow": {
+    "volatility_r2": -0.1994,
+    "quantile_q0.5_pinball_neg": -0.0194,
+    "barrier_accuracy_minus_base": 0.0
+   }
+  },
+  "best_non_fused_branch": {
+   "volatility_r2": -0.0366,
+   "quantile_q0.5_pinball_neg": -0.0194,
+   "barrier_accuracy_minus_base": 0.0
+  },
+  "variants": {
+   "random_fusion_frozen": {
+    "probes_list": [
+     {
+      "volatility_r2": -0.1236,
+      "quantile_q0.5_pinball_neg": -0.0193,
+      "barrier_accuracy_minus_base": -0.0046
+     }
+    ],
+    "trainable_params": 0,
+    "total_params": 25984,
+    "result_digest": "a2f190f6126ee7783b696dad95a60c3e337b109a4bae48b014603948ece7d1b1"
+   },
+   "branch_concatenation": {
+    "probes_list": [
+     {
+      "volatility_r2": -0.0709,
+      "quantile_q0.5_pinball_neg": -0.0207,
+      "barrier_accuracy_minus_base": -0.0228
+     }
+    ],
+    "trainable_params": 0,
+    "result_digest": "e494b5cea5f953e26e67beb9a31631120f1ef6626555a8a7db1b3c7ba699de89"
+   },
+   "current_fusion_probe_trained": {
+    "probes_list": [
+     {
+      "volatility_r2": -0.0624,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": -0.0068
+     },
+     {
+      "volatility_r2": -0.0929,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": 0.0022
+     },
+     {
+      "volatility_r2": -0.1117,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": 0.0
+     },
+     {
+      "volatility_r2": -0.1453,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": -0.0228
+     }
+    ],
+    "trainable_params": 25984
+   },
+   "gated_softmax_probe_trained": {
+    "probes_list": [
+     {
+      "volatility_r2": -0.1276,
+      "quantile_q0.5_pinball_neg": -0.0195,
+      "barrier_accuracy_minus_base": 0.0
+     },
+     {
+      "volatility_r2": -0.0452,
+      "quantile_q0.5_pinball_neg": -0.0196,
+      "barrier_accuracy_minus_base": -0.0205
+     },
+     {
+      "volatility_r2": -0.1125,
+      "quantile_q0.5_pinball_neg": -0.0196,
+      "barrier_accuracy_minus_base": -0.0068
+     },
+     {
+      "volatility_r2": -0.0739,
+      "quantile_q0.5_pinball_neg": -0.0203,
+      "barrier_accuracy_minus_base": -0.0432
+     }
+    ],
+    "trainable_params": 19877
+   },
+   "fine_tuned_branches_plus_fusion": {
+    "probes_list": [
+     {
+      "volatility_r2": 0.0295,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": 0.0
+     },
+     {
+      "volatility_r2": -0.0779,
+      "quantile_q0.5_pinball_neg": -0.0195,
+      "barrier_accuracy_minus_base": 0.0022
+     },
+     {
+      "volatility_r2": 0.0125,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": -0.0455
+     },
+     {
+      "volatility_r2": -0.045,
+      "quantile_q0.5_pinball_neg": -0.0194,
+      "barrier_accuracy_minus_base": 0.0
+     }
+    ],
+    "trainable_params": 108039
+   }
+  },
+  "decisions": {
+   "random_fusion_frozen": "DOES_NOT_ADVANCE",
+   "branch_concatenation": "DOES_NOT_ADVANCE",
+   "current_fusion_probe_trained": "DOES_NOT_ADVANCE",
+   "gated_softmax_probe_trained": "DOES_NOT_ADVANCE",
+   "fine_tuned_branches_plus_fusion": "DOES_NOT_ADVANCE"
+  }
+ },
+ "summary": {
+  "survivor_verdicts": {
+   "oscillators|w128|d16": "NOT_DEMONSTRATED",
+   "oscillators|w128|d64": "NOT_DEMONSTRATED",
+   "oscillators|w256|d64": "NOT_DEMONSTRATED",
+   "oscillators|w32|d64": "NOT_DEMONSTRATED",
+   "oscillators|w64|d64": "NOT_DEMONSTRATED",
+   "returns_momentum|w128|d16": "NOT_DEMONSTRATED",
+   "returns_momentum|w128|d32": "NOT_DEMONSTRATED",
+   "returns_momentum|w32|d16": "NOT_DEMONSTRATED",
+   "returns_momentum|w64|d16": "NOT_DEMONSTRATED",
+   "returns_momentum|w64|d64": "NOT_DEMONSTRATED",
+   "trend_level|w32|d128": "NOT_DEMONSTRATED",
+   "trend_level|w32|d32": "NOT_DEMONSTRATED",
+   "trend_level|w32|d96": "NOT_DEMONSTRATED",
+   "trend_level|w64|d16": "NOT_DEMONSTRATED",
+   "trend_level|w64|d32": "NOT_DEMONSTRATED",
+   "volatility_distribution|w128|d16": "NOT_DEMONSTRATED",
+   "volatility_distribution|w256|d16": "NOT_DEMONSTRATED",
+   "volatility_distribution|w32|d16": "NOT_DEMONSTRATED",
+   "volatility_distribution|w32|d32": "NOT_DEMONSTRATED",
+   "volatility_distribution|w64|d16": "NOT_DEMONSTRATED",
+   "volume_flow|w128|d128": "NOT_DEMONSTRATED",
+   "volume_flow|w256|d128": "NOT_DEMONSTRATED",
+   "volume_flow|w32|d128": "NOT_DEMONSTRATED",
+   "volume_flow|w32|d16": "NOT_DEMONSTRATED",
+   "volume_flow|w64|d128": "NOT_DEMONSTRATED"
+  },
+  "fusion_decisions": {
+   "random_fusion_frozen": "DOES_NOT_ADVANCE",
+   "branch_concatenation": "DOES_NOT_ADVANCE",
+   "current_fusion_probe_trained": "DOES_NOT_ADVANCE",
+   "gated_softmax_probe_trained": "DOES_NOT_ADVANCE",
+   "fine_tuned_branches_plus_fusion": "DOES_NOT_ADVANCE"
+  },
+  "any_fusion_advances": false
+ }
+}
