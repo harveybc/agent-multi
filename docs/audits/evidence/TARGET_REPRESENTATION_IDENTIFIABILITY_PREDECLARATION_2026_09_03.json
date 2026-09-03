@@ -1,0 +1,42 @@
+{
+  "schema": "agent_multi.target_representation_identifiability_predeclaration.v1",
+  "work_plan_unit": "TARGET_REPRESENTATION_IDENTIFIABILITY_AUDIT",
+  "order": "agent-multi@1649e7c0 §7 N0",
+  "committed_before_any_result": true,
+  "question": "did the candidate fail because the representation discarded useful signal, or because the chosen target/horizon (realized volatility h6) is not predictable beyond persistence on the available causal data?",
+  "target": "realized volatility h6 — identical to the screen-v2 primary target",
+  "arms": {
+    "1_persistence": "trailing-volatility persistence (past-14-bar realized vol as single ridge predictor) — the floor every claim must beat",
+    "2_direct_linear": "ridge regression on the CAUSAL RAW INPUTS: the flattened preprocessed feature window (all 83 columns), no extractor, closed-form with calibration-selected lambda",
+    "3_direct_temporal": "gru_branch over ALL 83 features + linear head, trained END TO END supervised (a small direct temporal model already implemented in the repository; the candidate extractor is NOT used)",
+    "4_best_frozen_branch": "FROZEN historical evidence: the best screen-v2 survivor per family (no rerun; values cited from the accepted report)",
+    "5_candidate_fusion": "FROZEN historical evidence only: the screen-v2 fusion variants (no new arm; never retrained)"
+  },
+  "folds": {
+    "rule": "selection stays INSIDE fit/calibration-derived causal folds of the o2022 slice; the consumed screen-v2 monitor windows (origin-0 monitor [cal_end..85%] and origin-1 monitor [85%..100%]) are NEVER reused as a new final test; intact confirmation roles are never touched (sealed years are structurally unloadable via load_fit_slice)",
+    "fold_A": {"fit": "[0 .. 43%) minus purge", "calibration": "[43% .. 53%) minus purge", "score": "[55% .. 65%)"},
+    "fold_B": {"fit": "[0 .. 53%) minus purge", "calibration": "[53% .. 63%) minus purge", "score": "[65% .. 75%)"},
+    "purge_bars": 12,
+    "note": "both score windows end strictly before the 85% boundary of the first consumed monitor"
+  },
+  "statistical_unit": "the (fold x arm) score; seeds are nested repetitions of the trainable arm, never units",
+  "seeds_direct_temporal": [101, 202, 303, 404],
+  "origins": "the two predeclared folds A/B (rolling causal origins inside the fit slice)",
+  "effect_margin": "an arm demonstrates predictability only with score R2 > 0 on BOTH folds AND paired mean margin over persistence >= 0.02 with the fold-level values individually positive; identical to the screen-v2 materiality convention",
+  "multiplicity": "Holm over the two direct arms (2 and 3); arms 4 and 5 are frozen citations, not new tests",
+  "budget": {
+    "direct_linear": "closed-form ridge; negligible",
+    "direct_temporal": "at most 5000 Adam updates per (fold, seed); 8 runs total for the full diagnostic",
+    "full_diagnostic_wall_ceiling_s": 21600,
+    "preflight": "EXACTLY one fast unit (direct_linear fold A) and one heavy unit (direct_temporal fold A seed 101), at most 5000 updates, at most one hour total, mechanics only — authorized by §7; the FULL diagnostic requires a separate order"
+  },
+  "device": "per the measured screen-v2 benchmark (285.2s CPU vs 59.0s CUDA on the heaviest unit): CUDA for the temporal arm, CPU for ridge",
+  "stopping": "no early stopping on score; calibration-only checkpoint selection for the temporal arm; the full diagnostic stops when all predeclared units complete or the wall ceiling trips",
+  "interpretation_map": {
+    "PREDICTABILITY_NOT_DEMONSTRATED": "neither direct arm (2, 3) demonstrates positive out-of-sample skill AND the margin over persistence -> change target, horizon or data before designing another extractor",
+    "REPRESENTATION_BOTTLENECK_DEMONSTRATED": "a direct arm advances but the frozen branches (4) do not",
+    "FUSION_BOTTLENECK_DEMONSTRATED": "frozen branches (4) advance but the frozen fusion (5) does not",
+    "INCONCLUSIVE": "any other pattern"
+  },
+  "runtime": "the C1-corrected observable runtime (transition-lock CAS, unique O_EXCL temps, strict aggregate); every unit atomic, resumable, heartbeated"
+}

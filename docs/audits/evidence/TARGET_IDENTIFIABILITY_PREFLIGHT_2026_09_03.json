@@ -1,0 +1,28 @@
+{
+ "schema": "agent_multi.target_identifiability_preflight.v1",
+ "classification": "MECHANICS_ONLY_PREFLIGHT",
+ "predeclaration": "docs/audits/evidence/TARGET_REPRESENTATION_IDENTIFIABILITY_PREDECLARATION_2026_09_03.json",
+ "wall_s": 12.7,
+ "outcomes": {
+  "fast": {
+   "unit": "ee82db4c6032dbfaa636",
+   "state": "COMPLETED",
+   "result": {
+    "score_r2": -1.6831,
+    "wall_s": 4.9
+   }
+  },
+  "heavy": {
+   "unit": "fd5ca0b49b12f1701f95",
+   "state": "COMPLETED",
+   "result": {
+    "score_r2": -0.003,
+    "calibration_r2": -0.4622,
+    "device": "cuda",
+    "updates": 5000,
+    "wall_s": 7.4
+   }
+  }
+ },
+ "note": "mechanics only \u2014 NO scientific claim; the full diagnostic requires a separate order"
+}

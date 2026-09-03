@@ -75,7 +75,7 @@ class TestCE4LedgerAndResults:
         b = r.root / "units" / f"{uids[1]}.result.json"
         a.write_text(b.read_text())
         with pytest.raises(RuntimePreflightError,
-                           match="correspondence"):
+                           match="binding absent or broken"):
             aggregate(r, uids)
 
     def test_release_stamps_unit_binding(self, run):

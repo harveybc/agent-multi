@@ -406,7 +406,8 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
                  identity_proof: dict | None = None,
                  authorization_sha256: str | None = None,
                  environment_preflight: dict | None = None,
-                 resume_attempt_dir: Path | None = None) -> dict:
+                 resume_attempt_dir: Path | None = None,
+                 scientific_gate_path: Path | None = None) -> dict:
     """Run ONE cell through the accepted nested trainer under custody.
 
     Musashi correction 3 (2026-09-03): cells are OBSERVABLE and
@@ -504,6 +505,18 @@ def execute_cell(design: dict, cell: dict, pretrain_dir: Path,
             raise DispatchRefused(
                 "executable tree changed between preflight and model "
                 "construction — refused (DATA-SOTA-379)")
+        # C3 (order @1649e7c0 §4.4): the dispatcher independently
+        # RE-DERIVES the scientific gate immediately before any
+        # CUDA/model/environment construction — a gate accepted at
+        # argument parsing can never be swapped afterwards
+        if scientific_gate_path is not None:
+            from tools.sac_scientific_gate import (
+                verify_gate_for_dispatch)
+            try:
+                verify_gate_for_dispatch(Path(scientific_gate_path))
+            except SystemExit as exc:
+                raise DispatchRefused(
+                    f"pre-construction gate re-derivation: {exc}")
         device_class = None
         if device == "cuda":
             import torch
@@ -727,7 +740,9 @@ def main() -> int:
                               environment_preflight=preflight,
                               resume_attempt_dir=(
                                   Path(args.resume_attempt)
-                                  if args.resume_attempt else None))
+                                  if args.resume_attempt else None),
+                              scientific_gate_path=Path(
+                                  args.scientific_gate))
         print(json.dumps({"status": "CPU_DRY_RUN_COMPLETED",
                           "custody_key": record["custody_key"][:16],
                           "stop_reason":
@@ -787,7 +802,8 @@ def main() -> int:
             Path(args.gpu_authorized_by_musashi)),
         environment_preflight=preflight,
         resume_attempt_dir=(Path(args.resume_attempt)
-                            if args.resume_attempt else None))
+                            if args.resume_attempt else None),
+        scientific_gate_path=Path(args.scientific_gate))
     print(json.dumps({"status": "CELL_COMPLETED",
                       "custody_key": record["custody_key"][:16],
                       "logical_slot": args.logical_slot},

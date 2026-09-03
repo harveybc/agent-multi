@@ -37,7 +37,10 @@
   "volume_flow|w64|d128": "NOT_DEMONSTRATED"
  },
  "usable_branches": [],
- "screen_report": "run id positive_skill_screen_v2_20260903 / POSITIVE_SKILL_SCREEN_V2_REPORT.json (durable state store)",
+ "screen_report": "run id positive_skill_screen_v2_20260903 / POSITIVE_SKILL_SCREEN_V2_REPORT.json",
  "screen_report_sha256": "147dcce4897a6f5b56d67fa0ec1e31e0ffaa8aa3e73ac0b1537d853807669a0e",
+ "external_audit": "run id positive_skill_screen_v2_20260903 / EXTERNAL_AUDIT_2026_09_03.json",
+ "external_audit_sha256": "37f3c85982b1f25cd7ea6e47307c91a2fdc0d2c2458bb5310f68cb6abd4d9188",
+ "external_audit_verdict": "SCREEN_V2_NEGATIVE_RESULT_ACCEPTED_WITH_LEGACY_BINDING_DISCLOSURE",
  "consequence": "the eight paired-SAC cells are NOT dispatched; return the negative result or explicitly design another extractor (Musashi correction 2)"
 }

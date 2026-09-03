@@ -640,6 +640,20 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "screen_v2_external_audit.py": {
+   "purpose": "External READ-ONLY runtime auditor of a frozen screen-v2 run (order @1649e7c0 C2): recomputes every ledger/input/code/config digest against the frozen executing checkout (commit + cleanliness), verifies every state identity byte-for-byte with unit-id recompute, requires the exact COMPLETED population, detects foreign states/results/logs, binds legacy results through attempt logs and worker completion records with a classified limitation, recomputes the COMPLETE final report under the frozen code and requires exact equality, and emits SCREEN_V2_NEGATIVE_RESULT_ACCEPTED_WITH_LEGACY_BINDING_DISCLOSURE or SCREEN_V2_RERUN_REQUIRED. Never writes into the run root.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
+  },
+  "target_identifiability_audit.py": {
+   "purpose": "TARGET_REPRESENTATION_IDENTIFIABILITY_AUDIT runner (order @1649e7c0 \u00a77 N0, predeclared): compares trailing-vol persistence, direct ridge on causal raw inputs, and a direct end-to-end GRU (no candidate extractor) under causal folds INSIDE the fit/calibration slice that never reuse the consumed screen-v2 monitors; frozen screen-v2 branches and fusion enter as citations only. Implements materialize/worker/preflight on the C1-corrected runtime; the FULL diagnostic has no entry point (separate order required).",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

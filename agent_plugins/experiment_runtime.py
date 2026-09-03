@@ -59,12 +59,16 @@ def sha_file(path: Path) -> str:
 
 
 def atomic_write_json(path: Path, payload: dict) -> None:
-    """tmp + fsync + rename + dir fsync: a disk-full or fsync failure
-    raises BEFORE any state can claim completion."""
+    """unique O_EXCL tmp + fsync + rename + dir fsync (C1.2,
+    2026-09-03): two concurrent writers can never share a temporary —
+    the fixed shared ``.tmp`` with O_TRUNC is prohibited. A disk-full
+    or fsync failure raises BEFORE any state can claim completion."""
+    import uuid as _uuid
     path = Path(path)
-    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp = path.parent / (path.name + f".{os.getpid()}."
+                         f"{_uuid.uuid4().hex}.tmp")
     data = json.dumps(payload, indent=1, default=str).encode()
-    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
     try:
         os.write(fd, data)
         os.fsync(fd)
@@ -145,6 +149,66 @@ class RunDirectory:
     def _state_path(self, uid: str) -> Path:
         return self.root / "units" / f"{uid}.state.json"
 
+    def _transition_lock(self, uid: str):
+        """C1 (2026-09-03): ONE per-unit transition lock covering
+        state re-read, expected-state/attempt verification, result
+        persistence and terminal-state persistence. O_EXCL creation
+        with pid ownership; a dead holder's lock is broken by exactly
+        one breaker (O_EXCL arbitrates the re-creation); creation and
+        release are made durable; an uncertain release FAILS CLOSED."""
+        run = self
+
+        class _Lock:
+            path = self.root / "units" / f"{uid}.transition.lock"
+
+            def __enter__(lock):
+                deadline = time.time() + 60.0
+                while True:
+                    try:
+                        fd = os.open(lock.path,
+                                     os.O_CREAT | os.O_EXCL
+                                     | os.O_WRONLY, 0o644)
+                        try:
+                            os.write(fd, str(os.getpid()).encode())
+                            os.fsync(fd)
+                        finally:
+                            os.close(fd)
+                        dfd = os.open(lock.path.parent, os.O_RDONLY)
+                        try:
+                            os.fsync(dfd)
+                        finally:
+                            os.close(dfd)
+                        return lock
+                    except FileExistsError:
+                        try:
+                            holder = int(lock.path.read_text() or 0)
+                        except (OSError, ValueError):
+                            holder = 0
+                        if holder and not Path(
+                                f"/proc/{holder}").exists():
+                            try:
+                                os.unlink(lock.path)
+                            except FileNotFoundError:
+                                pass
+                            continue
+                        if time.time() > deadline:
+                            raise RuntimePreflightError(
+                                f"{uid}: transition lock held past "
+                                "the deadline — refusing rather "
+                                "than racing")
+                        time.sleep(0.02)
+
+            def __exit__(lock, exc_type, exc, tb):
+                os.unlink(lock.path)
+                dfd = os.open(lock.path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(dfd)
+                finally:
+                    os.close(dfd)
+                return False
+
+        return _Lock()
+
     def _result_path(self, uid: str) -> Path:
         return self.root / "units" / f"{uid}.result.json"
 
@@ -165,27 +229,34 @@ class RunDirectory:
             os.fsync(fd)
         finally:
             os.close(fd)
-        state = self.unit_state(uid)
-        if state["state"] not in ("PENDING", "FAILED", "INTERRUPTED",
-                                  "TIMED_OUT"):
-            os.unlink(lock)
-            raise UnitClaimError(
-                f"{uid}: state {state['state']} is not claimable")
-        ledger = self.ledger()
-        drift = {k: (ledger["digests"].get(k), v)
-                 for k, v in expected_digests.items()
-                 if ledger["digests"].get(k) != v}
-        if drift:
-            os.unlink(lock)
-            raise RuntimePreflightError(
-                f"{uid}: code/data/config digest drift vs the ledger "
-                f"{drift} — resume with changed identity refuses")
-        state.update({"state": "RUNNING",
-                      "attempt": int(state.get("attempt", 0)) + 1,
-                      "pid": os.getpid(),
-                      "claimed_at": time.time()})
-        atomic_write_json(self._state_path(uid), state)
-        return state
+        try:
+            with self._transition_lock(uid):
+                state = self.unit_state(uid)
+                if state["state"] not in ("PENDING", "FAILED",
+                                          "INTERRUPTED", "TIMED_OUT"):
+                    raise UnitClaimError(
+                        f"{uid}: state {state['state']} is not "
+                        "claimable")
+                ledger = self.ledger()
+                drift = {k: (ledger["digests"].get(k), v)
+                         for k, v in expected_digests.items()
+                         if ledger["digests"].get(k) != v}
+                if drift:
+                    raise RuntimePreflightError(
+                        f"{uid}: code/data/config digest drift vs "
+                        f"the ledger {drift} — resume with changed "
+                        "identity refuses")
+                state.update({"state": "RUNNING",
+                              "attempt": int(state.get("attempt", 0))
+                              + 1,
+                              "pid": os.getpid(),
+                              "claimed_at": time.time()})
+                atomic_write_json(self._state_path(uid), state)
+                return state
+        except BaseException:
+            if lock.exists():
+                os.unlink(lock)
+            raise
 
     def release(self, uid: str, terminal_state: str,
                 result: dict | None = None,
@@ -204,53 +275,68 @@ class RunDirectory:
                                   "INTERRUPTED"):
             raise RuntimePreflightError(
                 f"illegal terminal state {terminal_state}")
-        state = self.unit_state(uid)
-        current = state.get("state")
-        if attempt is not None and \
-                int(state.get("attempt", 0)) != int(attempt):
-            raise RuntimePreflightError(
-                f"{uid}: stale actor (attempt {attempt} vs current "
-                f"{state.get('attempt')}) — release refused")
-        if terminal_state == "COMPLETED":
-            if result is None:
+        # C1 (2026-09-03): a REAL cross-process CAS — the state is
+        # re-read UNDER the per-unit transition lock; exactly one
+        # differing terminal transition can win; the loser observes
+        # the winner and cannot report success.
+        with self._transition_lock(uid):
+            state = self.unit_state(uid)
+            current = state.get("state")
+            if attempt is not None and \
+                    int(state.get("attempt", 0)) != int(attempt):
                 raise RuntimePreflightError(
-                    "COMPLETED without a result is prohibited "
-                    "(invariant 3)")
-            result = dict(result)
-            result["unit_id"] = uid
-            result["result_digest"] = sha_obj(
-                {k: v for k, v in result.items()
-                 if k != "result_digest"})
-            existing = self._result_path(uid)
-            if existing.exists():
-                previous = json.loads(existing.read_text())
-                if previous.get("result_digest") == \
-                        result["result_digest"]:
-                    return  # idempotent duplicate — nothing moves
-                raise RuntimePreflightError(
-                    f"{uid}: conflicting duplicate result "
-                    "refuses (digest mismatch)")
-            if current in ("COMPLETED", "FAILED", "TIMED_OUT",
-                           "INTERRUPTED"):
-                raise RuntimePreflightError(
-                    f"{uid}: terminal state {current!r} never "
-                    "overwritten by COMPLETED — a late completer "
-                    "refuses")
-            if current != "RUNNING":
-                raise RuntimePreflightError(
-                    f"{uid}: COMPLETED requires RUNNING, found "
-                    f"{current!r}")
-            atomic_write_json(existing, result)
-        else:
-            if current in ("COMPLETED", "FAILED", "TIMED_OUT",
-                           "INTERRUPTED"):
-                raise RuntimePreflightError(
-                    f"{uid}: terminal state {current!r} never "
-                    f"overwritten by {terminal_state} — refused")
-        state.update({"state": terminal_state,
-                      "finished_at": time.time(),
-                      "note": note})
-        atomic_write_json(self._state_path(uid), state)
+                    f"{uid}: stale actor (attempt {attempt} vs "
+                    f"current {state.get('attempt')}) — release "
+                    "refused")
+            if terminal_state == "COMPLETED":
+                if result is None:
+                    raise RuntimePreflightError(
+                        "COMPLETED without a result is prohibited "
+                        "(invariant 3)")
+                result = dict(result)
+                result["unit_id"] = uid
+                result["result_digest"] = sha_obj(
+                    {k: v for k, v in result.items()
+                     if k != "result_digest"})
+                existing = self._result_path(uid)
+                if existing.exists():
+                    previous = json.loads(existing.read_text())
+                    # C1.5: idempotence ONLY after the full unit
+                    # binding and digest are reverified
+                    recomputed_prev = sha_obj(
+                        {k: v for k, v in previous.items()
+                         if k != "result_digest"})
+                    if (previous.get("result_digest")
+                            == recomputed_prev
+                            and previous.get("unit_id") == uid
+                            and previous.get("result_digest")
+                            == result["result_digest"]
+                            and current == "COMPLETED"):
+                        return  # verified idempotent duplicate
+                    raise RuntimePreflightError(
+                        f"{uid}: conflicting duplicate result "
+                        "refuses (digest/binding mismatch)")
+                if current in ("COMPLETED", "FAILED", "TIMED_OUT",
+                               "INTERRUPTED"):
+                    raise RuntimePreflightError(
+                        f"{uid}: terminal state {current!r} never "
+                        "overwritten by COMPLETED — a late "
+                        "completer refuses")
+                if current != "RUNNING":
+                    raise RuntimePreflightError(
+                        f"{uid}: COMPLETED requires RUNNING, found "
+                        f"{current!r}")
+                atomic_write_json(existing, result)
+            else:
+                if current in ("COMPLETED", "FAILED", "TIMED_OUT",
+                               "INTERRUPTED"):
+                    raise RuntimePreflightError(
+                        f"{uid}: terminal state {current!r} never "
+                        f"overwritten by {terminal_state} — refused")
+            state.update({"state": terminal_state,
+                          "finished_at": time.time(),
+                          "note": note})
+            atomic_write_json(self._state_path(uid), state)
         lock = self.root / "units" / f"{uid}.lock"
         if lock.exists():
             os.unlink(lock)
@@ -592,25 +678,37 @@ def aggregate(run: RunDirectory, expected_units: list) -> dict:
         raise RuntimePreflightError(
             f"aggregation refuses: {len(missing)} expected units not "
             f"COMPLETED (e.g. {missing[:3]})")
+    ledger_identity = {u["unit_id"]: u["identity"]
+                       for u in run.ledger()["units"]}
     results = {}
     for u in expected_units:
         result = run.result(u)
         if result is None:
             raise RuntimePreflightError(
                 f"aggregation refuses: no durable result for {u}")
-        # R1 (2026-09-03): recompute the digest over the CONTENT and
-        # demand unit-result correspondence — a tampered or foreign
-        # result refuses instead of steering the decision
+        # C1.7 (2026-09-03): recompute the digest over the CONTENT,
+        # REQUIRE the unit binding, verify the state identity is
+        # exactly the ledger identity and recompute unit_id at the
+        # last point of use
         recomputed = sha_obj({k: v for k, v in result.items()
                               if k != "result_digest"})
         if result.get("result_digest") != recomputed:
             raise RuntimePreflightError(
                 f"aggregation refuses: result digest mismatch for "
                 f"{u} — content was altered after completion")
-        bound = result.get("unit_id")
-        if bound is not None and bound != u:
+        if result.get("unit_id") != u:
             raise RuntimePreflightError(
-                f"aggregation refuses: result of {u} is bound to "
-                f"{bound} — unit/result correspondence broken")
+                f"aggregation refuses: result of {u} carries "
+                f"unit_id {result.get('unit_id')!r} — mandatory "
+                "binding absent or broken")
+        identity = states[u].get("identity")
+        if identity != ledger_identity.get(u):
+            raise RuntimePreflightError(
+                f"aggregation refuses: state identity of {u} does "
+                "not equal the ledger identity — forged or drifted")
+        if unit_id(identity) != u:
+            raise RuntimePreflightError(
+                f"aggregation refuses: unit_id(identity) does not "
+                f"recompute to {u}")
         results[u] = result
     return results

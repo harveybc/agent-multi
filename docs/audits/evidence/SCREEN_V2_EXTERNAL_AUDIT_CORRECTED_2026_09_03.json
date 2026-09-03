@@ -1,0 +1,83 @@
+{
+ "schema": "agent_multi.screen_v2_external_audit.v1",
+ "run_root": "run id positive_skill_screen_v2_20260903 (durable state store)",
+ "audited_report_sha256": "147dcce4897a6f5b56d67fa0ec1e31e0ffaa8aa3e73ac0b1537d853807669a0e",
+ "frozen_code_digest": "950581d06002cab8019a7b82333b6ead10d59f10ef4b4dad443c7d0e56879c3a",
+ "frozen_config_digest": "00a54c03c59eadd883601dff1b50943ed984ed7244280cc90be0b9af54269f2a",
+ "verdict": "SCREEN_V2_NEGATIVE_RESULT_ACCEPTED_WITH_LEGACY_BINDING_DISCLOSURE",
+ "findings": [],
+ "facts": {
+  "phases": {
+   "round1": {
+    "units": 100,
+    "counts": {
+     "COMPLETED": 100
+    },
+    "completed_results_verified": 100,
+    "attempt_retries_enumerated": [],
+    "halving_decision_present": true
+   },
+   "round2": {
+    "units": 50,
+    "counts": {
+     "COMPLETED": 50
+    },
+    "completed_results_verified": 50,
+    "attempt_retries_enumerated": [],
+    "halving_decision_present": true
+   },
+   "round3": {
+    "units": 25,
+    "counts": {
+     "COMPLETED": 25
+    },
+    "completed_results_verified": 25,
+    "attempt_retries_enumerated": [],
+    "halving_decision_present": true
+   },
+   "survivors": {
+    "units": 450,
+    "counts": {
+     "COMPLETED": 450
+    },
+    "completed_results_verified": 450,
+    "attempt_retries_enumerated": [],
+    "halving_decision_present": false
+   },
+   "fusion": {
+    "units": 19,
+    "counts": {
+     "COMPLETED": 19
+    },
+    "completed_results_verified": 19,
+    "attempt_retries_enumerated": [],
+    "halving_decision_present": false
+   }
+  },
+  "supervisor_watchdog_and_ceiling_lines": [],
+  "final_report": {
+   "present": true,
+   "cells": 100,
+   "survivor_decisions": 25,
+   "fusion_decisions": {
+    "random_fusion_frozen": "DOES_NOT_ADVANCE",
+    "branch_concatenation": "DOES_NOT_ADVANCE",
+    "current_fusion_probe_trained": "DOES_NOT_ADVANCE",
+    "gated_softmax_probe_trained": "DOES_NOT_ADVANCE",
+    "fine_tuned_branches_plus_fusion": "DOES_NOT_ADVANCE"
+   },
+   "recomputed_exactly": true
+  },
+  "limitations": [
+   {
+    "classification": "LEGACY_RESULT_SCHEMA_NO_EMBEDDED_UNIT_ID",
+    "detail": "the f46cf2da result schema did not embed unit_id; every legacy result was instead bound through its attempt log and worker completion record above; this limitation is classified and CANNOT change the verdict",
+    "can_change_verdict": false
+   }
+  ],
+  "schema_limits_declared": [
+   "the frozen state schema keeps only the LAST attempt per unit; per-attempt claim/finish intervals of superseded attempts are reconstructible only from attempt logs and the supervisor journal, both enumerated above",
+   "overlap detection relies on single-result + lock absence + attempt-log accounting + watchdog journal; the R1-corrected runtime adds attempt CAS so future runs prove it structurally"
+  ]
+ }
+}

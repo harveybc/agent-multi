@@ -38,7 +38,19 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def evaluate(report_path: Path) -> dict:
+GATE_FIELDS = ("schema", "gate", "advancing_fusion_variants",
+               "fusion_decisions", "survivor_verdicts",
+               "usable_branches", "screen_report",
+               "screen_report_sha256", "external_audit",
+               "external_audit_sha256", "external_audit_verdict",
+               "consequence")
+ACCEPTED_AUDIT_VERDICT = ("SCREEN_V2_NEGATIVE_RESULT_ACCEPTED_WITH_"
+                          "LEGACY_BINDING_DISCLOSURE",
+                          "SCREEN_V2_ACCEPTED_AFTER_EXTERNAL_"
+                          "RUNTIME_AUDIT")
+
+
+def evaluate(report_path: Path, audit_path: Path) -> dict:
     report = json.loads(Path(report_path).read_text())
     if report.get("schema") != "agent_multi.positive_skill_screen.v2":
         raise SystemExit(
@@ -57,6 +69,27 @@ def evaluate(report_path: Path) -> dict:
                 (report.get("survivor_decisions") or {}).items()}
     gate = ("SAC_GATE_PASS" if advancing
             else "SAC_GATE_FAIL_NEGATIVE_RESULT")
+    # C3 (order @1649e7c0 §4): the gate BINDS the corrected external
+    # audit and requires its accepted classification
+    audit = json.loads(Path(audit_path).read_text())
+    audit_verdict = audit.get("verdict")
+    if audit_verdict not in ACCEPTED_AUDIT_VERDICT:
+        raise SystemExit(
+            f"REFUSED: the external audit verdict is "
+            f"{audit_verdict!r} — a gate may only be derived over "
+            "an ACCEPTED runtime audit")
+    # the report the gate derives from must be THE audited report —
+    # a doctored copy with a self-consistent re-derivation refuses
+    audited_sha = audit.get("audited_report_sha256")
+    if audited_sha is None:
+        raise SystemExit(
+            "REFUSED: the external audit does not name the audited "
+            "report digest — regenerate the audit")
+    if sha256_file(report_path) != audited_sha:
+        raise SystemExit(
+            "REFUSED: the report is not the one the external audit "
+            "verified — a self-consistent derivation over a "
+            "doctored report confers nothing")
     return {
         "schema": GATE_SCHEMA,
         "gate": gate,
@@ -68,6 +101,9 @@ def evaluate(report_path: Path) -> dict:
             if v == "USABLE_PREDICTIVE_VALUE"),
         "screen_report": str(report_path),
         "screen_report_sha256": sha256_file(report_path),
+        "external_audit": str(audit_path),
+        "external_audit_sha256": sha256_file(audit_path),
+        "external_audit_verdict": audit_verdict,
         "consequence": (
             "the eight paired-SAC cells MAY be dispatched (subject "
             "to every other driver refusal)" if advancing else
@@ -78,12 +114,26 @@ def evaluate(report_path: Path) -> dict:
 
 
 def verify_gate_for_dispatch(gate_path: Path) -> dict:
-    """Called by the dispatch driver: typed refusals, never silence."""
+    """C3 (order @1649e7c0 §4): the gate is DERIVED, never declared.
+    Verification re-derives the entire artifact from the bound
+    report and audit and requires the supplied artifact to equal the
+    recomputation on EVERY field; missing and unknown fields refuse;
+    an edited verdict, a forged advancing variant, a substituted
+    report or audit, and a self-consistent re-digest all refuse
+    because the derivation source is the report itself."""
     gate = json.loads(Path(gate_path).read_text())
     if gate.get("schema") != GATE_SCHEMA:
         raise SystemExit(
             f"REFUSED: {gate_path} is not a "
             f"{GATE_SCHEMA} artifact")
+    supplied_fields = set(gate)
+    expected_fields = set(GATE_FIELDS)
+    if supplied_fields != expected_fields:
+        raise SystemExit(
+            "REFUSED: gate artifact fields do not match the exact "
+            f"schema — missing {sorted(expected_fields
+                                       - supplied_fields)}, "
+            f"unknown {sorted(supplied_fields - expected_fields)}")
     report_path = Path(gate["screen_report"])
     if not report_path.exists():
         raise SystemExit(
@@ -92,6 +142,21 @@ def verify_gate_for_dispatch(gate_path: Path) -> dict:
         raise SystemExit(
             "REFUSED: the screen report changed after the gate was "
             "evaluated — re-run the gate")
+    audit_path = Path(gate["external_audit"])
+    if not audit_path.exists():
+        raise SystemExit(
+            "REFUSED: the gate's external audit no longer exists")
+    if sha256_file(audit_path) != gate["external_audit_sha256"]:
+        raise SystemExit(
+            "REFUSED: the external audit changed after the gate "
+            "was evaluated")
+    recomputed = evaluate(report_path, audit_path)
+    for field in GATE_FIELDS:
+        if gate[field] != recomputed[field]:
+            raise SystemExit(
+                f"REFUSED: gate field {field!r} does not equal the "
+                "recomputed derivation from the bound report/audit "
+                "— a declared gate never overrides a derived one")
     if gate["gate"] != "SAC_GATE_PASS":
         raise SystemExit(
             "REFUSED: the scientific gate is "
@@ -105,12 +170,16 @@ def main() -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
     ev = sub.add_parser("evaluate")
     ev.add_argument("--report", required=True)
+    ev.add_argument("--audit", required=True,
+                    help="the corrected external-audit artifact "
+                         "(C3: the gate binds it and requires an "
+                         "accepted classification)")
     ev.add_argument("--output", required=True)
     vf = sub.add_parser("verify")
     vf.add_argument("--gate", required=True)
     args = parser.parse_args()
     if args.cmd == "evaluate":
-        gate = evaluate(Path(args.report))
+        gate = evaluate(Path(args.report), Path(args.audit))
         Path(args.output).write_text(json.dumps(gate, indent=1))
         print(json.dumps({k: gate[k] for k in
                           ("gate", "advancing_fusion_variants",
