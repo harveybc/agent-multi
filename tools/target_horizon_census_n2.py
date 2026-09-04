@@ -639,7 +639,12 @@ def _candidate_assessment(key, fam, res_by_window, window_keys):
         pooled_model.append(model)
         wrec = {"selected_model": r["selected_model"],
                 "n": r["n_score"],
-                "effective_blocks": r["effective_blocks"]}
+                # legacy name: COUNT of available non-overlapping
+                # blocks (n_score // block_length). It is NOT a
+                # statistical effective sample size (order
+                # @4c1f1532 C5/F6).
+                "effective_blocks": r["effective_blocks"],
+                "available_blocks": r["effective_blocks"]}
         if r["effective_blocks"] < MIN_EFFECTIVE_BLOCKS:
             assessment["licensed"] = False
             assessment["license_failures"].append(
@@ -692,6 +697,13 @@ def _candidate_assessment(key, fam, res_by_window, window_keys):
              for wk in window_keys]
     assessment["bootstrap_p_one_sided"] = round(
         _block_bootstrap_p(diffs, BOOT_SEED), 6)
+    # C5 (order @4c1f1532): 2000 repetitions resolve no smaller
+    # p than 1/2001 — report the floor as an inequality, never
+    # with more numerical precision than the Monte Carlo provides
+    assessment["p_resolution"] = "min Monte Carlo p = 1/2001 (B=2000)"
+    if assessment["bootstrap_p_one_sided"] <= round(
+            1.0 / (BOOT_B + 1), 6):
+        assessment["bootstrap_p_reported"] = "<= 1/2001"
     assessment["all_windows_positive_vs_every_baseline"] = all(
         assessment["windows"][wk][f"skill_vs_{b}"] > 0
         for wk in window_keys for b in base_names)
@@ -699,7 +711,6 @@ def _candidate_assessment(key, fam, res_by_window, window_keys):
 
 
 def aggregate_final(root: Path) -> dict:
-    import numpy as np
     run = RunDirectory(root / "census")
     ledger = run.ledger()
     states = run.states()
@@ -714,6 +725,19 @@ def aggregate_final(root: Path) -> dict:
             problems.append({"unit": uid, "why": state["state"],
                              "treatment": by_unit[uid]["treatment"],
                              "window": by_unit[uid]["origin"]})
+    if problems:
+        return science_aggregate(ledger, {}, problems)
+    results = runtime_aggregate(run, expected)
+    return science_aggregate(ledger, results, [])
+
+
+def science_aggregate(ledger: dict, results: dict,
+                      problems: list) -> dict:
+    """Pure scientific aggregation from a ledger and terminal
+    result payloads — shared by the run-directory path above and
+    the offline bundle verifier (order @4c1f1532 C4)."""
+    import numpy as np
+    by_unit = {u["unit_id"]: u["identity"] for u in ledger["units"]}
     trace = {"schema": "agent_multi.target_census_verdict.v1",
              "predeclaration": PREDECLARATION,
              "digests": ledger["digests"],
@@ -724,7 +748,6 @@ def aggregate_final(root: Path) -> dict:
         trace["cause"] = ("failed/timed-out/missing units preserved "
                           "in the verdict — never dropped")
         return trace
-    results = runtime_aggregate(run, expected)
     window_keys = sorted(ledger["role_geometry"]["windows"])
     by_key: dict = {}
     for uid, res in results.items():
@@ -803,21 +826,25 @@ def aggregate_final(root: Path) -> dict:
                              for k, v in holm.items()}
     trace["inconclusive_candidates"] = inconclusive_candidates
 
-    # ---- verdict ----
+    # ---- verdict: SEALED semantics (order @4c1f1532 C2) ----
+    # "a candidate with degenerate labels, inadequate class support
+    # or insufficient effective blocks is INCONCLUSIVE" and the
+    # census verdict INCONCLUSIVE covers "any unlicensed case" —
+    # irrespective of how many other candidates pass or fail.
     if control_failures:
         trace["verdict"] = "INCONCLUSIVE"
         trace["cause"] = control_failures
-    elif inconclusive_candidates and not passers:
-        # unlicensed candidates block a clean negative only if no
-        # candidate passed; preserved either way
-        trace["verdict"] = ("INCONCLUSIVE"
-                            if len(inconclusive_candidates) == 9
-                            else "NO_TARGET_CANDIDATE_DEMONSTRATED")
+    elif inconclusive_candidates:
+        trace["verdict"] = "INCONCLUSIVE"
+        trace["cause"] = [f"unlicensed candidate(s) "
+                          f"{inconclusive_candidates} — sealed rule: "
+                          "any unlicensed case makes the census "
+                          "INCONCLUSIVE, irrespective of passers"]
     elif passers:
         trace["verdict"] = "TARGET_CANDIDATE_FOUND"
     else:
         trace["verdict"] = "NO_TARGET_CANDIDATE_DEMONSTRATED"
-    if passers:
+    if passers and trace["verdict"] == "TARGET_CANDIDATE_FOUND":
         # predeclared selection: minimum per-window skill vs the
         # strongest baseline (stability), then Holm p, then horizon
         def stability(k):

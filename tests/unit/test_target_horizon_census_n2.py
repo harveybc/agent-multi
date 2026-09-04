@@ -240,6 +240,9 @@ class TestAggregateRefusals:
 
     def test_low_class_support_is_inconclusive_candidate(
             self, home_tmp):
+        """C2 adversarial (order @4c1f1532): ONE unlicensed
+        candidate among eight failures — the SEALED rule makes the
+        whole census INCONCLUSIVE, never a clean negative."""
         def starve(result):
             result["class_support"]["score"] = \
                 {"0": 5, "1": 60, "2": 151}
@@ -249,8 +252,24 @@ class TestAggregateRefusals:
         assert "bar_h6" in trace["inconclusive_candidates"]
         assert trace["candidates"]["bar_h6"]["outcome"] == \
             "INCONCLUSIVE_CANDIDATE"
-        assert trace["verdict"] == \
-            "NO_TARGET_CANDIDATE_DEMONSTRATED"
+        assert trace["verdict"] == "INCONCLUSIVE"
+        assert any("sealed rule" in c for c in trace["cause"])
+
+    def test_unlicensed_beside_passer_is_inconclusive(
+            self, home_tmp):
+        """C2 adversarial (order @4c1f1532): one unlicensed
+        candidate beside an apparent passer — INCONCLUSIVE and NO
+        selection, irrespective of the passer."""
+        def starve(result):
+            result["class_support"]["score"] = \
+                {"0": 5, "1": 60, "2": 151}
+        _full_run(home_tmp, deltas={"vol_h6": 0.15},
+                  overrides={
+                      (("bar_h6"), wk): starve for wk in WKS})
+        trace = tcn2.aggregate_final(home_tmp)
+        assert trace["verdict"] == "INCONCLUSIVE"
+        assert "selection" not in trace
+        assert "bar_h6" in trace["inconclusive_candidates"]
 
     def test_degenerate_model_is_inconclusive_candidate(
             self, home_tmp):
@@ -261,6 +280,29 @@ class TestAggregateRefusals:
             (("ret_h12"), wk): degenerate for wk in WKS})
         trace = tcn2.aggregate_final(home_tmp)
         assert "ret_h12" in trace["inconclusive_candidates"]
+        assert trace["verdict"] == "INCONCLUSIVE"
+
+
+class TestRealN2Rederivation:
+
+    def test_repaired_judge_preserves_real_n2_verdict(self):
+        """C2 (order @4c1f1532): the sealed-semantics repair does
+        NOT alter the real N2 result, because all nine real
+        candidates were licensed — proven by rederivation from the
+        durable run directory."""
+        run_root = (Path.home() / ".local/share/agent-multi/"
+                    "target_horizon_census_n2_20260903")
+        if not run_root.exists():
+            pytest.skip("frozen N2 run not present on this host")
+        trace = tcn2.aggregate_final(run_root)
+        assert trace["inconclusive_candidates"] == []
+        assert trace["verdict"] == "TARGET_CANDIDATE_FOUND"
+        assert trace["selection"]["selected"] == \
+            ["bar_h6", "bar_h12"]
+        for key in ("bar_h6", "bar_h12"):
+            assert trace["candidates"][key]["outcome"] == "PASSES"
+            assert trace["candidates"][key][
+                "bootstrap_p_reported"] == "<= 1/2001"
 
 
 class TestFrozenAnchors:

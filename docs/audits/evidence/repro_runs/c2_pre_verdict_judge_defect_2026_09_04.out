@@ -1,0 +1,3 @@
+A(unlicensed among failures): verdict=NO_TARGET_CANDIDATE_DEMONSTRATED unlicensed=['bar_h6'] selected=None
+B(unlicensed beside passer): verdict=TARGET_CANDIDATE_FOUND unlicensed=['bar_h6'] selected=['vol_h6']
+PRE CONFIRMED: sealed rule 'ANY unlicensed candidate -> INCONCLUSIVE' is violated in both scenarios

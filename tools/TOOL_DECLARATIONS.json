@@ -661,6 +661,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "n2_result_bundle.py": {
+   "purpose": "Self-contained N2 result bundle builder + offline verifier (order @4c1f1532 C4): packs all 60 N2 units (identity, terminal state, verbatim result payload, sha256) with the verbatim ledger into one sanitized JSON; verify authenticates WITHOUT the private run directory \u2014 rejects missing/extra/duplicate/altered/forged/non-terminal units, recomputes unit ids and both digests (file bytes + runtime canonical self-digest), reaggregates via the shared science_aggregate and requires semantic equality with the committed verdict trace.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

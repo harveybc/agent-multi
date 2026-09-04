@@ -1,0 +1,27 @@
+{
+  "schema": "agent_multi.n2_superseding_interpretation.v1",
+  "order": "agent-multi@4c1f1532 §3 C1",
+  "supersedes_interpretation_of": "TARGET_HORIZON_CENSUS_N2_VERDICT_TRACE_2026_09_03.json and the N2 sections of GENERAL_SATOSHI_TO_MUSASHI_N1_DISPOSITION_AND_N2_CENSUS_RETURN_2026_09_03.md (every N2 artifact preserved byte-for-byte; only the PROSE interpretation is superseded)",
+  "literal_protocol_verdict_preserved": "TARGET_CANDIDATE_FOUND_UNDER_N2_BASELINE (development-only)",
+
+  "honest_scientific_scope": "On the consumed ETH H4 development rows, first-touch barrier outcomes at six and twelve bars were better calibrated by past-only barrier-scale volatility than by a static class prior. The observed gain was modest and was explained almost entirely by the current scalar used to set barrier width. N2 did not demonstrate directional skill, incremental information in the 83-feature representation, neural-model value or trading profitability.",
+
+  "findings_acknowledged": {
+    "F1_baseline_information_mismatch": "the selected logistic model was refit on fit+calibration while fit_class_prior used fit alone — the published effects (+0.027008 h6, +0.025885 h12) are overstated relative to a recency-matched fit+calibration prior (Musashi's exploratory post-hoc: +0.023177 / +0.021533, to be reproduced by the executing package in the N2_ATTRIBUTION_AUDIT, never copied as authority)",
+    "F2_target_construction_scale": "the winning target_history model receives the same current trailing-volatility scalar that DEFINES the barrier widths; against the information-matched prior the three causal lags add only ~+0.0004 — N2 identified a useful scalar conditioning variable, not a representation-learning target; the 249-value summary of the 83 inputs was selected in no winning unit",
+    "F3_reachability_not_direction": "most of the gain lies in hit-versus-censored; conditional upper-versus-lower skill is approximately zero across windows — the lower log loss is a valid probabilistic improvement and must never be described as directional predictability or trading value; the adverse-first same-bar convention (<3% of rows per score window) belongs in sensitivity reporting because H4 OHLC cannot reveal intrabar order",
+    "F4_verdict_judge": "the aggregate contradicted the sealed any-unlicensed-makes-INCONCLUSIVE rule; repaired under C2 with adversarial tests; the real N2 verdict is unaffected because all nine real candidates were licensed (proven by rederivation)",
+    "F5_reproduction_package": "the repository carried digests without the 60 result payloads; closed under C4 with a sanitized self-contained bundle and an offline verifier",
+    "F6_available_blocks": "effective_blocks was a COUNT of available non-overlapping blocks (36), not a statistical effective sample size; new prose says available_blocks; the original field name is retained only as legacy with this definition"
+  },
+
+  "p_value_reporting_correction": "the minimum Monte Carlo p over 2000 bootstrap repetitions is 1/2001; the published 0.0005 values are reported as p <= 1/2001, never with more precision than the repetitions provide",
+
+  "what_remains_valid": [
+    "60/60 ledgered units terminal COMPLETED at attempt 1 under bound digests",
+    "all six negative controls licensed the harness (leak sentinels unrealistically easy; shifted targets fail)",
+    "every regression candidate (returns h1/3/6/12, volatility h3/6/12) fails its calibrated baselines",
+    "bar_h6 and bar_h12 satisfy the rule N2 actually predeclared, under the N2 baseline as declared",
+    "development-only: no confirmatory claim, no promotion, neural confirmation gated on order @4c1f1532 §4"
+  ]
+}
