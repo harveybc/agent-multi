@@ -1,0 +1,11 @@
+BASELINE: 23 passed in 2.56s
+M1_anchor_time_guards: 2 failed, 21 passed in 2.70s  bites=True (expected failing: ['test_adv1_pre2026_anchor', 'test_adv3_future_anchor'])
+M2_boundary_guard: 1 failed, 22 passed in 3.18s  bites=True (expected failing: ['test_adv2_moved_boundary'])
+M3_payload_digest: 1 failed, 22 passed in 3.08s  bites=True (expected failing: ['test_adv4_altered_payload'])
+M4_label_history: 1 failed, 22 passed in 3.15s  bites=True (expected failing: ['test_adv8_label_history_mismatch'])
+M5_unit_set: 2 failed, 21 passed in 3.36s  bites=True (expected failing: ['test_adv9_missing_unit', 'test_duplicate_unit'])
+M6_license_guard: 1 failed, 22 passed in 3.13s  bites=True (expected failing: ['test_adv9b_license_failure_beside_decision'])
+M7_report_rederivation: 1 failed, 22 passed in 2.56s  bites=True (expected failing: ['test_adv10_edited_verdict'])
+M8_float32_coercion: 1 failed, 22 passed in 2.60s  bites=True (expected failing: ['test_sub_float32_revision_refuses'])
+RESTORED: 23 passed in 2.58s
+ALL MUTATIONS BITE: True

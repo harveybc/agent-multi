@@ -131,6 +131,31 @@ def decide(contrast_stats: dict, blocks_complete: bool,
 # D2: bounded acquisition                                            #
 # ------------------------------------------------------------------ #
 
+def _verify_overlap(overlap, lake_2025, lake_ms):
+    """Field-EXACT continuity: float64 of the api decimal string
+    must equal the frozen value bitwise — a revision hidden by
+    float32 coercion still refuses (adversary 5)."""
+    field_map = [(1, "open"), (2, "high"), (3, "low"),
+                 (4, "close"), (5, "volume"), (7, "quote_volume"),
+                 (9, "taker_buy_base_volume"),
+                 (10, "taker_buy_quote_volume")]
+    for i, r in enumerate(overlap):
+        if r[0] != int(lake_ms.iloc[i]):
+            raise FreshRefusal(
+                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: timestamp "
+                f"order mismatch at overlap row {i}")
+        for j, col in field_map:
+            if float(r[j]) != float(lake_2025[col].iloc[i]):
+                raise FreshRefusal(
+                    "SOURCE_CONTINUITY_NOT_DEMONSTRATED: field "
+                    f"{col} revised at open_time {r[0]}: api "
+                    f"{r[j]} vs frozen {lake_2025[col].iloc[i]}")
+        if int(overlap[i][8]) != int(lake_2025["trade_count"]
+                                     .iloc[i]):
+            raise FreshRefusal(
+                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: trade_count "
+                f"revised at {r[0]}")
+
 def acquire(staging: Path) -> dict:
     import pandas as pd
     import requests
@@ -234,26 +259,7 @@ def acquire(staging: Path) -> dict:
         raise FreshRefusal(
             "SOURCE_CONTINUITY_NOT_DEMONSTRATED: overlap row count "
             f"{len(overlap)} != frozen {len(lake_2025)}")
-    field_map = [(1, "open"), (2, "high"), (3, "low"),
-                 (4, "close"), (5, "volume"), (7, "quote_volume"),
-                 (9, "taker_buy_base_volume"),
-                 (10, "taker_buy_quote_volume")]
-    for i, r in enumerate(overlap):
-        if r[0] != int(lake_ms.iloc[i]):
-            raise FreshRefusal(
-                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: timestamp "
-                f"order mismatch at overlap row {i}")
-        for j, col in field_map:
-            if float(r[j]) != float(lake_2025[col].iloc[i]):
-                raise FreshRefusal(
-                    "SOURCE_CONTINUITY_NOT_DEMONSTRATED: field "
-                    f"{col} revised at open_time {r[0]}: api "
-                    f"{r[j]} vs frozen {lake_2025[col].iloc[i]}")
-        if int(overlap[i][8]) != int(lake_2025["trade_count"]
-                                     .iloc[i]):
-            raise FreshRefusal(
-                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: trade_count "
-                f"revised at {r[0]}")
+    _verify_overlap(overlap, lake_2025, lake_ms)
     receipt = {"schema": "agent_multi.n3_acquisition_receipt.v1",
                "contract": CONTRACT,
                "acquired_at_utc": acquired_at.isoformat(),

@@ -274,3 +274,42 @@ class TestVerifier:
         b["units"].append(b["units"][0])
         with pytest.raises(n3f.FreshRefusal, match="duplicate"):
             n3f.verify(_write(tmp_path, b))
+
+
+class TestOverlapExactness:
+    """Adversary 5: a revision hidden by float32 coercion must
+    still refuse under the float64-exact comparison."""
+
+    def _frames(self, revise=None):
+        import pandas as pd
+        base = 2345.123456789
+        rows = [[1735689600000, str(base), str(base + 10),
+                 str(base - 10), str(base + 1), "100.5",
+                 1735703999999, "23451.2", 777, "50.25",
+                 "11725.6", "0"]]
+        if revise is not None:
+            rows[0][4] = revise
+        lake = pd.DataFrame({
+            "open": [base], "high": [base + 10],
+            "low": [base - 10], "close": [base + 1],
+            "volume": [100.5], "quote_volume": [23451.2],
+            "trade_count": [777],
+            "taker_buy_base_volume": [50.25],
+            "taker_buy_quote_volume": [11725.6]})
+        lake_ms = pd.Series([1735689600000])
+        return rows, lake, lake_ms
+
+    def test_exact_overlap_passes(self):
+        rows, lake, lake_ms = self._frames()
+        n3f._verify_overlap(rows, lake, lake_ms)
+
+    def test_sub_float32_revision_refuses(self):
+        # a revision ~3e-8 relative is INVISIBLE after float32
+        # coercion but must refuse under the float64-exact compare
+        import numpy as np
+        true_close = 2345.123456789 + 1
+        revised = true_close * (1 + 3e-8)
+        assert np.float32(revised) == np.float32(true_close)
+        rows, lake, lake_ms = self._frames(revise=repr(revised))
+        with pytest.raises(n3f.FreshRefusal, match="revised"):
+            n3f._verify_overlap(rows, lake, lake_ms)

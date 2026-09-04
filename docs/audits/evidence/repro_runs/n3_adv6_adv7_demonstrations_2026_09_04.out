@@ -1,0 +1,5 @@
+adv6: honest rsi_14 cells outside envelope = 0
+adv6: future-shifted rsi_14 cells outside envelope = 18069 of 18085
+adv6 BITES: any future-dependent computation destroys the overlap parity -> SOURCE_OR_PIPELINE_DRIFT
+adv7: regenerate on gapped copy -> exit 1, {"refusal": "confirmation grid incomplete: 1457 != 1458"}
+adv7 BITES: a deleted 2026 bar refuses at the executable 1458-bar grid check; forward fill never bridges it

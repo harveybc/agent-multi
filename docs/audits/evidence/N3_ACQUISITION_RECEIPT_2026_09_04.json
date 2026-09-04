@@ -1,0 +1,78 @@
+{
+ "schema": "agent_multi.n3_acquisition_receipt.v1",
+ "contract": "docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json",
+ "acquired_at_utc": "2026-09-04T15:27:36.744924+00:00",
+ "source_identity": "Binance Spot public /api/v3/klines",
+ "pages": [
+  {
+   "page": 0,
+   "request": {
+    "symbol": "ETHUSDT",
+    "interval": "4h",
+    "startTime": 1735689600000,
+    "endTime": 1788220799999,
+    "limit": 1000
+   },
+   "status": 200,
+   "sha256": "0d4894402a9803820fdf5b588f54a04f0e7cfbc825ceeccc885974853131720d",
+   "acquired_at_utc": "2026-09-04T15:27:37.119041+00:00",
+   "first_open_time": 1735689600000,
+   "last_open_time": 1750075200000,
+   "n_rows": 1000
+  },
+  {
+   "page": 1,
+   "request": {
+    "symbol": "ETHUSDT",
+    "interval": "4h",
+    "startTime": 1750089600000,
+    "endTime": 1788220799999,
+    "limit": 1000
+   },
+   "status": 200,
+   "sha256": "38000bc441ba4993b191f17667c364b96559ff1478a05cabeac90d2134e0279f",
+   "acquired_at_utc": "2026-09-04T15:27:37.912499+00:00",
+   "first_open_time": 1750089600000,
+   "last_open_time": 1764475200000,
+   "n_rows": 1000
+  },
+  {
+   "page": 2,
+   "request": {
+    "symbol": "ETHUSDT",
+    "interval": "4h",
+    "startTime": 1764489600000,
+    "endTime": 1788220799999,
+    "limit": 1000
+   },
+   "status": 200,
+   "sha256": "f2db0f0d8408c16751bdb51aca5981493800cbe790da08c2dbde06b08dcdb74f",
+   "acquired_at_utc": "2026-09-04T15:27:38.603647+00:00",
+   "first_open_time": 1764489600000,
+   "last_open_time": 1778875200000,
+   "n_rows": 1000
+  },
+  {
+   "page": 3,
+   "request": {
+    "symbol": "ETHUSDT",
+    "interval": "4h",
+    "startTime": 1778889600000,
+    "endTime": 1788220799999,
+    "limit": 1000
+   },
+   "status": 200,
+   "sha256": "d75c150bbd52e15b55bd6d2185899222d04abb8e48670514364643a91005b2a6",
+   "acquired_at_utc": "2026-09-04T15:27:39.554384+00:00",
+   "first_open_time": 1778889600000,
+   "last_open_time": 1788206400000,
+   "n_rows": 648
+  }
+ ],
+ "rows_total": 3648,
+ "rows_overlap_verified_exact": 0,
+ "rows_2026": 3648,
+ "last_closed_open_time": 1788206400000,
+ "verdict": "SOURCE_CONTINUITY_DEMONSTRATED",
+ "acquired_parquet_sha256": "442fde4aef285007ef366b0caa2246f7b54b530598efb34a9f31ca5d9daef977"
+}
