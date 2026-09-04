@@ -105,10 +105,19 @@ baseline y restauración 23/23.
 ## 6. Conteos de suites del tip final
 
 - Focales juntas: **79 passed** (N3 23 · censo N2 21 · bundle 10 ·
-  atribución 7 · R3 18) · índice de superficie 17 passed.
-- **Suite completa sobre el tip final: ESTAMPA EN EL COMMIT DE
-  ESTAMPA** conforme a la regla permanente (se corre tras el commit
-  de este packet).
+  atribución 7 · R3 18) · índice de superficie 17 passed · escáner
+  340 103 passed.
+- **Suite completa SOBRE EL TIP FINAL `0d8e10fc`** (corrida DESPUÉS
+  del commit, conforme a la regla permanente): **2 failed, 2851
+  passed, 4 skipped, 68 warnings in 238.80s** — las dos fallas son
+  el par D1-anchor preexistente conocido; delta exacto 2828 + 23
+  tests N3 = 2851.
+- **Defecto auto-atrapado y divulgado**: la primera corrida de suite
+  al tip previo falló el escáner de topología 340 — el NOMBRE del
+  worker de adquisición stage-1.3 porta un identificador de host del
+  operador y quedó literal en el inventario D0 público. Corregido en
+  `0d8e10fc`: el worker queda ligado por sha256 con etiqueta
+  sanitizada que explica la retención; 103/103 del escáner en verde.
 
 ## 7. Tiempo, CPU/RSS, mutaciones, unidades falladas
 
