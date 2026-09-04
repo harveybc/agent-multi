@@ -62,8 +62,11 @@ explícito. Ninguna etiqueta del tool implica revisión independiente.
 
 - Batería N3 v4: **41 passed** · batería N4: **11 passed** · índice
   de superficie 17 passed.
-- **Suite completa sobre el tip final: ESTAMPA EN EL COMMIT DE
-  ESTAMPA** conforme a la regla permanente.
+- **Suite completa SOBRE EL TIP FINAL `d1a6ae58`** (corrida DESPUÉS
+  del commit, conforme a la regla permanente): **2 failed, 2880
+  passed, 4 skipped, 69 warnings in 237.21s** — las dos fallas son
+  el par D1-anchor preexistente conocido; delta exacto 2864 + 5
+  (batería N3 36→41) + 11 (batería N4) = 2880.
 
 ## 4. El censo N4.0
 
