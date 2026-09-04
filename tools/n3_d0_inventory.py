@@ -78,13 +78,22 @@ def main() -> int:
                       "technical.parquet")
     stat = FINDATA / ("features/trading_asset_features/ethusdt/4h/"
                       "statistical.parquet")
+    # the stage-1.3 acquisition worker's filename embeds an operator
+    # host identifier; it is bound here by DIGEST with a sanitized
+    # label (DATA-SOTA-340: no topology tokens in public evidence)
+    worker_files = {
+        "stage13_crypto_acquisition_worker (filename withheld — "
+        "carries a host identifier; governed financial-data "
+        "worker)": "stage13_dragon_crypto_worker.py",
+        "stage21_trading_asset_worker.py":
+            "stage21_trading_asset_worker.py",
+        "stage22_trading_features_worker.py":
+            "stage22_trading_features_worker.py",
+        "stage31_prepare_inputs_worker.py":
+            "stage31_prepare_inputs_worker.py"}
     workers = {
-        name: {"path": f"financial-data/_scripts/workers/{name}",
-               "sha256": sha(FINDATA / "_scripts/workers" / name)}
-        for name in ("stage13_dragon_crypto_worker.py",
-                     "stage21_trading_asset_worker.py",
-                     "stage22_trading_features_worker.py",
-                     "stage31_prepare_inputs_worker.py")}
+        label: {"sha256": sha(FINDATA / "_scripts/workers" / real)}
+        for label, real in worker_files.items()}
 
     ev = REPO / "docs/audits/evidence"
     n2 = {
@@ -162,8 +171,8 @@ def main() -> int:
             "params": ["symbol=ETHUSDT", "interval=4h",
                        "startTime=<ms>", "endTime=<ms>",
                        "limit=1000"],
-            "rate_limit_handling": "HTTP 429 backoff as in "
-                                   "stage13_dragon_crypto_worker",
+            "rate_limit_handling": "HTTP 429 backoff as in the "
+                                   "stage-1.3 acquisition worker",
             "authority": "same public endpoint used by the governed "
                          "financial-data acquisition workers; no "
                          "credentials, no private endpoints"},

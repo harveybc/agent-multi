@@ -1,7 +1,7 @@
 {
  "schema": "agent_multi.n3_d0_inventory.v1",
  "order": "agent-multi@a13671ab \u00a73",
- "generated_at": "2026-09-04T15:16:21.594101+00:00",
+ "generated_at": "2026-09-04T15:45:59.771027+00:00",
  "frozen_predictor_contract": {
   "model_ready_csv": {
    "path": "predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
@@ -88,20 +88,16 @@
    "sha256": "9ed54a89eb7f94228ced151b67bf2f1f4b52ee12b7b1628d83e4d7b7044df20a"
   },
   "workers": {
-   "stage13_dragon_crypto_worker.py": {
-    "path": "financial-data/_scripts/workers/stage13_dragon_crypto_worker.py",
+   "stage13_crypto_acquisition_worker (filename withheld \u2014 carries a host identifier; governed financial-data worker)": {
     "sha256": "9520b24294599612d3269e3a61f6a1a4abfc60a91712fec7319b5e3ccb804da2"
    },
    "stage21_trading_asset_worker.py": {
-    "path": "financial-data/_scripts/workers/stage21_trading_asset_worker.py",
     "sha256": "765a03dc5b716b709f2a0ff0a3f6ef54a60a92e44131b003c0f2675eb38e4176"
    },
    "stage22_trading_features_worker.py": {
-    "path": "financial-data/_scripts/workers/stage22_trading_features_worker.py",
     "sha256": "7495a0d974a7eb086eef0c11927b1c536946746ee3544ad82f6c256d1c6ee050"
    },
    "stage31_prepare_inputs_worker.py": {
-    "path": "financial-data/_scripts/workers/stage31_prepare_inputs_worker.py",
     "sha256": "1482f6479060421dfe4fc07193cc9fb3f9447ce1143d5dc6458172927703447b"
    }
   },
@@ -119,7 +115,7 @@
    "endTime=<ms>",
    "limit=1000"
   ],
-  "rate_limit_handling": "HTTP 429 backoff as in stage13_dragon_crypto_worker",
+  "rate_limit_handling": "HTTP 429 backoff as in the stage-1.3 acquisition worker",
   "authority": "same public endpoint used by the governed financial-data acquisition workers; no credentials, no private endpoints"
  },
  "n2_identities": {
