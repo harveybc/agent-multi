@@ -1,0 +1,8 @@
+acceptance-2: HISTORICAL code (git 4863549f) verifying the reviewed v2 bytes:
+{
+ "verdict": "N3_BUNDLE_VERIFIED",
+ "rederived_decision": "TARGET_SCALE_EFFECT_NOT_CONFIRMED",
+ "units_verified": 8,
+ "external_digest_checked": true
+}
+ACCEPTANCE 2 HOLDS: historical code + reviewed digest reproduce the accepted negative

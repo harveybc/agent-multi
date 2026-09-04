@@ -1,0 +1,10 @@
+P1: ACCEPTED -> N3_BUNDLE_VERIFIED
+P2: ACCEPTED -> N3_BUNDLE_VERIFIED
+P3: ACCEPTED -> N3_BUNDLE_VERIFIED
+P4: ACCEPTED -> N3_BUNDLE_VERIFIED
+P5: ACCEPTED -> N3_BUNDLE_VERIFIED
+P6: ACCEPTED -> N3_BUNDLE_VERIFIED
+P7: ACCEPTED -> N3_BUNDLE_VERIFIED
+P8: ACCEPTED -> N3_BUNDLE_VERIFIED
+
+PRE CONFIRMED: 8/8 semantic mutations accepted by the current verifier when handed their own digest — 'exact schemas at every level' is FALSE and a self-chosen checksum is being treated as authority

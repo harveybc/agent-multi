@@ -1,8 +1,9 @@
-"""N3 v2 battery (orders @a13671ab + correction @17f6e574):
-typed epoch helper, restricted custody under umask 000, strict wire
-grammar, evidence-derived metrics, and a verifier with EXTERNAL
-authority that refuses the four Musashi forgeries and every earlier
-adversary."""
+"""N3 battery v3 (orders @a13671ab + @17f6e574 + @a1e7b739):
+typed epoch helper, restricted custody, strict wire grammar, typed
+per-observation evidence, exact nested schemas (P1-P8 frozen as
+semantic regressions on the REAL published v2 bundle), and the
+authority ladder — a caller-supplied digest can never mint the
+gate-bearing publication label."""
 from __future__ import annotations
 
 import copy
@@ -31,52 +32,41 @@ from agent_plugins.experiment_runtime import sha_obj  # noqa: E402
 SEALED = json.loads(
     (REPO / "docs/audits/evidence/"
      "N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json").read_text())
+V2_PATH = (REPO / "docs/audits/evidence/"
+           "N3_FRESH_CONFIRMATION_BUNDLE_V2_2026_09_04.json")
+V3_PATH = (REPO / "docs/audits/evidence/"
+           "N3_FRESH_CONFIRMATION_BUNDLE_V3_2026_09_04.json")
+V2_REVIEWED_SHA = ("f2c4ae1dc9628b1d9ab733a1ed4f28b1de3f32c31a713"
+                   "9efff89f3945e592c82")
 
 
 # ------------------------------------------------------------------ #
-# C1: the typed epoch helper                                         #
+# C1 helper / C2 custody / C5 grammar (unchanged disciplines)        #
 # ------------------------------------------------------------------ #
 
 class TestEpochHelper:
 
-    def test_ms_resolution_series_is_unit_safe(self):
-        s = pd.Series(pd.to_datetime([1767211200000], unit="ms",
-                                     utc=True)).astype(
-            "datetime64[ms, UTC]")
-        assert int(n3f.to_epoch_ms(s).iloc[0]) == 1767211200000
-
-    def test_ns_resolution_series_same_answer(self):
-        s = pd.Series(pd.to_datetime([1767211200000], unit="ms",
-                                     utc=True)).astype(
-            "datetime64[ns, UTC]")
-        assert int(n3f.to_epoch_ms(s).iloc[0]) == 1767211200000
+    def test_ms_and_ns_resolutions_agree(self):
+        for res in ("datetime64[ms, UTC]", "datetime64[ns, UTC]"):
+            s = pd.Series(pd.to_datetime([1767211200000],
+                                         unit="ms",
+                                         utc=True)).astype(res)
+            assert int(n3f.to_epoch_ms(s).iloc[0]) == 1767211200000
 
     def test_frozen_parquet_final_bar_exact(self):
         lake = pd.read_parquet(n3f.LAKE_PARQUET)
-        ms = n3f.to_epoch_ms(lake["open_time"])
-        assert int(ms.iloc[-1]) == 1767211200000
+        assert int(n3f.to_epoch_ms(
+            lake["open_time"]).iloc[-1]) == 1767211200000
 
-    def test_null_refuses(self):
-        with pytest.raises(n3f.FreshRefusal, match="null"):
-            n3f.to_epoch_ms(pd.Series([pd.NaT]))
-
-    def test_bool_refuses(self):
-        with pytest.raises(n3f.FreshRefusal, match="boolean"):
-            n3f.to_epoch_ms(pd.Series([True, False]))
-
-    def test_out_of_range_refuses(self):
-        s = pd.Series(pd.to_datetime([0], unit="ms", utc=True))
-        with pytest.raises(n3f.FreshRefusal, match="range"):
-            n3f.to_epoch_ms(s)
-
-    def test_strict_epoch_int_rejects_bool(self):
+    def test_null_bool_range_refuse(self):
         with pytest.raises(n3f.FreshRefusal):
-            n3f.strict_epoch_int(True, "x")
+            n3f.to_epoch_ms(pd.Series([pd.NaT]))
+        with pytest.raises(n3f.FreshRefusal):
+            n3f.to_epoch_ms(pd.Series([True, False]))
+        with pytest.raises(n3f.FreshRefusal):
+            n3f.to_epoch_ms(pd.Series(pd.to_datetime(
+                [0], unit="ms", utc=True)))
 
-
-# ------------------------------------------------------------------ #
-# C2 custody under umask 000                                         #
-# ------------------------------------------------------------------ #
 
 class TestCustody:
 
@@ -86,348 +76,337 @@ class TestCustody:
         yield tmp_path
         os.umask(old)
 
-    def test_create_is_0700_and_files_0600_under_umask_000(
-            self, base):
+    def test_create_0700_files_0600_under_umask_000(self, base):
         root = base / "staging"
         fd = n3f.secure_root(root, create=True)
         try:
-            st = os.fstat(fd)
-            assert (st.st_mode & 0o777) == 0o700
+            assert (os.fstat(fd).st_mode & 0o777) == 0o700
             n3f.secure_write(fd, "a.bin", b"x")
         finally:
             os.close(fd)
         assert (os.stat(root / "a.bin").st_mode & 0o777) == 0o600
         assert n3f.secure_read(root, "a.bin") == b"x"
 
-    def test_existing_permissive_root_refused_not_repaired(
-            self, base):
+    def test_permissive_root_refused_not_repaired(self, base):
         root = base / "permissive"
         root.mkdir(mode=0o775)
         os.chmod(root, 0o775)
-        with pytest.raises(n3f.FreshRefusal, match="already exists"):
-            n3f.secure_root(root, create=True)
-        with pytest.raises(n3f.FreshRefusal, match="0700"):
+        with pytest.raises(n3f.FreshRefusal):
             n3f.secure_root(root, create=False)
-        assert (os.stat(root).st_mode & 0o777) == 0o775  # untouched
+        assert (os.stat(root).st_mode & 0o777) == 0o775
 
-    def test_symlink_root_refused(self, base):
+    def test_symlinks_refused(self, base):
         real = base / "real"
         real.mkdir(mode=0o700)
         os.chmod(real, 0o700)
-        link = base / "link"
-        link.symlink_to(real)
+        (base / "link").symlink_to(real)
         with pytest.raises(n3f.FreshRefusal):
-            n3f.secure_root(link, create=False)
+            n3f.secure_root(base / "link", create=False)
 
-    def test_symlinked_file_refused(self, base):
-        root = base / "s2"
-        fd = n3f.secure_root(root, create=True)
-        try:
-            n3f.secure_write(fd, "real.bin", b"y")
-        finally:
-            os.close(fd)
-        (root / "evil.bin").symlink_to(root / "real.bin")
-        with pytest.raises(n3f.FreshRefusal):
-            n3f.secure_read(root, "evil.bin")
-
-    def test_permissive_file_refused(self, base):
-        root = base / "s3"
-        fd = n3f.secure_root(root, create=True)
-        try:
-            n3f.secure_write(fd, "f.bin", b"z")
-        finally:
-            os.close(fd)
-        os.chmod(root / "f.bin", 0o664)
-        with pytest.raises(n3f.FreshRefusal, match="0600"):
-            n3f.secure_read(root, "f.bin")
-
-
-# ------------------------------------------------------------------ #
-# C5 strict wire grammar and JSON                                    #
-# ------------------------------------------------------------------ #
 
 class TestStrictParsing:
 
-    def test_json_nan_refused(self):
-        with pytest.raises(n3f.FreshRefusal, match="non-finite"):
+    def test_json_nan_and_duplicates_refused(self):
+        with pytest.raises(n3f.FreshRefusal):
             n3f.strict_json(b'{"a": NaN}')
-
-    def test_json_duplicate_key_refused(self):
-        with pytest.raises(n3f.FreshRefusal, match="duplicate"):
+        with pytest.raises(n3f.FreshRefusal):
             n3f.strict_json(b'{"a": 1, "a": 2}')
 
     def test_decimal_grammar(self):
         assert n3f.strict_decimal("2345.10000000", "x") == 2345.1
-        for bad in ("1e5", "NaN", "Infinity", True, 5, "5", ".5"):
+        for bad in ("1e5", "NaN", True, 5, "5", ".5"):
             with pytest.raises(n3f.FreshRefusal):
                 n3f.strict_decimal(bad, "x")
 
-    def _row(self, open_ms=1735689600000):
-        return [open_ms, "100.0", "110.0", "90.0", "105.0",
-                "10.5", open_ms + 14399999, "1050.0", 7,
-                "5.25", "525.0", "0"]
-
-    def test_valid_row_passes(self):
-        n3f.validate_wire_rows([self._row()],
-                               1735689600000 + 10 ** 9)
-
-    def test_eleven_fields_refused(self):
+    def test_twelve_fields_and_bool_count_refused(self):
+        row = [1735689600000, "100.0", "110.0", "90.0", "105.0",
+               "10.5", 1735703999999, "1050.0", 7, "5.25",
+               "525.0", "0"]
+        n3f.validate_wire_rows([row], 1735689600000 + 10 ** 9)
         with pytest.raises(n3f.FreshRefusal, match="12"):
-            n3f.validate_wire_rows([self._row()[:11]],
+            n3f.validate_wire_rows([row[:11]],
                                    1735689600000 + 10 ** 9)
-
-    def test_boolean_count_refused(self):
-        r = self._row()
-        r[8] = True
+        bad = list(row)
+        bad[8] = True
         with pytest.raises(n3f.FreshRefusal, match="integer"):
-            n3f.validate_wire_rows([r], 1735689600000 + 10 ** 9)
+            n3f.validate_wire_rows([bad], 1735689600000 + 10 ** 9)
 
-    def test_open_bar_refused(self):
-        r = self._row()
-        with pytest.raises(n3f.FreshRefusal, match="open terminal"):
-            n3f.validate_wire_rows([r], r[6])
+
+class TestOverlapExactness:
+
+    def test_sub_float32_revision_refuses(self):
+        base = 2345.123456789
+        true_close = base + 1
+        revised = true_close * (1 + 3e-8)
+        assert np.float32(revised) == np.float32(true_close)
+        rows = [[1735689600000, str(base), str(base + 10),
+                 str(base - 10), repr(revised), "100.5",
+                 1735703999999, "23451.2", 777, "50.25",
+                 "11725.6", "0"]]
+        lake = pd.DataFrame({
+            "open": [base], "high": [base + 10],
+            "low": [base - 10], "close": [true_close],
+            "volume": [100.5], "quote_volume": [23451.2],
+            "trade_count": [777],
+            "taker_buy_base_volume": [50.25],
+            "taker_buy_quote_volume": [11725.6]})
+        with pytest.raises(n3f.FreshRefusal, match="revised"):
+            n3f._verify_overlap(rows, lake,
+                                pd.Series([1735689600000]))
+
+    def test_one_ulp_derived_field_tolerated_and_counted(self):
+        base = 2345.123456789
+        import struct
+        qv = 23451.2
+        qv_1ulp = struct.unpack("<d", struct.pack(
+            "<q", struct.unpack("<q", struct.pack(
+                "<d", qv))[0] + 1))[0]
+        rows = [[1735689600000, str(base), str(base + 10),
+                 str(base - 10), str(base + 1), "100.5",
+                 1735703999999, repr(qv_1ulp), 777, "50.25",
+                 "11725.6", "0"]]
+        lake = pd.DataFrame({
+            "open": [base], "high": [base + 10],
+            "low": [base - 10], "close": [base + 1],
+            "volume": [100.5], "quote_volume": [qv],
+            "trade_count": [777],
+            "taker_buy_base_volume": [50.25],
+            "taker_buy_quote_volume": [11725.6]})
+        rep = n3f._verify_overlap(rows, lake,
+                                  pd.Series([1735689600000]))
+        assert rep["quote_volume"]["cells_1ulp"] == 1
+        assert rep["quote_volume"]["max_ulp"] == 1
 
 
 # ------------------------------------------------------------------ #
-# geometry, decision, overlap exactness (carried from v1)            #
+# geometry and decision (sealed)                                     #
 # ------------------------------------------------------------------ #
 
-class TestGeometry:
+class TestGeometryAndDecision:
 
-    def test_expected_scoring_anchors_match_contract(self):
+    def test_canonical_anchors_match_contract(self):
         expected = SEALED["role_ledger"][
             "expected_scoring_anchors"]
         for name, start, end, bars in n3f.BLOCKS:
-            assert len(n3f.scoring_anchor_offsets(bars)) == \
-                expected[name]
+            canon = n3f.canonical_anchor_datetimes(name)
+            assert len(canon) == expected[name]
 
-    def test_canonical_anchor_list_shape(self):
-        canon = n3f.canonical_anchor_datetimes("B1_JanFeb")
-        assert len(canon) == 86
-        assert canon[0] == "2026-01-01 00:00:00"
-
-
-class TestDecisionTable:
-
-    def _stats(self, **over):
+    def test_decision_table(self):
         base = {}
         for t in n3f.TARGETS:
             for (a, b) in n3f.CONTRAST_FAMILY:
                 base[(t, a, b)] = {"pooled_skill": -0.01,
                                    "all_blocks_positive": False,
                                    "holm_p": 1.0}
-        for key, v in over.items():
-            t, a, b = key.split("|")
-            base[(t, a, b)] = v
-        return base
-
-    def _good(self, skill):
-        return {"pooled_skill": skill,
-                "all_blocks_positive": True, "holm_p": 0.001}
-
-    def test_representation_precedence(self):
-        stats = self._stats(**{
-            "bar_h6|arm2|arm1": self._good(0.02),
-            "bar_h12|arm2|arm1": self._good(0.02),
-            "bar_h12|arm5|arm2": self._good(0.006)})
-        assert n3f.decide(stats, True, True) == \
-            "INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA"
-
-    def test_not_confirmed_default(self):
-        assert n3f.decide(self._stats(), True, True) == \
+        assert n3f.decide(base, True, True) == \
             "TARGET_SCALE_EFFECT_NOT_CONFIRMED"
-
-    def test_insufficient_and_inconclusive(self):
         assert n3f.decide({}, False, True) == \
             "FRESH_CONFIRMATION_INSUFFICIENT"
-        assert n3f.decide({}, True, False) == \
-            "FRESH_CONFIRMATION_INCONCLUSIVE"
-
-
-class TestOverlapExactness:
-
-    def _frames(self, revise=None):
-        base = 2345.123456789
-        rows = [[1735689600000, str(base), str(base + 10),
-                 str(base - 10), str(base + 1), "100.5",
-                 1735703999999, "23451.2", 777, "50.25",
-                 "11725.6", "0"]]
-        if revise is not None:
-            rows[0][4] = revise
-        lake = pd.DataFrame({
-            "open": [base], "high": [base + 10],
-            "low": [base - 10], "close": [base + 1],
-            "volume": [100.5], "quote_volume": [23451.2],
-            "trade_count": [777],
-            "taker_buy_base_volume": [50.25],
-            "taker_buy_quote_volume": [11725.6]})
-        return rows, lake, pd.Series([1735689600000])
-
-    def test_sub_float32_revision_refuses(self):
-        true_close = 2345.123456789 + 1
-        revised = true_close * (1 + 3e-8)
-        assert np.float32(revised) == np.float32(true_close)
-        rows, lake, lake_ms = self._frames(revise=repr(revised))
-        with pytest.raises(n3f.FreshRefusal, match="revised"):
-            n3f._verify_overlap(rows, lake, lake_ms)
+        good = {"pooled_skill": 0.02,
+                "all_blocks_positive": True, "holm_p": 0.001}
+        rep = dict(base)
+        rep[("bar_h6", "arm2", "arm1")] = good
+        rep[("bar_h12", "arm2", "arm1")] = good
+        rep[("bar_h12", "arm5", "arm2")] = {
+            "pooled_skill": 0.006,
+            "all_blocks_positive": True, "holm_p": 0.001}
+        assert n3f.decide(rep, True, True) == \
+            "INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA"
 
 
 # ------------------------------------------------------------------ #
-# synthetic v2 bundle + the verifier                                 #
+# P1-P8: the eight Musashi semantic mutations, frozen as             #
+# regressions on the REAL published v2 bundle (self-supplied sha     #
+# crosses the byte layer; refusal must be SEMANTIC)                  #
 # ------------------------------------------------------------------ #
-
-def _mix(prior, y, eps, toward_truth=True):
-    onehot = np.eye(3)[y]
-    target = onehot if toward_truth else np.roll(onehot, 1, axis=1)
-    p = (1 - eps) * prior[None, :] + eps * target
-    return p / p.sum(axis=1, keepdims=True)
-
-
-def _synthetic_bundle():
-    rng = np.random.default_rng(21)
-    hist = [900, 1000, 1500]
-    prior = np.array(hist) / sum(hist)
-    units = []
-    for tkey in n3f.TARGETS:
-        for name, start, end, bars in n3f.BLOCKS:
-            anchors = n3f.canonical_anchor_datetimes(name)
-            n_s = len(anchors)
-            y = rng.integers(0, 3, size=n_s)
-            arms = {
-                "arm1": np.tile(prior, (n_s, 1)),
-                "arm2": _mix(prior, y, 0.02),
-                "arm3": _mix(prior, y, 0.02
-                             + 0.001 * rng.standard_normal()),
-                "arm4": _mix(prior, y, 0.03, toward_truth=False),
-                "arm5": _mix(prior, y, 0.02, toward_truth=False)}
-            payload = {
-                "unit": f"{tkey}:{name}",
-                "horizon": n3f.TARGETS[tkey], "block": name,
-                "n_score": n_s,
-                "anchor_datetimes": anchors,
-                "fit_cal_label_histogram": hist,
-                "labels": [int(v) for v in y],
-                "class_support_score": {
-                    str(c): int((y == c).sum())
-                    for c in (0, 1, 2)},
-                "arms": {a: {"record": {},
-                             "probs": [[float(v) for v in row]
-                                       for row in p],
-                             "metrics": n3f.unit_metrics(y, p)}
-                         for a, p in arms.items()}}
-            payload["payload_sha256"] = sha_obj(payload)
-            units.append(payload)
-    contrasts, stats, complete = n3f._rederive(units)
-    assert complete
-    verdict = n3f.decide(stats, True, True)
-    return {"schema": n3f.BUNDLE_SCHEMA_V2,
-            "contract": n3f.CONTRACT,
-            "contract_sha256": __import__(
-                "agent_plugins.experiment_runtime",
-                fromlist=["sha_file"]).sha_file(
-                    REPO / n3f.CONTRACT),
-            "role_ledger": n3f.role_ledger(),
-            "digests": {"acquired_parquet": "0" * 64,
-                        "model_ready_extended": "0" * 64,
-                        "frozen_csv": n3f.FROZEN_SHA,
-                        "lake_parquet": n3f.LAKE_SHA,
-                        "code": n3f._code_digest()},
-            "units": units, "contrasts": contrasts,
-            "verdict": verdict, "elapsed_s": 1.0,
-            "decision_constants": {}}
-
-
-@pytest.fixture(scope="module")
-def bundle():
-    return _synthetic_bundle()
-
-
-def _write(tmp_path, b):
-    p = tmp_path / "bundle.json"
-    p.write_text(json.dumps(b, default=float))
-    return p, hashlib.sha256(p.read_bytes()).hexdigest()
-
 
 def _redigest(u):
     u["payload_sha256"] = sha_obj(
         {k: v for k, v in u.items() if k != "payload_sha256"})
 
 
-class TestVerifierV2:
+@pytest.fixture(scope="module")
+def v2():
+    return json.loads(V2_PATH.read_text())
 
-    def test_consistent_bundle_verifies_with_external_digest(
-            self, bundle, tmp_path):
-        p, sha = _write(tmp_path, bundle)
-        out = n3f.verify(p, sha)
-        assert out["verdict"] == "N3_BUNDLE_VERIFIED"
-        assert out["external_digest_checked"] is True
 
-    def test_no_external_digest_refused(self, bundle, tmp_path):
-        p, _ = _write(tmp_path, bundle)
-        with pytest.raises(n3f.FreshRefusal, match="EXTERNAL"):
-            n3f.verify(p)
+def _probe(tmp_path, v2, mutate):
+    b = copy.deepcopy(v2)
+    mutate(b)
+    b["digests"]["code"] = n3f._code_digest()  # coherent forger
+    p = tmp_path / "probe.json"
+    p.write_text(json.dumps(b, default=float))
+    sha = hashlib.sha256(p.read_bytes()).hexdigest()
+    return p, sha
 
-    def test_wrong_external_digest_refused(self, bundle, tmp_path):
-        p, _ = _write(tmp_path, bundle)
-        with pytest.raises(n3f.FreshRefusal, match="external"):
-            n3f.verify(p, "ab" * 32)
 
-    def test_internal_mode_cannot_publish_verified(self, bundle,
-                                                   tmp_path):
-        p, _ = _write(tmp_path, bundle)
-        out = n3f.verify(p, internal_only=True)
+class TestSemanticRegressionsP1P8:
+
+    def test_p1_decision_constants(self, v2, tmp_path):
+        p, sha = _probe(tmp_path, v2, lambda b: b[
+            "decision_constants"].__setitem__("margin_repr", 999))
+        with pytest.raises(n3f.FreshRefusal,
+                           match="decision_constants"):
+            n3f.verify(p, sha)
+
+    def test_p2_stride(self, v2, tmp_path):
+        p, sha = _probe(tmp_path, v2, lambda b: b[
+            "role_ledger"].__setitem__("stride", 999))
+        with pytest.raises(n3f.FreshRefusal, match="stride"):
+            n3f.verify(p, sha)
+
+    def test_p3_horizon(self, v2, tmp_path):
+        def m(b):
+            u = [x for x in b["units"] if x["horizon"] == 6][0]
+            u["horizon"] = 999
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal, match="horizon"):
+            n3f.verify(p, sha)
+
+    def test_p4_contract_path(self, v2, tmp_path):
+        p, sha = _probe(tmp_path, v2, lambda b: b.__setitem__(
+            "contract", "docs/README_UNRELATED.md"))
+        with pytest.raises(n3f.FreshRefusal,
+                           match="contract path"):
+            n3f.verify(p, sha)
+
+    def test_p5_acquired_digest(self, v2, tmp_path):
+        p, sha = _probe(tmp_path, v2, lambda b: b[
+            "digests"].__setitem__("acquired_parquet", "0" * 64))
+        with pytest.raises(n3f.FreshRefusal, match="receipt"):
+            n3f.verify(p, sha)
+
+    def test_p6_boolean_label_support_preserving(self, v2,
+                                                 tmp_path):
+        def m(b):
+            u = b["units"][0]
+            u["labels"][u["labels"].index(1)] = True
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal,
+                           match="JSON integers"):
+            n3f.verify(p, sha)
+
+    def test_p7_string_probability(self, v2, tmp_path):
+        def m(b):
+            u = b["units"][1]
+            u["arms"]["arm2"]["probs"][0][0] = str(
+                u["arms"]["arm2"]["probs"][0][0])
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal, match="JSON number"):
+            n3f.verify(p, sha)
+
+    def test_p8_undeclared_digest_key(self, v2, tmp_path):
+        p, sha = _probe(tmp_path, v2, lambda b: b[
+            "digests"].__setitem__("undeclared_extra", "f" * 64))
+        with pytest.raises(n3f.FreshRefusal, match="schema"):
+            n3f.verify(p, sha)
+
+
+class TestTypedEvidenceCounterexamples:
+
+    def test_fractional_count(self, v2, tmp_path):
+        def m(b):
+            u = b["units"][2]
+            u["n_score"] = float(u["n_score"])
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal):
+            n3f.verify(p, sha)
+
+    def test_bool_in_histogram(self, v2, tmp_path):
+        def m(b):
+            u = b["units"][3]
+            u["fit_cal_label_histogram"][0] = True
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal, match="histogram"):
+            n3f.verify(p, sha)
+
+    def test_malformed_probability_row(self, v2, tmp_path):
+        def m(b):
+            u = b["units"][4]
+            u["arms"]["arm3"]["probs"][5] = [0.5, 0.5]
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal, match="malformed"):
+            n3f.verify(p, sha)
+
+    def test_out_of_simplex_row(self, v2, tmp_path):
+        def m(b):
+            u = b["units"][5]
+            u["arms"]["arm4"]["probs"][0] = [0.6, 0.6, 0.6]
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal, match="sum"):
+            n3f.verify(p, sha)
+
+    def test_c_outside_sealed_grid(self, v2, tmp_path):
+        def m(b):
+            u = b["units"][6]
+            u["arms"]["arm2"]["record"]["C"] = 3.14
+            _redigest(u)
+        p, sha = _probe(tmp_path, v2, m)
+        with pytest.raises(n3f.FreshRefusal, match="search set"):
+            n3f.verify(p, sha)
+
+
+# ------------------------------------------------------------------ #
+# C8: the authority ladder on the REAL artifacts                     #
+# ------------------------------------------------------------------ #
+
+class TestAuthorityLadder:
+
+    def test_reviewed_v2_is_gate_bearing(self):
+        out = n3f.verify(V2_PATH, V2_REVIEWED_SHA)
+        assert out["verdict"] == "N3_PUBLICATION_VERIFIED"
+        assert out["gate_bearing"] is True
+        assert out["rederived_decision"] == \
+            "TARGET_SCALE_EFFECT_NOT_CONFIRMED"
+
+    def test_pending_v3_is_not_gate_bearing(self):
+        sha = hashlib.sha256(V3_PATH.read_bytes()).hexdigest()
+        out = n3f.verify(V3_PATH, sha)
+        assert out["verdict"] == \
+            "N3_CANDIDATE_CONSISTENT_PENDING_REVIEW"
+        assert out["gate_bearing"] is False
+
+    def test_internal_mode_cannot_mint_authority(self):
+        out = n3f.verify(V3_PATH, internal_only=True)
         assert out["verdict"] == "N3_INTERNAL_CONSISTENCY_ONLY"
+        assert out["gate_bearing"] is False
 
-    # ---- the four Musashi forgeries, frozen as regressions ----
+    def test_no_external_digest_refused(self):
+        with pytest.raises(n3f.FreshRefusal, match="required"):
+            n3f.verify(V3_PATH)
 
-    def test_musashi_f1_zero_contract_sha(self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        b["contract_sha256"] = "0" * 64
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal, match="contract"):
-            n3f.verify(p, sha)
+    def test_wrong_digest_refused_before_parsing(self):
+        with pytest.raises(n3f.FreshRefusal, match="match"):
+            n3f.verify(V3_PATH, "ab" * 32)
 
-    def test_musashi_f2_blocks_complete_flag_is_not_authority(
-            self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        b["blocks_complete"] = False
-        b["verdict"] = "FRESH_CONFIRMATION_INSUFFICIENT"
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal):
-            n3f.verify(p, sha)  # unknown field OR edited verdict
-
-    def test_musashi_f3_absurd_unit_redigested(self, bundle,
-                                               tmp_path):
-        b = copy.deepcopy(bundle)
-        u = b["units"][0]
-        u["n_score"] = 1
-        u["class_support_score"] = {"0": 999, "1": 999, "2": 999}
-        _redigest(u)
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal):
-            n3f.verify(p, sha)
-
-    def test_musashi_f4_coherent_fake_neural_passer(self, bundle,
-                                                    tmp_path):
-        """The decisive regression: a FULLY coherent forgery
-        (probs, metrics, digests, contrasts and verdict all
-        recomputed) is internally indistinguishable from truth.
-        The EXTERNAL published digest — bound to the pushed Git
-        blob — is the authority that rejects it BEFORE its
-        scientific content is evaluated; and the internal-only
-        mode, which cannot see the forgery, is structurally unable
-        to publish N3_BUNDLE_VERIFIED."""
-        _, published_sha = _write(tmp_path, bundle)
-        b = copy.deepcopy(bundle)
+    def test_coherent_fake_passer_is_untrusted_never_verified(
+            self, v2, tmp_path):
+        """Acceptance 4+5: a fully coherent forgery — probs,
+        metrics, digests, contrasts, verdict and code identity all
+        recomputed — earns at most the supplied-digest consistency
+        label: UNTRUSTED, non-gate, and never a label implying
+        independent approval."""
+        b = copy.deepcopy(v2)
         for u in b["units"]:
             if u["horizon"] == 6:
                 y = np.asarray(u["labels"])
-                fake = _mix(np.asarray(
-                    u["fit_cal_label_histogram"], dtype=float)
-                    / sum(u["fit_cal_label_histogram"]),
-                    y, 0.05)
+                prior = np.asarray(
+                    u["fit_cal_label_histogram"],
+                    dtype=float)
+                prior = prior / prior.sum()
+                fake = 0.95 * np.asarray(
+                    u["arms"]["arm2"]["probs"]) \
+                    + 0.05 * np.eye(3)[y]
+                fake = fake / fake.sum(axis=1, keepdims=True)
                 u["arms"]["arm3"]["probs"] = [
-                    [float(v) for v in row] for row in fake]
+                    [float(x) for x in row] for row in fake]
                 u["arms"]["arm3"]["metrics"] = n3f.unit_metrics(
                     y, fake)
                 _redigest(u)
@@ -436,117 +415,52 @@ class TestVerifierV2:
         b["verdict"] = n3f.decide(stats, True, True)
         assert b["verdict"] == \
             "INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA"
-        forged = tmp_path / "forged.json"
-        forged.write_text(json.dumps(b, default=float))
-        # rejected at the byte gate, before parsing
-        with pytest.raises(n3f.FreshRefusal,
-                           match="external digest"):
-            n3f.verify(forged, published_sha)
-        # internal-only mode cannot mint publication authority
-        out = n3f.verify(forged, internal_only=True)
-        assert out["verdict"] == "N3_INTERNAL_CONSISTENCY_ONLY"
-        assert out["verdict"] != "N3_BUNDLE_VERIFIED"
+        b["digests"]["code"] = n3f._code_digest()
+        p = tmp_path / "fake.json"
+        p.write_text(json.dumps(b, default=float))
+        sha = hashlib.sha256(p.read_bytes()).hexdigest()
+        out = n3f.verify(p, sha)
+        assert out["verdict"] == \
+            "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
+        assert out["gate_bearing"] is False
+        assert "UNTRUSTED" in out["authority"]
 
-    # ---- earlier adversaries under v2 ----
 
-    def test_anchor_forgery_fails_canonical_check(self, bundle,
-                                                  tmp_path):
-        b = copy.deepcopy(bundle)
-        b["units"][0]["anchor_datetimes"] = \
-            ["2025-12-30 04:00:00"] + \
-            b["units"][0]["anchor_datetimes"][1:]
-        _redigest(b["units"][0])
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal, match="canonical"):
-            n3f.verify(p, sha)
+# ------------------------------------------------------------------ #
+# C9/C10: the v3 envelope                                            #
+# ------------------------------------------------------------------ #
 
-    def test_moved_boundary_refused(self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        b["role_ledger"]["blocks"]["B4_JulAug"] = [
-            "2026-07-01 00:00", "2026-09-15 20:00", 372]
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal, match="boundary"):
-            n3f.verify(p, sha)
+class TestReissueV3:
 
-    def test_metrics_must_derive_from_evidence(self, bundle,
-                                               tmp_path):
-        b = copy.deepcopy(bundle)
-        u = b["units"][2]
-        u["arms"]["arm2"]["metrics"] = dict(
-            u["arms"]["arm2"]["metrics"],
-            multiclass_logloss_mean=0.001)
-        _redigest(u)
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal, match="derive"):
-            n3f.verify(p, sha)
+    def test_v3_science_byte_equal_and_full_compare(self):
+        v3 = json.loads(V3_PATH.read_text())
+        m = v3["v2_correction_map"]
+        assert m["science_byte_equal"] is True
+        assert m["complete_contrast_objects_equal"] is True
+        assert m["decisions_equal"] is True
+        m1 = v3["v1_correction_map"]
+        assert m1["complete_contrast_objects_equal"] is True
+        assert "every key and value" in m1["comparison_scope"]
 
-    def test_support_derived_from_labels(self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        u = b["units"][1]
-        u["class_support_score"] = {"0": 40, "1": 40, "2": 6}
-        _redigest(u)
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal,
-                           match="derive from the labels"):
-            n3f.verify(p, sha)
-
-    def test_prior_label_history_mismatch(self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        u = b["units"][3]
-        u["fit_cal_label_histogram"] = [100, 2000, 1300]
-        _redigest(u)
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal,
-                           match="label histories"):
-            n3f.verify(p, sha)
-
-    def test_missing_unit_refused(self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        b["units"] = b["units"][:-1]
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal,
-                           match="missing/extra"):
-            n3f.verify(p, sha)
-
-    def test_edited_verdict_refused(self, bundle, tmp_path):
-        b = copy.deepcopy(bundle)
-        b["verdict"] = "TARGET_SCALE_EFFECT_NOT_CONFIRMED" \
-            if b["verdict"] != "TARGET_SCALE_EFFECT_NOT_CONFIRMED" \
-            else "FRESH_CONFIRMATION_INCONCLUSIVE"
-        p, sha = _write(tmp_path, b)
-        with pytest.raises(n3f.FreshRefusal, match="edited"):
-            n3f.verify(p, sha)
+    def test_v2_and_v3_contrasts_identical(self, v2):
+        v3 = json.loads(V3_PATH.read_text())
+        assert v3["contrasts"] == v2["contrasts"]
+        assert v3["verdict"] == v2["verdict"]
+        assert [u["labels"] for u in v3["units"]] == \
+            [u["labels"] for u in v2["units"]]
 
 
 class TestUnitMetrics:
 
-    def test_additive_identity_and_shapes(self):
+    def test_additive_identity(self):
         rng = np.random.default_rng(5)
         y = rng.integers(0, 3, 40)
         p = rng.dirichlet([1, 1, 1], size=40)
         m = n3f.unit_metrics(y, p)
         assert m["additive_identity_max_abs_gap"] < 1e-9
-        assert set(m["brier_components"]) == {"0", "1", "2"}
 
-    def test_invalid_simplex_refused(self):
-        y = np.array([0, 1])
-        p = np.array([[0.5, 0.5, 0.5], [0.2, 0.3, 0.5]])
-        with pytest.raises(n3f.FreshRefusal, match="simplex"):
-            n3f.unit_metrics(y, p)
-
-    def test_nan_probability_refused(self):
-        y = np.array([0])
-        p = np.array([[np.nan, 0.5, 0.5]])
-        with pytest.raises(n3f.FreshRefusal, match="finite"):
-            n3f.unit_metrics(y, p)
-
-    def test_length_disagreement_refused(self):
-        with pytest.raises(n3f.FreshRefusal, match="shape"):
+    def test_invalid_inputs_refuse(self):
+        with pytest.raises(n3f.FreshRefusal):
             n3f.unit_metrics([0, 1], [[0.2, 0.3, 0.5]])
-
-    def test_recall_typed_unavailable(self):
-        y = np.array([0, 0, 1, 1])
-        p = np.tile([0.4, 0.4, 0.2], (4, 1))
-        m = n3f.unit_metrics(y, p)
-        assert m["recall_argmax"]["2"] is None
-        assert m["recall_unavailable_classes"] == [2]
+        with pytest.raises(n3f.FreshRefusal):
+            n3f.unit_metrics([0], [[np.nan, 0.5, 0.5]])

@@ -1161,18 +1161,15 @@ def execute(staging: Path, out_bundle: Path,
     v1_map = None
     if v1_bundle is not None and v1_bundle.exists():
         v1 = json.loads(v1_bundle.read_text())
-        same_contrasts = all(
-            v1["contrasts"][k]["pooled_skill"]
-            == contrasts_out[k]["pooled_skill"]
-            and v1["contrasts"][k]["per_block_skill"]
-            == contrasts_out[k]["per_block_skill"]
-            for k in contrasts_out)
+        # C9 (order @a1e7b739): every key and value of all eight
+        # contrast objects, never a two-field proxy
+        same_contrasts = v1["contrasts"] == contrasts_out
         v1_map = {
             "v1_bundle_sha256": hashlib.sha256(
                 v1_bundle.read_bytes()).hexdigest(),
             "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
-            "verdict_equal": v1["verdict"] == verdict,
-            "all_contrast_numbers_equal": bool(same_contrasts),
+            "decisions_equal": v1["verdict"] == verdict,
+            "complete_contrast_objects_equal": bool(same_contrasts),
             "added_in_v2": ["labels", "per-anchor class "
                             "probabilities", "direction_given_hit",
                             "additive identity", "Brier components",
@@ -1231,171 +1228,500 @@ def _code_digest() -> str:
 
 
 # ------------------------------------------------------------------ #
-# C4: the verifier — external authority, exact schemas, everything  #
-# derived from evidence                                              #
+# C6-C8: the verifier — reviewer authority, exact nested schemas,    #
+# typed evidence, everything derived (order @a1e7b739)               #
 # ------------------------------------------------------------------ #
 
-TOP_KEYS = {"schema", "contract", "contract_sha256", "role_ledger",
-            "digests", "units", "contrasts", "verdict",
-            "elapsed_s", "decision_constants", "v1_correction_map"}
-UNIT_KEYS = {"unit", "horizon", "block", "n_score",
-             "anchor_datetimes", "fit_cal_label_histogram",
-             "labels", "class_support_score", "arms",
-             "payload_sha256", "license_failure"}
-ARM_KEYS = {"record", "probs", "metrics"}
+ALLOWLIST = ("docs/audits/evidence/"
+             "N3_REVIEWED_PUBLICATION_DIGESTS.json")
+RECEIPT_V2 = ("docs/audits/evidence/"
+              "N3_ACQUISITION_RECEIPT_V2_2026_09_04.json")
+PARITY_V2 = ("docs/audits/evidence/"
+             "N3_PARITY_REPORT_V2_2026_09_04.json")
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
+TOP_KEYS_REQUIRED = {"schema", "contract", "contract_sha256",
+                     "role_ledger", "digests", "units", "contrasts",
+                     "verdict", "elapsed_s", "decision_constants"}
+TOP_KEYS_OPTIONAL = {"v1_correction_map", "v2_correction_map"}
+UNIT_KEYS_EXACT = {"unit", "horizon", "block", "n_score",
+                   "anchor_datetimes", "fit_cal_label_histogram",
+                   "labels", "class_support_score", "arms",
+                   "payload_sha256"}
+ARM_KEYS_EXACT = {"record", "probs", "metrics"}
+METRIC_KEYS_EXACT = {"multiclass_logloss_mean",
+                     "hit_vs_censored_mean",
+                     "direction_given_hit_mean",
+                     "additive_identity_max_abs_gap", "brier",
+                     "brier_components", "recall_argmax",
+                     "recall_unavailable_classes",
+                     "calibration_deciles_hit"}
+DECILE_KEYS_EXACT = {"bin", "n", "mean_predicted_hit",
+                     "observed_hit_rate"}
+CONTRAST_KEYS_EXACT = {"pooled_skill", "per_block_skill",
+                       "all_blocks_positive", "bootstrap_p",
+                       "holm_p"}
+DIGEST_KEYS_EXACT = {"acquired_parquet", "model_ready_extended",
+                     "frozen_csv", "lake_parquet", "code"}
+ROLE_LEDGER_KEYS_EXACT = {"schema", "roles", "blocks",
+                          "purge_bars", "stride", "window",
+                          "anchor_counts"}
+GATE_LABEL = "N3_PUBLICATION_VERIFIED"
 
 
-def verify(bundle_path: Path, expected_sha256: str | None = None,
-           internal_only: bool = False) -> dict:
-    import numpy as np
-    raw = bundle_path.read_bytes()
-    if not internal_only:
-        if not expected_sha256:
-            raise FreshRefusal(
-                "an EXTERNAL expected bundle sha256 is required — "
-                "a digest carried inside the mutable bundle is a "
-                "checksum, not publication authority")
-        actual = hashlib.sha256(raw).hexdigest()
-        if actual != expected_sha256:
-            raise FreshRefusal(
-                f"bundle bytes do not match the external digest "
-                f"({actual[:12]} != {expected_sha256[:12]})")
-    bundle = strict_json(raw)
-    if bundle.get("schema") != BUNDLE_SCHEMA_V2:
-        raise FreshRefusal("unknown bundle schema")
-    unknown = set(bundle) - TOP_KEYS
-    missing = TOP_KEYS - set(bundle) - {"v1_correction_map"}
-    if unknown or missing:
-        raise FreshRefusal(
-            f"top-level schema violation: unknown={sorted(unknown)} "
-            f"missing={sorted(missing)}")
-    # sealed-contract bytes verified against the claim
-    actual_contract = sha_file(REPO / CONTRACT)
-    if bundle["contract_sha256"] != actual_contract:
-        raise FreshRefusal(
-            "contract_sha256 does not match the sealed contract "
-            "bytes")
-    if bundle["digests"].get("code") != _code_digest():
-        raise FreshRefusal("code identity differs from the "
-                           "verifying checkout")
-    if bundle["digests"].get("frozen_csv") != FROZEN_SHA or \
-            bundle["digests"].get("lake_parquet") != LAKE_SHA:
-        raise FreshRefusal("frozen data identities differ")
+def _is_int(x) -> bool:
+    return isinstance(x, int) and not isinstance(x, bool)
+
+
+def _is_num(x) -> bool:
+    return (_is_int(x) or isinstance(x, float)) \
+        and math.isfinite(x)
+
+
+def _need(cond: bool, msg: str) -> None:
+    if not cond:
+        raise FreshRefusal(msg)
+
+
+def _exact_keys(obj: dict, exact: set, label: str,
+                optional: set = frozenset()) -> None:
+    _need(isinstance(obj, dict), f"{label}: not an object")
+    unknown = set(obj) - exact - optional
+    missing = exact - set(obj)
+    _need(not unknown and not missing,
+          f"{label}: schema violation — unknown="
+          f"{sorted(unknown)} missing={sorted(missing)}")
+
+
+def _validate_role_ledger(ledger: dict) -> None:
+    """C6.2: the role ledger must DERIVE from the sealed contract
+    and frozen geometry, not merely exist. fit/cal anchor counts are
+    INFORMATIONAL (they depend on the frozen data grid's pre-2020
+    gaps); block anchor counts are strictly derived."""
+    _exact_keys(ledger, ROLE_LEDGER_KEYS_EXACT, "role_ledger")
+    canon = role_ledger()
+    _need(ledger["schema"] == canon["schema"],
+          "role_ledger.schema differs")
+    _need(ledger["roles"] == canon["roles"],
+          "role_ledger.roles differ from the sealed roles")
+    _need(ledger["blocks"] == canon["blocks"],
+          "role boundary moved: blocks differ from the sealed "
+          "contract")
     sealed = strict_json((REPO / CONTRACT).read_bytes())
-
-    def _norm(block):
-        return [str(block[0]).replace("T", " "),
-                str(block[1]).replace("T", " "), block[2]]
-    ledger = bundle["role_ledger"]
     for name, spec in sealed["role_ledger"]["blocks_utc"].items():
         got = ledger["blocks"].get(name)
-        if got is None or _norm(got) != _norm(spec):
+        norm = lambda b: [str(b[0]).replace("T", " "),
+                          str(b[1]).replace("T", " "), b[2]]
+        _need(got is not None and norm(got) == norm(spec),
+              f"role boundary moved: block {name} differs from "
+              "the sealed contract")
+    _need(_is_int(ledger["purge_bars"])
+          and ledger["purge_bars"] == H_MAX,
+          "role_ledger.purge_bars != sealed max horizon")
+    _need(_is_int(ledger["stride"]) and ledger["stride"] == STRIDE,
+          "role_ledger.stride != sealed stride")
+    _need(_is_int(ledger["window"]) and ledger["window"] == WINDOW,
+          "role_ledger.window != sealed window")
+    counts = ledger["anchor_counts"]
+    expected_keys = {"fit", "cal"} | {b[0] for b in BLOCKS}
+    _exact_keys(counts, expected_keys,
+                "role_ledger.anchor_counts")
+    for k, v in counts.items():
+        _need(_is_int(v) and v >= 0,
+              f"anchor_counts[{k}] not a non-negative integer")
+    for name, _, _, bars in BLOCKS:
+        _need(counts[name] == len(scoring_anchor_offsets(bars)),
+              f"anchor_counts[{name}] != canonical derived count")
+    # fit/cal counts: informational (typed above, not rederived)
+
+
+def _validate_digests(digests: dict, code_digest_expected: str
+                      ) -> None:
+    """C6.4: exactly five canonical sha256 fields, each BOUND —
+    acquisition to the committed strict v2 receipt, model-ready to
+    the committed parity record, data to the frozen constants, code
+    to the expected identity (current, or the allowlist entry's
+    recorded historical identity)."""
+    _exact_keys(digests, DIGEST_KEYS_EXACT, "digests")
+    for k, v in digests.items():
+        _need(isinstance(v, str) and HEX64.match(v),
+              f"digests[{k}] is not a canonical lowercase sha256")
+    _need(digests["frozen_csv"] == FROZEN_SHA,
+          "digests.frozen_csv differs from the frozen constant")
+    _need(digests["lake_parquet"] == LAKE_SHA,
+          "digests.lake_parquet differs from the frozen constant")
+    receipt = strict_json((REPO / RECEIPT_V2).read_bytes())
+    _need(digests["acquired_parquet"]
+          == receipt["acquired_parquet_sha256"],
+          "digests.acquired_parquet does not equal the committed "
+          "strict v2 receipt")
+    parity = strict_json((REPO / PARITY_V2).read_bytes())
+    _need(digests["model_ready_extended"]
+          == parity["extended_sha256"],
+          "digests.model_ready_extended does not equal the "
+          "committed parity record")
+    _need(digests["code"] == code_digest_expected,
+          "code identity differs from the expected identity for "
+          "this candidate")
+
+
+def _validate_unit_typed(u: dict) -> None:
+    """C7: typed per-observation evidence, validated BEFORE any
+    numpy conversion can coerce authority-bearing values."""
+    if "license_failure" in u:
+        raise FreshRefusal(
+            f"unit {u.get('unit')}: license failure "
+            f"{u['license_failure']} beside the decision")
+    _exact_keys(u, UNIT_KEYS_EXACT, f"unit {u.get('unit')}")
+    name = u["unit"]
+    _need(isinstance(name, str) and ":" in name,
+          "unit name malformed")
+    target, block = name.split(":", 1)
+    _need(target in TARGETS, f"unit {name}: unknown target")
+    _need(block in {b[0] for b in BLOCKS},
+          f"unit {name}: unknown block")
+    _need(u["block"] == block,
+          f"unit {name}: block field != name")
+    _need(_is_int(u["horizon"])
+          and u["horizon"] == TARGETS[target],
+          f"unit {name}: horizon does not equal the target's "
+          "sealed horizon")
+    canon = canonical_anchor_datetimes(block)
+    _need(_is_int(u["n_score"]) and u["n_score"] == len(canon),
+          f"unit {name}: n_score != canonical anchor count")
+    _need(u["anchor_datetimes"] == canon,
+          f"unit {name}: anchors differ from the canonical "
+          "sealed-geometry anchors")
+    hist = u["fit_cal_label_histogram"]
+    _need(isinstance(hist, list) and len(hist) == 3
+          and all(_is_int(x) and x >= 0 for x in hist)
+          and sum(hist) > 0,
+          f"unit {name}: histogram not three non-negative "
+          "integers")
+    labels = u["labels"]
+    _need(isinstance(labels, list)
+          and len(labels) == u["n_score"]
+          and all(_is_int(x) and x in (0, 1, 2) for x in labels),
+          f"unit {name}: labels must be JSON integers in {{0,1,2}} "
+          "(booleans refuse)")
+    support = u["class_support_score"]
+    _exact_keys(support, {"0", "1", "2"},
+                f"unit {name}.class_support_score")
+    for c in ("0", "1", "2"):
+        _need(_is_int(support[c]) and support[c] >= 0,
+              f"unit {name}: support[{c}] not a non-negative "
+              "integer")
+        _need(support[c] == sum(1 for v in labels
+                                if v == int(c)),
+              f"unit {name}: class support does not derive from "
+              "the labels")
+    _need(min(support["0"], support["1"]) >= SUPPORT_MIN,
+          f"unit {name}: derived class support below "
+          f"{SUPPORT_MIN} — unlicensed evidence beside a decision")
+    _exact_keys(u["arms"], set(ARMS), f"unit {name}.arms")
+    for arm, rec in u["arms"].items():
+        _exact_keys(rec, ARM_KEYS_EXACT, f"{name}.{arm}")
+        record = rec["record"]
+        if arm == "arm1":
+            _exact_keys(record, {"prior_from"},
+                        f"{name}.arm1.record")
+            _need(record["prior_from"] == "fit+calibration",
+                  f"{name}.arm1: prior source differs from the "
+                  "declared fit+calibration")
+        else:
+            _exact_keys(record, {"C", "cal_loss", "coef_norm"},
+                        f"{name}.{arm}.record")
+            _need(_is_num(record["C"])
+                  and record["C"] in tcn2.LOGISTIC_CS,
+                  f"{name}.{arm}: C outside the sealed search set")
+            _need(_is_num(record["cal_loss"])
+                  and _is_num(record["coef_norm"]),
+                  f"{name}.{arm}: non-finite fit record")
+        probs = rec["probs"]
+        _need(isinstance(probs, list)
+              and len(probs) == u["n_score"],
+              f"{name}.{arm}: probability rows != n_score")
+        for row in probs:
+            _need(isinstance(row, list) and len(row) == 3,
+                  f"{name}.{arm}: malformed probability row")
+            for v in row:
+                _need(_is_num(v) and 0.0 <= v <= 1.0,
+                      f"{name}.{arm}: probability must be a JSON "
+                      "number in [0,1] (booleans and strings "
+                      "refuse)")
+            _need(abs(sum(row) - 1.0) <= 1e-9,
+                  f"{name}.{arm}: probability row does not sum "
+                  "to one")
+        _validate_metrics_typed(rec["metrics"],
+                                f"{name}.{arm}.metrics")
+
+
+def _validate_metrics_typed(m: dict, label: str) -> None:
+    _exact_keys(m, METRIC_KEYS_EXACT, label)
+    for k in ("multiclass_logloss_mean", "hit_vs_censored_mean",
+              "additive_identity_max_abs_gap", "brier"):
+        _need(_is_num(m[k]), f"{label}.{k} not finite")
+    _need(m["direction_given_hit_mean"] is None
+          or _is_num(m["direction_given_hit_mean"]),
+          f"{label}.direction_given_hit_mean invalid")
+    _exact_keys(m["brier_components"], {"0", "1", "2"},
+                f"{label}.brier_components")
+    for v in m["brier_components"].values():
+        _need(_is_num(v), f"{label}: brier component not finite")
+    _exact_keys(m["recall_argmax"], {"0", "1", "2"},
+                f"{label}.recall_argmax")
+    for v in m["recall_argmax"].values():
+        _need(v is None or _is_num(v),
+              f"{label}: recall value invalid")
+    _need(isinstance(m["recall_unavailable_classes"], list)
+          and all(_is_int(x) and x in (0, 1, 2)
+                  for x in m["recall_unavailable_classes"]),
+          f"{label}: recall_unavailable_classes invalid")
+    _need(isinstance(m["calibration_deciles_hit"], list),
+          f"{label}: calibration deciles not a list")
+    for d in m["calibration_deciles_hit"]:
+        _exact_keys(d, DECILE_KEYS_EXACT, f"{label}.decile")
+        _need(_is_int(d["bin"]) and 0 <= d["bin"] <= 9
+              and _is_int(d["n"]) and d["n"] > 0
+              and _is_num(d["mean_predicted_hit"])
+              and _is_num(d["observed_hit_rate"]),
+              f"{label}: malformed calibration decile")
+
+
+def _validate_contrasts_typed(contrasts: dict) -> None:
+    expected = {f"{t}:{a}-vs-{b}" for t in TARGETS
+                for (a, b) in CONTRAST_FAMILY}
+    _exact_keys(contrasts, expected, "contrasts")
+    for ckey, s in contrasts.items():
+        _exact_keys(s, CONTRAST_KEYS_EXACT, f"contrasts[{ckey}]")
+        _need(_is_num(s["pooled_skill"]),
+              f"{ckey}: pooled_skill not finite")
+        _exact_keys(s["per_block_skill"],
+                    {b[0] for b in BLOCKS},
+                    f"{ckey}.per_block_skill")
+        for v in s["per_block_skill"].values():
+            _need(_is_num(v), f"{ckey}: block skill not finite")
+        _need(isinstance(s["all_blocks_positive"], bool),
+              f"{ckey}: all_blocks_positive not boolean")
+        _need(s["bootstrap_p"] == "<= 1/2001"
+              or _is_num(s["bootstrap_p"]),
+              f"{ckey}: bootstrap_p invalid")
+        _need(_is_num(s["holm_p"]), f"{ckey}: holm_p invalid")
+
+
+def _load_allowlist() -> dict:
+    path = REPO / ALLOWLIST
+    if not path.exists():
+        return {}
+    return strict_json(path.read_bytes()).get("entries", {})
+
+
+def verify(bundle_path: Path, supplied_sha256: str | None = None,
+           internal_only: bool = False) -> dict:
+    """C8 authority separation: a caller-supplied digest proves the
+    candidate matches a value the CALLER chose — byte match plus
+    semantic consistency, never publication authority. The
+    gate-bearing N3_PUBLICATION_VERIFIED label requires the digest
+    to appear with status 'reviewed' in the committed reviewer
+    allowlist, which no candidate can generate for itself."""
+    raw = bundle_path.read_bytes()
+    actual_sha = hashlib.sha256(raw).hexdigest()
+    allow = _load_allowlist()
+    entry = allow.get(actual_sha)
+    if not internal_only:
+        if not supplied_sha256:
             raise FreshRefusal(
-                f"role boundary moved: block {name} differs from "
-                "the sealed contract")
+                "an expected bundle sha256 is required — a digest "
+                "carried inside the mutable bundle is a checksum, "
+                "not authority")
+        if actual_sha != supplied_sha256:
+            raise FreshRefusal(
+                f"bundle bytes do not match the supplied digest "
+                f"({actual_sha[:12]} != {supplied_sha256[:12]})")
+    bundle = strict_json(raw)
+    _need(bundle.get("schema") == BUNDLE_SCHEMA_V2,
+          "unknown bundle schema")
+    _exact_keys(bundle, TOP_KEYS_REQUIRED, "bundle",
+                optional=TOP_KEYS_OPTIONAL)
+    # C6.1: contract path AND bytes
+    _need(bundle["contract"] == CONTRACT,
+          "contract path differs from the canonical committed "
+          "contract")
+    _need(bundle["contract_sha256"] == sha_file(REPO / CONTRACT),
+          "contract_sha256 does not match the sealed contract "
+          "bytes")
+    # C6.3: decision constants equal the rederivation constants
+    _exact_keys(bundle["decision_constants"],
+                {"margin_scale", "margin_repr", "support_min",
+                 "boot_b", "boot_seed", "block_len"},
+                "decision_constants")
+    expected_constants = {"margin_scale": MARGIN_SCALE,
+                          "margin_repr": MARGIN_REPR,
+                          "support_min": SUPPORT_MIN,
+                          "boot_b": BOOT_B,
+                          "boot_seed": BOOT_SEED,
+                          "block_len": BLOCK_LEN}
+    _need(bundle["decision_constants"] == expected_constants,
+          "decision_constants differ from the sealed rederivation "
+          "constants")
+    # C6.2: role ledger derives from the sealed contract
+    _validate_role_ledger(bundle["role_ledger"])
+    # C6.4: digests — code identity from the allowlist entry when
+    # reviewing a historical publication, else the current code
+    code_expected = (entry["code_digest"] if entry
+                     else _code_digest())
+    _validate_digests(bundle["digests"], code_expected)
+    # units: exact set, typed evidence, self-digest
     expected_units = {f"{t}:{b[0]}" for t in TARGETS
                       for b in BLOCKS}
-    seen = [u["unit"] for u in bundle["units"]]
-    if len(seen) != len(set(seen)):
-        raise FreshRefusal("duplicate units")
-    if set(seen) != expected_units:
-        raise FreshRefusal(
-            f"missing/extra units: "
-            f"{sorted(set(seen) ^ expected_units)[:4]}")
-    blocks_complete = True
+    seen = [u.get("unit") for u in bundle["units"]]
+    _need(len(seen) == len(set(seen)), "duplicate units")
+    _need(set(seen) == expected_units,
+          f"missing/extra units: "
+          f"{sorted(set(seen) ^ expected_units)[:4]}")
     for u in bundle["units"]:
-        unknown = set(u) - UNIT_KEYS
-        if unknown:
-            raise FreshRefusal(
-                f"unit {u.get('unit')}: unknown fields "
-                f"{sorted(unknown)}")
-        if u.get("license_failure"):
-            raise FreshRefusal(
-                f"unit {u['unit']}: license failure "
-                f"{u['license_failure']} beside the decision")
+        _validate_unit_typed(u)
         claimed = u.get("payload_sha256")
-        if sha_obj({k: v for k, v in u.items()
-                    if k != "payload_sha256"}) != claimed:
-            raise FreshRefusal(
-                f"unit {u['unit']}: payload altered (digest)")
-        # canonical anchors derived from the SEALED contract
-        canon = canonical_anchor_datetimes(u["block"])
-        if u["anchor_datetimes"] != canon:
-            raise FreshRefusal(
-                f"unit {u['unit']}: anchors differ from the "
-                "canonical sealed-geometry anchors")
-        if not (u["n_score"] == len(canon) == len(u["labels"])):
-            raise FreshRefusal(
-                f"unit {u['unit']}: n_score/anchors/labels "
-                "disagreement")
-        derived_support = {str(c): sum(1 for v in u["labels"]
-                                       if v == c)
-                           for c in (0, 1, 2)}
-        if derived_support != u["class_support_score"]:
-            raise FreshRefusal(
-                f"unit {u['unit']}: class support does not derive "
-                "from the labels")
-        if min(derived_support["0"], derived_support["1"]) \
-                < SUPPORT_MIN:
-            raise FreshRefusal(
-                f"unit {u['unit']}: derived class support below "
-                f"{SUPPORT_MIN} — unlicensed evidence beside a "
-                "decision")
-        if set(u["arms"]) != set(ARMS):
-            raise FreshRefusal(
-                f"unit {u['unit']}: arm set differs")
+        _need(sha_obj({k: v for k, v in u.items()
+                       if k != "payload_sha256"}) == claimed,
+              f"unit {u['unit']}: payload altered (digest)")
         hist = u["fit_cal_label_histogram"]
-        prior = np.clip(np.array(hist) / sum(hist), 1e-12, None)
+        import numpy as np
+        prior = np.clip(np.array(hist, dtype="float64")
+                        / sum(hist), 1e-12, None)
         prior = prior / prior.sum()
+        p1 = np.asarray(u["arms"]["arm1"]["probs"],
+                        dtype="float64")
+        _need(bool(np.allclose(p1, prior[None, :], atol=1e-12)),
+              f"unit {u['unit']}: arm1 probabilities are not the "
+              "fit+cal prior — different label histories")
         for arm, rec in u["arms"].items():
-            if set(rec) != ARM_KEYS:
-                raise FreshRefusal(
-                    f"unit {u['unit']} {arm}: arm schema "
-                    "violation")
-            if len(rec["probs"]) != u["n_score"]:
-                raise FreshRefusal(
-                    f"unit {u['unit']} {arm}: probability rows "
-                    "!= n_score")
             derived = unit_metrics(u["labels"], rec["probs"])
-            if derived != rec["metrics"]:
-                diffs = [k for k in derived
-                         if derived[k] != rec["metrics"].get(k)]
-                raise FreshRefusal(
-                    f"unit {u['unit']} {arm}: published metrics do "
-                    f"not derive from evidence: {diffs[:4]}")
-            if arm == "arm1":
-                p = np.asarray(rec["probs"])
-                if not np.allclose(p, prior[None, :], atol=1e-12):
-                    raise FreshRefusal(
-                        f"unit {u['unit']}: arm1 probabilities are "
-                        "not the fit+cal prior — different label "
-                        "histories")
+            _need(derived == rec["metrics"],
+                  f"unit {u['unit']} {arm}: published metrics do "
+                  "not derive from evidence")
+    # typed contrast schema, then full rederivation equality
+    _validate_contrasts_typed(bundle["contrasts"])
     contrasts_out, contrast_stats, complete = _rederive(
         bundle["units"])
-    if not complete:
-        raise FreshRefusal(
-            "missing or failed unit beside the decision — cannot "
-            "rederive all eight contrasts")
-    licenses_ok = True  # derived: every unit passed the checks
-    verdict = decide(contrast_stats, blocks_complete, licenses_ok)
-    if verdict != bundle["verdict"]:
-        raise FreshRefusal(
-            f"report edited: rederived verdict {verdict} != "
-            f"bundled {bundle['verdict']}")
-    if contrasts_out != bundle["contrasts"]:
-        for ckey, s in contrasts_out.items():
-            if bundle["contrasts"].get(ckey) != s:
-                raise FreshRefusal(
-                    f"report edited: contrast {ckey} does not "
-                    "rederive from unit evidence (full object "
-                    "compared)")
-        raise FreshRefusal("report edited: contrast set differs")
-    out_verdict = ("N3_BUNDLE_VERIFIED" if not internal_only
-                   else "N3_INTERNAL_CONSISTENCY_ONLY")
-    return {"verdict": out_verdict,
+    _need(complete, "missing or failed unit beside the decision")
+    verdict = decide(contrast_stats, True, True)
+    _need(verdict == bundle["verdict"],
+          f"report edited: rederived verdict {verdict} != "
+          f"bundled {bundle['verdict']}")
+    _need(contrasts_out == bundle["contrasts"],
+          "report edited: complete contrast objects do not "
+          "rederive from unit evidence")
+    # note: v1/v2 correction maps are INFORMATIONAL supersession
+    # documentation — typed as objects, content not authority
+    for key in TOP_KEYS_OPTIONAL & set(bundle):
+        _need(isinstance(bundle[key], dict),
+              f"{key}: informational map must be an object")
+    # C8 outcome vocabulary
+    if internal_only:
+        label = "N3_INTERNAL_CONSISTENCY_ONLY"
+        authority = "none — internal mode cannot mint authority"
+    elif entry and entry.get("status") == "reviewed":
+        label = GATE_LABEL
+        authority = (f"reviewed allowlist entry: "
+                     f"{entry['reviewed_by']}")
+    elif entry and entry.get("status") == "pending_review":
+        label = "N3_CANDIDATE_CONSISTENT_PENDING_REVIEW"
+        authority = ("allowlisted as pending — awaiting the "
+                     "independent reviewer; NOT gate-bearing")
+    else:
+        label = "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
+        authority = ("caller-supplied digest only — byte match "
+                     "plus semantic consistency; UNTRUSTED for "
+                     "publication or any gate")
+    return {"verdict": label,
             "rederived_decision": verdict,
             "units_verified": len(bundle["units"]),
-            "external_digest_checked": not internal_only}
+            "bundle_sha256": actual_sha,
+            "authority": authority,
+            "gate_bearing": label == GATE_LABEL}
+
+
+# ------------------------------------------------------------------ #
+# C9/C10: v3 publication envelope without scientific re-execution    #
+# ------------------------------------------------------------------ #
+
+def _full_contrast_equality(a: dict, b: dict) -> bool:
+    """C9: every key and value of all eight contrast objects."""
+    return a == b
+
+
+def reissue(v2_path: Path, v1_path: Path, out_path: Path) -> dict:
+    """C10: produce the v3 publication envelope from the EXACT v2
+    labels, probabilities and contrast evidence — only because the
+    verifier code identity changed. No refit, no bootstrap
+    redesign, no new scientific result."""
+    v2_raw = v2_path.read_bytes()
+    v2 = strict_json(v2_raw)
+    v1 = strict_json(v1_path.read_bytes())
+    v3 = json.loads(json.dumps(v2))  # deep copy, exact values
+    # authority-bearing scientific arrays: byte-level equality proof
+    def science_digest(bundle):
+        return sha_obj([[u["labels"], u["anchor_datetimes"],
+                         {a: r["probs"]
+                          for a, r in u["arms"].items()}]
+                        for u in sorted(bundle["units"],
+                                        key=lambda x: x["unit"])])
+    sci_v2 = science_digest(v2)
+    contrasts_out, contrast_stats, complete = _rederive(v2["units"])
+    if not complete:
+        raise FreshRefusal("v2 evidence incomplete")
+    decision = decide(contrast_stats, True, True)
+    if decision != v2["verdict"]:
+        raise FreshRefusal("v2 decision does not rederive")
+    if not _full_contrast_equality(contrasts_out, v2["contrasts"]):
+        raise FreshRefusal("v2 contrasts do not fully rederive")
+    v1_equal = _full_contrast_equality(v1["contrasts"],
+                                       v2["contrasts"])
+    v3["digests"]["code"] = _code_digest()
+    v3["v1_correction_map"] = {
+        "v1_bundle_sha256": hashlib.sha256(
+            v1_path.read_bytes()).hexdigest(),
+        "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
+        "decisions_equal": v1["verdict"] == v2["verdict"],
+        "complete_contrast_objects_equal": v1_equal,
+        "comparison_scope": "every key and value of all eight "
+                            "contrast objects, plus the decision "
+                            "(order @a1e7b739 C9; supersedes the "
+                            "narrower two-field claim "
+                            "all_contrast_numbers_equal of v2)"}
+    v3["v2_correction_map"] = {
+        "v2_bundle_sha256": hashlib.sha256(v2_raw).hexdigest(),
+        "v2_status": "PRESERVED UNCHANGED, SUPERSEDED",
+        "reason": "verifier code-identity change only (order "
+                  "@a1e7b739 C10); no scientific re-execution",
+        "authority_bearing_science_digest_v2": sci_v2,
+        "authority_bearing_science_digest_v3":
+            science_digest(v3),
+        "science_byte_equal": science_digest(v3) == sci_v2,
+        "decisions_equal": True,
+        "complete_contrast_objects_equal": True,
+        "changed_fields": ["digests.code",
+                           "v1_correction_map (C9 full compare)",
+                           "v2_correction_map (this map)"]}
+    if not v3["v2_correction_map"]["science_byte_equal"]:
+        raise FreshRefusal("science arrays drifted during reissue")
+    out_path.write_text(json.dumps(v3, indent=1, default=float)
+                        + "\n")
+    v3_sha = hashlib.sha256(out_path.read_bytes()).hexdigest()
+    # register as PENDING in the allowlist — a candidate cannot
+    # review itself; only the auditor promotes entries
+    allow_path = REPO / ALLOWLIST
+    allow = strict_json(allow_path.read_bytes())
+    allow["entries"][v3_sha] = {
+        "artifact": out_path.name,
+        "status": "pending_review",
+        "submitted_by": "reissue (order @a1e7b739 C10)",
+        "code_digest": v3["digests"]["code"],
+        "decision": v3["verdict"]}
+    allow_path.write_text(json.dumps(allow, indent=1) + "\n")
+    return {"v3_sha256": v3_sha, "decision": v3["verdict"],
+            "science_byte_equal": True,
+            "v1_complete_contrast_objects_equal": v1_equal}
 
 
 def main() -> int:
@@ -1417,6 +1743,10 @@ def main() -> int:
     v.add_argument("--bundle", required=True)
     v.add_argument("--expected-sha256", default=None)
     v.add_argument("--internal-only", action="store_true")
+    i = sub.add_parser("reissue")
+    i.add_argument("--v2-bundle", required=True)
+    i.add_argument("--v1-bundle", required=True)
+    i.add_argument("--out-bundle", required=True)
     args = parser.parse_args()
     try:
         if args.cmd == "acquire":
@@ -1447,6 +1777,11 @@ def main() -> int:
                           if args.v1_bundle else None)
             print(json.dumps({"verdict": out["verdict"],
                               "elapsed_s": out["elapsed_s"]}))
+        elif args.cmd == "reissue":
+            print(json.dumps(reissue(Path(args.v2_bundle),
+                                     Path(args.v1_bundle),
+                                     Path(args.out_bundle)),
+                             indent=1))
         else:
             print(json.dumps(verify(
                 Path(args.bundle), args.expected_sha256,

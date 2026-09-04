@@ -1,0 +1,10 @@
+P1: refused (decision_constants differ from the sealed rederivation constants)
+P2: refused (role_ledger.stride != sealed stride)
+P3: refused (unit bar_h6:B1_JanFeb: horizon does not equal the target's sealed hori)
+P4: refused (contract path differs from the canonical committed contract)
+P5: refused (digests.acquired_parquet does not equal the committed strict v2 receip)
+P6: refused (unit bar_h6:B1_JanFeb: labels must be JSON integers in {0,1,2} (boolea)
+P7: refused (bar_h6:B2_MarApr.arm2: probability must be a JSON number in [0,1] (boo)
+P8: refused (digests: schema violation — unknown=['undeclared_extra'] missing=[])
+
+POST: 0/8 semantic mutations accepted by the current verifier when handed their own digest — 'exact schemas at every level' is FALSE and a self-chosen checksum is being treated as authority
