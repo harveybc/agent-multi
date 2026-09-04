@@ -120,8 +120,11 @@ porque la identidad de código del verificador cambió:
 6. Igualdad v1-v2 establecida por comparación completa en código,
    no proxy. ✓
 7. Conteos del tip final: batería N3 v3 **36 passed** · índice de
-   superficie 17 · **suite completa: ESTAMPA EN EL COMMIT DE ESTAMPA**
-   conforme a la regla permanente.
+   superficie 17 · **suite completa SOBRE EL TIP FINAL `d7b652d9`**
+   (corrida DESPUÉS del commit, conforme a la regla permanente):
+   **2 failed, 2864 passed, 4 skipped, 68 warnings in 240.37s** —
+   las dos fallas son el par D1-anchor preexistente conocido; delta
+   exacto 2873 − 45 (batería v2 retirada) + 36 (batería v3) = 2864.
 
 ## 8. La línea inequívoca
 
