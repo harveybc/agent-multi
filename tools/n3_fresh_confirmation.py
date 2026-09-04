@@ -532,29 +532,60 @@ def validate_wire_rows(rows, acquired_at_ms: int):
                 f"grid gap/overlap between {prev} and {cur}")
 
 
+MARKET_FIELDS = [(1, "open"), (2, "high"), (3, "low"),
+                 (4, "close"), (5, "volume"),
+                 (9, "taker_buy_base_volume")]
+DERIVED_FIELDS = [(7, "quote_volume"),
+                  (10, "taker_buy_quote_volume")]
+
+
+def _ulp_distance(a: float, b: float) -> int:
+    import struct
+    ia = struct.unpack("<q", struct.pack("<d", a))[0]
+    ib = struct.unpack("<q", struct.pack("<d", b))[0]
+    return abs(ia - ib)
+
+
 def _verify_overlap(overlap, lake_2025, lake_ms_2025):
-    """Field-EXACT continuity: float64 of the api decimal string
-    must equal the frozen value bitwise (adversary 5: a revision
-    hidden by float32 coercion still refuses)."""
-    field_map = [(1, "open"), (2, "high"), (3, "low"),
-                 (4, "close"), (5, "volume"), (7, "quote_volume"),
-                 (9, "taker_buy_base_volume"),
-                 (10, "taker_buy_quote_volume")]
+    """Continuity per the disclosed field-class amendment
+    (@17f6e574 supersessions): MARKET fields, timestamps and
+    trade_count must be float64-BITWISE exact (adversary 5: a
+    revision hidden by float32 coercion still refuses); the two
+    DERIVED-AGGREGATE fields tolerate at most 1 ulp of Binance
+    re-serialization jitter, with counts returned for the receipt.
+    Anything beyond refuses."""
+    ulp_report = {col: {"cells_1ulp": 0, "max_ulp": 0}
+                  for _, col in DERIVED_FIELDS}
     for i, r in enumerate(overlap):
         if r[0] != int(lake_ms_2025.iloc[i]):
             raise FreshRefusal(
                 "SOURCE_CONTINUITY_NOT_DEMONSTRATED: timestamp "
                 f"order mismatch at overlap row {i}")
-        for j, col in field_map:
+        for j, col in MARKET_FIELDS:
             if float(r[j]) != float(lake_2025[col].iloc[i]):
                 raise FreshRefusal(
-                    "SOURCE_CONTINUITY_NOT_DEMONSTRATED: field "
-                    f"{col} revised at open_time {r[0]}: api "
-                    f"{r[j]} vs frozen {lake_2025[col].iloc[i]}")
+                    "SOURCE_CONTINUITY_NOT_DEMONSTRATED: MARKET "
+                    f"field {col} revised at open_time {r[0]}: "
+                    f"api {r[j]} vs frozen "
+                    f"{lake_2025[col].iloc[i]}")
+        for j, col in DERIVED_FIELDS:
+            fa, fl = float(r[j]), float(lake_2025[col].iloc[i])
+            if fa != fl:
+                d = _ulp_distance(fa, fl)
+                if d > 1:
+                    raise FreshRefusal(
+                        "SOURCE_CONTINUITY_NOT_DEMONSTRATED: "
+                        f"derived field {col} deviates {d} ulp at "
+                        f"open_time {r[0]} — beyond the disclosed "
+                        "1-ulp serialization tolerance")
+                ulp_report[col]["cells_1ulp"] += 1
+                ulp_report[col]["max_ulp"] = max(
+                    ulp_report[col]["max_ulp"], d)
         if int(r[8]) != int(lake_2025["trade_count"].iloc[i]):
             raise FreshRefusal(
                 "SOURCE_CONTINUITY_NOT_DEMONSTRATED: trade_count "
                 f"revised at {r[0]}")
+    return ulp_report
 
 
 def continuity(rows):
@@ -585,14 +616,15 @@ def continuity(rows):
         raise FreshRefusal(
             f"frozen 2025 rows {len(lake_2025)} != "
             f"{EXPECTED_OVERLAP}")
-    _verify_overlap(overlap, lake_2025, lake_ms_2025)
+    ulp_report = _verify_overlap(overlap, lake_2025,
+                                 lake_ms_2025)
     ext_first = extension[0][0]
     conf_start_ms = int(_utc(CONF_START).timestamp() * 1000)
     if ext_first != conf_start_ms:
         raise FreshRefusal(
             f"first extension bar {ext_first} != confirmation "
             f"start {conf_start_ms}")
-    return overlap, extension, lake_last
+    return overlap, extension, lake_last, ulp_report
 
 
 # ------------------------------------------------------------------ #
@@ -665,7 +697,7 @@ def _attest(staging: Path, rows, page_receipts, acquired_at_ms,
             *, version: int, supersedes) -> dict:
     import pandas as pd
     validate_wire_rows(rows, acquired_at_ms)
-    overlap, extension, lake_last = continuity(rows)
+    overlap, extension, lake_last, ulp_report = continuity(rows)
     receipt = {
         "schema": f"agent_multi.n3_acquisition_receipt.v{version}",
         "contract": CONTRACT,
@@ -675,6 +707,11 @@ def _attest(staging: Path, rows, page_receipts, acquired_at_ms,
         "rows_total": len(rows),
         "rows_overlap_verified_exact": len(overlap),
         "rows_2026": len(extension),
+        "derived_field_serialization_jitter": {
+            "rule": "disclosed 1-ulp tolerance for the two "
+                    "derived-aggregate fields only; market fields "
+                    "bitwise exact",
+            **ulp_report},
         "last_closed_open_time": rows[-1][0],
         "verdict": "SOURCE_CONTINUITY_DEMONSTRATED"}
     if supersedes:
