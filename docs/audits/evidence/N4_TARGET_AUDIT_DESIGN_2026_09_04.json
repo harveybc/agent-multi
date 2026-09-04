@@ -1,0 +1,54 @@
+{
+  "schema": "agent_multi.n4_target_audit_design.v1",
+  "experiment": "N4_TARGET_AUDIT",
+  "order": "agent-multi@13fdf18c §7",
+  "sealed_before_any_new_score": true,
+  "classification": "DEVELOPMENT-ONLY EXPLORATORY — uses already consumed fit/calibration development roles; cannot create a confirmation claim; no result may select its own threshold, horizon or baseline after seeing the same score (every threshold is sealed here)",
+
+  "candidate_families_max3_horizons_max3": {
+    "tradeable_move": {
+      "horizons": [6, 12, 24],
+      "definition": "ternary on r = log(close[a+h]/close[a]) with SEALED round-trip cost c = 0.0010 (10 bp: committed env commission 2 bp/side plus slippage buffer): 0 if r > c, 1 if r < -c, 2 otherwise",
+      "online_computable": "close of bar a only",
+      "economic_interpretation": "the minimal actionable question — does ANY position beat round-trip cost within h bars; class 2 is the no-trade answer",
+      "distinct_from_failures": "cost enters the DEFINITION (none of the seven failed regression targets had costs); close-to-close fixed-cost classes, not the unchanged intrabar vol-scaled first-touch barrier"
+    },
+    "mfe_mae_logratio": {
+      "horizons": [6, 12],
+      "definition": "log((MFE+1e-6)/(MAE+1e-6)); MFE = max(high[a+1..a+h])/close[a]-1, MAE = 1-min(low[a+1..a+h])/close[a], both clipped at 0",
+      "online_computable": "close of bar a only; labels consume (a, a+h] highs/lows",
+      "economic_interpretation": "reward/risk of entering now — sets bracket placement and sizing; costs shift usable thresholds, not the object",
+      "distinct_from_failures": "continuous path-asymmetry ratio from HIGH/LOW excursions — not a close-to-close return, not a volatility level, not a first-touch class"
+    },
+    "large_move": {
+      "horizons": [6, 12],
+      "definition": "1 if |r| >= q_h else 0, q_h = the 80th percentile of |r| computed on the w1 FIT prefix ONLY and sealed before scoring",
+      "online_computable": "close of bar a; q_h fixed from fit role",
+      "economic_interpretation": "activation/sizing gate: is a move worth acting on coming at all",
+      "distinct_from_failures": "decision-oriented exceedance probability, not the failed volatility-LEVEL regression"
+    }
+  },
+
+  "arms_per_candidate": ["constant/prior baseline (class prior from fit+cal, or fit+cal median for the continuous family)", "target-history: regularized model on the causal trailing-volatility lags (barscale 0-3) — the shared causal scalar history, calibration-only hyperparameters", "causal-linear: regularized model on the fixed 249-value causal summary of the 83 inputs, calibration-only hyperparameters"],
+  "primary_losses": {"class families": "multiclass/binary log loss (clip 1e-12)", "continuous family": "squared error on the log-ratio"},
+
+  "causal_design": {
+    "windows": "the four committed N2 development windows (geometry read from the committed N2 bundle ledger, digest-bound)",
+    "per_horizon_purge": "within every role, anchors with fewer than ceil(h/stride) sampled rows before the role end are excluded, so no label crosses any role boundary; h=24 additionally requires anchor+24 inside the frozen fit slice",
+    "no_2026": "structurally: only the frozen <=2025 predictor CSV is loaded; the sampled development anchors lie inside the pre-2022 o2022 fit slice",
+    "multiplicity": "Holm across ALL (candidate x model) contrasts (7 candidates x 2 fitted models = 14) via the repaired helper",
+    "uncertainty": "within-window circular block bootstrap on per-observation loss differences vs the prior baseline, block 6, B = 2000, seed 808, p floor <= 1/2001",
+    "licenses": "class families: every score window must hold >= 30 observations of each decision class (0 and 1); continuous family: finite losses and positive response variance; unlicensed candidates are reported UNLICENSED and cannot pass"
+  },
+
+  "decision_rule": {
+    "candidate_passes_iff": "EITHER fitted arm beats the prior baseline in all four windows with pooled skill >= 0.01 and Holm-adjusted p < 0.05",
+    "verdicts": {
+      "TARGET_FORMULATION_CANDIDATE_FOR_FUTURE_CONFIRMATION": "at least one candidate passes — authorizes ONLY a later confirmation design; opens no neural or GPU gate",
+      "TARGET_FORMULATION_NOT_IDENTIFIED": "no candidate passes simple baselines — supervised pretraining closes for this data contract rather than inventing another extractor",
+      "NO_UNTOUCHED_CONFIRMATION_ROLE_AVAILABLE": "reserved for a design whose execution would require an untouched role; this screen needs none (development windows only) — future CONFIRMATION of any passer will require genuinely new post-2026-08 data under a new order"
+    }
+  },
+
+  "execution_bounds": {"device": "CPU only", "wall_ceiling_s": 7200, "progress": "per-candidate progress lines with elapsed time", "determinism": "fixed seeds, deterministic solvers, complete per-window records persisted", "prohibited": "no neural model, GPU, SAC, environment training, representation extractor, network access or untouched-role access"}
+}

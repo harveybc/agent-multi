@@ -689,6 +689,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "n4_target_audit.py": {
+   "purpose": "N4 target/horizon/data suitability audit (order @13fdf18c \u00a7\u00a76-8; design sealed pre-score): census = one machine-readable census of all 16 targets (9 used in N1-N3 + 7 sealed successors: cost-thresholded tradeable-move h6/12/24, MFE/MAE log-ratio h6/12, large-move exceedance h6/12) with the eight ordered fields per entry, distributions on dev windows, and prior-use derived from committed contracts/evidence; screen = the cheap CPU identifiability screen (prior + trailing-vol history + causal-linear-249 arms, within-window block bootstrap B=2000 seed 808, Holm over 14 contrasts, sealed margins/thresholds, 2h ceiling), development-only: loads ONLY the frozen <=2025 fit slice so confirmation rows are structurally unreachable. Three-label verdict; can never open a neural/GPU gate.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

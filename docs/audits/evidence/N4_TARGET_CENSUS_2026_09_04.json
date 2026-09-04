@@ -1,0 +1,670 @@
+{
+ "schema": "agent_multi.n4_target_census.v1",
+ "order": "agent-multi@13fdf18c \u00a76",
+ "data_plane_digests": {
+  "frozen_csv": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "n2_npz": "07c5ff085dfd8bab0dfa33d038005c8fdb2d6c2acff3961d0fe4b042ef57cca7",
+  "n2_bundle_geometry": "9657192586438982d6cf20974c7052e1cb9140a479b74973b08b5b2afdaa168f"
+ },
+ "dev_windows": {
+  "w1": {
+   "fit": [
+    0,
+    481
+   ],
+   "cal": [
+    481,
+    657
+   ],
+   "score": [
+    660,
+    876
+   ]
+  },
+  "w2": {
+   "fit": [
+    0,
+    700
+   ],
+   "cal": [
+    700,
+    876
+   ],
+   "score": [
+    879,
+    1095
+   ]
+  },
+  "w3": {
+   "fit": [
+    0,
+    919
+   ],
+   "cal": [
+    919,
+    1095
+   ],
+   "score": [
+    1098,
+    1314
+   ]
+  },
+  "w4": {
+   "fit": [
+    0,
+    1138
+   ],
+   "cal": [
+    1138,
+    1314
+   ],
+   "score": [
+    1317,
+    1533
+   ]
+  }
+ },
+ "prior_use_derivation_note": "role usage derived from the committed contracts and evidence cited per entry \u2014 never from producer-supplied labels",
+ "targets": {
+  "ret_h1": {
+   "definition": "log(close[a+1]/close[a])",
+   "units": "log return",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 1,
+   "overlap_purge_requirement": "ceil(1/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "direct PnL proxy before costs; cost enters only via thresholding (none here) \u2014 FAILED its calibrated baselines in N2",
+   "simplest_admissible_baseline": "zero return / fit mean",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": -0.000207,
+     "std": 0.018366,
+     "q10": -0.019466,
+     "q50": 0.000862,
+     "q90": 0.019044
+    },
+    "w2": {
+     "mean": -0.001649,
+     "std": 0.016245,
+     "q10": -0.015117,
+     "q50": -0.001324,
+     "q90": 0.013464
+    },
+    "w3": {
+     "mean": -0.000731,
+     "std": 0.027979,
+     "q10": -0.024337,
+     "q50": -0.0002,
+     "q90": 0.024481
+    },
+    "w4": {
+     "mean": 0.001037,
+     "std": 0.01451,
+     "q10": -0.014506,
+     "q50": 0.000606,
+     "q90": 0.014873
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "ret_h3": {
+   "definition": "log(close[a+3]/close[a])",
+   "units": "log return",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 3,
+   "overlap_purge_requirement": "ceil(3/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "direct PnL proxy before costs; cost enters only via thresholding (none here) \u2014 FAILED its calibrated baselines in N2",
+   "simplest_admissible_baseline": "zero return / fit mean",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": 0.001829,
+     "std": 0.030666,
+     "q10": -0.028467,
+     "q50": 0.001321,
+     "q90": 0.037896
+    },
+    "w2": {
+     "mean": -0.001274,
+     "std": 0.023666,
+     "q10": -0.024536,
+     "q50": -0.001371,
+     "q90": 0.022789
+    },
+    "w3": {
+     "mean": 0.001277,
+     "std": 0.036324,
+     "q10": -0.033554,
+     "q50": 0.002597,
+     "q90": 0.040904
+    },
+    "w4": {
+     "mean": 0.002679,
+     "std": 0.025103,
+     "q10": -0.025862,
+     "q50": 0.002784,
+     "q90": 0.03043
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "ret_h6": {
+   "definition": "log(close[a+6]/close[a])",
+   "units": "log return",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 6,
+   "overlap_purge_requirement": "ceil(6/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "direct PnL proxy before costs; cost enters only via thresholding (none here) \u2014 FAILED its calibrated baselines in N2",
+   "simplest_admissible_baseline": "zero return / fit mean",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": 0.001139,
+     "std": 0.046862,
+     "q10": -0.051498,
+     "q50": 0.003388,
+     "q90": 0.057299
+    },
+    "w2": {
+     "mean": -0.003098,
+     "std": 0.036725,
+     "q10": -0.035989,
+     "q50": -0.002782,
+     "q90": 0.040668
+    },
+    "w3": {
+     "mean": 0.002556,
+     "std": 0.06134,
+     "q10": -0.060272,
+     "q50": 0.006454,
+     "q90": 0.059445
+    },
+    "w4": {
+     "mean": 0.004155,
+     "std": 0.037905,
+     "q10": -0.036754,
+     "q50": 0.002737,
+     "q90": 0.048208
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "ret_h12": {
+   "definition": "log(close[a+12]/close[a])",
+   "units": "log return",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 12,
+   "overlap_purge_requirement": "ceil(12/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "direct PnL proxy before costs; cost enters only via thresholding (none here) \u2014 FAILED its calibrated baselines in N2",
+   "simplest_admissible_baseline": "zero return / fit mean",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": 0.006142,
+     "std": 0.061307,
+     "q10": -0.059459,
+     "q50": 0.004866,
+     "q90": 0.063864
+    },
+    "w2": {
+     "mean": -0.00758,
+     "std": 0.051111,
+     "q10": -0.066232,
+     "q50": -0.002609,
+     "q90": 0.04768
+    },
+    "w3": {
+     "mean": 0.007229,
+     "std": 0.076757,
+     "q10": -0.070953,
+     "q50": 0.01554,
+     "q90": 0.083359
+    },
+    "w4": {
+     "mean": 0.008402,
+     "std": 0.052284,
+     "q10": -0.045354,
+     "q50": 0.005398,
+     "q90": 0.073652
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "vol_h3": {
+   "definition": "log(sqrt(mean(r^2 over (a,a+3])) + 1e-8)",
+   "units": "log volatility",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 3,
+   "overlap_purge_requirement": "ceil(3/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "risk sizing input; no direct cost dependence \u2014 FAILED calibrated AR1 in N1/N2",
+   "simplest_admissible_baseline": "literal trailing vol / calibrated AR1",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": -4.511356,
+     "std": 0.745945,
+     "q10": -5.474593,
+     "q50": -4.553698,
+     "q90": -3.521515
+    },
+    "w2": {
+     "mean": -4.743707,
+     "std": 0.684367,
+     "q10": -5.543885,
+     "q50": -4.750427,
+     "q90": -3.952572
+    },
+    "w3": {
+     "mean": -4.308243,
+     "std": 0.696726,
+     "q10": -5.170076,
+     "q50": -4.320335,
+     "q90": -3.519984
+    },
+    "w4": {
+     "mean": -4.666582,
+     "std": 0.723973,
+     "q10": -5.542101,
+     "q50": -4.593613,
+     "q90": -3.789932
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "vol_h6": {
+   "definition": "log(sqrt(mean(r^2 over (a,a+6])) + 1e-8)",
+   "units": "log volatility",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 6,
+   "overlap_purge_requirement": "ceil(6/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "risk sizing input; no direct cost dependence \u2014 FAILED calibrated AR1 in N1/N2",
+   "simplest_admissible_baseline": "literal trailing vol / calibrated AR1",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": -4.384357,
+     "std": 0.645168,
+     "q10": -5.18188,
+     "q50": -4.408802,
+     "q90": -3.551899
+    },
+    "w2": {
+     "mean": -4.582482,
+     "std": 0.551153,
+     "q10": -5.244486,
+     "q50": -4.597142,
+     "q90": -3.947607
+    },
+    "w3": {
+     "mean": -4.188025,
+     "std": 0.578839,
+     "q10": -4.83031,
+     "q50": -4.192498,
+     "q90": -3.557455
+    },
+    "w4": {
+     "mean": -4.523464,
+     "std": 0.576648,
+     "q10": -5.242942,
+     "q50": -4.521776,
+     "q90": -3.839333
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/TARGET_IDENTIFIABILITY_PREDECLARATION_N1_2026_09_03.json \u2014 vol_h6 inspected and selected on dev windows w1-w4",
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "vol_h12": {
+   "definition": "log(sqrt(mean(r^2 over (a,a+12])) + 1e-8)",
+   "units": "log volatility",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 12,
+   "overlap_purge_requirement": "ceil(12/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "risk sizing input; no direct cost dependence \u2014 FAILED calibrated AR1 in N1/N2",
+   "simplest_admissible_baseline": "literal trailing vol / calibrated AR1",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": -4.294249,
+     "std": 0.550839,
+     "q10": -4.972255,
+     "q50": -4.320276,
+     "q90": -3.56571
+    },
+    "w2": {
+     "mean": -4.500477,
+     "std": 0.474499,
+     "q10": -5.072124,
+     "q50": -4.533799,
+     "q90": -3.853494
+    },
+    "w3": {
+     "mean": -4.108076,
+     "std": 0.47245,
+     "q10": -4.65933,
+     "q50": -4.152521,
+     "q90": -3.628822
+    },
+    "w4": {
+     "mean": -4.428962,
+     "std": 0.481625,
+     "q10": -5.053596,
+     "q50": -4.381329,
+     "q90": -3.784352
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/repro_runs \u2014 accepted screen-v2 report (order @65ee8488): ret/vol targets consumed as pretraining objectives and branch evaluations on fit/monitor roles",
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "bar_h6": {
+   "definition": "first intrabar touch of +/-2*trailing-vol barriers within 6 bars (0 upper, 1 lower, 2 censored)",
+   "units": "class",
+   "causal_decision_time_information": "close+trailing vol at bar a",
+   "horizon_bars": 6,
+   "overlap_purge_requirement": "ceil(6/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "bracket-order outcome; barrier width scales with vol -> the N2/N3 chain proved the gain was the width scalar and did NOT replicate on fresh 2026",
+   "simplest_admissible_baseline": "fit+cal class prior",
+   "distribution_by_dev_window": {
+    "w1": {
+     "0": 70,
+     "1": 76,
+     "2": 70
+    },
+    "w2": {
+     "0": 67,
+     "1": 94,
+     "2": 55
+    },
+    "w3": {
+     "0": 87,
+     "1": 70,
+     "2": 59
+    },
+    "w4": {
+     "0": 83,
+     "1": 71,
+     "2": 62
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4",
+    "docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "bar_h12": {
+   "definition": "first intrabar touch of +/-2*trailing-vol barriers within 12 bars (0 upper, 1 lower, 2 censored)",
+   "units": "class",
+   "causal_decision_time_information": "close+trailing vol at bar a",
+   "horizon_bars": 12,
+   "overlap_purge_requirement": "ceil(12/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "bracket-order outcome; barrier width scales with vol -> the N2/N3 chain proved the gain was the width scalar and did NOT replicate on fresh 2026",
+   "simplest_admissible_baseline": "fit+cal class prior",
+   "distribution_by_dev_window": {
+    "w1": {
+     "0": 89,
+     "1": 97,
+     "2": 30
+    },
+    "w2": {
+     "0": 84,
+     "1": 106,
+     "2": 26
+    },
+    "w3": {
+     "0": 110,
+     "1": 82,
+     "2": 24
+    },
+    "w4": {
+     "0": 109,
+     "1": 86,
+     "2": 21
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "docs/audits/evidence/TARGET_HORIZON_DATA_CENSUS_N2_PREDECLARATION_2026_09_03.json + bundle \u2014 all nine candidates scored on dev windows w1-w4",
+    "docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "tm_h6": {
+   "definition": "0 if log-move > +0.001 (long clears round-trip cost), 1 if < -0.001, else 2",
+   "units": "class",
+   "causal_decision_time_information": "close of bar a; sealed cost 10bp",
+   "horizon_bars": 6,
+   "overlap_purge_requirement": "ceil(6/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "does ANY trade beat round-trip cost within h bars \u2014 the minimal economically actionable question; cost enters the DEFINITION (distinct from raw return regression and from intrabar path-dependent barriers)",
+   "simplest_admissible_baseline": "fit+cal class prior",
+   "distribution_by_dev_window": {
+    "w1": {
+     "0": 115,
+     "1": 97,
+     "2": 4
+    },
+    "w2": {
+     "0": 93,
+     "1": 115,
+     "2": 8
+    },
+    "w3": {
+     "0": 127,
+     "1": 84,
+     "2": 5
+    },
+    "w4": {
+     "0": 113,
+     "1": 94,
+     "2": 9
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived: absent from every committed predeclaration/bundle above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "tm_h12": {
+   "definition": "0 if log-move > +0.001 (long clears round-trip cost), 1 if < -0.001, else 2",
+   "units": "class",
+   "causal_decision_time_information": "close of bar a; sealed cost 10bp",
+   "horizon_bars": 12,
+   "overlap_purge_requirement": "ceil(12/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "does ANY trade beat round-trip cost within h bars \u2014 the minimal economically actionable question; cost enters the DEFINITION (distinct from raw return regression and from intrabar path-dependent barriers)",
+   "simplest_admissible_baseline": "fit+cal class prior",
+   "distribution_by_dev_window": {
+    "w1": {
+     "0": 115,
+     "1": 99,
+     "2": 2
+    },
+    "w2": {
+     "0": 100,
+     "1": 111,
+     "2": 5
+    },
+    "w3": {
+     "0": 136,
+     "1": 75,
+     "2": 5
+    },
+    "w4": {
+     "0": 116,
+     "1": 95,
+     "2": 5
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived: absent from every committed predeclaration/bundle above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "tm_h24": {
+   "definition": "0 if log-move > +0.001 (long clears round-trip cost), 1 if < -0.001, else 2",
+   "units": "class",
+   "causal_decision_time_information": "close of bar a; sealed cost 10bp",
+   "horizon_bars": 24,
+   "overlap_purge_requirement": "ceil(24/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "does ANY trade beat round-trip cost within h bars \u2014 the minimal economically actionable question; cost enters the DEFINITION (distinct from raw return regression and from intrabar path-dependent barriers)",
+   "simplest_admissible_baseline": "fit+cal class prior",
+   "distribution_by_dev_window": {
+    "w1": {
+     "0": 118,
+     "1": 95,
+     "2": 3
+    },
+    "w2": {
+     "0": 86,
+     "1": 125,
+     "2": 5
+    },
+    "w3": {
+     "0": 138,
+     "1": 76,
+     "2": 2
+    },
+    "w4": {
+     "0": 118,
+     "1": 95,
+     "2": 3
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived: absent from every committed predeclaration/bundle above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "mfemae_h6": {
+   "definition": "log((MFE+1e-6)/(MAE+1e-6)); MFE/MAE = max favorable/adverse excursion vs close[a] over (a,a+6]",
+   "units": "log ratio",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 6,
+   "overlap_purge_requirement": "ceil(6/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "reward/risk of entering now: sets brackets and sizing; costs shift the usable threshold but not the object (distinct: continuous path-asymmetry, not first-touch class, not close-to-close return)",
+   "simplest_admissible_baseline": "fit-role median (constant)",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": 0.05627,
+     "std": 2.49405,
+     "q10": -2.674273,
+     "q50": -0.066562,
+     "q90": 2.708259
+    },
+    "w2": {
+     "mean": -0.264496,
+     "std": 2.083145,
+     "q10": -2.72946,
+     "q50": -0.256104,
+     "q90": 2.268191
+    },
+    "w3": {
+     "mean": 0.304022,
+     "std": 2.621508,
+     "q10": -2.581567,
+     "q50": 0.282037,
+     "q90": 3.214041
+    },
+    "w4": {
+     "mean": 0.01479,
+     "std": 2.435161,
+     "q10": -2.717494,
+     "q50": 0.111226,
+     "q90": 2.654244
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived as above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "mfemae_h12": {
+   "definition": "log((MFE+1e-6)/(MAE+1e-6)); MFE/MAE = max favorable/adverse excursion vs close[a] over (a,a+12]",
+   "units": "log ratio",
+   "causal_decision_time_information": "close of bar a",
+   "horizon_bars": 12,
+   "overlap_purge_requirement": "ceil(12/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "reward/risk of entering now: sets brackets and sizing; costs shift the usable threshold but not the object (distinct: continuous path-asymmetry, not first-touch class, not close-to-close return)",
+   "simplest_admissible_baseline": "fit-role median (constant)",
+   "distribution_by_dev_window": {
+    "w1": {
+     "mean": 0.142695,
+     "std": 2.476126,
+     "q10": -2.676957,
+     "q50": 0.043017,
+     "q90": 2.842649
+    },
+    "w2": {
+     "mean": -0.283157,
+     "std": 2.157111,
+     "q10": -2.954735,
+     "q50": -0.238174,
+     "q90": 2.244439
+    },
+    "w3": {
+     "mean": 0.438483,
+     "std": 2.577341,
+     "q10": -2.463685,
+     "q50": 0.40356,
+     "q90": 3.09108
+    },
+    "w4": {
+     "mean": 0.135826,
+     "std": 2.515261,
+     "q10": -2.686267,
+     "q50": 0.348302,
+     "q90": 2.933834
+    }
+   },
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived as above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "lm_h6": {
+   "definition": "1 if |log-move over (a,a+6]| >= fit-role 80th percentile else 0",
+   "units": "binary",
+   "causal_decision_time_information": "close of bar a; threshold sealed on fit role only",
+   "horizon_bars": 6,
+   "overlap_purge_requirement": "ceil(6/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "activation/sizing gate: is a move worth acting on coming \u2014 decision-oriented exceedance, distinct from vol-level regression",
+   "simplest_admissible_baseline": "fit-role base rate (prior)",
+   "distribution_by_dev_window": "not recomputed (committed in the cited evidence)",
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived as above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  },
+  "lm_h12": {
+   "definition": "1 if |log-move over (a,a+12]| >= fit-role 80th percentile else 0",
+   "units": "binary",
+   "causal_decision_time_information": "close of bar a; threshold sealed on fit role only",
+   "horizon_bars": 12,
+   "overlap_purge_requirement": "ceil(12/4) sampled rows",
+   "economic_interpretation_and_cost_dependence": "activation/sizing gate: is a move worth acting on coming \u2014 decision-oriented exceedance, distinct from vol-level regression",
+   "simplest_admissible_baseline": "fit-role base rate (prior)",
+   "distribution_by_dev_window": "not recomputed (committed in the cited evidence)",
+   "roles_already_inspected_selected_confirmed": [
+    "NEVER inspected as a target (derived as above)"
+   ],
+   "remaining_untouched_confirmation_roles": "NONE on this data contract: dev windows and fit/cal consumed (N1/N2), 2026 Jan-Aug consumed as N3 confirmation, later rows absent \u2014 derived from docs/audits/evidence/N3_UNTOUCHED_ROLE_CENSUS_2026_09_04.json \u2014 every region through 2025 consumed or sealed and docs/audits/evidence/N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + v2 bundle \u2014 bar_h6/bar_h12 CONFIRMED (negative) on the 2026 Jan-Aug interval"
+  }
+ }
+}
