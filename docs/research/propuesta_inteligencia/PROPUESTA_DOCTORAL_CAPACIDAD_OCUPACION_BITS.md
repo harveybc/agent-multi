@@ -13,7 +13,7 @@ El número de parámetros de una red neuronal indica su tamaño, pero no permite
 
 Esta investigación propone un perfil en bits que mantenga separadas tres magnitudes: la capacidad empírica de memorizar ejemplos aleatorios, la memorización específica del conjunto de entrenamiento y la ganancia predictiva fuera de muestra. El estudio usará tareas sintéticas cuya regla generadora y nivel de ruido se conocen. Así será posible medir, además, qué parte del comportamiento de la regla fue recuperada y observar cuál es la red más pequeña que alcanza un criterio de generalización fijado con anticipación.
 
-La pregunta principal es si ese perfil permite anticipar el tamaño suficiente de una red con mayor precisión que la cuenta de parámetros y las reglas de capacidad existentes. El estudio principal empleará perceptrones multicapa en familias de reglas booleanas canónicas; una familia de autómatas finitos servirá como confirmación secuencial con redes recurrentes pequeñas. Las tareas, no las semillas de entrenamiento, serán las unidades independientes. El diseño separará piloto, ajuste, calibración y prueba final, e incluirá comparadores que puedan derrotar la propuesta.
+La pregunta principal es si ese perfil permite anticipar el tamaño suficiente de una red con mayor precisión que la cuenta de parámetros y las reglas de capacidad existentes. El estudio principal empleará perceptrones multicapa en familias de reglas booleanas canónicas. La confirmación secuencial usará señales temporales con componentes limpios, parámetros latentes y ruido conocidos, evaluadas con redes recurrentes pequeñas. Las tareas, no las semillas de entrenamiento, serán las unidades independientes. El diseño separará piloto, ajuste, calibración y prueba final, e incluirá comparadores que puedan derrotar la propuesta.
 
 El resultado esperado es un protocolo reproducible para estudiar memorización, aprendizaje de estructura y tamaño de modelos con cantidades expresadas en bits y denominadores explícitos, sin afirmar que todas representan el mismo tipo de información. Si el perfil no mejora el dimensionamiento, la investigación establecerá de manera precisa dónde dejan de ser útiles estas medidas.
 
@@ -58,12 +58,14 @@ El ajuste del conjunto de entrenamiento no distingue entre recordar una excepci�
 En esta propuesta, la **memorización específica** representa información sobre realizaciones particulares del conjunto de entrenamiento que no se explica por la regla generadora conocida. Para las tareas binarias, el generador proporciona la probabilidad verdadera \(p_\star(y_i\mid x_i)\), incluido el ruido. Se usará el estimador:
 
 \[
-\widehat M_{spec}(t)=\sum_{i\in S}
-\left[\log_2 p_{\theta_t}(y_i\mid x_i)
--\log_2 p_\star(y_i\mid x_i)\right]_+,
+\widehat M_{spec}(t)=
+\left[
+\sum_{i\in S}\log_2
+\frac{p_{\theta_t}(y_i\mid x_i)}{p_\star(y_i\mid x_i)}
+\right]_+,
 \]
 
-donde \(S\) es el conjunto de entrenamiento y \([a]_+=\max(a,0)\). Asignar al resultado observado más probabilidad que el proceso verdadero solo puede lograrse aprovechando la realización particular de la muestra; por eso el exceso se interpreta como memorización específica bajo este generador. Se reportarán tanto los bits totales como los bits por ejemplo. Esta cantidad puede aumentar durante el entrenamiento aun cuando el desempeño fuera de muestra deje de mejorar.
+donde \(S\) es el conjunto de entrenamiento y \([a]_+=\max(a,0)\). La parte positiva se aplica al contraste completo, no a cada ejemplo por separado: seleccionar únicamente contribuciones favorables produciría un sesgo ascendente aun sin memorización. El mismo contraste se calculará sobre una muestra intacta de igual procedencia. Si también aparece allí, se tratará como descalibración o diferencia respecto del oráculo, no como evidencia específica de memoria. Se reportarán los bits totales, los bits por ejemplo y su incertidumbre entre tareas. Esta cantidad puede aumentar durante el entrenamiento aun cuando el desempeño fuera de muestra deje de mejorar.
 
 ### 3.3 Ganancia predictiva fuera de muestra
 
@@ -78,7 +80,28 @@ donde \(T\) es el conjunto intacto, \(q_0\) es un predictor nulo que no observa 
 
 \(\widehat G_{pred}\) es una ganancia de predicción bajo pérdida logarítmica, no una medida literal de bits almacenados en los pesos. Por eso no se dividirá por la capacidad de memorización para producir una supuesta ocupación. La longitud de descripción y la compresibilidad de modelos siguen siendo comparadores pertinentes [10], [11], pero tampoco sustituyen una medición fuera de muestra.
 
-### 3.4 Identificación de reglas y límites de información
+### 3.4 Información disponible, aprovechamiento e identificación de reglas
+
+En la familia binaria, cada tarea seguirá una construcción explícita:
+
+\[
+Z\sim\operatorname{Unif}\{1,\ldots,M\},\qquad
+S=f_Z(X),\qquad
+Y=S\oplus E,\qquad E\sim\operatorname{Bernoulli}(\eta),
+\]
+
+donde \(Z\) identifica la regla, \(S\) es la etiqueta limpia y \(E\) es ruido independiente. Cuando \(S\) está balanceada, el canal binario simétrico deja \(1-h_2(\eta)\) bits de información entre la etiqueta limpia y la observada por ejemplo. Esta es información disponible en los datos bajo el generador declarado; no es información que el modelo necesariamente haya aprendido.
+
+Para distinguir ambas cosas se comparará la pérdida logarítmica del modelo con la del predictor nulo y la del oráculo que conoce el generador. Sea \(L_0\) la pérdida del predictor nulo, \(L_\theta\) la del modelo y \(L_\star\) la del oráculo, todas calculadas sobre la misma prueba intacta. Se reportará:
+
+\[
+\widehat A_{pred}(t)=
+\frac{L_0-L_{\theta_t}}{L_0-L_\star}.
+\]
+
+Esta razón expresa qué fracción de la ganancia predictiva recuperable alcanza el modelo. No mide qué fracción de sus pesos está ocupada. Tampoco se truncará a \([0,1]\): valores fuera del intervalo en una muestra finita serán reportados y diagnosticados, no ocultados.
+
+La razón solo estará definida cuando el oráculo mejore de manera demostrable al predictor nulo, es decir, cuando \(L_0-L_\star>0\) con la precisión fijada. Si el denominador es nulo o incierto, el resultado será `NO_IDENTIFICABLE`; no se estabilizará agregando una constante arbitraria.
 
 Las tareas sintéticas se construirán a partir de una variable latente \(Z\) que identifica la regla generadora dentro de un catálogo finito de \(M\) reglas. Sea \(B(W)\) el comportamiento del modelo entrenado sobre un conjunto de sondas. Si un observador puede identificar \(Z\) desde \(B(W)\) con probabilidad de error \(P_e\), la desigualdad de Fano y el procesamiento de datos establecen [12]:
 
@@ -87,11 +110,19 @@ I(Z;W)\geq I(Z;B(W))
 \geq \log_2 M-h_2(P_e)-P_e\log_2(M-1),
 \]
 
-donde \(W\) representa el estado entrenado y \(h_2\) es la entropía binaria. Este resultado relaciona el reconocimiento de la regla con información mínima, pero no entrega por sí solo el número exacto de parámetros. Traducir bits a parámetros requiere supuestos adicionales sobre precisión y familia de modelos. La tesis separará esa referencia de la estimación empírica de tamaño.
+donde \(W\) representa el estado entrenado y \(h_2\) es la entropía binaria. El término derecho se reportará como \(\widehat B_{regla}^{LB}\), una cota inferior de la información demostrada sobre la identidad de la regla. Este resultado no entrega el contenido total de los pesos ni el número exacto de parámetros. Traducir bits a parámetros requiere supuestos adicionales sobre precisión y familia de modelos. La tesis separará esa referencia de la estimación empírica de tamaño.
 
-### 3.5 Predicción de desempeño y búsqueda de arquitecturas
+En señales continuas con ruido gaussiano, la capacidad clásica de un canal gaussiano será solo una referencia bajo sus supuestos de distribución y potencia; no se aplicará automáticamente a una suma de senos correlacionada en el tiempo. Las comparaciones en bits se obtendrán mediante probabilidades conocidas del generador o mediante una cuantización fijada antes del experimento. Así se evita que la supuesta información cambie al modificar después la resolución numérica.
 
-Anticipar el resultado de un entrenamiento costoso tampoco es una idea nueva. Domhan et al. y Klein et al. extrapolan curvas parciales para detener configuraciones poco prometedoras [14], [15]. Los métodos de búsqueda de arquitecturas sin entrenamiento usan propiedades de inicialización y gradientes como proxies de desempeño [16], y NAS-Bench-Suite-Zero muestra que varios de esos proxies contienen información complementaria, pero también sesgos dependientes del espacio de búsqueda [17].
+### 3.5 Bancos temporales controlados
+
+Las señales sintéticas permiten separar mecanismos temporales que en datos naturales aparecen mezclados. SynTSBench organiza precisamente este tipo de evaluación mediante tendencia, estacionalidad, ruido, dependencias y óptimos teóricos [17]. Por tanto, generar senos y ruido no se presentará como una contribución nueva. Esta tesis aprovechará esa línea para una pregunta distinta: comprobar si el perfil de memorización, recuperación de regla y ganancia predictiva anticipa el tamaño suficiente de una red.
+
+Los sistemas dinámicos conocidos ofrecen una comprobación más exigente. La colección `dysts` contiene ecuaciones generadoras accesibles, trayectorias regenerables y propiedades como exponentes de Lyapunov y dimensiones del atractor [18]. Una selección pequeña y fijada con anticipación podrá usarse como prueba externa de alcance, sin afirmar que en esos sistemas se conoce el contenido exacto de los pesos.
+
+### 3.6 Predicción de desempeño y búsqueda de arquitecturas
+
+Anticipar el resultado de un entrenamiento costoso tampoco es una idea nueva. Domhan et al. y Klein et al. extrapolan curvas parciales para detener configuraciones poco prometedoras [13], [14]. Los métodos de búsqueda de arquitecturas sin entrenamiento usan propiedades de inicialización y gradientes como proxies de desempeño [15], y NAS-Bench-Suite-Zero muestra que varios de esos proxies contienen información complementaria, pero también sesgos dependientes del espacio de búsqueda [16].
 
 Por tanto, el vacío no puede formularse como “predecir el desempeño antes de entrenar”. La pregunta más estrecha es si separar memorización específica, ganancia predictiva y recuperación de la regla aporta información adicional para estimar **tamaño suficiente**, con el mismo presupuesto de observación y en tareas no usadas para ajustar el predictor. La tesis deberá superar extrapoladores y proxies compatibles; de lo contrario, el perfil puede conservar valor descriptivo, pero no justifica una nueva regla de dimensionamiento.
 
@@ -104,10 +135,14 @@ Para cada familia de arquitectura \(F\), algoritmo de entrenamiento \(A\) y prec
 | \(\widehat C_{mem}(F,A,b)\) | Máximo observado de memorización sobre conjuntos uniformes al variar su tamaño. | Capacidad empírica bajo el protocolo; no capacidad universal. |
 | \(\widehat M_{spec}(t)\) | Información sobre ejemplos de entrenamiento no explicada por el generador conocido, en el paso \(t\). | Memorización específica de la muestra. |
 | \(\widehat G_{pred}(t)\) | Reducción de pérdida logarítmica del modelo frente al predictor nulo sobre ejemplos intactos, en bits por ejemplo. | Ganancia predictiva del punto de entrenamiento; no memoria en los pesos. |
+| \(\widehat A_{pred}(t)\) | Cociente entre la ganancia del modelo y la ganancia recuperable por el oráculo, sobre la misma prueba intacta. | Aprovechamiento predictivo; no ocupación de pesos. |
 | \(R(t)\) | Acuerdo del modelo con la regla verdadera en entradas contrafactuales que no se usaron para entrenar. | Recuperación conductual de la regla plantada. |
+| \(\widehat B_{regla}^{LB}(t)\) | Cota de Fano obtenida al identificar la regla desde el comportamiento del modelo. | Información mínima demostrada sobre la regla; no contenido total del modelo. |
 | \(N_{min}^{obs}\) | Menor número de parámetros de la grilla cuya cota inferior de desempeño supera el umbral y cumple calibración. | Tamaño suficiente observado dentro de la grilla. |
 
 El cociente entre \(\widehat M_{spec}\) y \(\widehat C_{mem}\) podrá reportarse como análisis secundario de carga relativa de memorización. No se llamará ocupación útil, no mezclará información de prueba con memoria y no se supondrá limitado a \([0,1]\), porque el denominador es una estimación empírica.
+
+La tesis no condensará estas cantidades en una supuesta “capacidad usada”. \(\widehat C_{mem}\) es un techo empírico bajo un protocolo; \(\widehat M_{spec}\) mide una ventaja específica de la muestra; \(\widehat B_{regla}^{LB}\) es solo un piso sobre la regla identificable, y \(\widehat A_{pred}\) describe aprovechamiento de la información disponible. Sumarlas o tratarlas como partes exhaustivas del mismo depósito requeriría una identificación que este diseño no presupone.
 
 ## 5. Hipótesis
 
@@ -115,15 +150,25 @@ El cociente entre \(\widehat M_{spec}\) y \(\widehat C_{mem}\) podrá reportarse
 
 **H2 — Separación durante el aprendizaje.** En tareas con ruido idiosincrático, existirá una región de entrenamiento en la que \(\widehat M_{spec}\) aumente sin una mejora correspondiente de \(\widehat G_{pred}\) ni de \(R\) en datos intactos. La hipótesis falla si las tres trayectorias son indistinguibles dentro de la precisión predeclarada o si la memorización adicional mejora de manera estable la regla recuperada.
 
-**H3 — Predicción de tamaño.** En tareas nuevas de la familia primaria, un predictor sencillo que use el perfil \((\widehat C_{mem},\widehat M_{spec},\widehat G_{pred},R)\), medido con un sondeo de costo fijo, estimará \(N_{min}^{obs}\) con menor error absoluto en escala logarítmica que los comparadores predeclarados, sin aumentar la tasa de subdimensionamiento. La hipótesis falla si no mejora el error o si su aparente ahorro se obtiene recomendando redes insuficientes.
+**H3 — Predicción de tamaño.** En tareas nuevas de la familia primaria, un predictor sencillo que use el perfil \((\widehat C_{mem},\widehat M_{spec},\widehat G_{pred},\widehat B_{regla}^{LB})\), medido con un sondeo de costo fijo, estimará \(N_{min}^{obs}\) con menor error absoluto en escala logarítmica que los comparadores predeclarados, sin aumentar la tasa de subdimensionamiento. La hipótesis falla si no mejora el error o si su aparente ahorro se obtiene recomendando redes insuficientes. \(\widehat A_{pred}\) se reportará como una normalización descriptiva de \(\widehat G_{pred}\), no como una característica adicional que duplique la misma señal.
 
 ## 6. Metodología
 
 ### 6.1 Familias de tareas
 
-La familia principal estará formada por funciones representadas mediante diagramas de decisión binarios reducidos y ordenados. Con un orden de variables fijo, esta representación es canónica: dos diagramas representan la misma función si y solo si son idénticos. El número de nodos se usará como complejidad estructural declarada, sin presentarlo como complejidad de Kolmogorov. Cada tarea elegirá una regla latente, una distribución de entradas, un nivel de ruido de etiquetas y un número de ejemplos. Para dimensiones pequeñas, la tabla de verdad completa servirá como evaluación contrafactual; para dimensiones mayores se usará un conjunto separador generado antes de entrenar.
+La familia principal estará formada por funciones representadas mediante diagramas de decisión binarios reducidos y ordenados. Con un orden de variables fijo, esta representación es canónica: dos diagramas representan la misma función si y solo si son idénticos. El número de nodos se usará como complejidad estructural declarada, sin presentarlo como complejidad de Kolmogorov. Cada tarea elegirá una regla latente, una distribución de entradas, una tasa de ruido binario y un número de ejemplos. El generador conservará por separado entrada, identidad de regla, etiqueta limpia, ruido realizado y etiqueta observada. Para dimensiones pequeñas, la tabla de verdad completa servirá como evaluación contrafactual; para dimensiones mayores se usará un conjunto separador generado antes de entrenar.
 
-La confirmación secuencial usará lenguajes regulares generados por autómatas finitos mínimos. El número de estados del autómata ofrece una medida estructural verificable y permite comprobar si el protocolo se transporta de MLP a una red recurrente pequeña [13]. Esta fase no afirmará que ambas arquitecturas tienen la misma capacidad por compartir una cuenta de parámetros.
+La confirmación secuencial empleará un banco temporal controlado. Para una identidad de tarea \(Z\), la señal limpia tendrá la forma general:
+
+\[
+s_Z(t)=a_Z+b_Zt+
+\sum_{k=1}^{K_Z} A_{Z,k}\sin(2\pi f_{Z,k}t+\phi_{Z,k})+r_Z(t),
+\qquad y(t)=s_Z(t)+\epsilon(t),
+\]
+
+donde \(r_Z(t)\) podrá representar un cambio de régimen, una frecuencia variable o una dependencia autorregresiva declarada, y \(\epsilon(t)\) será ruido de distribución conocida. El banco avanzará desde componentes aislados hasta combinaciones: tendencia, una frecuencia, varias frecuencias, frecuencia variable, cambios de régimen y memoria no lineal. Frecuencias, amplitudes y fases provendrán de catálogos finitos; se impondrán orden canónico, restricciones de muestreo y ausencia de aliasing.
+
+Las particiones se harán por identidad de la ley generadora, no cortando al azar puntos vecinos de una misma trayectoria. El oráculo conservará \(s_Z(t)\), los componentes y la probabilidad de \(y(t)\), de modo que puedan calcularse la pérdida irreducible y el aprovechamiento predictivo. En esta fase, **pronóstico** designará la estimación de valores futuros \(y_{t+h}\) usando información disponible hasta \(t\); **predicción** conservará su sentido más amplio en clasificación e información predictiva [19]. MNIST y archivos naturales de series temporales no serán fuentes principales porque no ofrecen una regla generadora ni un nivel de ruido conocidos.
 
 ### 6.2 Partición y unidad de análisis
 
@@ -150,8 +195,8 @@ El predictor propuesto deberá superar comparadores útiles, no controles débil
 
 - cuenta de parámetros y dimensión de entrada;
 - reglas de capacidad de MacKay/Friedland cuando sus supuestos sean aplicables;
-- extrapolación probabilística de la curva parcial [14], [15];
-- proxies sin entrenamiento compatibles con las arquitecturas estudiadas [16], [17];
+- extrapolación probabilística de la curva parcial [13], [14];
+- proxies sin entrenamiento compatibles con las arquitecturas estudiadas [15], [16];
 - predictor monotónico que use solo tamaño, cantidad de datos y ruido.
 
 No se escogerá el comparador ganador después de ver la prueba final.
@@ -166,7 +211,7 @@ Los umbrales de desempeño, calibración y reconocimiento se fijarán con el pil
 
 1. Una definición operativa que evita confundir bits memorizados con ganancia predictiva en bits.
 2. Una calibración reproducible de capacidad empírica para modelos pequeños y precisiones declaradas.
-3. Un banco de tareas con reglas conocidas, ruido controlado y pruebas contrafactuales de reconocimiento.
+3. Un banco de tareas booleanas y temporales con reglas o señales limpias conocidas, ruido controlado y pruebas contrafactuales de reconocimiento.
 4. Una evaluación fuera de muestra de si el perfil informativo mejora el dimensionamiento de redes.
 5. Un resultado teórico de identificabilidad y una caracterización explícita de los casos en que no puede traducirse a tamaño de modelo.
 
@@ -176,7 +221,7 @@ En el alcance de esta tesis, la utilidad práctica se limita a familias donde pu
 
 Los datos serán sintéticos y no contendrán información personal. El experimento no requiere participantes humanos ni decisiones sobre personas. El código, las reglas generadoras, los registros de ejecución y los análisis se publicarán con versiones y semillas reproducibles.
 
-El principal riesgo científico es que el perfil no prediga \(N_{min}^{obs}\) mejor que una curva de aprendizaje sencilla. Ese resultado refutaría H3 y delimitaría el valor práctico de las medidas en bits. Un segundo riesgo es que la capacidad no sea estable frente al optimizador; en ese caso se reportará como propiedad del sistema de entrenamiento y no de la arquitectura aislada. Un tercero es que la confirmación secuencial no transporte el resultado de la familia booleana; esa diferencia será evidencia sobre el alcance del protocolo, no motivo para unir ambas poblaciones.
+El principal riesgo científico es que el perfil no prediga \(N_{min}^{obs}\) mejor que una curva de aprendizaje sencilla. Ese resultado refutaría H3 y delimitaría el valor práctico de las medidas en bits. Un segundo riesgo es que la capacidad no sea estable frente al optimizador; en ese caso se reportará como propiedad del sistema de entrenamiento y no de la arquitectura aislada. Un tercero es que la confirmación temporal no transporte el resultado de la familia booleana; esa diferencia será evidencia sobre el alcance del protocolo, no motivo para unir ambas poblaciones. También puede ocurrir que el banco temporal replique por completo conclusiones de SynTSBench: en ese caso funcionará como validación externa, no se reclamará como aporte propio.
 
 El cómputo es viable porque los modelos son pequeños y las tareas se generan localmente. Un preflight medirá tiempo y memoria antes de congelar la grilla. Cada fase tendrá un presupuesto y una condición de detención; no se intentará reproducir la escala de miles de millones de parámetros de [8].
 
@@ -188,10 +233,10 @@ El cómputo es viable porque los modelos son pequeños y las tareas se generan l
 | Meses 7–12 | Calibración de capacidad, validación de estimadores y primer artículo metodológico. |
 | Meses 13–20 | Trayectorias de memorización y ganancia predictiva en la familia booleana. |
 | Meses 21–27 | Predictor de tamaño, comparadores y evaluación intacta. |
-| Meses 28–32 | Confirmación secuencial con autómatas y análisis de alcance. |
+| Meses 28–32 | Confirmación con señales temporales controladas y análisis de alcance. |
 | Meses 33–36 | Integración de resultados, publicación de artefactos y escritura de tesis. |
 
-El alcance mínimo defendible comprende la familia booleana, H1–H3 y el resultado de identificabilidad. La confirmación con autómatas se recortará si el estudio principal requiere más tareas o mayor precisión estadística.
+El alcance mínimo defendible comprende la familia booleana, H1–H3 y el resultado de identificabilidad. La confirmación temporal se limitará a los componentes aislados si el estudio principal requiere más tareas o mayor precisión estadística; los sistemas caóticos son el primer elemento recortable.
 
 ## Referencias
 
@@ -219,12 +264,16 @@ El alcance mínimo defendible comprende la familia booleana, H1–H3 y el result
 
 [12] T. M. Cover and J. A. Thomas, *Elements of Information Theory*, 2nd ed. Hoboken, NJ, EE. UU.: Wiley, 2006.
 
-[13] J. J. Michalenko, A. Shah, A. Verma, R. G. Baraniuk, S. Chaudhuri, and A. B. Patel, “Representing formal languages: A comparison between finite automata and recurrent neural networks,” arXiv:1902.10297, 2019.
+[13] T. Domhan, J. T. Springenberg, and F. Hutter, “Speeding up automatic hyperparameter optimization of deep neural networks by extrapolation of learning curves,” in *Proc. IJCAI*, pp. 3460–3468, 2015.
 
-[14] T. Domhan, J. T. Springenberg, and F. Hutter, “Speeding up automatic hyperparameter optimization of deep neural networks by extrapolation of learning curves,” in *Proc. IJCAI*, pp. 3460–3468, 2015.
+[14] A. Klein, S. Falkner, J. T. Springenberg, and F. Hutter, “Learning curve prediction with Bayesian neural networks,” in *Proc. ICLR*, 2017.
 
-[15] A. Klein, S. Falkner, J. T. Springenberg, and F. Hutter, “Learning curve prediction with Bayesian neural networks,” in *Proc. ICLR*, 2017.
+[15] J. Mellor, J. Turner, A. Storkey, and E. J. Crowley, “Neural architecture search without training,” in *Proc. ICML*, pp. 7588–7598, 2021.
 
-[16] J. Mellor, J. Turner, A. Storkey, and E. J. Crowley, “Neural architecture search without training,” in *Proc. ICML*, pp. 7588–7598, 2021.
+[16] A. Krishnakumar, C. White, A. Zela, R. Tu, M. Safari, and F. Hutter, “NAS-Bench-Suite-Zero: Accelerating research on zero cost proxies,” in *Advances in Neural Information Processing Systems*, vol. 35, 2022.
 
-[17] A. Krishnakumar, C. White, A. Zela, R. Tu, M. Safari, and F. Hutter, “NAS-Bench-Suite-Zero: Accelerating research on zero cost proxies,” in *Advances in Neural Information Processing Systems*, vol. 35, 2022.
+[17] Q. Tan, Y. Chen, M. Li, R. Gu, Y. Su, and X.-P. Zhang, “SynTSBench: Rethinking temporal pattern learning in deep learning models for time series,” in *Advances in Neural Information Processing Systems*, vol. 38, 2025.
+
+[18] W. Gilpin, “Chaos as an interpretable benchmark for forecasting and data-driven modelling,” in *Advances in Neural Information Processing Systems*, vol. 34, 2021.
+
+[19] R. J. Hyndman and G. Athanasopoulos, *Forecasting: Principles and Practice*, 3rd ed. Melbourne, Australia: OTexts, 2021.

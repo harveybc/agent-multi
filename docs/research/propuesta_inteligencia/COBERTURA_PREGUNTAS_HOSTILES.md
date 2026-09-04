@@ -42,15 +42,15 @@ Porque los dos números describen objetos distintos. La capacidad aleatoria mide
 
 ### 9. Entonces, ¿el término ocupación desaparece por completo?
 
-Desaparece como variable principal. Solo puede reportarse, de manera secundaria, la memorización específica dividida por una capacidad empírica obtenida con el mismo protocolo. Aun así se llama carga relativa, no ocupación útil, y no se supone limitada a uno porque la capacidad observada es una estimación.
+Desaparece como variable principal. Solo puede reportarse, de manera secundaria, la memorización específica dividida por una capacidad empírica obtenida con el mismo protocolo. Aun así se llama carga relativa, no ocupación útil, y no se supone limitada a uno porque la capacidad observada es una estimación. La cota sobre la regla aprendida y el aprovechamiento predictivo se publican aparte: no se suman como si fueran compartimentos exhaustivos de los pesos.
 
 ### 10. ¿Qué significa ganancia predictiva?
 
-Es la reducción de pérdida logarítmica que logra el modelo al observar la entrada, comparada con un predictor nulo que no la observa. Se mide en datos no usados para entrenar y se expresa en bits por ejemplo. La información predictiva \(\mathcal V\) es el antecedente formal, pero la variable de esta tesis es una ganancia del punto de entrenamiento, no contenido físico de los pesos.
+Es la reducción de pérdida logarítmica que logra el modelo al observar la entrada, comparada con un predictor nulo que no la observa. Se mide en datos no usados para entrenar y se expresa en bits por ejemplo. La información predictiva \(\mathcal V\) es el antecedente formal, pero la variable de esta tesis es una ganancia del punto de entrenamiento, no contenido físico de los pesos. También se compara con el oráculo para saber qué fracción de la ganancia recuperable alcanzó el modelo; esa fracción tampoco es memoria ocupada.
 
 ### 11. ¿Cómo distingue memorización de generalización?
 
-El generador sintético es conocido. Permite calcular qué parte de la predicción explica la regla y qué parte corresponde a realizaciones particulares, como ruido de etiqueta. La estimación seguirá el marco de memorización no intencional de Morris. Además, la generalización se evalúa sobre entradas nuevas y sondas contrafactuales.
+El generador sintético es conocido. Permite calcular qué parte de la predicción explica la regla y qué parte corresponde a realizaciones particulares, como ruido de etiqueta. El contraste de longitudes de código se suma sobre la muestra completa; no se conservan solo los ejemplos favorables. Además se repite sobre datos intactos: un exceso que también aparezca allí se clasifica como descalibración o diferencia respecto del oráculo, no como memoria específica. La generalización se evalúa sobre entradas nuevas y sondas contrafactuales.
 
 ### 12. ¿Por qué una longitud comprimida no da una cota inferior de tamaño?
 
@@ -82,13 +82,13 @@ Las sondas no se usan en entrenamiento ni en selección de parada. Se construyen
 
 El acuerdo entre el modelo y la regla verdadera en entradas contrafactuales. Para tareas pequeñas se puede evaluar la tabla de verdad completa; para tareas mayores se usa un conjunto separador fijado antes del entrenamiento. No es una medida general de inteligencia.
 
-### 19. ¿Por qué usar autómatas finitos como confirmación?
+### 19. ¿Por qué usar señales temporales como confirmación?
 
-Porque permiten tareas secuenciales con complejidad estructural verificable mediante el autómata mínimo. Sirven para comprobar si el protocolo sobrevive fuera de MLP y reglas estáticas. Si no sobrevive, el resultado limita su transportabilidad.
+Porque permiten comprobar si el perfil sobrevive fuera de MLP y reglas estáticas, manteniendo conocida la señal limpia, el ruido y la ley generadora. El banco separa tendencia, periodicidad, frecuencia variable, cambios de régimen y memoria no lineal antes de combinarlos. Si el resultado no se transporta a una red recurrente pequeña, esa diferencia limita el alcance del protocolo.
 
 ### 20. ¿Por qué no usar datos reales?
 
-En datos reales no conocemos la regla verdadera, la cantidad de ruido ni el conjunto completo de intervenciones que distingue explicaciones. Serían útiles después de validar las medidas, pero no para establecer qué significa cada una.
+En datos reales no conocemos la regla verdadera, la cantidad de ruido ni el conjunto completo de intervenciones que distingue explicaciones. Serían útiles como comprobación externa después de validar las medidas, pero no para establecer qué significa cada una.
 
 ## Diseño experimental
 
@@ -144,16 +144,42 @@ La búsqueda de arquitecturas sin entrenamiento y la extrapolación de curvas so
 
 ### 33. ¿No está prometiendo dos tesis, una para MLP y otra para GRU?
 
-No. La familia booleana con MLP contiene el estudio principal. Los autómatas son una confirmación recortable. El resultado doctoral no depende de que ambas familias produzcan la misma constante ni del éxito de la confirmación.
+No. La familia booleana con MLP contiene el estudio principal. El banco temporal con GRU es una confirmación recortable. El resultado doctoral no depende de que ambas familias produzcan la misma constante ni del éxito de la confirmación.
 
 ### 34. ¿Es viable en tres años?
 
-Los modelos están acotados aproximadamente a un millón de parámetros y los datos son sintéticos. El piloto medirá costo antes de congelar la grilla. El alcance mínimo termina con la familia booleana; la confirmación secuencial se recorta si compite con la precisión del estudio principal.
+Los modelos están acotados aproximadamente a un millón de parámetros y los datos son sintéticos. El piloto medirá costo antes de congelar la grilla. El alcance mínimo termina con la familia booleana. En la confirmación temporal se recortan primero los sistemas caóticos y después las combinaciones de componentes; las señales aisladas quedan como mínimo.
 
 ### 35. ¿Cuál sería un resultado negativo valioso?
 
-Que las medidas en bits no mejoren una curva de aprendizaje barata, que dependan demasiado del optimizador o que no se transporten a tareas secuenciales. Cada resultado establecería un límite concreto y evitaría presentar capacidad, memorización y ganancia predictiva como una receta de tamaño.
+Que las medidas en bits no mejoren una curva de aprendizaje barata, que dependan demasiado del optimizador o que no se transporten a señales temporales. Cada resultado establecería un límite concreto y evitaría presentar capacidad, memorización y ganancia predictiva como una receta de tamaño.
 
 ### 36. ¿Qué afirmación no debe hacerse durante la entrevista?
 
-No debe decirse que se medirá inteligencia, que dos bits por peso valen para toda red, que la información útil ocupa una fracción literal de la capacidad, que un compresor produce una cota inferior ni que se encontrará el tamaño mínimo universal. Ninguna de esas afirmaciones pertenece a la propuesta revisada.
+No debe decirse que se medirá inteligencia, que dos bits por peso valen para toda red, que la información útil ocupa una fracción literal de la capacidad, que el cociente señal-ruido mide memoria del modelo, que un compresor produce una cota inferior ni que se encontrará el tamaño mínimo universal. Ninguna de esas afirmaciones pertenece a la propuesta revisada.
+
+## Señales temporales y terminología
+
+### 37. ¿Por qué no basta una suma de senos con ruido gaussiano?
+
+Porque es un control necesario, pero demasiado simple como confirmación completa. Una frecuencia fija puede resolverse con una representación compacta y ofrece atajos espectrales. El banco empieza allí y añade varias frecuencias, frecuencia variable, cambios de régimen y memoria no lineal. Cada componente se evalúa aislado antes de estudiar interacciones.
+
+### 38. ¿Cómo evita fuga entre entrenamiento y prueba temporal?
+
+La partición se hace por identidad de la ley generadora: combinaciones distintas de parámetros latentes pertenecen a piloto, ajuste, calibración y prueba. No se mezclan al azar puntos vecinos de una misma trayectoria. Además, toda ventana de pronóstico usa únicamente información disponible hasta su origen temporal.
+
+### 39. ¿La fórmula \(\tfrac12\log_2(1+\mathrm{SNR})\) dice cuánta memoria usa la red?
+
+No. Esa expresión corresponde a información o capacidad de un canal gaussiano bajo supuestos concretos de distribución, independencia y potencia. No describe automáticamente una señal sinusoidal correlacionada ni el contenido de los pesos. En esta tesis solo será una referencia cuando sus supuestos se satisfagan.
+
+### 40. ¿Por qué no usar MNIST o el archivo UCR como fuente ideal?
+
+Porque no conocemos exactamente su proceso generador, el nivel de ruido ni una regla verdadera que permita separar memoria y estructura. Pueden servir como comprobación externa, pero no como autoridad para medir capacidad en bits o aprovechamiento de información recuperable.
+
+### 41. SynTSBench ya genera tendencia, estacionalidad y ruido. ¿Dónde está la novedad?
+
+No está en generar esas señales. SynTSBench es un antecedente y comparador directo. La pregunta propia es si un perfil que separa capacidad de memorización, memoria específica, regla recuperada y ganancia predictiva permite anticipar el tamaño suficiente del modelo. Si no mejora los comparadores existentes, H3 falla.
+
+### 42. ¿Por qué el documento dice “predicción” y no siempre “pronóstico”?
+
+Porque no son sustitutos universales. Se usa **pronóstico** para estimar un valor futuro \(y_{t+h}\) con información disponible hasta \(t\). Se usa **predicción** en el sentido más amplio de aprendizaje automático: clasificación, predictor nulo, información predictiva o estimación del tamaño suficiente. En español ambos términos son válidos; la distinción evita llamar pronóstico a una clasificación sin eje futuro.
