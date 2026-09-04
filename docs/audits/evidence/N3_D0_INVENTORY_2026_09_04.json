@@ -1,0 +1,140 @@
+{
+ "schema": "agent_multi.n3_d0_inventory.v1",
+ "order": "agent-multi@a13671ab \u00a73",
+ "generated_at": "2026-09-04T15:16:21.594101+00:00",
+ "frozen_predictor_contract": {
+  "model_ready_csv": {
+   "path": "predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+   "sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+   "rows": 18085,
+   "columns": 90,
+   "range": [
+    "2017-09-28T04:00:00",
+    "2025-12-31T20:00:00"
+   ],
+   "feature_columns_ordered_count": 83
+  },
+  "with_warmup_nans_csv": {
+   "sha256": "d0619419cae427b69bf0549910f7d6c01388a2add3a748d5dbd1a9e3b5fc884d",
+   "rows": 18337,
+   "range": [
+    "2017-08-17T04:00:00",
+    "2025-12-31T20:00:00"
+   ]
+  },
+  "manifest_sha256": "860726e2f5c6d6b26f5a44d79863856b7c9fc80e957b88bf1b66a5f64f7b5b4b",
+  "export_metadata_sha256": "b4ffd1ad3faa1e8ca636eb5444157cf66a797133293200604fc3a64a25190428",
+  "export_generated_at": "2026-05-02T19:11:39.536791+00:00"
+ },
+ "raw_lake": {
+  "path": "financial-data/market_data/crypto/spot_top50/ethusdt/4h.parquet",
+  "sha256": "7a6b79833355d7c22a3db30e6494ced078d628338d76e671af320a06b35fc9e5",
+  "acquired_at": "2026-05-01T15:58:56.166673+00:00",
+  "rows": 18337,
+  "range_utc": [
+   "2017-08-17 04:00:00+00:00",
+   "2025-12-31 20:00:00+00:00"
+  ],
+  "grid": {
+   "expected_bars": 18353,
+   "actual_bars": 18337,
+   "missing_bars": 16,
+   "missing_utc": [
+    "2018-02-08 04:00:00+00:00",
+    "2018-02-08 08:00:00+00:00",
+    "2018-02-08 12:00:00+00:00",
+    "2018-02-08 16:00:00+00:00",
+    "2018-02-08 20:00:00+00:00",
+    "2018-02-09 00:00:00+00:00",
+    "2018-02-09 04:00:00+00:00",
+    "2018-06-26 04:00:00+00:00",
+    "2018-06-26 08:00:00+00:00",
+    "2018-07-04 04:00:00+00:00",
+    "2018-11-14 04:00:00+00:00",
+    "2019-03-12 04:00:00+00:00",
+    "2019-05-15 04:00:00+00:00",
+    "2019-05-15 08:00:00+00:00",
+    "2019-08-15 04:00:00+00:00",
+    "2020-02-19 12:00:00+00:00"
+   ],
+   "all_missing_before": "2020-02-20 (known Binance maintenance windows; none after)"
+  },
+  "duplicate_open_times": 0,
+  "columns": [
+   "open_time",
+   "open",
+   "high",
+   "low",
+   "close",
+   "volume",
+   "close_time",
+   "quote_volume",
+   "trade_count",
+   "taker_buy_base_volume",
+   "taker_buy_quote_volume"
+  ]
+ },
+ "stage_pipeline": {
+  "stage_2_1_base": {
+   "path": "financial-data/features/trading_asset_data/ethusdt/4h.parquet",
+   "sha256": "37321161d3e0d372abd0c3a0cc867ed4b2faf1fdf1e4569d55da6f6a1a1df099"
+  },
+  "stage_2_2_technical": {
+   "path": "financial-data/features/trading_asset_features/ethusdt/4h/technical.parquet",
+   "sha256": "7c0c927d6185c33a22476c21a73051380de83cc8fa1dee3d05ff0bdb10b54be6"
+  },
+  "stage_2_2_statistical": {
+   "path": "financial-data/features/trading_asset_features/ethusdt/4h/statistical.parquet",
+   "sha256": "9ed54a89eb7f94228ced151b67bf2f1f4b52ee12b7b1628d83e4d7b7044df20a"
+  },
+  "workers": {
+   "stage13_dragon_crypto_worker.py": {
+    "path": "financial-data/_scripts/workers/stage13_dragon_crypto_worker.py",
+    "sha256": "9520b24294599612d3269e3a61f6a1a4abfc60a91712fec7319b5e3ccb804da2"
+   },
+   "stage21_trading_asset_worker.py": {
+    "path": "financial-data/_scripts/workers/stage21_trading_asset_worker.py",
+    "sha256": "765a03dc5b716b709f2a0ff0a3f6ef54a60a92e44131b003c0f2675eb38e4176"
+   },
+   "stage22_trading_features_worker.py": {
+    "path": "financial-data/_scripts/workers/stage22_trading_features_worker.py",
+    "sha256": "7495a0d974a7eb086eef0c11927b1c536946746ee3544ad82f6c256d1c6ee050"
+   },
+   "stage31_prepare_inputs_worker.py": {
+    "path": "financial-data/_scripts/workers/stage31_prepare_inputs_worker.py",
+    "sha256": "1482f6479060421dfe4fc07193cc9fb3f9447ce1143d5dc6458172927703447b"
+   }
+  },
+  "financial_data_git_tip": "c077e20e23ba53df6fe09121e4ac811116f62ee6",
+  "predictor_git_tip": "fa08cab48c4e2f89ebc7642367cdfe0231597b47"
+ },
+ "endpoint_grammar": {
+  "base_url": "https://api.binance.com",
+  "path": "/api/v3/klines",
+  "method": "HTTP GET only",
+  "params": [
+   "symbol=ETHUSDT",
+   "interval=4h",
+   "startTime=<ms>",
+   "endTime=<ms>",
+   "limit=1000"
+  ],
+  "rate_limit_handling": "HTTP 429 backoff as in stage13_dragon_crypto_worker",
+  "authority": "same public endpoint used by the governed financial-data acquisition workers; no credentials, no private endpoints"
+ },
+ "n2_identities": {
+  "bundle": "9657192586438982d6cf20974c7052e1cb9140a479b74973b08b5b2afdaa168f",
+  "attribution_contract": "7336787096ff370988e40e2c3457b687e25b29ba99f65f08384263eb932a4743",
+  "attribution_artifact": "a07e70c84088b776e1090e328459caae91fc7536362b0593187f429e5d57ceab",
+  "role_census": "20676aaf533e90d06aa43e476fe7f1bf14722edf7e22ad1ea8e95e22c4355395",
+  "verdict_trace": "de5e84affffcd46d980d42cea059660ce7507d16059e4d752e31bfba83422480",
+  "census_inputs_npz_sha256": "07c5ff085dfd8bab0dfa33d038005c8fdb2d6c2acff3961d0fe4b042ef57cca7"
+ },
+ "divergences_recorded": {
+  "DV1_exporter_not_committed": "the one-off exporter that produced the model-ready layout (typical_price column, full and with_warmup_nans variants, generated 2026-05-02) is not a committed worker; its recipe is bound by the export metadata sources map (raw lake parquet + stage-2.2 technical/statistical parquets + stage-3.1 tech_stat merge). The N3-D3 overlap parity proof is the arbiter, feature by feature \u2014 no nearby pipeline is silently treated as the original",
+  "DV2_binary_label_mismatch": "the manifest lists ema_cross_10_50/ema_cross_20_100 as feature_binary_columns but the frozen values are CONTINUOUS ((ema_a-ema_b)/close per stage 2.2); only vol_regime_high/low are truly binary {0,1} \u2014 exact-equality checks in D3 apply to the true binary pair only",
+  "DV3_missing_bars_and_ffill": "the raw lake is MISSING 16 grid bars, all before 2020-02-20 (known Binance maintenance windows, enumerated above): missing bars are ABSENT ROWS, so stage-2.2 rolling features span them positionally and stage31's ffill only fills occasional mid-series feature NaNs, never fabricated market bars. Parity on overlap reproduces exactly this behavior; the 2026 extension REFUSES any newly missing grid bar instead of spanning or filling it",
+  "DV4_float32_sanitize": "stage 2.2 sanitize() casts features to float32 before CSV serialization \u2014 D3 numeric tolerances derive from float32 round-trip precision, predeclared before comparison",
+  "DV5_read_asset_column_rename": "stage 2.2 read_asset requires a 'timestamp' column; the lake stores 'open_time' \u2014 the rename happens in stage 2.1 (trading_asset_data); the N3 regeneration reproduces that chain explicitly"
+ }
+}

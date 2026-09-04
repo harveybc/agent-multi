@@ -675,6 +675,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "n3_d0_inventory.py": {
+   "purpose": "N3-D0 executable inventory (order @a13671ab \u00a73): binds by digest the frozen predictor model-ready CSVs/manifest, the raw Binance-shaped ETHUSDT H4 lake parquet + provenance, the Stage 2.1/2.2/3.1 workers that produced the 83 columns, the N2 bundle/contract/census identities and the public REST endpoint grammar; enumerates the 16 known missing pre-2020 grid bars and records the five divergences between the frozen export and the committed workers. Read-only; no network.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
