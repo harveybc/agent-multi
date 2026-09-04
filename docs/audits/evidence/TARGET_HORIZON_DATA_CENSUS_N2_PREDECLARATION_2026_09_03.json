@@ -1,0 +1,107 @@
+{
+  "schema": "agent_multi.target_horizon_census_predeclaration.v1",
+  "experiment": "TARGET_HORIZON_DATA_CENSUS_N2",
+  "order": "agent-multi@8fce8da0 §5",
+  "sealed_before_any_result": true,
+  "purpose": "decide what question a future extractor should be asked, before designing or training that extractor. Development-only: prior work consumed the available fit data, so N2 may SELECT a candidate for a later confirmation order but may not make a confirmatory prediction claim and may not touch sealed or intact confirmation roles.",
+
+  "candidates": {
+    "note": "fixed to the targets already present in the accepted pretraining contract (candidate_full5_pcgrad_o2022 pretrain_manifest.json). NOTHING may be added after seeing N2 results.",
+    "forward_log_return": {"horizons": [1, 3, 6, 12], "keys": ["ret_h1", "ret_h3", "ret_h6", "ret_h12"], "builder": "agent_plugins.branch_pretraining.forward_log_return_targets — log(close[a+h]/close[a]) at anchor a = t-1 of sampled step t"},
+    "realized_volatility": {"horizons": [3, 6, 12], "keys": ["vol_h3", "vol_h6", "vol_h12"], "builder": "agent_plugins.branch_pretraining.realized_volatility_targets — log(sqrt(mean(r_1..r_h^2)) + 1e-8), per-bar close-to-close, annualization none (contract)"},
+    "barrier_hit": {"horizons": [6, 12], "keys": ["bar_h6", "bar_h12"], "builder": "agent_plugins.branch_pretraining.barrier_hit_labels — EXECUTABLE intrabar first-touch by HIGH/LOW, trailing_realized_vol_close_to_close lookback 64, upper_mult 2.0, lower_mult 2.0, epsilon 1e-8, adverse-first collision (contract verbatim); classes 0=upper,1=lower,2=censored"}
+  },
+
+  "data_plane": {
+    "source_csv_digest_expected": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "source_contract": "sealed candidate pretrain_manifest.json, verified via pretrained_branch_loader.verify_source before materialization",
+    "sampling": "identical to N1: stride 4 raw bars, max 2200 sampled steps, window 64, warmup per parsed contract; the input windows npz is rebuilt through the SAME collect_preprocessed_windows path and must reproduce the N1 input digest 0f31661c339556bc96f51d9e77514ac6b5d519a7a4ba64c00a8786d94ecfc884 for the 83-channel windows",
+    "role_boundaries": "no target label may cross a role boundary: label of anchor a consumes raw bars (a, a+h]; embargo below guarantees separation in sampled rows"
+  },
+
+  "role_geometry": {
+    "derivation": "role_geometry(n) exactly as the frozen N1 runner, with EMBARGO = 3 sampled rows (uniform across candidates: max over candidates of ceil(horizon_bars/stride) = ceil(12/4) = 3, stricter than or equal to every per-candidate requirement)",
+    "windows": "four disjoint chronological score windows, all ending strictly before the first consumed screen-v2 monitor row (frontier = int(int(n*0.85)*0.82)); calibration precedes its score window with embargo; fit is the strict causal prefix",
+    "exact_ranges_published_in": "run ledger role_geometry (source-index ranges per role per window) — republished verbatim in the results artifact",
+    "per_window_licenses": "publish n, effective blocks, target variance (regression) or class support (classification) per window"
+  },
+
+  "baselines": {
+    "forward_log_return": ["zero_return (predict 0)", "fit_mean (fit-role mean of the target)"],
+    "realized_volatility": ["literal_trailing (past-only same-h trailing log realized vol at the anchor, NO fitted coefficient)", "calibrated_ar1 (ridge on the single trailing feature; fit on fit role, lambda selected on calibration only)"],
+    "barrier_hit": ["fit_class_prior (fit-role class frequencies, clipped at 1e-12)"],
+    "strongest_baseline_rule": "the strongest baseline of a family is the declared baseline with the LOWEST pooled primary loss over all score observations — a rule fixed here, not a post-hoc choice"
+  },
+
+  "primary_losses": {
+    "forward_log_return": "per-observation squared error on the log-return target",
+    "realized_volatility": "QLIKE on variances: F = (max(exp(pred)-1e-8, 1e-8))^2, r2v = (max(exp(y)-1e-8, 1e-8))^2, qlike = r2v/F - log(r2v/F) - 1",
+    "barrier_hit": "multiclass log loss, probabilities clipped at 1e-12",
+    "secondary": {
+      "forward_log_return": ["directional accuracy (sign agreement, zero counts as miss)", "Spearman rank correlation"],
+      "realized_volatility": ["R2 on the log-vol target"],
+      "barrier_hit": ["multiclass Brier score", "macro recall", "class support per role"]
+    },
+    "pooling_prohibition": "metrics from different target families are NEVER numerically pooled; every candidate is converted to within-family skill = 1 - loss_model/loss_baseline"
+  },
+
+  "models_cpu_only": {
+    "1_proper_baseline": "as declared per family above",
+    "2_target_history": {
+      "forward_log_return": "ridge on the last 12 raw per-bar log returns ending at the anchor (returns[a-11..a])",
+      "realized_volatility": "ridge on the trailing same-h log realized vol at sampled-step lags 0,1,2,3",
+      "barrier_hit": "multinomial logistic on the trailing barrier-scale vol (lookback 64) at sampled-step lags 0,1,2,3"
+    },
+    "3_causal_linear_summary": {
+      "features": "FIXED causal summary of the 83 preprocessed input channels over the trailing 64-bar observation window: per channel [last value, window mean, window std] = 249 features",
+      "regression": "ridge",
+      "classification": "multinomial logistic (lbfgs, max_iter 2000)"
+    },
+    "hyperparameters": "ridge lambda grid [1e-4,1e-3,1e-2,1e-1,1,10,100]; logistic C grid [0.01,0.1,1,10]; selected on CALIBRATION primary loss only; feature standardization uses FIT-role mean/std only; conditioning, selected regularization and coefficient norms recorded per unit so catastrophic linear failure is diagnosable",
+    "prohibited": "no GRU, transformer, extractor or RL agent in N2 (order §5.3); temporal neural confirmation requires a later order"
+  },
+
+  "uncertainty_dependence_aware": {
+    "statistic": "mean per-observation primary-loss difference d_i = L_strongest_baseline(i) - L_model(i) over all score observations of the four windows",
+    "method": "circular block bootstrap, block length 6 sampled rows (>= embargo 3; ~216^(1/3)), B = 2000, RNG seed 505, blocks resampled WITHIN each score window (adjacent windows are never treated as independent replications; no cross-window t-test)",
+    "p_value": "one-sided p = (1 + #{bootstrap mean <= 0}) / (B + 1) against H1: mean difference > 0",
+    "multiplicity": "Holm step-down across ALL NINE candidates via agent_plugins.paired_inference.holm_adjust (the R3-repaired monotone implementation)"
+  },
+
+  "advance_rule": {
+    "candidate_passes_iff": [
+      "per-window skill > 0 against EVERY declared baseline of its family in EVERY score window",
+      "pooled skill against the strongest baseline >= 0.02 (materiality)",
+      "Holm-adjusted one-sided bootstrap p < 0.05",
+      "licenses hold: >= 8 effective blocks per window; barrier candidates additionally require classes 0 and 1 each >= 30 observations in EVERY score window and non-degenerate fit/cal labels; regression candidates require target variance > 0 per window"
+    ],
+    "license_failure": "a candidate with degenerate labels, inadequate class support or insufficient effective blocks is INCONCLUSIVE_CANDIDATE, never a winner and never silently dropped",
+    "verdicts": {
+      "TARGET_CANDIDATE_FOUND": "at least one candidate passes the full rule",
+      "NO_TARGET_CANDIDATE_DEMONSTRATED": "all complete candidates fail the rule",
+      "INCONCLUSIVE": "missing/failed units, inadequate effective support, discordant evidence, any unlicensed case, or any negative-control failure"
+    },
+    "selection_rule_max_two": "among passers rank by MINIMUM per-window skill vs the strongest baseline (stability, not the largest raw score); ties broken by smaller Holm-adjusted p, then smaller horizon; select at most two; their neural confirmation is NOT begun automatically"
+  },
+
+  "negative_controls": {
+    "never_eligible": "controls diagnose the harness and are never candidates",
+    "future_leak_sentinel": "per family at the mid horizon (ret_h6, vol_h6, bar_h6): the census linear model receives the TRUE target as its only feature (one-hot for classification). It must achieve pooled skill >= 0.5 vs the strongest baseline in every window — proving the harness detects leakage as unrealistically easy. Failure -> census INCONCLUSIVE",
+    "causally_shifted_target": "per family at the mid horizon: model 3 trained against the target circularly time-shifted by +37 sampled rows (roles unchanged, marginal distribution preserved). It must NOT satisfy the advance rule. If it passes -> census INCONCLUSIVE"
+  },
+
+  "execution_bounds": {
+    "device": "CPU only, CUDA_VISIBLE_DEVICES empty; no GPU work authorized (order §7)",
+    "campaign_wall_ceiling_s": 7200,
+    "unit_timeout_s": 600,
+    "heartbeat": "minute-level status.json with completed/total units, throughput and ETA",
+    "stop_file": "STOP_CENSUS in the run root -> terminate-and-reap",
+    "immutable_digests": "input npz per family, source csv, sealed pretrain manifest+generation, code (census tool + experiment_runtime + branch_pretraining + temporal_information + paired_inference), and THIS predeclaration; re-verified at claim",
+    "terminality": "no retry of a terminal scientific result; infrastructure interruptions resume only through the same ledgered identity; aggregate recomputed from exact terminal unit records only"
+  },
+
+  "units": {
+    "grain": "one unit = (candidate-or-control, score window): all of that candidate's family models and baselines computed inside the unit",
+    "count": "9 candidates x 4 windows + 6 controls x 4 windows = 60"
+  }
+}
