@@ -1,0 +1,44 @@
+{
+  "schema": "agent_multi.n5_transition_ledger.v1",
+  "order": "agent-multi@9fd016b0 §10 (N5.0 — disposition only)",
+  "classification": "NO-EFFECT inspection of accepted work-plan documents; nothing launched, nothing invented",
+
+  "paths": {
+    "direct_random_initialized_sac_controls": {
+      "governing_documents": ["examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_o2022_paired_v1.json (o2022 paired pretrain-vs-random roles)", "docs/work_plan/04_MODELS_POLICIES_AND_TRAINING.md", "docs/work_plan/33_ETH_DECISION_RESEARCH_AND_MULTI_ASSET_ROADMAP.md", "SAC driver correction order 2026-08-28 (C3 roles doc)"],
+      "accepted_identities": "paired split contract (source 1b447c66); the 8 paired SAC cells were designed under the screen-v2 gate",
+      "depends_on_closed_pretraining_branch": "PARTIALLY: the PAIRED design's pretrained arm is dead with the branch; a RANDOM-ONLY control question survives but is a DIFFERENT experiment than the accepted paired contract",
+      "blockers": ["SAC_GATE_FAIL_NEGATIVE_RESULT (order @65ee8488) never released the 8 cells", "no untouched confirmation role on this contract (N3 role census)", "GPU work unauthorized since order @8fce8da0 chain"],
+      "dispatch_already_authorized": false,
+      "smallest_next_decision": "a new reviewed design order converting the paired contract into a random-only SAC baseline question with genuinely new post-2026-08 evaluation data"
+    },
+    "feature_selection_component_domains": {
+      "governing_documents": ["docs/work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md", "docs/work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md", "docs/work_plan/30_FRONT5_MULTIDOMAIN_PROGRAM.md (Retsu's alternative-domains front)"],
+      "accepted_identities": "P1 curriculum terminal evidence (p1_curriculum_terminal_20260825); finding 235 (dead actor, 64 raw-price dims) ACCEPTED with clean-start v2 ordered; doin-domains WP3-C accepted at doin-domains@d01708a",
+      "depends_on_closed_pretraining_branch": "NO — operates on environment feature sets and curricula, not on supervised extractor pretraining",
+      "blockers": ["clean-start v2 dispatch was ordered but gated pending Musashi's design review (P1LR campaign disposition)", "GPU authorization absent under the current order chain", "L2 PARKED by owner order"],
+      "dispatch_already_authorized": false,
+      "smallest_next_decision": "Musashi issues the clean-start v2 design order (finding 235 consequence) naming budget, arms and gate"
+    },
+    "weekly_flat_economic_work": {
+      "governing_documents": ["gym-fx tools/wp4_session_readiness.py chain (C18-C38, C38 delivered gym-fx@6d779af)", "lts collector_activation_preflight.py", "docs/work_plan/29_CONTINUOUS_DEMO_TRADING_OPERATIONS.md"],
+      "accepted_identities": "C1-C17 + C36/C37 accepted; C38 delivered awaiting review; trust root external Ed25519; production pin 55b8cfc4…",
+      "depends_on_closed_pretraining_branch": "NO",
+      "blockers": ["VENUE_SESSION_HISTORY_UNAVAILABLE (F7: the MT5 EA has never published session/calendar evidence)", "collector activation COORDINATED_WINDOW_REQUIRED (open MT5 position / non-flat account at last judgment)", "owner actions pending: key ceremony, real operator kit, build ratification, coordinated window"],
+      "dispatch_already_authorized": false,
+      "smallest_next_decision": "owner executes the key ceremony and schedules the coordinated flat window; then the committed collector preflight judge reruns"
+    },
+    "rolling_retraining": {
+      "governing_documents": ["docs/work_plan/32_CHAMPION_SUCCESSION_AND_REGIME_RESEARCH.md", "docs/work_plan/26_CONTINUOUS_RESEARCH_AND_INNOVATION_PROGRAM.md", "docs/work_plan/04_MODELS_POLICIES_AND_TRAINING.md"],
+      "accepted_identities": "USDCAD/ETH champion lineage and succession baselines per the succession handoffs",
+      "depends_on_closed_pretraining_branch": "NO for RL champions; YES for any supervised-predictor refresh on the closed ETH H4 tech_stat contract",
+      "blockers": ["no sealed succession design (doc 32 is research direction, not an executable contract)", "GPU authorization absent", "fresh evaluation data required for any honest out-of-time gate (same lesson as N3)"],
+      "dispatch_already_authorized": false,
+      "smallest_next_decision": "a reviewed succession/retraining design order with sealed roles on genuinely new data"
+    }
+  },
+
+  "overall_disposition": "ALL_SUCCESSORS_CURRENTLY_BLOCKED",
+  "disposition_detail": "no existing order authorizes a CPU/GPU dispatch on any inspected path: the paired SAC cells remain gate-closed, feature-selection clean-start v2 awaits its design order, weekly-flat awaits venue evidence and owner ceremony actions, and rolling retraining lacks a sealed design; every path's smallest unblocking decision is named above and belongs to the auditor or the owner",
+  "no_effects_statement": "no process inspected beyond committed documents; no service, GPU, training, venue or live action taken"
+}

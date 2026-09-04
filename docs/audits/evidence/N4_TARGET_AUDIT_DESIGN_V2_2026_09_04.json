@@ -1,0 +1,183 @@
+{
+ "schema": "agent_multi.n4_target_audit_design.v2",
+ "experiment": "N4_TARGET_AUDIT",
+ "order": "agent-multi@13fdf18c \u00a77",
+ "sealed_before_any_new_score": true,
+ "classification": "DEVELOPMENT-ONLY EXPLORATORY \u2014 uses already consumed fit/calibration development roles; cannot create a confirmation claim; no result may select its own threshold, horizon or baseline after seeing the same score (every threshold is sealed here)",
+ "candidate_families_max3_horizons_max3": {
+  "mfe_mae_logratio": {
+   "horizons": [
+    6,
+    12
+   ],
+   "definition": "log((MFE+1e-6)/(MAE+1e-6)); MFE = max(high[a+1..a+h])/close[a]-1, MAE = 1-min(low[a+1..a+h])/close[a], both clipped at 0",
+   "online_computable": "close of bar a only; labels consume (a, a+h] highs/lows",
+   "economic_interpretation": "reward/risk of entering now \u2014 sets bracket placement and sizing; costs shift usable thresholds, not the object",
+   "distinct_from_failures": "continuous path-asymmetry ratio from HIGH/LOW excursions \u2014 not a close-to-close return, not a volatility level, not a first-touch class"
+  },
+  "large_move": {
+   "horizons": [
+    6,
+    12
+   ],
+   "definition": "1 if |r| >= q_h else 0, q_h = the 80th percentile of |r| computed on the w1 FIT prefix ONLY and sealed before scoring",
+   "online_computable": "close of bar a; q_h fixed from fit role",
+   "economic_interpretation": "activation/sizing gate: is a move worth acting on coming at all",
+   "distinct_from_failures": "decision-oriented exceedance probability, not the failed volatility-LEVEL regression"
+  },
+  "terminal_return_class": {
+   "horizons": [
+    6,
+    12,
+    24
+   ],
+   "definition": "ternary on the TERMINAL h-bar return r = log(close[a+h]/close[a]) with SEALED round-trip cost c = 0.0010: 0 if r > c, 1 if r < -c, 2 otherwise \u2014 a property of the terminal close only, not of any intrahorizon path",
+   "online_computable": "close of bar a only",
+   "economic_interpretation": "does the TERMINAL h-bar move clear round-trip cost; class 2 is the no-trade answer; it does NOT measure intrahorizon trade opportunities",
+   "distinct_from_failures": "cost enters the DEFINITION (none of the seven failed regression targets had costs); close-to-close fixed-cost classes, not the unchanged intrabar vol-scaled first-touch barrier"
+  }
+ },
+ "arms_per_candidate": [
+  "constant/prior baseline (class prior from fit+cal, or fit+cal median for the continuous family)",
+  "volatility_history: regularized model on the causal trailing-volatility lags (barscale 0-3) \u2014 calibration-only hyperparameters (renamed from the misnomer target_history)",
+  "causal-linear: regularized model on the fixed 249-value causal summary of the 83 inputs, calibration-only hyperparameters"
+ ],
+ "primary_losses": {
+  "class families": "multiclass/binary log loss (clip 1e-12)",
+  "continuous family": "squared error on the log-ratio"
+ },
+ "causal_design": {
+  "windows": "the four committed N2 development windows (geometry read from the committed N2 bundle ledger, digest-bound)",
+  "per_horizon_purge": "within every role, anchors with fewer than ceil(h/stride) sampled rows before the role end are excluded, so no label crosses any role boundary; h=24 additionally requires anchor+24 inside the frozen fit slice",
+  "no_2026": "structurally: only the frozen <=2025 predictor CSV is loaded; the sampled development anchors lie inside the pre-2022 o2022 fit slice",
+  "multiplicity": "Holm across the COMPLETE ordered 14-slot family (7 candidates x 2 fitted arms), materialized before the verdict regardless of licensing",
+  "uncertainty": "within-window circular block bootstrap on per-observation loss differences vs the prior baseline, block 6, B = 2000, seed 808, p floor <= 1/2001",
+  "licenses": "class families: EVERY class required by the target contract (class3: 0,1,2; class2: 0,1) must hold >= 30 observations in every score window; continuous family: finite losses and positive response variance; unlicensed candidates receive non-rejecting placeholders in the 14-slot family and can never pass"
+ },
+ "decision_rule": {
+  "candidate_passes_iff": "EITHER fitted arm beats the prior baseline in all four windows with pooled skill >= 0.01 and Holm-adjusted p < 0.05",
+  "verdicts": {
+   "TARGET_FORMULATION_CANDIDATE_FOR_FUTURE_CONFIRMATION": "at least one candidate passes \u2014 authorizes ONLY a later confirmation design; opens no neural or GPU gate",
+   "TARGET_FORMULATION_NOT_IDENTIFIED": "no candidate passes simple baselines \u2014 supervised pretraining closes for this data contract rather than inventing another extractor",
+   "NO_UNTOUCHED_CONFIRMATION_ROLE_AVAILABLE": "reserved for a design whose execution would require an untouched role; this screen needs none (development windows only) \u2014 future CONFIRMATION of any passer will require genuinely new post-2026-08 data under a new order"
+  }
+ },
+ "execution_bounds": {
+  "device": "CPU only",
+  "wall_ceiling_s": 7200,
+  "progress": "per-candidate progress lines with elapsed time",
+  "determinism": "fixed seeds, deterministic solvers, complete per-window records persisted",
+  "prohibited": "no neural model, GPU, SAC, environment training, representation extractor, network access or untouched-role access"
+ },
+ "supersedes": {
+  "v1_design_sha256": "ae05f1878305cc3aee9003849d4f147f2685a159ed3afbdc3870ec7e8c58f4ef",
+  "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
+  "corrections": [
+   "N4-C3: family renamed terminal_return_class \u2014 the label is the TERMINAL h-bar close-to-close return thresholded at cost; it does not measure intrahorizon trades",
+   "N4-C3: fitted arm renamed volatility_history (it fits trailing-volatility lags, never target history); legacy alias target_history retained ONLY to read the superseded v1 records",
+   "N4-C1: licensing derives required classes from the target contract (class3 -> {0,1,2}, class2 -> {0,1}); the no-trade class is licensed like any other",
+   "N4-C2: the Holm family is the complete ordered 14-slot list below, materialized regardless of licensing; unlicensed slots carry non-rejecting placeholders (p=1)",
+   "N4-C4: this design carries the executable_binding that validate_design() compares field-by-field against the executing module before any score"
+  ]
+ },
+ "executable_binding": {
+  "families": {
+   "terminal_return_class": [
+    6,
+    12,
+    24
+   ],
+   "mfe_mae_logratio": [
+    6,
+    12
+   ],
+   "large_move": [
+    6,
+    12
+   ]
+  },
+  "candidate_table": {
+   "tm_h6": [
+    "tm_h6",
+    6,
+    "class3"
+   ],
+   "tm_h12": [
+    "tm_h12",
+    12,
+    "class3"
+   ],
+   "tm_h24": [
+    "tm_h24",
+    24,
+    "class3"
+   ],
+   "mfemae_h6": [
+    "mfemae_h6",
+    6,
+    "cont"
+   ],
+   "mfemae_h12": [
+    "mfemae_h12",
+    12,
+    "cont"
+   ],
+   "lm_h6": [
+    "lm_h6",
+    6,
+    "class2"
+   ],
+   "lm_h12": [
+    "lm_h12",
+    12,
+    "class2"
+   ]
+  },
+  "fitted_arms": [
+   "volatility_history",
+   "causal_linear"
+  ],
+  "required_classes": {
+   "class3": [
+    0,
+    1,
+    2
+   ],
+   "class2": [
+    0,
+    1
+   ]
+  },
+  "family_slots_ordered": [
+   "tm_h6:volatility_history",
+   "tm_h6:causal_linear",
+   "tm_h12:volatility_history",
+   "tm_h12:causal_linear",
+   "tm_h24:volatility_history",
+   "tm_h24:causal_linear",
+   "mfemae_h6:volatility_history",
+   "mfemae_h6:causal_linear",
+   "mfemae_h12:volatility_history",
+   "mfemae_h12:causal_linear",
+   "lm_h6:volatility_history",
+   "lm_h6:causal_linear",
+   "lm_h12:volatility_history",
+   "lm_h12:causal_linear"
+  ],
+  "round_trip_cost": 0.001,
+  "exceedance_q": 0.8,
+  "margin": 0.01,
+  "support_min": 30,
+  "boot_b": 2000,
+  "boot_seed": 808,
+  "block_len": 6,
+  "stride": 4,
+  "purge": "per role, exclude anchors with fewer than ceil(h/stride) sampled rows before the role end",
+  "wall_ceiling_s": 7200,
+  "verdict_labels": [
+   "TARGET_FORMULATION_CANDIDATE_FOR_FUTURE_CONFIRMATION",
+   "TARGET_FORMULATION_NOT_IDENTIFIED",
+   "NO_UNTOUCHED_CONFIRMATION_ROLE_AVAILABLE"
+  ]
+ }
+}

@@ -366,11 +366,26 @@ REGISTRY = (REPO / "docs/audits/evidence/"
             "N3_REVIEWED_PUBLICATION_DIGESTS.json")
 
 
+def _current_code_fixture(tmp_path):
+    """The committed v4 envelope binds the code identity at its
+    publication commit; after the C16 docstring-only correction the
+    current identity differs and Musashi forbids a v5 envelope for
+    a docstring change. Invariant tests therefore run on an
+    unpublished FIXTURE: v4 content with digests.code set to the
+    current identity."""
+    b = json.loads(V4_PATH.read_text())
+    b["digests"]["code"] = n3f._code_digest()
+    p = tmp_path / "fixture.json"
+    p.write_text(json.dumps(b, default=float))
+    return p, hashlib.sha256(p.read_bytes()).hexdigest()
+
+
 class TestNoAuthorityInvariant:
 
-    def test_vocabulary_has_no_review_or_gate_labels(self):
-        sha = hashlib.sha256(V4_PATH.read_bytes()).hexdigest()
-        out = n3f.verify(V4_PATH, sha)
+    def test_vocabulary_has_no_review_or_gate_labels(
+            self, tmp_path):
+        fx, sha = _current_code_fixture(tmp_path)
+        out = n3f.verify(fx, sha)
         assert out["verdict"] == \
             "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
         assert "gate_bearing" not in out
@@ -378,8 +393,9 @@ class TestNoAuthorityInvariant:
         assert out["informational_unverified_fields"] == [
             "v1_correction_map", "v2_correction_map"]
 
-    def test_internal_mode_label(self):
-        out = n3f.verify(V4_PATH, internal_only=True)
+    def test_internal_mode_label(self, tmp_path):
+        fx, _ = _current_code_fixture(tmp_path)
+        out = n3f.verify(fx, internal_only=True)
         assert out["verdict"] == "N3_INTERNAL_CONSISTENCY_ONLY"
 
     def test_c11_attack_a_registry_flip_has_no_effect(
@@ -389,9 +405,9 @@ class TestNoAuthorityInvariant:
         IN PLACE, the verifier output cannot change — it never
         consumes the registry."""
         reg = json.loads(REGISTRY.read_text())
-        sha = hashlib.sha256(V4_PATH.read_bytes()).hexdigest()
+        fx, sha = _current_code_fixture(tmp_path)
         reg["entries"][sha] = {
-            "artifact": V4_PATH.name, "status": "reviewed",
+            "artifact": fx.name, "status": "reviewed",
             "reviewed_by": "candidate self-review",
             "code_digest": "0" * 64, "decision": "x"}
         fake_reg = tmp_path / "registry.json"
@@ -399,7 +415,7 @@ class TestNoAuthorityInvariant:
         monkeypatch.setattr(
             n3f, "REVIEWER_REGISTRY",
             str(fake_reg.relative_to(fake_reg.anchor)))
-        out = n3f.verify(V4_PATH, sha)
+        out = n3f.verify(fx, sha)
         assert out["verdict"] == \
             "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
         assert "self-review" not in json.dumps(out)
@@ -438,7 +454,8 @@ class TestNoAuthorityInvariant:
 
     def test_c13_arbitrary_map_is_named_unverified(self, v2,
                                                    tmp_path):
-        b = copy.deepcopy(json.loads(V4_PATH.read_text()))
+        b = json.loads(V4_PATH.read_text())
+        b["digests"]["code"] = n3f._code_digest()
         b["v2_correction_map"] = {
             "arbitrary_unverified_claim": True}
         p = tmp_path / "arb.json"
@@ -533,3 +550,27 @@ class TestUnitMetrics:
             n3f.unit_metrics([0, 1], [[0.2, 0.3, 0.5]])
         with pytest.raises(n3f.FreshRefusal):
             n3f.unit_metrics([0], [[np.nan, 0.5, 0.5]])
+
+
+class TestC16NoStaleAuthorityClaims:
+
+    def test_source_and_declaration_claim_no_obtainable_gate(self):
+        """C16 (order @9fd016b0): production source and the tool
+        declaration cannot claim an obtainable N3 gate or allowlist
+        authority; historical PRE fixtures may keep the old words
+        as attack evidence."""
+        src = (REPO / "tools/n3_fresh_confirmation.py").read_text()
+        assert "gate-bearing N3_PUBLICATION_VERIFIED" not in src
+        assert "gate_bearing" not in src
+        decl = json.loads(
+            (REPO / "tools/TOOL_DECLARATIONS.json").read_text())
+        purpose = decl["tools"]["n3_fresh_confirmation.py"][
+            "purpose"]
+        assert "NO authority" in purpose \
+            or "no authority" in purpose.lower()
+        assert "gate-bearing" not in purpose \
+            or "no gate" in purpose.lower()
+        import inspect
+        doc = inspect.getdoc(n3f.verify)
+        assert "CANNOT" in doc and "minted" in doc
+        assert "gate-bearing" not in doc

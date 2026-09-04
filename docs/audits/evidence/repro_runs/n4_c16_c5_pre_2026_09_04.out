@@ -1,0 +1,27 @@
+== C16: stale authority docstring in verify() ==
+docstring mentions gate-bearing/allowlist: True
+  quoted: ['gate-bearing N3_PUBLICATION_VERIFIED label requires the digest', 'allowlist, which no candidate can generate for itself.']
+
+== N4-C1: ternary license ignores class 2 ==
+tm_h6: licensed=True class-2 supports={'w1': 4, 'w2': 8, 'w3': 5, 'w4': 9}
+tm_h12: licensed=True class-2 supports={'w1': 2, 'w2': 5, 'w3': 5, 'w4': 5}
+tm_h24: licensed=True class-2 supports={'w1': 3, 'w2': 4, 'w3': 2, 'w4': 3}
+true class-2 range across ternaries: 2-9  (the return packet WRONGLY said 2-4 — disclosed count-discipline violation)
+
+== N4-C2: Holm family is 10, not the declared 14 ==
+p-values actually corrected: 10 of 14 declared
+
+== N4-C3: names overclaim ==
+family name 'tradeable_move' in tool/design/result: True
+arm 'target_history' fits barscale (volatility lags): True
+intrahorizon +5%% touch, terminal +0.05%%: tm_h6 class = 2 (class 2 no-trade — terminal-return semantics, NOT 'any trade within h')
+
+== N4-C4: design is named, not executed ==
+validate_design exists: False
+decision constants come from module constants (MARGIN/BOOT_SEED/...) — no design-vs-execution equality check exists
+
+== N4-C5: no standalone adjudicator ==
+adjudicate() exists: False
+licensing/p/Holm/verdict embedded in screen() only
+
+PRE CONFIRMED: all five findings reproduce

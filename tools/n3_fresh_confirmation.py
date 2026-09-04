@@ -1552,12 +1552,16 @@ def validate_reviewer_registry(path: Path) -> dict:
 
 def verify(bundle_path: Path, supplied_sha256: str | None = None,
            internal_only: bool = False) -> dict:
-    """C8 authority separation: a caller-supplied digest proves the
+    """Consistency-only verification (orders @a1e7b739 C8,
+    @13fdf18c C11-C12): a caller-supplied digest proves the
     candidate matches a value the CALLER chose — byte match plus
-    semantic consistency, never publication authority. The
-    gate-bearing N3_PUBLICATION_VERIFIED label requires the digest
-    to appear with status 'reviewed' in the committed reviewer
-    allowlist, which no candidate can generate for itself."""
+    semantic verification yield N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_
+    DIGEST; internal mode yields N3_INTERNAL_CONSISTENCY_ONLY.
+    Nothing here is publication authority: independent review is
+    external, separately committed auditor metadata and CANNOT be
+    minted by this tool, from any registry, digest or input a
+    candidate controls. No gate label exists because no executing
+    consumer exists."""
     raw = bundle_path.read_bytes()
     actual_sha = hashlib.sha256(raw).hexdigest()
     if not internal_only:
