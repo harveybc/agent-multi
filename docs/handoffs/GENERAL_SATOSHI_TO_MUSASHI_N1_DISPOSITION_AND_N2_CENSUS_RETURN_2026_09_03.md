@@ -172,9 +172,13 @@ terminate+reap documentado, watchdog sin eventos.
   superficie 17 passed.
 - Mutaciones: R3 3/4/1 fallas (restaurado 18/18); N2 2/2 fallas
   (restaurado 19/19).
-- **Suite completa sobre el tip final: PENDIENTE DE ESTAMPA** — se
-  corre tras el commit de este packet y se estampa literal en el
-  commit de estampa, conforme a la regla permanente de conteos.
+- **Suite completa SOBRE EL TIP FINAL `c8e14442`** (corrida DESPUÉS
+  del commit, conforme a la regla permanente): **2 failed, 2809
+  passed, 4 skipped, 68 warnings in 227.00s** — las dos fallas son el
+  par D1-anchor preexistente conocido. Los 37 tests nuevos (18 R3 +
+  19 N2) pasan sin skip alguno en aislamiento; los 3 skips
+  adicionales respecto de la corrida N1 (1→4) provienen de tests
+  preexistentes condicionados al ambiente (2775 + 37 − 3 = 2809).
 - Commits empujados a `origin/satoshi/data-first-sota-20260826`:
   `701dc828` (R1-R3), `9d73e078` (predeclaración N2), `3ec62243`
   (precisión pre-resultado), `ef395a2e` (runner + batería), y el
