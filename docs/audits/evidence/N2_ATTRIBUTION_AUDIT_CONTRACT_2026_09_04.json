@@ -1,0 +1,56 @@
+{
+  "schema": "agent_multi.n2_attribution_audit_contract.v1",
+  "experiment": "N2_ATTRIBUTION_AUDIT",
+  "order": "agent-multi@4c1f1532 §3 C3",
+  "classification": "DEVELOPMENT_ONLY_AUDIT_NOT_UNTOUCHED_CONFIRMATION",
+  "prior_observation_disclosure": "Musashi's independent post-hoc diagnostic values were ALREADY OBSERVED before this contract existed (information-matched pooled skills +0.023177 h6 / +0.021533 h12; scale-only +0.022736 / +0.021161; incremental lags +0.000441 / +0.000372; near-zero conditional direction skill; <3% same-bar collisions). This audit REPRODUCES them with the executing package on the frozen arrays — it can confirm attribution on development rows and nothing more. No value from the order is copied as authority; every number is recomputed.",
+
+  "data_binding": {
+    "census_inputs_npz_sha256": "07c5ff085dfd8bab0dfa33d038005c8fdb2d6c2acff3961d0fe4b042ef57cca7",
+    "role_geometry": "the N2 ledger geometry verbatim (four score windows w1-w4 of 216 rows, embargo 3, cal 176, fit prefix); no role, target, feature or score row may be added",
+    "targets": ["bar_h6", "bar_h12"],
+    "source_csv_sha256_for_collision_mask": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+    "collision_mask_rule": "a sensitivity METADATA mask (not a feature, not a target): same-bar collision at horizon h iff the first upper-hit bar equals the first lower-hit bar and precedes h, derived from the contract's exact validated OHLC, levels and trailing scale; self-check: every collision row inside h must carry label 1 (adverse-first) in the frozen npz"
+  },
+
+  "arms_equal_information": {
+    "note": "every fitted arm uses the census machinery: hyperparameter on CALIBRATION only, refit on fit+calibration, fit-only standardization — so no arm sees information another is denied",
+    "arm1_prior_fitcal": "class prior estimated on fit+calibration rows (closes F1: the recency-matched baseline)",
+    "arm2_scale_only": "multinomial logistic on the current barrier scale (barscale lag 0, 1 feature)",
+    "arm3_scale_lags": "multinomial logistic on barscale lags 0-3 (4 features) — the N2 winning model",
+    "arm4_summary_only": "multinomial logistic on the fixed 249-value causal summary of the 83 inputs",
+    "arm5_scale_plus_summary": "multinomial logistic on barscale lags 0-3 concatenated with the 249-value summary (253 features)"
+  },
+
+  "metrics": {
+    "primary": "multiclass log loss (probabilities clipped 1e-12); NO hard accuracy as a primary metric",
+    "decomposition": "exact additive split L_multi = L_hit_vs_censored + L_direction_given_hit, using p_hit = p0+p1 and p(class|hit) = p_class/p_hit; the binary hit-vs-censored log loss scores every row; the conditional direction log loss scores only rows with a hit label",
+    "secondary": ["Brier score and per-class Brier components", "per-class recall of the argmax classifier (exploratory only)", "class support per role and window", "calibration tables: deciles of predicted hit probability vs empirical hit frequency per window"],
+    "paired": "per-observation multiclass log-loss differences for every predeclared contrast"
+  },
+
+  "contrasts_and_decision": {
+    "contrast_family_holm": ["h6: arm2-arm1", "h6: arm3-arm2", "h6: arm4-arm1", "h6: arm5-arm2", "h12: arm2-arm1", "h12: arm3-arm2", "h12: arm4-arm1", "h12: arm5-arm2"],
+    "uncertainty": "within-window circular block bootstrap on per-observation differences, block 6, B=2000, seed 606, one-sided H1 mean>0; minimum Monte Carlo p reported as <= 1/2001; Holm across the eight contrasts via agent_plugins.paired_inference.holm_adjust",
+    "margins": {"scale_vs_prior": 0.01, "incremental": 0.005, "rationale": "half and a quarter of the N2 materiality 0.02: the audit asks whether SMALL incremental structure exists beyond the target-definition scalar"},
+    "skill_definition": "1 - sum(loss_arm_a)/sum(loss_arm_b) pooled over the four score windows; per-window skills also reported",
+    "verdict_rule": {
+      "BARRIER_SIGNAL_EXPLAINED_BY_TARGET_DEFINITION_SCALE": "arm2 beats arm1 on both targets (pooled skill >= 0.01, all four windows positive, Holm p < 0.05) AND no incremental contrast (arm3-arm2 or arm5-arm2, either target) simultaneously has all windows positive, pooled skill >= 0.005 and Holm p < 0.05",
+      "INCREMENTAL_DEVELOPMENT_STRUCTURE_OBSERVED": "any incremental contrast (arm3-arm2 or arm5-arm2, either target) has all windows positive, pooled skill >= 0.005 and Holm p < 0.05",
+      "ATTRIBUTION_INCONCLUSIVE": "anything else, including any degenerate fit, non-finite loss, or failed self-check",
+      "labels_scope": "development evidence only; no label can promote a model"
+    }
+  },
+
+  "sensitivities_exploratory": [
+    "recompute every contrast excluding same-bar-collision rows from scoring",
+    "recompute every bootstrap p at block lengths 3, 6 and 12",
+    "all sensitivity outputs labeled exploratory, outside the verdict rule"
+  ],
+
+  "execution": {
+    "device": "CPU only",
+    "determinism": "single process, fixed seed 606 for the bootstrap, deterministic solvers",
+    "output_artifact": "TARGET_HORIZON_CENSUS_N2_ATTRIBUTION_AUDIT_2026_09_04.json, written only after this contract is committed and pushed"
+  }
+}
