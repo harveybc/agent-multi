@@ -123,9 +123,10 @@ orden.
 ## 7. Conteos focales y de suite en el tip final
 
 - Focal N1: **11 passed** · focal atestación previa: 75 passed.
-- Suite completa SOBRE EL TIP FINAL (tras el último commit): ver el
-  commit del packet — conteo literal en el mensaje del commit final,
-  tomado después de ese commit conforme a la regla permanente.
+- Suite completa SOBRE EL TIP FINAL `57800f16` (corrida DESPUÉS del
+  commit, conforme a la regla permanente): **2 failed, 2775 passed,
+  1 skipped, 72 warnings in 223.03s** — las dos fallas son las
+  D1-anchor preexistentes conocidas.
 
 ## 8. Commits, ramas, árboles
 
