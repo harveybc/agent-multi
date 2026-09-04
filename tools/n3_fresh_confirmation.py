@@ -1,19 +1,32 @@
 #!/usr/bin/env python3
-"""N3_FRESH_DATA_CONFIRMATION (order agent-multi@a13671ab §§4-8;
-contract sealed in N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json
-BEFORE the first network request and before any 2026 target/score).
+"""N3_FRESH_DATA_CONFIRMATION runner, v2 (orders agent-multi@a13671ab
+and the publication-integrity correction @17f6e574; contract sealed in
+N3_FRESH_CONFIRMATION_CONTRACT_2026_09_04.json + supersessions).
 
-Subcommands:
-  acquire     bounded public GET of ETHUSDT 4h klines (overlap+2026)
-              into a NEW restricted staging root, with receipts,
-              validation and field-exact overlap continuity.
-  regenerate  full-history feature regeneration through the bound
-              Stage 2.1/2.2/3.1 chain + overlap parity proof.
-  execute     the five frozen arms on the four 2026 blocks (CPU),
-              bundle + decision trace.
-  verify      offline verifier: rederives the decision from the
-              bundle alone and refuses the ten ordered adversaries.
-"""
+v2 corrections (order @17f6e574):
+  C1  one typed timestamp→epoch-ms helper (unit-safe, range-guarded);
+      continuity requires EXACTLY 2190 overlap + 1458 extension rows;
+      empty overlap can never demonstrate continuity.
+  C2  restricted staging custody: root 0700 / files 0600, created and
+      VERIFIED from descriptor-derived facts; permissive or symlinked
+      roots refuse — never chmodded into trust.
+  C3  complete per-observation evidence: exact labels and class
+      probabilities per anchor; every aggregate (decomposition with
+      additive identity, Brier components, recall, calibration
+      deciles) derived from them; rounding only at publication.
+  C4  the offline verifier requires an EXTERNAL bundle sha256 before
+      parsing, verifies the sealed-contract bytes, enforces exact
+      schemas, derives completeness/licenses/supports from evidence,
+      and recomputes every aggregate, contrast field and the decision.
+      INTERNAL_CONSISTENCY_ONLY mode exists but cannot publish
+      N3_BUNDLE_VERIFIED.
+  C5  strict wire grammar: exactly 12 kline fields, duplicate-key and
+      non-finite JSON rejection, integer non-boolean
+      timestamps/counts, canonical decimal strings; the historical
+      ffill's effect is MEASURED per role and any changed 2026 cell
+      refuses.
+
+Subcommands: acquire / reattest / regenerate / execute / verify."""
 from __future__ import annotations
 
 import argparse
@@ -21,6 +34,9 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
+import re
+import stat as stat_mod
 import sys
 import time
 from datetime import datetime, timezone
@@ -54,12 +70,17 @@ BAR_MS = 14_400_000
 H_MAX = 12
 STRIDE = 4
 WINDOW = 64
+WARMUP_FLOOR = 321
 BOOT_SEED = 707
 BOOT_B = 2000
 BLOCK_LEN = 6
 MARGIN_SCALE = 0.01
 MARGIN_REPR = 0.005
 SUPPORT_MIN = 15
+EXPECTED_OVERLAP = 2190
+EXPECTED_EXTENSION = 1458
+EPOCH_MS_MIN = 1_400_000_000_000   # 2014-05
+EPOCH_MS_MAX = 1_800_000_000_000   # 2027-01
 TARGETS = {"bar_h6": 6, "bar_h12": 12}
 ARMS = ("arm1", "arm2", "arm3", "arm4", "arm5")
 CONTRAST_FAMILY = (("arm2", "arm1"), ("arm3", "arm2"),
@@ -74,11 +95,175 @@ ROLE_FIT = ("2017-09-28 04:00", "2024-12-31 20:00")
 ROLE_CAL = ("2025-01-01 00:00", "2025-12-31 20:00")
 CONF_START = "2026-01-01 00:00"
 CONF_END = "2026-08-31 20:00"
+BUNDLE_SCHEMA_V2 = "agent_multi.n3_fresh_bundle.v2"
+DECIMAL_RE = re.compile(r"^[0-9]+\.[0-9]+$")
+KLINE_FIELDS = 12
 
 
 class FreshRefusal(ValueError):
-    """Typed refusal for any D2-D4 boundary violation."""
+    """Typed refusal for any boundary violation."""
 
+
+# ------------------------------------------------------------------ #
+# C1: the single typed timestamp -> epoch-milliseconds helper        #
+# ------------------------------------------------------------------ #
+
+def to_epoch_ms(values):
+    """Unit-safe conversion of datetime-like values to int64 epoch
+    milliseconds. The subtraction/Timedelta form normalizes ANY
+    pandas datetime resolution (ms, us, ns) explicitly — an integer
+    is never divided before its unit is known. Rejects nulls,
+    booleans, non-datetimes and out-of-range results."""
+    import pandas as pd
+    if isinstance(values, (bool,)) or (
+            hasattr(values, "dtype")
+            and values.dtype == bool):
+        raise FreshRefusal("boolean input to epoch conversion")
+    s = pd.to_datetime(values, utc=True, errors="coerce")
+    isna = s.isna()
+    if bool(getattr(isna, "any", lambda: isna)()):
+        raise FreshRefusal("null/unparseable timestamp in epoch "
+                           "conversion")
+    ms = (s - pd.Timestamp(0, tz="UTC")) \
+        // pd.Timedelta(milliseconds=1)
+    import numpy as np
+    arr = np.asarray(ms, dtype="int64")
+    if ((arr < EPOCH_MS_MIN) | (arr > EPOCH_MS_MAX)).any():
+        raise FreshRefusal(
+            "epoch-ms outside the project range "
+            f"[{EPOCH_MS_MIN}, {EPOCH_MS_MAX}]")
+    return pd.Series(arr, index=getattr(s, "index", None))
+
+
+def strict_epoch_int(x, label: str) -> int:
+    """C5: integer, non-boolean, in-range wire timestamp/count."""
+    if isinstance(x, bool) or not isinstance(x, int):
+        raise FreshRefusal(f"{label}: not a non-boolean integer: "
+                           f"{x!r}")
+    return x
+
+
+def strict_decimal(x, label: str) -> float:
+    """C5: canonical Binance decimal string; no silent coercion."""
+    if not isinstance(x, str) or not DECIMAL_RE.match(x):
+        raise FreshRefusal(
+            f"{label}: not a canonical decimal string: {x!r}")
+    v = float(x)
+    if not math.isfinite(v):
+        raise FreshRefusal(f"{label}: non-finite decimal")
+    return v
+
+
+def _reject_const(name):
+    raise FreshRefusal(f"non-finite JSON constant {name} refused")
+
+
+def _no_dup_pairs(pairs):
+    d = {}
+    for k, v in pairs:
+        if k in d:
+            raise FreshRefusal(f"duplicate JSON key {k!r} refused")
+        d[k] = v
+    return d
+
+
+def strict_json(raw: bytes):
+    """C5: JSON with duplicate-key and NaN/Inf rejection."""
+    return json.loads(raw, parse_constant=_reject_const,
+                      object_pairs_hook=_no_dup_pairs)
+
+
+# ------------------------------------------------------------------ #
+# C2 custody: restricted staging (0700 root, 0600 files)             #
+# ------------------------------------------------------------------ #
+
+def secure_root(path: Path, *, create: bool) -> int:
+    """Open the staging root O_NOFOLLOW and verify from the
+    DESCRIPTOR: regular directory, owned by the current uid, mode
+    exactly 0700. Refuses permissive/foreign/symlinked roots — never
+    chmods them into trust. Returns the directory fd."""
+    if create:
+        if path.exists() or path.is_symlink():
+            raise FreshRefusal(
+                f"staging root already exists — refusing to reuse "
+                f"or repair it: {path.name}")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        os.mkdir(path, mode=0o700)
+        os.chmod(path, 0o700)
+    try:
+        fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY
+                     | os.O_NOFOLLOW)
+    except OSError as exc:
+        raise FreshRefusal(
+            f"staging root not an openable real directory: "
+            f"{exc}") from exc
+    st = os.fstat(fd)
+    if not stat_mod.S_ISDIR(st.st_mode):
+        os.close(fd)
+        raise FreshRefusal("staging root is not a directory")
+    if st.st_uid != os.geteuid():
+        os.close(fd)
+        raise FreshRefusal("staging root owned by another uid")
+    if (st.st_mode & 0o777) != 0o700:
+        os.close(fd)
+        raise FreshRefusal(
+            f"staging root mode {oct(st.st_mode & 0o777)} != 0700 "
+            "— permissive custody refused, not repaired")
+    return fd
+
+
+def secure_write(dir_fd: int, name: str, payload: bytes) -> None:
+    """Create a file at exact mode 0600 under the verified root,
+    O_EXCL|O_NOFOLLOW, and verify the mode from the descriptor."""
+    if "/" in name:
+        raise FreshRefusal("secure_write takes a bare file name")
+    fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                 | os.O_NOFOLLOW, 0o600, dir_fd=dir_fd)
+    try:
+        os.fchmod(fd, 0o600)
+        st = os.fstat(fd)
+        if not stat_mod.S_ISREG(st.st_mode) or \
+                (st.st_mode & 0o777) != 0o600:
+            raise FreshRefusal(f"{name}: bad mode after create")
+        os.write(fd, payload)
+    finally:
+        os.close(fd)
+
+
+def secure_read(root: Path, name: str) -> bytes:
+    """Read a file under a verified root, refusing symlinks,
+    non-regular files, foreign owners and permissive modes."""
+    dir_fd = secure_root(root, create=False)
+    try:
+        fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW,
+                     dir_fd=dir_fd)
+    except OSError as exc:
+        os.close(dir_fd)
+        raise FreshRefusal(f"{name}: {exc}") from exc
+    try:
+        st = os.fstat(fd)
+        if not stat_mod.S_ISREG(st.st_mode):
+            raise FreshRefusal(f"{name}: not a regular file")
+        if st.st_uid != os.geteuid():
+            raise FreshRefusal(f"{name}: foreign owner")
+        if (st.st_mode & 0o777) != 0o600:
+            raise FreshRefusal(
+                f"{name}: mode {oct(st.st_mode & 0o777)} != 0600")
+        chunks = []
+        while True:
+            chunk = os.read(fd, 1 << 20)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        return b"".join(chunks)
+    finally:
+        os.close(fd)
+        os.close(dir_fd)
+
+
+# ------------------------------------------------------------------ #
+# geometry and decision (sealed)                                     #
+# ------------------------------------------------------------------ #
 
 def _utc(ts: str):
     return datetime.strptime(ts, "%Y-%m-%d %H:%M").replace(
@@ -97,17 +282,25 @@ def role_ledger() -> dict:
 
 
 def scoring_anchor_offsets(block_bars: int) -> list:
-    """Stride-4 offsets from the block's first bar, tail-purged so
-    labels (a, a+12] stay inside the block."""
     return [i for i in range(0, block_bars, STRIDE)
             if i + H_MAX < block_bars]
 
 
+def canonical_anchor_datetimes(block_name: str) -> list:
+    """The exact anchor timestamp list implied by the sealed blocks,
+    stride and purge — derived from the CONTRACT, not the bundle."""
+    from datetime import timedelta
+    for name, start, end, bars in BLOCKS:
+        if name == block_name:
+            t0 = _utc(start).replace(tzinfo=None)
+            return [(t0 + timedelta(hours=4 * i)).strftime(
+                "%Y-%m-%d %H:%M:%S")
+                for i in scoring_anchor_offsets(bars)]
+    raise FreshRefusal(f"unknown block {block_name}")
+
+
 def decide(contrast_stats: dict, blocks_complete: bool,
            licenses_ok: bool) -> str:
-    """Sealed decision table, pure and total. contrast_stats:
-    {(target, a, b): {pooled_skill, all_blocks_positive,
-    holm_p}}."""
     if not blocks_complete:
         return "FRESH_CONFIRMATION_INSUFFICIENT"
     if not licenses_ok:
@@ -128,314 +321,90 @@ def decide(contrast_stats: dict, blocks_complete: bool,
 
 
 # ------------------------------------------------------------------ #
-# D2: bounded acquisition                                            #
+# C3: per-observation metrics — everything derives from             #
+# (labels, probabilities); rounding only at publication             #
 # ------------------------------------------------------------------ #
 
-def _verify_overlap(overlap, lake_2025, lake_ms):
-    """Field-EXACT continuity: float64 of the api decimal string
-    must equal the frozen value bitwise — a revision hidden by
-    float32 coercion still refuses (adversary 5)."""
-    field_map = [(1, "open"), (2, "high"), (3, "low"),
-                 (4, "close"), (5, "volume"), (7, "quote_volume"),
-                 (9, "taker_buy_base_volume"),
-                 (10, "taker_buy_quote_volume")]
-    for i, r in enumerate(overlap):
-        if r[0] != int(lake_ms.iloc[i]):
-            raise FreshRefusal(
-                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: timestamp "
-                f"order mismatch at overlap row {i}")
-        for j, col in field_map:
-            if float(r[j]) != float(lake_2025[col].iloc[i]):
-                raise FreshRefusal(
-                    "SOURCE_CONTINUITY_NOT_DEMONSTRATED: field "
-                    f"{col} revised at open_time {r[0]}: api "
-                    f"{r[j]} vs frozen {lake_2025[col].iloc[i]}")
-        if int(overlap[i][8]) != int(lake_2025["trade_count"]
-                                     .iloc[i]):
-            raise FreshRefusal(
-                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: trade_count "
-                f"revised at {r[0]}")
-
-def acquire(staging: Path) -> dict:
-    import pandas as pd
-    import requests
-    staging.mkdir(parents=True, exist_ok=True)
-    start_ms = int(_utc("2025-01-01 00:00").timestamp() * 1000)
-    end_open_ms = int(_utc(CONF_END).timestamp() * 1000)
-    acquired_at = datetime.now(timezone.utc)
-    if end_open_ms + BAR_MS >= acquired_at.timestamp() * 1000:
-        raise FreshRefusal("terminal confirmation bar not yet "
-                           "closed at acquisition time")
-    receipts = []
-    rows = []
-    cursor = start_ms
-    page = 0
-    while cursor <= end_open_ms:
-        params = {"symbol": "ETHUSDT", "interval": "4h",
-                  "startTime": cursor,
-                  "endTime": end_open_ms + BAR_MS - 1,
-                  "limit": 1000}
-        try:
-            resp = requests.get(
-                "https://api.binance.com/api/v3/klines",
-                params=params, timeout=30)
-        except Exception as exc:
-            raise FreshRefusal(
-                f"PUBLIC_DATA_ACQUISITION_BLOCKED: {exc}") from exc
-        if resp.status_code == 429:
-            time.sleep(10)
-            continue
-        if resp.status_code != 200:
-            raise FreshRefusal(
-                f"PUBLIC_DATA_ACQUISITION_BLOCKED: HTTP "
-                f"{resp.status_code}")
-        raw = resp.content
-        payload = json.loads(raw)
-        if not payload:
-            break
-        page_path = staging / f"page_{page:03d}.json"
-        page_path.write_bytes(raw)
-        receipts.append({
-            "page": page,
-            "request": {"symbol": "ETHUSDT", "interval": "4h",
-                        "startTime": params["startTime"],
-                        "endTime": params["endTime"],
-                        "limit": 1000},
-            "status": resp.status_code,
-            "sha256": hashlib.sha256(raw).hexdigest(),
-            "acquired_at_utc": datetime.now(
-                timezone.utc).isoformat(),
-            "first_open_time": payload[0][0],
-            "last_open_time": payload[-1][0],
-            "n_rows": len(payload)})
-        for k in payload:
-            if len(k) != 12:
-                raise FreshRefusal("schema drift: kline row does "
-                                   f"not have 12 fields: {len(k)}")
-            rows.append(k)
-        last_open = payload[-1][0]
-        cursor = last_open + BAR_MS
-        page += 1
-        time.sleep(0.4)
-    # ---- validation ----
-    opens = [r[0] for r in rows]
-    if len(set(opens)) != len(opens):
-        raise FreshRefusal("duplicate open_time in acquisition")
-    for prev, cur in zip(opens, opens[1:]):
-        if cur - prev != BAR_MS:
-            raise FreshRefusal(
-                f"grid gap/overlap between {prev} and {cur}")
-    if opens[0] != start_ms:
-        raise FreshRefusal("acquisition does not start at the "
-                           "contract start bar")
-    if opens[-1] != end_open_ms:
-        raise FreshRefusal(
-            "confirmation interval incomplete: last acquired open "
-            f"{opens[-1]} != {end_open_ms}")
-    for r in rows:
-        o, h, low, c = (float(r[1]), float(r[2]), float(r[3]),
-                        float(r[4]))
-        vol = float(r[5])
-        if not all(map(math.isfinite, (o, h, low, c, vol))):
-            raise FreshRefusal("non-finite OHLCV")
-        if min(o, h, low, c) <= 0 or vol < 0:
-            raise FreshRefusal("non-positive OHLC or negative "
-                               "volume")
-        if h < max(o, c) or low > min(o, c):
-            raise FreshRefusal("invalid OHLC geometry")
-        if r[6] != r[0] + BAR_MS - 1:
-            raise FreshRefusal("close_time != open_time + 4h - 1ms")
-        if r[6] >= acquired_at.timestamp() * 1000:
-            raise FreshRefusal("partially open terminal bar")
-    # ---- overlap continuity vs the frozen lake ----
-    if sha_file(LAKE_PARQUET) != LAKE_SHA:
-        raise FreshRefusal("frozen lake parquet digest changed")
-    lake = pd.read_parquet(LAKE_PARQUET)
-    lake_ms = (pd.to_datetime(lake["open_time"], utc=True)
-               .astype("int64") // 10 ** 6)
-    lake_2025 = lake[lake_ms >= start_ms].reset_index(drop=True)
-    overlap = [r for r in rows if r[0] <= int(lake_ms.iloc[-1])]
-    if len(overlap) != len(lake_2025):
-        raise FreshRefusal(
-            "SOURCE_CONTINUITY_NOT_DEMONSTRATED: overlap row count "
-            f"{len(overlap)} != frozen {len(lake_2025)}")
-    _verify_overlap(overlap, lake_2025, lake_ms)
-    receipt = {"schema": "agent_multi.n3_acquisition_receipt.v1",
-               "contract": CONTRACT,
-               "acquired_at_utc": acquired_at.isoformat(),
-               "source_identity": "Binance Spot public "
-                                  "/api/v3/klines",
-               "pages": receipts,
-               "rows_total": len(rows),
-               "rows_overlap_verified_exact": len(overlap),
-               "rows_2026": len(rows) - len(overlap),
-               "last_closed_open_time": opens[-1],
-               "verdict": "SOURCE_CONTINUITY_DEMONSTRATED"}
-    (staging / "acquisition_receipt.json").write_text(
-        json.dumps(receipt, indent=1))
-    table = pd.DataFrame(
-        rows, columns=["open_time", "open", "high", "low", "close",
-                       "volume", "close_time", "quote_volume",
-                       "trade_count", "taker_buy_base_volume",
-                       "taker_buy_quote_volume", "ignore"])
-    table.to_parquet(staging / "acquired.parquet")
-    receipt["acquired_parquet_sha256"] = sha_file(
-        staging / "acquired.parquet")
-    (staging / "acquisition_receipt.json").write_text(
-        json.dumps(receipt, indent=1))
-    return receipt
-
-
-# ------------------------------------------------------------------ #
-# D3: full-history regeneration + overlap parity                     #
-# ------------------------------------------------------------------ #
-
-def _load_stage22():
-    spec = importlib.util.spec_from_file_location(
-        "stage22", FINDATA / "_scripts/workers/"
-        "stage22_trading_features_worker.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def regenerate(staging: Path) -> dict:
+def unit_metrics(labels, probs) -> dict:
+    """All predeclared metrics for one (unit, arm) from exact labels
+    and class probabilities. Refuses invalid simplexes, length
+    disagreement, non-finite values; proves the additive identity
+    multiclass = hit/censored + hit_indicator * direction|hit."""
     import numpy as np
-    import pandas as pd
-    stage22 = _load_stage22()
-    lake = pd.read_parquet(LAKE_PARQUET)
-    acq = pd.read_parquet(staging / "acquired.parquet")
-    acq_ms = pd.to_numeric(acq["open_time"])
-    lake_last_ms = int(
-        (pd.to_datetime(lake["open_time"], utc=True)
-         .astype("int64") // 10 ** 6).iloc[-1])
-    ext = acq[acq_ms > lake_last_ms].copy()
-    ext["open_time"] = pd.to_datetime(
-        pd.to_numeric(ext["open_time"]), unit="ms", utc=True)
-    ext["close_time"] = pd.to_datetime(
-        pd.to_numeric(ext["close_time"]), unit="ms", utc=True)
-    for col in ("open", "high", "low", "close", "volume",
-                "quote_volume", "taker_buy_base_volume",
-                "taker_buy_quote_volume"):
-        ext[col] = pd.to_numeric(ext[col])
-    ext["trade_count"] = pd.to_numeric(ext["trade_count"])
-    full_raw = pd.concat(
-        [lake, ext[lake.columns]], ignore_index=True)
-    # stage 2.1 semantics: open_time -> timestamp, sorted, deduped,
-    # numeric OHLCV (mirrors stage22.read_asset)
-    base = full_raw.rename(columns={"open_time": "timestamp"})
-    base["timestamp"] = pd.to_datetime(base["timestamp"], utc=True)
-    base = (base.dropna(subset=["timestamp"])
-            .sort_values("timestamp")
-            .drop_duplicates(subset=["timestamp"], keep="last")
-            .reset_index(drop=True))
-    for col in ("open", "high", "low", "close", "volume"):
-        base[col] = pd.to_numeric(base[col], errors="coerce")
-    # extension refuses any newly missing grid bar
-    t26 = base["timestamp"]
-    conf = base[(t26 >= _utc(CONF_START))
-                & (t26 <= _utc(CONF_END))]
-    if len(conf) != 1458:
-        raise FreshRefusal(
-            f"confirmation grid incomplete: {len(conf)} != 1458")
-    tech = stage22.compute_technical(base)
-    stat = stage22.compute_statistical(base)
-    stat = stat.rename(columns={"log_return_1":
-                                "statistical__log_return_1"})
-    merged = pd.DataFrame({
-        "DATE_TIME": base["timestamp"].dt.strftime(
-            "%Y-%m-%d %H:%M:%S"),
-        "typical_price": ((base["high"] + base["low"]
-                           + base["close"]) / 3),
-        "OPEN": base["open"], "HIGH": base["high"],
-        "LOW": base["low"], "CLOSE": base["close"],
-        "VOLUME": base["volume"]})
-    frozen_cols = json.loads(
-        (PREDICTOR / "examples/data/project3/"
-         "ethusdt_4h_tech_stat_export_metadata.json").read_text()
-    )["columns"]
-    feature_cols = [c for c in frozen_cols
-                    if c not in merged.columns]
-    for col in feature_cols:
-        if col in tech.columns:
-            merged[col] = tech[col].to_numpy()
-        elif col in stat.columns:
-            merged[col] = stat[col].to_numpy()
+    y = np.asarray(labels)
+    p = np.asarray(probs, dtype="float64")
+    if p.ndim != 2 or p.shape[1] != 3 or len(y) != len(p):
+        raise FreshRefusal("labels/probability shape disagreement")
+    if not np.isfinite(p).all():
+        raise FreshRefusal("non-finite probability")
+    if (p < 0).any() or (p > 1).any() or \
+            (np.abs(p.sum(axis=1) - 1.0) > 1e-9).any():
+        raise FreshRefusal("invalid probability simplex")
+    if not np.isin(y, (0, 1, 2)).all():
+        raise FreshRefusal("label outside {0,1,2}")
+    pc = np.clip(p[np.arange(len(y)), y], 1e-12, None)
+    lm = -np.log(pc)
+    p_hit = np.clip(p[:, 0] + p[:, 1], 1e-12, 1 - 1e-12)
+    is_hit = y < 2
+    l_hit = np.where(is_hit, -np.log(p_hit), -np.log(1 - p_hit))
+    l_dir = np.zeros(len(y))
+    hi = np.where(is_hit)[0]
+    if len(hi):
+        l_dir[hi] = -np.log(np.clip(
+            p[hi, y[hi]] / p_hit[hi], 1e-12, None))
+    if not np.allclose(lm, l_hit + l_dir, atol=1e-9):
+        raise FreshRefusal("additive identity violated")
+    onehot = np.eye(3)[y]
+    pred = p.argmax(axis=1)
+    recall = {}
+    unavailable = []
+    for c in (0, 1, 2):
+        n_c = int((y == c).sum())
+        if n_c == 0:
+            recall[str(c)] = None
+            unavailable.append(c)
         else:
-            raise FreshRefusal(f"feature {col} produced by neither "
-                               "stage-2.2 table")
-    merged = merged[frozen_cols]
-    numeric = [c for c in frozen_cols if c != "DATE_TIME"]
-    merged[numeric] = merged[numeric].replace(
-        [np.inf, -np.inf], np.nan).ffill()
-    model_ready = merged.dropna(
-        subset=[c for c in feature_cols]).reset_index(drop=True)
-    # ---- overlap parity ----
-    if sha_file(FROZEN_CSV) != FROZEN_SHA:
-        raise FreshRefusal("frozen model-ready CSV digest changed")
-    frozen = pd.read_csv(FROZEN_CSV)
-    n_over = len(frozen)
-    regen_over = model_ready.iloc[:n_over]
-    if list(regen_over["DATE_TIME"]) != list(frozen["DATE_TIME"]):
-        raise FreshRefusal("SOURCE_OR_PIPELINE_DRIFT: DATE_TIME "
-                           "sequence mismatch on overlap")
-    if list(model_ready.columns) != list(frozen.columns):
-        raise FreshRefusal("SOURCE_OR_PIPELINE_DRIFT: column order "
-                           "mismatch")
-    exact_cols = ["OPEN", "HIGH", "LOW", "CLOSE", "VOLUME",
-                  "vol_regime_high", "vol_regime_low"]
-    parity = {}
-    drift = []
-    for col in [c for c in frozen_cols if c != "DATE_TIME"]:
-        a = regen_over[col].to_numpy(dtype="float64")
-        b = frozen[col].to_numpy(dtype="float64")
-        if col in exact_cols:
-            ok = bool(np.array_equal(a, b))
-            parity[col] = {"class": "exact", "equal": ok}
-            if not ok:
-                drift.append(col)
-            continue
-        a32 = a.astype("float32")
-        b32 = b.astype("float32")
-        bit = a32 == b32
-        both_nan = np.isnan(a) & np.isnan(b)
-        mism = ~(bit | both_nan)
-        absdev = np.abs(a - b)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            reldev = absdev / np.maximum(np.abs(b), 1e-30)
-        inside = (absdev <= 1e-6) | (reldev <= 1e-5)
-        bad = mism & ~inside & ~both_nan
-        parity[col] = {
-            "class": "float32_envelope",
-            "bit_exact_frac": round(
-                float((bit | both_nan).mean()), 6),
-            "max_abs_dev": float(np.nanmax(absdev))
-            if len(absdev) else 0.0,
-            "max_rel_dev": float(np.nanmax(reldev))
-            if len(reldev) else 0.0,
-            "cells_outside_envelope": int(bad.sum())}
-        if bad.sum():
-            drift.append(col)
-    verdict = ("SOURCE_OR_PIPELINE_DRIFT" if drift
-               else "OVERLAP_PARITY_DEMONSTRATED")
-    report = {"schema": "agent_multi.n3_parity_report.v1",
-              "contract": CONTRACT,
-              "overlap_rows": n_over,
-              "regenerated_rows": len(model_ready),
-              "rows_2026": len(model_ready) - n_over,
-              "verdict": verdict,
-              "drifted_features": drift,
-              "per_feature": parity}
-    (staging / "parity_report.json").write_text(
-        json.dumps(report, indent=1))
-    if drift:
-        raise FreshRefusal(f"SOURCE_OR_PIPELINE_DRIFT: {drift[:5]}")
-    model_ready.to_parquet(staging / "model_ready_extended.parquet")
-    report["extended_sha256"] = sha_file(
-        staging / "model_ready_extended.parquet")
-    (staging / "parity_report.json").write_text(
-        json.dumps(report, indent=1))
-    return report
+            recall[str(c)] = round(float(
+                ((pred == c) & (y == c)).sum() / n_c), 6)
+    edges = np.quantile(p_hit, np.linspace(0, 1, 11))
+    deciles = []
+    for d in range(10):
+        lo, hi_e = edges[d], edges[d + 1]
+        sel = (p_hit >= lo) & (p_hit <= hi_e if d == 9
+                               else p_hit < hi_e)
+        if sel.sum():
+            deciles.append({
+                "bin": d, "n": int(sel.sum()),
+                "mean_predicted_hit": round(
+                    float(p_hit[sel].mean()), 6),
+                "observed_hit_rate": round(
+                    float(is_hit[sel].mean()), 6)})
+    return {
+        "multiclass_logloss_mean": round(float(lm.mean()), 6),
+        "hit_vs_censored_mean": round(float(l_hit.mean()), 6),
+        "direction_given_hit_mean": (
+            round(float(l_dir[is_hit].mean()), 6)
+            if is_hit.any() else None),
+        "additive_identity_max_abs_gap": round(float(
+            np.abs(lm - (l_hit + l_dir)).max()), 12),
+        "brier": round(float(
+            ((p - onehot) ** 2).sum(axis=1).mean()), 6),
+        "brier_components": {
+            str(c): round(float(
+                ((p[:, c] - (y == c)) ** 2).mean()), 6)
+            for c in (0, 1, 2)},
+        "recall_argmax": recall,
+        "recall_unavailable_classes": unavailable,
+        "calibration_deciles_hit": deciles,
+    }
+
+
+def derive_losses(labels, probs):
+    """Per-observation multiclass log loss from exact evidence."""
+    import numpy as np
+    y = np.asarray(labels)
+    p = np.asarray(probs, dtype="float64")
+    return -np.log(np.clip(p[np.arange(len(y)), y], 1e-12, None))
 
 
 # ------------------------------------------------------------------ #
@@ -444,9 +413,13 @@ def regenerate(staging: Path) -> dict:
 
 def _rederive(units):
     """Contrasts, bootstrap p, Holm and decision inputs derived
-    purely from unit payloads. Returns (contrasts_out,
-    contrast_stats, complete)."""
+    purely from unit (labels, probabilities) evidence."""
     import numpy as np
+    losses = {}
+    for u in units:
+        for arm, rec in u.get("arms", {}).items():
+            losses[(u["unit"], arm)] = derive_losses(
+                u["labels"], rec["probs"])
     pvals, stats = {}, {}
     complete = True
     for tkey in TARGETS:
@@ -461,8 +434,8 @@ def _rederive(units):
                         or b not in u.get("arms", {}):
                     complete = False
                     continue
-                la = np.asarray(u["arms"][a]["per_obs_logloss"])
-                lb = np.asarray(u["arms"][b]["per_obs_logloss"])
+                la = losses[(u["unit"], a)]
+                lb = losses[(u["unit"], b)]
                 per_block[name] = round(
                     1.0 - float(la.sum() / lb.sum()), 6)
                 diffs.append(lb - la)
@@ -470,12 +443,10 @@ def _rederive(units):
                 complete = False
                 continue
             pooled = round(1.0 - float(
-                sum(np.asarray(
-                    tunits[nm]["arms"][a]["per_obs_logloss"]).sum()
+                sum(losses[(tunits[nm]["unit"], a)].sum()
                     for nm, _, _, _ in BLOCKS)
-                / sum(np.asarray(
-                    tunits[nm]["arms"][b]["per_obs_logloss"]).sum()
-                    for nm, _, _, _ in BLOCKS)), 6)
+                / sum(losses[(tunits[nm]["unit"], b)].sum()
+                      for nm, _, _, _ in BLOCKS)), 6)
             rng = np.random.default_rng(BOOT_SEED)
             n_low = 0
             for _ in range(BOOT_B):
@@ -515,54 +486,502 @@ def _rederive(units):
 
 
 # ------------------------------------------------------------------ #
-# D4: frozen five-arm execution                                      #
+# wire-row validation (C5 grammar) + continuity (C1)                 #
 # ------------------------------------------------------------------ #
 
-def _anchor_indices(df, start, end, purge_after=None):
+def validate_wire_rows(rows, acquired_at_ms: int):
+    """Exact Binance kline grammar and market validity."""
+    if not rows:
+        raise FreshRefusal("empty acquisition")
+    for r in rows:
+        if not isinstance(r, list) or len(r) != KLINE_FIELDS:
+            raise FreshRefusal(
+                f"schema drift: kline row with "
+                f"{len(r) if isinstance(r, list) else '?'} fields "
+                f"!= {KLINE_FIELDS}")
+        strict_epoch_int(r[0], "open_time")
+        strict_epoch_int(r[6], "close_time")
+        strict_epoch_int(r[8], "trade_count")
+        if r[8] < 0:
+            raise FreshRefusal("negative trade_count")
+        o = strict_decimal(r[1], "open")
+        h = strict_decimal(r[2], "high")
+        low = strict_decimal(r[3], "low")
+        c = strict_decimal(r[4], "close")
+        vol = strict_decimal(r[5], "volume")
+        strict_decimal(r[7], "quote_volume")
+        strict_decimal(r[9], "taker_buy_base_volume")
+        strict_decimal(r[10], "taker_buy_quote_volume")
+        if min(o, h, low, c) <= 0 or vol < 0:
+            raise FreshRefusal("non-positive OHLC or negative "
+                               "volume")
+        if h < max(o, c) or low > min(o, c):
+            raise FreshRefusal("invalid OHLC geometry")
+        if r[0] % BAR_MS != 0:
+            raise FreshRefusal("open_time not on the 4h grid")
+        if r[6] != r[0] + BAR_MS - 1:
+            raise FreshRefusal("close_time != open_time + 4h - 1ms")
+        if r[6] >= acquired_at_ms:
+            raise FreshRefusal("partially open terminal bar")
+    opens = [r[0] for r in rows]
+    if len(set(opens)) != len(opens):
+        raise FreshRefusal("duplicate open_time")
+    for prev, cur in zip(opens, opens[1:]):
+        if cur - prev != BAR_MS:
+            raise FreshRefusal(
+                f"grid gap/overlap between {prev} and {cur}")
+
+
+def _verify_overlap(overlap, lake_2025, lake_ms_2025):
+    """Field-EXACT continuity: float64 of the api decimal string
+    must equal the frozen value bitwise (adversary 5: a revision
+    hidden by float32 coercion still refuses)."""
+    field_map = [(1, "open"), (2, "high"), (3, "low"),
+                 (4, "close"), (5, "volume"), (7, "quote_volume"),
+                 (9, "taker_buy_base_volume"),
+                 (10, "taker_buy_quote_volume")]
+    for i, r in enumerate(overlap):
+        if r[0] != int(lake_ms_2025.iloc[i]):
+            raise FreshRefusal(
+                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: timestamp "
+                f"order mismatch at overlap row {i}")
+        for j, col in field_map:
+            if float(r[j]) != float(lake_2025[col].iloc[i]):
+                raise FreshRefusal(
+                    "SOURCE_CONTINUITY_NOT_DEMONSTRATED: field "
+                    f"{col} revised at open_time {r[0]}: api "
+                    f"{r[j]} vs frozen {lake_2025[col].iloc[i]}")
+        if int(r[8]) != int(lake_2025["trade_count"].iloc[i]):
+            raise FreshRefusal(
+                "SOURCE_CONTINUITY_NOT_DEMONSTRATED: trade_count "
+                f"revised at {r[0]}")
+
+
+def continuity(rows):
+    """C1: exact 2190/1458 accounting; empty overlap NEVER
+    demonstrates continuity."""
+    import pandas as pd
+    if sha_file(LAKE_PARQUET) != LAKE_SHA:
+        raise FreshRefusal("frozen lake parquet digest changed")
+    lake = pd.read_parquet(LAKE_PARQUET)
+    lake_ms = to_epoch_ms(lake["open_time"])
+    start_ms = int(_utc("2025-01-01 00:00").timestamp() * 1000)
+    sel = lake_ms >= start_ms
+    lake_2025 = lake[sel].reset_index(drop=True)
+    lake_ms_2025 = lake_ms[sel].reset_index(drop=True)
+    lake_last = int(lake_ms.iloc[-1])
+    overlap = [r for r in rows if r[0] <= lake_last]
+    extension = [r for r in rows if r[0] > lake_last]
+    if len(overlap) != EXPECTED_OVERLAP:
+        raise FreshRefusal(
+            "SOURCE_CONTINUITY_NOT_DEMONSTRATED: overlap rows "
+            f"{len(overlap)} != {EXPECTED_OVERLAP} — an empty or "
+            "short overlap can never demonstrate continuity")
+    if len(extension) != EXPECTED_EXTENSION:
+        raise FreshRefusal(
+            f"extension rows {len(extension)} != "
+            f"{EXPECTED_EXTENSION}")
+    if len(lake_2025) != EXPECTED_OVERLAP:
+        raise FreshRefusal(
+            f"frozen 2025 rows {len(lake_2025)} != "
+            f"{EXPECTED_OVERLAP}")
+    _verify_overlap(overlap, lake_2025, lake_ms_2025)
+    ext_first = extension[0][0]
+    conf_start_ms = int(_utc(CONF_START).timestamp() * 1000)
+    if ext_first != conf_start_ms:
+        raise FreshRefusal(
+            f"first extension bar {ext_first} != confirmation "
+            f"start {conf_start_ms}")
+    return overlap, extension, lake_last
+
+
+# ------------------------------------------------------------------ #
+# D2: acquire (network) and C1/C2: reattest from frozen pages        #
+# ------------------------------------------------------------------ #
+
+def acquire(staging: Path) -> dict:
+    import requests
+    dir_fd = secure_root(staging, create=True)
+    os.close(dir_fd)
+    start_ms = int(_utc("2025-01-01 00:00").timestamp() * 1000)
+    end_open_ms = int(_utc(CONF_END).timestamp() * 1000)
+    acquired_at = datetime.now(timezone.utc)
+    acquired_at_ms = int(acquired_at.timestamp() * 1000)
+    if end_open_ms + BAR_MS >= acquired_at_ms:
+        raise FreshRefusal("terminal confirmation bar not yet "
+                           "closed at acquisition time")
+    receipts, rows = [], []
+    cursor, page = start_ms, 0
+    while cursor <= end_open_ms:
+        params = {"symbol": "ETHUSDT", "interval": "4h",
+                  "startTime": cursor,
+                  "endTime": end_open_ms + BAR_MS - 1,
+                  "limit": 1000}
+        try:
+            resp = requests.get(
+                "https://api.binance.com/api/v3/klines",
+                params=params, timeout=30)
+        except Exception as exc:
+            raise FreshRefusal(
+                f"PUBLIC_DATA_ACQUISITION_BLOCKED: {exc}") from exc
+        if resp.status_code == 429:
+            time.sleep(10)
+            continue
+        if resp.status_code != 200:
+            raise FreshRefusal(
+                f"PUBLIC_DATA_ACQUISITION_BLOCKED: HTTP "
+                f"{resp.status_code}")
+        raw = resp.content
+        payload = strict_json(raw)
+        if not payload:
+            break
+        dir_fd = secure_root(staging, create=False)
+        try:
+            secure_write(dir_fd, f"page_{page:03d}.json", raw)
+        finally:
+            os.close(dir_fd)
+        receipts.append({
+            "page": page,
+            "request": {"symbol": "ETHUSDT", "interval": "4h",
+                        "startTime": params["startTime"],
+                        "endTime": params["endTime"],
+                        "limit": 1000},
+            "status": resp.status_code,
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "acquired_at_utc": datetime.now(
+                timezone.utc).isoformat(),
+            "first_open_time": payload[0][0],
+            "last_open_time": payload[-1][0],
+            "n_rows": len(payload)})
+        rows.extend(payload)
+        cursor = payload[-1][0] + BAR_MS
+        page += 1
+        time.sleep(0.4)
+    return _attest(staging, rows, receipts, acquired_at_ms,
+                   version=1, supersedes=None)
+
+
+def _attest(staging: Path, rows, page_receipts, acquired_at_ms,
+            *, version: int, supersedes) -> dict:
+    import pandas as pd
+    validate_wire_rows(rows, acquired_at_ms)
+    overlap, extension, lake_last = continuity(rows)
+    receipt = {
+        "schema": f"agent_multi.n3_acquisition_receipt.v{version}",
+        "contract": CONTRACT,
+        "attested_at_utc": datetime.now(timezone.utc).isoformat(),
+        "source_identity": "Binance Spot public /api/v3/klines",
+        "pages": page_receipts,
+        "rows_total": len(rows),
+        "rows_overlap_verified_exact": len(overlap),
+        "rows_2026": len(extension),
+        "last_closed_open_time": rows[-1][0],
+        "verdict": "SOURCE_CONTINUITY_DEMONSTRATED"}
+    if supersedes:
+        receipt["supersedes"] = supersedes
+    table = pd.DataFrame(
+        rows, columns=["open_time", "open", "high", "low", "close",
+                       "volume", "close_time", "quote_volume",
+                       "trade_count", "taker_buy_base_volume",
+                       "taker_buy_quote_volume", "ignore"])
+    import io
+    buf = io.BytesIO()
+    table.to_parquet(buf)
+    dir_fd = secure_root(staging, create=False)
+    try:
+        secure_write(dir_fd, "acquired.parquet", buf.getvalue())
+        receipt["acquired_parquet_sha256"] = hashlib.sha256(
+            buf.getvalue()).hexdigest()
+        secure_write(dir_fd, "acquisition_receipt.json",
+                     (json.dumps(receipt, indent=1) + "\n")
+                     .encode())
+    finally:
+        os.close(dir_fd)
+    return receipt
+
+
+def reattest(v1_staging: Path, v2_staging: Path,
+             v1_receipt_path: Path) -> dict:
+    """C1+C2: rebuild custody and continuity from the ALREADY
+    acquired raw page bytes. No network request. Copies only bytes
+    whose digest matches the frozen v1 page receipts, into a fresh
+    0700 root with 0600 files."""
+    v1_receipt_bytes = v1_receipt_path.read_bytes()
+    v1 = strict_json(v1_receipt_bytes)
+    dir_fd = secure_root(v2_staging, create=True)
+    os.close(dir_fd)
+    rows = []
+    page_receipts = []
+    for page_rec in v1["pages"]:
+        name = f"page_{page_rec['page']:03d}.json"
+        raw = (v1_staging / name).read_bytes()
+        digest = hashlib.sha256(raw).hexdigest()
+        if digest != page_rec["sha256"]:
+            raise FreshRefusal(
+                f"{name}: bytes changed after their receipt digest "
+                f"({digest[:12]} != {page_rec['sha256'][:12]})")
+        dir_fd = secure_root(v2_staging, create=False)
+        try:
+            secure_write(dir_fd, name, raw)
+        finally:
+            os.close(dir_fd)
+        payload = strict_json(raw)
+        rows.extend(payload)
+        page_receipts.append(page_rec)
+    acquired_at_ms = int(datetime.now(timezone.utc)
+                         .timestamp() * 1000)
+    receipt = _attest(
+        v2_staging, rows, page_receipts, acquired_at_ms,
+        version=2,
+        supersedes={
+            "v1_receipt_sha256": hashlib.sha256(
+                v1_receipt_bytes).hexdigest(),
+            "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
+            "correction_map": {
+                "rows_overlap_verified_exact": {
+                    "v1": v1["rows_overlap_verified_exact"],
+                    "v2": EXPECTED_OVERLAP,
+                    "cause": "timestamp-unit bug (datetime64[ms] "
+                             "int64 divided by 1e6 again) made both "
+                             "overlap sets empty; 0 == 0 passed "
+                             "vacuously"},
+                "rows_2026": {"v1": v1["rows_2026"],
+                              "v2": EXPECTED_EXTENSION,
+                              "cause": "same unit bug classified "
+                                       "every acquired row as "
+                                       "extension"},
+                "custody": {"v1": "root 0775, files 0664",
+                            "v2": "root 0700, files 0600, "
+                                  "descriptor-verified"}}})
+    return receipt
+
+
+# ------------------------------------------------------------------ #
+# D3: regenerate (v2 semantics)                                      #
+# ------------------------------------------------------------------ #
+
+def _load_stage22():
+    spec = importlib.util.spec_from_file_location(
+        "stage22", FINDATA / "_scripts/workers/"
+        "stage22_trading_features_worker.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def regenerate(staging: Path) -> dict:
+    import numpy as np
+    import pandas as pd
+    stage22 = _load_stage22()
+    lake = pd.read_parquet(LAKE_PARQUET)
+    acq = pd.read_parquet(
+        __import__("io").BytesIO(
+            secure_read(staging, "acquired.parquet")))
+    acq_ms = acq["open_time"].apply(
+        lambda x: strict_epoch_int(int(x), "open_time"))
+    lake_ms = to_epoch_ms(lake["open_time"])
+    lake_last_ms = int(lake_ms.iloc[-1])
+    ext = acq[acq_ms > lake_last_ms].copy()
+    if len(ext) != EXPECTED_EXTENSION:
+        raise FreshRefusal(
+            f"extension selection {len(ext)} != "
+            f"{EXPECTED_EXTENSION} rows after the true final "
+            "frozen timestamp")
+    first_ext_ms = int(acq_ms[acq_ms > lake_last_ms].iloc[0])
+    if first_ext_ms != int(_utc(CONF_START).timestamp() * 1000):
+        raise FreshRefusal(
+            "first extension row is not 2026-01-01T00:00:00Z")
+    ext["open_time"] = pd.to_datetime(
+        pd.to_numeric(ext["open_time"]), unit="ms", utc=True)
+    ext["close_time"] = pd.to_datetime(
+        pd.to_numeric(ext["close_time"]), unit="ms", utc=True)
+    for col in ("open", "high", "low", "close", "volume",
+                "quote_volume", "taker_buy_base_volume",
+                "taker_buy_quote_volume"):
+        ext[col] = pd.to_numeric(ext[col])
+    ext["trade_count"] = pd.to_numeric(ext["trade_count"])
+    full_raw = pd.concat(
+        [lake, ext[lake.columns]], ignore_index=True)
+    base = full_raw.rename(columns={"open_time": "timestamp"})
+    base["timestamp"] = pd.to_datetime(base["timestamp"], utc=True)
+    if base["timestamp"].duplicated().any():
+        raise FreshRefusal(
+            "duplicate timestamp between frozen lake and "
+            "extension — an overlap row would be replaced; refused")
+    base = base.sort_values("timestamp").reset_index(drop=True)
+    for col in ("open", "high", "low", "close", "volume"):
+        base[col] = pd.to_numeric(base[col], errors="coerce")
+    t26 = base["timestamp"]
+    conf = base[(t26 >= _utc(CONF_START))
+                & (t26 <= _utc(CONF_END))]
+    if len(conf) != EXPECTED_EXTENSION:
+        raise FreshRefusal(
+            f"confirmation grid incomplete: {len(conf)} != "
+            f"{EXPECTED_EXTENSION}")
+    tech = stage22.compute_technical(base)
+    stat = stage22.compute_statistical(base)
+    stat = stat.rename(columns={"log_return_1":
+                                "statistical__log_return_1"})
+    merged = pd.DataFrame({
+        "DATE_TIME": base["timestamp"].dt.strftime(
+            "%Y-%m-%d %H:%M:%S"),
+        "typical_price": ((base["high"] + base["low"]
+                           + base["close"]) / 3),
+        "OPEN": base["open"], "HIGH": base["high"],
+        "LOW": base["low"], "CLOSE": base["close"],
+        "VOLUME": base["volume"]})
+    frozen_cols = json.loads(
+        (PREDICTOR / "examples/data/project3/"
+         "ethusdt_4h_tech_stat_export_metadata.json").read_text()
+    )["columns"]
+    feature_cols = [c for c in frozen_cols
+                    if c not in merged.columns]
+    for col in feature_cols:
+        if col in tech.columns:
+            merged[col] = tech[col].to_numpy()
+        elif col in stat.columns:
+            merged[col] = stat[col].to_numpy()
+        else:
+            raise FreshRefusal(f"feature {col} produced by neither "
+                               "stage-2.2 table")
+    merged = merged[frozen_cols]
+    numeric = [c for c in frozen_cols if c != "DATE_TIME"]
+    # C5: measure the historical-compatibility ffill BY ROLE and
+    # refuse if it changes any 2026 input cell
+    before = merged[numeric].replace([np.inf, -np.inf], np.nan)
+    after = before.ffill()
+    changed = before.isna() & after.notna()
+    is_2026 = (pd.to_datetime(merged["DATE_TIME"])
+               >= _utc(CONF_START).replace(tzinfo=None))
+    changed_2026 = int(changed[is_2026.to_numpy()].sum().sum())
+    changed_hist = int(changed[~is_2026.to_numpy()].sum().sum())
+    if changed_2026 != 0:
+        raise FreshRefusal(
+            f"ffill changed {changed_2026} confirmation-era cells "
+            "— imputation into 2026 refused")
+    merged[numeric] = after
+    model_ready = merged.dropna(
+        subset=[c for c in feature_cols]).reset_index(drop=True)
+    if sha_file(FROZEN_CSV) != FROZEN_SHA:
+        raise FreshRefusal("frozen model-ready CSV digest changed")
+    frozen = pd.read_csv(FROZEN_CSV)
+    n_over = len(frozen)
+    regen_over = model_ready.iloc[:n_over]
+    if list(regen_over["DATE_TIME"]) != list(frozen["DATE_TIME"]):
+        raise FreshRefusal("SOURCE_OR_PIPELINE_DRIFT: DATE_TIME "
+                           "sequence mismatch on overlap")
+    if list(model_ready.columns) != list(frozen.columns):
+        raise FreshRefusal("SOURCE_OR_PIPELINE_DRIFT: column order "
+                           "mismatch")
+    exact_cols = ["OPEN", "HIGH", "LOW", "CLOSE", "VOLUME",
+                  "vol_regime_high", "vol_regime_low"]
+    parity, drift = {}, []
+    for col in [c for c in frozen_cols if c != "DATE_TIME"]:
+        a = regen_over[col].to_numpy(dtype="float64")
+        b = frozen[col].to_numpy(dtype="float64")
+        if col in exact_cols:
+            ok = bool(np.array_equal(a, b))
+            parity[col] = {"class": "exact", "equal": ok}
+            if not ok:
+                drift.append(col)
+            continue
+        a32 = a.astype("float32")
+        b32 = b.astype("float32")
+        bit = a32 == b32
+        both_nan = np.isnan(a) & np.isnan(b)
+        mism = ~(bit | both_nan)
+        absdev = np.abs(a - b)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            reldev = absdev / np.maximum(np.abs(b), 1e-30)
+        inside = (absdev <= 1e-6) | (reldev <= 1e-5)
+        bad = mism & ~inside & ~both_nan
+        parity[col] = {
+            "class": "float32_envelope",
+            "bit_exact_frac": round(
+                float((bit | both_nan).mean()), 6),
+            "max_abs_dev": float(np.nanmax(absdev))
+            if len(absdev) else 0.0,
+            "max_rel_dev": float(np.nanmax(reldev))
+            if len(reldev) else 0.0,
+            "cells_outside_envelope": int(bad.sum())}
+        if bad.sum():
+            drift.append(col)
+    verdict = ("SOURCE_OR_PIPELINE_DRIFT" if drift
+               else "OVERLAP_PARITY_DEMONSTRATED")
+    report = {"schema": "agent_multi.n3_parity_report.v2",
+              "contract": CONTRACT,
+              "overlap_rows": n_over,
+              "regenerated_rows": len(model_ready),
+              "rows_2026": len(model_ready) - n_over,
+              "ffill_cells_changed": {
+                  "historical_warmup_compat": changed_hist,
+                  "confirmation_2026": changed_2026},
+              "verdict": verdict,
+              "drifted_features": drift,
+              "per_feature": parity}
+    import io
+    buf = io.BytesIO()
+    model_ready.to_parquet(buf)
+    dir_fd = secure_root(staging, create=False)
+    try:
+        secure_write(dir_fd, "model_ready_extended.parquet",
+                     buf.getvalue())
+        report["extended_sha256"] = hashlib.sha256(
+            buf.getvalue()).hexdigest()
+        secure_write(dir_fd, "parity_report.json",
+                     (json.dumps(report, indent=1) + "\n")
+                     .encode())
+    finally:
+        os.close(dir_fd)
+    if drift:
+        raise FreshRefusal(f"SOURCE_OR_PIPELINE_DRIFT: {drift[:5]}")
+    return report
+
+
+# ------------------------------------------------------------------ #
+# D4: frozen five-arm execution (v2 bundle)                          #
+# ------------------------------------------------------------------ #
+
+def _anchor_indices(df, start, end):
     import pandas as pd
     ts = pd.to_datetime(df["DATE_TIME"])
     lo = ts.searchsorted(pd.Timestamp(_utc(start).replace(
         tzinfo=None)))
     hi = ts.searchsorted(pd.Timestamp(_utc(end).replace(
         tzinfo=None)), side="right")
-    rows = list(range(lo, hi))
-    if purge_after is not None:
-        rows = [r for r in rows if r + H_MAX < purge_after]
-    return rows
+    return list(range(lo, hi))
 
 
-def execute(staging: Path, out_bundle: Path) -> dict:
+def execute(staging: Path, out_bundle: Path,
+            v1_bundle: Path | None = None) -> dict:
     import numpy as np
     import pandas as pd
     from agent_plugins.branch_pretraining import barrier_hit_labels
     started = time.time()
-    df = pd.read_parquet(staging / "model_ready_extended.parquet")
+    df = pd.read_parquet(
+        __import__("io").BytesIO(
+            secure_read(staging, "model_ready_extended.parquet")))
     n = len(df)
     closes = df["CLOSE"].to_numpy()
     returns = np.diff(np.log(closes))
-    # labels for ALL rows with full forward coverage
     max_a = n - H_MAX - 1
     steps = list(range(WINDOW + 4 * 3 + 1, max_a + 2))
-    labels = barrier_hit_labels(
+    labels_all = barrier_hit_labels(
         df["OPEN"].to_numpy(), df["HIGH"].to_numpy(),
         df["LOW"].to_numpy(), closes, steps, [6, 12], 64, 2.0, 2.0,
         1e-8)
     label_row = {s - 1: i for i, s in enumerate(steps)}
-    # barrier-scale lags (vectorized trailing mean square)
     sq = np.concatenate([[0.0], np.cumsum(returns ** 2)])
     scale = np.full((n, 4), np.nan)
     for k in range(4):
         a = np.arange(WINDOW + 4 * 3 + 1, n)
         a2 = a - 4 * k
         valid = a2 >= 65
-        av = a[valid]
-        a2v = a2[valid]
-        # window returns[a2-64 : a2] -> sq[a2] - sq[a2-64]
+        av, a2v = a[valid], a2[valid]
         scale[av, k] = np.sqrt(
             (sq[a2v] - sq[a2v - 64]) / 64.0) + 1e-8
-    # 249 causal summary via the audited observation pipeline
     from agent_plugins.branch_pretraining import (
-        collect_preprocessed_windows, validate_contract)
+        collect_preprocessed_windows)
     from agent_plugins.pretrained_branch_loader import verify_source
     pretrain_dir = (Path.home() / ".local/share/agent-multi/"
                     "restricted_evidence/"
@@ -588,13 +1007,6 @@ def execute(staging: Path, out_bundle: Path) -> dict:
         return np.concatenate(
             [win[:, -1, :], win.mean(axis=1), win.std(axis=1)],
             axis=1).astype("float64")
-
-    # role anchors: stride from each role's first bar, tail-purged
-    # so no label crosses the role/confirmation boundary. The
-    # sealed warmup-floor amendment excludes fit/cal anchors below
-    # row 321 (scaling window 256 + observation window 64 + 1) so
-    # every arm feature is computable — pure geometry, no data.
-    WARMUP_FLOOR = 321
 
     def stride_rows(start, end):
         rows = _anchor_indices(df, start, end)
@@ -643,16 +1055,15 @@ def execute(staging: Path, out_bundle: Path) -> dict:
     licenses_ok = True
     for tkey, h in TARGETS.items():
         hcol = 0 if h == 6 else 1
-        y = {r: int(labels[label_row[r], hcol]) for r in all_rows}
+        y = {r: int(labels_all[label_row[r], hcol])
+             for r in all_rows}
         yf = np.array([y[r] for r in fit_rows])
         yc = np.array([y[r] for r in cal_rows])
         counts = np.bincount(np.concatenate([yf, yc]),
                              minlength=3)
         prior = np.clip(counts / counts.sum(), 1e-12, None)
         prior = prior / prior.sum()
-        # fit each arm ONCE per target; score all blocks jointly
-        arm_probs = {}
-        arm_recs = {}
+        arm_probs, arm_recs = {}, {}
         degenerate = None
         for arm in ARMS:
             if arm == "arm1":
@@ -671,7 +1082,7 @@ def execute(staging: Path, out_bundle: Path) -> dict:
         row_pos = {r: i for i, r in enumerate(score_rows)}
         for name, _, _, _ in BLOCKS:
             rows_s = block_rows[name]
-            ys = np.array([y[r] for r in rows_s])
+            ys = [y[r] for r in rows_s]
             payload = {"unit": f"{tkey}:{name}",
                        "horizon": h, "block": name,
                        "n_score": len(rows_s),
@@ -680,8 +1091,10 @@ def execute(staging: Path, out_bundle: Path) -> dict:
                            for r in rows_s],
                        "fit_cal_label_histogram": [
                            int(c) for c in counts],
+                       "labels": [int(v) for v in ys],
                        "class_support_score": {
-                           str(c): int((ys == c).sum())
+                           str(c): int(sum(1 for v in ys
+                                           if v == c))
                            for c in (0, 1, 2)},
                        "arms": {}}
             if min(payload["class_support_score"]["0"],
@@ -698,50 +1111,56 @@ def execute(staging: Path, out_bundle: Path) -> dict:
             idx = [row_pos[r] for r in rows_s]
             for arm in ARMS:
                 probs = arm_probs[arm][idx]
-                lm = -np.log(np.clip(
-                    probs[np.arange(len(ys)), ys], 1e-12, None))
-                p_hit = np.clip(probs[:, 0] + probs[:, 1],
-                                1e-12, 1 - 1e-12)
-                is_hit = ys < 2
-                l_hit = np.where(is_hit, -np.log(p_hit),
-                                 -np.log(1 - p_hit))
                 payload["arms"][arm] = {
                     "record": arm_recs[arm],
-                    "multiclass_logloss_mean": round(
-                        float(lm.mean()), 6),
-                    "hit_vs_censored_mean": round(
-                        float(l_hit.mean()), 6),
-                    "per_obs_logloss": [round(float(v), 8)
-                                        for v in lm]}
+                    "probs": [[float(v) for v in row]
+                              for row in probs],
+                    "metrics": unit_metrics(ys, probs)}
             units.append(payload)
-    # ---- contrasts + decision (shared rederivation) ----
     contrasts_out, contrast_stats, complete = _rederive(units)
     if not complete:
         licenses_ok = False
     verdict = decide(contrast_stats, blocks_complete, licenses_ok)
+    v1_map = None
+    if v1_bundle is not None and v1_bundle.exists():
+        v1 = json.loads(v1_bundle.read_text())
+        same_contrasts = all(
+            v1["contrasts"][k]["pooled_skill"]
+            == contrasts_out[k]["pooled_skill"]
+            and v1["contrasts"][k]["per_block_skill"]
+            == contrasts_out[k]["per_block_skill"]
+            for k in contrasts_out)
+        v1_map = {
+            "v1_bundle_sha256": hashlib.sha256(
+                v1_bundle.read_bytes()).hexdigest(),
+            "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
+            "verdict_equal": v1["verdict"] == verdict,
+            "all_contrast_numbers_equal": bool(same_contrasts),
+            "added_in_v2": ["labels", "per-anchor class "
+                            "probabilities", "direction_given_hit",
+                            "additive identity", "Brier components",
+                            "recall", "calibration deciles"],
+            "removed_in_v2": ["per_obs_logloss (now derived from "
+                              "labels+probs)",
+                              "blocks_complete/licenses_ok as "
+                              "bundle authority (verifier derives "
+                              "them)"]}
     bundle = {
-        "schema": "agent_multi.n3_fresh_bundle.v1",
+        "schema": BUNDLE_SCHEMA_V2,
         "contract": CONTRACT,
         "contract_sha256": sha_file(REPO / CONTRACT),
         "role_ledger": ledger,
         "digests": {
-            "acquired_parquet": sha_file(
-                staging / "acquired.parquet"),
-            "model_ready_extended": sha_file(
-                staging / "model_ready_extended.parquet"),
+            "acquired_parquet": hashlib.sha256(
+                secure_read(staging, "acquired.parquet"))
+            .hexdigest(),
+            "model_ready_extended": hashlib.sha256(
+                secure_read(staging,
+                            "model_ready_extended.parquet"))
+            .hexdigest(),
             "frozen_csv": FROZEN_SHA,
             "lake_parquet": LAKE_SHA,
-            "code": sha_obj({
-                "n3_fresh_confirmation.py": sha_file(
-                    REPO / "tools/n3_fresh_confirmation.py"),
-                "target_horizon_census_n2.py": sha_file(
-                    REPO / "tools/target_horizon_census_n2.py"),
-                "paired_inference.py": sha_file(
-                    REPO / "agent_plugins/paired_inference.py"),
-                "branch_pretraining.py": sha_file(
-                    REPO / "agent_plugins/branch_pretraining.py")})},
-        "blocks_complete": blocks_complete,
-        "licenses_ok": licenses_ok,
+            "code": _code_digest()},
         "units": units,
         "contrasts": contrasts_out,
         "verdict": verdict,
@@ -752,6 +1171,8 @@ def execute(staging: Path, out_bundle: Path) -> dict:
             "support_min": SUPPORT_MIN,
             "boot_b": BOOT_B, "boot_seed": BOOT_SEED,
             "block_len": BLOCK_LEN}}
+    if v1_map:
+        bundle["v1_correction_map"] = v1_map
     for u in units:
         u["payload_sha256"] = sha_obj(
             {k: v for k, v in u.items() if k != "payload_sha256"})
@@ -760,21 +1181,75 @@ def execute(staging: Path, out_bundle: Path) -> dict:
     return bundle
 
 
+def _code_digest() -> str:
+    return sha_obj({
+        "n3_fresh_confirmation.py": sha_file(
+            REPO / "tools/n3_fresh_confirmation.py"),
+        "target_horizon_census_n2.py": sha_file(
+            REPO / "tools/target_horizon_census_n2.py"),
+        "paired_inference.py": sha_file(
+            REPO / "agent_plugins/paired_inference.py"),
+        "branch_pretraining.py": sha_file(
+            REPO / "agent_plugins/branch_pretraining.py")})
+
+
 # ------------------------------------------------------------------ #
-# offline verifier — refuses the ten ordered adversaries             #
+# C4: the verifier — external authority, exact schemas, everything  #
+# derived from evidence                                              #
 # ------------------------------------------------------------------ #
 
-def verify(bundle_path: Path) -> dict:
+TOP_KEYS = {"schema", "contract", "contract_sha256", "role_ledger",
+            "digests", "units", "contrasts", "verdict",
+            "elapsed_s", "decision_constants", "v1_correction_map"}
+UNIT_KEYS = {"unit", "horizon", "block", "n_score",
+             "anchor_datetimes", "fit_cal_label_histogram",
+             "labels", "class_support_score", "arms",
+             "payload_sha256", "license_failure"}
+ARM_KEYS = {"record", "probs", "metrics"}
+
+
+def verify(bundle_path: Path, expected_sha256: str | None = None,
+           internal_only: bool = False) -> dict:
     import numpy as np
-    bundle = json.loads(bundle_path.read_text())
-    if bundle.get("schema") != "agent_multi.n3_fresh_bundle.v1":
+    raw = bundle_path.read_bytes()
+    if not internal_only:
+        if not expected_sha256:
+            raise FreshRefusal(
+                "an EXTERNAL expected bundle sha256 is required — "
+                "a digest carried inside the mutable bundle is a "
+                "checksum, not publication authority")
+        actual = hashlib.sha256(raw).hexdigest()
+        if actual != expected_sha256:
+            raise FreshRefusal(
+                f"bundle bytes do not match the external digest "
+                f"({actual[:12]} != {expected_sha256[:12]})")
+    bundle = strict_json(raw)
+    if bundle.get("schema") != BUNDLE_SCHEMA_V2:
         raise FreshRefusal("unknown bundle schema")
-    sealed = json.loads((REPO / CONTRACT).read_text())
-    ledger = bundle["role_ledger"]
-    # adversary 2: boundary moved after acquisition
+    unknown = set(bundle) - TOP_KEYS
+    missing = TOP_KEYS - set(bundle) - {"v1_correction_map"}
+    if unknown or missing:
+        raise FreshRefusal(
+            f"top-level schema violation: unknown={sorted(unknown)} "
+            f"missing={sorted(missing)}")
+    # sealed-contract bytes verified against the claim
+    actual_contract = sha_file(REPO / CONTRACT)
+    if bundle["contract_sha256"] != actual_contract:
+        raise FreshRefusal(
+            "contract_sha256 does not match the sealed contract "
+            "bytes")
+    if bundle["digests"].get("code") != _code_digest():
+        raise FreshRefusal("code identity differs from the "
+                           "verifying checkout")
+    if bundle["digests"].get("frozen_csv") != FROZEN_SHA or \
+            bundle["digests"].get("lake_parquet") != LAKE_SHA:
+        raise FreshRefusal("frozen data identities differ")
+    sealed = strict_json((REPO / CONTRACT).read_bytes())
+
     def _norm(block):
         return [str(block[0]).replace("T", " "),
                 str(block[1]).replace("T", " "), block[2]]
+    ledger = bundle["role_ledger"]
     for name, spec in sealed["role_ledger"]["blocks_utc"].items():
         got = ledger["blocks"].get(name)
         if got is None or _norm(got) != _norm(spec):
@@ -788,106 +1263,157 @@ def verify(bundle_path: Path) -> dict:
         raise FreshRefusal("duplicate units")
     if set(seen) != expected_units:
         raise FreshRefusal(
-            f"missing/extra units: {sorted(set(seen) ^ expected_units)[:4]}")
-    conf_lo = _utc(CONF_START).replace(tzinfo=None)
-    conf_hi = _utc(CONF_END).replace(tzinfo=None)
+            f"missing/extra units: "
+            f"{sorted(set(seen) ^ expected_units)[:4]}")
+    blocks_complete = True
     for u in bundle["units"]:
+        unknown = set(u) - UNIT_KEYS
+        if unknown:
+            raise FreshRefusal(
+                f"unit {u.get('unit')}: unknown fields "
+                f"{sorted(unknown)}")
+        if u.get("license_failure"):
+            raise FreshRefusal(
+                f"unit {u['unit']}: license failure "
+                f"{u['license_failure']} beside the decision")
         claimed = u.get("payload_sha256")
         if sha_obj({k: v for k, v in u.items()
                     if k != "payload_sha256"}) != claimed:
             raise FreshRefusal(
                 f"unit {u['unit']}: payload altered (digest)")
-        if u.get("license_failure"):
+        # canonical anchors derived from the SEALED contract
+        canon = canonical_anchor_datetimes(u["block"])
+        if u["anchor_datetimes"] != canon:
             raise FreshRefusal(
-                f"unit {u['unit']}: license failure "
-                f"{u['license_failure']} beside the decision")
-        blo, bhi, bars = [
-            (s, e, n) for name, s, e, n in BLOCKS
-            if name == u["block"]][0]
-        lo = _utc(blo).replace(tzinfo=None)
-        hi = _utc(bhi).replace(tzinfo=None)
-        for t in u["anchor_datetimes"]:
-            dt = datetime.strptime(t, "%Y-%m-%d %H:%M:%S")
-            # adversary 1: a 2025 row used as confirmation
-            if dt < conf_lo:
-                raise FreshRefusal(
-                    f"pre-2026 anchor {t} used as confirmation")
-            # adversary 3: future row beyond the sealed interval
-            if dt > conf_hi:
-                raise FreshRefusal(
-                    f"anchor {t} beyond the sealed confirmation "
-                    "end")
-            if not (lo <= dt <= hi):
-                raise FreshRefusal(
-                    f"anchor {t} outside its block {u['block']}")
-        # adversary 8: prior vs fitted label histories
+                f"unit {u['unit']}: anchors differ from the "
+                "canonical sealed-geometry anchors")
+        if not (u["n_score"] == len(canon) == len(u["labels"])):
+            raise FreshRefusal(
+                f"unit {u['unit']}: n_score/anchors/labels "
+                "disagreement")
+        derived_support = {str(c): sum(1 for v in u["labels"]
+                                       if v == c)
+                           for c in (0, 1, 2)}
+        if derived_support != u["class_support_score"]:
+            raise FreshRefusal(
+                f"unit {u['unit']}: class support does not derive "
+                "from the labels")
+        if min(derived_support["0"], derived_support["1"]) \
+                < SUPPORT_MIN:
+            raise FreshRefusal(
+                f"unit {u['unit']}: derived class support below "
+                f"{SUPPORT_MIN} — unlicensed evidence beside a "
+                "decision")
+        if set(u["arms"]) != set(ARMS):
+            raise FreshRefusal(
+                f"unit {u['unit']}: arm set differs")
         hist = u["fit_cal_label_histogram"]
-        total = sum(hist)
-        prior = np.clip(np.array(hist) / total, 1e-12, None)
+        prior = np.clip(np.array(hist) / sum(hist), 1e-12, None)
         prior = prior / prior.sum()
-        arm1 = u["arms"]["arm1"]
-        ys_loss = np.asarray(arm1["per_obs_logloss"])
-        candidate = -np.log(prior)
-        if not all(any(abs(v - c) < 5e-7 for c in candidate)
-                   for v in ys_loss[:20]):
-            raise FreshRefusal(
-                f"unit {u['unit']}: arm1 losses inconsistent with "
-                "the bundled fit+cal label histogram — different "
-                "label histories")
-    # rederive contrasts + decision (adversaries 9, 10)
+        for arm, rec in u["arms"].items():
+            if set(rec) != ARM_KEYS:
+                raise FreshRefusal(
+                    f"unit {u['unit']} {arm}: arm schema "
+                    "violation")
+            if len(rec["probs"]) != u["n_score"]:
+                raise FreshRefusal(
+                    f"unit {u['unit']} {arm}: probability rows "
+                    "!= n_score")
+            derived = unit_metrics(u["labels"], rec["probs"])
+            if derived != rec["metrics"]:
+                diffs = [k for k in derived
+                         if derived[k] != rec["metrics"].get(k)]
+                raise FreshRefusal(
+                    f"unit {u['unit']} {arm}: published metrics do "
+                    f"not derive from evidence: {diffs[:4]}")
+            if arm == "arm1":
+                p = np.asarray(rec["probs"])
+                if not np.allclose(p, prior[None, :], atol=1e-12):
+                    raise FreshRefusal(
+                        f"unit {u['unit']}: arm1 probabilities are "
+                        "not the fit+cal prior — different label "
+                        "histories")
     contrasts_out, contrast_stats, complete = _rederive(
         bundle["units"])
     if not complete:
         raise FreshRefusal(
             "missing or failed unit beside the decision — cannot "
             "rederive all eight contrasts")
-    verdict = decide(contrast_stats, bundle["blocks_complete"],
-                     bundle["licenses_ok"])
+    licenses_ok = True  # derived: every unit passed the checks
+    verdict = decide(contrast_stats, blocks_complete, licenses_ok)
     if verdict != bundle["verdict"]:
         raise FreshRefusal(
             f"report edited: rederived verdict {verdict} != "
             f"bundled {bundle['verdict']}")
-    for ckey, s in contrasts_out.items():
-        rec = bundle["contrasts"].get(ckey)
-        if rec is None or \
-                rec["pooled_skill"] != s["pooled_skill"] or \
-                rec["per_block_skill"] != s["per_block_skill"]:
-            raise FreshRefusal(
-                f"report edited: contrast {ckey} numbers do not "
-                "rederive from unit payloads")
-    return {"verdict": "N3_BUNDLE_VERIFIED",
+    if contrasts_out != bundle["contrasts"]:
+        for ckey, s in contrasts_out.items():
+            if bundle["contrasts"].get(ckey) != s:
+                raise FreshRefusal(
+                    f"report edited: contrast {ckey} does not "
+                    "rederive from unit evidence (full object "
+                    "compared)")
+        raise FreshRefusal("report edited: contrast set differs")
+    out_verdict = ("N3_BUNDLE_VERIFIED" if not internal_only
+                   else "N3_INTERNAL_CONSISTENCY_ONLY")
+    return {"verdict": out_verdict,
             "rederived_decision": verdict,
-            "units_verified": len(bundle["units"])}
+            "units_verified": len(bundle["units"]),
+            "external_digest_checked": not internal_only}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="cmd", required=True)
-    for name in ("acquire", "regenerate", "execute"):
-        sp = sub.add_parser(name)
-        sp.add_argument("--staging", required=True)
-        if name == "execute":
-            sp.add_argument("--out-bundle", required=True)
+    a = sub.add_parser("acquire")
+    a.add_argument("--staging", required=True)
+    r = sub.add_parser("reattest")
+    r.add_argument("--v1-staging", required=True)
+    r.add_argument("--v2-staging", required=True)
+    r.add_argument("--v1-receipt", required=True)
+    g = sub.add_parser("regenerate")
+    g.add_argument("--staging", required=True)
+    e = sub.add_parser("execute")
+    e.add_argument("--staging", required=True)
+    e.add_argument("--out-bundle", required=True)
+    e.add_argument("--v1-bundle", default=None)
     v = sub.add_parser("verify")
     v.add_argument("--bundle", required=True)
+    v.add_argument("--expected-sha256", default=None)
+    v.add_argument("--internal-only", action="store_true")
     args = parser.parse_args()
     try:
         if args.cmd == "acquire":
             out = acquire(Path(args.staging))
             print(json.dumps({"verdict": out["verdict"],
                               "rows": out["rows_total"],
-                              "pages": len(out["pages"])}))
+                              "overlap": out[
+                                  "rows_overlap_verified_exact"],
+                              "rows_2026": out["rows_2026"]}))
+        elif args.cmd == "reattest":
+            out = reattest(Path(args.v1_staging),
+                           Path(args.v2_staging),
+                           Path(args.v1_receipt))
+            print(json.dumps({"verdict": out["verdict"],
+                              "rows": out["rows_total"],
+                              "overlap": out[
+                                  "rows_overlap_verified_exact"],
+                              "rows_2026": out["rows_2026"]}))
         elif args.cmd == "regenerate":
             out = regenerate(Path(args.staging))
             print(json.dumps({"verdict": out["verdict"],
-                              "rows_2026": out["rows_2026"]}))
+                              "rows_2026": out["rows_2026"],
+                              "ffill": out["ffill_cells_changed"]}))
         elif args.cmd == "execute":
             out = execute(Path(args.staging),
-                          Path(args.out_bundle))
+                          Path(args.out_bundle),
+                          Path(args.v1_bundle)
+                          if args.v1_bundle else None)
             print(json.dumps({"verdict": out["verdict"],
                               "elapsed_s": out["elapsed_s"]}))
         else:
-            print(json.dumps(verify(Path(args.bundle)), indent=1))
+            print(json.dumps(verify(
+                Path(args.bundle), args.expected_sha256,
+                internal_only=args.internal_only), indent=1))
         return 0
     except FreshRefusal as refusal:
         print(json.dumps({"refusal": str(refusal)}))

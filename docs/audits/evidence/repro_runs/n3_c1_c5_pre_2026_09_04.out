@@ -1,0 +1,24 @@
+== C1: timestamp-unit bug ==
+frozen parquet open_time dtype: datetime64[ms, UTC]
+final frozen bar: buggy=1767211 true=1767211200000
+buggy lake_2025 rows: 0 (overlap check was 0 == 0 -> vacuous pass)
+committed v1 receipt: rows_total=3648 rows_overlap_verified_exact=0 rows_2026=3648 verdict=SOURCE_CONTINUITY_DEMONSTRATED
+
+== C2: four forgeries vs the committed verifier ==
+forgery F1_zero_contract_sha: ACCEPTED -> N3_BUNDLE_VERIFIED (decision TARGET_SCALE_EFFECT_NOT_CONFIRMED)
+forgery F2_blocks_complete_false: ACCEPTED -> N3_BUNDLE_VERIFIED (decision FRESH_CONFIRMATION_INSUFFICIENT)
+forgery F3_absurd_unit_redigested: ACCEPTED -> N3_BUNDLE_VERIFIED (decision TARGET_SCALE_EFFECT_NOT_CONFIRMED)
+  (forged verdict now: INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA)
+forgery F4_coherent_fake_neural_passer: ACCEPTED -> N3_BUNDLE_VERIFIED (decision INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA)
+
+== C4: staging custody modes ==
+root mode: drwxrwxr-x (0o775)
+page_000 mode: -rw-rw-r-- (0o664)
+
+== C5: parser boundaries ==
+json.loads NaN accepted: True
+json.loads duplicate keys (keeps last): {'a': 2}
+float(True) coerces: 1.0
+ffill 2026 effect: NEVER MEASURED in v1 (no per-role count exists in any artifact)
+
+PRE CONFIRMED: 4 of 4 forgeries accepted; unit bug, vacuous continuity, 0775/0664 custody and parser holes all reproduce
