@@ -57,7 +57,8 @@
       "regression": "ridge",
       "classification": "multinomial logistic (lbfgs, max_iter 2000)"
     },
-    "hyperparameters": "ridge lambda grid [1e-4,1e-3,1e-2,1e-1,1,10,100]; logistic C grid [0.01,0.1,1,10]; selected on CALIBRATION primary loss only; feature standardization uses FIT-role mean/std only; conditioning, selected regularization and coefficient norms recorded per unit so catastrophic linear failure is diagnosable",
+    "hyperparameters": "ridge lambda grid [1e-4,1e-3,1e-2,1e-1,1,10,100]; logistic C grid [0.01,0.1,1,10]; selected on CALIBRATION primary loss only; after selection the estimator is refit on fit+calibration with the selected hyperparameter (standard calibration-licensed refit, applied uniformly to models and the calibrated baselines); feature standardization uses FIT-role mean/std only; conditioning, selected regularization and coefficient norms recorded per unit so catastrophic linear failure is diagnosable",
+    "model_choice_rule": "per (candidate, window) unit the census model is chosen between target-history and causal-linear-summary by LOWER pooled calibration primary loss — calibration-only selection, fixed here pre-result; both models' losses are still recorded",
     "prohibited": "no GRU, transformer, extractor or RL agent in N2 (order §5.3); temporal neural confirmation requires a later order"
   },
 
