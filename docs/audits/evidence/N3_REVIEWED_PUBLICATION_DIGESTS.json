@@ -1,19 +1,12 @@
 {
  "schema": "agent_multi.n3_reviewed_publication_digests.v1",
- "doc": "Reviewer-authority allowlist (order @a1e7b739 C8). Only digests recorded here with status 'reviewed' can yield the gate-bearing N3_PUBLICATION_VERIFIED label. A candidate can never add or promote its own entry: entries are written by order of the auditor, in evidence, outside every code-digest file list (no circular pin). 'pending_review' entries verify as consistent candidates awaiting the reviewer.",
+ "doc": "REVIEWER-OWNED metadata registry (orders @a1e7b739 C8, @13fdf18c C11). It is NOT consumed by the candidate verifier and is NEVER written by candidate tools \u2014 the v3 pending entry previously self-added by reissue was removed as part of the C11 correction; candidate submissions live in separate submission receipts. Entries here are written only by order of the auditor. This file grants nothing by itself: independent acceptance is the auditor's committed review record.",
  "entries": {
   "f2c4ae1dc9628b1d9ab733a1ed4f28b1de3f32c31a7139efff89f3945e592c82": {
    "artifact": "N3_FRESH_CONFIRMATION_BUNDLE_V2_2026_09_04.json",
    "status": "reviewed",
    "reviewed_by": "Musashi, order agent-multi@a1e7b739 \u00a71 (N3_NEGATIVE_RESULT_ACCEPTED_BY_REVIEWED_PUBLICATION_DIGEST)",
    "code_digest": "ed3f01384d12720f0ca3cef1a4e2f039ffc6df37561591c98511fa64e57090dc",
-   "decision": "TARGET_SCALE_EFFECT_NOT_CONFIRMED"
-  },
-  "e3e5a4fe1530b569f59f8b5036f826908440f806649b57087458eb390cbea9d3": {
-   "artifact": "N3_FRESH_CONFIRMATION_BUNDLE_V3_2026_09_04.json",
-   "status": "pending_review",
-   "submitted_by": "reissue (order @a1e7b739 C10)",
-   "code_digest": "2dca6f432168aa82ca6be023a357c15af7b5eb78dbf0e2612353d9e964a00e6a",
    "decision": "TARGET_SCALE_EFFECT_NOT_CONFIRMED"
   }
  }

@@ -94,8 +94,8 @@ def p8(b):
 
 accepted = [probe(f"P{i}", fn) for i, fn in
             enumerate((p1, p2, p3, p4, p5, p6, p7, p8), 1)]
-print(f"\nPOST: {sum(accepted)}/8 semantic mutations "
-      "accepted by the current verifier when handed their own "
-      "digest — 'exact schemas at every level' is FALSE and a "
-      "self-chosen checksum is being treated as authority")
+print(f"\nPOST: {sum(accepted)}/8 semantic mutations accepted — "
+      "every probe was REFUSED for its exact semantic reason after "
+      "its byte digest matched; a supplied digest earned "
+      "consistency only, never authority")
 assert not any(accepted), 'a semantic probe still passes'

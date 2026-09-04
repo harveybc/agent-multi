@@ -1232,8 +1232,13 @@ def _code_digest() -> str:
 # typed evidence, everything derived (order @a1e7b739)               #
 # ------------------------------------------------------------------ #
 
-ALLOWLIST = ("docs/audits/evidence/"
-             "N3_REVIEWED_PUBLICATION_DIGESTS.json")
+# Reviewer-owned metadata registry (order @13fdf18c C11): the
+# candidate verifier NEVER consumes it for authority and candidate
+# tools NEVER write it — independent acceptance lives in separately
+# committed auditor review records. validate_reviewer_registry()
+# below offers hygiene validation of the metadata file only.
+REVIEWER_REGISTRY = ("docs/audits/evidence/"
+                     "N3_REVIEWED_PUBLICATION_DIGESTS.json")
 RECEIPT_V2 = ("docs/audits/evidence/"
               "N3_ACQUISITION_RECEIPT_V2_2026_09_04.json")
 PARITY_V2 = ("docs/audits/evidence/"
@@ -1265,7 +1270,8 @@ DIGEST_KEYS_EXACT = {"acquired_parquet", "model_ready_extended",
 ROLE_LEDGER_KEYS_EXACT = {"schema", "roles", "blocks",
                           "purge_bars", "stride", "window",
                           "anchor_counts"}
-GATE_LABEL = "N3_PUBLICATION_VERIFIED"
+# C12 (order @13fdf18c): no gate label exists in this tool — no
+# executing consumer exists, so no verdict here may imply one.
 
 
 def _is_int(x) -> bool:
@@ -1508,11 +1514,40 @@ def _validate_contrasts_typed(contrasts: dict) -> None:
         _need(_is_num(s["holm_p"]), f"{ckey}: holm_p invalid")
 
 
-def _load_allowlist() -> dict:
-    path = REPO / ALLOWLIST
-    if not path.exists():
-        return {}
-    return strict_json(path.read_bytes()).get("entries", {})
+REGISTRY_ENTRY_KEYS = {
+    "reviewed": {"artifact", "status", "reviewed_by",
+                 "code_digest", "decision"},
+    "pending_review": {"artifact", "status", "submitted_by",
+                       "code_digest", "decision"}}
+
+
+def validate_reviewer_registry(path: Path) -> dict:
+    """C12-C13 §4 hygiene validation of the reviewer-owned
+    METADATA file. This function grants nothing: it checks shape.
+    The registry is not consumed by verify() and is never written
+    by candidate tools."""
+    reg = strict_json(path.read_bytes())
+    _exact_keys(reg, {"schema", "doc", "entries"},
+                "reviewer_registry")
+    _need(reg["schema"]
+          == "agent_multi.n3_reviewed_publication_digests.v1",
+          "reviewer_registry: unknown schema")
+    for sha, entry in reg["entries"].items():
+        _need(bool(HEX64.match(sha)),
+              f"registry key {sha[:12]}: not canonical sha256")
+        status = entry.get("status")
+        _need(status in REGISTRY_ENTRY_KEYS,
+              f"registry {sha[:12]}: status {status!r} outside "
+              "the enum")
+        _exact_keys(entry, REGISTRY_ENTRY_KEYS[status],
+                    f"registry entry {sha[:12]}")
+        _need(bool(HEX64.match(entry["code_digest"])),
+              f"registry {sha[:12]}: code_digest not sha256")
+        for k in ("artifact", "decision"):
+            _need(isinstance(entry[k], str) and entry[k],
+                  f"registry {sha[:12]}: {k} not a string")
+    return {"entries": len(reg["entries"]),
+            "note": "metadata hygiene only — no authority"}
 
 
 def verify(bundle_path: Path, supplied_sha256: str | None = None,
@@ -1525,8 +1560,6 @@ def verify(bundle_path: Path, supplied_sha256: str | None = None,
     allowlist, which no candidate can generate for itself."""
     raw = bundle_path.read_bytes()
     actual_sha = hashlib.sha256(raw).hexdigest()
-    allow = _load_allowlist()
-    entry = allow.get(actual_sha)
     if not internal_only:
         if not supplied_sha256:
             raise FreshRefusal(
@@ -1565,11 +1598,10 @@ def verify(bundle_path: Path, supplied_sha256: str | None = None,
           "constants")
     # C6.2: role ledger derives from the sealed contract
     _validate_role_ledger(bundle["role_ledger"])
-    # C6.4: digests — code identity from the allowlist entry when
-    # reviewing a historical publication, else the current code
-    code_expected = (entry["code_digest"] if entry
-                     else _code_digest())
-    _validate_digests(bundle["digests"], code_expected)
+    # C6.4/C11: a candidate is validated against the CURRENT code
+    # identity only; historical publications are verified by their
+    # historical code, retrieved from git by the reviewer
+    _validate_digests(bundle["digests"], _code_digest())
     # units: exact set, typed evidence, self-digest
     expected_units = {f"{t}:{b[0]}" for t in TARGETS
                       for b in BLOCKS}
@@ -1611,34 +1643,29 @@ def verify(bundle_path: Path, supplied_sha256: str | None = None,
     _need(contrasts_out == bundle["contrasts"],
           "report edited: complete contrast objects do not "
           "rederive from unit evidence")
-    # note: v1/v2 correction maps are INFORMATIONAL supersession
-    # documentation — typed as objects, content not authority
-    for key in TOP_KEYS_OPTIONAL & set(bundle):
+    # C13: correction maps are informational and UNVERIFIED —
+    # typed as objects and NAMED as unverified in the output; they
+    # are excluded from the semantic-verification claim
+    informational = sorted(TOP_KEYS_OPTIONAL & set(bundle))
+    for key in informational:
         _need(isinstance(bundle[key], dict),
               f"{key}: informational map must be an object")
-    # C8 outcome vocabulary
-    if internal_only:
-        label = "N3_INTERNAL_CONSISTENCY_ONLY"
-        authority = "none — internal mode cannot mint authority"
-    elif entry and entry.get("status") == "reviewed":
-        label = GATE_LABEL
-        authority = (f"reviewed allowlist entry: "
-                     f"{entry['reviewed_by']}")
-    elif entry and entry.get("status") == "pending_review":
-        label = "N3_CANDIDATE_CONSISTENT_PENDING_REVIEW"
-        authority = ("allowlisted as pending — awaiting the "
-                     "independent reviewer; NOT gate-bearing")
-    else:
-        label = "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
-        authority = ("caller-supplied digest only — byte match "
-                     "plus semantic consistency; UNTRUSTED for "
-                     "publication or any gate")
+    # C11/C12 outcome vocabulary: content and consistency ONLY.
+    # This tool can NEVER emit a label implying independent review
+    # or bear a gate — independent acceptance is a separately
+    # committed auditor review record, outside this process.
+    label = ("N3_INTERNAL_CONSISTENCY_ONLY" if internal_only
+             else "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST")
     return {"verdict": label,
             "rederived_decision": verdict,
             "units_verified": len(bundle["units"]),
             "bundle_sha256": actual_sha,
-            "authority": authority,
-            "gate_bearing": label == GATE_LABEL}
+            "authority": ("none — this verifier establishes byte "
+                          "identity and semantic consistency only; "
+                          "independent review authority cannot be "
+                          "minted from candidate-controlled "
+                          "inputs"),
+            "informational_unverified_fields": informational}
 
 
 # ------------------------------------------------------------------ #
@@ -1650,78 +1677,151 @@ def _full_contrast_equality(a: dict, b: dict) -> bool:
     return a == b
 
 
-def reissue(v2_path: Path, v1_path: Path, out_path: Path) -> dict:
-    """C10: produce the v3 publication envelope from the EXACT v2
-    labels, probabilities and contrast evidence — only because the
-    verifier code identity changed. No refit, no bootstrap
-    redesign, no new scientific result."""
+PUBLICATION_ONLY_PATHS = ("digests.code", "v1_correction_map",
+                          "v2_correction_map")
+SCIENTIFIC_FIELDS_INCLUDED = (
+    "units[*].labels", "units[*].anchor_datetimes",
+    "units[*].arms[*].probs")
+
+
+def publication_diff(a: dict, b: dict,
+                     allowed_paths=PUBLICATION_ONLY_PATHS) -> list:
+    """C15: complete structural comparison of two bundle objects
+    AFTER removing an explicit allowlist of publication-only paths.
+    Returns every unexpected added/removed/changed top-or-nested
+    path; the caller refuses when the list is non-empty."""
+    def strip(obj):
+        out = json.loads(json.dumps(obj, default=float))
+        for path in allowed_paths:
+            node = out
+            parts = path.split(".")
+            for part in parts[:-1]:
+                node = node.get(part, {})
+            node.pop(parts[-1], None)
+        return out
+
+    def walk(x, y, prefix, diffs):
+        if isinstance(x, dict) and isinstance(y, dict):
+            for k in sorted(set(x) | set(y)):
+                path = f"{prefix}.{k}" if prefix else k
+                if k not in x:
+                    diffs.append(f"added:{path}")
+                elif k not in y:
+                    diffs.append(f"removed:{path}")
+                else:
+                    walk(x[k], y[k], path, diffs)
+        elif isinstance(x, list) and isinstance(y, list):
+            if len(x) != len(y):
+                diffs.append(f"changed:{prefix}(length)")
+                return
+            for i, (xi, yi) in enumerate(zip(x, y)):
+                walk(xi, yi, f"{prefix}[{i}]", diffs)
+        elif x != y:
+            diffs.append(f"changed:{prefix}")
+
+    diffs = []
+    walk(strip(a), strip(b), "", diffs)
+    return diffs
+
+
+def reissue(prev_path: Path, v1_path: Path, v2_path: Path,
+            out_path: Path, receipt_path: Path) -> dict:
+    """C10/C15: derive a successor publication envelope from the
+    EXACT prior evidence — only because the verifier code identity
+    changed. Emits a candidate-submission RECEIPT; NEVER writes the
+    reviewer-owned registry. Names its equalities truthfully:
+    scientific_fields_equal covers the recorded field subset, and a
+    complete structural comparison beyond the declared
+    publication-only paths must be empty."""
+    prev_raw = prev_path.read_bytes()
+    prev = strict_json(prev_raw)
+    v1 = strict_json(v1_path.read_bytes())
     v2_raw = v2_path.read_bytes()
     v2 = strict_json(v2_raw)
-    v1 = strict_json(v1_path.read_bytes())
-    v3 = json.loads(json.dumps(v2))  # deep copy, exact values
-    # authority-bearing scientific arrays: byte-level equality proof
-    def science_digest(bundle):
+    v4 = json.loads(json.dumps(prev, default=float))
+
+    def science_fields_digest(bundle):
         return sha_obj([[u["labels"], u["anchor_datetimes"],
                          {a: r["probs"]
                           for a, r in u["arms"].items()}]
                         for u in sorted(bundle["units"],
                                         key=lambda x: x["unit"])])
-    sci_v2 = science_digest(v2)
-    contrasts_out, contrast_stats, complete = _rederive(v2["units"])
+    sci_prev = science_fields_digest(prev)
+    contrasts_out, contrast_stats, complete = _rederive(
+        prev["units"])
     if not complete:
-        raise FreshRefusal("v2 evidence incomplete")
+        raise FreshRefusal("prior evidence incomplete")
     decision = decide(contrast_stats, True, True)
-    if decision != v2["verdict"]:
-        raise FreshRefusal("v2 decision does not rederive")
-    if not _full_contrast_equality(contrasts_out, v2["contrasts"]):
-        raise FreshRefusal("v2 contrasts do not fully rederive")
-    v1_equal = _full_contrast_equality(v1["contrasts"],
-                                       v2["contrasts"])
-    v3["digests"]["code"] = _code_digest()
-    v3["v1_correction_map"] = {
+    if decision != prev["verdict"]:
+        raise FreshRefusal("prior decision does not rederive")
+    if not _full_contrast_equality(contrasts_out,
+                                   prev["contrasts"]):
+        raise FreshRefusal("prior contrasts do not fully rederive")
+    v4["digests"]["code"] = _code_digest()
+    v4["v1_correction_map"] = {
         "v1_bundle_sha256": hashlib.sha256(
             v1_path.read_bytes()).hexdigest(),
         "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
-        "decisions_equal": v1["verdict"] == v2["verdict"],
-        "complete_contrast_objects_equal": v1_equal,
+        "decisions_equal": v1["verdict"] == decision,
+        "complete_contrast_objects_equal":
+            _full_contrast_equality(v1["contrasts"],
+                                    prev["contrasts"]),
         "comparison_scope": "every key and value of all eight "
                             "contrast objects, plus the decision "
-                            "(order @a1e7b739 C9; supersedes the "
-                            "narrower two-field claim "
-                            "all_contrast_numbers_equal of v2)"}
-    v3["v2_correction_map"] = {
+                            "(order @a1e7b739 C9)"}
+    v4["v2_correction_map"] = {
         "v2_bundle_sha256": hashlib.sha256(v2_raw).hexdigest(),
-        "v2_status": "PRESERVED UNCHANGED, SUPERSEDED",
-        "reason": "verifier code-identity change only (order "
-                  "@a1e7b739 C10); no scientific re-execution",
-        "authority_bearing_science_digest_v2": sci_v2,
-        "authority_bearing_science_digest_v3":
-            science_digest(v3),
-        "science_byte_equal": science_digest(v3) == sci_v2,
-        "decisions_equal": True,
-        "complete_contrast_objects_equal": True,
-        "changed_fields": ["digests.code",
-                           "v1_correction_map (C9 full compare)",
-                           "v2_correction_map (this map)"]}
-    if not v3["v2_correction_map"]["science_byte_equal"]:
-        raise FreshRefusal("science arrays drifted during reissue")
-    out_path.write_text(json.dumps(v3, indent=1, default=float)
+        "v2_status": "PRESERVED UNCHANGED, SUPERSEDED (scientific "
+                     "anchor of the reviewed publication)",
+        "reason": "verifier code-identity change only (orders "
+                  "@a1e7b739 C10, @13fdf18c C11-C15); no "
+                  "scientific re-execution",
+        "scientific_fields_equal":
+            science_fields_digest(v4) == science_fields_digest(v2),
+        "scientific_fields_included": list(
+            SCIENTIFIC_FIELDS_INCLUDED),
+        "publication_only_paths": list(PUBLICATION_ONLY_PATHS),
+        "full_object_diff_beyond_publication_paths": [],
+        "decisions_equal": v2["verdict"] == decision,
+        "complete_contrast_objects_equal":
+            _full_contrast_equality(v2["contrasts"],
+                                    prev["contrasts"])}
+    if not v4["v2_correction_map"]["scientific_fields_equal"]:
+        raise FreshRefusal("scientific fields drifted during "
+                           "reissue")
+    diffs = publication_diff(v2, v4)
+    if diffs:
+        raise FreshRefusal(
+            f"unexpected non-publication differences vs the "
+            f"scientific anchor: {diffs[:5]}")
+    if science_fields_digest(v4) != sci_prev:
+        raise FreshRefusal("science drifted vs the prior envelope")
+    out_path.write_text(json.dumps(v4, indent=1, default=float)
                         + "\n")
-    v3_sha = hashlib.sha256(out_path.read_bytes()).hexdigest()
-    # register as PENDING in the allowlist — a candidate cannot
-    # review itself; only the auditor promotes entries
-    allow_path = REPO / ALLOWLIST
-    allow = strict_json(allow_path.read_bytes())
-    allow["entries"][v3_sha] = {
-        "artifact": out_path.name,
-        "status": "pending_review",
-        "submitted_by": "reissue (order @a1e7b739 C10)",
-        "code_digest": v3["digests"]["code"],
-        "decision": v3["verdict"]}
-    allow_path.write_text(json.dumps(allow, indent=1) + "\n")
-    return {"v3_sha256": v3_sha, "decision": v3["verdict"],
-            "science_byte_equal": True,
-            "v1_complete_contrast_objects_equal": v1_equal}
+    v4_sha = hashlib.sha256(out_path.read_bytes()).hexdigest()
+    # candidate-submission receipt — SEPARATE from the
+    # reviewer-owned registry, which candidate tools never touch
+    receipt = {
+        "schema": "agent_multi.n3_candidate_submission_receipt.v1",
+        "candidate_artifact": out_path.name,
+        "candidate_sha256": v4_sha,
+        "derived_from": {
+            "prior_envelope": prev_path.name,
+            "prior_sha256": hashlib.sha256(prev_raw).hexdigest(),
+            "scientific_anchor": v2_path.name,
+            "scientific_anchor_sha256": hashlib.sha256(
+                v2_raw).hexdigest()},
+        "code_digest": v4["digests"]["code"],
+        "decision": decision,
+        "statement": "candidate submission awaiting the "
+                     "independent reviewer; this receipt grants "
+                     "nothing and is not the reviewer-owned "
+                     "registry"}
+    receipt_path.write_text(json.dumps(receipt, indent=1) + "\n")
+    return {"v4_sha256": v4_sha, "decision": decision,
+            "scientific_fields_equal": True,
+            "full_object_diff_beyond_publication_paths": [],
+            "receipt": receipt_path.name}
 
 
 def main() -> int:
@@ -1744,9 +1844,11 @@ def main() -> int:
     v.add_argument("--expected-sha256", default=None)
     v.add_argument("--internal-only", action="store_true")
     i = sub.add_parser("reissue")
-    i.add_argument("--v2-bundle", required=True)
+    i.add_argument("--prev-bundle", required=True)
     i.add_argument("--v1-bundle", required=True)
+    i.add_argument("--v2-bundle", required=True)
     i.add_argument("--out-bundle", required=True)
+    i.add_argument("--receipt", required=True)
     args = parser.parse_args()
     try:
         if args.cmd == "acquire":
@@ -1778,9 +1880,11 @@ def main() -> int:
             print(json.dumps({"verdict": out["verdict"],
                               "elapsed_s": out["elapsed_s"]}))
         elif args.cmd == "reissue":
-            print(json.dumps(reissue(Path(args.v2_bundle),
+            print(json.dumps(reissue(Path(args.prev_bundle),
                                      Path(args.v1_bundle),
-                                     Path(args.out_bundle)),
+                                     Path(args.v2_bundle),
+                                     Path(args.out_bundle),
+                                     Path(args.receipt)),
                              indent=1))
         else:
             print(json.dumps(verify(

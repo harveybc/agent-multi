@@ -1,0 +1,8 @@
+C11-A: N3_PUBLICATION_VERIFIED | gate_bearing: True | authority: reviewed allowlist entry: candidate self-review
+C11-B: scientific_decision = INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA
+C11-B: verifier_label = N3_PUBLICATION_VERIFIED | gate_bearing: True | authority: reviewed allowlist entry: candidate self-review
+C13: N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST | names the map unverified?: False
+C14 committed POST final line: POST: 0/8 semantic mutations accepted by the current verifier when handed their own digest — 'exact 
+C15: field is named science_byte_equal: True
+
+PRE CONFIRMED: candidate-controlled registry mints reviewer authority (even for a forged positive); arbitrary maps pass unnamed; POST speaks PRE; byte-equality is misnamed

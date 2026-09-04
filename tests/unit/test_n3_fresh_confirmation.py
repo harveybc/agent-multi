@@ -1,9 +1,12 @@
-"""N3 battery v3 (orders @a13671ab + @17f6e574 + @a1e7b739):
-typed epoch helper, restricted custody, strict wire grammar, typed
-per-observation evidence, exact nested schemas (P1-P8 frozen as
-semantic regressions on the REAL published v2 bundle), and the
-authority ladder — a caller-supplied digest can never mint the
-gate-bearing publication label."""
+"""N3 battery v4 (orders @a13671ab + @17f6e574 + @a1e7b739 +
+@13fdf18c): typed epoch helper, restricted custody, strict wire
+grammar, typed per-observation evidence, exact nested schemas (P1-P8
+frozen as semantic regressions on the REAL published v2 bundle), and
+the NO-AUTHORITY invariant — the verifier emits content and
+consistency labels only; no candidate-controlled input (registry
+copies included) can produce a label implying independent review,
+and the reviewer-owned registry is metadata that candidate tools
+never write."""
 from __future__ import annotations
 
 import copy
@@ -354,53 +357,62 @@ class TestTypedEvidenceCounterexamples:
 
 
 # ------------------------------------------------------------------ #
-# C8: the authority ladder on the REAL artifacts                     #
+# C11/C12: NO authority ladder — content and consistency only        #
 # ------------------------------------------------------------------ #
 
-class TestAuthorityLadder:
+V4_PATH = (REPO / "docs/audits/evidence/"
+           "N3_FRESH_CONFIRMATION_BUNDLE_V4_2026_09_04.json")
+REGISTRY = (REPO / "docs/audits/evidence/"
+            "N3_REVIEWED_PUBLICATION_DIGESTS.json")
 
-    def test_reviewed_v2_is_gate_bearing(self):
-        out = n3f.verify(V2_PATH, V2_REVIEWED_SHA)
-        assert out["verdict"] == "N3_PUBLICATION_VERIFIED"
-        assert out["gate_bearing"] is True
-        assert out["rederived_decision"] == \
-            "TARGET_SCALE_EFFECT_NOT_CONFIRMED"
 
-    def test_pending_v3_is_not_gate_bearing(self):
-        sha = hashlib.sha256(V3_PATH.read_bytes()).hexdigest()
-        out = n3f.verify(V3_PATH, sha)
+class TestNoAuthorityInvariant:
+
+    def test_vocabulary_has_no_review_or_gate_labels(self):
+        sha = hashlib.sha256(V4_PATH.read_bytes()).hexdigest()
+        out = n3f.verify(V4_PATH, sha)
         assert out["verdict"] == \
-            "N3_CANDIDATE_CONSISTENT_PENDING_REVIEW"
-        assert out["gate_bearing"] is False
+            "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
+        assert "gate_bearing" not in out
+        assert "PUBLICATION_VERIFIED" not in json.dumps(out)
+        assert out["informational_unverified_fields"] == [
+            "v1_correction_map", "v2_correction_map"]
 
-    def test_internal_mode_cannot_mint_authority(self):
-        out = n3f.verify(V3_PATH, internal_only=True)
+    def test_internal_mode_label(self):
+        out = n3f.verify(V4_PATH, internal_only=True)
         assert out["verdict"] == "N3_INTERNAL_CONSISTENCY_ONLY"
-        assert out["gate_bearing"] is False
 
-    def test_no_external_digest_refused(self):
-        with pytest.raises(n3f.FreshRefusal, match="required"):
-            n3f.verify(V3_PATH)
+    def test_c11_attack_a_registry_flip_has_no_effect(
+            self, tmp_path, monkeypatch):
+        """Frozen PRE attack A: even with a candidate-controlled
+        registry copy flipped to 'reviewed: candidate self-review'
+        IN PLACE, the verifier output cannot change — it never
+        consumes the registry."""
+        reg = json.loads(REGISTRY.read_text())
+        sha = hashlib.sha256(V4_PATH.read_bytes()).hexdigest()
+        reg["entries"][sha] = {
+            "artifact": V4_PATH.name, "status": "reviewed",
+            "reviewed_by": "candidate self-review",
+            "code_digest": "0" * 64, "decision": "x"}
+        fake_reg = tmp_path / "registry.json"
+        fake_reg.write_text(json.dumps(reg))
+        monkeypatch.setattr(
+            n3f, "REVIEWER_REGISTRY",
+            str(fake_reg.relative_to(fake_reg.anchor)))
+        out = n3f.verify(V4_PATH, sha)
+        assert out["verdict"] == \
+            "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
+        assert "self-review" not in json.dumps(out)
 
-    def test_wrong_digest_refused_before_parsing(self):
-        with pytest.raises(n3f.FreshRefusal, match="match"):
-            n3f.verify(V3_PATH, "ab" * 32)
-
-    def test_coherent_fake_passer_is_untrusted_never_verified(
+    def test_c11_attack_b_forged_positive_earns_no_review_label(
             self, v2, tmp_path):
-        """Acceptance 4+5: a fully coherent forgery — probs,
-        metrics, digests, contrasts, verdict and code identity all
-        recomputed — earns at most the supplied-digest consistency
-        label: UNTRUSTED, non-gate, and never a label implying
-        independent approval."""
+        """Frozen PRE attack B: the coherent forged POSITIVE with
+        any registry manipulation available to it still earns only
+        the consistency label — never one implying review."""
         b = copy.deepcopy(v2)
         for u in b["units"]:
             if u["horizon"] == 6:
                 y = np.asarray(u["labels"])
-                prior = np.asarray(
-                    u["fit_cal_label_histogram"],
-                    dtype=float)
-                prior = prior / prior.sum()
                 fake = 0.95 * np.asarray(
                     u["arms"]["arm2"]["probs"]) \
                     + 0.05 * np.eye(3)[y]
@@ -413,41 +425,98 @@ class TestAuthorityLadder:
         contrasts, stats, _ = n3f._rederive(b["units"])
         b["contrasts"] = contrasts
         b["verdict"] = n3f.decide(stats, True, True)
-        assert b["verdict"] == \
-            "INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA"
         b["digests"]["code"] = n3f._code_digest()
-        p = tmp_path / "fake.json"
+        p = tmp_path / "forged.json"
         p.write_text(json.dumps(b, default=float))
         sha = hashlib.sha256(p.read_bytes()).hexdigest()
         out = n3f.verify(p, sha)
+        assert out["rederived_decision"] == \
+            "INCREMENTAL_REPRESENTATION_CANDIDATE_ON_FRESH_DATA"
         assert out["verdict"] == \
             "N3_BUNDLE_CONSISTENT_WITH_SUPPLIED_DIGEST"
-        assert out["gate_bearing"] is False
-        assert "UNTRUSTED" in out["authority"]
+        assert "none" in out["authority"]
+
+    def test_c13_arbitrary_map_is_named_unverified(self, v2,
+                                                   tmp_path):
+        b = copy.deepcopy(json.loads(V4_PATH.read_text()))
+        b["v2_correction_map"] = {
+            "arbitrary_unverified_claim": True}
+        p = tmp_path / "arb.json"
+        p.write_text(json.dumps(b, default=float))
+        sha = hashlib.sha256(p.read_bytes()).hexdigest()
+        out = n3f.verify(p, sha)
+        assert "v2_correction_map" in \
+            out["informational_unverified_fields"]
+
+    def test_no_external_digest_refused(self):
+        with pytest.raises(n3f.FreshRefusal, match="required"):
+            n3f.verify(V4_PATH)
 
 
-# ------------------------------------------------------------------ #
-# C9/C10: the v3 envelope                                            #
-# ------------------------------------------------------------------ #
+class TestReviewerRegistryHygiene:
 
-class TestReissueV3:
+    def test_committed_registry_validates(self):
+        out = n3f.validate_reviewer_registry(REGISTRY)
+        assert out["entries"] == 1
 
-    def test_v3_science_byte_equal_and_full_compare(self):
-        v3 = json.loads(V3_PATH.read_text())
-        m = v3["v2_correction_map"]
-        assert m["science_byte_equal"] is True
-        assert m["complete_contrast_objects_equal"] is True
-        assert m["decisions_equal"] is True
-        m1 = v3["v1_correction_map"]
-        assert m1["complete_contrast_objects_equal"] is True
-        assert "every key and value" in m1["comparison_scope"]
+    def test_bad_status_refuses(self, tmp_path):
+        reg = json.loads(REGISTRY.read_text())
+        key = next(iter(reg["entries"]))
+        reg["entries"][key]["status"] = "self_approved"
+        p = tmp_path / "r.json"
+        p.write_text(json.dumps(reg))
+        with pytest.raises(n3f.FreshRefusal, match="enum"):
+            n3f.validate_reviewer_registry(p)
 
-    def test_v2_and_v3_contrasts_identical(self, v2):
-        v3 = json.loads(V3_PATH.read_text())
-        assert v3["contrasts"] == v2["contrasts"]
-        assert v3["verdict"] == v2["verdict"]
-        assert [u["labels"] for u in v3["units"]] == \
+    def test_wrong_entry_schema_refuses(self, tmp_path):
+        reg = json.loads(REGISTRY.read_text())
+        key = next(iter(reg["entries"]))
+        reg["entries"][key]["extra"] = 1
+        p = tmp_path / "r.json"
+        p.write_text(json.dumps(reg))
+        with pytest.raises(n3f.FreshRefusal, match="schema"):
+            n3f.validate_reviewer_registry(p)
+
+
+class TestReissueV4:
+
+    def test_truthful_names_and_paths(self):
+        v4 = json.loads(V4_PATH.read_text())
+        m = v4["v2_correction_map"]
+        assert m["scientific_fields_equal"] is True
+        assert m["scientific_fields_included"] == list(
+            n3f.SCIENTIFIC_FIELDS_INCLUDED)
+        assert m["publication_only_paths"] == list(
+            n3f.PUBLICATION_ONLY_PATHS)
+        assert m["full_object_diff_beyond_publication_paths"] \
+            == []
+        assert "science_byte_equal" not in m
+
+    def test_v2_v4_science_identical(self, v2):
+        v4 = json.loads(V4_PATH.read_text())
+        assert v4["contrasts"] == v2["contrasts"]
+        assert v4["verdict"] == v2["verdict"]
+        assert [u["labels"] for u in v4["units"]] == \
             [u["labels"] for u in v2["units"]]
+
+    def test_publication_diff_catches_unexpected_change(self, v2):
+        v4 = json.loads(V4_PATH.read_text())
+        assert n3f.publication_diff(v2, v4) == []
+        tampered = copy.deepcopy(v4)
+        tampered["elapsed_s"] = 999.0
+        diffs = n3f.publication_diff(v2, tampered)
+        assert diffs == ["changed:elapsed_s"]
+
+    def test_submission_receipt_is_not_the_registry(self):
+        rec = json.loads(
+            (REPO / "docs/audits/evidence/"
+             "N3_V4_SUBMISSION_RECEIPT_2026_09_04.json")
+            .read_text())
+        assert rec["schema"] == \
+            "agent_multi.n3_candidate_submission_receipt.v1"
+        assert "grants nothing" in rec["statement"]
+        reg = json.loads(REGISTRY.read_text())
+        assert rec["candidate_sha256"] not in reg["entries"]
 
 
 class TestUnitMetrics:

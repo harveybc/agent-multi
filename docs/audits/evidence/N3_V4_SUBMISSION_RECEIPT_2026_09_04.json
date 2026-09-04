@@ -1,0 +1,14 @@
+{
+ "schema": "agent_multi.n3_candidate_submission_receipt.v1",
+ "candidate_artifact": "N3_FRESH_CONFIRMATION_BUNDLE_V4_2026_09_04.json",
+ "candidate_sha256": "c81ff2740ee0e1c68fc4eb09b2e0428dbfb501fda5152b748964699e7f5ac550",
+ "derived_from": {
+  "prior_envelope": "N3_FRESH_CONFIRMATION_BUNDLE_V3_2026_09_04.json",
+  "prior_sha256": "e3e5a4fe1530b569f59f8b5036f826908440f806649b57087458eb390cbea9d3",
+  "scientific_anchor": "N3_FRESH_CONFIRMATION_BUNDLE_V2_2026_09_04.json",
+  "scientific_anchor_sha256": "f2c4ae1dc9628b1d9ab733a1ed4f28b1de3f32c31a7139efff89f3945e592c82"
+ },
+ "code_digest": "cbd9ff9e2542d740e2f56111afa04693f76ed5d5093ecdb2be3f606ff5ceb1ab",
+ "decision": "TARGET_SCALE_EFFECT_NOT_CONFIRMED",
+ "statement": "candidate submission awaiting the independent reviewer; this receipt grants nothing and is not the reviewer-owned registry"
+}

@@ -7,4 +7,4 @@ P6: refused (unit bar_h6:B1_JanFeb: labels must be JSON integers in {0,1,2} (boo
 P7: refused (bar_h6:B2_MarApr.arm2: probability must be a JSON number in [0,1] (boo)
 P8: refused (digests: schema violation — unknown=['undeclared_extra'] missing=[])
 
-POST: 0/8 semantic mutations accepted by the current verifier when handed their own digest — 'exact schemas at every level' is FALSE and a self-chosen checksum is being treated as authority
+POST: 0/8 semantic mutations accepted — every probe was REFUSED for its exact semantic reason after its byte digest matched; a supplied digest earned consistency only, never authority
