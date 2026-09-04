@@ -104,8 +104,12 @@ Nada lanzado, nada inventado; cero inspección de procesos.
   `tests/test_eth_sac_inner_curriculum_contract.py::TestAnchorsAndEvidence::test_anchor_hashes_match_the_exact_d1_artifacts`
   y `::test_d1_records_remain_loadable_and_unchanged` — 2 failed
   allí también (par D1-anchor preexistente).
-- **Suite completa SOBRE EL TIP FINAL: ESTAMPA EN EL COMMIT DE
-  ESTAMPA** conforme a la regla permanente.
+- **Suite completa SOBRE EL TIP FINAL `87909efa`** (corrida DESPUÉS
+  del commit, conforme a la regla permanente): **2 failed, 2886
+  passed, 4 skipped, 68 warnings in 239.24s** — las dos fallas son
+  exactamente los dos tests D1 nombrados arriba, reproducidos
+  también contra el padre prístino; delta exacto 2880 + 1 (test
+  estructural C16) + 5 (batería N4 11→16) = 2886.
 
 ## 8. Efectos externos
 
