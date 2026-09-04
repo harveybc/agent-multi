@@ -1,0 +1,93 @@
+{
+  "schema": "agent_multi.n1_r3_rederivation.v1",
+  "order": "agent-multi@8fce8da0 \u00a74 item 5",
+  "method": "aggregate_final re-run over the frozen 28 terminal unit records with the repaired statistics helper (agent_plugins/paired_inference.py); frozen interpretation artifact untouched",
+  "primary_verdict_repaired": "PREDICTABILITY_NOT_DEMONSTRATED",
+  "primary_verdict_frozen": "PREDICTABILITY_NOT_DEMONSTRATED",
+  "verdict_unchanged": true,
+  "holm_pvalues_repaired": {
+    "direct_temporal": 1.0,
+    "direct_linear": 1.0
+  },
+  "holm_pvalues_frozen": {
+    "direct_temporal": 1.0,
+    "direct_linear": 0.9419
+  },
+  "holm_monotone_in_sorted_order": true,
+  "paired_analysis_repaired": {
+    "calibrated_ar1": {
+      "per_window": {
+        "w1": 0.2031,
+        "w2": -0.0957,
+        "w3": 0.0151,
+        "w4": 0.0678
+      },
+      "diffs_vs_literal": [
+        0.2772,
+        0.422,
+        0.4156,
+        0.374
+      ],
+      "mean_diff": 0.3722,
+      "ci95": [
+        0.2659,
+        0.4785
+      ],
+      "t_stat": 11.142,
+      "p_one_sided": 0.0008,
+      "zero_variance": null,
+      "all_windows_positive": false
+    },
+    "direct_linear": {
+      "per_window": {
+        "w1": -10.5314,
+        "w2": -2.5648,
+        "w3": -2.6918,
+        "w4": -3.1986
+      },
+      "diffs_vs_literal": [
+        -10.4573,
+        -2.0471,
+        -2.2913,
+        -2.8924
+      ],
+      "mean_diff": -4.422,
+      "ci95": [
+        -10.8483,
+        2.0043
+      ],
+      "t_stat": -2.19,
+      "p_one_sided": 0.9419,
+      "zero_variance": null,
+      "all_windows_positive": false,
+      "holm_p": 1.0,
+      "advances": false
+    },
+    "direct_temporal": {
+      "per_window": {
+        "w1": -2.8866,
+        "w2": -0.804,
+        "w3": -0.2067,
+        "w4": -0.4356
+      },
+      "diffs_vs_literal": [
+        -2.8125,
+        -0.2863,
+        0.1938,
+        -0.1294
+      ],
+      "mean_diff": -0.7586,
+      "ci95": [
+        -2.9602,
+        1.443
+      ],
+      "t_stat": -1.096,
+      "p_one_sided": 0.8235,
+      "zero_variance": null,
+      "all_windows_positive": false,
+      "holm_p": 1.0,
+      "advances": false
+    }
+  },
+  "advancing_arms": []
+}

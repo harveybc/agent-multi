@@ -1,0 +1,7 @@
+<env>/lib/python3.12/site-packages/numpy/_core/function_base.py:141: RuntimeWarning: invalid value encountered in subtract
+  delta = np.subtract(stop, start, dtype=type(dt))
+DEFECT A: survival_t3(inf) = nan  (NaN propagated: True)
+DEFECT A path: diffs=[0.2, 0.2, 0.2, 0.2] -> sd=0.0 -> t_stat=inf -> p=nan
+DEFECT B: raw={'direct_linear': 0.01, 'direct_temporal': 0.011} -> adjusted={'direct_linear': 0.02, 'direct_temporal': 0.011}
+DEFECT B: adjusted in ascending-raw order = [0.02, 0.011]  (monotone: False)
+PRE CONFIRMED: both defects reproduce from the frozen source lines

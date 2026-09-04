@@ -37,6 +37,8 @@ from agent_plugins.experiment_runtime import (  # noqa: E402
     RunDirectory, RuntimePreflightError, atomic_write_json,
     aggregate as runtime_aggregate, run_one_unit, sha_file, sha_obj,
     unit_id)
+from agent_plugins.paired_inference import (  # noqa: E402
+    holm_adjust, paired_t)
 
 PREDECLARATION = (
     "docs/audits/evidence/"
@@ -405,45 +407,35 @@ def aggregate_final(root: Path) -> dict:
         diffs = [per_window[wk][arm]
                  - per_window[wk]["literal_persistence"]
                  for wk in window_keys]
-        m = mean(diffs)
-        sd = stdev(diffs)
-        se = sd / math.sqrt(len(diffs))
-        ci = (m - T_CRIT_DF3 * se, m + T_CRIT_DF3 * se)
-        # one-sided p via the t survival function
-        t_stat = m / se if se > 0 else float("inf")
+        # repaired reusable helper (order @8fce8da0 §4 R3):
+        # rejects non-finite scores; zero-variance differences
+        # yield predeclared FINITE outcomes instead of the retired
+        # inf -> linspace -> NaN path
+        stats = paired_t(diffs, t_crit=T_CRIT_DF3)
         all_positive = all(per_window[wk][arm] > 0
                            for wk in window_keys)
         return {"per_window": {wk: per_window[wk][arm]
                                for wk in window_keys},
                 "diffs_vs_literal": [round(d, 4) for d in diffs],
-                "mean_diff": round(m, 4),
-                "ci95": [round(ci[0], 4), round(ci[1], 4)],
-                "t_stat": round(t_stat, 3),
+                "mean_diff": round(stats["mean"], 4),
+                "ci95": [round(stats["ci95"][0], 4),
+                         round(stats["ci95"][1], 4)],
+                "t_stat": (round(stats["t_stat"], 3)
+                           if stats["t_stat"] is not None else None),
+                "p_one_sided": round(stats["p_one_sided"], 4),
+                "zero_variance": stats["zero_variance"],
                 "all_windows_positive": all_positive}
 
     analysis = {arm: paired(arm)
                 for arm in ("calibrated_ar1", "direct_linear",
                             "direct_temporal")}
 
-    def survival_t3(t):
-        """One-sided P(T_3 > t) by numerical integration of the
-        exact df=3 t density (scipy-free; declared estimator)."""
-        import numpy as np
-        grid = np.linspace(abs(t), abs(t) + 60, 240000)
-        coeff = math.gamma(2.0) / (math.sqrt(3 * math.pi)
-                                   * math.gamma(1.5))
-        pdf = coeff * (1 + grid ** 2 / 3.0) ** -2.0
-        integrate = getattr(np, "trapezoid", None) or np.trapz
-        p = float(integrate(pdf, grid))
-        return p if t > 0 else 1 - p
-
     direct_arms = ["direct_linear", "direct_temporal"]
-    pvals = {arm: survival_t3(analysis[arm]["t_stat"])
+    pvals = {arm: analysis[arm]["p_one_sided"]
              for arm in direct_arms}
-    holm = {}
-    for rank, arm in enumerate(sorted(direct_arms,
-                                      key=lambda a: pvals[a])):
-        holm[arm] = min(1.0, pvals[arm] * (len(direct_arms) - rank))
+    # step-down Holm WITH the cumulative maximum (monotone
+    # non-decreasing adjusted p-values) — repaired per R3
+    holm = holm_adjust(pvals)
     advancing = []
     hinting = []
     for arm in direct_arms:

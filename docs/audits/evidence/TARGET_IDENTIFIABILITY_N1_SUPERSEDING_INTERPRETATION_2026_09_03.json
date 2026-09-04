@@ -1,0 +1,39 @@
+{
+  "schema": "agent_multi.n1_superseding_interpretation.v1",
+  "order": "agent-multi@8fce8da0 §§2-3 (R1+R2)",
+  "supersedes_interpretation_of": "TARGET_IDENTIFIABILITY_N1_INTERPRETATION_2026_09_03.json (every N1 artifact preserved byte-for-byte; only the PROSE interpretation is superseded)",
+  "classification": "EXPLORATORY_NEGATIVE_AFTER_MECHANICS_PREFLIGHT",
+
+  "honest_scientific_scope": "On the tested causal ETH H4 development data, for realized volatility h6, neither the direct ridge nor the fixed GRU demonstrated positive out-of-sample skill under the predeclared N1 budget. A calibrated one-variable autoregression improved consistently over literal persistence, so temporal dependence exists, but N1 does not identify whether the remaining limitation is the target, the inputs, the estimator or the training recipe.",
+
+  "reporting_hazards_corrected": {
+    "hazard_1": "the published +0.372 with CI (+0.266, +0.478) is the mean R2 DIFFERENCE between the calibrated AR1 and literal persistence across the four score windows. It is NOT an autoregressive coefficient; N1 never persisted the fitted coefficient and none is named.",
+    "hazard_2": "every assertion equivalent to 'signal does not exist', 'no exploitable signal beyond one AR coefficient' or 'no extractor can conserve signal the target does not contain' is WITHDRAWN and replaced by: 'predictability was not demonstrated by the tested arms under the N1 protocol'. N1 did not prove signal absence, did not prove that no extractor could preserve signal, and did not prove that the target alone caused every earlier negative."
+  },
+
+  "r2_exploratory_disclosure": {
+    "why_not_confirmatory": "the N0 mechanics preflight EXPOSED score results before the N1 declaration existed: direct_linear fold A score R2 = -1.6831 and direct_temporal fold A seed 101 score R2 = -0.0030 were printed on 2026-09-03 before the N1 predeclaration was committed.",
+    "frozen_role_use_overlap_map": {
+      "n": 2200,
+      "n0_preflight_score_regions": {"fold_A": [1210, 1430], "fold_B": [1430, 1650]},
+      "n0_units_actually_executed": ["direct_linear fold A", "direct_temporal fold A seed 101"],
+      "n1_score_windows": {"w1": [663, 879], "w2": [881, 1097], "w3": [1099, 1315], "w4": [1317, 1533]},
+      "overlaps": [
+        {"n1_window": "w3", "n0_fold": "A", "overlap_rows": [1210, 1315], "count": 105},
+        {"n1_window": "w4", "n0_fold": "A", "overlap_rows": [1317, 1430], "count": 113},
+        {"n1_window": "w4", "n0_fold": "B", "overlap_rows": [1430, 1533], "count": 103, "note": "fold B was materialized but its units were never executed in the N0 preflight; listed for completeness"}
+      ],
+      "exposure_summary": "218 rows of N1 w3/w4 lie inside the N0 fold-A score region whose results were exposed pre-declaration; N1 is therefore EXPLORATORY, not untouched confirmatory inference"
+    },
+    "independence_caveat": "the four neighboring chronological score windows with expanding training histories are NOT demonstrated independent replications. The per-window losses and contrasts are authoritative observations; the t interval over their differences is DESCRIPTIVE under an independence assumption and is not proof of signal absence.",
+    "intact_roles": "the sealed and intact confirmation roles remain untouched; this classification does not erase the N1 result — it prevents the t-test and thresholds from being presented as untouched confirmatory inference."
+  },
+
+  "accepted_measured_scope_unchanged": [
+    "28/28 ledgered units completed at attempt 1",
+    "per-window scores reproduce the published paired differences and confidence intervals",
+    "neither tested direct arm satisfies the predeclared advance rule",
+    "typed result PREDICTABILITY_NOT_DEMONSTRATED stands as a negative result for THIS dataset, horizon, model set and budget",
+    "SAC remains blocked; no N1 checkpoint is promotable; no N1 GPU unit is rerun"
+  ]
+}

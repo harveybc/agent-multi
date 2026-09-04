@@ -1,0 +1,15 @@
+{
+  "primary_verdict_repaired": "PREDICTABILITY_NOT_DEMONSTRATED",
+  "primary_verdict_frozen": "PREDICTABILITY_NOT_DEMONSTRATED",
+  "verdict_unchanged": true,
+  "holm_pvalues_repaired": {
+    "direct_temporal": 1.0,
+    "direct_linear": 1.0
+  },
+  "holm_pvalues_frozen": {
+    "direct_temporal": 1.0,
+    "direct_linear": 0.9419
+  },
+  "advancing_arms": []
+}
+written: docs/audits/evidence/TARGET_IDENTIFIABILITY_N1_R3_REDERIVATION_2026_09_03.json
