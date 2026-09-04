@@ -59,7 +59,8 @@
     "margins_reused_from_accepted_attribution_contract": {"scale_vs_prior": 0.01, "representation_incremental": 0.005},
     "uncertainty": "within-block circular block bootstrap on per-observation multiclass log-loss differences, block length 6 sampled anchors, B = 2000, RNG seed 707 (new, fixed here), one-sided H1 mean > 0, minimum Monte Carlo p reported as <= 1/2001; Holm across the eight contrasts via agent_plugins.paired_inference.holm_adjust",
     "licenses": {"class_support": "classes 0 and 1 each >= 15 scoring anchors per block per horizon (blocks are ~40% of an N2 216-row window whose sealed threshold was 30; scaled and fixed pre-result)", "available_blocks": ">= 8 non-overlapping bootstrap blocks per score block (86/6 = 14 minimum, structurally satisfied when blocks are complete)", "finiteness": "any non-finite loss or degenerate fit is a license failure"},
-    "seeds_note": "no fitted arm here is stochastic (lbfgs deterministic); if any optimizer randomness appears it describes optimization variability and is never the statistical sample size"
+    "seeds_note": "no fitted arm here is stochastic (lbfgs deterministic); if any optimizer randomness appears it describes optimization variability and is never the statistical sample size",
+    "fit_anchor_warmup_floor_amendment": "PRE-SCORE AMENDMENT (no 2026 score existed when sealed; the first execution refused at FITTING because the earliest fit anchors precede the feature warmup): fit/cal anchors additionally require row index >= 321 (= 256-bar causal scaling window + 64-bar observation window + 1) so every arm feature is computable; anchors below the floor are EXCLUDED from fitting, never imputed. The floor is pure data-independent geometry. A hard finiteness gate refuses (typed) any remaining non-finite feature cell instead of imputing or silently dropping it."
   },
 
   "parity_tolerances_d3": {

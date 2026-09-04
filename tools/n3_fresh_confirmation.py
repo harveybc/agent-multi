@@ -584,12 +584,18 @@ def execute(staging: Path, out_bundle: Path) -> dict:
             axis=1).astype("float64")
 
     # role anchors: stride from each role's first bar, tail-purged
-    # so no label crosses the role/confirmation boundary
+    # so no label crosses the role/confirmation boundary. The
+    # sealed warmup-floor amendment excludes fit/cal anchors below
+    # row 321 (scaling window 256 + observation window 64 + 1) so
+    # every arm feature is computable — pure geometry, no data.
+    WARMUP_FLOOR = 321
+
     def stride_rows(start, end):
         rows = _anchor_indices(df, start, end)
         boundary = rows[-1] + 1
         return [r for r in rows[::STRIDE]
-                if r + H_MAX < boundary and r in label_row]
+                if r + H_MAX < boundary and r in label_row
+                and r >= WARMUP_FLOOR]
     fit_rows = stride_rows(*ROLE_FIT)
     cal_rows = stride_rows(*ROLE_CAL)
     block_rows = {}
@@ -612,14 +618,20 @@ def execute(staging: Path, out_bundle: Path) -> dict:
 
     def xmat(rows, arm):
         if arm == "arm2":
-            return np.array([[scale[r, 0]] for r in rows])
-        if arm == "arm3":
-            return np.array([scale[r] for r in rows])
-        if arm == "arm4":
-            return np.array([summaries[r] for r in rows])
-        return np.array(
-            [np.concatenate([scale[r], summaries[r]])
-             for r in rows])
+            x = np.array([[scale[r, 0]] for r in rows])
+        elif arm == "arm3":
+            x = np.array([scale[r] for r in rows])
+        elif arm == "arm4":
+            x = np.array([summaries[r] for r in rows])
+        else:
+            x = np.array(
+                [np.concatenate([scale[r], summaries[r]])
+                 for r in rows])
+        if not np.isfinite(x).all():
+            raise FreshRefusal(
+                f"non-finite feature cell in {arm} matrix — "
+                "refused, never imputed")
+        return x
 
     units = []
     licenses_ok = True
