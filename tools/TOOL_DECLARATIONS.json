@@ -654,6 +654,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "target_horizon_census_n2.py": {
+   "purpose": "TARGET_HORIZON_DATA_CENSUS_N2 runner (order @8fce8da0 \u00a75-\u00a76; sealed pre-result predeclaration): development-only CPU census over the nine target-horizon candidates fixed by the accepted pretraining contract (fwd log return h1/3/6/12, realized vol h3/6/12, barrier hit h6/12) with per-family proper baselines (zero/fit-mean, literal-trailing/calibrated-AR1, fit-class-prior), target-history and causal-linear models chosen on calibration only, four disjoint causal score windows (embargo 3), within-window circular block bootstrap, Holm across nine via the R3-repaired helper, license gates and negative controls (future-leak sentinel + causally shifted target). Bounded supervisor (2h wall, 600s unit timeout, minute heartbeat, STOP_CENSUS terminate+reap); aggregate recomputed from terminal unit records; selects at most two candidates, never begins neural confirmation.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
