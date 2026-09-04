@@ -124,8 +124,13 @@ enunciado.
 
 - Focales: censo N2 21 · bundle 10 · atribución 7 · R3 18 · N1 11 ·
   índice de superficie 17 — todos passed.
-- **Suite completa SOBRE EL TIP FINAL: PENDIENTE DE ESTAMPA** — se
-  corre tras el commit de este packet y se estampa literal.
+- **Suite completa SOBRE EL TIP FINAL `16a0e1f0`** (corrida DESPUÉS
+  del commit, conforme a la regla permanente): **2 failed, 2828
+  passed, 4 skipped, 68 warnings in 238.06s** — las dos fallas son el
+  par D1-anchor preexistente conocido; los 4 skips son los mismos
+  condicionales ambientales de la corrida anterior. Delta exacto:
+  2809 + 19 tests nuevos de esta orden (2 adversariales C2 + 10
+  bundle C4 + 7 atribución C3) = 2828.
 - Commits empujados a `origin/satoshi/data-first-sota-20260826`:
   `fd65fb46` (C1/C2/C4/C5), `0d4762c5` (contrato C3), `bdfc03a2`
   (C3 + censo N3), y el commit de este packet. Árbol limpio; gate de
