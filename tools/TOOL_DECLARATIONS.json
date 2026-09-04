@@ -668,6 +668,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "n2_attribution_audit.py": {
+   "purpose": "N2_ATTRIBUTION_AUDIT runner (order @4c1f1532 C3; contract sealed pre-result): development-only attribution on the frozen N2 arrays \u2014 five equal-information arms (fit+cal prior, scale-only, scale+3lags, 249-summary, scale+summary) per barrier target and window; exact additive log-loss decomposition (hit-vs-censored + direction-given-hit), Brier components, exploratory argmax recall, calibration deciles; eight-contrast Holm family with within-window block bootstrap (B=2000 seed 606, p floor 1/2001); collision-mask and block-length sensitivities labeled exploratory; three-way sealed verdict rule. CPU only; refuses drifted input digests and degenerate fits.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

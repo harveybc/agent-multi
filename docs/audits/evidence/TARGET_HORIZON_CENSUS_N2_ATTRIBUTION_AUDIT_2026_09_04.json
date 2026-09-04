@@ -1,0 +1,3161 @@
+{
+ "schema": "agent_multi.n2_attribution_audit.v1",
+ "contract": "docs/audits/evidence/N2_ATTRIBUTION_AUDIT_CONTRACT_2026_09_04.json",
+ "npz_sha256": "07c5ff085dfd8bab0dfa33d038005c8fdb2d6c2acff3961d0fe4b042ef57cca7",
+ "targets": {
+  "bar_h6": {
+   "collision_rows_total": 17,
+   "collision_labels_all_adverse": true,
+   "windows": {
+    "w1": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 70,
+      "1": 76,
+      "2": 70
+     },
+     "collision_rows": 5,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 1.111665,
+       "hit_vs_censored_logloss": 0.636449,
+       "direction_given_hit_logloss": 0.703059,
+       "brier": 0.67454,
+       "brier_components": {
+        "0": 0.22415,
+        "1": 0.228324,
+        "2": 0.222066
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 1.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.621,
+         "empirical_hit_rate": 0.6759
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 1.095145,
+       "hit_vs_censored_logloss": 0.61773,
+       "direction_given_hit_logloss": 0.706314,
+       "brier": 0.663141,
+       "brier_components": {
+        "0": 0.22312,
+        "1": 0.226628,
+        "2": 0.213393
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.8816,
+        "2": 0.3571
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.081847,
+        "coef_norm": 0.236183
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5648,
+         "empirical_hit_rate": 0.5
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6184,
+         "empirical_hit_rate": 0.4762
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6338,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6473,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6549,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.6675,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.6845,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.689,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.6956,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.7126,
+         "empirical_hit_rate": 0.6818
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 1.080208,
+       "hit_vs_censored_logloss": 0.604444,
+       "direction_given_hit_logloss": 0.703871,
+       "brier": 0.653271,
+       "brier_components": {
+        "0": 0.222883,
+        "1": 0.222655,
+        "2": 0.207734
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.8158,
+        "2": 0.4143
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.07107,
+        "coef_norm": 1.985259
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5241,
+         "empirical_hit_rate": 0.3636
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6054,
+         "empirical_hit_rate": 0.4762
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6303,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6479,
+         "empirical_hit_rate": 0.6667
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6668,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.6829,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.6951,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7042,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7179,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.747,
+         "empirical_hit_rate": 0.8636
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.133637,
+       "hit_vs_censored_logloss": 0.641845,
+       "direction_given_hit_logloss": 0.727582,
+       "brier": 0.69313,
+       "brier_components": {
+        "0": 0.225374,
+        "1": 0.241649,
+        "2": 0.226107
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.1286,
+        "1": 0.5526,
+        "2": 0.3714
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.202489,
+        "coef_norm": 0.762839
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.4178,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.5424,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.5854,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6158,
+         "empirical_hit_rate": 0.4762
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6472,
+         "empirical_hit_rate": 0.5455
+        },
+        {
+         "bin": 5,
+         "n": 22,
+         "mean_predicted": 0.6771,
+         "empirical_hit_rate": 0.5909
+        },
+        {
+         "bin": 6,
+         "n": 21,
+         "mean_predicted": 0.7092,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7374,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7879,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8671,
+         "empirical_hit_rate": 0.8182
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.129273,
+       "hit_vs_censored_logloss": 0.642096,
+       "direction_given_hit_logloss": 0.720755,
+       "brier": 0.691564,
+       "brier_components": {
+        "0": 0.220978,
+        "1": 0.245629,
+        "2": 0.224957
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.2429,
+        "1": 0.6316,
+        "2": 0.2143
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.203437,
+        "coef_norm": 0.768645
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.4795,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6121,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6576,
+         "empirical_hit_rate": 0.5455
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6824,
+         "empirical_hit_rate": 0.6667
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.7078,
+         "empirical_hit_rate": 0.5455
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.7407,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.767,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7948,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8363,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.903,
+         "empirical_hit_rate": 0.8182
+        }
+       ]
+      }
+     }
+    },
+    "w2": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 67,
+      "1": 94,
+      "2": 55
+     },
+     "collision_rows": 3,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 1.102061,
+       "hit_vs_censored_logloss": 0.595815,
+       "direction_given_hit_logloss": 0.679187,
+       "brier": 0.668772,
+       "brier_components": {
+        "0": 0.215633,
+        "1": 0.250844,
+        "2": 0.202295
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.0,
+        "2": 1.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.6336,
+         "empirical_hit_rate": 0.7454
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 1.055074,
+       "hit_vs_censored_logloss": 0.550558,
+       "direction_given_hit_logloss": 0.676867,
+       "brier": 0.636231,
+       "brier_components": {
+        "0": 0.214206,
+        "1": 0.239763,
+        "2": 0.182262
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9894,
+        "2": 0.2182
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.094971,
+        "coef_norm": 0.262991
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.6161,
+         "empirical_hit_rate": 0.3182
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6604,
+         "empirical_hit_rate": 0.5238
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6761,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6824,
+         "empirical_hit_rate": 0.6667
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6898,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.6974,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.7039,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7082,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7199,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.732,
+         "empirical_hit_rate": 0.9091
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 1.061647,
+       "hit_vs_censored_logloss": 0.550493,
+       "direction_given_hit_logloss": 0.685772,
+       "brier": 0.639701,
+       "brier_components": {
+        "0": 0.215376,
+        "1": 0.241546,
+        "2": 0.182779
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9362,
+        "2": 0.2545
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.076961,
+        "coef_norm": 2.41606
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5728,
+         "empirical_hit_rate": 0.4091
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6537,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6719,
+         "empirical_hit_rate": 0.5
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6857,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6962,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.706,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.7128,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7221,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7355,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.7843,
+         "empirical_hit_rate": 0.9545
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.125756,
+       "hit_vs_censored_logloss": 0.566066,
+       "direction_given_hit_logloss": 0.750888,
+       "brier": 0.671168,
+       "brier_components": {
+        "0": 0.228486,
+        "1": 0.253941,
+        "2": 0.188741
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.209,
+        "1": 0.4574,
+        "2": 0.5818
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.130526,
+        "coef_norm": 0.840341
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.324,
+         "empirical_hit_rate": 0.3636
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.451,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.5307,
+         "empirical_hit_rate": 0.5
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.5839,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6188,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 5,
+         "n": 22,
+         "mean_predicted": 0.6662,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 6,
+         "n": 21,
+         "mean_predicted": 0.7051,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7536,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8032,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8884,
+         "empirical_hit_rate": 0.9545
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.118825,
+       "hit_vs_censored_logloss": 0.557737,
+       "direction_given_hit_logloss": 0.752764,
+       "brier": 0.667902,
+       "brier_components": {
+        "0": 0.228187,
+        "1": 0.254585,
+        "2": 0.18513
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.2388,
+        "1": 0.4362,
+        "2": 0.5818
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.124323,
+        "coef_norm": 0.844593
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.3426,
+         "empirical_hit_rate": 0.3636
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.4733,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.5511,
+         "empirical_hit_rate": 0.5909
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.5992,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6375,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 5,
+         "n": 22,
+         "mean_predicted": 0.6786,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 6,
+         "n": 21,
+         "mean_predicted": 0.7172,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7606,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8124,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8957,
+         "empirical_hit_rate": 0.9545
+        }
+       ]
+      }
+     }
+    },
+    "w3": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 87,
+      "1": 70,
+      "2": 59
+     },
+     "collision_rows": 0,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 1.12207,
+       "hit_vs_censored_logloss": 0.598009,
+       "direction_given_hit_logloss": 0.721002,
+       "brier": 0.681452,
+       "brier_components": {
+        "0": 0.255983,
+        "1": 0.221869,
+        "2": 0.2036
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.6557,
+         "empirical_hit_rate": 0.7269
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 1.097942,
+       "hit_vs_censored_logloss": 0.570774,
+       "direction_given_hit_logloss": 0.725275,
+       "brier": 0.666487,
+       "brier_components": {
+        "0": 0.252731,
+        "1": 0.222422,
+        "2": 0.191334
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9143,
+        "2": 0.3051
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.05063,
+        "coef_norm": 0.331774
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.3573,
+         "empirical_hit_rate": 0.4091
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6321,
+         "empirical_hit_rate": 0.5238
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6526,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6632,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6714,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.6797,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.6895,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7069,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7274,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.7403,
+         "empirical_hit_rate": 0.8182
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 1.104686,
+       "hit_vs_censored_logloss": 0.581625,
+       "direction_given_hit_logloss": 0.719625,
+       "brier": 0.671291,
+       "brier_components": {
+        "0": 0.254903,
+        "1": 0.220492,
+        "2": 0.195896
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9143,
+        "2": 0.322
+       },
+       "fit_record": {
+        "C": 0.1,
+        "cal_loss": 1.045285,
+        "coef_norm": 0.536119
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.3302,
+         "empirical_hit_rate": 0.4545
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6249,
+         "empirical_hit_rate": 0.5238
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.653,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.666,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6749,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.6859,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.6974,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7155,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7376,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.7514,
+         "empirical_hit_rate": 0.8182
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.215649,
+       "hit_vs_censored_logloss": 0.650491,
+       "direction_given_hit_logloss": 0.777543,
+       "brier": 0.741931,
+       "brier_components": {
+        "0": 0.264057,
+        "1": 0.250264,
+        "2": 0.227611
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.1954,
+        "1": 0.3571,
+        "2": 0.5763
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.066822,
+        "coef_norm": 0.878713
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.2317,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.3838,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.4542,
+         "empirical_hit_rate": 0.5455
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.5211,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.5908,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.6508,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.6911,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.735,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8982,
+         "empirical_hit_rate": 0.8636
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.2025,
+       "hit_vs_censored_logloss": 0.631539,
+       "direction_given_hit_logloss": 0.785526,
+       "brier": 0.729735,
+       "brier_components": {
+        "0": 0.265096,
+        "1": 0.24684,
+        "2": 0.217799
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.1954,
+        "1": 0.3286,
+        "2": 0.6102
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.059215,
+        "coef_norm": 0.885617
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.2314,
+         "empirical_hit_rate": 0.5909
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.4182,
+         "empirical_hit_rate": 0.5238
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.4926,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.5498,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6092,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 5,
+         "n": 22,
+         "mean_predicted": 0.6501,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 6,
+         "n": 21,
+         "mean_predicted": 0.694,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7355,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8103,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.908,
+         "empirical_hit_rate": 0.8636
+        }
+       ]
+      }
+     }
+    },
+    "w4": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 83,
+      "1": 71,
+      "2": 62
+     },
+     "collision_rows": 0,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 1.1084,
+       "hit_vs_censored_logloss": 0.604267,
+       "direction_given_hit_logloss": 0.707096,
+       "brier": 0.672998,
+       "brier_components": {
+        "0": 0.243989,
+        "1": 0.22229,
+        "2": 0.20672
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.6674,
+         "empirical_hit_rate": 0.713
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 1.094992,
+       "hit_vs_censored_logloss": 0.589186,
+       "direction_given_hit_logloss": 0.709442,
+       "brier": 0.665624,
+       "brier_components": {
+        "0": 0.240821,
+        "1": 0.224248,
+        "2": 0.200556
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9296,
+        "2": 0.0806
+       },
+       "fit_record": {
+        "C": 1.0,
+        "cal_loss": 1.088847,
+        "coef_norm": 0.324458
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.619,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6765,
+         "empirical_hit_rate": 0.5714
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.7006,
+         "empirical_hit_rate": 0.3636
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.713,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.723,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.7328,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.7412,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7551,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7644,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.775,
+         "empirical_hit_rate": 0.8182
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 1.094651,
+       "hit_vs_censored_logloss": 0.587314,
+       "direction_given_hit_logloss": 0.71159,
+       "brier": 0.665598,
+       "brier_components": {
+        "0": 0.24101,
+        "1": 0.224836,
+        "2": 0.199751
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9437,
+        "2": 0.1129
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.093182,
+        "coef_norm": 0.194065
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.6205,
+         "empirical_hit_rate": 0.5909
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6747,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.7017,
+         "empirical_hit_rate": 0.5
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.7132,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.7225,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.7329,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.7411,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7576,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.7655,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.7759,
+         "empirical_hit_rate": 0.7727
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.104801,
+       "hit_vs_censored_logloss": 0.555671,
+       "direction_given_hit_logloss": 0.770208,
+       "brier": 0.676277,
+       "brier_components": {
+        "0": 0.252746,
+        "1": 0.23383,
+        "2": 0.1897
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.2771,
+        "1": 0.4648,
+        "2": 0.3548
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.248725,
+        "coef_norm": 0.888669
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.4595,
+         "empirical_hit_rate": 0.4545
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.5838,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6335,
+         "empirical_hit_rate": 0.5
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6703,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.6963,
+         "empirical_hit_rate": 0.3636
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.7251,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.7593,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.7968,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.831,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8904,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.096696,
+       "hit_vs_censored_logloss": 0.546334,
+       "direction_given_hit_logloss": 0.771937,
+       "brier": 0.674205,
+       "brier_components": {
+        "0": 0.251156,
+        "1": 0.236969,
+        "2": 0.186081
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.3373,
+        "1": 0.493,
+        "2": 0.2903
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.233466,
+        "coef_norm": 0.896059
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5005,
+         "empirical_hit_rate": 0.5455
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6138,
+         "empirical_hit_rate": 0.5238
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.6567,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.6872,
+         "empirical_hit_rate": 0.4286
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.7263,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.7633,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8009,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8326,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8541,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9028,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  "bar_h12": {
+   "collision_rows_total": 19,
+   "collision_labels_all_adverse": true,
+   "windows": {
+    "w1": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 89,
+      "1": 97,
+      "2": 30
+     },
+     "collision_rows": 6,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 1.016136,
+       "hit_vs_censored_logloss": 0.409812,
+       "direction_given_hit_logloss": 0.704119,
+       "brier": 0.619678,
+       "brier_components": {
+        "0": 0.249196,
+        "1": 0.248968,
+        "2": 0.121514
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.8174,
+         "empirical_hit_rate": 0.8611
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 1.007418,
+       "hit_vs_censored_logloss": 0.396153,
+       "direction_given_hit_logloss": 0.709856,
+       "brier": 0.617463,
+       "brier_components": {
+        "0": 0.250938,
+        "1": 0.248948,
+        "2": 0.117576
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.074027,
+        "coef_norm": 0.18276
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.7916,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8169,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.824,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8301,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8335,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8391,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8467,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8486,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8515,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.859,
+         "empirical_hit_rate": 0.9545
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 1.000654,
+       "hit_vs_censored_logloss": 0.387718,
+       "direction_given_hit_logloss": 0.711797,
+       "brier": 0.615739,
+       "brier_components": {
+        "0": 0.251059,
+        "1": 0.249344,
+        "2": 0.115336
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.070092,
+        "coef_norm": 2.32831
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.7663,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8127,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8284,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8404,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8508,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8601,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8675,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8735,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8801,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8924,
+         "empirical_hit_rate": 0.9545
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.045709,
+       "hit_vs_censored_logloss": 0.429451,
+       "direction_given_hit_logloss": 0.715655,
+       "brier": 0.64071,
+       "brier_components": {
+        "0": 0.248978,
+        "1": 0.26266,
+        "2": 0.129072
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.2584,
+        "1": 0.8454,
+        "2": 0.0667
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.164099,
+        "coef_norm": 0.833673
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.6058,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.7777,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8148,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8304,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8518,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8716,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8896,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9038,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.921,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9428,
+         "empirical_hit_rate": 0.8636
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.038227,
+       "hit_vs_censored_logloss": 0.426276,
+       "direction_given_hit_logloss": 0.710653,
+       "brier": 0.634472,
+       "brier_components": {
+        "0": 0.24512,
+        "1": 0.262775,
+        "2": 0.126577
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.2697,
+        "1": 0.8144,
+        "2": 0.0667
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.169284,
+        "coef_norm": 0.834574
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.6534,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8172,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8504,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8664,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8805,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 5,
+         "n": 22,
+         "mean_predicted": 0.8954,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 6,
+         "n": 21,
+         "mean_predicted": 0.9121,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9246,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9379,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9568,
+         "empirical_hit_rate": 0.8636
+        }
+       ]
+      }
+     }
+    },
+    "w2": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 84,
+      "1": 106,
+      "2": 26
+     },
+     "collision_rows": 3,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 0.982669,
+       "hit_vs_censored_logloss": 0.378043,
+       "direction_given_hit_logloss": 0.687365,
+       "brier": 0.59794,
+       "brier_components": {
+        "0": 0.239312,
+        "1": 0.250042,
+        "2": 0.108586
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.8276,
+         "empirical_hit_rate": 0.8796
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 0.949872,
+       "hit_vs_censored_logloss": 0.345875,
+       "direction_given_hit_logloss": 0.68665,
+       "brier": 0.584566,
+       "brier_components": {
+        "0": 0.239261,
+        "1": 0.244726,
+        "2": 0.100578
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.013321,
+        "coef_norm": 0.328687
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.8185,
+         "empirical_hit_rate": 0.5
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8516,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8623,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8666,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8714,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8763,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8805,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8831,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8903,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8975,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 0.950633,
+       "hit_vs_censored_logloss": 0.34406,
+       "direction_given_hit_logloss": 0.689578,
+       "brier": 0.586087,
+       "brier_components": {
+        "0": 0.239483,
+        "1": 0.246049,
+        "2": 0.100555
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9811,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 1.009759,
+        "coef_norm": 2.207105
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.7961,
+         "empirical_hit_rate": 0.5455
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8496,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8589,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8674,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8734,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8793,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8846,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8899,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8967,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9114,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.018172,
+       "hit_vs_censored_logloss": 0.328321,
+       "direction_given_hit_logloss": 0.784252,
+       "brier": 0.640138,
+       "brier_components": {
+        "0": 0.267349,
+        "1": 0.275352,
+        "2": 0.097436
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.25,
+        "1": 0.6981,
+        "2": 0.1154
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.06314,
+        "coef_norm": 0.898305
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5976,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.7411,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8064,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8373,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8593,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8858,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.9051,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9257,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9475,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9727,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.01991,
+       "hit_vs_censored_logloss": 0.330187,
+       "direction_given_hit_logloss": 0.784106,
+       "brier": 0.642777,
+       "brier_components": {
+        "0": 0.267087,
+        "1": 0.277343,
+        "2": 0.098347
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.25,
+        "1": 0.6981,
+        "2": 0.0769
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.060354,
+        "coef_norm": 0.900681
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.6175,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.7609,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8221,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8489,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.87,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8935,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.9109,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9302,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9522,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.975,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      }
+     }
+    },
+    "w3": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 110,
+      "1": 82,
+      "2": 24
+     },
+     "collision_rows": 0,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 1.004642,
+       "hit_vs_censored_logloss": 0.359549,
+       "direction_given_hit_logloss": 0.72573,
+       "brier": 0.620144,
+       "brier_components": {
+        "0": 0.273074,
+        "1": 0.245659,
+        "2": 0.101412
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.8374,
+         "empirical_hit_rate": 0.8889
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 0.977656,
+       "hit_vs_censored_logloss": 0.327282,
+       "direction_given_hit_logloss": 0.731671,
+       "brier": 0.61304,
+       "brier_components": {
+        "0": 0.272875,
+        "1": 0.247367,
+        "2": 0.092798
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9512,
+        "2": 0.25
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 0.97055,
+        "coef_norm": 0.367564
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5701,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8275,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8413,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8481,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8533,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8585,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8644,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8748,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8865,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8937,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 0.980235,
+       "hit_vs_censored_logloss": 0.332319,
+       "direction_given_hit_logloss": 0.728905,
+       "brier": 0.614991,
+       "brier_components": {
+        "0": 0.273425,
+        "1": 0.246269,
+        "2": 0.095296
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 0.9512,
+        "2": 0.2083
+       },
+       "fit_record": {
+        "C": 0.1,
+        "cal_loss": 0.968811,
+        "coef_norm": 0.348955
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.5662,
+         "empirical_hit_rate": 0.6364
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8268,
+         "empirical_hit_rate": 0.6667
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.842,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.848,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8544,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8596,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.866,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.8757,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.8882,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.8949,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 1.062819,
+       "hit_vs_censored_logloss": 0.349895,
+       "direction_given_hit_logloss": 0.802039,
+       "brier": 0.669167,
+       "brier_components": {
+        "0": 0.295891,
+        "1": 0.266592,
+        "2": 0.106683
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.3,
+        "1": 0.5488,
+        "2": 0.2917
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.009008,
+        "coef_norm": 0.948884
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.3905,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.643,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.734,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.7948,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.828,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 5,
+         "n": 22,
+         "mean_predicted": 0.86,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 6,
+         "n": 21,
+         "mean_predicted": 0.8902,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9202,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9427,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9683,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 1.069495,
+       "hit_vs_censored_logloss": 0.35058,
+       "direction_given_hit_logloss": 0.808779,
+       "brier": 0.673244,
+       "brier_components": {
+        "0": 0.299709,
+        "1": 0.266165,
+        "2": 0.107369
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.3182,
+        "1": 0.5244,
+        "2": 0.25
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.011693,
+        "coef_norm": 0.950165
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.3713,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.6546,
+         "empirical_hit_rate": 0.619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.7558,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8358,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8642,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.897,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9245,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9465,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9707,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      }
+     }
+    },
+    "w4": {
+     "n_score": 216,
+     "class_support_score": {
+      "0": 109,
+      "1": 86,
+      "2": 21
+     },
+     "collision_rows": 0,
+     "arms": {
+      "arm1": {
+       "multiclass_logloss": 0.973153,
+       "hit_vs_censored_logloss": 0.332743,
+       "direction_given_hit_logloss": 0.709378,
+       "brier": 0.599963,
+       "brier_components": {
+        "0": 0.265007,
+        "1": 0.243993,
+        "2": 0.090963
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": null,
+       "calibration_deciles_hit": [
+        {
+         "bin": 9,
+         "n": 216,
+         "mean_predicted": 0.8463,
+         "empirical_hit_rate": 0.9028
+        }
+       ]
+      },
+      "arm2": {
+       "multiclass_logloss": 0.957504,
+       "hit_vs_censored_logloss": 0.313552,
+       "direction_given_hit_logloss": 0.713301,
+       "brier": 0.597576,
+       "brier_components": {
+        "0": 0.262896,
+        "1": 0.247839,
+        "2": 0.086841
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 10.0,
+        "cal_loss": 0.971518,
+        "coef_norm": 0.372453
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.8198,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8589,
+         "empirical_hit_rate": 0.7143
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8738,
+         "empirical_hit_rate": 0.7273
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8812,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.887,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8926,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8973,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9048,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9097,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9152,
+         "empirical_hit_rate": 0.9545
+        }
+       ]
+      },
+      "arm3": {
+       "multiclass_logloss": 0.959453,
+       "hit_vs_censored_logloss": 0.313276,
+       "direction_given_hit_logloss": 0.715765,
+       "brier": 0.599316,
+       "brier_components": {
+        "0": 0.26389,
+        "1": 0.248708,
+        "2": 0.086718
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.0,
+        "1": 1.0,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 0.974867,
+        "coef_norm": 0.193064
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.8226,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8567,
+         "empirical_hit_rate": 0.7619
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8727,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8791,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8839,
+         "empirical_hit_rate": 0.9091
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.8894,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.8941,
+         "empirical_hit_rate": 0.9545
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9027,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9064,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9117,
+         "empirical_hit_rate": 0.9091
+        }
+       ]
+      },
+      "arm4": {
+       "multiclass_logloss": 0.968505,
+       "hit_vs_censored_logloss": 0.290196,
+       "direction_given_hit_logloss": 0.751358,
+       "brier": 0.612711,
+       "brier_components": {
+        "0": 0.271879,
+        "1": 0.257543,
+        "2": 0.083289
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.4679,
+        "1": 0.5233,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.116035,
+        "coef_norm": 0.967554
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.7488,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8057,
+         "empirical_hit_rate": 0.8095
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8458,
+         "empirical_hit_rate": 0.7727
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8668,
+         "empirical_hit_rate": 0.9524
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8857,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.9001,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.9154,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9321,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9458,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9628,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      },
+      "arm5": {
+       "multiclass_logloss": 0.965451,
+       "hit_vs_censored_logloss": 0.285192,
+       "direction_given_hit_logloss": 0.753517,
+       "brier": 0.613359,
+       "brier_components": {
+        "0": 0.272038,
+        "1": 0.259325,
+        "2": 0.081997
+       },
+       "recall_argmax_exploratory": {
+        "0": 0.4495,
+        "1": 0.5233,
+        "2": 0.0
+       },
+       "fit_record": {
+        "C": 0.01,
+        "cal_loss": 1.125863,
+        "coef_norm": 0.966359
+       },
+       "calibration_deciles_hit": [
+        {
+         "bin": 0,
+         "n": 22,
+         "mean_predicted": 0.7604,
+         "empirical_hit_rate": 0.6818
+        },
+        {
+         "bin": 1,
+         "n": 21,
+         "mean_predicted": 0.8208,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 2,
+         "n": 22,
+         "mean_predicted": 0.8568,
+         "empirical_hit_rate": 0.8182
+        },
+        {
+         "bin": 3,
+         "n": 21,
+         "mean_predicted": 0.8777,
+         "empirical_hit_rate": 0.8571
+        },
+        {
+         "bin": 4,
+         "n": 22,
+         "mean_predicted": 0.8952,
+         "empirical_hit_rate": 0.8636
+        },
+        {
+         "bin": 5,
+         "n": 21,
+         "mean_predicted": 0.9078,
+         "empirical_hit_rate": 0.9048
+        },
+        {
+         "bin": 6,
+         "n": 22,
+         "mean_predicted": 0.9211,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 7,
+         "n": 21,
+         "mean_predicted": 0.9385,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 8,
+         "n": 22,
+         "mean_predicted": 0.9512,
+         "empirical_hit_rate": 1.0
+        },
+        {
+         "bin": 9,
+         "n": 22,
+         "mean_predicted": 0.9668,
+         "empirical_hit_rate": 1.0
+        }
+       ]
+      }
+     }
+    }
+   }
+  }
+ },
+ "contrasts": {
+  "bar_h6:arm2-vs-arm1": {
+   "pooled_skill": 0.022736,
+   "per_window_skill": {
+    "w1": 0.01486,
+    "w2": 0.042635,
+    "w3": 0.021504,
+    "w4": 0.012097
+   },
+   "all_windows_positive": true,
+   "bootstrap_p": "<= 1/2001",
+   "holm_p": 0.003998
+  },
+  "bar_h6:arm3-vs-arm2": {
+   "pooled_skill": 0.000451,
+   "per_window_skill": {
+    "w1": 0.01364,
+    "w2": -0.00623,
+    "w3": -0.006143,
+    "w4": 0.000311
+   },
+   "all_windows_positive": false,
+   "bootstrap_p": 0.449275,
+   "holm_p": 1.0
+  },
+  "bar_h6:arm4-vs-arm1": {
+   "pooled_skill": -0.030522,
+   "per_window_skill": {
+    "w1": -0.019765,
+    "w2": -0.021501,
+    "w3": -0.083398,
+    "w4": 0.003247
+   },
+   "all_windows_positive": false,
+   "bootstrap_p": 0.971514,
+   "holm_p": 1.0
+  },
+  "bar_h6:arm5-vs-arm2": {
+   "pooled_skill": -0.047003,
+   "per_window_skill": {
+    "w1": -0.031163,
+    "w2": -0.060423,
+    "w3": -0.095231,
+    "w4": -0.001557
+   },
+   "all_windows_positive": false,
+   "bootstrap_p": 0.9995,
+   "holm_p": 1.0
+  },
+  "bar_h12:arm2-vs-arm1": {
+   "pooled_skill": 0.021161,
+   "per_window_skill": {
+    "w1": 0.008579,
+    "w2": 0.033376,
+    "w3": 0.026862,
+    "w4": 0.016081
+   },
+   "all_windows_positive": true,
+   "bootstrap_p": "<= 1/2001",
+   "holm_p": 0.003998
+  },
+  "bar_h12:arm3-vs-arm2": {
+   "pooled_skill": 0.000379,
+   "per_window_skill": {
+    "w1": 0.006714,
+    "w2": -0.000801,
+    "w3": -0.002638,
+    "w4": -0.002035
+   },
+   "all_windows_positive": false,
+   "bootstrap_p": 0.432784,
+   "holm_p": 1.0
+  },
+  "bar_h12:arm4-vs-arm1": {
+   "pooled_skill": -0.029826,
+   "per_window_skill": {
+    "w1": -0.029103,
+    "w2": -0.036129,
+    "w3": -0.057908,
+    "w4": 0.004776
+   },
+   "all_windows_positive": false,
+   "bootstrap_p": 0.947526,
+   "holm_p": 1.0
+  },
+  "bar_h12:arm5-vs-arm2": {
+   "pooled_skill": -0.051544,
+   "per_window_skill": {
+    "w1": -0.030582,
+    "w2": -0.073733,
+    "w3": -0.093938,
+    "w4": -0.0083
+   },
+   "all_windows_positive": false,
+   "bootstrap_p": 0.994503,
+   "holm_p": 1.0
+  }
+ },
+ "sensitivities_exploratory": {
+  "bar_h6:arm2-vs-arm1": {
+   "pooled_skill_without_collisions": 0.021817,
+   "bootstrap_p_by_block": {
+    "3": "<= 1/2001",
+    "6": "<= 1/2001",
+    "12": "<= 1/2001"
+   }
+  },
+  "bar_h6:arm3-vs-arm2": {
+   "pooled_skill_without_collisions": -0.000159,
+   "bootstrap_p_by_block": {
+    "3": 0.438781,
+    "6": 0.449275,
+    "12": 0.457271
+   }
+  },
+  "bar_h6:arm4-vs-arm1": {
+   "pooled_skill_without_collisions": -0.03182,
+   "bootstrap_p_by_block": {
+    "3": 0.97951,
+    "6": 0.971514,
+    "12": 0.975012
+   }
+  },
+  "bar_h6:arm5-vs-arm2": {
+   "pooled_skill_without_collisions": -0.047474,
+   "bootstrap_p_by_block": {
+    "3": 0.9995,
+    "6": 0.9995,
+    "12": 0.998501
+   }
+  },
+  "bar_h12:arm2-vs-arm1": {
+   "pooled_skill_without_collisions": 0.020349,
+   "bootstrap_p_by_block": {
+    "3": "<= 1/2001",
+    "6": "<= 1/2001",
+    "12": "<= 1/2001"
+   }
+  },
+  "bar_h12:arm3-vs-arm2": {
+   "pooled_skill_without_collisions": -7.2e-05,
+   "bootstrap_p_by_block": {
+    "3": 0.424788,
+    "6": 0.432784,
+    "12": 0.452774
+   }
+  },
+  "bar_h12:arm4-vs-arm1": {
+   "pooled_skill_without_collisions": -0.030596,
+   "bootstrap_p_by_block": {
+    "3": 0.958521,
+    "6": 0.947526,
+    "12": 0.948026
+   }
+  },
+  "bar_h12:arm5-vs-arm2": {
+   "pooled_skill_without_collisions": -0.051529,
+   "bootstrap_p_by_block": {
+    "3": 0.999,
+    "6": 0.994503,
+    "12": 0.997501
+   }
+  }
+ },
+ "self_checks": {
+  "bar_h6": {
+   "collision_labels_all_adverse": true,
+   "decomposition_additive": true
+  },
+  "bar_h12": {
+   "collision_labels_all_adverse": true,
+   "decomposition_additive": true
+  }
+ },
+ "verdict": "BARRIER_SIGNAL_EXPLAINED_BY_TARGET_DEFINITION_SCALE",
+ "order_reproduction": {
+  "note": "recomputed here, never copied as authority",
+  "h6": {
+   "scale_plus_lags_vs_fitcal_prior": 0.023177,
+   "scale_only_vs_fitcal_prior": 0.022736,
+   "incremental_lags": 0.000441,
+   "order_values": {
+    "scale_lags": 0.023177,
+    "scale_only": 0.022736,
+    "incremental": 0.000441
+   }
+  },
+  "h12": {
+   "scale_plus_lags_vs_fitcal_prior": 0.021533,
+   "scale_only_vs_fitcal_prior": 0.021161,
+   "incremental_lags": 0.000372,
+   "order_values": {
+    "scale_lags": 0.021533,
+    "scale_only": 0.021161,
+    "incremental": 0.000372
+   }
+  }
+ }
+}

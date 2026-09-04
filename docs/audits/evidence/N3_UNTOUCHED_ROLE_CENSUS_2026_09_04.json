@@ -1,0 +1,28 @@
+{
+  "schema": "agent_multi.n3_untouched_role_census.v1",
+  "order": "agent-multi@4c1f1532 §4",
+  "question": "does an untouched chronological confirmation region exist on the ETH H4 development lineage (pinned source sha256 1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f, rows 2017-09-28T04:00 .. 2026-01-01)?",
+
+  "contract_lineages_examined": {
+    "o2022_paired": "examples/config/phase_3_eth_sac_dynamics/splits/eth_nested_split_contract_o2022_paired_v1.json — fit_train 2017..2022, train_monitor 2021, inner_validation 2022 (scored primary endpoint), outer_validation 2023 (materialized, declared unconsumed BY THAT CAMPAIGN), sealed_test 2024..2026",
+    "p1_doc38_eth_partition": "docs/audits/evidence/p1_curriculum_terminal_20260825/nested_split_contract_v1.json — fit_train 2017..2023, train_monitor 2022, inner_validation 2023, outer_validation 2024, sealed_test 2025"
+  },
+
+  "region_census": {
+    "2017-09..2020": "CONSUMED — pretraining fit (sealed candidate), screen-v2 windows and evaluations, N0/N1/N2 development sampling (2200 stride-4 steps; every N score window ends before the consumed monitor frontier)",
+    "2021": "CONSUMED — o2022 train_monitor (early-patience assessments) and inside p1 fit_train",
+    "2022": "CONSUMED — o2022 inner_validation (declared scored primary endpoint) and p1 train_monitor; also inside p1 fit_train",
+    "2023": "CONSUMED — p1/Doc-38 inner_validation: the curriculum campaign's selection/validation endpoint. Evidence: pipeline_plugins/rl_pipeline_with_validation.py consumes inner_validation trade/activity evidence for arm validation; the terminal campaign evidence p1_curriculum_terminal_20260825 binds this partition (source 1b447c66) and its selected manifests bind data_sha256 1b447c66; the D1/P1 campaigns scored replicas against this role",
+    "2024": "CONSUMED AND SEALED — scored once per arm as p1 outer_validation_2024 (reports carry outer_endpoint.scored_rows 2196 on the same market period, eval csv sha256 2244dfc0...); simultaneously inside sealed_test of the operative o2022 contract — blocked for both reasons",
+    "2025": "SEALED — sealed_test in BOTH lineages; the order forbids borrowing sealed test data",
+    "2026+": "ABSENT — the pinned file ends at 2026-01-01; no rows exist"
+  },
+
+  "verdict": "NO_UNTOUCHED_CONFIRMATION_ROLE",
+  "consequence": "N3 STOPS at the census, exactly as ordered ('If no such region exists, stop as NO_UNTOUCHED_CONFIRMATION_ROLE; never borrow sealed test data or rename a consumed role'). No N3 predeclaration was committed, no confirmation score was computed, no GPU unit ran, no sealed role was accessed, no consumed role was renamed.",
+
+  "future_paths_not_begun": [
+    "acquire genuinely new post-2025-12-31 ETH H4 rows into a fresh pinned file and predeclare N3 on that untouched region under a new order",
+    "any decision about the sealed 2024-2025 regions belongs to the auditor and the owner, is not requested here, and is not recommended by this census"
+  ]
+}
