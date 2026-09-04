@@ -682,6 +682,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "n3_fresh_confirmation.py": {
+   "purpose": "N3_FRESH_DATA_CONFIRMATION runner (order @a13671ab \u00a7\u00a74-8; contract sealed pre-network): acquire = bounded public GET of ETHUSDT 4h klines (overlap 2025 + confirmation 2026-01..2026-08) into a NEW restricted staging root with per-page receipts, full validation and field-exact overlap continuity vs the frozen lake (typed refusals PUBLIC_DATA_ACQUISITION_BLOCKED / SOURCE_CONTINUITY_NOT_DEMONSTRATED); regenerate = full-history feature regeneration through the bound Stage 2.1/2.2/3.1 chain with per-feature float32-envelope overlap parity (SOURCE_OR_PIPELINE_DRIFT on violation); execute = the five frozen arms on four two-month 2026 blocks (CPU, sealed decision table, within-block bootstrap B=2000 seed 707, Holm-8 via the repaired helper); verify = offline verifier that rederives the decision from the sanitized bundle alone and refuses the ten ordered adversaries.",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "discovery",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
