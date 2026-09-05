@@ -1,0 +1,31 @@
+== E1: unequal economic envelopes from the public paths ==
+comparator headroom: 0.012102
+B4 cell headroom:    0.007102
+UNEQUAL — shared_execution_envelope scales exposure by (1 - headroom): the comparison is economically biased
+
+== E2: the proposed GPU command is not a B4 command ==
+old gym-fx pin present: True
+references B4_CELL_CONFIGS: False
+references SUPERSEDING_DESIGN: False
+references GENESIS_BINDING: False
+references SCREEN_B_RESULTS: False
+
+== E3: the final code cannot satisfy its own sealed design ==
+live screen_b sha: d22d5fb96bb6 | live materializer: 7a87a1535ce1
+bind refuses: REFUSED: executing code drifted from the sealed design
+
+== E4: a cell is not a complete runnable recipe ==
+training-semantic keys ABSENT from the hashed cell: ['agent_plugin', 'pipeline_plugin', 'preprocessor_plugin', 'learning_rate', 'net_arch', 'ent_coef', 'batch_size', 'buffer_size', 'learning_starts', 'train_freq', 'gradient_steps', 'epoch_timesteps', 'max_epochs', 'l1_patience', 'selection_metric', 'budget_max_env_steps', 'budget_max_updates', 'budget_max_wall_seconds', 'input_data_file']
+mechanics runner fills them elsewhere: True
+
+== E5: comparator verification trusts a summary ==
+forged empty summary passes the label check: True
+forged empty summary passes the lineage check: True
+ACCEPTED — the materializer's entire comparator verification grants cells against zero verified results
+
+== E6: authority language contradicts the decision ==
+v5 result cost_authority: 'alpaca venue primary (pending ratification)'
+'pending ratification' in executing code: True
+owner act ratified observation v2 + build 6140; Alpaca costs were selected by Musashi review, not ratified by the owner
+
+PRE CONFIRMED: all six findings reproduce
