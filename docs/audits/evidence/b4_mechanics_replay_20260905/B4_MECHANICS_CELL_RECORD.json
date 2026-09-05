@@ -1,0 +1,85 @@
+{
+ "schema": "agent_multi.b4_mechanics_cell_record.v2",
+ "status": "MECHANICS_PROVEN_NON_PROMOTABLE",
+ "g1_eligible": false,
+ "runner": "tools/b4_run_cell.py",
+ "cell": "o2024_seed101",
+ "cell_config_sha256": "fb5a92d56c8d8d3a260d2bde58e7f3d733d64fb3067a76cdd78787fc2062e9ef",
+ "authority_chain": {
+  "design_sha256": "9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237",
+  "amendment_shas": [
+   "ae874b68ec896e99aa31a309a29e72f9a278cfeff7b9ffa7e1fdb7c72192c805",
+   "81f9815fd7c76ba3f0b9ec476f00d507e30b68ecc9a8d202b7c6c4902daaa21a",
+   "f04823b77acab35e6822d55016b2aa7bcc996b7b4528071b263b8f8b885835dd",
+   "d02ea469fb41964cafb7d3bfa84652fc9b8a751416b5df1ed94bbe410a769266"
+  ],
+  "final_code_pins": {
+   "tools/b4_authority.py": "9d12af340f5c314561d1494bf21edf353b52bb2fbcf0c6013122352038ef835f",
+   "tools/screen_b_baselines.py": "f7351e94c39b7e7d6d73aba4a2703fe8501766e6e85871d28a202a374c484039",
+   "tools/materialize_b4_causal_sac.py": "12933c0d02da83b62c68bf8c370b664d8e089ee401bc7d093fe69de8a1c14445",
+   "tools/b4_run_cell.py": "1ae1cd4801486dac6139976b57fcdfb4629ae4e34b40fd45774b122a3bf8edad"
+  },
+  "comparator_n_results": 15,
+  "comparator_n_ledger": 99
+ },
+ "train_slice": {
+  "year": 2023,
+  "years_present": [
+   2022,
+   2023
+  ],
+  "csv_sha256": "6f2bf73f983acb14d05117f81a5f60c7f4d12191fd8ffd95764013ec91911afa"
+ },
+ "genesis": {
+  "container_sha256": "05ef17bbbbbcc9ad571b91af68d8fb7054b8b9f2b7f3fe8f3468e77ff3e01fdf",
+  "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+  "zero_update_verified": true
+ },
+ "gymfx_lineage_manifest_sha256": "a30eda1f042d9a84b3a588d0ab972f9f39510410517c2557f4a7afd2f53c0787",
+ "gymfx_commit": "6d779afdd7cd4e8b2d7c2dfadc6395482e831269",
+ "observation_dimension_facts": {
+  "checked": true,
+  "source": "config.observation_contract",
+  "expected_flattened_dimension": 2660,
+  "actual_flattened_dimension": 2660
+ },
+ "caps": {
+  "budget_max_env_steps": 2000,
+  "budget_max_updates": 1000,
+  "budget_max_wall_seconds": 1800.0,
+  "rss_cap_bytes": 2147483648,
+  "thermal_cap_celsius": 95
+ },
+ "segments": [
+  {
+   "requested_timesteps": 1200,
+   "real_timesteps": 1129,
+   "cumulative_env_steps": 1129,
+   "cumulative_updates": 1000,
+   "budget_stop": "optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound",
+   "resource_stop": null,
+   "wall_seconds": 18.8,
+   "post_segment_check": "typed stop: optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound"
+  },
+  {
+   "requested_timesteps": 800,
+   "pre_segment_refusal": "optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound"
+  }
+ ],
+ "observed": {
+  "env_steps": 1129,
+  "optimizer_updates": 1000,
+  "wall_seconds": 18.9,
+  "peak_rss_bytes": 1091825664,
+  "peak_thermal_celsius": 70.0,
+  "thermal_sensors_available": true,
+  "resource_stop": null
+ },
+ "proofs": {
+  "exact_update_stop": "typed refusal: optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound",
+  "stop_file": "typed refusal: external stop request (budget_stop_file present) \u2014 stopped at 1129 env steps / 1000 updates",
+  "finite": "all 3737606 policy parameters finite after 1000 real updates",
+  "trained_tensor_sha256": "baff8253199069dbbcdbe8b3214c89595ee5d136190819e60bb6d2441ba6f54e"
+ },
+ "sealed_2025_used": false
+}

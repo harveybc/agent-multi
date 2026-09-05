@@ -1,0 +1,17 @@
+{
+ "binding": {
+  "o2022_seed101": "c44632657069057bbabf5599f5ffb849a521ef33d8952b38fbfd134e8d0cedec",
+  "o2022_seed202": "e4be9fc34e5d23cd55aac4cdbfab2283cc4178d5e983ca435425eb02b0cffd9f",
+  "o2022_seed303": "d3c46ff358c8daa29d9a05baddb838f8900e31306a844fd6a02025bd2d007a76",
+  "o2022_seed404": "30e58d8cf208ddf4764b38f613d5964f021ee4ca125300bd98b611d084243dee",
+  "o2023_seed101": "c9691b85aed69fdd446e866808177be5cbfcbc2940b96a875a3fde66529b5c3d",
+  "o2023_seed202": "dddbcc1fca29e276f67e1a682a754b12fc19e1254541b279ae4335cf5ab85e63",
+  "o2023_seed303": "4ec745e9d4b00a57e9b70081457951586ad5880ab068c680e195a0175ce1b514",
+  "o2023_seed404": "47314166dc07ef9ff2ead337eb1b20281696ce1796bfce3b3ff5f1c8192cc524",
+  "o2024_seed101": "fb5a92d56c8d8d3a260d2bde58e7f3d733d64fb3067a76cdd78787fc2062e9ef",
+  "o2024_seed202": "0d229c46fdcb75288f68a990b7c1c778d471a741ef72336c6816d80df63944f9",
+  "o2024_seed303": "b2cba28244d4745bdd4433ce9840a5073534037a6dfd72e8b1d06da687de76ff",
+  "o2024_seed404": "ac776b333f6884709007c796e76c39c1c5a703f2c93346d52d4b2b278af55f65"
+ },
+ "note": "genesis tensors are reusable (seed-deterministic, observation identity unchanged) but each cell's genesis is BOUND to this final cell-config digest (N3); a config change invalidates the binding"
+}

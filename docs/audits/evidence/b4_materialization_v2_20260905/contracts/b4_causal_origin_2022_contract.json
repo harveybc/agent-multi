@@ -1,0 +1,39 @@
+{
+ "schema": "agent_multi.nested_split_contract.v1",
+ "$doc": "B4 causal origin 2022: every fitting and selection role ends before the score year; authored from the v1 contract (sha 2b31b7770f815b75...). sealed_test remains structurally unmaterialized.",
+ "source_csv": "/home/harveybc/Documents/GitHub/predictor/examples/data/project3/ethusdt_4h_tech_stat_full_model_ready.csv",
+ "source_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+ "date_column": "DATE_TIME",
+ "window_size": 32,
+ "scaling_window": 256,
+ "max_feature_lookback": 0,
+ "roles": {
+  "fit_train": {
+   "start": "2017-09-28T04:00:00",
+   "end": "2021-01-01T00:00:00"
+  },
+  "train_monitor": {
+   "start": "2020-01-01T00:00:00",
+   "end": "2021-01-01T00:00:00"
+  },
+  "inner_validation": {
+   "start": "2021-01-01T00:00:00",
+   "end": "2022-01-01T00:00:00"
+  },
+  "outer_validation": {
+   "start": "2022-01-01T00:00:00",
+   "end": "2023-01-01T00:00:00"
+  },
+  "sealed_test": {
+   "start": "2025-01-01T00:00:00",
+   "end": "2026-01-01T00:00:00"
+  }
+ },
+ "expected_rows": {
+  "fit_train": 11509,
+  "train_monitor": 2190,
+  "inner_validation": 2190,
+  "outer_validation": 2196,
+  "sealed_test": 2190
+ }
+}
