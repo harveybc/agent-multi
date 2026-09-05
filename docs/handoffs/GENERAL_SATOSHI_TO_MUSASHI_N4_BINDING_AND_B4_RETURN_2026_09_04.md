@@ -117,8 +117,12 @@ linajes refusa. Obligaciones de refusal-tests enumeradas. **Por su
 - Fallas conocidas por nombre exacto (par D1-anchor), reproducidas
   contra el padre prístino en el retorno anterior; siguen siendo las
   únicas.
-- **Suite completa SOBRE EL TIP FINAL: ESTAMPA EN EL COMMIT DE
-  ESTAMPA** conforme a la regla permanente.
+- **Suite completa SOBRE EL TIP FINAL `fe69afe2`** (corrida DESPUÉS
+  del commit, conforme a la regla permanente): **2 failed, 2893
+  passed, 4 skipped, 68 warnings in 236.01s** — las dos fallas son
+  el par D1-anchor conocido, ya reproducido contra el padre
+  prístino; delta exacto 2886 − 16 (batería N4 v2 retirada) + 23
+  (batería v3 con B4) = 2893.
 
 ## 8. Efectos externos
 
