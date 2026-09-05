@@ -183,3 +183,76 @@ def test_d2_correct_pins_bind(tmp_path, monkeypatch):
     out = sb.bind_superseding_design()
     assert out["lineage"]["manifest_sha256"] == "b" * 64
     assert len(out["design_sha256"]) == 64
+
+
+# --- Order @0b4d2748 B4-D1: genesis refusal regressions ---
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import importlib as _il
+g = _il.import_module("tools.p1lr_genesis_artifacts")
+
+
+class _FakeBuf:
+    def __init__(self, n):
+        self._n = n
+
+    def size(self):
+        return self._n
+
+
+class _FakeModel:
+    def __init__(self, n_updates=0, num_timesteps=0, replay=0):
+        self._n_updates = n_updates
+        self.num_timesteps = num_timesteps
+        self.replay_buffer = _FakeBuf(replay)
+        self.policy = object()
+
+
+def test_d1_nonzero_genesis_updates_refuse():
+    with pytest.raises(RuntimeError, match="GENESIS_NOT_ZERO_UPDATE"):
+        g._zero_update_proof(_FakeModel(n_updates=1))
+    with pytest.raises(RuntimeError, match="GENESIS_NOT_ZERO_UPDATE"):
+        g._zero_update_proof(_FakeModel(replay=5))
+    g._zero_update_proof(_FakeModel())  # true zero passes
+
+
+def _fake_build(monkeypatch, hashes):
+    class _FakePlugin:
+        def save(self, model, path):
+            Path(path).write_bytes(b"z")
+
+    class _FakeEnv:
+        def close(self):
+            pass
+
+    monkeypatch.setattr(
+        g, "resolve_observation_dimension",
+        lambda c, b: {"observation_dim": 4, "net_arch": [8],
+                      "ent_coef": 0.1})
+    monkeypatch.setattr(
+        g, "_build_model",
+        lambda seed, dim, facts: (_FakeModel(), _FakePlugin(),
+                                  _FakeEnv()))
+    sac = _il.import_module("agent_plugins.sac_agent")
+    it = iter(hashes)
+    monkeypatch.setattr(sac, "_policy_tensor_hash",
+                        lambda pol: next(it))
+
+
+def test_d1_resume_artifact_refuses(tmp_path, monkeypatch):
+    """A persisted genesis is immutable: an existing artifact refuses
+    instead of being overwritten (the resume-artifact refusal)."""
+    _fake_build(monkeypatch, ["a" * 64, "a" * 64])
+    seed_dir = tmp_path / "seed7"
+    seed_dir.mkdir()
+    (seed_dir / "zero_update_genesis_seed7.zip").write_bytes(b"old")
+    with pytest.raises(RuntimeError, match="GENESIS_EXISTS"):
+        g.build_seed_genesis({}, {}, 7, tmp_path)
+
+
+def test_d1_foreign_tensor_identity_refuses(tmp_path, monkeypatch):
+    """Two same-seed constructions must hash to ONE tensor identity;
+    a divergent (foreign/pretrained) tensor refuses."""
+    _fake_build(monkeypatch, ["a" * 64, "b" * 64])
+    with pytest.raises(RuntimeError, match="GENESIS_NONDETERMINISTIC"):
+        g.build_seed_genesis({}, {}, 8, tmp_path)

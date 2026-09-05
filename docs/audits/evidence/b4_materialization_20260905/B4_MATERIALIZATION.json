@@ -1,0 +1,218 @@
+{
+ "schema": "agent_multi.b4_causal_sac_materialization.v1",
+ "status": "PREPARED_NOT_LAUNCHED",
+ "origins": [
+  {
+   "year": 2022,
+   "path": "/home/harveybc/.local/share/agent-multi/b4_materialization_20260905/contracts/b4_causal_origin_2022_contract.json",
+   "sha256": "db247c7f56f94172de82917de1c35e878ce8fa4c884211184c5a05ccb733b027",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2021-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2020-01-01T00:00:00",
+     "end": "2021-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2021-01-01T00:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  },
+  {
+   "year": 2023,
+   "path": "/home/harveybc/.local/share/agent-multi/b4_materialization_20260905/contracts/b4_causal_origin_2023_contract.json",
+   "sha256": "c21d009a687bb4147ac1408f34c4d3554b635d1db97f4388c9a3096d3385139c",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2021-01-01T00:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2024-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  },
+  {
+   "year": 2024,
+   "path": "/home/harveybc/.local/share/agent-multi/b4_materialization_20260905/contracts/b4_causal_origin_2024_contract.json",
+   "sha256": "098d5e979d60f5f89deb931b72efca16c935f12770d7ada7dbc83b8403319585",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2024-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2024-01-01T00:00:00",
+     "end": "2025-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  }
+ ],
+ "causal_eligibility": [
+  {
+   "origin": "o2022",
+   "fit_data_end": "2021-01-01",
+   "selection_info_end": "2021-12-31",
+   "eligible": true
+  },
+  {
+   "origin": "o2023",
+   "fit_data_end": "2022-01-01",
+   "selection_info_end": "2022-12-31",
+   "eligible": true
+  },
+  {
+   "origin": "o2024",
+   "fit_data_end": "2023-01-01",
+   "selection_info_end": "2023-12-31",
+   "eligible": true
+  }
+ ],
+ "observation_identity": {
+  "feature_count": 83,
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "agent_state_fields_sha256": "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9f160",
+  "flattened_shape": 2660,
+  "system_contract_sha256": "563b1dcb05685671c1f32c6549658b432ff0cbc72bde53be4354bb9030929c06",
+  "status_in_contract": "OWNER_RATIFIED"
+ },
+ "recipe_equality_sha256": "d227d58c2cc81a0ca831af8fd0a3164742d497cfc4c402f70ec7154bcfa36e7c",
+ "genesis": {
+  "status": "materialized",
+  "cells": {
+   "o2022_seed101": {
+    "container_sha256": "04870c4fb6723bac35209b3e7ac1d856bde90d08d3bf271466925eb1bd345090",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2022_seed202": {
+    "container_sha256": "71aa31e98cba07cc9d4ed81ecca97a7185bac982bd51d8066775204eedc56155",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2022_seed303": {
+    "container_sha256": "e4d310ed24e602fb05f4654aedd374800ba4a68a0b88ae5dc4399f2b370761a6",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2022_seed404": {
+    "container_sha256": "a8cb2d5adf1d3d26e4cceb5073c74fb72b3e19171d2079053a709893dabbf23e",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   },
+   "o2023_seed101": {
+    "container_sha256": "04870c4fb6723bac35209b3e7ac1d856bde90d08d3bf271466925eb1bd345090",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2023_seed202": {
+    "container_sha256": "71aa31e98cba07cc9d4ed81ecca97a7185bac982bd51d8066775204eedc56155",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2023_seed303": {
+    "container_sha256": "e4d310ed24e602fb05f4654aedd374800ba4a68a0b88ae5dc4399f2b370761a6",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2023_seed404": {
+    "container_sha256": "a8cb2d5adf1d3d26e4cceb5073c74fb72b3e19171d2079053a709893dabbf23e",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   },
+   "o2024_seed101": {
+    "container_sha256": "04870c4fb6723bac35209b3e7ac1d856bde90d08d3bf271466925eb1bd345090",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2024_seed202": {
+    "container_sha256": "71aa31e98cba07cc9d4ed81ecca97a7185bac982bd51d8066775204eedc56155",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2024_seed303": {
+    "container_sha256": "e4d310ed24e602fb05f4654aedd374800ba4a68a0b88ae5dc4399f2b370761a6",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2024_seed404": {
+    "container_sha256": "a8cb2d5adf1d3d26e4cceb5073c74fb72b3e19171d2079053a709893dabbf23e",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   }
+  },
+  "pairing": "same zero-update init per seed across origins (paired); no cross-origin or P1 warm start"
+ },
+ "cells": {
+  "o2022_seed101": "8428c347f98db5d2302519276bd3bcffadf75165e1d6f7833197141d0a688aee",
+  "o2022_seed202": "b04ceb2825a64e41b504d375f1a92f2be0ebd06d1793210ab1f422c3338fe2f7",
+  "o2022_seed303": "ec93a5b0b8dbfd2ff22ed9bb3c5fd8597d26194a3d321e1044bafd25158e5782",
+  "o2022_seed404": "11af80f0652b8d6e654ce1861de95e4e309905bc62d9fcbbeea3bf77d402bf01",
+  "o2023_seed101": "fc6204ea8301b00559202d3c219cd844a0e35b60b3ea6ae2148e10fad379211e",
+  "o2023_seed202": "5d3adba5cf591ad004cbced8409905d0ecb17214a2a36d867db5f3093b1e2b3a",
+  "o2023_seed303": "84fe093579271734159ea4b4c9b1239ce5614c3f7fc7c8935e0d32f26b06c937",
+  "o2023_seed404": "39ea6e479b6052e33bc5d9538bfe4e7347786cd261630bdc7095c2f5d5e9f46a",
+  "o2024_seed101": "e52f9da25deb55cc626680488529b85ae2d47f92e36ab26eead3aa02033ddedd",
+  "o2024_seed202": "c7c7aee42abdb5a0d6c15e7dd56773f26e5b7848ab576911fc2cecbe91e7da29",
+  "o2024_seed303": "570616e22f3f143854c847ad06180886ff2d51b5e4f7d0d4ef855eabdaac8552",
+  "o2024_seed404": "bb3b74849cb23351c302ffc5e1eb65e639d170298405ddfb7ced38b7e5051895"
+ },
+ "gpu_hours_estimate": {
+  "basis": "median seconds/epoch from ACCEPTED P1 phase reports; assumed epochs/arm=120 (P1 normal phases stopped at 101-150 under the same patience contract)",
+  "per_host_class": {
+   "omega_4070": {
+    "seconds_per_epoch_median": 238.7,
+    "est_hours_per_arm": 7.96
+   },
+   "gamma_5070ti_5090": {
+    "seconds_per_epoch_median": 118.1,
+    "est_hours_per_arm": 3.94
+   }
+  },
+  "arms_total": 12,
+  "est_total_gpu_hours_range": [
+   47.3,
+   95.5
+  ],
+  "caveat": "v2 observation is SMALLER than P1's executed 84 (2,660 vs 2,692 inputs): estimate is mildly conservative; the proposed GPU preflight measures the real rate before dispatch"
+ },
+ "cpu_smoke_command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python tools/wp4_cpu_smoke.py --nested-contract /home/harveybc/.local/share/agent-multi/b4_materialization_20260905/contracts/b4_causal_origin_2024_contract.json --observation-contract /home/harveybc/Documents/GitHub/.worktrees/am-data-first/examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v2.json --seed 101 --epoch-timesteps 512 --max-epochs 2 --l1-patience 1 --l1-patience-start-epoch 0 --device cpu --selection-metric paired_generalization_weekly_v1 --output-dir <smoke_dir>",
+ "proposed_gpu_preflight": "ONE bounded arm (o2024, seed 101, max 3 epochs) on omega to measure real seconds/epoch under the v2 observation BEFORE any fleet dispatch \u2014 requires explicit Musashi authorization",
+ "sealed_2025_used": false
+}

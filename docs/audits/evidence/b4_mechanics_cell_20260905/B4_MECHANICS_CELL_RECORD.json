@@ -1,0 +1,65 @@
+{
+ "schema": "agent_multi.b4_mechanics_cell_record.v1",
+ "status": "MECHANICS_PROVEN_NON_PROMOTABLE",
+ "g1_eligible": false,
+ "cell": "o2024_seed101",
+ "cell_config_sha256": "e52f9da25deb55cc626680488529b85ae2d47f92e36ab26eead3aa02033ddedd",
+ "train_year_role": {
+  "year": 2023,
+  "rule": "calibration slice only \u2014 no scored-year or 2025 bar"
+ },
+ "train_csv_sha256": "6f2bf73f983acb14d05117f81a5f60c7f4d12191fd8ffd95764013ec91911afa",
+ "genesis": {
+  "container_sha256": "04870c4fb6723bac35209b3e7ac1d856bde90d08d3bf271466925eb1bd345090",
+  "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+  "zero_update_verified": true
+ },
+ "gymfx_lineage_manifest_sha256": "a30eda1f042d9a84b3a588d0ab972f9f39510410517c2557f4a7afd2f53c0787",
+ "gymfx_commit": "6d779afdd7cd4e8b2d7c2dfadc6395482e831269",
+ "observation_dimension_facts": {
+  "checked": true,
+  "source": "config.observation_contract",
+  "expected_flattened_dimension": 2660,
+  "actual_flattened_dimension": 2660
+ },
+ "caps": {
+  "budget_max_env_steps": 2000,
+  "budget_max_updates": 1000,
+  "budget_max_wall_seconds": 1800.0,
+  "rss_cap_bytes": 2147483648
+ },
+ "segments": [
+  {
+   "requested_timesteps": 1200,
+   "cumulative_env_steps": 1129,
+   "cumulative_updates": 1000,
+   "budget_stop": "optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound",
+   "wall_seconds": 18.1,
+   "post_segment_check": "typed stop: optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound"
+  },
+  {
+   "requested_timesteps": 800,
+   "pre_segment_refusal": "optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound"
+  }
+ ],
+ "observed": {
+  "env_steps": 1129,
+  "optimizer_updates": 1000,
+  "wall_seconds": 18.2,
+  "peak_rss_bytes": 1093496832,
+  "rss_stop": null
+ },
+ "proofs": {
+  "exact_update_stop": "typed refusal: optimizer-update budget 1000 reached: the ACTUAL counter reads 1000 \u2014 stopping at >= so the counter can never exceed the bound",
+  "stop_file": "typed refusal: external stop request (budget_stop_file present) \u2014 stopped at 1129 env steps / 1000 updates",
+  "finite": "all 3737606 policy parameters finite after 1000 real optimizer updates",
+  "save_load_roundtrip": "tensor sha 54a625aab1115572\u2026 and update counter 1000 identical after reload",
+  "trained_tensor_sha256": "54a625aab11155729c398236b4e01fcc78cfb9c3b49c32c9c3af20b081b91b3a"
+ },
+ "headroom_divergence": {
+  "baselines_entry_cost_headroom": 0.012102,
+  "b4_cell_entry_cost_headroom": 0.007102,
+  "note": "OBSERVED_DIVERGENCE_FOR_REVIEW: base_config margin +0.006 vs cell margin +0.001 over 2x per-side \u2014 both sealed; neither altered here; the CELL value governs this mechanics run"
+ },
+ "sealed_2025_used": false
+}
