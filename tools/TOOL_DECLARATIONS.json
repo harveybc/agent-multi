@@ -698,7 +698,22 @@
    "owner": "General Satoshi III"
   },
   "b4_mechanics_cell.py": {
-   "purpose": "B4-D3 mechanics cell (order @0b4d2748): ONE bounded CPU cell o2024_seed101 under F9 budgets (2000 steps/1000 updates/30min/2GiB RSS) proving exact-update stop, stop-file, finiteness and save/load roundtrip \u2014 NON-PROMOTABLE, G1-excluded, never a launcher",
+   "purpose": "SUPERSEDED by b4_run_cell.py (order @61622469 E5) \u2014 historical D3 mechanics executor; never a B4 launch surface",
+   "lifecycle": "deprecated",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III",
+   "replacement": "b4_run_cell.py"
+  },
+  "b4_authority.py": {
+   "purpose": "ONE B4 authority module (order @61622469): sealed design + append-only amendment chain, gym-fx point-of-use lineage, the single economic envelope rule + complete-envelope digest, corrected cost authority language, evidence-complete comparator verifier, full-chain verifier",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
+  },
+  "b4_run_cell.py": {
+   "purpose": "the ONE B4 runner (order @61622469 E5): cell id + materialization root + output root + device ONLY; all scientific/budget values from the reviewed cell; full authority chain at point of use; F9.2 + RSS/thermal/stop-file/wall in every segment; NON-PROMOTABLE artifacts; GPU refuses without the separate Musashi authorization",
    "lifecycle": "supported",
    "mutability": "mutating",
    "authority_class": "evidence_producer",

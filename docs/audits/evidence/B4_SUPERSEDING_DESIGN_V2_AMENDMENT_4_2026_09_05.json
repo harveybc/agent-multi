@@ -1,0 +1,18 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v2_final",
+ "amends_design_sha256": "9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237",
+ "supersedes_amendment_shas": [
+  "ae874b68ec896e99aa31a309a29e72f9a278cfeff7b9ffa7e1fdb7c72192c805",
+  "81f9815fd7c76ba3f0b9ec476f00d507e30b68ecc9a8d202b7c6c4902daaa21a",
+  "f04823b77acab35e6822d55016b2aa7bcc996b7b4528071b263b8f8b885835dd"
+ ],
+ "order": "agent-multi@61622469 B4-E3 \u2014 the executable append-only repair of the design/code boundary: verify_amendment_chain() carries the design and amendments 1-3 as constants and requires THESE live-file digests; any drift refuses at point of use",
+ "final_code_pins": {
+  "tools/b4_authority.py": "9d12af340f5c314561d1494bf21edf353b52bb2fbcf0c6013122352038ef835f",
+  "tools/screen_b_baselines.py": "f7351e94c39b7e7d6d73aba4a2703fe8501766e6e85871d28a202a374c484039",
+  "tools/materialize_b4_causal_sac.py": "12933c0d02da83b62c68bf8c370b664d8e089ee401bc7d093fe69de8a1c14445",
+  "tools/b4_run_cell.py": "1ae1cd4801486dac6139976b57fcdfb4629ae4e34b40fd45774b122a3bf8edad"
+ },
+ "scope": "adds: one economic envelope rule (E1, headroom 2x per-side + 0.006 = 0.012102 for the fixed Alpaca model), complete immutable cells (E4), the evidence-complete comparator verifier (E5), the single runner tools/b4_run_cell.py (E5 order section 7), corrected cost-authority language (E6). The comparator population scored before this amendment (v5) remains immutable historical evidence; the replacement population is scored under these pins",
+ "chronology_truth": "authored AFTER the @61622469 PRE freeze reproduced E1-E6 and BEFORE any replacement score or cell"
+}

@@ -44,43 +44,10 @@ SEEDS = (101, 202, 303, 404)
 # materialization RE-HASHES every consumed gym-fx code file at point
 # of use and refuses drift or a dirty tree.
 GYMFX_REPO = Path.home() / "Documents/GitHub/gym-fx"
-GYMFX_PINNED_COMMIT = (
-    "6d779afdd7cd4e8b2d7c2dfadc6395482e831269")
+import b4_authority as _b4a
 
-
-def gymfx_lineage_manifest() -> dict:
-    import subprocess
-    head = subprocess.run(
-        ["git", "-C", str(GYMFX_REPO), "rev-parse", "HEAD"],
-        capture_output=True, text=True).stdout.strip()
-    if head != GYMFX_PINNED_COMMIT:
-        raise SystemExit(
-            f"REFUSED: gym-fx checkout {head[:12]} is not the "
-            f"accepted lineage {GYMFX_PINNED_COMMIT[:12]} "
-            "(satoshi/trade-reconciliation-20260828)")
-    dirty = subprocess.run(
-        ["git", "-C", str(GYMFX_REPO), "status", "--porcelain"],
-        capture_output=True, text=True).stdout.strip()
-    if dirty:
-        raise SystemExit("REFUSED: gym-fx tree is dirty — the "
-                         "point-of-use manifest must hash the "
-                         "committed lineage only")
-    tracked = subprocess.run(
-        ["git", "-C", str(GYMFX_REPO), "ls-files", "*.py"],
-        capture_output=True, text=True).stdout.split()
-    files = {}
-    for rel in sorted(tracked):
-        fp = GYMFX_REPO / rel
-        if fp.exists():
-            files[rel] = hashlib.sha256(
-                fp.read_bytes()).hexdigest()
-    manifest = {"repo": "gym-fx",
-                "branch": "satoshi/trade-reconciliation-20260828",
-                "commit": head,
-                "files": files}
-    manifest["manifest_sha256"] = hashlib.sha256(json.dumps(
-        manifest, sort_keys=True).encode()).hexdigest()
-    return manifest
+GYMFX_PINNED_COMMIT = _b4a.GYMFX_PINNED_COMMIT
+gymfx_lineage_manifest = _b4a.gymfx_lineage_manifest
 
 # fit/monitor/inner/score eras per origin — selection information ends
 # with inner_validation, strictly before every score start.
@@ -209,6 +176,7 @@ def validate_cell_config(cfg: dict) -> None:
     if cfg.get("require_observation_declaration") is not True:
         raise SystemExit("REFUSED: observation declaration is "
                          "mandatory")
+    _b4a.verify_cell_complete(cfg)
 
 
 def check_lineage_match(cell_cfg: dict,
@@ -224,10 +192,74 @@ def check_lineage_match(cell_cfg: dict,
             f"({str(b)[:12]})")
 
 
+def resolve_training_recipe() -> dict:
+    """B4-E4: every scientific default becomes a LITERAL at
+    materialization — the accepted P1 recipe from the reviewed
+    launch manifest plus the SAC parameters the agent plugin
+    actually consumes (net_arch/ent_coef aligned with the genesis
+    construction so the same-seed identity proof holds)."""
+    import importlib.util as _ilu
+    launch = json.loads((Path.home() /
+                         ".local/share/agent-multi/"
+                         "l1_curriculum_campaign_20260823/seed101_N/"
+                         "normal_report.launch_manifest.json"
+                         ).read_text())
+    base = launch["effective_config"]
+    spec = _ilu.spec_from_file_location(
+        "p1g_recipe", REPO / "tools/p1lr_genesis_artifacts.py")
+    g = _ilu.module_from_spec(spec)
+    spec.loader.exec_module(g)
+    contract = g.load_v2_contract(g.p1.CONTRACT_PATH_V2)
+    bindings = g.p1.load_bindings()
+    facts = g.resolve_observation_dimension(contract, bindings)
+    from agent_plugins.sac_agent import Plugin as _SacPlugin
+    sac_defaults = _SacPlugin().params
+    return {
+        "env_plugin": "gym_fx_env",
+        "agent_plugin": "sac_agent",
+        "pipeline_plugin": "rl_pipeline_with_validation",
+        "preprocessor_plugin": "feature_window_preprocessor",
+        "learning_rate": float(base["learning_rate"]),
+        "batch_size": int(base["batch_size"]),
+        "learning_starts": int(base["learning_starts"]),
+        "epoch_timesteps": int(base["epoch_timesteps"]),
+        "max_epochs": int(base["max_epochs"]),
+        "l1_patience": int(base["l1_patience"]),
+        "l1_patience_start_epoch": int(
+            base["l1_patience_start_epoch"]),
+        "l1_min_delta": float(base["l1_min_delta"]),
+        "selection_metric": str(base["selection_metric"]),
+        "action_space_mode": str(base["action_space_mode"]),
+        "continuous_action_threshold": float(
+            base.get("continuous_action_threshold", 0.0)),
+        "continuous_action_contract":
+            "target_exposure_hysteresis_v2",
+        "initial_cash": float(base["initial_cash"]),
+        "solvency_mode": str(base["solvency_mode"]),
+        "feature_scaling": base.get("feature_scaling"),
+        "feature_scaling_window": base.get(
+            "feature_scaling_window"),
+        "net_arch": [int(x) for x in facts["net_arch"]],
+        "ent_coef": facts["ent_coef"],
+        "buffer_size": int(sac_defaults["buffer_size"]),
+        "train_freq": int(sac_defaults["train_freq"]),
+        "gradient_steps": int(sac_defaults["gradient_steps"]),
+        "gamma": float(sac_defaults["gamma"]),
+        "tau": float(sac_defaults["tau"]),
+        "use_sde": False,
+        "genesis_construction_buffer_size": int(
+            g.CONSTRUCTION_BUFFER_SIZE),
+        # env windowing consumed by gym_fx_env stepping (a scientific
+        # episode-segmentation choice — materialized, never ambient)
+        "train_days": 1,
+    }
+
+
 def build_cell_config(origin_contract: dict, seed: int,
                       frozen_envelope: dict, cost_manifest: dict,
                       obs: dict, envelope_sha256: str = "",
-                      gymfx_manifest_sha256: str = "") -> dict:
+                      gymfx_manifest_sha256: str = "",
+                      recipe: dict = None) -> dict:
     """WP4 (finding 326): the FULL contract identity of one B4 cell —
     envelope, venue cost binding, observation declaration and the
     mandatory-declaration flag — exists AT MATERIALIZATION, never
@@ -256,12 +288,10 @@ def build_cell_config(origin_contract: dict, seed: int,
         "nested_split_contract_path_descriptive":
             origin_contract["path"],
         "strategy_plugin": "shared_execution_envelope",
-        "execution_envelope": {
-            **frozen_envelope,
-            # cost-scaled entry headroom (N3): 2x per-side + margin
-            "entry_cost_headroom": round(2.0 * (
-                alp["env_binding"]["commission"]
-                + alp["env_binding"]["slippage_perc"]) + 0.001, 6)},
+        # B4-E1: the ONE headroom rule shared with the comparator —
+        # 2x per-side + 0.006; the old +0.001 margin refuses.
+        "execution_envelope": _b4a.complete_execution_envelope(
+            frozen_envelope, alp["env_binding"]),
         # N2/N3 (finding 331): training, checkpoint selection AND
         # scoring all run under the SAME alpaca G1 contract as the
         # rule comparators.
@@ -272,6 +302,56 @@ def build_cell_config(origin_contract: dict, seed: int,
         "cost_g1_eligible": True,
         "cost_fee_tier": alp.get("fee_schedule_source", {}).get(
             "tier", "Tier 1"),
+        "cost_authority": _b4a.COST_AUTHORITY,
+        "cost_binding": dict(alp["env_binding"]),
+        "complete_envelope_digest": _b4a.complete_envelope_digest(
+            _b4a.complete_execution_envelope(frozen_envelope,
+                                             alp["env_binding"]),
+            alp["env_binding"]),
+        "source_data_sha256": (
+            "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc"
+            "735747628f8d0435ebe440f"),
+        "seed": seed, "train_seed": seed, "eval_seed": seed,
+        "genesis_policy": {
+            "policy": "fresh_zero_update_seed_deterministic",
+            "warm_start": "FORBIDDEN",
+            "replay_import": "FORBIDDEN",
+            "resume": "FORBIDDEN"},
+        "execution_modes": {
+            "cpu_mechanics_replay": {
+                "budget_max_env_steps": 2000,
+                "budget_max_updates": 1000,
+                "budget_max_wall_seconds": 1800.0,
+                "rss_cap_bytes": 2 * 1024 ** 3,
+                "thermal_cap_celsius": 95,
+                "stop_file_policy": ("budget_stop_file in the "
+                                     "output root; presence stops "
+                                     "before the next step"),
+                "train_role": "calibration_year_only",
+                "train_year": int(origin_contract["year"]) - 1,
+                "replay_buffer_cap": 5000,
+                "learn_segments": [1200, 800],
+                "classification":
+                    "MECHANICS_PROVEN_NON_PROMOTABLE_ONLY"},
+            "gpu_economic": {
+                "status": ("REQUIRES_SEPARATE_MUSASHI_GPU_"
+                           "AUTHORIZATION"),
+                "budget_max_env_steps": None,
+                "budget_max_updates": None,
+                "budget_max_wall_seconds": 57600.0,
+                "rss_cap_bytes": 32 * 1024 ** 3,
+                "thermal_cap_celsius": 95,
+                "stop_file_policy": ("budget_stop_file in the "
+                                     "output root; presence stops "
+                                     "before the next step"),
+                "stopping_contract": ("epoch/patience per the "
+                                      "materialized recipe fields; "
+                                      "budgets resolved into the "
+                                      "authorization artifact")}},
+        "output_classification": {
+            "mechanics": "MECHANICS_PROVEN_NON_PROMOTABLE_ONLY",
+            "economic": "NON_PROMOTABLE_UNTIL_MUSASHI_REVIEW",
+            "g1_eligible": False},
         "cost_maker_taker_assumption": "taker",
         "execution_envelope_sha256": envelope_sha256,
         "feature_columns": list(obs["feature_columns"]),
@@ -297,6 +377,13 @@ def build_cell_config(origin_contract: dict, seed: int,
                 else obs["flattened_shape"]),
         },
     }
+    cfg.update(recipe or resolve_training_recipe())
+    # gpu_economic env-step/update budgets derive from the
+    # materialized stopping contract, never a launch-time choice:
+    econ = cfg["execution_modes"]["gpu_economic"]
+    econ["budget_max_env_steps"] = int(
+        cfg["epoch_timesteps"]) * (int(cfg["max_epochs"]) + 1)
+    econ["budget_max_updates"] = econ["budget_max_env_steps"]
     validate_cell_config(cfg)
     return cfg
 
@@ -403,23 +490,17 @@ def main(argv=None) -> int:
         _n4a = _ilu.module_from_spec(_s)
         _s.loader.exec_module(_n4a)
         _n4a.verify_owner_act()
-        gymfx_manifest = gymfx_lineage_manifest()
-        # B4-D3: the comparator population must exist and share ONE
-        # execution-truth lineage with every B4 cell — an absent or
-        # foreign-lineage comparator refuses (order @0b4d2748).
-        comparator_packet = (args.calibration_dir /
-                            "SCREEN_B_RESULTS.json")
-        if not comparator_packet.is_file():
-            raise SystemExit(
-                "REFUSED: no B0-B3 comparator packet in the "
-                "calibration dir — B4 cells may not materialize "
-                "against an unproven comparator lineage")
-        comparator = json.loads(comparator_packet.read_text())
-        if (comparator.get("population_label")
-                != "SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B"):
-            raise SystemExit(
-                "REFUSED: comparator packet is not the Option-B "
-                "current-execution-truth population")
+        # B4-E3/E5 (order @61622469): the FULL authority chain is
+        # established at point of use — design + amendment chain +
+        # final code pins + live lineage + owner act + fixed cost
+        # model + data identity + the EVIDENCE-COMPLETE comparator
+        # population (labels and supplied counts grant nothing).
+        authority = _b4a.verify_full_authority_chain(
+            args.calibration_dir)
+        gymfx_manifest = authority["comparator"]["lineage"]
+        comparator = {"gymfx_lineage_manifest_sha256":
+                      gymfx_manifest["manifest_sha256"]}
+        recipe = resolve_training_recipe()
         (out / "GYMFX_LINEAGE_MANIFEST.json").write_text(
             json.dumps(gymfx_manifest, indent=1))
         for oc in origins:
@@ -428,7 +509,8 @@ def main(argv=None) -> int:
                     oc, seed, frozen_by_origin[oc["year"]]["geometry"],
                     cost_manifest, obs,
                     frozen_by_origin[oc["year"]]["envelope_sha256"],
-                    gymfx_manifest["manifest_sha256"])
+                    gymfx_manifest["manifest_sha256"],
+                    recipe=recipe)
                 check_lineage_match(cfg, comparator)
                 key = f"o{oc['year']}_seed{seed}"
                 cells_cfg[key] = {
@@ -464,7 +546,9 @@ def main(argv=None) -> int:
         sort_keys=True).encode()).hexdigest()
 
     packet = {
-        "schema": "agent_multi.b4_causal_sac_materialization.v1",
+        "schema": "agent_multi.b4_causal_sac_materialization.v2",
+        "comparator_dir": str(args.calibration_dir) if
+        args.calibration_dir else None,
         "status": "PREPARED_NOT_LAUNCHED",
         "origins": origins,
         "causal_eligibility": causal,
@@ -473,22 +557,22 @@ def main(argv=None) -> int:
         "genesis": genesis,
         "cells": {k: v["config_sha256"] for k, v in cells_cfg.items()} if cells_cfg else "PENDING_WP3_CALIBRATION",
         "gpu_hours_estimate": gpu_hours_estimate(out),
-        "cpu_smoke_command": (
+        "b4_launch_surface": (
+            "tools/b4_run_cell.py is the ONE B4 runner: it may "
+            "select only a reviewed cell id, materialization root, "
+            "output root and device; every scientific and budget "
+            "value comes from the materialized cell"),
+        "cpu_mechanics_command": (
             "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python "
-            "tools/wp4_cpu_smoke.py --nested-contract "
-            f"{origins[-1]['path']} --observation-contract "
-            f"{V2_SYSTEM} --seed 101 --epoch-timesteps 512 "
-            "--max-epochs 2 --l1-patience 1 "
-            "--l1-patience-start-epoch 0 --device cpu "
-            "--selection-metric paired_generalization_weekly_v1 "
-            "--output-dir <smoke_dir>"),
-        "proposed_gpu_preflight": (
-            "ONE bounded arm (o2024, seed 101, max 3 epochs) on omega "
-            "to measure real seconds/epoch under the v2 observation "
-            "BEFORE any fleet dispatch — requires explicit Musashi "
-            "authorization"),
+            "tools/b4_run_cell.py --cell-id o2024_seed101 "
+            "--materialization-root <this_output_dir> "
+            "--output-root <mechanics_dir> --device cpu"),
+        "gpu_preflight_status": (
+            "requires the separate explicit Musashi GPU "
+            "authorization AFTER this correction passes review"),
         "sealed_2025_used": False,
     }
+    _b4a.verify_language(packet, "B4 materialization packet")
     (out / "B4_MATERIALIZATION.json").write_text(json.dumps(packet,
                                                             indent=1))
     print(json.dumps({"status": packet["status"],

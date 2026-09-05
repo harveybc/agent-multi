@@ -8,8 +8,9 @@ no free choice), stop_first_pessimistic collision, portfolio-fraction
 sizing units = lagged_equity * min(1,|raw|) / lagged_close (C3), close
 taxonomy (envelope_close_sl/tp, policy_close, reversal_close,
 data_end_liquidation). Costs come from the versioned evidence-backed
-cost manifest (C4): primary governs G1 (pending ratification),
-zero_cost is diagnostic, stress descriptive. Evidence carries the C5
+cost manifest (C4): the alpaca primary is the Musashi-reviewed
+FIXED experimental cost model governing G1; zero_cost is diagnostic,
+stress descriptive. Evidence carries the C5
 run manifest (code identities, digests, timing p50/p95, H4 deadline)
 and a deterministic idempotent trial ledger.
 """
@@ -79,6 +80,14 @@ class ScreenBError(SystemExit):
     pass
 
 
+def _b4_authority():
+    """The ONE authority module (order @61622469) — lazy so module
+    load stays path-independent."""
+    sys.path.insert(0, str(REPO / "tools"))
+    import b4_authority
+    return b4_authority
+
+
 # Order @0b4d2748 B4-D1/D2: the superseding design must be SEALED
 # (committed) before any new score exists, and every new score is
 # labeled as the Option-B population under the CURRENT accepted
@@ -93,19 +102,16 @@ def bind_superseding_design() -> dict:
     THIS data, THIS calibration rule and THIS gym-fx point-of-use
     lineage. The caller cannot choose the trust root: the pins live
     in the committed design artifact, not in arguments."""
-    sys.path.insert(0, str(REPO / "tools"))
-    from materialize_b4_causal_sac import gymfx_lineage_manifest
-    if not DESIGN_PATH.exists():
-        raise ScreenBError(
-            "REFUSED: superseding design not sealed at "
-            f"{DESIGN_PATH.name} — no new score may exist first")
+    b4a = _b4_authority()
+    gymfx_lineage_manifest = b4a.gymfx_lineage_manifest
+    # B4-E3: the design/code boundary is repaired by the executable
+    # append-only amendment chain — the final amendment's pins must
+    # equal the LIVE executing files (this one included), and the
+    # sealed design plus amendments 1-3 must match their carried
+    # identities byte for byte.
+    chain = b4a.verify_amendment_chain()
+    design = chain["design"]
     raw = DESIGN_PATH.read_bytes()
-    design = json.loads(raw)
-    pins = design["sealed_code_identity"]
-    own = _sha_file(Path(__file__).resolve())
-    if pins["screen_b_baselines_py_sha256"] != own:
-        raise ScreenBError(
-            "REFUSED: executing code drifted from the sealed design")
     if design["source_data_sha256"] != DATA_SHA:
         raise ScreenBError(
             "REFUSED: sealed design pins a different source dataset")
@@ -125,7 +131,7 @@ def bind_superseding_design() -> dict:
             "REFUSED: gym-fx point-of-use lineage differs from the "
             "sealed design — mixed execution truth")
     return {"design_sha256": hashlib.sha256(raw).hexdigest(),
-            "lineage": lineage}
+            "lineage": lineage, "chain": chain}
 
 
 def _sha_file(p: Path) -> str:
@@ -143,12 +149,11 @@ def load_cost_sets() -> dict:
         "alpaca_ethusd": {
             "binding": m["alpaca_ethusd"]["env_binding"],
             "g1_eligible": True,
-            "authority": ("alpaca venue primary (pending "
-                          "ratification)")},
+            "authority": _b4_authority().COST_AUTHORITY},
         "mt5_ethusd": {
             "binding": m["mt5_ethusd"]["env_binding"],
             "g1_eligible": False,   # financing evidence gap blocks G1
-            "authority": ("mt5 venue primary — G1-blocked by the "
+            "authority": ("mt5 venue descriptive — G1-blocked by the "
                           "financing/swap evidence gap")},
         "zero_cost": {"binding": m["zero_cost"]["env_binding"],
                       "g1_eligible": False,
@@ -244,16 +249,12 @@ def base_config(origin: dict, cost_binding: dict,
     # B4-D1 (order @0b4d2748): Alpaca crypto G1 — weekly-flat is
     # the separate MT5 program; explicitly OFF, never a default
     cfg["session_exposure_enabled"] = False
-    env_cfg = dict(envelope)
-    # entry headroom scales with the COST BINDING (a fixed 0.2% was
-    # smaller than alpaca's 30.5 bp/side and margin-rejected every
-    # full-exposure long — counted, then refused, now fixed):
-    per_side = float(cost_binding.get("commission", 0.0)) + float(
-        cost_binding.get("slippage_perc", 0.0))
-    # headroom = round-trip cost + decision-to-fill drift floor (H4
-    # opens routinely gap ~0.5-1% from the decision close; a rejected
-    # entry self-heals next bar at recomputed size and is COUNTED)
-    env_cfg["entry_cost_headroom"] = round(2.0 * per_side + 0.006, 6)
+    # B4-E1: the ONE envelope rule for comparator and B4 — the
+    # authority module owns headroom (2x per-side + 0.006); building
+    # it any other way refuses before env construction.
+    b4a = _b4_authority()
+    env_cfg = b4a.complete_execution_envelope(envelope, cost_binding)
+    b4a.verify_envelope(env_cfg, cost_binding)
     cfg["execution_envelope"] = env_cfg
     cfg.update(cost_binding)
     cfg.pop("env_mode", None)
@@ -330,6 +331,10 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
     pos = rule_positions(close, arm, origin["scored_start_index"])
     sig = sigma_series(close, origin["scored_start_index"])
     cfg = base_config(origin, cost_binding, envelope)
+    b4a = _b4_authority()
+    b4a.verify_envelope(cfg["execution_envelope"], cost_binding)
+    envelope_complete_digest = b4a.complete_envelope_digest(
+        cfg["execution_envelope"], cost_binding)
     env = _load_env_plugin("gym_fx_env", cfg).make_env(cfg)
     obs, _ = env.reset(seed=0)
     inner = env
@@ -430,6 +435,7 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
         "effective_config_sha256": _sha_obj(cfg),
         "cost_manifest_sha256": cost_sha,
         "execution_envelope_sha256": envelope_sha,
+        "complete_envelope_digest": envelope_complete_digest,
         "scored_index_sha256": origin["scored_index_sha256"],
         "decision_step_seconds_p50": pct(0.50),
         "decision_step_seconds_p95": pct(0.95),
@@ -607,7 +613,8 @@ def main(argv=None) -> int:
         r["population_label"] = POPULATION_LABEL
         r["gymfx_lineage_manifest_sha256"] = (
             binding["lineage"]["manifest_sha256"])
-    packet = {"schema": "agent_multi.screen_b_rule_arms.v5",
+    packet = {"schema": "agent_multi.screen_b_rule_arms.v6",
+              "cost_authority_model": _b4_authority().COST_AUTHORITY,
               "population_label": POPULATION_LABEL,
               "superseding_design_sha256": binding["design_sha256"],
               "gymfx_lineage_manifest_sha256":
@@ -619,6 +626,8 @@ def main(argv=None) -> int:
                                    validate_stats_inputs(results)],
               "results": results,
               "trial_ledger": str(ledger)}
+    _b4_authority().verify_language(packet,
+                                    "Screen B result packet")
     (out / "SCREEN_B_RESULTS.json").write_text(json.dumps(
         packet, indent=1))
     print(json.dumps({f"{r['arm']}@{r['origin']}:{r['cost_set']}":
