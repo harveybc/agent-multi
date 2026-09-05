@@ -1,0 +1,116 @@
+== cal o2022 geom0 B1
+== cal o2022 geom0 B2a
+== cal o2022 geom0 B2b
+== cal o2022 geom0 B3
+== cal o2022 geom1 B1
+== cal o2022 geom1 B2a
+== cal o2022 geom1 B2b
+== cal o2022 geom1 B3
+== cal o2022 geom2 B1
+== cal o2022 geom2 B2a
+== cal o2022 geom2 B2b
+== cal o2022 geom2 B3
+== cal o2022 geom3 B1
+== cal o2022 geom3 B2a
+== cal o2022 geom3 B2b
+== cal o2022 geom3 B3
+== cal o2022 geom4 B1
+== cal o2022 geom4 B2a
+== cal o2022 geom4 B2b
+== cal o2022 geom4 B3
+== cal o2022 geom5 B1
+== cal o2022 geom5 B2a
+== cal o2022 geom5 B2b
+== cal o2022 geom5 B3
+== cal o2022 geom6 B1
+== cal o2022 geom6 B2a
+== cal o2022 geom6 B2b
+== cal o2022 geom6 B3
+== cal o2023 geom0 B1
+== cal o2023 geom0 B2a
+== cal o2023 geom0 B2b
+== cal o2023 geom0 B3
+== cal o2023 geom1 B1
+== cal o2023 geom1 B2a
+== cal o2023 geom1 B2b
+== cal o2023 geom1 B3
+== cal o2023 geom2 B1
+== cal o2023 geom2 B2a
+== cal o2023 geom2 B2b
+== cal o2023 geom2 B3
+== cal o2023 geom3 B1
+== cal o2023 geom3 B2a
+== cal o2023 geom3 B2b
+== cal o2023 geom3 B3
+== cal o2023 geom4 B1
+== cal o2023 geom4 B2a
+== cal o2023 geom4 B2b
+== cal o2023 geom4 B3
+== cal o2023 geom5 B1
+== cal o2023 geom5 B2a
+== cal o2023 geom5 B2b
+== cal o2023 geom5 B3
+== cal o2023 geom6 B1
+== cal o2023 geom6 B2a
+== cal o2023 geom6 B2b
+== cal o2023 geom6 B3
+== cal o2024 geom0 B1
+== cal o2024 geom0 B2a
+== cal o2024 geom0 B2b
+== cal o2024 geom0 B3
+== cal o2024 geom1 B1
+== cal o2024 geom1 B2a
+== cal o2024 geom1 B2b
+== cal o2024 geom1 B3
+== cal o2024 geom2 B1
+== cal o2024 geom2 B2a
+== cal o2024 geom2 B2b
+== cal o2024 geom2 B3
+== cal o2024 geom3 B1
+== cal o2024 geom3 B2a
+== cal o2024 geom3 B2b
+== cal o2024 geom3 B3
+== cal o2024 geom4 B1
+== cal o2024 geom4 B2a
+== cal o2024 geom4 B2b
+== cal o2024 geom4 B3
+== cal o2024 geom5 B1
+== cal o2024 geom5 B2a
+== cal o2024 geom5 B2b
+== cal o2024 geom5 B3
+== cal o2024 geom6 B1
+== cal o2024 geom6 B2a
+== cal o2024 geom6 B2b
+== cal o2024 geom6 B3
+== B0 origin 2022 [alpaca_ethusd]
+== B1 origin 2022 [alpaca_ethusd]
+== B2a origin 2022 [alpaca_ethusd]
+== B2b origin 2022 [alpaca_ethusd]
+== B3 origin 2022 [alpaca_ethusd]
+== B0 origin 2023 [alpaca_ethusd]
+== B1 origin 2023 [alpaca_ethusd]
+== B2a origin 2023 [alpaca_ethusd]
+== B2b origin 2023 [alpaca_ethusd]
+== B3 origin 2023 [alpaca_ethusd]
+== B0 origin 2024 [alpaca_ethusd]
+== B1 origin 2024 [alpaca_ethusd]
+== B2a origin 2024 [alpaca_ethusd]
+== B2b origin 2024 [alpaca_ethusd]
+== B3 origin 2024 [alpaca_ethusd]
+{
+ "B0@2022:alpaca_ethusd": 0.0,
+ "B1@2022:alpaca_ethusd": -1.43,
+ "B2a@2022:alpaca_ethusd": 0.775,
+ "B2b@2022:alpaca_ethusd": -1.179,
+ "B3@2022:alpaca_ethusd": 0.577,
+ "B0@2023:alpaca_ethusd": 0.0,
+ "B1@2023:alpaca_ethusd": 0.662,
+ "B2a@2023:alpaca_ethusd": -1.454,
+ "B2b@2023:alpaca_ethusd": -1.429,
+ "B3@2023:alpaca_ethusd": -1.156,
+ "B0@2024:alpaca_ethusd": 0.0,
+ "B1@2024:alpaca_ethusd": 0.52,
+ "B2a@2024:alpaca_ethusd": -0.26,
+ "B2b@2024:alpaca_ethusd": 1.107,
+ "B3@2024:alpaca_ethusd": 0.023
+}

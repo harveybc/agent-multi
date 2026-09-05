@@ -1,0 +1,177 @@
+{
+ "schema": "agent_multi.screen_b_run_manifest.v3",
+ "code_identity": {
+  "agent_multi_commit": "c8f491929c543120382aa7a7d3f491a0c0ee3122",
+  "agent_multi_clean_tree": true,
+  "gymfx_origin": "/home/harveybc/Documents/GitHub/gym-fx",
+  "gymfx_commit": "6d779afdd7cd4e8b2d7c2dfadc6395482e831269",
+  "gymfx_clean_tree": true
+ },
+ "source_data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+ "cost_manifest_sha256": "bb8503aeadf9fe51c3db9ee8780ee7b8898c092869e3a452e79e58da75e0c416",
+ "calibration_grid": [
+  {
+   "envelope_mode": "fixed_fraction",
+   "sl_fraction": 0.01,
+   "tp_fraction": 0.02,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "deployed live-seat geometry (mt5_eth_sac_model_runner_v1); DIAGNOSTIC control in the WP3 calibration grid"
+  },
+  {
+   "envelope_mode": "atr",
+   "atr_window": 14,
+   "atr_sl_mult": 1.5,
+   "atr_tp_mult": 2.25,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "WP3 grid SL=1.5xATR TP/SL=1.5"
+  },
+  {
+   "envelope_mode": "atr",
+   "atr_window": 14,
+   "atr_sl_mult": 1.5,
+   "atr_tp_mult": 3.0,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "WP3 grid SL=1.5xATR TP/SL=2.0"
+  },
+  {
+   "envelope_mode": "atr",
+   "atr_window": 14,
+   "atr_sl_mult": 2.0,
+   "atr_tp_mult": 3.0,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "WP3 grid SL=2.0xATR TP/SL=1.5"
+  },
+  {
+   "envelope_mode": "atr",
+   "atr_window": 14,
+   "atr_sl_mult": 2.0,
+   "atr_tp_mult": 4.0,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "WP3 grid SL=2.0xATR TP/SL=2.0"
+  },
+  {
+   "envelope_mode": "atr",
+   "atr_window": 14,
+   "atr_sl_mult": 3.0,
+   "atr_tp_mult": 4.5,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "WP3 grid SL=3.0xATR TP/SL=1.5"
+  },
+  {
+   "envelope_mode": "atr",
+   "atr_window": 14,
+   "atr_sl_mult": 3.0,
+   "atr_tp_mult": 6.0,
+   "collision_rule": "stop_first_pessimistic",
+   "sizing_mode": "portfolio_fraction",
+   "leverage_cap": 1.0,
+   "source": "WP3 grid SL=3.0xATR TP/SL=2.0"
+  }
+ ],
+ "calibration_cost_set": "alpaca_ethusd",
+ "frozen_geometry_by_origin": {
+  "2022": {
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 3.0,
+    "atr_tp_mult": 6.0,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=3.0xATR TP/SL=2.0"
+   },
+   "envelope_sha256": "7e8a6976c3f225228abcfa593a617f8bd2c5ed43004d9d423c50be0cddd7d613",
+   "calibrated_on_year": 2021
+  },
+  "2023": {
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 3.0,
+    "atr_tp_mult": 4.5,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=3.0xATR TP/SL=1.5"
+   },
+   "envelope_sha256": "e2a4b6266fe95517a7146971206918bed1446e337ec92e4ce4a005b2b5a81053",
+   "calibrated_on_year": 2022
+  },
+  "2024": {
+   "geometry": {
+    "envelope_mode": "atr",
+    "atr_window": 14,
+    "atr_sl_mult": 3.0,
+    "atr_tp_mult": 6.0,
+    "collision_rule": "stop_first_pessimistic",
+    "sizing_mode": "portfolio_fraction",
+    "leverage_cap": 1.0,
+    "source": "WP3 grid SL=3.0xATR TP/SL=2.0"
+   },
+   "envelope_sha256": "7e8a6976c3f225228abcfa593a617f8bd2c5ed43004d9d423c50be0cddd7d613",
+   "calibrated_on_year": 2023
+  }
+ },
+ "origins": [
+  {
+   "year": 2022,
+   "csv": "docs/audits/evidence/screen_b_rule_arms_v5_current_truth_20260905/origins/origin_2022.csv",
+   "csv_sha256": "d09079544d7a82309f25fa422e6691315bb4f29f458507cca14ae0c24f80c8c7",
+   "rows": 2730,
+   "scored_rows": 2190,
+   "scored_start_index": 540,
+   "scored_index_sha256": "8e15d3e317e3c0b4cd71270ffcddcff4b78a3341abcaddfefd74a9ea620809e8",
+   "score_start": "2022-01-01 00:00:00",
+   "score_end": "2022-12-31 20:00:00"
+  },
+  {
+   "year": 2023,
+   "csv": "docs/audits/evidence/screen_b_rule_arms_v5_current_truth_20260905/origins/origin_2023.csv",
+   "csv_sha256": "6f2bf73f983acb14d05117f81a5f60c7f4d12191fd8ffd95764013ec91911afa",
+   "rows": 2730,
+   "scored_rows": 2190,
+   "scored_start_index": 540,
+   "scored_index_sha256": "9b4d84faf1063f3ad988a2352daf143beb0c3efdccf81ec10f22b9b0388a57be",
+   "score_start": "2023-01-01 00:00:00",
+   "score_end": "2023-12-31 20:00:00"
+  },
+  {
+   "year": 2024,
+   "csv": "docs/audits/evidence/screen_b_rule_arms_v5_current_truth_20260905/origins/origin_2024.csv",
+   "csv_sha256": "8681cb23efae6487ef61e8f2428f2a19409c15a1f26f2cc7171c2c720fd07db6",
+   "rows": 2736,
+   "scored_rows": 2196,
+   "scored_start_index": 540,
+   "scored_index_sha256": "98a70fa454de7a8b68d9685152697fbb45500da36234b9999a0bcd0b86b86dac",
+   "score_start": "2024-01-01 00:00:00",
+   "score_end": "2024-12-31 20:00:00"
+  }
+ ],
+ "arms": [
+  "B0",
+  "B1",
+  "B2a",
+  "B2b",
+  "B3"
+ ],
+ "cost_sets": [
+  "alpaca_ethusd"
+ ],
+ "population_label": "SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B",
+ "superseding_design_sha256": "9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237",
+ "gymfx_commit": "6d779afdd7cd4e8b2d7c2dfadc6395482e831269",
+ "gymfx_lineage_manifest_sha256": "a30eda1f042d9a84b3a588d0ab972f9f39510410517c2557f4a7afd2f53c0787"
+}

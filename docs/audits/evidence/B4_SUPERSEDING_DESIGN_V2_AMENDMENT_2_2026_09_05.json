@@ -1,0 +1,7 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v1",
+ "amends": "docs/audits/evidence/B4_SUPERSEDING_DESIGN_V2_OPTION_B_2026_09_05.json (sha256 9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237 — byte-intact)",
+ "scope": "PROSE CORRECTION ONLY — no pin changes",
+ "self_caught_defect": "the sealed design's calibration_rule.grid prose says '13 geometries'; the actual sealed grid (pinned exactly by grid_sha256 d7390c31...) holds 7: 1 deployed fixed control (SL 1% / TP 2%) + ATR(14) with SL mult {1.5, 2.0, 3.0} x TP/SL ratio {1.5, 2.0}. The count '13' was written from memory and is WRONG; the sha pin and the executed grid are right (trial ledger: 7 geoms x 4 arms x 3 origins = 84 calibration trials + 15 score trials = 99 rows, registered_before_results)",
+ "disclosure": "unprompted, caught while reconciling the D2 trial-ledger cardinality against the design"
+}
