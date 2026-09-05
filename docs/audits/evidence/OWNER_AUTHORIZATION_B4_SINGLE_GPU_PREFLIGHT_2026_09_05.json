@@ -1,0 +1,79 @@
+{
+  "schema": "agent_multi.owner_decision_record.v1",
+  "recorded_at_date": "2026-09-05",
+  "authority": "project_owner",
+  "recorded_by": "General Musashi",
+  "resolves": {
+    "order": "agent-multi@61622469",
+    "return": "satoshi/data-first-sota-20260826@0b85113a",
+    "owner_response": "I approve that they start"
+  },
+  "decision": "APPROVE_ONE_B4_BOUNDED_GPU_PREFLIGHT_ONLY",
+  "approved_cell": {
+    "cell_id": "o2024_seed101",
+    "cell_config_sha256": "fb5a92d56c8d8d3a260d2bde58e7f3d733d64fb3067a76cdd78787fc2062e9ef",
+    "cell_population_sha256": "e9ab814393434bb83329e36e64d139ab222a8da3ca7a09b48a94a85f25216cbf",
+    "materialization_sha256": "f146aa23dd1ff5bde199282fde25ad8a9c72ce4c58235e610e646d791f2926a9",
+    "genesis_binding_sha256": "50ffacb670cce2e1ca7abe4b18705308935ac5f2845468b3b365a61928cb7bd3"
+  },
+  "approved_comparator": {
+    "population": "SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B",
+    "run_manifest_sha256": "0fa49830582b78b406537e8cf0f2ced70352216fe6fbb999b644fdbac61f35a8",
+    "results_sha256": "4a30cb89456e03b63d9c4ddd04b72f3ff12c7d70e8b603b1154de8c586859ae9",
+    "trial_ledger_sha256": "295a9f6c9595e1d45f49bbd62c21670dc99a6f33127795642f6c82b434dfda59",
+    "result_count": 15,
+    "trial_count": 99
+  },
+  "approved_scientific_identity": {
+    "superseding_design_sha256": "9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237",
+    "amendment_4_sha256": "d02ea469fb41964cafb7d3bfa84652fc9b8a751416b5df1ed94bbe410a769266",
+    "gymfx_commit": "6d779afdd7cd4e8b2d7c2dfadc6395482e831269",
+    "complete_entry_cost_headroom": 0.012102,
+    "cost_authority": "MUSASHI_REVIEWED_FIXED_EXPERIMENTAL_COST_MODEL"
+  },
+  "preflight_limits": {
+    "attempts": 1,
+    "environment_steps_max": 20000,
+    "optimizer_updates_max": 20000,
+    "wall_seconds_max": 7200,
+    "host_rss_bytes_max": 8589934592,
+    "cuda_allocated_bytes_max": 6442450944,
+    "gpu_temperature_celsius_max": 87,
+    "learning_segments": [
+      20000
+    ],
+    "stop_file_required": true,
+    "heartbeat_seconds_max": 30
+  },
+  "execution_contract": {
+    "device_class": "one explicitly bound CUDA device",
+    "training_role": "origin-2024 calibration data only",
+    "training_year": 2023,
+    "scored_year_rows_in_gradients": 0,
+    "sealed_2025_rows_read": 0,
+    "initialization": "approved zero-update genesis only",
+    "result_classification": "B4_GPU_PREFLIGHT_MECHANICS_AND_THROUGHPUT_ONLY",
+    "g1_eligible": false,
+    "checkpoint_promotable": false,
+    "economic_conclusion_allowed": false
+  },
+  "preconditions": [
+    "The runner consumes this exact owner record from a fixed reviewed identity, not a caller-selected replacement.",
+    "The runner verifies the exact selected cell, materialization, genesis binding and comparator identities before CUDA or model construction.",
+    "The comparator complete-envelope digest is re-derived from frozen geometry and fixed cost bytes, not checked for presence only.",
+    "The effective PyTorch device is CUDA and its physical identity and telemetry are recorded.",
+    "Every limit is enforced inside the learning segment and cannot be increased by CLI, config defaults or amendment metadata.",
+    "Failure of any precondition ends the single attempt without retry or expansion."
+  ],
+  "does_not_authorize": [
+    "the remaining 11 B4 cells",
+    "a second preflight attempt",
+    "the 47-95 GPU-hour campaign",
+    "economic scoring, selection or inference",
+    "sealed-2025 access",
+    "checkpoint promotion or deployment",
+    "feature or target search",
+    "collector or venue work",
+    "service changes, orders or positions"
+  ]
+}
