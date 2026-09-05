@@ -1,19 +1,26 @@
 {
  "schema": "agent_multi.cost_manifest.v2",
  "version": "eth_h4_v2_venue_specific",
- "generated_utc": "2026-08-26T08:38:11.943397+00:00",
+ "generated_utc": "2026-08-26T11:28:24.401367+00:00",
  "alpaca_ethusd": {
   "instrument": "ETH/USD",
   "venue": "alpaca",
   "commission_fraction_per_side": 0.0025,
-  "commission_basis": "PUBLISHED_REAL_FEE_SCHEDULE (labeled external): Alpaca crypto base-tier TAKER 25 bp \u2014 the business fee of the real product; the Paper simulator charges 0, which is a SIMULATOR OMISSION, not business economics",
+  "commission_basis": "PUBLISHED_REAL_FEE_SCHEDULE: Alpaca crypto Tier-1 (lowest volume) TAKER fee 25 bp; the Paper simulator charges 0, which is a SIMULATOR OMISSION, not business economics",
+  "fee_schedule_source": {
+   "url": "https://docs.alpaca.markets/docs/crypto-fees",
+   "tier": "Tier 1 (monthly volume < $100k)",
+   "assumption": "TAKER (market orders cross the spread)",
+   "retrieved": "2026-08-26",
+   "verified_by": "Musashi audit 2026-08-26: 'agrees with Alpaca's current official fee schedule'"
+  },
   "paper_simulator_charge_fraction": 0.0,
-  "half_spread_fraction_per_side": 0.00045215,
-  "half_spread_basis": "EVIDENCED: median full spread 9.043 bps over 7650 venue+instrument-attributed ETH/USD paper quotes",
+  "half_spread_fraction_per_side": 0.00045115,
+  "half_spread_basis": "EVIDENCED: median full spread 9.023 bps over 7684 venue+instrument-attributed ETH/USD paper quotes",
   "slippage_fraction_per_side": 0.0001,
   "slippage_basis": "DECLARED_BOUND_NOT_EVIDENCED: 1 bp",
   "env_binding": {
-   "commission": 0.00295215,
+   "commission": 0.00295115,
    "slippage_perc": 0.0001
   }
  },
@@ -48,9 +55,9 @@
  },
  "evidence": {
   "alpaca_quotes": {
-   "n_quotes": 7650,
-   "full_spread_bps_median": 9.043,
-   "full_spread_bps_p95": 13.489,
+   "n_quotes": 7684,
+   "full_spread_bps_median": 9.023,
+   "full_spread_bps_p95": 13.486,
    "source": "/home/harveybc/.local/state/lts/alpaca-paper-lab.sqlite",
    "table": "quote_observations",
    "symbol": "ETH/USD"

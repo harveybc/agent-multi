@@ -1,0 +1,14 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v1",
+ "amends": "docs/audits/evidence/B4_SUPERSEDING_DESIGN_V2_OPTION_B_2026_09_05.json (sha256 9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237 — byte-intact) after amendments 1-2",
+ "scope": "cost-manifest PATH split + consequent code-identity re-pins; the manifest BYTES the design pins (bb8503ae...) are unchanged",
+ "self_caught_defect": "porting the 81fa5a2b Screen B files silently REPLACED examples/config/phase_3_eth_sac_dynamics/cost_manifest_eth_h4_v2.json (dc27f1d4..., the PAIRED-SAC program's sealed cost authority, commission 0.00295215) with the Screen B generation (bb8503ae..., commission 0.00295115). The paired-dispatch driver regression test_shared_facts_are_design_bound caught the drift at the full-suite tip run — the guard worked",
+ "correction": "the branch file is RESTORED to the paired-SAC bytes (dc27f1d4...); the Screen B generation now lives at examples/config/phase_3_eth_sac_dynamics/cost_manifest_eth_h4_v2_screen_b_20260826.json with IDENTICAL bytes bb8503ae... — every D2/D3 evidence digest binds bytes, not paths, so the executed evidence stands unchanged",
+ "chronology_truth": "D2 scored under the sealed baselines identity 99f36b87... and D3 materialized under amendment-1 identity 33860e51... BEFORE this split; NO score or cell was produced under the re-pinned identities below",
+ "re_pinned": {
+  "screen_b_baselines_py_sha256": "d22d5fb96bb68da39e3eaa6c3d31b1d73c6f7ffa36ff9f562248122002b46b4a",
+  "materialize_b4_causal_sac_py_sha256": "7a87a1535ce1e07efc4768981546f19d7e0b49d237ef8843d0c9185b69f23ecc",
+  "refusal_battery_sha256": "afbf2d44eb2ff9849e6b180e705e0ca23f75cb7902ca468978869d1b537d8efc"
+ },
+ "battery": "18 passed (B4 authority) + 10 passed (paired dispatch driver) at this amendment"
+}

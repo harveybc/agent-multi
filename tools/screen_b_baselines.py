@@ -32,7 +32,7 @@ DATA = Path("/home/harveybc/Documents/GitHub/predictor/examples/data/"
 DATA_SHA = ("1b447c66e68495e826c53e2ab2b08ecd3922c8fdc"
             "735747628f8d0435ebe440f")
 COST_MANIFEST = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
-                 "cost_manifest_eth_h4_v2.json")
+                 "cost_manifest_eth_h4_v2_screen_b_20260826.json")
 CONTEXT_BARS = 540
 BARS_PER_YEAR = 2190
 SIGMA_TARGET = 0.15

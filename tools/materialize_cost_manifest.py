@@ -104,7 +104,7 @@ def mt5_evidence() -> dict:
 
 def main() -> int:
     out = Path(sys.argv[sys.argv.index("--output") + 1]) if "--output" \
-        in sys.argv else Path("cost_manifest_eth_h4_v2.json")
+        in sys.argv else Path("cost_manifest_eth_h4_v2_screen_b_20260826.json")
     sp = spread_stats()          # Alpaca ETH/USD quotes (attributed)
     mt5 = mt5_evidence()         # MT5 demo ETHUSD fills (attributed)
     comm = commission_evidence() # L0: observability ONLY (unattributed)

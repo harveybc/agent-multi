@@ -185,7 +185,7 @@ def gpu_hours_estimate(reports_dir: Path) -> dict:
 
 
 COST_MANIFEST = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
-                 "cost_manifest_eth_h4_v2.json")
+                 "cost_manifest_eth_h4_v2_screen_b_20260826.json")
 
 
 def validate_cell_config(cfg: dict) -> None:
