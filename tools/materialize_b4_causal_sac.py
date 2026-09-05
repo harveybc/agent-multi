@@ -404,6 +404,22 @@ def main(argv=None) -> int:
         _s.loader.exec_module(_n4a)
         _n4a.verify_owner_act()
         gymfx_manifest = gymfx_lineage_manifest()
+        # B4-D3: the comparator population must exist and share ONE
+        # execution-truth lineage with every B4 cell — an absent or
+        # foreign-lineage comparator refuses (order @0b4d2748).
+        comparator_packet = (args.calibration_dir /
+                            "SCREEN_B_RESULTS.json")
+        if not comparator_packet.is_file():
+            raise SystemExit(
+                "REFUSED: no B0-B3 comparator packet in the "
+                "calibration dir — B4 cells may not materialize "
+                "against an unproven comparator lineage")
+        comparator = json.loads(comparator_packet.read_text())
+        if (comparator.get("population_label")
+                != "SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B"):
+            raise SystemExit(
+                "REFUSED: comparator packet is not the Option-B "
+                "current-execution-truth population")
         (out / "GYMFX_LINEAGE_MANIFEST.json").write_text(
             json.dumps(gymfx_manifest, indent=1))
         for oc in origins:
@@ -413,6 +429,7 @@ def main(argv=None) -> int:
                     cost_manifest, obs,
                     frozen_by_origin[oc["year"]]["envelope_sha256"],
                     gymfx_manifest["manifest_sha256"])
+                check_lineage_match(cfg, comparator)
                 key = f"o{oc['year']}_seed{seed}"
                 cells_cfg[key] = {
                     "effective_config": cfg,

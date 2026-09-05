@@ -1,0 +1,10 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v1",
+ "amends": "docs/audits/evidence/B4_SUPERSEDING_DESIGN_V2_OPTION_B_2026_09_05.json (sha256 9155f508afc4b87f345a652070a6727a13373c75877c619f6110d54e9e678237, sealed at agent-multi@c8f49192 — byte-intact, never edited)",
+ "scope": "EXACTLY ONE pin superseded: sealed_code_identity.materialize_b4_causal_sac_py_sha256",
+ "reason": "B4-D3 hardening AFTER the seal and BEFORE any B4 cell materialization: main() now refuses an absent comparator packet, refuses a non-Option-B population label, and calls check_lineage_match() on every cell config against the comparator packet — the D3 obligations of order @0b4d2748",
+ "superseded_pin": "3964f96f87c56018e9d5f1327815c13acd5d63696b010925802fdb2d3dc86d43",
+ "new_pin": "33860e5103997fc0ad19ecdc216afb7bdb093c07b94279fa91603b2eb7926b96",
+ "chronology_truth": "the D2 rule-arm rerun executes under the UNTOUCHED sealed screen_b_baselines.py identity (99f36b87...) and captured design sha 9155f508... at process start; this amendment changes nothing that any D2 score consumed",
+ "battery": "tests/test_b4_materializer_authority.py — 15 passed at this amendment"
+}
