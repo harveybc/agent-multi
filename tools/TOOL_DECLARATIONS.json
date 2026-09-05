@@ -696,6 +696,13 @@
    "mutability": "read_only",
    "authority_class": "discovery",
    "owner": "General Satoshi III"
+  },
+  "b4_mechanics_cell.py": {
+   "purpose": "B4-D3 mechanics cell (order @0b4d2748): ONE bounded CPU cell o2024_seed101 under F9 budgets (2000 steps/1000 updates/30min/2GiB RSS) proving exact-update stop, stop-file, finiteness and save/load roundtrip \u2014 NON-PROMOTABLE, G1-excluded, never a launcher",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
