@@ -1,0 +1,64 @@
+{
+  "schema": "agent_multi.owner_decision_record.v1",
+  "recorded_at_date": "2026-09-04",
+  "authority": "project_owner",
+  "recorded_by": "General Musashi",
+  "resolves": {
+    "order": "agent-multi@af1ca667",
+    "section": "13",
+    "items": [
+      1,
+      2
+    ]
+  },
+  "owner_response": {
+    "observation_contract_v2": "RATIFIED",
+    "mt5_terminal_build_6140": "ACCEPTED"
+  },
+  "observation_contract_v2": {
+    "decision": "OWNER_RATIFIED",
+    "contract_path": "examples/config/phase_3_eth_sac_dynamics/systems/ethusdt_4h_l1_system_v2.json",
+    "contract_file_sha256": "0ecc3d004b26ef4d913fd06ab585f9ce0885011a4cf4d1cc88d0a743b3e981a7",
+    "schema": "agent_multi.observation_system_contract.v2",
+    "feature_count": 83,
+    "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+    "excluded_feature": "typical_price",
+    "include_price_window": false,
+    "include_agent_state": true,
+    "agent_state_fields": [
+      "position",
+      "equity_norm",
+      "unrealized_pnl_norm",
+      "holding_duration_norm"
+    ],
+    "agent_state_fields_sha256": "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9f160",
+    "window_size": 32,
+    "flattened_shape": [
+      2660
+    ],
+    "scope": "Prospective post-P1 screens, including Screen B recovery. Historical P1 artifacts retain their executed 84-feature identity.",
+    "change_rule": "Any change to count, order, digests, flags, state fields, window size or flattened shape requires a new owner ratification."
+  },
+  "mt5_collector_build": {
+    "decision": "ACCEPTED_AS_CURRENT_EXPECTED_BUILD",
+    "expected_terminal_build": 6140,
+    "supersedes_expected_terminal_build": 6090,
+    "scope": "Collector preflight and operator-kit validation only.",
+    "change_rule": "The collector judge and reviewed kit may be updated to require build 6140; a different observed build requires a new disposition."
+  },
+  "remaining_owner_dependent_gates": [
+    "Ed25519 key ceremony in restricted operator storage",
+    "real backup, review-act and rollback kit",
+    "fresh direct zero-position and zero-order evidence at the coordinated activation window"
+  ],
+  "does_not_authorize": [
+    "GPU dispatch or training",
+    "collector deployment or activation",
+    "MT5 installation, update or restart",
+    "service changes",
+    "venue connections or order commands",
+    "weekly-flat live activation",
+    "key generation or storage",
+    "checkpoint promotion"
+  ]
+}
