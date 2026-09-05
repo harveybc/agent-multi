@@ -169,9 +169,11 @@ class TestMandatoryRegressions:
 
     def test_r7_forged_positive_v1_cannot_mint_a_successor(
             self, tmp_path):
-        """The C19 attack frozen: sweetened continuous losses in a
-        forged v1 — rejected at the source-identity gate, never
-        adjudicated."""
+        """C23 (order @0b4d2748): the FORMERLY OMITTED second call
+        — the forged positive v1 supplied WITH ITS OWN CORRECT
+        HASH must refuse BEFORE the data plane is loaded, because
+        the executing path CARRIES the reviewed identities and the
+        caller cannot choose the trust root."""
         v1 = json.loads(RESULT_V1.read_text())
         for ck in ("mfemae_h6", "mfemae_h12"):
             for wk, rec in v1["per_window_records"][ck].items():
@@ -180,16 +182,31 @@ class TestMandatoryRegressions:
                     for v in rec["losses"]["prior"]]
         forged = tmp_path / "forged_v1.json"
         forged.write_text(json.dumps(v1, default=float))
-        with pytest.raises(n4a.N4Refusal, match="reviewed"):
-            n4a.rebind(forged, V1_SHA, V1_DESIGN_SHA,
-                       hashlib.sha256(
-                           DESIGN_V3.read_bytes()).hexdigest(),
+        fsha = hashlib.sha256(forged.read_bytes()).hexdigest()
+        design_sha = hashlib.sha256(
+            DESIGN_V3.read_bytes()).hexdigest()
+        # THE missing call: forged file + its own correct hash.
+        # run_root is nonexistent — the refusal must fire before
+        # any data plane access could matter.
+        with pytest.raises(n4a.N4Refusal,
+                           match="trust root"):
+            n4a.rebind(forged, fsha, V1_DESIGN_SHA, design_sha,
                        Path("/nonexistent"),
                        tmp_path / "out.json")
-        # and supplying the forged file's own digest is not the
-        # reviewed identity: the caller cannot substitute it
-        fsha = hashlib.sha256(forged.read_bytes()).hexdigest()
-        assert fsha != V1_SHA
+        # a tampered file under the CARRIED identity also refuses
+        with pytest.raises(n4a.N4Refusal, match="reviewed"):
+            n4a.rebind(forged, V1_SHA, V1_DESIGN_SHA, design_sha,
+                       Path("/nonexistent"),
+                       tmp_path / "out.json")
+        # substituted v1-design or design identities refuse too
+        with pytest.raises(n4a.N4Refusal, match="trust root"):
+            n4a.rebind(forged, V1_SHA, fsha, design_sha,
+                       Path("/nonexistent"),
+                       tmp_path / "out.json")
+        with pytest.raises(n4a.N4Refusal, match="trust root"):
+            n4a.rebind(forged, V1_SHA, V1_DESIGN_SHA, fsha,
+                       Path("/nonexistent"),
+                       tmp_path / "out.json")
 
     def test_more_typed_refusals(self, records):
         recs = copy.deepcopy(records)
@@ -324,3 +341,77 @@ class TestB4RecoveryArtifacts:
                    d["explicitly_not_authorized_here"])
         assert "invariant_either_way" in \
             d["the_single_semantic_decision_for_review"]
+
+
+class TestC24DesignAndOwnerAct:
+    """C24 (order @0b4d2748): exact recursive design schema and
+    executable owner-act consumption."""
+
+    def _try_design(self, tmp_path, mutate):
+        d = json.loads(DESIGN_V3.read_text())
+        mutate(d)
+        p = tmp_path / "d.json"
+        p.write_text(json.dumps(d))
+        sha = hashlib.sha256(p.read_bytes()).hexdigest()
+        with um.patch.object(n4a, "DESIGN_V3", str(p)):
+            n4a.validate_design(sha)
+
+    def test_classification_object_refused(self, tmp_path):
+        with pytest.raises(n4a.N4Refusal, match="string"):
+            self._try_design(tmp_path, lambda d: d.__setitem__(
+                "classification", {"attacker_field": True}))
+
+    def test_unknown_key_inside_family_refused(self, tmp_path):
+        def m(d):
+            fam = next(iter(d[
+                "candidate_families_max3_horizons_max3"].values()))
+            fam["attacker"] = 1
+        with pytest.raises(n4a.N4Refusal, match="unknown"):
+            self._try_design(tmp_path, m)
+
+    def test_missing_decision_rule_verdict_refused(self, tmp_path):
+        def m(d):
+            d["decision_rule"]["verdicts"].pop(
+                "TARGET_FORMULATION_NOT_IDENTIFIED")
+        with pytest.raises(n4a.N4Refusal, match="missing"):
+            self._try_design(tmp_path, m)
+
+    def test_typed_substitutions_refused(self, tmp_path):
+        for bad in ("7200", True, 7200.0):
+            with pytest.raises(n4a.N4Refusal):
+                self._try_design(tmp_path, lambda d, b=bad:
+                                 d["execution_bounds"]
+                                 .__setitem__("wall_ceiling_s", b))
+
+    def test_owner_act_verifies_executably(self):
+        out = n4a.verify_owner_act()
+        assert out["owner_act"] == "VERIFIED"
+        assert out["act_sha256"] == (
+            "399483a14ab4821a49155afd72d153e870e2f9c0519458"
+            "75ca7fdfb5a5726186")
+        assert out["expected_terminal_build"] == 6140
+
+    def test_owner_act_tampering_refuses(self, tmp_path,
+                                         monkeypatch):
+        act_path = EV / ("OWNER_RATIFICATION_OBSERVATION_V2_AND_"
+                         "MT5_BUILD_6140_2026_09_04.json")
+        # altered final digest character
+        raw = act_path.read_text()
+        tampered = tmp_path / "act.json"
+        tampered.write_text(raw.replace(
+            '"feature_count": 83', '"feature_count": 84'))
+        monkeypatch.setattr(n4a, "OWNER_ACT_PATH", str(tampered))
+        with pytest.raises(n4a.N4Refusal, match="bytes differ"):
+            n4a.verify_owner_act()
+        # missing act
+        monkeypatch.setattr(n4a, "OWNER_ACT_PATH",
+                            str(tmp_path / "absent.json"))
+        with pytest.raises(n4a.N4Refusal, match="absent"):
+            n4a.verify_owner_act()
+
+    def test_contract_doc_no_longer_pending(self):
+        c = json.loads(
+            (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+             "systems/ethusdt_4h_l1_system_v2.json").read_text())
+        assert "pending" not in c["$doc"].lower()
+        assert "OWNER-RATIFIED" in c["$doc"]

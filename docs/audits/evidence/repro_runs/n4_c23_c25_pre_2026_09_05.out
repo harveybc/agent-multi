@@ -1,0 +1,19 @@
+== C23: the omitted second call — forged v1 + its OWN correct hash ==
+forged sha: 74b800889ecaeb7610912df50a7dad1724d981e560630a11cbfadb51bca545ba
+Attempting to load plugin: feature_window_preprocessor from group: preprocessor.plugins
+Successfully loaded plugin: feature_window_preprocessor (class-level defaults, see config_out.json for actual): {'window_size': 32, 'price_column': 'CLOSE', 'feature_columns': [], 'feature_binary_columns': [], 'feature_scaling': 'rolling_zscore', 'feature_scaling_window': 256, 'include_price_window': True, 'include_agent_state': True, 'agent_state_contract': 'legacy_episode_v1', 'holding_duration_scale_bars': 42, 'feature_clip': 10.0}
+accepted: True
+verdict: TARGET_FORMULATION_CANDIDATE_FOR_FUTURE_CONFIRMATION
+passers: ['mfemae_h6:volatility_history', 'mfemae_h12:volatility_history']
+
+== C24-A: nested design field remains permissive ==
+ACCEPTED_UNKNOWN_NESTED_FIELD
+
+== C24-B: the owner act is named but not consumed ==
+act present on this branch: False
+$doc still says pending: True
+
+== C25: LTS build coercion (documented from the order's independent run) ==
+judge still coerces via int(): True
+
+PRE CONFIRMED: all findings reproduce

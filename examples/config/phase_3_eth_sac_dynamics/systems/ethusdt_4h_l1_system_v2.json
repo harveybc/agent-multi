@@ -1,5 +1,5 @@
 {
- "$doc": "PROSPECTIVE observation contract v2 (SOTA final audit 2026-08-25, owner ratification PENDING). New identity for post-P1 screens; historical P1 artifacts stay under their executed 84-feature identity and are never rewritten.",
+ "$doc": "PROSPECTIVE observation contract v2 (SOTA final audit 2026-08-25, OWNER-RATIFIED 2026-09-04 by record 399483a1... (agent-multi@bb105fa6)). New identity for post-P1 screens; historical P1 artifacts stay under their executed 84-feature identity and are never rewritten.",
  "schema": "agent_multi.observation_system_contract.v2",
  "status": "OWNER_RATIFIED",
  "derives_from": {

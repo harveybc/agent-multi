@@ -114,10 +114,16 @@ import re as _re
 HEX64 = _re.compile(r"^[0-9a-f]{64}$")
 DESIGN_V3 = ("docs/audits/evidence/"
              "N4_TARGET_AUDIT_DESIGN_V3_2026_09_04.json")
-EXPECTED_V1_RESULT_SHA = ("d696886c4e0d8f59378e29505eaea509ffeef8"
+# C23 (order @0b4d2748): the executing correction path CARRIES the
+# reviewed identities. A caller-supplied value that is not exactly
+# the carried constant refuses BEFORE any file is opened — the
+# candidate can never choose the trust root.
+REVIEWED_V1_RESULT_SHA = ("d696886c4e0d8f59378e29505eaea509ffeef8"
                           "0b6fa8b1c5c9517587333d7400")
-EXPECTED_V1_DESIGN_SHA = ("ae05f1878305cc3aee9003849d4f147f2685a1"
+REVIEWED_V1_DESIGN_SHA = ("ae05f1878305cc3aee9003849d4f147f2685a1"
                           "59ed3afbdc3870ec7e8c58f4ef")
+REVIEWED_DESIGN_V3_SHA = ("c5ccb0eb88113d29761e98bee44fbcb92a0877"
+                          "277abc0690456e4ffc92001ad7")
 
 
 def _reject_const(name):
@@ -516,6 +522,189 @@ def executable_binding() -> dict:
         "verdict_labels": list(VERDICT_LABELS)}
 
 
+def _need(cond: bool, msg: str) -> None:
+    if not cond:
+        raise N4Refusal(msg)
+
+
+def _check_schema(value, spec, path="design"):
+    """C24.1 (order @0b4d2748): every consumed design field has an
+    exact schema and exact primitive type; unknown, missing or
+    type-changed values refuse RECURSIVELY."""
+    if spec == "str":
+        _need(type(value) is str, f"{path}: expected string")
+        return
+    if spec == "int":
+        _need(_is_int(value), f"{path}: expected integer "
+              "(booleans and floats refuse)")
+        return
+    if spec == "real":
+        _need(_is_real(value) and type(value) is not bool,
+              f"{path}: expected finite real")
+        return
+    if spec == "bool":
+        _need(type(value) is bool, f"{path}: expected boolean")
+        return
+    if isinstance(spec, tuple) and spec[0] == "list":
+        _need(type(value) is list, f"{path}: expected list")
+        for i, item in enumerate(value):
+            _check_schema(item, spec[1], f"{path}[{i}]")
+        return
+    if isinstance(spec, tuple) and spec[0] == "map":
+        _need(type(value) is dict, f"{path}: expected object")
+        for k, v in value.items():
+            _need(type(k) is str, f"{path}: non-string key")
+            _check_schema(v, spec[1], f"{path}.{k}")
+        return
+    if isinstance(spec, dict):
+        _need(type(value) is dict, f"{path}: expected object")
+        unknown = set(value) - set(spec)
+        missing = set(spec) - set(value)
+        _need(not unknown and not missing,
+              f"{path}: schema violation unknown="
+              f"{sorted(unknown)[:3]} missing="
+              f"{sorted(missing)[:3]}")
+        for k, sub in spec.items():
+            _check_schema(value[k], sub, f"{path}.{k}")
+        return
+    raise N4Refusal(f"{path}: unsupported schema spec")
+
+
+_FAMILY_SPEC = {"horizons": ("list", "int"), "definition": "str",
+                "online_computable": "str",
+                "economic_interpretation": "str",
+                "distinct_from_failures": "str"}
+DESIGN_V3_SCHEMA = {
+    "schema": "str", "experiment": "str", "order": "str",
+    "chronology": {"v1": "str", "v2": "str", "v3": "str"},
+    "classification": "str",
+    "candidate_families_max3_horizons_max3": ("map", _FAMILY_SPEC),
+    "arms_per_candidate": ("list", "str"),
+    "primary_losses": ("map", "str"),
+    "causal_design": ("map", "str"),
+    "decision_rule": {
+        "candidate_passes_iff": "str",
+        "verdicts": {
+            "TARGET_FORMULATION_CANDIDATE_FOR_FUTURE_"
+            "CONFIRMATION": "str",
+            "TARGET_FORMULATION_NOT_IDENTIFIED": "str",
+            "NO_UNTOUCHED_CONFIRMATION_ROLE_AVAILABLE": "str"}},
+    "execution_bounds": {
+        "device": "str", "wall_ceiling_s": "int",
+        "progress": "str", "determinism": "str",
+        "prohibited": "str"},
+    "supersedes": {
+        "v1_design_sha256": "str", "v2_design_sha256": "str",
+        "statuses": "str", "corrections_v3": ("list", "str")},
+    "executable_binding": ("map", None),  # typed separately
+}
+
+
+OWNER_ACT_PATH = ("docs/audits/evidence/OWNER_RATIFICATION_"
+                  "OBSERVATION_V2_AND_MT5_BUILD_6140_2026_09_04"
+                  ".json")
+OWNER_ACT_SHA = ("399483a14ab4821a49155afd72d153e870e2f9c0519458"
+                 "75ca7fdfb5a5726186")
+RATIFIED_FEATURE_COLUMNS_SHA = (
+    "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b4"
+    "4e4d")
+RATIFIED_AGENT_STATE_SHA = (
+    "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9"
+    "f160")
+RATIFIED_PROPOSED_CONTRACT_SHA = (
+    "0ecc3d004b26ef4d913fd06ab585f9ce0885011a4cf4d1cc88d0a743b3e9"
+    "81a7")
+
+
+def verify_owner_act() -> dict:
+    """C24.2 (order @0b4d2748): the owner decision record is
+    consumed EXECUTABLY — complete SHA-256 equality (prefix
+    comparisons forbidden), strict parsing, exact schema and exact
+    agreement on authority, decisions, parent order, resolved
+    items, proposed contract identity, every observation term with
+    its FULL digest, the build-6140 scope and the remaining gates.
+    Every B4 materializer must call this before accepting
+    OWNER_RATIFIED — a status string alone grants nothing."""
+    path = Path(OWNER_ACT_PATH)
+    if not path.is_absolute():
+        path = REPO / path
+    if not path.exists():
+        raise N4Refusal("owner act absent from the executing "
+                        "branch — OWNER_RATIFIED cannot be "
+                        "accepted")
+    raw = path.read_bytes()
+    actual = hashlib.sha256(raw).hexdigest()
+    if actual != OWNER_ACT_SHA:
+        raise N4Refusal(
+            "owner act bytes differ from the recorded identity "
+            "— refused (full-digest equality, no prefixes)")
+    act = strict_json_bytes(raw)
+    _need(act.get("authority") == "project_owner",
+          "owner act: authority is not the project owner")
+    _need(act.get("resolves", {}).get("order")
+          == "agent-multi@af1ca667"
+          and act["resolves"].get("section") == "13"
+          and act["resolves"].get("items") == [1, 2],
+          "owner act: foreign parent order or resolved items")
+    resp = act.get("owner_response", {})
+    _need(resp.get("observation_contract_v2") == "RATIFIED"
+          and resp.get("mt5_terminal_build_6140") == "ACCEPTED",
+          "owner act: decision differs")
+    obs = act.get("observation_contract_v2", {})
+    _need(obs.get("decision") == "OWNER_RATIFIED"
+          and obs.get("contract_file_sha256")
+          == RATIFIED_PROPOSED_CONTRACT_SHA
+          and obs.get("feature_count") == 83
+          and obs.get("feature_columns_sha256")
+          == RATIFIED_FEATURE_COLUMNS_SHA
+          and obs.get("excluded_feature") == "typical_price"
+          and obs.get("include_price_window") is False
+          and obs.get("include_agent_state") is True
+          and obs.get("agent_state_fields")
+          == ["position", "equity_norm", "unrealized_pnl_norm",
+              "holding_duration_norm"]
+          and obs.get("agent_state_fields_sha256")
+          == RATIFIED_AGENT_STATE_SHA
+          and obs.get("window_size") == 32
+          and obs.get("flattened_shape") == [2660],
+          "owner act: an observation term differs from the "
+          "ratified tuple")
+    build = act.get("mt5_collector_build", {})
+    _need(build.get("decision")
+          == "ACCEPTED_AS_CURRENT_EXPECTED_BUILD"
+          and build.get("expected_terminal_build") == 6140
+          and type(build.get("expected_terminal_build")) is int
+          and build.get("supersedes_expected_terminal_build")
+          == 6090,
+          "owner act: build decision differs")
+    gates = act.get("remaining_owner_dependent_gates")
+    _need(isinstance(gates, list) and len(gates) == 3,
+          "owner act: remaining gates differ")
+    # the live contract must agree with the act
+    contract = strict_json_bytes(
+        (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+         "systems/ethusdt_4h_l1_system_v2.json").read_bytes())
+    _need(contract.get("status") == "OWNER_RATIFIED",
+          "contract status is not OWNER_RATIFIED")
+    cols = contract["observation"]["feature_columns"]
+    cols_sha = hashlib.sha256(json.dumps(
+        cols, separators=(",", ":")).encode()).hexdigest()
+    state_sha = hashlib.sha256(json.dumps(
+        contract["observation"]["agent_state_fields"],
+        separators=(",", ":")).encode()).hexdigest()
+    _need(cols_sha == RATIFIED_FEATURE_COLUMNS_SHA
+          and state_sha == RATIFIED_AGENT_STATE_SHA
+          and len(cols) == 83,
+          "live contract terms differ from the ratified digests")
+    _need("pending" not in contract.get("$doc", "").lower()
+          and "AWAITING" not in contract.get("$doc", ""),
+          "contract $doc still claims a pending ratification")
+    return {"owner_act": "VERIFIED",
+            "act_sha256": actual,
+            "observation_identity": "OWNER_RATIFIED",
+            "expected_terminal_build": 6140}
+
+
 DESIGN_V3_TOP_KEYS = {
     "schema", "experiment", "order", "chronology",
     "classification", "candidate_families_max3_horizons_max3",
@@ -548,14 +737,26 @@ def validate_design(expected_sha256: str) -> dict:
             f"expected pre-execution identity "
             f"{expected_sha256[:12]}")
     design = strict_json_bytes(raw)
-    unknown = set(design) - DESIGN_V3_TOP_KEYS
-    missing = DESIGN_V3_TOP_KEYS - set(design)
-    if unknown or missing:
-        raise N4Refusal(
-            f"design top-level schema violation: unknown="
-            f"{sorted(unknown)[:3]} missing={sorted(missing)[:3]}")
-    binding = design["executable_binding"]
-    _typed_equal(binding, executable_binding())
+    # C24.1: the WHOLE document is schema-checked recursively with
+    # exact primitive types; executable_binding is then compared
+    # field-by-field against the executing module
+    schema = dict(DESIGN_V3_SCHEMA)
+    schema["executable_binding"] = ("map", None)
+    for key, spec in schema.items():
+        _need(key in design, f"design: missing {key}")
+    unknown = set(design) - set(schema)
+    _need(not unknown, f"design top-level schema violation: "
+          f"unknown={sorted(unknown)[:3]}")
+    for key, spec in schema.items():
+        if key == "executable_binding":
+            continue
+        _check_schema(design[key], spec, f"design.{key}")
+    fams = design["candidate_families_max3_horizons_max3"]
+    _need(len(fams) <= 3 and all(
+        len(f["horizons"]) <= 3 for f in fams.values()),
+        "design: family/horizon cardinality violated")
+    _typed_equal(design["executable_binding"],
+                 executable_binding())
     return design
 
 
@@ -949,19 +1150,31 @@ def rebind(v1_result: Path, expected_v1_sha: str,
     CPU reconstruction; no new hypothesis, threshold, target,
     model, neural run or GPU."""
     import numpy as np
+    # C23: supplied identities must EQUAL the carried reviewed
+    # constants — checked before any file is opened
+    for supplied, carried, label in (
+            (expected_v1_sha, REVIEWED_V1_RESULT_SHA,
+             "v1 result"),
+            (expected_v1_design_sha, REVIEWED_V1_DESIGN_SHA,
+             "v1 design"),
+            (design_sha, REVIEWED_DESIGN_V3_SHA,
+             "corrected design")):
+        if supplied != carried:
+            raise N4Refusal(
+                f"supplied {label} identity is not the carried "
+                "reviewed constant — the caller cannot choose the "
+                "trust root; refused before opening any file")
     raw = v1_result.read_bytes()
     actual = hashlib.sha256(raw).hexdigest()
-    if actual != expected_v1_sha:
+    if actual != REVIEWED_V1_RESULT_SHA:
         raise N4Refusal(
             f"source v1 result {actual[:12]} differs from the "
-            f"independently reviewed identity "
-            f"{str(expected_v1_sha)[:12]} — refused before "
-            "parsing")
+            "carried reviewed identity — refused before parsing")
     v1_design_path = REPO / ("docs/audits/evidence/"
                              "N4_TARGET_AUDIT_DESIGN_2026_09_04"
                              ".json")
     v1_design_actual = sha_file(v1_design_path)
-    if v1_design_actual != expected_v1_design_sha:
+    if v1_design_actual != REVIEWED_V1_DESIGN_SHA:
         raise N4Refusal("original v1 design bytes differ from the "
                         "reviewed identity")
     design = validate_design(design_sha)
