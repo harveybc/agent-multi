@@ -119,10 +119,18 @@ def main() -> int:
             "instrument": "ETH/USD", "venue": "alpaca",
             "commission_fraction_per_side": 0.0025,
             "commission_basis": (
-                "PUBLISHED_REAL_FEE_SCHEDULE (labeled external): Alpaca "
-                "crypto base-tier TAKER 25 bp — the business fee of the "
-                "real product; the Paper simulator charges 0, which is a "
-                "SIMULATOR OMISSION, not business economics"),
+                "PUBLISHED_REAL_FEE_SCHEDULE: Alpaca crypto Tier-1 "
+                "(lowest volume) TAKER fee 25 bp; the Paper simulator "
+                "charges 0, which is a SIMULATOR OMISSION, not business "
+                "economics"),
+            "fee_schedule_source": {
+                "url": "https://docs.alpaca.markets/docs/crypto-fees",
+                "tier": "Tier 1 (monthly volume < $100k)",
+                "assumption": "TAKER (market orders cross the spread)",
+                "retrieved": "2026-08-26",
+                "verified_by": ("Musashi audit 2026-08-26: 'agrees with "
+                                "Alpaca's current official fee "
+                                "schedule'")},
             "paper_simulator_charge_fraction": 0.0,
             "half_spread_fraction_per_side": round(alp_half / 1e4, 8),
             "half_spread_basis": (

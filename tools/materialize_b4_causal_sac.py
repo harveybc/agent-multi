@@ -39,6 +39,49 @@ V2_SYSTEM = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
              "systems/ethusdt_4h_l1_system_v2.json")
 SEEDS = (101, 202, 303, 404)
 
+# B4-D1 (order @0b4d2748): the rerun binds to the CURRENT accepted
+# GymFxEnv line. A commit label alone is insufficient — the
+# materialization RE-HASHES every consumed gym-fx code file at point
+# of use and refuses drift or a dirty tree.
+GYMFX_REPO = Path.home() / "Documents/GitHub/gym-fx"
+GYMFX_PINNED_COMMIT = (
+    "6d779afdd7cd4e8b2d7c2dfadc6395482e831269")
+
+
+def gymfx_lineage_manifest() -> dict:
+    import subprocess
+    head = subprocess.run(
+        ["git", "-C", str(GYMFX_REPO), "rev-parse", "HEAD"],
+        capture_output=True, text=True).stdout.strip()
+    if head != GYMFX_PINNED_COMMIT:
+        raise SystemExit(
+            f"REFUSED: gym-fx checkout {head[:12]} is not the "
+            f"accepted lineage {GYMFX_PINNED_COMMIT[:12]} "
+            "(satoshi/trade-reconciliation-20260828)")
+    dirty = subprocess.run(
+        ["git", "-C", str(GYMFX_REPO), "status", "--porcelain"],
+        capture_output=True, text=True).stdout.strip()
+    if dirty:
+        raise SystemExit("REFUSED: gym-fx tree is dirty — the "
+                         "point-of-use manifest must hash the "
+                         "committed lineage only")
+    tracked = subprocess.run(
+        ["git", "-C", str(GYMFX_REPO), "ls-files", "*.py"],
+        capture_output=True, text=True).stdout.split()
+    files = {}
+    for rel in sorted(tracked):
+        fp = GYMFX_REPO / rel
+        if fp.exists():
+            files[rel] = hashlib.sha256(
+                fp.read_bytes()).hexdigest()
+    manifest = {"repo": "gym-fx",
+                "branch": "satoshi/trade-reconciliation-20260828",
+                "commit": head,
+                "files": files}
+    manifest["manifest_sha256"] = hashlib.sha256(json.dumps(
+        manifest, sort_keys=True).encode()).hexdigest()
+    return manifest
+
 # fit/monitor/inner/score eras per origin — selection information ends
 # with inner_validation, strictly before every score start.
 ORIGIN_ERAS = {
@@ -145,9 +188,46 @@ COST_MANIFEST = (REPO / "examples/config/phase_3_eth_sac_dynamics/"
                  "cost_manifest_eth_h4_v2.json")
 
 
+def validate_cell_config(cfg: dict) -> None:
+    """B4-D1 required regressions (order @0b4d2748 §6): every
+    effective config must carry the explicit weekly-session OFF
+    flag, the Alpaca-only G1 authority, the genesis binding hook
+    and the gym-fx lineage identity. Tampered configs refuse."""
+    if cfg.get("session_exposure_enabled") is not False:
+        raise SystemExit(
+            "REFUSED: session_exposure_enabled must be explicitly "
+            "False — the weekly-flat state machine belongs to the "
+            "separate MT5 program and a default or override may "
+            "not decide the Screen B question")
+    if cfg.get("cost_contract_id") != "alpaca_ethusd" \
+            or cfg.get("cost_g1_eligible") is not True:
+        raise SystemExit("REFUSED: only the Alpaca primary "
+                         "contract is a G1 authority")
+    if not cfg.get("gymfx_lineage_manifest_sha256"):
+        raise SystemExit("REFUSED: cell without the gym-fx "
+                         "point-of-use lineage identity")
+    if cfg.get("require_observation_declaration") is not True:
+        raise SystemExit("REFUSED: observation declaration is "
+                         "mandatory")
+
+
+def check_lineage_match(cell_cfg: dict,
+                        baseline_meta: dict) -> None:
+    """B4-D1: a rule result and a B4 cell may never mix GymFxEnv
+    lineages."""
+    a = cell_cfg.get("gymfx_lineage_manifest_sha256")
+    b = baseline_meta.get("gymfx_lineage_manifest_sha256")
+    if not a or not b or a != b:
+        raise SystemExit(
+            f"REFUSED: mixed GymFxEnv lineage between B4 cell "
+            f"({str(a)[:12]}) and its rule comparator "
+            f"({str(b)[:12]})")
+
+
 def build_cell_config(origin_contract: dict, seed: int,
                       frozen_envelope: dict, cost_manifest: dict,
-                      obs: dict) -> dict:
+                      obs: dict, envelope_sha256: str = "",
+                      gymfx_manifest_sha256: str = "") -> dict:
     """WP4 (finding 326): the FULL contract identity of one B4 cell —
     envelope, venue cost binding, observation declaration and the
     mandatory-declaration flag — exists AT MATERIALIZATION, never
@@ -155,22 +235,45 @@ def build_cell_config(origin_contract: dict, seed: int,
     if not frozen_envelope:
         raise SystemExit("REFUSED: B4 cell without a frozen execution "
                          "envelope (finding 326)")
-    if not cost_manifest.get("mt5_ethusd"):
-        raise SystemExit("REFUSED: B4 cell without a venue cost "
-                         "contract (finding 326)")
+    alp = cost_manifest.get("alpaca_ethusd")
+    if not alp:
+        raise SystemExit("REFUSED: B4 cell without the alpaca_ethusd "
+                         "venue cost contract (findings 326/331)")
+    if cost_manifest.get("_force_contract") in ("mt5_ethusd",
+                                                "zero_cost"):
+        raise SystemExit("REFUSED: MT5/zero-cost contracts are not "
+                         "G1-eligible for B4 cells (finding 331)")
     if not obs:
         raise SystemExit("REFUSED: B4 cell without the v2 observation "
                          "declaration (finding 327)")
     cfg = {
         "seed": seed,
+        # B4-D1: the G1 venue is Alpaca crypto — the weekly-flat
+        # state machine belongs to the separate MT5 program and is
+        # explicitly OFF; a default may not decide this
+        "session_exposure_enabled": False,
         "nested_split_contract_sha256": origin_contract["sha256"],
         "nested_split_contract_path_descriptive":
             origin_contract["path"],
         "strategy_plugin": "shared_execution_envelope",
-        "execution_envelope": dict(frozen_envelope),
-        # training env executes under the LIVE venue's binding (mt5);
-        # evaluation is re-scored under both venue primaries (declared)
-        **cost_manifest["mt5_ethusd"]["env_binding"],
+        "execution_envelope": {
+            **frozen_envelope,
+            # cost-scaled entry headroom (N3): 2x per-side + margin
+            "entry_cost_headroom": round(2.0 * (
+                alp["env_binding"]["commission"]
+                + alp["env_binding"]["slippage_perc"]) + 0.001, 6)},
+        # N2/N3 (finding 331): training, checkpoint selection AND
+        # scoring all run under the SAME alpaca G1 contract as the
+        # rule comparators.
+        **alp["env_binding"],
+        "cost_contract_id": "alpaca_ethusd",
+        "cost_manifest_sha256": hashlib.sha256(
+            COST_MANIFEST.read_bytes()).hexdigest(),
+        "cost_g1_eligible": True,
+        "cost_fee_tier": alp.get("fee_schedule_source", {}).get(
+            "tier", "Tier 1"),
+        "cost_maker_taker_assumption": "taker",
+        "execution_envelope_sha256": envelope_sha256,
         "feature_columns": list(obs["feature_columns"]),
         "include_price_window": obs["include_price_window"],
         "include_agent_state": obs["include_agent_state"],
@@ -178,6 +281,7 @@ def build_cell_config(origin_contract: dict, seed: int,
                                         "live_stationary_v2"),
         "window_size": obs["window_size"],
         "require_observation_declaration": True,
+        "gymfx_lineage_manifest_sha256": gymfx_manifest_sha256,
         "observation_contract": {
             "require_feature_aware_preprocessor": True,
             "preprocessor_plugin": "feature_window_preprocessor",
@@ -193,6 +297,7 @@ def build_cell_config(origin_contract: dict, seed: int,
                 else obs["flattened_shape"]),
         },
     }
+    validate_cell_config(cfg)
     return cfg
 
 
@@ -289,11 +394,25 @@ def main(argv=None) -> int:
                 "calibrated_on_year": cal["calibration_year"]}
     cells_cfg = {}
     if frozen_by_origin:
+        # C24.2: a status string alone grants nothing — the owner
+        # act is verified executably before any cell accepts the
+        # ratified observation identity
+        import importlib.util as _ilu
+        _s = _ilu.spec_from_file_location(
+            "n4a_owner", REPO / "tools/n4_target_audit.py")
+        _n4a = _ilu.module_from_spec(_s)
+        _s.loader.exec_module(_n4a)
+        _n4a.verify_owner_act()
+        gymfx_manifest = gymfx_lineage_manifest()
+        (out / "GYMFX_LINEAGE_MANIFEST.json").write_text(
+            json.dumps(gymfx_manifest, indent=1))
         for oc in origins:
             for seed in SEEDS:
                 cfg = build_cell_config(
                     oc, seed, frozen_by_origin[oc["year"]]["geometry"],
-                    cost_manifest, obs)
+                    cost_manifest, obs,
+                    frozen_by_origin[oc["year"]]["envelope_sha256"],
+                    gymfx_manifest["manifest_sha256"])
                 key = f"o{oc['year']}_seed{seed}"
                 cells_cfg[key] = {
                     "effective_config": cfg,
@@ -302,6 +421,16 @@ def main(argv=None) -> int:
                         default=str).encode()).hexdigest()}
         (out / "B4_CELL_CONFIGS.json").write_text(json.dumps(
             cells_cfg, indent=1))
+        gen_manifest = out / "genesis" / "GENESIS_BINDING.json"
+        gen_manifest.parent.mkdir(parents=True, exist_ok=True)
+        gen_manifest.write_text(json.dumps({
+            "binding": {k: v["config_sha256"]
+                        for k, v in cells_cfg.items()},
+            "note": ("genesis tensors are reusable (seed-deterministic, "
+                     "observation identity unchanged) but each cell's "
+                     "genesis is BOUND to this final cell-config digest "
+                     "(N3); a config change invalidates the binding")},
+            indent=1))
 
     recipe = {"cost_manifest_sha256": hashlib.sha256(
                   COST_MANIFEST.read_bytes()).hexdigest(),

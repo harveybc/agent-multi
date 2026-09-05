@@ -1,0 +1,101 @@
+{
+  "schema": "agent_multi.b4_superseding_design.v2",
+  "order": "agent-multi@0b4d2748 — Option B ACCEPTED by Musashi; this artifact is the NEW superseding design (B4-D1), not an edit of the reviewed proposal",
+  "supersedes": {
+    "proposal": "docs/audits/evidence/B4_SUPERSEDING_DESIGN_PROPOSAL_2026_09_04.json",
+    "decision_taken": "option_B — rerun the CPU-cheap B0-B3 rule baselines AND run B4 under the CURRENT accepted gym-fx execution truth; stale-lineage comparators refused"
+  },
+  "status": "SEALED_BEFORE_ANY_NEW_SCORE",
+  "population_label": "SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B",
+
+  "question_unchanged": "does a causally trained random-initialized SAC policy add value over the already completed B0-B3 rules under the same folds, costs and execution envelope?",
+
+  "cells_unchanged": {
+    "origins": [2022, 2023, 2024],
+    "seeds": [101, 202, 303, 404],
+    "b4_cells": 12,
+    "rule_arms": ["B0", "B1", "B2a", "B2b", "B3"],
+    "rule_arm_definitions": "doc 40 §Screen B; implemented by rule_positions() inside the sealed screen_b_baselines.py identity below — no free parameters outside the sealed grid"
+  },
+
+  "execution_truth_binding": {
+    "gymfx_commit": "6d779afdd7cd4e8b2d7c2dfadc6395482e831269",
+    "gymfx_branch_evidence": "satoshi/trade-reconciliation-20260828 (fill-truth + temporal v2, accepted 2026-08-28)",
+    "gymfx_point_of_use_manifest_sha256": "a30eda1f042d9a84b3a588d0ab972f9f39510410517c2557f4a7afd2f53c0787",
+    "gymfx_tracked_py_files": 85,
+    "point_of_use_rule": "gymfx_lineage_manifest() recomputes the manifest AT EXECUTION TIME from the live checkout and refuses any other commit or a dirty tree; both the baselines runner and the B4 materializer call it — the caller cannot choose the trust root",
+    "mixed_lineage_rule": "check_lineage_match() refuses any B4 cell whose gymfx_lineage_manifest_sha256 differs from its B0-B3 comparator's; every result and every cell config carries the identity"
+  },
+
+  "sealed_code_identity": {
+    "screen_b_baselines_py_sha256": "99f36b87d7a40a0553991ac6b875f1619023f955755bcb92555b8119a51ac8f3",
+    "materialize_b4_causal_sac_py_sha256": "3964f96f87c56018e9d5f1327815c13acd5d63696b010925802fdb2d3dc86d43",
+    "refusal_battery": "tests/test_b4_materializer_authority.py sha256 0f9ba7a53833a5b98f7142294aad76fe607a7c4a386ac9bb2cf041e0a8925a3d — 15 passed",
+    "binding_rule": "bind_superseding_design() refuses to score when the executing screen_b_baselines.py sha, the source data sha, the cost manifest sha, the calibration grid sha or the live gym-fx manifest sha differs from the pins in THIS file"
+  },
+
+  "source_data_sha256": "1b447c66e68495e826c53e2ab2b08ecd3922c8fdc735747628f8d0435ebe440f",
+  "cost_manifest_sha256": "bb8503aeadf9fe51c3db9ee8780ee7b8898c092869e3a452e79e58da75e0c416",
+
+  "economy_unchanged": {
+    "g1_sole_economy": "alpaca_ethusd (owner-ratified venue path); zero_cost VENUE_NEUTRAL_DIAGNOSTIC_ONLY; mt5 descriptive and G1-blocked by the financing/swap evidence gap",
+    "b4_envelopes": "per-origin FROZEN Alpaca envelopes produced by the calibration rule below during the D2 rerun — B4 consumes them, never refits them"
+  },
+
+  "calibration_rule": {
+    "inherited_exactly_from": "agent-multi@81fa5a2b screen_b_baselines.py (final envelope-calibration rule)",
+    "grid_sha256": "d7390c31ac9c82dfa5cd002fc5a5228fd10808f12196ee86b6ae362d1ebb465a",
+    "grid": "13 geometries: deployed fixed control (SL 1% / TP 2%) + ATR(14) {1.5,2.0,3.0}xSL x TP/SL {1.5,2.0}",
+    "calibration_cost_set": "alpaca_ethusd",
+    "calibration_window": "the 12 months BEFORE each origin's score year (strictly causal; no scored-year bar enters geometry selection)",
+    "selection": "activity gates first (median envelope fires <= 1000/yr, median position events >= 4/yr), then max median across arms of (net_return - 1.0 * mdd)",
+    "recalibration_scope": "allowed ONLY inside these eligible development roles; NO 2025 row may be read or materialized"
+  },
+
+  "observation_contract_ratified": {
+    "identity": "observation contract v2 — 83 ordered features, NO price window, 4 agent-state fields, window 32, flattened 2660",
+    "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+    "agent_state_sha256": "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9f160",
+    "owner_act_record_sha256": "399483a14ab4821a49155afd72d153e870e2f9c051945875ca7fdfb5a5726186",
+    "owner_act_commit": "agent-multi@bb105fa6",
+    "ratified_proposed_bytes_sha256": "0ecc3d004b26ef4d913fd06ab585f9ce0885011a4cf4d1cc88d0a743b3e981a7",
+    "current_contract_file_sha256": "563b1dcb05685671c1f32c6549658b432ff0cbc72bde53be4354bb9030929c06",
+    "consumption": "verify_owner_act() (carried constants, full-digest equality, terms-unchanged proof, live-contract cross-check) gates B4 materialization; live semantic refusal before model construction enforces the 83/flags/shape identity"
+  },
+
+  "genesis_unchanged": {
+    "rule": "fresh zero-update genesis per seed, recipe-equality digest across the 12 cells, zero pretrained keys — hidden pretrained keys, nonzero update counters and resume artifacts refuse"
+  },
+
+  "session_exposure": {
+    "value": false,
+    "rule": "session_exposure_enabled is EXPLICITLY False in every rule-arm config and every B4 cell config; absent or True refuses (validate_cell_config + base_config)"
+  },
+
+  "sealed_2025": {
+    "rule": "structurally absent — origins materialize only their own year; SEALED_START 2025-01-01 never enters any role; any role touching 2025 refuses"
+  },
+
+  "consumed_years_disclosure": "2022-2024 are development-consumed by screen-v2/N1-N4 and by this Screen B program; NO confirmation claim may be emitted from them; every output carries the population label and this disclosure — confirmation lives only in a future sealed protocol",
+
+  "old_evidence_quarantine": {
+    "immutable_comparator_refused": "screen_b_rule_arms_v4_alpaca_20260826 at agent-multi@81fa5a2b (RUN_MANIFEST blob 8c2ed49d00e64ffe0fceec7f5dfa1379d6f01656, SCREEN_B_RESULTS blob be50ccd37b4d7c22ba3bb99c3e47161b2a3cb246) ran under the superseded 2026-08-25/26 lineage — it remains immutable evidence and CANNOT serve as the B4 comparator",
+    "v1_v2_v3_dirs": "docs/audits/evidence/screen_b_rule_arms_{20260825,v2_20260825,v3_20260826} untouched on this branch"
+  },
+
+  "d2_rerun_specification": {
+    "arms": "ALL of B0,B1,B2a,B2b,B3 x origins 2022,2023,2024 under the frozen Alpaca G1 economy (--cost-sets alpaca_ethusd)",
+    "compute": "CPU only (CUDA_VISIBLE_DEVICES empty)",
+    "evidence_dir": "docs/audits/evidence/screen_b_rule_arms_v5_current_truth_20260905/",
+    "sealing": "THIS design + code identities + trial ledger registration precede every score; trials register with registered_before_results=true"
+  },
+
+  "d3_mechanics_cell_specification": {
+    "cell": "origin 2024, seed 101, CPU",
+    "caps": {"env_steps": 2000, "optimizer_updates": 1000, "wall_minutes": 30, "rss_gib": 2},
+    "obligations": "F9.2 budget callback in every learning segment (exact-update stop + stop-file), finite steps and gradients, save/load roundtrip proof",
+    "artifacts": "NON-PROMOTABLE, excluded from G1"
+  },
+
+  "explicitly_not_authorized": ["GPU dispatch or GPU preflight execution", "feature selection, Screen A/R/C, broad campaigns", "collector activation, key ceremony, service change, venue connection, order commands", "weekly-flat activation or checkpoint promotion", "any confirmation claim on the consumed development years", "reading or materializing any 2025 row"]
+}

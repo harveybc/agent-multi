@@ -66,7 +66,9 @@ CALIBRATION_GRID = [dict(FIXED_CONTROL_ENVELOPE)] + [
      "source": f"WP3 grid SL={sl}xATR TP/SL={ratio}"}
     for sl in (1.5, 2.0, 3.0) for ratio in (1.5, 2.0)]
 CALIBRATION_ARMS = ("B1", "B2a", "B2b", "B3")
-CALIBRATION_COST_SET = "mt5_ethusd"   # the executing live venue
+CALIBRATION_COST_SET = "alpaca_ethusd"  # N2: the SOLE current G1
+# economy — geometry must be selected under its own economics
+# (finding 330); MT5 stays descriptive and is NOT recalibrated
 # activity gates BEFORE economic ranking (declared):
 MAX_ENVELOPE_FIRES_PER_YEAR = 1000    # pathological churn refusal
 MIN_POSITION_EVENTS_PER_YEAR = 4      # no-activity refusal
@@ -75,6 +77,55 @@ RISK_LAMBDA = 1.0                     # hierarchical composite weight
 
 class ScreenBError(SystemExit):
     pass
+
+
+# Order @0b4d2748 B4-D1/D2: the superseding design must be SEALED
+# (committed) before any new score exists, and every new score is
+# labeled as the Option-B population under the CURRENT accepted
+# gym-fx execution truth.
+DESIGN_PATH = (REPO / "docs/audits/evidence/"
+               "B4_SUPERSEDING_DESIGN_V2_OPTION_B_2026_09_05.json")
+POPULATION_LABEL = "SCREEN_B_CURRENT_EXECUTION_TRUTH_OPTION_B"
+
+
+def bind_superseding_design() -> dict:
+    """Refuse to score unless the sealed design pins THIS code,
+    THIS data, THIS calibration rule and THIS gym-fx point-of-use
+    lineage. The caller cannot choose the trust root: the pins live
+    in the committed design artifact, not in arguments."""
+    sys.path.insert(0, str(REPO / "tools"))
+    from materialize_b4_causal_sac import gymfx_lineage_manifest
+    if not DESIGN_PATH.exists():
+        raise ScreenBError(
+            "REFUSED: superseding design not sealed at "
+            f"{DESIGN_PATH.name} — no new score may exist first")
+    raw = DESIGN_PATH.read_bytes()
+    design = json.loads(raw)
+    pins = design["sealed_code_identity"]
+    own = _sha_file(Path(__file__).resolve())
+    if pins["screen_b_baselines_py_sha256"] != own:
+        raise ScreenBError(
+            "REFUSED: executing code drifted from the sealed design")
+    if design["source_data_sha256"] != DATA_SHA:
+        raise ScreenBError(
+            "REFUSED: sealed design pins a different source dataset")
+    if design["cost_manifest_sha256"] != _sha_file(COST_MANIFEST):
+        raise ScreenBError(
+            "REFUSED: sealed design pins a different cost manifest")
+    if (design["calibration_rule"]["grid_sha256"]
+            != _sha_obj(CALIBRATION_GRID)):
+        raise ScreenBError(
+            "REFUSED: sealed design pins a different "
+            "calibration grid")
+    lineage = gymfx_lineage_manifest()
+    if (design["execution_truth_binding"]
+            ["gymfx_point_of_use_manifest_sha256"]
+            != lineage["manifest_sha256"]):
+        raise ScreenBError(
+            "REFUSED: gym-fx point-of-use lineage differs from the "
+            "sealed design — mixed execution truth")
+    return {"design_sha256": hashlib.sha256(raw).hexdigest(),
+            "lineage": lineage}
 
 
 def _sha_file(p: Path) -> str:
@@ -190,13 +241,19 @@ def base_config(origin: dict, cost_binding: dict,
     cfg["continuous_action_threshold"] = 0.0
     cfg["continuous_action_contract"] = "target_exposure_hysteresis_v2"
     cfg["strategy_plugin"] = "shared_execution_envelope"
+    # B4-D1 (order @0b4d2748): Alpaca crypto G1 — weekly-flat is
+    # the separate MT5 program; explicitly OFF, never a default
+    cfg["session_exposure_enabled"] = False
     env_cfg = dict(envelope)
     # entry headroom scales with the COST BINDING (a fixed 0.2% was
     # smaller than alpaca's 30.5 bp/side and margin-rejected every
     # full-exposure long — counted, then refused, now fixed):
     per_side = float(cost_binding.get("commission", 0.0)) + float(
         cost_binding.get("slippage_perc", 0.0))
-    env_cfg["entry_cost_headroom"] = round(2.0 * per_side + 0.001, 6)
+    # headroom = round-trip cost + decision-to-fill drift floor (H4
+    # opens routinely gap ~0.5-1% from the decision close; a rejected
+    # entry self-heals next bar at recomputed size and is COUNTED)
+    env_cfg["entry_cost_headroom"] = round(2.0 * per_side + 0.006, 6)
     cfg["execution_envelope"] = env_cfg
     cfg.update(cost_binding)
     cfg.pop("env_mode", None)
@@ -318,11 +375,11 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
         "envelope_residual_sweeps", 0) or 0)
     rejections = int(inner.bridge.execution_diagnostics.get(
         "envelope_order_rejections", 0) or 0)
-    if failure or sweeps or rejections:
+    if failure or sweeps:
         raise ScreenBError(
             f"REFUSED_RUN: envelope lifecycle failure arm={arm} "
             f"origin={origin['year']} tag={tag!r} failure={failure!r} "
-            f"residual_sweeps={sweeps} order_rejections={rejections}")
+            f"residual_sweeps={sweeps}")
     final_pos = float(getattr(inner.bridge, "position", 0.0) or 0.0)
     if final_pos != 0.0 and rows:
         rows[-1]["close_reasons"] = (
@@ -365,6 +422,7 @@ def run_arm(origin: dict, arm: str, out_dir: Path, cost_set: str,
             np.median(np.abs(realized[realized != 0]))
             if (realized != 0).any() else 0.0),
         "close_reason_counts": counts,
+        "entry_order_rejections_healed": rejections,
         "total_commission_paid": float(
             per_bar["commission_paid_cum"].iloc[-1] if len(per_bar)
             else 0.0),
@@ -478,10 +536,13 @@ def main(argv=None) -> int:
     ap.add_argument("--arms", default=",".join(ARMS))
     ap.add_argument("--origins", default=",".join(map(str, ORIGINS)))
     ap.add_argument("--cost-sets",
-                    default="alpaca_ethusd,mt5_ethusd,zero_cost")
+                    default="alpaca_ethusd,zero_cost")
     args = ap.parse_args(argv)
     out = args.output_dir
     out.mkdir(parents=True, exist_ok=True)
+    binding = bind_superseding_design()
+    (out / "GYMFX_LINEAGE_MANIFEST.json").write_text(
+        json.dumps(binding["lineage"], indent=1))
     cost_sets, cost_sha = load_cost_sets()
     df = load_source()
     origins = [materialize_origin(df, int(y), out / "origins")
@@ -506,6 +567,11 @@ def main(argv=None) -> int:
             for y, c in calibrations.items()},
         "origins": origins,
         "arms": arms, "cost_sets": wanted,
+        "population_label": POPULATION_LABEL,
+        "superseding_design_sha256": binding["design_sha256"],
+        "gymfx_commit": binding["lineage"]["commit"],
+        "gymfx_lineage_manifest_sha256":
+            binding["lineage"]["manifest_sha256"],
     }
     (out / "RUN_MANIFEST.json").write_text(json.dumps(run_manifest,
                                                       indent=1))
@@ -537,7 +603,15 @@ def main(argv=None) -> int:
                     o, arm, out, cs, spec["binding"],
                     spec["authority"], spec["g1_eligible"],
                     cost_sha, geom, esha))
-    packet = {"schema": "agent_multi.screen_b_rule_arms.v3",
+    for r in results:
+        r["population_label"] = POPULATION_LABEL
+        r["gymfx_lineage_manifest_sha256"] = (
+            binding["lineage"]["manifest_sha256"])
+    packet = {"schema": "agent_multi.screen_b_rule_arms.v5",
+              "population_label": POPULATION_LABEL,
+              "superseding_design_sha256": binding["design_sha256"],
+              "gymfx_lineage_manifest_sha256":
+                  binding["lineage"]["manifest_sha256"],
               "run_manifest_sha256": _sha_file(out / "RUN_MANIFEST.json"),
               "sealed_2025_used": False,
               "g1_claim": "NOT_EMITTED (B4 absent)",
