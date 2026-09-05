@@ -1,0 +1,15 @@
+== P1: no positive authorization path exists ==
+runner reads an authorization artifact: False
+unconditional non-CPU refusal: True
+always assigns run_cfg["device"] = "cpu": True
+
+== P2: a caller can self-rebind a different scientific cell ==
+ACCEPTED_SELF_REBOUND_CELL 0.123
+
+== P3: complete-envelope verification is presence-only ==
+ACCEPTED_FORGED_COMPLETE_ENVELOPE_DIGEST 15 99
+
+== P4: the materialized GPU mode is a campaign budget ==
+env steps: 40020000 | updates: 40020000 | wall: 57600.0 | thermal: 95 | cuda limit present: False
+
+PRE CONFIRMED: all four findings reproduce
