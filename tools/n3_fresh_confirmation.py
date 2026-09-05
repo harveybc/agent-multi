@@ -1342,11 +1342,13 @@ def _validate_role_ledger(ledger: dict) -> None:
 
 def _validate_digests(digests: dict, code_digest_expected: str
                       ) -> None:
-    """C6.4: exactly five canonical sha256 fields, each BOUND —
-    acquisition to the committed strict v2 receipt, model-ready to
-    the committed parity record, data to the frozen constants, code
-    to the expected identity (current, or the allowlist entry's
-    recorded historical identity)."""
+    """C6.4 (narrowed per @af1ca667 C16): exactly five canonical
+    sha256 fields, each BOUND — acquisition to the committed strict
+    v2 receipt, model-ready to the committed parity record, data to
+    the frozen constants, code to the CURRENT executing identity.
+    No registry or allowlist can supply a historical identity here:
+    historical publications are verified by their historical code,
+    retrieved from git by the reviewer."""
     _exact_keys(digests, DIGEST_KEYS_EXACT, "digests")
     for k, v in digests.items():
         _need(isinstance(v, str) and HEX64.match(v),

@@ -107,6 +107,95 @@ class N4Refusal(ValueError):
 
 
 # ------------------------------------------------------------------ #
+# C17 (order @af1ca667): one strict JSON and schema boundary         #
+# ------------------------------------------------------------------ #
+
+import re as _re
+HEX64 = _re.compile(r"^[0-9a-f]{64}$")
+DESIGN_V3 = ("docs/audits/evidence/"
+             "N4_TARGET_AUDIT_DESIGN_V3_2026_09_04.json")
+EXPECTED_V1_RESULT_SHA = ("d696886c4e0d8f59378e29505eaea509ffeef8"
+                          "0b6fa8b1c5c9517587333d7400")
+EXPECTED_V1_DESIGN_SHA = ("ae05f1878305cc3aee9003849d4f147f2685a1"
+                          "59ed3afbdc3870ec7e8c58f4ef")
+
+
+def _reject_const(name):
+    raise N4Refusal(f"non-finite JSON constant {name} refused")
+
+
+def _no_dup_pairs(pairs):
+    d = {}
+    for k, v in pairs:
+        if k in d:
+            raise N4Refusal(f"duplicate JSON key {k!r} refused")
+        d[k] = v
+    return d
+
+
+def strict_json_bytes(raw: bytes):
+    """Rejects duplicate keys and non-finite constants BEFORE an
+    object exists. Callers hash exactly these bytes and parse
+    exactly these bytes, once."""
+    return json.loads(raw, parse_constant=_reject_const,
+                      object_pairs_hook=_no_dup_pairs)
+
+
+def _is_int(x) -> bool:
+    return isinstance(x, int) and not isinstance(x, bool)
+
+
+def _is_real(x) -> bool:
+    return (_is_int(x) or isinstance(x, float)) \
+        and math.isfinite(x)
+
+
+def _typed_equal(a, b, path="binding") -> None:
+    """Exact primitive types before comparison: booleans are never
+    integers/reals here, 30.0 never equals 30."""
+    if isinstance(b, bool) or isinstance(a, bool):
+        if type(a) is not bool or type(b) is not bool or a != b:
+            raise N4Refusal(f"{path}: boolean mismatch")
+        return
+    if isinstance(b, int):
+        if not _is_int(a) or a != b:
+            raise N4Refusal(
+                f"{path}: expected integer {b}, got {a!r} "
+                f"({type(a).__name__})")
+        return
+    if isinstance(b, float):
+        if type(a) is not float or a != b:
+            raise N4Refusal(
+                f"{path}: expected real {b}, got {a!r} "
+                f"({type(a).__name__})")
+        return
+    if isinstance(b, str):
+        if type(a) is not str or a != b:
+            raise N4Refusal(f"{path}: string mismatch")
+        return
+    if isinstance(b, list):
+        if type(a) is not list or len(a) != len(b):
+            raise N4Refusal(f"{path}: list shape mismatch")
+        for i, (x, y) in enumerate(zip(a, b)):
+            _typed_equal(x, y, f"{path}[{i}]")
+        return
+    if isinstance(b, dict):
+        if type(a) is not dict:
+            raise N4Refusal(f"{path}: expected object")
+        unknown = set(a) - set(b)
+        missing = set(b) - set(a)
+        if unknown or missing:
+            raise N4Refusal(
+                f"{path}: schema violation unknown="
+                f"{sorted(unknown)[:3]} missing="
+                f"{sorted(missing)[:3]}")
+        for k in b:
+            _typed_equal(a[k], b[k], f"{path}.{k}")
+        return
+    raise N4Refusal(f"{path}: unsupported type")
+
+
+# ------------------------------------------------------------------ #
 # shared data plane: DEVELOPMENT rows only (frozen <=2025 CSV)       #
 # ------------------------------------------------------------------ #
 
@@ -427,37 +516,46 @@ def executable_binding() -> dict:
         "verdict_labels": list(VERDICT_LABELS)}
 
 
+DESIGN_V3_TOP_KEYS = {
+    "schema", "experiment", "order", "chronology",
+    "classification", "candidate_families_max3_horizons_max3",
+    "arms_per_candidate", "primary_losses", "causal_design",
+    "decision_rule", "execution_bounds", "executable_binding",
+    "supersedes"}
+
+
 def validate_design(expected_sha256: str) -> dict:
-    """N4-C4: exact schema and field-by-field equality between the
-    sealed design's executable_binding and this module's executing
-    configuration, plus the pre-execution digest identity supplied
-    by the reviewed invocation. No self-review authority — this is
-    configuration binding, not publication approval."""
-    path = Path(DESIGN_V2)
+    """C17 (order @af1ca667): one strict boundary. Reads ONE byte
+    stream, hashes those bytes, parses those bytes with duplicate-
+    key and non-finite rejection; validates the exact top-level
+    schema and the executable_binding with exact primitive types
+    (booleans excluded from integer/real fields; 30.0 != 30);
+    requires the pre-execution digest supplied by the reviewed
+    invocation. Configuration binding, never publication
+    approval."""
+    if not isinstance(expected_sha256, str) \
+            or not HEX64.match(expected_sha256):
+        raise N4Refusal("expected design digest must be a "
+                        "canonical lowercase sha256")
+    path = Path(DESIGN_V3)
     if not path.is_absolute():
         path = REPO / path
-    actual = sha_file(path)
+    raw = path.read_bytes()
+    actual = hashlib.sha256(raw).hexdigest()
     if actual != expected_sha256:
         raise N4Refusal(
             f"design digest {actual[:12]} differs from the "
             f"expected pre-execution identity "
-            f"{str(expected_sha256)[:12]}")
-    design = json.loads(path.read_bytes())
-    binding = design.get("executable_binding")
-    if not isinstance(binding, dict):
-        raise N4Refusal("design lacks executable_binding")
-    expected = executable_binding()
-    unknown = set(binding) - set(expected)
-    missing = set(expected) - set(binding)
+            f"{expected_sha256[:12]}")
+    design = strict_json_bytes(raw)
+    unknown = set(design) - DESIGN_V3_TOP_KEYS
+    missing = DESIGN_V3_TOP_KEYS - set(design)
     if unknown or missing:
         raise N4Refusal(
-            f"design binding schema violation: unknown="
-            f"{sorted(unknown)} missing={sorted(missing)}")
-    for key, val in expected.items():
-        if binding[key] != val:
-            raise N4Refusal(
-                f"design/execution mismatch at {key}: design="
-                f"{binding[key]!r} != executable={val!r}")
+            f"design top-level schema violation: unknown="
+            f"{sorted(unknown)[:3]} missing={sorted(missing)[:3]}")
+    binding = design["executable_binding"]
+    _typed_equal(binding, executable_binding())
     return design
 
 
@@ -480,14 +578,16 @@ def _boot_p_from_diffs(diffs):
 
 
 def adjudicate(records: dict) -> dict:
-    """N4-C5: pure, strict adjudication from complete per-window
-    records only. Re-derives licensing (required classes from the
-    candidate contract), skills, raw p-values, the COMPLETE ordered
-    14-slot Holm family (unlicensed slots get non-rejecting
-    placeholders), passers and the verdict. Refuses unknown or
-    missing candidates/windows, duplicate slots, non-finite values,
-    unequal loss-vector lengths and any producer-supplied verdict
-    or license flag."""
+    """C18/C20 (order @af1ca667): pure adjudication from
+    EVIDENCE-COMPLETE records. Each (candidate, window) record must
+    carry the per-observation facts that DECIDE licensing —
+    ordered class labels (classification) or target values
+    (continuous), the ordered-anchor digest and cardinality, and
+    the three ordered loss vectors. n_score, class supports and
+    response variance are DERIVED here; any published diagnostics
+    are compared, never trusted. Typed refusals fire BEFORE any
+    NumPy coercion. No producer verdict, license, support or
+    variance can authorize anything."""
     import numpy as np
     if set(records) != set(CANDIDATE_TABLE):
         raise N4Refusal(
@@ -495,6 +595,7 @@ def adjudicate(records: dict) -> dict:
             f"{sorted(set(records) ^ set(CANDIDATE_TABLE))[:4]}")
     wks = ("w1", "w2", "w3", "w4")
     assessment = {}
+    derived = {}
     for ck, per_w in records.items():
         if set(per_w) != set(wks):
             raise N4Refusal(f"{ck}: window set mismatch")
@@ -503,59 +604,108 @@ def adjudicate(records: dict) -> dict:
         reasons = []
         for wk in wks:
             rec = per_w[wk]
-            allowed = {"window", "n_score", "losses",
-                       "class_support_score",
-                       "response_var_score"}
-            forbidden = set(rec) - allowed
+            required = {"window", "n_score", "anchors_sha256",
+                        "losses"}
+            required |= ({"labels"} if kind in REQUIRED_CLASSES
+                         else {"target_values"})
+            forbidden = set(rec) - required
             if forbidden & {"licensed", "verdict", "outcome",
-                            "holm_p"}:
+                            "holm_p", "class_support_score",
+                            "response_var_score"}:
                 raise N4Refusal(
                     f"{ck}/{wk}: producer-supplied adjudication "
                     f"field refused: {sorted(forbidden)[:3]}")
-            if forbidden:
+            if forbidden or (required - set(rec)):
                 raise N4Refusal(
-                    f"{ck}/{wk}: unknown fields "
-                    f"{sorted(forbidden)[:3]}")
-            losses = rec.get("losses")
+                    f"{ck}/{wk}: record schema violation "
+                    f"unknown={sorted(forbidden)[:3]} missing="
+                    f"{sorted(required - set(rec))[:3]}")
+            if rec["window"] != wk:
+                raise N4Refusal(
+                    f"{ck}/{wk}: declared window "
+                    f"{rec['window']!r} differs from its key")
+            if not (isinstance(rec["anchors_sha256"], str)
+                    and HEX64.match(rec["anchors_sha256"])):
+                raise N4Refusal(
+                    f"{ck}/{wk}: anchors_sha256 not canonical")
+            n = rec["n_score"]
+            if not _is_int(n) or n <= 0:
+                raise N4Refusal(
+                    f"{ck}/{wk}: n_score must be a positive "
+                    "integer")
+            losses = rec["losses"]
             if losses is None:
                 licensed = False
                 reasons.append(f"{wk}: degenerate fit (no losses)")
                 continue
-            if set(losses) != {"prior", *FITTED_ARMS}:
-                raise N4Refusal(f"{ck}/{wk}: arm set mismatch "
-                                f"{sorted(losses)}")
-            lengths = {len(v) for v in losses.values()}
-            if len(lengths) != 1:
+            if not isinstance(losses, dict) or \
+                    set(losses) != {"prior", *FITTED_ARMS}:
                 raise N4Refusal(
-                    f"{ck}/{wk}: unequal loss-vector lengths")
-            for arm, v in losses.items():
-                arr = np.asarray(v, dtype="float64")
-                if not np.isfinite(arr).all():
+                    f"{ck}/{wk}: arm set mismatch")
+            for arm, vec in losses.items():
+                if not isinstance(vec, list) or len(vec) != n:
                     raise N4Refusal(
-                        f"{ck}/{wk}/{arm}: non-finite loss")
+                        f"{ck}/{wk}/{arm}: loss cardinality != "
+                        "n_score")
+                for v in vec:
+                    if not _is_real(v):
+                        raise N4Refusal(
+                            f"{ck}/{wk}/{arm}: loss value must be "
+                            "a finite JSON number (booleans, "
+                            "strings, null, NaN, infinity "
+                            "refuse)")
+            prior_sum = sum(losses["prior"])
+            if not (prior_sum > 0 and math.isfinite(prior_sum)):
+                raise N4Refusal(
+                    f"{ck}/{wk}: non-positive or non-finite "
+                    "baseline loss denominator")
             if kind in REQUIRED_CLASSES:
-                support = rec.get("class_support_score")
-                if not isinstance(support, dict):
-                    licensed = False
-                    reasons.append(f"{wk}: missing class support")
-                    continue
+                labels = rec["labels"]
+                if not isinstance(labels, list) \
+                        or len(labels) != n:
+                    raise N4Refusal(
+                        f"{ck}/{wk}: label cardinality != "
+                        "n_score")
+                allowed = set(REQUIRED_CLASSES[kind])
+                if kind == "class3":
+                    allowed = {0, 1, 2}
+                for v in labels:
+                    if not _is_int(v) or v not in allowed:
+                        raise N4Refusal(
+                            f"{ck}/{wk}: class label outside the "
+                            f"target contract: {v!r}")
+                support = {c: sum(1 for v in labels if v == c)
+                           for c in sorted(allowed)}
+                derived[(ck, wk)] = {"support": support}
                 for c in REQUIRED_CLASSES[kind]:
-                    got = support.get(str(c))
-                    if not isinstance(got, int) or got < SUPPORT_MIN:
+                    if support.get(c, 0) < SUPPORT_MIN:
                         licensed = False
                         reasons.append(
-                            f"{wk}: required class {c} support "
-                            f"{got} < {SUPPORT_MIN}")
+                            f"{wk}: required class {c} derived "
+                            f"support {support.get(c, 0)} < "
+                            f"{SUPPORT_MIN}")
             else:
-                rv = rec.get("response_var_score")
-                if not isinstance(rv, (int, float)) or rv <= 0:
+                values = rec["target_values"]
+                if not isinstance(values, list) \
+                        or len(values) != n:
+                    raise N4Refusal(
+                        f"{ck}/{wk}: target cardinality != "
+                        "n_score")
+                for v in values:
+                    if not _is_real(v):
+                        raise N4Refusal(
+                            f"{ck}/{wk}: target value must be a "
+                            "finite JSON number")
+                arr = np.asarray(values, dtype="float64")
+                var = float(arr.var())
+                derived[(ck, wk)] = {"response_var": var}
+                if not (var > 0):
                     licensed = False
-                    reasons.append(f"{wk}: non-positive response "
-                                   "variance")
+                    reasons.append(f"{wk}: non-positive DERIVED "
+                                   "response variance")
         assessment[ck] = {"kind": kind, "licensed": licensed,
                           "license_reasons": reasons,
                           "models": {}}
-    # complete ordered 14-slot family — materialized BEFORE Holm
     family = []
     pvals = {}
     for slot in FAMILY_SLOTS:
@@ -568,6 +718,7 @@ def adjudicate(records: dict) -> dict:
             pvals[slot] = 1.0
             continue
         per_w = records[ck]
+        import numpy as np
         diffs, skills = [], {}
         for wk in wks:
             b = np.asarray(per_w[wk]["losses"]["prior"])
@@ -579,25 +730,29 @@ def adjudicate(records: dict) -> dict:
                 for wk in wks)
             / sum(np.asarray(per_w[wk]["losses"]["prior"]).sum()
                   for wk in wks)), 6)
-        p = _boot_p_from_diffs(diffs)
-        pvals[slot] = min(1.0, p)
+        pv = _boot_p_from_diffs(diffs)
+        pvals[slot] = min(1.0, pv)
         family.append({"slot": slot, "status": "TESTED",
                        "raw_p": ("<= 1/2001"
-                                 if p <= 1 / (BOOT_B + 1) + 1e-12
-                                 else round(p, 6)),
+                                 if pv <= 1 / (BOOT_B + 1) + 1e-12
+                                 else round(pv, 6)),
                        "per_window_skill": skills,
                        "pooled_skill": pooled,
                        "all_windows_positive": all(
                            v > 0 for v in skills.values())})
         entry["models"][arm] = family[-1]
-    if len(family) != 14 or len(pvals) != 14             or [f["slot"] for f in family] != list(FAMILY_SLOTS):
+    if len(family) != 14 or len(pvals) != 14 \
+            or [f["slot"] for f in family] != list(FAMILY_SLOTS):
         raise N4Refusal(
             f"family cardinality/order violated: {len(family)}")
     holm = holm_adjust(pvals)
     passers = []
     for f in family:
         f["holm_p"] = round(holm[f["slot"]], 6)
-        if f["status"] == "TESTED"                 and f["all_windows_positive"]                 and f["pooled_skill"] >= MARGIN                 and f["holm_p"] < 0.05:
+        if f["status"] == "TESTED" \
+                and f["all_windows_positive"] \
+                and f["pooled_skill"] >= MARGIN \
+                and f["holm_p"] < 0.05:
             f["passes"] = True
             passers.append(f["slot"])
         else:
@@ -613,6 +768,9 @@ def adjudicate(records: dict) -> dict:
                else VERDICT_LABELS[1])
     return {"family_cardinality_proven": len(family),
             "family": family, "per_candidate": assessment,
+            "derived_licensing_facts": {
+                f"{ck}:{wk}": v
+                for (ck, wk), v in sorted(derived.items())},
             "passers": passers, "verdict": verdict}
 
 
@@ -754,8 +912,8 @@ def screen(run_root: Path, out_path: Path,
                              "only; consumed fit/cal roles; no "
                              "confirmation claim is possible from "
                              "this screen",
-           "design": DESIGN_V2,
-           "design_sha256": sha_file(REPO / DESIGN_V2),
+           "design": DESIGN_V3,
+           "design_sha256": sha_file(REPO / DESIGN_V3),
            "data_plane_digests": plane["digests"],
            "decision_constants": executable_binding(),
            "lm_thresholds": {
@@ -777,72 +935,174 @@ def screen(run_root: Path, out_path: Path,
     return out
 
 
-def readjudicate(v1_result: Path, out_path: Path) -> dict:
-    """N4-C5 preferred path: re-adjudicate the EXISTING frozen v1
-    records — no data plane, no fitting, no torch. Maps the legacy
-    misnamed arm through the explicit non-semantic alias, strips
-    producer adjudication fields, runs the pure adjudicator under
-    the v2 design, and publishes a successor artifact with an
-    explicit supersession relation. Loss vectors are copied
-    verbatim and their equality with v1 is proven by digest."""
-    v1_raw = v1_result.read_bytes()
-    v1 = json.loads(v1_raw)
+def rebind(v1_result: Path, expected_v1_sha: str,
+           expected_v1_design_sha: str, design_sha: str,
+           run_root: Path, out_path: Path) -> dict:
+    """C19/C21 (order @af1ca667): evidence-complete corrective
+    re-adjudication, BOUND to the independently reviewed source
+    identities before parsing. Reconstructs the missing target and
+    anchor evidence from the already frozen local data plane (same
+    windows, purges, thresholds — nothing selected or refitted),
+    copies the v1 loss vectors with digest proof, and PROVES
+    alignment by recomputing every prior-baseline loss vector
+    exactly from the reconstructed observations. Authorized bounded
+    CPU reconstruction; no new hypothesis, threshold, target,
+    model, neural run or GPU."""
+    import numpy as np
+    raw = v1_result.read_bytes()
+    actual = hashlib.sha256(raw).hexdigest()
+    if actual != expected_v1_sha:
+        raise N4Refusal(
+            f"source v1 result {actual[:12]} differs from the "
+            f"independently reviewed identity "
+            f"{str(expected_v1_sha)[:12]} — refused before "
+            "parsing")
+    v1_design_path = REPO / ("docs/audits/evidence/"
+                             "N4_TARGET_AUDIT_DESIGN_2026_09_04"
+                             ".json")
+    v1_design_actual = sha_file(v1_design_path)
+    if v1_design_actual != expected_v1_design_sha:
+        raise N4Refusal("original v1 design bytes differ from the "
+                        "reviewed identity")
+    design = validate_design(design_sha)
+    v1 = strict_json_bytes(raw)
+    dp = v1.get("data_plane_digests", {})
+    if dp.get("frozen_csv") != FROZEN_SHA \
+            or dp.get("n2_npz") != N2_NPZ_SHA:
+        raise N4Refusal(
+            "source data-plane identities differ from the frozen "
+            "contract — a copied digest is not source authority")
+    plane = _load_dev_arrays(run_root)
+    if dp.get("n2_bundle_geometry") != plane["digests"][
+            "n2_bundle_geometry"]:
+        raise N4Refusal("source geometry identity differs from "
+                        "the committed N2 bundle")
+    targets = build_targets(plane)
+    geometry = plane["geometry"]
+    fit_all = list(range(*geometry["windows"]["w1"]["fit"]))
+    lm_thresholds = {}
+    for h in PROPOSED["large_move"]:
+        q = float(np.quantile(
+            np.abs(np.asarray(targets[f"r_h{h}"])[fit_all]),
+            EXCEEDANCE_Q))
+        targets[f"lm_h{h}"] = (
+            np.abs(targets[f"r_h{h}"]) >= q).astype(int)
+        lm_thresholds[f"h{h}"] = round(q, 8)
+    v1_thresholds = v1["decision_constants"]["lm_thresholds"]
+    if {k: round(float(v), 8)
+            for k, v in v1_thresholds.items()} != lm_thresholds:
+        raise N4Refusal("reconstructed lm thresholds differ from "
+                        "the frozen v1 thresholds")
+    wks = ("w1", "w2", "w3", "w4")
     records = {}
-    for ck, per_w in v1["per_window_records"].items():
+    alignment = {}
+    for ck, (tkey, h, kind) in CANDIDATE_TABLE.items():
+        per_w_v1 = v1["per_window_records"][ck]
+        y_full = np.asarray(targets[tkey])
         records[ck] = {}
-        for wk, rec in per_w.items():
-            new = {"window": rec["window"],
-                   "n_score": rec["n_score"]}
-            if "class_support_score" in rec:
-                new["class_support_score"] =                     rec["class_support_score"]
-            if "response_var_score" in rec:
-                new["response_var_score"] =                     rec["response_var_score"]
-            losses = rec.get("losses")
-            if losses is None:
-                new["losses"] = None
+        for wk in wks:
+            fit, cal, sc = _window_roles(geometry, wk, h)
+            if h == 24:
+                usable = plane["usable24"]
+                fit = [r for r in fit if usable[r]]
+                cal = [r for r in cal if usable[r]]
+                sc = [r for r in sc if usable[r]]
+            rec_v1 = per_w_v1[wk]
+            losses_v1 = rec_v1.get("losses")
+            losses = (None if losses_v1 is None else {
+                LEGACY_ARM_ALIAS.get(a, a): list(v)
+                for a, v in losses_v1.items()})
+            ys = y_full[sc]
+            yfc = np.concatenate([y_full[fit], y_full[cal]])
+            if losses is not None:
+                if len(losses["prior"]) != len(sc):
+                    raise N4Refusal(
+                        f"{ck}/{wk}: v1 loss cardinality differs "
+                        "from the reconstructed anchor set")
+                # alignment proof: recompute the PRIOR losses
+                # exactly from reconstructed observations
+                if kind in REQUIRED_CLASSES:
+                    n_classes = 3 if kind == "class3" else 2
+                    counts = np.bincount(yfc.astype(int),
+                                         minlength=n_classes)
+                    prior = np.clip(counts / counts.sum(),
+                                    1e-12, None)
+                    prior = prior / prior.sum()
+                    recomputed = [round(float(
+                        -np.log(max(prior[int(v)], 1e-12))), 8)
+                        for v in ys]
+                else:
+                    med = float(np.median(yfc))
+                    recomputed = [round(float((v - med) ** 2), 8)
+                                  for v in ys]
+                if recomputed != losses["prior"]:
+                    raise N4Refusal(
+                        f"{ck}/{wk}: recomputed prior losses do "
+                        "not equal the frozen v1 vector — "
+                        "observation alignment unproven")
+                alignment[f"{ck}:{wk}"] = "prior_vector_exact"
+            rec = {"window": wk, "n_score": len(sc),
+                   "anchors_sha256": sha_obj(
+                       [int(r) for r in sc]),
+                   "losses": losses}
+            if kind in REQUIRED_CLASSES:
+                rec["labels"] = [int(v) for v in ys]
             else:
-                new["losses"] = {
-                    LEGACY_ARM_ALIAS.get(arm, arm): v
-                    for arm, v in losses.items()}
-            records[ck][wk] = new
-    def loss_digest(recs):
+                rec["target_values"] = [
+                    round(float(v), 8) for v in ys]
+            records[ck][wk] = rec
+
+    def loss_digest(source):
         return sha_obj([[ck, wk,
-                         recs[ck][wk].get("losses")]
-                        for ck in sorted(recs)
-                        for wk in sorted(recs[ck])])
-    v1_losses_digest = sha_obj(
-        [[ck, wk,
-          None if v1["per_window_records"][ck][wk].get("losses")
-          is None else {
-              LEGACY_ARM_ALIAS.get(a, a): v
-              for a, v in v1["per_window_records"][ck][wk]
-              ["losses"].items()}]
-         for ck in sorted(v1["per_window_records"])
-         for wk in sorted(v1["per_window_records"][ck])])
-    if loss_digest(records) != v1_losses_digest:
-        raise N4Refusal("loss vectors drifted during "
-                        "re-adjudication")
+                         None if source[ck][wk].get("losses")
+                         is None else source[ck][wk]["losses"]]
+                        for ck in sorted(source)
+                        for wk in sorted(source[ck])])
+    v1_mapped = {ck: {wk: {"losses": None
+                           if per_w[wk].get("losses") is None
+                           else {LEGACY_ARM_ALIAS.get(a, a): v
+                                 for a, v in per_w[wk]["losses"]
+                                 .items()}}
+                      for wk in per_w}
+                 for ck, per_w in
+                 v1["per_window_records"].items()}
+    if loss_digest(records) != loss_digest(v1_mapped):
+        raise N4Refusal("copied loss vectors drifted")
     adjudication = adjudicate(records)
-    out = {"schema": "agent_multi.n4_screen_result.v2",
-           "order": "agent-multi@9fd016b0 N4-C5",
+    out = {"schema": "agent_multi.n4_screen_result.v3",
+           "order": "agent-multi@af1ca667 C17-C21",
+           "chronology": {
+               "v1": "original design sealed BEFORE scores; "
+                     "licensing defective (hard-coded class "
+                     "subset)",
+               "v2": "auditor-prescribed post-result correction "
+                     "over the frozen v1 losses; NOT a "
+                     "predeclaration; evidence boundary was "
+                     "incomplete (producer-declared supports)",
+               "v3": "AUDITOR_PRESCRIBED_CORRECTIVE_ADJUDICATION_"
+                     "NO_NEW_HYPOTHESIS — evidence-complete: "
+                     "per-observation labels/targets and anchors "
+                     "reconstructed from the frozen data plane, "
+                     "prior vectors re-derived exactly, licensing "
+                     "DERIVED, nothing predeclared and nothing "
+                     "refitted"},
            "classification": v1["classification"],
-           "design": DESIGN_V2,
-           "design_sha256": sha_file(REPO / DESIGN_V2),
-           "data_plane_digests": v1["data_plane_digests"],
+           "design": DESIGN_V3,
+           "design_sha256": design_sha,
+           "data_plane_digests": plane["digests"],
            "decision_constants": executable_binding(),
-           "lm_thresholds": v1["decision_constants"][
-               "lm_thresholds"],
+           "lm_thresholds": lm_thresholds,
            "per_window_records": records,
            **adjudication,
+           "alignment_proofs": alignment,
            "supersession": {
-               "v1_result_sha256": hashlib.sha256(
-                   v1_raw).hexdigest(),
-               "v1_design": v1["design"],
-               "v1_design_sha256": v1["design_sha256"],
-               "v1_status": "PRESERVED UNCHANGED, SUPERSEDED — "
-                            "its observed losses remain evidence; "
-                            "its licensing and report are "
-                            "superseded by this adjudication",
+               "v1_result_sha256": expected_v1_sha,
+               "v1_design_sha256": expected_v1_design_sha,
+               "v2_result": "N4_SCREEN_RESULT_V2_2026_09_04.json",
+               "v2_status": "PRESERVED UNCHANGED, SUPERSEDED "
+                            "(incomplete evidence boundary "
+                            "disclosed)",
+               "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
                "loss_vectors_identical_to_v1": True,
                "legacy_arm_alias_applied": dict(
                    LEGACY_ARM_ALIAS)},
@@ -856,8 +1116,7 @@ def readjudicate(v1_result: Path, out_path: Path) -> dict:
                          "formulations; no untouched confirmation "
                          "role remains in this dataset — a new "
                          "program requires new data or a "
-                         "separately motivated scientific design "
-                         "(order @9fd016b0 N4-C6)",
+                         "separately motivated scientific design",
            "gpu_neural_gate": "CLOSED"}
     out_path.write_text(json.dumps(out, indent=1, default=float)
                         + "\n")
@@ -874,8 +1133,12 @@ def main() -> int:
     s.add_argument("--run-root", required=True)
     s.add_argument("--out", required=True)
     s.add_argument("--design-sha", required=True)
-    r = sub.add_parser("readjudicate")
+    r = sub.add_parser("rebind")
     r.add_argument("--v1-result", required=True)
+    r.add_argument("--expected-v1-sha", required=True)
+    r.add_argument("--expected-v1-design-sha", required=True)
+    r.add_argument("--design-sha", required=True)
+    r.add_argument("--run-root", required=True)
     r.add_argument("--out", required=True)
     args = parser.parse_args()
     try:
@@ -889,8 +1152,11 @@ def main() -> int:
                               "passers": out["passers"],
                               "elapsed_s": out["elapsed_s"]}))
         else:
-            out = readjudicate(Path(args.v1_result),
-                               Path(args.out))
+            out = rebind(Path(args.v1_result),
+                         args.expected_v1_sha,
+                         args.expected_v1_design_sha,
+                         args.design_sha, Path(args.run_root),
+                         Path(args.out))
             print(json.dumps({"verdict": out["verdict"],
                               "passers": out["passers"],
                               "family": out[

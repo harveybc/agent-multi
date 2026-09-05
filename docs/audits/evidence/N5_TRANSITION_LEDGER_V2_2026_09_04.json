@@ -1,0 +1,38 @@
+{
+  "schema": "agent_multi.n5_transition_ledger.v2",
+  "order": "agent-multi@af1ca667 §8 (C22), superseding the v1 ledger without rewriting it",
+  "supersedes": {
+    "v1": "N5_TRANSITION_LEDGER_2026_09_04.json",
+    "v1_status": "PRESERVED UNCHANGED, SUPERSEDED",
+    "v1_defects": ["misordered the accepted roadmap (Screen B/B4 absent as the next node; feature selection listed as if next)", "carried stale weekly-flat/MT5 state (C38 'awaiting review'; last MT5 judgment described as non-flat)"]
+  },
+  "owner_ratifications_consumed": {
+    "record": "OWNER_RATIFICATION_OBSERVATION_V2_AND_MT5_BUILD_6140_2026_09_04.json (sha 399483a14ab4821a49155afd72d153e870e2f9c051945875ca7fdfb5a5726186, commit bb105fa6)",
+    "observation_contract_v2": "OWNER_RATIFIED — contract 0ecc3d00…, 83 ordered features (c4697681…), typical_price excluded, raw price window disabled, four agent-state fields (b5beeb97…), window 32, flattened 2660; resolves the owner blocker that gated B4; historical P1 artifacts keep their executed 84-feature identity",
+    "mt5_terminal_build": "6140 ACCEPTED as current expected build for collector preflight and operator-kit validation, superseding stale 6090 in that scope only; NOT permission to install/update/restart/activate"
+  },
+
+  "roadmap_next_node": {
+    "node": "Screen B / B4 (causal per-origin random-initialized SAC arm)",
+    "authority": ["docs/work_plan/38_NEAT_LESSONS_L1_L2_CURRICULUM_AND_FEATURE_SELECTION.md §23.6 (P1 terminates; dependency graph advances to Screen B) and §23.2 (feature selection deferred until Screens B, A, R and C)", "docs/work_plan/40_POST_P1_SCREEN_SPECS_2026_08_24.md (B0-B3 CPU rule arms; B4 causal per-origin SAC arm)"],
+    "surviving_branch": "satoshi/post-p1-screen-b-20260825@81fa5a2b — final corrected Screen B branch, returned for independent review, never GPU-dispatched; the death of the paired supervised-pretraining branch does NOT erase the original random-initialized B4 question",
+    "status": "under B4-R0..R3 audit in this same return"
+  },
+  "feature_selection": {
+    "status": "DEFERRED by the accepted roadmap until Screens B, A, R and C complete (doc 38 §23.2) — the v1 ledger's implication that it was next was wrong"
+  },
+  "weekly_flat_economic_work": {
+    "c38_status": "ACCEPTED for continued readiness development (order MUSASHI_TO_GENERAL_SATOSHI_SCREEN_V2_RUNTIME_AND_WP4_NEXT_ORDER_2026_09_03 accepted the readiness boundary) — still NON-AUTHORITATIVE economically",
+    "mt5_last_known_state": "FLAT 0 positions / 0 orders on terminal build 6140 — HISTORICAL observation, explicitly insufficient to justify any action now; fresh-at-action evidence is required",
+    "true_remaining_blockers": ["operator Ed25519 key ceremony in restricted storage", "real backup manifest, sealed review act and tested rollback kit", "fresh direct 0-position/0-order snapshot and heartbeat AT the coordinated activation window", "authoritative venue session history (only obtainable AFTER collector activation)"],
+    "resolved_blocker": "terminal build ratification — build 6140 accepted by the owner record above",
+    "collector_status": "COORDINATED_WINDOW_REQUIRED (unchanged until every remaining gate is independently satisfied)"
+  },
+  "direct_random_initialized_sac_controls": {
+    "status": "this IS the Screen B/B4 node above — the v1 ledger's 'requires a new design with new data' framing conflated the dead PAIRED pretraining design with the surviving RANDOM-ONLY B4 question; disposition now flows from B4-R0..R3"
+  },
+  "rolling_retraining": {
+    "status": "unchanged from v1: no sealed succession design (doc 32 is direction, not contract); after Screen B per the roadmap ordering"
+  },
+  "no_effects_statement": "documents and committed evidence only; no process, service, GPU, venue or live action"
+}

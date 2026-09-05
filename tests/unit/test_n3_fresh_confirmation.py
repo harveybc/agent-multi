@@ -574,3 +574,10 @@ class TestC16NoStaleAuthorityClaims:
         doc = inspect.getdoc(n3f.verify)
         assert "CANNOT" in doc and "minted" in doc
         assert "gate-bearing" not in doc
+        # C16-narrow (@af1ca667): no production docstring may claim
+        # an allowlist-supplied identity path
+        dd = inspect.getdoc(n3f._validate_digests)
+        assert "No registry or allowlist can supply" in dd
+        production = (REPO / "tools/n3_fresh_confirmation.py")\
+            .read_text()
+        assert "allowlist entry's" not in production

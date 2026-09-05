@@ -1,7 +1,7 @@
 {
  "$doc": "PROSPECTIVE observation contract v2 (SOTA final audit 2026-08-25, owner ratification PENDING). New identity for post-P1 screens; historical P1 artifacts stay under their executed 84-feature identity and are never rewritten.",
  "schema": "agent_multi.observation_system_contract.v2",
- "status": "PROPOSED_AWAITING_OWNER_RATIFICATION",
+ "status": "OWNER_RATIFIED",
  "derives_from": {
   "path": "ethusdt_4h_l1_system_v1.json",
   "relation": "exact declared 83-feature ordered list; typical_price excluded; price window disabled (v1 declared it enabled)"
@@ -120,5 +120,18 @@
    2660
   ]
  },
- "enforcement": "tools/post_p1_screen_contract.check_observation_identity refuses any drift pre-model (count, order, canonical digest, flags, state fields)"
+ "enforcement": "tools/post_p1_screen_contract.check_observation_identity refuses any drift pre-model (count, order, canonical digest, flags, state fields)",
+ "ratification": {
+  "decision": "OWNER_RATIFIED",
+  "record": "docs/audits/evidence/OWNER_RATIFICATION_OBSERVATION_V2_AND_MT5_BUILD_6140_2026_09_04.json",
+  "record_sha256": "399483a14ab4821a49155afd72d153e870e2f9c051945875ca7fdfb5a5726186",
+  "record_commit": "agent-multi@bb105fa6",
+  "proposed_file_sha256": "0ecc3d004b26ef4d913fd06ab585f9ce0885011a4cf4d1cc88d0a743b3e981a7",
+  "date": "2026-09-04",
+  "terms_unchanged_proof": {
+   "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+   "agent_state_fields_sha256": "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9f160"
+  },
+  "change_rule": "any change to count, order, digests, flags, state fields, window size or flattened shape requires a NEW owner ratification"
+ }
 }

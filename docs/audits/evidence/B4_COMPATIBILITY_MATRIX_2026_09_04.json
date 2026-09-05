@@ -1,0 +1,41 @@
+{
+  "schema": "agent_multi.b4_compatibility_matrix.v1",
+  "order": "agent-multi@af1ca667 §9 (B4-R0, read-only)",
+  "branch_audited": "satoshi/post-p1-screen-b-20260825@81fa5a2b",
+  "question_preserved": "does a causally trained random-initialized SAC policy add value over the completed B0-B3 rules under the same folds, costs and execution envelope? (order §10 — the original Screen B question; the dead paired-pretraining branch does not erase it)",
+
+  "matrix": {
+    "roles_and_sealed_2025": {
+      "verdict": "COMPATIBLE",
+      "evidence": "materialize_b4_causal_sac.py authors per-origin causal contracts (score 2022/2023/2024; fit/monitor/inner strictly earlier) from the v1 split contract; sealed_test remains structurally unmaterialized; causal eligibility, origin ordering and sealed absence are refusal-checked BEFORE any model construction"
+    },
+    "observation_contract_v2": {
+      "verdict": "COMPATIBLE_AND_NOW_OWNER_RATIFIED",
+      "evidence": "the branch validates the LIVE v2 system file semantically (ordered 83 features, canonical digest, price window false, agent state, window 32, flattened 2660) via check_observation_identity and REFUSES cells without it; the owner record (bb105fa6) ratified exactly these terms; the status flip changed file bytes only — feature digest c4697681 and state digest b5beeb97 proven unchanged; the semantic binding is insensitive to the status byte, so no re-pin is needed",
+      "p1_isolation": "P1's executed-84 artifacts are never touched; B4 genesis is fresh zero-update per seed (no cross-origin warm start)"
+    },
+    "gymfx_env_semantics": {
+      "verdict": "SEMANTIC_DIVERGENCE — the one design decision",
+      "evidence": "the branch carries its own execution-truth work (entry-bar settlement at level, fill-anchored geometry, deferred entry-bar reversals) and its B0-B3 v4 baselines were produced under the branch lineage of 2026-08-25/26; the currently accepted gym-fx execution truth advanced afterwards (fill-truth + temporal v2 lineage, accepted 2026-08-28). Two coherent options exist and CHOOSING is a reviewed design act: (A) pin the branch lineage for both B0-B3 and B4 (comparator-consistent, but executes under superseded truth) or (B) re-run the cheap B0-B3 CPU baselines AND B4 under the current accepted semantics (current-truth-consistent; baselines are CPU-cheap). Neither option may mix lineages between B4 and its comparator."
+    },
+    "alpaca_g1_cost_envelope": {
+      "verdict": "COMPATIBLE",
+      "evidence": "Alpaca sole G1 economy bound in-branch: official fee-schedule source/tier/retrieval in the manifest (sha bb8503ae...), per-origin frozen envelopes, cost_contract_id + g1_eligible + cost-scaled headroom embedded per cell, MT5/zero refused for G1 cells, genesis bound to final cell-config digests, five authority tests"
+    },
+    "runtime_budget_guard_and_durable_dispatch": {
+      "verdict": "IMPLEMENTATION_ONLY_INTEGRATION",
+      "evidence": "the branch predates the currently accepted observable runtime (C1-hardened per-unit CAS, durable states, kill+reap watchdog, thermal gates) and the accepted F9 executing budget guard; wiring the 12 B4 cells through that runtime changes no scientific object (policy, env, costs, roles unchanged) and is required before any dispatch"
+    },
+    "supervised_pretraining_closure": {
+      "verdict": "COMPATIBLE",
+      "evidence": "B4 is random-initialization by construction — fresh zero-update genesis artifacts per seed with recipe-equality digests across the 12 cells; no pretrained key can enter through defaults, resume state or plugin configuration (refusal-checked); the N1-N4 closure does not touch this arm"
+    },
+    "consumed_development_years_disclosure": {
+      "verdict": "DISCLOSURE_REQUIRED_NO_CHANGE",
+      "evidence": "score origins 2022/2023/2024 are consumed development years (N3 role census); the order explicitly allows their reuse for development screening with the no-confirmation-claim label — every B4 output must carry it"
+    }
+  },
+
+  "semantic_changes_unavoidable": ["gymfx_env_semantics: lineage choice (A) or (B) — a reviewed design decision that cannot be made unilaterally"],
+  "implementation_only_changes": ["current-runtime integration (C1 CAS + F9 budget guard + durable dispatch)", "no observation re-pin needed (semantic binding proven insensitive to the ratified-status byte)"]
+}

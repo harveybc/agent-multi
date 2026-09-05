@@ -1,0 +1,26 @@
+== C17: validate_design is not strict ==
+{
+ "unknown_top_field": true,
+ "duplicate_key": true,
+ "float_support_min": true
+}
+
+== C18: fabricated supports license and pass tm_h6 ==
+tm_h6 outcome: PASSES | passers: ['tm_h6:volatility_history']
+missing window/n_score + 30/30/30 supports: ACCEPTED — FAILS (counts never checked against loss cardinality)
+
+== C19: a forged v1 mints a positive successor ==
+forged-v1 successor verdict: TARGET_FORMULATION_CANDIDATE_FOR_FUTURE_CONFIRMATION | passers: ['mfemae_h6:volatility_history', 'mfemae_h6:causal_linear', 'mfemae_h12:volatility_history', 'mfemae_h12:causal_linear']
+
+== C20: numeric string survives on the unlicensed path ==
+numeric-string loss in unlicensed candidate: ACCEPTED (verdict TARGET_FORMULATION_NOT_IDENTIFIED)
+
+== C21: v2 claims a predeclaration it cannot have ==
+design v2 sealed_before_any_new_score: True (v2 was added in the correction commit AFTER v1 scores were known)
+
+== C22: N5 ledger misorders the roadmap ==
+ledger paths: ['direct_random_initialized_sac_controls', 'feature_selection_component_domains', 'weekly_flat_economic_work', 'rolling_retraining']
+Screen B/B4 named as next node: False
+stale claims present: C38-awaiting: True | non-flat MT5: True
+
+PRE CONFIRMED: all six findings reproduce

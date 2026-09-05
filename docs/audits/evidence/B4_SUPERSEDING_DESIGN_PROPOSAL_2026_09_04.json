@@ -1,0 +1,23 @@
+{
+  "schema": "agent_multi.b4_superseding_design_proposal.v1",
+  "order": "agent-multi@af1ca667 §§10-11 — prepared because ONE unavoidable semantic change exists; per §11 NOTHING was executed, not even the mechanics cell, pending independent review",
+  "status": "CANDIDATE_AWAITING_MUSASHI_REVIEW",
+
+  "question_unchanged": "does a causally trained random-initialized SAC policy add value over the already completed B0-B3 rules under the same folds, costs and execution envelope?",
+
+  "inherited_unchanged_from_81fa5a2b": ["3 causal score origins (2022, 2023, 2024) x 4 seeds (101, 202, 303, 404) = 12 cells", "per-origin causal contracts with sealed-2025 structurally absent", "owner-ratified observation identity v2 (83 ordered features c4697681..., no price window, 4 agent-state fields b5beeb97..., window 32, flattened 2660) enforced by live semantic refusal before model construction", "fresh zero-update genesis per seed, recipe-equality digest across the 12 cells, zero pretrained keys (refusal-checked)", "Alpaca sole G1 economy: manifest bb8503ae..., per-origin frozen envelopes, cost-scaled headroom, MT5/zero refused", "GPU-hour estimates derived from the MEASURED P1 terminal reports"],
+
+  "the_single_semantic_decision_for_review": {
+    "issue": "execution-truth lineage: the branch's B0-B3 v4 baselines ran under the 2026-08-25/26 lineage; the accepted gym-fx execution truth advanced on 2026-08-28 (fill-truth + temporal v2)",
+    "option_A": "pin the branch lineage for BOTH B0-B3 and B4 (comparator-consistent; executes under superseded truth)",
+    "option_B": "re-run the CPU-cheap B0-B3 v4 baselines AND run B4 under the CURRENT accepted execution truth (current-truth-consistent; baseline rerun is hours of CPU)",
+    "invariant_either_way": "B4 and its B0-B3 comparator must share ONE lineage — mixing refuses",
+    "satoshi_recommendation": "Option B — currently accepted execution truth supersedes, and stale-truth results would be un-publishable against the current contracts; the baseline rerun cost is trivial next to the GPU spend it protects"
+  },
+
+  "implementation_integrations_required": ["dispatch the 12 cells through the current C1-hardened observable runtime (per-unit CAS, durable terminal states, kill+reap watchdog, thermal gates 87/95C)", "the accepted F9 EXECUTING budget guard bounds every learning segment and must be able to stop inside one (mechanics-cell proof obligation)", "unit identity via unit_id(identity) with origin/seed/treatment fields; ledger sealed before the first cell"],
+
+  "refusal_tests_prepared_with_this_proposal": ["mixed-lineage refusal: a B4 cell whose env identity digest differs from its B0-B3 comparator's refuses", "pretrained-key refusal: any nonzero-update or foreign-key genesis refuses (inherited, re-asserted under the current runtime)", "observation drift refusal: any deviation from the ratified 83/flags/shape identity refuses (inherited live check)", "sealed-2025 refusal: any role touching 2025 refuses (inherited)", "consumed-years label: every output carries the no-confirmation-claim disclosure or refuses"],
+
+  "explicitly_not_authorized_here": ["GPU dispatch or preflight execution", "the CPU mechanics cell (deferred per §11 until this design is reviewed)", "feature selection, Screen A/R/C, broad campaigns", "any confirmation claim on the consumed 2022-2024 development years"]
+}
