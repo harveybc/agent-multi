@@ -1,0 +1,31 @@
+== 1 (C13): the unbound-state forgery dies ==
+refused: REFUSED: state operator VERSION differs from the artifact spec — foreign operator generati
+refused: REFUSED: state ewma level incoherent with rows_seen — fabricated history refused
+
+== 2 (C15): understated semantics die ==
+alpha=2.0 refused: REFUSED: ewma alpha must lie in (0, 1] — its meaningful smoothing inte
+window=5 lookback=0 refused: REFUSED: declared lookback 0 does not equal the value derived from the
+fit binds interval+contract+prefix: True
+
+== 3 (C14): persistence is durable content-addressed ==
+content-addressed idempotent: True | name is digest: True
+O_EXCL+fsync+typed uncertainty present: True
+
+== 4 (C16): the three-record forgery dies ==
+all 3/3 forged records refused in full re-derivation
+
+== 5 (C17): physical replacement dies ==
+refused: REFUSED: am__white__snr5__hom__seed11 array clean_signal bytes differ from the s
+
+== 6 (C18): a coherent pair cannot claim review ==
+rewritten pair rc: 1 | REFUSED: measurement bytes differ from the population manifest — a rewritten population is
+honest pair without reviewer record rc: 3 -> SELF_CONSISTENT_ONLY_NOT_AUTHORIZING: True
+
+== 7 (C19): no circular shift; controls untouchable ==
+np.roll removed: True
+future-row mutation cannot reach the width control: True
+
+== 8 (C20): smuggled/mistyped nested fields die ==
+refused: REFUSED: record keys are not the exact schema (diff: ['attacker_note'])
+
+POST CONFIRMED: all eight C13-C20 bypasses die

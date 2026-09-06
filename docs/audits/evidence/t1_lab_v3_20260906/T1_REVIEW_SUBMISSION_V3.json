@@ -1,0 +1,10 @@
+{
+ "schema": "agent_multi.t1_review_submission.v1",
+ "design_sha256": "6dcffa2131e7d2ef2c023a0499e4c35b711cff3d8a653dac4a8a7a25165f623a",
+ "bank_inventory_sha256": "457db7781b799bed98992fa5e3251d5d60f1e17d92a7e87540b5f53a26c72bb0",
+ "measurement_manifest_sha256": "66b2dd307b2f358ec8ccabd5e35bfbac60799a56d7e0e9328429392fa293de10",
+ "measurements_sha256": "911ea90f8b31940ce9e24794019218c949c0ef6e66eef0920cf29e897e48d973",
+ "publication_sha256": "ab0cd520ba5ad4c2764adba0314f2fb5c9f0d9257bff79d3c11d6b7970ec0936",
+ "records_rederived_from_arrays": 1116,
+ "note": "candidate submission \u2014 NON-AUTHORIZING until an external reviewer record names these digests"
+}

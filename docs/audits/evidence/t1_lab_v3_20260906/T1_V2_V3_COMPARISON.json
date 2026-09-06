@@ -1,0 +1,18 @@
+{
+ "schema": "agent_multi.t1_v2_v3_comparison.v1",
+ "regimes": 384,
+ "verdict_flips_v2_to_v3": [],
+ "note": "width control replaced (C19 circular-shift -> train-frozen independent channels): every assay value changed, ZERO regime verdicts flipped \u2014 the published conclusions are robust to the causality correction",
+ "bank_physical_parity": "192/192 units, 0 array byte mismatches v2->v3",
+ "population": {
+  "records": 1152,
+  "measured": 1116,
+  "typed_refusals": 36
+ },
+ "verdict_counts_v3": {
+  "NON_CAUSAL_ORACLE_ONLY": 64,
+  "LAB_CALIBRATED": 180,
+  "LAB_REJECTED": 116,
+  "INCONCLUSIVE": 24
+ }
+}
