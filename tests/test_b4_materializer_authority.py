@@ -10,6 +10,7 @@ import hashlib
 import importlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -263,7 +264,7 @@ def _pins(*rels):
 
 
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
-             a7_over=None, a8_over=None, **over):
+             a7_over=None, a8_over=None, a9_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -340,6 +341,25 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f8 = tmp_path / "a8.json"
     f8.write_text(json.dumps(a8))
     monkeypatch.setattr(a, "AMENDMENT_8_PATH", f8)
+    a9 = {"amends_amendment_8_sha256": a._sha_file(f8),
+          "change_disclosure": "test fixture disclosure",
+          "proposed_campaign_population": {
+              "cell_population_sha256": "a" * 64,
+              "materialization_sha256": "b" * 64,
+              "genesis_binding_sha256": "c" * 64},
+          "final_code_pins": _pins(
+              "tools/b4_authority.py", "tools/b4_run_cell.py",
+              "tools/b4_campaign_executor.py",
+              "tools/b4_campaign_ledger.py",
+              "tools/b4_campaign_orchestrator.py",
+              "tools/b4_adjudicator.py",
+              "tools/materialize_b4_causal_sac.py",
+              "pipeline_plugins/rl_pipeline_with_validation.py",
+              "tests/test_b4_materializer_authority.py")}
+    a9.update(a9_over or {})
+    f9 = tmp_path / "a9.json"
+    f9.write_text(json.dumps(a9))
+    monkeypatch.setattr(a, "AMENDMENT_9_PATH", f9)
     return a4
 
 
@@ -347,7 +367,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 8
+    assert len(chain["amendment_shas"]) == 9
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -382,7 +402,7 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_authority.py"] = "0" * 64
     _fake_a4(tmp_path, monkeypatch,
-             a8_over={"final_code_pins": pins})
+             a9_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -1133,10 +1153,48 @@ def test_e12_stop_classification():
 
 
 def _ledger_fixture(tmp_path):
+    """C21 coherent universe: the fixture materializes its OWN
+    frozen source per origin (540-bar context + the full year, 4h),
+    a comparator population with the same bar identities, exact-
+    schema claims/terminals, real checkpoint bytes and PHYSICAL
+    intent/completion seals. Every factual field re-derives."""
     import numpy as _np2
     import pandas as _pd2
     gen = a.CAMPAIGN_GENERATION
     bars = {2022: 2190, 2023: 2190, 2024: 2196}
+    (tmp_path / "contracts").mkdir(exist_ok=True)
+    comp_dir = tmp_path / "comp_default"
+    comp_dir.mkdir(exist_ok=True)
+    frozen = {}
+    arms = []
+    for year, n in bars.items():
+        ctx = _pd2.date_range(end=f"{year}-01-01",
+                              periods=541, freq="4h")[:-1]
+        yr = _pd2.date_range(f"{year}-01-01", periods=n, freq="4h")
+        dts = ctx.append(yr)
+        close = 1.0 + _np2.arange(len(dts)) * 1e-4
+        srcp = tmp_path / f"source_{year}.csv"
+        _pd2.DataFrame({"DATE_TIME": dts, "CLOSE": close}
+                       ).to_csv(srcp, index=False)
+        (tmp_path / "contracts" /
+         f"b4_causal_origin_{year}_contract.json").write_text(
+            json.dumps({"source_ref": f"fixture:{year}"}))
+        sdt = [d.strftime("%Y-%m-%d %H:%M") for d in yr]
+        scl = close[540:]
+        frozen[year] = {
+            "datetimes": sdt,
+            "row_shas": [hashlib.sha256(
+                f"{d}|{c:.10g}".encode()).hexdigest()
+                for d, c in zip(sdt, scl)]}
+        cp = comp_dir / f"B0_{year}.csv"
+        _pd2.DataFrame({"datetime": yr,
+                        "net_return": [0.0] * n}).to_csv(
+            cp, index=False)
+        arms.append({"arm": "B0", "origin": year,
+                     "per_bar_csv": str(cp),
+                     "per_bar_sha256": ledger_mod._sha_file(cp)})
+    (comp_dir / "SCREEN_B_RESULTS.json").write_text(
+        json.dumps({"results": arms}))
     cells = {f"o{y}_seed{s}": {"cell_config_sha256":
                                f"{y}{s}".ljust(64, "a")}
              for y in (2022, 2023, 2024)
@@ -1149,72 +1207,100 @@ def _ledger_fixture(tmp_path):
                {cid: e["cell_config_sha256"]
                 for cid, e in entries.items()})}
     results = tmp_path / "results"
-    idents = {y: [f"{y}-01-01 {i % 24:02d}:00"
-                  + ("" if i < 24 else f".{i}")
-              for i in range(bars[y])] for y in bars}
-    # unique, deterministic identity strings per origin
-    idents = {y: [f"{y}-{i:05d}" for i in range(bars[y])]
-              for y in bars}
     for cid, e in entries.items():
         year = int(cid.split("_")[0][1:])
+        seed = int(cid.split("seed")[1])
         d = results / cid
         d.mkdir(parents=True)
         n = bars[year]
+        eq = _np2.linspace(1000.0, 1010.0, n)
+        delta = _np2.zeros(n)
+        delta[1:] = _np2.diff(eq)
+        nr = _np2.zeros(n)
+        nr[1:] = eq[1:] / eq[:-1] - 1.0
         df = _pd2.DataFrame({
             "origin": [year] * n,
-            "seed": [int(cid.split("seed")[1])] * n,
-            "datetime_utc": idents[year],
-            "scored_index": list(range(n)),
-            "source_row_sha256": ["s" * 64] * n,
+            "seed": [seed] * n,
+            "datetime_utc": frozen[year]["datetimes"],
+            "scored_index": list(range(540, 540 + n)),
+            "source_row_sha256": frozen[year]["row_shas"],
             "requested_exposure": [0.0] * n,
             "realized_exposure": [0.0] * n,
-            "economic_equity": _np2.linspace(1000, 1010, n),
-            "net_equity_delta_observed":
-                [0.0] + [10.0 / (n - 1)] * (n - 1),
-            "env_pnl_fact": [0.0] + [10.0 / (n - 1)] * (n - 1),
+            "gross_equity": ["UNAVAILABLE_ENV_FACT"] * n,
+            "economic_equity": eq,
+            "net_equity_delta_observed": delta,
+            "env_pnl_fact": delta,
             "commission_delta": [0.0] * n,
-            "net_return": [0.0] * n})
-        # make per-bar bytes unique per cell
-        df.loc[0, "seed"] = int(cid.split("seed")[1])
+            "pre_commission_equity_delta_derived": delta,
+            "slippage_declared": ["declared_zero"] * n,
+            "net_return": nr})
         pb = d / f"per_bar_{cid}.csv"
         df.to_csv(pb, index=False)
         ident_sha = hashlib.sha256(
-            "|".join(idents[year]).encode()).hexdigest()
+            "|".join(frozen[year]["datetimes"]).encode()
+        ).hexdigest()
+        ckp = d / f"checkpoint_{cid}.zip"
+        ckp.write_bytes(f"fixture-checkpoint-{cid}".encode())
         term = {"schema": "agent_multi.b4_cell_terminal.v1",
                 "cell": cid, "terminal": "COMPLETED",
+                "g1_eligible": False,
+                "checkpoint_promotable": False,
                 "cell_config_sha256": e["cell_config_sha256"],
                 "attempt_id": f"attempt_{cid}",
+                "artifact_class": "fixture",
                 "per_bar_csv": str(pb),
                 "per_bar_sha256": ledger_mod._sha_file(pb),
                 "scored_index_sha256": ident_sha,
-                "checkpoint_sha256": "c" * 64,
-                "sealed_2025_used": False}
+                "scored_bars": n,
+                "counter_semantics": "fixture",
+                "checkpoint_sha256": ledger_mod._sha_file(ckp),
+                "checkpoint_path": str(ckp),
+                "sealed_2025_used": False,
+                "wall_seconds": 1.0,
+                "effective_limits": {}}
         tp = d / "B4_CELL_TERMINAL.json"
         tp.write_text(json.dumps(term))
-        (d / f"CLAIM_{gen}.json").write_text(json.dumps(
-            {"schema": "agent_multi.b4_attempt_claim.v2",
-             "campaign_generation": gen,
-             "attempt_id": f"attempt_{cid}", "cell": cid,
-             "claimed_wall": 0.0,
-             "terminal_sha256": ledger_mod._sha_file(tp)}))
+        _write_claim_and_seal(results, cid, f"attempt_{cid}")
     return led, results
+
+
+def _write_claim_and_seal(results, cid, att):
+    """Exact-schema claim + PHYSICAL intent/completion seal."""
+    gen = a.CAMPAIGN_GENERATION
+    d = results / cid
+    tp = d / "B4_CELL_TERMINAL.json"
+    (d / f"CLAIM_{gen}.json").write_text(json.dumps(
+        {"schema": "agent_multi.b4_attempt_claim.v2",
+         "campaign_generation": gen,
+         "attempt_id": att, "cell": cid,
+         "claimed_wall": 0.0, "claimed_monotonic": 0.0,
+         "holder_pid": os.getpid(),
+         "terminal_sha256": ledger_mod._sha_file(tp)}))
+    for w in d.glob("SEAL_*.json"):
+        w.unlink()
+    orch.seal_attempt(results, cid, att)
 
 
 def _reseal(results, cid):
     tp = results / cid / "B4_CELL_TERMINAL.json"
     term = json.loads(tp.read_text())
     att = term.get("attempt_id", f"attempt_{cid}")
-    gen = a.CAMPAIGN_GENERATION
-    (results / cid / f"CLAIM_{gen}.json").write_text(json.dumps(
-        {"schema": "agent_multi.b4_attempt_claim.v2",
-         "campaign_generation": gen,
-         "attempt_id": att, "cell": cid, "claimed_wall": 0.0,
-         "terminal_sha256": ledger_mod._sha_file(tp)}))
+    _write_claim_and_seal(results, cid, att)
+
+
+def _patch_universe(led, tmp_path, monkeypatch):
+    monkeypatch.setattr(ledger_mod, "verify_ledger",
+                        lambda lp, mr: led)
+    monkeypatch.setattr(
+        ledger_mod.b4a, "resolve_source_ref",
+        lambda ref: tmp_path / f"source_{ref.split(':')[1]}.csv")
+    monkeypatch.setattr(
+        ledger_mod, "_derive_comparator_dir",
+        lambda mr: tmp_path / "comp_default")
 
 
 def _check_results(led, tmp_path, results, monkeypatch):
-    monkeypatch.setattr(ledger_mod, "verify_ledger",
-                        lambda lp, mr: led)
+    _patch_universe(led, tmp_path, monkeypatch)
     return ledger_mod.verify_campaign_results(
         tmp_path / "ledger.json", tmp_path, results)
 
@@ -1237,8 +1323,17 @@ def test_e12_mechanics_result_as_scientific_refuses(
         tmp_path, monkeypatch):
     led, results = _ledger_fixture(tmp_path)
     tp = results / "o2024_seed101" / "B4_CELL_TERMINAL.json"
-    term = json.loads(tp.read_text())
+    base = json.loads(tp.read_text())
+    # smuggled extra field dies on the EXACT schema first
+    term = dict(base)
     term["status"] = "B4_GPU_PREFLIGHT_MECHANICS_AND_THROUGHPUT_ONLY"
+    tp.write_text(json.dumps(term))
+    _reseal(results, "o2024_seed101")
+    with pytest.raises(SystemExit, match="exact schema"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # a preflight token inside the terminal class dies as mechanics
+    term = dict(base)
+    term["terminal"] = "COMPLETED_B4_GPU_PREFLIGHT_MECHANICS"
     tp.write_text(json.dumps(term))
     _reseal(results, "o2024_seed101")
     with pytest.raises(SystemExit, match="mechanics/preflight"):
@@ -1582,12 +1677,31 @@ def test_c12_lease_bypass_impossible(tmp_path, monkeypatch):
     fake.write_text(json.dumps(
         {"campaign_generation": a.CAMPAIGN_GENERATION,
          "cell": "o2024_seed101", "attempt_id": "attempt_forged"}))
+    with pytest.raises(SystemExit, match="exact schema"):
+        orch.verify_lease(fake, tmp_path, "o2024_seed101", tmp_path)
+    # a WELL-FORMED lease still refuses without its claim
+    (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
+    (tmp_path / "o2024_seed101").mkdir(exist_ok=True)
+    good = orch.issue_lease(
+        tmp_path, "o2024_seed101",
+        {"attempt_id": "attempt_foreign"}, "e" * 64, tmp_path)
     with pytest.raises(SystemExit,
                        match="claim for o2024_seed101 absent"):
-        orch.verify_lease(fake, tmp_path, "o2024_seed101", tmp_path)
+        orch.verify_lease(good, tmp_path, "o2024_seed101", tmp_path)
     claim = orch.claim_attempt(tmp_path, "o2024_seed101")
     with pytest.raises(SystemExit, match="attempt differs"):
-        orch.verify_lease(fake, tmp_path, "o2024_seed101", tmp_path)
+        orch.verify_lease(good, tmp_path, "o2024_seed101", tmp_path)
+    # C17: matching claim but a FOREIGN authorization digest
+    lease2 = orch.issue_lease(tmp_path, "o2024_seed101", claim,
+                              "e" * 64, tmp_path)
+    with pytest.raises(SystemExit,
+                       match="authorization digest differs"):
+        orch.verify_lease(lease2, tmp_path, "o2024_seed101",
+                          tmp_path, expected_auth_sha="f" * 64)
+    # C17: no live lock -> no capability
+    with pytest.raises(SystemExit, match="live campaign"):
+        orch.verify_lease(lease2, tmp_path, "o2024_seed101",
+                          tmp_path)
 
 
 def test_c15_resume_adjudicates_every_class(tmp_path):
@@ -1772,12 +1886,9 @@ def test_f7_no_absolute_paths_guard():
 def test_c14_null_seal_refuses(tmp_path, monkeypatch):
     """A6 POST: an unsealed attempt is UNCERTAIN, never accepted."""
     led, results = _ledger_fixture(tmp_path)
-    gen = a.CAMPAIGN_GENERATION
-    cp = results / "o2022_seed101" / f"CLAIM_{gen}.json"
-    rec = json.loads(cp.read_text())
-    rec["terminal_sha256"] = None
-    cp.write_text(json.dumps(rec))
-    with pytest.raises(SystemExit, match="UNSEALED"):
+    for w in (results / "o2022_seed101").glob("SEAL_COMPLETE_*"):
+        w.unlink()
+    with pytest.raises(SystemExit, match="UNSEALED or UNCERTAIN"):
         _check_results(led, tmp_path, results, monkeypatch)
 
 
@@ -1826,8 +1937,589 @@ def test_c14_shifted_identity_refuses_vs_comparator(
 
 def _check_results_with_comp(led, tmp_path, results, comp,
                              monkeypatch):
-    monkeypatch.setattr(ledger_mod, "verify_ledger",
-                        lambda lp, mr: led)
+    _patch_universe(led, tmp_path, monkeypatch)
     return ledger_mod.verify_campaign_results(
         tmp_path / "ledger.json", tmp_path, results,
         comparator_dir=comp)
+
+
+# ================= C17-C22 acceptance battery (§7) =================
+
+def _live_lock(root, orch_mod=None):
+    om = orch_mod or orch
+    (Path(root) / "CAMPAIGN_LOCK").write_text(json.dumps(
+        {"pid": os.getpid(), "generation": a.CAMPAIGN_GENERATION,
+         "acquire_id": "harness0000000000"}))
+
+
+def _resign_lease(doc):
+    body = {k: doc[k] for k in sorted(doc) if k != "lease_sha256"}
+    doc["lease_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    return doc
+
+
+def test_c17_foreign_lease_variants_die(tmp_path):
+    """§7.1: the exact PRE forgery and every re-signed foreign
+    variant refuse BEFORE any compute construction."""
+    (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
+    _live_lock(tmp_path)
+    claim = orch.claim_attempt(tmp_path, "o2024_seed101")
+    lease_p = orch.issue_lease(tmp_path, "o2024_seed101", claim,
+                               "a" * 64, tmp_path)
+    # sanity: the honest lease verifies
+    ok = orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                           tmp_path, expected_auth_sha="a" * 64)
+    assert ok["attempt_id"] == claim["attempt_id"]
+    base = json.loads(lease_p.read_text())
+    # 1) the PRE mutation verbatim: the foreign schema token now
+    # dies at the earliest layer
+    doc = dict(base)
+    doc["schema"] = "attacker.anything.v9"
+    doc["authorization_sha256"] = "b" * 64
+    doc["holder_pid"] = 999999
+    lease_p.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="foreign lease schema"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)
+    # 1b) unsigned content mutation (schema intact): digest breaks
+    doc = dict(base)
+    doc["authorization_sha256"] = "b" * 64
+    doc["holder_pid"] = 999999
+    lease_p.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="altered"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)
+    # 2) re-signed foreign schema
+    doc = _resign_lease({**base, "schema": "attacker.v9"})
+    lease_p.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="foreign lease schema"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)
+    # 3) re-signed foreign authorization digest
+    doc = _resign_lease({**base, "authorization_sha256": "b" * 64})
+    lease_p.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit,
+                       match="authorization digest differs"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path, expected_auth_sha="a" * 64)
+    # 4) re-signed foreign holder pid
+    doc = _resign_lease({**base, "holder_pid": 999999})
+    lease_p.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="holder identity"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)
+    # 5) restored honest lease but the lock vanished
+    lease_p.write_text(json.dumps(base))
+    (tmp_path / "CAMPAIGN_LOCK").unlink()
+    with pytest.raises(SystemExit, match="live campaign"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)
+
+
+def _seal_root(tmp_path, name):
+    root = tmp_path / name
+    c = orch.claim_attempt(root, "o2022_seed101")
+    executor.write_terminal(root, "o2022_seed101", "FAILED", {
+        "attempt_id": c["attempt_id"], "reason": "x",
+        "wall_seconds": 1.0})
+    return root, c
+
+
+def test_c18_seal_fsync_outcome_matrix(tmp_path, monkeypatch):
+    """§7.2: BOTH physical outcomes of a failed completion write.
+    The caller always sees failure; a fresh adjudication reads the
+    PHYSICAL state — persisted bytes seal, absent/partial bytes
+    stay UNCERTAIN, and uncertain never becomes success."""
+    real = orch._excl_write
+
+    def failing(path, payload, mode=0o644, physical="persist"):
+        if "SEAL_COMPLETE" in Path(path).name:
+            if physical == "persist":
+                real(path, payload, mode)
+            elif physical == "partial":
+                real(path, payload[: len(payload) // 2], mode)
+            raise OSError("injected completion write failure")
+        return real(path, payload, mode)
+
+    # outcome A: bytes persisted although the caller saw OSError
+    rootA, cA = _seal_root(tmp_path, "A")
+    monkeypatch.setattr(
+        orch, "_excl_write",
+        lambda p, b, m=0o644: failing(p, b, m, "persist"))
+    with pytest.raises(OSError, match="injected"):
+        orch.seal_attempt(rootA, "o2022_seed101", cA["attempt_id"])
+    monkeypatch.setattr(orch, "_excl_write", real)
+    assert orch.seal_state(rootA, "o2022_seed101") == "SEALED"
+    assert orch.adjudicate_cell_state(
+        rootA, "o2022_seed101") == "TERMINAL_FAILED"
+    # outcome B: bytes did NOT persist -> UNCERTAIN, blocked
+    rootB, cB = _seal_root(tmp_path, "B")
+    monkeypatch.setattr(
+        orch, "_excl_write",
+        lambda p, b, m=0o644: failing(p, b, m, "absent"))
+    with pytest.raises(OSError, match="injected"):
+        orch.seal_attempt(rootB, "o2022_seed101", cB["attempt_id"])
+    monkeypatch.setattr(orch, "_excl_write", real)
+    assert orch.seal_state(rootB, "o2022_seed101") == "UNCERTAIN"
+    assert orch.adjudicate_cell_state(
+        rootB, "o2022_seed101") == "UNCERTAIN"
+    # outcome C: HALF the bytes persisted -> UNCERTAIN, blocked
+    rootC, cC = _seal_root(tmp_path, "C")
+    monkeypatch.setattr(
+        orch, "_excl_write",
+        lambda p, b, m=0o644: failing(p, b, m, "partial"))
+    with pytest.raises(OSError, match="injected"):
+        orch.seal_attempt(rootC, "o2022_seed101", cC["attempt_id"])
+    monkeypatch.setattr(orch, "_excl_write", real)
+    assert orch.seal_state(rootC, "o2022_seed101") == "UNCERTAIN"
+    assert orch.adjudicate_cell_state(
+        rootC, "o2022_seed101") == "UNCERTAIN"
+    # transplanted completion from A into B -> UNCERTAIN
+    rootD, cD = _seal_root(tmp_path, "D")
+    src_c = next((rootA / "o2022_seed101").glob("SEAL_COMPLETE_*"))
+    dst = (rootD / "o2022_seed101" /
+           f"SEAL_COMPLETE_{cD['attempt_id']}.json")
+    intent = (rootD / "o2022_seed101" /
+              f"SEAL_INTENT_{cD['attempt_id']}.json")
+    intent.write_text(src_c.read_text())
+    dst.write_text(src_c.read_text())
+    assert orch.seal_state(rootD, "o2022_seed101") == "UNCERTAIN"
+
+
+def test_c19_lock_acquire_release_matrix(tmp_path):
+    """§7.3: at most one holder; release is owned and witnessed;
+    an uncertain/foreign release never silently succeeds; a crashed
+    holder is never auto-stolen."""
+    lk = orch.GlobalLock(tmp_path)
+    lk.__enter__()
+    # second contender refuses while held
+    with pytest.raises(SystemExit, match="exactly one winner"):
+        orch.GlobalLock(tmp_path).__enter__()
+    # a NON-holder object cannot release
+    thief = orch.GlobalLock(tmp_path)
+    thief.held = True
+    thief.acquire_id = "0" * 16
+    with pytest.raises(SystemExit, match="non-holder"):
+        thief.__exit__()
+    assert (tmp_path / "CAMPAIGN_LOCK").is_file()
+    # owned release leaves a durable witness and frees the slot
+    lk.__exit__()
+    assert not (tmp_path / "CAMPAIGN_LOCK").exists()
+    wit = list(tmp_path.glob("LOCK_RELEASE_*.json"))
+    assert len(wit) == 1
+    assert json.loads(wit[0].read_text())[
+        "acquire_id"] == lk.acquire_id
+    # slot reusable only AFTER the witnessed release
+    lk2 = orch.GlobalLock(tmp_path)
+    lk2.__enter__()
+    # attacker unlinks the live lock: the holder's release fails
+    # closed instead of silently passing
+    (tmp_path / "CAMPAIGN_LOCK").unlink()
+    with pytest.raises(SystemExit):
+        lk2.__exit__()
+    # crashed-holder lock (dead pid) is never auto-stolen
+    (tmp_path / "CAMPAIGN_LOCK").write_text(json.dumps(
+        {"pid": 999999, "generation": a.CAMPAIGN_GENERATION,
+         "acquire_id": "dead000000000000"}))
+    with pytest.raises(SystemExit, match="exactly one winner"):
+        orch.GlobalLock(tmp_path).__enter__()
+
+
+def _contender(root, q):
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location(
+        "b4orch_child",
+        Path(__file__).resolve().parents[1]
+        / "tools/b4_campaign_orchestrator.py")
+    om = ilu.module_from_spec(spec)
+    spec.loader.exec_module(om)
+    try:
+        om.claim_attempt(root, "o2022_seed101")
+        q.put(("claimed", None))
+    except SystemExit as exc:
+        q.put(("refused", str(exc)))
+    q.put(("state", om.adjudicate_cell_state(root,
+                                             "o2022_seed101")))
+
+
+def test_c18_two_process_contention_after_uncertainty(tmp_path,
+                                                      monkeypatch):
+    """§7.4: after an uncertain seal boundary, two REAL processes
+    both refuse to re-claim and both adjudicate UNCERTAIN."""
+    import multiprocessing as mp
+    root, c = _seal_root(tmp_path, "U")
+    real = orch._excl_write
+    monkeypatch.setattr(
+        orch, "_excl_write",
+        lambda p, b, m=0o644: (_ for _ in ()).throw(
+            OSError("injected")) if "SEAL_COMPLETE" in Path(p).name
+        else real(p, b, m))
+    with pytest.raises(OSError):
+        orch.seal_attempt(root, "o2022_seed101", c["attempt_id"])
+    monkeypatch.setattr(orch, "_excl_write", real)
+    ctx = mp.get_context("fork")
+    q = ctx.Queue()
+    ps = [ctx.Process(target=_contender, args=(root, q))
+          for _ in range(2)]
+    [p.start() for p in ps]
+    [p.join(timeout=60) for p in ps]
+    out = [q.get(timeout=5) for _ in range(4)]
+    claims = [v for k, v in out if k in ("claimed", "refused")]
+    states = [v for k, v in out if k == "state"]
+    assert all("one winner" in c or "exactly one" in c
+               for c in claims if c)
+    assert len([k for k, _ in out if k == "refused"]) == 2
+    assert states == ["UNCERTAIN", "UNCERTAIN"]
+
+
+def test_c20_minimal_terminal_cannot_complete(tmp_path,
+                                              monkeypatch):
+    """§7.5: the pre-C21 minimal terminal (7 evidence keys) is no
+    longer admissible at the final gate."""
+    led, results = _ledger_fixture(tmp_path)
+    cid = "o2022_seed101"
+    tp = results / cid / "B4_CELL_TERMINAL.json"
+    term = json.loads(tp.read_text())
+    minimal = {k: term[k] for k in (
+        "schema", "cell", "terminal", "attempt_id",
+        "cell_config_sha256", "per_bar_csv", "per_bar_sha256",
+        "scored_index_sha256", "checkpoint_sha256",
+        "sealed_2025_used")}
+    tp.write_text(json.dumps(minimal))
+    _reseal(results, cid)
+    with pytest.raises(SystemExit, match="exact schema"):
+        _check_results(led, tmp_path, results, monkeypatch)
+
+
+def test_c20_comparator_not_omittable(tmp_path, monkeypatch):
+    """§7.6: comparator evidence is derived and mandatory — absent
+    derivation refuses; the CLI carries no omission path; a None
+    argument DERIVES instead of skipping."""
+    (tmp_path / "B4_MATERIALIZATION.json").write_text(
+        json.dumps({"no_comparator": True}))
+    with pytest.raises(SystemExit,
+                       match="no comparator_ref|comparator"):
+        ledger_mod._derive_comparator_dir(tmp_path)
+    lsrc = (Path(__file__).resolve().parents[1]
+            / "tools/b4_campaign_ledger.py").read_text()
+    assert "comparator_dir" not in lsrc[lsrc.index("def main"):]
+    body = lsrc[lsrc.index("def verify_campaign_results"):
+                lsrc.index("def verify_single_cell_result")]
+    assert "_derive_comparator_dir" in body
+
+
+def test_c20_completion_requires_full_verifier_source():
+    """§7.8: run_campaign consumes verify_campaign_results BEFORE
+    it may report CAMPAIGN_COMPLETE (the integrated run proves the
+    live path end to end)."""
+    osrc = (Path(__file__).resolve().parents[1]
+            / "tools/b4_campaign_orchestrator.py").read_text()
+    body = osrc[osrc.index("def run_campaign"):]
+    i_verify = body.index("verify_campaign_results")
+    i_complete = body.index('"CAMPAIGN_COMPLETE"')
+    assert i_verify < i_complete
+
+
+def _mutate_perbar(results, cid, mutfn):
+    import pandas as _pd4
+    d = results / cid
+    pb = d / f"per_bar_{cid}.csv"
+    df = _pd4.read_csv(pb)
+    df = mutfn(df)
+    df.to_csv(pb, index=False)
+    tp = d / "B4_CELL_TERMINAL.json"
+    term = json.loads(tp.read_text())
+    term["per_bar_sha256"] = ledger_mod._sha_file(pb)
+    tp.write_text(json.dumps(term))
+    _reseal(results, cid)
+
+
+def test_c21_factual_mutations_each_fail(tmp_path, monkeypatch):
+    """§7.7: every factual field mutation independently refuses at
+    the final gate — presence is not evidence."""
+    cid = "o2023_seed202"
+
+    def fresh():
+        import shutil as _sh
+        for child in tmp_path.iterdir():
+            if child.is_dir():
+                _sh.rmtree(child)
+            else:
+                child.unlink()
+        return _ledger_fixture(tmp_path)
+
+    # 1. seed column lies
+    led, results = fresh()
+
+    def m1(df):
+        df["seed"] = df["seed"] + 1
+        return df
+    _mutate_perbar(results, cid, m1)
+    with pytest.raises(SystemExit, match="seed column"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # 2. scored_index relative instead of absolute
+    led, results = fresh()
+
+    def m2(df):
+        df["scored_index"] = range(len(df))
+        return df
+    _mutate_perbar(results, cid, m2)
+    with pytest.raises(SystemExit, match="absolute sequence"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # 3. timestamps shifted off the frozen source
+    led, results = fresh()
+
+    def m3(df):
+        df["datetime_utc"] = list(df["datetime_utc"][1:]) + \
+            ["2099-01-01 00:00"]
+        return df
+    _mutate_perbar(results, cid, m3)
+    with pytest.raises(SystemExit, match="frozen source|comparator"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # 4. source_row_sha256 fabricated
+    led, results = fresh()
+
+    def m4(df):
+        df["source_row_sha256"] = ["s" * 64] * len(df)
+        return df
+    _mutate_perbar(results, cid, m4)
+    with pytest.raises(SystemExit, match="does not\\s+recompute"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # 5. net_return decoupled from the equity path
+    led, results = fresh()
+
+    def m5(df):
+        df.loc[10, "net_return"] = 0.5
+        return df
+    _mutate_perbar(results, cid, m5)
+    with pytest.raises(SystemExit, match="net_return does not"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # 6. checkpoint bytes differ from the declared digest
+    led, results = fresh()
+    ck = results / cid / f"checkpoint_{cid}.zip"
+    ck.write_bytes(b"tampered-checkpoint-bytes")
+    with pytest.raises(SystemExit, match="checkpoint bytes"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # 7. checkpoint reused across two cells
+    led, results = fresh()
+    other = "o2023_seed303"
+    tp = results / other / "B4_CELL_TERMINAL.json"
+    term = json.loads(tp.read_text())
+    donor = json.loads((results / cid /
+                        "B4_CELL_TERMINAL.json").read_text())
+    term["checkpoint_sha256"] = donor["checkpoint_sha256"]
+    term["checkpoint_path"] = donor["checkpoint_path"]
+    tp.write_text(json.dumps(term))
+    _reseal(results, other)
+    with pytest.raises(SystemExit, match="reuses the checkpoint"):
+        _check_results(led, tmp_path, results, monkeypatch)
+
+
+def _c22_harness(tmp_path, monkeypatch, exec_mod, ceiling_hours):
+    (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
+    monkeypatch.setattr(exec_mod, "CAMPAIGN_AUTH_SHA", "f" * 64)
+    authf = tmp_path / "auth.json"
+    authf.write_text("{}")
+    monkeypatch.setattr(exec_mod, "CAMPAIGN_AUTH_PATH", authf)
+    monkeypatch.setattr(exec_mod.b4a,
+                        "verify_campaign_authorization_record",
+                        lambda *a_, **k_: {})
+    monkeypatch.setattr(
+        exec_mod.b4a, "load_resource_contract",
+        lambda: {"global_gpu_hours_ceiling": ceiling_hours})
+    _live_lock(tmp_path)
+    claim = orch.claim_attempt(tmp_path, "o2024_seed101")
+    lease = orch.issue_lease(tmp_path, "o2024_seed101", claim,
+                             "f" * 64, tmp_path)
+    return lease
+
+
+def test_c22_global_budget_cannot_be_enlarged(tmp_path,
+                                              monkeypatch):
+    """§7.9: the executor recomputes the remainder at the point of
+    use; a caller value can only TIGHTEN it."""
+    # exhausted ceiling + huge caller -> still refused
+    lease = _c22_harness(tmp_path, monkeypatch, executor, 0.0)
+    with pytest.raises(SystemExit, match="hard bound"):
+        executor.execute_cell(
+            "o2024_seed101", tmp_path, tmp_path, "cpu",
+            lease_path=lease,
+            global_wall_remaining_seconds=1e12)
+    # huge ceiling + small caller -> the caller TIGHTENS
+    for child in tmp_path.iterdir():
+        import shutil as _sh
+        _sh.rmtree(child) if child.is_dir() else child.unlink()
+    lease = _c22_harness(tmp_path, monkeypatch, executor, 1000.0)
+    with pytest.raises(SystemExit, match="hard bound"):
+        executor.execute_cell(
+            "o2024_seed101", tmp_path, tmp_path, "cpu",
+            lease_path=lease,
+            global_wall_remaining_seconds=100.0)
+    # huge ceiling + None -> the derived remainder passes this
+    # layer and the NEXT gate (materialization) refuses instead
+    for child in tmp_path.iterdir():
+        import shutil as _sh
+        _sh.rmtree(child) if child.is_dir() else child.unlink()
+    lease = _c22_harness(tmp_path, monkeypatch, executor, 1000.0)
+    try:
+        executor.execute_cell(
+            "o2024_seed101", tmp_path, tmp_path, "cpu",
+            lease_path=lease,
+            global_wall_remaining_seconds=None)
+        raise AssertionError("must not reach execution")
+    except BaseException as exc:
+        assert "hard bound" not in str(exc)
+
+
+# ---------------- §7.12: guard-removal mutations ------------------
+
+def _mutant_module(rel, old, new, name):
+    import tempfile
+    srcp = Path(__file__).resolve().parents[1] / rel
+    text = srcp.read_text()
+    assert old in text, f"mutation anchor missing in {rel}"
+    mp = Path(tempfile.mkdtemp()) / f"{name}.py"
+    mp.write_text(text.replace(old, new))
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location(name, mp)
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    if hasattr(m, "REPO"):
+        m.REPO = Path(__file__).resolve().parents[1]
+    return m
+
+
+def test_mut_c17_holder_binding_is_the_guard(tmp_path):
+    """Removing the holder-identity comparison lets a foreign-pid
+    lease through — proving test_c17 bites that exact guard."""
+    m = _mutant_module(
+        "tools/b4_campaign_orchestrator.py",
+        '''    if not (lease["holder_pid"] == lockrec.get("pid")
+            == claim.get("holder_pid") == me):''',
+        '''    if False and not (lease["holder_pid"] == lockrec.get("pid")
+            == claim.get("holder_pid") == me):''',
+        "orch_mut_c17")
+    (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
+    _live_lock(tmp_path)
+    claim = orch.claim_attempt(tmp_path, "o2024_seed101")
+    lease_p = orch.issue_lease(tmp_path, "o2024_seed101", claim,
+                               "a" * 64, tmp_path)
+    doc = _resign_lease({**json.loads(lease_p.read_text()),
+                         "holder_pid": 999999})
+    lease_p.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="holder identity"):
+        orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)
+    assert m.verify_lease(lease_p, tmp_path, "o2024_seed101",
+                          tmp_path)["holder_pid"] == 999999
+
+
+def test_mut_c18_completion_integrity_is_the_guard(tmp_path):
+    """Removing the completion self-digest check accepts a tampered
+    completion — proving seal_state's integrity check bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_orchestrator.py",
+        '''        if hashlib.sha256(json.dumps(
+                body, sort_keys=True).encode()).hexdigest() != \\
+                completion.get("completion_sha256"):
+            return "UNCERTAIN"''',
+        '''        if False:
+            return "UNCERTAIN"''',
+        "orch_mut_c18")
+    root, c = _seal_root(tmp_path, "M")
+    orch.seal_attempt(root, "o2022_seed101", c["attempt_id"])
+    cp = next((root / "o2022_seed101").glob("SEAL_COMPLETE_*"))
+    doc = json.loads(cp.read_text())
+    doc["completion_sha256"] = "0" * 64
+    cp.write_text(json.dumps(doc))
+    assert orch.seal_state(root, "o2022_seed101") == "UNCERTAIN"
+    assert m.seal_state(root, "o2022_seed101") == "SEALED"
+
+
+def test_mut_c20_seal_gate_is_the_guard(tmp_path, monkeypatch):
+    """Removing the ledger's physical-seal gate lets an unsealed
+    cell into completion — proving the C20 gate bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_ledger.py",
+        '''        if orch.seal_state(results_root, cid) != "SEALED":
+            raise LedgerRefusal(''',
+        '''        if False:
+            raise LedgerRefusal(''',
+        "ledger_mut_c20")
+    led, results = _ledger_fixture(tmp_path)
+    for w in (results / "o2022_seed101").glob("SEAL_COMPLETE_*"):
+        w.unlink()
+    with pytest.raises(SystemExit, match="UNSEALED or UNCERTAIN"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    monkeypatch.setattr(m, "verify_ledger", lambda lp, mr: led)
+    monkeypatch.setattr(
+        m, "_derive_comparator_dir",
+        lambda mr: tmp_path / "comp_default")
+    assert m.verify_campaign_results(
+        tmp_path / "ledger.json", tmp_path, results)["n"] == 12
+
+
+def test_mut_c21_source_row_recompute_is_the_guard(tmp_path,
+                                                   monkeypatch):
+    """Removing the source-row recomputation lets a fabricated
+    source_row_sha256 column through — proving C21 bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_ledger.py",
+        '''        if list(df["source_row_sha256"].astype(str)) != \\
+                exp["row_shas"]:
+            raise LedgerRefusal(''',
+        '''        if False:
+            raise LedgerRefusal(''',
+        "ledger_mut_c21")
+    led, results = _ledger_fixture(tmp_path)
+    cid = "o2023_seed101"
+
+    def m4(df):
+        df["source_row_sha256"] = ["s" * 64] * len(df)
+        return df
+    _mutate_perbar(results, cid, m4)
+    with pytest.raises(SystemExit, match="does not\\s+recompute"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    monkeypatch.setattr(m, "verify_ledger", lambda lp, mr: led)
+    monkeypatch.setattr(
+        m, "_derive_comparator_dir",
+        lambda mr: tmp_path / "comp_default")
+    assert m.verify_campaign_results(
+        tmp_path / "ledger.json", tmp_path, results)["n"] == 12
+
+
+def test_mut_c22_min_recompute_is_the_guard(tmp_path, monkeypatch):
+    """Reverting to caller-trusting remainder acceptance lets an
+    exhausted budget run — proving the C22 recompute bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_executor.py",
+        '''    recomputed = _orch.remaining_global_seconds(
+        Path(out_root), b4a.load_resource_contract())
+    if global_wall_remaining_seconds is None:
+        global_wall_remaining_seconds = recomputed
+    else:
+        global_wall_remaining_seconds = min(
+            float(global_wall_remaining_seconds), recomputed)''',
+        '''    if global_wall_remaining_seconds is None:
+        global_wall_remaining_seconds = _orch.\\
+            remaining_global_seconds(Path(out_root),
+                                     b4a.load_resource_contract())''',
+        "exec_mut_c22")
+    m.b4a = executor.b4a
+    lease = _c22_harness(tmp_path, monkeypatch, executor, 0.0)
+    with pytest.raises(SystemExit, match="hard bound"):
+        executor.execute_cell(
+            "o2024_seed101", tmp_path, tmp_path, "cpu",
+            lease_path=lease,
+            global_wall_remaining_seconds=1e12)
+    monkeypatch.setattr(m, "CAMPAIGN_AUTH_SHA", "f" * 64)
+    monkeypatch.setattr(m, "CAMPAIGN_AUTH_PATH",
+                        tmp_path / "auth.json")
+    try:
+        m.execute_cell("o2024_seed101", tmp_path, tmp_path, "cpu",
+                       lease_path=lease,
+                       global_wall_remaining_seconds=1e12)
+        raise AssertionError("must not reach execution")
+    except BaseException as exc:
+        assert "hard bound" not in str(exc)

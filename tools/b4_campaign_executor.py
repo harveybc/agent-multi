@@ -392,7 +392,8 @@ def write_terminal(out_root: Path, cell_id: str, terminal: str,
     if terminal == "COMPLETED":
         for k in ("attempt_id", "cell_config_sha256", "per_bar_csv",
                   "per_bar_sha256", "sealed_2025_used",
-                  "scored_index_sha256", "checkpoint_sha256"):
+                  "scored_index_sha256", "checkpoint_sha256",
+                  "checkpoint_path"):
             if k not in rec:
                 raise ExecutorRefusal(
                     f"REFUSED: COMPLETED terminal without {k!r} — "
@@ -590,12 +591,19 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
     _orch = _ilu.module_from_spec(_os)
     _os.loader.exec_module(_orch)
     lease = _orch.verify_lease(lease_path, out_root, cell_id,
-                               mat_root)
+                               mat_root,
+                               expected_auth_sha=CAMPAIGN_AUTH_SHA)
     attempt_id = lease["attempt_id"]
+    # C22: the hard global bound is RECOMPUTED here, at the last
+    # point of use; a caller value can only TIGHTEN it, never
+    # enlarge it (infinity or a larger remainder is ignored).
+    recomputed = _orch.remaining_global_seconds(
+        Path(out_root), b4a.load_resource_contract())
     if global_wall_remaining_seconds is None:
-        global_wall_remaining_seconds = _orch.\
-            remaining_global_seconds(Path(out_root),
-                                     b4a.load_resource_contract())
+        global_wall_remaining_seconds = recomputed
+    else:
+        global_wall_remaining_seconds = min(
+            float(global_wall_remaining_seconds), recomputed)
     if global_wall_remaining_seconds < 600.0:
         raise ExecutorRefusal(
             "REFUSED: remaining global campaign wall is smaller "
@@ -618,6 +626,10 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
     comparator_dir = comparator_dir_of(packet)
     b4a.verify_full_authority_chain(comparator_dir)
     sb = _load_sb()
+    # C17: revalidate the capability under the same lock right
+    # before entering the pipeline.
+    _orch.verify_lease(lease_path, out_root, cell_id, mat_root,
+                       expected_auth_sha=CAMPAIGN_AUTH_SHA)
     from app.plugin_loader import load_plugin
     agent_cls, _ = load_plugin("agent.plugins", cfg["agent_plugin"])
     pipeline_cls, _ = load_plugin("pipeline.plugins",
@@ -662,6 +674,7 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
             "cell_config_sha256": built["cell"]["config_sha256"],
             "artifact_class": artifact_class,
             "checkpoint_sha256": score["checkpoint_sha256"],
+            "checkpoint_path": str(score_target),
             "per_bar_csv": score["per_bar_csv"],
             "per_bar_sha256": score["per_bar_sha256"],
             "scored_index_sha256": score["scored_index_sha256"],

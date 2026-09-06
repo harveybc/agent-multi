@@ -51,6 +51,9 @@ AMENDMENT_7_PATH = (EVIDENCE /
 AMENDMENT_8_PATH = (EVIDENCE /
                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_8_2026_09_06"
                     ".json")
+AMENDMENT_9_PATH = (EVIDENCE /
+                    "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_9_2026_09_06"
+                    ".json")
 
 # --- B4-P1 (order @9fb017e3): the exact owner GPU authorization ---
 # Fixed reviewed identities: neither the path nor the digest can come
@@ -96,7 +99,7 @@ def campaign_record_required_bindings() -> dict:
         "cell_population_sha256": pop["cell_population_sha256"],
         "materialization_sha256": pop["materialization_sha256"],
         "genesis_binding_sha256": pop["genesis_binding_sha256"],
-        "amendment_8_sha256": _sha_file(AMENDMENT_8_PATH),
+        "amendment_9_sha256": _sha_file(AMENDMENT_9_PATH),
         "resource_contract_sha256": RESOURCE_CONTRACT_V2_SHA,
         "campaign_generation": CAMPAIGN_GENERATION,
     }
@@ -903,6 +906,38 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 8 does not pin the corrected "
                 "runtime surface")
     pins.update(a8_pins)
+    # C17-C22 (final audit 2026-09-06): amendment 9 — the capability/
+    # seal/factual-verifier generation; names a8's exact bytes,
+    # discloses, carries the population; its pins supersede.
+    if not AMENDMENT_9_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 9 absent — the capability-authority "
+            "generation does not exist")
+    a9 = json.loads(AMENDMENT_9_PATH.read_bytes())
+    if a9.get("amends_amendment_8_sha256") != _sha_file(
+            AMENDMENT_8_PATH):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 9 does not name amendment 8's "
+            "exact bytes")
+    if not a9.get("change_disclosure"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 9 must disclose its changes")
+    if a9.get("proposed_campaign_population"):
+        campaign_pins = a9["proposed_campaign_population"]
+    a9_pins = a9.get("final_code_pins", {})
+    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
+                "tools/b4_campaign_executor.py",
+                "tools/b4_campaign_ledger.py",
+                "tools/b4_campaign_orchestrator.py",
+                "tools/b4_adjudicator.py",
+                "tools/materialize_b4_causal_sac.py",
+                "pipeline_plugins/rl_pipeline_with_validation.py",
+                "tests/test_b4_materializer_authority.py"):
+        if req not in a9_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 9 does not pin the corrected "
+                "runtime surface")
+    pins.update(a9_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -915,7 +950,8 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_5_PATH),
                _sha_file(AMENDMENT_6_PATH),
                _sha_file(AMENDMENT_7_PATH),
-               _sha_file(AMENDMENT_8_PATH)],
+               _sha_file(AMENDMENT_8_PATH),
+               _sha_file(AMENDMENT_9_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}

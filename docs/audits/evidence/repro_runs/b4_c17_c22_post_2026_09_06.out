@@ -1,0 +1,31 @@
+== C17: the PRE foreign lease now refuses ==
+refused: REFUSED: foreign lease schema
+refused (digest): REFUSED: lease content digest does not re-derive — the capability was altered
+
+== C18: failed sealing is adjudicated PHYSICALLY ==
+CALLER_SAW OSError injected completion write failure
+FRESH_STATE UNCERTAIN
+-> uncertain bytes never become success; a persisted completion (the other physical outcome) is covered by test_c18_seal_fsync_outcome_matrix
+
+== C19: lock release is owned and witnessed ==
+refused: REFUSED: lock release by a non-holder — ownership is required
+owned release left durable witness: LOCK_RELEASE_cffa3862cf4242b3.json
+release witness protocol present: True
+
+== C20: completion consumes the strongest verifier ==
+run_campaign calls verify_campaign_results before CAMPAIGN_COMPLETE: True
+comparator derived from materialization; CLI cannot omit: True
+
+== C21: factual fields are verified bindings ==
+verifier checks seed column vs cell seed: True
+verifier checks scored_index sequence: True
+verifier checks source_row recompute: True
+verifier checks checkpoint bytes verify: True
+verifier checks net_return recompute: True
+verifier checks exact terminal schema: True
+verifier checks exact per-bar schema: True
+
+== C22: the executor recomputes; callers only tighten ==
+executor recomputes at point of use and min()s the caller value: True
+
+POST CONFIRMED: C17-C22 findings no longer reproduce

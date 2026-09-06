@@ -135,6 +135,56 @@ def verify_ledger(ledger_path: Path, mat_root: Path) -> dict:
     return ledger
 
 
+def _load_orch():
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location(
+        "b4orch_led", REPO / "tools/b4_campaign_orchestrator.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def _derive_comparator_dir(mat_root: Path) -> Path:
+    """C20: comparator evidence is MANDATORY and derived from the
+    reviewed materialization — it cannot be omitted by API or CLI."""
+    packet = json.loads((Path(mat_root) /
+                         "B4_MATERIALIZATION.json").read_bytes())
+    ref = packet.get("comparator_ref") or packet.get(
+        "comparator_dir")
+    if not ref:
+        raise LedgerRefusal(
+            "REFUSED: materialization carries no comparator anchor")
+    d = (b4a.resolve_source_ref(str(ref))
+         if ":" in str(ref)[:12] else Path(ref))
+    if not (Path(d) / "SCREEN_B_RESULTS.json").is_file():
+        raise LedgerRefusal(
+            "REFUSED: derived comparator population is absent — "
+            "completion cannot be claimed without it")
+    return Path(d)
+
+
+TERMINAL_SCHEMA_KEYS = {
+    "schema", "cell", "terminal", "g1_eligible",
+    "checkpoint_promotable", "attempt_id", "cell_config_sha256",
+    "artifact_class", "checkpoint_sha256", "checkpoint_path",
+    "per_bar_csv", "per_bar_sha256", "scored_index_sha256",
+    "scored_bars", "counter_semantics", "sealed_2025_used",
+    "wall_seconds", "effective_limits"}
+CLAIM_SCHEMA_KEYS = {
+    "schema", "campaign_generation", "attempt_id", "cell",
+    "claimed_wall", "claimed_monotonic", "holder_pid",
+    "terminal_sha256"}
+PER_BAR_SCHEMA = {
+    "origin": "int", "seed": "int", "datetime_utc": "str",
+    "scored_index": "int", "source_row_sha256": "str",
+    "requested_exposure": "float", "realized_exposure": "float",
+    "gross_equity": "str", "economic_equity": "float",
+    "net_equity_delta_observed": "float", "env_pnl_fact": "float",
+    "commission_delta": "float",
+    "pre_commission_equity_delta_derived": "float",
+    "slippage_declared": "str", "net_return": "float"}
+
+
 def verify_campaign_results(ledger_path: Path, mat_root: Path,
                             results_root: Path,
                             comparator_dir: Path = None) -> dict:
@@ -149,19 +199,45 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
     import pandas as pd
     ledger = verify_ledger(ledger_path, mat_root)
     results_root = Path(results_root)
+    orch = _load_orch()
+    if comparator_dir is None:
+        comparator_dir = _derive_comparator_dir(mat_root)
     seen_attempts = set()
     seen_artifacts = {}
+    seen_checkpoints = {}
     facts = {}
     comp_idents = {}
-    if comparator_dir is not None:
-        packet = json.loads((Path(comparator_dir) /
-                             "SCREEN_B_RESULTS.json").read_bytes())
-        for r in packet["results"]:
-            key = int(r["origin"])
-            comp = pd.read_csv(r["per_bar_csv"])
-            ident = list(pd.to_datetime(comp["datetime"])
-                         .dt.strftime("%Y-%m-%d %H:%M"))
-            comp_idents.setdefault(key, {})[r["arm"]] = ident
+    packet = json.loads((Path(comparator_dir) /
+                         "SCREEN_B_RESULTS.json").read_bytes())
+    for r in packet["results"]:
+        key = int(r["origin"])
+        comp = pd.read_csv(r["per_bar_csv"])
+        ident = list(pd.to_datetime(comp["datetime"])
+                     .dt.strftime("%Y-%m-%d %H:%M"))
+        comp_idents.setdefault(key, {})[r["arm"]] = ident
+    # C21: expected frozen-source identity per origin (datetime +
+    # close), recomputed from the resolved contract source.
+    expected_rows_by_origin = {}
+    for year in (2022, 2023, 2024):
+        contract = json.loads((Path(mat_root) / "contracts" /
+                               f"b4_causal_origin_{year}"
+                               "_contract.json").read_bytes())
+        srcp = b4a.resolve_source_ref(contract["source_ref"])
+        full = pd.read_csv(srcp, parse_dates=["DATE_TIME"])
+        in_year = full.index[full["DATE_TIME"].dt.year == year]
+        lo = max(0, int(in_year[0]) - 540)
+        sl = full.iloc[lo: int(in_year[-1]) + 1]
+        scored = sl.iloc[540:]
+        expected_rows_by_origin[year] = {
+            "datetimes": list(scored["DATE_TIME"]
+                              .dt.strftime("%Y-%m-%d %H:%M")),
+            "row_shas": [hashlib.sha256(
+                f"{d}|{c:.10g}".encode()).hexdigest()
+                for d, c in zip(
+                    scored["DATE_TIME"].dt.strftime(
+                        "%Y-%m-%d %H:%M"),
+                    scored["CLOSE"].astype(float))],
+            "start_index": 540}
     required_cols = ("origin", "seed", "datetime_utc",
                      "scored_index", "source_row_sha256",
                      "requested_exposure", "realized_exposure",
@@ -191,14 +267,21 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
         if claim.get("schema") != "agent_multi.b4_attempt_claim.v2":
             raise LedgerRefusal(f"REFUSED: {cid} foreign claim "
                                 "schema")
-        seal = claim.get("terminal_sha256")
-        if seal is None:
+        # C21: EXACT schemas at the consuming boundary
+        if set(claim) != CLAIM_SCHEMA_KEYS:
             raise LedgerRefusal(
-                f"REFUSED: {cid} attempt is UNSEALED — an absent "
-                "seal is UNCERTAIN, never accepted evidence")
-        if seal != _sha_file(term_p):
+                f"REFUSED: {cid} claim keys are not the exact "
+                "schema")
+        if set(term) != TERMINAL_SCHEMA_KEYS:
             raise LedgerRefusal(
-                f"REFUSED: {cid} seal does not bind this terminal")
+                f"REFUSED: {cid} terminal keys are not the exact "
+                f"schema (diff: "
+                f"{sorted(set(term) ^ TERMINAL_SCHEMA_KEYS)})")
+        # C18: the seal is the PHYSICAL intent/completion witness
+        if orch.seal_state(results_root, cid) != "SEALED":
+            raise LedgerRefusal(
+                f"REFUSED: {cid} attempt is UNSEALED or UNCERTAIN "
+                "— never accepted evidence")
         if term.get("cell") != cid or claim.get("cell") != cid:
             raise LedgerRefusal(
                 f"REFUSED: {cid} identity mismatch")
@@ -248,6 +331,21 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             raise LedgerRefusal(
                 f"REFUSED: {cid} per-bar lacks required columns "
                 f"{missing_cols}")
+        # C21: EXACT per-bar schema and primitive column types
+        if set(df.columns) != set(PER_BAR_SCHEMA):
+            raise LedgerRefusal(
+                f"REFUSED: {cid} per-bar columns are not the exact "
+                f"schema (diff: "
+                f"{sorted(set(df.columns) ^ set(PER_BAR_SCHEMA))})")
+        for col, want in PER_BAR_SCHEMA.items():
+            kind = df[col].dtype.kind
+            ok = {"int": kind == "i",
+                  "float": kind == "f",
+                  "str": kind in ("O", "U")}[want]
+            if not ok:
+                raise LedgerRefusal(
+                    f"REFUSED: {cid} per-bar column {col!r} has "
+                    f"kind {kind!r}, the schema requires {want}")
         year = int(cid.split("_")[0][1:])
         if len(df) != bars_per_year[year]:
             raise LedgerRefusal(
@@ -266,6 +364,62 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
                 df["origin"].nunique() != 1:
             raise LedgerRefusal(f"REFUSED: {cid} origin column "
                                 "mismatch")
+        # C21: seed column must equal the cell seed
+        cell_seed = int(cid.split("seed")[1])
+        if df["seed"].nunique() != 1 or \
+                int(df["seed"].iloc[0]) != cell_seed:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} seed column does not equal the "
+                "cell seed")
+        # C21: exact absolute scored-index sequence
+        exp = expected_rows_by_origin[year]
+        want_idx = list(range(exp["start_index"],
+                              exp["start_index"] + len(df)))
+        if list(df["scored_index"].astype(int)) != want_idx:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} scored_index is not the expected "
+                "absolute sequence")
+        # C21: timestamps ordered, unique, equal to frozen source
+        dts = list(df["datetime_utc"].astype(str))
+        if dts != exp["datetimes"]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} timestamps differ from the frozen "
+                "source origin")
+        if len(set(dts)) != len(dts):
+            raise LedgerRefusal(f"REFUSED: {cid} duplicate "
+                                "timestamps")
+        # C21: source_row_sha256 recomputed from frozen source rows
+        if list(df["source_row_sha256"].astype(str)) != \
+                exp["row_shas"]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} source_row_sha256 does not "
+                "recompute from the frozen source rows")
+        # C21: net_return recomputed from the equity path
+        eq = df["economic_equity"].to_numpy(dtype=float)
+        nr = df["net_return"].to_numpy(dtype=float)
+        recomputed_nr = np.zeros_like(nr)
+        recomputed_nr[1:] = eq[1:] / np.where(eq[:-1] == 0.0, 1.0,
+                                              eq[:-1]) - 1.0
+        if float(np.max(np.abs(nr[1:] - recomputed_nr[1:]))) > 1e-9:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} net_return does not recompute "
+                "from the economic equity path")
+        # C21: checkpoint bytes verified when the artifact exists
+        ck = term.get("checkpoint_path")
+        if not isinstance(ck, str) or not ck:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} terminal lacks checkpoint_path")
+        ckp = Path(ck)
+        if ckp.is_file():
+            if _sha_file(ckp) != term["checkpoint_sha256"]:
+                raise LedgerRefusal(
+                    f"REFUSED: {cid} checkpoint bytes differ from "
+                    "the declared digest")
+        if term["checkpoint_sha256"] in seen_checkpoints:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} reuses the checkpoint of "
+                f"{seen_checkpoints[term['checkpoint_sha256']]}")
+        seen_checkpoints[term["checkpoint_sha256"]] = cid
         # independent conservation (never one field vs itself)
         resid = float((df["net_equity_delta_observed"]
                        - df["env_pnl_fact"]).abs().max())

@@ -92,20 +92,55 @@ def _excl_write(path: Path, payload: bytes, mode=0o644) -> None:
 
 
 class GlobalLock:
+    """C19: acquisition is O_EXCL; release is OWNED (only the
+    recorded holder pid may release) and DURABLE (an append-only
+    RELEASE witness is fsynced before the unlink, and the directory
+    is fsynced after). A crashed holder's lock is never auto-stolen
+    — operator disposition only."""
+
     def __init__(self, results_root: Path):
-        self.path = Path(results_root) / "CAMPAIGN_LOCK"
+        self.root = Path(results_root)
+        self.path = self.root / "CAMPAIGN_LOCK"
         self.held = False
+        self.acquire_id = None
 
     def __enter__(self):
+        import uuid as _uuid
+        self.acquire_id = _uuid.uuid4().hex[:16]
         _excl_write(self.path, json.dumps(
             {"pid": os.getpid(),
-             "generation": b4a.CAMPAIGN_GENERATION}).encode())
+             "generation": b4a.CAMPAIGN_GENERATION,
+             "acquire_id": self.acquire_id}).encode())
         self.held = True
         return self
 
     def __exit__(self, *exc):
-        if self.held:
-            self.path.unlink(missing_ok=True)
+        if not self.held:
+            return
+        try:
+            raw = self.path.read_bytes()
+        except OSError as exc:
+            raise OrchestratorRefusal(
+                "REFUSED: campaign lock vanished under the holder "
+                f"({exc}) — uncertain release, failing closed")
+        rec = b4a._strict_json_bytes(raw, "campaign lock")
+        if rec.get("pid") != os.getpid() or \
+                rec.get("acquire_id") != self.acquire_id:
+            raise OrchestratorRefusal(
+                "REFUSED: lock release by a non-holder — ownership "
+                "is required")
+        witness = self.root / f"LOCK_RELEASE_{self.acquire_id}.json"
+        _excl_write(witness, json.dumps(
+            {"schema": "agent_multi.b4_lock_release.v1",
+             "acquire_id": self.acquire_id,
+             "holder_pid": os.getpid()}).encode())
+        self.path.unlink()
+        dfd = os.open(str(self.root), os.O_RDONLY)
+        try:
+            os.fsync(dfd)
+        finally:
+            os.close(dfd)
+        self.held = False
 
 
 def _claim_path(results_root: Path, cell_id: str) -> Path:
@@ -151,44 +186,29 @@ def load_claim(results_root: Path, cell_id: str) -> dict:
     return rec
 
 
-def seal_attempt(results_root: Path, cell_id: str,
-                 attempt_id: str) -> None:
-    cell_dir = Path(results_root) / cell_id
-    claim_p = _claim_path(results_root, cell_id)
-    rec = load_claim(results_root, cell_id)
-    if rec["attempt_id"] != attempt_id:
-        raise OrchestratorRefusal(
-            "REFUSED: sealing a foreign attempt")
-    if rec.get("terminal_sha256") is not None:
-        raise OrchestratorRefusal("REFUSED: attempt already sealed")
-    terminal = cell_dir / "B4_CELL_TERMINAL.json"
-    if not terminal.is_file():
-        raise OrchestratorRefusal(
-            "REFUSED: no terminal exists to seal — the attempt "
-            "stays UNCERTAIN for operator disposition")
-    rec["terminal_sha256"] = _sha_file(terminal)
-    tmp = claim_p.with_suffix(".tmp")
-    tmp.write_text(json.dumps(rec, indent=1))
-    os.replace(tmp, claim_p)
-    dfd = os.open(str(cell_dir), os.O_RDONLY)
-    try:
-        os.fsync(dfd)
-    finally:
-        os.close(dfd)
-
-
 # ------------------- C12: execution lease -------------------------
+LEASE_SCHEMA = {
+    "schema": str, "campaign_generation": str, "cell": str,
+    "attempt_id": str, "authorization_sha256": str,
+    "materialization_sha256": str, "issued_monotonic": float,
+    "holder_pid": int, "lease_sha256": str}
+LEASE_SCHEMA_NAME = "agent_multi.b4_execution_lease.v2"
+
+
 def issue_lease(results_root: Path, cell_id: str, claim: dict,
                 auth_sha: str, mat_root: Path) -> Path:
-    lease = {"schema": "agent_multi.b4_execution_lease.v1",
+    lease = {"schema": LEASE_SCHEMA_NAME,
              "campaign_generation": b4a.CAMPAIGN_GENERATION,
              "cell": cell_id,
              "attempt_id": claim["attempt_id"],
              "authorization_sha256": auth_sha,
              "materialization_sha256":
                  _sha_file(Path(mat_root) / "B4_MATERIALIZATION.json"),
-             "issued_monotonic": time.monotonic(),
+             "issued_monotonic": float(time.monotonic()),
              "holder_pid": os.getpid()}
+    lease["lease_sha256"] = hashlib.sha256(json.dumps(
+        {k: lease[k] for k in sorted(lease)},
+        sort_keys=True).encode()).hexdigest()
     p = (Path(results_root) / cell_id /
          f"LEASE_{claim['attempt_id']}.json")
     _excl_write(p, json.dumps(lease, indent=1).encode())
@@ -196,26 +216,55 @@ def issue_lease(results_root: Path, cell_id: str, claim: dict,
 
 
 def verify_lease(lease_path: Path, results_root: Path,
-                 cell_id: str, mat_root: Path) -> dict:
-    """C12: the executor calls THIS before any pipeline/env/CUDA
-    construction. A fabricated attempt id, a manually written
-    incomplete claim or a stale lease produces zero compute."""
+                 cell_id: str, mat_root: Path,
+                 expected_auth_sha: str = None) -> dict:
+    """C17: the lease is an EXECUTION CAPABILITY, not a file beside
+    a claim — exact schema and primitive types, immutable content
+    digest, the LIVE campaign authorization digest, and holder
+    identity bound across lease == claim == global lock == the
+    executing process. Revalidate under the same lock immediately
+    before entering the pipeline; any foreign element produces zero
+    compute."""
     p = Path(lease_path)
     if p.is_symlink() or not p.is_file():
         raise OrchestratorRefusal("REFUSED: execution lease absent")
     lease = b4a._strict_json_bytes(p.read_bytes(), "execution lease")
-    if lease.get("campaign_generation") != b4a.CAMPAIGN_GENERATION \
-            or lease.get("cell") != cell_id:
+    if set(lease) != set(LEASE_SCHEMA):
+        raise OrchestratorRefusal(
+            "REFUSED: lease keys are not the exact schema")
+    for k, t in LEASE_SCHEMA.items():
+        if type(lease[k]) is not t:
+            raise OrchestratorRefusal(
+                f"REFUSED: lease field {k!r} has a foreign "
+                "primitive type")
+    if lease["schema"] != LEASE_SCHEMA_NAME:
+        raise OrchestratorRefusal(
+            "REFUSED: foreign lease schema")
+    body = {k: lease[k] for k in sorted(lease)
+            if k != "lease_sha256"}
+    if hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest() != \
+            lease["lease_sha256"]:
+        raise OrchestratorRefusal(
+            "REFUSED: lease content digest does not re-derive — "
+            "the capability was altered")
+    if lease["campaign_generation"] != b4a.CAMPAIGN_GENERATION \
+            or lease["cell"] != cell_id:
         raise OrchestratorRefusal(
             "REFUSED: lease generation/cell binding mismatch")
+    if expected_auth_sha is not None and \
+            lease["authorization_sha256"] != expected_auth_sha:
+        raise OrchestratorRefusal(
+            "REFUSED: lease authorization digest differs from the "
+            "reviewed campaign authorization")
     claim = load_claim(results_root, cell_id)
-    if claim["attempt_id"] != lease.get("attempt_id"):
+    if claim["attempt_id"] != lease["attempt_id"]:
         raise OrchestratorRefusal(
             "REFUSED: lease attempt differs from the unique claim")
-    if claim.get("terminal_sha256") is not None:
+    if seal_state(results_root, cell_id) != "UNSEALED":
         raise OrchestratorRefusal(
             "REFUSED: the claimed attempt already reached a sealed "
-            "terminal")
+            "or uncertain terminal")
     terminal = Path(results_root) / cell_id / "B4_CELL_TERMINAL.json"
     if terminal.exists():
         raise OrchestratorRefusal(
@@ -230,11 +279,101 @@ def verify_lease(lease_path: Path, results_root: Path,
     if lockrec.get("generation") != b4a.CAMPAIGN_GENERATION:
         raise OrchestratorRefusal(
             "REFUSED: campaign lock belongs to another generation")
+    me = os.getpid()
+    if not (lease["holder_pid"] == lockrec.get("pid")
+            == claim.get("holder_pid") == me):
+        raise OrchestratorRefusal(
+            "REFUSED: lease/claim/lock holder identity does not "
+            "bind to the executing process")
     mat_sha = _sha_file(Path(mat_root) / "B4_MATERIALIZATION.json")
-    if lease.get("materialization_sha256") != mat_sha:
+    if lease["materialization_sha256"] != mat_sha:
         raise OrchestratorRefusal(
             "REFUSED: lease materialization digest is stale")
     return lease
+
+
+# ---------------- C18: intent/completion durable seal -------------
+def _seal_paths(results_root: Path, cell_id: str,
+                attempt_id: str):
+    d = Path(results_root) / cell_id
+    return (d / f"SEAL_INTENT_{attempt_id}.json",
+            d / f"SEAL_COMPLETE_{attempt_id}.json")
+
+
+def seal_attempt(results_root: Path, cell_id: str,
+                 attempt_id: str) -> None:
+    """C18: append-only intent/completion — never an overwrite whose
+    only proof is the final fsync. Recovery reads PHYSICAL data: a
+    complete, self-integral completion that matches its intent seals
+    the terminal; anything else is UNCERTAIN."""
+    cell_dir = Path(results_root) / cell_id
+    claim = load_claim(results_root, cell_id)
+    if claim["attempt_id"] != attempt_id:
+        raise OrchestratorRefusal(
+            "REFUSED: sealing a foreign attempt")
+    terminal = cell_dir / "B4_CELL_TERMINAL.json"
+    if not terminal.is_file():
+        raise OrchestratorRefusal(
+            "REFUSED: no terminal exists to seal — the attempt "
+            "stays UNCERTAIN for operator disposition")
+    intent_p, complete_p = _seal_paths(results_root, cell_id,
+                                       attempt_id)
+    if complete_p.exists():
+        raise OrchestratorRefusal("REFUSED: attempt already sealed")
+    term_sha = _sha_file(terminal)
+    intent = {"schema": "agent_multi.b4_seal_intent.v1",
+              "campaign_generation": b4a.CAMPAIGN_GENERATION,
+              "cell": cell_id, "attempt_id": attempt_id,
+              "holder_pid": os.getpid(),
+              "terminal_sha256": term_sha}
+    _excl_write(intent_p, json.dumps(intent, indent=1).encode())
+    completion = {"schema": "agent_multi.b4_seal_completion.v1",
+                  "intent_sha256": _sha_file(intent_p),
+                  "terminal_sha256": term_sha,
+                  "attempt_id": attempt_id}
+    completion["completion_sha256"] = hashlib.sha256(json.dumps(
+        {k: completion[k] for k in sorted(completion)},
+        sort_keys=True).encode()).hexdigest()
+    _excl_write(complete_p,
+                json.dumps(completion, indent=1).encode())
+
+
+def seal_state(results_root: Path, cell_id: str) -> str:
+    """PHYSICAL adjudication of the seal: SEALED only when a
+    complete, self-integral completion matches its intent AND the
+    live terminal bytes; UNCERTAIN on any partial, malformed or
+    transplanted witness; UNSEALED when neither exists."""
+    try:
+        claim = load_claim(results_root, cell_id)
+    except SystemExit:
+        return "NO_CLAIM"
+    attempt_id = claim["attempt_id"]
+    intent_p, complete_p = _seal_paths(results_root, cell_id,
+                                       attempt_id)
+    terminal = Path(results_root) / cell_id / "B4_CELL_TERMINAL.json"
+    if not intent_p.exists() and not complete_p.exists():
+        return "UNSEALED"
+    if not complete_p.exists() or not intent_p.exists() or \
+            not terminal.is_file():
+        return "UNCERTAIN"
+    try:
+        completion = b4a._strict_json_bytes(complete_p.read_bytes(),
+                                            "seal completion")
+        body = {k: completion[k] for k in sorted(completion)
+                if k != "completion_sha256"}
+        if hashlib.sha256(json.dumps(
+                body, sort_keys=True).encode()).hexdigest() != \
+                completion.get("completion_sha256"):
+            return "UNCERTAIN"
+        if completion.get("intent_sha256") != _sha_file(intent_p):
+            return "UNCERTAIN"
+        if completion.get("attempt_id") != attempt_id:
+            return "UNCERTAIN"
+        if completion.get("terminal_sha256") != _sha_file(terminal):
+            return "UNCERTAIN"
+    except (SystemExit, OSError):
+        return "UNCERTAIN"
+    return "SEALED"
 
 
 # ---------------- C13: global remaining wall ----------------------
@@ -295,10 +434,9 @@ def adjudicate_cell_state(results_root: Path, cell_id: str) -> str:
                                       f"terminal {cell_id}")
     except SystemExit:
         return "UNCERTAIN"
-    if claim.get("terminal_sha256") is None:
-        return "UNCERTAIN"          # unsealed is never accepted
-    if claim["terminal_sha256"] != _sha_file(terminal):
-        return "UNCERTAIN"
+    seal = seal_state(results_root, cell_id)
+    if seal != "SEALED":
+        return "UNCERTAIN"          # unsealed/partial never accepted
     if term.get("cell") != cell_id or \
             term.get("attempt_id") != claim["attempt_id"]:
         return "UNCERTAIN"
@@ -443,8 +581,15 @@ def run_campaign(mat_root: Path, ledger_path: Path,
                 global_wall_remaining_seconds=remaining)
             seal_attempt(results_root, cid, claim["attempt_id"])
             outcome["completed"].append(cid)
-    status = ("CAMPAIGN_COMPLETE" if not outcome["failed"]
-              else "CAMPAIGN_COMPLETE_WITH_FAILED_CELLS")
+    # C20: scientific completion REQUIRES the strongest verifier —
+    # comparator evidence derived from the reviewed materialization,
+    # impossible to omit.
+    if not outcome["failed"] and not outcome["uncertain"]:
+        ledger_mod.verify_campaign_results(
+            ledger_path, mat_root, results_root)
+        status = "CAMPAIGN_COMPLETE"
+    else:
+        status = "CAMPAIGN_COMPLETE_WITH_FAILED_CELLS"
     print(json.dumps({"status": status, **outcome}, indent=1))
     return 0
 
