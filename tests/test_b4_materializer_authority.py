@@ -264,7 +264,8 @@ def _pins(*rels):
 
 
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
-             a7_over=None, a8_over=None, a9_over=None, **over):
+             a7_over=None, a8_over=None, a9_over=None,
+             a10_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -360,6 +361,28 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f9 = tmp_path / "a9.json"
     f9.write_text(json.dumps(a9))
     monkeypatch.setattr(a, "AMENDMENT_9_PATH", f9)
+    monkeypatch.setattr(a, "AMENDMENT_9_SHA", a._sha_file(f9))
+    a10 = {"amends_amendment_9_sha256": a._sha_file(f9),
+           "change_disclosure": "test fixture disclosure",
+           "scientific_change":
+               "NONE — runtime authority (C23-C25) only",
+           "proposed_campaign_population": {
+               "cell_population_sha256": "d" * 64,
+               "materialization_sha256": "e" * 64,
+               "genesis_binding_sha256": "f" * 64},
+           "final_code_pins": _pins(
+               "tools/b4_authority.py", "tools/b4_run_cell.py",
+               "tools/b4_campaign_executor.py",
+               "tools/b4_campaign_ledger.py",
+               "tools/b4_campaign_orchestrator.py",
+               "tools/b4_adjudicator.py",
+               "tools/materialize_b4_causal_sac.py",
+               "pipeline_plugins/rl_pipeline_with_validation.py",
+               "tests/test_b4_materializer_authority.py")}
+    a10.update(a10_over or {})
+    f10 = tmp_path / "a10.json"
+    f10.write_text(json.dumps(a10))
+    monkeypatch.setattr(a, "AMENDMENT_10_PATH", f10)
     return a4
 
 
@@ -367,7 +390,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 9
+    assert len(chain["amendment_shas"]) == 10
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -402,7 +425,7 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_authority.py"] = "0" * 64
     _fake_a4(tmp_path, monkeypatch,
-             a9_over={"final_code_pins": pins})
+             a10_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -2897,3 +2920,150 @@ def test_mut_c24_mode_guard_bites(tmp_path):
         orch.load_claim(tmp_path, "o2024_seed101")
     assert m.load_claim(
         tmp_path, "o2024_seed101")["cell"] == "o2024_seed101"
+
+
+# ================== C26: append-only chain adversaries =============
+
+def test_c26_rewritten_a9_refuses_without_a10(tmp_path,
+                                              monkeypatch):
+    """The exact C26 finding: an in-place rewritten amendment 9
+    refuses even when no amendment 10 exists yet."""
+    _fake_a4(tmp_path, monkeypatch)
+    f9 = tmp_path / "a9.json"
+    doc = json.loads(f9.read_text())
+    doc["final_code_pins"]["tools/b4_authority.py"] = "1" * 64
+    f9.write_text(json.dumps(doc))          # rewrite IN PLACE
+    with pytest.raises(SystemExit,
+                       match="never edited in place"):
+        a.verify_amendment_chain()
+
+
+def test_c26_restored_a9_without_a10_refuses(tmp_path,
+                                             monkeypatch):
+    _fake_a4(tmp_path, monkeypatch)
+    monkeypatch.setattr(a, "AMENDMENT_10_PATH",
+                        tmp_path / "absent_a10.json")
+    with pytest.raises(SystemExit, match="amendment 10 absent"):
+        a.verify_amendment_chain()
+
+
+def test_c26_a10_naming_rewritten_a9_refuses(tmp_path,
+                                             monkeypatch):
+    """Amendment 10 must name the ORIGINAL reviewed amendment-9
+    bytes, never the rewritten ones."""
+    _fake_a4(tmp_path, monkeypatch,
+             a10_over={"amends_amendment_9_sha256": "9" * 64})
+    with pytest.raises(SystemExit,
+                       match="exact reviewed bytes"):
+        a.verify_amendment_chain()
+
+
+def test_c26_altered_code_after_a10_refuses(tmp_path, monkeypatch):
+    pins = _pins("tools/b4_authority.py", "tools/b4_run_cell.py",
+                 "tools/b4_campaign_executor.py",
+                 "tools/b4_campaign_ledger.py",
+                 "tools/b4_campaign_orchestrator.py",
+                 "tools/b4_adjudicator.py",
+                 "tools/materialize_b4_causal_sac.py",
+                 "pipeline_plugins/rl_pipeline_with_validation.py",
+                 "tests/test_b4_materializer_authority.py")
+    pins["tools/b4_campaign_orchestrator.py"] = "2" * 64
+    _fake_a4(tmp_path, monkeypatch,
+             a10_over={"final_code_pins": pins})
+    with pytest.raises(SystemExit, match="differs from the final"):
+        a.verify_amendment_chain()
+
+
+def test_c26_record_naming_a9_refuses(tmp_path, monkeypatch):
+    """An authorization candidate naming amendment_9_sha256 instead
+    of the truthful amendment_10_sha256 refuses."""
+    _fake_a4(tmp_path, monkeypatch)
+    binds = a.campaign_record_required_bindings()
+    assert "amendment_10_sha256" in binds
+    assert "amendment_9_sha256" not in binds
+    limits = a.load_resource_contract()
+    rec = {"schema": "agent_multi.owner_campaign_authorization.v2",
+           "recorded_at_date": "2026-09-06",
+           "authority": "project_owner",
+           "recorded_by": "General Musashi",
+           "decision": "APPROVE_B4_TWELVE_CELL_CAMPAIGN",
+           "bindings": dict(binds),
+           "per_cell_limits": {k: limits[k] for k in (
+               "budget_max_env_steps", "budget_max_updates",
+               "budget_max_wall_seconds", "budget_max_rss_bytes",
+               "budget_max_cuda_bytes",
+               "budget_max_gpu_temp_celsius")},
+           "owner_decision": {
+               "intent_record_sha256": "3" * 64,
+               "owner_words": "ok yo autorizo"}}
+    good = tmp_path / "rec_good.json"
+    good.write_text(json.dumps(rec))
+    got = a.verify_campaign_authorization_record(
+        good, a._sha_file(good))
+    assert got["bindings"]["amendment_10_sha256"] == \
+        binds["amendment_10_sha256"]
+    # naming the (rewritten or original) amendment 9 field refuses
+    bad = dict(rec)
+    bad_binds = dict(binds)
+    bad_binds.pop("amendment_10_sha256")
+    bad_binds["amendment_9_sha256"] = a._sha_file(
+        tmp_path / "a9.json")
+    bad["bindings"] = bad_binds
+    badp = tmp_path / "rec_bad.json"
+    badp.write_text(json.dumps(bad))
+    with pytest.raises(SystemExit):
+        a.verify_campaign_authorization_record(
+            badp, a._sha_file(badp))
+
+
+def test_c26_self_rehashed_replacement_a10_refuses(tmp_path,
+                                                   monkeypatch):
+    """A coherent REPLACEMENT amendment 10 (self-consistent but
+    naming a different predecessor) grants nothing."""
+    _fake_a4(tmp_path, monkeypatch)
+    f10 = tmp_path / "a10.json"
+    doc = json.loads(f10.read_text())
+    doc["amends_amendment_9_sha256"] = hashlib.sha256(
+        b"attacker history").hexdigest()
+    f10.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit,
+                       match="exact reviewed bytes"):
+        a.verify_amendment_chain()
+
+
+def test_c26_missing_or_reordered_amendment_refuses(tmp_path,
+                                                    monkeypatch):
+    _fake_a4(tmp_path, monkeypatch)
+    monkeypatch.setattr(a, "AMENDMENT_8_PATH",
+                        tmp_path / "gone_a8.json")
+    with pytest.raises(SystemExit, match="amendment 8 absent"):
+        a.verify_amendment_chain()
+    # duplicated content in the wrong slot (a8 bytes as a9) breaks
+    # the exact link
+    _fake_a4(tmp_path, monkeypatch)
+    (tmp_path / "a9.json").write_text(
+        (tmp_path / "a8.json").read_text())
+    with pytest.raises(SystemExit,
+                       match="never edited in place|does not name"):
+        a.verify_amendment_chain()
+
+
+def test_c26_git_history_regression():
+    """The PRE reproduction stays executable: the reviewed original
+    and the rewritten blob hash to the recorded values."""
+    import subprocess
+    rel = ("docs/audits/evidence/"
+           "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_9_2026_09_06.json")
+    repo = Path(__file__).resolve().parents[1]
+
+    def blob(commit):
+        return subprocess.run(
+            ["git", "cat-file", "-p", f"{commit}:{rel}"],
+            cwd=repo, capture_output=True, check=True).stdout
+    assert hashlib.sha256(blob("d97c3f62")).hexdigest() == \
+        a.AMENDMENT_9_SHA
+    assert hashlib.sha256(blob("d8f25438")).hexdigest() == (
+        "01aeee957c993ee764b8e4753860d9c03b6467973eed5a3ec07bb42"
+        "5e1e4a337")
+    # the live file is the RESTORED original
+    assert a._sha_file(repo / rel) == a.AMENDMENT_9_SHA

@@ -13,13 +13,13 @@
  "final_code_pins": {
   "tools/b4_authority.py": "eacd84a2fff4e2c4d54881271b7e1b7eae36319353f1fe2c2e7ca91ecb19efee",
   "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
-  "tools/b4_campaign_executor.py": "c852c3cc5dd8469507f1238d07db60cf77c72bf25966e843d4911e6af93c6cfc",
-  "tools/b4_campaign_ledger.py": "c1505f34b17180ec944a230578af7bb923675c0ac5ab5a112360651ecad64e42",
-  "tools/b4_campaign_orchestrator.py": "6b2659c03f6146d99a951d3e07d86af7dea2fafef1f9d01b4445f62d648a6640",
+  "tools/b4_campaign_executor.py": "d15ebc3ad85f808dea1a08de49be04276856fc506f85a9aa4872597142a8b975",
+  "tools/b4_campaign_ledger.py": "cb915240be7fcc5df952b29d622ea0d9f771e0e683054a0769294900c78bbcd2",
+  "tools/b4_campaign_orchestrator.py": "38cdbe8b449450d54fe28f6b9dad4c129325a7d578a21b477124568a1a625a60",
   "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
   "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
   "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
-  "tests/test_b4_materializer_authority.py": "ad479ef8c2b5430c3ce9983957d1fe647315df3982ab1688407323b60c49f8dd"
+  "tests/test_b4_materializer_authority.py": "062ea994ea0083c6d47bab54af6057771e104dac0bbbe59914d372720b7ec553"
  },
  "resource_contract_v2_sha256": "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc8f723bec0b20",
  "chronology_truth": "authored AFTER the C17-C22 PRE freeze and BEFORE any campaign score"

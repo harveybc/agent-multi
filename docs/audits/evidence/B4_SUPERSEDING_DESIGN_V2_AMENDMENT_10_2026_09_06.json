@@ -1,0 +1,26 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v8_append_only_repair",
+ "amends_amendment_9_sha256": "eb9d49707b2a173056b07c3802b617d8302b38e5f42245efed7db5e8d155ca42",
+ "order": "C26 (append-only amendment order 2026-09-06) after C23-C25 (final authority order): amendment 9 was wrongly edited in place to carry the C23-C25 pins; its reviewed bytes are RESTORED and this amendment appends the correction the rewrite tried to smuggle: monotone epoch campaign lock (held/releasing/released in place, append-only intent/completion witnesses, no unlink, reclaim only over a physically RELEASED predecessor), private descriptor-bound control plane (0700 dirs, 0600 self-integral lock/claim/lease/seal/terminal records, single-descriptor consumption), and mandatory descriptor-first checkpoint existence/owner/mode/digest at the final gate",
+ "change_disclosure": "C23-C25 lock/control-plane/checkpoint correction ONLY, plus this C26 chain repair itself (amendment-9 byte restoration, the AMENDMENT_9_SHA immutability pin, this amendment-10 link, and the record binding renamed truthfully to amendment_10_sha256). No scored value, contract, source row, economic column, cell population, materialization digest, campaign generation or resource contract changes.",
+ "scientific_change": "NONE \u2014 runtime authority (C23-C25) only",
+ "proposed_campaign_population": {
+  "materialization_root_note": "operator-local tree; identities below bind it",
+  "cell_population_sha256": "111dfed8acd281b269fc9916b8d6b5a39898d71b3a894f3f5dbb9b5f55792b05",
+  "materialization_sha256": "d9ecbd80481fa8e07ae5a442f75b003f786a3fbcc7b6521a20c35b489e07be2b",
+  "genesis_binding_sha256": "faa179091864733cbabfb01c399d3b82f090477195b5eda6d98bd71542b69d62"
+ },
+ "final_code_pins": {
+  "tools/b4_authority.py": "55fbf430ad7f0866f5efa47794ae1f220a5667fcac89394f710633d7d21eb2f8",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "c852c3cc5dd8469507f1238d07db60cf77c72bf25966e843d4911e6af93c6cfc",
+  "tools/b4_campaign_ledger.py": "c1505f34b17180ec944a230578af7bb923675c0ac5ab5a112360651ecad64e42",
+  "tools/b4_campaign_orchestrator.py": "6b2659c03f6146d99a951d3e07d86af7dea2fafef1f9d01b4445f62d648a6640",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
+  "tests/test_b4_materializer_authority.py": "fdd5dd490145da66eaa8c9781ae7b370ed73dd01d7ab70c81d39e7f433dfac84"
+ },
+ "resource_contract_v2_sha256": "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc8f723bec0b20",
+ "chronology_truth": "authored AFTER the C26 PRE freeze (ed6c59af) and the amendment-9 restoration, with all executing code and tests finalized first and hashed from disk; no earlier amendment was edited afterward"
+}

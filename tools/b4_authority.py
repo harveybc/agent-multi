@@ -54,6 +54,14 @@ AMENDMENT_8_PATH = (EVIDENCE /
 AMENDMENT_9_PATH = (EVIDENCE /
                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_9_2026_09_06"
                     ".json")
+# C26: amendment 9's bytes are HISTORY — restored to the reviewed
+# blob at d97c3f62 and pinned by digest; any in-place rewrite
+# refuses. Later corrections append (amendment 10+), never edit.
+AMENDMENT_9_SHA = ("eb9d49707b2a173056b07c3802b617d8302b38e5f422"
+                   "45efed7db5e8d155ca42")
+AMENDMENT_10_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_10_"
+                     "2026_09_06.json")
 
 # --- B4-P1 (order @9fb017e3): the exact owner GPU authorization ---
 # Fixed reviewed identities: neither the path nor the digest can come
@@ -99,7 +107,7 @@ def campaign_record_required_bindings() -> dict:
         "cell_population_sha256": pop["cell_population_sha256"],
         "materialization_sha256": pop["materialization_sha256"],
         "genesis_binding_sha256": pop["genesis_binding_sha256"],
-        "amendment_9_sha256": _sha_file(AMENDMENT_9_PATH),
+        "amendment_10_sha256": _sha_file(AMENDMENT_10_PATH),
         "resource_contract_sha256": RESOURCE_CONTRACT_V2_SHA,
         "campaign_generation": CAMPAIGN_GENERATION,
     }
@@ -938,6 +946,51 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 9 does not pin the corrected "
                 "runtime surface")
     pins.update(a9_pins)
+    # C26: amendment 9 is immutable HISTORY — its exact reviewed
+    # bytes are pinned; an in-place rewrite refuses even before
+    # the link check.
+    if _sha_file(AMENDMENT_9_PATH) != AMENDMENT_9_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 9 bytes differ from the reviewed "
+            "append-only identity — historical amendments are "
+            "never edited in place")
+    # C26: amendment 10 — the C23-C25 runtime-authority correction
+    # generation; names amendment 9's exact restored bytes,
+    # discloses only that correction, and carries the population;
+    # its pins supersede.
+    if not AMENDMENT_10_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 10 absent — the C23-C25 correction "
+            "generation does not exist in the chain")
+    a10 = json.loads(AMENDMENT_10_PATH.read_bytes())
+    if a10.get("amends_amendment_9_sha256") != AMENDMENT_9_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 10 does not name amendment 9's "
+            "exact reviewed bytes")
+    if not a10.get("change_disclosure"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 10 must disclose its changes")
+    if a10.get("scientific_change") != \
+            "NONE — runtime authority (C23-C25) only":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 10 must declare NO scientific "
+            "change")
+    if a10.get("proposed_campaign_population"):
+        campaign_pins = a10["proposed_campaign_population"]
+    a10_pins = a10.get("final_code_pins", {})
+    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
+                "tools/b4_campaign_executor.py",
+                "tools/b4_campaign_ledger.py",
+                "tools/b4_campaign_orchestrator.py",
+                "tools/b4_adjudicator.py",
+                "tools/materialize_b4_causal_sac.py",
+                "pipeline_plugins/rl_pipeline_with_validation.py",
+                "tests/test_b4_materializer_authority.py"):
+        if req not in a10_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 10 does not pin the corrected "
+                "runtime surface")
+    pins.update(a10_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -951,7 +1004,8 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_6_PATH),
                _sha_file(AMENDMENT_7_PATH),
                _sha_file(AMENDMENT_8_PATH),
-               _sha_file(AMENDMENT_9_PATH)],
+               _sha_file(AMENDMENT_9_PATH),
+               _sha_file(AMENDMENT_10_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
