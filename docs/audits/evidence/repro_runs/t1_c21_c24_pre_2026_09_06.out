@@ -1,0 +1,20 @@
+== C21: executed lab bytes differ from the sealed design ==
+sealed  t1_lab_run_sha256: da0e051345e655b747a5c3b49598dbf9c7a207782c6eec2e4ccb372da90fdc54
+live    t1_lab_run_sha256: ea61522e1063109756dc852b300b6e515f6deb795d635e0e047a03d53b00e2ad
+payload lab_sha256      : ea61522e1063109756dc852b300b6e515f6deb795d635e0e047a03d53b00e2ad
+lab verifies ONLY the causal-operator digest at startup: True
+t1_adjudicator.py enforces complete executable identity: False
+t1_independent_verifier.py enforces complete executable identity: False
+
+== C22: a forged quantitative field still yields a submission ==
+verifier label: SELF_CONSISTENT_ONLY_NOT_AUTHORIZING
+records re-derived: 1116
+SUBMISSION_WRITTEN_FOR_FORGED_PUBLICATION True publication_sha256 0f791363df647534
+(real median was 7.4583 -> published 999; verdict labels unchanged)
+
+== C23: the candidate can impersonate the reviewer ==
+verifier label: REPRODUCED_UNDER_REVIEWED_IDENTITY
+reviewer accepted: candidate-self-review
+VERIFIER_RC 0
+
+PRE CONFIRMED: C21-C23 authority bypasses all reproduce
