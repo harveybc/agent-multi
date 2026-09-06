@@ -1,0 +1,29 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v9_activation_closure",
+ "amends_amendment_10_sha256": "c299d03ee1bab35c14094023ca88486e0cdee6e1b5313d8a405f6e3d569e3848",
+ "authorization_record_sha256": "c58008cc5285365b4c64e2827a9b9d1a329e3b64f7c72a37b62c1c6e702ae55d",
+ "owner_ratification_sha256": "540fb175f0203338aa08a21bc91bba1dddf942008e011ab7b34c6695af776c63",
+ "order": "C27-C28 (authorization closure order 2026-09-06): finite two-phase activation \u2014 the reviewer authorization record binds the audited pre-activation amendment-10 snapshot; THIS amendment consumes that record (CAMPAIGN_AUTH_SHA set to its exact digest), binds the owner ratification, and pins the final execution/verification/test surface. The final dispatch will bind the reviewed Git commit containing both.",
+ "change_disclosure": "authorization consumption and C28 portability ONLY: CAMPAIGN_AUTH_SHA None -> the reviewed record digest; per-attempt CELL_AUTH_BINDING witness; terminal/campaign-report carry authorization_record_sha256 + amendment_11_sha256 re-derived by the final verifier; nested owner-ratification verification (bytes, exact words, twelve-cell scope); the operator-specific absolute source-data fallback replaced by the logical relative identity under resolve_predictor_root() with containment and descriptor hashing. No scored value, population, contract, generation or resource identity changes.",
+ "scientific_change": "NONE \u2014 authorization consumption and C28 portability",
+ "proposed_campaign_population": {
+  "materialization_root_note": "operator-local tree; identities below bind it",
+  "cell_population_sha256": "111dfed8acd281b269fc9916b8d6b5a39898d71b3a894f3f5dbb9b5f55792b05",
+  "materialization_sha256": "d9ecbd80481fa8e07ae5a442f75b003f786a3fbcc7b6521a20c35b489e07be2b",
+  "genesis_binding_sha256": "faa179091864733cbabfb01c399d3b82f090477195b5eda6d98bd71542b69d62"
+ },
+ "final_code_pins": {
+  "tools/b4_authority.py": "ddec6373d9f595db79f293c5a0294fb93fbff2077773d6ea79b063aed3e330ae",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "750a354f4209fc2ad9779238796d1c8b5c4a83e3b1e1bf65ed6bd758c7d30590",
+  "tools/b4_campaign_ledger.py": "1c34bc174132e073cc7f2b37bfffb1cf3199dd7f67b6f764ede6b0d5e7a5218c",
+  "tools/b4_campaign_orchestrator.py": "cbde1f8a77dbe5933039c845abf7452429d70c761141443b7f788e7c3032dbd9",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
+  "tests/test_b4_materializer_authority.py": "3ea33a7c5797e22366aaf3aa8b40e94e752b687a78e91916c46d6fbd10ebe8e8"
+ },
+ "resource_contract_v2_sha256": "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc8f723bec0b20",
+ "chronology_truth": "authored AFTER the C27-C28 PRE freeze (6721731f) and after all executing code and tests were finalized and hashed from disk; amendments 1-10 untouched",
+ "amendment_sha256": "416fd2d0414ffc5bcab8d1a7851ff8a91be5d1f5af3376cff8bd4ff346fea5ed"
+}

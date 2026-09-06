@@ -37,7 +37,7 @@ import b4_authority as b4a  # noqa: E402
 # pins path+digest here by order after this correction passes review.
 CAMPAIGN_AUTH_PATH = (b4a.EVIDENCE /
                       "MUSASHI_B4_CAMPAIGN_AUTHORIZATION_RECORD.json")
-CAMPAIGN_AUTH_SHA = None
+CAMPAIGN_AUTH_SHA = ("c58008cc5285365b4c64e2827a9b9d1a329e3b64f7c72a37b62c1c6e702ae55d")
 
 TERMINAL_CLASSES = ("COMPLETED", "FAILED", "TIMED_OUT",
                     "THERMAL_STOP", "RESOURCE_STOP",
@@ -393,7 +393,8 @@ def write_terminal(out_root: Path, cell_id: str, terminal: str,
         for k in ("attempt_id", "cell_config_sha256", "per_bar_csv",
                   "per_bar_sha256", "sealed_2025_used",
                   "scored_index_sha256", "checkpoint_sha256",
-                  "checkpoint_path"):
+                  "checkpoint_path", "authorization_record_sha256",
+                  "amendment_11_sha256"):
             if k not in rec:
                 raise ExecutorRefusal(
                     f"REFUSED: COMPLETED terminal without {k!r} — "
@@ -638,6 +639,20 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
     comparator_dir = comparator_dir_of(packet)
     b4a.verify_full_authority_chain(comparator_dir)
     sb = _load_sb()
+    # C27.7: a per-attempt authorization-binding witness lives in
+    # the cell directory (beside every heartbeat/artifact of the
+    # attempt); the terminal and final report carry the same two
+    # digests and the final verifier re-derives them.
+    binding = {
+        "schema": "agent_multi.b4_cell_auth_binding.v1",
+        "attempt_id": attempt_id,
+        "authorization_record_sha256":
+            _sha_file(CAMPAIGN_AUTH_PATH),
+        "amendment_11_sha256": _sha_file(b4a.AMENDMENT_11_PATH)}
+    _orch._excl_write(
+        Path(out_root) / cell_id /
+        f"CELL_AUTH_BINDING_{attempt_id}.json",
+        json.dumps(binding, indent=1).encode())
     # C17: revalidate the capability under the same lock right
     # before entering the pipeline.
     _orch.verify_lease(lease_path, out_root, cell_id, mat_root,
@@ -702,6 +717,10 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
                 "budget_max_env_steps", "budget_max_updates",
                 "budget_max_wall_seconds",
                 "budget_max_rss_bytes")},
+            "authorization_record_sha256":
+                _sha_file(CAMPAIGN_AUTH_PATH),
+            "amendment_11_sha256":
+                _sha_file(b4a.AMENDMENT_11_PATH),
         }
     except ExecutorRefusal:
         raise

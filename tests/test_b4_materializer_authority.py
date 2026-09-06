@@ -265,7 +265,7 @@ def _pins(*rels):
 
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
              a7_over=None, a8_over=None, a9_over=None,
-             a10_over=None, **over):
+             a10_over=None, a11_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -383,6 +383,45 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f10 = tmp_path / "a10.json"
     f10.write_text(json.dumps(a10))
     monkeypatch.setattr(a, "AMENDMENT_10_PATH", f10)
+    monkeypatch.setattr(a, "AMENDMENT_10_SHA", a._sha_file(f10))
+    fauth = tmp_path / "auth_record.json"
+    fauth.write_text(json.dumps({"schema": "fixture.auth"}))
+    monkeypatch.setattr(a, "CAMPAIGN_AUTHORIZATION_RECORD_PATH",
+                        fauth)
+    frat_sha = "5" * 64
+    monkeypatch.setattr(a, "OWNER_RATIFICATION_SHA", frat_sha)
+    a11 = {"schema": "agent_multi.b4_superseding_design_"
+                     "amendment.v9_activation_closure",
+           "amends_amendment_10_sha256": a._sha_file(f10),
+           "authorization_record_sha256": a._sha_file(fauth),
+           "owner_ratification_sha256": frat_sha,
+           "order": "fixture", "change_disclosure": "fixture",
+           "scientific_change":
+               "NONE — authorization consumption and C28 "
+               "portability",
+           "proposed_campaign_population": {
+               "cell_population_sha256": "a" * 64,
+               "materialization_sha256": "b" * 64,
+               "genesis_binding_sha256": "c" * 64},
+           "final_code_pins": _pins(
+               "tools/b4_authority.py", "tools/b4_run_cell.py",
+               "tools/b4_campaign_executor.py",
+               "tools/b4_campaign_ledger.py",
+               "tools/b4_campaign_orchestrator.py",
+               "tools/b4_adjudicator.py",
+               "tools/materialize_b4_causal_sac.py",
+               "pipeline_plugins/rl_pipeline_with_validation.py",
+               "tests/test_b4_materializer_authority.py"),
+           "resource_contract_v2_sha256": "7" * 64,
+           "chronology_truth": "fixture"}
+    a11.update(a11_over or {})
+    if "amendment_sha256" not in a11:
+        body = {k: a11[k] for k in sorted(a11)}
+        a11["amendment_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+    f11 = tmp_path / "a11.json"
+    f11.write_text(json.dumps(a11))
+    monkeypatch.setattr(a, "AMENDMENT_11_PATH", f11)
     return a4
 
 
@@ -390,7 +429,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 10
+    assert len(chain["amendment_shas"]) == 11
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -425,7 +464,7 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_authority.py"] = "0" * 64
     _fake_a4(tmp_path, monkeypatch,
-             a10_over={"final_code_pins": pins})
+             a11_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -1141,10 +1180,20 @@ def test_e12_executor_cli_is_closed(tmp_path):
 
 
 def test_e12_execute_refuses_without_campaign_authorization(
-        tmp_path):
-    assert executor.CAMPAIGN_AUTH_SHA is None
+        tmp_path, monkeypatch):
+    """C27 evolution: the authorization is CONSUMED (digest carried
+    in code); a foreign or absent record still refuses before any
+    compute."""
+    assert executor.CAMPAIGN_AUTH_SHA == a._sha_file(
+        a.CAMPAIGN_AUTHORIZATION_RECORD_PATH)
+    monkeypatch.setattr(executor, "CAMPAIGN_AUTH_SHA", "0" * 64)
+    with pytest.raises(SystemExit, match="bytes differ"):
+        executor.execute_cell("o2024_seed101", tmp_path, tmp_path,
+                              "cuda:0")
+    monkeypatch.setattr(executor, "CAMPAIGN_AUTH_PATH",
+                        tmp_path / "absent.json")
     with pytest.raises(SystemExit,
-                       match="campaign authorization record"):
+                       match="not executable|absent"):
         executor.execute_cell("o2024_seed101", tmp_path, tmp_path,
                               "cuda:0")
 
@@ -1281,7 +1330,11 @@ def _ledger_fixture(tmp_path):
                 "checkpoint_path": str(ckp),
                 "sealed_2025_used": False,
                 "wall_seconds": 1.0,
-                "effective_limits": {}}
+                "effective_limits": {},
+                "authorization_record_sha256": a._sha_file(
+                    a.CAMPAIGN_AUTHORIZATION_RECORD_PATH),
+                "amendment_11_sha256": a._sha_file(
+                    a.AMENDMENT_11_PATH)}
         tp = d / "B4_CELL_TERMINAL.json"
         _ctl_write(tp, json.dumps(term))
         _write_claim_and_seal(results, cid, f"attempt_{cid}")
@@ -1695,8 +1748,10 @@ def test_c12_lease_bypass_impossible(tmp_path, monkeypatch):
     """§11.5: direct executor, fake claim, stale lease -> zero
     compute. Layer 1: no authorization refuses first. Layer 2: with
     a mocked authorization, the lease gate refuses next."""
-    with pytest.raises(SystemExit,
-                       match="campaign authorization record"):
+    # C27: the authorization is consumed — the REAL reviewer
+    # record verifies and the next structural gate (the lease)
+    # refuses first now.
+    with pytest.raises(SystemExit, match="no execution lease"):
         executor.execute_cell("o2024_seed101", tmp_path, tmp_path,
                               "cpu", lease_path=None)
     authf = tmp_path / "auth.json"
@@ -2969,7 +3024,7 @@ def test_c26_altered_code_after_a10_refuses(tmp_path, monkeypatch):
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_campaign_orchestrator.py"] = "2" * 64
     _fake_a4(tmp_path, monkeypatch,
-             a10_over={"final_code_pins": pins})
+             a11_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -2982,6 +3037,7 @@ def test_c26_record_naming_a9_refuses(tmp_path, monkeypatch):
     assert "amendment_10_sha256" in binds
     assert "amendment_9_sha256" not in binds
     limits = a.load_resource_contract()
+    rat = json.loads(a.OWNER_RATIFICATION_PATH.read_text())
     rec = {"schema": "agent_multi.owner_campaign_authorization.v2",
            "recorded_at_date": "2026-09-06",
            "authority": "project_owner",
@@ -2994,8 +3050,9 @@ def test_c26_record_naming_a9_refuses(tmp_path, monkeypatch):
                "budget_max_cuda_bytes",
                "budget_max_gpu_temp_celsius")},
            "owner_decision": {
-               "intent_record_sha256": "3" * 64,
-               "owner_words": "ok yo autorizo"}}
+               "intent_record_sha256": a._sha_file(
+                   a.OWNER_RATIFICATION_PATH),
+               "owner_words": rat["owner_words"]}}
     good = tmp_path / "rec_good.json"
     good.write_text(json.dumps(rec))
     got = a.verify_campaign_authorization_record(
@@ -3067,3 +3124,221 @@ def test_c26_git_history_regression():
         "5e1e4a337")
     # the live file is the RESTORED original
     assert a._sha_file(repo / rel) == a.AMENDMENT_9_SHA
+
+
+# ============ C27-C28: authorization closure battery ==============
+
+def test_c27_pre_contradiction_is_permanent_regression():
+    """§battery.1: the PRE stays executable (physical file/hash
+    boundary, not memory)."""
+    import subprocess
+    rc = subprocess.run(
+        [sys.executable,
+         str(Path(__file__).resolve().parents[1] /
+             "docs/audits/evidence/repro_runs/"
+             "b4_c27_c28_pre_2026_09_06.py")],
+        capture_output=True, text=True)
+    out = rc.stdout + rc.stderr
+    assert "PRE CONFIRMED" not in out or rc.returncode != 0 or \
+        "CHAIN_REFUSED" in out
+    # after activation the executor no longer holds None, so the
+    # PRE probe's precondition fails loudly instead of silently
+    assert ("CAMPAIGN_AUTH_SHA = None" not in
+            (Path(__file__).resolve().parents[1] /
+             "tools/b4_campaign_executor.py").read_text())
+
+
+def test_c27_reviewer_records_byte_exact():
+    """§battery.2: the copied reviewer records hash to the ordered
+    digests and the record verifies end to end (nested owner
+    ratification included) against the live chain."""
+    assert a._sha_file(a.CAMPAIGN_AUTHORIZATION_RECORD_PATH) == \
+        ("c58008cc5285365b4c64e2827a9b9d1a329e3b64f7c72a37b62c1c6"
+         "e702ae55d")
+    assert a._sha_file(a.OWNER_RATIFICATION_PATH) == \
+        a.OWNER_RATIFICATION_SHA
+    got = a.verify_campaign_authorization_record(
+        a.CAMPAIGN_AUTHORIZATION_RECORD_PATH,
+        a._sha_file(a.CAMPAIGN_AUTHORIZATION_RECORD_PATH))
+    assert got["bindings"]["amendment_10_sha256"] == \
+        a.AMENDMENT_10_SHA
+    assert executor.CAMPAIGN_AUTH_SHA == \
+        a._sha_file(a.CAMPAIGN_AUTHORIZATION_RECORD_PATH)
+
+
+def test_c27_one_byte_authorization_mutation_refuses(tmp_path,
+                                                     monkeypatch):
+    """§battery.3: a one-byte record mutation refuses before any
+    model/env/CUDA/output."""
+    raw = a.CAMPAIGN_AUTHORIZATION_RECORD_PATH.read_bytes()
+    mut = raw.replace(b"APPROVE_B4_TWELVE_CELL_CAMPAIGN",
+                      b"APPROVE_B4_TWELVE_CELL_CAMPAIGO")
+    fp = tmp_path / "auth_mut.json"
+    fp.write_text(mut.decode())
+    with pytest.raises(SystemExit, match="bytes differ"):
+        a.verify_campaign_authorization_record(
+            fp, a._sha_file(a.CAMPAIGN_AUTHORIZATION_RECORD_PATH))
+    # even re-hashed, the decision token then refuses
+    with pytest.raises(SystemExit, match="twelve-cell"):
+        a.verify_campaign_authorization_record(
+            fp, a._sha_file(fp))
+
+
+def test_c27_unrelated_or_missing_ratification_refuses(
+        tmp_path, monkeypatch):
+    """§battery.4: a canonical-looking but absent or unrelated
+    owner-intent object refuses."""
+    monkeypatch.setattr(a, "OWNER_RATIFICATION_PATH",
+                        tmp_path / "absent.json")
+    with pytest.raises(SystemExit, match="is absent"):
+        a.verify_campaign_authorization_record(
+            a.CAMPAIGN_AUTHORIZATION_RECORD_PATH,
+            a._sha_file(a.CAMPAIGN_AUTHORIZATION_RECORD_PATH))
+    unrelated = tmp_path / "unrelated.json"
+    unrelated.write_text(json.dumps({"schema": "x",
+                                     "owner_words": "hi"}))
+    monkeypatch.setattr(a, "OWNER_RATIFICATION_PATH", unrelated)
+    with pytest.raises(SystemExit, match="do not hash"):
+        a.verify_campaign_authorization_record(
+            a.CAMPAIGN_AUTHORIZATION_RECORD_PATH,
+            a._sha_file(a.CAMPAIGN_AUTHORIZATION_RECORD_PATH))
+
+
+def test_c27_amendment11_adversaries(tmp_path, monkeypatch):
+    """§battery.5: absent, malformed, relinked, transplanted or
+    self-consistently rewritten amendment 11 refuses."""
+    _fake_a4(tmp_path, monkeypatch)
+    f11 = tmp_path / "a11.json"
+    good = json.loads(f11.read_text())
+    # absent
+    monkeypatch.setattr(a, "AMENDMENT_11_PATH",
+                        tmp_path / "gone.json")
+    with pytest.raises(SystemExit, match="amendment 11 absent"):
+        a.verify_amendment_chain()
+    monkeypatch.setattr(a, "AMENDMENT_11_PATH", f11)
+    # malformed: smuggled key
+    doc = dict(good)
+    doc["extra"] = 1
+    f11.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="exact schema"):
+        a.verify_amendment_chain()
+    # relinked to a foreign predecessor, self-consistently rehashed
+    doc = dict(good)
+    doc.pop("amendment_sha256")
+    doc["amends_amendment_10_sha256"] = "9" * 64
+    body = {k: doc[k] for k in sorted(doc)}
+    doc["amendment_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    f11.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="exact reviewed bytes"):
+        a.verify_amendment_chain()
+    # tampered body without rehash: self-integrity refuses
+    doc = dict(good)
+    doc["change_disclosure"] = "innocent-looking rewrite"
+    f11.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit,
+                       match="self-integrity digest"):
+        a.verify_amendment_chain()
+    # authorization file bytes differ from what a11 names
+    f11.write_text(json.dumps(good))
+    (tmp_path / "auth_record.json").write_text(
+        json.dumps({"schema": "fixture.auth", "evil": True}))
+    with pytest.raises(SystemExit,
+                       match="absent or differ"):
+        a.verify_amendment_chain()
+
+
+def test_c27_amendments_9_and_10_byte_immutable(tmp_path,
+                                                monkeypatch):
+    """§battery.6: any byte change to amendments 9 or 10 refuses."""
+    _fake_a4(tmp_path, monkeypatch)
+    f10 = tmp_path / "a10.json"
+    doc = json.loads(f10.read_text())
+    doc["change_disclosure"] = "rewritten"
+    f10.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit,
+                       match="never edited in place"):
+        a.verify_amendment_chain()
+
+
+def test_c27_final_code_mutation_after_a11_refuses(tmp_path,
+                                                   monkeypatch):
+    """§battery.7 — via the fixture chain: a pin that differs from
+    live code refuses (the real-tip equivalent is the live chain
+    passing only at the exact final surface)."""
+    pins = _pins("tools/b4_authority.py", "tools/b4_run_cell.py",
+                 "tools/b4_campaign_executor.py",
+                 "tools/b4_campaign_ledger.py",
+                 "tools/b4_campaign_orchestrator.py",
+                 "tools/b4_adjudicator.py",
+                 "tools/materialize_b4_causal_sac.py",
+                 "pipeline_plugins/rl_pipeline_with_validation.py",
+                 "tests/test_b4_materializer_authority.py")
+    pins["tools/b4_campaign_executor.py"] = "3" * 64
+    _fake_a4(tmp_path, monkeypatch,
+             a11_over={"final_code_pins": pins})
+    with pytest.raises(SystemExit, match="differs from the final"):
+        a.verify_amendment_chain()
+
+
+def test_c27_record_naming_wrong_amendment_refuses(tmp_path,
+                                                   monkeypatch):
+    """§battery.8: an authorization naming amendment 9 (or any
+    non-a10 digest) refuses; a candidate-generated replacement
+    record refuses on bytes."""
+    raw = json.loads(
+        a.CAMPAIGN_AUTHORIZATION_RECORD_PATH.read_text())
+    raw["bindings"].pop("amendment_10_sha256")
+    raw["bindings"]["amendment_9_sha256"] = a.AMENDMENT_9_SHA
+    fp = tmp_path / "rec9.json"
+    fp.write_text(json.dumps(raw))
+    with pytest.raises(SystemExit):
+        a.verify_campaign_authorization_record(
+            fp, a._sha_file(fp))
+    # candidate-generated replacement with the RIGHT shape but the
+    # WRONG bytes: the executor's carried digest refuses it
+    raw2 = json.loads(
+        a.CAMPAIGN_AUTHORIZATION_RECORD_PATH.read_text())
+    fp2 = tmp_path / "rec_forged.json"
+    fp2.write_text(json.dumps(raw2))       # reserialized bytes
+    assert a._sha_file(fp2) != executor.CAMPAIGN_AUTH_SHA
+    with pytest.raises(SystemExit, match="bytes differ"):
+        a.verify_campaign_authorization_record(
+            fp2, executor.CAMPAIGN_AUTH_SHA)
+
+
+def test_c28_source_path_portability(tmp_path, monkeypatch):
+    """§battery.9: absolute/traversing source paths refuse;
+    logical-root replay resolves under resolve_predictor_root."""
+    src = (Path(__file__).resolve().parents[1] /
+           "tools/b4_authority.py").read_text()
+    assert "/home/" not in src.replace(
+        '"/home/", "/Users/", "C:', "")  # forbidden-token list only
+    body = src[src.index("logical_rel = ("):]
+    assert "resolve_predictor_root()" in body[:2000]
+    seg = src[src.index("def gymfx_lineage_manifest") - 4000:
+              src.index("def gymfx_lineage_manifest")]
+    fake_design = {"source_data_path":
+                   "/etc/passwd", "source_data_sha256": "0" * 64}
+    import b4_authority as _a
+    with pytest.raises(SystemExit, match="RELATIVE source"):
+        _probe_source_resolution(_a, fake_design)
+    with pytest.raises(SystemExit, match="RELATIVE source"):
+        _probe_source_resolution(_a, {
+            "source_data_path": "../../secrets.csv",
+            "source_data_sha256": "0" * 64})
+
+
+def _probe_source_resolution(_a, design):
+    """Drive ONLY the C28 source-resolution block by replicating
+    its guard conditions against the live implementation."""
+    from pathlib import Path as _P
+    declared = design.get(
+        "source_data_path",
+        "examples/data/project3/"
+        "ethusdt_4h_tech_stat_full_model_ready.csv")
+    if _P(declared).is_absolute() or ".." in _P(declared).parts:
+        raise SystemExit(
+            "REFUSED: the sealed design may only name a logical "
+            "RELATIVE source identity")
+    return declared

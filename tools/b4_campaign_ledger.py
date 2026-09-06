@@ -170,7 +170,8 @@ TERMINAL_SCHEMA_KEYS = {
     "artifact_class", "checkpoint_sha256", "checkpoint_path",
     "per_bar_csv", "per_bar_sha256", "scored_index_sha256",
     "scored_bars", "counter_semantics", "sealed_2025_used",
-    "wall_seconds", "effective_limits"}
+    "wall_seconds", "effective_limits",
+    "authorization_record_sha256", "amendment_11_sha256"}
 CLAIM_SCHEMA_KEYS = {
     "schema", "campaign_generation", "attempt_id", "cell",
     "claimed_wall", "claimed_monotonic", "holder_pid",
@@ -488,6 +489,20 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             raise LedgerRefusal(
                 f"REFUSED: {cid} does not prove sealed-period "
                 "absence")
+        # C27.7: the terminal's authorization/amendment digests are
+        # RE-DERIVED from the live reviewer record and chain files;
+        # producer labels grant nothing.
+        want_auth = _sha_file(
+            b4a.CAMPAIGN_AUTHORIZATION_RECORD_PATH)
+        want_a11 = _sha_file(b4a.AMENDMENT_11_PATH)
+        if term.get("authorization_record_sha256") != want_auth:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} terminal authorization digest "
+                "does not re-derive from the reviewer record")
+        if term.get("amendment_11_sha256") != want_a11:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} terminal amendment-11 digest "
+                "does not re-derive from the live chain")
         facts[cid] = {"terminal": term["terminal"],
                       "attempt_id": att,
                       "per_bar_sha256": term["per_bar_sha256"],

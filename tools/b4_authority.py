@@ -62,6 +62,23 @@ AMENDMENT_9_SHA = ("eb9d49707b2a173056b07c3802b617d8302b38e5f422"
 AMENDMENT_10_PATH = (EVIDENCE /
                      "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_10_"
                      "2026_09_06.json")
+# C27: amendment 10 is byte-immutable HISTORY like amendment 9 —
+# the reviewer authorization record binds this exact snapshot.
+AMENDMENT_10_SHA = ("c299d03ee1bab35c14094023ca88486e0cdee6e1b5"
+                    "313d8a405f6e3d569e3848")
+AMENDMENT_11_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_11_"
+                     "2026_09_06.json")
+# C27: the two reviewer-authored records, byte-pinned. The
+# candidate never authors either.
+OWNER_RATIFICATION_PATH = (
+    EVIDENCE /
+    "OWNER_B4_CAMPAIGN_AUTHORIZATION_RATIFIED_2026_09_06.json")
+OWNER_RATIFICATION_SHA = (
+    "540fb175f0203338aa08a21bc91bba1dddf942008e011ab7b34c6695"
+    "af776c63")
+CAMPAIGN_AUTHORIZATION_RECORD_PATH = (
+    EVIDENCE / "MUSASHI_B4_CAMPAIGN_AUTHORIZATION_RECORD.json")
 
 # --- B4-P1 (order @9fb017e3): the exact owner GPU authorization ---
 # Fixed reviewed identities: neither the path nor the digest can come
@@ -97,6 +114,11 @@ CAMPAIGN_GENERATION = "b4_campaign_generation_v5_20260906"
 
 
 def campaign_record_required_bindings() -> dict:
+    """C27 (non-circular by design): the reviewer authorization
+    record binds the audited PRE-ACTIVATION amendment-10 snapshot
+    (immutable constant), while the live chain advances to
+    amendment 11 which binds that reviewer record and the final
+    consuming code. The record never pre-binds amendment 11."""
     chain = verify_amendment_chain()
     pop = chain["proposed_campaign_population"]
     if not pop:
@@ -107,7 +129,7 @@ def campaign_record_required_bindings() -> dict:
         "cell_population_sha256": pop["cell_population_sha256"],
         "materialization_sha256": pop["materialization_sha256"],
         "genesis_binding_sha256": pop["genesis_binding_sha256"],
-        "amendment_10_sha256": _sha_file(AMENDMENT_10_PATH),
+        "amendment_10_sha256": AMENDMENT_10_SHA,
         "resource_contract_sha256": RESOURCE_CONTRACT_V2_SHA,
         "campaign_generation": CAMPAIGN_GENERATION,
     }
@@ -243,6 +265,39 @@ def verify_campaign_authorization_record(path: Path,
             "record digest and the owner's words")
     _canonical_sha(od["intent_record_sha256"],
                    "owner intent digest")
+    # C27.6: the ratification record the digest names must EXIST,
+    # hash to that digest, carry the exact owner words, and scope
+    # this twelve-cell campaign. A canonical-looking but absent or
+    # unrelated intent digest refuses.
+    rat_p = OWNER_RATIFICATION_PATH
+    if not rat_p.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: the owner ratification record named by the "
+            "authorization is absent")
+    rat_raw = rat_p.read_bytes()
+    if hashlib.sha256(rat_raw).hexdigest() != \
+            od["intent_record_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: the owner ratification bytes do not hash to "
+            "the intent digest the authorization names — an "
+            "unrelated object grants nothing")
+    rat = _strict_json_bytes(rat_raw, "owner ratification record")
+    if rat.get("owner_words") != od["owner_words"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: the owner words differ between the "
+            "authorization and the ratification record")
+    scope = rat.get("scope")
+    if not isinstance(scope, list) or not any(
+            isinstance(s, str) and "twelve-cell B4 population" in s
+            for s in scope):
+        raise B4AuthorityRefusal(
+            "REFUSED: the ratification scope does not cover this "
+            "twelve-cell campaign")
+    if not isinstance(rat.get("does_not_authorize"), list) or \
+            not rat["does_not_authorize"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: the ratification lacks its explicit "
+            "non-authorization boundary")
     binds = rec["bindings"]
     expected_binds = campaign_record_required_bindings()
     if not isinstance(binds, dict) or \
@@ -991,6 +1046,82 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 10 does not pin the corrected "
                 "runtime surface")
     pins.update(a10_pins)
+    if _sha_file(AMENDMENT_10_PATH) != AMENDMENT_10_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 10 bytes differ from the reviewed "
+            "append-only identity — historical amendments are "
+            "never edited in place")
+    # C27: amendment 11 — the finite activation closure. Strict
+    # exact schema, self-integral canonical digest; missing,
+    # malformed, reordered, transplanted or self-consistently
+    # rewritten amendment 11 refuses.
+    if not AMENDMENT_11_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 absent — the authorization "
+            "consumption is not yet part of the chain")
+    a11 = _strict_json_bytes(AMENDMENT_11_PATH.read_bytes(),
+                             "amendment 11")
+    _A11_KEYS = {"schema", "amends_amendment_10_sha256",
+                 "authorization_record_sha256",
+                 "owner_ratification_sha256", "order",
+                 "change_disclosure", "scientific_change",
+                 "proposed_campaign_population",
+                 "final_code_pins",
+                 "resource_contract_v2_sha256",
+                 "chronology_truth", "amendment_sha256"}
+    if set(a11) != _A11_KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 keys are not the exact schema")
+    body = {k: a11[k] for k in sorted(a11)
+            if k != "amendment_sha256"}
+    if hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest() != \
+            a11["amendment_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 self-integrity digest does not "
+            "re-derive")
+    if a11["schema"] != ("agent_multi.b4_superseding_design_"
+                         "amendment.v9_activation_closure"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 carries a foreign schema")
+    if a11["amends_amendment_10_sha256"] != AMENDMENT_10_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 does not name amendment 10's "
+            "exact reviewed bytes")
+    auth_p = CAMPAIGN_AUTHORIZATION_RECORD_PATH
+    if not auth_p.is_file() or _sha_file(auth_p) != \
+            a11["authorization_record_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 names an authorization record "
+            "whose bytes are absent or differ")
+    if a11["owner_ratification_sha256"] != OWNER_RATIFICATION_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 does not name the owner "
+            "ratification's exact bytes")
+    if a11["scientific_change"] != \
+            "NONE — authorization consumption and C28 portability":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 must declare NO scientific "
+            "change")
+    if not a11["change_disclosure"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 must disclose its changes")
+    if a11.get("proposed_campaign_population"):
+        campaign_pins = a11["proposed_campaign_population"]
+    a11_pins = a11.get("final_code_pins", {})
+    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
+                "tools/b4_campaign_executor.py",
+                "tools/b4_campaign_ledger.py",
+                "tools/b4_campaign_orchestrator.py",
+                "tools/b4_adjudicator.py",
+                "tools/materialize_b4_causal_sac.py",
+                "pipeline_plugins/rl_pipeline_with_validation.py",
+                "tests/test_b4_materializer_authority.py"):
+        if req not in a11_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 11 does not pin the complete "
+                "final execution, verification and test surface")
+    pins.update(a11_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -1005,7 +1136,8 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_7_PATH),
                _sha_file(AMENDMENT_8_PATH),
                _sha_file(AMENDMENT_9_PATH),
-               _sha_file(AMENDMENT_10_PATH)],
+               _sha_file(AMENDMENT_10_PATH),
+               _sha_file(AMENDMENT_11_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
@@ -1248,11 +1380,47 @@ def verify_full_authority_chain(baselines_dir: Path) -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: fixed experimental cost model bytes differ "
             "from the sealed design")
-    data_p = Path(design.get(
-        "source_data_path",
-        "/home/harveybc/Documents/GitHub/predictor/examples/data/"
-        "project3/ethusdt_4h_tech_stat_full_model_ready.csv"))
-    if _sha_file(data_p) != design["source_data_sha256"]:
+    # C28: NO operator-specific absolute fallback — the source is
+    # one normalized logical relative identity under the accepted
+    # predictor root, containment-checked and hashed from the
+    # opened descriptor.
+    logical_rel = ("examples/data/project3/"
+                   "ethusdt_4h_tech_stat_full_model_ready.csv")
+    declared = design.get("source_data_path", logical_rel)
+    if Path(declared).is_absolute() or ".." in \
+            Path(declared).parts:
+        raise B4AuthorityRefusal(
+            "REFUSED: the sealed design may only name a logical "
+            "RELATIVE source identity — absolute or traversing "
+            "paths are machine coupling")
+    pred_root = resolve_predictor_root().resolve()
+    data_p = (pred_root / declared).resolve()
+    if pred_root not in data_p.parents:
+        raise B4AuthorityRefusal(
+            "REFUSED: resolved source escapes the accepted "
+            "predictor root")
+    import os as _os
+    import stat as _stat
+    try:
+        dfd = _os.open(str(data_p), _os.O_RDONLY | getattr(
+            _os, "O_NOFOLLOW", 0))
+    except OSError as exc:
+        raise B4AuthorityRefusal(
+            f"REFUSED: source dataset unopenable ({exc})")
+    try:
+        st = _os.fstat(dfd)
+        if not _stat.S_ISREG(st.st_mode):
+            raise B4AuthorityRefusal(
+                "REFUSED: source dataset is not a regular file")
+        h = hashlib.sha256()
+        while True:
+            chunk = _os.read(dfd, 1 << 20)
+            if not chunk:
+                break
+            h.update(chunk)
+    finally:
+        _os.close(dfd)
+    if h.hexdigest() != design["source_data_sha256"]:
         raise B4AuthorityRefusal(
             "REFUSED: source dataset bytes differ from the sealed "
             "design")

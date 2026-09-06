@@ -1,0 +1,10 @@
+== C27: activation without contradiction ==
+executor carries the reviewed digest: True
+CHAIN_OK amendments 11
+authorization record verifies (nested owner ratification, exact words, twelve-cell scope): True
+amendment 11 names a10 + the reviewer record; amendments 9/10 byte-immutable: True
+
+== C28: no operator-specific absolute data path ==
+literal home fallback removed; logical relative identity + containment + descriptor hashing in place: True
+
+POST CONFIRMED: C27-C28 closed; the campaign is executable pending only your final commit audit

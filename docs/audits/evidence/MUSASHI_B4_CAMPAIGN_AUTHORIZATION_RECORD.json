@@ -1,0 +1,27 @@
+{
+ "schema": "agent_multi.owner_campaign_authorization.v2",
+ "recorded_at_date": "2026-09-06",
+ "authority": "project_owner",
+ "recorded_by": "General Musashi",
+ "decision": "APPROVE_B4_TWELVE_CELL_CAMPAIGN",
+ "bindings": {
+  "cell_population_sha256": "111dfed8acd281b269fc9916b8d6b5a39898d71b3a894f3f5dbb9b5f55792b05",
+  "materialization_sha256": "d9ecbd80481fa8e07ae5a442f75b003f786a3fbcc7b6521a20c35b489e07be2b",
+  "genesis_binding_sha256": "faa179091864733cbabfb01c399d3b82f090477195b5eda6d98bd71542b69d62",
+  "amendment_10_sha256": "c299d03ee1bab35c14094023ca88486e0cdee6e1b5313d8a405f6e3d569e3848",
+  "resource_contract_sha256": "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc8f723bec0b20",
+  "campaign_generation": "b4_campaign_generation_v5_20260906"
+ },
+ "per_cell_limits": {
+  "budget_max_env_steps": 40020000,
+  "budget_max_updates": 40020000,
+  "budget_max_wall_seconds": 43200.0,
+  "budget_max_rss_bytes": 8589934592,
+  "budget_max_cuda_bytes": 6442450944,
+  "budget_max_gpu_temp_celsius": 87.0
+ },
+ "owner_decision": {
+  "intent_record_sha256": "540fb175f0203338aa08a21bc91bba1dddf942008e011ab7b34c6695af776c63",
+  "owner_words": "listo, Satoshi terminó, yo apruebo que mpiecen."
+ }
+}

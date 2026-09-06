@@ -879,6 +879,10 @@ def run_campaign(mat_root: Path, ledger_path: Path,
         ledger_mod.verify_campaign_results(
             ledger_path, mat_root, results_root)
         status = "CAMPAIGN_COMPLETE"
+        outcome["authorization_record_sha256"] = _sha_file(
+            b4a.CAMPAIGN_AUTHORIZATION_RECORD_PATH)
+        outcome["amendment_11_sha256"] = _sha_file(
+            b4a.AMENDMENT_11_PATH)
     else:
         status = "CAMPAIGN_COMPLETE_WITH_FAILED_CELLS"
     print(json.dumps({"status": status, **outcome}, indent=1))
