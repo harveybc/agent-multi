@@ -1,0 +1,74 @@
+{
+ "schema": "agent_multi.t1_design.v1",
+ "order": "T0-T1 (work plan 43 \u00a7\u00a74-5); sealed BEFORE any measurement",
+ "operator_protocol": {
+  "repo": "preprocessor@satoshi/t0-t1-causal-transformations-20260906",
+  "commit": "9359ccb4",
+  "causal_operators_sha256": "19a8ae360971bb6eea5a46ae8c68c00303e91adf34a6b833a563f9d9d2afe585",
+  "battery": "tests/test_causal_operators.py \u2014 20 passed"
+ },
+ "candidates": [
+  "identity",
+  "trailing_mean(5)",
+  "trailing_median(5)",
+  "ewma(0.3)",
+  "local_level_kalman(MoM fit on train)"
+ ],
+ "oracle": "centered_mean_oracle(5) \u2014 NON_CAUSAL_ORACLE_ONLY, never eligible",
+ "bank": {
+  "n_samples": 2048,
+  "roles": "train 0-1228 / validation 1228-1638 / score 1638-2048, materialized before any fit",
+  "families": [
+   "blocks",
+   "bumps",
+   "heavisine",
+   "doppler",
+   "sine",
+   "chirp",
+   "am",
+   "state_space_mv(3 vars, common+private)"
+  ],
+  "snr_grid_db": [
+   "inf",
+   20,
+   10,
+   5,
+   0,
+   -5
+  ],
+  "perturbations": [
+   "white",
+   "colored(AR0.8)",
+   "cross_correlated",
+   "heteroscedastic",
+   "impulsive",
+   "missing(5%)",
+   "delayed(2)"
+  ],
+  "matrix_rule": "white x full grid x all families; 6 non-white perts at 10dB on heavisine+bumps; impulsive x {0,-5}dB on bumps; state_space heterogeneous 10/0/-5dB under white+cross-correlated; x 3 seeds (11,12,13)"
+ },
+ "assays": {
+  "frozen": "persistence + causal ridge on 8 lags, lambda 1.0, horizons {1,5}, target = CLEAN signal",
+  "arms": "X vs D(X) vs [X,D(X),R] vs capacity control [X,X,X] (identical dimension)",
+  "fit": "train role only; report on the score role"
+ },
+ "adjudication_thresholds": {
+  "snr_gain_min_db": 0.5,
+  "utility_tolerance_rel": 0.02,
+  "extreme_retention_min": 0.5,
+  "tail_ratio_max": 1.5,
+  "residual_info_max_r2": 0.01,
+  "min_seeds": 3
+ },
+ "code_identity": {
+  "t1_known_truth_bank_sha256": "aba9e7c7b6afce3514e5b802b0b3a5cd834d3e0273ba7a47499995d5cd530789",
+  "t1_lab_run_sha256": "753f9e56fb7f9264b601b643f8293373765700ae0cdce53ce712f873347402e2",
+  "t1_adjudicator_sha256": "210d4ca368422e4133fa4a052b253e907761fd52a9f09df89b3f5003b1a82c12"
+ },
+ "rules": [
+  "a better RMSE/SNR with worse utility or tails does not pass",
+  "an informative residual forbids the name noise-removal",
+  "typed refusals (unlicensed missingness) are recorded evidence",
+  "verdicts bounded by regime; unit = family x perturbation x snr x seed"
+ ]
+}
