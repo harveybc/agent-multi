@@ -12,9 +12,16 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
-PREP = Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"
-sys.path.insert(0, str(PREP))
-from app import causal_operators as co  # noqa: E402
+PREP = Path(os.environ.get(
+    "B4_T1_PREPROCESSOR_ROOT",
+    Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
+# spec-load by file: agent-multi has its OWN `app` package, so a
+# name import would collide inside the full suite.
+import importlib.util as _ilu  # noqa: E402
+_co_spec = _ilu.spec_from_file_location(
+    "t1_causal_operators", PREP / "app/causal_operators.py")
+co = _ilu.module_from_spec(_co_spec)
+_co_spec.loader.exec_module(co)
 import t1_adjudicator as adj  # noqa: E402
 import t1_known_truth_bank as bank  # noqa: E402
 

@@ -92,8 +92,14 @@ def resolve_preprocessor_root() -> Path:
 
 
 def load_co():
-    sys.path.insert(0, str(resolve_preprocessor_root()))
-    from app import causal_operators as co
+    # spec-load by file: agent-multi carries its OWN `app` package,
+    # so a name import can collide when other modules loaded first.
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location(
+        "t1_causal_operators",
+        resolve_preprocessor_root() / "app/causal_operators.py")
+    co = ilu.module_from_spec(spec)
+    spec.loader.exec_module(co)
     return co
 
 

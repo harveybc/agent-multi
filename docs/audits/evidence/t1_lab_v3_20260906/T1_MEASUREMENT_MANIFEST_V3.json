@@ -2,9 +2,9 @@
  "schema": "agent_multi.t1_measurement_manifest.v1",
  "design_sha256": "6dcffa2131e7d2ef2c023a0499e4c35b711cff3d8a653dac4a8a7a25165f623a",
  "bank_inventory_sha256": "457db7781b799bed98992fa5e3251d5d60f1e17d92a7e87540b5f53a26c72bb0",
- "measurements_sha256": "911ea90f8b31940ce9e24794019218c949c0ef6e66eef0920cf29e897e48d973",
+ "measurements_sha256": "27474f76e3abf5336b972f8b351c525ea9ed822ebb998a3d19ee8821f3dfc97f",
  "records_total": 1152,
  "records_measured": 1116,
  "records_refused": 36,
- "manifest_sha256": "66b2dd307b2f358ec8ccabd5e35bfbac60799a56d7e0e9328429392fa293de10"
+ "manifest_sha256": "9d1023ae8c2ae753d7c9dd746da7351a7d58363652e6581e45b1458123dc9880"
 }

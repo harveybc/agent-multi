@@ -1,10 +1,10 @@
 {
  "schema": "agent_multi.t1_v3_state_digests.v1",
- "note": "operator-local state files (not committed); these digests bind them",
+ "note": "operator-local state files (not committed); these digests bind them. The measurement run was repeated after a non-functional import fix to t1_lab_run.py (namespace collision found by the full suite); adjudication bytes and all verdicts are IDENTICAL across both runs.",
  "sha256": {
-  "t1_measurements_v3_20260906.json": "911ea90f8b31940ce9e24794019218c949c0ef6e66eef0920cf29e897e48d973",
+  "t1_measurements_v3_20260906.json": "27474f76e3abf5336b972f8b351c525ea9ed822ebb998a3d19ee8821f3dfc97f",
   "t1_adjudication_v3_20260906.json": "ab0cd520ba5ad4c2764adba0314f2fb5c9f0d9257bff79d3c11d6b7970ec0936",
-  "t1_review_submission_v3_20260906.json": "8e9e1be459a69116c23b34c541fb2d8c87a24735903beeb0b61a5fa0f90e9685",
-  "t1_measurements_v3_20260906_MANIFEST.json": "7404893e94d56ff30a0c0fd996acaffe68a45f31017db32b1558ac39ec9a8aa8"
+  "t1_review_submission_v3_20260906.json": "4a81e93d86076b337e69cceb0028beeedb1b0d8d833405abc8b3d07d00dbd886",
+  "t1_measurements_v3_20260906_MANIFEST.json": "c0375013300786044ddaa41f82eb8bd027d59c1930bc277c46ea8b70c6da5792"
  }
 }
