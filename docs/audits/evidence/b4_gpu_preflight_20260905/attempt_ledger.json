@@ -1,0 +1,8 @@
+{
+ "authorization_sha256": "7426a0bfc9cdb6c609730755512c0936f58fdc45d40cd17c0bb5a83ce00cdf82",
+ "cell": "o2024_seed101",
+ "output_root": "/home/harveybc/.local/share/agent-multi/b4_gpu_preflight_20260905",
+ "device_uuid": "<gpu-uuid-held-in-private-evidence>",
+ "consumed_wall": 1788653337.8656409,
+ "sanitization_note": "uuid redacted in the public copy"
+}

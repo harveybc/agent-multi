@@ -1,0 +1,15 @@
+HEARTBEAT {"heartbeat_at_seconds": 30.0, "env_steps": 3657, "updates": 3528, "rss_bytes": 1872936960, "cuda_bytes": 66397184, "gpu_temp": 45.0}
+HEARTBEAT {"heartbeat_at_seconds": 60.0, "env_steps": 7289, "updates": 7160, "rss_bytes": 2000969728, "cuda_bytes": 66397184, "gpu_temp": 46.0}
+HEARTBEAT {"heartbeat_at_seconds": 90.2, "env_steps": 10920, "updates": 10791, "rss_bytes": 2093023232, "cuda_bytes": 66397184, "gpu_temp": 47.0}
+HEARTBEAT {"heartbeat_at_seconds": 120.2, "env_steps": 14598, "updates": 14469, "rss_bytes": 2176270336, "cuda_bytes": 66397184, "gpu_temp": 47.0}
+HEARTBEAT {"heartbeat_at_seconds": 150.3, "env_steps": 18202, "updates": 18073, "rss_bytes": 2252963840, "cuda_bytes": 66397184, "gpu_temp": 47.0}
+{
+ "status": "B4_GPU_PREFLIGHT_MECHANICS_AND_THROUGHPUT_ONLY",
+ "steps": 20000,
+ "updates": 19872,
+ "wall_s": 168.5,
+ "steps_per_s": 118.69,
+ "peak_rss_mib": 2185,
+ "peak_cuda_mib": 63,
+ "peak_gpu_temp": 47.0
+}
