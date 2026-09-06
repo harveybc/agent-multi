@@ -1,0 +1,37 @@
+{
+ "schema": "agent_multi.t1_design.v2",
+ "order": "T0-T1 C1-C12 (audit 2026-09-06); sealed BEFORE any v2 measurement; v1 evidence preserved byte-intact as exploratory history",
+ "operator_protocol": {
+  "repo_branch": "preprocessor@satoshi/t0-t1-causal-transformations-20260906",
+  "commit": "4b1d2d4e",
+  "causal_operators_sha256": "4266084a1e43b510b50aad60935d5eef362cf1b5d2b87f6bc1d3160890127ca6",
+  "battery": "tests/test_causal_operators.py \u2014 42 passed"
+ },
+ "expected_operators_exact": [
+  "identity",
+  "trailing_mean",
+  "trailing_median",
+  "ewma",
+  "local_level_kalman",
+  "centered_mean_oracle"
+ ],
+ "bank_inventory_sha256": "a03b182e3fbeed7ba93bcbbd2cfd2cae3b39801431d22ad2c8a31db6c1aa4b33",
+ "unit_schema": "agent_multi.t1_unit.v2 (clean + additive + distortion/support + observed; on-support identities asserted; true SNR recomputed on the exact metric support; total-observation-error SNR bound separately)",
+ "role_semantics": "gates from SCORE role only; train/validation published separately (C8)",
+ "width_control": "circular-shift nuisance channels (517, 1031) \u2014 controls WIDTH without duplicated-information regularization artifacts; declared limit: does not control collinearity with informative channels (C9)",
+ "material_failure_rule": "any seed/variable: null score facts, utility collapse < -0.25, extreme inversion, tail > 3x -> LAB_REJECTED (C10)",
+ "adjudication_thresholds": {
+  "snr_gain_min_db": 0.5,
+  "utility_tolerance_rel": 0.02,
+  "extreme_retention_min": 0.5,
+  "tail_ratio_max": 1.5,
+  "residual_info_max_r2": 0.01,
+  "min_seeds": 3
+ },
+ "evidence": "observation-level content-addressed NPZ (denoised+residual) digest-bound per record; independent verifier re-derives gates from arrays (C6/C12)",
+ "code_identity": {
+  "t1_known_truth_bank_sha256": "62f2b6db942d112cfadb6f2178151484369f01540227c5c89ea7c30e9dcd903c",
+  "t1_lab_run_sha256": "15935dbe8117ab168961888415acad9f27569037c09a9ea8df92794f76ddd80d",
+  "t1_adjudicator_sha256": "b54a8a6f316e83674de7fcc3f4a9a55356bfb041a4103f69e9a4cfff66021a5c"
+ }
+}

@@ -184,14 +184,36 @@ def materialize_unit(cell: dict, seed: int, out_dir: Path) -> dict:
                            cell["snr_db"], rng)
         noise, mask, delay = p["noise"], p["mask"], p["delay"]
         stds = p["noise_std_per_var"]
-    observed = clean + noise
+    # C5 (order 2026-09-06): honest perturbation model — the unit
+    # separates the clean latent signal, the ADDITIVE disturbance,
+    # the OPERATIONAL distortion (delay/missingness) and the
+    # observed signal, and binds the exact support/mapping.
+    additive = noise
+    distortion = {"kind": "none"}
+    support = np.ones(clean.shape, dtype=bool)
+    observed = clean + additive
     if mask is not None:
         observed = observed.copy()
         observed[mask] = np.nan
+        support = ~mask
+        distortion = {"kind": "missing",
+                      "missing_fraction": float(mask.mean())}
     if delay:
-        observed = np.roll(observed, delay, axis=1)
-        observed[:, :delay] = observed[:, delay][..., None] * 0 + \
-            observed[:, delay:delay + 1]
+        base = clean + additive
+        observed = np.empty_like(base)
+        observed[:, delay:] = base[:, :-delay]
+        observed[:, :delay] = base[:, :1]
+        support = np.zeros(clean.shape, dtype=bool)
+        support[:, delay:] = True
+        distortion = {"kind": "delay", "delay_bars": int(delay),
+                      "index_mapping":
+                          "observed[t] = clean[t-delay] + "
+                          "additive[t-delay] for t >= delay"}
+        # binding assert: on-support equality is EXACT
+        assert np.array_equal(observed[:, delay:],
+                              base[:, :-delay])
+    if mask is None and not delay:
+        assert np.array_equal(observed, clean + additive)
     unit_id = (f"{cell['family']}__{cell['perturbation']}__"
                f"snr{cell['snr_db']}__"
                f"{'het' if cell['heterogeneous'] else 'hom'}"
@@ -199,21 +221,34 @@ def materialize_unit(cell: dict, seed: int, out_dir: Path) -> dict:
     unit_dir = out_dir / unit_id
     unit_dir.mkdir(parents=True, exist_ok=True)
     np.save(unit_dir / "clean_signal.npy", clean)
-    np.save(unit_dir / "realized_noise.npy", noise)
+    np.save(unit_dir / "additive_noise.npy", additive)
     np.save(unit_dir / "observed_signal.npy", observed)
+    np.save(unit_dir / "metric_support.npy", support)
+    # true SNR values recomputed from the ACTUAL arrays over the
+    # exact support each metric will use: additive-component SNR on
+    # its own support, and TOTAL realized observation error
+    # (observed - clean at the decision time) on the same support.
     true_snr = []
+    total_error_snr = []
     for j in range(v):
-        npow = float(np.mean(noise[j] ** 2))
+        sup = support[j]
+        npow = float(np.mean(additive[j][sup] ** 2))
+        spow = float(np.mean(clean[j][sup] ** 2))
         true_snr.append("inf" if npow == 0 else
-                        float(10 * np.log10(
-                            np.mean(clean[j] ** 2) / npow)))
+                        float(10 * np.log10(spow / npow)))
+        err = observed[j][sup] - clean[j][sup]
+        epow = float(np.mean(err ** 2))
+        total_error_snr.append("inf" if epow == 0 else
+                               float(10 * np.log10(spow / epow)))
     record = {
-        "schema": "agent_multi.t1_unit.v1",
+        "schema": "agent_multi.t1_unit.v2",
+        "distortion": distortion,
+        "true_total_observation_error_snr_db": total_error_snr,
         "unit_id": unit_id,
         "family": cell["family"],
         "perturbation": cell["perturbation"],
         "declared_snr_db": cell["snr_db"],
-        "true_realized_snr_db": true_snr,
+        "true_additive_snr_db": true_snr,
         "heterogeneous": cell["heterogeneous"],
         "seed": seed,
         "n_variables": v, "n_samples": N,
@@ -223,8 +258,9 @@ def materialize_unit(cell: dict, seed: int, out_dir: Path) -> dict:
         "temporal_roles": {k: list(vr) for k, vr in ROLES.items()},
         "roles_materialized_before_any_fit": True,
         "digests": {"clean_signal": _sha(clean),
-                    "realized_noise": _sha(noise),
-                    "observed_signal": _sha(observed)},
+                    "additive_noise": _sha(additive),
+                    "observed_signal": _sha(observed),
+                    "metric_support": _sha(support)},
     }
     (unit_dir / "UNIT.json").write_text(json.dumps(record, indent=1))
     return record
