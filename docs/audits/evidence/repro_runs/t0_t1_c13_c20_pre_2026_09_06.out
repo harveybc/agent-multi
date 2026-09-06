@@ -1,0 +1,40 @@
+== C13: unbound state accepted and steers output ==
+ACCEPTED_UNBOUND_STATE 1001 foreign OUTPUT -992.0 vs honest 2.0
+
+== C15: understated causal semantics accepted ==
+ewma alpha=2.0 accepted: True
+trailing window=5 with declared lookback=0 accepted: True
+fit() binds no train interval/prefix digest: True
+
+== C14: state persistence is a pathname overwrite ==
+same path silently overwritten: True bytes changed: True
+save_state uses O_EXCL/fsync/content address: False
+
+== C16: three-record forgery -> verifier REPRODUCED ==
+FORGED_RECORDS 3 FORGED_VERDICT LAB_CALIBRATED (real: LAB_REJECTED)
+{
+ "independent_verification": "REPRODUCED",
+ "records_rederived_from_arrays": 1116,
+ "verdict_counts": {
+  "NON_CAUSAL_ORACLE_ONLY": 64,
+  "LAB_CALIBRATED": 181,
+  "LAB_REJECTED": 115,
+  "INCONCLUSIV
+VERIFIER_RC 0
+
+== C17: inventory binds names, not unit evidence ==
+inventory carries per-unit array digests: False
+arrays replaced while sealed inventory unchanged: True
+
+== C18: coherent measurement+publication pair accepted ==
+verifier consumes caller-supplied measurement/publication paths with no externally reviewed digest: True
+-> demonstrated live by the C16 probe: forged pair returned REPRODUCED rc 0
+
+== C19: circular-shift nuisance crosses role boundaries ==
+width control uses np.roll: True
+first 517 train positions hold values from indices 1531 - 2047 (the series END, i.e. validation/score rows)
+
+== C20: unknown/mistyped nested fields reach adjudication ==
+adjudication completed over smuggled/mistyped nested fields: {'NON_CAUSAL_ORACLE_ONLY': 64, 'LAB_CALIBRATED': 180, 'LAB_REJECTED': 116, 'INCONCLUSIVE': 24}
+
+PRE CONFIRMED: C13-C20 findings all reproduce
