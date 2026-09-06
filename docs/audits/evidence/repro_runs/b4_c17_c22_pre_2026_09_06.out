@@ -1,0 +1,28 @@
+== C17: a foreign execution lease is accepted ==
+ACCEPTED_FOREIGN_LEASE bbbb 999999 attacker.anything.v9
+
+== C18: failed sealing recognized as successful ==
+CALLER_SAW OSError injected dir fsync failure
+FRESH_STATE COMPLETED_VERIFIED
+-> the caller saw failure; a fresh process accepts the seal — partial recognition
+
+== C19: unacknowledged unlink release ==
+second holder acquired while first still believes it holds: True
+release fsyncs directory or writes witness: False
+
+== C20: completion without the strong verifier ==
+run_campaign calls verify_campaign_results: False
+CLI verify passes comparator_dir: False
+
+== C21: present-but-not-factual fields ==
+verifier checks seed column vs cell seed: False
+verifier checks scored_index sequence: False
+verifier checks source_row recompute: False
+verifier checks checkpoint bytes verify: False
+verifier checks net_return recompute: False
+
+== C22: caller-provided global remainder enlarges ==
+executor derives remainder ONLY when caller passes None: True
+-> execute_cell(..., global_wall_remaining_seconds=1e12) is accepted verbatim; the hard limit is delegated to the caller
+
+PRE CONFIRMED: C17-C22 findings all reproduce
