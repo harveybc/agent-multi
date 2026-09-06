@@ -1,0 +1,52 @@
+{
+  "schema": "agent_multi.musashi_b4_gpu_preflight_runtime_audit.v1",
+  "issued_at": "2026-09-05",
+  "auditor": "General Musashi",
+  "subject_commit": "5464e838fe79f7395871cb3f7e424eacf8c7e771",
+  "subject_branch": "satoshi/data-first-sota-20260826",
+  "return_packet": "docs/handoffs/GENERAL_SATOSHI_TO_MUSASHI_B4_GPU_PREFLIGHT_RETURN_2026_09_05.md",
+  "verdict": "B4_GPU_PREFLIGHT_ACCEPTED_AFTER_INDEPENDENT_RUNTIME_AUDIT",
+  "scope": "MECHANICS_AND_THROUGHPUT_ONLY",
+  "reviewed_bindings": {
+    "owner_authorization_sha256": "7426a0bfc9cdb6c609730755512c0936f58fdc45d40cd17c0bb5a83ce00cdf82",
+    "amendment_5_sha256": "f199c9375e7f718df507c7c72535c1174f88e14877cfdd241773bc1432151a20",
+    "runtime_record_sha256": "7c6473d5ede424ff3fd44a5633e1896fb68e766ce2d90eb7560864d54a5f2347",
+    "attempt_ledger_sha256": "faf8a74e79f16f93bc89079daff668c16bab9f31a18fb54fd733265c5bc4fcd6",
+    "console_log_sha256": "95c73b6aa7f210670a7abeaa9d6b821c3cf692474b7fbdaaf8f1f174c1299037",
+    "b4_authority_py_sha256": "790a3ea2fbc4c56e731cc991104846c9b4605c54e38671ee0a2993144c3bced1",
+    "b4_run_cell_py_sha256": "34560269c573d701e4fd849b05be1bebfdf1730a3c4dc7d0fa30bb82f60fbdf3"
+  },
+  "independently_verified_facts": {
+    "cell_id": "o2024_seed101",
+    "requested_device": "cuda:0",
+    "effective_device": "cuda:0",
+    "environment_steps": 20000,
+    "optimizer_updates": 19872,
+    "learning_starts": 128,
+    "wall_seconds": 168.5,
+    "environment_steps_per_second": 118.69,
+    "updates_per_second": 117.93,
+    "peak_rss_bytes": 2291228672,
+    "peak_cuda_allocated_bytes": 66397184,
+    "maximum_gpu_temperature_c": 47,
+    "heartbeat_count": 5,
+    "temperature_sample_count": 800,
+    "training_years": [
+      2022,
+      2023
+    ],
+    "scored_rows": 0,
+    "sealed_test_rows": 0,
+    "attempt_consumed": true,
+    "promotable": false,
+    "economic_evidence": false
+  },
+  "limitations": [
+    "The run exercised one mechanics epoch only; it did not execute the campaign epoch loop, validation, checkpoint selection, outer-origin scoring, or economic aggregation.",
+    "The 5.6 hour per-arm figure is a rough linear projection from mechanics throughput and is not accepted as a campaign ETA or budget.",
+    "The return packet reports 42 C before dispatch while the bound public runtime record reports 41 C; the record governs and the discrepancy is non-material.",
+    "No result authorizes checkpoint promotion, an economic conclusion, the remaining eleven cells, or the twelve-cell campaign."
+  ],
+  "next_gate": "B4_12_CELL_CAMPAIGN_READY_FOR_OWNER_AUTHORIZATION",
+  "decision": "Accept the consumed preflight. Build and audit the complete scientific executor and adjudicator offline before requesting a separate campaign authorization."
+}
