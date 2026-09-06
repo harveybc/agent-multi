@@ -1,0 +1,15 @@
+== C23: uncertain release admits a second holder ==
+FIRST_RELEASE_SAW OSError LOCK_EXISTS False WITNESSES 1
+SECOND_HOLDER_ENTERED True
+
+== C24: public-mode, path-raced control objects ==
+CAMPAIGN_LOCK 0o644
+CLAIM_b4_campaign_generation_v5_20260906.json 0o644
+LEASE_attempt_2299b3f491274b97.json 0o644
+load_claim checks by path then reopens by path: True
+CONSUMED_SWAPPED_BYTES attempt_SWAPPED
+
+== C25: a missing checkpoint is accepted ==
+ACCEPTED_ABSENT_CHECKPOINT 12 False
+
+PRE CONFIRMED: C23-C25 findings all reproduce
