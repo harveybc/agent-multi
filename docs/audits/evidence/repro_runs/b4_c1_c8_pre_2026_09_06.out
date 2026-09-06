@@ -1,0 +1,40 @@
+== F1: the scoring path is dead and the terminal is inadmissible ==
+execute_cell calls score_frozen_checkpoint: False
+terminal fields missing from execute_cell COMPLETED: ['attempt_id', 'per_bar_csv', 'per_bar_sha256', 'sealed_2025_used']
+-> the executor's normal COMPLETED output is REJECTED by verify_campaign_results (its own authoritative consumer); the return packet's published call graph claimed otherwise
+
+== F2: approved limits do not govern the process ==
+effective wall_seconds = 57600.0
+effective rss_cap      = None
+effective cuda_cap     = None
+effective thermal_cap  = None
+authorized: 43200 8589934592 6442450944 87
+-> the builder copies the OLD gpu_economic mode; the resource contract and the future record govern nothing; no global 96 GPU-h consumer exists
+
+== F3: no per-cell isolation or observability ==
+cell/builder sets save_model: False
+cell/builder sets checkpoint_bundle_dir: False
+cell/builder sets cell_runtime_dir: False
+-> the pipeline falls back to ./agent_model.zip shared between sequential cells; CellRuntime never activates
+
+== F4: two terminal writers can both win ==
+writer_outcomes = [('success', 'A'), ('success', 'B')]
+durable_reason  = A
+-> exists()+write_text() has no O_EXCL/fsync/CAS; no durable attempt claim before CUDA
+
+== F5: 'exact pairing' accepts different bars ==
+candidate indices [1,2] vs control [0,1]; vectors equal: True
+-> bar_index/datetime discarded; a shifted series enters G1/SPA/IQM as if paired
+
+== F6: the scoring helper does not satisfy the economic contract ==
+helper publishes datetime identity: False
+helper publishes gross per-bar return: False
+helper publishes cost DELTA conversion: False
+helper publishes gross-costs=net reconciliation: False
+commission_paid copied raw from info: True
+
+== F7: public evidence is not portable ==
+committed evidence files containing absolute user paths: 18
+-> local topology published; evidence irreproducible from another checkout
+
+PRE CONFIRMED: F1-F7 all reproduce
