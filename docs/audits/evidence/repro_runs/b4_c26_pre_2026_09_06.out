@@ -1,0 +1,7 @@
+amendment 9 @ d97c3f62: eb9d49707b2a173056b07c3802b617d8302b38e5f42245efed7db5e8d155ca42
+amendment 9 @ d8f25438: 01aeee957c993ee764b8e4753860d9c03b6467973eed5a3ec07bb425e1e4a337
+differing top-level fields: ['final_code_pins']
+differing pins: ['tests/test_b4_materializer_authority.py', 'tools/b4_campaign_executor.py', 'tools/b4_campaign_ledger.py', 'tools/b4_campaign_orchestrator.py']
+-> the supposedly append-only amendment 9 was edited in place to carry the C23-C25 pins; nothing else changed
+
+PRE CONFIRMED: C26 finding reproduces from Git objects
