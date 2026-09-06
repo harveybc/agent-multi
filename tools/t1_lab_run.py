@@ -16,10 +16,12 @@ C8: every gate metric is computed PER ROLE (train / validation /
 score) and published separately; the primary verdict inputs are the
 SCORE-role facts only.
 
-C9: the dimensionality control is predeclared circular-shift
-nuisance channels (deterministic offsets), which match input width
-without changing the base arm's effective regularization on
-duplicated information; its null behavior is verifiable.
+C19 (audit 2026-09-06): the dimensionality control is
+TRAIN-FROZEN INDEPENDENT nuisance channels — deterministic rng
+seeded by (unit, operator, channel), scaled by the TRAIN-role
+standard deviation of the observed series only. No channel value
+depends on any observed row, so no temporal role can leak through
+the control; width matches [X,D,R] exactly.
 
 C7: JSON is emitted with allow_nan=False; non-finite gate values
 become typed nulls with a reason and can never authorize
@@ -39,7 +41,7 @@ sys.path.insert(0, str(REPO / "tools"))
 HORIZONS = (1, 5)
 RIDGE_LAGS = 8
 RIDGE_LAMBDA = 1.0
-NUISANCE_SHIFTS = (517, 1031)
+NUISANCE_CHANNELS = 2
 CANDIDATES = ("identity", "trailing_mean", "trailing_median",
               "ewma", "local_level_kalman")
 ORACLE = "centered_mean_oracle"
@@ -98,11 +100,11 @@ def load_co():
 def _spec(co, kind, columns):
     oid = (f"{kind}_t1" if kind != ORACLE
            else "NON_CAUSAL_ORACLE_ONLY_centered_mean")
-    lb = PARAMS[kind].get("window", 1)
     return {"schema": co.SCHEMA_VERSION, "operator_id": oid,
             "kind": kind, "version": "1",
             "params": dict(PARAMS[kind]), "columns": list(columns),
-            "fit_role": "train", "lookback": lb,
+            "fit_role": "train",
+            "lookback": co.derived_lookback(kind, PARAMS[kind]),
             "availability_rule": "bar_close"}
 
 
@@ -130,16 +132,34 @@ def _targets(clean_var, lo, hi, h):
                      for t in range(lo + RIDGE_LAGS, hi - h)])
 
 
-def assay_arms(clean_j, obs_j, d_j, r_j, roles, h) -> dict:
-    """Frozen assays: fit on train, report on score. C9: the width
-    control uses deterministic circular-shift nuisance channels —
-    same width as [X,D,R], no duplicated-information regularization
-    artifact; declared limits: it controls WIDTH, not collinearity
-    with informative channels."""
+def nuisance_channels(obs_j, roles, ident: str) -> list:
+    """C19: width-control channels generated INDEPENDENTLY of the
+    observed series — deterministic rng seeded by the declared
+    identity, amplitude frozen on the TRAIN role's std only. No
+    value depends on any observed row, so future-row mutations and
+    role boundaries cannot reach the control."""
+    lo_t, hi_t = roles["train"]
+    scale = float(np.std(obs_j[lo_t:hi_t]))
+    out = []
+    for k in range(NUISANCE_CHANNELS):
+        seed = int(hashlib.sha256(
+            f"t1_nuisance|{ident}|{k}".encode()
+        ).hexdigest()[:8], 16)
+        rng = np.random.default_rng(seed)
+        out.append(rng.normal(0.0, scale if scale > 0 else 1.0,
+                              obs_j.shape[0]))
+    return out
+
+
+def assay_arms(clean_j, obs_j, d_j, r_j, roles, h,
+               nuisance) -> dict:
+    """Frozen assays: fit on train, report on score. The width
+    control matches [X,D,R]'s input width with train-frozen
+    INDEPENDENT channels (see nuisance_channels); every arm uses
+    the same eligible support."""
     lo_t, hi_t = roles["train"]
     lo_s, hi_s = roles["score"]
-    n1 = np.roll(obs_j, NUISANCE_SHIFTS[0])
-    n2 = np.roll(obs_j, NUISANCE_SHIFTS[1])
+    n1, n2 = nuisance
     arms = {"X": [obs_j], "D": [d_j], "XDR": [obs_j, d_j, r_j],
             "width_control_X_nuisance": [obs_j, n1, n2]}
     out = {}
@@ -225,9 +245,14 @@ def measure_unit_operator(co, unit_dir: Path, kind: str,
                 "unit contains licensed missingness; current "
                 "candidates declare NO missingness policy — typed "
                 "refusal recorded as the missingness behavior")
-        art = co.fit(spec, obs[:, lo_t:hi_t].T, columns, "train")
+        stream = f"t1_unit:{rec['unit_id']}"
+        train_m = obs[:, lo_t:hi_t].T
+        art = co.fit(spec, train_m, columns, "train",
+                     co.make_train_contract(
+                         train_m, train_m.shape[0],
+                         float(lo_t), stream))
         n = obs.shape[1]
-        tc = co.make_bar_close_contract(n)
+        tc = co.make_bar_close_contract(n, 0.0, stream)
         d = co.transform_batch(art, obs.T, columns, tc).T
     except co.CausalOperatorError as exc:
         result.update({"status": "TYPED_REFUSAL",
@@ -257,9 +282,11 @@ def measure_unit_operator(co, unit_dir: Path, kind: str,
             for k in lags]
         delay = int(list(lags)[int(np.argmax(xc))])
         h_facts = {}
+        nuis = nuisance_channels(
+            obs[j], roles, f"{rec['unit_id']}|{kind}|v{j}")
         for h in HORIZONS:
             h_facts[f"h{h}"] = assay_arms(clean[j], obs[j], d[j],
-                                          r[j], roles, h)
+                                          r[j], roles, h, nuis)
         per_var.append({
             "variable": columns[j],
             "true_additive_snr_db":
@@ -317,9 +344,25 @@ def main() -> int:
             None, _sha_file(inv_path)):
         raise SystemExit(
             "REFUSED: bank inventory differs from the sealed design")
+    if inv.get("schema") != "agent_multi.t1_bank_inventory.v2":
+        raise SystemExit(
+            "REFUSED: the bank inventory does not bind the "
+            "physical population (v2 schema required)")
+    # C17: recompute EVERY unit digest from bytes BEFORE measuring
     for uid in inv["unit_ids"]:
-        u = json.loads((args.bank_dir / uid / "UNIT.json"
-                        ).read_text())
+        bound = inv["units"][uid]
+        ud = args.bank_dir / uid
+        if _sha_file(ud / "UNIT.json") != \
+                bound["unit_json_sha256"]:
+            raise SystemExit(
+                f"REFUSED: unit {uid} metadata differs from the "
+                "sealed inventory")
+        for name, want in bound["arrays"].items():
+            if _sha_file(ud / f"{name}.npy") != want:
+                raise SystemExit(
+                    f"REFUSED: unit {uid} array {name} differs "
+                    "from the sealed inventory")
+        u = json.loads((ud / "UNIT.json").read_text())
         if u.get("schema") != "agent_multi.t1_unit.v2":
             raise SystemExit(f"REFUSED: unit {uid} is not a v2 "
                              "unit")
@@ -337,6 +380,25 @@ def main() -> int:
                "records": records}
     args.output.write_text(json.dumps(payload, indent=1,
                                       allow_nan=False))
+    # C18: immutable measurement-population manifest — the exact
+    # identities a reviewer promotes; the candidate cannot rewrite
+    # them coherently without changing this digest.
+    manifest = {
+        "schema": "agent_multi.t1_measurement_manifest.v1",
+        "design_sha256": args.design_sha,
+        "bank_inventory_sha256": _sha_file(inv_path),
+        "measurements_sha256": _sha_file(args.output),
+        "records_total": len(records),
+        "records_measured": sum(1 for r in records
+                                if r["status"] == "MEASURED"),
+        "records_refused": sum(1 for r in records
+                               if r["status"] == "TYPED_REFUSAL")}
+    manifest["manifest_sha256"] = hashlib.sha256(json.dumps(
+        {k: manifest[k] for k in sorted(manifest)},
+        sort_keys=True).encode()).hexdigest()
+    mp = args.output.with_name(args.output.stem +
+                               "_MANIFEST.json")
+    mp.write_text(json.dumps(manifest, indent=1))
     print(json.dumps({"units": len(inv["unit_ids"]),
                       "records": len(records),
                       "refusals": sum(

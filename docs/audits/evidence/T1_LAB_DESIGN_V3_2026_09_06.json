@@ -1,0 +1,42 @@
+{
+ "schema": "agent_multi.t1_design.v3",
+ "order": "T0-T1 C13-C20 (final audit 2026-09-06); sealed BEFORE any v3 measurement; v1 and v2 evidence preserved byte-intact as history",
+ "supersedes": {
+  "design_v2_sha256": "240cd89e1a02441bc9855bb359e379e4829ab3e7fa564814777c297d7cfd25e2",
+  "disclosure": "v3 changes, all evidence-authority or causality corrections, no scientific relaxation: (1) C19 width control replaced \u2014 circular-shift nuisance leaked series-end values into train positions; now TRAIN-FROZEN INDEPENDENT channels (deterministic rng per unit|operator|variable|channel, amplitude = train-role std only), so assay values change and every regime is REMEASURED; (2) C17 bank inventory v2 binds every unit's metadata and array bytes (physical parity of all 192 units' arrays with the v2 bank verified: 0 mismatches); (3) C15 specs carry DERIVED lookback (trailing window-1, ewma/kalman unbounded=-1, centered non-causal=-2) and ewma alpha constrained to (0,1]; (4) fits are bound to an exact train interval + timestamp contract + source-prefix digest under T0 artifact v2; (5) C16 the verifier re-derives EVERY decision-bearing metric of all measured records; (6) C18 measurement-population manifest + external reviewer record required for any reviewed identity; (7) C20 strict consuming schemas at adjudication."
+ },
+ "operator_protocol": {
+  "repo_branch": "preprocessor@satoshi/t0-t1-causal-transformations-20260906",
+  "commit": "e6c3cdc",
+  "causal_operators_sha256": "b1de49f3a00422bcbb9143b5403f1735ee1e2898f4094bc4dadf8147bf0d9c8c",
+  "battery": "tests/test_causal_operators.py \u2014 52 passed"
+ },
+ "expected_operators_exact": [
+  "identity",
+  "trailing_mean",
+  "trailing_median",
+  "ewma",
+  "local_level_kalman",
+  "centered_mean_oracle"
+ ],
+ "bank_inventory_sha256": "457db7781b799bed98992fa5e3251d5d60f1e17d92a7e87540b5f53a26c72bb0",
+ "unit_schema": "agent_multi.t1_unit.v2 (clean + additive + distortion/support + observed; on-support identities asserted; true SNR recomputed on the exact metric support; total-observation-error SNR bound separately); inventory agent_multi.t1_bank_inventory.v2 binds every unit's metadata and array bytes (C17)",
+ "role_semantics": "gates from SCORE role only; train/validation published separately (C8)",
+ "width_control": "TRAIN-FROZEN INDEPENDENT nuisance channels (C19): deterministic rng seeded sha256('t1_nuisance|<unit>|<operator>|v<j>|<k>'), amplitude = std of the observed TRAIN role only; matches [X,D,R] width; no channel value depends on any observed row",
+ "material_failure_rule": "any seed/variable: null score facts, utility collapse < -0.25, extreme inversion, tail > 3x -> LAB_REJECTED (C10)",
+ "adjudication_thresholds": {
+  "snr_gain_min_db": 0.5,
+  "utility_tolerance_rel": 0.02,
+  "extreme_retention_min": 0.5,
+  "tail_ratio_max": 1.5,
+  "residual_info_max_r2": 0.01,
+  "min_seeds": 3
+ },
+ "evidence": "observation-level content-addressed NPZ (denoised+residual) digest-bound per record; measurement-population manifest binds the exact measurement bytes (C18); the independent verifier re-derives EVERY decision-bearing metric of EVERY measured record (C16) and is non-authorizing without an external reviewer record naming the exact measurement+publication digests (C18)",
+ "code_identity": {
+  "t1_known_truth_bank_sha256": "5934216d0d5e0b0d4eeb6560c57d9ab85ad2ecdfb5059ec3d21cd3a531aabfdf",
+  "t1_lab_run_sha256": "da0e051345e655b747a5c3b49598dbf9c7a207782c6eec2e4ccb372da90fdc54",
+  "t1_adjudicator_sha256": "2dd960722ec221521af067f4f03211b254959c379dc7259e18e24f46578f644d",
+  "t1_independent_verifier_sha256": "c91cdc505647eaf35243761307f912b09b1f2e74af4e41b7ca9ae77cbf6ed632"
+ }
+}

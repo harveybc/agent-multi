@@ -277,12 +277,29 @@ def main() -> int:
         for seed in SEEDS:
             ledger.append(materialize_unit(cell, seed,
                                            args.output_dir))
+    def _sha_file(fp):
+        return hashlib.sha256(Path(fp).read_bytes()).hexdigest()
+    units = {}
+    for r in ledger:
+        ud = args.output_dir / r["unit_id"]
+        units[r["unit_id"]] = {
+            "unit_json_sha256": _sha_file(ud / "UNIT.json"),
+            "arrays": {name: _sha_file(ud / f"{name}.npy")
+                       for name in ("clean_signal",
+                                    "additive_noise",
+                                    "observed_signal",
+                                    "metric_support")}}
+    # C17 (audit 2026-09-06): the sealed inventory binds the
+    # PHYSICAL known-truth population — every unit's strict
+    # metadata digest and every array's file digest. Unit ids
+    # alone are names, not evidence.
     inventory = {
-        "schema": "agent_multi.t1_bank_inventory.v1",
+        "schema": "agent_multi.t1_bank_inventory.v2",
         "predeclared_cells": len(cells),
         "seeds": list(SEEDS),
         "units_total": len(ledger),
         "unit_ids": [r["unit_id"] for r in ledger],
+        "units": units,
         "design_rule": predeclared_matrix.__doc__,
     }
     (args.output_dir / "BANK_INVENTORY.json").write_text(
