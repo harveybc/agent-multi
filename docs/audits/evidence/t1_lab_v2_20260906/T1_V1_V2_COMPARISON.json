@@ -1,0 +1,82 @@
+{
+ "schema": "agent_multi.t1_v1_v2_comparison.v1",
+ "rule": "v1 preserved byte-intact as exploratory history; v2 verdicts derive from SCORE-role facts + any-material-failure rule + observation-level re-derivation; no v1 count promoted",
+ "v1_counts": {
+  "NON_CAUSAL_ORACLE_ONLY": 64,
+  "LAB_CALIBRATED": 190,
+  "INCONCLUSIVE": 59,
+  "LAB_REJECTED": 71
+ },
+ "v2_counts": {
+  "NON_CAUSAL_ORACLE_ONLY": 64,
+  "LAB_CALIBRATED": 180,
+  "LAB_REJECTED": 116,
+  "INCONCLUSIVE": 24
+ },
+ "by_operator": {
+  "v1": {
+   "centered_mean_oracle": {
+    "NON_CAUSAL_ORACLE_ONLY": 64
+   },
+   "ewma": {
+    "LAB_CALIBRATED": 40,
+    "INCONCLUSIVE": 19,
+    "LAB_REJECTED": 5
+   },
+   "identity": {
+    "LAB_CALIBRATED": 62,
+    "INCONCLUSIVE": 2
+   },
+   "local_level_kalman": {
+    "LAB_REJECTED": 17,
+    "LAB_CALIBRATED": 31,
+    "INCONCLUSIVE": 16
+   },
+   "trailing_mean": {
+    "LAB_CALIBRATED": 34,
+    "INCONCLUSIVE": 12,
+    "LAB_REJECTED": 18
+   },
+   "trailing_median": {
+    "LAB_CALIBRATED": 23,
+    "LAB_REJECTED": 31,
+    "INCONCLUSIVE": 10
+   }
+  },
+  "v2": {
+   "centered_mean_oracle": {
+    "NON_CAUSAL_ORACLE_ONLY": 64
+   },
+   "ewma": {
+    "LAB_CALIBRATED": 42,
+    "LAB_REJECTED": 16,
+    "INCONCLUSIVE": 6
+   },
+   "identity": {
+    "LAB_CALIBRATED": 62,
+    "INCONCLUSIVE": 2
+   },
+   "local_level_kalman": {
+    "LAB_REJECTED": 33,
+    "LAB_CALIBRATED": 23,
+    "INCONCLUSIVE": 8
+   },
+   "trailing_mean": {
+    "LAB_CALIBRATED": 32,
+    "LAB_REJECTED": 27,
+    "INCONCLUSIVE": 5
+   },
+   "trailing_median": {
+    "LAB_CALIBRATED": 21,
+    "LAB_REJECTED": 40,
+    "INCONCLUSIVE": 3
+   }
+  }
+ },
+ "headline_changes": [
+  "kalman REJECTED 17 -> 33 (material failures no longer hidden by medians)",
+  "trailing_median REJECTED 31 -> 40 (extreme inversions surfaced)",
+  "ewma CALIBRATED 40 -> 42 (score-role gates cleaner than all-role mixing)",
+  "INCONCLUSIVE 59 -> 24 (typed nulls + material rule resolve ambiguity)"
+ ]
+}

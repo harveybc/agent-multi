@@ -18,7 +18,12 @@ from app import causal_operators as co  # noqa: E402
 import t1_adjudicator as adj  # noqa: E402
 import t1_known_truth_bank as bank  # noqa: E402
 
-MEAS = Path.home() / ".local/share/agent-multi/t1_measurements_20260906.json"
+MEAS = Path.home() / (".local/share/agent-multi/"
+                     "t1_measurements_v2_20260906.json")
+BANK = Path.home() / ".local/share/agent-multi/t1_bank_v2_20260906"
+NPZ = Path.home() / ".local/share/agent-multi/t1_npz_v2_20260906"
+DESIGN = (REPO / "docs/audits/evidence/"
+          "T1_LAB_DESIGN_V2_2026_09_06.json")
 _meas_present = pytest.mark.skipif(not MEAS.is_file(),
                                    reason="measurements absent")
 
@@ -53,8 +58,27 @@ def test_a2_contaminated_fit_role_refuses():
 
 
 # 3. reconstruction better + extreme destroyed -> LAB_REJECTED
-def _fake_measurements(gain, util, retention, resid=0.0,
-                       tail=1.0):
+def _pv(gain=5.0, util=0.01, retention=0.9, resid=0.0,
+        tail=1.0):
+    def role(g):
+        return {"mse_observed": 1.0, "mse_denoised": 0.5,
+                "snr_gain_db": g, "extreme_retention": retention,
+                "tail_ratio": tail}
+    return {"variable": "v0", "true_additive_snr_db": 10,
+            "true_total_error_snr_db": 10,
+            "snr_estimator_std_error": 0.1, "delay_bars": 1,
+            "by_role": {"train": role(gain), "validation":
+                        role(gain), "score": role(gain)},
+            "assays_score_fit_train": {
+                h: {"X": 0.5, "D": 0.5 * (1 + util),
+                    "XDR": 0.5 + resid,
+                    "width_control_X_nuisance": 0.5,
+                    "residual_incremental_r2": resid}
+                for h in ("h1", "h5")}}
+
+
+def _fake_measurements(gain=5.0, util=0.01, retention=0.9,
+                       resid=0.0, tail=1.0):
     recs = []
     for seed in (11, 12, 13):
         recs.append({
@@ -63,26 +87,21 @@ def _fake_measurements(gain, util, retention, resid=0.0,
             "declared_snr_db": 10, "heterogeneous": False,
             "seed": seed, "causal": True, "oracle_only": False,
             "status": "MEASURED",
-            "per_variable": [{
-                "variable": "v0", "true_snr_db": 10,
-                "snr_estimator_std_error": 0.1,
-                "mse_observed": 1.0, "mse_denoised": 0.5,
-                "snr_gain_db": gain, "delay_bars": 1,
-                "extreme_retention": retention,
-                "tail_ratio": tail,
-                "ljung_box_p_residual_train": 0.5,
-                "assays": {h: {"X": 0.5, "D": 0.5 * (1 + util),
-                               "XDR": 0.5 + resid,
-                               "capacity_control_XXX": 0.5,
-                               "residual_incremental_r2": resid,
-                               "persistence_obs_mse": 1.0}
-                           for h in ("h1", "h5")}}]})
-    return {"records": recs, "expected_units": 3,
-            "expected_operators": 1}
+            "per_variable": [_pv(gain, util, retention, resid,
+                                 tail)]})
+    return {"records": recs, "design_sha256": "d" * 64}
+
+
+FAKE_DESIGN = {"expected_operators_exact": ["ewma"]}
+FAKE_INV = {"unit_ids": ["u11", "u12", "u13"]}
+
+
+def _adjudicate(m):
+    return adj.adjudicate(FAKE_DESIGN, FAKE_INV, m)
 
 
 def test_a3_reconstruction_up_extreme_destroyed_rejected():
-    out = adj.adjudicate(_fake_measurements(
+    out = _adjudicate(_fake_measurements(
         gain=5.0, util=0.0, retention=0.1))
     v = list(out["verdicts"].values())[0]
     assert v["verdict"] == "LAB_REJECTED"
@@ -91,7 +110,7 @@ def test_a3_reconstruction_up_extreme_destroyed_rejected():
 
 # 4. residual with target utility -> demoted to TRANSFORMATION
 def test_a4_informative_residual_demoted():
-    out = adj.adjudicate(_fake_measurements(
+    out = _adjudicate(_fake_measurements(
         gain=5.0, util=0.01, retention=0.9, resid=0.2))
     v = list(out["verdicts"].values())[0]
     assert v["verdict"] == "LAB_CALIBRATED"
@@ -102,29 +121,35 @@ def test_a4_informative_residual_demoted():
 # 5. true SNR declared on natural data -> the bank has no such unit
 def test_a5_no_true_snr_outside_known_truth():
     src = (REPO / "tools/t1_known_truth_bank.py").read_text()
-    assert "true_realized_snr_db" in src
+    assert "true_additive_snr_db" in src
     lab = (REPO / "tools/t1_lab_run.py").read_text()
     # every true-* fact the lab reports flows FROM the bank unit
     # record (known clean+noise); the lab never mints one.
-    assert 'rec["true_realized_snr_db"]' in lab
+    assert 'rec["true_additive_snr_db"]' in lab
     assert 'rec["noise_std_per_var"]' in lab
     assert "def true_snr" not in lab
 
 
 # 6. positive aggregate with a failed/absent unit -> refuses
 def test_a6_incomplete_population_refuses():
-    m = _fake_measurements(5.0, 0.01, 0.9)
-    m["expected_units"] = 4
+    """C6: the population derives from DESIGN+INVENTORY — a missing
+    design-required record refuses; producer counts grant nothing."""
+    m = _fake_measurements()
+    m["records"] = m["records"][:2]
     with pytest.raises(SystemExit, match="population incomplete"):
-        adj.adjudicate(m)
+        _adjudicate(m)
+    m2 = _fake_measurements()
+    m2["records"].append(dict(m2["records"][0],
+                              unit_id="foreign_unit"))
+    with pytest.raises(SystemExit, match="foreign record"):
+        _adjudicate(m2)
 
 
 # 7. inflated support from windows of one process -> unit rule
 def test_a7_windows_are_never_replicas():
-    m = _fake_measurements(5.0, 0.01, 0.9)
-    m["records"] = m["records"][:1]     # one seed only
-    m["expected_units"] = 1
-    out = adj.adjudicate(m)
+    m = _fake_measurements()
+    m["records"] = m["records"][:1]
+    out = adj.adjudicate(FAKE_DESIGN, {"unit_ids": ["u11"]}, m)
     v = list(out["verdicts"].values())[0]
     assert v["verdict"] == "INCONCLUSIVE"
     assert "seeds" in v["reason"]
@@ -154,7 +179,7 @@ def test_a9_producer_verdict_ignored():
     m = _fake_measurements(gain=-3.0, util=-0.5, retention=0.9)
     for r in m["records"]:
         r["verdict"] = "LAB_CALIBRATED"      # forged producer field
-    out = adj.adjudicate(m)
+    out = _adjudicate(m)
     v = list(out["verdicts"].values())[0]
     assert v["verdict"] == "LAB_REJECTED"
 
@@ -182,12 +207,14 @@ def test_a11_full_prefix_parity_not_just_last_value():
     rng = np.random.default_rng(3)
     x = rng.normal(0, 1, (60, 1))
     art = co.fit(spec, x, ["a"], "train")
-    batch = co.transform_batch(art, x, ["a"])
+    tc = co.make_bar_close_contract(60)
+    batch = co.transform_batch(art, x, ["a"], tc)
     state = co.init_state(art)
     frag = []
     for i in range(60):
-        out, state = co.transform_incremental(art, state,
-                                              x[i], ["a"])
+        out, state = co.transform_incremental(
+            art, state, x[i], ["a"],
+            co.make_bar_close_contract(1, float(i)))
         frag.append(out)
     frag = np.concatenate(frag)
     assert frag.tobytes() == batch.tobytes()   # EVERY byte, not [-1]
@@ -206,26 +233,95 @@ def test_a12_cpu_only_guard():
 # directed mutations on the REAL adjudication
 @_meas_present
 def test_m1_real_population_rederives():
+    design = json.loads(DESIGN.read_text())
+    inv = json.loads((BANK / "BANK_INVENTORY.json").read_text())
     m = json.loads(MEAS.read_text())
-    out = adj.adjudicate(m)
+    out = adj.adjudicate(design, inv, m)
     assert out["population"]["records"] == 1152
     assert out["verdict_counts"]["NON_CAUSAL_ORACLE_ONLY"] == 64
 
 
 @_meas_present
 def test_m2_mutated_record_changes_verdict_derivation():
+    design = json.loads(DESIGN.read_text())
+    inv = json.loads((BANK / "BANK_INVENTORY.json").read_text())
     m = json.loads(MEAS.read_text())
-    out1 = adj.adjudicate(json.loads(json.dumps(m)))
+    out1 = adj.adjudicate(design, inv,
+                          json.loads(json.dumps(m)))
     for r in m["records"]:
         if r["operator"] == "trailing_median" and \
                 r["status"] == "MEASURED":
             for pv in r["per_variable"]:
-                pv["extreme_retention"] = 1.0
+                for role in pv["by_role"].values():
+                    if isinstance(role, dict) and \
+                            "extreme_retention" in role:
+                        role["extreme_retention"] = 1.0
                 for h in ("h1", "h5"):
-                    pv["assays"][h]["D"] = \
-                        pv["assays"][h]["X"] + 0.5
-    out2 = adj.adjudicate(m)
+                    a = pv["assays_score_fit_train"][h]
+                    if isinstance(a["X"], float):
+                        a["D"] = a["X"] + 0.5
+    out2 = adj.adjudicate(design, inv, m)
     assert out1["verdict_counts"] != out2["verdict_counts"]
+
+
+@_meas_present
+def test_m4_rederivation_catches_forged_npz_gates():
+    """C6: a published gate that disagrees with the re-derived
+    array value refuses."""
+    design = json.loads(DESIGN.read_text())
+    inv = json.loads((BANK / "BANK_INVENTORY.json").read_text())
+    m = json.loads(MEAS.read_text())
+    victim = next(r for r in m["records"]
+                  if r["status"] == "MEASURED"
+                  and r["operator"] == "ewma")
+    victim["per_variable"][0]["by_role"]["score"][
+        "snr_gain_db"] = 99.9
+    with pytest.raises(SystemExit, match="re-derived"):
+        adj.rederive_gates(victim, BANK, NPZ)
+
+
+def test_c7_nan_gates_never_authorize():
+    """C7 POST: NaN in every gate now REFUSES the gate and the
+    regime becomes INCONCLUSIVE, never calibrated."""
+    m = _fake_measurements()
+    for r in m["records"]:
+        for pv in r["per_variable"]:
+            pv["by_role"]["score"]["snr_gain_db"] = float("nan")
+    out = _adjudicate(m)
+    v = list(out["verdicts"].values())[0]
+    assert v["verdict"] == "INCONCLUSIVE"
+    assert "finite" in v["reason"]
+
+
+def test_c10_one_material_failure_cannot_hide():
+    """C10 POST: two good seeds cannot mask one destroyed seed."""
+    m = _fake_measurements(gain=5.0, util=0.01, retention=0.9)
+    bad = m["records"][2]["per_variable"][0]
+    for role in bad["by_role"].values():
+        role["extreme_retention"] = -0.5     # inversion in ONE seed
+    out = _adjudicate(m)
+    v = list(out["verdicts"].values())[0]
+    assert v["verdict"] == "LAB_REJECTED"
+    assert "cannot hide" in v["reason"] or "material" in v["reason"]
+
+
+def test_c5_delayed_units_bind_observation_identity(tmp_path):
+    """C5 POST: delayed observed == rolled(clean+additive) EXACTLY
+    on support; the on-support identity is asserted at
+    materialization."""
+    rec = bank.materialize_unit(
+        {"family": "heavisine", "perturbation": "delayed",
+         "snr_db": 10, "heterogeneous": False}, 11, tmp_path)
+    u = tmp_path / rec["unit_id"]
+    clean = np.load(u / "clean_signal.npy")
+    add = np.load(u / "additive_noise.npy")
+    obs = np.load(u / "observed_signal.npy")
+    sup = np.load(u / "metric_support.npy")
+    k = rec["distortion"]["delay_bars"]
+    assert np.array_equal(obs[:, k:], (clean + add)[:, :-k])
+    assert not sup[:, :k].any() and sup[:, k:].all()
+    assert rec["true_total_observation_error_snr_db"][0] < \
+        rec["true_additive_snr_db"][0]
 
 
 def test_m3_bank_unit_digests_rederive(tmp_path):
