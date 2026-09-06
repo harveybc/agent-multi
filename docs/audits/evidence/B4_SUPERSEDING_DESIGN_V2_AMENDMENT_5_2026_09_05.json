@@ -1,0 +1,14 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v3_execution",
+ "amends_amendment_4_sha256": "d02ea469fb41964cafb7d3bfa84652fc9b8a751416b5df1ed94bbe410a769266",
+ "owner_authorization_sha256": "7426a0bfc9cdb6c609730755512c0936f58fdc45d40cd17c0bb5a83ce00cdf82",
+ "order": "agent-multi@9fb017e3 B4-P1 \u2014 execution-only append-only step: the runner consumes the exact owner GPU authorization from carried path+digest, binds the owner-approved materialization/comparator identities externally, re-derives comparator complete-envelope digests factually, and derives the bounded gpu_preflight mode ONLY from the owner record",
+ "scientific_change": "NONE",
+ "data_role_change": "NONE",
+ "final_code_pins": {
+  "tools/b4_authority.py": "790a3ea2fbc4c56e731cc991104846c9b4605c54e38671ee0a2993144c3bced1",
+  "tools/b4_run_cell.py": "34560269c573d701e4fd849b05be1bebfdf1730a3c4dc7d0fa30bb82f60fbdf3",
+  "tests/test_b4_materializer_authority.py": "108cfcfbee83648e66427b8826eceb39eab53d3ea40f9c883cbfb25ac78642d9"
+ },
+ "chronology_truth": "authored AFTER the @9fb017e3 PRE freeze (03b05cf7-successor a2ca2783) and BEFORE the single authorized GPU preflight"
+}

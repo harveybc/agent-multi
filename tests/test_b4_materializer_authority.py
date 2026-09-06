@@ -258,23 +258,32 @@ def test_e6_cell_with_forbidden_language_refuses():
 
 
 # ------------------------- E3: amendment chain --------------------
-def _fake_a4(tmp_path, monkeypatch, **over):
+def _pins(*rels):
+    return {rel: a._sha_file(REPO / rel) for rel in rels}
+
+
+def _fake_a4(tmp_path, monkeypatch, a5_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
-          "final_code_pins": {
-              "tools/b4_authority.py":
-                  a._sha_file(REPO / "tools/b4_authority.py"),
-              "tools/screen_b_baselines.py":
-                  a._sha_file(REPO / "tools/screen_b_baselines.py"),
-              "tools/materialize_b4_causal_sac.py":
-                  a._sha_file(REPO /
-                              "tools/materialize_b4_causal_sac.py"),
-              "tools/b4_run_cell.py":
-                  a._sha_file(REPO / "tools/b4_run_cell.py")}}
+          "final_code_pins": _pins(
+              "tools/b4_authority.py",
+              "tools/screen_b_baselines.py",
+              "tools/materialize_b4_causal_sac.py",
+              "tools/b4_run_cell.py")}
     a4.update(over)
     f = tmp_path / "a4.json"
     f.write_text(json.dumps(a4))
     monkeypatch.setattr(a, "AMENDMENT_4_PATH", f)
+    a5 = {"amends_amendment_4_sha256": a._sha_file(f),
+          "owner_authorization_sha256": a.OWNER_GPU_AUTH_SHA,
+          "scientific_change": "NONE",
+          "final_code_pins": _pins(
+              "tools/b4_authority.py", "tools/b4_run_cell.py",
+              "tests/test_b4_materializer_authority.py")}
+    a5.update(a5_over or {})
+    f5 = tmp_path / "a5.json"
+    f5.write_text(json.dumps(a5))
+    monkeypatch.setattr(a, "AMENDMENT_5_PATH", f5)
     return a4
 
 
@@ -282,7 +291,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 4
+    assert len(chain["amendment_shas"]) == 5
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -301,17 +310,25 @@ def test_e3_reordered_prior_chain_refuses(tmp_path, monkeypatch):
 
 
 def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
-    a4 = _fake_a4(tmp_path, monkeypatch)
-    a4["final_code_pins"]["tools/b4_run_cell.py"] = "0" * 64
-    (a.AMENDMENT_4_PATH).write_text(json.dumps(a4))
+    _fake_a4(tmp_path, monkeypatch,
+             a5_over={"final_code_pins": {
+                 "tools/b4_authority.py": "0" * 64,
+                 "tools/b4_run_cell.py":
+                     a._sha_file(REPO / "tools/b4_run_cell.py"),
+                 "tests/test_b4_materializer_authority.py":
+                     a._sha_file(
+                         REPO /
+                         "tests/test_b4_materializer_authority.py"),
+             }})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
 
 def test_e3_incomplete_pin_surface_refuses(tmp_path, monkeypatch):
-    a4 = _fake_a4(tmp_path, monkeypatch)
-    del a4["final_code_pins"]["tools/b4_run_cell.py"]
-    (a.AMENDMENT_4_PATH).write_text(json.dumps(a4))
+    pins = _pins("tools/b4_authority.py",
+                 "tools/screen_b_baselines.py",
+                 "tools/materialize_b4_causal_sac.py")
+    _fake_a4(tmp_path, monkeypatch, final_code_pins=pins)
     with pytest.raises(SystemExit, match="full executing surface"):
         a.verify_amendment_chain()
 
@@ -532,12 +549,23 @@ def test_e7_cli_cannot_override_scientific_values(tmp_path):
                          "--device", "cpu", flag, "1"])
 
 
-def test_e7_gpu_refuses_without_authorization(tmp_path):
-    with pytest.raises(SystemExit, match="Musashi GPU authorization"):
-        runner.main(["--cell-id", "o2024_seed101",
+def test_p1_gpu_wrong_cell_refuses(tmp_path):
+    with pytest.raises(SystemExit,
+                       match="approved exactly ONE GPU cell"):
+        runner.main(["--cell-id", "o2023_seed202",
                      "--materialization-root", str(tmp_path),
                      "--output-root", str(tmp_path / "out"),
                      "--device", "cuda:0"])
+
+
+def test_p2_foreign_root_refuses_any_device(tmp_path):
+    for dev in ("cpu", "cuda:0"):
+        with pytest.raises(SystemExit,
+                           match="absent from the materialization"):
+            runner.main(["--cell-id", "o2024_seed101",
+                         "--materialization-root", str(tmp_path),
+                         "--output-root", str(tmp_path / "out"),
+                         "--device", dev])
 
 
 def test_e7_unreviewed_cell_id_refuses(tmp_path):
@@ -619,3 +647,318 @@ def test_d1_foreign_tensor_identity_refuses(tmp_path, monkeypatch):
     _fake_build(monkeypatch, ["a" * 64, "b" * 64])
     with pytest.raises(RuntimeError, match="GENESIS_NONDETERMINISTIC"):
         g.build_seed_genesis({}, {}, 8, tmp_path)
+
+
+# ============ Order @9fb017e3: B4-P1..P4 battery ============
+MAT_V2 = (Path.home() /
+          ".local/share/agent-multi/b4_materialization_v2_20260905")
+V6_DIR = (REPO / "docs/audits/evidence/"
+          "screen_b_rule_arms_v6_e_corrected_20260905")
+_mat_present = pytest.mark.skipif(
+    not MAT_V2.is_dir(), reason="approved materialization root "
+    "absent on this host")
+
+
+def test_p1_exact_authorization_verifies():
+    rec = a.verify_gpu_preflight_authorization()
+    assert rec["decision"] == \
+        "APPROVE_ONE_B4_BOUNDED_GPU_PREFLIGHT_ONLY"
+    lim = rec["preflight_limits"]
+    assert (lim["environment_steps_max"], lim["optimizer_updates_max"],
+            lim["wall_seconds_max"]) == (20000, 20000, 7200)
+    assert lim["attempts"] == 1
+
+
+def test_p1_missing_authorization_refuses(tmp_path, monkeypatch):
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_PATH",
+                        tmp_path / "absent.json")
+    with pytest.raises(SystemExit, match="authorization absent"):
+        a.verify_gpu_preflight_authorization()
+
+
+def test_p1_edited_or_self_rehashed_record_refuses(
+        tmp_path, monkeypatch):
+    rec = json.loads(a.OWNER_GPU_AUTH_PATH.read_text())
+    rec["preflight_limits"]["environment_steps_max"] = 40_000_000
+    f = tmp_path / "auth.json"
+    f.write_text(json.dumps(rec))
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_PATH", f)
+    with pytest.raises(SystemExit, match="bytes differ"):
+        a.verify_gpu_preflight_authorization()
+
+
+def test_p1_wrong_carried_digest_refuses(monkeypatch):
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_SHA", "0" * 64)
+    with pytest.raises(SystemExit, match="bytes differ"):
+        a.verify_gpu_preflight_authorization()
+
+
+def test_p1_wrong_decision_refuses(tmp_path, monkeypatch):
+    rec = json.loads(a.OWNER_GPU_AUTH_PATH.read_text())
+    rec["decision"] = "APPROVE_FULL_CAMPAIGN"
+    f = tmp_path / "auth.json"
+    f.write_text(json.dumps(rec))
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_PATH", f)
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_SHA",
+                        a._sha_file(f))
+    with pytest.raises(SystemExit, match="single "
+                       "bounded GPU preflight"):
+        a.verify_gpu_preflight_authorization()
+
+
+def test_p1_unknown_field_refuses(tmp_path, monkeypatch):
+    rec = json.loads(a.OWNER_GPU_AUTH_PATH.read_text())
+    rec["attacker_extension"] = {"grants": "everything"}
+    f = tmp_path / "auth.json"
+    f.write_text(json.dumps(rec))
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_PATH", f)
+    monkeypatch.setattr(a, "OWNER_GPU_AUTH_SHA", a._sha_file(f))
+    with pytest.raises(SystemExit, match="unknown top-level"):
+        a.verify_gpu_preflight_authorization()
+
+
+@_mat_present
+def test_p2_approved_materialization_verifies():
+    rec = a.verify_gpu_preflight_authorization()
+    a.verify_approved_materialization(MAT_V2, rec)
+
+
+@_mat_present
+def test_p2_self_rebound_cell_refuses_on_external_identity(tmp_path):
+    """The exact P2 reproduction with ALL internal digests repaired
+    — must refuse on the externally pinned identity before any
+    model construction."""
+    rec = a.verify_gpu_preflight_authorization()
+    fake = tmp_path / "mat"
+    (fake / "genesis").mkdir(parents=True)
+    cells = json.loads((MAT_V2 / "B4_CELL_CONFIGS.json").read_text())
+    cfg = cells["o2024_seed101"]["effective_config"]
+    cfg["learning_rate"] = 0.123
+    new_digest = hashlib.sha256(json.dumps(
+        cfg, sort_keys=True, default=str).encode()).hexdigest()
+    cells["o2024_seed101"]["config_sha256"] = new_digest
+    (fake / "B4_CELL_CONFIGS.json").write_text(json.dumps(cells))
+    import shutil
+    shutil.copy(MAT_V2 / "B4_MATERIALIZATION.json",
+                fake / "B4_MATERIALIZATION.json")
+    binding = json.loads(
+        (MAT_V2 / "genesis" / "GENESIS_BINDING.json").read_text())
+    binding["binding"]["o2024_seed101"] = new_digest
+    (fake / "genesis" / "GENESIS_BINDING.json").write_text(
+        json.dumps(binding))
+    with pytest.raises(SystemExit,
+                       match="owner-approved identity"):
+        a.verify_approved_materialization(fake, rec)
+    with pytest.raises(SystemExit,
+                       match="owner-approved identity"):
+        runner.main(["--cell-id", "o2024_seed101",
+                     "--materialization-root", str(fake),
+                     "--output-root", str(tmp_path / "out"),
+                     "--device", "cpu"])
+
+
+def test_p3_real_v6_digests_rederive():
+    design = json.loads(a.DESIGN_PATH.read_text())
+    binding = json.loads(
+        (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+         "cost_manifest_eth_h4_v2_screen_b_20260826.json"
+         ).read_text())["alpaca_ethusd"]["env_binding"]
+    facts = a.verify_comparator_population(V6_DIR, design, binding)
+    assert len(facts["complete_envelope_digest_by_origin"]) == 3
+
+
+def test_p3_forged_complete_envelope_digest_refuses(
+        tmp_path, monkeypatch):
+    """The exact P3 counterexample: 64 zeroes in one result."""
+    import shutil
+    copy = tmp_path / "v6"
+    copy.mkdir()
+    for f in ("RUN_MANIFEST.json", "trial_ledger.jsonl",
+              "ENVELOPE_CALIBRATION_o2022.json",
+              "ENVELOPE_CALIBRATION_o2023.json",
+              "ENVELOPE_CALIBRATION_o2024.json"):
+        shutil.copy(V6_DIR / f, copy / f)
+    packet = json.loads((V6_DIR / "SCREEN_B_RESULTS.json").read_text())
+    packet["results"][0]["complete_envelope_digest"] = "0" * 64
+    (copy / "SCREEN_B_RESULTS.json").write_text(json.dumps(packet))
+    design = json.loads(a.DESIGN_PATH.read_text())
+    binding = json.loads(
+        (REPO / "examples/config/phase_3_eth_sac_dynamics/"
+         "cost_manifest_eth_h4_v2_screen_b_20260826.json"
+         ).read_text())["alpaca_ethusd"]["env_binding"]
+    with pytest.raises(SystemExit, match="does not re-derive from "
+                       "the frozen geometry"):
+        a.verify_comparator_population(copy, design, binding)
+
+
+def test_p3_changed_cost_field_changes_derivation():
+    """Commission, slippage or a geometry field changes the derived
+    digest — the factual field, not a label, decides."""
+    binding = {"commission": 0.00295115, "slippage_perc": 0.0001}
+    base = a.complete_envelope_digest(
+        a.complete_execution_envelope(GEOM, binding), binding)
+    for poison in ({"commission": 0.001},
+                   {"slippage_perc": 0.002}):
+        b2 = dict(binding, **poison)
+        d2 = a.complete_envelope_digest(
+            a.complete_execution_envelope(GEOM, b2), b2)
+        assert d2 != base
+    g2 = dict(GEOM, atr_sl_mult=9.9)
+    assert a.complete_envelope_digest(
+        a.complete_execution_envelope(g2, binding),
+        binding) != base
+
+
+def test_p4_gpu_mode_derives_only_from_owner_record():
+    rec = a.verify_gpu_preflight_authorization()
+    cfg = _cell()
+    cfg["execution_modes"]["gpu_economic"][
+        "budget_max_env_steps"] = 999_999_999
+    mode = runner.gpu_mode_from_record(rec, cfg)
+    assert mode["budget_max_env_steps"] == 20000
+    assert mode["budget_max_updates"] == 20000
+    assert mode["budget_max_wall_seconds"] == 7200.0
+    assert mode["rss_cap_bytes"] == 8 * 1024 ** 3
+    assert mode["cuda_cap_bytes"] == 6 * 1024 ** 3
+    assert mode["thermal_cap_celsius"] == 87
+    assert mode["learn_segments"] == [20000]
+    assert mode["train_year"] == 2023
+
+
+def test_p4_owner_train_year_mismatch_refuses():
+    rec = json.loads(a.OWNER_GPU_AUTH_PATH.read_text())
+    rec["execution_contract"]["training_year"] = 2024
+    cfg = _cell()
+    with pytest.raises(SystemExit, match="training year"):
+        runner.gpu_mode_from_record(rec, cfg)
+
+
+def test_p4_ambiguous_or_missing_gpu_telemetry_refuses(monkeypatch):
+    monkeypatch.setattr(runner, "_nvidia_query",
+                        lambda q, d=None: [])
+    with pytest.raises(SystemExit, match="missing or ambiguous"):
+        runner.gpu_inventory("0")
+    monkeypatch.setattr(runner, "_nvidia_query",
+                        lambda q, d=None: ["a,b,1,2,3", "c,d,4,5,6"])
+    with pytest.raises(SystemExit, match="missing or ambiguous"):
+        runner.gpu_inventory("0")
+
+
+def _guard(peak, **kw):
+    import types
+    cb = runner.make_guard_callback(peak, **kw)
+    cb.model = types.SimpleNamespace(_n_updates=0)
+    cb.num_timesteps = runner.TEMP_SAMPLE_EVERY_STEPS
+    return cb
+
+
+def test_p4_guard_stops_on_rss_thermal_and_lost_telemetry(
+        monkeypatch):
+    peak = {"peak_rss_bytes": 0, "stop": None}
+    cb = _guard(peak, rss_cap=1, thermal_cap=87.0)
+    assert cb._on_step() is False and "RSS cap" in peak["stop"]
+    monkeypatch.setattr(runner, "_gpu_temp", lambda d: 99.0)
+    peak = {"peak_rss_bytes": 0, "stop": None}
+    cb = _guard(peak, rss_cap=2 ** 40, thermal_cap=87.0,
+                gpu_device="0")
+    assert cb._on_step() is False
+    assert "thermal cap 87.0C exceeded at 99.0C" in peak["stop"]
+    monkeypatch.setattr(runner, "_gpu_temp", lambda d: None)
+    peak = {"peak_rss_bytes": 0, "stop": None}
+    cb = _guard(peak, rss_cap=2 ** 40, thermal_cap=87.0,
+                gpu_device="0")
+    assert cb._on_step() is False
+    assert "telemetry lost" in peak["stop"]
+
+
+def test_p4_heartbeat_emits_facts():
+    peak = {"peak_rss_bytes": 0, "stop": None}
+    beats = []
+    cb = _guard(peak, rss_cap=2 ** 40, thermal_cap=200.0,
+                heartbeat_seconds=0, heartbeats=beats)
+    assert cb._on_step() is True
+    assert beats and beats[0]["env_steps"] == \
+        runner.TEMP_SAMPLE_EVERY_STEPS
+
+
+@_mat_present
+def test_p4_second_attempt_refuses(tmp_path, monkeypatch):
+    ledger = tmp_path / "attempt.json"
+    ledger.write_text("{}")
+    monkeypatch.setattr(a, "GPU_ATTEMPT_LEDGER", ledger)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    monkeypatch.setattr(
+        runner, "gpu_inventory",
+        lambda d: {"uuid": "GPU-x", "name": "x",
+                   "temperature_celsius": 40.0,
+                   "memory_used_mib": 100.0,
+                   "memory_total_mib": 8188.0})
+    monkeypatch.setattr(runner, "gpu_compute_apps", lambda d: [])
+    import torch
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+    with pytest.raises(SystemExit, match="already consumed"):
+        runner.main(["--cell-id", "o2024_seed101",
+                     "--materialization-root", str(MAT_V2),
+                     "--output-root", str(tmp_path / "out"),
+                     "--device", "cuda:0"])
+
+
+@_mat_present
+def test_p4_hot_device_resource_blocks_without_consuming(
+        tmp_path, monkeypatch):
+    ledger = tmp_path / "attempt.json"
+    monkeypatch.setattr(a, "GPU_ATTEMPT_LEDGER", ledger)
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    monkeypatch.setattr(
+        runner, "gpu_inventory",
+        lambda d: {"uuid": "GPU-x", "name": "x",
+                   "temperature_celsius": 90.0,
+                   "memory_used_mib": 100.0,
+                   "memory_total_mib": 8188.0})
+    monkeypatch.setattr(runner, "gpu_compute_apps", lambda d: [])
+    out = tmp_path / "out"
+    rc = runner.main(["--cell-id", "o2024_seed101",
+                      "--materialization-root", str(MAT_V2),
+                      "--output-root", str(out),
+                      "--device", "cuda:0"])
+    assert rc == 0 and not ledger.exists()
+    term = json.loads(
+        (out / "B4_GPU_PREFLIGHT_TERMINAL.json").read_text())
+    assert term["status"] == "B4_GPU_PREFLIGHT_RESOURCE_BLOCKED"
+    assert term["attempt_consumed"] is False
+
+
+@_mat_present
+def test_p4_busy_device_resource_blocks(tmp_path, monkeypatch):
+    monkeypatch.setattr(a, "GPU_ATTEMPT_LEDGER",
+                        tmp_path / "attempt.json")
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0")
+    monkeypatch.setattr(
+        runner, "gpu_inventory",
+        lambda d: {"uuid": "GPU-x", "name": "x",
+                   "temperature_celsius": 40.0,
+                   "memory_used_mib": 100.0,
+                   "memory_total_mib": 8188.0})
+    monkeypatch.setattr(
+        runner, "gpu_compute_apps",
+        lambda d: [{"pid": 1234, "used_memory_mib": 4000.0}])
+    out = tmp_path / "out"
+    rc = runner.main(["--cell-id", "o2024_seed101",
+                      "--materialization-root", str(MAT_V2),
+                      "--output-root", str(out),
+                      "--device", "cuda:0"])
+    assert rc == 0
+    term = json.loads(
+        (out / "B4_GPU_PREFLIGHT_TERMINAL.json").read_text())
+    assert term["status"] == "B4_GPU_PREFLIGHT_RESOURCE_BLOCKED"
+    assert "substantial CUDA compute workload" in term["reason"]
+
+
+@_mat_present
+def test_p4_multi_device_binding_refuses(monkeypatch, tmp_path):
+    monkeypatch.setenv("CUDA_VISIBLE_DEVICES", "0,1")
+    with pytest.raises(SystemExit, match="exactly one explicit"):
+        runner.main(["--cell-id", "o2024_seed101",
+                     "--materialization-root", str(MAT_V2),
+                     "--output-root", str(tmp_path / "out"),
+                     "--device", "cuda:0"])

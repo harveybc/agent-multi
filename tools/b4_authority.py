@@ -39,6 +39,150 @@ AMENDMENT_SHAS = (
 AMENDMENT_4_PATH = (EVIDENCE /
                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_4_2026_09_05"
                     ".json")
+AMENDMENT_5_PATH = (EVIDENCE /
+                    "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_5_2026_09_05"
+                    ".json")
+
+# --- B4-P1 (order @9fb017e3): the exact owner GPU authorization ---
+# Fixed reviewed identities: neither the path nor the digest can come
+# from CLI, environment, materialization root or output root.
+OWNER_GPU_AUTH_PATH = (
+    EVIDENCE /
+    "OWNER_AUTHORIZATION_B4_SINGLE_GPU_PREFLIGHT_2026_09_05.json")
+OWNER_GPU_AUTH_SHA = ("7426a0bfc9cdb6c609730755512c0936f58fdc45d"
+                      "40cd17c0bb5a83ce00cdf82")
+GPU_ATTEMPT_LEDGER = (Path.home() / ".local/share/agent-multi/"
+                      "b4_gpu_preflight_attempt_ledger.json")
+
+_AUTH_SCHEMA = {
+    "schema": str, "recorded_at_date": str, "authority": str,
+    "recorded_by": str, "resolves": dict, "decision": str,
+    "approved_cell": dict, "approved_comparator": dict,
+    "approved_scientific_identity": dict, "preflight_limits": dict,
+    "execution_contract": dict, "preconditions": list,
+    "does_not_authorize": list}
+
+
+def verify_gpu_preflight_authorization() -> dict:
+    """Hash-before-parse consumption of the exact owner record, then
+    exact schema, exact primitive types and exact agreement with the
+    carried scientific identities. Any deviation refuses BEFORE CUDA
+    initialization, model construction or output creation."""
+    if not OWNER_GPU_AUTH_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: owner GPU authorization absent — no GPU path "
+            "exists without the exact owner record")
+    raw = OWNER_GPU_AUTH_PATH.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != OWNER_GPU_AUTH_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: owner GPU authorization bytes differ from the "
+            "carried reviewed digest — an edited, self-rehashed or "
+            "substituted record grants nothing")
+    rec = json.loads(raw)
+    for k, t in _AUTH_SCHEMA.items():
+        if k not in rec or type(rec[k]) is not t:
+            raise B4AuthorityRefusal(
+                f"REFUSED: owner record field {k!r} missing or "
+                "mistyped")
+    if set(rec) != set(_AUTH_SCHEMA):
+        raise B4AuthorityRefusal(
+            "REFUSED: owner record carries unknown top-level fields")
+    if rec["decision"] != "APPROVE_ONE_B4_BOUNDED_GPU_PREFLIGHT_ONLY":
+        raise B4AuthorityRefusal(
+            "REFUSED: the recorded decision is not the single "
+            "bounded GPU preflight approval")
+    ident = rec["approved_scientific_identity"]
+    if ident["superseding_design_sha256"] != DESIGN_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: owner record names a different sealed design")
+    if ident["gymfx_commit"] != GYMFX_PINNED_COMMIT:
+        raise B4AuthorityRefusal(
+            "REFUSED: owner record names a different gym-fx lineage")
+    if ident["cost_authority"] !=             "MUSASHI_REVIEWED_FIXED_EXPERIMENTAL_COST_MODEL":
+        raise B4AuthorityRefusal(
+            "REFUSED: owner record names a different cost authority")
+    if type(ident["complete_entry_cost_headroom"]) is not float or             ident["complete_entry_cost_headroom"] != 0.012102:
+        raise B4AuthorityRefusal(
+            "REFUSED: owner record headroom differs from the one "
+            "reviewed rule")
+    lim = rec["preflight_limits"]
+    for k, t in (("attempts", int), ("environment_steps_max", int),
+                 ("optimizer_updates_max", int),
+                 ("wall_seconds_max", int),
+                 ("host_rss_bytes_max", int),
+                 ("cuda_allocated_bytes_max", int),
+                 ("gpu_temperature_celsius_max", int),
+                 ("stop_file_required", bool),
+                 ("heartbeat_seconds_max", int)):
+        if type(lim.get(k)) is not t:
+            raise B4AuthorityRefusal(
+                f"REFUSED: preflight limit {k!r} missing or mistyped")
+    if lim["attempts"] != 1:
+        raise B4AuthorityRefusal(
+            "REFUSED: the owner approved exactly ONE attempt")
+    if list(lim["learning_segments"]) != [
+            lim["environment_steps_max"]]:
+        raise B4AuthorityRefusal(
+            "REFUSED: learning segments differ from the single "
+            "bounded segment the owner approved")
+    return rec
+
+
+def verify_approved_materialization(mat_root: Path,
+                                    rec: dict) -> None:
+    """B4-P2: hash and compare the exact files the owner record
+    names BEFORE parsing any cell — a self-consistent replacement
+    tree (repaired internal digests included) grants nothing."""
+    mat_root = Path(mat_root)
+    cell = rec["approved_cell"]
+    pins = (
+        ("B4_CELL_CONFIGS.json", cell["cell_population_sha256"]),
+        ("B4_MATERIALIZATION.json", cell["materialization_sha256"]),
+        ("genesis/GENESIS_BINDING.json",
+         cell["genesis_binding_sha256"]),
+    )
+    for rel, want in pins:
+        f = mat_root / rel
+        if not f.is_file():
+            raise B4AuthorityRefusal(
+                f"REFUSED: approved artifact {rel} absent from the "
+                "materialization root")
+        got = _sha_file(f)
+        if got != want:
+            raise B4AuthorityRefusal(
+                f"REFUSED: {rel} digest {got[:12]} differs from the "
+                f"owner-approved identity {want[:12]} — the "
+                "externally pinned population is not this tree")
+    cells = json.loads((mat_root / "B4_CELL_CONFIGS.json").read_bytes())
+    entry = cells.get(cell["cell_id"])
+    if not entry:
+        raise B4AuthorityRefusal(
+            "REFUSED: approved cell absent from the population")
+    canonical = hashlib.sha256(json.dumps(
+        entry["effective_config"], sort_keys=True,
+        default=str).encode()).hexdigest()
+    if canonical != cell["cell_config_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: the selected cell's canonical config differs "
+            "from the owner-approved cell identity")
+
+
+def verify_approved_comparator(baselines_dir: Path,
+                               rec: dict) -> None:
+    """B4-P1: the comparator the owner approved, by exact digests."""
+    d = Path(baselines_dir)
+    comp = rec["approved_comparator"]
+    for rel, want in (("RUN_MANIFEST.json",
+                       comp["run_manifest_sha256"]),
+                      ("SCREEN_B_RESULTS.json",
+                       comp["results_sha256"]),
+                      ("trial_ledger.jsonl",
+                       comp["trial_ledger_sha256"])):
+        got = _sha_file(d / rel)
+        if got != want:
+            raise B4AuthorityRefusal(
+                f"REFUSED: comparator {rel} digest differs from the "
+                "owner-approved population")
 
 # --- Cost-authority language (E6) ---------------------------------
 COST_AUTHORITY = (
@@ -312,13 +456,7 @@ def verify_amendment_chain() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: amendment 4 names a different or reordered "
             "prior chain")
-    pins = a4.get("final_code_pins", {})
-    for rel, want in pins.items():
-        live = _sha_file(REPO / rel)
-        if live != want:
-            raise B4AuthorityRefusal(
-                f"REFUSED: executing code {rel} digest {live[:12]} "
-                f"differs from the final amendment pin {want[:12]}")
+    pins = dict(a4.get("final_code_pins", {}))
     required_pins = {"tools/b4_authority.py",
                      "tools/screen_b_baselines.py",
                      "tools/materialize_b4_causal_sac.py",
@@ -327,9 +465,46 @@ def verify_amendment_chain() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: amendment 4 does not pin the full executing "
             "surface")
+    # B4-P1 (order @9fb017e3): amendment 5 is the execution-only
+    # append-only step — it names amendment 4 and the owner-record
+    # digest, changes no scientific parameter or data role, and its
+    # pins SUPERSEDE amendment 4's for the files it re-pins.
+    if not AMENDMENT_5_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 5 absent — the execution chain "
+            "through the owner GPU authorization does not exist")
+    a5 = json.loads(AMENDMENT_5_PATH.read_bytes())
+    if a5.get("amends_amendment_4_sha256") != _sha_file(
+            AMENDMENT_4_PATH):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 5 does not name amendment 4's exact "
+            "bytes")
+    if a5.get("owner_authorization_sha256") != OWNER_GPU_AUTH_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 5 does not name the owner-record "
+            "digest")
+    if a5.get("scientific_change") != "NONE":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 5 must declare zero scientific or "
+            "data-role change")
+    a5_pins = a5.get("final_code_pins", {})
+    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
+                "tests/test_b4_materializer_authority.py"):
+        if req not in a5_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 5 does not pin the final "
+                "authority module, runner and tests")
+    pins.update(a5_pins)
+    for rel, want in pins.items():
+        live = _sha_file(REPO / rel)
+        if live != want:
+            raise B4AuthorityRefusal(
+                f"REFUSED: executing code {rel} digest {live[:12]} "
+                f"differs from the final amendment pin {want[:12]}")
     return {"design_sha256": DESIGN_SHA,
             "amendment_shas": list(AMENDMENT_SHAS)
-            + [_sha_file(AMENDMENT_4_PATH)],
+            + [_sha_file(AMENDMENT_4_PATH),
+               _sha_file(AMENDMENT_5_PATH)],
             "final_code_pins": pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
 
@@ -343,7 +518,8 @@ EXPECTED_CAL_ARMS = 4
 
 
 def verify_comparator_population(baselines_dir: Path,
-                                 design: dict) -> dict:
+                                 design: dict,
+                                 cost_binding: dict = None) -> dict:
     """Consume the run manifest, ledger, 15 result records, frozen
     envelope artifacts and referenced digests; RE-DERIVE cardinality,
     coverage, terminal state and the selected envelope per origin.
@@ -480,6 +656,19 @@ def verify_comparator_population(baselines_dir: Path,
             raise B4AuthorityRefusal(
                 f"REFUSED: result {key} lacks the complete-envelope "
                 "digest (B4-E1)")
+        if cost_binding is not None:
+            # B4-P3 (order @9fb017e3): the digest is RE-DERIVED from
+            # the origin's frozen geometry and the fixed cost bytes —
+            # a supplied value is never trusted.
+            derived = complete_envelope_digest(
+                complete_execution_envelope(
+                    frozen[year]["frozen_geometry"], cost_binding),
+                cost_binding)
+            if r["complete_envelope_digest"] != derived:
+                raise B4AuthorityRefusal(
+                    f"REFUSED: result {key} complete-envelope digest "
+                    "does not re-derive from the frozen geometry and "
+                    "fixed cost bytes (B4-P3)")
         verify_language(
             {"cost_authority": r.get("cost_authority", "")},
             f"comparator result {key}")
@@ -493,9 +682,18 @@ def verify_comparator_population(baselines_dir: Path,
     if packet.get("sealed_2025_used") is not False:
         raise B4AuthorityRefusal(
             "REFUSED: packet does not prove sealed-2025 absence")
+    derived_by_origin = {}
+    if cost_binding is not None:
+        derived_by_origin = {
+            year: complete_envelope_digest(
+                complete_execution_envelope(
+                    frozen[year]["frozen_geometry"], cost_binding),
+                cost_binding)
+            for year in EXPECTED_ORIGINS}
     return {"lineage": lineage, "frozen_by_origin": frozen,
             "population_label": packet.get("population_label"),
-            "n_results": len(results), "n_ledger": len(rows)}
+            "n_results": len(results), "n_ledger": len(rows),
+            "complete_envelope_digest_by_origin": derived_by_origin}
 
 
 def verify_full_authority_chain(baselines_dir: Path) -> dict:
@@ -528,6 +726,9 @@ def verify_full_authority_chain(baselines_dir: Path) -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: source dataset bytes differ from the sealed "
             "design")
-    comparator = verify_comparator_population(baselines_dir, design)
+    cost_binding = json.loads(cost_p.read_bytes())[
+        "alpaca_ethusd"]["env_binding"]
+    comparator = verify_comparator_population(baselines_dir, design,
+                                              cost_binding)
     return {"chain": chain, "comparator": comparator,
-            "design": design}
+            "design": design, "cost_binding": cost_binding}
