@@ -1,0 +1,31 @@
+{
+ "schema": "agent_multi.b4_cell_terminal.v1",
+ "cell": "o2024_seed101",
+ "terminal": "COMPLETED",
+ "g1_eligible": false,
+ "checkpoint_promotable": false,
+ "attempt_id": "attempt_1f9c657e16f84115",
+ "cell_config_sha256": "6e28a30e46f4a0d296b06f8d5aa7b0616da72221a18640dbd60003510c505690",
+ "artifact_class": "INTEGRATED_PROOF_FROZEN_GENESIS_V4",
+ "checkpoint_sha256": "cc7d10fff6cef84040203052c3fc1b8c30f6dc501a4f2156c04b60925a6d0a5b",
+ "checkpoint_path": "<state_root>/b4_integrated_v4_20260906/o2024_seed101/stamped_genesis_o2024_seed101.zip",
+ "per_bar_csv": "<state_root>/b4_integrated_v4_20260906/o2024_seed101/per_bar_o2024_seed101.csv",
+ "per_bar_sha256": "37c039512f07c1dd7024218cc494961360ef4cb918c2779d8e00099138c2194b",
+ "scored_index_sha256": "98a70fa454de7a8b68d9685152697fbb45500da36234b9999a0bcd0b86b86dac",
+ "scored_bars": 2196,
+ "counter_semantics": {
+  "commission_paid": "CUMULATIVE from env info; converted to per-bar deltas; monotonicity verified",
+  "net_equity_delta_observed": "delta of consecutive economic_equity OBSERVATIONS (independent of the env pnl fact)",
+  "env_pnl_fact": "the env's own per-bar pnl \u2014 the second, independent source; conservation verified between the two",
+  "gross_equity": "UNAVAILABLE \u2014 the sealed gym-fx lineage exposes no gross-equity counter; the economic claim is NARROWED accordingly; pre_commission_equity_delta_derived is a labeled derivation, never a gross fact",
+  "slippage": "embedded in fill price per the cost binding; not separately countable under the sealed gym-fx lineage (declared, not silent)"
+ },
+ "sealed_2025_used": false,
+ "wall_seconds": 3.0,
+ "effective_limits": {
+  "budget_max_env_steps": 40020000,
+  "budget_max_updates": 40020000,
+  "budget_max_wall_seconds": 43200.0,
+  "budget_max_rss_bytes": 8589934592
+ }
+}

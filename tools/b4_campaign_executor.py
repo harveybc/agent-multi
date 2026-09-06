@@ -403,18 +403,30 @@ def write_terminal(out_root: Path, cell_id: str, terminal: str,
                 "REFUSED: COMPLETED without sealed-absence proof")
     b4a.verify_language(rec, "cell terminal record")
     p = _terminal_path(out_root, cell_id)
-    p.parent.mkdir(parents=True, exist_ok=True)
+    if not p.parent.exists():
+        os.makedirs(str(p.parent), mode=0o700, exist_ok=True)
     if p.parent.is_symlink() or p.is_symlink():
         raise ExecutorRefusal("REFUSED: terminal path is a symlink")
     payload = json.dumps(rec, indent=1).encode()
     try:
+        # C24: terminals are private-mode control records (0600),
+        # immutable by O_EXCL, validated descriptor-first by every
+        # consumer.
         fd = os.open(str(p),
-                     os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o444)
+                     os.O_CREAT | os.O_EXCL | os.O_WRONLY
+                     | os.O_NOFOLLOW, 0o600)
     except FileExistsError:
         raise ExecutorRefusal(
             f"REFUSED: terminal state already written for {cell_id} "
             "— terminal records are immutable")
     try:
+        st = os.fstat(fd)
+        import stat as _stat
+        if not _stat.S_ISREG(st.st_mode):
+            raise ExecutorRefusal(
+                "REFUSED: terminal descriptor is not a regular "
+                "file")
+        os.fchmod(fd, 0o600)
         os.write(fd, payload)
         os.fsync(fd)
     finally:
@@ -669,6 +681,10 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
         verify_scoring_evidence(score, origin, comparator_dir,
                                 cell_id)
         terminal = "COMPLETED"
+        # C25: our own scored artifact is normalized to a safe mode
+        # (no group/world write) BEFORE the terminal names it — the
+        # final verifier refuses permissive artifacts.
+        os.chmod(score_target, 0o644)
         detail = {
             "attempt_id": attempt_id,
             "cell_config_sha256": built["cell"]["config_sha256"],

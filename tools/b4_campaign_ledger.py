@@ -13,6 +13,7 @@ a score-bearing field in the scheduler input refuses."""
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -173,7 +174,7 @@ TERMINAL_SCHEMA_KEYS = {
 CLAIM_SCHEMA_KEYS = {
     "schema", "campaign_generation", "attempt_id", "cell",
     "claimed_wall", "claimed_monotonic", "holder_pid",
-    "terminal_sha256"}
+    "terminal_sha256", "claim_sha256"}
 PER_BAR_SCHEMA = {
     "origin": "int", "seed": "int", "datetime_utc": "str",
     "scored_index": "int", "source_row_sha256": "str",
@@ -257,10 +258,8 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             raise LedgerRefusal(
                 f"REFUSED: {cid} has {len(claims)} claims — exactly "
                 "one per generation")
-        claim = b4a._strict_json_bytes(claims[0].read_bytes(),
-                                       f"claim {cid}")
-        term = b4a._strict_json_bytes(term_p.read_bytes(),
-                                      f"terminal {cid}")
+        claim = orch._secure_json(claims[0], f"claim {cid}")
+        term = orch._secure_json(term_p, f"terminal {cid}")
         if term.get("schema") != "agent_multi.b4_cell_terminal.v1":
             raise LedgerRefusal(f"REFUSED: {cid} foreign terminal "
                                 "schema")
@@ -314,17 +313,23 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
                 raise LedgerRefusal(
                     f"REFUSED: {cid} terminal lacks {req!r}")
         pb = Path(term["per_bar_csv"])
-        if not pb.is_file() or _sha_file(pb) != \
-                term["per_bar_sha256"]:
+        try:
+            pb_bytes = orch._secure_read(pb, expected_mode=None)
+        except SystemExit:
             raise LedgerRefusal(
                 f"REFUSED: {cid} per-bar evidence missing or "
-                "digest-broken")
+                "unreadable")
+        if hashlib.sha256(pb_bytes).hexdigest() != \
+                term["per_bar_sha256"]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} per-bar evidence digest-broken")
         if term["per_bar_sha256"] in seen_artifacts:
             raise LedgerRefusal(
                 f"REFUSED: {cid} reuses the per-bar artifact of "
                 f"{seen_artifacts[term['per_bar_sha256']]}")
         seen_artifacts[term["per_bar_sha256"]] = cid
-        df = pd.read_csv(pb)
+        import io as _io
+        df = pd.read_csv(_io.BytesIO(pb_bytes))
         missing_cols = [c for c in required_cols
                         if c not in df.columns]
         if missing_cols:
@@ -404,17 +409,51 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             raise LedgerRefusal(
                 f"REFUSED: {cid} net_return does not recompute "
                 "from the economic equity path")
-        # C21: checkpoint bytes verified when the artifact exists
+        # C25: the checkpoint MUST exist and verify from one
+        # descriptor — a terminal cannot prove an artifact by
+        # naming bytes that are no longer present.
         ck = term.get("checkpoint_path")
         if not isinstance(ck, str) or not ck:
             raise LedgerRefusal(
                 f"REFUSED: {cid} terminal lacks checkpoint_path")
-        ckp = Path(ck)
-        if ckp.is_file():
-            if _sha_file(ckp) != term["checkpoint_sha256"]:
+        try:
+            ckfd = os.open(ck, os.O_RDONLY | os.O_NOFOLLOW)
+        except FileNotFoundError:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} checkpoint artifact is ABSENT — "
+                "a declared digest of missing bytes is not "
+                "evidence")
+        except OSError as exc:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} checkpoint unopenable ({exc}) — "
+                "symlinks and races fail closed")
+        try:
+            ckst = os.fstat(ckfd)
+            import stat as _stat
+            if not _stat.S_ISREG(ckst.st_mode):
                 raise LedgerRefusal(
-                    f"REFUSED: {cid} checkpoint bytes differ from "
-                    "the declared digest")
+                    f"REFUSED: {cid} checkpoint is not a regular "
+                    "file")
+            if ckst.st_uid != os.getuid():
+                raise LedgerRefusal(
+                    f"REFUSED: {cid} checkpoint has a foreign "
+                    "owner")
+            if _stat.S_IMODE(ckst.st_mode) & 0o022:
+                raise LedgerRefusal(
+                    f"REFUSED: {cid} checkpoint is group/world "
+                    "writable — unsafe artifact mode")
+            h = hashlib.sha256()
+            while True:
+                chunk = os.read(ckfd, 1 << 20)
+                if not chunk:
+                    break
+                h.update(chunk)
+        finally:
+            os.close(ckfd)
+        if h.hexdigest() != term["checkpoint_sha256"]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} checkpoint bytes differ from "
+                "the declared digest")
         if term["checkpoint_sha256"] in seen_checkpoints:
             raise LedgerRefusal(
                 f"REFUSED: {cid} reuses the checkpoint of "
@@ -451,7 +490,8 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
                 "absence")
         facts[cid] = {"terminal": term["terminal"],
                       "attempt_id": att,
-                      "per_bar_sha256": term["per_bar_sha256"]}
+                      "per_bar_sha256": term["per_bar_sha256"],
+                      "checkpoint_sha256_verified": h.hexdigest()}
     extra = [d.name for d in results_root.iterdir()
              if d.is_dir() and d.name.startswith("o")
              and d.name not in EXPECTED_CELLS]
@@ -470,7 +510,8 @@ def verify_single_cell_result(results_root: Path, cell_id: str,
     term_p = Path(results_root) / cell_id / "B4_CELL_TERMINAL.json"
     if not term_p.is_file():
         raise LedgerRefusal(f"REFUSED: {cell_id} has no terminal")
-    term = json.loads(term_p.read_bytes())
+    term = _load_orch()._secure_json(term_p,
+                                     f"terminal {cell_id}")
     if term.get("schema") != "agent_multi.b4_cell_terminal.v1":
         raise LedgerRefusal(f"REFUSED: {cell_id} foreign schema")
     if term.get("cell") != cell_id:

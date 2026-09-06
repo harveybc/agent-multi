@@ -1241,6 +1241,7 @@ def _ledger_fixture(tmp_path):
         ).hexdigest()
         ckp = d / f"checkpoint_{cid}.zip"
         ckp.write_bytes(f"fixture-checkpoint-{cid}".encode())
+        os.chmod(ckp, 0o644)
         term = {"schema": "agent_multi.b4_cell_terminal.v1",
                 "cell": cid, "terminal": "COMPLETED",
                 "g1_eligible": False,
@@ -1259,23 +1260,28 @@ def _ledger_fixture(tmp_path):
                 "wall_seconds": 1.0,
                 "effective_limits": {}}
         tp = d / "B4_CELL_TERMINAL.json"
-        tp.write_text(json.dumps(term))
+        _ctl_write(tp, json.dumps(term))
         _write_claim_and_seal(results, cid, f"attempt_{cid}")
     return led, results
 
 
 def _write_claim_and_seal(results, cid, att):
-    """Exact-schema claim + PHYSICAL intent/completion seal."""
+    """Exact-schema self-integral claim + PHYSICAL seal, all
+    private-mode under 0700 directories."""
     gen = a.CAMPAIGN_GENERATION
     d = results / cid
+    os.chmod(results, 0o700)
+    os.chmod(d, 0o700)
     tp = d / "B4_CELL_TERMINAL.json"
-    (d / f"CLAIM_{gen}.json").write_text(json.dumps(
+    os.chmod(tp, 0o600)
+    rec = _signed_claim(
         {"schema": "agent_multi.b4_attempt_claim.v2",
          "campaign_generation": gen,
          "attempt_id": att, "cell": cid,
          "claimed_wall": 0.0, "claimed_monotonic": 0.0,
          "holder_pid": os.getpid(),
-         "terminal_sha256": ledger_mod._sha_file(tp)}))
+         "terminal_sha256": None})
+    _ctl_write(d / f"CLAIM_{gen}.json", json.dumps(rec))
     for w in d.glob("SEAL_*.json"):
         w.unlink()
     orch.seal_attempt(results, cid, att)
@@ -1327,14 +1333,14 @@ def test_e12_mechanics_result_as_scientific_refuses(
     # smuggled extra field dies on the EXACT schema first
     term = dict(base)
     term["status"] = "B4_GPU_PREFLIGHT_MECHANICS_AND_THROUGHPUT_ONLY"
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, "o2024_seed101")
     with pytest.raises(SystemExit, match="exact schema"):
         _check_results(led, tmp_path, results, monkeypatch)
     # a preflight token inside the terminal class dies as mechanics
     term = dict(base)
     term["terminal"] = "COMPLETED_B4_GPU_PREFLIGHT_MECHANICS"
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, "o2024_seed101")
     with pytest.raises(SystemExit, match="mechanics/preflight"):
         _check_results(led, tmp_path, results, monkeypatch)
@@ -1346,7 +1352,7 @@ def test_e12_reused_attempt_refuses(tmp_path, monkeypatch):
         tp = results / cid / "B4_CELL_TERMINAL.json"
         term = json.loads(tp.read_text())
         term["attempt_id"] = "attempt_SAME"
-        tp.write_text(json.dumps(term))
+        _ctl_write(tp, json.dumps(term))
         _reseal(results, cid)
     with pytest.raises(SystemExit, match="attempt identity reused"):
         _check_results(led, tmp_path, results, monkeypatch)
@@ -1357,7 +1363,7 @@ def test_e12_foreign_cell_digest_refuses(tmp_path, monkeypatch):
     tp = results / "o2023_seed303" / "B4_CELL_TERMINAL.json"
     term = json.loads(tp.read_text())
     term["cell_config_sha256"] = "f" * 64
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, "o2023_seed303")
     with pytest.raises(SystemExit, match="foreign cell digest"):
         _check_results(led, tmp_path, results, monkeypatch)
@@ -1375,7 +1381,7 @@ def test_e12_sealed_read_refuses(tmp_path, monkeypatch):
     tp = results / "o2022_seed303" / "B4_CELL_TERMINAL.json"
     term = json.loads(tp.read_text())
     term["sealed_2025_used"] = True
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, "o2022_seed303")
     with pytest.raises(SystemExit, match="sealed-period"):
         _check_results(led, tmp_path, results, monkeypatch)
@@ -1589,14 +1595,19 @@ def test_c13_global_boundary_exact_below_above(tmp_path):
     for hours, expect_dispatch in ((95.0, True),
                                    (96.0, False),
                                    (96.1, False)):
-        tp.write_text(json.dumps({"terminal": "FAILED",
-                                  "wall_seconds": hours * 3600.0}))
-        (d / f"CLAIM_{gen}.json").write_text(json.dumps(
-            {"schema": "agent_multi.b4_attempt_claim.v2",
-             "campaign_generation": gen,
-             "attempt_id": "attempt_x", "cell": "o2022_seed101",
-             "claimed_wall": 0.0,
-             "terminal_sha256": None}))
+        os.chmod(d, 0o700)
+        _ctl_write(tp, json.dumps(
+            {"terminal": "FAILED",
+             "wall_seconds": hours * 3600.0}))
+        _ctl_write(d / f"CLAIM_{gen}.json", json.dumps(
+            _signed_claim(
+                {"schema": "agent_multi.b4_attempt_claim.v2",
+                 "campaign_generation": gen,
+                 "attempt_id": "attempt_x",
+                 "cell": "o2022_seed101",
+                 "claimed_wall": 0.0, "claimed_monotonic": 0.0,
+                 "holder_pid": os.getpid(),
+                 "terminal_sha256": None})))
         remaining = orch.remaining_global_seconds(tmp_path, limits)
         can = remaining >= orch.MIN_SEGMENT_SECONDS
         assert can is expect_dispatch, (hours, remaining)
@@ -1613,12 +1624,14 @@ def test_c13_malformed_duration_fails_closed(tmp_path):
     gen = a.CAMPAIGN_GENERATION
     d = tmp_path / "o2022_seed101"
     d.mkdir(parents=True)
-    (d / f"CLAIM_{gen}.json").write_text(json.dumps(
+    os.chmod(d, 0o700)
+    _ctl_write(d / f"CLAIM_{gen}.json", json.dumps(_signed_claim(
         {"schema": "agent_multi.b4_attempt_claim.v2",
          "campaign_generation": gen, "attempt_id": "x",
          "cell": "o2022_seed101", "claimed_wall": 0.0,
-         "terminal_sha256": None}))
-    (d / "B4_CELL_TERMINAL.json").write_text(json.dumps(
+         "claimed_monotonic": 0.0, "holder_pid": os.getpid(),
+         "terminal_sha256": None})))
+    _ctl_write(d / "B4_CELL_TERMINAL.json", json.dumps(
         {"terminal": "FAILED", "wall_seconds": "twelve"}))
     with pytest.raises(SystemExit, match="malformed terminal"):
         orch.gpu_seconds_spent(tmp_path)
@@ -1677,11 +1690,20 @@ def test_c12_lease_bypass_impossible(tmp_path, monkeypatch):
     fake.write_text(json.dumps(
         {"campaign_generation": a.CAMPAIGN_GENERATION,
          "cell": "o2024_seed101", "attempt_id": "attempt_forged"}))
+    # C24: a public-mode lease dies at the earliest layer
+    with pytest.raises(SystemExit, match="not the private"):
+        orch.verify_lease(fake, tmp_path, "o2024_seed101", tmp_path)
+    fake.unlink()
+    _ctl_write(fake, json.dumps(
+        {"campaign_generation": a.CAMPAIGN_GENERATION,
+         "cell": "o2024_seed101", "attempt_id": "attempt_forged"}))
     with pytest.raises(SystemExit, match="exact schema"):
         orch.verify_lease(fake, tmp_path, "o2024_seed101", tmp_path)
     # a WELL-FORMED lease still refuses without its claim
     (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
-    (tmp_path / "o2024_seed101").mkdir(exist_ok=True)
+    (tmp_path / "o2024_seed101").mkdir(mode=0o700,
+                                       exist_ok=True)
+    os.chmod(tmp_path / "o2024_seed101", 0o700)
     good = orch.issue_lease(
         tmp_path, "o2024_seed101",
         {"attempt_id": "attempt_foreign"}, "e" * 64, tmp_path)
@@ -1902,7 +1924,7 @@ def test_c14_one_row_forgery_refuses(tmp_path, monkeypatch):
     tp = results / cid / "B4_CELL_TERMINAL.json"
     term = json.loads(tp.read_text())
     term["per_bar_sha256"] = ledger_mod._sha_file(pb)
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, cid)
     with pytest.raises(SystemExit,
                        match="required columns|scored rows"):
@@ -1945,11 +1967,38 @@ def _check_results_with_comp(led, tmp_path, results, comp,
 
 # ================= C17-C22 acceptance battery (§7) =================
 
+def _ctl_write(path, text):
+    """Test harness: (re)write a control object PRIVATE (0600)."""
+    p = Path(path)
+    if p.exists():
+        p.unlink()
+    fd = os.open(str(p), os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                 0o600)
+    try:
+        os.write(fd, text.encode()
+                 if isinstance(text, str) else text)
+    finally:
+        os.close(fd)
+
+
+def _signed_claim(rec):
+    body = {k: rec[k] for k in sorted(rec) if k != "claim_sha256"}
+    rec["claim_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    return rec
+
+
 def _live_lock(root, orch_mod=None):
     om = orch_mod or orch
-    (Path(root) / "CAMPAIGN_LOCK").write_text(json.dumps(
-        {"pid": os.getpid(), "generation": a.CAMPAIGN_GENERATION,
-         "acquire_id": "harness0000000000"}))
+    Path(root).mkdir(mode=0o700, exist_ok=True)
+    os.chmod(root, 0o700)
+    rec = {"schema": om.LOCK_SCHEMA_NAME,
+           "generation": a.CAMPAIGN_GENERATION,
+           "epoch": 1, "holder_pid": os.getpid(),
+           "acquire_id": "harness0000000000"}
+    rec["lock_sha256"] = om._self_sha(rec, "lock_sha256")
+    _ctl_write(Path(root) / "LOCK_EPOCH_1.json",
+               json.dumps(rec, indent=1))
 
 
 def _resign_lease(doc):
@@ -1978,7 +2027,7 @@ def test_c17_foreign_lease_variants_die(tmp_path):
     doc["schema"] = "attacker.anything.v9"
     doc["authorization_sha256"] = "b" * 64
     doc["holder_pid"] = 999999
-    lease_p.write_text(json.dumps(doc))
+    _ctl_write(lease_p, json.dumps(doc))
     with pytest.raises(SystemExit, match="foreign lease schema"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path)
@@ -1986,32 +2035,32 @@ def test_c17_foreign_lease_variants_die(tmp_path):
     doc = dict(base)
     doc["authorization_sha256"] = "b" * 64
     doc["holder_pid"] = 999999
-    lease_p.write_text(json.dumps(doc))
+    _ctl_write(lease_p, json.dumps(doc))
     with pytest.raises(SystemExit, match="altered"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path)
     # 2) re-signed foreign schema
     doc = _resign_lease({**base, "schema": "attacker.v9"})
-    lease_p.write_text(json.dumps(doc))
+    _ctl_write(lease_p, json.dumps(doc))
     with pytest.raises(SystemExit, match="foreign lease schema"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path)
     # 3) re-signed foreign authorization digest
     doc = _resign_lease({**base, "authorization_sha256": "b" * 64})
-    lease_p.write_text(json.dumps(doc))
+    _ctl_write(lease_p, json.dumps(doc))
     with pytest.raises(SystemExit,
                        match="authorization digest differs"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path, expected_auth_sha="a" * 64)
     # 4) re-signed foreign holder pid
     doc = _resign_lease({**base, "holder_pid": 999999})
-    lease_p.write_text(json.dumps(doc))
+    _ctl_write(lease_p, json.dumps(doc))
     with pytest.raises(SystemExit, match="holder identity"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path)
     # 5) restored honest lease but the lock vanished
-    lease_p.write_text(json.dumps(base))
-    (tmp_path / "CAMPAIGN_LOCK").unlink()
+    _ctl_write(lease_p, json.dumps(base))
+    (tmp_path / "LOCK_EPOCH_1.json").unlink()
     with pytest.raises(SystemExit, match="live campaign"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path)
@@ -2033,7 +2082,7 @@ def test_c18_seal_fsync_outcome_matrix(tmp_path, monkeypatch):
     stay UNCERTAIN, and uncertain never becomes success."""
     real = orch._excl_write
 
-    def failing(path, payload, mode=0o644, physical="persist"):
+    def failing(path, payload, mode=0o600, physical="persist"):
         if "SEAL_COMPLETE" in Path(path).name:
             if physical == "persist":
                 real(path, payload, mode)
@@ -2046,7 +2095,7 @@ def test_c18_seal_fsync_outcome_matrix(tmp_path, monkeypatch):
     rootA, cA = _seal_root(tmp_path, "A")
     monkeypatch.setattr(
         orch, "_excl_write",
-        lambda p, b, m=0o644: failing(p, b, m, "persist"))
+        lambda p, b, m=0o600: failing(p, b, m, "persist"))
     with pytest.raises(OSError, match="injected"):
         orch.seal_attempt(rootA, "o2022_seed101", cA["attempt_id"])
     monkeypatch.setattr(orch, "_excl_write", real)
@@ -2057,7 +2106,7 @@ def test_c18_seal_fsync_outcome_matrix(tmp_path, monkeypatch):
     rootB, cB = _seal_root(tmp_path, "B")
     monkeypatch.setattr(
         orch, "_excl_write",
-        lambda p, b, m=0o644: failing(p, b, m, "absent"))
+        lambda p, b, m=0o600: failing(p, b, m, "absent"))
     with pytest.raises(OSError, match="injected"):
         orch.seal_attempt(rootB, "o2022_seed101", cB["attempt_id"])
     monkeypatch.setattr(orch, "_excl_write", real)
@@ -2068,7 +2117,7 @@ def test_c18_seal_fsync_outcome_matrix(tmp_path, monkeypatch):
     rootC, cC = _seal_root(tmp_path, "C")
     monkeypatch.setattr(
         orch, "_excl_write",
-        lambda p, b, m=0o644: failing(p, b, m, "partial"))
+        lambda p, b, m=0o600: failing(p, b, m, "partial"))
     with pytest.raises(OSError, match="injected"):
         orch.seal_attempt(rootC, "o2022_seed101", cC["attempt_id"])
     monkeypatch.setattr(orch, "_excl_write", real)
@@ -2082,48 +2131,199 @@ def test_c18_seal_fsync_outcome_matrix(tmp_path, monkeypatch):
            f"SEAL_COMPLETE_{cD['attempt_id']}.json")
     intent = (rootD / "o2022_seed101" /
               f"SEAL_INTENT_{cD['attempt_id']}.json")
-    intent.write_text(src_c.read_text())
-    dst.write_text(src_c.read_text())
+    _ctl_write(intent, src_c.read_text())
+    _ctl_write(dst, src_c.read_text())
     assert orch.seal_state(rootD, "o2022_seed101") == "UNCERTAIN"
 
 
 def test_c19_lock_acquire_release_matrix(tmp_path):
-    """§7.3: at most one holder; release is owned and witnessed;
-    an uncertain/foreign release never silently succeeds; a crashed
-    holder is never auto-stolen."""
+    """§7.2/§7.3 (C23): monotone epochs — one holder; witnessed
+    in-place release; uncertain release blocks; released epoch
+    reclaimable exactly once per contender; nothing is ever
+    unlinked or auto-stolen."""
+    os.chmod(tmp_path, 0o700)
     lk = orch.GlobalLock(tmp_path)
     lk.__enter__()
+    assert lk.epoch == 1
     # second contender refuses while held
-    with pytest.raises(SystemExit, match="exactly one winner"):
+    with pytest.raises(SystemExit, match="HELD"):
         orch.GlobalLock(tmp_path).__enter__()
     # a NON-holder object cannot release
     thief = orch.GlobalLock(tmp_path)
     thief.held = True
+    thief.epoch = 1
     thief.acquire_id = "0" * 16
     with pytest.raises(SystemExit, match="non-holder"):
         thief.__exit__()
-    assert (tmp_path / "CAMPAIGN_LOCK").is_file()
-    # owned release leaves a durable witness and frees the slot
+    assert orch.current_lock_epoch(tmp_path)["state"] == "HELD"
+    # owned release transitions IN PLACE to RELEASED (no unlink)
     lk.__exit__()
-    assert not (tmp_path / "CAMPAIGN_LOCK").exists()
-    wit = list(tmp_path.glob("LOCK_RELEASE_*.json"))
-    assert len(wit) == 1
-    assert json.loads(wit[0].read_text())[
-        "acquire_id"] == lk.acquire_id
-    # slot reusable only AFTER the witnessed release
+    st = orch.current_lock_epoch(tmp_path)
+    assert st["state"] == "RELEASED" and st["epoch"] == 1
+    assert (tmp_path / "LOCK_EPOCH_1.json").exists()
+    assert (tmp_path / "LOCK_RELEASE_INTENT_1.json").exists()
+    assert (tmp_path / "LOCK_RELEASE_COMPLETE_1.json").exists()
+    # released epoch is reclaimable as epoch 2
     lk2 = orch.GlobalLock(tmp_path)
     lk2.__enter__()
-    # attacker unlinks the live lock: the holder's release fails
-    # closed instead of silently passing
-    (tmp_path / "CAMPAIGN_LOCK").unlink()
-    with pytest.raises(SystemExit):
-        lk2.__exit__()
-    # crashed-holder lock (dead pid) is never auto-stolen
-    (tmp_path / "CAMPAIGN_LOCK").write_text(json.dumps(
-        {"pid": 999999, "generation": a.CAMPAIGN_GENERATION,
-         "acquire_id": "dead000000000000"}))
-    with pytest.raises(SystemExit, match="exactly one winner"):
-        orch.GlobalLock(tmp_path).__enter__()
+    assert lk2.epoch == 2
+    # same-uid deletion of the CURRENT lock (the 0700 root
+    # excludes everyone else): the HOLDER can never silently
+    # succeed — its release adjudicates the epoch and fails closed
+    (tmp_path / "LOCK_EPOCH_2.json").unlink()
+    with pytest.raises(SystemExit, match="non-holder|uncertain"):
+        lk2.__exit__()          # holder fails closed, no silent ok
+    # crashed holder (held epoch, dead pid) is never auto-stolen
+    root2 = tmp_path / "crashed"
+    root2.mkdir(mode=0o700)
+    rec = {"schema": orch.LOCK_SCHEMA_NAME,
+           "generation": a.CAMPAIGN_GENERATION,
+           "epoch": 1, "holder_pid": 999999,
+           "acquire_id": "dead000000000000"}
+    rec["lock_sha256"] = orch._self_sha(rec, "lock_sha256")
+    _ctl_write(root2 / "LOCK_EPOCH_1.json", json.dumps(rec))
+    with pytest.raises(SystemExit, match="HELD"):
+        orch.GlobalLock(root2).__enter__()
+
+
+def test_c23_uncertain_release_blocks_two_real_processes(
+        tmp_path, monkeypatch):
+    """C23 acceptance: the exact PRE sequence — failed FINAL
+    durability during release — leaves the epoch RELEASING; a
+    second REAL process cannot enter; a fully durable release
+    remains reclaimable by a real process."""
+    import multiprocessing as mp2
+    os.chmod(tmp_path, 0o700)
+    lk = orch.GlobalLock(tmp_path)
+    lk.__enter__()
+    real = orch._excl_write
+
+    def completion_lost(path, payload, mode=0o600):
+        if "LOCK_RELEASE_COMPLETE" in Path(path).name:
+            raise OSError("injected completion write failure")
+        return real(path, payload, mode)
+
+    monkeypatch.setattr(orch, "_excl_write", completion_lost)
+    with pytest.raises(SystemExit, match="uncertain release"):
+        lk.__exit__()
+    monkeypatch.setattr(orch, "_excl_write", real)
+    assert orch.current_lock_epoch(tmp_path)["state"] == \
+        "RELEASING"
+    ctx = mp2.get_context("fork")
+    q = ctx.Queue()
+
+    def _enter(q2):
+        import importlib.util as ilu
+        spec = ilu.spec_from_file_location(
+            "b4orch_c23", Path(__file__).resolve().parents[1]
+            / "tools/b4_campaign_orchestrator.py")
+        om = ilu.module_from_spec(spec)
+        spec.loader.exec_module(om)
+        try:
+            om.GlobalLock(tmp_path).__enter__()
+            q2.put(("entered", None))
+        except SystemExit as exc:
+            q2.put(("refused", str(exc)))
+
+    pr = ctx.Process(target=_enter, args=(q,))
+    pr.start()
+    pr.join(30)
+    kind, msg = q.get(timeout=5)
+    assert kind == "refused" and "UNCERTAIN" in msg
+    # the OTHER physical outcome: completion bytes persisted even
+    # though the caller saw an error -> RELEASED and reclaimable
+    # by a fresh real process
+    root2 = tmp_path / "persisted"
+    root2.mkdir(mode=0o700)
+    lkB = orch.GlobalLock(root2)
+    lkB.__enter__()
+
+    def completion_persists_then_errors(path, payload,
+                                        mode=0o600):
+        real(path, payload, mode)
+        if "LOCK_RELEASE_COMPLETE" in Path(path).name:
+            raise OSError("injected post-persist failure")
+
+    monkeypatch.setattr(orch, "_excl_write",
+                        completion_persists_then_errors)
+    with pytest.raises(SystemExit, match="uncertain release"):
+        lkB.__exit__()
+    monkeypatch.setattr(orch, "_excl_write", real)
+    assert orch.current_lock_epoch(root2)["state"] == "RELEASED"
+    q2 = ctx.Queue()
+
+    def _enter2(qq):
+        import importlib.util as ilu
+        spec = ilu.spec_from_file_location(
+            "b4orch_c23b", Path(__file__).resolve().parents[1]
+            / "tools/b4_campaign_orchestrator.py")
+        om = ilu.module_from_spec(spec)
+        spec.loader.exec_module(om)
+        try:
+            got = om.GlobalLock(root2)
+            got.__enter__()
+            qq.put(("entered", got.epoch))
+        except SystemExit as exc:
+            qq.put(("refused", str(exc)))
+
+    pr2 = ctx.Process(target=_enter2, args=(q2,))
+    pr2.start()
+    pr2.join(30)
+    kind2, epoch2 = q2.get(timeout=5)
+    assert kind2 == "entered" and epoch2 == 2
+
+
+def test_c24_control_plane_private_and_descriptor_bound(tmp_path):
+    """C24 acceptance: modes, foreign objects, symlink swaps and
+    smuggled fields all refuse; nothing is silently chmodded."""
+    os.chmod(tmp_path, 0o700)
+    _live_lock(tmp_path)
+    claim = orch.claim_attempt(tmp_path, "o2024_seed101")
+    (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
+    lease_p = orch.issue_lease(tmp_path, "o2024_seed101", claim,
+                               "a" * 64, tmp_path)
+    import stat as _st
+    for path in (tmp_path / "LOCK_EPOCH_1.json",
+                 tmp_path / "o2024_seed101" /
+                 f"CLAIM_{a.CAMPAIGN_GENERATION}.json",
+                 lease_p):
+        assert _st.S_IMODE(os.stat(path).st_mode) == 0o600
+    assert _st.S_IMODE(os.stat(
+        tmp_path / "o2024_seed101").st_mode) == 0o700
+    # a permissive claim is REFUSED, never chmodded
+    cp = (tmp_path / "o2024_seed101" /
+          f"CLAIM_{a.CAMPAIGN_GENERATION}.json")
+    os.chmod(cp, 0o644)
+    with pytest.raises(SystemExit, match="not the private"):
+        orch.load_claim(tmp_path, "o2024_seed101")
+    assert _st.S_IMODE(os.stat(cp).st_mode) == 0o644  # untouched
+    os.chmod(cp, 0o600)
+    # symlink substitution refuses at open (O_NOFOLLOW)
+    donor = tmp_path / "donor.json"
+    donor.write_text(cp.read_text())
+    cp.unlink()
+    cp.symlink_to(donor)
+    with pytest.raises(SystemExit, match="unopenable|symlink"):
+        orch.load_claim(tmp_path, "o2024_seed101")
+    cp.unlink()
+    _ctl_write(cp, donor.read_text())
+    # smuggled extra field refuses (exact schema)
+    rec = json.loads(cp.read_text())
+    rec["attacker"] = True
+    _ctl_write(cp, json.dumps(rec))
+    with pytest.raises(SystemExit, match=r"exact\s+schema"):
+        orch.load_claim(tmp_path, "o2024_seed101")
+    # tampered self-digest refuses
+    rec.pop("attacker")
+    rec["claimed_wall"] = 999.0
+    _ctl_write(cp, json.dumps(rec))
+    with pytest.raises(SystemExit, match=r"does not\s+re-derive"):
+        orch.load_claim(tmp_path, "o2024_seed101")
+    # a permissive control DIRECTORY refuses
+    root2 = tmp_path / "lax"
+    root2.mkdir(mode=0o755)
+    with pytest.raises(SystemExit, match="not the private"):
+        orch.claim_attempt(root2, "o2022_seed101")
 
 
 def _contender(root, q):
@@ -2152,7 +2352,7 @@ def test_c18_two_process_contention_after_uncertainty(tmp_path,
     real = orch._excl_write
     monkeypatch.setattr(
         orch, "_excl_write",
-        lambda p, b, m=0o644: (_ for _ in ()).throw(
+        lambda p, b, m=0o600: (_ for _ in ()).throw(
             OSError("injected")) if "SEAL_COMPLETE" in Path(p).name
         else real(p, b, m))
     with pytest.raises(OSError):
@@ -2186,7 +2386,7 @@ def test_c20_minimal_terminal_cannot_complete(tmp_path,
         "cell_config_sha256", "per_bar_csv", "per_bar_sha256",
         "scored_index_sha256", "checkpoint_sha256",
         "sealed_2025_used")}
-    tp.write_text(json.dumps(minimal))
+    _ctl_write(tp, json.dumps(minimal))
     _reseal(results, cid)
     with pytest.raises(SystemExit, match="exact schema"):
         _check_results(led, tmp_path, results, monkeypatch)
@@ -2231,7 +2431,7 @@ def _mutate_perbar(results, cid, mutfn):
     tp = d / "B4_CELL_TERMINAL.json"
     term = json.loads(tp.read_text())
     term["per_bar_sha256"] = ledger_mod._sha_file(pb)
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, cid)
 
 
@@ -2310,7 +2510,7 @@ def test_c21_factual_mutations_each_fail(tmp_path, monkeypatch):
                         "B4_CELL_TERMINAL.json").read_text())
     term["checkpoint_sha256"] = donor["checkpoint_sha256"]
     term["checkpoint_path"] = donor["checkpoint_path"]
-    tp.write_text(json.dumps(term))
+    _ctl_write(tp, json.dumps(term))
     _reseal(results, other)
     with pytest.raises(SystemExit, match="reuses the checkpoint"):
         _check_results(led, tmp_path, results, monkeypatch)
@@ -2395,9 +2595,9 @@ def test_mut_c17_holder_binding_is_the_guard(tmp_path):
     lease through — proving test_c17 bites that exact guard."""
     m = _mutant_module(
         "tools/b4_campaign_orchestrator.py",
-        '''    if not (lease["holder_pid"] == lockrec.get("pid")
+        '''    if not (lease["holder_pid"] == lockrec["holder_pid"]
             == claim.get("holder_pid") == me):''',
-        '''    if False and not (lease["holder_pid"] == lockrec.get("pid")
+        '''    if False and not (lease["holder_pid"] == lockrec["holder_pid"]
             == claim.get("holder_pid") == me):''',
         "orch_mut_c17")
     (tmp_path / "B4_MATERIALIZATION.json").write_text("{}")
@@ -2407,7 +2607,7 @@ def test_mut_c17_holder_binding_is_the_guard(tmp_path):
                                "a" * 64, tmp_path)
     doc = _resign_lease({**json.loads(lease_p.read_text()),
                          "holder_pid": 999999})
-    lease_p.write_text(json.dumps(doc))
+    _ctl_write(lease_p, json.dumps(doc))
     with pytest.raises(SystemExit, match="holder identity"):
         orch.verify_lease(lease_p, tmp_path, "o2024_seed101",
                           tmp_path)
@@ -2432,7 +2632,7 @@ def test_mut_c18_completion_integrity_is_the_guard(tmp_path):
     cp = next((root / "o2022_seed101").glob("SEAL_COMPLETE_*"))
     doc = json.loads(cp.read_text())
     doc["completion_sha256"] = "0" * 64
-    cp.write_text(json.dumps(doc))
+    _ctl_write(cp, json.dumps(doc))
     assert orch.seal_state(root, "o2022_seed101") == "UNCERTAIN"
     assert m.seal_state(root, "o2022_seed101") == "SEALED"
 
@@ -2523,3 +2723,177 @@ def test_mut_c22_min_recompute_is_the_guard(tmp_path, monkeypatch):
         raise AssertionError("must not reach execution")
     except BaseException as exc:
         assert "hard bound" not in str(exc)
+
+
+def test_c25_checkpoint_adversaries(tmp_path, monkeypatch):
+    """§5.6 (C25): missing, symlinked, non-regular, permissive and
+    altered checkpoints each block the strongest verifier."""
+    cid = "o2022_seed202"
+
+    def fresh():
+        import shutil as _sh
+        for child in tmp_path.iterdir():
+            if child.is_dir():
+                _sh.rmtree(child)
+            else:
+                child.unlink()
+        return _ledger_fixture(tmp_path)
+
+    # (a) ABSENT — the exact PRE
+    led, results = fresh()
+    (results / cid / f"checkpoint_{cid}.zip").unlink()
+    with pytest.raises(SystemExit, match="ABSENT"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # (b) symlink substitution
+    led, results = fresh()
+    ck = results / cid / f"checkpoint_{cid}.zip"
+    donor = results / cid / "donor.zip"
+    donor.write_bytes(ck.read_bytes())
+    ck.unlink()
+    ck.symlink_to(donor)
+    with pytest.raises(SystemExit, match="unopenable"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # (c) directory in place of the artifact
+    led, results = fresh()
+    ck = results / cid / f"checkpoint_{cid}.zip"
+    ck.unlink()
+    ck.mkdir()
+    with pytest.raises(SystemExit,
+                       match="unopenable|not a regular"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # (d) group/world-writable artifact
+    led, results = fresh()
+    os.chmod(results / cid / f"checkpoint_{cid}.zip", 0o666)
+    with pytest.raises(SystemExit, match="writable"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    # (e) altered bytes (kept from C21, now descriptor-read)
+    led, results = fresh()
+    (results / cid / f"checkpoint_{cid}.zip").write_bytes(
+        b"tampered")
+    os.chmod(results / cid / f"checkpoint_{cid}.zip", 0o644)
+    with pytest.raises(SystemExit, match="checkpoint bytes"):
+        _check_results(led, tmp_path, results, monkeypatch)
+
+
+def test_mut_c25_mandatory_existence_is_the_guard(tmp_path,
+                                                  monkeypatch):
+    """Reverting to `if exists: verify` re-admits the removed
+    checkpoint — proving C25 bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_ledger.py",
+        '''        try:
+            ckfd = os.open(ck, os.O_RDONLY | os.O_NOFOLLOW)
+        except FileNotFoundError:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} checkpoint artifact is ABSENT — "
+                "a declared digest of missing bytes is not "
+                "evidence")''',
+        '''        try:
+            ckfd = os.open(ck, os.O_RDONLY | os.O_NOFOLLOW)
+        except FileNotFoundError:
+            facts[cid] = {"terminal": term["terminal"],
+                          "attempt_id": att,
+                          "per_bar_sha256": term["per_bar_sha256"],
+                          "checkpoint_sha256_verified": None}
+            continue''',
+        "ledger_mut_c25")
+    led, results = _ledger_fixture(tmp_path)
+    cid = "o2023_seed101"
+    (results / cid / f"checkpoint_{cid}.zip").unlink()
+    with pytest.raises(SystemExit, match="ABSENT"):
+        _check_results(led, tmp_path, results, monkeypatch)
+    monkeypatch.setattr(m, "verify_ledger", lambda lp, mr: led)
+    monkeypatch.setattr(
+        m, "_derive_comparator_dir",
+        lambda mr: tmp_path / "comp_default")
+    assert m.verify_campaign_results(
+        tmp_path / "ledger.json", tmp_path, results)["n"] == 12
+
+
+def test_mut_c23_releasing_guard_bites(tmp_path, monkeypatch):
+    """Treating RELEASING as RELEASED re-admits the second holder
+    after an uncertain release — proving C23 bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_orchestrator.py",
+        '''            if st["state"] == "RELEASING":
+                raise OrchestratorRefusal(
+                    f"REFUSED: lock epoch {cur} release is "
+                    "UNCERTAIN (intent without durable completion) "
+                    "— operator disposition, no second holder")''',
+        '''            if st["state"] == "RELEASING":
+                st = dict(st, state="RELEASED")''',
+        "orch_mut_c23")
+    os.chmod(tmp_path, 0o700)
+    lk = orch.GlobalLock(tmp_path)
+    lk.__enter__()
+    real = orch._excl_write
+    monkeypatch.setattr(
+        orch, "_excl_write",
+        lambda p, b, mm=0o600: (_ for _ in ()).throw(
+            OSError("injected"))
+        if "LOCK_RELEASE_COMPLETE" in Path(p).name
+        else real(p, b, mm))
+    with pytest.raises(SystemExit, match="uncertain release"):
+        lk.__exit__()
+    monkeypatch.setattr(orch, "_excl_write", real)
+    with pytest.raises(SystemExit, match="UNCERTAIN"):
+        orch.GlobalLock(tmp_path).__enter__()
+    # defense in depth: killing ONLY the scan-layer guard is not
+    # enough — the post-choice revalidation still refuses
+    with pytest.raises(SystemExit, match="no longer RELEASED"):
+        m.GlobalLock(tmp_path).__enter__()
+    # both layers removed -> the forged reclaim finally enters,
+    # proving each guard is live and necessary
+    m2 = _mutant_module(
+        "tools/b4_campaign_orchestrator.py",
+        '''            if st["state"] == "RELEASING":
+                raise OrchestratorRefusal(
+                    f"REFUSED: lock epoch {cur} release is "
+                    "UNCERTAIN (intent without durable completion) "
+                    "— operator disposition, no second holder")''',
+        '''            if st["state"] == "RELEASING":
+                st = dict(st, state="RELEASED")''',
+        "orch_mut_c23_full")
+    src2 = Path(m2.__file__).read_text()
+    old2 = '''            if prev["state"] != "RELEASED":'''
+    assert old2 in src2
+    Path(m2.__file__).write_text(src2.replace(
+        old2, '''            if False:'''))
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location("orch_mut_c23_full2",
+                                       m2.__file__)
+    m3 = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m3)
+    # the single-layer attempt above created epoch 2 and then
+    # self-released it in order on refusal; clear every epoch-2
+    # residue so the double mutant contends on the uncertain
+    # epoch 1 alone
+    for stale in list(tmp_path.glob("LOCK_EPOCH_2.json")) + \
+            list(tmp_path.glob("LOCK_RELEASE_INTENT_2.json")) + \
+            list(tmp_path.glob("LOCK_RELEASE_COMPLETE_2.json")):
+        stale.unlink()
+    got = m3.GlobalLock(tmp_path)
+    got.__enter__()                      # only the DOUBLE mutant
+    assert got.epoch == 2
+
+
+def test_mut_c24_mode_guard_bites(tmp_path):
+    """Removing the exact-mode check re-admits a public claim —
+    proving C24 bites."""
+    m = _mutant_module(
+        "tools/b4_campaign_orchestrator.py",
+        '''        if expected_mode is not None and \\
+                stat.S_IMODE(st.st_mode) != expected_mode:''',
+        '''        if False and expected_mode is not None and \\
+                stat.S_IMODE(st.st_mode) != expected_mode:''',
+        "orch_mut_c24")
+    os.chmod(tmp_path, 0o700)
+    _live_lock(tmp_path)
+    orch.claim_attempt(tmp_path, "o2024_seed101")
+    cp = (tmp_path / "o2024_seed101" /
+          f"CLAIM_{a.CAMPAIGN_GENERATION}.json")
+    os.chmod(cp, 0o644)
+    with pytest.raises(SystemExit, match="not the private"):
+        orch.load_claim(tmp_path, "o2024_seed101")
+    assert m.load_claim(
+        tmp_path, "o2024_seed101")["cell"] == "o2024_seed101"

@@ -1,0 +1,18 @@
+== C23: uncertain release admits NO second holder ==
+FIRST_RELEASE_SAW REFUSED: uncertain release completion (injected completion f
+EPOCH_STATE RELEASING LOCK_STILL_PRESENT True
+SECOND_HOLDER_ENTERED False | REFUSED: lock epoch 1 release is UNCERTAIN (intent without durable com
+-> nothing was ever unlinked; the epoch stays for the operator
+
+== C24: private descriptor-bound control plane ==
+LOCK_EPOCH_1.json 0o600
+CLAIM_b4_campaign_generation_v5_20260906.json 0o600
+LEASE_attempt_fee198389fd14e9d.json 0o600
+cell dir 0o700
+load_claim consumes ONE descriptor (_secure_json): True
+swapped claim refused: REFUSED: claim for o2024_seed101 content digest does not re-derive — a
+
+== C25: a missing checkpoint refuses ==
+refused: REFUSED: o2023_seed202 checkpoint artifact is ABSENT — a declared digest of missing bytes 
+
+POST CONFIRMED: C23-C25 findings no longer reproduce

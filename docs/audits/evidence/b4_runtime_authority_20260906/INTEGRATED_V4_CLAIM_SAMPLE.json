@@ -1,0 +1,11 @@
+{
+ "schema": "agent_multi.b4_attempt_claim.v2",
+ "campaign_generation": "b4_campaign_generation_v5_20260906",
+ "attempt_id": "attempt_1f9c657e16f84115",
+ "cell": "o2024_seed101",
+ "claimed_wall": 1788723376.4584424,
+ "claimed_monotonic": 1065307.591274731,
+ "holder_pid": 3126229,
+ "terminal_sha256": null,
+ "claim_sha256": "a39022922234d9543475a32e1834bba4916e3c71ae6e0913bf4c757e87148df8"
+}

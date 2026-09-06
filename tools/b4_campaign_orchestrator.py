@@ -57,12 +57,59 @@ def _sha_file(p: Path) -> str:
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
-def _excl_write(path: Path, payload: bytes, mode=0o644) -> None:
-    """O_EXCL|O_NOFOLLOW create, descriptor-first validation,
-    fsync(file)+fsync(dir). Uncertainty fails closed."""
-    if path.parent.is_symlink():
+CONTROL_DIR_MODE = 0o700
+CONTROL_FILE_MODE = 0o600
+
+
+def _secure_dir(path: Path, create: bool = True) -> None:
+    """C24: control-plane directories are PRIVATE (0700) and
+    validated descriptor-first. An existing permissive directory is
+    REFUSED, never silently chmodded."""
+    path = Path(path)
+    if create and not path.exists():
+        try:
+            os.mkdir(str(path), CONTROL_DIR_MODE)
+        except FileExistsError:
+            pass
+        except OSError as exc:
+            raise OrchestratorRefusal(
+                f"REFUSED: cannot create control directory "
+                f"{path.name}: {exc}")
+    try:
+        dfd = os.open(str(path),
+                      os.O_RDONLY | os.O_NOFOLLOW
+                      | getattr(os, "O_DIRECTORY", 0))
+    except OSError as exc:
         raise OrchestratorRefusal(
-            f"REFUSED: parent of {path.name} is a symlink")
+            f"REFUSED: control directory {path.name} unopenable "
+            f"({exc}) — failing closed")
+    try:
+        st = os.fstat(dfd)
+        if not stat.S_ISDIR(st.st_mode):
+            raise OrchestratorRefusal(
+                f"REFUSED: {path.name} is not a directory")
+        if st.st_uid != os.getuid():
+            raise OrchestratorRefusal(
+                f"REFUSED: control directory {path.name} has a "
+                "foreign owner")
+        if stat.S_IMODE(st.st_mode) != CONTROL_DIR_MODE:
+            raise OrchestratorRefusal(
+                f"REFUSED: control directory {path.name} mode "
+                f"{oct(stat.S_IMODE(st.st_mode))} is not the "
+                f"private {oct(CONTROL_DIR_MODE)} — refused, not "
+                "chmodded")
+    finally:
+        os.close(dfd)
+
+
+def _excl_write(path: Path, payload: bytes,
+                mode=CONTROL_FILE_MODE) -> None:
+    """C24: O_EXCL|O_NOFOLLOW create of a PRIVATE (0600) control
+    object under a verified 0700 directory; descriptor-first
+    validation, explicit fchmod, fsync(file)+fsync(dir).
+    Uncertainty fails closed."""
+    path = Path(path)
+    _secure_dir(path.parent)
     try:
         fd = os.open(str(path),
                      os.O_CREAT | os.O_EXCL | os.O_WRONLY
@@ -80,6 +127,7 @@ def _excl_write(path: Path, payload: bytes, mode=0o644) -> None:
         if not stat.S_ISREG(st.st_mode):
             raise OrchestratorRefusal(
                 f"REFUSED: {path.name} is not a regular file")
+        os.fchmod(fd, mode)
         os.write(fd, payload)
         os.fsync(fd)
     finally:
@@ -91,56 +139,279 @@ def _excl_write(path: Path, payload: bytes, mode=0o644) -> None:
         os.close(dfd)
 
 
+def _secure_read(path: Path,
+                 expected_mode=CONTROL_FILE_MODE) -> bytes:
+    """C24: ONE descriptor per consumption — O_NOFOLLOW open, then
+    regular-file/owner/exact-mode checks and the read all from that
+    same descriptor. No check-by-path-then-reopen-by-path."""
+    try:
+        fd = os.open(str(path), os.O_RDONLY | os.O_NOFOLLOW)
+    except FileNotFoundError:
+        raise OrchestratorRefusal(
+            f"REFUSED: control object {Path(path).name} absent")
+    except OSError as exc:
+        raise OrchestratorRefusal(
+            f"REFUSED: control object {Path(path).name} unopenable "
+            f"({exc}) — symlinks and races fail closed")
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            raise OrchestratorRefusal(
+                f"REFUSED: {Path(path).name} is not a regular "
+                "file")
+        if st.st_uid != os.getuid():
+            raise OrchestratorRefusal(
+                f"REFUSED: {Path(path).name} has a foreign owner")
+        if expected_mode is not None and \
+                stat.S_IMODE(st.st_mode) != expected_mode:
+            raise OrchestratorRefusal(
+                f"REFUSED: {Path(path).name} mode "
+                f"{oct(stat.S_IMODE(st.st_mode))} is not the "
+                f"private {oct(expected_mode)} control mode — a "
+                "permissive object is refused, not chmodded")
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+        return b"".join(chunks)
+    finally:
+        os.close(fd)
+
+
+def _secure_json(path: Path, where: str,
+                 expected_mode=CONTROL_FILE_MODE) -> dict:
+    return b4a._strict_json_bytes(
+        _secure_read(path, expected_mode), where)
+
+
+def _self_sha(body: dict, exclude: str) -> str:
+    return hashlib.sha256(json.dumps(
+        {k: body[k] for k in sorted(body) if k != exclude},
+        sort_keys=True).encode()).hexdigest()
+
+
+# ---------------- C23: monotone epoch campaign lock ----------------
+LOCK_SCHEMA_NAME = "agent_multi.b4_campaign_lock_epoch.v1"
+LOCK_INTENT_SCHEMA = "agent_multi.b4_lock_release_intent.v1"
+LOCK_COMPLETE_SCHEMA = "agent_multi.b4_lock_release_complete.v1"
+
+
+def _epoch_paths(root: Path, epoch: int):
+    root = Path(root)
+    return (root / f"LOCK_EPOCH_{epoch}.json",
+            root / f"LOCK_RELEASE_INTENT_{epoch}.json",
+            root / f"LOCK_RELEASE_COMPLETE_{epoch}.json")
+
+
+def _scan_epochs(root: Path) -> list:
+    out = []
+    for p in Path(root).glob("LOCK_EPOCH_*.json"):
+        tail = p.name[len("LOCK_EPOCH_"):-len(".json")]
+        if not tail.isdigit():
+            raise OrchestratorRefusal(
+                f"REFUSED: malformed lock epoch name {p.name}")
+        out.append(int(tail))
+    return sorted(out)
+
+
+def lock_epoch_state(root: Path, epoch: int) -> dict:
+    """PHYSICAL adjudication of one lock epoch:
+    HELD -> lock only; RELEASING -> lock+intent; RELEASED ->
+    lock+intent+completion all integral and mutually bound;
+    anything partial/malformed/transplanted -> UNCERTAIN."""
+    lock_p, intent_p, complete_p = _epoch_paths(root, epoch)
+    out = {"epoch": epoch, "state": "UNCERTAIN", "record": None}
+    try:
+        rec = _secure_json(lock_p, f"lock epoch {epoch}")
+    except SystemExit:
+        return out
+    if set(rec) != {"schema", "generation", "epoch", "holder_pid",
+                    "acquire_id", "lock_sha256"} or \
+            rec["schema"] != LOCK_SCHEMA_NAME or \
+            rec["epoch"] != epoch or \
+            rec["generation"] != b4a.CAMPAIGN_GENERATION or \
+            type(rec["holder_pid"]) is not int or \
+            type(rec["acquire_id"]) is not str or \
+            _self_sha(rec, "lock_sha256") != rec["lock_sha256"]:
+        return out
+    out["record"] = rec
+    intent_exists = intent_p.exists()
+    complete_exists = complete_p.exists()
+    if not intent_exists and not complete_exists:
+        out["state"] = "HELD"
+        return out
+    if not intent_exists:
+        return out              # completion without intent
+    try:
+        intent = _secure_json(intent_p,
+                              f"lock release intent {epoch}")
+    except SystemExit:
+        return out
+    if set(intent) != {"schema", "epoch", "acquire_id",
+                       "holder_pid", "intent_sha256"} or \
+            intent["schema"] != LOCK_INTENT_SCHEMA or \
+            intent["epoch"] != epoch or \
+            intent["acquire_id"] != rec["acquire_id"] or \
+            intent["holder_pid"] != rec["holder_pid"] or \
+            _self_sha(intent, "intent_sha256") != \
+            intent["intent_sha256"]:
+        return out
+    if not complete_exists:
+        out["state"] = "RELEASING"
+        return out
+    try:
+        comp = _secure_json(complete_p,
+                            f"lock release completion {epoch}")
+    except SystemExit:
+        return out
+    intent_file_sha = hashlib.sha256(
+        _secure_read(intent_p)).hexdigest()
+    if set(comp) != {"schema", "epoch", "acquire_id",
+                     "intent_file_sha256",
+                     "completion_sha256"} or \
+            comp["schema"] != LOCK_COMPLETE_SCHEMA or \
+            comp["epoch"] != epoch or \
+            comp["acquire_id"] != rec["acquire_id"] or \
+            comp["intent_file_sha256"] != intent_file_sha or \
+            _self_sha(comp, "completion_sha256") != \
+            comp["completion_sha256"]:
+        return out
+    out["state"] = "RELEASED"
+    return out
+
+
 class GlobalLock:
-    """C19: acquisition is O_EXCL; release is OWNED (only the
-    recorded holder pid may release) and DURABLE (an append-only
-    RELEASE witness is fsynced before the unlink, and the directory
-    is fsynced after). A crashed holder's lock is never auto-stolen
-    — operator disposition only."""
+    """C23: MONOTONE campaign lock — unlink is never an authorizing
+    transition. Epoch n transitions in place through
+    held -> releasing -> released by APPEND-ONLY intent/completion
+    witnesses; reclaim creates epoch n+1 exclusively and only when
+    epoch n is physically RELEASED. Every missing, partial,
+    malformed, transplanted or uncertain state is operator
+    disposition, never an absent lock."""
 
     def __init__(self, results_root: Path):
         self.root = Path(results_root)
-        self.path = self.root / "CAMPAIGN_LOCK"
-        self.held = False
+        self.epoch = None
         self.acquire_id = None
+        self.held = False
 
     def __enter__(self):
         import uuid as _uuid
+        _secure_dir(self.root)
+        epochs = _scan_epochs(self.root)
+        if epochs:
+            cur = epochs[-1]
+            st = lock_epoch_state(self.root, cur)
+            if st["state"] == "HELD":
+                raise OrchestratorRefusal(
+                    f"REFUSED: lock epoch {cur} is HELD — exactly "
+                    "one winner; a crashed holder is operator "
+                    "disposition, never auto-stolen")
+            if st["state"] == "RELEASING":
+                raise OrchestratorRefusal(
+                    f"REFUSED: lock epoch {cur} release is "
+                    "UNCERTAIN (intent without durable completion) "
+                    "— operator disposition, no second holder")
+            if st["state"] != "RELEASED":
+                raise OrchestratorRefusal(
+                    f"REFUSED: lock epoch {cur} state is "
+                    "UNCERTAIN — operator disposition")
+            nxt = cur + 1
+        else:
+            nxt = 1
         self.acquire_id = _uuid.uuid4().hex[:16]
-        _excl_write(self.path, json.dumps(
-            {"pid": os.getpid(),
-             "generation": b4a.CAMPAIGN_GENERATION,
-             "acquire_id": self.acquire_id}).encode())
+        rec = {"schema": LOCK_SCHEMA_NAME,
+               "generation": b4a.CAMPAIGN_GENERATION,
+               "epoch": nxt,
+               "holder_pid": os.getpid(),
+               "acquire_id": self.acquire_id}
+        rec["lock_sha256"] = _self_sha(rec, "lock_sha256")
+        lock_p, _, _ = _epoch_paths(self.root, nxt)
+        _excl_write(lock_p, json.dumps(rec, indent=1).encode())
+        # C23: revalidate the COMPLETE tuple under the exclusive
+        # choice — the predecessor must still be RELEASED and the
+        # epoch we own must adjudicate HELD by us.
+        if nxt > 1:
+            prev = lock_epoch_state(self.root, nxt - 1)
+            if prev["state"] != "RELEASED":
+                # release OUR just-created epoch in order before
+                # refusing, so a transient predecessor doubt never
+                # strands an orphan HELD epoch; if even that release
+                # is uncertain, the epoch stays for the operator.
+                self.epoch = nxt
+                self.held = True
+                try:
+                    self.__exit__()
+                except SystemExit:
+                    pass
+                self.held = False
+                raise OrchestratorRefusal(
+                    f"REFUSED: predecessor lock epoch {nxt - 1} "
+                    "is no longer RELEASED under the exclusive "
+                    "choice — failing closed")
+        mine = lock_epoch_state(self.root, nxt)
+        if mine["state"] != "HELD" or \
+                mine["record"]["holder_pid"] != os.getpid() or \
+                mine["record"]["acquire_id"] != self.acquire_id:
+            raise OrchestratorRefusal(
+                f"REFUSED: acquired lock epoch {nxt} does not "
+                "adjudicate as held by this process")
+        self.epoch = nxt
         self.held = True
         return self
 
     def __exit__(self, *exc):
         if not self.held:
             return
-        try:
-            raw = self.path.read_bytes()
-        except OSError as exc:
+        st = lock_epoch_state(self.root, self.epoch)
+        if st["state"] != "HELD" or \
+                st["record"] is None or \
+                st["record"]["holder_pid"] != os.getpid() or \
+                st["record"]["acquire_id"] != self.acquire_id:
             raise OrchestratorRefusal(
-                "REFUSED: campaign lock vanished under the holder "
-                f"({exc}) — uncertain release, failing closed")
-        rec = b4a._strict_json_bytes(raw, "campaign lock")
-        if rec.get("pid") != os.getpid() or \
-                rec.get("acquire_id") != self.acquire_id:
-            raise OrchestratorRefusal(
-                "REFUSED: lock release by a non-holder — ownership "
-                "is required")
-        witness = self.root / f"LOCK_RELEASE_{self.acquire_id}.json"
-        _excl_write(witness, json.dumps(
-            {"schema": "agent_multi.b4_lock_release.v1",
-             "acquire_id": self.acquire_id,
-             "holder_pid": os.getpid()}).encode())
-        self.path.unlink()
-        dfd = os.open(str(self.root), os.O_RDONLY)
+                "REFUSED: lock release by a non-holder or over an "
+                "uncertain epoch — ownership is required")
+        _, intent_p, complete_p = _epoch_paths(self.root,
+                                               self.epoch)
+        intent = {"schema": LOCK_INTENT_SCHEMA,
+                  "epoch": self.epoch,
+                  "acquire_id": self.acquire_id,
+                  "holder_pid": os.getpid()}
+        intent["intent_sha256"] = _self_sha(intent, "intent_sha256")
         try:
-            os.fsync(dfd)
-        finally:
-            os.close(dfd)
+            _excl_write(intent_p,
+                        json.dumps(intent, indent=1).encode())
+        except OSError as exc2:
+            raise OrchestratorRefusal(
+                f"REFUSED: uncertain release intent ({exc2}) — "
+                "the epoch stays for operator disposition")
+        intent_file_sha = hashlib.sha256(
+            _secure_read(intent_p)).hexdigest()
+        comp = {"schema": LOCK_COMPLETE_SCHEMA,
+                "epoch": self.epoch,
+                "acquire_id": self.acquire_id,
+                "intent_file_sha256": intent_file_sha}
+        comp["completion_sha256"] = _self_sha(comp,
+                                              "completion_sha256")
+        try:
+            _excl_write(complete_p,
+                        json.dumps(comp, indent=1).encode())
+        except OSError as exc2:
+            raise OrchestratorRefusal(
+                f"REFUSED: uncertain release completion ({exc2}) "
+                "— the epoch stays RELEASING for operator "
+                "disposition")
         self.held = False
+
+
+def current_lock_epoch(root: Path) -> dict:
+    """The newest epoch's physical state (NO_LOCK when none)."""
+    epochs = _scan_epochs(root)
+    if not epochs:
+        return {"epoch": None, "state": "NO_LOCK", "record": None}
+    return lock_epoch_state(root, epochs[-1])
 
 
 def _claim_path(results_root: Path, cell_id: str) -> Path:
@@ -148,12 +419,19 @@ def _claim_path(results_root: Path, cell_id: str) -> Path:
             f"CLAIM_{b4a.CAMPAIGN_GENERATION}.json")
 
 
+CLAIM_SCHEMA = {
+    "schema": str, "campaign_generation": str, "attempt_id": str,
+    "cell": str, "claimed_wall": float, "claimed_monotonic": float,
+    "holder_pid": int, "terminal_sha256": type(None),
+    "claim_sha256": str}
+
+
 def claim_attempt(results_root: Path, cell_id: str) -> dict:
-    """C10: the ONE claimable object per (cell, generation). The
-    attempt id is data inside the record — never part of the
-    exclusive path."""
+    """C10/C24: the ONE claimable object per (cell, generation) —
+    self-integral, private-mode, under a 0700 cell directory."""
+    _secure_dir(Path(results_root))
     cell_dir = Path(results_root) / cell_id
-    cell_dir.mkdir(parents=True, exist_ok=True)
+    _secure_dir(cell_dir)
     rec = {"schema": "agent_multi.b4_attempt_claim.v2",
            "campaign_generation": b4a.CAMPAIGN_GENERATION,
            "attempt_id": f"attempt_{uuid.uuid4().hex[:16]}",
@@ -162,23 +440,38 @@ def claim_attempt(results_root: Path, cell_id: str) -> dict:
            "claimed_monotonic": time.monotonic(),
            "holder_pid": os.getpid(),
            "terminal_sha256": None}
+    rec["claim_sha256"] = _self_sha(rec, "claim_sha256")
     _excl_write(_claim_path(results_root, cell_id),
                 json.dumps(rec, indent=1).encode())
     return rec
 
 
 def load_claim(results_root: Path, cell_id: str) -> dict:
+    """C24: exact typed self-integral schema, consumed from ONE
+    descriptor."""
     p = _claim_path(results_root, cell_id)
-    if p.is_symlink() or not p.is_file():
-        raise OrchestratorRefusal(
-            f"REFUSED: claim for {cell_id} absent or non-regular")
-    rec = b4a._strict_json_bytes(p.read_bytes(),
-                                 f"claim {cell_id}")
-    for k in ("schema", "campaign_generation", "attempt_id",
-              "cell", "claimed_wall", "terminal_sha256"):
-        if k not in rec:
+    try:
+        rec = _secure_json(p, f"claim {cell_id}")
+    except SystemExit as exc:
+        if "absent" in str(exc):
             raise OrchestratorRefusal(
-                f"REFUSED: claim for {cell_id} missing {k!r}")
+                f"REFUSED: claim for {cell_id} absent or "
+                "non-regular")
+        raise
+    if set(rec) != set(CLAIM_SCHEMA):
+        raise OrchestratorRefusal(
+            f"REFUSED: claim for {cell_id} keys are not the exact "
+            "schema")
+    for k, t in CLAIM_SCHEMA.items():
+        if not (rec[k] is None if t is type(None)
+                else type(rec[k]) is t):
+            raise OrchestratorRefusal(
+                f"REFUSED: claim field {k!r} has a foreign "
+                "primitive type")
+    if _self_sha(rec, "claim_sha256") != rec["claim_sha256"]:
+        raise OrchestratorRefusal(
+            f"REFUSED: claim for {cell_id} content digest does "
+            "not re-derive — altered control object")
     if rec["cell"] != cell_id or \
             rec["campaign_generation"] != b4a.CAMPAIGN_GENERATION:
         raise OrchestratorRefusal(
@@ -226,9 +519,7 @@ def verify_lease(lease_path: Path, results_root: Path,
     before entering the pipeline; any foreign element produces zero
     compute."""
     p = Path(lease_path)
-    if p.is_symlink() or not p.is_file():
-        raise OrchestratorRefusal("REFUSED: execution lease absent")
-    lease = b4a._strict_json_bytes(p.read_bytes(), "execution lease")
+    lease = _secure_json(p, "execution lease")
     if set(lease) != set(LEASE_SCHEMA):
         raise OrchestratorRefusal(
             "REFUSED: lease keys are not the exact schema")
@@ -269,18 +560,17 @@ def verify_lease(lease_path: Path, results_root: Path,
     if terminal.exists():
         raise OrchestratorRefusal(
             "REFUSED: a terminal already exists for this cell")
-    lock = Path(results_root) / "CAMPAIGN_LOCK"
-    if not lock.is_file():
+    cur = current_lock_epoch(Path(results_root))
+    if cur["state"] != "HELD":
         raise OrchestratorRefusal(
             "REFUSED: no live campaign lease/lock covers this "
-            "execution")
-    lockrec = b4a._strict_json_bytes(lock.read_bytes(),
-                                     "campaign lock")
-    if lockrec.get("generation") != b4a.CAMPAIGN_GENERATION:
+            f"execution (lock state {cur['state']})")
+    lockrec = cur["record"]
+    if lockrec["generation"] != b4a.CAMPAIGN_GENERATION:
         raise OrchestratorRefusal(
             "REFUSED: campaign lock belongs to another generation")
     me = os.getpid()
-    if not (lease["holder_pid"] == lockrec.get("pid")
+    if not (lease["holder_pid"] == lockrec["holder_pid"]
             == claim.get("holder_pid") == me):
         raise OrchestratorRefusal(
             "REFUSED: lease/claim/lock holder identity does not "
@@ -320,7 +610,7 @@ def seal_attempt(results_root: Path, cell_id: str,
                                        attempt_id)
     if complete_p.exists():
         raise OrchestratorRefusal("REFUSED: attempt already sealed")
-    term_sha = _sha_file(terminal)
+    term_sha = hashlib.sha256(_secure_read(terminal)).hexdigest()
     intent = {"schema": "agent_multi.b4_seal_intent.v1",
               "campaign_generation": b4a.CAMPAIGN_GENERATION,
               "cell": cell_id, "attempt_id": attempt_id,
@@ -357,19 +647,20 @@ def seal_state(results_root: Path, cell_id: str) -> str:
             not terminal.is_file():
         return "UNCERTAIN"
     try:
-        completion = b4a._strict_json_bytes(complete_p.read_bytes(),
-                                            "seal completion")
+        completion = _secure_json(complete_p, "seal completion")
         body = {k: completion[k] for k in sorted(completion)
                 if k != "completion_sha256"}
         if hashlib.sha256(json.dumps(
                 body, sort_keys=True).encode()).hexdigest() != \
                 completion.get("completion_sha256"):
             return "UNCERTAIN"
-        if completion.get("intent_sha256") != _sha_file(intent_p):
+        if completion.get("intent_sha256") != hashlib.sha256(
+                _secure_read(intent_p)).hexdigest():
             return "UNCERTAIN"
         if completion.get("attempt_id") != attempt_id:
             return "UNCERTAIN"
-        if completion.get("terminal_sha256") != _sha_file(terminal):
+        if completion.get("terminal_sha256") != hashlib.sha256(
+                _secure_read(terminal)).hexdigest():
             return "UNCERTAIN"
     except (SystemExit, OSError):
         return "UNCERTAIN"
@@ -383,11 +674,10 @@ def gpu_seconds_spent(results_root: Path) -> float:
     total = 0.0
     now = time.time()
     for claim_p in Path(results_root).glob("*/CLAIM_*.json"):
-        rec = b4a._strict_json_bytes(claim_p.read_bytes(),
-                                     claim_p.name)
+        rec = _secure_json(claim_p, claim_p.name)
         term = claim_p.parent / "B4_CELL_TERMINAL.json"
         if term.exists():
-            t = b4a._strict_json_bytes(term.read_bytes(), term.name)
+            t = _secure_json(term, term.name)
             w = t.get("wall_seconds")
             if type(w) not in (int, float) or w < 0 or \
                     not (w == w):
@@ -430,8 +720,7 @@ def adjudicate_cell_state(results_root: Path, cell_id: str) -> str:
     except SystemExit:
         return "UNCERTAIN"
     try:
-        term = b4a._strict_json_bytes(terminal.read_bytes(),
-                                      f"terminal {cell_id}")
+        term = _secure_json(terminal, f"terminal {cell_id}")
     except SystemExit:
         return "UNCERTAIN"
     seal = seal_state(results_root, cell_id)
@@ -527,7 +816,9 @@ def run_campaign(mat_root: Path, ledger_path: Path,
             "REFUSED: no Musashi campaign authorization record — "
             "the orchestrator dispatches nothing")
     ledger = ledger_mod.verify_ledger(ledger_path, mat_root)
-    results_root.mkdir(parents=True, exist_ok=True)
+    if not results_root.exists():
+        os.makedirs(str(results_root), mode=0o700)
+    _secure_dir(results_root)
     outcome = {"completed": [], "failed": [], "uncertain": [],
                "pending": []}
     with GlobalLock(results_root):
