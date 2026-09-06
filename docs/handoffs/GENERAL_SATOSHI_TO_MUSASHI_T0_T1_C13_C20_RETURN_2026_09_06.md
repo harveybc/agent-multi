@@ -15,6 +15,7 @@ v1 and v2 evidence preserved byte-intact as history.
 | agent-multi (same) | `94257e7a` | T1 C16-C20 code + **design v3 sealed BEFORE any v3 measurement**. |
 | agent-multi (same) | `766fd4f0` | POST (all eight die) + v3 evidence + batteries. |
 | agent-multi (same) | `7d07d9ac` | Self-found import-collision fix (below) + remeasurement, verdicts identical. |
+| agent-multi (same) | `e3e817e1` | Four t1 tools declared in the engineering surface registry (its unclassified-executable guard caught them in the full suite). |
 | preprocessor `satoshi/t0-t1-causal-transformations-20260906` | `e6c3cdc` | T0 C13-C15 (state v3, snapshots, derived semantics). |
 
 ## 2. C13-C15 (T0, preprocessor)
@@ -160,9 +161,16 @@ v2) → adjudication → independent verification.
   no-roll assertion, five C20 smuggle kills, v1/v2 immutability,
   and C16/C17 guard-removal mutants).
 - T0 focal: **52 passed**.
-- agent-multi full suite from this branch's tip: running at packet
-  time; final count reported in the commit that follows this
-  packet if it differs from green-minus-known-legacy.
+- agent-multi full suite at this branch's final tip (`e3e817e1`):
+  **3043 passed, 2 failed** — only the preexisting D1-anchor pair
+  (`test_eth_sac_inner_curriculum_contract`), which predates every
+  order on this front. Two earlier full-suite catches are disclosed
+  in §6 and were fixed in-line: the `app` namespace collision, and
+  the engineering-surface guard refusing the four undeclared t1
+  executables (declared at `e3e817e1`; index battery 17 passed).
+  The known `test_weekly_promotion` flake appeared once as a
+  collection-order ERROR and passes isolated and at the final tip
+  (named for watch since the @9abea1bc era).
 
 ## 6. Self-found defects (disclosed unprompted)
 
