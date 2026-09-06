@@ -93,6 +93,49 @@ def expected_population(design: dict, inventory: dict) -> set:
             for op in ops}
 
 
+# --- C21: complete executable identity ----------------------------
+CODE_IDENTITY_FILES = {
+    "t1_known_truth_bank_sha256": "t1_known_truth_bank.py",
+    "t1_lab_run_sha256": "t1_lab_run.py",
+    "t1_adjudicator_sha256": "t1_adjudicator.py",
+    "t1_independent_verifier_sha256": "t1_independent_verifier.py",
+}
+
+
+def executed_code_identity() -> dict:
+    """The digests of the ACTUALLY present executable bytes."""
+    tools_dir = Path(__file__).resolve().parent
+    return {k: _sha_file(tools_dir / v)
+            for k, v in CODE_IDENTITY_FILES.items()}
+
+
+def verify_complete_code_identity(design: dict,
+                                  operator_sha: str = None) -> None:
+    """C21: every executable recalculates ALL identities the sealed
+    design names and refuses BEFORE any evidence is read when any
+    differs. No behavior-preserving exception."""
+    sealed = design.get("code_identity")
+    if not isinstance(sealed, dict) or \
+            set(sealed) != set(CODE_IDENTITY_FILES):
+        raise AdjudicationRefusal(
+            "REFUSED: the sealed design does not carry the "
+            "complete executable code identity")
+    live = executed_code_identity()
+    for k in CODE_IDENTITY_FILES:
+        if sealed[k] != live[k]:
+            raise AdjudicationRefusal(
+                f"REFUSED: executed {CODE_IDENTITY_FILES[k]} "
+                f"bytes ({live[k][:12]}) differ from the sealed "
+                f"design identity ({str(sealed[k])[:12]}) — the "
+                "run would not be the one the design names")
+    want_op = design.get("operator_protocol", {}).get(
+        "causal_operators_sha256")
+    if operator_sha is not None and operator_sha != want_op:
+        raise AdjudicationRefusal(
+            "REFUSED: causal operator identity differs from the "
+            "sealed design")
+
+
 # --- C16: independent re-derivation constants -----------------
 # Deliberately DUPLICATED from the lab (same mathematical
 # definitions, independent implementation consumed only by
@@ -711,6 +754,101 @@ def adjudicate(design: dict, inventory: dict, measurements: dict,
     return out
 
 
+# --- C22: complete publication comparison -------------------------
+_PUB_TOP_KEYS = {"schema", "design_sha256", "population",
+                 "verdict_basis", "material_failure_rule",
+                 "verdicts", "verdict_counts"}
+_DIST_KEYS = {"min", "median", "max"}
+_VERDICT_VALUES = {"LAB_CALIBRATED", "LAB_REJECTED",
+                   "INCONCLUSIVE", "NON_CAUSAL_ORACLE_ONLY"}
+
+
+def check_publication_schema(pub: dict) -> None:
+    """C22: exact schemas and primitive types for the publication
+    and every nested verdict."""
+    if not isinstance(pub, dict) or set(pub) != _PUB_TOP_KEYS:
+        raise AdjudicationRefusal(
+            f"REFUSED: publication keys are not the exact schema "
+            f"(diff: {sorted(set(pub) ^ _PUB_TOP_KEYS)})")
+    if pub["schema"] != "agent_multi.t1_adjudication.v2":
+        raise AdjudicationRefusal(
+            "REFUSED: foreign publication schema")
+    if not isinstance(pub["verdicts"], dict) or \
+            not isinstance(pub["verdict_counts"], dict):
+        raise AdjudicationRefusal(
+            "REFUSED: publication verdict containers malformed")
+    for key, v in pub["verdicts"].items():
+        if not isinstance(v, dict) or \
+                v.get("verdict") not in _VERDICT_VALUES:
+            raise AdjudicationRefusal(
+                f"REFUSED: {key} carries an invalid verdict "
+                "payload")
+        if type(v.get("reason")) is not str or not v["reason"]:
+            raise AdjudicationRefusal(
+                f"REFUSED: {key} lacks a typed reason")
+        for dk in ("snr_gain_db",
+                   "relative_utility_delta_D_vs_X",
+                   "extreme_retention", "tail_ratio",
+                   "residual_incremental_r2"):
+            if dk in v and v[dk] is not None:
+                d = v[dk]
+                if not isinstance(d, dict) or \
+                        set(d) != _DIST_KEYS or any(
+                            isinstance(d[x], bool)
+                            or not isinstance(d[x], (int, float))
+                            or not np.isfinite(float(d[x]))
+                            for x in _DIST_KEYS):
+                    raise AdjudicationRefusal(
+                        f"REFUSED: {key} distribution {dk} is "
+                        "not the exact min/median/max shape")
+        if "seeds" in v and (isinstance(v["seeds"], bool)
+                             or type(v["seeds"]) is not int):
+            raise AdjudicationRefusal(
+                f"REFUSED: {key} seed count mistyped")
+        if "material_failures" in v and \
+                not isinstance(v["material_failures"], list):
+            raise AdjudicationRefusal(
+                f"REFUSED: {key} material failures mistyped")
+
+
+def _canonical_bytes(obj) -> bytes:
+    return json.dumps(obj, sort_keys=True,
+                      separators=(",", ":"),
+                      allow_nan=False).encode()
+
+
+def require_publication_equality(rederived: dict,
+                                 published: dict) -> None:
+    """C22: the COMPLETE canonical adjudication — verdicts,
+    reasons, every distribution, seed counts, residual flags,
+    material-failure identities, population/method metadata and
+    counts — must equal the re-derived object. Any changed field
+    refuses with the first differing path."""
+    check_publication_schema(published)
+    check_publication_schema(rederived)
+    if _canonical_bytes(rederived) == _canonical_bytes(published):
+        return
+
+    def _diff(a, b, path):
+        if isinstance(a, dict) and isinstance(b, dict):
+            for k in sorted(set(a) | set(b)):
+                if k not in a or k not in b:
+                    return f"{path}.{k} (presence)"
+                d = _diff(a[k], b[k], f"{path}.{k}")
+                if d:
+                    return d
+            return None
+        if a != b:
+            return (f"{path} (published {b!r} != re-derived "
+                    f"{a!r})")
+        return None
+
+    where = _diff(rederived, published, "publication")
+    raise AdjudicationRefusal(
+        f"REFUSED: published adjudication differs from the "
+        f"complete re-derivation at {where}")
+
+
 def main() -> int:
     import argparse
     ap = argparse.ArgumentParser()
@@ -728,6 +866,8 @@ def main() -> int:
             "REFUSED: sealed design bytes differ from the reviewed "
             "digest")
     design = _strict_json(args.design)
+    # C21: refuse BEFORE reading measurements or arrays
+    verify_complete_code_identity(design)
     inventory = _strict_json(args.bank_dir / "BANK_INVENTORY.json")
     m = _strict_json(args.measurements)
     if m.get("design_sha256") != args.design_sha:

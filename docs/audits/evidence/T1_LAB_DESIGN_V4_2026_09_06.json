@@ -1,0 +1,43 @@
+{
+ "schema": "agent_multi.t1_design.v4",
+ "order": "T1 C21-C24 review-authority order (2026-09-06); sealed BEFORE any v4 measurement; v1-v3 preserved byte-intact as history",
+ "supersedes": {
+  "design_v3_sha256": "6dcffa2131e7d2ef2c023a0499e4c35b711cff3d8a653dac4a8a7a25165f623a",
+  "disclosure": "v4 changes are review-authority corrections only, no scientific change: (1) C21 the design seals the COMPLETE code identity (bank builder, lab, adjudicator, independent verifier) and every executable recalculates all of them at startup, refusing before evidence use on any difference \u2014 this closes the v3 defect where the executed lab (ea61522e...) differed from the sealed digest (da0e0513...) after a post-seal import fix; measurements/manifest/submission now carry the executed identity; (2) C22 the independent verifier recomputes the COMPLETE canonical adjudication and requires exact equality (verdicts, reasons, every min/median/max distribution, seed counts, residual flags, material-failure identities, population/method metadata, counts) \u2014 label/count comparison is dead; (3) C23 the candidate verifier has NO review-authority branch: its strongest outcome is a self-consistent NON-AUTHORIZING submission (exit 3); external review authority is a separate Musashi record pinned later in the consuming T2 order; (4) the physical bank population is the VERIFIED v3 bank (identical inventory digests; arrays byte-verified at every run)."
+ },
+ "operator_protocol": {
+  "repo_branch": "preprocessor@satoshi/t0-t1-causal-transformations-20260906",
+  "commit": "e6c3cdc",
+  "causal_operators_sha256": "b1de49f3a00422bcbb9143b5403f1735ee1e2898f4094bc4dadf8147bf0d9c8c",
+  "battery": "tests/test_causal_operators.py \u2014 52 passed"
+ },
+ "expected_operators_exact": [
+  "identity",
+  "trailing_mean",
+  "trailing_median",
+  "ewma",
+  "local_level_kalman",
+  "centered_mean_oracle"
+ ],
+ "bank_inventory_sha256": "457db7781b799bed98992fa5e3251d5d60f1e17d92a7e87540b5f53a26c72bb0",
+ "unit_schema": "agent_multi.t1_unit.v2; inventory agent_multi.t1_bank_inventory.v2 binds every unit's metadata and array bytes (C17)",
+ "role_semantics": "gates from SCORE role only; train/validation published separately (C8)",
+ "width_control": "TRAIN-FROZEN INDEPENDENT nuisance channels (C19): deterministic rng seeded sha256('t1_nuisance|<unit>|<operator>|v<j>|<k>'), amplitude = std of the observed TRAIN role only",
+ "material_failure_rule": "any seed/variable: null score facts, utility collapse < -0.25, extreme inversion, tail > 3x -> LAB_REJECTED (C10)",
+ "adjudication_thresholds": {
+  "snr_gain_min_db": 0.5,
+  "utility_tolerance_rel": 0.02,
+  "extreme_retention_min": 0.5,
+  "tail_ratio_max": 1.5,
+  "residual_info_max_r2": 0.01,
+  "min_seeds": 3
+ },
+ "evidence": "observation-level content-addressed NPZ; measurement manifest v2 binds bytes AND executed code identity (C18/C21); the verifier re-derives EVERY metric of EVERY measured record (C16) and requires COMPLETE publication equality (C22); candidate outcomes are never authorizing (C23)",
+ "review_authority": "external ONLY: a separate Musashi record created after independent reproduction, pinned by digest in the consuming T2 order; candidate code carries no branch that can claim it",
+ "code_identity": {
+  "t1_known_truth_bank_sha256": "5934216d0d5e0b0d4eeb6560c57d9ab85ad2ecdfb5059ec3d21cd3a531aabfdf",
+  "t1_lab_run_sha256": "dc3c1c62ea65cd33e8f85b02a85c90748943442eb0c16839a69b4070936c7283",
+  "t1_adjudicator_sha256": "8f04e2f690fadbc97ccc186ff905580b12521dc03692e321349142658ee68801",
+  "t1_independent_verifier_sha256": "64ccc0ee30b3b8b8d04311435dde715e193f1c9a72a584fac67df0d9f46b7187"
+ }
+}

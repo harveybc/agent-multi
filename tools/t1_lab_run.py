@@ -337,6 +337,14 @@ def main() -> int:
             "REFUSED: sealed design bytes differ from the reviewed "
             "digest")
     design = json.loads(raw)
+    # C21: the COMPLETE executable identity must match the sealed
+    # design BEFORE anything is read — no behavior-preserving
+    # exception; a differing byte is a differing run.
+    import t1_adjudicator as _adj
+    try:
+        _adj.verify_complete_code_identity(design)
+    except SystemExit as exc:
+        raise SystemExit(str(exc))
     co = load_co()
     want_co = design["operator_protocol"][
         "causal_operators_sha256"]
@@ -382,7 +390,8 @@ def main() -> int:
                "bank_inventory_sha256": _sha_file(inv_path),
                "code_identity": {
                    "causal_operators_sha256": co.code_identity(),
-                   "lab_sha256": _sha_file(Path(__file__))},
+                   "lab_sha256": _sha_file(Path(__file__)),
+                   "executed": _adj.executed_code_identity()},
                "records": records}
     args.output.write_text(json.dumps(payload, indent=1,
                                       allow_nan=False))
@@ -390,10 +399,11 @@ def main() -> int:
     # identities a reviewer promotes; the candidate cannot rewrite
     # them coherently without changing this digest.
     manifest = {
-        "schema": "agent_multi.t1_measurement_manifest.v1",
+        "schema": "agent_multi.t1_measurement_manifest.v2",
         "design_sha256": args.design_sha,
         "bank_inventory_sha256": _sha_file(inv_path),
         "measurements_sha256": _sha_file(args.output),
+        "executed_code_identity": _adj.executed_code_identity(),
         "records_total": len(records),
         "records_measured": sum(1 for r in records
                                 if r["status"] == "MEASURED"),
