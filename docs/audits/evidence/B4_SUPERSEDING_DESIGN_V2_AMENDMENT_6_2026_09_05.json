@@ -1,0 +1,25 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v4_campaign_preparation",
+ "amends_amendment_5_sha256": "f199c9375e7f718df507c7c72535c1174f88e14877cfdd241773bc1432151a20",
+ "order": "agent-multi@e8bb500f E8-E12 \u2014 campaign executor, twelve-cell ledger, doc-41 adjudicator, bounded time-based GPU monitor; execute refuses until the owner's SEPARATE campaign authorization exists",
+ "data_role_change_disclosure": [
+  "PER-ORIGIN SEALED ZONE CORRECTION (dry-run finding, disclosed, never silent): each origin contract's sealed_test now starts the instant its scored year ends (o2022: 2023-01-01, o2023: 2024-01-01, o2024: 2025-01-01 unchanged) and runs to 2026-01-01. STRICTLY MORE RESTRICTIVE: later development years are sealed away from earlier origins too; the global confirmatory 2025 set lies inside every zone and stays unread. Required because the pipeline's nested-split chain demands outer/sealed contiguity; the v2 contracts left a gap and o2022/o2023 could not execute the real lifecycle (NestedSplitError frozen in the dry-run reports). Fit/monitor/inner/outer windows UNCHANGED."
+ ],
+ "scientific_change": "NONE beyond the disclosed sealed-zone widening",
+ "proposed_campaign_population": {
+  "materialization_root_note": "operator-local tree; identities below bind it",
+  "cell_population_sha256": "99dac961f1a7b4aae67cd36abeb295f81e8697760f8da23433e9467e45df4a2d",
+  "materialization_sha256": "d2c943fa9705f1c52d70d7472aac672d2406a3efa244b58c25a189ecbc0ceb10",
+  "genesis_binding_sha256": "db962cf4a520c5ad18c35734b6d83f9090dff50a8f574a33878c70ea4e72b11e"
+ },
+ "final_code_pins": {
+  "tools/b4_authority.py": "b7b58b81124b5c9bdf0a61078b05b031ed30b9e0b6a9e2aaa84bf52a294e95f7",
+  "tools/b4_run_cell.py": "2c1cd04f8ccb6d12c9e68803c4f30956550972bc6b47c15a2877bacefcc6d762",
+  "tools/b4_campaign_executor.py": "f19c5fef38ae78d8ade31b2d62aab3789855c2ad5b90615bfe26a875d62170f0",
+  "tools/b4_campaign_ledger.py": "0ff9d93911e4e5952c9ad7fcfdd7923e721e992cd08808e496972cc27bbb28a8",
+  "tools/b4_adjudicator.py": "b6f332052aa50aadbf380d22f5c77b3dd6d2055903d26358640026bc64f6262a",
+  "tools/materialize_b4_causal_sac.py": "cc65bd930402dbe248675ab059a394e0e8d194ad936f9b27edd2744643914a1d",
+  "tests/test_b4_materializer_authority.py": "f7ed3be3458f7cb43733bdd71221cb361d5f482a97d8c46cfee13c08ef8f4538"
+ },
+ "chronology_truth": "authored AFTER the @e8bb500f PRE call-path freeze (4feb1ff1) and the dry-run finding; BEFORE any campaign score; the owner's future campaign record confirms the proposed population"
+}

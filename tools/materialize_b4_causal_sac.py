@@ -71,7 +71,14 @@ def author_origin_contract(year: int, out_dir: Path) -> dict:
     c["$doc"] = (f"B4 causal origin {year}: every fitting and selection "
                  f"role ends before the score year; authored from the "
                  f"v1 contract (sha {sha_file(V1_CONTRACT)[:16]}...). "
-                 f"sealed_test remains structurally unmaterialized.")
+                 f"sealed_test is THIS ORIGIN's post-outer exclusion "
+                 f"zone: every bar after the scored year is sealed "
+                 f"away from this origin (later development years of "
+                 f"OTHER origins included), and the global "
+                 f"confirmatory 2025 set lies inside it — strictly "
+                 f"MORE restrictive than a 2025-only seal; "
+                 f"structurally unmaterialized.")
+    sealed_end = base["roles"]["sealed_test"]["end"]
     c["roles"] = {
         "fit_train": {"start": base["roles"]["fit_train"]["start"],
                       "end": fit_end},
@@ -81,8 +88,22 @@ def author_origin_contract(year: int, out_dir: Path) -> dict:
                              "end": f"{year}-01-01T00:00:00"},
         "outer_validation": {"start": f"{year}-01-01T00:00:00",
                              "end": f"{year + 1}-01-01T00:00:00"},
-        "sealed_test": dict(base["roles"]["sealed_test"]),
+        # contiguity with the pipeline's nested-split chain AND the
+        # causal truth: the zone starts the instant scoring ends.
+        "sealed_test": {"start": f"{year + 1}-01-01T00:00:00",
+                        "end": sealed_end},
     }
+    # expected_rows must assert THIS origin's windows, not the v1
+    # base's (dry-run finding: derived != asserted for o2022/o2023).
+    import pandas as pd
+    dates = pd.read_csv(c["source_csv"],
+                        usecols=[c["date_column"]],
+                        parse_dates=[c["date_column"]]
+                        )[c["date_column"]]
+    c["expected_rows"] = {
+        role: int(((dates >= w["start"])
+                   & (dates < w["end"])).sum())
+        for role, w in c["roles"].items()}
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"b4_causal_origin_{year}_contract.json"
     path.write_text(json.dumps(c, indent=1))

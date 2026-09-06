@@ -718,6 +718,27 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "b4_campaign_executor.py": {
+   "purpose": "E8 campaign cell executor (order @e8bb500f): maps one materialized B4 cell into the real rl_pipeline_with_validation lifecycle + frozen-checkpoint outer scoring; dry-run validates the complete path offline; execute refuses until the owner's separate campaign authorization exists; immutable typed terminals",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "b4_campaign_ledger.py": {
+   "purpose": "E9 twelve-cell campaign ledger: materialized before dispatch, expected terminal identities per cell, complete-population gate, health-only scheduling (score-bearing input refuses)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
+  },
+  "b4_adjudicator.py": {
+   "purpose": "E10 doc-41 statistical adjudicator: paired per-bar support, WP40 G1 votes, IQM + stratified bootstrap CI, Politis-White block length from the control series, stationary bootstrap B=10000 seed 20260824, Hansen SPA, DSR both conventions; fail-closed",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

@@ -1,0 +1,132 @@
+{
+ "schema": "agent_multi.b4_campaign_ledger.v1",
+ "population_sha256": "99dac961f1a7b4aae67cd36abeb295f81e8697760f8da23433e9467e45df4a2d",
+ "materialization_sha256": "d2c943fa9705f1c52d70d7472aac672d2406a3efa244b58c25a189ecbc0ceb10",
+ "comparator_dir": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/docs/audits/evidence/screen_b_rule_arms_v6_e_corrected_20260905",
+ "owner_preflight_authorization_sha256": "7426a0bfc9cdb6c609730755512c0936f58fdc45d40cd17c0bb5a83ce00cdf82",
+ "preflight_is_scientific_evidence": false,
+ "cells": {
+  "o2022_seed101": {
+   "cell_config_sha256": "085beb7d38c3440cb2bcf5c83992f7ec20461982fed30f0891b89182125c62d4",
+   "genesis_binding_sha256": "085beb7d38c3440cb2bcf5c83992f7ec20461982fed30f0891b89182125c62d4",
+   "genesis_container_sha256": "5409f02a7ff9913bda8c8a69cb424c6d6eaaaba0475dfaa431bc5af61d3a5ad5",
+   "genesis_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2022_seed101/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2022_seed202": {
+   "cell_config_sha256": "3d2c00875609d076140e0eadf1062c9850575fd91ffce33a3c7e0dc01953255c",
+   "genesis_binding_sha256": "3d2c00875609d076140e0eadf1062c9850575fd91ffce33a3c7e0dc01953255c",
+   "genesis_container_sha256": "d8967fe64ca96088b9f35b92a27348ca1e568ac30a5bb0c26e8fd69513180772",
+   "genesis_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2022_seed202/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2022_seed303": {
+   "cell_config_sha256": "a95f3f3252ca5a16be2b3b3a21af5ecb7bd843a2d75fc5b668173c8fefc4ea5e",
+   "genesis_binding_sha256": "a95f3f3252ca5a16be2b3b3a21af5ecb7bd843a2d75fc5b668173c8fefc4ea5e",
+   "genesis_container_sha256": "6b0b666b18de32810ac8b8259b12961e9f13f149a74687bc0f340992cb081488",
+   "genesis_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2022_seed303/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2022_seed404": {
+   "cell_config_sha256": "b648662736ca5907971ba31d988d4e3c0b4ff07a822e2ba2fa0a849059f52333",
+   "genesis_binding_sha256": "b648662736ca5907971ba31d988d4e3c0b4ff07a822e2ba2fa0a849059f52333",
+   "genesis_container_sha256": "0cccaf1ebad682017ab1a4f09ad4e88dfab0949da2c080656c906622b8d04df1",
+   "genesis_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2022_seed404/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2023_seed101": {
+   "cell_config_sha256": "2b8af10725492c51d306e3ea984550a67f0a6d38c411b96f9a65829629a67a0d",
+   "genesis_binding_sha256": "2b8af10725492c51d306e3ea984550a67f0a6d38c411b96f9a65829629a67a0d",
+   "genesis_container_sha256": "5409f02a7ff9913bda8c8a69cb424c6d6eaaaba0475dfaa431bc5af61d3a5ad5",
+   "genesis_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2023_seed101/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2023_seed202": {
+   "cell_config_sha256": "5023c3393ee4273cb1f17e92a1fe054d040c3a87638be39d21420e8f813b8f3b",
+   "genesis_binding_sha256": "5023c3393ee4273cb1f17e92a1fe054d040c3a87638be39d21420e8f813b8f3b",
+   "genesis_container_sha256": "d8967fe64ca96088b9f35b92a27348ca1e568ac30a5bb0c26e8fd69513180772",
+   "genesis_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2023_seed202/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2023_seed303": {
+   "cell_config_sha256": "1e1ca67e4d5c398b16ac63cdf21845216e6ac8252dfd2928405a8a0d6813bdbe",
+   "genesis_binding_sha256": "1e1ca67e4d5c398b16ac63cdf21845216e6ac8252dfd2928405a8a0d6813bdbe",
+   "genesis_container_sha256": "6b0b666b18de32810ac8b8259b12961e9f13f149a74687bc0f340992cb081488",
+   "genesis_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2023_seed303/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2023_seed404": {
+   "cell_config_sha256": "d68ec1a277a96355f8759bdbfbe7caf52b268f5d7f1ca72fd9e556b25e6f20cc",
+   "genesis_binding_sha256": "d68ec1a277a96355f8759bdbfbe7caf52b268f5d7f1ca72fd9e556b25e6f20cc",
+   "genesis_container_sha256": "0cccaf1ebad682017ab1a4f09ad4e88dfab0949da2c080656c906622b8d04df1",
+   "genesis_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2023_seed404/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2024_seed101": {
+   "cell_config_sha256": "01e624d8e93128f6d260a9267003ad11a9819a3af8b6c1bf36e56f8c30846e33",
+   "genesis_binding_sha256": "01e624d8e93128f6d260a9267003ad11a9819a3af8b6c1bf36e56f8c30846e33",
+   "genesis_container_sha256": "5409f02a7ff9913bda8c8a69cb424c6d6eaaaba0475dfaa431bc5af61d3a5ad5",
+   "genesis_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2024_seed101/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2024_seed202": {
+   "cell_config_sha256": "e2cacd0a7fb76a2cbea7bf3edc411bbdbbc30f133a7276c7a01187007b5fb6ed",
+   "genesis_binding_sha256": "e2cacd0a7fb76a2cbea7bf3edc411bbdbbc30f133a7276c7a01187007b5fb6ed",
+   "genesis_container_sha256": "d8967fe64ca96088b9f35b92a27348ca1e568ac30a5bb0c26e8fd69513180772",
+   "genesis_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2024_seed202/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2024_seed303": {
+   "cell_config_sha256": "0a1e66aefa0eec0900310dc0b4a688dc3f359b4a1e0782c852407a949fe6d074",
+   "genesis_binding_sha256": "0a1e66aefa0eec0900310dc0b4a688dc3f359b4a1e0782c852407a949fe6d074",
+   "genesis_container_sha256": "6b0b666b18de32810ac8b8259b12961e9f13f149a74687bc0f340992cb081488",
+   "genesis_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2024_seed303/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  },
+  "o2024_seed404": {
+   "cell_config_sha256": "b5b8a10c175722559db3666e0ae7f31ecfc24d0331d8e2286b22038260303748",
+   "genesis_binding_sha256": "b5b8a10c175722559db3666e0ae7f31ecfc24d0331d8e2286b22038260303748",
+   "genesis_container_sha256": "0cccaf1ebad682017ab1a4f09ad4e88dfab0949da2c080656c906622b8d04df1",
+   "genesis_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+   "expected_terminal": "B4_CELL_TERMINAL.json under the campaign output root at o2024_seed404/",
+   "expected_result_schema": "agent_multi.b4_cell_terminal.v1 + per-bar paired net returns on the scored origin index",
+   "attempt_ids_consumed": [],
+   "status": "PENDING"
+  }
+ },
+ "scheduling_rule": "staged by RUNTIME HEALTH ONLY (fields: compute_apps_active, device_available, gpu_memory_free_mib, gpu_temperature_celsius, host_rss_free_bytes, previous_terminal_class, stop_file_present); observed returns and gate direction can never reorder, skip or add cells",
+ "campaign_digest": "58617dcdeda40afece2c635519f8dca02882b86255582d922415afb283f55d74"
+}

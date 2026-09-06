@@ -33,7 +33,10 @@ GPU_PREFLIGHT_LABEL = "B4_GPU_PREFLIGHT_MECHANICS_AND_THROUGHPUT_ONLY"
 GPU_BLOCKED_LABEL = "B4_GPU_PREFLIGHT_RESOURCE_BLOCKED"
 GPU_FAILED_LABEL = "B4_GPU_PREFLIGHT_FAILED_TYPED"
 SUBSTANTIAL_COMPUTE_MIB = 1024
-TEMP_SAMPLE_EVERY_STEPS = 25
+# E11 (order @e8bb500f): GPU telemetry sampling is TIME-based
+# and bounded — one probe per cadence tick, overhead measured
+# at callback construction and reported in the record.
+TEMP_SAMPLE_SECONDS = 5.0
 
 
 class RunnerRefusal(SystemExit):
@@ -143,6 +146,13 @@ def make_guard_callback(peak: dict, rss_cap: int, thermal_cap: float,
             super().__init__()
             self._last_hb = time.time()
             self._t0 = time.time()
+            self._last_temp = 0.0
+            if gpu_device is not None:
+                probe_t0 = time.perf_counter()
+                _gpu_temp(gpu_device)
+                peak["temp_probe_seconds_per_call"] = round(
+                    time.perf_counter() - probe_t0, 4)
+                peak["temp_probe_calls"] = 0
 
         def _on_step(self) -> bool:
             rss = _rss_bytes()
@@ -160,7 +170,10 @@ def make_guard_callback(peak: dict, rss_cap: int, thermal_cap: float,
                                     f"exceeded at {alloc}")
                     return False
             if gpu_device is not None:
-                if self.num_timesteps % TEMP_SAMPLE_EVERY_STEPS == 0:
+                if time.time() - self._last_temp >= \
+                        TEMP_SAMPLE_SECONDS:
+                    self._last_temp = time.time()
+                    peak["temp_probe_calls"] += 1
                     t = _gpu_temp(gpu_device)
                     if t is None:
                         peak["stop"] = ("GPU temperature telemetry "
@@ -634,6 +647,10 @@ def main(argv=None) -> int:
                          "peak_cuda_bytes": peak.get("peak_cuda_bytes"),
                          "peak_gpu_temp": peak.get("peak_gpu_temp"),
                          "gpu_temp_series": peak.get("gpu_temp_series"),
+                         "temp_probe_seconds_per_call":
+                             peak.get("temp_probe_seconds_per_call"),
+                         "temp_probe_calls":
+                             peak.get("temp_probe_calls"),
                          "peak_thermal_celsius":
                              peak.get("peak_thermal_celsius"),
                          "resource_stop": peak["stop"]},

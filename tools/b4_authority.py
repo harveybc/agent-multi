@@ -42,6 +42,9 @@ AMENDMENT_4_PATH = (EVIDENCE /
 AMENDMENT_5_PATH = (EVIDENCE /
                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_5_2026_09_05"
                     ".json")
+AMENDMENT_6_PATH = (EVIDENCE /
+                    "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_6_2026_09_05"
+                    ".json")
 
 # --- B4-P1 (order @9fb017e3): the exact owner GPU authorization ---
 # Fixed reviewed identities: neither the path nor the digest can come
@@ -495,6 +498,40 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 5 does not pin the final "
                 "authority module, runner and tests")
     pins.update(a5_pins)
+    # E8-E12 (order @e8bb500f): amendment 6 is the campaign-
+    # preparation append-only step — it names amendment 5's exact
+    # bytes, DISCLOSES its data-role change (the per-origin sealed
+    # zone correction; never silent), carries the PROPOSED campaign
+    # population identities for the owner's future authorization,
+    # and its pins supersede amendment 5's for the files it re-pins.
+    campaign_pins = None
+    if not AMENDMENT_6_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 6 absent — the campaign-preparation "
+            "chain does not exist")
+    a6 = json.loads(AMENDMENT_6_PATH.read_bytes())
+    if a6.get("amends_amendment_5_sha256") != _sha_file(
+            AMENDMENT_5_PATH):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 6 does not name amendment 5's "
+            "exact bytes")
+    if not a6.get("data_role_change_disclosure"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 6 must disclose its data-role "
+            "change explicitly")
+    campaign_pins = a6.get("proposed_campaign_population")
+    a6_pins = a6.get("final_code_pins", {})
+    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
+                "tools/b4_campaign_executor.py",
+                "tools/b4_campaign_ledger.py",
+                "tools/b4_adjudicator.py",
+                "tools/materialize_b4_causal_sac.py",
+                "tests/test_b4_materializer_authority.py"):
+        if req not in a6_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 6 does not pin the full "
+                "campaign executing surface")
+    pins.update(a6_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -504,9 +541,39 @@ def verify_amendment_chain() -> dict:
     return {"design_sha256": DESIGN_SHA,
             "amendment_shas": list(AMENDMENT_SHAS)
             + [_sha_file(AMENDMENT_4_PATH),
-               _sha_file(AMENDMENT_5_PATH)],
+               _sha_file(AMENDMENT_5_PATH),
+               _sha_file(AMENDMENT_6_PATH)],
             "final_code_pins": pins,
+            "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
+
+
+def verify_campaign_materialization(mat_root: Path) -> dict:
+    """E8/E9: the campaign tree binds to the amendment-6 PROPOSED
+    population identities (auditor-reviewable now; the owner's
+    campaign record confirms them later). A self-consistent
+    replacement tree grants nothing on this path either."""
+    chain = verify_amendment_chain()
+    pins = chain["proposed_campaign_population"]
+    if not pins:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 6 carries no proposed campaign "
+            "population identities — the campaign tree has no "
+            "external binding yet")
+    mat_root = Path(mat_root)
+    for rel, key in (("B4_CELL_CONFIGS.json",
+                      "cell_population_sha256"),
+                     ("B4_MATERIALIZATION.json",
+                      "materialization_sha256"),
+                     ("genesis/GENESIS_BINDING.json",
+                      "genesis_binding_sha256")):
+        want = pins.get(key)
+        f = mat_root / rel
+        if not want or not f.is_file() or _sha_file(f) != want:
+            raise B4AuthorityRefusal(
+                f"REFUSED: campaign artifact {rel} differs from the "
+                "amendment-6 proposed population identity")
+    return chain
 
 
 # --- E5: evidence-complete comparator verification ----------------

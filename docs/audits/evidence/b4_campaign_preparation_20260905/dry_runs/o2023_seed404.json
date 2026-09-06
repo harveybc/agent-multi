@@ -1,0 +1,35 @@
+{
+ "schema": "agent_multi.b4_campaign_dry_run.v1",
+ "cell": "o2023_seed404",
+ "status": "DRY_RUN_READY",
+ "cell_config_sha256": "d68ec1a277a96355f8759bdbfbe7caf52b268f5d7f1ca72fd9e556b25e6f20cc",
+ "contract": "/home/harveybc/.local/share/agent-multi/b4_materialization_v3_20260905/contracts/b4_causal_origin_2023_contract.json",
+ "roles_materialized": {
+  "outer_validation": {
+   "csv": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/nested_splits/outer_validation.csv",
+   "sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6"
+  },
+  "train": {
+   "csv": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/nested_splits/fit_train.csv",
+   "sha256": "4268f9a1b1d37e1b0de75ed843df52c69dfe038b714b5c1f796caa7f58c0661b"
+  },
+  "train_monitor": {
+   "csv": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/nested_splits/train_monitor.csv",
+   "sha256": "2eeaf6ecf84d21109f8e25371ab254659ce2c8f2aaee150d82dcd6ab65a64848"
+  },
+  "train_tail": {
+   "csv": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/nested_splits/train_monitor.csv",
+   "sha256": "2eeaf6ecf84d21109f8e25371ab254659ce2c8f2aaee150d82dcd6ab65a64848"
+  },
+  "val": {
+   "csv": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/nested_splits/inner_validation.csv",
+   "sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06"
+  },
+  "validation": {
+   "csv": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/nested_splits/inner_validation.csv",
+   "sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06"
+  }
+ },
+ "findings": [],
+ "wall_seconds": 1.5
+}

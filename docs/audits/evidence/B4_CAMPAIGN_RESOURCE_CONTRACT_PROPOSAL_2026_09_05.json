@@ -1,0 +1,68 @@
+{
+ "schema": "agent_multi.b4_campaign_resource_contract_proposal.v1",
+ "order": "agent-multi@e8bb500f E11 \u2014 PROPOSAL for the owner's separate campaign authorization; nothing here authorizes dispatch",
+ "per_cell_limits": {
+  "environment_steps_max": 40020000,
+  "real_updates_max": 40020000,
+  "wall_seconds_max": 43200,
+  "host_rss_bytes_max": 8589934592,
+  "cuda_allocated_bytes_max": 6442450944,
+  "gpu_temperature_celsius_max": 87,
+  "note": "step/update ceilings are the materialized epoch-loop bound (20000 x (2000+1)); the REAL stop is the materialized patience contract (60/40, min_delta 0); wall 12h/cell is a hard backstop ~2.5x the measured mechanics rate extrapolation for a patience-typical 120-epoch arm \u2014 a backstop, NOT an ETA"
+ },
+ "global_limits": {
+  "gpu_hours_ceiling_all_cells": 96.0,
+  "max_concurrency": 1,
+  "note": "one cell at a time on this host class; the ceiling is a hard kill boundary, not an estimate"
+ },
+ "eligible_devices_read_only_inventory": {
+  "host_class": "laptop RTX 4070 8 GiB (uuid held in private evidence; machine topology never enters the public repo)",
+  "device_count": 1,
+  "observed_idle_temperature_c": 43,
+  "note": "read-only inventory at authoring; re-taken pre-dispatch"
+ },
+ "monitoring": {
+  "heartbeat_seconds": 30,
+  "gpu_telemetry_sample_seconds": 5.0,
+  "sampler": "time-based bounded nvidia-smi probe (one call per tick); per-call overhead measured at callback construction and reported in every record",
+  "stop_file": "budget_stop_file in the cell output root; presence stops before the next environment step (typed)",
+  "operator_progress": "HEARTBEAT lines every 30 s with steps/updates/RSS/CUDA/temperature; terminal record with requested vs effective limits and full counters"
+ },
+ "retry_policy_by_terminal_class": {
+  "COMPLETED": "never re-run; result immutable",
+  "FAILED": "NO automatic retry; auditor review names the cause first",
+  "TIMED_OUT": "NO automatic retry; budget adequacy reviewed",
+  "THERMAL_STOP": "NO automatic retry; host thermal review",
+  "RESOURCE_STOP": "NO automatic retry; resource review",
+  "EXTERNALLY_STOPPED": "NO automatic retry; the stop was a decision",
+  "ambiguous_or_missing_terminal": "NO retry ever \u2014 an ambiguous attempt is adjudicated, not repeated"
+ },
+ "itemized_estimate": {
+  "claim_discipline": "NO campaign ETA is claimed (auditor limitation accepted): the mechanics preflight measured ONE bounded segment without the epoch loop, validation, checkpoint I/O, scoring or aggregation. Components below are measured where a measurement exists and labeled UNMEASURED otherwise; the later authorized FIRST full-path cell converts them to data.",
+  "learning_per_20000_step_epoch_seconds": {
+   "value": 168.5,
+   "basis": "MEASURED (accepted preflight)"
+  },
+  "validation_per_epoch": {
+   "value": null,
+   "basis": "UNMEASURED \u2014 inner-validation eval cost; bounded conservatively by one epoch-equivalent until timed"
+  },
+  "checkpoint_io_per_save_seconds": {
+   "value": 1.0,
+   "basis": "measured save/load roundtrip order of magnitude in mechanics records"
+  },
+  "frozen_outer_scoring_per_origin_seconds": {
+   "value": null,
+   "basis": "UNMEASURED \u2014 same shape as one comparator arm-year (minutes-scale in the v6 rerun); timed in the first full-path cell"
+  },
+  "aggregation_adjudication_seconds": {
+   "value": null,
+   "basis": "UNMEASURED CPU-only; B=10000 bootstrap dominates; timed offline before dispatch"
+  },
+  "monitor_overhead": {
+   "value": "temp_probe_seconds_per_call x ceil(wall/5s)",
+   "basis": "measured per-call at construction; reported per record"
+  }
+ },
+ "remaining_owner_decision": "authorize the 12-cell B4 campaign under this resource contract (or an auditor-amended one), pinning the amendment-6 proposed population identities and the campaign authorization digest into the executor"
+}

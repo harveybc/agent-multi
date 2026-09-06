@@ -1,0 +1,220 @@
+{
+ "schema": "agent_multi.b4_causal_sac_materialization.v2",
+ "comparator_dir": "/home/harveybc/Documents/GitHub/.worktrees/am-data-first/docs/audits/evidence/screen_b_rule_arms_v6_e_corrected_20260905",
+ "status": "PREPARED_NOT_LAUNCHED",
+ "origins": [
+  {
+   "year": 2022,
+   "path": "/home/harveybc/.local/share/agent-multi/b4_materialization_v3_20260905/contracts/b4_causal_origin_2022_contract.json",
+   "sha256": "8d22dc265a17db07c10a67dd20d84fca1adc75dc54efda1561becf906b9a39c9",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2021-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2020-01-01T00:00:00",
+     "end": "2021-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2021-01-01T00:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  },
+  {
+   "year": 2023,
+   "path": "/home/harveybc/.local/share/agent-multi/b4_materialization_v3_20260905/contracts/b4_causal_origin_2023_contract.json",
+   "sha256": "e0d0d3e8571894e0187376f622c512237d4b4f648ddfc869c92d5f7e699c03d5",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2021-01-01T00:00:00",
+     "end": "2022-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2024-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2024-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  },
+  {
+   "year": 2024,
+   "path": "/home/harveybc/.local/share/agent-multi/b4_materialization_v3_20260905/contracts/b4_causal_origin_2024_contract.json",
+   "sha256": "64b1cdc2af7c84a1672bdfb1cc607b01d8d76796211073b4d5de1025ee0c656b",
+   "roles": {
+    "fit_train": {
+     "start": "2017-09-28T04:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "train_monitor": {
+     "start": "2022-01-01T00:00:00",
+     "end": "2023-01-01T00:00:00"
+    },
+    "inner_validation": {
+     "start": "2023-01-01T00:00:00",
+     "end": "2024-01-01T00:00:00"
+    },
+    "outer_validation": {
+     "start": "2024-01-01T00:00:00",
+     "end": "2025-01-01T00:00:00"
+    },
+    "sealed_test": {
+     "start": "2025-01-01T00:00:00",
+     "end": "2026-01-01T00:00:00"
+    }
+   }
+  }
+ ],
+ "causal_eligibility": [
+  {
+   "origin": "o2022",
+   "fit_data_end": "2021-01-01",
+   "selection_info_end": "2021-12-31",
+   "eligible": true
+  },
+  {
+   "origin": "o2023",
+   "fit_data_end": "2022-01-01",
+   "selection_info_end": "2022-12-31",
+   "eligible": true
+  },
+  {
+   "origin": "o2024",
+   "fit_data_end": "2023-01-01",
+   "selection_info_end": "2023-12-31",
+   "eligible": true
+  }
+ ],
+ "observation_identity": {
+  "feature_count": 83,
+  "feature_columns_sha256": "c4697681c1323245691b8e577905894b96bed81738411b439995e2c2d4b44e4d",
+  "agent_state_fields_sha256": "b5beeb97e2031b8b696fad452cf42d1781d87848ce753855413f0f46eef9f160",
+  "flattened_shape": 2660,
+  "system_contract_sha256": "563b1dcb05685671c1f32c6549658b432ff0cbc72bde53be4354bb9030929c06",
+  "status_in_contract": "OWNER_RATIFIED"
+ },
+ "recipe_equality_sha256": "d227d58c2cc81a0ca831af8fd0a3164742d497cfc4c402f70ec7154bcfa36e7c",
+ "genesis": {
+  "status": "materialized",
+  "cells": {
+   "o2022_seed101": {
+    "container_sha256": "5409f02a7ff9913bda8c8a69cb424c6d6eaaaba0475dfaa431bc5af61d3a5ad5",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2022_seed202": {
+    "container_sha256": "d8967fe64ca96088b9f35b92a27348ca1e568ac30a5bb0c26e8fd69513180772",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2022_seed303": {
+    "container_sha256": "6b0b666b18de32810ac8b8259b12961e9f13f149a74687bc0f340992cb081488",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2022_seed404": {
+    "container_sha256": "0cccaf1ebad682017ab1a4f09ad4e88dfab0949da2c080656c906622b8d04df1",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   },
+   "o2023_seed101": {
+    "container_sha256": "5409f02a7ff9913bda8c8a69cb424c6d6eaaaba0475dfaa431bc5af61d3a5ad5",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2023_seed202": {
+    "container_sha256": "d8967fe64ca96088b9f35b92a27348ca1e568ac30a5bb0c26e8fd69513180772",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2023_seed303": {
+    "container_sha256": "6b0b666b18de32810ac8b8259b12961e9f13f149a74687bc0f340992cb081488",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2023_seed404": {
+    "container_sha256": "0cccaf1ebad682017ab1a4f09ad4e88dfab0949da2c080656c906622b8d04df1",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   },
+   "o2024_seed101": {
+    "container_sha256": "5409f02a7ff9913bda8c8a69cb424c6d6eaaaba0475dfaa431bc5af61d3a5ad5",
+    "policy_tensor_sha256": "6bf257c4d8ebba0788434a8004d324bcbad8f64a1b33a70d0f853cc09eb657db",
+    "n_updates": 0
+   },
+   "o2024_seed202": {
+    "container_sha256": "d8967fe64ca96088b9f35b92a27348ca1e568ac30a5bb0c26e8fd69513180772",
+    "policy_tensor_sha256": "1589f49c42384d3ab7a73defc4f24358274ab389ecad32e998046e5d136433f2",
+    "n_updates": 0
+   },
+   "o2024_seed303": {
+    "container_sha256": "6b0b666b18de32810ac8b8259b12961e9f13f149a74687bc0f340992cb081488",
+    "policy_tensor_sha256": "15f0d8964fdf044580968221fabd8691f4cfd42f6167bf77703bd2a173d35da5",
+    "n_updates": 0
+   },
+   "o2024_seed404": {
+    "container_sha256": "0cccaf1ebad682017ab1a4f09ad4e88dfab0949da2c080656c906622b8d04df1",
+    "policy_tensor_sha256": "d5ac1d713a290b1d199a79d38a06231ec0b8f2166a342a1f903d72323d888b97",
+    "n_updates": 0
+   }
+  },
+  "pairing": "same zero-update init per seed across origins (paired); no cross-origin or P1 warm start"
+ },
+ "cells": {
+  "o2022_seed101": "085beb7d38c3440cb2bcf5c83992f7ec20461982fed30f0891b89182125c62d4",
+  "o2022_seed202": "3d2c00875609d076140e0eadf1062c9850575fd91ffce33a3c7e0dc01953255c",
+  "o2022_seed303": "a95f3f3252ca5a16be2b3b3a21af5ecb7bd843a2d75fc5b668173c8fefc4ea5e",
+  "o2022_seed404": "b648662736ca5907971ba31d988d4e3c0b4ff07a822e2ba2fa0a849059f52333",
+  "o2023_seed101": "2b8af10725492c51d306e3ea984550a67f0a6d38c411b96f9a65829629a67a0d",
+  "o2023_seed202": "5023c3393ee4273cb1f17e92a1fe054d040c3a87638be39d21420e8f813b8f3b",
+  "o2023_seed303": "1e1ca67e4d5c398b16ac63cdf21845216e6ac8252dfd2928405a8a0d6813bdbe",
+  "o2023_seed404": "d68ec1a277a96355f8759bdbfbe7caf52b268f5d7f1ca72fd9e556b25e6f20cc",
+  "o2024_seed101": "01e624d8e93128f6d260a9267003ad11a9819a3af8b6c1bf36e56f8c30846e33",
+  "o2024_seed202": "e2cacd0a7fb76a2cbea7bf3edc411bbdbbc30f133a7276c7a01187007b5fb6ed",
+  "o2024_seed303": "0a1e66aefa0eec0900310dc0b4a688dc3f359b4a1e0782c852407a949fe6d074",
+  "o2024_seed404": "b5b8a10c175722559db3666e0ae7f31ecfc24d0331d8e2286b22038260303748"
+ },
+ "gpu_hours_estimate": {
+  "basis": "median seconds/epoch from ACCEPTED P1 phase reports; assumed epochs/arm=120 (P1 normal phases stopped at 101-150 under the same patience contract)",
+  "per_host_class": {
+   "omega_4070": {
+    "seconds_per_epoch_median": 238.7,
+    "est_hours_per_arm": 7.96
+   },
+   "gamma_5070ti_5090": {
+    "seconds_per_epoch_median": 118.1,
+    "est_hours_per_arm": 3.94
+   }
+  },
+  "arms_total": 12,
+  "est_total_gpu_hours_range": [
+   47.3,
+   95.5
+  ],
+  "caveat": "v2 observation is SMALLER than P1's executed 84 (2,660 vs 2,692 inputs): estimate is mildly conservative; the proposed GPU preflight measures the real rate before dispatch"
+ },
+ "b4_launch_surface": "tools/b4_run_cell.py is the ONE B4 runner: it may select only a reviewed cell id, materialization root, output root and device; every scientific and budget value comes from the materialized cell",
+ "cpu_mechanics_command": "CUDA_VISIBLE_DEVICES='' PYTHONPATH=. python tools/b4_run_cell.py --cell-id o2024_seed101 --materialization-root <this_output_dir> --output-root <mechanics_dir> --device cpu",
+ "gpu_preflight_status": "requires the separate explicit Musashi GPU authorization AFTER this correction passes review",
+ "sealed_2025_used": false
+}
