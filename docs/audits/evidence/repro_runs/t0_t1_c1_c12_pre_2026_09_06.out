@@ -1,0 +1,40 @@
+== 1: bool and numeric-string matrices coerce and execute ==
+bool matrix executed -> [1.0, 0.7]
+string matrix executed -> [1.25, 1.625]
+
+== 2: arbitrary future availability rule executes ==
+rule 'tomorrow_after_decision' executed (5, 1) — the API consumes no timestamps at all
+
+== 3: state from alpha 0.3 accepted by alpha 0.9 ==
+foreign state ACCEPTED by a different artifact -> [-0.5842127912029282, -0.02122789770777357]
+
+== 4: DAG edge a->z validates ==
+incompatible child ACCEPTED; order: ['root', 'kid']
+
+== 5: same-name artifact save overwrites ==
+overwritten: True
+
+== 6: delayed observed != clean + realized_noise ==
+max |observed - (clean + recorded_noise)| = 4.91
+
+== 7: committed measurement JSON has non-finite literals ==
+literal NaN occurrences: 234
+
+== 8: NaN in every gate metric -> LAB_CALIBRATED ==
+all-NaN gates verdict: LAB_CALIBRATED
+
+== 9: self-declared 3-record population adjudicates ==
+expected_units/operators come from the PRODUCER dict: 3 records adjudicated above with self-declared counts
+
+== 10: gate metrics computed across train+val+score ==
+reconstruction uses obs[j] (FULL 2048 samples): True
+
+== 11: [X,X,X] changes ridge's effective regularization ==
+max |pred_X - pred_XXX| = 0.0161 (nonzero: duplication under a fixed penalty is NOT capacity-neutral)
+
+== 12: execution without the sealed design ==
+lab verifies sealed design digest: False
+adjudicator consumes design/inventory: False
+lab default embeds a worktree path: True
+
+PRE CONFIRMED: all twelve reproduce
