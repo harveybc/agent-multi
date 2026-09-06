@@ -96,30 +96,47 @@ def load_task_unit(census: dict, unit_id: str) -> dict:
             "census digest — the frame is decoupled from its "
             "bytes")
     import pandas as pd
+    import t2_bank as bank
     df = pd.read_csv(io.BytesIO(raw))
     col = meta["column"]
     if col not in df.columns:
         raise HarnessRefusal(f"unit {unit_id!r} lacks the declared "
                              f"column {col!r}")
-    y = pd.to_numeric(df[col], errors="coerce").to_numpy(float)
-    n_nan = int(np.isnan(y).sum())
-    if "forward-fill" in meta["missingness_policy"]:
-        s = pd.Series(y).ffill().bfill()
-        y = s.to_numpy(float)
-    elif n_nan:
-        raise HarnessRefusal(
-            f"unit {unit_id!r} has {n_nan} NaN and its declared "
-            "policy refuses missingness")
-    if not np.isfinite(y).all():
-        raise HarnessRefusal(f"unit {unit_id!r} not finite after "
-                             "declared policy")
+    # C1: strict tokens (malformed refuses), leading-prefix rule,
+    # bounded causal forward fill only — bfill does not exist.
+    y_raw = bank.parse_strict_numeric(df[col].tolist(),
+                                      f"{unit_id}/{col}")
+    fixed = bank.apply_causal_missingness(
+        y_raw, unit_id,
+        max_gap_run=meta.get("max_gap_run",
+                             bank.DEFAULT_MAX_GAP_RUN))
+    y = fixed["y"]
+    # C2: a real time index — parsed or mechanically reconstructed
+    # by the unit's declared rule, then checked for duplicates,
+    # ordering and spacing.
+    tcol = meta.get("time_column")
+    if tcol and tcol in df.columns:
+        ts_all = bank.parse_strict_numeric(
+            df[tcol].tolist(), f"{unit_id}/{tcol}")
+        ts = ts_all[fixed["missingness"]["leading_dropped"]:]
+        time_provenance = f"parsed_column:{tcol}"
+    else:
+        ts = np.arange(len(y), dtype=float)
+        time_provenance = ("mechanical_row_index (declared: "
+                           "regular sampling per census "
+                           "frequency)")
+    time_facts = bank.check_time_index(ts, unit_id)
     return {"unit_id": unit_id, "y": y,
             "bytes_sha256": meta["bytes_sha256"],
             "family": meta["family"],
             "frequency": meta["frequency"],
             "license_note": meta["license_note"],
-            "nan_filled": n_nan,
-            "seasonal_period": SEASONAL_PERIOD[unit_id]}
+            "missingness": fixed["missingness"],
+            "time_index": time_facts,
+            "time_provenance": time_provenance,
+            "seasonal_period": SEASONAL_PERIOD[unit_id],
+            "seasonal_period_provenance":
+                "predeclared_design_constant"}
 
 
 def roles_of(n: int) -> dict:
@@ -183,130 +200,257 @@ def _targets(y, lo, hi, h):
                      for t in range(lo + RIDGE_LAGS, hi - h)])
 
 
+def _train_scaler(Xt):
+    """C5: train-only standardization — mean/std from the fit rows
+    only, applied unchanged everywhere else."""
+    mu = Xt.mean(axis=0)
+    sd = Xt.std(axis=0)
+    sd = np.where(sd < 1e-12, 1.0, sd)
+    return mu, sd
+
+
 def _ridge(Xt, yt, Xs):
-    XtX = Xt.T @ Xt + RIDGE_LAMBDA * np.eye(Xt.shape[1])
-    w = np.linalg.solve(XtX, Xt.T @ yt)
-    return Xs @ w
+    """C5: intercept + train-only standardization."""
+    mu, sd = _train_scaler(Xt)
+    Zt = (Xt - mu) / sd
+    Zs = (Xs - mu) / sd
+    Zt1 = np.hstack([np.ones((len(Zt), 1)), Zt])
+    Zs1 = np.hstack([np.ones((len(Zs), 1)), Zs])
+    reg = RIDGE_LAMBDA * np.eye(Zt1.shape[1])
+    reg[0, 0] = 0.0                    # never penalize the mean
+    w = np.linalg.solve(Zt1.T @ Zt1 + reg, Zt1.T @ yt)
+    return Zs1 @ w
 
 
-def _mlp(Xt, yt, Xs, seed):
+def _mlp(Xt, yt, Xs, seed, val_frac=0.2):
+    """C5: same train-only scaling; the VALIDATION role has an
+    explicit purpose — the temporally FINAL fraction of the fit
+    rows drives the epoch rule (early stopping) without ever
+    seeing score rows."""
     from sklearn.neural_network import MLPRegressor
-    m = MLPRegressor(random_state=seed, **MLP_BUDGET)
+    mu, sd = _train_scaler(Xt)
+    Zt = (Xt - mu) / sd
+    Zs = (Xs - mu) / sd
+    n_val = max(8, int(len(Zt) * val_frac))
+    m = MLPRegressor(random_state=seed,
+                     early_stopping=False, **MLP_BUDGET)
     import warnings
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        m.fit(Xt, yt)
-    return m.predict(Xs)
+        best, best_val = None, np.inf
+        fit_Z, fit_y = Zt[:-n_val], yt[:-n_val]
+        val_Z, val_y = Zt[-n_val:], yt[-n_val:]
+        for epochs in (40, 80, 120, 200):
+            mm = MLPRegressor(random_state=seed,
+                              **{**MLP_BUDGET,
+                                 "max_iter": epochs})
+            mm.fit(fit_Z, fit_y)
+            v = float(np.mean(np.abs(mm.predict(val_Z) - val_y)))
+            if v < best_val:
+                best, best_val = mm, v
+        m = best
+    return m.predict(Zs)
 
 
-def _metrics(y_true, y_pred, resid_train_q):
+def _metrics(y_true, y_pred, resid_train_q, mase_denom,
+             extreme_mask):
+    """C5: MASE is the scale-free primary loss (train-defined
+    seasonal-naive denominator); raw MAE/RMSE stay PER-SERIES
+    diagnostics and are never pooled across families. C6: the
+    extreme set is predeclared from train-scaled INNOVATIONS (not
+    raw level), and calibration reports coverage AND width."""
     err = y_pred - y_true
     mae = float(np.mean(np.abs(err)))
     rmse = float(np.sqrt(np.mean(err ** 2)))
+    mase = float(mae / mase_denom) if mase_denom > 0 else None
     lo_q, hi_q = resid_train_q
     coverage = float(np.mean((err >= lo_q) & (err <= hi_q)))
-    k = max(1, len(y_true) // 10)
-    top = np.argsort(np.abs(y_true))[-k:]
-    mae_extreme = float(np.mean(np.abs(err[top])))
-    return {"mae": mae, "rmse": rmse,
-            "interval_coverage_train_q90": coverage,
-            "mae_top_decile_abs_target": mae_extreme}
+    width = float(hi_q - lo_q)
+    out = {"mase_primary": mase,
+           "mae_per_series_diagnostic": mae,
+           "rmse_per_series_diagnostic": rmse,
+           "interval_coverage_train_q90": coverage,
+           "interval_width_train_q90": width}
+    if extreme_mask is not None and extreme_mask.any():
+        out["mase_on_extreme_innovations"] = (
+            float(np.mean(np.abs(err[extreme_mask])) / mase_denom)
+            if mase_denom > 0 else None)
+        out["extreme_support"] = int(extreme_mask.sum())
+    else:
+        out["mase_on_extreme_innovations"] = None
+        out["extreme_support"] = 0
+    return out
+
+
+def train_innovation_extremes(y, lo_t, hi_t, targets_idx,
+                              period, q=0.9):
+    """C6: an extreme is a large TRAIN-SCALED innovation
+    |y[t+h] - y[t+h-period]| exceeding the train-quantile of the
+    same statistic — a rising level series does not turn 'late'
+    into 'extreme'."""
+    train_innov = np.abs(np.diff(y[lo_t:hi_t]))
+    if len(train_innov) < 10:
+        return None, 0.0
+    thresh = float(np.quantile(train_innov, q))
+    mask = np.array([abs(y[t] - y[t - 1]) > thresh
+                     for t in targets_idx])
+    return mask, thresh
+
+
+ROLLING_ORIGINS = 3
+ORIGIN_BASE_FRAC = 0.6
+
+
+def unit_origins(n: int) -> list:
+    """C5: multiple causal rolling origins — the final 40% of the
+    series is covered by consecutive score windows; for origin o,
+    train=[0,o) and score=[o,o+w). Predeclared geometry, never
+    outcome-dependent."""
+    base = int(n * ORIGIN_BASE_FRAC)
+    w = (n - base) // ROLLING_ORIGINS
+    if w < RIDGE_LAGS + 4:
+        raise HarnessRefusal(
+            f"series too short for {ROLLING_ORIGINS} rolling "
+            "origins")
+    return [(base + k * w,
+             base + (k + 1) * w if k < ROLLING_ORIGINS - 1 else n)
+            for k in range(ROLLING_ORIGINS)]
+
+
+def _mase_denominator(y, lo_t, hi_t, period):
+    """C5: train-defined seasonal-naive MAE — the score suffix is
+    never used for normalization."""
+    if hi_t - lo_t <= period + 1:
+        return 0.0
+    d = np.abs(y[lo_t + period:hi_t] - y[lo_t:hi_t - period])
+    return float(np.mean(d))
 
 
 def assay_unit(co, unit: dict, h: int = 1) -> dict:
-    """All arms through the identical path; every cost counted."""
-    t0 = time.perf_counter()
+    """All arms on identical rows/budgets per origin; every cost
+    phase recorded separately (C7)."""
     y = unit["y"]
     n = len(y)
     if n < 120:
         raise HarnessRefusal(
-            f"unit {unit['unit_id']} too short for the lag/split "
+            f"unit {unit['unit_id']} too short for the lag/origin "
             "geometry")
-    roles = roles_of(n)
-    lo_t, hi_t = roles["train"]
-    lo_s, hi_s = roles["score"]
-    den = causal_denoise(co, y, roles, unit["unit_id"])
-    d = den["d"]
-    r = y - d
-    nui = nuisance(y, roles, f"{unit['unit_id']}|{T1_OPERATOR['kind']}")
-    arms = {"X": [y], "D": [d], "XDR": [y, d, r],
-            "width_control": [y, nui[0], nui[1]]}
-    yt = _targets(y, lo_t, hi_t, h)
-    ys = _targets(y, lo_s, hi_s, h)
     period = unit["seasonal_period"]
-    snaive_idx = [t + h - period for t in
-                  range(lo_s + RIDGE_LAGS, hi_s - h)]
-    if min(snaive_idx) < 0:
-        raise HarnessRefusal("seasonal naive would need rows "
-                             "before the series start")
-    snaive_pred = y[snaive_idx]
-    results = {"seasonal_naive": {
-        "predictor": "y[t+h-period]",
-        "period_source": "predeclared_design_constant",
-        "metrics": _metrics(
-            ys, snaive_pred,
-            _train_resid_q(y, lo_t, hi_t, h, period))}}
-    for arm, series in arms.items():
-        Xt = _lag_matrix(series, lo_t, hi_t, h)
-        Xs = _lag_matrix(series, lo_s, hi_s, h)
-        ridge_pred = _ridge(Xt, yt, Xs)
-        rq = np.quantile(_ridge(Xt, yt, Xt) - yt, [0.05, 0.95])
-        arm_out = {"ridge": _metrics(ys, ridge_pred,
-                                     (float(rq[0]),
-                                      float(rq[1])))}
-        mlp_runs = {}
-        for seed in SEED_TAPE:
-            pred = _mlp(Xt, yt, Xs, seed)
-            tq = np.quantile(_mlp(Xt, yt, Xt, seed) - yt,
-                             [0.05, 0.95])
-            mlp_runs[f"seed{seed}"] = _metrics(
-                ys, pred, (float(tq[0]), float(tq[1])))
-        arm_out["mlp_small"] = mlp_runs
-        results[arm] = arm_out
+    origins = unit_origins(n)
+    per_origin = {}
+    costs = {}
+    for oi, (o_lo, o_hi) in enumerate(origins):
+        okey = f"origin{oi}"
+        ocost = {}
+        lo_t, hi_t = 0, o_lo
+        t0 = time.perf_counter()
+        den = causal_denoise(co, y, {"train": (lo_t, hi_t)},
+                             f"{unit['unit_id']}|{okey}")
+        ocost["denoise_fit_transform_s"] = round(
+            time.perf_counter() - t0, 4)
+        d = den["d"]
+        r = y - d
+        nui = nuisance(y, {"train": (lo_t, hi_t)},
+                       f"{unit['unit_id']}|{T1_OPERATOR['kind']}"
+                       f"|{okey}")
+        arms = {"X": [y], "D": [d], "XDR": [y, d, r],
+                "width_control": [y, nui[0], nui[1]]}
+        t0 = time.perf_counter()
+        yt = _targets(y, lo_t, hi_t, h)
+        ys = _targets(y, o_lo, o_hi, h)
+        targets_idx = [t + h for t in
+                       range(o_lo + RIDGE_LAGS, o_hi - h)]
+        ocost["target_construction_s"] = round(
+            time.perf_counter() - t0, 4)
+        mase_den = _mase_denominator(y, lo_t, hi_t, period)
+        ex_mask, ex_thresh = train_innovation_extremes(
+            y, lo_t, hi_t, targets_idx, period)
+        # seasonal-naive reference on the same score rows
+        snv_idx = [t - period for t in targets_idx]
+        if min(snv_idx) < 0:
+            raise HarnessRefusal(
+                f"{unit['unit_id']} {okey}: seasonal naive needs "
+                "rows before the series start")
+        t0 = time.perf_counter()
+        tr_idx = [t + h for t in
+                  range(lo_t + RIDGE_LAGS, hi_t - h)]
+        tr_snv = y[[t - period for t in tr_idx]] - y[tr_idx]
+        q = np.quantile(tr_snv, [0.05, 0.95])
+        oout = {"seasonal_naive": {
+            "period_source": unit["seasonal_period_provenance"],
+            "metrics": _metrics(
+                ys, y[snv_idx], (float(q[0]), float(q[1])),
+                mase_den, ex_mask)}}
+        ocost["seasonal_naive_s"] = round(
+            time.perf_counter() - t0, 4)
+        for arm, series in arms.items():
+            acost = {}
+            t0 = time.perf_counter()
+            Xt = _lag_matrix(series, lo_t, hi_t, h)
+            Xs = _lag_matrix(series, o_lo, o_hi, h)
+            acost["lag_features_s"] = round(
+                time.perf_counter() - t0, 4)
+            t0 = time.perf_counter()
+            ridge_pred = _ridge(Xt, yt, Xs)
+            ridge_in = _ridge(Xt, yt, Xt)
+            acost["ridge_fit_forecast_s"] = round(
+                time.perf_counter() - t0, 4)
+            rq = np.quantile(ridge_in - yt, [0.05, 0.95])
+            arm_out = {"ridge": _metrics(
+                ys, ridge_pred, (float(rq[0]), float(rq[1])),
+                mase_den, ex_mask)}
+            mlp_runs = {}
+            for seed in SEED_TAPE:
+                t0 = time.perf_counter()
+                pred = _mlp(Xt, yt, Xs, seed)
+                inp = _mlp(Xt, yt, Xt, seed)
+                acost[f"mlp_fit_forecast_seed{seed}_s"] = round(
+                    time.perf_counter() - t0, 4)
+                tq = np.quantile(inp - yt, [0.05, 0.95])
+                mlp_runs[f"seed{seed}"] = _metrics(
+                    ys, pred, (float(tq[0]), float(tq[1])),
+                    mase_den, ex_mask)
+            arm_out["mlp_small"] = mlp_runs
+            oout[arm] = arm_out
+            ocost[f"arm_{arm}"] = acost
+        per_origin[okey] = {
+            "train": [lo_t, hi_t], "score": [o_lo, o_hi],
+            "mase_denominator_train_snaive": mase_den,
+            "extreme_innovation_threshold_train": ex_thresh,
+            "operator_artifact_sha256": den["artifact_sha256"],
+            "results": oout}
+        costs[okey] = ocost
     peak_rss = resource.getrusage(
         resource.RUSAGE_SELF).ru_maxrss * 1024
-    rec = {"schema": "agent_multi.t2_assay_record.v1",
-           "authority": "DEVELOPMENT_ONLY_ZERO_CONFIRMATORY_"
-                        "AUTHORITY",
+    rec = {"schema": "agent_multi.t2_assay_record.v2",
+           "authority": "DEVELOPMENT_MECHANICS_ONLY_REQUIRES_"
+                        "C1_C8_CORRECTION_CLEARED",
            "unit_id": unit["unit_id"],
            "family": unit["family"],
            "bytes_sha256": unit["bytes_sha256"],
            "license_note": unit["license_note"],
-           "nan_filled": unit["nan_filled"],
+           "missingness": unit["missingness"],
+           "time_index": unit["time_index"],
+           "time_provenance": unit["time_provenance"],
            "horizon": h,
-           "roles": {k: list(v) for k, v in roles.items()},
+           "seasonal_period": unit["seasonal_period"],
+           "seasonal_period_provenance":
+               unit["seasonal_period_provenance"],
            "operator": {**T1_OPERATOR,
                         "selection_source":
-                            "T1_v4_record_LAB_CALIBRATED",
-                        "artifact_sha256": den["artifact_sha256"],
-                        "spec_sha256": den["spec_sha256"]},
+                            "T1_v4_record_LAB_CALIBRATED"},
            "seed_tape": list(SEED_TAPE),
-           "unit_is_the_statistical_unit": True,
+           "series_is_the_primary_unit": True,
+           "origins_and_seeds_are_nested": True,
            "claim_classes_only": ["utility", "calibration",
                                   "extreme_preservation", "cost"],
-           "results": results,
-           "cost": {"cpu_wall_seconds":
-                    round(time.perf_counter() - t0, 3),
-                    "peak_rss_bytes": int(peak_rss),
-                    "includes": "fit + transform + all arms + all "
-                                "seeds (failed attempts would be "
-                                "recorded here too)"}}
+           "rolling_origins": per_origin,
+           "costs_by_phase": costs,
+           "peak_rss_bytes": int(peak_rss)}
     body = {k: rec[k] for k in sorted(rec)}
     rec["record_sha256"] = hashlib.sha256(json.dumps(
         body, sort_keys=True, allow_nan=False).encode()).hexdigest()
     return rec
-
-
-def _train_resid_q(y, lo_t, hi_t, h, period):
-    idx = [t + h - period for t in range(lo_t + RIDGE_LAGS,
-                                         hi_t - h)]
-    idx = [i for i in idx if i >= 0]
-    tr_pred = y[idx]
-    tr_true = np.array([y[t + h] for t in
-                        range(lo_t + RIDGE_LAGS, hi_t - h)
-                        ])[-len(idx):] if idx else np.array([0.0])
-    q = np.quantile(tr_pred - tr_true, [0.05, 0.95])
-    return (float(q[0]), float(q[1]))
 
 
 def check_record_schema(rec: dict) -> None:
@@ -314,10 +458,14 @@ def check_record_schema(rec: dict) -> None:
     fields refuse (noise/SNR/eligibility are structurally
     impossible claims for T2)."""
     want = {"schema", "authority", "unit_id", "family",
-            "bytes_sha256", "license_note", "nan_filled",
-            "horizon", "roles", "operator", "seed_tape",
-            "unit_is_the_statistical_unit", "claim_classes_only",
-            "results", "cost", "record_sha256"}
+            "bytes_sha256", "license_note", "missingness",
+            "time_index", "time_provenance", "horizon",
+            "seasonal_period", "seasonal_period_provenance",
+            "operator", "seed_tape",
+            "series_is_the_primary_unit",
+            "origins_and_seeds_are_nested", "claim_classes_only",
+            "rolling_origins", "costs_by_phase",
+            "peak_rss_bytes", "record_sha256"}
     if set(rec) != want:
         raise HarnessRefusal(
             f"record keys are not the exact schema (diff: "
@@ -329,8 +477,13 @@ def check_record_schema(rec: dict) -> None:
             raise HarnessRefusal(
                 f"forbidden claim token {tok!r} inside a T2 "
                 "record")
-    if "cost" not in rec or "cpu_wall_seconds" not in rec["cost"]:
-        raise HarnessRefusal("record omits its cost")
+    if "costs_by_phase" not in rec or not rec["costs_by_phase"]:
+        raise HarnessRefusal("record omits its per-phase costs")
+    for okey, oc in rec["costs_by_phase"].items():
+        if "denoise_fit_transform_s" not in oc or not any(
+                k.startswith("arm_") for k in oc):
+            raise HarnessRefusal(
+                f"record omits separated costs at {okey}")
     body = {k: rec[k] for k in sorted(rec)
             if k != "record_sha256"}
     if hashlib.sha256(json.dumps(
@@ -350,11 +503,17 @@ def main() -> int:
     args = ap.parse_args()
     census = json.loads(args.census.read_text())
     if args.confirmatory:
+        # C3: a REAL gate sequence — each missing element refuses
+        # with its own typed reason; nothing is unconditional.
+        import t2_confirmatory as conf
+        state = Path.home() / ".local/share/agent-multi"
+        conf.run_confirmatory(
+            state / "t2_public_data_manifest_20260906.json",
+            state / "t2_confirmatory_design_20260906.json",
+            state / "t2_attempt_ledger_20260906.json")
         raise HarnessRefusal(
-            "PUBLIC_DATA_REQUIRED: the census verdict is "
-            f"{census['verdict']!r} and no sealed T2.2 design "
-            "exists — confirmatory scoring is impossible until "
-            "the operator supplies the lawful public bank")
+            "unreachable: run_confirmatory always refuses until "
+            "the design review exists")
     if not args.development_only:
         raise HarnessRefusal(
             "choose --development-only (zero authority) or "
@@ -376,24 +535,26 @@ def main() -> int:
         meta = census["development_only_units"][uid]
         if meta["status"] != "PRESENT_DEVELOPMENT_ONLY":
             continue
-        unit = load_task_unit(census, uid)
         try:
+            unit = load_task_unit(census, uid)
             rec = assay_unit(co, unit)
         except SystemExit as exc:
             records.append({
                 "schema": "agent_multi.t2_assay_refusal.v1",
-                "authority": "DEVELOPMENT_ONLY_ZERO_CONFIRMATORY_"
-                             "AUTHORITY",
+                "authority": "DEVELOPMENT_MECHANICS_ONLY_"
+                             "REQUIRES_C1_C8_CORRECTION_CLEARED",
                 "unit_id": uid,
-                "bytes_sha256": unit["bytes_sha256"],
+                "bytes_sha256":
+                    census["development_only_units"][uid].get(
+                        "bytes_sha256"),
                 "status": "TYPED_REFUSAL",
                 "refusal": str(exc)})
             continue
         check_record_schema(rec)
         records.append(rec)
-    payload = {"schema": "agent_multi.t2_pilot.v1",
-               "authority": "DEVELOPMENT_ONLY_ZERO_CONFIRMATORY_"
-                            "AUTHORITY",
+    payload = {"schema": "agent_multi.t2_pilot.v2",
+               "authority": "DEVELOPMENT_MECHANICS_ONLY_REQUIRES_"
+                            "C1_C8_CORRECTION_CLEARED",
                "census_sha256": hashlib.sha256(
                    args.census.read_bytes()).hexdigest(),
                "records": records}

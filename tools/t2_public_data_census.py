@@ -66,20 +66,24 @@ _SM_UNITS = {
         "frequency": "weekly", "license_note":
             "public domain (NOAA/Scripps via statsmodels, "
             "package BSD-3-Clause)",
-        "missingness_policy": "forward-fill declared at load; "
-                              "raw NaN count recorded"},
+        "missingness_policy": "C1 causal: strict tokens, leading "
+                              "prefix dropped, bounded forward "
+                              "fill only (no bfill)",
+        "max_gap_run": 25},
     "sm_sunspots": {
         "module": "sunspots", "column": "SUNACTIVITY",
         "family": "solar_activity",
         "frequency": "yearly", "license_note":
             "public domain (SILSO via statsmodels)",
-        "missingness_policy": "none expected; refuse on NaN"},
+        "missingness_policy": "none expected; refuse on NaN",
+        "max_gap_run": 0},
     "sm_nile": {
         "module": "nile", "column": "volume",
         "family": "hydrology",
         "frequency": "yearly", "license_note":
             "public domain (classic Nile series via statsmodels)",
-        "missingness_policy": "none expected; refuse on NaN"},
+        "missingness_policy": "none expected; refuse on NaN",
+        "max_gap_run": 0},
 }
 
 

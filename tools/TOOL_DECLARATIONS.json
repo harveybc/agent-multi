@@ -788,6 +788,27 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_bank.py": {
+   "purpose": "T2 physical bank (C1/C2/C4): strict numeric tokens (malformed refuses), causal missingness (leading-prefix rule + bounded forward fill, no bfill, mask recorded), time-index facts, Monash .tsf panel parser, per-series units with cross-archive dedup and deterministic id-hash subsampling",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t2_confirmatory.py": {
+   "purpose": "T2 confirmatory path (C3/C8): manifest/design/operator/population/ledger/verifier gate sequence (closed pending the Musashi design review; no score computed) and the predeclared hierarchical decision rule (family clusters, series units, multiplicity, INCONCLUSIVE paths)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
+  },
+  "t2_acquire_public_data.py": {
+   "purpose": "D0 bounded public-data acquisition: read-only HTTPS from official archival records (Zenodo Monash + ETDataset), 2 GiB cumulative cap, per-file manifest (URL/DOI/time/bytes/sha256/upstream checksum/license id+text digest/citation/logical id); raw bytes outside Git; per-record licenses, never archive-wide",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
