@@ -95,9 +95,14 @@ preexisting D1-anchor pair only.
 
 ## 5. The single final commit proposed for dispatch
 
-**`3bbbbc43`** — the tip containing the consumed
-records, amendment 11, the C28 portability fix, the battery and
-this packet. Amendment digests at that tip:
+**The tip of `satoshi/data-first-sota-20260826` as pushed with
+this packet** — a packet cannot carry its own commit hash (my
+first stamp attempt via amend proved it by going stale instantly;
+disclosed), so the proposed dispatch commit is defined by
+reference: the branch tip whose latest commit carries this file,
+read from origin. It contains the consumed records, amendment 11,
+the C28 portability fix, the battery and this packet. Amendment
+digests at that tip:
 a9 `eb9d4970…` (immutable), a10 `c299d03e…` (immutable),
 a11 = the value reported live by
 `campaign_record_required_bindings()`… precisely: the a11 file's
