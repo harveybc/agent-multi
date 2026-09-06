@@ -84,7 +84,8 @@ def materialize_ledger(mat_root: Path, out: Path) -> dict:
             _sha_file(Path(mat_root) / "B4_CELL_CONFIGS.json"),
         "materialization_sha256":
             _sha_file(Path(mat_root) / "B4_MATERIALIZATION.json"),
-        "comparator_dir": packet["comparator_dir"],
+        "comparator_ref": packet.get("comparator_ref")
+        or packet.get("comparator_dir"),
         "owner_preflight_authorization_sha256":
             b4a.OWNER_GPU_AUTH_SHA,
         "preflight_is_scientific_evidence": False,
@@ -167,11 +168,32 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             raise LedgerRefusal(
                 f"REFUSED: {cid} result binds a foreign cell digest")
         att = term.get("attempt_id")
-        if att:
-            if att in seen_attempts:
-                raise LedgerRefusal(
-                    f"REFUSED: attempt identity reused at {cid}")
-            seen_attempts.add(att)
+        if not att or not isinstance(att, str):
+            raise LedgerRefusal(
+                f"REFUSED: {cid} terminal without a durable "
+                "attempt_id — attempts are mandatory (C5)")
+        if att in seen_attempts:
+            raise LedgerRefusal(
+                f"REFUSED: attempt identity reused at {cid}")
+        seen_attempts.add(att)
+        claim = results_root / cid / f"ATTEMPT_{att}.json"
+        if not claim.is_file():
+            raise LedgerRefusal(
+                f"REFUSED: {cid} attempt claim record absent — the "
+                "attempt does not belong to this cell")
+        claim_rec = json.loads(claim.read_bytes())
+        if claim_rec.get("cell") != cid or \
+                claim_rec.get("attempt_id") != att:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} attempt binding broken")
+        if term.get("terminal_sha256_expected") not in (None,):
+            pass
+        actual_term_sha = _sha_file(term_p)
+        claimed = claim_rec.get("terminal_sha256")
+        if claimed is not None and claimed != actual_term_sha:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} terminal digest differs from the "
+                "attempt's sealed terminal binding")
         if term.get("terminal") != "COMPLETED":
             raise LedgerRefusal(
                 f"REFUSED: {cid} terminal is "
@@ -197,6 +219,42 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             f"REFUSED: extra/foreign cells in the result tree: "
             f"{extra}")
     return {"cells": facts, "n": len(facts)}
+
+
+def verify_single_cell_result(results_root: Path, cell_id: str,
+                              expected_cell_sha: str) -> dict:
+    """C1.6: the executor calls THIS immediately after writing a
+    COMPLETED terminal — the same field discipline as the campaign
+    verifier, for one cell."""
+    term_p = Path(results_root) / cell_id / "B4_CELL_TERMINAL.json"
+    if not term_p.is_file():
+        raise LedgerRefusal(f"REFUSED: {cell_id} has no terminal")
+    term = json.loads(term_p.read_bytes())
+    if term.get("schema") != "agent_multi.b4_cell_terminal.v1":
+        raise LedgerRefusal(f"REFUSED: {cell_id} foreign schema")
+    if term.get("cell") != cell_id:
+        raise LedgerRefusal(f"REFUSED: {cell_id} identity mismatch")
+    if term.get("cell_config_sha256") != expected_cell_sha:
+        raise LedgerRefusal(
+            f"REFUSED: {cell_id} binds a foreign cell digest")
+    if term.get("terminal") != "COMPLETED":
+        raise LedgerRefusal(
+            f"REFUSED: {cell_id} terminal is "
+            f"{term.get('terminal')!r}")
+    att = term.get("attempt_id")
+    if not att or not isinstance(att, str):
+        raise LedgerRefusal(
+            f"REFUSED: {cell_id} COMPLETED without attempt_id")
+    pb = term.get("per_bar_csv")
+    if not pb or not Path(pb).is_file() or \
+            _sha_file(Path(pb)) != term.get("per_bar_sha256"):
+        raise LedgerRefusal(
+            f"REFUSED: {cell_id} per-bar evidence missing or "
+            "digest-broken")
+    if term.get("sealed_2025_used") is not False:
+        raise LedgerRefusal(
+            f"REFUSED: {cell_id} without sealed-absence proof")
+    return term
 
 
 def schedule_next(ledger: dict, health: dict) -> str:

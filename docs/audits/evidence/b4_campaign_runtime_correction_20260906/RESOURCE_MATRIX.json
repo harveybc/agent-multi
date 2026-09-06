@@ -1,0 +1,39 @@
+{
+ "schema": "agent_multi.b4_resource_matrix.v1",
+ "authorized_source": "B4_CAMPAIGN_RESOURCE_CONTRACT_PROPOSAL_2026_09_05.json (sha 1b738f74...)",
+ "requested_vs_effective": {
+  "budget_max_env_steps": {
+   "authorized": 40020000,
+   "effective": 40020000
+  },
+  "budget_max_updates": {
+   "authorized": 40020000,
+   "effective": 40020000
+  },
+  "budget_max_wall_seconds": {
+   "authorized": 43200,
+   "effective": 43200.0
+  },
+  "budget_max_rss_bytes": {
+   "authorized": 8589934592,
+   "effective": 8589934592
+  },
+  "budget_max_cuda_bytes": {
+   "authorized": 6442450944,
+   "effective": "installed on cuda devices only (device=cpu dry-run)"
+  },
+  "budget_max_gpu_temp_celsius": {
+   "authorized": 87,
+   "effective": "installed on cuda devices only (device=cpu dry-run)"
+  },
+  "global_gpu_hours_ceiling": {
+   "authorized": 96.0,
+   "effective": "orchestrator gpu_hours_spent() gate, failed attempts included"
+  },
+  "max_concurrency": {
+   "authorized": 1,
+   "effective": "GlobalLock O_EXCL"
+  }
+ },
+ "guard_seam": "pipeline F9 executing callback (_check_resource_budget inside every learn segment; lost telemetry fails closed)"
+}

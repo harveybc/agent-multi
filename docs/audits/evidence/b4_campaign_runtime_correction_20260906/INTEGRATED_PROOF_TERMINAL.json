@@ -1,0 +1,23 @@
+{
+ "schema": "agent_multi.b4_cell_terminal.v1",
+ "cell": "o2024_seed101",
+ "terminal": "COMPLETED",
+ "g1_eligible": false,
+ "checkpoint_promotable": false,
+ "attempt_id": "attempt_c7176f8080e245ae",
+ "cell_config_sha256": "6e28a30e46f4a0d296b06f8d5aa7b0616da72221a18640dbd60003510c505690",
+ "artifact_class": "INTEGRATED_PROOF_FROZEN_GENESIS",
+ "checkpoint_sha256": "7c018edf4ded1abca4e0417537a9312f115de32b7a01013cfe77b06847b0f9db",
+ "per_bar_csv": "<state_root>/b4_integrated_proof_20260906/o2024_seed101/per_bar_o2024_seed101.csv",
+ "per_bar_sha256": "d0a38efb23966b934d58fb61abd26a0e87c929456c322f015a95a105d3f7c917",
+ "scored_index_sha256": "98a70fa454de7a8b68d9685152697fbb45500da36234b9999a0bcd0b86b86dac",
+ "scored_bars": 2196,
+ "counter_semantics": {
+  "commission_paid": "CUMULATIVE from env info; converted to per-bar deltas",
+  "pnl": "per-bar economic delta from env info",
+  "slippage": "embedded in fill price per the cost binding; not separately countable under the sealed gym-fx lineage (declared, not silent)"
+ },
+ "sealed_2025_used": false,
+ "wall_seconds": 5.4,
+ "note": "INTEGRATED PROOF (C7): frozen zero-update genesis scored as a controlled double through the COMPLETE path \u2014 claim -> score (2196 bars, full identity, exact reconciliation) -> identity pairing vs ALL comparator arms -> durable exclusive terminal -> REAL ledger verifier acceptance; 5.4 s CPU; artifact class INTEGRATED_PROOF_FROZEN_GENESIS, non-promotable, non-scientific"
+}

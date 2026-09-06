@@ -45,6 +45,9 @@ AMENDMENT_5_PATH = (EVIDENCE /
 AMENDMENT_6_PATH = (EVIDENCE /
                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_6_2026_09_05"
                     ".json")
+AMENDMENT_7_PATH = (EVIDENCE /
+                    "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_7_2026_09_06"
+                    ".json")
 
 # --- B4-P1 (order @9fb017e3): the exact owner GPU authorization ---
 # Fixed reviewed identities: neither the path nor the digest can come
@@ -56,6 +59,158 @@ OWNER_GPU_AUTH_SHA = ("7426a0bfc9cdb6c609730755512c0936f58fdc45d"
                       "40cd17c0bb5a83ce00cdf82")
 GPU_ATTEMPT_LEDGER = (Path.home() / ".local/share/agent-multi/"
                       "b4_gpu_preflight_attempt_ledger.json")
+
+# --- C3 (order @0ce52740): the AUTHORIZED resource contract is a
+# carried identity; effective limits derive from IT, never from the
+# cell's old gpu_economic mode. The future Musashi authorization
+# record must bind these exact digests.
+RESOURCE_CONTRACT_PATH = (
+    EVIDENCE / "B4_CAMPAIGN_RESOURCE_CONTRACT_PROPOSAL_2026_09_05"
+               ".json")
+RESOURCE_CONTRACT_SHA = ("1b738f74534fa4ca6fc88e5373caec9aaac7be44"
+                         "96a60547e19fb66c3b13cdaf")
+CAMPAIGN_RECORD_REQUIRED_BINDINGS = {
+    "cell_population_sha256":
+        "99dac961f1a7b4aae67cd36abeb295f81e8697760f8da23433e9467e"
+        "45df4a2d",
+    "materialization_sha256":
+        "d2c943fa9705f1c52d70d7472aac672d2406a3efa244b58c25a189ec"
+        "bc0ceb10",
+    "genesis_binding_sha256":
+        "db962cf4a520c5ad18c35734b6d83f9090dff50a8f574a33878c70ea"
+        "4e72b11e",
+    "amendment_6_sha256":
+        "773d6bdef7515a1e4e0a0a518a15637a736e13eda1d3f7629c72c53a"
+        "c9d2b9f1",
+    "resource_contract_sha256": RESOURCE_CONTRACT_SHA,
+}
+
+
+def load_resource_contract() -> dict:
+    """Hash-before-parse consumption of the AUTHORIZED resource
+    contract; the effective per-cell limits every executor path must
+    install."""
+    raw = RESOURCE_CONTRACT_PATH.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != RESOURCE_CONTRACT_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: resource contract bytes differ from the "
+            "carried authorized digest")
+    c = json.loads(raw)
+    lim = c["per_cell_limits"]
+    return {
+        "budget_max_env_steps": int(lim["environment_steps_max"]),
+        "budget_max_updates": int(lim["real_updates_max"]),
+        "budget_max_wall_seconds": float(lim["wall_seconds_max"]),
+        "budget_max_rss_bytes": int(lim["host_rss_bytes_max"]),
+        "budget_max_cuda_bytes": int(
+            lim["cuda_allocated_bytes_max"]),
+        "budget_max_gpu_temp_celsius": float(
+            lim["gpu_temperature_celsius_max"]),
+        "global_gpu_hours_ceiling": float(
+            c["global_limits"]["gpu_hours_ceiling_all_cells"]),
+        "max_concurrency": int(c["global_limits"]["max_concurrency"]),
+        "heartbeat_seconds": int(
+            c["monitoring"]["heartbeat_seconds"]),
+    }
+
+
+def verify_campaign_authorization_record(path: Path,
+                                         expected_sha: str) -> dict:
+    """C3: the future Musashi record — strict schema, full-digest
+    equality on every required binding, exact authorized limits. Any
+    deviation refuses BEFORE model, env, CUDA or output."""
+    path = Path(path)
+    if not path.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: campaign authorization record absent")
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected_sha:
+        raise B4AuthorityRefusal(
+            "REFUSED: campaign authorization bytes differ from the "
+            "carried reviewed digest")
+    rec = json.loads(raw)
+    binds = rec.get("bindings", {})
+    for k, want in CAMPAIGN_RECORD_REQUIRED_BINDINGS.items():
+        if binds.get(k) != want:
+            raise B4AuthorityRefusal(
+                f"REFUSED: campaign record binding {k!r} differs "
+                "from the audited identity")
+    limits = load_resource_contract()
+    rec_lim = rec.get("per_cell_limits", {})
+    for k in ("budget_max_env_steps", "budget_max_updates",
+              "budget_max_wall_seconds", "budget_max_rss_bytes",
+              "budget_max_cuda_bytes",
+              "budget_max_gpu_temp_celsius"):
+        if rec_lim.get(k) != limits[k]:
+            raise B4AuthorityRefusal(
+                f"REFUSED: campaign record limit {k!r} differs from "
+                "the authorized resource contract")
+    return {"record": rec, "limits": limits}
+
+
+# --- F7 (order @0ce52740): public evidence carries LOGICAL
+# identities; local roots resolve at point of use only.
+def resolve_predictor_root() -> Path:
+    import os
+    root = os.environ.get("B4_PREDICTOR_ROOT")
+    if root:
+        p = Path(root)
+    else:
+        p = REPO.parent.parent / "predictor"
+        if not p.is_dir():
+            p = Path.home() / "Documents/GitHub/predictor"
+    if not p.is_dir():
+        raise B4AuthorityRefusal(
+            "REFUSED: predictor data root unresolved — set "
+            "B4_PREDICTOR_ROOT")
+    return p
+
+
+def resolve_state_root() -> Path:
+    import os
+    root = os.environ.get("B4_STATE_ROOT")
+    p = (Path(root) if root
+         else Path.home() / ".local/share/agent-multi")
+    if not p.is_dir():
+        raise B4AuthorityRefusal(
+            "REFUSED: state root unresolved — set B4_STATE_ROOT")
+    return p
+
+
+def resolve_source_ref(ref: str) -> Path:
+    """A logical source_ref like 'predictor:examples/data/...' or
+    'repo:docs/...' resolves under an explicit root at runtime."""
+    if ref.startswith("predictor:"):
+        return resolve_predictor_root() / ref.split(":", 1)[1]
+    if ref.startswith("repo:"):
+        return REPO / ref.split(":", 1)[1]
+    if ref.startswith("state:"):
+        return resolve_state_root() / ref.split(":", 1)[1]
+    raise B4AuthorityRefusal(
+        f"REFUSED: unknown logical source ref {ref!r}")
+
+
+ABS_PATH_MARKERS = ("/home/", "/Users/", "C:\\")
+
+
+def verify_no_absolute_paths(obj, where: str = "artifact") -> None:
+    """F7: committed public evidence may not carry absolute local
+    paths, usernames, hosts or storage topology."""
+    def _walk(v):
+        if isinstance(v, str):
+            for m in ABS_PATH_MARKERS:
+                if m in v:
+                    raise B4AuthorityRefusal(
+                        f"REFUSED: absolute local path in {where}: "
+                        f"{v[:60]!r}")
+        elif isinstance(v, dict):
+            for k, x in v.items():
+                _walk(k)
+                _walk(x)
+        elif isinstance(v, (list, tuple)):
+            for x in v:
+                _walk(x)
+    _walk(obj)
 
 _AUTH_SCHEMA = {
     "schema": str, "recorded_at_date": str, "authority": str,
@@ -364,9 +519,12 @@ REQUIRED_CELL_KEYS = (
     "session_exposure_enabled", "gymfx_lineage_manifest_sha256",
     "execution_modes", "output_classification",
 )
+# checkpoint_bundle_dir is a pipeline OUTPUT (the coherent
+# per-improvement bundle, findings 307/308/309) derived per-cell by
+# the executor — the actual resume inputs are the keys below.
 FORBIDDEN_CELL_KEYS = (
     "warm_start_bundle", "pretrained_branch_generation_dir",
-    "checkpoint_bundle_dir", "resume_from", "replay_import")
+    "resume_from", "resume_from_cell_runtime", "replay_import")
 
 
 def verify_cell_complete(cfg: dict) -> None:
@@ -532,6 +690,39 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 6 does not pin the full "
                 "campaign executing surface")
     pins.update(a6_pins)
+    # C8 (order @0ce52740): amendment 7 is the runtime-correction
+    # append-only step — names amendment 6's exact bytes, discloses
+    # its artifact-identity change, carries the CORRECTED campaign
+    # population and supersedes pins for the runtime surface.
+    if not AMENDMENT_7_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 7 absent — the corrected runtime "
+            "chain does not exist")
+    a7 = json.loads(AMENDMENT_7_PATH.read_bytes())
+    if a7.get("amends_amendment_6_sha256") != _sha_file(
+            AMENDMENT_6_PATH):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 7 does not name amendment 6's "
+            "exact bytes")
+    if not a7.get("change_disclosure"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 7 must disclose its changes")
+    if a7.get("proposed_campaign_population"):
+        campaign_pins = a7["proposed_campaign_population"]
+    a7_pins = a7.get("final_code_pins", {})
+    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
+                "tools/b4_campaign_executor.py",
+                "tools/b4_campaign_ledger.py",
+                "tools/b4_campaign_orchestrator.py",
+                "tools/b4_adjudicator.py",
+                "tools/materialize_b4_causal_sac.py",
+                "pipeline_plugins/rl_pipeline_with_validation.py",
+                "tests/test_b4_materializer_authority.py"):
+        if req not in a7_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 7 does not pin the corrected "
+                "runtime surface")
+    pins.update(a7_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -542,7 +733,8 @@ def verify_amendment_chain() -> dict:
             "amendment_shas": list(AMENDMENT_SHAS)
             + [_sha_file(AMENDMENT_4_PATH),
                _sha_file(AMENDMENT_5_PATH),
-               _sha_file(AMENDMENT_6_PATH)],
+               _sha_file(AMENDMENT_6_PATH),
+               _sha_file(AMENDMENT_7_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}

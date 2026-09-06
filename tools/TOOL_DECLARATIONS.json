@@ -739,6 +739,13 @@
    "mutability": "read_only",
    "authority_class": "verifier",
    "owner": "General Satoshi III"
+  },
+  "b4_campaign_orchestrator.py": {
+   "purpose": "C4 single campaign orchestrator: durable O_EXCL attempt claims before CUDA, global exclusive lock (concurrency 1), GPU-hour ceiling accounting incl. failed attempts, health-only fixed-order dispatch, ambiguous attempts blocked forever",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

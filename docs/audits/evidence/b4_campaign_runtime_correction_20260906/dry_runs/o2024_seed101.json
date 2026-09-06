@@ -1,0 +1,46 @@
+{
+ "schema": "agent_multi.b4_campaign_dry_run.v2",
+ "cell": "o2024_seed101",
+ "status": "DRY_RUN_READY",
+ "cell_config_sha256": "6e28a30e46f4a0d296b06f8d5aa7b0616da72221a18640dbd60003510c505690",
+ "contract": "<materialization_root>/contracts/b4_causal_origin_2024_contract.json",
+ "executable_path_facts": {
+  "execute_cell_calls_scorer": true,
+  "execute_cell_calls_verifier": true,
+  "execute_cell_calls_terminal": true
+ },
+ "effective_limits": {
+  "budget_max_env_steps": 40020000,
+  "budget_max_updates": 40020000,
+  "budget_max_wall_seconds": 43200.0,
+  "budget_max_rss_bytes": 8589934592
+ },
+ "roles_materialized": {
+  "outer_validation": {
+   "csv": "o2024_seed101/nested_splits/outer_validation.csv",
+   "sha256": "2244dfc00efa6f681653425d364e720bb66eb2c25ccc2112b80235519e367a30"
+  },
+  "train": {
+   "csv": "o2024_seed101/nested_splits/fit_train.csv",
+   "sha256": "b9a35d6cef2936979168d28e0b4113d2c6a1a309fd3a60c9ee943ea55a791568"
+  },
+  "train_monitor": {
+   "csv": "o2024_seed101/nested_splits/train_monitor.csv",
+   "sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06"
+  },
+  "train_tail": {
+   "csv": "o2024_seed101/nested_splits/train_monitor.csv",
+   "sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06"
+  },
+  "val": {
+   "csv": "o2024_seed101/nested_splits/inner_validation.csv",
+   "sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6"
+  },
+  "validation": {
+   "csv": "o2024_seed101/nested_splits/inner_validation.csv",
+   "sha256": "e36ec652aa2935d7bc0f74e0c0f452688e8eb34d47de5a5dd379ec56f1419bd6"
+  }
+ },
+ "findings": [],
+ "wall_seconds": 1.6
+}

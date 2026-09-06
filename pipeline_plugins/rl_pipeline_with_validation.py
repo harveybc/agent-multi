@@ -723,6 +723,83 @@ def _validated_budget(config, key, *, kind,
     return value
 
 
+def _read_rss_bytes():
+    with open("/proc/self/statm") as fh:
+        return int(fh.read().split()[1]) * 4096
+
+
+def _read_gpu_temp(device):
+    import subprocess as _sp
+    try:
+        out = _sp.run(["nvidia-smi", "-i", str(device),
+                       "--query-gpu=temperature.gpu",
+                       "--format=csv,noheader,nounits"],
+                      capture_output=True, text=True, timeout=10)
+    except (OSError, _sp.TimeoutExpired):
+        return None
+    rows = [r for r in out.stdout.splitlines() if r.strip()]
+    if out.returncode != 0 or len(rows) != 1:
+        return None
+    try:
+        return float(rows[0].strip())
+    except ValueError:
+        return None
+
+
+def _check_resource_budget(config, *, sampled_state=None):
+    """C3 (order @0ce52740): the authorized RESOURCE limits ride the
+    SAME executing guard as F9 — RSS, CUDA allocation and GPU
+    temperature are checked inside every learn segment; lost GPU
+    telemetry fails CLOSED. Keys: budget_max_rss_bytes,
+    budget_max_cuda_bytes, budget_max_gpu_temp_celsius +
+    budget_gpu_device."""
+    rss_cap = _validated_budget(config, "budget_max_rss_bytes",
+                                kind="int")
+    cuda_cap = _validated_budget(config, "budget_max_cuda_bytes",
+                                 kind="int")
+    temp_cap = _validated_budget(config,
+                                 "budget_max_gpu_temp_celsius",
+                                 kind="float")
+    if rss_cap is None and cuda_cap is None and temp_cap is None:
+        return None
+    facts = dict(sampled_state or {})
+    if rss_cap is not None:
+        rss = _read_rss_bytes()
+        facts["rss_bytes"] = rss
+        if rss > int(rss_cap):
+            raise ExecutingBudgetExceeded(
+                f"RSS budget {rss_cap} exceeded at {rss} bytes")
+    if cuda_cap is not None:
+        import torch as _torch
+        if not _torch.cuda.is_available():
+            raise ExecutingBudgetExceeded(
+                "CUDA budget declared but no CUDA device is "
+                "available — refusing to run unguarded")
+        alloc = int(_torch.cuda.max_memory_allocated())
+        facts["cuda_bytes"] = alloc
+        if alloc > int(cuda_cap):
+            raise ExecutingBudgetExceeded(
+                f"CUDA allocation budget {cuda_cap} exceeded at "
+                f"{alloc} bytes")
+    if temp_cap is not None:
+        device = config.get("budget_gpu_device")
+        if device in (None, ""):
+            raise ExecutingBudgetExceeded(
+                "GPU temperature budget declared without a bound "
+                "budget_gpu_device — refusing to run unguarded")
+        t = _read_gpu_temp(device)
+        if t is None:
+            raise ExecutingBudgetExceeded(
+                "GPU temperature telemetry missing or ambiguous — "
+                "failing CLOSED rather than running unguarded")
+        facts["gpu_temp_celsius"] = t
+        if t > float(temp_cap):
+            raise ExecutingBudgetExceeded(
+                f"GPU temperature budget {temp_cap}C exceeded at "
+                f"{t}C")
+    return facts
+
+
 def _check_executing_budget(config, model, *, started_wall,
                             next_segment_timesteps=0):
     import os as _os
@@ -735,6 +812,7 @@ def _check_executing_budget(config, model, *, started_wall,
                                     "budget_max_wall_seconds",
                                     kind="float")
     stop_file = config.get("budget_stop_file")
+    _check_resource_budget(config)
     if budget_steps is None and budget_updates is None and \
             budget_wall is None and stop_file is None:
         return
@@ -762,6 +840,9 @@ def _check_executing_budget(config, model, *, started_wall,
             f"optimizer-update budget {budget_updates} reached: "
             f"the ACTUAL counter reads {updates} — stopping at >= "
             "so the counter can never exceed the bound")
+
+
+import time as _time_mod
 
 
 def make_executing_budget_callback(config, started_wall):
@@ -817,6 +898,15 @@ def make_executing_budget_callback(config, started_wall):
             try:
                 _check_executing_budget(
                     config, self.model, started_wall=started_wall)
+                # C3: resource limits are sampled on a bounded time
+                # cadence inside the segment (RSS every tick; GPU
+                # telemetry per its own cadence) — lost telemetry
+                # fails closed via the same typed stop.
+                now = _time_mod.time()
+                if now - getattr(self, "_last_resource_check",
+                                 0.0) >= 5.0:
+                    self._last_resource_check = now
+                    _check_resource_budget(config)
             except ExecutingBudgetExceeded as exc:
                 self.budget_stop = str(exc)
                 return False

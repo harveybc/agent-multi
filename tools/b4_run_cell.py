@@ -316,10 +316,12 @@ def main(argv=None) -> int:
     # 2. Full authority chain at point of use (E3 items 1-8 + P3
     #    factual envelope re-derivation).
     packet = json.loads((mat / "B4_MATERIALIZATION.json").read_text())
-    comparator_dir = packet.get("comparator_dir")
-    if not comparator_dir:
+    ref = packet.get("comparator_ref") or packet.get("comparator_dir")
+    if not ref:
         raise RunnerRefusal(
             "REFUSED: materialization carries no comparator anchor")
+    comparator_dir = (b4a.resolve_source_ref(str(ref))
+                      if ":" in str(ref)[:12] else Path(ref))
     b4a.verify_approved_comparator(Path(comparator_dir), rec)
     authority = b4a.verify_full_authority_chain(Path(comparator_dir))
     lineage = authority["comparator"]["lineage"]

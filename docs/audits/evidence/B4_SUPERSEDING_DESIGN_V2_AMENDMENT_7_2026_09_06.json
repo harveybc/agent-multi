@@ -1,0 +1,25 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v5_runtime_correction",
+ "amends_amendment_6_sha256": "773d6bdef7515a1e4e0a0a518a15637a736e13eda1d3f7629c72c53ac9d2b9f1",
+ "order": "agent-multi@0ce52740 C1-C8 \u2014 runtime correction: connected scientific cycle (run_pipeline -> digest-bound artifact -> identity-complete frozen scoring -> durable exclusive terminal -> real ledger verification), authorized resource-contract limits riding the pipeline's F9 guard (RSS/CUDA/thermal fail-closed), per-cell isolation + CellRuntime, single orchestrator with durable attempt claims and global GPU-hour accounting, identity-paired adjudication, logical public evidence",
+ "change_disclosure": "ARTIFACT-IDENTITY CHANGE ONLY, data-role windows UNCHANGED: origin contracts now carry a LOGICAL source_ref (no absolute local path; F7) so their bytes and every cell digest change; fit/monitor/inner/outer/sealed windows and expected_rows semantics are byte-comparable and identical to the v3 population. PREDECLARATION (C1.3): a typed inactive result without an eligible best checkpoint scores its TERMINAL artifact, labeled INACTIVE_TERMINAL_SCORED \u2014 the cell is never excluded and no artifact is substituted silently. DECLARED LIMITATION: slippage is embedded in fill prices under the sealed gym-fx lineage and is not separately countable; commission reconciles exactly per bar (gross - commission = net pnl).",
+ "scientific_change": "NONE beyond the disclosed artifact-identity and predeclared inactive-scoring rule",
+ "proposed_campaign_population": {
+  "materialization_root_note": "operator-local tree; identities below bind it",
+  "cell_population_sha256": "111dfed8acd281b269fc9916b8d6b5a39898d71b3a894f3f5dbb9b5f55792b05",
+  "materialization_sha256": "a0984e1a5003e9996360a170124137116671b6225b5acb1890e7e37a8e86b6cd",
+  "genesis_binding_sha256": "faa179091864733cbabfb01c399d3b82f090477195b5eda6d98bd71542b69d62"
+ },
+ "final_code_pins": {
+  "tools/b4_authority.py": "db43f069a6dab0ce13340a76c222a3b77ad1c30a13ad59012488e46b0b0637ea",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "7418a530ba5f11be395f554de4a5835cf7e6312f82d1ebd0bbdf6e8f3fcc38a6",
+  "tools/b4_campaign_ledger.py": "7738f5c8c296a6c91de15bfa4b49bbc18d3be41fff4b524d106f27d70be81be6",
+  "tools/b4_campaign_orchestrator.py": "ec41187b53f8896ad3e3370d32771d68c414e20a428bc5ab49015e9f1426cab9",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "dd029929a10dd93d50c163014fe83eb61e41195afcbe97bb543461d77eb81b39",
+  "tests/test_b4_materializer_authority.py": "a517be22b603535d2e807d5fe75f6f78cca49a6607fd63cc8209448c99a2e483"
+ },
+ "chronology_truth": "authored AFTER the @0ce52740 PRE freeze (dcbdacf3) and BEFORE any campaign score"
+}

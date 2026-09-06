@@ -62,12 +62,21 @@ def sha_file(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
+SOURCE_REF = ("predictor:examples/data/project3/"
+              "ethusdt_4h_tech_stat_full_model_ready.csv")
+
+
 def author_origin_contract(year: int, out_dir: Path) -> dict:
     base = json.loads(V1_CONTRACT.read_text())
     era = ORIGIN_ERAS[year]
     fit_end = f"{era['fit_end']}T00:00:00"
     c = dict(base)
     c["schema"] = "agent_multi.nested_split_contract.v1"
+    # F7 (order @0ce52740): committed contracts carry a LOGICAL
+    # source identity; consumers resolve it under an explicit root
+    # at runtime. No absolute local path enters public evidence.
+    c["source_ref"] = SOURCE_REF
+    c.pop("source_csv", None)
     c["$doc"] = (f"B4 causal origin {year}: every fitting and selection "
                  f"role ends before the score year; authored from the "
                  f"v1 contract (sha {sha_file(V1_CONTRACT)[:16]}...). "
@@ -96,7 +105,7 @@ def author_origin_contract(year: int, out_dir: Path) -> dict:
     # expected_rows must assert THIS origin's windows, not the v1
     # base's (dry-run finding: derived != asserted for o2022/o2023).
     import pandas as pd
-    dates = pd.read_csv(c["source_csv"],
+    dates = pd.read_csv(_b4a.resolve_source_ref(c["source_ref"]),
                         usecols=[c["date_column"]],
                         parse_dates=[c["date_column"]]
                         )[c["date_column"]]
@@ -106,8 +115,12 @@ def author_origin_contract(year: int, out_dir: Path) -> dict:
         for role, w in c["roles"].items()}
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"b4_causal_origin_{year}_contract.json"
+    _b4a.verify_no_absolute_paths(c, f"origin {year} contract")
     path.write_text(json.dumps(c, indent=1))
-    return {"year": year, "path": str(path), "sha256": sha_file(path),
+    return {"year": year,
+            "path": f"contracts/b4_causal_origin_{year}"
+                    f"_contract.json",
+            "sha256": sha_file(path),
             "roles": c["roles"]}
 
 
@@ -567,9 +580,10 @@ def main(argv=None) -> int:
         sort_keys=True).encode()).hexdigest()
 
     packet = {
-        "schema": "agent_multi.b4_causal_sac_materialization.v2",
-        "comparator_dir": str(args.calibration_dir) if
-        args.calibration_dir else None,
+        "schema": "agent_multi.b4_causal_sac_materialization.v3",
+        "comparator_ref": ("repo:docs/audits/evidence/"
+                           "screen_b_rule_arms_v6_e_corrected_"
+                           "20260905"),
         "status": "PREPARED_NOT_LAUNCHED",
         "origins": origins,
         "causal_eligibility": causal,
@@ -594,6 +608,10 @@ def main(argv=None) -> int:
         "sealed_2025_used": False,
     }
     _b4a.verify_language(packet, "B4 materialization packet")
+    _b4a.verify_no_absolute_paths(
+        {k: v for k, v in packet.items()
+         if k not in ("cpu_mechanics_command",)},
+        "B4 materialization packet")
     (out / "B4_MATERIALIZATION.json").write_text(json.dumps(packet,
                                                             indent=1))
     print(json.dumps({"status": packet["status"],

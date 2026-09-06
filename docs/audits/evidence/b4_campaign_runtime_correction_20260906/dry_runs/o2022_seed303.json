@@ -1,0 +1,46 @@
+{
+ "schema": "agent_multi.b4_campaign_dry_run.v2",
+ "cell": "o2022_seed303",
+ "status": "DRY_RUN_READY",
+ "cell_config_sha256": "5a0a3aba91fd8b24a4524fff7c5927a307f910978c4e17bcd5615c971992fbe0",
+ "contract": "<materialization_root>/contracts/b4_causal_origin_2022_contract.json",
+ "executable_path_facts": {
+  "execute_cell_calls_scorer": true,
+  "execute_cell_calls_verifier": true,
+  "execute_cell_calls_terminal": true
+ },
+ "effective_limits": {
+  "budget_max_env_steps": 40020000,
+  "budget_max_updates": 40020000,
+  "budget_max_wall_seconds": 43200.0,
+  "budget_max_rss_bytes": 8589934592
+ },
+ "roles_materialized": {
+  "outer_validation": {
+   "csv": "o2022_seed303/nested_splits/outer_validation.csv",
+   "sha256": "f9a0e25a5ee7009fa76bac583766455b43359ea616e68d79cb1ce81bf8cb0c06"
+  },
+  "train": {
+   "csv": "o2022_seed303/nested_splits/fit_train.csv",
+   "sha256": "e5c542d825deb015c491e58644c34df45c9f541a8fae897794017d4af89760a4"
+  },
+  "train_monitor": {
+   "csv": "o2022_seed303/nested_splits/train_monitor.csv",
+   "sha256": "b522013ca6e7a9c0acd5b50f71ece32b60f5dba95ff762cfc93943dfa28c7d98"
+  },
+  "train_tail": {
+   "csv": "o2022_seed303/nested_splits/train_monitor.csv",
+   "sha256": "b522013ca6e7a9c0acd5b50f71ece32b60f5dba95ff762cfc93943dfa28c7d98"
+  },
+  "val": {
+   "csv": "o2022_seed303/nested_splits/inner_validation.csv",
+   "sha256": "2eeaf6ecf84d21109f8e25371ab254659ce2c8f2aaee150d82dcd6ab65a64848"
+  },
+  "validation": {
+   "csv": "o2022_seed303/nested_splits/inner_validation.csv",
+   "sha256": "2eeaf6ecf84d21109f8e25371ab254659ce2c8f2aaee150d82dcd6ab65a64848"
+  }
+ },
+ "findings": [],
+ "wall_seconds": 1.3
+}

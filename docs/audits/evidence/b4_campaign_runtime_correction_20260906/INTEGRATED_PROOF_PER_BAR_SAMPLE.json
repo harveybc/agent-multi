@@ -1,0 +1,70 @@
+{
+ "columns": [
+  "origin",
+  "seed",
+  "datetime_utc",
+  "scored_index",
+  "source_row_sha256",
+  "requested_exposure",
+  "realized_exposure",
+  "gross_equity",
+  "economic_equity",
+  "gross_return_delta",
+  "commission_delta",
+  "slippage_declared",
+  "net_return",
+  "net_pnl_delta"
+ ],
+ "rows_total": 2196,
+ "per_bar_sha256": "d0a38efb23966b934d58fb61abd26a0e87c929456c322f015a95a105d3f7c917",
+ "first_rows": [
+  {
+   "origin": 2024,
+   "seed": 101,
+   "datetime_utc": "2024-01-01 00:00",
+   "scored_index": 540,
+   "source_row_sha256": "0706afe5a863be3321428434cbf47860a22ae2cc881b788a6df34347d04c17c9",
+   "requested_exposure": -0.0602208375930786,
+   "realized_exposure": -0.0795077371146104,
+   "gross_equity": 9720.42305128399,
+   "economic_equity": 9654.960654358958,
+   "gross_return_delta": 2.721076621564862,
+   "commission_delta": 0.0,
+   "slippage_declared": "EMBEDDED_IN_FILL_PRICE_PER_COST_BINDING",
+   "net_return": 0.0002819114258043,
+   "net_pnl_delta": 2.721076621564862
+  },
+  {
+   "origin": 2024,
+   "seed": 101,
+   "datetime_utc": "2024-01-01 04:00",
+   "scored_index": 541,
+   "source_row_sha256": "c33a69ac8f705c4e1079360fec3603dcf8bea059c395c9ca3c495882998ef35f",
+   "requested_exposure": -0.0711667537689209,
+   "realized_exposure": -0.0799178238816532,
+   "gross_equity": 9716.756687498604,
+   "economic_equity": 9651.294290573573,
+   "gross_return_delta": -3.666363785385329,
+   "commission_delta": 0.0,
+   "slippage_declared": "EMBEDDED_IN_FILL_PRICE_PER_COST_BINDING",
+   "net_return": -0.0003797388634338,
+   "net_pnl_delta": -3.666363785385329
+  },
+  {
+   "origin": 2024,
+   "seed": 101,
+   "datetime_utc": "2024-01-01 08:00",
+   "scored_index": 542,
+   "source_row_sha256": "002258ac5c5f0b458ed464a7bea083f5fc9e0605fa9349908fc75c761cb0e54e",
+   "requested_exposure": -0.0812358260154724,
+   "realized_exposure": -0.0806662983126595,
+   "gross_equity": 9710.072156840168,
+   "economic_equity": 9644.609759915136,
+   "gross_return_delta": -6.684530658436415,
+   "commission_delta": 0.0,
+   "slippage_declared": "EMBEDDED_IN_FILL_PRICE_PER_COST_BINDING",
+   "net_return": -0.0006926045830936,
+   "net_pnl_delta": -6.684530658436415
+  }
+ ]
+}

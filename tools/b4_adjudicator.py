@@ -70,8 +70,14 @@ def _finite(x: np.ndarray, what: str) -> np.ndarray:
     return x
 
 
+DT_FMT = "%Y-%m-%d %H:%M"
+
+
 def _per_bar_net(csv_path: Path, declared_sha: str,
-                 what: str) -> np.ndarray:
+                 what: str, with_identity: bool = False):
+    """C2 (order @0ce52740): pairing is IDENTITY, never length —
+    the loader returns the ordered bar-identity vector alongside
+    the values when asked, and refuses records without one."""
     import pandas as pd
     f = Path(csv_path)
     if not f.is_file():
@@ -86,7 +92,19 @@ def _per_bar_net(csv_path: Path, declared_sha: str,
     if col not in df.columns:
         raise AdjudicationRefusal(
             f"REFUSED: no net-return column in {what}")
-    return _finite(df[col].to_numpy(dtype=float), what)
+    values = _finite(df[col].to_numpy(dtype=float), what)
+    if not with_identity:
+        return values
+    if "datetime_utc" in df.columns:
+        ident = list(df["datetime_utc"].astype(str))
+    elif "datetime" in df.columns:
+        ident = list(pd.to_datetime(df["datetime"])
+                     .dt.strftime(DT_FMT))
+    else:
+        raise AdjudicationRefusal(
+            f"REFUSED: {what} carries no bar identity column — "
+            "identity-free pairing is forbidden")
+    return values, ident
 
 
 def sharpe(series: np.ndarray) -> float:
@@ -272,14 +290,26 @@ def load_campaign_results(ledger_path: Path, mat_root: Path,
     ledger_mod.verify_campaign_results(ledger_path, mat_root,
                                        results_root)
     out = {}
+    idents = {}
+    seen_files = {}
     for y in ORIGINS:
         for s in SEEDS:
             cid = f"o{y}_seed{s}"
             term = json.loads((Path(results_root) / cid /
                                "B4_CELL_TERMINAL.json").read_bytes())
-            series = _per_bar_net(Path(term["per_bar_csv"]),
-                                  term["per_bar_sha256"], cid)
+            sha = term["per_bar_sha256"]
+            if sha in seen_files:
+                raise AdjudicationRefusal(
+                    f"REFUSED: {cid} presents the same per-bar "
+                    f"artifact as {seen_files[sha]} — one artifact "
+                    "cannot be two results")
+            seen_files[sha] = cid
+            series, ident = _per_bar_net(
+                Path(term["per_bar_csv"]), sha, cid,
+                with_identity=True)
             out[(y, s)] = series
+            idents[(y, s)] = ident
+    out["__identities__"] = idents
     return out
 
 
@@ -291,11 +321,15 @@ def load_comparator_series(baselines_dir: Path,
     packet = json.loads((Path(baselines_dir) /
                          "SCREEN_B_RESULTS.json").read_bytes())
     out = {}
+    idents = {}
     for r in packet["results"]:
         key = (r["arm"], int(r["origin"]))
-        out[key] = _per_bar_net(Path(r["per_bar_csv"]),
-                                r["per_bar_sha256"],
-                                f"{r['arm']}@{r['origin']}")
+        series, ident = _per_bar_net(
+            Path(r["per_bar_csv"]), r["per_bar_sha256"],
+            f"{r['arm']}@{r['origin']}", with_identity=True)
+        out[key] = series
+        idents[key] = ident
+    out["__identities__"] = idents
     return out
 
 
@@ -308,7 +342,23 @@ def adjudicate(b4_series: dict, rule_series: dict,
     np.ndarray on the identical scored index."""
     failures = []
     exclusions = []
-    # 1. pairing support
+    b4_ident = b4_series.pop("__identities__", None)
+    rule_ident = rule_series.pop("__identities__", None)
+    # 1. pairing support — IDENTITY equality, never length (C2)
+    if b4_ident is not None and rule_ident is not None:
+        for y in ORIGINS:
+            ref = rule_ident[(RULE_ARMS[0], y)]
+            for arm in RULE_ARMS[1:]:
+                if rule_ident[(arm, y)] != ref:
+                    raise AdjudicationRefusal(
+                        f"REFUSED: comparator {arm}@{y} bar "
+                        "identities differ from its siblings")
+            for s in SEEDS:
+                if b4_ident[(y, s)] != ref:
+                    raise AdjudicationRefusal(
+                        f"REFUSED: o{y}_seed{s} bar-identity vector "
+                        "differs from the comparator — a shifted or "
+                        "foreign series can never pair")
     for y in ORIGINS:
         for arm in RULE_ARMS:
             if (arm, y) not in rule_series:
