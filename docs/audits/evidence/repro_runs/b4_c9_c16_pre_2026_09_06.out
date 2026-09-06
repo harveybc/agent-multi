@@ -1,0 +1,36 @@
+== A1: the truthful amendment-7 record cannot pass ==
+refused: REFUSED: campaign record binding 'cell_population_sha256' differs from the audited identit
+verifier expects retired v3/a6 bindings: 99dac961f1a7 vs real v4 111dfed8acd2
+
+== A2: two winners inside the vulnerable claim interval ==
+outcomes: [('WIN', 'A'), ('WIN', 'B')] | claim files: 2
+-> O_EXCL protects each UUID name, not the logical cell
+
+== A3: dry-run damages campaign state ==
+seal_attempt RAISED FileNotFoundError (no terminal): B4_CELL_TERMINAL.json
+durable claims left by the 'dry' run: 1
+-> dry-run writes a claim, then crashes; neither read-only nor replayable (the leftover claim makes the cell AMBIGUOUS)
+
+== A4: direct executor bypasses orchestration ==
+execute_cell verifies claim file exists: False
+execute_cell verifies campaign lease: False
+-> a fabricated nonempty attempt_id reaches the pipeline path (gated today only by the null CAMPAIGN_AUTH_SHA)
+
+== A5: 95 consumed hours still grants a 12-hour cell ==
+spent 95.0 h < ceiling 96 -> next cell dispatches with its OWN wall budget 43200.0 s (12 h) -> campaign can reach ~107 h
+intrasegment campaign-remaining consumer exists: False
+
+== A6: null seals + fabricated one-row CSVs pass ==
+forged campaign ACCEPTED: 12 cells (null seals, one shared 999-return row, no schema/pairing re-derivation)
+
+== A7: resume skips every terminal class by existence ==
+skip condition: if existing and not terminal.exists():
+distinguishes COMPLETED from FAILED/UNCERTAIN: False
+
+== A8: per-step telemetry + tautological reconciliation ==
+_check_executing_budget on EVERY step calls _check_resource_budget (which shells nvidia-smi when a temp cap is set): True
+gross_return_delta defined as pnl + commission_delta: True
+net_pnl_delta defined as the SAME pnl: True
+-> conservation is an identity by construction, not an independent reconciliation
+
+PRE CONFIRMED: A1-A8 all reproduce
