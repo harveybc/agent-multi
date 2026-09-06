@@ -26,11 +26,16 @@ import t1_adjudicator as adj  # noqa: E402
 import t1_known_truth_bank as bank  # noqa: E402
 
 MEAS = Path.home() / (".local/share/agent-multi/"
-                     "t1_measurements_v3_20260906.json")
+                     "t1_measurements_v4_20260906.json")
 BANK = Path.home() / ".local/share/agent-multi/t1_bank_v3_20260906"
-NPZ = Path.home() / ".local/share/agent-multi/t1_npz_v3_20260906"
+NPZ = Path.home() / ".local/share/agent-multi/t1_npz_v4_20260906"
 DESIGN = (REPO / "docs/audits/evidence/"
-          "T1_LAB_DESIGN_V3_2026_09_06.json")
+          "T1_LAB_DESIGN_V4_2026_09_06.json")
+PUB = Path.home() / (".local/share/agent-multi/"
+                     "t1_adjudication_v4_20260906.json")
+MANIFEST = Path.home() / (".local/share/agent-multi/"
+                          "t1_measurements_v4_20260906_MANIFEST"
+                          ".json")
 _meas_present = pytest.mark.skipif(not MEAS.is_file(),
                                    reason="measurements absent")
 
@@ -491,22 +496,19 @@ def test_c17_physical_replacement_dies(tmp_path):
 
 
 @_v3_present
-def test_c18_coherent_pair_cannot_claim_review(tmp_path):
-    """§4.8: a coherent rewrite of measurements+publication is
-    (a) refused against the population manifest, and (b) even the
-    honest pair is NON-AUTHORIZING without an external reviewer
-    record naming its exact digests."""
+def test_c18_c23_no_path_to_review_authority(tmp_path):
+    """C18/C23: rewritten measurements refuse against the
+    manifest; the honest pair is NON-AUTHORIZING (exit 3); there
+    is NO consuming API for reviewer records; a forged
+    quantitative publication refuses on complete equality."""
     import subprocess
-    S = Path.home() / ".local/share/agent-multi"
     design_sha = hashlib.sha256(DESIGN.read_bytes()).hexdigest()
     base = [sys.executable,
             str(REPO / "tools/t1_independent_verifier.py"),
             "--design", str(DESIGN), "--design-sha", design_sha,
             "--bank-dir", str(BANK), "--npz-dir", str(NPZ),
-            "--measurement-manifest",
-            str(S / "t1_measurements_v3_20260906_MANIFEST.json"),
-            "--published",
-            str(S / "t1_adjudication_v3_20260906.json")]
+            "--measurement-manifest", str(MANIFEST),
+            "--published", str(PUB)]
     # (a) coherently rewritten measurements != manifest
     m = _v3_meas()
     m["records"][0]["cpu_wall_seconds"] = 9.9
@@ -516,38 +518,206 @@ def test_c18_coherent_pair_cannot_claim_review(tmp_path):
                         capture_output=True, text=True)
     assert rc.returncode not in (0, 3)
     assert "population manifest" in rc.stderr + rc.stdout
-    # (b) the honest pair without a reviewer record: exit 3
+    # (b) the honest pair: strongest outcome is exit 3
     rc2 = subprocess.run(
         base + ["--measurements", str(MEAS)],
         capture_output=True, text=True)
     assert rc2.returncode == 3
     assert "SELF_CONSISTENT_ONLY_NOT_AUTHORIZING" in rc2.stdout
-    # (c) a reviewer record naming FOREIGN digests refuses
+    assert "complete_publication_equality" in rc2.stdout
+    # (c) NO consuming API: the flag itself does not exist
     rr = tmp_path / "rr.json"
     rr.write_text(json.dumps({
         "schema": "agent_multi.t1_reviewed_record.v1",
-        "reviewer": "fixture", "measurements_sha256": "0" * 64,
-        "publication_sha256": "0" * 64}))
+        "reviewer": "candidate-self-review",
+        "measurements_sha256": adj._sha_file(MEAS),
+        "publication_sha256": adj._sha_file(PUB)}))
     rc3 = subprocess.run(
         base + ["--measurements", str(MEAS),
                 "--reviewed-record", str(rr)],
         capture_output=True, text=True)
-    assert rc3.returncode not in (0, 3)
-    assert "DIFFERENT" in rc3.stderr + rc3.stdout
-    # (d) a reviewer record naming the exact digests authorizes
-    rr2 = tmp_path / "rr2.json"
-    rr2.write_text(json.dumps({
-        "schema": "agent_multi.t1_reviewed_record.v1",
-        "reviewer": "test_fixture_reviewer",
-        "measurements_sha256": adj._sha_file(MEAS),
-        "publication_sha256": adj._sha_file(
-            S / "t1_adjudication_v3_20260906.json")}))
+    assert rc3.returncode == 2          # argparse: unknown flag
+    # (d) forged quantitative field -> refused on COMPLETE
+    # equality (the exact PRE probe)
+    pub = json.loads(PUB.read_text())
+    pub["verdicts"]["ewma::am|white|snr-5"][
+        "snr_gain_db"]["median"] = 999
+    forged = tmp_path / "pub999.json"
+    forged.write_text(json.dumps(pub))
     rc4 = subprocess.run(
-        base + ["--measurements", str(MEAS),
-                "--reviewed-record", str(rr2)],
+        [sys.executable,
+         str(REPO / "tools/t1_independent_verifier.py"),
+         "--design", str(DESIGN), "--design-sha", design_sha,
+         "--bank-dir", str(BANK), "--npz-dir", str(NPZ),
+         "--measurement-manifest", str(MANIFEST),
+         "--published", str(forged),
+         "--measurements", str(MEAS),
+         "--submission-out", str(tmp_path / "sub.json")],
         capture_output=True, text=True)
-    assert rc4.returncode == 0
-    assert "REPRODUCED_UNDER_REVIEWED_IDENTITY" in rc4.stdout
+    assert rc4.returncode not in (0, 3)
+    blob = rc4.stderr + rc4.stdout
+    assert "differs from the complete re-derivation" in blob
+    assert "snr_gain_db" in blob and "median" in blob
+    assert not (tmp_path / "sub.json").exists()
+
+
+def test_c23_candidate_code_has_no_authority_tokens():
+    """C23: structural assert — no candidate tool contains a
+    branch capable of emitting a review-authority label."""
+    for tool in ("t1_known_truth_bank.py", "t1_lab_run.py",
+                 "t1_adjudicator.py",
+                 "t1_independent_verifier.py"):
+        text = (REPO / "tools" / tool).read_text()
+        for token in ("REPRODUCED_UNDER_REVIEWED_IDENTITY",
+                      "reviewed_record", "reviewed-record",
+                      '"ACCEPTED"', '"AUTHORIZED"',
+                      "REVIEW_APPROVED"):
+            assert token not in text, (tool, token)
+
+
+@_v3_present
+def test_c21_identity_mutations_refuse_before_evidence(tmp_path):
+    """C21: every executable-identity mutation refuses before any
+    evidence is read — for each of the sealed digests."""
+    design = json.loads(DESIGN.read_text())
+    for field in ("t1_known_truth_bank_sha256",
+                  "t1_lab_run_sha256",
+                  "t1_adjudicator_sha256",
+                  "t1_independent_verifier_sha256"):
+        forged = json.loads(DESIGN.read_text())
+        forged["code_identity"][field] = "0" * 64
+        with pytest.raises(SystemExit,
+                           match="differ from the sealed"):
+            adj.verify_complete_code_identity(forged)
+    with pytest.raises(SystemExit, match="causal operator"):
+        adj.verify_complete_code_identity(
+            design, operator_sha="0" * 64)
+    # live subprocess: a design naming other bytes refuses rc!=0
+    import subprocess
+    forged = json.loads(DESIGN.read_text())
+    forged["code_identity"]["t1_lab_run_sha256"] = "0" * 64
+    fp = tmp_path / "design_forged.json"
+    fp.write_text(json.dumps(forged, indent=1))
+    rc = subprocess.run(
+        [sys.executable,
+         str(REPO / "tools/t1_independent_verifier.py"),
+         "--design", str(fp),
+         "--design-sha",
+         hashlib.sha256(fp.read_bytes()).hexdigest(),
+         "--bank-dir", str(BANK), "--npz-dir", str(NPZ),
+         "--measurement-manifest", str(MANIFEST),
+         "--published", str(PUB),
+         "--measurements", str(MEAS)],
+        capture_output=True, text=True)
+    assert rc.returncode not in (0, 3)
+    assert "differ from the sealed" in rc.stderr + rc.stdout
+
+
+@_v3_present
+@pytest.mark.parametrize("field,setter", [
+    ("verdict", lambda v: v.update(
+        verdict="LAB_REJECTED"
+        if v["verdict"] == "LAB_CALIBRATED"
+        else "LAB_CALIBRATED")),
+    ("reason", lambda v: v.update(reason="all good")),
+    ("snr median", lambda v: v["snr_gain_db"].update(median=999.0)),
+    ("snr min", lambda v: v["snr_gain_db"].update(min=-1.0)),
+    ("snr max", lambda v: v["snr_gain_db"].update(max=100.0)),
+    ("tail median", lambda v: v["tail_ratio"].update(median=0.1)),
+    ("retention", lambda v: v["extreme_retention"].update(
+        median=0.99)),
+    ("utility", lambda v: v["relative_utility_delta_D_vs_X"]
+     .update(median=0.5)),
+    ("residual dist", lambda v: v["residual_incremental_r2"]
+     .update(median=0.5)),
+    ("seeds", lambda v: v.update(seeds=99)),
+    ("residual flag", lambda v: v.update(
+        residual_informative=not v.get("residual_informative",
+                                       False))),
+    ("material failures", lambda v: v.update(
+        material_failures=["smuggled clean bill"]))])
+def test_c22_every_field_class_mutation_refuses(field, setter):
+    """C22: mutation of every publication field class refuses on
+    the complete comparison."""
+    rederived = json.loads(PUB.read_text())
+    published = json.loads(PUB.read_text())
+    setter(published["verdicts"]["ewma::am|white|snr-5"])
+    with pytest.raises(SystemExit,
+                       match="complete re-derivation"):
+        adj.require_publication_equality(rederived, published)
+
+
+@_v3_present
+def test_c22_population_metadata_and_counts_refuse():
+    rederived = json.loads(PUB.read_text())
+    for mut in (
+            lambda p: p["verdict_counts"].update(
+                LAB_CALIBRATED=181),
+            lambda p: p.update(verdict_basis="vibes"),
+            lambda p: p.update(material_failure_rule="x"),
+            lambda p: p["population"].update(records=9),
+            lambda p: p.update(design_sha256="f" * 64)):
+        published = json.loads(PUB.read_text())
+        mut(published)
+        with pytest.raises(SystemExit,
+                           match="complete re-derivation"):
+            adj.require_publication_equality(rederived, published)
+    # smuggled extra top-level field dies on the exact schema
+    published = json.loads(PUB.read_text())
+    published["endorsement"] = "shiny"
+    with pytest.raises(SystemExit, match="exact schema"):
+        adj.require_publication_equality(rederived, published)
+
+
+@_v3_present
+def test_mut_c22_complete_equality_is_the_guard(tmp_path):
+    """Reverting to label/count comparison re-admits the 999
+    forgery — proving C22 bites."""
+    import importlib.util as ilu
+    text = (REPO / "tools/t1_adjudicator.py").read_text()
+    old = ("    if _canonical_bytes(rederived) == "
+           "_canonical_bytes(published):")
+    assert old in text
+    mut_text = text.replace(
+        old,
+        "    if rederived['verdict_counts'] == "
+        "published['verdict_counts']:")
+    mp = tmp_path / "adj_mut_c22.py"
+    mp.write_text(mut_text)
+    spec = ilu.spec_from_file_location("adj_mut_c22", mp)
+    mut = ilu.module_from_spec(spec)
+    spec.loader.exec_module(mut)
+    rederived = json.loads(PUB.read_text())
+    published = json.loads(PUB.read_text())
+    published["verdicts"]["ewma::am|white|snr-5"][
+        "snr_gain_db"]["median"] = 999.0
+    with pytest.raises(SystemExit):
+        adj.require_publication_equality(rederived, published)
+    mut.require_publication_equality(rederived, published)  # blind
+
+
+@_v3_present
+def test_mut_c21_identity_guard_bites(tmp_path):
+    """Removing the startup identity comparison re-admits a
+    foreign-bytes run — proving C21 bites."""
+    import importlib.util as ilu
+    text = (REPO / "tools/t1_adjudicator.py").read_text()
+    old = "        if sealed[k] != live[k]:"
+    assert old in text
+    mp = tmp_path / "adj_mut_c21.py"
+    mp.write_text(text.replace(
+        old, "        if False and sealed[k] != live[k]:"))
+    spec = ilu.spec_from_file_location("adj_mut_c21", mp)
+    mut = ilu.module_from_spec(spec)
+    spec.loader.exec_module(mut)
+    # the mutant lives in tmp; its identity source stays the real
+    # tools directory (only the comparison guard is mutated)
+    mut.executed_code_identity = adj.executed_code_identity
+    forged = json.loads(DESIGN.read_text())
+    forged["code_identity"]["t1_lab_run_sha256"] = "0" * 64
+    with pytest.raises(SystemExit):
+        adj.verify_complete_code_identity(forged)
+    mut.verify_complete_code_identity(forged)       # mutant blind
 
 
 def test_c19_future_rows_cannot_reach_controls():
@@ -617,15 +787,20 @@ def test_c20_smuggled_nested_fields_refuse():
         _adjudicate(m5)
 
 
-def test_history_v1_v2_immutable_and_superseded():
-    """§4.11: v1/v2 designs remain byte-intact; v3 names v2's
-    exact bytes as superseded history."""
-    v2 = REPO / "docs/audits/evidence/T1_LAB_DESIGN_V2_2026_09_06.json"
-    v1 = REPO / "docs/audits/evidence/T1_LAB_DESIGN_2026_09_06.json"
-    assert v1.is_file() and v2.is_file()
-    d3 = json.loads(DESIGN.read_text())
+def test_history_designs_immutable_and_superseded():
+    """v1-v3 designs remain byte-intact; each generation names its
+    predecessor's exact bytes as superseded history."""
+    e = REPO / "docs/audits/evidence"
+    v1 = e / "T1_LAB_DESIGN_2026_09_06.json"
+    v2 = e / "T1_LAB_DESIGN_V2_2026_09_06.json"
+    v3 = e / "T1_LAB_DESIGN_V3_2026_09_06.json"
+    assert v1.is_file() and v2.is_file() and v3.is_file()
+    d3 = json.loads(v3.read_text())
     assert d3["supersedes"]["design_v2_sha256"] == \
         hashlib.sha256(v2.read_bytes()).hexdigest()
+    d4 = json.loads(DESIGN.read_text())
+    assert d4["supersedes"]["design_v3_sha256"] == \
+        hashlib.sha256(v3.read_bytes()).hexdigest()
 
 
 @_v3_present

@@ -1,0 +1,10 @@
+{
+ "schema": "agent_multi.t1_v4_state_digests.v1",
+ "note": "operator-local state files (not committed); these digests bind them",
+ "sha256": {
+  "t1_measurements_v4_20260906.json": "3ec02686d5b32725483c7e894bfd5e2bf8d26e38e180bc914cfd136457224977",
+  "t1_adjudication_v4_20260906.json": "715449179198215c03848f837accf88a84572734aaf3540544edc1a248c23856",
+  "t1_review_submission_v4_20260906.json": "5bb86be77cf00507315b95a4e8ed7053f228e19cdca1c460e7383e821a7ace54",
+  "t1_measurements_v4_20260906_MANIFEST.json": "045aba749b9a7db7f4ad009236e9a4378f506efb14698249e0466ce3a32a9c04"
+ }
+}

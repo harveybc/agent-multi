@@ -1,0 +1,16 @@
+{
+ "schema": "agent_multi.t1_measurement_manifest.v2",
+ "design_sha256": "90d382aa941d74ce80da5d7f68bb3b62b8c6139c836bef3670706f2cb9f23f17",
+ "bank_inventory_sha256": "457db7781b799bed98992fa5e3251d5d60f1e17d92a7e87540b5f53a26c72bb0",
+ "measurements_sha256": "3ec02686d5b32725483c7e894bfd5e2bf8d26e38e180bc914cfd136457224977",
+ "executed_code_identity": {
+  "t1_known_truth_bank_sha256": "5934216d0d5e0b0d4eeb6560c57d9ab85ad2ecdfb5059ec3d21cd3a531aabfdf",
+  "t1_lab_run_sha256": "dc3c1c62ea65cd33e8f85b02a85c90748943442eb0c16839a69b4070936c7283",
+  "t1_adjudicator_sha256": "8f04e2f690fadbc97ccc186ff905580b12521dc03692e321349142658ee68801",
+  "t1_independent_verifier_sha256": "64ccc0ee30b3b8b8d04311435dde715e193f1c9a72a584fac67df0d9f46b7187"
+ },
+ "records_total": 1152,
+ "records_measured": 1116,
+ "records_refused": 36,
+ "manifest_sha256": "5a008e668092837f4336708cc948bf3bf91b7d59070ed3ac9e66612b8cd53564"
+}

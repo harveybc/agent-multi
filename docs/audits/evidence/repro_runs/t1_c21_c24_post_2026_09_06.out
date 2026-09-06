@@ -1,0 +1,15 @@
+== 1 (C21): executed bytes == sealed design, enforced ==
+all five sealed identities equal the executed bytes: True
+foreign-identity design rc: 1 | REFUSED: executed t1_lab_run.py bytes (dc3c1c62ea65) differ from the sealed desi
+measurement payload carries the executed identity: True
+
+== 2 (C22): the 999 forgery refuses; no submission ==
+rc: 1 | REFUSED: published adjudication differs from the complete re-derivation at publication.verdicts.ewma::am|white|snr-5.snr
+SUBMISSION_WRITTEN: False
+
+== 3 (C23): no path to review authority exists ==
+--reviewed-record rc: 2 (2 = the flag does not exist)
+no candidate tool contains an authority-emitting branch: True
+honest pair strongest outcome: 3 SELF_CONSISTENT_ONLY_NOT_AUTHORIZING | complete equality: True | rederived: 1116
+
+POST CONFIRMED: C21-C23 authority bypasses all die

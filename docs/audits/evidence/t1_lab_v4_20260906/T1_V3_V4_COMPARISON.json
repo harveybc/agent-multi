@@ -1,0 +1,18 @@
+{
+ "schema": "agent_multi.t1_v3_v4_comparison.v1",
+ "regimes": 384,
+ "verdict_flips_v3_to_v4": [],
+ "byte_identical_verdict_bodies": 384,
+ "note": "v4 REMEASURED everything under the sealed v4 design and complete code identity; all 384 verdict bodies re-derive byte-identical to v3 \u2014 the conclusion is reproduced, not copied. Verdict counts 64/180/116/24 unchanged; ewma::am|white|snr5 remains LAB_REJECTED.",
+ "population": {
+  "records": 1152,
+  "measured": 1116,
+  "typed_refusals": 36
+ },
+ "verdict_counts_v4": {
+  "NON_CAUSAL_ORACLE_ONLY": 64,
+  "LAB_CALIBRATED": 180,
+  "LAB_REJECTED": 116,
+  "INCONCLUSIVE": 24
+ }
+}
