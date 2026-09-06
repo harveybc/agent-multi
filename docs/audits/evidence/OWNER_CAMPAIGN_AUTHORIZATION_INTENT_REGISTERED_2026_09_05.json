@@ -1,0 +1,25 @@
+{
+ "schema": "agent_multi.owner_authorization_registered_by_satoshi.v1",
+ "registered_at_date": "2026-09-05",
+ "registered_by": "General Satoshi III (chat relay, verbatim intent per the owner-typo rule)",
+ "owner_words": "ok yo autorizo",
+ "owner_intent_registered": "the project owner AUTHORIZES the B4 twelve-cell campaign, in response to the preparation return packet at satoshi/data-first-sota-20260826@a540065c (disposition B4_12_CELL_CAMPAIGN_READY_FOR_OWNER_AUTHORIZATION)",
+ "resolves": {
+  "order": "agent-multi@e8bb500f",
+  "return": "satoshi/data-first-sota-20260826@a540065c"
+ },
+ "proposed_bindings_awaiting_musashi_record": {
+  "cell_population_sha256_prefix": "99dac961f1a7",
+  "materialization_sha256_prefix": "d2c943fa9705",
+  "genesis_binding_sha256_prefix": "db962cf4a520",
+  "amendment_6_sha256_prefix": "773d6bdef751",
+  "resource_contract_proposal_sha256_prefix": "1b738f74534f"
+ },
+ "status": "OWNER_INTENT_REGISTERED_AWAITING_MUSASHI_DECISION_RECORD",
+ "why_not_yet_executable": "the executor refuses BY DESIGN until a reviewed owner decision record digest is pinned into CAMPAIGN_AUTH_SHA by auditor order (the preflight pattern: owner approves -> Musashi records the decision with exact digests after independently auditing the return -> Satoshi consumes it executably). Satoshi pinning his own digest would be the caller choosing the trust root \u2014 the exact failure class this chain exists to refuse.",
+ "next_steps": [
+  "Musashi independently audits the @a540065c return (executor, ledger, adjudicator, amendment 6, resource contract)",
+  "Musashi records the owner decision (owner_decision_record.v1) pinning the population identities, limits and resource contract, and issues the campaign execution order",
+  "Satoshi pins the record digest into CAMPAIGN_AUTH_SHA per that order and executes the twelve cells under it"
+ ]
+}
