@@ -1,0 +1,10 @@
+1. amendment-10 executor pin: c852c3cc5dd84695 ...
+   live executor file hash : c852c3cc5dd84695 ...
+2. executor contains CAMPAIGN_AUTH_SHA = None: True
+   baseline chain: CHAIN_OK
+3. activated executor hash: 177728a3d99332d6 ... (differs from the pin)
+   chain with activation  : CHAIN_REFUSED: REFUSED: executing code tools/b4_campaign_executor.py digest 177728a3d993 differs from the
+   bytes restored exactly : True
+4. -> the owner decision is valid yet the campaign cannot be executed: consuming the authorization contradicts the append-only chain (finite two-phase activation required)
+
+PRE CONFIRMED: C27 activation contradiction reproduces physically
