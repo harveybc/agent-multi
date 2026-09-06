@@ -29,6 +29,8 @@ ZENODO_SELECTION = {
                           "family": "urban_pedestrian"},
     "hospital": {"record": 4656014, "family": "health_hospital"},
     "solar_weekly": {"record": 4656151, "family": "solar_energy"},
+    "solar_10_minutes": {"record": 4656144,
+                         "family": "solar_energy"},
     "saugeenday": {"record": 4656058, "family": "hydrology"},
     "us_births": {"record": 4656049, "family": "demography"},
     "electricity_weekly": {"record": 4656141,

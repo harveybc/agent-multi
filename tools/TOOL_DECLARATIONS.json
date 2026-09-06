@@ -809,6 +809,20 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_bank_census.py": {
+   "purpose": "T2 step-3 census of the ACQUIRED public bank: manifested bytes through the C1/C2/C4 loaders with global cross-archive dedup; exact admissible/excluded population per dataset/family; ETTh1 inventoried REVIEW_REQUIRED; no scores",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t2_design_draft.py": {
+   "purpose": "T2 step-4 confirmatory-design DRAFT + disclosed precision calculation (Bonferroni-by-family n-min from development-scale sd); candidate for the Musashi design review \u2014 never sealed, no confirmatory score",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

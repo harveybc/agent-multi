@@ -1,0 +1,10 @@
+{
+ "schema": "agent_multi.t2_public_bank_digests.v1",
+ "note": "raw dataset bytes live outside Git under <state_root>/t2_public_raw; the manifest binds every file by sha256",
+ "sha256": {
+  "t2_public_data_manifest_20260906.json": "5ee356dbfbb77552084f9a2752a1e7a6f96cb48330f3d66948e5f743a1ee0741",
+  "t2_bank_census_20260906.json": "d137bb42f7e7f132d459d699c2e3ba89f9ecb47d65742963208f08053cc6d15a",
+  "t2_confirmatory_design_DRAFT_20260906.json": "a830c4655ea2c571a7d689f7ee2bc44bb9fc36c379774e2a05874e37a809a68a",
+  "t2_pilot_20260906.json": "771c97287e1b9d53062b050113e14f27a6f5f6a9123e83b0d485aae93e699c22"
+ }
+}

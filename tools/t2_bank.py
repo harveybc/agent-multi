@@ -167,7 +167,15 @@ def parse_tsf_bytes(raw: bytes, logical_id: str,
     """C4: minimal strict parser for the Monash .tsf format —
     header attributes + @data lines 'name:...:v1,v2,...'. Refuses
     malformed structure instead of guessing."""
-    text = raw.decode("utf-8", errors="strict")
+    try:
+        text = raw.decode("utf-8", errors="strict")
+        encoding_used = "utf-8"
+    except UnicodeDecodeError:
+        # Monash headers occasionally carry latin-1 punctuation;
+        # latin-1 is byte-bijective (no silent loss) and the
+        # numeric data lines are ASCII. The choice is RECORDED.
+        text = raw.decode("latin-1")
+        encoding_used = "latin-1"
     lines = text.splitlines()
     freq = None
     horizon = None
@@ -207,6 +215,7 @@ def parse_tsf_bytes(raw: bytes, logical_id: str,
     return {"logical_id": logical_id, "frequency": freq,
             "declared_horizon": horizon,
             "attributes": attrs, "series": series,
+            "encoding_used": encoding_used,
             "bytes_sha256": _sha_bytes(raw)}
 
 
