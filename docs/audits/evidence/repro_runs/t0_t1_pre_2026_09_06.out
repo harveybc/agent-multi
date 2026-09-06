@@ -1,0 +1,36 @@
+== 1. real preprocessor surface ==
+plugins: ['__init__.py', 'anti_naive_lock.py', 'plugin_cleaner.py', 'plugin_default.py', 'plugin_default_backup.py', 'plugin_feature_selector_post.py', 'plugin_feature_selector_pre.py', 'plugin_normalizer.py', 'plugin_trimmer.py', 'plugin_unbiaser.py']
+file-loader CLI pipeline: True
+D1-D6 splits in default plugin: True
+dual normalizer (A on D1, B on D4): True
+train-only rules present: True
+
+== 2. reusable fit/transform API with artifact + incremental + digest ==
+occurrences across app/: {'transform_incremental': 0, 'artifact_sha': 0, 'fit(': 1, 'transform_batch': 0}
+-> NO reusable operator protocol exists (CLI-coupled, batch-only, no incremental parity, no artifact digest)
+
+== 3. existing noise generators are NOT the T1 unit ==
+heuristic-strategy sweep_noise perturbs PREDICTIONS via API set_noise: True
+synthetic-datagen files with (clean_signal, realized_noise, observed) unit: 0
+-> neither produces per-variable known truth (clean+realized_noise+observed+seed+family+params)
+
+== 4. counterexample: centered filter leaks the future ==
+centered[98] = 0.150 (uses x[99..100] — the FUTURE step leaks two bars early; clean value there is 0)
+
+== 5. counterexample: fitting on validation changes the result ==
+same bar normalized: train-only 0.8451 vs train+val 0.5111
+
+== 6. counterexample: batch vs incremental bytes differ ==
+batch sha: b5861985ae4e
+fragmented-without-state sha: aeb07f44e1e8
+-> incremental parity requires CARRIED state; naive re-batching per fragment produces different bytes
+
+== 7. counterexample: better reconstruction destroys an extreme and leaves target info in the residual ==
+RMSE improves: 0.493 -> 0.313; peak retention 0.12; corr(residual, clean) = 0.438
+-> reconstruction metrics alone would promote a filter that kills the extreme; the residual still carries the target
+
+== 8. real state of the preprocessor test suite ==
+collect-only: 16 tests collected, 3 errors in 0.53s
+returncode: 2
+
+PRE CONFIRMED: all eight points frozen
