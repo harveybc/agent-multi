@@ -1,0 +1,18 @@
+{
+ "schema": "agent_multi.owner_b4_campaign_authorization_ratification.v1",
+ "recorded_at_date": "2026-09-06",
+ "recorded_by": "General Musashi",
+ "owner_words": "listo, Satoshi terminó, yo apruebo que mpiecen.",
+ "interpretation": "The project owner authorizes the prepared B4 twelve-cell campaign to start only after independent runtime review closes the executable authorization chain and a final dispatch order pins the reviewed commit.",
+ "scope": [
+  "the twelve-cell B4 population whose exact identities are named by the Musashi campaign authorization record",
+  "the reviewed resource contract and its global and per-cell limits",
+  "one campaign execution after the final executable authorization audit"
+ ],
+ "does_not_authorize": [
+  "changing the scientific population, data roles, comparator, cost model or sealed score interval",
+  "using the sealed 2025 confirmation data",
+  "live venue, service, key, position or checkpoint promotion actions",
+  "retrying ambiguous or terminal campaign attempts"
+ ]
+}
