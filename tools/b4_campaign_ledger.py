@@ -136,80 +136,167 @@ def verify_ledger(ledger_path: Path, mat_root: Path) -> dict:
 
 
 def verify_campaign_results(ledger_path: Path, mat_root: Path,
-                            results_root: Path) -> dict:
-    """The complete-population gate: only a full, identity-matched,
-    per-bar-complete 12-cell result set is a campaign result."""
+                            results_root: Path,
+                            comparator_dir: Path = None) -> dict:
+    """C14: the complete-population gate RE-DERIVES everything —
+    exact claim/terminal schemas and their digest binding (a null
+    seal is UNCERTAIN, never accepted), unique attempts, per-bar
+    schema/types/finiteness/cardinality, bar-identity equality
+    against every comparator arm, independent economic conservation,
+    all digests, and no artifact reuse. Labels and counts grant
+    nothing."""
+    import numpy as np
+    import pandas as pd
     ledger = verify_ledger(ledger_path, mat_root)
     results_root = Path(results_root)
     seen_attempts = set()
+    seen_artifacts = {}
     facts = {}
+    comp_idents = {}
+    if comparator_dir is not None:
+        packet = json.loads((Path(comparator_dir) /
+                             "SCREEN_B_RESULTS.json").read_bytes())
+        for r in packet["results"]:
+            key = int(r["origin"])
+            comp = pd.read_csv(r["per_bar_csv"])
+            ident = list(pd.to_datetime(comp["datetime"])
+                         .dt.strftime("%Y-%m-%d %H:%M"))
+            comp_idents.setdefault(key, {})[r["arm"]] = ident
+    required_cols = ("origin", "seed", "datetime_utc",
+                     "scored_index", "source_row_sha256",
+                     "requested_exposure", "realized_exposure",
+                     "economic_equity",
+                     "net_equity_delta_observed", "env_pnl_fact",
+                     "commission_delta", "net_return")
+    bars_per_year = {2022: 2190, 2023: 2190, 2024: 2196}
     for cid in EXPECTED_CELLS:
-        term_p = results_root / cid / "B4_CELL_TERMINAL.json"
+        cell_dir = results_root / cid
+        term_p = cell_dir / "B4_CELL_TERMINAL.json"
+        claims = sorted(cell_dir.glob("CLAIM_*.json"))
         if not term_p.is_file():
             raise LedgerRefusal(
                 f"REFUSED: partial population — {cid} has no "
-                "terminal result; a partial population is never a "
-                "campaign result")
-        term = json.loads(term_p.read_bytes())
+                "terminal result")
+        if len(claims) != 1:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} has {len(claims)} claims — exactly "
+                "one per generation")
+        claim = b4a._strict_json_bytes(claims[0].read_bytes(),
+                                       f"claim {cid}")
+        term = b4a._strict_json_bytes(term_p.read_bytes(),
+                                      f"terminal {cid}")
         if term.get("schema") != "agent_multi.b4_cell_terminal.v1":
+            raise LedgerRefusal(f"REFUSED: {cid} foreign terminal "
+                                "schema")
+        if claim.get("schema") != "agent_multi.b4_attempt_claim.v2":
+            raise LedgerRefusal(f"REFUSED: {cid} foreign claim "
+                                "schema")
+        seal = claim.get("terminal_sha256")
+        if seal is None:
             raise LedgerRefusal(
-                f"REFUSED: {cid} result schema is foreign")
-        if "PREFLIGHT" in str(term.get("terminal", "")).upper() or \
-                term.get("status", "").startswith("B4_GPU_PREFLIGHT"):
+                f"REFUSED: {cid} attempt is UNSEALED — an absent "
+                "seal is UNCERTAIN, never accepted evidence")
+        if seal != _sha_file(term_p):
             raise LedgerRefusal(
-                f"REFUSED: {cid} presents a mechanics/preflight "
-                "record as scientific evidence")
-        if term.get("cell") != cid:
+                f"REFUSED: {cid} seal does not bind this terminal")
+        if term.get("cell") != cid or claim.get("cell") != cid:
             raise LedgerRefusal(
-                f"REFUSED: result-to-cell identity mismatch at "
-                f"{cid}")
+                f"REFUSED: {cid} identity mismatch")
         if term.get("cell_config_sha256") != \
                 ledger["cells"][cid]["cell_config_sha256"]:
             raise LedgerRefusal(
-                f"REFUSED: {cid} result binds a foreign cell digest")
+                f"REFUSED: {cid} binds a foreign cell digest")
         att = term.get("attempt_id")
-        if not att or not isinstance(att, str):
+        if not att or not isinstance(att, str) or \
+                att != claim.get("attempt_id"):
             raise LedgerRefusal(
-                f"REFUSED: {cid} terminal without a durable "
-                "attempt_id — attempts are mandatory (C5)")
+                f"REFUSED: {cid} attempt binding broken")
         if att in seen_attempts:
             raise LedgerRefusal(
                 f"REFUSED: attempt identity reused at {cid}")
         seen_attempts.add(att)
-        claim = results_root / cid / f"ATTEMPT_{att}.json"
-        if not claim.is_file():
+        if "PREFLIGHT" in str(term.get("terminal", "")).upper() or \
+                str(term.get("status", "")).startswith(
+                    "B4_GPU_PREFLIGHT"):
             raise LedgerRefusal(
-                f"REFUSED: {cid} attempt claim record absent — the "
-                "attempt does not belong to this cell")
-        claim_rec = json.loads(claim.read_bytes())
-        if claim_rec.get("cell") != cid or \
-                claim_rec.get("attempt_id") != att:
-            raise LedgerRefusal(
-                f"REFUSED: {cid} attempt binding broken")
-        if term.get("terminal_sha256_expected") not in (None,):
-            pass
-        actual_term_sha = _sha_file(term_p)
-        claimed = claim_rec.get("terminal_sha256")
-        if claimed is not None and claimed != actual_term_sha:
-            raise LedgerRefusal(
-                f"REFUSED: {cid} terminal digest differs from the "
-                "attempt's sealed terminal binding")
+                f"REFUSED: {cid} presents a mechanics/preflight "
+                "record as scientific evidence")
         if term.get("terminal") != "COMPLETED":
             raise LedgerRefusal(
                 f"REFUSED: {cid} terminal is "
-                f"{term.get('terminal')!r} — an incomplete cell "
-                "cannot enter adjudication")
-        pb = term.get("per_bar_csv")
-        if not pb or not Path(pb).is_file() or \
-                _sha_file(Path(pb)) != term.get("per_bar_sha256"):
+                f"{term.get('terminal')!r}")
+        for req in ("per_bar_csv", "per_bar_sha256",
+                    "scored_index_sha256", "checkpoint_sha256"):
+            if req not in term:
+                raise LedgerRefusal(
+                    f"REFUSED: {cid} terminal lacks {req!r}")
+        pb = Path(term["per_bar_csv"])
+        if not pb.is_file() or _sha_file(pb) != \
+                term["per_bar_sha256"]:
             raise LedgerRefusal(
-                f"REFUSED: {cid} lacks complete digest-bound "
-                "per-bar paired returns")
+                f"REFUSED: {cid} per-bar evidence missing or "
+                "digest-broken")
+        if term["per_bar_sha256"] in seen_artifacts:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} reuses the per-bar artifact of "
+                f"{seen_artifacts[term['per_bar_sha256']]}")
+        seen_artifacts[term["per_bar_sha256"]] = cid
+        df = pd.read_csv(pb)
+        missing_cols = [c for c in required_cols
+                        if c not in df.columns]
+        if missing_cols:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} per-bar lacks required columns "
+                f"{missing_cols}")
+        year = int(cid.split("_")[0][1:])
+        if len(df) != bars_per_year[year]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} has {len(df)} scored rows, the "
+                f"origin requires exactly {bars_per_year[year]}")
+        for col in ("economic_equity", "net_equity_delta_observed",
+                    "env_pnl_fact", "commission_delta",
+                    "net_return"):
+            vals = pd.to_numeric(df[col], errors="coerce"
+                                 ).to_numpy(dtype=float)
+            if not np.isfinite(vals).all():
+                raise LedgerRefusal(
+                    f"REFUSED: {cid} non-finite or non-numeric "
+                    f"value in {col}")
+        if int(df["origin"].iloc[0]) != year or \
+                df["origin"].nunique() != 1:
+            raise LedgerRefusal(f"REFUSED: {cid} origin column "
+                                "mismatch")
+        # independent conservation (never one field vs itself)
+        resid = float((df["net_equity_delta_observed"]
+                       - df["env_pnl_fact"]).abs().max())
+        if resid > 1e-6:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} conservation residual {resid} "
+                "between independent counters")
+        if (pd.to_numeric(df["commission_delta"])
+                < -1e-12).any():
+            raise LedgerRefusal(
+                f"REFUSED: {cid} cumulative commission decreased")
+        ident = list(df["datetime_utc"].astype(str))
+        ident_sha = hashlib.sha256(
+            "|".join(ident).encode()).hexdigest()
+        if ident_sha != term["scored_index_sha256"]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} bar identities do not re-derive "
+                "the declared scored index")
+        if comp_idents:
+            for arm, comp_ident in comp_idents.get(year,
+                                                   {}).items():
+                if comp_ident != ident:
+                    raise LedgerRefusal(
+                        f"REFUSED: {cid} bar-identity vector "
+                        f"differs from comparator {arm}@{year}")
         if term.get("sealed_2025_used") is not False:
             raise LedgerRefusal(
                 f"REFUSED: {cid} does not prove sealed-period "
                 "absence")
         facts[cid] = {"terminal": term["terminal"],
+                      "attempt_id": att,
                       "per_bar_sha256": term["per_bar_sha256"]}
     extra = [d.name for d in results_root.iterdir()
              if d.is_dir() and d.name.startswith("o")

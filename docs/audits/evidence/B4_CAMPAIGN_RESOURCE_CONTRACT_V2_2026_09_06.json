@@ -1,0 +1,35 @@
+{
+ "schema": "agent_multi.b4_campaign_resource_contract.v2",
+ "supersedes": "B4_CAMPAIGN_RESOURCE_CONTRACT_PROPOSAL_2026_09_05.json (sha 1b738f74... \u2014 named amendment 6 and a retired population; superseded, byte-intact)",
+ "generation": "b4_campaign_generation_v5_20260906",
+ "binding_rule": "binds the LATEST amendment of the live chain by truthful field name; never a retired population",
+ "per_cell_limits": {
+  "environment_steps_max": 40020000,
+  "real_updates_max": 40020000,
+  "wall_seconds_max": 43200,
+  "host_rss_bytes_max": 8589934592,
+  "cuda_allocated_bytes_max": 6442450944,
+  "gpu_temperature_celsius_max": 87
+ },
+ "global_limits": {
+  "gpu_hours_ceiling_all_cells": 96.0,
+  "max_concurrency": 1,
+  "enforcement": "intrasegment: effective cell wall = min(per-cell, remaining global); remainder < one segment refuses dispatch"
+ },
+ "monitoring": {
+  "heartbeat_seconds": 30,
+  "gpu_telemetry_sample_seconds": 5.0,
+  "cadence_rule": "resource telemetry ONLY at this cadence inside segments (forced at segment boundaries); due-sample telemetry loss fails closed",
+  "stop_file": "budget_stop_file per cell + CAMPAIGN_STOP global"
+ },
+ "retry_policy_by_terminal_class": {
+  "COMPLETED": "never re-run",
+  "FAILED": "no automatic retry",
+  "TIMED_OUT": "no automatic retry",
+  "THERMAL_STOP": "no automatic retry",
+  "RESOURCE_STOP": "no automatic retry",
+  "EXTERNALLY_STOPPED": "no automatic retry",
+  "UNCERTAIN_OR_UNSEALED": "blocked for operator disposition; never re-issued"
+ },
+ "estimate_discipline": "NO campaign ETA claimed; measured mechanics facts only (168.5 s / 20000-step epoch on the accepted preflight)"
+}

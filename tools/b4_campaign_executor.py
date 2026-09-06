@@ -157,21 +157,31 @@ def build_economic_config(cell_id: str, mat_root: Path,
 
 
 def reconcile_per_bar(out) -> None:
-    """C2: gross - commission == net pnl, exact per bar and in
-    total; a broken reconciliation refuses."""
-    resid = (out["gross_return_delta"] - out["commission_delta"]
-             - out["net_pnl_delta"]).abs().max()
-    if float(resid) > 1e-9:
+    """C16: conservation from INDEPENDENT sources — the env's own
+    per-bar pnl fact against the delta of consecutive economic-
+    equity observations recorded separately. Never an identity
+    built from one field. Total: equity_end - equity_start equals
+    the sum of observed deltas."""
+    resid = (out["net_equity_delta_observed"]
+             - out["env_pnl_fact"]).abs().max()
+    if float(resid) > 1e-6:
         raise ExecutorRefusal(
-            f"REFUSED: per-bar gross-costs=net reconciliation "
-            f"residual {resid}")
-    total = (float(out["gross_return_delta"].sum())
-             - float(out["commission_delta"].sum())
-             - float(out["net_pnl_delta"].sum()))
-    if abs(total) > 1e-6:
+            f"REFUSED: env pnl fact disagrees with the "
+            f"independently observed equity delta (max residual "
+            f"{resid}) — conservation broken")
+    eq = out["economic_equity"].to_numpy()
+    # the first scored delta crosses the context boundary and lies
+    # OUTSIDE the eq[0]..eq[-1] span; internal conservation sums the
+    # in-span deltas only.
+    total = abs(float(eq[-1] - eq[0])
+                - float(out["net_equity_delta_observed"]
+                        .iloc[1:].sum()))
+    if total > 1e-6:
         raise ExecutorRefusal(
-            f"REFUSED: total gross-costs=net reconciliation "
-            f"residual {total}")
+            f"REFUSED: total equity conservation residual {total}")
+    if (out["commission_delta"] < -1e-12).any():
+        raise ExecutorRefusal(
+            "REFUSED: cumulative commission counter decreased")
 
 
 # ---------------- C2: identity-complete frozen scoring ------------
@@ -240,11 +250,13 @@ def score_frozen_checkpoint(cfg: dict, checkpoint_zip: Path,
         commission_cum = float(info.get("commission_paid") or 0.0)
         if t >= scored_start:
             dt = df["DATE_TIME"].iloc[t]
-            pnl = float(info.get("pnl", 0.0))
+            env_pnl = float(info.get("pnl", 0.0))
             commission_delta = commission_cum - commission_prev
             units = float(getattr(inner.bridge, "position_units",
                                   0.0) or 0.0)
             close_t = float(df["CLOSE"].iloc[t])
+            observed_delta = (0.0 if equity_prev is None
+                              else econ - equity_prev)
             rows.append({
                 "origin": int(origin["year"]),
                 "seed": seed,
@@ -257,15 +269,21 @@ def score_frozen_checkpoint(cfg: dict, checkpoint_zip: Path,
                     action).reshape(-1)[0]),
                 "realized_exposure": (units * close_t / econ
                                       if econ else 0.0),
-                "gross_equity": econ + commission_cum,
+                # C16: the env does NOT expose gross equity — the
+                # field is typed-unavailable and the economic claim
+                # narrows; nothing is manufactured.
+                "gross_equity": "UNAVAILABLE_ENV_FACT",
                 "economic_equity": econ,
-                "gross_return_delta": pnl + commission_delta,
+                "net_equity_delta_observed": observed_delta,
+                "env_pnl_fact": (env_pnl if equity_prev is not None
+                                 else observed_delta),
                 "commission_delta": commission_delta,
+                "pre_commission_equity_delta_derived":
+                    observed_delta + commission_delta,
                 "slippage_declared":
                     "EMBEDDED_IN_FILL_PRICE_PER_COST_BINDING",
                 "net_return": (0.0 if equity_prev in (None, 0.0)
                                else econ / equity_prev - 1.0),
-                "net_pnl_delta": pnl,
             })
         equity_prev = econ
         commission_prev = commission_cum
@@ -301,8 +319,19 @@ def score_frozen_checkpoint(cfg: dict, checkpoint_zip: Path,
             "scored_index_sha256": scored_id,
             "counter_semantics": {
                 "commission_paid": "CUMULATIVE from env info; "
-                                   "converted to per-bar deltas",
-                "pnl": "per-bar economic delta from env info",
+                                   "converted to per-bar deltas; "
+                                   "monotonicity verified",
+                "net_equity_delta_observed": "delta of consecutive "
+                    "economic_equity OBSERVATIONS (independent of "
+                    "the env pnl fact)",
+                "env_pnl_fact": "the env's own per-bar pnl — the "
+                    "second, independent source; conservation "
+                    "verified between the two",
+                "gross_equity": "UNAVAILABLE — the sealed gym-fx "
+                    "lineage exposes no gross-equity counter; the "
+                    "economic claim is NARROWED accordingly; "
+                    "pre_commission_equity_delta_derived is a "
+                    "labeled derivation, never a gross fact",
                 "slippage": "embedded in fill price per the cost "
                             "binding; not separately countable "
                             "under the sealed gym-fx lineage "
@@ -538,7 +567,9 @@ def dry_run_cell(cell_id: str, mat_root: Path,
 
 # ---------------- C1: the connected scientific cycle --------------
 def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
-                 device: str, attempt_id: str = None) -> int:
+                 device: str, lease_path: Path = None,
+                 global_wall_remaining_seconds: float = None
+                 ) -> int:
     if CAMPAIGN_AUTH_SHA is None or not CAMPAIGN_AUTH_PATH.is_file():
         raise ExecutorRefusal(
             "REFUSED: no Musashi campaign authorization record "
@@ -546,10 +577,29 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
             "intent alone does not open this gate")
     b4a.verify_campaign_authorization_record(CAMPAIGN_AUTH_PATH,
                                              CAMPAIGN_AUTH_SHA)
-    if not attempt_id:
+    # C12: execution is structurally impossible without a VERIFIED
+    # lease — unique claim + live campaign lock + generation +
+    # digest bindings, all proven BEFORE any pipeline/env/CUDA call.
+    if lease_path is None:
         raise ExecutorRefusal(
-            "REFUSED: no durable attempt claim — cells run only "
-            "under the orchestrator's claimed attempt_id")
+            "REFUSED: no execution lease — cells run only under the "
+            "orchestrator's verified lease")
+    import importlib.util as _ilu
+    _os = _ilu.spec_from_file_location(
+        "b4orch_exec", REPO / "tools/b4_campaign_orchestrator.py")
+    _orch = _ilu.module_from_spec(_os)
+    _os.loader.exec_module(_orch)
+    lease = _orch.verify_lease(lease_path, out_root, cell_id,
+                               mat_root)
+    attempt_id = lease["attempt_id"]
+    if global_wall_remaining_seconds is None:
+        global_wall_remaining_seconds = _orch.\
+            remaining_global_seconds(Path(out_root),
+                                     b4a.load_resource_contract())
+    if global_wall_remaining_seconds < 600.0:
+        raise ExecutorRefusal(
+            "REFUSED: remaining global campaign wall is smaller "
+            "than one segment — the 96h ceiling is a hard bound")
     terminal_p = _terminal_path(out_root, cell_id)
     if terminal_p.exists():
         raise ExecutorRefusal(
@@ -558,6 +608,9 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
     built = build_economic_config(cell_id, mat_root, out_root,
                                   device)
     cfg = built["config"]
+    cfg["budget_max_wall_seconds"] = float(min(
+        cfg["budget_max_wall_seconds"],
+        global_wall_remaining_seconds))
     year = built["year"]
     t0 = time.time()
     packet = json.loads(
@@ -656,8 +709,9 @@ def main(argv=None) -> int:
                     choices=["cpu", "cuda:0"])
     ap.add_argument("--action", required=True,
                     choices=["dry-run", "execute"])
-    ap.add_argument("--attempt-id", default=None,
-                    help="orchestrator-claimed durable attempt id")
+    ap.add_argument("--lease", type=Path, default=None,
+                    help="orchestrator-issued execution lease (the "
+                         "ONLY way a cell executes)")
     args = ap.parse_args(argv)
     if args.action == "dry-run":
         report = dry_run_cell(args.cell_id,
@@ -673,7 +727,7 @@ def main(argv=None) -> int:
         return 0
     return execute_cell(args.cell_id, args.materialization_root,
                         args.output_root, args.device,
-                        attempt_id=args.attempt_id)
+                        lease_path=args.lease)
 
 
 if __name__ == "__main__":

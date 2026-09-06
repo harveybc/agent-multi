@@ -1,0 +1,26 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v6_runtime_authority",
+ "amends_amendment_7_sha256": "00d392f1eb6b65bc81e3625f6fbdae8b657a27efa69379ff1cd2486b0c7030ac",
+ "order": "C9-C16 (audit 2026-09-06) \u2014 one truthful authority generation: live-chain record bindings (amendment_8 by truthful name), atomic per-cell claims (CLAIM_<generation>, attempt inside), zero-write dry-run, execution leases, intrasegment 96h global bound, mandatory seals + fully re-deriving campaign verifier, resume adjudication, cadence-governed telemetry, independent-counter economics (gross UNAVAILABLE declared)",
+ "change_disclosure": "runtime-authority correction only; scientific population semantics unchanged from a7 EXCEPT: per-bar economic schema v2 (net_equity_delta_observed + env_pnl_fact independent columns; gross_equity typed UNAVAILABLE because the sealed gym-fx lineage exposes no gross counter \u2014 the economic claim NARROWS, nothing is manufactured). Resource contract v2 supersedes v1 (which named amendment 6 and a retired population). Cell digests change because the materializer emits under the corrected code identity.",
+ "scientific_change": "NONE beyond the disclosed schema narrowing",
+ "proposed_campaign_population": {
+  "materialization_root_note": "operator-local tree; identities below bind it",
+  "cell_population_sha256": "111dfed8acd281b269fc9916b8d6b5a39898d71b3a894f3f5dbb9b5f55792b05",
+  "materialization_sha256": "d9ecbd80481fa8e07ae5a442f75b003f786a3fbcc7b6521a20c35b489e07be2b",
+  "genesis_binding_sha256": "faa179091864733cbabfb01c399d3b82f090477195b5eda6d98bd71542b69d62"
+ },
+ "final_code_pins": {
+  "tools/b4_authority.py": "8624ba91e49e6a6557ceeeb4677eafdd8ca73e2a870505dea6555e318ee575da",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "04e57e67a1d010c9541c985808fbe6021987a91a8d41ef220c0d21bd6feeb57d",
+  "tools/b4_campaign_ledger.py": "15455887680000f0009ab5b7521e9c9b0bd2394a7cbe580f1eae4248bda722f9",
+  "tools/b4_campaign_orchestrator.py": "1f90e4f985d77919fbef12b3a8b306718f042a7e90b266765d4d3dfccfc5c5c1",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
+  "tests/test_b4_materializer_authority.py": "67802fafc313210a6a757d8c9df24a128ef3d5d053c2bccc741e3b75b230fe35"
+ },
+ "resource_contract_v2_sha256": "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc8f723bec0b20",
+ "chronology_truth": "authored AFTER the C9-C16 PRE freeze (6f856fa1) and BEFORE any campaign score"
+}

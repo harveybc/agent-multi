@@ -1,0 +1,11 @@
+{
+ "schema": "agent_multi.b4_attempt_claim.v2",
+ "campaign_generation": "b4_campaign_generation_v5_20260906",
+ "attempt_id": "attempt_da6cc895b0454cae",
+ "cell": "o2024_seed101",
+ "claimed_wall": 1788686008.3532386,
+ "claimed_monotonic": 1027939.486070923,
+ "holder_pid": 2722327,
+ "terminal_sha256": "1e7c327fea92bb8507ad269214880a3fec7f2a52f5fb1180067810957ad90f4c",
+ "note": "sealed v2 claim: attempt INSIDE the record, terminal digest bound"
+}

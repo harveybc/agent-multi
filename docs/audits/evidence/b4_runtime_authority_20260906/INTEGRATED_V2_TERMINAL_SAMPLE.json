@@ -1,0 +1,25 @@
+{
+ "schema": "agent_multi.b4_cell_terminal.v1",
+ "cell": "o2024_seed101",
+ "terminal": "COMPLETED",
+ "g1_eligible": false,
+ "checkpoint_promotable": false,
+ "attempt_id": "attempt_da6cc895b0454cae",
+ "cell_config_sha256": "6e28a30e46f4a0d296b06f8d5aa7b0616da72221a18640dbd60003510c505690",
+ "artifact_class": "INTEGRATED_PROOF_FROZEN_GENESIS",
+ "checkpoint_sha256": "512bda1e043bf8c1dcf7f19ca2c6b61e633564bf6c90eda9ee6736f03bdbc882",
+ "per_bar_csv": "<state_root>/b4_integrated_v2_20260906/o2024_seed101/per_bar_o2024_seed101.csv",
+ "per_bar_sha256": "37c039512f07c1dd7024218cc494961360ef4cb918c2779d8e00099138c2194b",
+ "scored_index_sha256": "98a70fa454de7a8b68d9685152697fbb45500da36234b9999a0bcd0b86b86dac",
+ "scored_bars": 2196,
+ "counter_semantics": {
+  "commission_paid": "CUMULATIVE from env info; converted to per-bar deltas; monotonicity verified",
+  "net_equity_delta_observed": "delta of consecutive economic_equity OBSERVATIONS (independent of the env pnl fact)",
+  "env_pnl_fact": "the env's own per-bar pnl \u2014 the second, independent source; conservation verified between the two",
+  "gross_equity": "UNAVAILABLE \u2014 the sealed gym-fx lineage exposes no gross-equity counter; the economic claim is NARROWED accordingly; pre_commission_equity_delta_derived is a labeled derivation, never a gross fact",
+  "slippage": "embedded in fill price per the cost binding; not separately countable under the sealed gym-fx lineage (declared, not silent)"
+ },
+ "sealed_2025_used": false,
+ "wall_seconds": 28.1,
+ "note": "INTEGRATED V2 (C9-C16): 12 cells through claim(atomic per-cell) -> verified lease -> identity-complete scoring with INDEPENDENT economics -> durable seal -> the FULL C14 verifier (re-derivation + comparator pairing) accepted 12/12; resume adjudication 12/12 COMPLETED_VERIFIED"
+}

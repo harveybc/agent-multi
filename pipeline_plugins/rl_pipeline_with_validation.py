@@ -812,7 +812,13 @@ def _check_executing_budget(config, model, *, started_wall,
                                     "budget_max_wall_seconds",
                                     kind="float")
     stop_file = config.get("budget_stop_file")
-    _check_resource_budget(config)
+    # C16 (order 2026-09-06): resource telemetry is NOT a per-step
+    # cost — it runs at the contract cadence inside the callback,
+    # and is FORCED only at segment boundaries (next_segment > 0),
+    # so an over-temperature event between segments stops before
+    # another training segment begins.
+    if next_segment_timesteps:
+        _check_resource_budget(config)
     if budget_steps is None and budget_updates is None and \
             budget_wall is None and stop_file is None:
         return
@@ -898,14 +904,18 @@ def make_executing_budget_callback(config, started_wall):
             try:
                 _check_executing_budget(
                     config, self.model, started_wall=started_wall)
-                # C3: resource limits are sampled on a bounded time
-                # cadence inside the segment (RSS every tick; GPU
-                # telemetry per its own cadence) — lost telemetry
-                # fails closed via the same typed stop.
-                now = _time_mod.time()
+                # C16: ONE cadence governor — resource limits sample
+                # at the contract's declared interval only; a due
+                # sample with missing/ambiguous telemetry fails
+                # closed via the same typed stop.
+                cadence = float(config.get(
+                    "resource_sample_seconds", 5.0))
+                now = _time_mod.monotonic()
                 if now - getattr(self, "_last_resource_check",
-                                 0.0) >= 5.0:
+                                 0.0) >= cadence:
                     self._last_resource_check = now
+                    self.resource_samples = getattr(
+                        self, "resource_samples", 0) + 1
                     _check_resource_budget(config)
             except ExecutingBudgetExceeded as exc:
                 self.budget_stop = str(exc)
