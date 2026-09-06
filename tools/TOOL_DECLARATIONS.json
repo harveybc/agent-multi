@@ -774,6 +774,20 @@
    "mutability": "read_only",
    "authority_class": "verifier",
    "owner": "General Satoshi III"
+  },
+  "t2_public_data_census.py": {
+   "purpose": "T2.0 census of locally available public non-financial time-series tasks with physical data authority (bytes digests, licenses, schemas); excludes financial/synthetic classes; emits CONFIRMATORY_BANK_UNAVAILABLE + exact deficit when the lawful minimum bank cannot be built",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t2_assay_harness.py": {
+   "purpose": "T2.1 shared causal assay harness: X/D(X)/[X,D,X-D] + matched-capacity control through the T0 contract; seasonal naive, lagged ridge, small MLP under identical splits/budgets/seed tape; claims utility/calibration/preservation/cost ONLY (no noise/SNR/eligibility fields); confirmatory calls refuse PUBLIC_DATA_REQUIRED until the sealed design and lawful bank exist",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

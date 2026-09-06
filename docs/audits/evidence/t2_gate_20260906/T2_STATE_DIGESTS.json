@@ -1,0 +1,7 @@
+{
+ "schema": "agent_multi.t2_state_digests.v1",
+ "sha256": {
+  "t2_census_20260906.json": "a7e916963515ed530c6151657a9c002b85ac8295645d3aecf3d165b919c37025",
+  "t2_pilot_20260906.json": "3dde54c05fa0ff504808c7b4e50ec690dc819e31ca11968056959b1e150ac54b"
+ }
+}
