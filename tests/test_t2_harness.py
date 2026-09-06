@@ -155,7 +155,14 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
         capture_output=True, text=True,
         env={**os.environ})
     assert rc.returncode != 0
-    assert "PUBLIC_DATA_REQUIRED" in rc.stderr + rc.stdout
+    # the gate is CLOSED at whichever stage the world is in:
+    # no manifest -> PUBLIC_DATA_REQUIRED; manifest acquired ->
+    # DESIGN_REQUIRED; draft sealed later -> DESIGN_REVIEW_REQUIRED.
+    # In every stage: typed refusal, zero scores, no output file.
+    out = rc.stderr + rc.stdout
+    assert any(tok in out for tok in
+               ("PUBLIC_DATA_REQUIRED", "DESIGN_REQUIRED",
+                "DESIGN_REVIEW_REQUIRED"))
     assert not (tmp_path / "out.json").exists()
 
 
