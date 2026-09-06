@@ -1,0 +1,46 @@
+executables that consume B4_CELL_CONFIGS: ['b4_authority.py', 'b4_mechanics_cell.py', 'b4_run_cell.py', 'materialize_b4_causal_sac.py']
+{
+ "b4_authority.py": {
+  "1_epoch_loop_under_materialized_terms": true,
+  "2_causal_validation_checkpoint_selection": true,
+  "3_frozen_checkpoint_outer_origin_eval": false,
+  "4_per_bar_net_returns_reviewed_costs": true,
+  "5_twelve_cell_aggregation_g1_decision_machinery": false
+ },
+ "b4_mechanics_cell.py": {
+  "1_epoch_loop_under_materialized_terms": false,
+  "2_causal_validation_checkpoint_selection": false,
+  "3_frozen_checkpoint_outer_origin_eval": false,
+  "4_per_bar_net_returns_reviewed_costs": false,
+  "5_twelve_cell_aggregation_g1_decision_machinery": false
+ },
+ "b4_run_cell.py": {
+  "1_epoch_loop_under_materialized_terms": false,
+  "2_causal_validation_checkpoint_selection": true,
+  "3_frozen_checkpoint_outer_origin_eval": false,
+  "4_per_bar_net_returns_reviewed_costs": false,
+  "5_twelve_cell_aggregation_g1_decision_machinery": false
+ },
+ "materialize_b4_causal_sac.py": {
+  "1_epoch_loop_under_materialized_terms": false,
+  "2_causal_validation_checkpoint_selection": true,
+  "3_frozen_checkpoint_outer_origin_eval": true,
+  "4_per_bar_net_returns_reviewed_costs": false,
+  "5_twelve_cell_aggregation_g1_decision_machinery": false
+ }
+}
+{
+ "runner_has_epoch_loop": false,
+ "runner_has_checkpoint_selection": false,
+ "runner_scores_outer_origin": false,
+ "runner_emits_per_bar_returns": false,
+ "any_tool_aggregates_12_cells_g1": false,
+ "adjudicator_exists": false,
+ "campaign_ledger_exists": false,
+ "campaign_executor_exists": false
+}
+pipeline has run_pipeline lifecycle: True
+pipeline consumes nested_split_contract: True
+any B4-cell consumer invokes run_pipeline: False
+
+PRE CONFIRMED: one bounded mechanics segment exists (b4_run_cell.py); NO complete campaign executor, ledger or doc-41 adjudicator exists on any call path
