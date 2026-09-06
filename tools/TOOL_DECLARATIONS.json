@@ -746,6 +746,34 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t1_known_truth_bank.py": {
+   "purpose": "T1 known-truth bank generator: 64 predeclared cells x 3 seeds -> 192 units with clean/additive/observed/support arrays, asserted on-support identities, dual SNR truth, and the v2 inventory binding every unit's metadata and array bytes (C17)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t1_lab_run.py": {
+   "purpose": "T1 measurement lab: sealed-design-bound, physically-verified bank, per-role metrics, train-frozen independent width control (C19), content-addressed NPZ observation evidence, and the measurement-population manifest (C18)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t1_adjudicator.py": {
+   "purpose": "T1 adjudicator: strict consuming schemas (C20), design-derived population, any-material-failure rule, and rederive_all_facts recomputing every decision-bearing metric from arrays (C16)",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
+  },
+  "t1_independent_verifier.py": {
+   "purpose": "T1 independent verifier: physical inventory re-derivation, manifest-bound measurements, full-population metric re-derivation, NON-AUTHORIZING without the external reviewer record (C18; exit 3 self-consistent-only)",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
