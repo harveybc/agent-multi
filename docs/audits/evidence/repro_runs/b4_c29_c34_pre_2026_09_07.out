@@ -1,0 +1,28 @@
+== 1. incident objects byte-exact ==
+CLAIM_b4_campaign_generation_v5_20260906.jso match=True
+LEASE_attempt_6e46ebe59eb842ca.json          match=True
+CELL_AUTH_BINDING_attempt_6e46ebe59eb842ca.j match=True
+resolved_origin_contract.json                match=True
+
+== 2. no learning artifacts; state AMBIGUOUS_CLAIM ==
+other objects in the cell dir: []
+AMBIGUOUS_CLAIM=['o2022_seed101'] PENDING=11
+
+== 3. REAL registry without sac_agent ==
+agent.plugins (filtered, REAL registry): 8 plugins, sac_agent absent
+
+== 3a. the orchestrator dry-run is PLUGIN-BLIND ==
+dry-run rc: 0 | writes: 0 | plugin checks in report: False
+DRY_RUN_BLIND_TO_MISSING_PLUGIN: True
+
+== 4. the escape: claim exists, ImportError crosses the boundary, NO terminal ==
+Attempting to load plugin: sac_agent from group: agent.plugins
+Failed to find plugin sac_agent in group agent.plugins
+escaped exception: ImportError: Plugin sac_agent not found in group agent.plugins.
+terminal written: False | state: AMBIGUOUS_CLAIM
+POST_CLAIM_IMPORT_ESCAPES_WITHOUT_TERMINAL: True
+
+== 5. the ambiguous claim charges wall-clock time ==
+gpu_seconds_spent(v5) = 5889s and GROWING with wall clock (no terminal caps it); the incident acta fixes the v5 charge at 0.01 h = 36 s for the v6 ceiling
+
+PRE CONFIRMED: C29-C31 findings reproduce; v5 untouched
