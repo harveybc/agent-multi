@@ -1,0 +1,20 @@
+== C31: one evaluable extreme series licenses the panel ==
+SUPPORT_1_OF_N: ADVANCE_TO_DOMAIN_VALIDATION
+panel extreme_state=EVALUATED from a single series; no per-panel support minimum exists
+
+== C35: three-origin geometry infeasible for length 84; two-origin target arithmetic ==
+3 origins, n=84: REFUSED: GEOMETRY_INADMISSIBLE: length 84 < harness minimum 120
+2 origins, n=84: REFUSED: GEOMETRY_INADMISSIBLE: length 84 < harness minimum 120
+target 2-origin windows for n=84: {'origin0': {'train': [0, 50], 'score': [50, 67]}, 'origin1': {'train': [0, 67], 'score': [67, 84]}}
+origin0: score width 17 | fit rows 41 (mlp val 8, fit 33) | scored rows 8
+origin1: score width 17 | fit rows 58 (mlp val 11, fit 47) | scored rows 8
+harness floor today: 'if n < 120' present: True | ROLLING_ORIGINS = 3: True
+
+== v4 state to be superseded ==
+v4 hospital: 0 admissible of 767 | population: 202
+
+== sim digests (geometry-independent, to be re-executed) ==
+coverage: e7fae7819dd26c8e
+screen:   76581fbbee9f39ea
+
+PRE CONFIRMED: C31 positive frozen; C35 target geometry arithmetic frozen; v4 state recorded
