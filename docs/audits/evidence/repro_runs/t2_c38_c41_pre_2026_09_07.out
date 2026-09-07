@@ -1,0 +1,10 @@
+== C38: review-record path is inside the repo ==
+productive review path (repo-relative): docs/audits/evidence/MUSASHI_T2_DESIGN_REVIEW_2026_09.json
+candidate-written repo record ACCEPTED: reviewer = General Musashi — declared authorship, not external custody
+
+== C39: the public CLI names the obsolete design ==
+CLI line: state / "t2_confirmatory_design_20260906.json",
+draft v6 in the CLI: False | sealed identity in the CLI: False
+CLI invocation refuses (legacy path in play): True
+
+PRE CONFIRMED: declarative review custody + legacy CLI design path frozen
