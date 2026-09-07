@@ -1,0 +1,12 @@
+== 1. the real sealed design, audited identities ==
+file: d1720f4d6ad05af3 | self: e1e3761b4c878c39
+no scientific ledger exists
+
+== 2. the single path stops at NOT_IMPLEMENTED ==
+stop: REFUSED: CONFIRMATORY_EXECUTION_NOT_IMPLEMENTED_IN_THIS_ORDER: scoring begins only after t
+
+== 3. no executor exists ==
+execution-record gate in code: False
+unit-record custody schema in code: False
+
+PRE CONFIRMED: sealed design verified; executor absent; execution gate absent; zero scores/ledger
