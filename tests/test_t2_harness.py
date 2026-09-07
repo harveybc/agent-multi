@@ -270,6 +270,7 @@ def test_c4_tsf_panel_and_dedup():
                                     for i in range(150)) + "\n")
     panel = bank.parse_tsf_bytes(tsf.encode(), "probe_panel")
     assert set(panel["series"]) == {"s1", "s2", "s3"}
+    assert panel["encoding_used"] == "utf-8"
     built = bank.build_series_units(
         panel, "probe_family", 12, "declared", min_length=100)
     # s2 duplicates s1 physically -> counted once
@@ -280,11 +281,15 @@ def test_c4_tsf_panel_and_dedup():
     # malformed .tsf refuses
     with pytest.raises(SystemExit, match="no @data"):
         bank.parse_tsf_bytes(b"@relation x\n", "bad")
-    # deterministic subsampling by id hash, never by outcome
+    # C11: EXACT top-k by id hash — order-independent, never
+    # exceeds k, never by outcome
     ids = [f"s{i}" for i in range(200)]
-    a1 = bank.deterministic_subsample(ids, 0.3, "salt1")
-    a2 = bank.deterministic_subsample(ids, 0.3, "salt1")
-    assert a1 == a2 and 30 < len(a1) < 90
+    a1 = bank.deterministic_top_k(ids, 40, "salt1")
+    a2 = bank.deterministic_top_k(list(reversed(ids)), 40,
+                                  "salt1")
+    assert a1 == a2 and len(a1) == 40
+    assert bank.deterministic_top_k(ids[:7], 40, "s") == \
+        sorted(ids[:7])
 
 
 def test_c5_fair_models_and_train_only_normalization():
@@ -338,130 +343,55 @@ def test_c6_extremes_are_innovations_not_level():
 
 
 def test_c3_gate_sequence_typed_refusals(tmp_path):
-    """C3: the confirmatory path opens only through the ordered
-    gates; each absence refuses with its own typed reason and NO
-    score is ever computed in this order."""
+    """C3 (v2 world): the ordered gates refuse typed at every
+    stage and no score path exists."""
     import t2_confirmatory as conf
     with pytest.raises(SystemExit, match="PUBLIC_DATA_REQUIRED"):
         conf.run_confirmatory(tmp_path / "none.json",
                               tmp_path / "d.json",
-                              tmp_path / "l.json")
-    manifest = {
-        "schema": "agent_multi.t2_public_data_manifest.v1",
-        "datasets": {"probe": {
-            "logical_id": "probe", "family": "f1",
-            "final_url": "https://example.org/x",
-            "archival_record": "doi:10/x",
-            "retrieved_at_utc": "2026-09-06T00:00:00Z",
-            "byte_size": 10, "sha256": "a" * 64,
-            "upstream_checksum": "UNAVAILABLE",
-            "license_id": "cc-by-4.0",
-            "license_text_sha256": "b" * 64,
-            "citation": "x", "local_relpath": "x.tsf",
-            "admission": "ADMISSIBLE"}}}
+                              tmp_path / "l.json",
+                              census_path=tmp_path / "c.json")
+    m, raw = _mk_manifest(tmp_path)
     mp_ = tmp_path / "manifest.json"
-    mp_.write_text(json.dumps(manifest))
-    with pytest.raises(SystemExit, match="DESIGN_REQUIRED"):
-        conf.run_confirmatory(mp_, tmp_path / "d.json",
-                              tmp_path / "l.json")
-    manifest_sha = hashlib.sha256(mp_.read_bytes()).hexdigest()
-    design = {
-        "schema": "agent_multi.t2_confirmatory_design.v1",
-        "sealed_after_census_manifest_sha256": manifest_sha,
-        "operator": conf.T1_ACCEPTED_OPERATOR,
-        "task_population": {"series_ids": ["probe::s1"],
-                            "families": ["f1"]},
-        "role_geometry": {"origins": 3, "base_frac": 0.6},
-        "primary_metric": "MASE_train_snaive",
-        "practical_margin_mase": 0.02,
-        "harm_margins": {"extreme_mase_ratio_max": 1.2,
-                         "coverage_drop_max": 0.1},
-        "precision_rule": {"min_series_per_family": 20,
-                           "min_families": 4},
-        "multiplicity_rule": {"alpha": 0.05,
-                              "method": "bonferroni_by_family"},
-        "missing_unit_rule": "typed refusal recorded; family "
-                             "dropped below min support",
-        "inconclusive_rule": "insufficient families or mixed "
-                             "consistency",
-        "resource_contract": {"cpu_nice": 15,
-                              "max_rss_bytes": 8 << 30},
-        "verifier_specification": "fresh-process re-parse of "
-                                  "source bytes, splits, arms, "
-                                  "metrics, costs, cardinality; "
-                                  "non-authorizing label only"}
-    body = {k: design[k] for k in sorted(design)}
-    design["design_sha256"] = hashlib.sha256(json.dumps(
-        body, sort_keys=True).encode()).hexdigest()
-    # note: design_review_record_sha256 is MISSING -> schema refuses
-    dp = tmp_path / "design.json"
-    dp.write_text(json.dumps(design))
-    with pytest.raises(SystemExit, match="exact schema"):
-        conf.run_confirmatory(mp_, dp, tmp_path / "l.json")
-    design.pop("design_sha256")
-    design["design_review_record_sha256"] = "0" * 64
-    body = {k: design[k] for k in sorted(design)}
-    design["design_sha256"] = hashlib.sha256(json.dumps(
-        body, sort_keys=True).encode()).hexdigest()
-    dp.write_text(json.dumps(design))
-    with pytest.raises(SystemExit,
-                       match="DESIGN_REVIEW_REQUIRED"):
-        conf.run_confirmatory(mp_, dp, tmp_path / "l.json")
-    # ambiguous license can never be admissible
-    m2 = json.loads(mp_.read_text())
+    mp_.write_text(json.dumps(m))
+    import unittest.mock as um
+    with um.patch.object(conf, "validate_public_manifest",
+                         lambda man, **k: {"probe": {}}):
+        with pytest.raises(SystemExit, match="CENSUS_REQUIRED"):
+            conf.run_confirmatory(mp_, tmp_path / "d.json",
+                                  tmp_path / "l.json",
+                                  census_path=tmp_path / "c.json")
+        cp = tmp_path / "census.json"
+        cp.write_text(json.dumps({"schema": "census"}))
+        with pytest.raises(SystemExit, match="DESIGN_REQUIRED"):
+            conf.run_confirmatory(mp_, tmp_path / "d.json",
+                                  tmp_path / "l.json",
+                                  census_path=cp)
+    # ambiguous license can never be admissible (real validator)
+    m2, raw2 = _mk_manifest(tmp_path / "amb")
     m2["datasets"]["probe"]["license_id"] = "AMBIGUOUS"
-    mp2 = tmp_path / "m2.json"
-    mp2.write_text(json.dumps(m2))
-    with pytest.raises(SystemExit, match="ambiguous license"):
-        conf.run_confirmatory(mp2, dp, tmp_path / "l.json")
-
-
-def _mk_records(fam_deltas):
-    """Synthetic C8 fixtures: fam_deltas maps family -> list of
-    per-series MASE deltas (X - D)."""
-    recs = []
-    i = 0
-    for fam, deltas in fam_deltas.items():
-        for d in deltas:
-            i += 1
-            recs.append({
-                "unit_id": f"u{i}", "family": fam,
-                "rolling_origins": {"origin0": {"results": {
-                    "X": {"ridge": {"mase_primary": 1.0},
-                          "mlp_small": {}},
-                    "D": {"ridge": {"mase_primary": 1.0 - d},
-                          "mlp_small": {}}}}}})
-    return recs
+    with pytest.raises(SystemExit, match="concrete license"):
+        conf.validate_public_manifest(m2, raw_root=raw2)
 
 
 def test_c8_decision_rule_hierarchical():
+    """C8 (compat name): the hierarchical rule under the COMPLETE
+    C14 evidence model."""
     import t2_confirmatory as conf
-    design = {"practical_margin_mase": 0.02,
-              "precision_rule": {"min_series_per_family": 5,
-                                 "min_families": 3},
-              "multiplicity_rule": {"alpha": 0.05}}
-    # too few families -> INCONCLUSIVE
-    out = conf.adjudicate_confirmatory(
-        _mk_records({"f1": [0.1] * 6}), design)
-    assert out["verdict"] == "INCONCLUSIVE"
-    # concentrated family harm kills a favorable grand average
-    out = conf.adjudicate_confirmatory(_mk_records({
-        "f1": [0.30] * 8, "f2": [0.30] * 8,
-        "f3": [-0.10] * 8}), design)
-    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
-    assert "f3" in out["reason"]
-    # broad consistency with tight CIs -> eligible CANDIDATE
-    out = conf.adjudicate_confirmatory(_mk_records({
-        "f1": [0.10, 0.11, 0.09, 0.10, 0.12, 0.10],
-        "f2": [0.08, 0.09, 0.10, 0.09, 0.08, 0.10],
-        "f3": [0.11, 0.10, 0.09, 0.12, 0.10, 0.11]}), design)
+    fams = {f"f{i}": 6 for i in range(6)}
+    design = _design_v2_fixture(fams)
+    good = [_complete_record(f"f{i}::s{j}", f"f{i}", delta=0.10)
+            for i in range(6) for j in range(6)]
+    out = conf.adjudicate_confirmatory(good, design)
     assert out["verdict"] == "PUBLICLY_ELIGIBLE_CANDIDATE"
-    # mixed consistency -> INCONCLUSIVE
-    out = conf.adjudicate_confirmatory(_mk_records({
-        "f1": [0.10] * 6, "f2": [0.10] * 6,
-        "f3": [0.001, -0.001, 0.002, 0.0, 0.001, -0.002]}),
-        design)
-    assert out["verdict"] == "INCONCLUSIVE"
+    # concentrated family harm defeats a favorable grand average
+    mixed = [_complete_record(
+        f"f{i}::s{j}", f"f{i}",
+        delta=(0.30 if i < 5 else -0.10))
+        for i in range(6) for j in range(6)]
+    out = conf.adjudicate_confirmatory(mixed, design)
+    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
+    assert "f5" in out["reason"]
 
 
 def test_old_pilot_relabeled():
@@ -471,3 +401,353 @@ def test_old_pilot_relabeled():
     assert "DEVELOPMENT_MECHANICS_ONLY_REQUIRES_" in src
     assert "DEVELOPMENT_ONLY_ZERO_CONFIRMATORY_AUTHORITY" \
         not in src
+
+
+# ================ C9-C16 acceptance battery ========================
+
+def _mk_manifest(tmp_path, raw_root=None):
+    import t2_confirmatory as conf
+    raw_root = raw_root or tmp_path / "raw"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    data = b"@frequency monthly\n@data\ns1:2020:" + \
+        ",".join(str(float(i % 9)) for i in range(150)).encode() \
+        + b"\n"
+    f = raw_root / "probe.tsf"
+    f.write_bytes(data)
+    d = {"logical_id": "probe", "family": "f1",
+         "final_url": "https://example.org/x",
+         "archival_record": "doi:10/x (zenodo:1)",
+         "record_metadata_sha256": "c" * 64,
+         "retrieved_at_utc": "2026-09-06T00:00:00Z",
+         "byte_size": len(data),
+         "sha256": hashlib.sha256(data).hexdigest(),
+         "upstream_checksum": "UNAVAILABLE",
+         "license_id": "cc-by-4.0",
+         "license_id_sha256": hashlib.sha256(
+             b"cc-by-4.0").hexdigest(),
+         "license_text_sha256": "UNAVAILABLE",
+         "citation": "x", "local_relpath": "probe.tsf",
+         "admission": "ADMISSIBLE"}
+    return {"schema": "agent_multi.t2_public_data_manifest.v2",
+            "datasets": {"probe": d}}, raw_root
+
+
+def test_c10_manifest_binds_physical_bytes(tmp_path):
+    """C10 POST: non-hex digests, traversing paths, absent bytes,
+    size and hash mismatches all refuse from the descriptor."""
+    import t2_confirmatory as conf
+    m, raw = _mk_manifest(tmp_path)
+    assert "probe" in conf.validate_public_manifest(
+        m, raw_root=raw)
+    bad = copy.deepcopy(m)
+    bad["datasets"]["probe"]["sha256"] = "Z" * 64
+    with pytest.raises(SystemExit, match="canonical lowercase"):
+        conf.validate_public_manifest(bad, raw_root=raw)
+    bad = copy.deepcopy(m)
+    bad["datasets"]["probe"]["local_relpath"] = "../../outside"
+    with pytest.raises(SystemExit,
+                       match="absolute or traversing"):
+        conf.validate_public_manifest(bad, raw_root=raw)
+    (raw / "probe.tsf").rename(raw / "gone.tsf")
+    with pytest.raises(SystemExit, match="unopenable"):
+        conf.validate_public_manifest(m, raw_root=raw)
+    (raw / "gone.tsf").rename(raw / "probe.tsf")
+    bad = copy.deepcopy(m)
+    bad["datasets"]["probe"]["byte_size"] += 1
+    with pytest.raises(SystemExit, match="size differs"):
+        conf.validate_public_manifest(bad, raw_root=raw)
+    data2 = (raw / "probe.tsf").read_bytes() + b"\n"
+    (raw / "probe.tsf").write_bytes(data2)
+    with pytest.raises(SystemExit, match="size differs"):
+        conf.validate_public_manifest(m, raw_root=raw)
+    # duplicate JSON keys refuse at parse
+    mp_ = tmp_path / "dup.json"
+    mp_.write_text('{"schema": "x", "schema": "y"}')
+    with pytest.raises(SystemExit, match="duplicate JSON key"):
+        conf.strict_json_load(mp_, "probe")
+    # the real remanifested v2 carries the truthful license names
+    real = json.loads(
+        (Path.home() / ".local/share/agent-multi/"
+         "t2_public_data_manifest_20260906.json").read_text())
+    for lid, dd in real["datasets"].items():
+        assert "license_id_sha256" in dd
+        if lid != "etth1":
+            assert dd["license_text_sha256"] == "UNAVAILABLE"
+    assert real["datasets"]["etth1"]["admission"] == \
+        "EXCLUDED_FROM_T2_CONFIRMATORY"
+
+
+def test_c14_duplicate_tsf_id_refuses():
+    import t2_bank as bank
+    tsf = ("@frequency monthly\n@data\n"
+           "s1:2020:" + ",".join(str(float(i))
+                                 for i in range(130)) + "\n"
+           "s1:2020:" + ",".join(str(float(i + 500))
+                                 for i in range(130)) + "\n")
+    with pytest.raises(SystemExit, match="duplicate .tsf"):
+        bank.parse_tsf_bytes(tsf.encode(), "dup_probe")
+    # the retired truncation refuses loudly
+    good = ("@frequency monthly\n@data\n"
+            "s1:2020:" + ",".join(str(float(i))
+                                  for i in range(130)) + "\n")
+    with pytest.raises(SystemExit, match="retired"):
+        bank.parse_tsf_bytes(good.encode(), "p", max_series=5)
+
+
+def test_c11_panel_permutation_invariant_population():
+    """C11 POST: permuting panel rows produces the SAME selected
+    population and the count never exceeds k."""
+    import t2_bank as bank
+    rows = ["s%03d:2020:%s" % (i, ",".join(
+        str(float((i * 7 + j) % 13)) for j in range(150)))
+        for i in range(120)]
+    head = "@frequency monthly\n@data\n"
+    p1 = bank.parse_tsf_bytes(
+        (head + "\n".join(rows)).encode(), "perm")
+    import random
+    rng = random.Random(7)
+    shuffled = rows[:]
+    rng.shuffle(shuffled)
+    p2 = bank.parse_tsf_bytes(
+        (head + "\n".join(shuffled)).encode(), "perm")
+    ids1 = bank.deterministic_top_k(p1["series"], 40, "salt")
+    ids2 = bank.deterministic_top_k(p2["series"], 40, "salt")
+    assert ids1 == ids2 and len(ids1) == 40
+
+
+def test_c9_transplanted_or_fabricated_review_refuses(tmp_path,
+                                                      monkeypatch):
+    """C9 POST: the exact Musashi bypass — candidate-hashed bytes
+    — dies; a transplanted/foreign-field record dies; and NO
+    ledger artifact appears on any refused gate."""
+    import t2_confirmatory as conf
+    m, raw = _mk_manifest(tmp_path)
+    mp_ = tmp_path / "manifest.json"
+    mp_.write_text(json.dumps(m))
+    cp = tmp_path / "census.json"
+    cp.write_text(json.dumps({"schema": "census"}))
+    monkeypatch.setattr(conf, "validate_public_manifest",
+                        lambda man, **k: {"probe": {}})
+    fake = tmp_path / "MUSASHI_T2_DESIGN_REVIEW_2026_09.json"
+    fake.write_text("candidate says approved")
+    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", fake)
+    design = {k: "x" for k in conf._DESIGN_KEYS}
+    design["schema"] = "agent_multi.t2_confirmatory_design.v1"
+    design["design_review_record_sha256"] = hashlib.sha256(
+        b"candidate says approved").hexdigest()
+    dp = tmp_path / "design.json"
+    dp.write_text(json.dumps(design))
+    lp = tmp_path / "ledger.json"
+    with pytest.raises(SystemExit):
+        conf.run_confirmatory(mp_, dp, lp, census_path=cp)
+    assert not lp.exists()
+    assert not (tmp_path / "ledger.json.INTENT").exists()
+    # even with a schema-valid design, non-record bytes refuse on
+    # strict parse; and a foreign reviewer refuses
+    rec = {"schema": "agent_multi.musashi_t2_design_review.v1",
+           "reviewed_at_date": "2026-09-06",
+           "reviewer": "candidate-self-review",
+           "decision": "SEAL_T2_CONFIRMATORY_DESIGN",
+           "design_draft_sha256": "a" * 64,
+           "manifest_sha256": "b" * 64,
+           "census_sha256": "c" * 64}
+    fake.write_text(json.dumps(rec))
+    design2 = {"design_review_record_sha256":
+               hashlib.sha256(fake.read_bytes()).hexdigest(),
+               "supersedes_draft_sha256": "a" * 64}
+    with pytest.raises(SystemExit, match="not the external "
+                                         "reviewer"):
+        conf.verify_design_review_record(design2, "b" * 64,
+                                         "c" * 64)
+    rec["reviewer"] = "General Musashi"
+    rec["manifest_sha256"] = "f" * 64      # foreign binding
+    fake.write_text(json.dumps(rec))
+    design2["design_review_record_sha256"] = hashlib.sha256(
+        fake.read_bytes()).hexdigest()
+    with pytest.raises(SystemExit,
+                       match="different public-data manifest"):
+        conf.verify_design_review_record(design2, "b" * 64,
+                                         "c" * 64)
+
+
+def _complete_record(uid, fam, delta=0.10, seeds=(11, 12, 13),
+                     origins=3, arms=("X", "D", "XDR",
+                                      "width_control"),
+                     wc_delta=0.0, ex_ratio=1.0,
+                     cov_drop=0.0, width_ratio=1.0):
+    ro = {}
+    costs = {}
+    for i in range(origins):
+        res = {}
+        for arm in arms:
+            base = 1.0
+            if arm == "D":
+                m = base - delta
+            elif arm == "width_control":
+                m = base - wc_delta
+            elif arm == "XDR":
+                m = base - delta * 0.8
+            else:
+                m = base
+            entry = {"mase_primary": m,
+                     "interval_coverage_train_q90":
+                         0.9 - (cov_drop if arm == "D" else 0.0),
+                     "interval_width_train_q90":
+                         1.0 * (width_ratio if arm == "D"
+                                else 1.0),
+                     "mase_on_extreme_innovations":
+                         m * (ex_ratio if arm == "D" else 1.0)}
+            res[arm] = {"ridge": dict(entry),
+                        "mlp_small": {f"seed{s}": dict(entry)
+                                      for s in seeds}}
+        ro[f"origin{i}"] = {"results": res}
+        costs[f"origin{i}"] = {"denoise_fit_transform_s": 0.1,
+                               "arm_X": {"ridge_fit_forecast_s":
+                                         0.1}}
+    return {"unit_id": uid, "family": fam,
+            "rolling_origins": ro, "costs_by_phase": costs}
+
+
+def _design_v2_fixture(series_by_family, seeds=(11, 12, 13)):
+    ids = []
+    for fam, ns in series_by_family.items():
+        ids += [f"{fam}::s{i}" for i in range(ns)]
+    return {
+        "task_population": {
+            "series_ids": sorted(ids),
+            "primary_gate_families": list(series_by_family)[:6],
+        },
+        "role_geometry": {"rolling_origins": 3},
+        "seed_tape": list(seeds),
+        "practical_margin_mase": 0.02,
+        "observed_precision_rule": {"max_ci_halfwidth": 0.02},
+        "harm_margins": {"extreme_innovation_mase_ratio_max": 1.2,
+                         "coverage_drop_max": 0.1,
+                         "width_inflation_max": 1.5},
+        "precision_rule": {"min_series_per_family": 5,
+                           "min_families": 6},
+        "multiplicity_rule": {"alpha": 0.05},
+        "inference_scope": "named panels only"}
+
+
+def test_c14_incomplete_evidence_refuses():
+    """C14 POST: the exact Musashi bypass — one origin, X/D only,
+    ridge only, no costs — REFUSES instead of adjudicating."""
+    import t2_confirmatory as conf
+    fams = {f"f{i}": 6 for i in range(6)}
+    design = _design_v2_fixture(fams)
+    # the bypass shape
+    recs = [{"unit_id": f"f{i}::s{j}", "family": f"f{i}",
+             "rolling_origins": {"origin0": {"results": {
+                 "X": {"ridge": {"mase_primary": 1.0}},
+                 "D": {"ridge": {"mase_primary": 0.9}}}}}}
+            for i in range(6) for j in range(6)]
+    with pytest.raises(SystemExit,
+                       match="expected 3 rolling origins|costs"):
+        conf.adjudicate_confirmatory(recs, design)
+    # complete records adjudicate; missing arm refuses
+    good = [_complete_record(f"f{i}::s{j}", f"f{i}")
+            for i in range(6) for j in range(6)]
+    out = conf.adjudicate_confirmatory(good, design)
+    assert out["verdict"] == "PUBLICLY_ELIGIBLE_CANDIDATE"
+    broken = [_complete_record(f"f{i}::s{j}", f"f{i}",
+                               arms=("X", "D", "XDR"))
+              for i in range(6) for j in range(6)]
+    with pytest.raises(SystemExit, match="width_control"):
+        conf.adjudicate_confirmatory(broken, design)
+    # incomplete population refuses (missing unit never dropped)
+    with pytest.raises(SystemExit,
+                       match="differs from the sealed design"):
+        conf.adjudicate_confirmatory(good[:-1], design)
+    # duplicate identity refuses
+    with pytest.raises(SystemExit, match="duplicate unit"):
+        conf.adjudicate_confirmatory(good + [good[0]], design)
+
+
+def test_c14_gates_bite_individually():
+    import t2_confirmatory as conf
+    fams = {f"f{i}": 6 for i in range(6)}
+    design = _design_v2_fixture(fams)
+
+    def build(**kw):
+        return [_complete_record(f"f{i}::s{j}", f"f{i}", **kw)
+                for i in range(6) for j in range(6)]
+    # family absent -> INCONCLUSIVE (all six required)
+    short = [r for r in build() if r["family"] != "f5"]
+    design_short = _design_v2_fixture(fams)
+    design_short["task_population"]["series_ids"] = sorted(
+        r["unit_id"] for r in short)
+    out = conf.adjudicate_confirmatory(short, design_short)
+    assert out["verdict"] == "INCONCLUSIVE"
+    assert "f5" in out["reason"]
+    # unattributed gain (width control matches D) -> INCONCLUSIVE
+    out = conf.adjudicate_confirmatory(
+        build(wc_delta=0.10), design)
+    assert out["verdict"] == "INCONCLUSIVE"
+    assert "attributable" in out["reason"]
+    # extreme harm -> INELIGIBLE
+    out = conf.adjudicate_confirmatory(
+        build(ex_ratio=1.5), design)
+    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
+    # coverage harm -> INELIGIBLE
+    out = conf.adjudicate_confirmatory(
+        build(cov_drop=0.2), design)
+    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
+    # observed precision: high variance -> INCONCLUSIVE
+    noisy = []
+    import random
+    rng = random.Random(3)
+    for i in range(6):
+        for j in range(6):
+            noisy.append(_complete_record(
+                f"f{i}::s{j}", f"f{i}",
+                delta=rng.uniform(-0.15, 0.35)))
+    out = conf.adjudicate_confirmatory(noisy, design)
+    assert out["verdict"] in ("INCONCLUSIVE",
+                              "PUBLICLY_INELIGIBLE")
+
+
+def test_c15_ledger_durable_and_late(tmp_path):
+    import t2_confirmatory as conf
+    lp = tmp_path / "ledger.json"
+    led = conf.open_attempt_ledger(lp)
+    assert led["schema"] == "agent_multi.t2_attempt_ledger.v2"
+    assert (tmp_path / "ledger.json.INTENT").exists()
+    again = conf.open_attempt_ledger(lp)
+    assert again["ledger_sha256"] == led["ledger_sha256"]
+    # tampered ledger fails closed
+    doc = json.loads(lp.read_text())
+    doc["attempts"] = ["forged"]
+    lp.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit, match="does not re-derive"):
+        conf.open_attempt_ledger(lp)
+    # intent without ledger -> uncertain, operator disposition
+    lp2 = tmp_path / "l2.json"
+    (tmp_path / "l2.json.INTENT").write_text("{}")
+    with pytest.raises(SystemExit, match="uncertain prior"):
+        conf.open_attempt_ledger(lp2)
+
+
+def test_c13_design_v2_truthful_and_structured():
+    d = json.loads(
+        (Path.home() / ".local/share/agent-multi/"
+         "t2_confirmatory_design_DRAFT_V2_20260906.json"
+         ).read_text())
+    pr = d["precision_rule"]
+    assert pr["min_series_per_family"] == 28
+    assert "raised to 20" not in pr["note"]
+    assert "IS this computed value" in pr["note"]
+    assert set(d["arms"]) == {"X", "D", "XDR", "width_control"}
+    assert d["primary_contrast"]["delta"] == "D_minus_X"
+    assert d["seed_tape"] == [11, 12, 13]
+    assert len(d["task_population"]["primary_gate_families"]) == 6
+    assert "named public panels" in d["inference_scope"]
+    assert d["sensitivity_rule"]["sd_grid_n_min"]["0.08"] == 112
+    per = d["task_population"]["per_dataset"]
+    for lid, meta in per.items():
+        if meta["family"] in d["task_population"][
+                "primary_gate_families"]:
+            assert meta["n_series"] <= 40
+    # every selected unit carries its numeric digest
+    ud = d["task_population"]["unit_digests"]
+    assert ud and all(len(v) == 64 for v in ud.values())

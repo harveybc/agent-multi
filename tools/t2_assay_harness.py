@@ -510,7 +510,8 @@ def main() -> int:
         conf.run_confirmatory(
             state / "t2_public_data_manifest_20260906.json",
             state / "t2_confirmatory_design_20260906.json",
-            state / "t2_attempt_ledger_20260906.json")
+            state / "t2_attempt_ledger_20260906.json",
+            census_path=state / "t2_bank_census_20260906.json")
         raise HarnessRefusal(
             "unreachable: run_confirmatory always refuses until "
             "the design review exists")

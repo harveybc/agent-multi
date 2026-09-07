@@ -141,25 +141,29 @@ def check_time_index(ts: np.ndarray, where: str,
             "first_ts": float(ts[0]), "last_ts": float(ts[-1])}
 
 
-def series_content_digest(y: np.ndarray) -> str:
-    """C4: physical identity of one series for cross-archive
-    deduplication — duplicates count once."""
+def series_numeric_digest(y: np.ndarray) -> str:
+    """C14 (honest name): EXACT NUMERIC EQUIVALENCE identity of one
+    parsed float64 series — no rounding, no byte-level claim about
+    the source text. Used for cross-archive deduplication:
+    numerically identical series count once."""
     return _sha_bytes(np.ascontiguousarray(
-        np.round(y.astype(float), 10)).tobytes())
+        y.astype(np.float64)).tobytes())
 
 
-def deterministic_subsample(series_ids, fraction: float,
-                            salt: str) -> list:
-    """C4: subsampling by identifier hash — never by outcome."""
-    if not 0 < fraction <= 1:
-        raise BankRefusal("subsample fraction out of (0,1]")
-    keep = []
-    for sid in series_ids:
-        h = int(hashlib.sha256(
-            f"{salt}|{sid}".encode()).hexdigest()[:8], 16)
-        if (h % 10_000) / 10_000.0 < fraction:
-            keep.append(sid)
-    return sorted(keep)
+# retired misnomer kept OFF the API surface deliberately
+series_content_digest = None
+
+
+def deterministic_top_k(series_ids, k: int, salt: str) -> list:
+    """C11: EXACT top-k selection by lowest identifier hash —
+    order-independent, outcome-independent, never exceeds k."""
+    if k <= 0:
+        raise BankRefusal("selection k must be positive")
+    ranked = sorted(
+        set(series_ids),
+        key=lambda sid: hashlib.sha256(
+            f"{salt}|{sid}".encode()).hexdigest())
+    return sorted(ranked[:min(k, len(ranked))])
 
 
 def parse_tsf_bytes(raw: bytes, logical_id: str,
@@ -204,14 +208,22 @@ def parse_tsf_bytes(raw: bytes, logical_id: str,
             raise BankRefusal(
                 f"{logical_id}: malformed .tsf data line")
         sid = parts[0]
+        if sid in series:
+            raise BankRefusal(
+                f"{logical_id}: duplicate .tsf series identifier "
+                f"{sid!r} — identities are never silently "
+                "overwritten")
         values = parts[-1].split(",")
         y = parse_strict_numeric(
             values, f"{logical_id}/{sid}")
         series[sid] = y
-        if max_series and len(series) >= max_series:
-            break
     if not series:
         raise BankRefusal(f"{logical_id}: no series parsed")
+    if max_series is not None:
+        raise BankRefusal(
+            "max_series truncation is retired (C11): the census "
+            "walks the COMPLETE panel and selects exact top-k by "
+            "identifier hash afterwards")
     return {"logical_id": logical_id, "frequency": freq,
             "declared_horizon": horizon,
             "attributes": attrs, "series": series,
@@ -244,20 +256,34 @@ def build_series_units(panel: dict, family: str,
             excluded[uid] = (f"REFUSED: {len(y)} rows < declared "
                              f"minimum {min_length}")
             continue
-        digest = series_content_digest(y)
+        digest = series_numeric_digest(y)
         if digest in seen:
             excluded[uid] = (f"DUPLICATE_OF:{seen[digest]} — "
                              "physical series counted once")
             continue
         seen[digest] = uid
+        # C12: every unit carries its per-unit temporal contract —
+        # here an ORDINAL index reconstructed from the declared
+        # panel frequency (never claimed as real timestamps), whose
+        # length must equal the signal after the missingness
+        # policy.
+        ts = np.arange(len(y), dtype=float)
+        time_facts = check_time_index(ts, uid, expected_step=1.0)
+        if time_facts["n"] != len(y):
+            raise BankRefusal(
+                f"{uid}: time index length differs from the "
+                "post-missingness signal")
         units[uid] = {
             "unit_id": uid, "family": family,
             "panel_bytes_sha256": panel["bytes_sha256"],
-            "series_content_sha256": digest,
+            "series_numeric_sha256": digest,
             "n": int(len(y)),
             "seasonal_period": int(seasonal_period),
             "seasonal_period_provenance": period_provenance,
             "frequency_declared": panel["frequency"],
+            "time_index": time_facts,
+            "time_provenance":
+                "ordinal_reconstructed_from_declared_frequency",
             "missingness": fixed["missingness"],
             "y": y}
     return {"units": units, "excluded": excluded}

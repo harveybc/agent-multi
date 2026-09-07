@@ -36,7 +36,6 @@ CONTRACTS = {
                            "max_gap": 0},
     "weather": {"period": 365, "min_length": 1000, "max_gap": 30},
 }
-MAX_SERIES_PER_PANEL = 300     # bounded census parse per archive
 
 
 def main() -> int:
@@ -61,9 +60,8 @@ def main() -> int:
                     f"REFUSED: {lid} zip does not contain exactly "
                     "one .tsf")
             tsf_bytes = zf.read(tsf_names[0])
-        panel = bank.parse_tsf_bytes(tsf_bytes, lid,
-                                     max_series=
-                                     MAX_SERIES_PER_PANEL)
+        # C11: the COMPLETE panel is walked — no positional cut
+        panel = bank.parse_tsf_bytes(tsf_bytes, lid)
         built = bank.build_series_units(
             panel, d["family"], contract["period"],
             "monash_record_frequency", contract["max_gap"],
@@ -80,6 +78,9 @@ def main() -> int:
             "series_admissible": len(built["units"]),
             "series_excluded": len(built["excluded"]),
             "admissible_unit_ids": sorted(built["units"]),
+            "unit_numeric_digests": {
+                uid: u["series_numeric_sha256"]
+                for uid, u in built["units"].items()},
             "length_min_median_max": (
                 [lengths[0], lengths[len(lengths) // 2],
                  lengths[-1]] if lengths else None),
@@ -97,16 +98,16 @@ def main() -> int:
         families.setdefault(p["family"], 0)
         families[p["family"]] += p["series_admissible"]
     out = {
-        "schema": "agent_multi.t2_bank_census.v1",
+        "schema": "agent_multi.t2_bank_census.v2",
         "manifest_sha256": hashlib.sha256(
             (Path.home() / ".local/share/agent-multi/"
              "t2_public_data_manifest_20260906.json"
              ).read_bytes()).hexdigest(),
-        "bounded_parse_note": f"census parsed at most "
-                              f"{MAX_SERIES_PER_PANEL} series per "
-                              "archive (disclosed bound; the "
-                              "sealed design fixes the exact "
-                              "scored population)",
+        "complete_walk_note": "the census walks EVERY series of "
+                              "every panel (C11); duplicate .tsf "
+                              "identifiers refuse; the sealed "
+                              "design selects exact top-k by "
+                              "identifier hash",
         "population": population,
         "excluded_reasons": excluded_summary,
         "admissible_series_by_family": families,

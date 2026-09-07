@@ -823,6 +823,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_remanifest_local.py": {
+   "purpose": "C10/C13 repair: rebuild the public-data manifest as v2 from already-acquired local bytes (no network) \u2014 truthful license_id_sha256, archival record metadata digests, ETTh1 EXCLUDED_FROM_T2_CONFIRMATORY",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

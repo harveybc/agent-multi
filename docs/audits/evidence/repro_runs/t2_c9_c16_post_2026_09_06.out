@@ -1,0 +1,23 @@
+== C9: self-fabricated review dies; no early ledger ==
+refused: REFUSED: design review record is not well-formed JSON (Expecting value
+no ledger artifact on refusal: True
+
+== C10: manifest bound to physical bytes ==
+v2 manifest verifies 9 admissible datasets from descriptors
+non-hex digest refused: REFUSED: tourism_monthly sha256 is not a canonical lowercase
+traversing relpath refused: REFUSED: dataset 'tourism_monthly' relpath is absolute or tr
+etth1 admission: EXCLUDED_FROM_T2_CONFIRMATORY
+truthful license fields (Monash): True | text digest: UNAVAILABLE
+
+== C11/C14: incomplete evidence and duplicates die ==
+one-origin/X-D-only/no-cost refused: REFUSED: f0::s0: expected 3 rolling origins
+duplicate .tsf id refused: REFUSED: dup_probe: duplicate .tsf series identifier 's1' — 
+
+== C11/C12: complete walk + exact cap ==
+weather series parsed (complete walk): 3010 admissible: 2992
+primary per-dataset selections: {'tourism_monthly': 40, 'pedestrian_counts': 40, 'hospital': 40, 'solar_weekly': 0, 'solar_10_minutes': 40, 'electricity_weekly': 40, 'weather': 40}
+
+== C13: truthful declarations ==
+n_min: 28 | note: xecutable minimum IS this computed value
+
+POST CONFIRMED: C9-C16 findings no longer reproduce
