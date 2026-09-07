@@ -1,0 +1,16 @@
+== 1. the implemented quantity: MASE(X)=1.0, MASE(D)=0.9 ==
+implemented delta        = +0.1
+declared D_minus_X value = -0.1  (MASE(D) - MASE(X))
+the name inverts the implemented meaning
+
+== 2. the contract NAMES it D_minus_X ==
+draft v5 primary_contrast.delta: D_minus_X
+validator check: if design["primary_contrast"].get("delta") != "D_minus_X" or \
+prose calls the panel effect a 'paired D-X mean': True
+
+== 3. the adjudicator treats POSITIVE as improvement ==
+uniform +0.1 implemented deltas -> ADVANCE_TO_DOMAIN_VALIDATION
+uniform -0.1 implemented deltas -> DOES_NOT_ADVANCE
+decision polarity agrees with the ARITHMETIC — the defect is the published estimand name only
+
+PRE CONFIRMED: sign contradiction frozen at the executable contract level
