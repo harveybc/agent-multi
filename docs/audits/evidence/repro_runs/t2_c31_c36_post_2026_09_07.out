@@ -1,0 +1,25 @@
+== C31: one evaluable extreme series never licenses ==
+SUPPORT_1_OF_N: INCONCLUSIVE | panel_f0: only 1/6 series carry evaluable extreme evidence < predeclar
+
+== C35: hospital 2x17 under the ONE authority ==
+windows: {'origin0': {'train': [0, 50], 'score': [50, 67]}, 'origin1': {'train': [0, 67], 'score': [67, 84]}}
+v5 hospital: {"n_selected": 40, "min_score_window": 17, "min_scored_rows_per_origin": 8, "min_mlp_fit_rows_after_validation": 33, "model_minimums_kept": true}
+population 242; hospital FULL member; v4 superseded: b483f16ab25d
+
+== C32/C34: the generator's windows are never the authority — live full re-derivation ==
+{"fresh_verification": "POPULATION_REDERIVED_NON_AUTHORIZING", "datasets_rebuilt": 9, "units_rederived": 4650, "design_series": 242}
+one-row design-window forgery: REFUSED: electricity_weekly::T111: unit_map fields do not re-derive from the phy
+
+== battery-frozen kills (each individually in the focal battery) ==
+- every unit_map field forged dies live (test_c36_2, 8 fields)
+- record window shifted one row refuses (test_c30_kill_4)
+- each cost phase omitted refuses via the productive adjudicator (test_c36_4, 5 phases + extra keys)
+- symlink root refuses (test_c30_kill_7)
+- fresh verifier wired before the ledger (test_c30_kill_8, live)
+- damaged panel -> DOES_NOT_ADVANCE (test_c30_kill_10)
+- dominant panel fails LOPO (test_c30_kill_9)
+
+== sims re-executed under the new geometry: byte-identical (panel-effect level) ==
+coverage e7fae781... | screen 76581fbb...
+
+POST CONFIRMED: C31-C35 executable; hospital resolved without exception; single geometry authority live

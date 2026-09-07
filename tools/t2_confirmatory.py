@@ -293,7 +293,7 @@ _DESIGN_KEYS = {
     "supersedes_draft_sha256", "operator", "task_population",
     "role_geometry", "arms", "models", "seed_tape",
     "primary_contrast", "secondary_gates", "primary_metric",
-    "estimand",
+    "estimand", "extreme_support_rule",
     "practical_margin_mase", "observed_precision_rule",
     "harm_margins", "precision_rule", "sensitivity_rule",
     "inference_method", "inference_scope", "multiplicity_rule",
@@ -301,8 +301,8 @@ _DESIGN_KEYS = {
     "verifier_specification", "design_review_record_sha256",
     "design_sha256"}
 
-_DESIGN_SCHEMAS_V4 = {"agent_multi.t2_screen_design.v4_draft",
-                      "agent_multi.t2_screen_design.v4"}
+_DESIGN_SCHEMAS_V4 = {"agent_multi.t2_screen_design.v5_draft",
+                      "agent_multi.t2_screen_design.v5"}
 SCREEN_OUTCOMES = ("ADVANCE_TO_DOMAIN_VALIDATION",
                    "DOES_NOT_ADVANCE", "INCONCLUSIVE")
 _UNIT_MAP_KEYS = {"family", "dataset", "series_numeric_sha256",
@@ -444,6 +444,26 @@ def validate_confirmatory_design(design: dict,
     if type(msp) is not int or msp <= 0:
         raise ConfirmatoryRefusal(
             "design.precision_rule lacks min_series_per_panel")
+    # C31: the per-panel EXTREME support minimum — absolute AND
+    # proportional, fixed in the design before any result.
+    esr = design["extreme_support_rule"]
+    if not isinstance(esr, dict) or set(esr) != {
+            "min_evaluable_series_absolute",
+            "min_evaluable_fraction"}:
+        raise ConfirmatoryRefusal(
+            "design.extreme_support_rule is not the exact "
+            "absolute+proportional schema")
+    ab = esr["min_evaluable_series_absolute"]
+    fr = esr["min_evaluable_fraction"]
+    if isinstance(ab, bool) or type(ab) is not int or ab < 1:
+        raise ConfirmatoryRefusal(
+            "extreme_support_rule.min_evaluable_series_absolute "
+            "must be a positive int")
+    if isinstance(fr, bool) or not isinstance(fr, (int, float)) \
+            or not 0 < float(fr) <= 1:
+        raise ConfirmatoryRefusal(
+            "extreme_support_rule.min_evaluable_fraction outside "
+            "(0, 1]")
     # ---- C26: every unit binds its exact causal geometry ----
     import t2_bank as _bank
     n_origins = int(rg["rolling_origins"])
@@ -461,7 +481,9 @@ def validate_confirmatory_design(design: dict,
             raise ConfirmatoryRefusal(
                 f"{uid}: horizon differs from the role geometry")
         want_w = _bank.origin_windows_for(
-            b["n_obs"], n_origins, base_frac)
+            b["n_obs"], n_origins, base_frac,
+            seasonal_period=b["seasonal_period"],
+            horizon=int(rg["horizon"]))
         if b["origin_windows"] != want_w:
             raise ConfirmatoryRefusal(
                 f"{uid}: origin_windows do not re-derive from the "
@@ -1110,6 +1132,14 @@ def adjudicate_screen(records: list, design: dict) -> dict:
     panel_stats = {}
     inconclusive_reasons = []
     harmed = []
+    esr = design.get("extreme_support_rule")
+    if not isinstance(esr, dict) or \
+            "min_evaluable_series_absolute" not in esr or \
+            "min_evaluable_fraction" not in esr:
+        raise ConfirmatoryRefusal(
+            "design lacks the predeclared per-panel "
+            "extreme_support_rule — the screen adjudicates only "
+            "its own contract")
     for p_, pp in per_panel.items():
         n = len(pp["d"])
         if n < min_series:
@@ -1117,6 +1147,22 @@ def adjudicate_screen(records: list, design: dict) -> dict:
                 f"{p_}: {n} series < declared minimum "
                 f"{min_series}")
             continue
+        # C31: the panel's EXTREME evidence needs a predeclared
+        # minimum of EVALUABLE series — absolute AND proportional;
+        # one evaluable series among many NOT_EVALUABLE can never
+        # license the panel (HARM_INFINITE counts as evaluable
+        # evidence of damage, never as absence).
+        evaluable = sum(1 for e in pp["ex"]
+                        if e["state"] in ("EVALUATED",
+                                          "HARM_INFINITE"))
+        need = max(int(esr["min_evaluable_series_absolute"]),
+                   math.ceil(float(esr["min_evaluable_fraction"])
+                             * n))
+        if evaluable < need:
+            inconclusive_reasons.append(
+                f"{p_}: only {evaluable}/{n} series carry "
+                f"evaluable extreme evidence < predeclared "
+                f"minimum {need} — never favorable")
         eff = float(np.mean(pp["d"]))
         att = float(np.mean(pp["a"]))
         if any(e["state"] == "HARM_INFINITE" for e in pp["ex"]):

@@ -593,7 +593,9 @@ _FIX_N_OBS = 150
 
 def _fix_windows():
     import t2_bank as bank
-    return bank.origin_windows_for(_FIX_N_OBS, 3, 0.6)
+    # C35: the COMMON two-origin geometry
+    return bank.origin_windows_for(_FIX_N_OBS, 2, 0.6,
+                                   seasonal_period=12)
 
 
 def _stamp(rec):
@@ -720,9 +722,12 @@ def _design_v2_fixture(series_by_family, seeds=(11, 12, 13),
             "primary_gate_families": list(series_by_family)[:6],
             "screen_panels": panels,
         },
-        "role_geometry": {"rolling_origins": 3,
+        "role_geometry": {"rolling_origins": 2,
                           "origin_base_frac": 0.6,
                           "lags": 8, "horizon": 1},
+        "extreme_support_rule": {
+            "min_evaluable_series_absolute": 2,
+            "min_evaluable_fraction": 0.25},
         "seed_tape": list(seeds),
         "practical_margin_mase": 0.02,
         "observed_precision_rule": {"max_ci_halfwidth": 0.05},
@@ -1116,9 +1121,10 @@ def test_kill_10_no_fabricated_precision():
 
 
 def test_fresh_verifier_live_population():
-    """C21/C28 live: the fresh verifier rebuilds 4650 units from
-    physical bytes and reproduces the v4 SCREEN population (202
-    series) with every unit_map field re-derived."""
+    """C21/C28/C35 live: the fresh verifier rebuilds 4650 units
+    from physical bytes and reproduces the v5 SCREEN population
+    (242 series — hospital a full member under the common
+    two-origin geometry) with every unit_map field re-derived."""
     import subprocess
     S = Path.home() / ".local/share/agent-multi"
     rc = subprocess.run(
@@ -1127,14 +1133,14 @@ def test_fresh_verifier_live_population():
          str(S / "t2_public_data_manifest_20260906.json"),
          "--census", str(S / "t2_bank_census_20260906.json"),
          "--design",
-         str(S / "t2_screen_design_DRAFT_V4_20260906.json")],
+         str(S / "t2_screen_design_DRAFT_V5_20260907.json")],
         capture_output=True, text=True)
     assert rc.returncode == 3, rc.stderr[-500:]
     out = json.loads(rc.stdout)
     assert out["fresh_verification"] == \
         "POPULATION_REDERIVED_NON_AUTHORIZING"
     assert out["units_rederived"] == 4650
-    assert out["design_series"] == 202
+    assert out["design_series"] == 242
 
 
 # ========== C25-C30 acceptance battery (the ten kills) =============
@@ -1233,7 +1239,7 @@ def test_c30_kill_4_shifted_window_refuses():
                        match="windows differ from the design"):
         conf.adjudicate_screen(recs, d)
     recs = _recs(d)
-    sc = recs[0]["rolling_origins"]["origin2"]["score"]
+    sc = recs[0]["rolling_origins"]["origin1"]["score"]
     sc[0] -= 1
     _stamp(recs[0])
     with pytest.raises(SystemExit,
@@ -1336,7 +1342,7 @@ def test_c30_kill_8_fresh_verifier_wired_into_single_path(
     S = Path.home() / ".local/share/agent-multi"
     mp = S / "t2_public_data_manifest_20260906.json"
     cp = S / "t2_bank_census_20260906.json"
-    dp = S / "t2_screen_design_DRAFT_V4_20260906.json"
+    dp = S / "t2_screen_design_DRAFT_V5_20260907.json"
     lp = tmp_path / "ledger.json"
     # the honest v4 draft passes fresh verification LIVE and dies
     # at the NEXT gate (no Musashi review record exists yet)
@@ -1469,3 +1475,193 @@ def test_c29_screen_contract_shape():
         if row["scenario"] in ("one_damaged_panel",
                                "one_dominant_panel"):
             assert row["advance_rate"] == 0.0
+
+
+# ===== C31-C36 final-screen battery (order 2026-09-06) =============
+
+
+def test_c36_1_extreme_support_one_of_n_never_licenses():
+    """C31: ONE evaluable extreme series among NOT_EVALUABLE
+    siblings can never allow ADVANCE — the predeclared per-panel
+    absolute+proportional minimum bites; X=0,D>0 stays infinite
+    harm and X=0,D=0 stays ratio 1.0."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = []
+    for uid in d["task_population"]["series_ids"]:
+        only = uid.endswith("::s0")
+        recs.append(_rec_for(d, uid,
+                             ex_support=(4 if only else 0)))
+    out = conf.adjudicate_screen(recs, d)
+    assert out["verdict"] == "INCONCLUSIVE"
+    assert "evaluable extreme evidence" in out["reason"]
+    assert "never favorable" in out["reason"]
+    # full support still adjudicates (control)
+    good = _recs(d)
+    assert conf.adjudicate_screen(good, d)["verdict"] == \
+        "ADVANCE_TO_DOMAIN_VALIDATION"
+    # the two frozen boundary cases hold under the C31 world
+    hi = conf.extreme_contrast(
+        {"extreme_support": 3,
+         "mase_on_extreme_innovations": 0.0},
+        {"extreme_support": 3,
+         "mase_on_extreme_innovations": 5.0}, "p")
+    assert hi == {"state": "HARM_INFINITE", "ratio": None}
+    eq = conf.extreme_contrast(
+        {"extreme_support": 3,
+         "mase_on_extreme_innovations": 0.0},
+        {"extreme_support": 3,
+         "mase_on_extreme_innovations": 0.0}, "p")
+    assert eq == {"state": "EVALUATED", "ratio": 1.0}
+    # a design without the rule refuses at validation
+    d2 = json.loads(json.dumps(d))
+    d2.pop("extreme_support_rule")
+    with pytest.raises(SystemExit):
+        conf.adjudicate_screen(_recs(d2), d2)
+
+
+def test_c36_2_every_unit_map_field_forged_dies_live():
+    """C34: each unit_map field falsified INDEPENDENTLY (rest
+    consistent, digest real) dies in the live fresh re-derivation
+    from physical bytes."""
+    import t2_confirmatory as conf
+    import t2_fresh_verifier as fv
+    S = Path.home() / ".local/share/agent-multi"
+    manifest = conf.strict_json_load(
+        S / "t2_public_data_manifest_20260906.json", "m")
+    census = conf.strict_json_load(
+        S / "t2_bank_census_20260906.json", "c")
+    design = conf.strict_json_load(
+        S / "t2_screen_design_DRAFT_V5_20260907.json", "d")
+    uid = design["task_population"]["series_ids"][0]
+    mutations = [
+        ("family", "totally_forged_family"),
+        ("dataset", "alien_panel"),
+        ("series_numeric_sha256", "e" * 64),
+        ("seasonal_period", 999),
+        ("horizon", 7),
+        ("n_obs", 12345),
+        ("time_identity_sha256", "f" * 64),
+        ("origin_windows", {"origin0": {"train": [0, 1],
+                                        "score": [1, 2]},
+                            "origin1": {"train": [0, 2],
+                                        "score": [2, 3]}}),
+    ]
+    for field, val in mutations:
+        forged = json.loads(json.dumps(design))
+        forged["task_population"]["unit_map"][uid][field] = val
+        with pytest.raises(SystemExit,
+                           match="do not re-derive|missing from"):
+            fv.fresh_verify(manifest, census, forged,
+                            manifest_sha=None)
+
+
+def test_c36_4_each_cost_phase_omitted_refuses():
+    """C33: omitting target construction, seasonal baseline, one
+    arm's lag features, one arm's ridge or one MLP seed each
+    refuses via the PRODUCTIVE adjudicator; an extra key refuses
+    too — the schema is exact, never an open minimum."""
+    import t2_confirmatory as conf
+    d = _d3()
+    cases = [
+        ("target_construction_s", None),
+        ("seasonal_naive_s", None),
+        (("arm_D", "lag_features_s"), None),
+        (("arm_XDR", "ridge_fit_forecast_s"), None),
+        (("arm_X", "mlp_fit_forecast_seed12_s"), None),
+    ]
+    for key, _ in cases:
+        recs = _recs(d)
+        oc = recs[0]["costs_by_phase"]["origin0"]
+        if isinstance(key, tuple):
+            del oc[key[0]][key[1]]
+            want = "arm cost phases are not the exact"
+        else:
+            del oc[key]
+            want = "cost phases are not the exact"
+        _stamp(recs[0])
+        with pytest.raises(SystemExit, match=want):
+            conf.adjudicate_screen(recs, d)
+    # extra keys refuse at both levels
+    recs = _recs(d)
+    recs[0]["costs_by_phase"]["origin0"]["smuggled_s"] = 0.1
+    _stamp(recs[0])
+    with pytest.raises(SystemExit,
+                       match="cost phases are not the exact"):
+        conf.adjudicate_screen(recs, d)
+    recs = _recs(d)
+    recs[0]["costs_by_phase"]["origin0"]["arm_D"][
+        "smuggled_s"] = 0.1
+    _stamp(recs[0])
+    with pytest.raises(SystemExit,
+                       match="arm cost phases are not the exact"):
+        conf.adjudicate_screen(recs, d)
+
+
+def test_c36_7_hospital_two_windows_of_17():
+    """C35: hospital's length-84 series mechanically produce two
+    consecutive 17-observation score windows under the COMMON
+    geometry, with every real model minimum intact; the harness
+    delegates to the same single authority."""
+    import os
+    import t2_bank as bank
+    os.environ.setdefault(
+        "B4_T1_PREPROCESSOR_ROOT",
+        str(Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
+    import t2_assay_harness as hz
+    w = bank.origin_windows_for(84, 2, 0.6, seasonal_period=12)
+    assert w == {"origin0": {"train": [0, 50],
+                             "score": [50, 67]},
+                 "origin1": {"train": [0, 67],
+                             "score": [67, 84]}}
+    assert all(wb["score"][1] - wb["score"][0] == 17
+               for wb in w.values())
+    assert hz.ROLLING_ORIGINS == 2
+    assert hz.unit_origins(84, seasonal_period=12) == \
+        [(50, 67), (67, 84)]
+    # real minimums: >=8 MLP fit rows after validation, >=1 scored
+    for wb in w.values():
+        fit = wb["train"][1] - 8 - 1
+        assert fit - max(8, int(fit * 0.2)) >= 8
+        assert wb["score"][1] - wb["score"][0] - 8 - 1 >= 1
+    # the fixed 120 floor is retired from the productive surface
+    assert not hasattr(bank, "SCREEN_MIN_LENGTH")
+    src = (REPO / "tools/t2_assay_harness.py").read_text()
+    assert "if n < 120" not in src
+    # the v5 draft records hospital as a FULL member
+    S = Path.home() / ".local/share/agent-multi"
+    v5 = json.loads(
+        (S / "t2_screen_design_DRAFT_V5_20260907.json").read_text())
+    gf = v5["task_population"]["geometry_feasibility"]["hospital"]
+    assert gf["n_selected"] == 40 and gf["min_score_window"] == 17
+    assert gf["model_minimums_kept"] is True
+
+
+def test_c36_8_every_selected_unit_geometry_admissible():
+    """C35: every unit of the six panels selected by v5 is
+    geometry-admissible under the common two-origin rule
+    (period-aware), and the population is 242 with v4 superseded
+    by digest."""
+    import t2_bank as bank
+    S = Path.home() / ".local/share/agent-multi"
+    v5 = json.loads(
+        (S / "t2_screen_design_DRAFT_V5_20260907.json").read_text())
+    tp = v5["task_population"]
+    assert len(tp["series_ids"]) == 242
+    panels = set(tp["screen_panels"])
+    n_by_panel = {}
+    for uid, b in tp["unit_map"].items():
+        assert bank.geometry_admissible(
+            b["n_obs"], 2, 0.6,
+            seasonal_period=b["seasonal_period"],
+            horizon=b["horizon"]), uid
+        if b["dataset"] in panels:
+            n_by_panel[b["dataset"]] = \
+                n_by_panel.get(b["dataset"], 0) + 1
+    assert sorted(n_by_panel) == sorted(panels)
+    assert all(v == 40 for v in n_by_panel.values())
+    v4_sha = hashlib.sha256(
+        (S / "t2_screen_design_DRAFT_V4_20260906.json")
+        .read_bytes()).hexdigest()
+    assert v5["supersedes_draft_sha256"] == v4_sha
+    assert v5["schema"] == "agent_multi.t2_screen_design.v5_draft"

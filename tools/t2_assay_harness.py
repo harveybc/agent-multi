@@ -298,23 +298,29 @@ def train_innovation_extremes(y, lo_t, hi_t, targets_idx,
     return mask, thresh
 
 
-ROLLING_ORIGINS = 3
+# C35: the COMMON two-origin geometry for every panel — 60% initial
+# fit fraction, two consecutive score windows over the final 40%.
+# No panel gets an exception; feasibility derives from the models'
+# real minimums inside the ONE productive rule.
+ROLLING_ORIGINS = 2
 ORIGIN_BASE_FRAC = 0.6
 
 
-def unit_origins(n: int) -> list:
-    """C5: multiple causal rolling origins — the final 40% of the
-    series is covered by consecutive score windows; for origin o,
-    train=[0,o) and score=[o,o+w). Predeclared geometry, never
+def unit_origins(n: int, seasonal_period: int = None) -> list:
+    """C5/C32: causal rolling origins — DELEGATED to the single
+    productive geometry authority (t2_bank.origin_windows_for) so
+    the harness, the design generator, the validator and the fresh
+    verifier can never drift. Predeclared, never
     outcome-dependent."""
-    base = int(n * ORIGIN_BASE_FRAC)
-    w = (n - base) // ROLLING_ORIGINS
-    if w < RIDGE_LAGS + 4:
-        raise HarnessRefusal(
-            f"series too short for {ROLLING_ORIGINS} rolling "
-            "origins")
-    return [(base + k * w,
-             base + (k + 1) * w if k < ROLLING_ORIGINS - 1 else n)
+    import t2_bank as _bank
+    try:
+        wins = _bank.origin_windows_for(
+            n, ROLLING_ORIGINS, ORIGIN_BASE_FRAC,
+            seasonal_period=seasonal_period)
+    except SystemExit as exc:
+        raise HarnessRefusal(str(exc))
+    return [(wins[f"origin{k}"]["score"][0],
+             wins[f"origin{k}"]["score"][1])
             for k in range(ROLLING_ORIGINS)]
 
 
@@ -332,12 +338,11 @@ def assay_unit(co, unit: dict, h: int = 1) -> dict:
     phase recorded separately (C7)."""
     y = unit["y"]
     n = len(y)
-    if n < 120:
-        raise HarnessRefusal(
-            f"unit {unit['unit_id']} too short for the lag/origin "
-            "geometry")
     period = unit["seasonal_period"]
-    origins = unit_origins(n)
+    # C35: feasibility is decided by the ONE geometry authority
+    # (real model minimums, period-aware) — the retired fixed 120
+    # floor lives only in git history.
+    origins = unit_origins(n, seasonal_period=period)
     per_origin = {}
     costs = {}
     for oi, (o_lo, o_hi) in enumerate(origins):

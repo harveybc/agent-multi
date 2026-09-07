@@ -148,7 +148,9 @@ def verify_design_population(rebuilt: dict, design: dict) -> None:
         admissible = [uid for uid in r["admissible_unit_ids"]
                       if bank.geometry_admissible(
                           r["unit_meta"][uid]["n"], n_origins,
-                          base_frac)]
+                          base_frac,
+                          seasonal_period=r["seasonal_period"],
+                          horizon=horizon)]
         by_family.setdefault(r["family"], {})[lid] = admissible
         for uid in r["admissible_unit_ids"]:
             unit_home[uid] = lid
@@ -187,7 +189,9 @@ def verify_design_population(rebuilt: dict, design: dict) -> None:
             "time_identity_sha256":
                 meta_all[uid]["time_identity_sha256"],
             "origin_windows": bank.origin_windows_for(
-                meta_all[uid]["n"], n_origins, base_frac)}
+                meta_all[uid]["n"], n_origins, base_frac,
+                seasonal_period=period_by_lid.get(lid),
+                horizon=horizon)}
         if b != truth:
             diff = sorted(k for k in set(b) | set(truth)
                           if b.get(k) != truth.get(k))

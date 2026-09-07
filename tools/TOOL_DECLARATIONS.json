@@ -858,6 +858,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_design_draft_v5.py": {
+   "purpose": "T2-S step-6 FINAL screen design DRAFT v5 (order C31-C36): supersedes v4 by digest; COMMON two-origin geometry (0.60 initial, lags 8, horizon 1) for all six panels \u2014 hospital a full member (2x17 windows, real model minimums verified per unit, GEOMETRY_INFEASIBLE refusal if any fails); per-panel extreme-support rule (absolute+proportional); selection salt t2_design_v5 over period-aware geometry-admissible units; candidate for the Musashi design review, never sealed, zero scores",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

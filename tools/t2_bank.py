@@ -154,28 +154,43 @@ def series_numeric_digest(y: np.ndarray) -> str:
 series_content_digest = None
 
 
-# C26/C28: the ONE productive origin-geometry rule — shared by the
-# design generator, the design validator and the fresh verifier so
-# no two implementations can drift. Mirrors the frozen harness
-# contract (unit_origins): base=int(n*frac), equal score windows,
-# the last absorbing the remainder; train is always [0, o_lo).
-SCREEN_MIN_LENGTH = 120
+# C26/C28/C35: the ONE productive origin-geometry rule — shared by
+# the harness, the design generator, the design validator and the
+# fresh verifier so no two implementations can EVER drift:
+# base=int(n*frac), equal consecutive score windows over the final
+# (1-frac) tail, the last absorbing the remainder; train is always
+# [0, o_lo). Feasibility DERIVES from the models' own real
+# minimums — never from an arbitrary length floor, and the models
+# are never weakened to make a series fit:
+# - every score window yields >= 1 scored row: w > lags + horizon;
+# - the harness sanity margin on the window: w >= lags + 4;
+# - the FIRST train role feeds the MLP epoch rule: fit rows
+#   (base - lags - horizon) minus the validation tail
+#   max(8, 20% of fit rows) must leave >= 8 fitting rows;
+# - with a declared seasonal period, the train role must admit a
+#   positive seasonal-naive MASE denominator: base > period + 1.
 SCREEN_MIN_SCORE_WINDOW = 12          # RIDGE_LAGS(8) + 4
+_GEO_LAGS = 8
+_GEO_MIN_FIT_AFTER_VAL = 8
+_GEO_MIN_VAL = 8
 
 
 def origin_windows_for(n: int, rolling_origins: int,
-                       base_frac: float) -> dict:
+                       base_frac: float,
+                       seasonal_period: int = None,
+                       horizon: int = 1) -> dict:
     """Exact per-unit causal windows derived from series LENGTH
     and the origin contract alone — before any result exists.
-    Refuses (typed) when the frozen geometry cannot window the
-    series; a refusal here is a population fact, never a score."""
+    Refuses (typed) when the geometry cannot satisfy the models'
+    REAL fit/score minimums; a refusal here is a population fact,
+    never a score."""
     if isinstance(n, bool) or type(n) is not int or n <= 0:
         raise BankRefusal(f"origin geometry: length {n!r} is not "
                           "a positive int")
-    if n < SCREEN_MIN_LENGTH:
-        raise BankRefusal(
-            f"GEOMETRY_INADMISSIBLE: length {n} < harness minimum "
-            f"{SCREEN_MIN_LENGTH}")
+    if isinstance(rolling_origins, bool) or \
+            type(rolling_origins) is not int or rolling_origins < 1:
+        raise BankRefusal("origin geometry: rolling_origins must "
+                          "be a positive int")
     base = int(n * base_frac)
     w = (n - base) // rolling_origins
     if w < SCREEN_MIN_SCORE_WINDOW:
@@ -183,6 +198,24 @@ def origin_windows_for(n: int, rolling_origins: int,
             f"GEOMETRY_INADMISSIBLE: score window {w} < minimum "
             f"{SCREEN_MIN_SCORE_WINDOW} for {rolling_origins} "
             "rolling origins")
+    if w - _GEO_LAGS - horizon < 1:
+        raise BankRefusal(
+            f"GEOMETRY_INADMISSIBLE: score window {w} yields no "
+            "scored row after lags and horizon")
+    fit_rows = base - _GEO_LAGS - horizon
+    n_val = max(_GEO_MIN_VAL, int(fit_rows * 0.2)) \
+        if fit_rows > 0 else 0
+    if fit_rows <= 0 or fit_rows - n_val < _GEO_MIN_FIT_AFTER_VAL:
+        raise BankRefusal(
+            f"GEOMETRY_INADMISSIBLE: first train role has "
+            f"{max(fit_rows, 0)} fit rows — the MLP epoch rule "
+            f"needs >= {_GEO_MIN_FIT_AFTER_VAL} after its "
+            f"validation tail (its OWN minimum, never weakened)")
+    if seasonal_period is not None and base <= seasonal_period + 1:
+        raise BankRefusal(
+            f"GEOMETRY_INADMISSIBLE: train role {base} rows "
+            f"cannot form the seasonal-naive MASE denominator "
+            f"(period {seasonal_period})")
     out = {}
     for k_ in range(rolling_origins):
         lo = base + k_ * w
@@ -194,9 +227,13 @@ def origin_windows_for(n: int, rolling_origins: int,
 
 
 def geometry_admissible(n: int, rolling_origins: int,
-                        base_frac: float) -> bool:
+                        base_frac: float,
+                        seasonal_period: int = None,
+                        horizon: int = 1) -> bool:
     try:
-        origin_windows_for(n, rolling_origins, base_frac)
+        origin_windows_for(n, rolling_origins, base_frac,
+                           seasonal_period=seasonal_period,
+                           horizon=horizon)
         return True
     except SystemExit:
         return False
