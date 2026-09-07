@@ -1,0 +1,24 @@
+== 1. C35: the gate accepts forged pins and dates ==
+ACCEPTED None 'not-a-date'
+ACCEPTED False 'not-a-date'
+ACCEPTED '../../foreign' 'not-a-date'
+ACCEPTED '0000000000000000000000000000000000000000' 'not-a-date'
+all four forged actas OPEN the gate; no descriptor binding, no independent digest, no date/commit validation
+
+== 2. C36: the public claim/lease/executor sequence bypasses the closed gate ==
+Attempting to load plugin: sac_agent from group: agent.plugins
+Failed to find plugin sac_agent in group agent.plugins
+ImportError reached (post-claim): Plugin sac_agent not found in group agent.plugins.
+claim created: True | typed terminal written: True | gate ever consulted: False
+terminal: FAILED_PLUGIN_ENVIRONMENT — the gate protects ONLY run_campaign; claim+lease+constructors ran while CLOSED
+
+== 3. C37: recovered authority absent from custody ==
+terminal_requires_amendment_11: True
+terminal_requires_amendment_12: False
+terminal_requires_recovery_acta: False
+terminal_requires_pinned_commit: False
+terminal_requires_generation: False
+report carries amendment_11 only: True
+per-attempt binding fields: authorization + amendment_11 only: True
+
+PRE CONFIRMED: C35 forged-acta acceptance, C36 public bypass, C37 stale custody all reproduce at 9d4aec7f
