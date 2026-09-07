@@ -1,0 +1,18 @@
+== 1. C43: telemetry materialized; composition typed ==
+progress file (cell-contained, cell-unique): b4_training_progress_o2022_seed101.json
+composed: ['ExecutingBudgetCallback', 'JsonTrainingProgressCallback']
+B4 without telemetry: REFUSED: B4 mandatory telemetry — no constructible training_progress_f
+REAL SAC evidence: docs/audits/evidence/repro_runs/b4_c46_real_sac_probe_2026_09_07.out (steps 179, updates 50, F9.2 exact stop, progress advanced, heartbeat under the cell)
+
+== 2. C45/C48: v6 incident byte-identical; historical dry-run still UNCERTAIN ==
+five incident objects byte-identical
+historical (aa9b5a0e) dry-run classifies the incident cell: UNCERTAIN
+
+== 3. C45: generation v7; 3.1 s debt accounted ==
+v7 ledger provenance: supersedes v6, lineage v5+v6, prior charge 39.1 s (36.0 + 3.1)
+
+== 4. C47: templates truthful; v7 acta path distinct; gate closed ==
+stale v6 template -> unambiguous placeholder; v7 template is placeholder-only (grants nothing)
+v7 gate: REFUSED: B4_V7_RUNTIME_READY_FOR_EXTERNAL_MUSASHI_ACTA — the v7 launch stays closed un
+
+POST CONFIRMED: C43-C47 executable; v6 history intact; v7 closed pending the Musashi acta

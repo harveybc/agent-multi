@@ -1,0 +1,26 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v13_runtime_recovery",
+ "amends_amendment_14_sha256": "2b40913cef6b334080214f27180e58f33937c225feb25f30a4584ce172582a29",
+ "v6_incident_order_sha256": "7edeb8eeefea4b9dbe8817993240caec6d9aebd8d9602790b3c83aa5f58acf05",
+ "order": "C43-C48 (runtime recovery order 2026-09-07): the first v6 dispatch died before the first gradient on a None progress callback handed to SB3, and the deterministic FAILED terminal was left unsealed (UNCERTAIN). This amendment records the append-only v7 recovery.",
+ "change_disclosure": "runtime recovery ONLY: (C43) per-cell MANDATORY progress telemetry materialized in the effective config (both keys -> one contained, cell-unique file) + compose_learn_callbacks() typed composition (SB3 never receives None; b4_require_progress refuses before model.learn; F9.2 preserved); (C44) run_campaign seals an INTEGRAL typed failure terminal under the same lock after revalidating claim/lease/terminal/authority \u2014 deterministic failures adjudicate TERMINAL_<TYPE>, never UNCERTAIN; absent/partial terminals still block; no default continuation after a failure; (C45) generation v7 with fresh provenance ledger, the v6 root immutable, 39.1 s prior charge (36.0 v5 + 3.1 v6); (C47) acta v3 at a NEW external filename binds commit, clean tree, generation and the LATEST amendment; stale v6 template digest corrected to an unambiguous placeholder. No population, config, data, genesis, comparator, budget, seed or scheduling change.",
+ "scientific_change": "NONE \u2014 runtime callback/seal recovery only",
+ "campaign_generation_v7": "b4_campaign_generation_v7_20260907",
+ "supersedes_generation": "b4_campaign_generation_v6_20260907",
+ "supersedes_results_root_logical": "b4_campaign_results_v6_20260907",
+ "v7_results_root_logical": "b4_campaign_results_v7_20260907",
+ "prior_generations_gpu_seconds_charged": 39.1,
+ "final_code_pins": {
+  "tools/b4_authority.py": "8aefe54b804bac3cc1ff2c4ee8c52fdcc4bcec75b74162c5ce7b10bcb4506b68",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "06aa20dd1b1404bbb077f632213e766dbc695b8100c71ae2ba929bd932f66d39",
+  "tools/b4_campaign_ledger.py": "2d12fe8c26e22bfaf1e4e5cf0e62d74abce95e3c176b21e6cb39d1599ce027b0",
+  "tools/b4_campaign_orchestrator.py": "8743261053298a924d7a4d4bed69116e9a6688db1a56ae4657bc13b3961bc3c4",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "4bd4000fd7ab1d3dca98ea074fdab18a64a2e293db5d770378b60f1cda5d7d6e",
+  "tests/test_b4_materializer_authority.py": "b54640365f7438673452a44a279f838600c81cf52a0d2f5aa7ef63bc01cd3958"
+ },
+ "chronology_truth": "authored AFTER the C43-C48 PRE freeze and after all corrected code and tests were finalized and hashed from disk; amendments 1-14 untouched; the real Musashi v7 acta remains ABSENT and the v7 launch remains CLOSED",
+ "amendment_sha256": "778dd4065df0906a35e98f7eb22b13abeae2a9bbd11a924e64dbc082bed668eb"
+}

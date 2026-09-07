@@ -121,11 +121,30 @@ RESOURCE_CONTRACT_V2_SHA = "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc
 # the generation it authorized (v5) — that historical truth never
 # changes; amendment 12 links v6 to it, and the v6 LAUNCH stays
 # closed until the external recovery-audit acta exists.
-CAMPAIGN_GENERATION = "b4_campaign_generation_v6_20260907"
+# --- C45 (runtime-recovery order 2026-09-07): the v6 generation
+# is SUPERSEDED HISTORY after the first-gradient runtime incident
+# (AttributeError on a None progress callback; cell o2022_seed101,
+# typed FAILED terminal, 3.1 s charged). Its root and failed
+# attempt are preserved byte-exact and never reused. Generation v7
+# carries the IDENTICAL scientific identity (scientific_change:
+# NONE) and differs only in the runtime corrections.
+CAMPAIGN_GENERATION = "b4_campaign_generation_v7_20260907"
+V6_GENERATION = "b4_campaign_generation_v6_20260907"
 AUTHORIZED_CAMPAIGN_GENERATION = "b4_campaign_generation_v5_20260906"
-SUPERSEDED_GENERATIONS = ("b4_campaign_generation_v5_20260906",)
+SUPERSEDED_GENERATIONS = ("b4_campaign_generation_v5_20260906",
+                          "b4_campaign_generation_v6_20260907")
 V5_RESULTS_ROOT_LOGICAL = "b4_campaign_results_20260906"
 V6_RESULTS_ROOT_LOGICAL = "b4_campaign_results_v6_20260907"
+V7_RESULTS_ROOT_LOGICAL = "b4_campaign_results_v7_20260907"
+# The v6 runtime incident is recorded in the Musashi order (copied
+# byte-exact into this branch) — pinned like the v5 incident acta.
+V6_INCIDENT_ORDER_PATH = (REPO / "docs/handoffs/"
+                          "MUSASHI_TO_GENERAL_SATOSHI_B4_C43_C48_"
+                          "AND_T2_C42_C47_ORDER_2026_09_07.md")
+V6_INCIDENT_ORDER_SHA = ("7edeb8eeefea4b9dbe8817993240caec6d9aeb"
+                         "d8d9602790b3c83aa5f58acf05")
+# C45.4: the 3.1 s v6 debt stays accounted — the ceiling never
+# restarts: 36.0 s (v5, per acta) + 3.1 s (v6 terminal) = 39.1 s.
 INCIDENT_RECORD_PATH = (REPO / "docs/audits/"
                         "MUSASHI_B4_DISPATCH_ENVIRONMENT_INCIDENT_"
                         "2026_09_06.md")
@@ -134,7 +153,9 @@ INCIDENT_RECORD_SHA = ("6e0905602f28517d6584a4969672c70a63ea577"
 # C32: the v5 charge against the global ceiling is the FIXED value
 # from the incident acta (0.01 h) — never the ambiguous claim's
 # ever-growing wall clock, and the 96 h budget never restarts.
-PRIOR_GENERATIONS_GPU_SECONDS = 36.0
+PRIOR_GENERATIONS_GPU_SECONDS = 39.1
+# historical per-amendment charges (immutable facts)
+V5_ONLY_PRIOR_CHARGE = 36.0
 # C33: amendment 11's bytes are HISTORY now — pinned like a9/a10.
 AMENDMENT_11_SHA = ("449a138726b56c9af3a29d2bdb68f1ba846468bb7fea"
                     "e64d738c9554a7de8e89")
@@ -150,13 +171,23 @@ AMENDMENT_12_PATH = (EVIDENCE /
 # signature they do NOT cryptographically identify an author.
 AUTHORITY_ROOT = (Path.home() /
                   ".config/agent-multi/reviewer_authority")
+# C47: the v7 acta uses a DIFFERENT fixed external filename; the
+# consumed v6 record stays untouched at its own name.
 RECOVERY_AUDIT_RECORD_PATH = (
+    AUTHORITY_ROOT / "MUSASHI_B4_V7_RUNTIME_AUDIT_RECORD.json")
+CONSUMED_V6_ACTA_PATH = (
     AUTHORITY_ROOT / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
 # C41: amendment 13's bytes are HISTORY — pinned like a9-a12.
 AMENDMENT_13_SHA = ("1d8b46ce527598d45d519f0885f5e7ea81f35aeef5"
                     "28dfa14952d3f9d646a5ff")
 AMENDMENT_14_PATH = (EVIDENCE /
                      "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_14_"
+                     "2026_09_07.json")
+# C47: amendment 14's bytes are HISTORY — pinned like a9-a13.
+AMENDMENT_14_SHA = ("2b40913cef6b334080214f27180e58f33937c225fe"
+                    "b25f30a4584ce172582a29")
+AMENDMENT_15_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_15_"
                      "2026_09_07.json")
 # Executable/shadow-capable suffixes and metadata names that an
 # untracked or ignored file must never contribute to the checkout.
@@ -1264,7 +1295,7 @@ def verify_amendment_chain() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: amendment 12 must declare NO scientific "
             "change")
-    if a12["campaign_generation_v6"] != CAMPAIGN_GENERATION or \
+    if a12["campaign_generation_v6"] != V6_GENERATION or \
             a12["supersedes_generation"] != \
             AUTHORIZED_CAMPAIGN_GENERATION or \
             a12["supersedes_results_root_logical"] != \
@@ -1275,7 +1306,7 @@ def verify_amendment_chain() -> dict:
             "REFUSED: amendment 12 generation/root lineage differs "
             "from the live constants")
     if a12["prior_generations_gpu_seconds_charged"] != \
-            PRIOR_GENERATIONS_GPU_SECONDS:
+            V5_ONLY_PRIOR_CHARGE:
         raise B4AuthorityRefusal(
             "REFUSED: amendment 12 ceiling charge differs from the "
             "incident acta's fixed 0.01 h")
@@ -1383,6 +1414,81 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 14 does not pin the complete "
                 "corrected surface")
     pins.update(a14_pins)
+    # --- C47: amendment 15 (runtime recovery) — append-only
+    # after the byte-pinned a14; C43-C47 only.
+    if _sha_file(AMENDMENT_14_PATH) != AMENDMENT_14_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 bytes were altered — "
+            "append-only history is broken")
+    if not AMENDMENT_15_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 absent — the runtime-recovery "
+            "custody chain is incomplete")
+    a15 = _strict_json_bytes(AMENDMENT_15_PATH.read_bytes(),
+                             "amendment 15")
+    _A15_KEYS = {"schema", "amends_amendment_14_sha256",
+                 "v6_incident_order_sha256", "order",
+                 "change_disclosure", "scientific_change",
+                 "campaign_generation_v7",
+                 "supersedes_generation",
+                 "supersedes_results_root_logical",
+                 "v7_results_root_logical",
+                 "prior_generations_gpu_seconds_charged",
+                 "final_code_pins", "chronology_truth",
+                 "amendment_sha256"}
+    if set(a15) != _A15_KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 keys are not the exact schema")
+    body15 = {k: a15[k] for k in sorted(a15)
+              if k != "amendment_sha256"}
+    if hashlib.sha256(json.dumps(
+            body15, sort_keys=True).encode()).hexdigest() != \
+            a15["amendment_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 self-integrity digest does "
+            "not re-derive")
+    if a15["schema"] != ("agent_multi.b4_superseding_design_"
+                         "amendment.v13_runtime_recovery"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 carries a foreign schema")
+    if a15["amends_amendment_14_sha256"] != AMENDMENT_14_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 does not name amendment 14's "
+            "exact reviewed bytes")
+    if not V6_INCIDENT_ORDER_PATH.is_file() or \
+            _sha_file(V6_INCIDENT_ORDER_PATH) != \
+            V6_INCIDENT_ORDER_SHA or \
+            a15["v6_incident_order_sha256"] != \
+            V6_INCIDENT_ORDER_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: the v6 incident order is absent, altered "
+            "or unnamed by amendment 15")
+    if a15["scientific_change"] != \
+            "NONE — runtime callback/seal recovery only":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 must declare NO scientific "
+            "change")
+    if a15["campaign_generation_v7"] != CAMPAIGN_GENERATION or \
+            a15["supersedes_generation"] != V6_GENERATION or \
+            a15["supersedes_results_root_logical"] != \
+            V6_RESULTS_ROOT_LOGICAL or \
+            a15["v7_results_root_logical"] != \
+            V7_RESULTS_ROOT_LOGICAL:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 generation/root lineage "
+            "differs from the live constants")
+    if a15["prior_generations_gpu_seconds_charged"] != \
+            PRIOR_GENERATIONS_GPU_SECONDS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 ceiling charge differs from "
+            "the accounted 39.1 s (36.0 v5 + 3.1 v6)")
+    a15_pins = a15.get("final_code_pins", {})
+    for req in _PINNED_SURFACE:
+        if req not in a15_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 15 does not pin the complete "
+                "corrected surface")
+    pins.update(a15_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -1401,7 +1507,8 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_11_PATH),
                _sha_file(AMENDMENT_12_PATH),
                _sha_file(AMENDMENT_13_PATH),
-               _sha_file(AMENDMENT_14_PATH)],
+               _sha_file(AMENDMENT_14_PATH),
+               _sha_file(AMENDMENT_15_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
@@ -1450,10 +1557,10 @@ def _open_private_authority_file(path: Path):
     except FileNotFoundError:
         os.close(fd)
         raise B4AuthorityRefusal(
-            "REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_"
-            "MUSASHI_AUDIT — the v6 launch stays closed until the "
-            "EXTERNAL recovery-audit acta exists under the "
-            "private reviewer-authority root")
+            "REFUSED: B4_V7_RUNTIME_READY_FOR_EXTERNAL_MUSASHI_"
+            "ACTA — the v7 launch stays closed until the EXTERNAL "
+            "runtime-audit acta exists under the private "
+            "reviewer-authority root")
     except OSError as exc:
         os.close(fd)
         raise B4AuthorityRefusal(
@@ -1584,27 +1691,29 @@ def read_recovery_acta() -> dict:
     rec = _strict_json_bytes(raw, "recovery audit record")
     _KEYS = {"schema", "reviewed_at_date", "reviewer", "decision",
              "latest_amendment_sha256", "pinned_commit",
-             "preflight_reviewed", "ledger_v6_reviewed",
-             "v5_v6_scientific_equality_reviewed"}
+             "pinned_tree", "campaign_generation",
+             "runtime_reviewed", "ledger_reviewed",
+             "scientific_terms_unchanged_reviewed"}
     if set(rec) != _KEYS:
         raise B4AuthorityRefusal(
             "REFUSED: recovery-audit record keys are not the "
             "exact schema")
     for k in ("schema", "reviewed_at_date", "reviewer",
               "decision", "latest_amendment_sha256",
-              "pinned_commit"):
+              "pinned_commit", "pinned_tree",
+              "campaign_generation"):
         if type(rec[k]) is not str or not rec[k]:
             raise B4AuthorityRefusal(
                 f"REFUSED: recovery-acta field {k!r} must be a "
                 "nonempty string — None/bool/paths grant nothing")
-    for k in ("preflight_reviewed", "ledger_v6_reviewed",
-              "v5_v6_scientific_equality_reviewed"):
+    for k in ("runtime_reviewed", "ledger_reviewed",
+              "scientific_terms_unchanged_reviewed"):
         if rec[k] is not True:
             raise B4AuthorityRefusal(
                 f"REFUSED: recovery-audit record does not attest "
                 f"{k}")
     if rec["schema"] != \
-            "agent_multi.musashi_b4_v6_recovery_audit.v2":
+            "agent_multi.musashi_b4_v7_runtime_audit.v3":
         raise B4AuthorityRefusal(
             "REFUSED: recovery-audit record carries a foreign "
             "schema")
@@ -1612,10 +1721,14 @@ def read_recovery_acta() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: recovery-audit author is not the external "
             "reviewer")
-    if rec["decision"] != "OPEN_B4_V6_LAUNCH":
+    if rec["decision"] != "OPEN_B4_V7_LAUNCH":
         raise B4AuthorityRefusal(
-            "REFUSED: recovery-audit decision does not open the "
-            "v6 launch")
+            "REFUSED: runtime-audit decision does not open the "
+            "v7 launch")
+    if rec["campaign_generation"] != CAMPAIGN_GENERATION:
+        raise B4AuthorityRefusal(
+            "REFUSED: the acta does not bind the executing v7 "
+            "generation")
     # canonical ISO date — parse AND re-format equality
     import datetime as _dt
     try:
@@ -1645,22 +1758,31 @@ def read_recovery_acta() -> dict:
     # untracked/ignored source. The nine-file list stays a human
     # review index only.
     checkout = verify_checkout_identity(pin)
-    # the LATEST recovery amendment — an older link grants nothing
-    if not AMENDMENT_14_PATH.is_file():
+    if len(rec["pinned_tree"]) != 40 or any(
+            c not in "0123456789abcdef"
+            for c in rec["pinned_tree"]):
         raise B4AuthorityRefusal(
-            "REFUSED: amendment 14 absent — the recovery custody "
-            "chain is incomplete")
-    a14_sha = _sha_file(AMENDMENT_14_PATH)
-    if rec["latest_amendment_sha256"] != a14_sha:
+            "REFUSED: pinned_tree is not 40 lowercase hex")
+    if rec["pinned_tree"] != checkout["tree"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: the acta's pinned tree differs from the "
+            "clean checkout's tree at the pinned commit")
+    # the LATEST recovery amendment — an older link grants nothing
+    if not AMENDMENT_15_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 15 absent — the runtime-recovery "
+            "custody chain is incomplete")
+    a15_sha = _sha_file(AMENDMENT_15_PATH)
+    if rec["latest_amendment_sha256"] != a15_sha:
         raise B4AuthorityRefusal(
             "REFUSED: the acta does not name the LATEST recovery "
-            "amendment's exact bytes — an amendment-13-only or "
+            "amendment's exact bytes — an amendment-14-only or "
             "older link grants nothing")
-    return {"schema": "agent_multi.b4_v6_recovery_witness.v2",
+    return {"schema": "agent_multi.b4_v7_recovery_witness.v3",
             "acta_sha256": acta_sha,
             "pinned_commit": pin,
             "checkout_tree_sha": checkout["tree"],
-            "latest_amendment_sha256": a14_sha,
+            "latest_amendment_sha256": a15_sha,
             "campaign_generation": CAMPAIGN_GENERATION}
 
 

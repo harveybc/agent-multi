@@ -260,7 +260,34 @@ def build_economic_config(cell_id: str, mat_root: Path,
             limits["budget_max_wall_seconds"],
         "budget_max_rss_bytes": limits["budget_max_rss_bytes"],
         "budget_stop_file": str(cell_dir / "STOP"),
+        # C43: MANDATORY per-cell B4 telemetry — both progress
+        # keys point at the SAME file under the cell's private
+        # root; the pipeline's typed callback composition refuses
+        # before model.learn if this telemetry cannot be built.
+        "training_progress_file":
+            str(cell_dir / "cell_runtime" /
+                f"b4_training_progress_{cell_id}.json"),
+        "progress_file":
+            str(cell_dir / "cell_runtime" /
+                f"b4_training_progress_{cell_id}.json"),
+        "b4_require_progress": True,
     })
+    # containment + non-shared: the progress path must live under
+    # THIS cell's directory and carry the cell's own name.
+    _pp = Path(cfg["training_progress_file"])
+    if cfg["training_progress_file"] != cfg["progress_file"]:
+        raise ExecutorRefusal(
+            "REFUSED: the two progress keys must name the SAME "
+            "per-cell telemetry file")
+    try:
+        _pp.relative_to(cell_dir)
+    except ValueError:
+        raise ExecutorRefusal(
+            "REFUSED: progress telemetry escapes the cell root")
+    if cell_id not in _pp.name:
+        raise ExecutorRefusal(
+            "REFUSED: progress telemetry is not cell-unique")
+    (cell_dir / "cell_runtime").mkdir(mode=0o700, exist_ok=True)
     if device.startswith("cuda"):
         cfg["budget_max_cuda_bytes"] = limits["budget_max_cuda_bytes"]
         cfg["budget_max_gpu_temp_celsius"] = \

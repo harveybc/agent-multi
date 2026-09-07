@@ -813,6 +813,58 @@ def _snapshot(root: Path) -> dict:
             for p in sorted(Path(root).rglob("*")) if p.is_file()}
 
 
+def _seal_failed_attempt(results_root: Path, cid: str,
+                         claim: dict, lease_path: Path,
+                         mat_root: Path, executor) -> str:
+    """C44: under the live lock, revalidate claim + lease +
+    authority, require an INTEGRAL typed terminal for the current
+    attempt, then durably seal it (intent + completion, fsynced).
+    Returns the adjudicated state. Absence/partiality of the
+    terminal or a failed revalidation leaves the cell UNCERTAIN
+    (nothing is sealed) and the original failure propagates."""
+    try:
+        c2 = load_claim(results_root, cid)
+        if c2["attempt_id"] != claim["attempt_id"]:
+            return adjudicate_cell_state(results_root, cid)
+        # manual lease revalidation: verify_lease() refuses once a
+        # terminal exists (it issues capability); here the typed
+        # terminal MUST exist — so the lease's integrity and
+        # bindings are checked directly, plus the live witness.
+        lease = _secure_json(Path(lease_path), "execution lease")
+        body = {k: lease[k] for k in sorted(lease)
+                if k != "lease_sha256"}
+        if hashlib.sha256(json.dumps(
+                body, sort_keys=True).encode()).hexdigest() != \
+                lease.get("lease_sha256"):
+            return adjudicate_cell_state(results_root, cid)
+        if lease.get("attempt_id") != claim["attempt_id"] or \
+                lease.get("cell") != cid or \
+                lease.get("campaign_generation") != \
+                b4a.CAMPAIGN_GENERATION or \
+                lease.get("authorization_sha256") != \
+                executor.CAMPAIGN_AUTH_SHA:
+            return adjudicate_cell_state(results_root, cid)
+        witness = b4a.require_v6_launch_open()
+        if lease.get("recovery_acta_sha256") != \
+                witness["acta_sha256"]:
+            return adjudicate_cell_state(results_root, cid)
+        b4a.verify_campaign_authorization_record(
+            executor.CAMPAIGN_AUTH_PATH,
+            executor.CAMPAIGN_AUTH_SHA)
+        term_p = Path(results_root) / cid / "B4_CELL_TERMINAL.json"
+        term = _secure_json(term_p, f"terminal {cid}")
+        if term.get("attempt_id") != claim["attempt_id"] or \
+                term.get("cell") != cid or \
+                term.get("terminal") in (None, "COMPLETED"):
+            return adjudicate_cell_state(results_root, cid)
+        seal_attempt(results_root, cid, claim["attempt_id"])
+    except SystemExit:
+        # revalidation or seal machinery failed — fail closed:
+        # the cell stays UNCERTAIN for operator disposition.
+        return adjudicate_cell_state(results_root, cid)
+    return adjudicate_cell_state(results_root, cid)
+
+
 def run_campaign(mat_root: Path, ledger_path: Path,
                  results_root: Path, device: str,
                  execute: bool,
@@ -942,10 +994,30 @@ def run_campaign(mat_root: Path, ledger_path: Path,
             lease = issue_lease(results_root, cid, claim,
                                 executor.CAMPAIGN_AUTH_SHA,
                                 mat_root)
-            executor.execute_cell(
-                cid, mat_root, results_root, device,
-                lease_path=lease,
-                global_wall_remaining_seconds=remaining)
+            try:
+                executor.execute_cell(
+                    cid, mat_root, results_root, device,
+                    lease_path=lease,
+                    global_wall_remaining_seconds=remaining)
+            except BaseException as exc:
+                # C44: a deterministic failure whose typed
+                # terminal exists for THIS attempt is SEALED under
+                # the same lock BEFORE anything propagates —
+                # claim, lease, terminal, authority and digest
+                # revalidated; it then adjudicates
+                # TERMINAL_<TYPE>, never UNCERTAIN. An absent or
+                # partial terminal stays UNCERTAIN and blocks.
+                sealed_state = _seal_failed_attempt(
+                    results_root, cid, claim, lease, mat_root,
+                    executor)
+                raise OrchestratorRefusal(
+                    f"REFUSED: {cid} terminated "
+                    f"{sealed_state} "
+                    f"({type(exc).__name__}: {str(exc)[:120]}) — "
+                    "the campaign does NOT continue to another "
+                    "cell by default; collecting the remaining "
+                    "cells requires an explicit separate "
+                    "decision")
             seal_attempt(results_root, cid, claim["attempt_id"])
             outcome["completed"].append(cid)
     # C20: scientific completion REQUIRES the strongest verifier —

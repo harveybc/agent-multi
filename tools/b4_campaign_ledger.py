@@ -97,15 +97,20 @@ def materialize_ledger(mat_root: Path, out: Path) -> dict:
         # identity is recomputable from the same materialization.
         "generation_provenance": {
             "campaign_generation": b4a.CAMPAIGN_GENERATION,
-            "supersedes_generation":
+            "supersedes_generation": b4a.V6_GENERATION,
+            "authorized_generation":
                 b4a.AUTHORIZED_CAMPAIGN_GENERATION,
             "supersedes_results_root_logical":
-                b4a.V5_RESULTS_ROOT_LOGICAL,
-            "incident_record_sha256": b4a.INCIDENT_RECORD_SHA,
+                b4a.V6_RESULTS_ROOT_LOGICAL,
+            "incident_lineage": {
+                "v5_environment_incident_sha256":
+                    b4a.INCIDENT_RECORD_SHA,
+                "v6_runtime_incident_order_sha256":
+                    b4a.V6_INCIDENT_ORDER_SHA},
             "prior_generations_gpu_seconds_charged":
                 b4a.PRIOR_GENERATIONS_GPU_SECONDS,
             "scientific_change": "NONE",
-            "ambiguous_attempt_artifacts_reusable": False},
+            "failed_attempt_artifacts_reusable": False},
         "cells": entries,
         "scheduling_rule": ("staged by RUNTIME HEALTH ONLY "
                             "(fields: %s); observed returns and "
@@ -155,16 +160,21 @@ def verify_ledger(ledger_path: Path, mat_root: Path) -> dict:
     # history and are never consumed by the v6 execution path.
     gp = ledger.get("generation_provenance")
     if gp is not None:
+        lin = gp.get("incident_lineage") or {}
         if gp.get("campaign_generation") != \
                 b4a.CAMPAIGN_GENERATION or \
                 gp.get("supersedes_generation") != \
+                b4a.V6_GENERATION or \
+                gp.get("authorized_generation") != \
                 b4a.AUTHORIZED_CAMPAIGN_GENERATION or \
-                gp.get("incident_record_sha256") != \
+                lin.get("v5_environment_incident_sha256") != \
                 b4a.INCIDENT_RECORD_SHA or \
+                lin.get("v6_runtime_incident_order_sha256") != \
+                b4a.V6_INCIDENT_ORDER_SHA or \
                 gp.get("prior_generations_gpu_seconds_charged") != \
                 b4a.PRIOR_GENERATIONS_GPU_SECONDS or \
                 gp.get("scientific_change") != "NONE" or \
-                gp.get("ambiguous_attempt_artifacts_reusable") \
+                gp.get("failed_attempt_artifacts_reusable") \
                 is not False:
             raise LedgerRefusal(
                 "REFUSED: ledger generation provenance differs "

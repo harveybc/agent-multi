@@ -3,7 +3,7 @@
  "reviewed_at_date": "<MUSASHI_FILLS_ISO_DATE_YYYY-MM-DD>",
  "reviewer": "General Musashi",
  "decision": "OPEN_B4_V6_LAUNCH",
- "latest_amendment_sha256": "e36c5e1a1a20330254619b280a77eaf4b7b0885ed28a72752cc346e7b0f8e667",
+ "latest_amendment_sha256": "<HISTORICAL_TEMPLATE_SUPERSEDED_BY_V7_DERIVE_FROM_PHYSICAL_AMENDMENT_FILE_AT_INSTALL>",
  "pinned_commit": "<MUSASHI_PINS_40_LOWERCASE_HEX_COMMIT>",
  "preflight_reviewed": "<MUSASHI_SETS_true>",
  "ledger_v6_reviewed": "<MUSASHI_SETS_true>",

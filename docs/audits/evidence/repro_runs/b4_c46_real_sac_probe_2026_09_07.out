@@ -1,0 +1,38 @@
+Attempting to load plugin: sac_agent from group: agent.plugins
+Successfully loaded plugin: sac_agent (class-level defaults, see config_out.json for actual): {'total_timesteps': 10000, 'learning_rate': 0.0003, 'buffer_size': 100000, 'learning_starts': 1000, 'batch_size': 256, 'tau': 0.005, 'gamma': 0.99, 'train_freq': 1, 'gradient_steps': 1, 'ent_coef': 'auto', 'target_update_interval': 1, 'target_entropy': 'auto', 'use_sde': False, 'net_arch': (256, 256), 'feature_extractor_plugin': None, 'feature_extractor_config': None, 'device': 'auto', 'agent_verbose': 0, 'train_seed': 0, 'training_progress_file': None, 'progress_file': None, 'progress_update_interval_steps': 1000, 'ga_fitness_dd_lambda': 1.0, 'oracle_behavior_pretrain_enabled': False, 'oracle_behavior_labels_file': None, 'oracle_behavior_pretrain_epochs': 3, 'oracle_behavior_pretrain_batch_size': 512, 'oracle_behavior_pretrain_hold_fraction': 0.1, 'oracle_behavior_pretrain_max_samples': 0, 'oracle_behavior_pretrain_clip_grad_norm': 1.0}
+Attempting to load plugin: rl_pipeline_with_validation from group: pipeline.plugins
+Successfully loaded plugin: rl_pipeline_with_validation (class-level defaults, see config_out.json for actual): {'train_years': 4, 'val_years': 1, 'test_years': 1, 'train_days': None, 'val_days': None, 'test_days': None, 'train_start': None, 'train_end': None, 'validation_start': None, 'validation_end': None, 'val_start': None, 'val_end': None, 'test_start': None, 'test_end': None, 'min_split_rows': 100, 'split_anchor': 'start', 'epoch_timesteps': 2000, 'max_epochs': 2000, 'l1_patience': 60, 'l1_patience_start_epoch': 40, 'l1_activity_patience': 40, 'l1_activity_patience_start_epoch': None, 'l1_min_delta': 1e-05, 'l1_min_checkpoint_timesteps': None, 'early_stop_train_tail_days': 7, 'early_stop_min_trades': 1, 'early_stop_min_train_tail_trades': None, 'early_stop_min_validation_trades': None, 'early_stop_no_trade_penalty': 1000000.0, 'selection_metric': 'total_return', 'risk_penalty_lambda': 1.0, 'l1_generalization_gap_penalty_beta': 0.25, 'plateau_lr': None, 'eval_seed': 0, 'train_seed': 0, 'save_model': './agent_model.zip', 'load_model': None, 'warm_start_model': None, 'warm_start_replay_buffer': None, 'save_replay_buffer': None, 'checkpoint_bundle_dir': None, 'warm_start_bundle': None, 'warm_start_replay_from_bundle': False, 'return_trace_dir': None, 'evaluate_test_split': True, 'write_results_sidecar': True, 'execution_cost_curriculum_epochs': None, 'actor_liveness_probe_observations': 256, 'actor_liveness_min_live_unit_fraction': 0.1, 'refuse_dead_actor': True, 'refuse_constant_policy_actor': False}
+Attempting to load plugin: sac_agent from group: agent.plugins
+Successfully loaded plugin: sac_agent (class-level defaults, see config_out.json for actual): {'total_timesteps': 10000, 'learning_rate': 0.0003, 'buffer_size': 100000, 'learning_starts': 1000, 'batch_size': 256, 'tau': 0.005, 'gamma': 0.99, 'train_freq': 1, 'gradient_steps': 1, 'ent_coef': 'auto', 'target_update_interval': 1, 'target_entropy': 'auto', 'use_sde': False, 'net_arch': (256, 256), 'feature_extractor_plugin': None, 'feature_extractor_config': None, 'device': 'auto', 'agent_verbose': 0, 'train_seed': 0, 'training_progress_file': None, 'progress_file': None, 'progress_update_interval_steps': 1000, 'ga_fitness_dd_lambda': 1.0, 'oracle_behavior_pretrain_enabled': False, 'oracle_behavior_labels_file': None, 'oracle_behavior_pretrain_epochs': 3, 'oracle_behavior_pretrain_batch_size': 512, 'oracle_behavior_pretrain_hold_fraction': 0.1, 'oracle_behavior_pretrain_max_samples': 0, 'oracle_behavior_pretrain_clip_grad_norm': 1.0}
+Attempting to load plugin: rl_pipeline_with_validation from group: pipeline.plugins
+Successfully loaded plugin: rl_pipeline_with_validation (class-level defaults, see config_out.json for actual): {'train_years': 4, 'val_years': 1, 'test_years': 1, 'train_days': None, 'val_days': None, 'test_days': None, 'train_start': None, 'train_end': None, 'validation_start': None, 'validation_end': None, 'val_start': None, 'val_end': None, 'test_start': None, 'test_end': None, 'min_split_rows': 100, 'split_anchor': 'start', 'epoch_timesteps': 2000, 'max_epochs': 2000, 'l1_patience': 60, 'l1_patience_start_epoch': 40, 'l1_activity_patience': 40, 'l1_activity_patience_start_epoch': None, 'l1_min_delta': 1e-05, 'l1_min_checkpoint_timesteps': None, 'early_stop_train_tail_days': 7, 'early_stop_min_trades': 1, 'early_stop_min_train_tail_trades': None, 'early_stop_min_validation_trades': None, 'early_stop_no_trade_penalty': 1000000.0, 'selection_metric': 'total_return', 'risk_penalty_lambda': 1.0, 'l1_generalization_gap_penalty_beta': 0.25, 'plateau_lr': None, 'eval_seed': 0, 'train_seed': 0, 'save_model': './agent_model.zip', 'load_model': None, 'warm_start_model': None, 'warm_start_replay_buffer': None, 'save_replay_buffer': None, 'checkpoint_bundle_dir': None, 'warm_start_bundle': None, 'warm_start_replay_from_bundle': False, 'return_trace_dir': None, 'evaluate_test_split': True, 'write_results_sidecar': True, 'execution_cost_curriculum_epochs': None, 'actor_liveness_probe_observations': 256, 'actor_liveness_min_live_unit_fraction': 0.1, 'refuse_dead_actor': True, 'refuse_constant_policy_actor': False}
+{
+ "schema": "agent_multi.b4_minimal_real_sac_probe.v1",
+ "step_bound": 20000,
+ "update_bound": 50,
+ "cases": [
+  {
+   "label": "b4_mandatory_progress",
+   "callbacks_composed": 2,
+   "stop": "RuntimeError: training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1",
+   "wall_seconds": 3.8,
+   "progress_file_exists": true,
+   "progress_last_event": null,
+   "progress_steps": 179,
+   "heartbeat_files_under_cell": [
+    "b4_training_progress_o2022_seed101.json",
+    "status.json"
+   ],
+   "heartbeat_stop_reason": "executing_budget: optimizer-update budget 50 reached: the ACTUAL counter reads 50 \u2014 stopping at >= so the coun",
+   "f9_2_exact_update_stop": true,
+   "progress_advanced": true
+  },
+  {
+   "label": "generic_no_progress",
+   "callbacks_composed": 1,
+   "stop": "RuntimeError: training ended before an activity-eligible L1 checkpoint became available: num_timesteps=1",
+   "wall_seconds": 2.5,
+   "f9_2_exact_update_stop": true
+  }
+ ]
+}

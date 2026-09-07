@@ -767,6 +767,20 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "b4_gen_amendment_15.py": {
+   "purpose": "C47 (runtime recovery order): authors amendment 15 \u2014 append-only after byte-pinned a14; records only C43-C47 (typed callback composition, failure-terminal sealing, generation v7 w/ 39.1s prior charge, acta v3 at a new external filename) and pins the corrected surface; structural published-regeneration guard",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "b4_minimal_real_sac_probe.py": {
+   "purpose": "C46 (runtime recovery order): the REAL minimal SAC probe \u2014 build_economic_config -> run_pipeline -> model.learn on CPU, both composition cases (mandatory B4 telemetry / generic optional), real steps + real updates, EXACT F9.2 intra-segment stop (optimizer-update bound), heartbeat+progress under the cell; mechanics only, throwaway root, zero promotion",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

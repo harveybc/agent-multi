@@ -851,6 +851,36 @@ def _check_executing_budget(config, model, *, started_wall,
 import time as _time_mod
 
 
+def compose_learn_callbacks(config, total_progress_timesteps,
+                            budget_cb):
+    """C43: the TYPED callback composition — SB3 never receives
+    None. The F9.2 executing-budget callback is MANDATORY and
+    always present; the JSON progress callback joins when the
+    config carries a progress path. A B4 campaign cell declares
+    `b4_require_progress: true` in its effective config: if its
+    mandatory telemetry cannot be constructed, this REFUSES before
+    model.learn — never a silent degradation to progress-less
+    execution."""
+    if budget_cb is None:
+        raise RuntimeError(
+            "REFUSED: the F9.2 executing-budget callback is "
+            "mandatory and missing")
+    callbacks = [budget_cb]
+    progress_cb = make_progress_callback(
+        config, total_progress_timesteps)
+    if progress_cb is not None:
+        callbacks.append(progress_cb)
+    elif config.get("b4_require_progress"):
+        raise RuntimeError(
+            "REFUSED: B4 mandatory telemetry — no constructible "
+            "training_progress_file/progress_file in the "
+            "effective config; refusing before model.learn")
+    if any(c is None for c in callbacks):
+        raise RuntimeError(
+            "REFUSED: a None callback can never reach SB3")
+    return callbacks
+
+
 def make_executing_budget_callback(config, started_wall):
     """F9.1: the guard as an INTRA-segment limit. The pre/post
     checks bound the segment boundaries, but a single learn segment
@@ -2263,7 +2293,10 @@ class PipelinePlugin:
                         total_timesteps=epoch_ts,
                         reset_num_timesteps=(epoch == 1),
                         log_interval=max(1, epoch_ts // 1000),
-                        callback=[make_progress_callback(config, total_progress_timesteps), _budget_cb],
+                        # C43: typed composition — never None
+                        callback=compose_learn_callbacks(
+                            config, total_progress_timesteps,
+                            _budget_cb),
                     )
                     if _budget_cb.budget_stop:
                         stop_reason = ("executing_budget: "

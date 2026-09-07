@@ -266,7 +266,8 @@ def _pins(*rels):
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
              a7_over=None, a8_over=None, a9_over=None,
              a10_over=None, a11_over=None, a12_over=None,
-             a13_over=None, a14_over=None, **over):
+             a13_over=None, a14_over=None,
+             a15_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -434,14 +435,14 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
            "order": "fixture", "change_disclosure": "fixture",
            "scientific_change":
                "NONE — environment recovery only",
-           "campaign_generation_v6": a.CAMPAIGN_GENERATION,
+           "campaign_generation_v6": a.V6_GENERATION,
            "supersedes_generation":
                a.AUTHORIZED_CAMPAIGN_GENERATION,
            "supersedes_results_root_logical":
                a.V5_RESULTS_ROOT_LOGICAL,
            "v6_results_root_logical": a.V6_RESULTS_ROOT_LOGICAL,
            "prior_generations_gpu_seconds_charged":
-               a.PRIOR_GENERATIONS_GPU_SECONDS,
+               a.V5_ONLY_PRIOR_CHARGE,
            "final_code_pins": _pins(
                "tools/b4_authority.py", "tools/b4_run_cell.py",
                "tools/b4_campaign_executor.py",
@@ -514,6 +515,42 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f14 = tmp_path / "a14.json"
     f14.write_text(json.dumps(a14))
     monkeypatch.setattr(a, "AMENDMENT_14_PATH", f14)
+    # C47: amendment 15 (runtime recovery)
+    monkeypatch.setattr(a, "AMENDMENT_14_SHA", a._sha_file(f14))
+    a15 = {"schema": "agent_multi.b4_superseding_design_"
+                     "amendment.v13_runtime_recovery",
+           "amends_amendment_14_sha256": a._sha_file(f14),
+           "v6_incident_order_sha256":
+               a.V6_INCIDENT_ORDER_SHA,
+           "order": "fixture", "change_disclosure": "fixture",
+           "scientific_change":
+               "NONE — runtime callback/seal recovery only",
+           "campaign_generation_v7": a.CAMPAIGN_GENERATION,
+           "supersedes_generation": a.V6_GENERATION,
+           "supersedes_results_root_logical":
+               a.V6_RESULTS_ROOT_LOGICAL,
+           "v7_results_root_logical":
+               a.V7_RESULTS_ROOT_LOGICAL,
+           "prior_generations_gpu_seconds_charged":
+               a.PRIOR_GENERATIONS_GPU_SECONDS,
+           "final_code_pins": _pins(
+               "tools/b4_authority.py", "tools/b4_run_cell.py",
+               "tools/b4_campaign_executor.py",
+               "tools/b4_campaign_ledger.py",
+               "tools/b4_campaign_orchestrator.py",
+               "tools/b4_adjudicator.py",
+               "tools/materialize_b4_causal_sac.py",
+               "pipeline_plugins/rl_pipeline_with_validation.py",
+               "tests/test_b4_materializer_authority.py"),
+           "chronology_truth": "fixture"}
+    a15.update(a15_over or {})
+    if "amendment_sha256" not in a15:
+        body = {k: a15[k] for k in sorted(a15)}
+        a15["amendment_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+    f15 = tmp_path / "a15.json"
+    f15.write_text(json.dumps(a15))
+    monkeypatch.setattr(a, "AMENDMENT_15_PATH", f15)
     return a4
 
 
@@ -521,7 +558,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 14
+    assert len(chain["amendment_shas"]) == 15
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -557,7 +594,7 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
     pins["tools/b4_authority.py"] = "0" * 64
     # C37: the latest amendment (a13) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a14_over={"final_code_pins": pins})
+             a15_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3139,7 +3176,7 @@ def test_c26_altered_code_after_a10_refuses(tmp_path, monkeypatch):
     pins["tools/b4_campaign_orchestrator.py"] = "2" * 64
     # C37: the latest amendment (a13) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a14_over={"final_code_pins": pins})
+             a15_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3394,7 +3431,7 @@ def test_c27_final_code_mutation_after_a11_refuses(tmp_path,
     # surface (a12 supersedes a11's pins exactly as a11 superseded
     # a10's) — the mutation is planted in amendment 12.
     _fake_a4(tmp_path, monkeypatch,
-             a14_over={"final_code_pins": pins})
+             a15_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3556,19 +3593,25 @@ def _fixture_acta(tmp_path, monkeypatch, **over):
     the real HEAD/tree without the clean-tree requirement, which
     the C42 mutation tests exercise with the REAL function on a
     scratch checkout."""
-    rec = {"schema": "agent_multi.musashi_b4_v6_recovery_audit.v2",
+    import subprocess as _sp
+    _tree = _sp.run(["git", "-C", str(REPO), "rev-parse",
+                     "HEAD^{tree}"], capture_output=True,
+                    text=True).stdout.strip()
+    rec = {"schema": "agent_multi.musashi_b4_v7_runtime_audit.v3",
            "reviewed_at_date": "2026-09-07",
            "reviewer": "General Musashi",
-           "decision": "OPEN_B4_V6_LAUNCH",
+           "decision": "OPEN_B4_V7_LAUNCH",
            "latest_amendment_sha256":
-               a._sha_file(a.AMENDMENT_14_PATH),
+               a._sha_file(a.AMENDMENT_15_PATH),
            "pinned_commit": _head_commit(),
-           "preflight_reviewed": True,
-           "ledger_v6_reviewed": True,
-           "v5_v6_scientific_equality_reviewed": True}
+           "pinned_tree": _tree,
+           "campaign_generation": a.CAMPAIGN_GENERATION,
+           "runtime_reviewed": True,
+           "ledger_reviewed": True,
+           "scientific_terms_unchanged_reviewed": True}
     rec.update(over)
     ra = _private_chain(tmp_path / "auth")
-    p = ra / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json"
+    p = ra / "MUSASHI_B4_V7_RUNTIME_AUDIT_RECORD.json"
     if p.exists():
         p.unlink()
     p.write_text(json.dumps(rec))
@@ -3836,8 +3879,8 @@ def test_c34_8_v6_deducts_prior_charge(tmp_path):
     empty.mkdir()
     remaining = orch.remaining_global_seconds(empty, limits)
     ceiling = float(limits["global_gpu_hours_ceiling"]) * 3600.0
-    assert remaining == ceiling - 36.0
-    assert a.PRIOR_GENERATIONS_GPU_SECONDS == 36.0
+    assert abs(remaining - (ceiling - 39.1)) < 1e-6
+    assert a.PRIOR_GENERATIONS_GPU_SECONDS == 39.1
 
 
 def test_c34_9_twelve_identities_equal_v5_v6(tmp_path):
@@ -3863,12 +3906,17 @@ def test_c34_9_twelve_identities_equal_v5_v6(tmp_path):
         v5["materialization_sha256"]
     gp = v6["generation_provenance"]
     assert gp["campaign_generation"] == a.CAMPAIGN_GENERATION
-    assert gp["supersedes_generation"] == \
+    assert gp["supersedes_generation"] == a.V6_GENERATION
+    assert gp["authorized_generation"] == \
         a.AUTHORIZED_CAMPAIGN_GENERATION
-    assert gp["incident_record_sha256"] == a.INCIDENT_RECORD_SHA
-    assert gp["prior_generations_gpu_seconds_charged"] == 36.0
+    lin = gp["incident_lineage"]
+    assert lin["v5_environment_incident_sha256"] == \
+        a.INCIDENT_RECORD_SHA
+    assert lin["v6_runtime_incident_order_sha256"] == \
+        a.V6_INCIDENT_ORDER_SHA
+    assert gp["prior_generations_gpu_seconds_charged"] == 39.1
     assert gp["scientific_change"] == "NONE"
-    assert gp["ambiguous_attempt_artifacts_reusable"] is False
+    assert gp["failed_attempt_artifacts_reusable"] is False
     # and the v6 verifier accepts its own fresh materialization
     ledger_mod.verify_ledger(out, _MAT_V5)
 
@@ -3888,8 +3936,12 @@ def test_c34_10_two_processes_one_claim(tmp_path):
         "import b4_authority as b4a\n"
         "from pathlib import Path\n"
         f"b4a.RECOVERY_AUDIT_RECORD_PATH = Path({str(acta)!r})\n"
+        "import subprocess as _sp\n"
+        f"_tr = _sp.run(['git','-C',{str(REPO)!r},'rev-parse',"
+        "'HEAD^{tree}'],capture_output=True,text=True)"
+        ".stdout.strip()\n"
         "b4a.verify_checkout_identity = lambda pin: "
-        "{'head': pin, 'tree': 'fixture'}\n"
+        "{'head': pin, 'tree': _tr}\n"
         f"spec = importlib.util.spec_from_file_location('o', "
         f"{str(REPO / 'tools/b4_campaign_orchestrator.py')!r})\n"
         "m = importlib.util.module_from_spec(spec)\n"
@@ -3960,7 +4012,7 @@ def test_c38_2_surface_mismatch_and_stale_amendment_refuse(
     # amendment-12-only link grants nothing
     _fixture_acta(tmp_path, monkeypatch,
                   latest_amendment_sha256=a._sha_file(
-                      a.AMENDMENT_13_PATH))
+                      a.AMENDMENT_14_PATH))
     with pytest.raises(SystemExit,
                        match="LATEST recovery amendment"):
         a.require_v6_launch_open()
@@ -3973,7 +4025,7 @@ def test_c38_3_acta_object_boundaries(tmp_path, monkeypatch):
     test_c42_3 against the productive private walk.)"""
     _close_gate(tmp_path, monkeypatch)
     with pytest.raises(SystemExit,
-                       match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                       match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
         a.require_v6_launch_open()
     _fixture_acta(tmp_path, monkeypatch)
     # swapped bytes between claim and lease: same labels, new
@@ -4013,28 +4065,28 @@ def test_c38_4_every_entry_point_gated(tmp_path, monkeypatch):
                                   _MAT_V5)
         _close_gate(tmp_path, monkeypatch)
         with pytest.raises(SystemExit,
-                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                           match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
             orch2.claim_attempt(root, "o2023_seed101")
         assert not (root / "o2023_seed101").exists()
         with pytest.raises(SystemExit,
-                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                           match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
             orch2.issue_lease(root, "o2022_seed101", claim,
                               executor2.CAMPAIGN_AUTH_SHA,
                               _MAT_V5)
         with pytest.raises(SystemExit,
-                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                           match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
             orch2.verify_lease(
                 lease, root, "o2022_seed101", _MAT_V5,
                 expected_auth_sha=executor2.CAMPAIGN_AUTH_SHA)
         with pytest.raises(SystemExit,
-                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                           match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
             executor2.execute_cell("o2022_seed101", _MAT_V5,
                                    root, "cpu", lease_path=lease)
         assert not (root / "o2022_seed101" /
                     "B4_CELL_TERMINAL.json").exists()
         # standalone CLI refuses too — even with a valid lease
         with pytest.raises(SystemExit,
-                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                           match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
             executor2.main([
                 "--cell-id", "o2022_seed101",
                 "--materialization-root", str(_MAT_V5),
@@ -4291,16 +4343,16 @@ def test_c42_2_repo_lookalike_grants_nothing(tmp_path,
     monkeypatch.setattr(
         a, "RECOVERY_AUDIT_RECORD_PATH",
         Path.home() / ".config/agent-multi/reviewer_authority/"
-        "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+        "MUSASHI_B4_V7_RUNTIME_AUDIT_RECORD.json")
     look = REPO / ("docs/audits/evidence/"
-                   "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+                   "MUSASHI_B4_V7_RUNTIME_AUDIT_RECORD.json")
     assert not look.exists()    # repo carries a TEMPLATE only
     look.write_text(json.dumps(rec))
     try:
         if a.RECOVERY_AUDIT_RECORD_PATH.exists():
             pytest.skip("real external record present on host")
         with pytest.raises(SystemExit,
-                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+                           match="READY_FOR_EXTERNAL_MUSASHI_ACTA"):
             a.require_v6_launch_open()
     finally:
         look.unlink()
@@ -4314,7 +4366,7 @@ def test_c42_3_private_chain_custody(tmp_path, monkeypatch):
     base = tmp_path / "auth"
     _fixture_acta(tmp_path, monkeypatch)
     ra = base / "agent-multi" / "reviewer_authority"
-    p = ra / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json"
+    p = ra / "MUSASHI_B4_V7_RUNTIME_AUDIT_RECORD.json"
     good = p.read_bytes()
     # parent (reviewer_authority) too permissive
     os.chmod(ra, 0o755)
@@ -4391,7 +4443,7 @@ def test_c42_4_witness_v2_carries_tree(tmp_path, monkeypatch):
     tree; the human review index remains but is not the
     boundary."""
     wit = a.require_v6_launch_open()
-    assert wit["schema"] == "agent_multi.b4_v6_recovery_witness.v2"
+    assert wit["schema"] == "agent_multi.b4_v7_recovery_witness.v3"
     assert len(wit["checkout_tree_sha"]) == 40
     assert wit["pinned_commit"] == _head_commit()
     src = (REPO / "tools/b4_authority.py").read_text()
@@ -4400,3 +4452,165 @@ def test_c42_4_witness_v2_carries_tree(tmp_path, monkeypatch):
     assert "verify_checkout_identity(pin)" in seg
     assert "git show" not in seg     # nine-file loop retired
     assert "cryptographically identify an author" in src
+
+
+# ====== C43-C48 runtime-recovery battery (order 2026-09-07) =======
+
+
+def test_c43_1_telemetry_materialized_and_contained(tmp_path):
+    """C43: build_economic_config materializes BOTH progress keys
+    to ONE cell-unique file contained under the cell root, and
+    the composed callback list never contains None."""
+    root = tmp_path / "r"
+    os.makedirs(root, mode=0o700)
+    built = executor.build_economic_config(
+        "o2022_seed101", _MAT_V5, root, "cpu")
+    cfg = built["config"]
+    assert cfg["training_progress_file"] == cfg["progress_file"]
+    pp = Path(cfg["training_progress_file"])
+    assert "o2022_seed101" in pp.name
+    pp.relative_to(root / "o2022_seed101")
+    assert cfg["b4_require_progress"] is True
+    import pipeline_plugins.rl_pipeline_with_validation as rp
+    bc = rp.make_executing_budget_callback(cfg, 0.0)
+    cbs = rp.compose_learn_callbacks(cfg, 1000, bc)
+    assert len(cbs) == 2 and all(c is not None for c in cbs)
+    from agent_plugins._progress_callback import \
+        make_progress_callback
+    assert make_progress_callback(cfg, 1000) is not None
+
+
+def test_c43_2_missing_telemetry_refuses_before_learn(tmp_path):
+    """C43/C46 mutation: removing the progress paths from a B4
+    config REFUSES in the typed composition before model.learn —
+    never a silent no-progress run; a None smuggled into the list
+    refuses; a missing F9.2 callback refuses."""
+    root = tmp_path / "r"
+    os.makedirs(root, mode=0o700)
+    built = executor.build_economic_config(
+        "o2022_seed101", _MAT_V5, root, "cpu")
+    cfg = built["config"]
+    import pipeline_plugins.rl_pipeline_with_validation as rp
+    bc = rp.make_executing_budget_callback(cfg, 0.0)
+    cfg.pop("training_progress_file")
+    cfg.pop("progress_file")
+    with pytest.raises(RuntimeError,
+                       match="B4 mandatory telemetry"):
+        rp.compose_learn_callbacks(cfg, 1000, bc)
+    # generic optional config composes [budget_cb] only
+    cfg2 = dict(cfg)
+    cfg2.pop("b4_require_progress")
+    cbs = rp.compose_learn_callbacks(cfg2, 1000, bc)
+    assert len(cbs) == 1 and cbs[0] is bc
+    # F9.2 removed refuses
+    with pytest.raises(RuntimeError, match="mandatory and "
+                                           "missing"):
+        rp.compose_learn_callbacks(cfg2, 1000, None)
+    # the productive learn site composes through the typed helper
+    src = (REPO / "pipeline_plugins/"
+                  "rl_pipeline_with_validation.py").read_text()
+    seg = src[src.index("model.learn("):]
+    seg = seg[:seg.index(")", seg.index("callback="))]
+    assert "compose_learn_callbacks" in seg
+    assert "make_progress_callback(config" not in seg
+
+
+def test_c44_1_failed_terminal_sealed_under_lock(tmp_path,
+                                                 monkeypatch):
+    """C44: a deterministic in-boundary failure is SEALED by the
+    orchestrator under the same lock and adjudicates
+    TERMINAL_<TYPE>, never UNCERTAIN; the campaign refuses to
+    continue by default."""
+    import app.plugin_loader as apl
+    orch2 = _orch()
+    executor2 = _executor()
+    real_load = apl.load_plugin
+
+    class BoomAgent:
+        plugin_params = {}
+
+        def __init__(self, cfg):
+            raise RuntimeError("constructor exploded (C44 probe)")
+
+    def fake_load(group, name):
+        if group == "agent.plugins":
+            return BoomAgent, []
+        return real_load(group, name)
+    monkeypatch.setattr(apl, "load_plugin", fake_load)
+    ledger_mod = _load_tool("b4led_c44",
+                            "tools/b4_campaign_ledger.py")
+    lp = tmp_path / "CAMPAIGN_LEDGER.json"
+    ledger_mod.materialize_ledger(_MAT_V5, lp)
+    root = tmp_path / "v7root"
+    with pytest.raises(SystemExit,
+                       match="does NOT continue to another cell"):
+        orch2.run_campaign(_MAT_V5, lp, root, "cpu",
+                           execute=True)
+    term = json.loads(
+        (root / "o2022_seed101" / "B4_CELL_TERMINAL.json")
+        .read_text())
+    assert term["terminal"] == "FAILED_CONSTRUCTION"
+    st = orch2.adjudicate_cell_state(root, "o2022_seed101")
+    assert st == "TERMINAL_FAILED_CONSTRUCTION", st
+    assert orch2.seal_state(root, "o2022_seed101") == "SEALED"
+
+
+def test_c44_2_partial_terminal_stays_uncertain(tmp_path,
+                                                monkeypatch):
+    """C44 mutation: when the failure leaves NO integral terminal
+    (write_terminal disabled), nothing is sealed and the cell
+    stays UNCERTAIN/AMBIGUOUS and blocks."""
+    import app.plugin_loader as apl
+    orch2 = _orch()
+    executor2 = _executor()
+    monkeypatch.setattr(executor2, "write_terminal",
+                        lambda *a_, **k_: (_ for _ in ()).throw(
+                            SystemExit("REFUSED: probe disabled "
+                                       "terminal writer")))
+    real_load = apl.load_plugin
+
+    class BoomAgent:
+        plugin_params = {}
+
+        def __init__(self, cfg):
+            raise RuntimeError("constructor exploded")
+
+    def fake_load(group, name):
+        if group == "agent.plugins":
+            return BoomAgent, []
+        return real_load(group, name)
+    monkeypatch.setattr(apl, "load_plugin", fake_load)
+    root = tmp_path / "v7root"
+    os.makedirs(root, mode=0o700)
+    with orch2.GlobalLock(root):
+        claim = orch2.claim_attempt(root, "o2022_seed101")
+        lease = orch2.issue_lease(root, "o2022_seed101", claim,
+                                  executor2.CAMPAIGN_AUTH_SHA,
+                                  _MAT_V5)
+        with pytest.raises(BaseException):
+            executor2.execute_cell("o2022_seed101", _MAT_V5,
+                                   root, "cpu", lease_path=lease)
+        sealed = orch2._seal_failed_attempt(
+            root, "o2022_seed101", claim, lease, _MAT_V5,
+            executor2)
+    assert sealed == "AMBIGUOUS_CLAIM"
+    assert not list((root / "o2022_seed101").glob("SEAL_*"))
+
+
+def test_c46_probe_tool_shape():
+    """C46: the real-SAC probe exists, drives the REAL pipeline
+    (no doubles), asserts both composition cases, the exact F9.2
+    stop and telemetry advancement."""
+    src = (REPO / "tools/b4_minimal_real_sac_probe.py").read_text()
+    assert "run_pipeline" in src and "compose_learn_callbacks" \
+        in src
+    assert "f9_2_exact_update_stop" in src
+    assert "optimizer-update budget" in src
+    assert "progress_advanced" in src
+    out = (REPO / "docs/audits/evidence/repro_runs/"
+                  "b4_c46_real_sac_probe_2026_09_07.out")
+    if out.exists():
+        txt = out.read_text()
+        assert '"f9_2_exact_update_stop": true' in txt
+        assert '"callbacks_composed": 2' in txt
+        assert '"callbacks_composed": 1' in txt
