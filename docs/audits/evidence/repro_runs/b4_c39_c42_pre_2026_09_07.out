@@ -1,0 +1,16 @@
+== C39: isolated checkout at the reviewed tip ==
+scratch HEAD: 367aa53ee298 == reviewed tip: True
+sac_agent.py modified: f0889d7a0b -> 8ce9c755d8
+sac_in_review_surface False
+sac_in_final_pins False
+chain ACCEPTED 13
+launch_gate ACCEPTED (witness acta ff92e73f8e)
+=> the MODIFIED SAC module is admitted: the authority binds nine files, not the executable checkout
+preflight records plugin digest: True | compares it to a reviewed value: False
+
+== C40: the acta path is candidate-writable, inside the repo ==
+productive acta path (repo-relative): docs/audits/evidence/MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json
+private external authority root exists: False
+repo lookalike CONSUMED: witness ff92e73f8e — declared authorship, not external custody
+
+PRE CONFIRMED: partial-surface authority and in-repo custody both reproduce at the reviewed tip
