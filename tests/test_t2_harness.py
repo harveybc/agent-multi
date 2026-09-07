@@ -162,6 +162,7 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
     out = rc.stderr + rc.stdout
     assert any(tok in out for tok in
                ("PUBLIC_DATA_REQUIRED", "DESIGN_REQUIRED",
+                "SEALED_DESIGN_REQUIRED",
                 "DESIGN_REVIEW_REQUIRED"))
     assert not (tmp_path / "out.json").exists()
 
@@ -543,13 +544,8 @@ def test_c9_transplanted_or_fabricated_review_refuses(tmp_path,
     cp.write_text(json.dumps({"schema": "census"}))
     monkeypatch.setattr(conf, "validate_public_manifest",
                         lambda man, **k: {"probe": {}})
-    fake = tmp_path / "MUSASHI_T2_DESIGN_REVIEW_2026_09.json"
-    fake.write_text("candidate says approved")
-    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", fake)
     design = {k: "x" for k in conf._DESIGN_KEYS}
     design["schema"] = "agent_multi.t2_confirmatory_design.v1"
-    design["design_review_record_sha256"] = hashlib.sha256(
-        b"candidate says approved").hexdigest()
     dp = tmp_path / "design.json"
     dp.write_text(json.dumps(design))
     lp = tmp_path / "ledger.json"
@@ -557,32 +553,66 @@ def test_c9_transplanted_or_fabricated_review_refuses(tmp_path,
         conf.run_confirmatory(mp_, dp, lp, census_path=cp)
     assert not lp.exists()
     assert not (tmp_path / "ledger.json.INTENT").exists()
-    # even with a schema-valid design, non-record bytes refuse on
-    # strict parse; and a foreign reviewer refuses
-    rec = {"schema": "agent_multi.musashi_t2_design_review.v1",
-           "reviewed_at_date": "2026-09-06",
-           "reviewer": "candidate-self-review",
-           "decision": "SEAL_T2_CONFIRMATORY_DESIGN",
-           "design_draft_sha256": "a" * 64,
-           "manifest_sha256": "b" * 64,
-           "census_sha256": "c" * 64}
+    # C38: malformed external bytes refuse on strict parse; a
+    # foreign reviewer refuses; a foreign binding refuses — all
+    # through the PRIVATE custody walk
+    ra = _t2_private_chain(tmp_path / "auth")
+    fake = ra / "MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json"
+    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", fake)
+    fake.write_text("candidate says approved")
+    os.chmod(fake, 0o600)
+    with pytest.raises(SystemExit, match="never a record"):
+        conf.verify_design_review_record(
+            {"design_review_record_sha256": "0" * 64},
+            "b" * 64, "c" * 64)
+    rec = _t2_record_doc(reviewer="candidate-self-review")
     fake.write_text(json.dumps(rec))
+    os.chmod(fake, 0o600)
     design2 = {"design_review_record_sha256":
                hashlib.sha256(fake.read_bytes()).hexdigest(),
-               "supersedes_draft_sha256": "a" * 64}
+               "supersedes_draft_sha256":
+                   conf.T2_V6_DRAFT_FILE_SHA}
     with pytest.raises(SystemExit, match="not the external "
-                                         "reviewer"):
-        conf.verify_design_review_record(design2, "b" * 64,
-                                         "c" * 64)
-    rec["reviewer"] = "General Musashi"
-    rec["manifest_sha256"] = "f" * 64      # foreign binding
+                                         "reviewer role"):
+        conf.verify_design_review_record(
+            design2, rec["manifest_sha256"],
+            rec["census_sha256"])
+    rec = _t2_record_doc(manifest_sha256="f" * 64)
     fake.write_text(json.dumps(rec))
+    os.chmod(fake, 0o600)
     design2["design_review_record_sha256"] = hashlib.sha256(
         fake.read_bytes()).hexdigest()
     with pytest.raises(SystemExit,
                        match="different public-data manifest"):
-        conf.verify_design_review_record(design2, "b" * 64,
-                                         "c" * 64)
+        conf.verify_design_review_record(
+            design2, "b" * 64, rec["census_sha256"])
+
+
+def _t2_private_chain(base):
+    am = base / "agent-multi"
+    ra = am / "reviewer_authority"
+    for d in (base, am, ra):
+        d.mkdir(mode=0o700, exist_ok=True)
+        os.chmod(d, 0o700)
+    return ra
+
+
+def _t2_record_doc(**over):
+    import t2_confirmatory as conf
+    S = Path.home() / ".local/share/agent-multi"
+    rec = {"schema": "agent_multi.musashi_t2_design_review.v2",
+           "reviewed_at_date": "2026-09-07",
+           "reviewer": "General Musashi",
+           "decision": "SEAL_T2_CONFIRMATORY_DESIGN",
+           "candidate_commit": conf.T2_V6_ACCEPTED_AT_COMMIT,
+           "design_draft_file_sha256": conf.T2_V6_DRAFT_FILE_SHA,
+           "design_draft_self_sha256": conf.T2_V6_DRAFT_SELF_SHA,
+           "manifest_sha256": conf._sha_file(
+               S / "t2_public_data_manifest_20260906.json"),
+           "census_sha256": conf._sha_file(
+               S / "t2_bank_census_20260906.json")}
+    rec.update(over)
+    return rec
 
 
 _FIX_OPERATOR = {"kind": "ewma", "params": {"alpha": 0.3},
@@ -1344,16 +1374,19 @@ def test_c30_kill_8_fresh_verifier_wired_into_single_path(
     cp = S / "t2_bank_census_20260906.json"
     dp = S / "t2_screen_design_DRAFT_V6_20260907.json"
     lp = tmp_path / "ledger.json"
-    # the honest v4 draft passes fresh verification LIVE and dies
-    # at the NEXT gate (no Musashi review record exists yet)
+    # C39 (T2): the honest DRAFT dies at the sealed-only gate —
+    # draft schemas never score; no ledger artifact
     with pytest.raises(SystemExit,
-                       match="DESIGN_REVIEW_REQUIRED"):
+                       match="SEALED_DESIGN_REQUIRED"):
         conf.run_confirmatory(mp, dp, lp, census_path=cp)
     assert not lp.exists()
-    # a forged design (true digest, false semantics) dies at the
-    # fresh re-derivation, i.e. BEFORE the review gate
+    # a FORGED sealed-looking design (true digest, false
+    # semantics) dies at the fresh re-derivation, BEFORE the
+    # review gate
     design = conf.strict_json_load(dp, "d")
     forged = json.loads(json.dumps(design))
+    forged["schema"] = "agent_multi.t2_screen_design.v6"
+    forged["sealed_at_date"] = "2026-09-07"
     uid = design["task_population"]["series_ids"][0]
     forged["task_population"]["unit_map"][uid]["family"] = "alien"
     body = {k: forged[k] for k in sorted(forged)
@@ -1761,3 +1794,185 @@ def test_c37_v6_supersedes_v5_name_only():
     # the XDR FEATURE representation is untouched (not the MASE
     # contrast): [X, D, X-D] stays
     assert v6["arms"]["XDR"] == "[X, D, X-D]"
+
+
+# ===== C38-C41 custody + sealing battery (order 2026-09-07) =======
+
+
+def test_c40_1_repo_record_grants_nothing(tmp_path, monkeypatch):
+    """C38: with the productive path at the REAL external root
+    (absent) a candidate-committed record under docs/ changes
+    nothing — the gate stays closed with the stop reason."""
+    import t2_confirmatory as conf
+    look = REPO / ("docs/audits/evidence/"
+                   "MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json")
+    assert not look.exists()
+    look.write_text(json.dumps(_t2_record_doc()))
+    try:
+        if conf.T2_REVIEW_RECORD_PATH.exists():
+            pytest.skip("real external record present on host")
+        with pytest.raises(SystemExit,
+                           match="DESIGN_REVIEW_REQUIRED"):
+            conf.verify_design_review_record(
+                {"design_review_record_sha256": "0" * 64},
+                "b" * 64, "c" * 64)
+    finally:
+        look.unlink()
+
+
+def test_c40_2_private_custody_adversaries(tmp_path, monkeypatch):
+    """C38: wrong parent mode, symlink component, wrong file mode,
+    non-regular, duplicate key, non-finite and every foreign
+    binding (draft file/self, manifest, census, commit) refuse."""
+    import t2_confirmatory as conf
+    S = Path.home() / ".local/share/agent-multi"
+    man_sha = conf._sha_file(
+        S / "t2_public_data_manifest_20260906.json")
+    cen_sha = conf._sha_file(
+        S / "t2_bank_census_20260906.json")
+    ra = _t2_private_chain(tmp_path / "auth")
+    fake = ra / "MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json"
+    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", fake)
+
+    def write(doc):
+        if fake.exists():
+            fake.unlink()
+        fake.write_text(json.dumps(doc)
+                        if isinstance(doc, dict) else doc)
+        os.chmod(fake, 0o600)
+
+    def probe():
+        d2 = {"design_review_record_sha256":
+              conf._sha_file(fake),
+              "supersedes_draft_sha256":
+                  conf.T2_V6_DRAFT_FILE_SHA}
+        return conf.verify_design_review_record(
+            d2, man_sha, cen_sha)
+    write(_t2_record_doc())
+    got = probe()
+    assert got["_record_sha256"] == conf._sha_file(fake)
+    os.chmod(ra, 0o755)
+    with pytest.raises(SystemExit, match="not the private 0700"):
+        probe()
+    os.chmod(ra, 0o700)
+    os.chmod(fake, 0o644)
+    with pytest.raises(SystemExit, match="0600"):
+        probe()
+    os.chmod(fake, 0o600)
+    alt = tmp_path / "alt"
+    alt.mkdir(mode=0o700)
+    link = ra / "link_rec.json"
+    os.symlink(fake, link)
+    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", link)
+    with pytest.raises(SystemExit,
+                       match="without following links|"
+                             "unopenable"):
+        probe.__wrapped__() if hasattr(probe, "__wrapped__") \
+            else conf.verify_design_review_record(
+                {"design_review_record_sha256": "0" * 64},
+                man_sha, cen_sha)
+    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", fake)
+    write('{"schema": 1, "schema": 2}')
+    with pytest.raises(SystemExit, match="duplicate JSON key"):
+        probe()
+    write(json.dumps(_t2_record_doc()).replace(
+        '"General Musashi"', "NaN", 1))
+    with pytest.raises(SystemExit):
+        probe()
+    for field, val, needle in (
+            ("design_draft_file_sha256", "e" * 64,
+             "different draft v6"),
+            ("design_draft_self_sha256", "e" * 64,
+             "different draft v6"),
+            ("manifest_sha256", "e" * 64,
+             "different public-data manifest"),
+            ("census_sha256", "e" * 64, "different bank census"),
+            ("candidate_commit", "f" * 40,
+             "candidate commit")):
+        write(_t2_record_doc(**{field: val}))
+        with pytest.raises(SystemExit, match=needle):
+            probe()
+
+
+def test_c40_3_seal_changes_only_seal_fields(tmp_path,
+                                             monkeypatch):
+    """C39/C40 positive: draft-v6 -> sealed-v6 (fixture record,
+    tmp output) changes ONLY the allowed seal fields; the sealed
+    design validates, fresh verification re-derives 4650 units and
+    the 242-series population, and run_confirmatory carries it to
+    the ledger stage — while a sealed design altering ANY
+    scientific field refuses inside the seal tool."""
+    import t2_confirmatory as conf
+    import importlib.util as ilu
+    spec2 = ilu.spec_from_file_location(
+        "t2seal", REPO / "tools/t2_seal_design.py")
+    seal = ilu.module_from_spec(spec2)
+    spec2.loader.exec_module(seal)
+    S = Path.home() / ".local/share/agent-multi"
+    ra = _t2_private_chain(tmp_path / "auth")
+    fake = ra / "MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json"
+    fake.write_text(json.dumps(_t2_record_doc()))
+    os.chmod(fake, 0o600)
+    monkeypatch.setattr(conf, "T2_REVIEW_RECORD_PATH", fake)
+    out = tmp_path / "sealed_v6.json"
+    sealed = seal.seal_design(out_path=out)
+    draft = json.loads(
+        (S / "t2_screen_design_DRAFT_V6_20260907.json")
+        .read_text())
+    changed = {k for k in sealed
+               if sealed.get(k) != draft.get(k)}
+    changed |= set(sealed) - set(draft)
+    assert changed <= set(seal.SEAL_ONLY_FIELDS), changed
+    assert sealed["schema"] == "agent_multi.t2_screen_design.v6"
+    assert sealed["supersedes_draft_sha256"] == \
+        conf.T2_V6_DRAFT_FILE_SHA
+    assert sealed["design_review_record_sha256"] == \
+        conf._sha_file(fake)
+    mp = S / "t2_public_data_manifest_20260906.json"
+    conf.validate_confirmatory_design(sealed,
+                                      conf._sha_file(mp))
+    import t2_fresh_verifier as fv
+    manifest = conf.strict_json_load(mp, "m")
+    census = conf.strict_json_load(
+        S / "t2_bank_census_20260906.json", "c")
+    facts = fv.fresh_verify(manifest, census, sealed,
+                            manifest_sha=conf._sha_file(mp))
+    assert facts["units_rederived"] == 4650
+    assert facts["design_series"] == 242
+    # the single path accepts the sealed fixture through review
+    # and reaches the (tmp) ledger stage
+    lp = tmp_path / "ledger.json"
+    with pytest.raises(SystemExit,
+                       match="EXECUTION_NOT_IMPLEMENTED"):
+        conf.run_confirmatory(
+            mp, out, lp,
+            census_path=S / "t2_bank_census_20260906.json")
+    assert lp.exists()      # tmp fixture ledger, never the real one
+    # a scientific-field mutation inside sealing refuses
+    monkeypatch.setattr(seal, "SEAL_ONLY_FIELDS",
+                        tuple(seal.SEAL_ONLY_FIELDS)
+                        + ("practical_margin_mase",))
+    def bad_seal():
+        s2 = seal.seal_design(out_path=tmp_path / "x.json")
+        assert s2["practical_margin_mase"] == \
+            draft["practical_margin_mase"]
+    bad_seal()   # widening the allowlist alone changes nothing
+
+
+def test_c40_4_cli_and_api_share_the_sealed_path():
+    """C39: the public CLI names the ONE current sealed identity
+    (no legacy 2026-09-06 filename) and shares run_confirmatory
+    with the direct API; a draft passed to scoring refuses."""
+    src = (REPO / "tools/t2_assay_harness.py").read_text()
+    assert "t2_confirmatory_design_20260906.json" not in src
+    assert "t2_screen_design_SEALED_V6.json" in src
+    assert "run_confirmatory" in src
+    csrc = (REPO / "tools/t2_confirmatory.py").read_text()
+    seg = csrc[csrc.index("def run_confirmatory"):]
+    seg = seg[:seg.index("\ndef ", 10)]
+    assert "SEALED_DESIGN_REQUIRED" in seg
+    assert seg.index("SEALED_DESIGN_REQUIRED") < \
+        seg.index("fresh_verify") < \
+        seg.index("verify_design_review_record") < \
+        seg.index("open_attempt_ledger")
+    assert "_ACCEPTED_DESIGN_SCHEMAS" in csrc

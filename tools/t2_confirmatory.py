@@ -301,7 +301,7 @@ _DESIGN_KEYS = {
     "verifier_specification", "design_review_record_sha256",
     "design_sha256"}
 
-_DESIGN_SCHEMAS_V4 = {"agent_multi.t2_screen_design.v6_draft",
+_ACCEPTED_DESIGN_SCHEMAS = {"agent_multi.t2_screen_design.v6_draft",
                       "agent_multi.t2_screen_design.v6"}
 SCREEN_OUTCOMES = ("ADVANCE_TO_DOMAIN_VALIDATION",
                    "DOES_NOT_ADVANCE", "INCONCLUSIVE")
@@ -332,10 +332,16 @@ def validate_confirmatory_design(design: dict,
     (v4), sealed after the census/acquisition and before any
     score. v3 and earlier are superseded history and refuse
     here."""
-    if not isinstance(design, dict) or set(design) != _DESIGN_KEYS:
+    _want_keys = _DESIGN_KEYS
+    if isinstance(design, dict) and not str(
+            design.get("schema", "")).endswith("_draft"):
+        # C39: the SEALED object carries exactly one extra field —
+        # the review chronology; drafts never carry it.
+        _want_keys = _DESIGN_KEYS | {"sealed_at_date"}
+    if not isinstance(design, dict) or set(design) != _want_keys:
         raise ConfirmatoryRefusal(
             "confirmatory design absent or not the exact schema")
-    if design.get("schema") not in _DESIGN_SCHEMAS_V4:
+    if design.get("schema") not in _ACCEPTED_DESIGN_SCHEMAS:
         raise ConfirmatoryRefusal(
             "design schema is not the v4 T2-S screen contract — "
             "superseded drafts (v3 and earlier) never validate")
@@ -528,62 +534,201 @@ def validate_confirmatory_design(design: dict,
             "fresh-process verifier specification")
 
 
-T2_REVIEW_RECORD_PATH = REPO / (
-    "docs/audits/evidence/MUSASHI_T2_DESIGN_REVIEW_2026_09.json")
+# C38: the PRODUCTIVE review record lives OUTSIDE the candidate
+# repository at ONE fixed path under the private reviewer-
+# authority root — never CLI/env-selected, never created/chmodded
+# by candidate code. A record committed under docs/ grants
+# nothing (the repo may carry a non-authorizing template only).
+# These checks establish custody facts and exact bytes; they do
+# NOT cryptographically identify an author.
+AUTHORITY_ROOT = (Path.home() /
+                  ".config/agent-multi/reviewer_authority")
+T2_REVIEW_RECORD_PATH = (
+    AUTHORITY_ROOT / "MUSASHI_T2_V6_DESIGN_REVIEW_RECORD.json")
+# The commit at which Musashi ACCEPTED scientific design v6, and
+# the exact draft identities his record must pin (audit
+# MUSASHI_AUDIT_B4_C35_C38_AND_T2_C37_2026_09_07).
+T2_V6_ACCEPTED_AT_COMMIT = (
+    "2ecd7915fe4f5636fe11368ec4a4087acd94eb59")
+T2_V6_DRAFT_FILE_SHA = (
+    "a68fccefd00e2e20f1dfb071980d2a51ee296f934bc39c404dbb8d0baf"
+    "36aec0")
+T2_V6_DRAFT_SELF_SHA = (
+    "96cde8b17176358e5721919a3c8f14ebaf5b5b51bba0f072d9de4875c3"
+    "3ddd5b")
 _REVIEW_KEYS = {"schema", "reviewed_at_date", "reviewer",
-                "decision", "design_draft_sha256",
+                "decision", "candidate_commit",
+                "design_draft_file_sha256",
+                "design_draft_self_sha256",
                 "manifest_sha256", "census_sha256"}
+
+
+def _open_private_authority_file(path: Path):
+    """C38 (mirrors the B4 rule): descriptor-first open of ONE
+    private-authority object — every component walked O_NOFOLLOW;
+    the final two directories owned by the executing uid, exact
+    mode 0700; the file regular, same uid, exact 0600; hash and
+    parse consume the same descriptor stream. Custody facts only —
+    nothing here identifies an author cryptographically."""
+    import stat as _stat
+    parts = Path(path).parts
+    if parts[0] != os.sep:
+        raise ConfirmatoryRefusal(
+            "the authority path must be absolute")
+    fd = os.open("/", os.O_RDONLY
+                 | getattr(os, "O_DIRECTORY", 0))
+    try:
+        for i, comp in enumerate(parts[1:-1], start=1):
+            nfd = os.open(comp, os.O_RDONLY | os.O_NOFOLLOW
+                          | getattr(os, "O_DIRECTORY", 0),
+                          dir_fd=fd)
+            os.close(fd)
+            fd = nfd
+            if len(parts) - 1 - i <= 2:
+                st = os.fstat(fd)
+                if st.st_uid != os.getuid():
+                    raise ConfirmatoryRefusal(
+                        f"authority directory {comp!r} has a "
+                        "foreign owner")
+                if _stat.S_IMODE(st.st_mode) != 0o700:
+                    raise ConfirmatoryRefusal(
+                        f"authority directory {comp!r} mode "
+                        f"{oct(_stat.S_IMODE(st.st_mode))} is "
+                        "not the private 0700 — refused, never "
+                        "chmodded")
+        leaf = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW,
+                       dir_fd=fd)
+    except FileNotFoundError:
+        os.close(fd)
+        raise ConfirmatoryRefusal(
+            "DESIGN_REVIEW_REQUIRED: the EXTERNAL Musashi design "
+            "review record does not exist under the private "
+            "reviewer-authority root — no seal, no score")
+    except OSError as exc:
+        os.close(fd)
+        raise ConfirmatoryRefusal(
+            f"authority path unopenable without following links "
+            f"(errno {exc.errno}: {exc.strerror})")
+    os.close(fd)
+    st = os.fstat(leaf)
+    if not _stat.S_ISREG(st.st_mode):
+        os.close(leaf)
+        raise ConfirmatoryRefusal(
+            "the authority record is not a regular file")
+    if st.st_uid != os.getuid():
+        os.close(leaf)
+        raise ConfirmatoryRefusal(
+            "the authority record has a foreign owner")
+    if _stat.S_IMODE(st.st_mode) != 0o600:
+        os.close(leaf)
+        raise ConfirmatoryRefusal(
+            f"the authority record mode "
+            f"{oct(_stat.S_IMODE(st.st_mode))} is not the exact "
+            "private 0600")
+    return leaf
 
 
 def verify_design_review_record(design: dict,
                                 manifest_sha: str,
                                 census_sha: str) -> dict:
-    """C9: finite, non-circular external review authority. The
-    Musashi record pins the PRE-review draft, manifest and census
-    digests; the sealed design may NAME that record but can alter
-    no scientific field. The candidate can neither write nor
-    select the root: the path is a repo constant and every field
-    is verified — schema, decision, author, bytes, bindings and
-    chronology."""
-    rr = design.get("design_review_record_sha256")
-    p = T2_REVIEW_RECORD_PATH
-    if not p.is_file():
+    """C9/C38: finite, non-circular EXTERNAL review authority.
+    The record is read descriptor-first from the fixed private
+    reviewer-authority path (a repository copy grants nothing),
+    strict-parsed from the same byte stream, and must pin: the
+    reviewer role and decision, a canonical review date, the
+    candidate commit at which design v6 was accepted, the physical
+    draft-v6 SHA AND its self identity, and the exact manifest and
+    census. The sealed design must name this record's exact
+    bytes. Custody facts and exact bytes only — no claim of
+    cryptographic authorship."""
+    fd = _open_private_authority_file(T2_REVIEW_RECORD_PATH)
+    try:
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+    finally:
+        os.close(fd)
+    raw = b"".join(chunks)
+    record_sha = hashlib.sha256(raw).hexdigest()
+    def _no_dupes(pairs):
+        keys = [k for k, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise ConfirmatoryRefusal(
+                "duplicate JSON key in the review record")
+        return dict(pairs)
+    try:
+        rec = json.loads(raw.decode("utf-8"),
+                         object_pairs_hook=_no_dupes,
+                         parse_constant=lambda c: (
+                             _ for _ in ()).throw(
+                             ConfirmatoryRefusal(
+                                 "non-finite constant in the "
+                                 "review record")))
+    except json.JSONDecodeError as exc:
         raise ConfirmatoryRefusal(
-            "DESIGN_REVIEW_REQUIRED: the external Musashi design "
-            "review record does not exist — the next review seals "
-            "or rejects the design; no confirmatory score")
-    if _sha_file(p) != rr:
-        raise ConfirmatoryRefusal(
-            "the sealed design names a DIFFERENT review record "
-            "than the external root — candidate-selected bytes "
-            "grant nothing")
-    rec = strict_json_load(p, "design review record")
+            f"review record is not well-formed JSON ({exc.msg}) "
+            "— arbitrary bytes are never a record")
     if set(rec) != _REVIEW_KEYS:
         raise ConfirmatoryRefusal(
-            "review record keys are not the exact schema")
-    if rec["schema"] != "agent_multi.musashi_t2_design_review.v1":
+            "review record keys are not the exact v2 schema")
+    for k in _REVIEW_KEYS:
+        if type(rec[k]) is not str or not rec[k]:
+            raise ConfirmatoryRefusal(
+                f"review record field {k!r} must be a nonempty "
+                "string")
+    if rec["schema"] != "agent_multi.musashi_t2_design_review.v2":
         raise ConfirmatoryRefusal(
             "review record carries a foreign schema")
+    import datetime as _dt
+    try:
+        d_ = _dt.date.fromisoformat(rec["reviewed_at_date"])
+    except ValueError:
+        raise ConfirmatoryRefusal(
+            "review reviewed_at_date is not a canonical ISO date")
+    if d_.isoformat() != rec["reviewed_at_date"]:
+        raise ConfirmatoryRefusal(
+            "review reviewed_at_date is not canonical")
     if rec["reviewer"] != "General Musashi":
         raise ConfirmatoryRefusal(
-            "review record author is not the external reviewer")
+            "review record author field is not the external "
+            "reviewer role")
     if rec["decision"] != "SEAL_T2_CONFIRMATORY_DESIGN":
         raise ConfirmatoryRefusal(
             "review record decision does not seal this design")
-    for k in ("design_draft_sha256", "manifest_sha256",
-              "census_sha256"):
+    if rec["candidate_commit"] != T2_V6_ACCEPTED_AT_COMMIT:
+        raise ConfirmatoryRefusal(
+            "review record does not pin the candidate commit at "
+            "which design v6 was accepted")
+    for k in ("design_draft_file_sha256",
+              "design_draft_self_sha256",
+              "manifest_sha256", "census_sha256"):
         _canon_sha(rec[k], f"review {k}")
+    if rec["design_draft_file_sha256"] != T2_V6_DRAFT_FILE_SHA or \
+            rec["design_draft_self_sha256"] != \
+            T2_V6_DRAFT_SELF_SHA:
+        raise ConfirmatoryRefusal(
+            "review record pins a different draft v6 (file or "
+            "self identity) than the accepted design")
     if rec["manifest_sha256"] != manifest_sha:
         raise ConfirmatoryRefusal(
             "review record binds a different public-data manifest")
     if rec["census_sha256"] != census_sha:
         raise ConfirmatoryRefusal(
             "review record binds a different bank census")
-    draft_sha = design.get("supersedes_draft_sha256")
-    if rec["design_draft_sha256"] != draft_sha:
+    if design.get("design_review_record_sha256") != record_sha:
         raise ConfirmatoryRefusal(
-            "review record pins a different pre-review draft than "
-            "the sealed design supersedes — chronology broken")
+            "the sealed design does not name THIS external review "
+            "record's exact bytes — candidate-selected records "
+            "grant nothing")
+    if design.get("supersedes_draft_sha256") != \
+            rec["design_draft_file_sha256"]:
+        raise ConfirmatoryRefusal(
+            "the sealed design does not supersede the exact "
+            "reviewed draft the record pins — chronology broken")
+    rec["_record_sha256"] = record_sha
     return rec
 
 
@@ -676,6 +821,14 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
             "sealed over the acquired bank")
     design = strict_json_load(dp, "confirmatory design")
     validate_confirmatory_design(design, manifest_sha)
+    # C39 (T2): draft schemas can be validated for review but can
+    # NEVER enter scoring — only the sealed v6 identity proceeds
+    # toward review-record verification and the ledger.
+    if design.get("schema", "").endswith("_draft"):
+        raise ConfirmatoryRefusal(
+            "SEALED_DESIGN_REQUIRED: a draft schema never scores "
+            "— seal the accepted draft v6 through the external "
+            "review record first")
     # C28: the fresh-process re-derivation runs INSIDE the single
     # path, immediately before any durable artifact — census and
     # design schemas via the productive parsers, population,

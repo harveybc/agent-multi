@@ -1,0 +1,11 @@
+{
+ "schema": "agent_multi.musashi_t2_design_review.v2",
+ "reviewed_at_date": "<MUSASHI_FILLS_ISO_DATE_YYYY-MM-DD>",
+ "reviewer": "General Musashi",
+ "decision": "SEAL_T2_CONFIRMATORY_DESIGN",
+ "candidate_commit": "2ecd7915fe4f5636fe11368ec4a4087acd94eb59",
+ "design_draft_file_sha256": "a68fccefd00e2e20f1dfb071980d2a51ee296f934bc39c404dbb8d0baf36aec0",
+ "design_draft_self_sha256": "96cde8b17176358e5721919a3c8f14ebaf5b5b51bba0f072d9de4875c33ddd5b",
+ "manifest_sha256": "43c48f6bb513be37d4a591f67694880e9f768391ab0db710902c3aadd55b76ff",
+ "census_sha256": "dc1bf8c770b297c506b1e30195753d7b25f82c51cbdd62b27667f58e7964674f"
+}

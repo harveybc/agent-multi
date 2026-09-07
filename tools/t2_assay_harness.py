@@ -521,9 +521,14 @@ def main() -> int:
         # with its own typed reason; nothing is unconditional.
         import t2_confirmatory as conf
         state = Path.home() / ".local/share/agent-multi"
+        # C39: the public CLI consumes the ONE current SEALED-v6
+        # identity (produced by tools/t2_seal_design.py only after
+        # the external review record exists); it shares the exact
+        # validation/fresh-verification/review/ledger sequence
+        # with direct run_confirmatory().
         conf.run_confirmatory(
             state / "t2_public_data_manifest_20260906.json",
-            state / "t2_confirmatory_design_20260906.json",
+            state / "t2_screen_design_SEALED_V6.json",
             state / "t2_attempt_ledger_20260906.json",
             census_path=state / "t2_bank_census_20260906.json")
         raise HarnessRefusal(

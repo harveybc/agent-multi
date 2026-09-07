@@ -1,0 +1,15 @@
+== 1. C38: review custody is EXTERNAL now ==
+productive review path: ~/.config/agent-multi/reviewer_authority/ (outside the candidate repo)
+REPO_LOOKALIKE: DIES [REFUSED: DESIGN_REVIEW_REQUIRED: the EXTERNAL Musashi design review record doe] match=True
+honest custody-not-authorship prose present
+
+== 2. C39: drafts never score; the CLI names the ONE sealed identity ==
+DRAFT_TO_SCORING: DIES [REFUSED: SEALED_DESIGN_REQUIRED: a draft schema never scores — seal the accept] match=True
+CLI names t2_screen_design_SEALED_V6.json; the legacy 2026-09-06 filename is gone
+single mechanical order: sealed -> fresh -> review -> ledger (shared by CLI and direct API)
+
+== 3. the accepted scientific design v6 is untouched ==
+draft v6 bytes: a68fccefd00e | self: 96cde8b17176 (byte-equal)
+no real sealed design exists; no real review record exists
+
+POST CONFIRMED: external custody + one sealing path; scientific v6 frozen; no seal, no score, no ledger

@@ -872,6 +872,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_seal_design.py": {
+   "purpose": "C39 (T2 custody order): the ONE deterministic sealing path accepted-draft-v6 -> external review record -> sealed v6; requires the private external record (descriptor-first custody), changes ONLY schema/review-binding/sealed_at_date/supersedes/self-digest, refuses any scientific-field delta; O_EXCL output; never runs the campaign; the real record and real sealed design are NOT created by the candidate",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
