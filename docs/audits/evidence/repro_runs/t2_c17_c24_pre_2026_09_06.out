@@ -1,0 +1,33 @@
+== 1 (C17): NaN authorizes a positive ==
+all D/ridge mase_primary = NaN -> PUBLICLY_ELIGIBLE_CANDIDATE
+
+== 2 (C18): family relabel with preserved counts ==
+permuted family labels -> PUBLICLY_ELIGIBLE_CANDIDATE
+
+== 3 (C19): null costs pass ==
+costs {'arm_X': null} -> PUBLICLY_ELIGIBLE_CANDIDATE
+
+== 4 (C19): forged MLP payload passes ==
+MLP seeds = 'forged' -> PUBLICLY_ELIGIBLE_CANDIDATE
+
+== 5 (C20): schema/identity/license decoupling ==
+extra top key + decoupled key + rehashed license accepted: True
+
+== 6 (C20): internal symlink accepted ==
+symlinked relpath accepted: True
+
+== 7 (C21): census not re-derived by the consumer ==
+run_confirmatory only hashes the census file: True
+
+== 8 (C21): per-dataset top-k, not per-family ==
+selection runs inside the per-dataset loop: True
+same-family two-dataset selection would total: 80
+
+== 9 (C22): duplicate lists / bool-as-number pass ==
+set() collapses duplicated seed list: True
+bool passes int-membership: True
+
+== 10 (C23): false precision under intrapanel dependence ==
+naive normal CI coverage at ICC=0.5: 0.249 (nominal 0.95) — precision is fabricated
+
+PRE CONFIRMED: C17-C24 findings all reproduce
