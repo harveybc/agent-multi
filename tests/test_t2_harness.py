@@ -1133,7 +1133,7 @@ def test_fresh_verifier_live_population():
          str(S / "t2_public_data_manifest_20260906.json"),
          "--census", str(S / "t2_bank_census_20260906.json"),
          "--design",
-         str(S / "t2_screen_design_DRAFT_V5_20260907.json")],
+         str(S / "t2_screen_design_DRAFT_V6_20260907.json")],
         capture_output=True, text=True)
     assert rc.returncode == 3, rc.stderr[-500:]
     out = json.loads(rc.stdout)
@@ -1342,7 +1342,7 @@ def test_c30_kill_8_fresh_verifier_wired_into_single_path(
     S = Path.home() / ".local/share/agent-multi"
     mp = S / "t2_public_data_manifest_20260906.json"
     cp = S / "t2_bank_census_20260906.json"
-    dp = S / "t2_screen_design_DRAFT_V5_20260907.json"
+    dp = S / "t2_screen_design_DRAFT_V6_20260907.json"
     lp = tmp_path / "ledger.json"
     # the honest v4 draft passes fresh verification LIVE and dies
     # at the NEXT gate (no Musashi review record exists yet)
@@ -1532,7 +1532,7 @@ def test_c36_2_every_unit_map_field_forged_dies_live():
     census = conf.strict_json_load(
         S / "t2_bank_census_20260906.json", "c")
     design = conf.strict_json_load(
-        S / "t2_screen_design_DRAFT_V5_20260907.json", "d")
+        S / "t2_screen_design_DRAFT_V6_20260907.json", "d")
     uid = design["task_population"]["series_ids"][0]
     mutations = [
         ("family", "totally_forged_family"),
@@ -1631,7 +1631,7 @@ def test_c36_7_hospital_two_windows_of_17():
     # the v5 draft records hospital as a FULL member
     S = Path.home() / ".local/share/agent-multi"
     v5 = json.loads(
-        (S / "t2_screen_design_DRAFT_V5_20260907.json").read_text())
+        (S / "t2_screen_design_DRAFT_V6_20260907.json").read_text())
     gf = v5["task_population"]["geometry_feasibility"]["hospital"]
     assert gf["n_selected"] == 40 and gf["min_score_window"] == 17
     assert gf["model_minimums_kept"] is True
@@ -1645,7 +1645,7 @@ def test_c36_8_every_selected_unit_geometry_admissible():
     import t2_bank as bank
     S = Path.home() / ".local/share/agent-multi"
     v5 = json.loads(
-        (S / "t2_screen_design_DRAFT_V5_20260907.json").read_text())
+        (S / "t2_screen_design_DRAFT_V6_20260907.json").read_text())
     tp = v5["task_population"]
     assert len(tp["series_ids"]) == 242
     panels = set(tp["screen_panels"])
@@ -1660,8 +1660,104 @@ def test_c36_8_every_selected_unit_geometry_admissible():
                 n_by_panel.get(b["dataset"], 0) + 1
     assert sorted(n_by_panel) == sorted(panels)
     assert all(v == 40 for v in n_by_panel.values())
-    v4_sha = hashlib.sha256(
-        (S / "t2_screen_design_DRAFT_V4_20260906.json")
+    v5_sha = hashlib.sha256(
+        (S / "t2_screen_design_DRAFT_V5_20260907.json")
         .read_bytes()).hexdigest()
-    assert v5["supersedes_draft_sha256"] == v4_sha
-    assert v5["schema"] == "agent_multi.t2_screen_design.v5_draft"
+    assert v5["supersedes_draft_sha256"] == v5_sha
+    assert v5["schema"] == "agent_multi.t2_screen_design.v6_draft"
+
+
+# ============ C37 estimand-polarity battery (2026-09-07) ===========
+
+
+def test_c37_polarity_contract():
+    """C37: the ONE estimand — mase_improvement_X_minus_D =
+    MASE(X) - MASE(D). X=1.0,D=0.9 -> +0.1 beneficial;
+    X=0.9,D=1.0 -> -0.1 harmful; the width-control attribution
+    uses the same orientation; old/ambiguous/inverted names
+    refuse in the validator."""
+    import t2_confirmatory as conf
+    d = _d3()
+    uid = d["task_population"]["series_ids"][0]
+    b = d["task_population"]["unit_map"][uid]
+
+    def probe(x, dd):
+        rec = _complete_record(uid, b["family"],
+                               dataset=b["dataset"],
+                               windows=b["origin_windows"])
+        for o in rec["rolling_origins"].values():
+            o["results"]["X"]["ridge"]["mase_primary"] = x
+            o["results"]["D"]["ridge"]["mase_primary"] = dd
+        _stamp(rec)
+        return conf._series_stats(rec, d, "D", "ridge")["delta"]
+    assert abs(probe(1.0, 0.9) - (+0.1)) < 1e-12
+    assert abs(probe(0.9, 1.0) - (-0.1)) < 1e-12
+    # beneficial ADVANCES, harmful DOES_NOT_ADVANCE (polarity)
+    good = [_rec_for(d, u, delta=0.10)
+            for u in d["task_population"]["series_ids"]]
+    assert conf.adjudicate_screen(good, d)["verdict"] == \
+        "ADVANCE_TO_DOMAIN_VALIDATION"
+    bad = [_rec_for(d, u, delta=-0.10)
+           for u in d["task_population"]["series_ids"]]
+    out = conf.adjudicate_screen(bad, d)
+    assert out["verdict"] == "DOES_NOT_ADVANCE"
+    assert out["panel_effect_definition"].startswith(
+        "mase_improvement_X_minus_D")
+    # width-control attribution: same orientation — a width
+    # control matching D's improvement zeroes the attribution
+    wc = [_rec_for(d, u, delta=0.10, wc_delta=0.10)
+          for u in d["task_population"]["series_ids"]]
+    out2 = conf.adjudicate_screen(wc, d)
+    assert out2["verdict"] == "INCONCLUSIVE"
+    assert "attributable" in out2["reason"]
+    # the validator refuses every superseded/ambiguous/inverted
+    # name on a live v6 document
+    import hashlib as _h
+    S = Path.home() / ".local/share/agent-multi"
+    mp = S / "t2_public_data_manifest_20260906.json"
+    v6 = json.loads(
+        (S / "t2_screen_design_DRAFT_V6_20260907.json")
+        .read_text())
+    for bad_name in ("D_minus_X", "delta",
+                     "mase_improvement_D_minus_X", "X_minus_D"):
+        f2 = json.loads(json.dumps(v6))
+        f2["primary_contrast"]["delta"] = bad_name
+        body = {k: f2[k] for k in sorted(f2)
+                if k != "design_sha256"}
+        f2["design_sha256"] = _h.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+        with pytest.raises(SystemExit,
+                           match="estimand names never validate|"
+                                 "mase_improvement_X_minus_D"):
+            conf.validate_confirmatory_design(
+                f2, conf._sha_file(mp))
+
+
+def test_c37_v6_supersedes_v5_name_only():
+    """C37: draft v6 is v5 with ONLY the estimand naming changed —
+    population, unit_map, geometry, margins and rules identical;
+    v6 supersedes v5 by exact digest; v2-v5 preserved."""
+    S = Path.home() / ".local/share/agent-multi"
+    v5 = json.loads(
+        (S / "t2_screen_design_DRAFT_V5_20260907.json")
+        .read_text())
+    v6 = json.loads(
+        (S / "t2_screen_design_DRAFT_V6_20260907.json")
+        .read_text())
+    tp5, tp6 = v5["task_population"], v6["task_population"]
+    assert tp6["series_ids"] == tp5["series_ids"]
+    assert tp6["unit_map"] == tp5["unit_map"]
+    assert v6["role_geometry"] == v5["role_geometry"]
+    assert v6["extreme_support_rule"] == v5["extreme_support_rule"]
+    assert v6["harm_margins"] == v5["harm_margins"]
+    assert v6["practical_margin_mase"] == \
+        v5["practical_margin_mase"]
+    assert v5["primary_contrast"]["delta"] == "D_minus_X"
+    assert v6["primary_contrast"]["delta"] == \
+        "mase_improvement_X_minus_D"
+    assert v6["supersedes_draft_sha256"] == hashlib.sha256(
+        (S / "t2_screen_design_DRAFT_V5_20260907.json")
+        .read_bytes()).hexdigest()
+    # the XDR FEATURE representation is untouched (not the MASE
+    # contrast): [X, D, X-D] stays
+    assert v6["arms"]["XDR"] == "[X, D, X-D]"

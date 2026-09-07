@@ -1,0 +1,22 @@
+== 1. polarity, executable ==
+X=1.0, D=0.9 -> +0.1 (beneficial)
+X=0.9, D=1.0 -> -0.1 (harmful)
+verdict on +0.1: ADVANCE_TO_DOMAIN_VALIDATION | mase_improvement_X_minus_D = MASE(X) - MASE(D); posi
+
+== 2. names: one accepted, all others refuse ==
+v6 (mase_improvement_X_minus_D): PASS
+'D_minus_X': refuses
+'delta': refuses
+'mase_improvement_D_minus_X': refuses
+'X_minus_D': refuses
+draft v5 (superseded schema): refuses
+
+== 3. v5 -> v6: naming-only supersession ==
+population/unit_map/geometry byte-equal; supersedes-v5 binding true; the XDR FEATURE list [X, D, X-D] untouched
+
+== 4. the real mutation was executed and read ==
+sed xm-am -> am-xm at the productive line killed 4 tests
+(c37_polarity assert diff 0.1999...; c8; kill_10; c36_1)
+then reverted — recorded in the packet from terminal output
+
+POST CONFIRMED: one unambiguous estimand; polarity frozen; v6 ready

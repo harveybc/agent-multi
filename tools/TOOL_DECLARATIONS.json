@@ -865,6 +865,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_design_draft_v6.py": {
+   "purpose": "T2-S step-7 DRAFT v6 (order C37): supersedes v5 by digest changing ONLY the estimand naming contract \u2014 primary contrast mase_improvement_X_minus_D = MASE(X) - MASE(D), positive = D reduces error (the arithmetic the adjudicator always implemented); population, geometry, selection salt, margins and rules identical to v5; candidate for the Musashi design review, never sealed, zero scores",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

@@ -301,8 +301,8 @@ _DESIGN_KEYS = {
     "verifier_specification", "design_review_record_sha256",
     "design_sha256"}
 
-_DESIGN_SCHEMAS_V4 = {"agent_multi.t2_screen_design.v5_draft",
-                      "agent_multi.t2_screen_design.v5"}
+_DESIGN_SCHEMAS_V4 = {"agent_multi.t2_screen_design.v6_draft",
+                      "agent_multi.t2_screen_design.v6"}
 SCREEN_OUTCOMES = ("ADVANCE_TO_DOMAIN_VALIDATION",
                    "DOES_NOT_ADVANCE", "INCONCLUSIVE")
 _UNIT_MAP_KEYS = {"family", "dataset", "series_numeric_sha256",
@@ -371,11 +371,27 @@ def validate_confirmatory_design(design: dict,
     if set(design["arms"]) != {"X", "D", "XDR", "width_control"}:
         raise ConfirmatoryRefusal(
             "design arms are not the exact required set")
-    if design["primary_contrast"].get("delta") != "D_minus_X" or \
+    # C37: ONE unambiguous estimand name. The implemented and
+    # intended arithmetic is MASE(X) - MASE(D): positive means D
+    # REDUCES error. The old inverted name, a bare ambiguous
+    # name, and opposite-polarity names all refuse typed.
+    _delta_name = design["primary_contrast"].get("delta")
+    if _delta_name in ("D_minus_X", "delta",
+                       "mase_improvement_D_minus_X",
+                       "X_minus_D"):
+        raise ConfirmatoryRefusal(
+            f"design names the primary contrast {_delta_name!r} "
+            "— superseded, ambiguous or polarity-inverted "
+            "estimand names never validate; the ONE name is "
+            "'mase_improvement_X_minus_D' (positive = D reduces "
+            "error)")
+    if _delta_name != "mase_improvement_X_minus_D" or \
             design["primary_contrast"].get("model") != "ridge":
         raise ConfirmatoryRefusal(
             "design must declare the single frozen primary "
-            "contrast (paired D-X under the frozen ridge)")
+            "contrast mase_improvement_X_minus_D (MASE(X) - "
+            "MASE(D), positive = improvement) under the frozen "
+            "ridge")
     _unique_list(design["seed_tape"], "design.seed_tape",
                  elem_type=int)
     tp2 = design["task_population"]
@@ -840,8 +856,10 @@ def extreme_contrast(x_entry, a_entry, path: str):
 
 
 def _series_stats(rec, design, arm="D", model="ridge"):
-    """Per-series paired deltas vs X for one arm/model, averaged
-    over the design's origins (nested, never inflating n)."""
+    """C37: per-series paired improvements
+    mase_improvement_X_minus_D = MASE(X) - MASE(arm) — POSITIVE
+    means the arm reduces error vs X. Averaged over the design's
+    origins (nested, never inflating n)."""
     origins = rec["rolling_origins"]
     deltas = []
     harms = {"coverage_drop": [], "width_ratio": []}
@@ -1068,10 +1086,11 @@ def adjudicate_screen(records: list, design: dict) -> dict:
     """C29 — the T2-S public screen, austere by construction:
 
     population: the six named public primary panels;
-    superior unit: the PANEL; panel effect = paired D-X mean of
-    its selected series; primary estimand = the UNWEIGHTED mean of
-    the six panel effects; scope = only these panels and their
-    admitted series.
+    superior unit: the PANEL; panel effect = paired mean of
+    mase_improvement_X_minus_D (= MASE(X) - MASE(D), positive =
+    D reduces error) over its selected series; primary estimand =
+    the UNWEIGHTED mean of the six panel effects; scope = only
+    these panels and their admitted series.
 
     ADVANCE_TO_DOMAIN_VALIDATION requires SIMULTANEOUSLY:
     t lower bound (df=5) above the practical margin; the exact
@@ -1241,6 +1260,9 @@ def adjudicate_screen(records: list, design: dict) -> dict:
                    range(signs_positive, 7)), 5)
                if signs_positive >= 3 else None,
            "leave_one_panel_out_means": lopo,
+           "panel_effect_definition":
+               "mase_improvement_X_minus_D = MASE(X) - MASE(D); "
+               "positive = D reduces error",
            "scope": "ONLY these six public panels and their "
                     "admitted series — no family-level or "
                     "public-eligibility claim"}
