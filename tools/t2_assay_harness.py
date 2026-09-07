@@ -333,9 +333,15 @@ def _mase_denominator(y, lo_t, hi_t, period):
     return float(np.mean(d))
 
 
-def assay_unit(co, unit: dict, h: int = 1) -> dict:
+def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
     """All arms on identical rows/budgets per origin; every cost
-    phase recorded separately (C7)."""
+    phase recorded separately (C7). C44 (executor order): when
+    `sink` is a dict, the RAW predictions and observations of every
+    origin/arm/model (and the seasonal-naive baseline) are captured
+    into it under (origin_key, arm, model) so the executor can
+    persist them and an independent verifier can recompute every
+    MASE and extreme metric from persisted arrays — a producer
+    summary alone never authorizes."""
     y = unit["y"]
     n = len(y)
     period = unit["seasonal_period"]
@@ -387,6 +393,10 @@ def assay_unit(co, unit: dict, h: int = 1) -> dict:
             "metrics": _metrics(
                 ys, y[snv_idx], (float(q[0]), float(q[1])),
                 mase_den, ex_mask)}}
+        if sink is not None:
+            sink[(okey, "seasonal_naive", "baseline")] = (
+                np.asarray(y[snv_idx], dtype=np.float64),
+                np.asarray(ys, dtype=np.float64))
         ocost["seasonal_naive_s"] = round(
             time.perf_counter() - t0, 4)
         for arm, series in arms.items():
@@ -405,6 +415,10 @@ def assay_unit(co, unit: dict, h: int = 1) -> dict:
             arm_out = {"ridge": _metrics(
                 ys, ridge_pred, (float(rq[0]), float(rq[1])),
                 mase_den, ex_mask)}
+            if sink is not None:
+                sink[(okey, arm, "ridge")] = (
+                    np.asarray(ridge_pred, dtype=np.float64),
+                    np.asarray(ys, dtype=np.float64))
             mlp_runs = {}
             for seed in SEED_TAPE:
                 t0 = time.perf_counter()
@@ -416,6 +430,10 @@ def assay_unit(co, unit: dict, h: int = 1) -> dict:
                 mlp_runs[f"seed{seed}"] = _metrics(
                     ys, pred, (float(tq[0]), float(tq[1])),
                     mase_den, ex_mask)
+                if sink is not None:
+                    sink[(okey, arm, f"mlp_seed{seed}")] = (
+                        np.asarray(pred, dtype=np.float64),
+                        np.asarray(ys, dtype=np.float64))
             arm_out["mlp_small"] = mlp_runs
             oout[arm] = arm_out
             ocost[f"arm_{arm}"] = acost

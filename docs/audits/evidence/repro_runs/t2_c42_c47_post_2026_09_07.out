@@ -1,0 +1,13 @@
+== 1. the exact confirmatory command, structurally closed ==
+command: PYTHONPATH=. python tools/t2_confirmatory_executor.py --execute
+stop: REFUSED: T2_EXECUTION_RECORD_REQUIRED: confirmatory scoring stays STRUCTURALLY CLOSED — the external Musashi e
+live chain: sealed -> fresh(4650/242) -> REAL review record -> EXECUTION record ABSENT -> typed close, no ledger
+
+== 2. work census (exact) + measured CPU fixture timings ==
+{"units": 242, "origins_per_unit": 2, "arms": 4, "mlp_seeds": 3, "model_fits": 7744, "baseline_evals": 484}
+measured per-unit rehearsal wall (dev fixtures, NOT extrapolated as results): sm_co2 25.2s, sm_sunspots 5.4s, sm_nile 3.9s (see the committed rehearsal output)
+
+== 3. state untouched ==
+sealed bytes identical; no unit records under the real root; no scientific ledger
+
+POST CONFIRMED: executor implemented and closed; custody + array recompute proven on the rehearsal; zero scores of the 242 series

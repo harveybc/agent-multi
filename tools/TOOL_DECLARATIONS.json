@@ -879,6 +879,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_confirmatory_executor.py": {
+   "purpose": "C42-C47: the T2 confirmatory EXECUTOR \u2014 consumes the SEALED v6 through the single gate chain (sealed -> fresh -> external review record -> external EXECUTION record, which is ABSENT so scoring is structurally closed); per-unit custody records (O_EXCL 0600 self-digested; sealed/review/execution/manifest/census/unit_map/code identity/costs bindings) + persisted prediction/observation NPZ with independent MASE/extreme recompute; sealed budget 4h/8GiB/nice15/stop-file, per-unit O_EXCL claims, executor lock, heartbeat, durable resume, FAILED preserved as missing; --mechanical-rehearsal runs the SAME executor on the three dev units only (zero sealed-bank series)",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

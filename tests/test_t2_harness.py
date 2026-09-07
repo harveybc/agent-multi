@@ -163,7 +163,8 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
     assert any(tok in out for tok in
                ("PUBLIC_DATA_REQUIRED", "DESIGN_REQUIRED",
                 "SEALED_DESIGN_REQUIRED",
-                "DESIGN_REVIEW_REQUIRED"))
+                "DESIGN_REVIEW_REQUIRED",
+                "T2_EXECUTION_RECORD_REQUIRED"))
     assert not (tmp_path / "out.json").exists()
 
 
@@ -1940,14 +1941,15 @@ def test_c40_3_seal_changes_only_seal_fields(tmp_path,
     assert facts["units_rederived"] == 4650
     assert facts["design_series"] == 242
     # the single path accepts the sealed fixture through review
-    # and reaches the (tmp) ledger stage
+    # and stops at the EXECUTION-record gate (C42/C47) — no
+    # ledger without the second external record
     lp = tmp_path / "ledger.json"
     with pytest.raises(SystemExit,
-                       match="EXECUTION_NOT_IMPLEMENTED"):
+                       match="T2_EXECUTION_RECORD_REQUIRED"):
         conf.run_confirmatory(
             mp, out, lp,
             census_path=S / "t2_bank_census_20260906.json")
-    assert lp.exists()      # tmp fixture ledger, never the real one
+    assert not lp.exists()
     # a scientific-field mutation inside sealing refuses
     monkeypatch.setattr(seal, "SEAL_ONLY_FIELDS",
                         tuple(seal.SEAL_ONLY_FIELDS)
@@ -1976,3 +1978,186 @@ def test_c40_4_cli_and_api_share_the_sealed_path():
         seg.index("verify_design_review_record") < \
         seg.index("open_attempt_ledger")
     assert "_ACCEPTED_DESIGN_SCHEMAS" in csrc
+
+
+# ===== C42-C47 confirmatory-executor battery (2026-09-07) =========
+
+
+def _exec_mod():
+    import importlib.util as ilu
+    spec = ilu.spec_from_file_location(
+        "t2exec", REPO / "tools/t2_confirmatory_executor.py")
+    m = ilu.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+
+
+def test_c47_1_execution_gate_structurally_closed(tmp_path,
+                                                  monkeypatch):
+    """C42/C47: without the external EXECUTION record the single
+    path refuses TYPED before any ledger; forged execution records
+    refuse per field; a valid fixture record opens the gates
+    WITHOUT computing anything."""
+    import t2_confirmatory as conf
+    S = Path.home() / ".local/share/agent-multi"
+    sealed = S / "t2_screen_design_SEALED_V6.json"
+    if not sealed.exists():
+        pytest.skip("sealed design absent on this host")
+    mp = S / "t2_public_data_manifest_20260906.json"
+    lp = tmp_path / "ledger.json"
+    monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH",
+                        tmp_path / "missing.json")
+    with pytest.raises(SystemExit,
+                       match="T2_EXECUTION_RECORD_REQUIRED"):
+        conf.run_confirmatory(
+            mp, sealed, lp,
+            census_path=S / "t2_bank_census_20260906.json")
+    assert not lp.exists()
+    # forged records refuse per field
+    ra = _t2_private_chain(tmp_path / "auth")
+    er = ra / "MUSASHI_T2_V6_EXECUTION_RECORD.json"
+    monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH", er)
+    d = json.loads(sealed.read_text())
+    good = {"schema": "agent_multi.musashi_t2_execution_record.v1",
+            "reviewed_at_date": "2026-09-07",
+            "reviewer": "General Musashi",
+            "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
+            "sealed_design_file_sha256": conf._sha_file(sealed),
+            "sealed_design_self_sha256": d["design_sha256"],
+            "candidate_commit": "f" * 40}
+    for field, val, needle in (
+            ("decision", "SOMETHING_ELSE", "does not open"),
+            ("reviewer", "candidate", "external reviewer role"),
+            ("sealed_design_file_sha256", "e" * 64,
+             "physical bytes"),
+            ("sealed_design_self_sha256", "e" * 64,
+             "self identity"),
+            ("reviewed_at_date", "7/9/2026", "canonical")):
+        doc = dict(good)
+        doc[field] = val
+        if er.exists():
+            er.unlink()
+        er.write_text(json.dumps(doc))
+        os.chmod(er, 0o600)
+        with pytest.raises(SystemExit, match=needle):
+            conf.run_confirmatory(
+                mp, sealed, lp,
+                census_path=S / "t2_bank_census_20260906.json")
+        assert not lp.exists()
+    # a VALID fixture record opens the gates; NOTHING is computed
+    er.unlink()
+    er.write_text(json.dumps(good))
+    os.chmod(er, 0o600)
+    out = conf.run_confirmatory(
+        mp, sealed, lp,
+        census_path=S / "t2_bank_census_20260906.json")
+    assert out["gates"] == "ALL_OPEN"
+    assert lp.exists()          # tmp fixture ledger only
+    assert out["execution_record_sha256"] == conf._sha_file(er)
+
+
+def test_c47_2_unit_record_custody_and_array_recompute(
+        tmp_path, monkeypatch):
+    """C43/C44: the rehearsal's REAL records verify from persisted
+    arrays; a mutated prediction, a swapped NPZ, an edited summary
+    and a broken self-digest each refuse; the rehearsal can never
+    touch a sealed-bank series; duplicate unit claims refuse."""
+    ex = _exec_mod()
+    os.environ.setdefault(
+        "B4_T1_PREPROCESSOR_ROOT",
+        str(Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    out_root = tmp_path / "rehearsal"
+    rc = ex.rehearse(out_root)
+    assert rc == 0
+    design = json.loads(ex.SEALED_PATH.read_text())
+    units = sorted((out_root / "units").glob("RECORD_*.json"))
+    assert len(units) == 3
+    for rp in units:
+        npz = rp.parent / rp.name.replace("RECORD_", "ARRAYS_"
+                                          ).replace(".json",
+                                                    ".npz")
+        ex.verify_unit_record(rp, npz, design)
+    # (a) mutate one persisted prediction -> MASE recompute dies
+    import numpy as _np
+    rp = units[0]
+    npz = rp.parent / rp.name.replace("RECORD_", "ARRAYS_"
+                                      ).replace(".json", ".npz")
+    data = dict(_np.load(npz))
+    k = next(k for k in data if k.startswith("pred__"))
+    data[k] = data[k] + 1.0
+    mut = tmp_path / "mut.npz"
+    with open(mut, "wb") as f:
+        _np.savez_compressed(f, **data)
+    wrapper = json.loads(rp.read_text())
+    wrapper["arrays_npz_sha256"] = ex._sha_file(mut)
+    wrapper["record_sha256"] = ex._self_sha(wrapper,
+                                            "record_sha256")
+    rp2 = tmp_path / "mut_record.json"
+    rp2.write_text(json.dumps(wrapper))
+    with pytest.raises(SystemExit,
+                       match="does not recompute from persisted"):
+        ex.verify_unit_record(rp2, mut, design)
+    # (b) swapped NPZ (digest mismatch)
+    other = units[1].parent / units[1].name.replace(
+        "RECORD_", "ARRAYS_").replace(".json", ".npz")
+    with pytest.raises(SystemExit, match="swapped or edited"):
+        ex.verify_unit_record(rp, other, design)
+    # (c) edited summary (self-digest breaks)
+    doc = json.loads(rp.read_text())
+    doc["assay_record"]["rolling_origins"]["origin0"]["results"][
+        "D"]["ridge"]["mase_primary"] = 0.0001
+    rp3 = tmp_path / "edited.json"
+    rp3.write_text(json.dumps(doc))
+    with pytest.raises(SystemExit,
+                       match="self-digest does not"):
+        ex.verify_unit_record(rp3, npz, design)
+    # (d) duplicate unit claim refuses (O_EXCL attempts)
+    import t2_assay_harness as hz
+    co = hz.load_co()
+    import t2_public_data_census as dc
+    census = dc.build_census()
+    unit = hz.load_task_unit(census, "sm_nile")
+    with pytest.raises(SystemExit,
+                       match="already claimed"):
+        ex.run_unit(hz, co, unit, design, {
+            "sealed_design_file_sha256": "x",
+            "sealed_design_self_sha256": "x",
+            "design_review_record_sha256": "x",
+            "execution_record_sha256": "x",
+            "manifest_sha256": "x", "census_sha256": "x"},
+            out_root)
+    # (e) the rehearsal population is disjoint from the sealed one
+    sealed_ids = set(design["task_population"]["series_ids"])
+    assert not sealed_ids & set(ex.DEV_UNITS)
+    src = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    assert "assert uid not in sealed_ids" in src
+
+
+def test_c47_3_budget_resume_and_lock():
+    """C45: the sealed budget bounds, the O_EXCL executor lock,
+    heartbeat and resume order are present in the productive
+    source; FAILED units are preserved as missing, never rerun."""
+    src = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    seg = src[src.index("def main"):]
+    assert "max_wall_seconds" in src and "max_rss_bytes" in src
+    assert "T2_STOP" in src and "os.nice(15)" in src
+    assert "EXECUTOR_LOCK" in src and "EXECUTOR_HEARTBEAT" in src
+    # resume: verified records skip BEFORE terminals, terminals
+    # count as preserved-missing, budget checked BEFORE work
+    i_rec = seg.index('f"RECORD_{safe}.json"')
+    i_term = seg.index('f"TERMINAL_{safe}.json"')
+    i_budget = seg.index("_budget(")
+    i_load = seg.index("load_bank_unit(")
+    assert i_rec < i_term < i_budget < i_load
+    assert "never rerun" in src or "preserved as missing" in src
+    # the work census is executable
+    ex = _exec_mod()
+    S = Path.home() / ".local/share/agent-multi"
+    if (S / "t2_screen_design_SEALED_V6.json").exists():
+        d = json.loads(
+            (S / "t2_screen_design_SEALED_V6.json").read_text())
+        w = ex.census_of_work(d)
+        assert w["units"] == 242 and w["origins_per_unit"] == 2
+        assert w["model_fits"] == 242 * 2 * 4 * 4

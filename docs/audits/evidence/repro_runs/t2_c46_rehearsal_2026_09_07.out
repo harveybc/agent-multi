@@ -1,0 +1,15 @@
+{
+ "rehearsal": "COMPLETE_MECHANICS_ONLY",
+ "units": [
+  "sm_co2",
+  "sm_sunspots",
+  "sm_nile"
+ ],
+ "per_unit_wall_seconds": {
+  "sm_co2": 23.16,
+  "sm_sunspots": 4.04,
+  "sm_nile": 3.61
+ },
+ "sealed_bank_series_touched": 0,
+ "records_verified_from_persisted_arrays": 3
+}

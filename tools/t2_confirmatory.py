@@ -563,7 +563,8 @@ _REVIEW_KEYS = {"schema", "reviewed_at_date", "reviewer",
                 "manifest_sha256", "census_sha256"}
 
 
-def _open_private_authority_file(path: Path):
+def _open_private_authority_file(path: Path,
+                                 missing_msg: str = None):
     """C38 (mirrors the B4 rule): descriptor-first open of ONE
     private-authority object — every component walked O_NOFOLLOW;
     the final two directories owned by the executing uid, exact
@@ -601,6 +602,7 @@ def _open_private_authority_file(path: Path):
     except FileNotFoundError:
         os.close(fd)
         raise ConfirmatoryRefusal(
+            missing_msg or
             "DESIGN_REVIEW_REQUIRED: the EXTERNAL Musashi design "
             "review record does not exist under the private "
             "reviewer-authority root — no seal, no score")
@@ -841,12 +843,112 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
     # C9: the external review — verified in full, BEFORE any
     # ledger artifact can exist.
     verify_design_review_record(design, manifest_sha, census_sha)
+    # C42/C47 (executor order): confirmatory EXECUTION is
+    # structurally closed by a SECOND external record — the
+    # Musashi execution record at the private authority root. The
+    # ledger is created only after it verifies.
+    exec_rec = verify_execution_record(design, _sha_file(dp))
     # C15: only now may the durable attempt ledger be created.
     open_attempt_ledger(Path(ledger_path))
-    raise ConfirmatoryRefusal(
-        "CONFIRMATORY_EXECUTION_NOT_IMPLEMENTED_IN_THIS_ORDER: "
-        "scoring begins only after the external audit of the "
-        "C25-C30 screen contract")
+    return {"gates": "ALL_OPEN", "execution_record_sha256":
+            exec_rec["_record_sha256"],
+            "note": "the confirmatory executor may now be "
+                    "invoked by the CLI/tool layer"}
+
+
+T2_EXECUTION_RECORD_PATH = (
+    AUTHORITY_ROOT / "MUSASHI_T2_V6_EXECUTION_RECORD.json")
+_EXEC_KEYS = {"schema", "reviewed_at_date", "reviewer",
+              "decision", "sealed_design_file_sha256",
+              "sealed_design_self_sha256", "candidate_commit"}
+
+
+def verify_execution_record(design: dict,
+                            design_file_sha: str) -> dict:
+    """C42/C47: the EXECUTION record — a second, separate external
+    Musashi record at the private authority root; the review
+    record seals the design, THIS one opens scoring. Read
+    descriptor-first with the same custody walk; exact schema;
+    must pin the sealed design's physical AND self identity.
+    Custody facts and exact bytes only."""
+    fd = _open_private_authority_file(
+        T2_EXECUTION_RECORD_PATH,
+        missing_msg=(
+            "T2_EXECUTION_RECORD_REQUIRED: confirmatory scoring "
+            "stays STRUCTURALLY CLOSED — the external Musashi "
+            "execution record does not exist under the private "
+            "reviewer-authority root; the sealed design alone "
+            "never scores"))
+    try:
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+    finally:
+        os.close(fd)
+    raw = b"".join(chunks)
+    rec_sha = hashlib.sha256(raw).hexdigest()
+    def _no_dupes(pairs):
+        keys = [k for k, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise ConfirmatoryRefusal(
+                "duplicate JSON key in the execution record")
+        return dict(pairs)
+    try:
+        rec = json.loads(raw.decode("utf-8"),
+                         object_pairs_hook=_no_dupes)
+    except json.JSONDecodeError as exc:
+        raise ConfirmatoryRefusal(
+            f"execution record is not well-formed JSON "
+            f"({exc.msg})")
+    if set(rec) != _EXEC_KEYS:
+        raise ConfirmatoryRefusal(
+            "execution record keys are not the exact schema")
+    for k in _EXEC_KEYS:
+        if type(rec[k]) is not str or not rec[k]:
+            raise ConfirmatoryRefusal(
+                f"execution record field {k!r} must be a "
+                "nonempty string")
+    if rec["schema"] != \
+            "agent_multi.musashi_t2_execution_record.v1":
+        raise ConfirmatoryRefusal(
+            "execution record carries a foreign schema")
+    import datetime as _dt
+    try:
+        d_ = _dt.date.fromisoformat(rec["reviewed_at_date"])
+    except ValueError:
+        raise ConfirmatoryRefusal(
+            "execution reviewed_at_date is not a canonical ISO "
+            "date")
+    if d_.isoformat() != rec["reviewed_at_date"]:
+        raise ConfirmatoryRefusal(
+            "execution reviewed_at_date is not canonical")
+    if rec["reviewer"] != "General Musashi":
+        raise ConfirmatoryRefusal(
+            "execution record author field is not the external "
+            "reviewer role")
+    if rec["decision"] != "OPEN_T2_CONFIRMATORY_EXECUTION":
+        raise ConfirmatoryRefusal(
+            "execution record decision does not open scoring")
+    body = {k: design[k] for k in sorted(design)
+            if k != "design_sha256"}
+    self_sha = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    if rec["sealed_design_self_sha256"] != self_sha or \
+            rec["sealed_design_self_sha256"] != \
+            design.get("design_sha256"):
+        raise ConfirmatoryRefusal(
+            "execution record does not pin THIS sealed design's "
+            "self identity")
+    _canon_sha(rec["sealed_design_file_sha256"],
+               "execution sealed file digest")
+    if rec["sealed_design_file_sha256"] != design_file_sha:
+        raise ConfirmatoryRefusal(
+            "execution record does not pin THIS sealed design's "
+            "physical bytes")
+    return {**rec, "_record_sha256": rec_sha}
 
 
 # ------- C17/C19: total numeric validation + model evidence -------
