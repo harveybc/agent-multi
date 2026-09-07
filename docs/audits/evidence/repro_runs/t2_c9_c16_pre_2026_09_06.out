@@ -1,0 +1,23 @@
+== C9: self-fabricated external review opens the gate ==
+gate outcome: REFUSED: CONFIRMATORY_EXECUTION_NOT_IMPLEMENTED_IN_THIS_ORDER: scoring begins on
+SELF_FABRICATED_REVIEW_REACHED_EXECUTOR: True
+LEDGER_CREATED_BEFORE_REVIEW_CHECK: True
+
+== C10: manifest not bound to physical bytes ==
+non-hex digest + traversing relpath + zero physical bytes accepted: True
+
+== C11: incomplete evidence adjudicates ELIGIBLE ==
+one origin, X/D only, ridge only, no costs/controls -> PUBLICLY_ELIGIBLE_CANDIDATE
+
+== C14: duplicate .tsf id silently overwritten ==
+series parsed: 1 | first value of s1: 500.0 (second row won silently)
+
+== C12: order-dependent census cut + no exact cap ==
+census truncates at max_series before hash selection: True
+probabilistic threshold with cap-40 intent kept 37 ids (design draft materialized 46/41/48)
+
+== C13: two factually incorrect declarations ==
+note says: declared minimum raised to 20 for safety
+license_text_sha256 == sha256(license id string): True
+
+PRE CONFIRMED: C9-C16 findings all reproduce
