@@ -38,6 +38,58 @@ CONTRACTS = {
 }
 
 
+_CENSUS_TOP_KEYS = {"schema", "manifest_sha256",
+                    "complete_walk_note", "population",
+                    "excluded_reasons",
+                    "admissible_series_by_family", "etth1"}
+_CENSUS_DATASET_KEYS = {"family", "frequency_declared",
+                        "seasonal_period", "series_parsed",
+                        "series_admissible", "series_excluded",
+                        "admissible_unit_ids",
+                        "unit_numeric_digests",
+                        "length_min_median_max", "zip_sha256",
+                        "tsf_member_sha256"}
+
+
+def validate_census_schema(census: dict) -> None:
+    """C28: the census document validated by its PRODUCTIVE
+    parser — exact top-level and per-dataset key sets, correct
+    schema tag, digests canonical, counts coherent with the unit
+    lists. Consumed by the fresh verifier, not only by tests."""
+    if not isinstance(census, dict) or \
+            census.get("schema") != "agent_multi.t2_bank_census.v2":
+        raise SystemExit(
+            "REFUSED: census absent or foreign schema")
+    if set(census) != _CENSUS_TOP_KEYS:
+        raise SystemExit(
+            f"REFUSED: census top-level keys are not the exact "
+            f"schema (diff: "
+            f"{sorted(set(census) ^ _CENSUS_TOP_KEYS)})")
+    pop = census["population"]
+    if not isinstance(pop, dict) or not pop:
+        raise SystemExit("REFUSED: census population empty")
+    for lid, p in pop.items():
+        if not isinstance(p, dict) or \
+                set(p) != _CENSUS_DATASET_KEYS:
+            raise SystemExit(
+                f"REFUSED: census dataset {lid!r} keys are not "
+                f"the exact schema (diff: "
+                f"{sorted(set(p) ^ _CENSUS_DATASET_KEYS)})")
+        ids = p["admissible_unit_ids"]
+        digs = p["unit_numeric_digests"]
+        if len(ids) != len(set(ids)) or \
+                p["series_admissible"] != len(ids) or \
+                set(digs) != set(ids):
+            raise SystemExit(
+                f"REFUSED: census dataset {lid!r} unit lists, "
+                "digests and counts are not coherent")
+        for uid, dg in digs.items():
+            if not isinstance(dg, str) or len(dg) != 64 or \
+                    dg != dg.lower():
+                raise SystemExit(
+                    f"REFUSED: census {uid} digest not canonical")
+
+
 def main() -> int:
     manifest = json.loads(
         (Path.home() / ".local/share/agent-multi/"

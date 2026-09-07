@@ -839,10 +839,24 @@
    "owner": "General Satoshi III"
   },
   "t2_fresh_verifier.py": {
-   "purpose": "C21 fresh-process population verifier: validates the manifest, reopens datasets by descriptor, rebuilds every unit and digest through the C1/C2/C4 loaders, reproduces the complete census and the exact v3 design population (family top-k); emits only a non-authorizing consistency label",
+   "purpose": "C21/C28 fresh-process verifier: validates census and design via the productive parsers, reopens datasets by descriptor, rebuilds every unit through the C1/C2/C4 loaders and re-derives EVERY unit_map field (family, panel, digest, period, horizon, length, temporal identity, origin windows); fresh_verify() is CALLED by run_confirmatory before the review gate and the ledger; emits only a non-authorizing consistency label",
    "lifecycle": "supported",
    "mutability": "read_only",
    "authority_class": "verifier",
+   "owner": "General Satoshi III"
+  },
+  "t2_design_draft_v4.py": {
+   "purpose": "T2-S step-5 SCREEN design DRAFT v4 (order C25-C30): supersedes v3 by digest; six named public panels, panel-level estimand (unweighted mean of paired D-X panel effects), austere composite rule (t df=5 + exact signs + LOPO + non-inferiority), per-unit origin windows/length/temporal identity derived from physical bytes BEFORE results, geometry-admissible family top-k; declares the hospital GEOMETRY_LIMITED fact openly; candidate for the Musashi design review, never sealed, zero scores",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t2_screen_sim.py": {
+   "purpose": "C30 evidence: operating characteristics of the composite six-panel screen rule on synthetic panel effects (boundary type-I under alpha, power vs between-panel sd, damaged/dominant-panel kill rates); no confirmatory outcome consumed",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
   }
  },

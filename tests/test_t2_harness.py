@@ -377,23 +377,29 @@ def test_c3_gate_sequence_typed_refusals(tmp_path):
 
 
 def test_c8_decision_rule_hierarchical():
-    """C8 (compat name): the hierarchical rule under the COMPLETE
-    C14 evidence model."""
+    """C8 (compat name) under the C29 SCREEN: six panels, panel-
+    level composite rule; concentrated panel harm defeats a
+    favorable grand average; the confirmatory adjudicator is a
+    typed refusal."""
     import t2_confirmatory as conf
     fams = {f"f{i}": 6 for i in range(6)}
-    design = _design_v2_fixture(fams, panels_per_family=3)
+    design = _design_v2_fixture(fams)
     good = [_rec_for(design, uid, delta=0.10)
             for uid in design["task_population"]["series_ids"]]
-    out = conf.adjudicate_confirmatory(good, design)
-    assert out["verdict"] == "PUBLICLY_ELIGIBLE_CANDIDATE"
-    # concentrated family harm defeats a favorable grand average
+    out = conf.adjudicate_screen(good, design)
+    assert out["verdict"] == "ADVANCE_TO_DOMAIN_VALIDATION"
+    assert "PUBLICLY_ELIGIBLE" not in json.dumps(out)
+    # concentrated panel harm defeats a favorable grand average
     mixed = [_rec_for(design, uid,
                       delta=(0.30 if not uid.startswith("f5")
                              else -0.10))
              for uid in design["task_population"]["series_ids"]]
-    out = conf.adjudicate_confirmatory(mixed, design)
-    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
-    assert "f5" in out["reason"]
+    out = conf.adjudicate_screen(mixed, design)
+    assert out["verdict"] == "DOES_NOT_ADVANCE"
+    assert "panel_f5" in out["reason"]
+    # the superseded confirmatory outcome no longer exists
+    with pytest.raises(SystemExit, match="superseded by"):
+        conf.adjudicate_confirmatory(good, design)
 
 
 def test_old_pilot_relabeled():
@@ -579,15 +585,40 @@ def test_c9_transplanted_or_fabricated_review_refuses(tmp_path,
                                          "c" * 64)
 
 
+_FIX_OPERATOR = {"kind": "ewma", "params": {"alpha": 0.3},
+                 "selection_source":
+                     "T1_v4_record_LAB_CALIBRATED"}
+_FIX_N_OBS = 150
+
+
+def _fix_windows():
+    import t2_bank as bank
+    return bank.origin_windows_for(_FIX_N_OBS, 3, 0.6)
+
+
+def _stamp(rec):
+    """Recompute record_sha256 the way the harness does — the
+    adversary CAN restamp; refusals must be SEMANTIC."""
+    body = {k: rec[k] for k in sorted(rec)
+            if k != "record_sha256"}
+    rec["record_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True,
+        allow_nan=False).encode()).hexdigest()
+    return rec
+
+
 def _complete_record(uid, fam, delta=0.10, seeds=(11, 12, 13),
-                     origins=3, arms=("X", "D", "XDR",
-                                      "width_control"),
+                     arms=("X", "D", "XDR", "width_control"),
                      wc_delta=0.0, ex_ratio=1.0,
                      cov_drop=0.0, width_ratio=1.0,
-                     dataset=None):
+                     dataset=None, windows=None, ex_support=4):
+    """C26: the FULL 21-key outer record the harness emits —
+    exact schema, bound geometry, extreme support, restamped
+    record_sha256."""
+    windows = windows or _fix_windows()
     ro = {}
     costs = {}
-    for i in range(origins):
+    for okey, wb in windows.items():
         res = {}
         for arm in arms:
             base = 1.0
@@ -606,7 +637,8 @@ def _complete_record(uid, fam, delta=0.10, seeds=(11, 12, 13),
                          1.0 * (width_ratio if arm == "D"
                                 else 1.0),
                      "mase_on_extreme_innovations":
-                         m * (ex_ratio if arm == "D" else 1.0)}
+                         m * (ex_ratio if arm == "D" else 1.0),
+                     "extreme_support": ex_support}
             res[arm] = {"ridge": dict(entry),
                         "mlp_small": {f"seed{s}": dict(entry)
                                       for s in seeds}}
@@ -614,26 +646,56 @@ def _complete_record(uid, fam, delta=0.10, seeds=(11, 12, 13),
             "mase_primary": 1.4,
             "interval_coverage_train_q90": 0.9,
             "interval_width_train_q90": 1.2}}
-        ro[f"origin{i}"] = {"results": res}
+        ro[okey] = {"train": list(wb["train"]),
+                    "score": list(wb["score"]),
+                    "mase_denominator_train_snaive": 0.5,
+                    "extreme_innovation_threshold_train": 1.0,
+                    "operator_artifact_sha256": "a" * 64,
+                    "results": res}
         arm_cost = {"lag_features_s": 0.01,
                     "ridge_fit_forecast_s": 0.1}
         for s in seeds:
             arm_cost[f"mlp_fit_forecast_seed{s}_s"] = 0.2
-        costs[f"origin{i}"] = {
+        costs[okey] = {
             "denoise_fit_transform_s": 0.1,
+            "target_construction_s": 0.02,
+            "seasonal_naive_s": 0.01,
             **{f"arm_{a}": dict(arm_cost) for a in
                ("X", "D", "XDR", "width_control")}}
-    return {"unit_id": uid, "family": fam,
-            "dataset": dataset or f"panel_{fam}",
-            "series_numeric_sha256": "d" * 64,
-            "seasonal_period": 12, "horizon": 1,
-            "rolling_origins": ro, "costs_by_phase": costs}
+    rec = {"schema": "agent_multi.t2_assay_record.v3",
+           "authority": "DEVELOPMENT_MECHANICS_ONLY_REQUIRES_"
+                        "C1_C8_CORRECTION_CLEARED",
+           "unit_id": uid, "family": fam,
+           "dataset": dataset or f"panel_{fam}",
+           "series_numeric_sha256": "d" * 64,
+           "bytes_sha256": "b" * 64,
+           "license_note": "cc-by-4.0",
+           "missingness": {"n_missing": 0},
+           "time_index": {"n": _FIX_N_OBS},
+           "time_provenance":
+               "ordinal_reconstructed_from_declared_frequency",
+           "horizon": 1, "seasonal_period": 12,
+           "seasonal_period_provenance":
+               "monash_record_frequency",
+           "operator": dict(_FIX_OPERATOR),
+           "seed_tape": list(seeds),
+           "series_is_the_primary_unit": True,
+           "origins_and_seeds_are_nested": True,
+           "claim_classes_only": ["utility", "calibration",
+                                  "extreme_preservation", "cost"],
+           "rolling_origins": ro, "costs_by_phase": costs,
+           "peak_rss_bytes": 1 << 20}
+    return _stamp(rec)
 
 
 def _design_v2_fixture(series_by_family, seeds=(11, 12, 13),
-                       panels_per_family=1):
+                       panels_per_family=1,
+                       min_series_per_panel=5):
+    """v4-shaped SCREEN design fixture: six named panels, unit_map
+    with bound origin windows, austere screen rule."""
     ids = []
     unit_map = {}
+    windows = _fix_windows()
     for fam, ns in series_by_family.items():
         for i in range(ns):
             uid = f"{fam}::s{i}"
@@ -642,115 +704,117 @@ def _design_v2_fixture(series_by_family, seeds=(11, 12, 13),
                      else f"panel_{fam}_{i % panels_per_family}")
             unit_map[uid] = {"family": fam, "dataset": panel,
                              "series_numeric_sha256": "d" * 64,
-                             "seasonal_period": 12, "horizon": 1}
+                             "seasonal_period": 12, "horizon": 1,
+                             "n_obs": _FIX_N_OBS,
+                             "time_identity_sha256": "0" * 64,
+                             "origin_windows": windows}
+    panels = sorted({b["dataset"] for b in unit_map.values()
+                     if b["family"] in
+                     list(series_by_family)[:6]})
     return {
+        "schema": "agent_multi.t2_screen_design.v4_draft",
+        "operator": dict(_FIX_OPERATOR),
         "task_population": {
             "series_ids": sorted(ids),
             "unit_map": unit_map,
             "primary_gate_families": list(series_by_family)[:6],
+            "screen_panels": panels,
         },
-        "role_geometry": {"rolling_origins": 3},
+        "role_geometry": {"rolling_origins": 3,
+                          "origin_base_frac": 0.6,
+                          "lags": 8, "horizon": 1},
         "seed_tape": list(seeds),
         "practical_margin_mase": 0.02,
         "observed_precision_rule": {"max_ci_halfwidth": 0.05},
         "harm_margins": {"extreme_innovation_mase_ratio_max": 1.2,
                          "coverage_drop_max": 0.1,
-                         "width_inflation_max": 1.5},
-        "precision_rule": {"min_series_per_family": 5,
-                           "min_families": 6},
+                         "width_inflation_max": 1.5,
+                         "non_inferiority_margin_mase": 0.02},
+        "precision_rule": {
+            "min_series_per_panel": min_series_per_panel,
+            "min_panels": 6},
         "multiplicity_rule": {"alpha": 0.05},
         "inference_method": {
-            "rule": "panel_replication_or_descriptive"},
-        "inference_scope": "named panels only"}
+            "rule": "six_panel_screen_t_sign_lopo"},
+        "inference_scope": "the six named panels only"}
 
 
 def _rec_for(design, uid, **kw):
     """Build a record consistent with the design's unit binding."""
     b = design["task_population"]["unit_map"][uid]
     return _complete_record(uid, b["family"],
-                            dataset=b["dataset"], **kw)
+                            dataset=b["dataset"],
+                            windows=b["origin_windows"], **kw)
 
 
 def test_c14_incomplete_evidence_refuses():
-    """C14 POST: the exact Musashi bypass — one origin, X/D only,
-    ridge only, no costs — REFUSES instead of adjudicating."""
+    """C14 POST under C26: the exact Musashi bypass — a bare
+    inner-only record — REFUSES at the OUTER schema instead of
+    adjudicating anything."""
     import t2_confirmatory as conf
     fams = {f"f{i}": 6 for i in range(6)}
     design = _design_v2_fixture(fams)
-    # the bypass shape
+    # the bypass shape: inner fragments with no outer identity
     recs = [{"unit_id": f"f{i}::s{j}", "family": f"f{i}",
              "rolling_origins": {"origin0": {"results": {
                  "X": {"ridge": {"mase_primary": 1.0}},
                  "D": {"ridge": {"mase_primary": 0.9}}}}}}
             for i in range(6) for j in range(6)]
     with pytest.raises(SystemExit,
-                       match="expected 3 rolling origins|costs"):
-        conf.adjudicate_confirmatory(recs, design)
-    # complete records with >=3 panels adjudicate; single panel
-    # is INCONCLUSIVE by the C23 inference rule
-    design3 = _design_v2_fixture(fams, panels_per_family=3)
-    good = [_rec_for(design3, uid)
-            for uid in design3["task_population"]["series_ids"]]
-    out = conf.adjudicate_confirmatory(good, design3)
-    assert out["verdict"] == "PUBLICLY_ELIGIBLE_CANDIDATE"
-    single = [_rec_for(design, uid)
+                       match="outer keys are not the exact"):
+        conf.adjudicate_screen(recs, design)
+    good = [_rec_for(design, uid)
+            for uid in design["task_population"]["series_ids"]]
+    out = conf.adjudicate_screen(good, design)
+    assert out["verdict"] == "ADVANCE_TO_DOMAIN_VALIDATION"
+    broken = [_rec_for(design, uid, arms=("X", "D", "XDR"))
               for uid in design["task_population"]["series_ids"]]
-    out1 = conf.adjudicate_confirmatory(single, design)
-    assert out1["verdict"] == "INCONCLUSIVE"
-    assert "unidentifiable" in out1["reason"] or \
-        "panel" in out1["reason"]
-    broken = [_rec_for(design3, uid, arms=("X", "D", "XDR"))
-              for uid in design3["task_population"]["series_ids"]]
     with pytest.raises(SystemExit, match="width_control"):
-        conf.adjudicate_confirmatory(broken, design3)
+        conf.adjudicate_screen(broken, design)
     # incomplete population refuses (missing unit never dropped)
     with pytest.raises(SystemExit,
                        match="differs from the sealed design"):
-        conf.adjudicate_confirmatory(good[:-1], design3)
+        conf.adjudicate_screen(good[:-1], design)
     # duplicate identity refuses
     with pytest.raises(SystemExit, match="duplicate unit"):
-        conf.adjudicate_confirmatory(good + [good[0]], design3)
+        conf.adjudicate_screen(good + [good[0]], design)
 
 
 def test_c14_gates_bite_individually():
     import t2_confirmatory as conf
     fams = {f"f{i}": 6 for i in range(6)}
-    design = _design_v2_fixture(fams, panels_per_family=3)
+    design = _design_v2_fixture(fams)
 
     def build(**kw):
         return [_rec_for(design, uid, **kw)
                 for uid in design["task_population"]["series_ids"]]
-    # family absent -> INCONCLUSIVE (all six required)
+    # a panel below support -> INCONCLUSIVE (all six required)
     short = [r for r in build() if r["family"] != "f5"]
-    design_short = _design_v2_fixture(fams, panels_per_family=3)
+    design_short = _design_v2_fixture(fams)
     design_short["task_population"]["series_ids"] = sorted(
         r["unit_id"] for r in short)
-    out = conf.adjudicate_confirmatory(short, design_short)
+    out = conf.adjudicate_screen(short, design_short)
     assert out["verdict"] == "INCONCLUSIVE"
-    assert "f5" in out["reason"]
+    assert "panel_f5" in out["reason"]
     # unattributed gain (width control matches D) -> INCONCLUSIVE
-    out = conf.adjudicate_confirmatory(
-        build(wc_delta=0.10), design)
+    out = conf.adjudicate_screen(build(wc_delta=0.10), design)
     assert out["verdict"] == "INCONCLUSIVE"
     assert "attributable" in out["reason"]
-    # extreme harm -> INELIGIBLE
-    out = conf.adjudicate_confirmatory(
-        build(ex_ratio=1.5), design)
-    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
-    # coverage harm -> INELIGIBLE
-    out = conf.adjudicate_confirmatory(
-        build(cov_drop=0.2), design)
-    assert out["verdict"] == "PUBLICLY_INELIGIBLE"
-    # observed precision: high variance -> INCONCLUSIVE
+    # extreme harm -> DOES_NOT_ADVANCE
+    out = conf.adjudicate_screen(build(ex_ratio=1.5), design)
+    assert out["verdict"] == "DOES_NOT_ADVANCE"
+    # coverage harm -> DOES_NOT_ADVANCE
+    out = conf.adjudicate_screen(build(cov_drop=0.2), design)
+    assert out["verdict"] == "DOES_NOT_ADVANCE"
+    # observed precision: high variance can never ADVANCE
     noisy = []
     import random
     rng = random.Random(3)
     for uid in design["task_population"]["series_ids"]:
         noisy.append(_rec_for(design, uid,
                               delta=rng.uniform(-0.15, 0.35)))
-    out = conf.adjudicate_confirmatory(noisy, design)
-    assert out["verdict"] in ("INCONCLUSIVE",
-                              "PUBLICLY_INELIGIBLE")
+    out = conf.adjudicate_screen(noisy, design)
+    assert out["verdict"] in ("INCONCLUSIVE", "DOES_NOT_ADVANCE")
 
 
 def test_c15_ledger_durable_and_late(tmp_path):
@@ -801,10 +865,10 @@ def test_c13_design_v2_truthful_and_structured():
 
 # ============= C17-C24 acceptance battery (ten kills) ==============
 
-def _d3(fams=None, panels=3):
+def _d3(fams=None):
+    """Six-panel screen design fixture (one panel per family)."""
     return _design_v2_fixture(fams or {f"f{i}": 6
-                                       for i in range(6)},
-                              panels_per_family=panels)
+                                       for i in range(6)})
 
 
 def _recs(design, **kw):
@@ -815,29 +879,39 @@ def _recs(design, **kw):
 def test_kill_1_nan_never_authorizes():
     import t2_confirmatory as conf
     d = _d3()
-    recs = _recs(d)
-    for r in recs:
-        for o in r["rolling_origins"].values():
-            o["results"]["D"]["ridge"]["mase_primary"] = \
-                float("nan")
-    with pytest.raises(SystemExit, match="not finite"):
-        conf.adjudicate_confirmatory(recs, d)
-    # inf / str / bool / negative each die with the field path
-    for bad, msg in ((float("inf"), "not finite"),
-                     ("0.9", "non-numeric"),
+    # NaN/inf cannot even be restamped (allow_nan=False): the
+    # record has NO valid identity digest and refuses TYPED
+    for bad in (float("inf"), float("nan")):
+        recs = _recs(d)
+        recs[0]["rolling_origins"]["origin0"]["results"]["D"][
+            "ridge"]["mase_primary"] = bad
+        with pytest.raises(SystemExit,
+                           match="non-finite numbers"):
+            conf.adjudicate_screen(recs, d)
+    # str / bool / negative each die with the field path
+    for bad, msg in (("0.9", "non-numeric"),
                      (True, "non-numeric"),
                      (-0.1, "nonnegative")):
         recs = _recs(d)
         recs[0]["rolling_origins"]["origin0"]["results"]["D"][
             "ridge"]["mase_primary"] = bad
+        _stamp(recs[0])
         with pytest.raises(SystemExit, match=msg):
-            conf.adjudicate_confirmatory(recs, d)
+            conf.adjudicate_screen(recs, d)
     # coverage outside [0,1] dies
     recs = _recs(d)
     recs[0]["rolling_origins"]["origin0"]["results"]["X"][
         "ridge"]["interval_coverage_train_q90"] = 1.4
+    _stamp(recs[0])
     with pytest.raises(SystemExit, match="outside"):
-        conf.adjudicate_confirmatory(recs, d)
+        conf.adjudicate_screen(recs, d)
+    # an UNRESTAMPED mutation dies even earlier, at identity
+    recs = _recs(d)
+    recs[0]["rolling_origins"]["origin0"]["results"]["X"][
+        "ridge"]["mase_primary"] = 0.5
+    with pytest.raises(SystemExit,
+                       match="record_sha256 does not recompute"):
+        conf.adjudicate_screen(recs, d)
 
 
 def test_kill_2_family_relabel_refuses():
@@ -847,19 +921,22 @@ def test_kill_2_family_relabel_refuses():
     for r in recs:
         i = int(r["family"][1])
         r["family"] = f"f{(i + 1) % 6}"
+        _stamp(r)
     with pytest.raises(SystemExit,
                        match="relabeled populations refuse"):
-        conf.adjudicate_confirmatory(recs, d)
-    # transplanted digest / dataset / period each refuse
+        conf.adjudicate_screen(recs, d)
+    # transplanted digest / dataset / period each refuse — even
+    # RESTAMPED (semantic binding, not only hash identity)
     for field, val in (("series_numeric_sha256", "e" * 64),
                        ("dataset", "panel_alien"),
                        ("seasonal_period", 99)):
         recs = _recs(d)
         recs[0][field] = val
+        _stamp(recs[0])
         with pytest.raises(SystemExit,
                            match="differs from the design "
                                  "binding"):
-            conf.adjudicate_confirmatory(recs, d)
+            conf.adjudicate_screen(recs, d)
 
 
 def test_kill_3_null_or_incomplete_costs_refuse():
@@ -869,21 +946,25 @@ def test_kill_3_null_or_incomplete_costs_refuse():
     for r in recs:
         for o in r["costs_by_phase"]:
             r["costs_by_phase"][o] = {"arm_X": None}
+        _stamp(r)
     with pytest.raises(SystemExit,
-                       match="phase cost|arm costs"):
-        conf.adjudicate_confirmatory(recs, d)
-    # one missing MLP seed cost refuses
+                       match="cost phases are not the exact"):
+        conf.adjudicate_screen(recs, d)
+    # one missing MLP seed cost refuses (exact per-arm set)
     recs = _recs(d)
     del recs[0]["costs_by_phase"]["origin0"]["arm_D"][
         "mlp_fit_forecast_seed12_s"]
-    with pytest.raises(SystemExit, match="seed12 cost missing"):
-        conf.adjudicate_confirmatory(recs, d)
+    _stamp(recs[0])
+    with pytest.raises(SystemExit,
+                       match="arm cost phases are not the exact"):
+        conf.adjudicate_screen(recs, d)
     # a negative cost refuses
     recs = _recs(d)
     recs[0]["costs_by_phase"]["origin0"]["arm_X"][
         "ridge_fit_forecast_s"] = -1.0
+    _stamp(recs[0])
     with pytest.raises(SystemExit, match="nonnegative"):
-        conf.adjudicate_confirmatory(recs, d)
+        conf.adjudicate_screen(recs, d)
 
 
 def test_kill_4_forged_mlp_payload_refuses():
@@ -895,14 +976,16 @@ def test_kill_4_forged_mlp_payload_refuses():
             for arm in ("X", "D", "XDR", "width_control"):
                 o["results"][arm]["mlp_small"] = {
                     f"seed{s}": "forged" for s in (11, 12, 13)}
+        _stamp(r)
     with pytest.raises(SystemExit, match="opaque payload"):
-        conf.adjudicate_confirmatory(recs, d)
+        conf.adjudicate_screen(recs, d)
     # seasonal-naive baseline is validated too, never ignored
     recs = _recs(d)
     recs[0]["rolling_origins"]["origin0"]["results"][
         "seasonal_naive"] = {"metrics": "forged"}
+    _stamp(recs[0])
     with pytest.raises(SystemExit, match="opaque payload"):
-        conf.adjudicate_confirmatory(recs, d)
+        conf.adjudicate_screen(recs, d)
 
 
 def test_kill_5_manifest_schema_identity_license(tmp_path):
@@ -1019,20 +1102,9 @@ def test_kill_9_design_duplicates_and_bool():
 
 
 def test_kill_10_no_fabricated_precision():
-    """C23: with a single panel per family the primary gate is
-    INCONCLUSIVE by construction; with >=3 panels the t-based
-    panel CI covers (committed simulation)."""
-    import t2_confirmatory as conf
-    d1 = _d3(panels=1)
-    out = conf.adjudicate_confirmatory(_recs(d1), d1)
-    assert out["verdict"] == "INCONCLUSIVE"
-    assert "unidentifiable" in out["reason"] or \
-        "panel" in out["reason"]
-    for st in out["families"].values():
-        assert "inferential" not in st.get("ci_class", "")
-    d2 = _d3(panels=2)
-    out2 = conf.adjudicate_confirmatory(_recs(d2), d2)
-    assert out2["verdict"] == "INCONCLUSIVE"
+    """C23→C29: series counts never become panel-level precision;
+    the committed simulations ground both the panel-level t rule
+    and the composite screen rule's operating characteristics."""
     sim = json.loads(
         (Path.home() / ".local/share/agent-multi/"
          "t2_coverage_sim_20260906.json").read_text())
@@ -1044,8 +1116,9 @@ def test_kill_10_no_fabricated_precision():
 
 
 def test_fresh_verifier_live_population():
-    """C21 live: the fresh verifier rebuilds 4650 units from
-    physical bytes and reproduces the v3 design population."""
+    """C21/C28 live: the fresh verifier rebuilds 4650 units from
+    physical bytes and reproduces the v4 SCREEN population (202
+    series) with every unit_map field re-derived."""
     import subprocess
     S = Path.home() / ".local/share/agent-multi"
     rc = subprocess.run(
@@ -1054,10 +1127,345 @@ def test_fresh_verifier_live_population():
          str(S / "t2_public_data_manifest_20260906.json"),
          "--census", str(S / "t2_bank_census_20260906.json"),
          "--design",
-         str(S / "t2_confirmatory_design_DRAFT_V3_20260906.json")],
+         str(S / "t2_screen_design_DRAFT_V4_20260906.json")],
         capture_output=True, text=True)
-    assert rc.returncode == 3
+    assert rc.returncode == 3, rc.stderr[-500:]
     out = json.loads(rc.stdout)
     assert out["fresh_verification"] == \
         "POPULATION_REDERIVED_NON_AUTHORIZING"
     assert out["units_rederived"] == 4650
+    assert out["design_series"] == 202
+
+
+# ========== C25-C30 acceptance battery (the ten kills) =============
+
+
+def test_c30_kill_1_missing_extremes_refuse():
+    """C25a: extreme_support > 0 with the metric absent REFUSES —
+    absence never improves a gate; support absent refuses too."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = _recs(d)
+    for r in recs:
+        for o in r["rolling_origins"].values():
+            for arm in ("X", "D", "XDR", "width_control"):
+                for ent in ([o["results"][arm]["ridge"]]
+                            + list(o["results"][arm][
+                                "mlp_small"].values())):
+                    ent.pop("mase_on_extreme_innovations", None)
+        _stamp(r)
+    with pytest.raises(SystemExit,
+                       match="extreme metric is absent"):
+        conf.adjudicate_screen(recs, d)
+    recs = _recs(d)
+    for r in recs:
+        for o in r["rolling_origins"].values():
+            for arm in ("X", "D", "XDR", "width_control"):
+                for ent in ([o["results"][arm]["ridge"]]
+                            + list(o["results"][arm][
+                                "mlp_small"].values())):
+                    ent.pop("mase_on_extreme_innovations", None)
+                    ent.pop("extreme_support", None)
+        _stamp(r)
+    with pytest.raises(SystemExit,
+                       match="extreme_support absent"):
+        conf.adjudicate_screen(recs, d)
+
+
+def test_c30_kill_2_zero_baseline_extreme_is_harm():
+    """C25b: X extreme error 0 with D extreme error large is
+    HARM_INFINITE — damage, never absence; X=0,D=0 is ratio 1.0
+    with no silent division; zero support is NOT_EVALUABLE and
+    never favorable."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = _recs(d)
+    for r in recs:
+        for o in r["rolling_origins"].values():
+            o["results"]["X"]["ridge"][
+                "mase_on_extreme_innovations"] = 0.0
+            o["results"]["D"]["ridge"][
+                "mase_on_extreme_innovations"] = 999.0
+        _stamp(r)
+    out = conf.adjudicate_screen(recs, d)
+    assert out["verdict"] == "DOES_NOT_ADVANCE"
+    assert "infinite extreme damage" in out["reason"]
+    # X=0, D=0 -> EVALUATED ratio 1.0 (no division error, no harm)
+    x0 = conf.extreme_contrast(
+        {"extreme_support": 3,
+         "mase_on_extreme_innovations": 0.0},
+        {"extreme_support": 3,
+         "mase_on_extreme_innovations": 0.0}, "p")
+    assert x0 == {"state": "EVALUATED", "ratio": 1.0}
+    # zero support -> NOT_EVALUABLE -> INCONCLUSIVE, never a pass
+    recs = _recs(d, ex_support=0)
+    out = conf.adjudicate_screen(recs, d)
+    assert out["verdict"] == "INCONCLUSIVE"
+    assert "NOT_EVALUABLE" in out["reason"]
+
+
+def test_c30_kill_3_record_without_geometry_refuses():
+    """C26: a record lacking train/score (however restamped)
+    refuses before any metric is consumed."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = _recs(d)
+    for r in recs:
+        for o in r["rolling_origins"].values():
+            o.pop("train", None)
+            o.pop("score", None)
+        _stamp(r)
+    with pytest.raises(SystemExit,
+                       match="origin keys are not the exact"):
+        conf.adjudicate_screen(recs, d)
+
+
+def test_c30_kill_4_shifted_window_refuses():
+    """C26: mutating a single window bound by ONE row refuses
+    against the design's bound geometry."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = _recs(d)
+    tr = recs[0]["rolling_origins"]["origin1"]["train"]
+    tr[1] += 1
+    _stamp(recs[0])
+    with pytest.raises(SystemExit,
+                       match="windows differ from the design"):
+        conf.adjudicate_screen(recs, d)
+    recs = _recs(d)
+    sc = recs[0]["rolling_origins"]["origin2"]["score"]
+    sc[0] -= 1
+    _stamp(recs[0])
+    with pytest.raises(SystemExit,
+                       match="windows differ from the design"):
+        conf.adjudicate_screen(recs, d)
+
+
+def test_c30_kill_5_costs_without_global_phases_refuse():
+    """C27: omitting target_construction_s or seasonal_naive_s
+    refuses — the cost schema is exact, null and unknown phases
+    refuse too."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = _recs(d)
+    for r in recs:
+        for oc in r["costs_by_phase"].values():
+            oc.pop("target_construction_s", None)
+            oc.pop("seasonal_naive_s", None)
+        _stamp(r)
+    with pytest.raises(SystemExit,
+                       match="cost phases are not the exact"):
+        conf.adjudicate_screen(recs, d)
+    # null phase refuses
+    recs = _recs(d)
+    recs[0]["costs_by_phase"]["origin0"][
+        "seasonal_naive_s"] = None
+    _stamp(recs[0])
+    with pytest.raises(SystemExit, match="finite nonnegative"):
+        conf.adjudicate_screen(recs, d)
+    # unknown extra phase refuses
+    recs = _recs(d)
+    recs[0]["costs_by_phase"]["origin0"]["smuggled_s"] = 0.1
+    _stamp(recs[0])
+    with pytest.raises(SystemExit,
+                       match="cost phases are not the exact"):
+        conf.adjudicate_screen(recs, d)
+
+
+def test_c30_kill_6_forged_unit_map_semantics_refuse():
+    """C28a: a unit_map entry with the TRUE numeric digest and
+    forged family/panel/period/geometry refuses in the fresh
+    verifier's full re-derivation (live, physical bytes)."""
+    import t2_confirmatory as conf
+    import t2_fresh_verifier as fv
+    S = Path.home() / ".local/share/agent-multi"
+    manifest = conf.strict_json_load(
+        S / "t2_public_data_manifest_20260906.json", "m")
+    census = conf.strict_json_load(
+        S / "t2_bank_census_20260906.json", "c")
+    design = conf.strict_json_load(
+        S / "t2_screen_design_DRAFT_V4_20260906.json", "d")
+    forged = json.loads(json.dumps(design))
+    uid = design["task_population"]["series_ids"][0]
+    b = forged["task_population"]["unit_map"][uid]
+    assert len(b["series_numeric_sha256"]) == 64  # digest REAL
+    b["family"] = "totally_forged_family"
+    b["seasonal_period"] = 999
+    with pytest.raises(SystemExit,
+                       match="do not re-derive from the physical "
+                             "bytes"):
+        fv.fresh_verify(manifest, census, forged,
+                        manifest_sha=None)
+    # forged origin windows die too
+    forged2 = json.loads(json.dumps(design))
+    b2 = forged2["task_population"]["unit_map"][uid]
+    b2["origin_windows"]["origin0"]["train"] = [0, 1]
+    with pytest.raises(SystemExit,
+                       match="do not re-derive from the physical "
+                             "bytes"):
+        fv.fresh_verify(manifest, census, forged2,
+                        manifest_sha=None)
+
+
+def test_c30_kill_7_symlink_root_refuses(tmp_path):
+    """C28b: a raw ROOT that is itself a symlink to the true
+    directory refuses — no resolve() ever precedes the open."""
+    import t2_confirmatory as conf
+    m, raw = _mk_manifest(tmp_path)
+    os.symlink(raw, tmp_path / "rootlink")
+    with pytest.raises(SystemExit, match="symlink root"):
+        conf.validate_public_manifest(
+            m, raw_root=tmp_path / "rootlink")
+    # the honest physical root still validates
+    adm = conf.validate_public_manifest(m, raw_root=raw)
+    assert "probe" in adm
+    # source guard: no resolve() may reappear before the root open
+    src = (REPO / "tools/t2_confirmatory.py").read_text()
+    seg = src[src.index("def validate_public_manifest"):
+              src.index("_DESIGN_KEYS")]
+    assert ".resolve()" not in seg
+
+
+def test_c30_kill_8_fresh_verifier_wired_into_single_path(
+        tmp_path):
+    """C28c: run_confirmatory CALLS the fresh verifier before the
+    review gate and the ledger — a semantically forged design dies
+    at re-derivation, BEFORE any review/ledger stage, and no
+    ledger artifact is created."""
+    import t2_confirmatory as conf
+    S = Path.home() / ".local/share/agent-multi"
+    mp = S / "t2_public_data_manifest_20260906.json"
+    cp = S / "t2_bank_census_20260906.json"
+    dp = S / "t2_screen_design_DRAFT_V4_20260906.json"
+    lp = tmp_path / "ledger.json"
+    # the honest v4 draft passes fresh verification LIVE and dies
+    # at the NEXT gate (no Musashi review record exists yet)
+    with pytest.raises(SystemExit,
+                       match="DESIGN_REVIEW_REQUIRED"):
+        conf.run_confirmatory(mp, dp, lp, census_path=cp)
+    assert not lp.exists()
+    # a forged design (true digest, false semantics) dies at the
+    # fresh re-derivation, i.e. BEFORE the review gate
+    design = conf.strict_json_load(dp, "d")
+    forged = json.loads(json.dumps(design))
+    uid = design["task_population"]["series_ids"][0]
+    forged["task_population"]["unit_map"][uid]["family"] = "alien"
+    body = {k: forged[k] for k in sorted(forged)
+            if k != "design_sha256"}
+    forged["design_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    fp = tmp_path / "forged_design.json"
+    fp.write_text(json.dumps(forged))
+    with pytest.raises(SystemExit,
+                       match="do not re-derive from the physical "
+                             "bytes"):
+        conf.run_confirmatory(mp, fp, lp, census_path=cp)
+    assert not lp.exists()
+    # source guard: the call precedes verify_design_review_record
+    src = (REPO / "tools/t2_confirmatory.py").read_text()
+    seg = src[src.index("def run_confirmatory"):]
+    seg = seg[:seg.index("def ", 10)]
+    assert seg.index("fresh_verify") < seg.index(
+        "verify_design_review_record") < seg.index(
+        "open_attempt_ledger")
+
+
+def test_c30_kill_9_dominant_panel_fails_lopo():
+    """C29: one dominant panel cannot carry the screen — the
+    leave-one-panel-out rule blocks ADVANCE even when the grand
+    mean clears the margin."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = []
+    for uid in d["task_population"]["series_ids"]:
+        big = uid.startswith("f0")
+        recs.append(_rec_for(d, uid,
+                             delta=(0.030 if big else 0.019)))
+    out = conf.adjudicate_screen(recs, d)
+    assert out["verdict"] != "ADVANCE_TO_DOMAIN_VALIDATION"
+    assert "leave-one-panel-out" in out["reason"]
+    lopo = out["leave_one_panel_out_means"]
+    assert min(lopo) <= 0.02 < max(lopo)
+    # a grossly dominant panel dies too (wide interval => the
+    # precision gate fires first; never ADVANCE either way)
+    recs2 = []
+    for uid in d["task_population"]["series_ids"]:
+        big = uid.startswith("f0")
+        recs2.append(_rec_for(d, uid,
+                              delta=(0.60 if big else 0.005)))
+    out2 = conf.adjudicate_screen(recs2, d)
+    assert out2["verdict"] != "ADVANCE_TO_DOMAIN_VALIDATION"
+    assert min(out2["leave_one_panel_out_means"]) <= 0.02
+
+
+def test_c30_kill_10_favorable_average_with_damaged_panel():
+    """C29: a favorable unweighted average with ONE materially
+    damaged panel is DOES_NOT_ADVANCE — sign sensitivity and the
+    non-inferiority margin both block it."""
+    import t2_confirmatory as conf
+    d = _d3()
+    recs = []
+    for uid in d["task_population"]["series_ids"]:
+        harmed = uid.startswith("f3")
+        recs.append(_rec_for(d, uid,
+                             delta=(-0.06 if harmed else 0.09)))
+    out = conf.adjudicate_screen(recs, d)
+    assert out[
+        "primary_estimand_unweighted_mean_of_panel_effects"] > 0.02
+    assert out["verdict"] == "DOES_NOT_ADVANCE"
+    assert "non-inferiority" in out["reason"]
+    assert out["signs_positive"] == 5
+
+
+def test_c29_screen_contract_shape():
+    """C29: the adjudicator emits ONLY screen outcomes, never
+    eligibility; refuses a design without the screen rule; the
+    committed v4 draft carries the estimand and the committed
+    screen simulation shows the composite rule's operating
+    characteristics."""
+    import t2_confirmatory as conf
+    d = _d3()
+    out = conf.adjudicate_screen(_recs(d), d)
+    assert out["verdict"] in ("ADVANCE_TO_DOMAIN_VALIDATION",
+                              "DOES_NOT_ADVANCE", "INCONCLUSIVE")
+    assert "PUBLICLY_ELIGIBLE" not in json.dumps(out)
+    assert "ONLY these six public panels" in out["scope"]
+    # a v3-rule design refuses in the screen adjudicator
+    d3_old = _d3()
+    d3_old["inference_method"] = {
+        "rule": "panel_replication_or_descriptive"}
+    with pytest.raises(SystemExit,
+                       match="six-panel screen rule"):
+        conf.adjudicate_screen(_recs(d3_old), d3_old)
+    # the live v4 draft: estimand block, outputs, hospital fact
+    S = Path.home() / ".local/share/agent-multi"
+    v4 = json.loads(
+        (S / "t2_screen_design_DRAFT_V4_20260906.json")
+        .read_text())
+    assert v4["schema"] == "agent_multi.t2_screen_design.v4_draft"
+    est = v4["estimand"]
+    assert est["superior_unit"] == "panel"
+    assert list(est["outputs"]) == [
+        "ADVANCE_TO_DOMAIN_VALIDATION", "DOES_NOT_ADVANCE",
+        "INCONCLUSIVE"]
+    assert "PUBLICLY_ELIGIBLE" not in json.dumps(v4["estimand"])
+    assert len(v4["task_population"]["screen_panels"]) == 6
+    assert "hospital" in v4["task_population"][
+        "geometry_limited_panels"]
+    assert "t2c_successor" in est and "CONDITIONAL" in \
+        est["t2c_successor"]
+    # v3 superseded by digest chain
+    v3_sha = hashlib.sha256(
+        (S / "t2_confirmatory_design_DRAFT_V3_20260906.json")
+        .read_bytes()).hexdigest()
+    assert v4["supersedes_draft_sha256"] == v3_sha
+    # committed screen-rule simulation: boundary type-I under
+    # alpha; damaged/dominant panels never advance
+    sim = json.loads(
+        (S / "t2_screen_sim_20260906.json").read_text())
+    for row in sim["rows"]:
+        if row["scenario"] == "boundary_type_I":
+            assert row["advance_rate"] < 0.05
+        if row["scenario"] in ("one_damaged_panel",
+                               "one_dominant_panel"):
+            assert row["advance_rate"] == 0.0

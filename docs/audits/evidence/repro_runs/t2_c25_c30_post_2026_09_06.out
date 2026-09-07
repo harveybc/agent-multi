@@ -1,0 +1,38 @@
+== C25a: missing extreme metrics -> typed refusal ==
+MISSING_EXTREMES: DIES [REFUSED: f0::s0.origin0.D: extreme_support 4 > 0 but the extreme metric is absent — absence never im] match=True
+
+== C25b: X extreme 0 vs D 999 -> HARM_INFINITE ==
+ZERO_BASELINE_EXTREME: DOES_NOT_ADVANCE | panel_f0: infinite extreme damage (X extreme error 0, D > 0); panel_f1
+
+== C26: record without geometry -> refusal ==
+NO_ORIGIN_GEOMETRY: DIES [REFUSED: f0::s0 origin0: origin keys are not the exact schema (diff: ['score', 'train']) — a record ] match=True
+
+== C26: one window bound shifted one row -> refusal ==
+SHIFTED_WINDOW: DIES [REFUSED: f0::s0 origin1: train/score windows differ from the design's bound geometry — a record with] match=True
+
+== C27: costs without target/baseline -> refusal ==
+MISSING_GLOBAL_COST_PHASES: DIES [REFUSED: f0::s0.origin0.costs: cost phases are not the exact schema (diff: ['seasonal_naive_s', 'tar] match=True
+
+== C28a: forged unit_map semantics (TRUE digest) dies in the LIVE fresh re-derivation ==
+FORGED_UNIT_MAP: DIES [REFUSED: electricity_weekly::T112: unit_map fields do not re-derive from the physical bytes (forged/] match=True
+
+== C28b: symlink ROOT refuses ==
+SYMLINK_ROOT: DIES [REFUSED: raw root unopenable without following links (errno 20: Not a directory) — a symlink root re] match=True
+honest physical root still validates: True
+
+== C28c: run_confirmatory CONSUMES the fresh verifier (live), before review and ledger ==
+HONEST_V4_REACHES_REVIEW_GATE: DIES [REFUSED: DESIGN_REVIEW_REQUIRED: the external Musashi design review record does not exist — the next] match=True
+no ledger artifact created: True
+order inside the single path: fresh_verify < review < ledger: True
+
+== C29: dominant panel cannot carry the screen ==
+DOMINANT_PANEL: INCONCLUSIVE | t lower bound 0.0161 <= margin; a leave-one-panel-out mean falls below the margi
+
+== C29: favorable average with one damaged panel ==
+DAMAGED_PANEL: DOES_NOT_ADVANCE | grand = 0.065
+
+== C29: single estimand; eligibility outcome dead ==
+superior_unit: panel | outputs: ['ADVANCE_TO_DOMAIN_VALIDATION', 'DOES_NOT_ADVANCE', 'INCONCLUSIVE']
+adjudicate_confirmatory: REFUSED: adjudicate_confirmatory is superseded by adjudicate_screen (T2-S); the 
+
+POST CONFIRMED: all ten C25-C30 adversaries die; screen contract executable

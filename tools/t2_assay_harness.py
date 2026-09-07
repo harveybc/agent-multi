@@ -128,6 +128,7 @@ def load_task_unit(census: dict, unit_id: str) -> dict:
     time_facts = bank.check_time_index(ts, unit_id)
     return {"unit_id": unit_id, "y": y,
             "bytes_sha256": meta["bytes_sha256"],
+            "dataset": f"statsmodels:{meta['module']}",
             "family": meta["family"],
             "frequency": meta["frequency"],
             "license_note": meta["license_note"],
@@ -422,11 +423,18 @@ def assay_unit(co, unit: dict, h: int = 1) -> dict:
         costs[okey] = ocost
     peak_rss = resource.getrusage(
         resource.RUSAGE_SELF).ru_maxrss * 1024
-    rec = {"schema": "agent_multi.t2_assay_record.v2",
+    import t2_bank as _bank
+    rec = {"schema": "agent_multi.t2_assay_record.v3",
            "authority": "DEVELOPMENT_MECHANICS_ONLY_REQUIRES_"
                         "C1_C8_CORRECTION_CLEARED",
            "unit_id": unit["unit_id"],
            "family": unit["family"],
+           # C26: IDENTITY is physical in the record — the panel
+           # it came from and the exact numeric digest of the
+           # scored series, both under record_sha256.
+           "dataset": unit.get("dataset", "development_bank"),
+           "series_numeric_sha256":
+               _bank.series_numeric_digest(y),
            "bytes_sha256": unit["bytes_sha256"],
            "license_note": unit["license_note"],
            "missingness": unit["missingness"],
@@ -458,6 +466,7 @@ def check_record_schema(rec: dict) -> None:
     fields refuse (noise/SNR/eligibility are structurally
     impossible claims for T2)."""
     want = {"schema", "authority", "unit_id", "family",
+            "dataset", "series_numeric_sha256",
             "bytes_sha256", "license_note", "missingness",
             "time_index", "time_provenance", "horizon",
             "seasonal_period", "seasonal_period_provenance",

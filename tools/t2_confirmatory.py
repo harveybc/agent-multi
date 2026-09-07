@@ -146,7 +146,27 @@ def validate_public_manifest(manifest: dict,
     if raw_root is None:
         raw_root = (Path.home() /
                     ".local/share/agent-multi/t2_public_raw")
-    raw_root = Path(raw_root).resolve()
+    # C28: the PHYSICAL root is opened and verified WITHOUT
+    # resolving symlinks first — os.path.abspath is lexical only,
+    # and the O_NOFOLLOW open refuses a root that is itself a
+    # link, exactly like leaves and intermediate components.
+    raw_root = Path(os.path.abspath(raw_root))
+    try:
+        rfd = os.open(str(raw_root),
+                      os.O_RDONLY | os.O_NOFOLLOW
+                      | getattr(os, "O_DIRECTORY", 0))
+    except OSError as exc:
+        raise ConfirmatoryRefusal(
+            f"raw root unopenable without following links "
+            f"(errno {exc.errno}: {exc.strerror}) — a symlink "
+            "root refuses like any other symlinked component")
+    try:
+        import stat as _stat
+        if not _stat.S_ISDIR(os.fstat(rfd).st_mode):
+            raise ConfirmatoryRefusal(
+                "raw root is not a physical directory")
+    finally:
+        os.close(rfd)
     total = 0
     admissible = {}
     for lid, d in ds.items():
@@ -190,10 +210,10 @@ def validate_public_manifest(manifest: dict,
             raise ConfirmatoryRefusal(
                 f"dataset {lid!r} relpath is absolute or "
                 "traversing")
-        target = (raw_root / rel).resolve()
-        if raw_root not in target.parents and target != raw_root:
-            raise ConfirmatoryRefusal(
-                f"dataset {lid!r} escapes the raw root")
+        # C28: containment is by CONSTRUCTION — rel is relative
+        # with no '..' (checked above) and every component is
+        # opened via openat/O_NOFOLLOW from the verified root
+        # descriptor; no resolve() ever names the target.
         total += d["byte_size"]
         if d["admission"] not in _ADMISSIONS:
             raise ConfirmatoryRefusal(
@@ -273,12 +293,21 @@ _DESIGN_KEYS = {
     "supersedes_draft_sha256", "operator", "task_population",
     "role_geometry", "arms", "models", "seed_tape",
     "primary_contrast", "secondary_gates", "primary_metric",
+    "estimand",
     "practical_margin_mase", "observed_precision_rule",
     "harm_margins", "precision_rule", "sensitivity_rule",
     "inference_method", "inference_scope", "multiplicity_rule",
     "missing_unit_rule", "inconclusive_rule", "resource_contract",
     "verifier_specification", "design_review_record_sha256",
     "design_sha256"}
+
+_DESIGN_SCHEMAS_V4 = {"agent_multi.t2_screen_design.v4_draft",
+                      "agent_multi.t2_screen_design.v4"}
+SCREEN_OUTCOMES = ("ADVANCE_TO_DOMAIN_VALIDATION",
+                   "DOES_NOT_ADVANCE", "INCONCLUSIVE")
+_UNIT_MAP_KEYS = {"family", "dataset", "series_numeric_sha256",
+                  "seasonal_period", "horizon", "n_obs",
+                  "time_identity_sha256", "origin_windows"}
 
 
 def _unique_list(v, what, elem_type=None):
@@ -299,11 +328,17 @@ def _unique_list(v, what, elem_type=None):
 
 def validate_confirmatory_design(design: dict,
                                  manifest_sha: str) -> None:
-    """C3.2-C3.6 + C8: the immutable design, sealed after the
-    census/acquisition and before any score."""
+    """C3.2-C3.6 + C8 + C26/C29: the immutable T2-S SCREEN design
+    (v4), sealed after the census/acquisition and before any
+    score. v3 and earlier are superseded history and refuse
+    here."""
     if not isinstance(design, dict) or set(design) != _DESIGN_KEYS:
         raise ConfirmatoryRefusal(
             "confirmatory design absent or not the exact schema")
+    if design.get("schema") not in _DESIGN_SCHEMAS_V4:
+        raise ConfirmatoryRefusal(
+            "design schema is not the v4 T2-S screen contract — "
+            "superseded drafts (v3 and earlier) never validate")
     body = {k: design[k] for k in sorted(design)
             if k != "design_sha256"}
     if hashlib.sha256(json.dumps(
@@ -365,6 +400,73 @@ def validate_confirmatory_design(design: dict,
         if k not in rg:
             raise ConfirmatoryRefusal(
                 f"design.role_geometry lacks {k}")
+    # ---- C29: the T2-S screen estimand, exact and austere ----
+    est = design["estimand"]
+    if not isinstance(est, dict):
+        raise ConfirmatoryRefusal("design.estimand malformed")
+    for k in ("population", "superior_unit", "panel_effect",
+              "primary", "scope", "outputs", "decision_rule",
+              "t2c_successor"):
+        if not est.get(k):
+            raise ConfirmatoryRefusal(f"design.estimand lacks {k}")
+    if tuple(est["outputs"]) != SCREEN_OUTCOMES:
+        raise ConfirmatoryRefusal(
+            "design.estimand.outputs must be exactly the three "
+            "screen outcomes")
+    if "PUBLICLY_ELIGIBLE" in json.dumps(est["outputs"]):
+        raise ConfirmatoryRefusal(
+            "PUBLICLY_ELIGIBLE_CANDIDATE is not a screen outcome "
+            "— the screen never grants public eligibility")
+    if est["superior_unit"] != "panel":
+        raise ConfirmatoryRefusal(
+            "the screen's superior unit is the PANEL")
+    panels = tp2.get("screen_panels")
+    if not isinstance(panels, list) or len(panels) != 6 or \
+            len(set(panels)) != 6:
+        raise ConfirmatoryRefusal(
+            "design must name exactly six distinct screen panels")
+    sel = tp2.get("selection")
+    if not isinstance(sel, dict) or \
+            sel.get("rule") != "family_top_k_geometry_admissible" \
+            or type(sel.get("k")) is not int or \
+            not sel.get("salt"):
+        raise ConfirmatoryRefusal(
+            "design must carry the structured selection contract "
+            "(rule/k/salt) for the fresh verifier to re-derive")
+    hm_ = design["harm_margins"]
+    ni = hm_.get("non_inferiority_margin_mase")
+    if isinstance(ni, bool) or not isinstance(ni, (int, float)) \
+            or not math.isfinite(float(ni)) or ni <= 0:
+        raise ConfirmatoryRefusal(
+            "design.harm_margins lacks a positive "
+            "non_inferiority_margin_mase")
+    msp = design["precision_rule"].get("min_series_per_panel")
+    if type(msp) is not int or msp <= 0:
+        raise ConfirmatoryRefusal(
+            "design.precision_rule lacks min_series_per_panel")
+    # ---- C26: every unit binds its exact causal geometry ----
+    import t2_bank as _bank
+    n_origins = int(rg["rolling_origins"])
+    base_frac = float(rg["origin_base_frac"])
+    for uid, b in tp2["unit_map"].items():
+        if not isinstance(b, dict) or set(b) != _UNIT_MAP_KEYS:
+            raise ConfirmatoryRefusal(
+                f"{uid}: unit binding keys are not the exact v4 "
+                f"schema (diff: "
+                f"{sorted(set(b) ^ _UNIT_MAP_KEYS)})")
+        _canon_sha(b["series_numeric_sha256"], f"{uid} digest")
+        _canon_sha(b["time_identity_sha256"],
+                   f"{uid} time identity")
+        if b["horizon"] != int(rg["horizon"]):
+            raise ConfirmatoryRefusal(
+                f"{uid}: horizon differs from the role geometry")
+        want_w = _bank.origin_windows_for(
+            b["n_obs"], n_origins, base_frac)
+        if b["origin_windows"] != want_w:
+            raise ConfirmatoryRefusal(
+                f"{uid}: origin_windows do not re-derive from the "
+                "series length and the origin contract — geometry "
+                "is bound before results, never free-floating")
     for k in ("practical_margin_mase",):
         v = design[k]
         if isinstance(v, bool) or not isinstance(
@@ -504,20 +606,22 @@ def open_attempt_ledger(path: Path) -> dict:
 
 def run_confirmatory(manifest_path: Path, design_path: Path,
                      ledger_path: Path,
-                     census_path: Path = None) -> None:
-    """C3/C9/C15: the ordered gate sequence — every missing element
-    refuses with its own typed reason; the attempt ledger is
-    created ONLY after every verification passes; and the external
-    review root cannot be candidate-written. Scoring remains
-    unimplemented pending the external audit of the C9-C16
-    corrections."""
+                     census_path: Path = None,
+                     raw_root: Path = None) -> None:
+    """C3/C9/C15/C28: the ordered gate sequence — every missing
+    element refuses with its own typed reason; the FRESH VERIFIER
+    is an executing precondition of THIS single path (a separate
+    script satisfies nothing); the attempt ledger is created ONLY
+    after every verification passes; and the external review root
+    cannot be candidate-written. Scoring remains unimplemented
+    pending the external audit of the C25-C30 screen contract."""
     mp = Path(manifest_path)
     if not mp.is_file():
         raise ConfirmatoryRefusal(
             "PUBLIC_DATA_REQUIRED: no public-data manifest exists "
             "yet — acquire and census the bank first")
     manifest = strict_json_load(mp, "public-data manifest")
-    validate_public_manifest(manifest)
+    validate_public_manifest(manifest, raw_root=raw_root)
     manifest_sha = _sha_file(mp)
     if census_path is None:
         census_path = (Path.home() / ".local/share/agent-multi/"
@@ -534,6 +638,15 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
             "sealed over the acquired bank")
     design = strict_json_load(dp, "confirmatory design")
     validate_confirmatory_design(design, manifest_sha)
+    # C28: the fresh-process re-derivation runs INSIDE the single
+    # path, immediately before any durable artifact — census and
+    # design schemas via the productive parsers, population,
+    # digests and EVERY unit_map field rebuilt from physical
+    # bytes. Its output is a precondition, never an authority.
+    import t2_fresh_verifier as _fv
+    census = strict_json_load(cp, "bank census")
+    _fv.fresh_verify(manifest, census, design, raw_root=raw_root,
+                     manifest_sha=manifest_sha)
     # C9: the external review — verified in full, BEFORE any
     # ledger artifact can exist.
     verify_design_review_record(design, manifest_sha, census_sha)
@@ -542,7 +655,7 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
     raise ConfirmatoryRefusal(
         "CONFIRMATORY_EXECUTION_NOT_IMPLEMENTED_IN_THIS_ORDER: "
         "scoring begins only after the external audit of the "
-        "C9-C16 corrections")
+        "C25-C30 screen contract")
 
 
 # ------- C17/C19: total numeric validation + model evidence -------
@@ -622,41 +735,46 @@ _COST_PHASE_PREFIXES = ("denoise_fit_transform_s",
                         "seasonal_naive_s")
 
 
+GLOBAL_COST_PHASES = ("denoise_fit_transform_s",
+                      "target_construction_s",
+                      "seasonal_naive_s")
+
+
 def check_origin_costs(oc, arms, seed_tape, path: str) -> None:
-    """C19: costs enumerate every phase and every arm/model with
-    finite nonnegative values — a single arm_* key satisfies
-    nothing."""
+    """C27: the per-origin cost schema is EXACT — every declared
+    global phase, every arm with its lag/ridge/MLP-per-seed
+    phases, all values finite nonnegative non-bool. Unknown,
+    missing, null or extra phases refuse."""
     if not isinstance(oc, dict):
         raise ConfirmatoryRefusal(f"{path}: costs are not a "
                                   "mapping")
+
     def _num(v, where):
-        if isinstance(v, bool) or not isinstance(
+        if v is None or isinstance(v, bool) or not isinstance(
                 v, (int, float)) or not math.isfinite(float(v)) \
                 or float(v) < 0:
             raise ConfirmatoryRefusal(
                 f"{where}: cost is not a finite nonnegative "
                 "number")
-    for ph in ("denoise_fit_transform_s",):
-        if ph not in oc:
-            raise ConfirmatoryRefusal(
-                f"{path}: phase cost {ph!r} missing")
+    want_top = set(GLOBAL_COST_PHASES) | {
+        f"arm_{a}" for a in arms}
+    if set(oc) != want_top:
+        raise ConfirmatoryRefusal(
+            f"{path}: cost phases are not the exact schema "
+            f"(diff: {sorted(set(oc) ^ want_top)})")
+    for ph in GLOBAL_COST_PHASES:
         _num(oc[ph], f"{path}.{ph}")
+    want_arm = {"lag_features_s", "ridge_fit_forecast_s"} | {
+        f"mlp_fit_forecast_seed{s}_s" for s in seed_tape}
     for arm in arms:
         key = f"arm_{arm}"
-        ac = oc.get(key)
-        if not isinstance(ac, dict) or not ac:
+        ac = oc[key]
+        if not isinstance(ac, dict) or set(ac) != want_arm:
             raise ConfirmatoryRefusal(
-                f"{path}.{key}: arm costs absent or opaque")
-        if "lag_features_s" not in ac or \
-                "ridge_fit_forecast_s" not in ac:
-            raise ConfirmatoryRefusal(
-                f"{path}.{key}: lag/ridge phase costs missing")
-        for s in seed_tape:
-            if f"mlp_fit_forecast_seed{s}_s" not in ac:
-                raise ConfirmatoryRefusal(
-                    f"{path}.{key}: MLP seed{s} cost missing")
-        for ck, cv in ac.items():
-            _num(cv, f"{path}.{key}.{ck}")
+                f"{path}.{key}: arm cost phases are not the "
+                "exact schema")
+        for ck in want_arm:
+            _num(ac[ck], f"{path}.{key}.{ck}")
 
 
 # ------------- C8/C14: complete decision rule ---------------------
@@ -664,13 +782,49 @@ def check_origin_costs(oc, arms, seed_tape, path: str) -> None:
 _REQUIRED_ARMS = ("X", "D", "XDR", "width_control")
 
 
+def extreme_contrast(x_entry, a_entry, path: str):
+    """C25: EXPLICIT states, never boolean truth. The evidence
+    binds extreme_support to its metric:
+    - support > 0: both metrics are MANDATORY and compared,
+      including zero; X=0 & D=0 -> ratio 1.0 (no silent
+      division); X=0 & D>0 -> HARM_INFINITE (damage, not
+      absence);
+    - support == 0: NOT_EVALUABLE, never favorable."""
+    sup_x = x_entry.get("extreme_support")
+    sup_a = a_entry.get("extreme_support")
+    sup = sup_x if sup_x is not None else sup_a
+    if sup is None:
+        raise ConfirmatoryRefusal(
+            f"{path}: extreme_support absent — extreme evidence "
+            "must carry its support state")
+    sup = int(check_metric(sup, "extreme_support", path))
+    if sup == 0:
+        return {"state": "NOT_EVALUABLE", "ratio": None}
+    ex_x = x_entry.get("mase_on_extreme_innovations")
+    ex_a = a_entry.get("mase_on_extreme_innovations")
+    if ex_x is None or ex_a is None:
+        raise ConfirmatoryRefusal(
+            f"{path}: extreme_support {sup} > 0 but the extreme "
+            "metric is absent — absence never improves a gate")
+    ex_x = check_metric(ex_x, "mase_on_extreme_innovations",
+                        f"{path}.X")
+    ex_a = check_metric(ex_a, "mase_on_extreme_innovations",
+                        f"{path}.{'arm'}")
+    if ex_x == 0.0 and ex_a == 0.0:
+        return {"state": "EVALUATED", "ratio": 1.0}
+    if ex_x == 0.0 and ex_a > 0.0:
+        return {"state": "HARM_INFINITE", "ratio": None}
+    return {"state": "EVALUATED", "ratio": ex_a / ex_x}
+
+
 def _series_stats(rec, design, arm="D", model="ridge"):
     """Per-series paired deltas vs X for one arm/model, averaged
     over the design's origins (nested, never inflating n)."""
     origins = rec["rolling_origins"]
-    deltas, harms = [], {"extreme_ratio": [], "coverage_drop": [],
-                         "width_ratio": []}
-    for o in origins.values():
+    deltas = []
+    harms = {"coverage_drop": [], "width_ratio": []}
+    ex_states = []
+    for okey, o in origins.items():
         res = o["results"]
         x = res["X"][model]
         a_ = res[arm][model]
@@ -679,19 +833,92 @@ def _series_stats(rec, design, arm="D", model="ridge"):
         am = check_metric(a_["mase_primary"], "mase_primary",
                           f"{rec['unit_id']}.{arm}.{model}")
         deltas.append(xm - am)
-        ex_x = x.get("mase_on_extreme_innovations")
-        ex_a = a_.get("mase_on_extreme_innovations")
-        if ex_x and ex_a:
-            harms["extreme_ratio"].append(ex_a / max(ex_x, 1e-12))
+        ex_states.append(extreme_contrast(
+            x, a_, f"{rec['unit_id']}.{okey}.{arm}"))
         harms["coverage_drop"].append(
-            x["interval_coverage_train_q90"]
-            - a_["interval_coverage_train_q90"])
-        harms["width_ratio"].append(
-            a_["interval_width_train_q90"]
-            / max(x["interval_width_train_q90"], 1e-12))
+            check_metric(x["interval_coverage_train_q90"],
+                         "interval_coverage_train_q90",
+                         f"{rec['unit_id']}.X")
+            - check_metric(a_["interval_coverage_train_q90"],
+                           "interval_coverage_train_q90",
+                           f"{rec['unit_id']}.{arm}"))
+        wx = check_metric(x["interval_width_train_q90"],
+                          "interval_width_train_q90",
+                          f"{rec['unit_id']}.X")
+        wa = check_metric(a_["interval_width_train_q90"],
+                          "interval_width_train_q90",
+                          f"{rec['unit_id']}.{arm}")
+        harms["width_ratio"].append(wa / max(wx, 1e-12))
+    if any(s["state"] == "HARM_INFINITE" for s in ex_states):
+        ex_summary = {"state": "HARM_INFINITE", "ratio": None}
+    elif all(s["state"] == "NOT_EVALUABLE" for s in ex_states):
+        ex_summary = {"state": "NOT_EVALUABLE", "ratio": None}
+    else:
+        ratios = [s["ratio"] for s in ex_states
+                  if s["state"] == "EVALUATED"]
+        ex_summary = {"state": "EVALUATED",
+                      "ratio": float(np.mean(ratios))}
     return {"delta": float(np.mean(deltas)),
-            "harms": {k: (float(np.mean(v)) if v else None)
+            "extreme": ex_summary,
+            "harms": {k: float(np.mean(v))
                       for k, v in harms.items()}}
+
+
+RECORD_OUTER_KEYS = {
+    "schema", "authority", "unit_id", "family", "dataset",
+    "series_numeric_sha256", "bytes_sha256",
+    "license_note", "missingness", "time_index",
+    "time_provenance", "horizon", "seasonal_period",
+    "seasonal_period_provenance", "operator", "seed_tape",
+    "series_is_the_primary_unit", "origins_and_seeds_are_nested",
+    "claim_classes_only", "rolling_origins", "costs_by_phase",
+    "peak_rss_bytes", "record_sha256"}
+
+
+def check_record_outer(rec: dict, design: dict) -> None:
+    """C26: the OUTER record is consumed whole — exact v3 schema
+    (identity fields physical, under the digest), recomputed
+    record_sha256, operator/seed-tape/claims equal to the design;
+    no extra or missing fields."""
+    uid = rec.get("unit_id")
+    if not isinstance(rec, dict) or set(rec) != RECORD_OUTER_KEYS:
+        raise ConfirmatoryRefusal(
+            f"{uid}: record outer keys are not the exact schema "
+            f"(diff: {sorted(set(rec) ^ RECORD_OUTER_KEYS)})")
+    if rec["schema"] != "agent_multi.t2_assay_record.v3":
+        raise ConfirmatoryRefusal(
+            f"{uid}: record schema is not the v3 identity-"
+            "bearing contract")
+    body = {k: rec[k] for k in sorted(rec)
+            if k != "record_sha256"}
+    try:
+        blob = json.dumps(body, sort_keys=True, allow_nan=False)
+    except ValueError:
+        raise ConfirmatoryRefusal(
+            f"{uid}: record contains non-finite numbers — no "
+            "valid identity digest exists (NaN/inf are not "
+            "evidence)")
+    if hashlib.sha256(blob.encode()).hexdigest() != \
+            rec["record_sha256"]:
+        raise ConfirmatoryRefusal(
+            f"{uid}: record_sha256 does not recompute — identity "
+            "and provenance unconsumed evidence never "
+            "adjudicates")
+    dop = design["operator"]
+    rop = rec["operator"]
+    if not isinstance(rop, dict) or \
+            rop.get("kind") != dop["kind"] or \
+            rop.get("params") != dop["params"]:
+        raise ConfirmatoryRefusal(
+            f"{uid}: operator identity differs from the design")
+    if list(rec["seed_tape"]) != list(design["seed_tape"]):
+        raise ConfirmatoryRefusal(
+            f"{uid}: seed tape differs from the design")
+    if set(rec["claim_classes_only"]) != {
+            "utility", "calibration", "extreme_preservation",
+            "cost"}:
+        raise ConfirmatoryRefusal(
+            f"{uid}: claim classes differ from the contract")
 
 
 def check_record_completeness(rec: dict, design: dict) -> None:
@@ -701,12 +928,15 @@ def check_record_completeness(rec: dict, design: dict) -> None:
     per-unit design binding (family/digest/geometry) enforced;
     costs enumerated for every phase and arm/model."""
     uid = rec.get("unit_id")
+    check_record_outer(rec, design)
     want_origins = int(design["role_geometry"]["rolling_origins"])
     origins = rec.get("rolling_origins")
     if not isinstance(origins, dict) or \
-            len(origins) != want_origins:
+            set(origins) != {f"origin{i}"
+                             for i in range(want_origins)}:
         raise ConfirmatoryRefusal(
-            f"{uid}: expected {want_origins} rolling origins")
+            f"{uid}: expected exactly the {want_origins} named "
+            "rolling origins")
     # C18: per-unit binding to the design's canonical map
     umap = design["task_population"].get("unit_map", {})
     bound = umap.get(uid)
@@ -733,16 +963,42 @@ def check_record_completeness(rec: dict, design: dict) -> None:
         raise ConfirmatoryRefusal(
             f"{uid}: per-phase costs incomplete")
     want_seeds = {f"seed{s}" for s in design["seed_tape"]}
+    ow = bound.get("origin_windows")
+    if not isinstance(ow, dict) or \
+            set(ow) != set(origins):
+        raise ConfirmatoryRefusal(
+            f"{uid}: the design binds no exact origin windows — "
+            "causal geometry must be bound before results")
+    _ORIGIN_KEYS = {"train", "score",
+                    "mase_denominator_train_snaive",
+                    "extreme_innovation_threshold_train",
+                    "operator_artifact_sha256", "results"}
     for okey, o in origins.items():
-        if "origin_binding" in (bound or {}):
-            ob = bound["origin_binding"].get(okey)
-            got = {"train": o.get("train"),
-                   "score": o.get("score")}
-            if ob is not None and (got["train"] != ob["train"]
-                                   or got["score"] != ob["score"]):
+        if not isinstance(o, dict) or set(o) != _ORIGIN_KEYS:
+            raise ConfirmatoryRefusal(
+                f"{uid} {okey}: origin keys are not the exact "
+                f"schema (diff: "
+                f"{sorted(set(o) ^ _ORIGIN_KEYS)}) — a record "
+                "without its causal geometry never adjudicates")
+        wb = ow[okey]
+        if list(o["train"]) != list(wb["train"]) or \
+                list(o["score"]) != list(wb["score"]):
+            raise ConfirmatoryRefusal(
+                f"{uid} {okey}: train/score windows differ from "
+                "the design's bound geometry — a record without "
+                "or with shifted windows never adjudicates")
+        den = o["mase_denominator_train_snaive"]
+        thr = o["extreme_innovation_threshold_train"]
+        for nm, v in (("mase_denominator_train_snaive", den),
+                      ("extreme_innovation_threshold_train",
+                       thr)):
+            if isinstance(v, bool) or not isinstance(
+                    v, (int, float)) or not math.isfinite(
+                        float(v)) or float(v) < 0:
                 raise ConfirmatoryRefusal(
-                    f"{uid} {okey}: origin geometry differs from "
-                    "the design binding")
+                    f"{uid} {okey}: {nm} outside its domain")
+        _canon_sha(o["operator_artifact_sha256"],
+                   f"{uid} {okey} operator artifact")
         res = o.get("results", {})
         want_res = set(_REQUIRED_ARMS) | {"seasonal_naive"}
         if not isinstance(res, dict) or \
@@ -775,10 +1031,39 @@ def check_record_completeness(rec: dict, design: dict) -> None:
 
 
 def adjudicate_confirmatory(records: list, design: dict) -> dict:
-    """C8/C14: population equality, completeness, re-derived
-    deltas/intervals/harms/attribution, observed-precision rule,
-    all six primary families, multiplicity — every gate must pass
-    before the candidate label may exist."""
+    """C29: SUPERSEDED. The T2 target is now the T2-S public
+    screen (panel-level, six panels, ADVANCE/DOES_NOT_ADVANCE/
+    INCONCLUSIVE). PUBLICLY_ELIGIBLE_CANDIDATE no longer exists as
+    an outcome anywhere."""
+    raise ConfirmatoryRefusal(
+        "adjudicate_confirmatory is superseded by "
+        "adjudicate_screen (T2-S); the screen decides only "
+        "advancement to domain validation, never public "
+        "eligibility")
+
+
+def adjudicate_screen(records: list, design: dict) -> dict:
+    """C29 — the T2-S public screen, austere by construction:
+
+    population: the six named public primary panels;
+    superior unit: the PANEL; panel effect = paired D-X mean of
+    its selected series; primary estimand = the UNWEIGHTED mean of
+    the six panel effects; scope = only these panels and their
+    admitted series.
+
+    ADVANCE_TO_DOMAIN_VALIDATION requires SIMULTANEOUSLY:
+    t lower bound (df=5) above the practical margin; the exact
+    sign test compatible with alpha 0.05 (all six panel effects
+    positive); every leave-one-panel-out mean above the margin;
+    no panel harmed beyond the non-inferiority margin; and the
+    preservation/calibration/cost/support gates complete.
+    Anything under-powered or under-precise is INCONCLUSIVE —
+    margins are never adjusted after seeing results."""
+    if design.get("inference_method", {}).get("rule") != \
+            "six_panel_screen_t_sign_lopo":
+        raise ConfirmatoryRefusal(
+            "design does not predeclare the six-panel screen "
+            "rule — the screen adjudicates only its own contract")
     tp = design["task_population"]
     want_ids = set(tp["series_ids"])
     got_ids = [r.get("unit_id") for r in records]
@@ -795,182 +1080,152 @@ def adjudicate_confirmatory(records: list, design: dict) -> dict:
     for rec in records:
         check_record_completeness(rec, design)
     margin = float(design["practical_margin_mase"])
-    prec = design["precision_rule"]
-    min_series = int(prec["min_series_per_family"])
-    fams_required = list(tp["primary_gate_families"])
-    max_ci_width = float(
-        design["observed_precision_rule"]["max_ci_halfwidth"]) * 2
-    fam_deltas = {}
-    fam_attrib = {}
-    fam_harms = {}
-    for rec in records:
-        fam = rec["family"]
-        if fam not in fams_required:
-            continue
-        s = _series_stats(rec, design, "D", "ridge")
-        w = _series_stats(rec, design, "width_control", "ridge")
-        fam_deltas.setdefault(fam, []).append(s["delta"])
-        fam_attrib.setdefault(fam, []).append(
-            s["delta"] - w["delta"])
-        fam_harms.setdefault(fam, []).append(s["harms"])
-    absent = [f for f in fams_required
-              if len(fam_deltas.get(f, [])) < min_series]
-    if absent:
-        return {"verdict": "INCONCLUSIVE",
-                "reason": (f"primary families below support/"
-                           f"absent: {sorted(absent)} — all six "
-                           "are required for a primary positive")}
-    alpha = float(design["multiplicity_rule"]["alpha"]) / \
-        len(fams_required)
-    from statistics import NormalDist
-    z = NormalDist().inv_cdf(1 - alpha / 2)
-    fam_stats = {}
-    harmed, unattributed, imprecise, failing = [], [], [], []
-    unidentifiable = []
+    ni_margin = float(design["harm_margins"].get(
+        "non_inferiority_margin_mase", margin))
     hm = design["harm_margins"]
-    inf_rule = design.get("inference_method", {}).get(
-        "rule", "panel_replication_or_descriptive")
-    if inf_rule != "panel_replication_or_descriptive":
+    umap = tp["unit_map"]
+    panels_named = list(tp["screen_panels"])
+    if len(panels_named) != 6 or \
+            len(set(panels_named)) != 6:
         raise ConfirmatoryRefusal(
-            "design names an unimplemented inference rule")
-    # C23: series inside ONE panel share unidentifiable panel-
-    # level dependence (my own coverage simulation shows the
-    # within-panel ICC estimator CANNOT see a common intercept —
-    # the mean removes it). Therefore: with >=2 independent
-    # panels per family, the PANEL is the inferential unit
-    # (delta per panel = mean of its series); with a single
-    # panel, between-series intervals are DESCRIPTIVE ONLY and
-    # the family is INCONCLUSIVE for the primary gate.
-    umap = design["task_population"].get("unit_map", {})
-    # group series deltas by (family, dataset/panel)
-    panel_map = {}
+            "the screen requires exactly six distinct named "
+            "panels")
+    min_series = int(design["precision_rule"][
+        "min_series_per_panel"])
+    per_panel = {p_: {"d": [], "a": [], "ex": [],
+                      "cov": [], "wid": []}
+                 for p_ in panels_named}
     for rec in records:
-        fam = rec["family"]
-        if fam not in fams_required:
-            continue
-        panel = umap.get(rec["unit_id"], {}).get("dataset",
-                                                 "UNKNOWN")
+        panel = umap[rec["unit_id"]]["dataset"]
+        if panel not in per_panel:
+            continue          # sensitivity-only units
         s = _series_stats(rec, design, "D", "ridge")
         w = _series_stats(rec, design, "width_control", "ridge")
-        panel_map.setdefault(fam, {}).setdefault(
-            panel, {"d": [], "a": []})
-        panel_map[fam][panel]["d"].append(s["delta"])
-        panel_map[fam][panel]["a"].append(
-            s["delta"] - w["delta"])
-    for fam in fams_required:
-        arr = np.array(fam_deltas[fam], dtype=float)
-        att = np.array(fam_attrib[fam], dtype=float)
-        n = len(arr)
-        panels = panel_map.get(fam, {})
-        k_panels = len(panels)
-        if k_panels >= 2:
-            pd = np.array([float(np.mean(v["d"]))
-                           for v in panels.values()])
-            pa = np.array([float(np.mean(v["a"]))
-                           for v in panels.values()])
-            if k_panels < 3:
-                unidentifiable.append(fam)
-                fam_stats[fam] = {
-                    "n_series": n, "n_panels": k_panels,
-                    "mean_delta": float(arr.mean()),
-                    "ci_class": "descriptive_insufficient_"
-                                "panel_replication",
-                    "note": "at least 3 panels are needed for a "
-                            "panel-level interval"}
-                continue
-            from scipy import stats as _st
-            tq = float(_st.t.ppf(1 - alpha / 2, k_panels - 1))
-            se = float(pd.std(ddof=1) / math.sqrt(k_panels))
-            lo = float(pd.mean() - tq * se)
-            width = float(2 * tq * se)
-            mean_delta = float(pd.mean())
-            att_mean = float(pa.mean())
-            ci_class = "panel_level_inferential"
-            n_support = k_panels
-        else:
-            unidentifiable.append(fam)
-            fam_stats[fam] = {
-                "n_series": n, "n_panels": k_panels,
-                "mean_delta": float(arr.mean()),
-                "descriptive_series_sd":
-                    float(arr.std(ddof=1)) if n > 1 else None,
-                "ci_class": "descriptive_within_single_panel",
-                "note": "panel-level dependence unidentifiable "
-                        "with one panel — no inferential "
-                        "interval exists; INCONCLUSIVE for the "
-                        "primary gate"}
+        pp = per_panel[panel]
+        pp["d"].append(s["delta"])
+        pp["a"].append(s["delta"] - w["delta"])
+        pp["ex"].append(s["extreme"])
+        pp["cov"].append(s["harms"]["coverage_drop"])
+        pp["wid"].append(s["harms"]["width_ratio"])
+    panel_stats = {}
+    inconclusive_reasons = []
+    harmed = []
+    for p_, pp in per_panel.items():
+        n = len(pp["d"])
+        if n < min_series:
+            inconclusive_reasons.append(
+                f"{p_}: {n} series < declared minimum "
+                f"{min_series}")
             continue
-        ex = [h["extreme_ratio"] for h in fam_harms[fam]
-              if h["extreme_ratio"] is not None]
-        cov = [h["coverage_drop"] for h in fam_harms[fam]]
-        wid = [h["width_ratio"] for h in fam_harms[fam]]
-        fam_stats[fam] = {
-            "n_series": n, "n_panels": n_support,
-            "mean_delta": mean_delta,
-            "ci_low": lo, "ci_width": width,
-            "ci_class": ci_class,
-            "attribution_mean": att_mean,
-            "extreme_ratio_mean": (float(np.mean(ex))
-                                   if ex else None),
-            "coverage_drop_mean": float(np.mean(cov)),
-            "width_ratio_mean": float(np.mean(wid))}
-        st = fam_stats[fam]
-        if mean_delta < -margin:
-            harmed.append(fam)
-        if width > max_ci_width:
-            imprecise.append(fam)
-        if st["extreme_ratio_mean"] is not None and \
-                st["extreme_ratio_mean"] > \
-                float(hm["extreme_innovation_mase_ratio_max"]):
-            harmed.append(fam)
-        if st["coverage_drop_mean"] > \
-                float(hm["coverage_drop_max"]):
-            harmed.append(fam)
-        if st["width_ratio_mean"] > \
-                float(hm["width_inflation_max"]):
-            harmed.append(fam)
-        if st["attribution_mean"] <= 0:
-            unattributed.append(fam)
-        if lo <= margin:
-            failing.append(fam)
-    if unidentifiable:
+        eff = float(np.mean(pp["d"]))
+        att = float(np.mean(pp["a"]))
+        if any(e["state"] == "HARM_INFINITE" for e in pp["ex"]):
+            ex_state, ex_ratio = "HARM_INFINITE", None
+        elif all(e["state"] == "NOT_EVALUABLE"
+                 for e in pp["ex"]):
+            ex_state, ex_ratio = "NOT_EVALUABLE", None
+        else:
+            rr = [e["ratio"] for e in pp["ex"]
+                  if e["state"] == "EVALUATED"]
+            ex_state, ex_ratio = "EVALUATED", float(np.mean(rr))
+        panel_stats[p_] = {
+            "n_series": n, "effect": eff,
+            "attribution": att,
+            "extreme_state": ex_state,
+            "extreme_ratio": ex_ratio,
+            "coverage_drop": float(np.mean(pp["cov"])),
+            "width_ratio": float(np.mean(pp["wid"]))}
+        st = panel_stats[p_]
+        if eff < -ni_margin:
+            harmed.append(f"{p_}: effect {eff:.4f} beyond the "
+                          "non-inferiority margin")
+        if ex_state == "HARM_INFINITE":
+            harmed.append(f"{p_}: infinite extreme damage "
+                          "(X extreme error 0, D > 0)")
+        if ex_state == "EVALUATED" and ex_ratio > float(
+                hm["extreme_innovation_mase_ratio_max"]):
+            harmed.append(f"{p_}: extreme ratio {ex_ratio:.3f}")
+        if ex_state == "NOT_EVALUABLE":
+            inconclusive_reasons.append(
+                f"{p_}: extreme evidence NOT_EVALUABLE (zero "
+                "support) — never favorable")
+        if st["coverage_drop"] > float(hm["coverage_drop_max"]):
+            harmed.append(f"{p_}: coverage drop "
+                          f"{st['coverage_drop']:.3f}")
+        if st["width_ratio"] > float(hm["width_inflation_max"]):
+            harmed.append(f"{p_}: width inflation "
+                          f"{st['width_ratio']:.3f}")
+        if att <= 0:
+            inconclusive_reasons.append(
+                f"{p_}: gain not attributable beyond the width "
+                "control")
+    if len(panel_stats) < 6:
         return {"verdict": "INCONCLUSIVE",
-                "reason": (f"dependence not identifiable / "
-                           f"effective support too small in "
-                           f"{sorted(unidentifiable)} — "
-                           "intrapanel correlation never "
-                           "fabricates precision"),
-                "families": fam_stats}
+                "reason": "; ".join(inconclusive_reasons[:4]),
+                "panels": panel_stats}
+    effects = np.array([panel_stats[p_]["effect"]
+                        for p_ in panels_named], dtype=float)
+    grand = float(effects.mean())
+    from scipy import stats as _st
+    tq = float(_st.t.ppf(0.975, 5))
+    se = float(effects.std(ddof=1) / math.sqrt(6))
+    ci_low = grand - tq * se
+    # C29: the OBSERVED precision gate — an interval too wide is
+    # INCONCLUSIVE even with a favorable mean; the threshold is
+    # frozen in the design, never adjusted after seeing it.
+    max_hw = float(design["observed_precision_rule"][
+        "max_ci_halfwidth"])
+    if tq * se > max_hw:
+        inconclusive_reasons.append(
+            f"observed precision insufficient: t CI half-width "
+            f"{tq * se:.4f} > frozen maximum {max_hw}")
+    signs_positive = int((effects > 0).sum())
+    sign_ok = signs_positive == 6      # exact p = 2/64 = 0.03125
+    lopo = [float(np.delete(effects, i).mean())
+            for i in range(6)]
+    lopo_ok = all(v > margin for v in lopo)
+    out = {"panels": panel_stats,
+           "primary_estimand_unweighted_mean_of_panel_effects":
+               grand,
+           "t_ci_low_df5": ci_low,
+           "signs_positive": signs_positive,
+           "sign_test_exact_p_two_sided":
+               round(2 * (0.5 ** 6) * sum(
+                   math.comb(6, k) for k in
+                   range(signs_positive, 7)), 5)
+               if signs_positive >= 3 else None,
+           "leave_one_panel_out_means": lopo,
+           "scope": "ONLY these six public panels and their "
+                    "admitted series — no family-level or "
+                    "public-eligibility claim"}
     if harmed:
-        return {"verdict": "PUBLICLY_INELIGIBLE",
-                "reason": (f"material harm in families "
-                           f"{sorted(set(harmed))} — a favorable "
-                           "grand average cannot pass over it"),
-                "families": fam_stats}
-    if imprecise:
-        return {"verdict": "INCONCLUSIVE",
-                "reason": (f"observed precision insufficient in "
-                           f"{sorted(imprecise)}: CI wider than "
-                           "the predeclared bound even if the "
-                           "mean is favorable"),
-                "families": fam_stats}
-    if unattributed:
-        return {"verdict": "INCONCLUSIVE",
-                "reason": (f"gain not attributable beyond the "
-                           f"matched-width control in "
-                           f"{sorted(unattributed)}"),
-                "families": fam_stats}
-    if failing:
-        return {"verdict": "INCONCLUSIVE",
-                "reason": (f"{sorted(failing)} do not clear the "
-                           "practical margin — broad-family "
-                           "consistency is required"),
-                "families": fam_stats}
-    return {"verdict": "PUBLICLY_ELIGIBLE_CANDIDATE",
-            "reason": ("all six primary families pass margin, "
-                       "observed precision, attribution vs the "
-                       "width control and every harm gate; "
-                       "inference limited to the studied panels "
-                       "per the design's inference_scope"),
-            "inference_scope": design["inference_scope"],
-            "families": fam_stats}
+        out.update({"verdict": "DOES_NOT_ADVANCE",
+                    "reason": "; ".join(sorted(set(harmed))[:4])})
+        return out
+    if inconclusive_reasons:
+        out.update({"verdict": "INCONCLUSIVE",
+                    "reason": "; ".join(
+                        inconclusive_reasons[:4])})
+        return out
+    if ci_low > margin and sign_ok and lopo_ok:
+        out.update({"verdict": "ADVANCE_TO_DOMAIN_VALIDATION",
+                    "reason": ("t lower bound, exact sign test "
+                              "(6/6, p=0.03125) and all six "
+                              "leave-one-panel-out means clear "
+                              "the frozen margin; no harm gate "
+                              "fired")})
+        return out
+    why = []
+    if ci_low <= margin:
+        why.append(f"t lower bound {ci_low:.4f} <= margin")
+    if not sign_ok:
+        why.append(f"only {signs_positive}/6 positive panels "
+                   "(exact sign test incompatible with alpha "
+                   "0.05)")
+    if not lopo_ok:
+        why.append("a leave-one-panel-out mean falls below the "
+                   "margin (single-panel dominance)")
+    out.update({"verdict": "INCONCLUSIVE"
+                if grand > 0 else "DOES_NOT_ADVANCE",
+                "reason": "; ".join(why)})
+    return out

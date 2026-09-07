@@ -154,6 +154,68 @@ def series_numeric_digest(y: np.ndarray) -> str:
 series_content_digest = None
 
 
+# C26/C28: the ONE productive origin-geometry rule — shared by the
+# design generator, the design validator and the fresh verifier so
+# no two implementations can drift. Mirrors the frozen harness
+# contract (unit_origins): base=int(n*frac), equal score windows,
+# the last absorbing the remainder; train is always [0, o_lo).
+SCREEN_MIN_LENGTH = 120
+SCREEN_MIN_SCORE_WINDOW = 12          # RIDGE_LAGS(8) + 4
+
+
+def origin_windows_for(n: int, rolling_origins: int,
+                       base_frac: float) -> dict:
+    """Exact per-unit causal windows derived from series LENGTH
+    and the origin contract alone — before any result exists.
+    Refuses (typed) when the frozen geometry cannot window the
+    series; a refusal here is a population fact, never a score."""
+    if isinstance(n, bool) or type(n) is not int or n <= 0:
+        raise BankRefusal(f"origin geometry: length {n!r} is not "
+                          "a positive int")
+    if n < SCREEN_MIN_LENGTH:
+        raise BankRefusal(
+            f"GEOMETRY_INADMISSIBLE: length {n} < harness minimum "
+            f"{SCREEN_MIN_LENGTH}")
+    base = int(n * base_frac)
+    w = (n - base) // rolling_origins
+    if w < SCREEN_MIN_SCORE_WINDOW:
+        raise BankRefusal(
+            f"GEOMETRY_INADMISSIBLE: score window {w} < minimum "
+            f"{SCREEN_MIN_SCORE_WINDOW} for {rolling_origins} "
+            "rolling origins")
+    out = {}
+    for k_ in range(rolling_origins):
+        lo = base + k_ * w
+        hi = base + (k_ + 1) * w if k_ < rolling_origins - 1 \
+            else n
+        out[f"origin{k_}"] = {"train": [0, lo],
+                              "score": [lo, hi]}
+    return out
+
+
+def geometry_admissible(n: int, rolling_origins: int,
+                        base_frac: float) -> bool:
+    try:
+        origin_windows_for(n, rolling_origins, base_frac)
+        return True
+    except SystemExit:
+        return False
+
+
+def unit_time_identity(unit: dict) -> str:
+    """C28: canonical TEMPORAL identity of a built unit — length,
+    declared frequency, provenance and the parsed index facts —
+    re-derivable from physical bytes by the fresh verifier."""
+    ti = unit["time_index"]
+    body = {"n": int(unit["n"]),
+            "frequency_declared": unit["frequency_declared"],
+            "time_provenance": unit["time_provenance"],
+            "first_ts": ti["first_ts"], "last_ts": ti["last_ts"],
+            "median_step": ti["median_step"]}
+    return hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+
+
 def family_top_k(ids_by_dataset: dict, k: int,
                  salt: str) -> list:
     """C21: top-k over the WHOLE FAMILY — all datasets of the

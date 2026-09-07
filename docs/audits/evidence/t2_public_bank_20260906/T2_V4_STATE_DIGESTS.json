@@ -1,0 +1,13 @@
+{
+ "schema": "agent_multi.t2_v4_state_digests.v1",
+ "note": "physical digests of the immutable T2-S v4 state consumed by order C25-C30; v2/v3 drafts preserved as history; zero downloads, zero scores, zero scientific ledger",
+ "manifest_sha256": "43c48f6bb513be37d4a591f67694880e9f768391ab0db710902c3aadd55b76ff",
+ "census_sha256": "dc1bf8c770b297c506b1e30195753d7b25f82c51cbdd62b27667f58e7964674f",
+ "design_draft_v2_sha256": "25acad3a4bf4f8f14b7d7f4db0b85942e7b32b71d668b5ce947b4c33c99c3571",
+ "design_draft_v3_sha256": "dc31b54a434e93da82cf0d2f566f574310b3207668bd0ab3eaa9c242b3f2b199",
+ "design_draft_v4_sha256": "b483f16ab25df6b5053275dae59857310557254864f3366fa3240952ed27813b",
+ "coverage_sim_sha256": "e7fae7819dd26c8ec37455d72d29d3d03a315c10fe037bad8958375ef1d6390b",
+ "screen_sim_sha256": "76581fbbee9f39ea1c045fd2ac3eb09f19006a183ab3c9bfa5d6a33b1721846f",
+ "design_v4_self_sha256_field": "326cc132912906667353959c34a09e746b7105cbd57fee30b5357883337ace7e",
+ "v4_supersedes_v3_by_digest": true
+}
