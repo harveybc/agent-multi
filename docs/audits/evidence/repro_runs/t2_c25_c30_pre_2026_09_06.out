@@ -1,0 +1,26 @@
+== C25a: missing extreme metrics -> POSITIVE ==
+MISSING_EXTREMES PUBLICLY_ELIGIBLE_CANDIDATE
+
+== C25b: X extreme 0.0 vs D extreme 999.0 -> POSITIVE ==
+ZERO_BASELINE_EXTREME PUBLICLY_ELIGIBLE_CANDIDATE
+
+== C26: record without train/score geometry -> POSITIVE ==
+NO_ORIGIN_GEOMETRY PUBLICLY_ELIGIBLE_CANDIDATE
+outer schema/record_sha256 not consumed: True
+
+== C27: costs without target/baseline phases -> POSITIVE ==
+MISSING_GLOBAL_COST_PHASES PUBLICLY_ELIGIBLE_CANDIDATE
+
+== C28a: forged unit_map semantics pass the fresh verifier ==
+FORGED_UNIT_MAP accepted: True
+
+== C28b: symlink ROOT accepted ==
+SYMLINK_ROOT accepted: True
+
+== C28c: run_confirmatory does not consume the fresh verifier ==
+fresh verifier absent from the single path: True
+
+== C29: the v3 draft mixes two estimands (documented) ==
+scope says 'named panels only' while the rule demands >=3 panels PER FAMILY: True
+
+PRE CONFIRMED: C25-C29 findings all reproduce
