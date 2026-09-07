@@ -423,12 +423,18 @@ CLAIM_SCHEMA = {
     "schema": str, "campaign_generation": str, "attempt_id": str,
     "cell": str, "claimed_wall": float, "claimed_monotonic": float,
     "holder_pid": int, "terminal_sha256": type(None),
+    "recovery_acta_sha256": str,
     "claim_sha256": str}
 
 
 def claim_attempt(results_root: Path, cell_id: str) -> dict:
-    """C10/C24: the ONE claimable object per (cell, generation) —
-    self-integral, private-mode, under a 0700 cell directory."""
+    """C10/C24/C36: the ONE claimable object per (cell,
+    generation) — self-integral, private-mode, under a 0700 cell
+    directory. NO claim can exist while the recovery gate is
+    closed: the witness is RE-DERIVED here from the reviewed acta
+    (a caller-supplied witness is never sufficient) and its digest
+    enters the claim itself."""
+    witness = b4a.require_v6_launch_open()
     _secure_dir(Path(results_root))
     cell_dir = Path(results_root) / cell_id
     _secure_dir(cell_dir)
@@ -439,7 +445,8 @@ def claim_attempt(results_root: Path, cell_id: str) -> dict:
            "claimed_wall": time.time(),
            "claimed_monotonic": time.monotonic(),
            "holder_pid": os.getpid(),
-           "terminal_sha256": None}
+           "terminal_sha256": None,
+           "recovery_acta_sha256": witness["acta_sha256"]}
     rec["claim_sha256"] = _self_sha(rec, "claim_sha256")
     _excl_write(_claim_path(results_root, cell_id),
                 json.dumps(rec, indent=1).encode())
@@ -484,12 +491,23 @@ LEASE_SCHEMA = {
     "schema": str, "campaign_generation": str, "cell": str,
     "attempt_id": str, "authorization_sha256": str,
     "materialization_sha256": str, "issued_monotonic": float,
-    "holder_pid": int, "lease_sha256": str}
-LEASE_SCHEMA_NAME = "agent_multi.b4_execution_lease.v2"
+    "holder_pid": int,
+    "recovery_acta_sha256": str,
+    "pinned_execution_commit": str,
+    "lease_sha256": str}
+LEASE_SCHEMA_NAME = "agent_multi.b4_execution_lease.v3"
 
 
 def issue_lease(results_root: Path, cell_id: str, claim: dict,
                 auth_sha: str, mat_root: Path) -> Path:
+    # C36: the execution capability cannot be issued while the
+    # recovery gate is closed — the witness is re-derived HERE.
+    witness = b4a.require_v6_launch_open()
+    if claim.get("recovery_acta_sha256") != \
+            witness["acta_sha256"]:
+        raise OrchestratorRefusal(
+            "REFUSED: claim recovery-acta digest differs from "
+            "the re-derived witness — transplanted authority")
     lease = {"schema": LEASE_SCHEMA_NAME,
              "campaign_generation": b4a.CAMPAIGN_GENERATION,
              "cell": cell_id,
@@ -498,7 +516,10 @@ def issue_lease(results_root: Path, cell_id: str, claim: dict,
              "materialization_sha256":
                  _sha_file(Path(mat_root) / "B4_MATERIALIZATION.json"),
              "issued_monotonic": float(time.monotonic()),
-             "holder_pid": os.getpid()}
+             "holder_pid": os.getpid(),
+             "recovery_acta_sha256": witness["acta_sha256"],
+             "pinned_execution_commit":
+                 witness["pinned_commit"]}
     lease["lease_sha256"] = hashlib.sha256(json.dumps(
         {k: lease[k] for k in sorted(lease)},
         sort_keys=True).encode()).hexdigest()
@@ -552,6 +573,17 @@ def verify_lease(lease_path: Path, results_root: Path,
     if claim["attempt_id"] != lease["attempt_id"]:
         raise OrchestratorRefusal(
             "REFUSED: lease attempt differs from the unique claim")
+    # C36: the capability is valid ONLY under the re-derived
+    # recovery witness — caller-supplied values grant nothing.
+    witness = b4a.require_v6_launch_open()
+    if lease["recovery_acta_sha256"] != witness["acta_sha256"] \
+            or lease["pinned_execution_commit"] != \
+            witness["pinned_commit"] or \
+            claim.get("recovery_acta_sha256") != \
+            witness["acta_sha256"]:
+        raise OrchestratorRefusal(
+            "REFUSED: lease/claim recovery bindings differ from "
+            "the re-derived witness — transplanted authority")
     if seal_state(results_root, cell_id) != "UNSEALED":
         raise OrchestratorRefusal(
             "REFUSED: the claimed attempt already reached a sealed "
@@ -615,7 +647,12 @@ def seal_attempt(results_root: Path, cell_id: str,
               "campaign_generation": b4a.CAMPAIGN_GENERATION,
               "cell": cell_id, "attempt_id": attempt_id,
               "holder_pid": os.getpid(),
-              "terminal_sha256": term_sha}
+              "terminal_sha256": term_sha,
+              # C37: the seal names the recovery authority via its
+              # verified parent binding (the terminal carries the
+              # full witness re-derived by the verifiers).
+              "recovery_acta_sha256":
+                  b4a.require_v6_launch_open()["acta_sha256"]}
     _excl_write(intent_p, json.dumps(intent, indent=1).encode())
     completion = {"schema": "agent_multi.b4_seal_completion.v1",
                   "intent_sha256": _sha_file(intent_p),
@@ -922,6 +959,16 @@ def run_campaign(mat_root: Path, ledger_path: Path,
             b4a.CAMPAIGN_AUTHORIZATION_RECORD_PATH)
         outcome["amendment_11_sha256"] = _sha_file(
             b4a.AMENDMENT_11_PATH)
+        # C37: the final report binds the recovered authority,
+        # re-derived at reporting time.
+        _wit = b4a.require_v6_launch_open()
+        outcome["campaign_generation"] = \
+            _wit["campaign_generation"]
+        outcome["recovery_acta_sha256"] = _wit["acta_sha256"]
+        outcome["pinned_execution_commit"] = \
+            _wit["pinned_commit"]
+        outcome["latest_amendment_sha256"] = \
+            _wit["latest_amendment_sha256"]
     else:
         status = "CAMPAIGN_COMPLETE_WITH_FAILED_CELLS"
     print(json.dumps({"status": status, **outcome}, indent=1))

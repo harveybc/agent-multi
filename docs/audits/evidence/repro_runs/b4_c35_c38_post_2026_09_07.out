@@ -1,0 +1,27 @@
+== 0. PRODUCTION: the real gate is CLOSED (no acta) ==
+REAL_GATE: DIES [REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launch st] match=True
+
+== 1. C35: the four PRE forgeries and the malformed date are DEAD ==
+FORGED_PIN None: DIES [REFUSED: recovery-acta field 'pinned_commit' must be a nonempty string — None/bool/p] match=True
+FORGED_PIN False: DIES [REFUSED: recovery-acta field 'pinned_commit' must be a nonempty string — None/bool/p] match=True
+FORGED_PIN ../../foreign: DIES [REFUSED: pinned_commit is not 40 lowercase hex characters] match=True
+FORGED_PIN 00000000000000: DIES [REFUSED: pinned_commit does not name an existing git commit in this repository] match=True
+MALFORMED_DATE not-a-date: DIES [REFUSED: reviewed_at_date is not a canonical ISO date] match=True
+MALFORMED_DATE 2026-13-40: DIES [REFUSED: reviewed_at_date is not a canonical ISO date] match=True
+MALFORMED_DATE 2026-9-7: DIES [REFUSED: reviewed_at_date is not a canonical ISO date] match=True
+SURFACE_MISMATCH: DIES [REFUSED: live surface tools/b4_authority.py differs from the reviewed surface at the] match=True
+A12_ONLY_LINK: DIES [REFUSED: the acta does not name the LATEST recovery amendment's exact bytes — an ame] match=True
+
+== 2. C36: every public path refuses with the gate closed ==
+claim_attempt: DIES [REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launch st] match=True
+no claim object created: True
+execute_cell(direct, no lease path even): DIES [REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launch st] match=True
+standalone CLI --action execute: DIES [REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launch st] match=True
+
+== 3. C36: with a VALID fixture witness the flow works and custody carries all four bindings ==
+claim+lease bind acta eccffe07d4 and pin 2a503491
+COMPLETED terminal REQUIRES the four recovery bindings
+structural domination: claim/lease/verify/execute all re-derive the witness
+campaign report binds the recovered authority
+
+POST CONFIRMED: acta verified-object, witness on every path, recovered custody; real acta ABSENT, launch CLOSED

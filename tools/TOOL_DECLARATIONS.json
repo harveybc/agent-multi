@@ -753,6 +753,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "b4_gen_amendment_13.py": {
+   "purpose": "C37 (recovery authority order): authors amendment 13 \u2014 append-only after byte-pinned a12; records only C35-C37 (verified acta object, witness on every execution path, recovered custody) and pins the corrected surface; the published-regeneration guard (a9 lesson) is structural",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

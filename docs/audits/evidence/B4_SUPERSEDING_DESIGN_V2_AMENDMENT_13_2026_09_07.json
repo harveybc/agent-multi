@@ -1,0 +1,20 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v11_recovery_custody",
+ "amends_amendment_12_sha256": "74174c596efe405e4a7d1a6531a781c9649dafd5dd316a6bb389003aac2203ca",
+ "order": "C35-C38 (recovery authority order 2026-09-07): the acta becomes a VERIFIED OBJECT (descriptor-bound, owner/mode checked, canonical date, 40-hex pinned commit naming an existing git commit whose reviewed surface byte-matches the live surface, LATEST amendment digest); the typed recovery witness is RE-DERIVED by claim_attempt, issue_lease, verify_lease, execute_cell and run_campaign \u2014 no public sequence reaches constructors, pipeline or CUDA with the gate closed; the witness flows through claim, lease, per-attempt binding, terminals, seal intent, campaign report and both verifiers.",
+ "change_disclosure": "recovery authority custody ONLY: read_recovery_acta() verified reader + typed witness; witness re-derivation on every execution path incl. the standalone CLI; claim schema + recovery_acta_sha256; lease schema v3 + recovery_acta_sha256 + pinned_execution_commit; binding v2, COMPLETED and typed-failure terminals, seal intent and campaign report carry generation/acta/pinned-commit/latest-amendment; both verifiers re-derive all four. No population, config, data, genesis, comparator, limit or ordering change.",
+ "scientific_change": "NONE \u2014 recovery authority custody only",
+ "final_code_pins": {
+  "tools/b4_authority.py": "8f3138ab5fa67ae895f2f5f4f6d46d16026adebc15a3a1ad5032ab31419e17b9",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "20378790786cfb1da4229e00fd3b181a6eeb557f06ba9b73fce9c3e7877f452c",
+  "tools/b4_campaign_ledger.py": "a6ef3ba27c733cc592aeb9ff127b4f41813e290a2e9a0f62238e622811e331ee",
+  "tools/b4_campaign_orchestrator.py": "930ef8e468bacff63192f53cce6c3e95beedd58c66aa7ad3a8161df524448600",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
+  "tests/test_b4_materializer_authority.py": "c9b080b8da733c5dee7facbafc05ffd39d2f38c0a73d68d203d745f5ed6462cb"
+ },
+ "chronology_truth": "authored AFTER the C35-C38 PRE freeze and after all corrected code and tests were finalized and hashed from disk; amendments 1-12 untouched; the real Musashi recovery acta remains ABSENT and the v6 launch remains CLOSED",
+ "amendment_sha256": "88dda36971acd7ecb728b07dac000897cf75873f2eda92d22bc5495baa4ca513"
+}

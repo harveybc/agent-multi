@@ -213,11 +213,15 @@ TERMINAL_SCHEMA_KEYS = {
     "per_bar_csv", "per_bar_sha256", "scored_index_sha256",
     "scored_bars", "counter_semantics", "sealed_2025_used",
     "wall_seconds", "effective_limits",
-    "authorization_record_sha256", "amendment_11_sha256"}
+    "authorization_record_sha256", "amendment_11_sha256",
+    # C37: the RECOVERED authority — a terminal carrying only
+    # a11/a12 refuses under the v6 generation
+    "campaign_generation", "recovery_acta_sha256",
+    "pinned_execution_commit", "latest_amendment_sha256"}
 CLAIM_SCHEMA_KEYS = {
     "schema", "campaign_generation", "attempt_id", "cell",
     "claimed_wall", "claimed_monotonic", "holder_pid",
-    "terminal_sha256", "claim_sha256"}
+    "terminal_sha256", "recovery_acta_sha256", "claim_sha256"}
 PER_BAR_SCHEMA = {
     "origin": "int", "seed": "int", "datetime_utc": "str",
     "scored_index": "int", "source_row_sha256": "str",
@@ -545,6 +549,24 @@ def verify_campaign_results(ledger_path: Path, mat_root: Path,
             raise LedgerRefusal(
                 f"REFUSED: {cid} terminal amendment-11 digest "
                 "does not re-derive from the live chain")
+        # C37: the RECOVERED authority is re-derived from the
+        # reviewed acta — producer labels grant nothing; a
+        # terminal with a stale, transplanted or absent recovery
+        # binding refuses.
+        wit = b4a.require_v6_launch_open()
+        if term.get("campaign_generation") != \
+                wit["campaign_generation"] or \
+                term.get("recovery_acta_sha256") != \
+                wit["acta_sha256"] or \
+                term.get("pinned_execution_commit") != \
+                wit["pinned_commit"] or \
+                term.get("latest_amendment_sha256") != \
+                wit["latest_amendment_sha256"]:
+            raise LedgerRefusal(
+                f"REFUSED: {cid} terminal recovery bindings "
+                "(generation/acta/pinned commit/latest amendment) "
+                "do not re-derive from the reviewed recovery "
+                "authority")
         facts[cid] = {"terminal": term["terminal"],
                       "attempt_id": att,
                       "per_bar_sha256": term["per_bar_sha256"],
@@ -580,6 +602,20 @@ def verify_single_cell_result(results_root: Path, cell_id: str,
         raise LedgerRefusal(
             f"REFUSED: {cell_id} terminal is "
             f"{term.get('terminal')!r}")
+    # C37: the RECOVERED authority verifies BEFORE any evidence —
+    # a stale or transplanted binding never gets to per-bar data.
+    wit = b4a.require_v6_launch_open()
+    for k, want in (("campaign_generation",
+                     wit["campaign_generation"]),
+                    ("recovery_acta_sha256", wit["acta_sha256"]),
+                    ("pinned_execution_commit",
+                     wit["pinned_commit"]),
+                    ("latest_amendment_sha256",
+                     wit["latest_amendment_sha256"])):
+        if term.get(k) != want:
+            raise LedgerRefusal(
+                f"REFUSED: {cell_id} terminal {k} does not "
+                "re-derive from the reviewed recovery authority")
     att = term.get("attempt_id")
     if not att or not isinstance(att, str):
         raise LedgerRefusal(

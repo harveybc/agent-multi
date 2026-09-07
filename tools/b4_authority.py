@@ -12,6 +12,7 @@ carried constants here."""
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -145,6 +146,24 @@ AMENDMENT_12_PATH = (EVIDENCE /
 # launch REFUSES with the stop label.
 RECOVERY_AUDIT_RECORD_PATH = (
     EVIDENCE / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+# C35/C37: amendment 12's bytes are HISTORY now — pinned like
+# a9/a10/a11; the recovery custody chain appends amendment 13.
+AMENDMENT_12_SHA = ("74174c596efe405e4a7d1a6531a781c9649dafd5dd"
+                    "316a6bb389003aac2203ca")
+AMENDMENT_13_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_13_"
+                     "2026_09_07.json")
+# C35: the EXPLICIT finite surface whose bytes at the acta's
+# pinned commit must equal the live surface being admitted.
+RECOVERY_SURFACE_FILES = (
+    "tools/b4_authority.py", "tools/b4_run_cell.py",
+    "tools/b4_campaign_executor.py",
+    "tools/b4_campaign_ledger.py",
+    "tools/b4_campaign_orchestrator.py",
+    "tools/b4_adjudicator.py",
+    "tools/materialize_b4_causal_sac.py",
+    "pipeline_plugins/rl_pipeline_with_validation.py",
+    "tests/test_b4_materializer_authority.py")
 
 
 def campaign_record_required_bindings() -> dict:
@@ -1243,6 +1262,54 @@ def verify_amendment_chain() -> dict:
                 "corrected execution, verification and test "
                 "surface")
     pins.update(a12_pins)
+    # --- C37: amendment 13 (recovery authority custody) —
+    # append-only after the byte-pinned a12; describes ONLY
+    # C35-C37; its pins supersede for the corrected files.
+    if _sha_file(AMENDMENT_12_PATH) != AMENDMENT_12_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 bytes were altered — "
+            "append-only history is broken")
+    if not AMENDMENT_13_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 absent — the recovery custody "
+            "chain is incomplete")
+    a13 = _strict_json_bytes(AMENDMENT_13_PATH.read_bytes(),
+                             "amendment 13")
+    _A13_KEYS = {"schema", "amends_amendment_12_sha256", "order",
+                 "change_disclosure", "scientific_change",
+                 "final_code_pins", "chronology_truth",
+                 "amendment_sha256"}
+    if set(a13) != _A13_KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 keys are not the exact schema")
+    body13 = {k: a13[k] for k in sorted(a13)
+              if k != "amendment_sha256"}
+    if hashlib.sha256(json.dumps(
+            body13, sort_keys=True).encode()).hexdigest() != \
+            a13["amendment_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 self-integrity digest does not "
+            "re-derive")
+    if a13["schema"] != ("agent_multi.b4_superseding_design_"
+                         "amendment.v11_recovery_custody"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 carries a foreign schema")
+    if a13["amends_amendment_12_sha256"] != AMENDMENT_12_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 does not name amendment 12's "
+            "exact reviewed bytes")
+    if a13["scientific_change"] != \
+            "NONE — recovery authority custody only":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 must declare NO scientific "
+            "change")
+    a13_pins = a13.get("final_code_pins", {})
+    for req in _PINNED_SURFACE:
+        if req not in a13_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 13 does not pin the complete "
+                "corrected surface")
+    pins.update(a13_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -1259,36 +1326,87 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_9_PATH),
                _sha_file(AMENDMENT_10_PATH),
                _sha_file(AMENDMENT_11_PATH),
-               _sha_file(AMENDMENT_12_PATH)],
+               _sha_file(AMENDMENT_12_PATH),
+               _sha_file(AMENDMENT_13_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
 
 
-def require_v6_launch_open() -> dict:
-    """C33: the v6 LAUNCH gate — closed until the external Musashi
-    recovery-audit acta exists at the repo-constant path and
-    validates (reviewer, decision, amendment-12 binding). The
-    candidate submission grants nothing; no tip digest lives inside
-    the tip."""
+def read_recovery_acta() -> dict:
+    """C35: the recovery acta as a VERIFIED OBJECT — one
+    descriptor-bound read (O_NOFOLLOW; regular file; owned by the
+    executing uid; no group/world write), bytes hashed and parsed
+    from that same descriptor with duplicate-key and non-finite
+    rejection, exact schema and primitive types, canonical ISO
+    date, a pinned_commit that is 40 lowercase hex NAMING AN
+    EXISTING git commit whose reviewed execution surface (the
+    explicit finite RECOVERY_SURFACE_FILES set) byte-matches the
+    live surface being admitted, and the LATEST recovery
+    amendment digest — an older link grants nothing. Returns a
+    typed witness; a reviewer label or booleans alone grant
+    nothing."""
     p = RECOVERY_AUDIT_RECORD_PATH
-    if not p.is_file():
+    try:
+        fd = os.open(str(p), os.O_RDONLY | os.O_NOFOLLOW)
+    except FileNotFoundError:
         raise B4AuthorityRefusal(
             "REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_"
             "MUSASHI_AUDIT — the v6 launch stays closed until the "
             "external recovery-audit acta pins the recovered "
             "commit and opens it")
-    rec = _strict_json_bytes(p.read_bytes(),
-                             "recovery audit record")
+    except OSError as exc:
+        raise B4AuthorityRefusal(
+            f"REFUSED: recovery acta unopenable without following "
+            f"links (errno {exc.errno}: {exc.strerror})")
+    try:
+        import stat as _stat
+        st = os.fstat(fd)
+        if not _stat.S_ISREG(st.st_mode):
+            raise B4AuthorityRefusal(
+                "REFUSED: recovery acta is not a regular file")
+        if st.st_uid != os.getuid():
+            raise B4AuthorityRefusal(
+                "REFUSED: recovery acta is not owned by the "
+                "executing user")
+        if st.st_mode & 0o022:
+            raise B4AuthorityRefusal(
+                "REFUSED: recovery acta is group/world-writable — "
+                "a permissive authority object grants nothing")
+        chunks = []
+        while True:
+            b = os.read(fd, 1 << 20)
+            if not b:
+                break
+            chunks.append(b)
+    finally:
+        os.close(fd)
+    raw = b"".join(chunks)
+    acta_sha = hashlib.sha256(raw).hexdigest()
+    rec = _strict_json_bytes(raw, "recovery audit record")
     _KEYS = {"schema", "reviewed_at_date", "reviewer", "decision",
-             "amendment_12_sha256", "pinned_commit",
+             "latest_amendment_sha256", "pinned_commit",
              "preflight_reviewed", "ledger_v6_reviewed",
              "v5_v6_scientific_equality_reviewed"}
     if set(rec) != _KEYS:
         raise B4AuthorityRefusal(
-            "REFUSED: recovery-audit record keys are not the exact "
-            "schema")
-    if rec["schema"] != "agent_multi.musashi_b4_v6_recovery_audit.v1":
+            "REFUSED: recovery-audit record keys are not the "
+            "exact schema")
+    for k in ("schema", "reviewed_at_date", "reviewer",
+              "decision", "latest_amendment_sha256",
+              "pinned_commit"):
+        if type(rec[k]) is not str or not rec[k]:
+            raise B4AuthorityRefusal(
+                f"REFUSED: recovery-acta field {k!r} must be a "
+                "nonempty string — None/bool/paths grant nothing")
+    for k in ("preflight_reviewed", "ledger_v6_reviewed",
+              "v5_v6_scientific_equality_reviewed"):
+        if rec[k] is not True:
+            raise B4AuthorityRefusal(
+                f"REFUSED: recovery-audit record does not attest "
+                f"{k}")
+    if rec["schema"] != \
+            "agent_multi.musashi_b4_v6_recovery_audit.v2":
         raise B4AuthorityRefusal(
             "REFUSED: recovery-audit record carries a foreign "
             "schema")
@@ -1300,17 +1418,68 @@ def require_v6_launch_open() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: recovery-audit decision does not open the "
             "v6 launch")
-    if rec["amendment_12_sha256"] != _sha_file(AMENDMENT_12_PATH):
+    # canonical ISO date — parse AND re-format equality
+    import datetime as _dt
+    try:
+        d_ = _dt.date.fromisoformat(rec["reviewed_at_date"])
+    except ValueError:
         raise B4AuthorityRefusal(
-            "REFUSED: recovery-audit record pins a different "
-            "amendment 12 than the live chain")
-    for k in ("preflight_reviewed", "ledger_v6_reviewed",
-              "v5_v6_scientific_equality_reviewed"):
-        if rec[k] is not True:
+            "REFUSED: reviewed_at_date is not a canonical ISO "
+            "date")
+    if d_.isoformat() != rec["reviewed_at_date"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: reviewed_at_date is not canonical")
+    pin = rec["pinned_commit"]
+    if len(pin) != 40 or any(c not in "0123456789abcdef"
+                             for c in pin):
+        raise B4AuthorityRefusal(
+            "REFUSED: pinned_commit is not 40 lowercase hex "
+            "characters")
+    import subprocess as _sp
+    ct = _sp.run(["git", "-C", str(REPO), "cat-file", "-t", pin],
+                 capture_output=True, text=True)
+    if ct.returncode != 0 or ct.stdout.strip() != "commit":
+        raise B4AuthorityRefusal(
+            "REFUSED: pinned_commit does not name an existing "
+            "git commit in this repository")
+    # the reviewed surface AT the pinned commit must equal the
+    # LIVE surface being admitted — an explicit finite file set.
+    for rel in RECOVERY_SURFACE_FILES:
+        show = _sp.run(["git", "-C", str(REPO), "show",
+                        f"{pin}:{rel}"], capture_output=True)
+        if show.returncode != 0:
             raise B4AuthorityRefusal(
-                f"REFUSED: recovery-audit record does not attest "
-                f"{k}")
-    return rec
+                f"REFUSED: pinned commit lacks reviewed surface "
+                f"file {rel}")
+        if hashlib.sha256(show.stdout).hexdigest() != \
+                _sha_file(REPO / rel):
+            raise B4AuthorityRefusal(
+                f"REFUSED: live surface {rel} differs from the "
+                "reviewed surface at the pinned commit — the "
+                "acta does not cover this code")
+    # the LATEST recovery amendment — an older link grants nothing
+    if not AMENDMENT_13_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 absent — the recovery custody "
+            "chain is incomplete")
+    a13_sha = _sha_file(AMENDMENT_13_PATH)
+    if rec["latest_amendment_sha256"] != a13_sha:
+        raise B4AuthorityRefusal(
+            "REFUSED: the acta does not name the LATEST recovery "
+            "amendment's exact bytes — an amendment-12-only or "
+            "older link grants nothing")
+    return {"schema": "agent_multi.b4_v6_recovery_witness.v1",
+            "acta_sha256": acta_sha,
+            "pinned_commit": pin,
+            "latest_amendment_sha256": a13_sha,
+            "campaign_generation": CAMPAIGN_GENERATION}
+
+
+def require_v6_launch_open() -> dict:
+    """C33/C35/C36: the ONE launch gate — re-derives the typed
+    recovery witness from the reviewed object at the point of use;
+    a caller-supplied witness is never sufficient."""
+    return read_recovery_acta()
 
 
 def verify_campaign_materialization(mat_root: Path) -> dict:

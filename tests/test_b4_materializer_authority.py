@@ -265,7 +265,8 @@ def _pins(*rels):
 
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
              a7_over=None, a8_over=None, a9_over=None,
-             a10_over=None, a11_over=None, a12_over=None, **over):
+             a10_over=None, a11_over=None, a12_over=None,
+             a13_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -459,6 +460,32 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f12 = tmp_path / "a12.json"
     f12.write_text(json.dumps(a12))
     monkeypatch.setattr(a, "AMENDMENT_12_PATH", f12)
+    # C37: amendment 13 (recovery custody) — fixture chain tail
+    monkeypatch.setattr(a, "AMENDMENT_12_SHA", a._sha_file(f12))
+    a13 = {"schema": "agent_multi.b4_superseding_design_"
+                     "amendment.v11_recovery_custody",
+           "amends_amendment_12_sha256": a._sha_file(f12),
+           "order": "fixture", "change_disclosure": "fixture",
+           "scientific_change":
+               "NONE — recovery authority custody only",
+           "final_code_pins": _pins(
+               "tools/b4_authority.py", "tools/b4_run_cell.py",
+               "tools/b4_campaign_executor.py",
+               "tools/b4_campaign_ledger.py",
+               "tools/b4_campaign_orchestrator.py",
+               "tools/b4_adjudicator.py",
+               "tools/materialize_b4_causal_sac.py",
+               "pipeline_plugins/rl_pipeline_with_validation.py",
+               "tests/test_b4_materializer_authority.py"),
+           "chronology_truth": "fixture"}
+    a13.update(a13_over or {})
+    if "amendment_sha256" not in a13:
+        body = {k: a13[k] for k in sorted(a13)}
+        a13["amendment_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+    f13 = tmp_path / "a13.json"
+    f13.write_text(json.dumps(a13))
+    monkeypatch.setattr(a, "AMENDMENT_13_PATH", f13)
     return a4
 
 
@@ -466,7 +493,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 12
+    assert len(chain["amendment_shas"]) == 13
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -500,9 +527,9 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
                  "pipeline_plugins/rl_pipeline_with_validation.py",
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_authority.py"] = "0" * 64
-    # C33: the latest amendment (a12) owns the live-checked pins
+    # C37: the latest amendment (a13) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a12_over={"final_code_pins": pins})
+             a13_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -1263,6 +1290,7 @@ def test_e12_stop_classification():
 
 
 def _ledger_fixture(tmp_path):
+    _wit_now = a.require_v6_launch_open()
     """C21 coherent universe: the fixture materializes its OWN
     frozen source per origin (540-bar context + the full year, 4h),
     a comparator population with the same bar identities, exact-
@@ -1372,7 +1400,16 @@ def _ledger_fixture(tmp_path):
                 "authorization_record_sha256": a._sha_file(
                     a.CAMPAIGN_AUTHORIZATION_RECORD_PATH),
                 "amendment_11_sha256": a._sha_file(
-                    a.AMENDMENT_11_PATH)}
+                    a.AMENDMENT_11_PATH),
+                # C37: the fixture terminal carries the recovery
+                # custody re-derived from the armed fixture acta
+                "campaign_generation":
+                    _wit_now["campaign_generation"],
+                "recovery_acta_sha256": _wit_now["acta_sha256"],
+                "pinned_execution_commit":
+                    _wit_now["pinned_commit"],
+                "latest_amendment_sha256":
+                    _wit_now["latest_amendment_sha256"]}
         tp = d / "B4_CELL_TERMINAL.json"
         _ctl_write(tp, json.dumps(term))
         _write_claim_and_seal(results, cid, f"attempt_{cid}")
@@ -1394,7 +1431,9 @@ def _write_claim_and_seal(results, cid, att):
          "attempt_id": att, "cell": cid,
          "claimed_wall": 0.0, "claimed_monotonic": 0.0,
          "holder_pid": os.getpid(),
-         "terminal_sha256": None})
+         "terminal_sha256": None,
+         "recovery_acta_sha256":
+             a.require_v6_launch_open()["acta_sha256"]})
     _ctl_write(d / f"CLAIM_{gen}.json", json.dumps(rec))
     for w in d.glob("SEAL_*.json"):
         w.unlink()
@@ -1721,7 +1760,9 @@ def test_c13_global_boundary_exact_below_above(tmp_path):
                  "cell": "o2022_seed101",
                  "claimed_wall": 0.0, "claimed_monotonic": 0.0,
                  "holder_pid": os.getpid(),
-                 "terminal_sha256": None})))
+                 "terminal_sha256": None,
+         "recovery_acta_sha256":
+             a.require_v6_launch_open()["acta_sha256"]})))
         remaining = orch.remaining_global_seconds(tmp_path, limits)
         can = remaining >= orch.MIN_SEGMENT_SECONDS
         assert can is expect_dispatch, (hours, remaining)
@@ -1744,7 +1785,9 @@ def test_c13_malformed_duration_fails_closed(tmp_path):
          "campaign_generation": gen, "attempt_id": "x",
          "cell": "o2022_seed101", "claimed_wall": 0.0,
          "claimed_monotonic": 0.0, "holder_pid": os.getpid(),
-         "terminal_sha256": None})))
+         "terminal_sha256": None,
+         "recovery_acta_sha256":
+             a.require_v6_launch_open()["acta_sha256"]})))
     _ctl_write(d / "B4_CELL_TERMINAL.json", json.dumps(
         {"terminal": "FAILED", "wall_seconds": "twelve"}))
     with pytest.raises(SystemExit, match="malformed terminal"):
@@ -1824,7 +1867,10 @@ def test_c12_lease_bypass_impossible(tmp_path, monkeypatch):
     os.chmod(tmp_path / "o2024_seed101", 0o700)
     good = orch.issue_lease(
         tmp_path, "o2024_seed101",
-        {"attempt_id": "attempt_foreign"}, "e" * 64, tmp_path)
+        {"attempt_id": "attempt_foreign",
+         "recovery_acta_sha256":
+             a.require_v6_launch_open()["acta_sha256"]},
+        "e" * 64, tmp_path)
     with pytest.raises(SystemExit,
                        match="claim for o2024_seed101 absent"):
         orch.verify_lease(good, tmp_path, "o2024_seed101", tmp_path)
@@ -3063,9 +3109,9 @@ def test_c26_altered_code_after_a10_refuses(tmp_path, monkeypatch):
                  "pipeline_plugins/rl_pipeline_with_validation.py",
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_campaign_orchestrator.py"] = "2" * 64
-    # C33: the latest amendment (a12) owns the live-checked pins
+    # C37: the latest amendment (a13) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a12_over={"final_code_pins": pins})
+             a13_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3320,7 +3366,7 @@ def test_c27_final_code_mutation_after_a11_refuses(tmp_path,
     # surface (a12 supersedes a11's pins exactly as a11 superseded
     # a10's) — the mutation is planted in amendment 12.
     _fake_a4(tmp_path, monkeypatch,
-             a12_over={"final_code_pins": pins})
+             a13_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3430,23 +3476,60 @@ def _filtered_registry(monkeypatch, drop="sac_agent"):
     monkeypatch.setattr(apl, "entry_points", _view)
 
 
-def _fixture_acta(tmp_path, monkeypatch):
-    """A fixture recovery-audit acta bound to the fixture a12 —
-    used ONLY to drive the execute path past the closed launch
-    gate inside adversarial tests."""
-    rec = {"schema": "agent_multi.musashi_b4_v6_recovery_audit.v1",
+_FIXTURE_SURFACE = (
+    "docs/audits/MUSASHI_B4_DISPATCH_ENVIRONMENT_INCIDENT_"
+    "2026_09_06.md",)
+
+
+def _head_commit():
+    import subprocess
+    return subprocess.run(
+        ["git", "-C", str(REPO), "rev-parse", "HEAD"],
+        capture_output=True, text=True).stdout.strip()
+
+
+@pytest.fixture(autouse=True)
+def _gate_open_by_default(tmp_path_factory, monkeypatch):
+    """C36: the recovery gate now guards claim/lease/execute on
+    EVERY path, so the battery arms an isolated fixture acta by
+    default; closed-gate adversaries explicitly point the acta
+    path at a missing file. The acta lives OUTSIDE the test's own
+    tmp_path so tests that wipe their tree cannot orphan the
+    gate. Production ships with NO acta — the real gate stays
+    closed (proven by PRE/POST outside pytest)."""
+    gate_dir = tmp_path_factory.mktemp("gate")
+    _fixture_acta(gate_dir, monkeypatch)
+    yield
+
+
+def _close_gate(tmp_path, monkeypatch):
+    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH",
+                        tmp_path / "no_acta_here.json")
+
+
+def _fixture_acta(tmp_path, monkeypatch, **over):
+    """C35: an ISOLATED fixture acta — the authority digest is
+    injected only by TEST SETUP (surface + path monkeypatched);
+    no productive TEST_ONLY entry point exists. The pinned commit
+    is the real HEAD and the declared surface is a committed,
+    unmodified file so the byte-match check runs for real."""
+    rec = {"schema": "agent_multi.musashi_b4_v6_recovery_audit.v2",
            "reviewed_at_date": "2026-09-07",
            "reviewer": "General Musashi",
            "decision": "OPEN_B4_V6_LAUNCH",
-           "amendment_12_sha256":
-               a._sha_file(a.AMENDMENT_12_PATH),
-           "pinned_commit": "f" * 40,
+           "latest_amendment_sha256":
+               a._sha_file(a.AMENDMENT_13_PATH),
+           "pinned_commit": _head_commit(),
            "preflight_reviewed": True,
            "ledger_v6_reviewed": True,
            "v5_v6_scientific_equality_reviewed": True}
+    rec.update(over)
     p = tmp_path / "recovery_acta.json"
     p.write_text(json.dumps(rec))
+    os.chmod(p, 0o600)
     monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", p)
+    monkeypatch.setattr(a, "RECOVERY_SURFACE_FILES",
+                        _FIXTURE_SURFACE)
     return p
 
 
@@ -3733,16 +3816,23 @@ def test_c34_10_two_processes_one_claim(tmp_path):
     root = tmp_path / "race"
     root.mkdir()
     os.chmod(root, 0o700)
+    acta = a.RECOVERY_AUDIT_RECORD_PATH
+    surf = _FIXTURE_SURFACE
     code = (
         "import sys, importlib.util\n"
+        f"sys.path.insert(0, {str(REPO)!r})\n"
+        f"sys.path.insert(0, {str(REPO / 'tools')!r})\n"
+        "import b4_authority as b4a\n"
+        "from pathlib import Path\n"
+        f"b4a.RECOVERY_AUDIT_RECORD_PATH = Path({str(acta)!r})\n"
+        f"b4a.RECOVERY_SURFACE_FILES = {tuple(surf)!r}\n"
         f"spec = importlib.util.spec_from_file_location('o', "
         f"{str(REPO / 'tools/b4_campaign_orchestrator.py')!r})\n"
         "m = importlib.util.module_from_spec(spec)\n"
         "spec.loader.exec_module(m)\n"
         f"root = {str(root)!r}\n"
         "try:\n"
-        "    m.claim_attempt(__import__('pathlib').Path(root), "
-        "'o2023_seed202')\n"
+        "    m.claim_attempt(Path(root), 'o2023_seed202')\n"
         "    print('WON')\n"
         "except SystemExit as e:\n"
         "    print('LOST')\n")
@@ -3755,3 +3845,294 @@ def test_c34_10_two_processes_one_claim(tmp_path):
     assert len(claims) == 1
     assert claims[0].name == \
         f"CLAIM_{a.CAMPAIGN_GENERATION}.json"
+
+
+# ====== C35-C38 recovery-authority battery (order 2026-09-07) ======
+
+
+def test_c38_1_invalid_pin_and_date_forms_refuse(tmp_path,
+                                                 monkeypatch):
+    """C35: every non-string/invalid commit form and a malformed
+    date refuse — the PRE's four ACCEPTED forgeries are dead."""
+    for pin in (None, False, "../../foreign", "0" * 40,
+                "f" * 40, "ABC" + "0" * 37, "abc123", 12345):
+        _fixture_acta(tmp_path, monkeypatch, pinned_commit=pin)
+        with pytest.raises(SystemExit,
+                           match="nonempty string|40 lowercase|"
+                                 "existing git commit"):
+            a.require_v6_launch_open()
+    for date in ("not-a-date", "2026-13-40", "07/09/2026",
+                 "2026-9-7", "", None):
+        _fixture_acta(tmp_path, monkeypatch,
+                      reviewed_at_date=date)
+        with pytest.raises(SystemExit,
+                           match="canonical ISO date|nonempty "
+                                 "string|not canonical"):
+            a.require_v6_launch_open()
+
+
+def test_c38_2_surface_mismatch_and_stale_amendment_refuse(
+        tmp_path, monkeypatch):
+    """C35: a pinned commit whose reviewed surface differs from
+    the live code refuses; an acta naming an OLDER amendment
+    (a12-only link) refuses."""
+    # the PRE commit predates the C35-C38 corrections — its
+    # b4_authority bytes can never equal the corrected live file
+    pre_commit = "9cad8df4"
+    import subprocess
+    full = subprocess.run(
+        ["git", "-C", str(REPO), "rev-parse", pre_commit],
+        capture_output=True, text=True).stdout.strip()
+    _fixture_acta(tmp_path, monkeypatch, pinned_commit=full)
+    monkeypatch.setattr(a, "RECOVERY_SURFACE_FILES",
+                        ("tools/b4_authority.py",))
+    with pytest.raises(SystemExit,
+                       match="differs from the reviewed surface"):
+        a.require_v6_launch_open()
+    # nonexistent commit
+    _fixture_acta(tmp_path, monkeypatch, pinned_commit="a" * 40)
+    with pytest.raises(SystemExit,
+                       match="existing git commit"):
+        a.require_v6_launch_open()
+    # amendment-12-only link grants nothing
+    _fixture_acta(tmp_path, monkeypatch,
+                  latest_amendment_sha256=a._sha_file(
+                      a.AMENDMENT_12_PATH))
+    with pytest.raises(SystemExit,
+                       match="LATEST recovery amendment"):
+        a.require_v6_launch_open()
+
+
+def test_c38_3_acta_object_boundaries(tmp_path, monkeypatch):
+    """C35: absent, symlinked, non-regular, permissive and
+    swapped-bytes actas refuse or are caught downstream."""
+    _close_gate(tmp_path, monkeypatch)
+    with pytest.raises(SystemExit,
+                       match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+        a.require_v6_launch_open()
+    real = _fixture_acta(tmp_path, monkeypatch)
+    link = tmp_path / "acta_link.json"
+    os.symlink(real, link)
+    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", link)
+    with pytest.raises(SystemExit,
+                       match="without following links"):
+        a.require_v6_launch_open()
+    d = tmp_path / "acta_dir"
+    d.mkdir()
+    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", d)
+    with pytest.raises(SystemExit,
+                       match="not a regular file|following links"):
+        a.require_v6_launch_open()
+    _fixture_acta(tmp_path, monkeypatch)
+    os.chmod(a.RECOVERY_AUDIT_RECORD_PATH, 0o666)
+    with pytest.raises(SystemExit,
+                       match="group/world-writable"):
+        a.require_v6_launch_open()
+    os.chmod(a.RECOVERY_AUDIT_RECORD_PATH, 0o600)
+    # swapped bytes between claim and lease: same labels, new
+    # bytes -> transplanted authority refusal at issue_lease
+    orch2 = _orch()
+    executor2 = _executor()
+    root = tmp_path / "swaproot"
+    os.makedirs(root, mode=0o700)
+    with orch2.GlobalLock(root):
+        claim = orch2.claim_attempt(root, "o2022_seed101")
+        doc = json.loads(
+            a.RECOVERY_AUDIT_RECORD_PATH.read_text())
+        a.RECOVERY_AUDIT_RECORD_PATH.write_text(
+            json.dumps(doc, indent=3))     # bytes change only
+        os.chmod(a.RECOVERY_AUDIT_RECORD_PATH, 0o600)
+        with pytest.raises(SystemExit,
+                           match="transplanted authority"):
+            orch2.issue_lease(root, "o2022_seed101", claim,
+                              executor2.CAMPAIGN_AUTH_SHA,
+                              _MAT_V5)
+
+
+def test_c38_4_every_entry_point_gated(tmp_path, monkeypatch):
+    """C36: claim, lease, verify_lease, execute_cell and the
+    standalone CLI all refuse with the gate CLOSED — no public
+    sequence reaches constructors or pipeline; and the
+    structural domination holds in source."""
+    orch2 = _orch()
+    executor2 = _executor()
+    root = tmp_path / "gatedroot"
+    os.makedirs(root, mode=0o700)
+    lock = orch2.GlobalLock(root)
+    lock.__enter__()
+    try:
+        claim = orch2.claim_attempt(root, "o2022_seed101")
+        lease = orch2.issue_lease(root, "o2022_seed101", claim,
+                                  executor2.CAMPAIGN_AUTH_SHA,
+                                  _MAT_V5)
+        _close_gate(tmp_path, monkeypatch)
+        with pytest.raises(SystemExit,
+                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+            orch2.claim_attempt(root, "o2023_seed101")
+        assert not (root / "o2023_seed101").exists()
+        with pytest.raises(SystemExit,
+                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+            orch2.issue_lease(root, "o2022_seed101", claim,
+                              executor2.CAMPAIGN_AUTH_SHA,
+                              _MAT_V5)
+        with pytest.raises(SystemExit,
+                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+            orch2.verify_lease(
+                lease, root, "o2022_seed101", _MAT_V5,
+                expected_auth_sha=executor2.CAMPAIGN_AUTH_SHA)
+        with pytest.raises(SystemExit,
+                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+            executor2.execute_cell("o2022_seed101", _MAT_V5,
+                                   root, "cpu", lease_path=lease)
+        assert not (root / "o2022_seed101" /
+                    "B4_CELL_TERMINAL.json").exists()
+        # standalone CLI refuses too — even with a valid lease
+        with pytest.raises(SystemExit,
+                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+            executor2.main([
+                "--cell-id", "o2022_seed101",
+                "--materialization-root", str(_MAT_V5),
+                "--output-root", str(root),
+                "--device", "cpu", "--action", "execute",
+                "--lease", str(lease)])
+    finally:
+        lock.__exit__(None, None, None)
+    # structural domination: every execution entry point contains
+    # the witness re-derivation
+    osrc = (REPO / "tools/b4_campaign_orchestrator.py").read_text()
+    esrc = (REPO / "tools/b4_campaign_executor.py").read_text()
+    for fn in ("def claim_attempt", "def issue_lease",
+               "def verify_lease"):
+        seg = osrc[osrc.index(fn):]
+        seg = seg[:seg.index("\ndef ", 10)]
+        assert "require_v6_launch_open" in seg, fn
+    seg = esrc[esrc.index("def execute_cell"):]
+    seg = seg[:seg.index("\ndef ", 10)]
+    assert "require_v6_launch_open" in seg
+    seg = osrc[osrc.index("def run_campaign"):]
+    assert "require_v6_launch_open" in seg[:4000]
+
+
+def test_c38_5_custody_bindings_verified(tmp_path, monkeypatch):
+    """C37: claim, lease, binding, terminals and verifiers carry
+    and re-derive the recovery witness; missing or transplanted
+    bindings refuse; a11-only / a12-only terminals refuse under
+    the v6 generation."""
+    orch2 = _orch()
+    executor2 = _executor()
+    ledger_mod = _load_tool("b4led_c38",
+                            "tools/b4_campaign_ledger.py")
+    wit = a.require_v6_launch_open()
+    root = tmp_path / "custroot"
+    os.makedirs(root, mode=0o700)
+    with orch2.GlobalLock(root):
+        claim = orch2.claim_attempt(root, "o2022_seed101")
+        assert claim["recovery_acta_sha256"] == \
+            wit["acta_sha256"]
+        lease_p = orch2.issue_lease(root, "o2022_seed101", claim,
+                                    executor2.CAMPAIGN_AUTH_SHA,
+                                    _MAT_V5)
+        lease = json.loads(lease_p.read_text())
+        assert lease["recovery_acta_sha256"] == \
+            wit["acta_sha256"]
+        assert lease["pinned_execution_commit"] == \
+            wit["pinned_commit"]
+        # transplanted lease binding refuses at verification
+        doc = dict(lease)
+        doc["recovery_acta_sha256"] = "e" * 64
+        body = {k: doc[k] for k in sorted(doc)
+                if k != "lease_sha256"}
+        doc["lease_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+        forged_p = root / "o2022_seed101" / "LEASE_forged.json"
+        forged_p.write_text(json.dumps(doc))
+        os.chmod(forged_p, 0o600)
+        with pytest.raises(SystemExit,
+                           match="transplanted authority"):
+            orch2.verify_lease(
+                forged_p, root, "o2022_seed101", _MAT_V5,
+                expected_auth_sha=executor2.CAMPAIGN_AUTH_SHA)
+    # a COMPLETED terminal without the recovery keys refuses at
+    # the writer, and an a11-only terminal refuses at the
+    # verifier
+    with pytest.raises(SystemExit,
+                       match="COMPLETED terminal without"):
+        executor2.write_terminal(
+            root, "o2023_seed101", "COMPLETED",
+            {"attempt_id": "attempt_x",
+             "cell_config_sha256": "1" * 64,
+             "per_bar_csv": "x.csv", "per_bar_sha256": "2" * 64,
+             "sealed_2025_used": False,
+             "scored_index_sha256": "3" * 64,
+             "checkpoint_sha256": "4" * 64,
+             "checkpoint_path": "x.zip",
+             "authorization_record_sha256": "5" * 64,
+             "amendment_11_sha256": "6" * 64})
+    # typed-failure terminals carry the witness too
+    d1 = tmp_path / "failterm"
+    os.makedirs(d1, mode=0o700)
+    executor2.write_terminal(
+        d1, "o2022_seed101", "FAILED_PREFLIGHT_TYPED",
+        {"attempt_id": "attempt_y", "failed_phase": "config",
+         "reason": "probe", "wall_seconds": 0.1,
+         "campaign_generation": wit["campaign_generation"],
+         "recovery_acta_sha256": wit["acta_sha256"],
+         "pinned_execution_commit": wit["pinned_commit"],
+         "latest_amendment_sha256":
+             wit["latest_amendment_sha256"]})
+    t = json.loads((d1 / "o2022_seed101" /
+                    "B4_CELL_TERMINAL.json").read_text())
+    assert t["recovery_acta_sha256"] == wit["acta_sha256"]
+
+
+def test_c38_6_verifier_rederives_recovery_bindings(tmp_path,
+                                                    monkeypatch):
+    """C37: the single-cell verifier re-derives generation, acta,
+    pinned commit and latest amendment — stale or transplanted
+    values refuse even when internally consistent."""
+    executor2 = _executor()
+    ledger_mod = _load_tool("b4led_c38b",
+                            "tools/b4_campaign_ledger.py")
+    wit = a.require_v6_launch_open()
+    root = tmp_path / "verroot"
+    cdir = root / "o2022_seed101"
+    os.makedirs(cdir, mode=0o700)
+    os.chmod(root, 0o700)
+    base = {"schema": "agent_multi.b4_cell_terminal.v1",
+            "cell": "o2022_seed101", "terminal": "COMPLETED",
+            "g1_eligible": False, "checkpoint_promotable": False,
+            "attempt_id": "attempt_z",
+            "cell_config_sha256": "1" * 64,
+            "artifact_class": "PROBE",
+            "checkpoint_sha256": "2" * 64,
+            "checkpoint_path": str(tmp_path / "absent.zip"),
+            "per_bar_csv": "x.csv", "per_bar_sha256": "3" * 64,
+            "scored_index_sha256": "4" * 64, "scored_bars": 1,
+            "counter_semantics": "probe",
+            "sealed_2025_used": False, "wall_seconds": 1.0,
+            "effective_limits": {},
+            "authorization_record_sha256": a._sha_file(
+                a.CAMPAIGN_AUTHORIZATION_RECORD_PATH),
+            "amendment_11_sha256": a._sha_file(
+                a.AMENDMENT_11_PATH),
+            "campaign_generation": wit["campaign_generation"],
+            "recovery_acta_sha256": wit["acta_sha256"],
+            "pinned_execution_commit": wit["pinned_commit"],
+            "latest_amendment_sha256":
+                wit["latest_amendment_sha256"]}
+    for k in ("campaign_generation", "recovery_acta_sha256",
+              "pinned_execution_commit",
+              "latest_amendment_sha256"):
+        doc = dict(base)
+        doc[k] = ("z" * 64 if "sha" in k or "commit" in k
+                  else "b4_campaign_generation_v5_20260906")
+        tp = cdir / "B4_CELL_TERMINAL.json"
+        if tp.exists():
+            tp.unlink()
+        tp.write_text(json.dumps(doc))
+        os.chmod(tp, 0o600)
+        with pytest.raises(SystemExit,
+                           match="does not re-derive from the "
+                                 "reviewed recovery authority"):
+            ledger_mod.verify_single_cell_result(
+                root, "o2022_seed101", "1" * 64)

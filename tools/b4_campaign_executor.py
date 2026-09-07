@@ -515,7 +515,12 @@ def write_terminal(out_root: Path, cell_id: str, terminal: str,
                   "per_bar_sha256", "sealed_2025_used",
                   "scored_index_sha256", "checkpoint_sha256",
                   "checkpoint_path", "authorization_record_sha256",
-                  "amendment_11_sha256"):
+                  "amendment_11_sha256",
+                  # C37: a terminal carrying only a11/a12 refuses
+                  # under the recovered generation
+                  "campaign_generation", "recovery_acta_sha256",
+                  "pinned_execution_commit",
+                  "latest_amendment_sha256"):
             if k not in rec:
                 raise ExecutorRefusal(
                     f"REFUSED: COMPLETED terminal without {k!r} — "
@@ -710,6 +715,12 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
             "REFUSED: no Musashi campaign authorization record "
             "exists — the campaign is not executable; the owner's "
             "intent alone does not open this gate")
+    # C36: NO execution path reaches constructors, pipeline or
+    # CUDA while the recovery gate is closed — the witness is
+    # RE-DERIVED here at the last point of use; a lease alone is
+    # never sufficient. The standalone CLI passes through this
+    # exact function.
+    witness = b4a.require_v6_launch_open()
     b4a.verify_campaign_authorization_record(CAMPAIGN_AUTH_PATH,
                                              CAMPAIGN_AUTH_SHA)
     # C12: execution is structurally impossible without a VERIFIED
@@ -781,12 +792,18 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
         # the attempt); the terminal and final report carry the
         # same two digests and the final verifier re-derives them.
         binding = {
-            "schema": "agent_multi.b4_cell_auth_binding.v1",
+            "schema": "agent_multi.b4_cell_auth_binding.v2",
             "attempt_id": attempt_id,
             "authorization_record_sha256":
                 _sha_file(CAMPAIGN_AUTH_PATH),
             "amendment_11_sha256":
-                _sha_file(b4a.AMENDMENT_11_PATH)}
+                _sha_file(b4a.AMENDMENT_11_PATH),
+            # C37: the RECOVERED authority is part of custody
+            "campaign_generation": b4a.CAMPAIGN_GENERATION,
+            "recovery_acta_sha256": witness["acta_sha256"],
+            "pinned_execution_commit": witness["pinned_commit"],
+            "latest_amendment_sha256":
+                witness["latest_amendment_sha256"]}
         _orch._excl_write(
             Path(out_root) / cell_id /
             f"CELL_AUTH_BINDING_{attempt_id}.json",
@@ -865,6 +882,14 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
                 _sha_file(CAMPAIGN_AUTH_PATH),
             "amendment_11_sha256":
                 _sha_file(b4a.AMENDMENT_11_PATH),
+            # C37: every scientific result binds the recovered
+            # authority — generation, acta, pinned commit and the
+            # LATEST amendment; the verifier re-derives all four.
+            "campaign_generation": b4a.CAMPAIGN_GENERATION,
+            "recovery_acta_sha256": witness["acta_sha256"],
+            "pinned_execution_commit": witness["pinned_commit"],
+            "latest_amendment_sha256":
+                witness["latest_amendment_sha256"],
         }
     except BaseException as exc:
         # C31: post-claim ExecutorRefusal no longer passes through
@@ -887,7 +912,16 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
                             "reason":
                                 f"{type(exc).__name__}: {exc}",
                             "wall_seconds":
-                                round(time.time() - t0, 1)})
+                                round(time.time() - t0, 1),
+                            "campaign_generation":
+                                b4a.CAMPAIGN_GENERATION,
+                            "recovery_acta_sha256":
+                                witness["acta_sha256"],
+                            "pinned_execution_commit":
+                                witness["pinned_commit"],
+                            "latest_amendment_sha256":
+                                witness["latest_amendment_sha256"]
+                            })
         except ExecutorRefusal:
             # a terminal already exists (the one legitimate case)
             # — the claim is not ambiguous; the original cause
