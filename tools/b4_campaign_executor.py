@@ -41,7 +41,128 @@ CAMPAIGN_AUTH_SHA = ("c58008cc5285365b4c64e2827a9b9d1a329e3b64f7c72a37b62c1c6e70
 
 TERMINAL_CLASSES = ("COMPLETED", "FAILED", "TIMED_OUT",
                     "THERMAL_STOP", "RESOURCE_STOP",
-                    "EXTERNALLY_STOPPED")
+                    "EXTERNALLY_STOPPED",
+                    # C31: typed post-claim deterministic failures —
+                    # a preflight-class terminal preserves the exact
+                    # cause and never grants an automatic retry.
+                    "FAILED_PLUGIN_ENVIRONMENT",
+                    "FAILED_CONSTRUCTION",
+                    "FAILED_PREFLIGHT_TYPED")
+
+# --- C30: the executable environment identity — version and
+# provenance FACTS, never a private absolute path. Values from the
+# incident record's normalized environment identification.
+REQUIRED_RUNTIME = {
+    "python": (3, 12),
+    "agent-multi": "0.4.0",
+    "gymnasium": "1.3.0",
+    "stable-baselines3": "2.9.0",
+    "torch": "2.13.0",
+}
+REQUIRED_ENTRY_POINTS = (
+    ("agent.plugins", "sac_agent"),
+    ("pipeline.plugins", "rl_pipeline_with_validation"),
+)
+
+
+def preflight_environment(device: str) -> dict:
+    """C30: the strong dry-run environment gate — ZERO writes.
+    Validates interpreter and required versions, CUDA for the
+    requested device, both entry points, EFFECTIVE import of both
+    plugins FROM THE FROZEN CHECKOUT (module provenance proven by
+    file identity, never by implicit sys.path precedence), the
+    dependencies needed to build env+agent, and the live B4
+    authority. Any failure refuses BEFORE claim, lease, binding or
+    origin contract; result state stays PENDING."""
+    facts = {"schema": "agent_multi.b4_environment_preflight.v1",
+             "environment_name_observed":
+                 os.environ.get("CONDA_DEFAULT_ENV", "UNKNOWN"),
+             "writes": 0}
+    import platform
+    got_py = sys.version_info[:2]
+    if got_py != REQUIRED_RUNTIME["python"]:
+        raise ExecutorRefusal(
+            f"REFUSED: interpreter {platform.python_version()} is "
+            f"not the required {REQUIRED_RUNTIME['python']} — the "
+            "training stack's environment is mandatory")
+    facts["python_version"] = platform.python_version()
+    import importlib.metadata as _md
+    for dist in ("agent-multi", "gymnasium", "stable-baselines3",
+                 "torch"):
+        try:
+            ver = _md.version(dist)
+        except _md.PackageNotFoundError:
+            raise ExecutorRefusal(
+                f"REFUSED: required distribution {dist!r} is not "
+                "installed in this interpreter")
+        want = REQUIRED_RUNTIME[dist]
+        if ver.split("+")[0] != want:
+            raise ExecutorRefusal(
+                f"REFUSED: {dist} version {ver} differs from the "
+                f"required {want}")
+        facts[f"version_{dist}"] = ver
+    # entry points EXIST in the registry
+    eps = _md.entry_points()
+    for group, name in REQUIRED_ENTRY_POINTS:
+        found = [e.name for e in eps.select(group=group)]
+        if name not in found:
+            raise ExecutorRefusal(
+                f"REFUSED: entry point {name!r} absent from group "
+                f"{group!r} — the interpreter cannot run this "
+                "campaign (the incident's exact failure class)")
+    # EFFECTIVE import from the frozen checkout — executable
+    # provenance, not metadata precedence
+    import inspect
+    from app.plugin_loader import load_plugin
+    for group, name in REQUIRED_ENTRY_POINTS:
+        cls, _params = load_plugin(group, name)
+        src = Path(inspect.getfile(cls)).resolve()
+        try:
+            rel = src.relative_to(REPO.resolve())
+        except ValueError:
+            raise ExecutorRefusal(
+                f"REFUSED: plugin {name!r} imports from a FOREIGN "
+                "source outside the frozen checkout — editable "
+                "metadata pointing at a historic runtime grants "
+                "nothing")
+        facts[f"plugin_{name}"] = {
+            "module_relpath": str(rel),
+            "module_sha256": _sha_file(src)}
+    # dependencies needed to build the environment and the agent
+    for mod in ("gymnasium", "stable_baselines3", "numpy",
+                "pandas"):
+        try:
+            importlib.import_module(mod)
+        except Exception as exc:
+            raise ExecutorRefusal(
+                f"REFUSED: dependency {mod!r} does not import "
+                f"({type(exc).__name__}) — the agent cannot be "
+                "built in this interpreter")
+    # CUDA for the requested device
+    if device.startswith("cuda"):
+        import torch
+        if not torch.cuda.is_available():
+            raise ExecutorRefusal(
+                "REFUSED: CUDA unavailable for the requested "
+                f"device {device!r} — refuses before any claim")
+        idx = int(device.split(":")[1]) if ":" in device else 0
+        if idx >= torch.cuda.device_count():
+            raise ExecutorRefusal(
+                f"REFUSED: CUDA device index {idx} out of range")
+        facts["cuda_available"] = True
+        facts["cuda_device_count"] = int(torch.cuda.device_count())
+    else:
+        facts["cuda_available"] = None
+    # live code identity and B4 authority
+    if CAMPAIGN_AUTH_SHA is None or not CAMPAIGN_AUTH_PATH.is_file():
+        raise ExecutorRefusal(
+            "REFUSED: no campaign authorization record — the "
+            "environment preflight requires the live authority")
+    b4a.verify_campaign_authorization_record(CAMPAIGN_AUTH_PATH,
+                                             CAMPAIGN_AUTH_SHA)
+    chain = b4a.verify_amendment_chain()
+    facts["amendment_chain_length"] = len(chain["amendment_shas"])
+    return facts
 DT_FMT = "%Y-%m-%d %H:%M"
 
 
@@ -617,54 +738,75 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
     else:
         global_wall_remaining_seconds = min(
             float(global_wall_remaining_seconds), recomputed)
-    if global_wall_remaining_seconds < 600.0:
-        raise ExecutorRefusal(
-            "REFUSED: remaining global campaign wall is smaller "
-            "than one segment — the 96h ceiling is a hard bound")
     terminal_p = _terminal_path(out_root, cell_id)
     if terminal_p.exists():
+        # a written terminal means the claim is NOT ambiguous —
+        # this refusal is the one legitimate post-claim escape.
         raise ExecutorRefusal(
             f"REFUSED: {cell_id} already holds an immutable "
             "terminal state — attempts are never reused")
-    built = build_economic_config(cell_id, mat_root, out_root,
-                                  device)
-    cfg = built["config"]
-    cfg["budget_max_wall_seconds"] = float(min(
-        cfg["budget_max_wall_seconds"],
-        global_wall_remaining_seconds))
-    year = built["year"]
+    # ---- C31: the TOTAL exception boundary. From here to the
+    # COMPLETED terminal, EVERY deterministic failure — budget,
+    # config, authority, source binding, revalidation, plugin
+    # load, constructors, pipeline, scoring, verification —
+    # produces a typed terminal; no exception can escape leaving
+    # the claim without one. A preflight-class terminal preserves
+    # the exact cause and grants NO automatic retry.
     t0 = time.time()
-    packet = json.loads(
-        (Path(mat_root) / "B4_MATERIALIZATION.json").read_text())
-    comparator_dir = comparator_dir_of(packet)
-    b4a.verify_full_authority_chain(comparator_dir)
-    sb = _load_sb()
-    # C27.7: a per-attempt authorization-binding witness lives in
-    # the cell directory (beside every heartbeat/artifact of the
-    # attempt); the terminal and final report carry the same two
-    # digests and the final verifier re-derives them.
-    binding = {
-        "schema": "agent_multi.b4_cell_auth_binding.v1",
-        "attempt_id": attempt_id,
-        "authorization_record_sha256":
-            _sha_file(CAMPAIGN_AUTH_PATH),
-        "amendment_11_sha256": _sha_file(b4a.AMENDMENT_11_PATH)}
-    _orch._excl_write(
-        Path(out_root) / cell_id /
-        f"CELL_AUTH_BINDING_{attempt_id}.json",
-        json.dumps(binding, indent=1).encode())
-    # C17: revalidate the capability under the same lock right
-    # before entering the pipeline.
-    _orch.verify_lease(lease_path, out_root, cell_id, mat_root,
-                       expected_auth_sha=CAMPAIGN_AUTH_SHA)
-    from app.plugin_loader import load_plugin
-    agent_cls, _ = load_plugin("agent.plugins", cfg["agent_plugin"])
-    pipeline_cls, _ = load_plugin("pipeline.plugins",
-                                  cfg["pipeline_plugin"])
-    agent_plugin = agent_cls(cfg)
-    pipeline = pipeline_cls(cfg)
-    cell_dir = Path(out_root) / cell_id
+    phase = "budget"
     try:
+        if global_wall_remaining_seconds < 600.0:
+            raise ExecutorRefusal(
+                "REFUSED: remaining global campaign wall is "
+                "smaller than one segment — the 96h ceiling is a "
+                "hard bound")
+        phase = "config"
+        built = build_economic_config(cell_id, mat_root, out_root,
+                                      device)
+        cfg = built["config"]
+        cfg["budget_max_wall_seconds"] = float(min(
+            cfg["budget_max_wall_seconds"],
+            global_wall_remaining_seconds))
+        year = built["year"]
+        phase = "authority"
+        packet = json.loads(
+            (Path(mat_root) / "B4_MATERIALIZATION.json"
+             ).read_text())
+        comparator_dir = comparator_dir_of(packet)
+        b4a.verify_full_authority_chain(comparator_dir)
+        phase = "source_binding"
+        sb = _load_sb()
+        # C27.7: a per-attempt authorization-binding witness lives
+        # in the cell directory (beside every heartbeat/artifact of
+        # the attempt); the terminal and final report carry the
+        # same two digests and the final verifier re-derives them.
+        binding = {
+            "schema": "agent_multi.b4_cell_auth_binding.v1",
+            "attempt_id": attempt_id,
+            "authorization_record_sha256":
+                _sha_file(CAMPAIGN_AUTH_PATH),
+            "amendment_11_sha256":
+                _sha_file(b4a.AMENDMENT_11_PATH)}
+        _orch._excl_write(
+            Path(out_root) / cell_id /
+            f"CELL_AUTH_BINDING_{attempt_id}.json",
+            json.dumps(binding, indent=1).encode())
+        phase = "capability_revalidation"
+        # C17: revalidate the capability under the same lock right
+        # before entering the pipeline.
+        _orch.verify_lease(lease_path, out_root, cell_id, mat_root,
+                           expected_auth_sha=CAMPAIGN_AUTH_SHA)
+        phase = "plugin_load"
+        from app.plugin_loader import load_plugin
+        agent_cls, _ = load_plugin("agent.plugins",
+                                   cfg["agent_plugin"])
+        pipeline_cls, _ = load_plugin("pipeline.plugins",
+                                      cfg["pipeline_plugin"])
+        phase = "construction"
+        agent_plugin = agent_cls(cfg)
+        pipeline = pipeline_cls(cfg)
+        cell_dir = Path(out_root) / cell_id
+        phase = "pipeline"
         final = pipeline.run_pipeline(config=cfg, env_plugin=None,
                                       agent_plugin=agent_plugin,
                                       mode="train")
@@ -687,12 +829,14 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
             raise ExecutorRefusal(
                 "REFUSED: pipeline returned no scoreable artifact "
                 "bound by digest")
+        phase = "scoring"
         df = sb.load_source()
         origin = sb.materialize_origin(df, year,
                                        cell_dir / "outer_origin")
         score = score_frozen_checkpoint(
             cfg, score_target, score_sha, origin,
             cell_dir / f"per_bar_{cell_id}.csv", cell_id)
+        phase = "verification"
         verify_scoring_evidence(score, origin, comparator_dir,
                                 cell_id)
         terminal = "COMPLETED"
@@ -722,16 +866,33 @@ def execute_cell(cell_id: str, mat_root: Path, out_root: Path,
             "amendment_11_sha256":
                 _sha_file(b4a.AMENDMENT_11_PATH),
         }
-    except ExecutorRefusal:
-        raise
     except BaseException as exc:
-        terminal = classify_stop(str(exc), None, False)
-        if terminal == "COMPLETED":
-            terminal = "FAILED"
-        write_terminal(out_root, cell_id, terminal,
-                       {"attempt_id": attempt_id,
-                        "reason": f"{type(exc).__name__}: {exc}",
-                        "wall_seconds": round(time.time() - t0, 1)})
+        # C31: post-claim ExecutorRefusal no longer passes through
+        # — EVERY deterministic failure inside the boundary is a
+        # typed terminal; the exact phase and cause are preserved.
+        if phase == "plugin_load":
+            tclass = "FAILED_PLUGIN_ENVIRONMENT"
+        elif phase == "construction":
+            tclass = "FAILED_CONSTRUCTION"
+        elif phase in ("pipeline", "scoring", "verification"):
+            tclass = classify_stop(str(exc), None, False)
+            if tclass == "COMPLETED":
+                tclass = "FAILED"
+        else:
+            tclass = "FAILED_PREFLIGHT_TYPED"
+        try:
+            write_terminal(out_root, cell_id, tclass,
+                           {"attempt_id": attempt_id,
+                            "failed_phase": phase,
+                            "reason":
+                                f"{type(exc).__name__}: {exc}",
+                            "wall_seconds":
+                                round(time.time() - t0, 1)})
+        except ExecutorRefusal:
+            # a terminal already exists (the one legitimate case)
+            # — the claim is not ambiguous; the original cause
+            # propagates.
+            pass
         raise
     write_terminal(out_root, cell_id, terminal, detail)
     # C1.6: a COMPLETED must immediately pass the REAL ledger

@@ -90,6 +90,22 @@ def materialize_ledger(mat_root: Path, out: Path) -> dict:
         "owner_preflight_authorization_sha256":
             b4a.OWNER_GPU_AUTH_SHA,
         "preflight_is_scientific_evidence": False,
+        # C32: generation provenance — the v6 ledger is a FRESH
+        # materialization (never a copy of the superseded v5
+        # mutable ledger); it names the incident, the fixed prior
+        # charge, and the append-only lineage. Its expected
+        # identity is recomputable from the same materialization.
+        "generation_provenance": {
+            "campaign_generation": b4a.CAMPAIGN_GENERATION,
+            "supersedes_generation":
+                b4a.AUTHORIZED_CAMPAIGN_GENERATION,
+            "supersedes_results_root_logical":
+                b4a.V5_RESULTS_ROOT_LOGICAL,
+            "incident_record_sha256": b4a.INCIDENT_RECORD_SHA,
+            "prior_generations_gpu_seconds_charged":
+                b4a.PRIOR_GENERATIONS_GPU_SECONDS,
+            "scientific_change": "NONE",
+            "ambiguous_attempt_artifacts_reusable": False},
         "cells": entries,
         "scheduling_rule": ("staged by RUNTIME HEALTH ONLY "
                             "(fields: %s); observed returns and "
@@ -133,6 +149,32 @@ def verify_ledger(ledger_path: Path, mat_root: Path) -> dict:
     if recomputed != ledger["campaign_digest"]:
         raise LedgerRefusal("REFUSED: campaign digest does not "
                             "re-derive")
+    # C32: a ledger of the CURRENT generation must carry truthful
+    # provenance — the incident, the lineage and the fixed prior
+    # charge. Superseded-generation ledgers (v5) are immutable
+    # history and are never consumed by the v6 execution path.
+    gp = ledger.get("generation_provenance")
+    if gp is not None:
+        if gp.get("campaign_generation") != \
+                b4a.CAMPAIGN_GENERATION or \
+                gp.get("supersedes_generation") != \
+                b4a.AUTHORIZED_CAMPAIGN_GENERATION or \
+                gp.get("incident_record_sha256") != \
+                b4a.INCIDENT_RECORD_SHA or \
+                gp.get("prior_generations_gpu_seconds_charged") != \
+                b4a.PRIOR_GENERATIONS_GPU_SECONDS or \
+                gp.get("scientific_change") != "NONE" or \
+                gp.get("ambiguous_attempt_artifacts_reusable") \
+                is not False:
+            raise LedgerRefusal(
+                "REFUSED: ledger generation provenance differs "
+                "from the live chain constants")
+    elif b4a.CAMPAIGN_GENERATION != \
+            b4a.AUTHORIZED_CAMPAIGN_GENERATION:
+        raise LedgerRefusal(
+            "REFUSED: a recovered-generation campaign requires a "
+            "ledger with explicit generation provenance — the "
+            "superseded mutable ledger is never reused as genesis")
     return ledger
 
 

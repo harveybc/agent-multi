@@ -1,0 +1,29 @@
+== 1. v5 incident objects preserved byte-exact ==
+four digests match; v5 objects preserved byte-exact
+v6 over the v5 root: REFUSED: results root holds a foreign-generation object CLAIM_b4_campaign_genera
+
+== 2. dry-run now refuses the missing plugin BEFORE any claim ==
+dry-run: REFUSED: entry point 'sac_agent' absent from group 'agent.plugins' — the interpr
+
+== 3. the escape is dead: typed terminal, never AMBIGUOUS_CLAIM ==
+Attempting to load plugin: sac_agent from group: agent.plugins
+Failed to find plugin sac_agent in group agent.plugins
+terminal: FAILED_PLUGIN_ENVIRONMENT | phase: plugin_load | state: UNCERTAIN
+
+== 4. v6 accounting: 0.01h charged, budget never restarted ==
+fresh-root remaining = ceiling - 36.0s -> 95.99 h
+
+== 5. the honest v6 dry-run passes; the LAUNCH stays closed ==
+dry-run rc: 0 | remaining: 95.99 h | preflight chain: 12
+launch gate: REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launch stays cl
+
+== 6. v6 never consumes v5 objects ==
+v5 ledger as v6 genesis: REFUSED: a recovered-generation campaign requires a ledger with explic
+
+== 7. twelve scientific identities equal v5<->v6 ==
+campaign_digest equal; provenance names incident 6e0905602f28 | scientific_change NONE
+
+== 8. chain: 12 amendments; published a12 can never be regenerated ==
+amendments: 12
+
+POST CONFIRMED: incident mechanisms dead; v6 recovery append-only; launch closed pending the Musashi acta

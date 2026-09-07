@@ -265,7 +265,7 @@ def _pins(*rels):
 
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
              a7_over=None, a8_over=None, a9_over=None,
-             a10_over=None, a11_over=None, **over):
+             a10_over=None, a11_over=None, a12_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -422,6 +422,43 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f11 = tmp_path / "a11.json"
     f11.write_text(json.dumps(a11))
     monkeypatch.setattr(a, "AMENDMENT_11_PATH", f11)
+    # C33: amendment 12 (environment recovery) — the fixture chain
+    # mirrors the append-only lineage; a11's bytes become pinned
+    # history exactly like a9/a10.
+    monkeypatch.setattr(a, "AMENDMENT_11_SHA", a._sha_file(f11))
+    a12 = {"schema": "agent_multi.b4_superseding_design_"
+                     "amendment.v10_environment_recovery",
+           "amends_amendment_11_sha256": a._sha_file(f11),
+           "incident_record_sha256": a.INCIDENT_RECORD_SHA,
+           "order": "fixture", "change_disclosure": "fixture",
+           "scientific_change":
+               "NONE — environment recovery only",
+           "campaign_generation_v6": a.CAMPAIGN_GENERATION,
+           "supersedes_generation":
+               a.AUTHORIZED_CAMPAIGN_GENERATION,
+           "supersedes_results_root_logical":
+               a.V5_RESULTS_ROOT_LOGICAL,
+           "v6_results_root_logical": a.V6_RESULTS_ROOT_LOGICAL,
+           "prior_generations_gpu_seconds_charged":
+               a.PRIOR_GENERATIONS_GPU_SECONDS,
+           "final_code_pins": _pins(
+               "tools/b4_authority.py", "tools/b4_run_cell.py",
+               "tools/b4_campaign_executor.py",
+               "tools/b4_campaign_ledger.py",
+               "tools/b4_campaign_orchestrator.py",
+               "tools/b4_adjudicator.py",
+               "tools/materialize_b4_causal_sac.py",
+               "pipeline_plugins/rl_pipeline_with_validation.py",
+               "tests/test_b4_materializer_authority.py"),
+           "chronology_truth": "fixture"}
+    a12.update(a12_over or {})
+    if "amendment_sha256" not in a12:
+        body = {k: a12[k] for k in sorted(a12)}
+        a12["amendment_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+    f12 = tmp_path / "a12.json"
+    f12.write_text(json.dumps(a12))
+    monkeypatch.setattr(a, "AMENDMENT_12_PATH", f12)
     return a4
 
 
@@ -429,7 +466,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 11
+    assert len(chain["amendment_shas"]) == 12
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -463,8 +500,9 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
                  "pipeline_plugins/rl_pipeline_with_validation.py",
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_authority.py"] = "0" * 64
+    # C33: the latest amendment (a12) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a11_over={"final_code_pins": pins})
+             a12_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -1725,22 +1763,24 @@ def test_c11_dry_run_zero_writes(tmp_path, monkeypatch):
     a nonexistent root still permits a pure dry-run."""
     mat = Path.home() / (".local/share/agent-multi/"
                          "b4_materialization_v5_20260906")
-    dr = Path.home() / (".local/share/agent-multi/"
-                        "b4_campaign_dryrun_v5_20260906")
-    if not mat.is_dir() or not (dr / "CAMPAIGN_LEDGER.json"
-                                ).is_file():
+    if not mat.is_dir():
         pytest.skip("v5 materialization absent on this host")
+    # C32: the dry-run consumes a PROVENANCE-BEARING v6 ledger —
+    # the superseded v5-era mutable ledgers refuse by design.
+    ledger_mod = _load_tool("b4led_c11",
+                            "tools/b4_campaign_ledger.py")
+    lp = tmp_path / "CAMPAIGN_LEDGER.json"
+    ledger_mod.materialize_ledger(mat, lp)
     fresh = tmp_path / "fresh_root_never_created"
-    rc = orch.run_campaign(mat, dr / "CAMPAIGN_LEDGER.json",
-                           fresh, "cpu", execute=False)
+    rc = orch.run_campaign(mat, lp, fresh, "cpu", execute=False)
     assert rc == 0 and not fresh.exists()
     pre_root = tmp_path / "pre"
     (pre_root / "o2022_seed101").mkdir(parents=True)
     marker = pre_root / "o2022_seed101" / "x.json"
     marker.write_text("{}")
     snap = orch._snapshot(pre_root)
-    rc = orch.run_campaign(mat, dr / "CAMPAIGN_LEDGER.json",
-                           pre_root, "cpu", execute=False)
+    rc = orch.run_campaign(mat, lp, pre_root, "cpu",
+                           execute=False)
     assert rc == 0 and orch._snapshot(pre_root) == snap
 
 
@@ -3023,8 +3063,9 @@ def test_c26_altered_code_after_a10_refuses(tmp_path, monkeypatch):
                  "pipeline_plugins/rl_pipeline_with_validation.py",
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_campaign_orchestrator.py"] = "2" * 64
+    # C33: the latest amendment (a12) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a11_over={"final_code_pins": pins})
+             a12_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3275,8 +3316,11 @@ def test_c27_final_code_mutation_after_a11_refuses(tmp_path,
                  "pipeline_plugins/rl_pipeline_with_validation.py",
                  "tests/test_b4_materializer_authority.py")
     pins["tools/b4_campaign_executor.py"] = "3" * 64
+    # C33: the LATEST amendment's pins are the live-checked
+    # surface (a12 supersedes a11's pins exactly as a11 superseded
+    # a10's) — the mutation is planted in amendment 12.
     _fake_a4(tmp_path, monkeypatch,
-             a11_over={"final_code_pins": pins})
+             a12_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3342,3 +3386,372 @@ def _probe_source_resolution(_a, design):
             "REFUSED: the sealed design may only name a logical "
             "RELATIVE source identity")
     return declared
+
+
+# ===== C29-C34 environment-recovery battery (order 2026-09-06) =====
+
+def _load_tool(name, rel):
+    spec2 = importlib.util.spec_from_file_location(name, REPO / rel)
+    mod = importlib.util.module_from_spec(spec2)
+    spec2.loader.exec_module(mod)
+    return mod
+
+
+def _orch():
+    return _load_tool("b4orch_c34", "tools/b4_campaign_orchestrator.py")
+
+
+def _executor():
+    return _load_tool("b4exec_c34", "tools/b4_campaign_executor.py")
+
+
+_STATE = Path.home() / ".local/share/agent-multi"
+_MAT_V5 = _STATE / "b4_materialization_v5_20260906"
+_V5_ROOT = _STATE / "b4_campaign_results_20260906"
+
+
+def _filtered_registry(monkeypatch, drop="sac_agent"):
+    """A REAL entry-point registry view lacking one plugin — the
+    incident's exact environment class, never an artificial
+    exception."""
+    import importlib.metadata as md
+    import app.plugin_loader as apl
+    real = md.entry_points
+
+    def _view():
+        class _V:
+            def select(self, group):
+                eps = real().select(group=group)
+                if group == "agent.plugins":
+                    return [e for e in eps if e.name != drop]
+                return eps
+        return _V()
+    monkeypatch.setattr(md, "entry_points", _view)
+    monkeypatch.setattr(apl, "entry_points", _view)
+
+
+def _fixture_acta(tmp_path, monkeypatch):
+    """A fixture recovery-audit acta bound to the fixture a12 —
+    used ONLY to drive the execute path past the closed launch
+    gate inside adversarial tests."""
+    rec = {"schema": "agent_multi.musashi_b4_v6_recovery_audit.v1",
+           "reviewed_at_date": "2026-09-07",
+           "reviewer": "General Musashi",
+           "decision": "OPEN_B4_V6_LAUNCH",
+           "amendment_12_sha256":
+               a._sha_file(a.AMENDMENT_12_PATH),
+           "pinned_commit": "f" * 40,
+           "preflight_reviewed": True,
+           "ledger_v6_reviewed": True,
+           "v5_v6_scientific_equality_reviewed": True}
+    p = tmp_path / "recovery_acta.json"
+    p.write_text(json.dumps(rec))
+    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", p)
+    return p
+
+
+def test_c34_1_plugin_absent_fails_before_claim(tmp_path,
+                                                monkeypatch):
+    """C34.1/C30: a registry without sac_agent refuses in the
+    environment preflight BEFORE claim, lease, binding or origin
+    contract; the root stays PENDING with zero objects."""
+    _fake_a4(tmp_path, monkeypatch)
+    _fixture_acta(tmp_path, monkeypatch)
+    _filtered_registry(monkeypatch)
+    orch = _orch()
+    root = tmp_path / "v6root"
+    with pytest.raises(SystemExit,
+                       match="entry point 'sac_agent' absent"):
+        orch.run_campaign(_MAT_V5, tmp_path / "ledger.json",
+                          root, "cpu", execute=True)
+    assert not root.exists() or not list(root.rglob("CLAIM_*"))
+
+
+def test_c34_1b_preflight_zero_writes(tmp_path, monkeypatch):
+    """C30: the environment preflight performs ZERO writes."""
+    executor = _executor()
+    before = sorted(p for p in tmp_path.rglob("*"))
+    facts = executor.preflight_environment("cpu")
+    after = sorted(p for p in tmp_path.rglob("*"))
+    assert before == after and facts["writes"] == 0
+    assert facts["python_version"].startswith("3.12")
+    assert facts["plugin_sac_agent"]["module_relpath"].startswith(
+        "agent_plugins/")
+
+
+def test_c34_2_foreign_source_plugin_refuses(monkeypatch):
+    """C34.2/C30: a plugin importable only from OUTSIDE the frozen
+    checkout refuses — metadata precedence is never trusted."""
+    import app.plugin_loader as apl
+    executor = _executor()
+
+    def fake_load(group, name):
+        return json.JSONEncoder, []
+    monkeypatch.setattr(apl, "load_plugin", fake_load)
+    with pytest.raises(SystemExit, match="FOREIGN source"):
+        executor.preflight_environment("cpu")
+
+
+def test_c34_3_cuda_absent_refuses_before_claim(tmp_path,
+                                                monkeypatch):
+    """C34.3/C30: CUDA unavailable for cuda:0 refuses in the
+    preflight — before any claim exists."""
+    import torch
+    executor = _executor()
+    monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+    with pytest.raises(SystemExit, match="CUDA unavailable"):
+        executor.preflight_environment("cuda:0")
+
+
+def _claimed_cell(tmp_path, orch, executor, monkeypatch):
+    """Claim+lease on a throwaway v6 root exactly as run_campaign
+    does, returning the context to drive execute_cell."""
+    root = tmp_path / "v6exec"
+    os.makedirs(root, mode=0o700, exist_ok=True)
+    lock = orch.GlobalLock(root)
+    lock.__enter__()
+    claim = orch.claim_attempt(root, "o2022_seed101")
+    lease = orch.issue_lease(root, "o2022_seed101", claim,
+                             executor.CAMPAIGN_AUTH_SHA, _MAT_V5)
+    return root, lock, claim, lease
+
+
+def test_c34_4_agent_constructor_typed_terminal(tmp_path,
+                                                monkeypatch):
+    """C34.4/C31: an agent constructor failure AFTER the claim
+    leaves a typed FAILED_CONSTRUCTION terminal — never an
+    ambiguous claim."""
+    import app.plugin_loader as apl
+    orch = _orch()
+    executor = _executor()
+    real_load = apl.load_plugin
+
+    class BoomAgent:
+        plugin_params = {}
+
+        def __init__(self, cfg):
+            raise RuntimeError("agent constructor exploded")
+
+    def fake_load(group, name):
+        if group == "agent.plugins":
+            return BoomAgent, []
+        return real_load(group, name)
+    monkeypatch.setattr(apl, "load_plugin", fake_load)
+    root, lock, claim, lease = _claimed_cell(
+        tmp_path, orch, executor, monkeypatch)
+    try:
+        with pytest.raises(RuntimeError, match="agent constructor"):
+            executor.execute_cell("o2022_seed101", _MAT_V5, root,
+                                  "cpu", lease_path=lease)
+    finally:
+        lock.__exit__(None, None, None)
+    term = json.loads(
+        (root / "o2022_seed101" / "B4_CELL_TERMINAL.json"
+         ).read_text())
+    assert term["terminal"] == "FAILED_CONSTRUCTION"
+    assert term["failed_phase"] == "construction"
+    assert "agent constructor exploded" in term["reason"]
+    assert orch.adjudicate_cell_state(root, "o2022_seed101") != \
+        "AMBIGUOUS_CLAIM"
+
+
+def test_c34_5_pipeline_constructor_typed_terminal(tmp_path,
+                                                   monkeypatch):
+    """C34.5/C31: a pipeline constructor failure AFTER the claim
+    leaves a typed FAILED_CONSTRUCTION terminal."""
+    import app.plugin_loader as apl
+    orch = _orch()
+    executor = _executor()
+    real_load = apl.load_plugin
+
+    class OkAgent:
+        plugin_params = {}
+
+        def __init__(self, cfg):
+            pass
+
+    class BoomPipeline:
+        plugin_params = {}
+
+        def __init__(self, cfg):
+            raise RuntimeError("pipeline constructor exploded")
+
+    def fake_load(group, name):
+        if group == "agent.plugins":
+            return OkAgent, []
+        if group == "pipeline.plugins":
+            return BoomPipeline, []
+        return real_load(group, name)
+    monkeypatch.setattr(apl, "load_plugin", fake_load)
+    root, lock, claim, lease = _claimed_cell(
+        tmp_path, orch, executor, monkeypatch)
+    try:
+        with pytest.raises(RuntimeError,
+                           match="pipeline constructor"):
+            executor.execute_cell("o2022_seed101", _MAT_V5, root,
+                                  "cpu", lease_path=lease)
+    finally:
+        lock.__exit__(None, None, None)
+    term = json.loads(
+        (root / "o2022_seed101" / "B4_CELL_TERMINAL.json"
+         ).read_text())
+    assert term["terminal"] == "FAILED_CONSTRUCTION"
+    assert "pipeline constructor exploded" in term["reason"]
+
+
+def test_c34_6_pre_pipeline_never_ambiguous(tmp_path, monkeypatch):
+    """C34.6/C29/C31: the INCIDENT regression — the productive
+    loader's ImportError from a real registry without sac_agent now
+    leaves a typed FAILED_PLUGIN_ENVIRONMENT terminal, and any
+    other pre-pipeline exception leaves FAILED_PREFLIGHT_TYPED;
+    AMBIGUOUS_CLAIM is structurally impossible inside the
+    boundary."""
+    orch = _orch()
+    executor = _executor()
+    _filtered_registry(monkeypatch)
+    root, lock, claim, lease = _claimed_cell(
+        tmp_path, orch, executor, monkeypatch)
+    try:
+        with pytest.raises(ImportError, match="sac_agent not found"):
+            executor.execute_cell("o2022_seed101", _MAT_V5, root,
+                                  "cpu", lease_path=lease)
+    finally:
+        lock.__exit__(None, None, None)
+    term = json.loads(
+        (root / "o2022_seed101" / "B4_CELL_TERMINAL.json"
+         ).read_text())
+    assert term["terminal"] == "FAILED_PLUGIN_ENVIRONMENT"
+    assert term["failed_phase"] == "plugin_load"
+    assert "sac_agent not found in group agent.plugins" in \
+        term["reason"]
+    st = orch.adjudicate_cell_state(root, "o2022_seed101")
+    assert st != "AMBIGUOUS_CLAIM"
+    # generic pre-pipeline failure on a second throwaway root
+    executor2 = _executor()
+    monkeypatch.setattr(
+        executor2, "build_economic_config",
+        lambda *a_, **k: (_ for _ in ()).throw(
+            ValueError("config stage exploded")))
+    root2 = tmp_path / "v6exec2"
+    os.makedirs(root2, mode=0o700)
+    lock2 = orch.GlobalLock(root2)
+    lock2.__enter__()
+    claim2 = orch.claim_attempt(root2, "o2022_seed101")
+    lease2 = orch.issue_lease(root2, "o2022_seed101", claim2,
+                              executor2.CAMPAIGN_AUTH_SHA, _MAT_V5)
+    try:
+        with pytest.raises(ValueError, match="config stage"):
+            executor2.execute_cell("o2022_seed101", _MAT_V5, root2,
+                                   "cpu", lease_path=lease2)
+    finally:
+        lock2.__exit__(None, None, None)
+    term2 = json.loads(
+        (root2 / "o2022_seed101" / "B4_CELL_TERMINAL.json"
+         ).read_text())
+    assert term2["terminal"] == "FAILED_PREFLIGHT_TYPED"
+    assert term2["failed_phase"] == "config"
+    assert orch.adjudicate_cell_state(root2, "o2022_seed101") != \
+        "AMBIGUOUS_CLAIM"
+
+
+def test_c34_7_v6_never_reads_v5_attempt(tmp_path, monkeypatch):
+    """C34.7/C32: the recovered generation refuses any root holding
+    a superseded-generation object, and the superseded v5 ledger
+    (no generation provenance) is never consumable by v6."""
+    _fake_a4(tmp_path, monkeypatch)
+    _fixture_acta(tmp_path, monkeypatch)
+    orch = _orch()
+    root = tmp_path / "poisoned"
+    cdir = root / "o2022_seed101"
+    os.makedirs(cdir, mode=0o700)
+    v5_claim = (_V5_ROOT / "o2022_seed101" /
+                "CLAIM_b4_campaign_generation_v5_20260906.json")
+    (cdir / v5_claim.name).write_bytes(v5_claim.read_bytes())
+    with pytest.raises(SystemExit,
+                       match="foreign-generation object"):
+        orch.run_campaign(_MAT_V5, tmp_path / "ledger.json",
+                          root, "cpu", execute=True)
+    # the v5 mutable ledger refuses as v6 genesis
+    ledger_mod = _load_tool("b4led_c34",
+                            "tools/b4_campaign_ledger.py")
+    with pytest.raises(SystemExit,
+                       match="explicit generation provenance"):
+        ledger_mod.verify_ledger(_V5_ROOT / "CAMPAIGN_LEDGER.json",
+                                 _MAT_V5)
+
+
+def test_c34_8_v6_deducts_prior_charge(tmp_path):
+    """C34.8/C32: the 96h ceiling never restarts — v6 deducts the
+    incident acta's fixed 0.01h before its own spending."""
+    orch = _orch()
+    limits = a.load_resource_contract()
+    empty = tmp_path / "fresh"
+    empty.mkdir()
+    remaining = orch.remaining_global_seconds(empty, limits)
+    ceiling = float(limits["global_gpu_hours_ceiling"]) * 3600.0
+    assert remaining == ceiling - 36.0
+    assert a.PRIOR_GENERATIONS_GPU_SECONDS == 36.0
+
+
+def test_c34_9_twelve_identities_equal_v5_v6(tmp_path):
+    """C34.9/C32: the v6 ledger carries EXACTLY the twelve v5
+    scientific identities (configs, genesis, comparator, order) —
+    scientific_change NONE is machine-checked, and the ledger is a
+    fresh materialization naming the incident."""
+    ledger_mod = _load_tool("b4led_c34b",
+                            "tools/b4_campaign_ledger.py")
+    out = tmp_path / "CAMPAIGN_LEDGER.json"
+    v6 = ledger_mod.materialize_ledger(_MAT_V5, out)
+    v5 = json.loads((_V5_ROOT / "CAMPAIGN_LEDGER.json").read_text())
+    assert sorted(v6["cells"]) == sorted(v5["cells"])
+    for cid in v6["cells"]:
+        for k in ("cell_config_sha256", "genesis_binding_sha256",
+                  "genesis_container_sha256",
+                  "genesis_tensor_sha256"):
+            assert v6["cells"][cid][k] == v5["cells"][cid][k], \
+                (cid, k)
+    assert v6["campaign_digest"] == v5["campaign_digest"]
+    assert v6["population_sha256"] == v5["population_sha256"]
+    assert v6["materialization_sha256"] == \
+        v5["materialization_sha256"]
+    gp = v6["generation_provenance"]
+    assert gp["campaign_generation"] == a.CAMPAIGN_GENERATION
+    assert gp["supersedes_generation"] == \
+        a.AUTHORIZED_CAMPAIGN_GENERATION
+    assert gp["incident_record_sha256"] == a.INCIDENT_RECORD_SHA
+    assert gp["prior_generations_gpu_seconds_charged"] == 36.0
+    assert gp["scientific_change"] == "NONE"
+    assert gp["ambiguous_attempt_artifacts_reusable"] is False
+    # and the v6 verifier accepts its own fresh materialization
+    ledger_mod.verify_ledger(out, _MAT_V5)
+
+
+def test_c34_10_two_processes_one_claim(tmp_path):
+    """C34.10: two REAL processes race the v6 claim — exactly one
+    wins the O_EXCL create."""
+    import subprocess
+    root = tmp_path / "race"
+    root.mkdir()
+    os.chmod(root, 0o700)
+    code = (
+        "import sys, importlib.util\n"
+        f"spec = importlib.util.spec_from_file_location('o', "
+        f"{str(REPO / 'tools/b4_campaign_orchestrator.py')!r})\n"
+        "m = importlib.util.module_from_spec(spec)\n"
+        "spec.loader.exec_module(m)\n"
+        f"root = {str(root)!r}\n"
+        "try:\n"
+        "    m.claim_attempt(__import__('pathlib').Path(root), "
+        "'o2023_seed202')\n"
+        "    print('WON')\n"
+        "except SystemExit as e:\n"
+        "    print('LOST')\n")
+    procs = [subprocess.Popen([sys.executable, "-c", code],
+                              stdout=subprocess.PIPE, text=True)
+             for _ in range(2)]
+    outs = [p.communicate()[0].strip() for p in procs]
+    assert sorted(outs) == ["LOST", "WON"], outs
+    claims = list(root.rglob("CLAIM_*.json"))
+    assert len(claims) == 1
+    assert claims[0].name == \
+        f"CLAIM_{a.CAMPAIGN_GENERATION}.json"

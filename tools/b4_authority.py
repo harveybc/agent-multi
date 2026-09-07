@@ -110,7 +110,41 @@ RESOURCE_CONTRACT_V2_SHA = "516bd7d70e46353c2e4fec00761d4322511127c222d9432928cc
 # amendment chain at verification time — never fossilized constants.
 # The latest amendment's digest is bound under its TRUTHFUL field
 # name (amendment_7_sha256 today; a future amendment renames it).
-CAMPAIGN_GENERATION = "b4_campaign_generation_v5_20260906"
+# --- C29-C34 (environment recovery order 2026-09-06): the v5
+# generation is SUPERSEDED HISTORY — its results root and the
+# ambiguous attempt are preserved byte-exact and never read or
+# reused. Generation v6 carries the IDENTICAL scientific identity
+# (population, configs, data, genesis, comparator, limits, order;
+# amendment 12: scientific_change NONE) and differs ONLY in the
+# environment correction. The Musashi authorization record binds
+# the generation it authorized (v5) — that historical truth never
+# changes; amendment 12 links v6 to it, and the v6 LAUNCH stays
+# closed until the external recovery-audit acta exists.
+CAMPAIGN_GENERATION = "b4_campaign_generation_v6_20260907"
+AUTHORIZED_CAMPAIGN_GENERATION = "b4_campaign_generation_v5_20260906"
+SUPERSEDED_GENERATIONS = ("b4_campaign_generation_v5_20260906",)
+V5_RESULTS_ROOT_LOGICAL = "b4_campaign_results_20260906"
+V6_RESULTS_ROOT_LOGICAL = "b4_campaign_results_v6_20260907"
+INCIDENT_RECORD_PATH = (REPO / "docs/audits/"
+                        "MUSASHI_B4_DISPATCH_ENVIRONMENT_INCIDENT_"
+                        "2026_09_06.md")
+INCIDENT_RECORD_SHA = ("6e0905602f28517d6584a4969672c70a63ea577"
+                       "20cdfcdb3e32c5dce4c6d5587")
+# C32: the v5 charge against the global ceiling is the FIXED value
+# from the incident acta (0.01 h) — never the ambiguous claim's
+# ever-growing wall clock, and the 96 h budget never restarts.
+PRIOR_GENERATIONS_GPU_SECONDS = 36.0
+# C33: amendment 11's bytes are HISTORY now — pinned like a9/a10.
+AMENDMENT_11_SHA = ("449a138726b56c9af3a29d2bdb68f1ba846468bb7fea"
+                    "e64d738c9554a7de8e89")
+AMENDMENT_12_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_12_"
+                     "2026_09_07.json")
+# C33: the future Musashi recovery-audit acta — repo-constant path,
+# candidate never authors or selects it; until it exists the v6
+# launch REFUSES with the stop label.
+RECOVERY_AUDIT_RECORD_PATH = (
+    EVIDENCE / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
 
 
 def campaign_record_required_bindings() -> dict:
@@ -131,7 +165,12 @@ def campaign_record_required_bindings() -> dict:
         "genesis_binding_sha256": pop["genesis_binding_sha256"],
         "amendment_10_sha256": AMENDMENT_10_SHA,
         "resource_contract_sha256": RESOURCE_CONTRACT_V2_SHA,
-        "campaign_generation": CAMPAIGN_GENERATION,
+        # C33: the record binds the generation it AUTHORIZED —
+        # that historical fact never mutates; amendment 12 links
+        # the executing v6 generation to it with scientific_change
+        # NONE, and the v6 launch additionally requires the
+        # external recovery-audit acta.
+        "campaign_generation": AUTHORIZED_CAMPAIGN_GENERATION,
     }
 
 
@@ -1109,19 +1148,101 @@ def verify_amendment_chain() -> dict:
     if a11.get("proposed_campaign_population"):
         campaign_pins = a11["proposed_campaign_population"]
     a11_pins = a11.get("final_code_pins", {})
-    for req in ("tools/b4_authority.py", "tools/b4_run_cell.py",
-                "tools/b4_campaign_executor.py",
-                "tools/b4_campaign_ledger.py",
-                "tools/b4_campaign_orchestrator.py",
-                "tools/b4_adjudicator.py",
-                "tools/materialize_b4_causal_sac.py",
-                "pipeline_plugins/rl_pipeline_with_validation.py",
-                "tests/test_b4_materializer_authority.py"):
+    _PINNED_SURFACE = (
+        "tools/b4_authority.py", "tools/b4_run_cell.py",
+        "tools/b4_campaign_executor.py",
+        "tools/b4_campaign_ledger.py",
+        "tools/b4_campaign_orchestrator.py",
+        "tools/b4_adjudicator.py",
+        "tools/materialize_b4_causal_sac.py",
+        "pipeline_plugins/rl_pipeline_with_validation.py",
+        "tests/test_b4_materializer_authority.py")
+    for req in _PINNED_SURFACE:
         if req not in a11_pins:
             raise B4AuthorityRefusal(
                 "REFUSED: amendment 11 does not pin the complete "
                 "final execution, verification and test surface")
     pins.update(a11_pins)
+    # --- C33: amendment 12 (environment recovery) — append-only
+    # after the byte-pinned a11; describes ONLY C29-C32 and the v6
+    # generation; scientific_change NONE; its pins supersede the
+    # superseded-surface pins for the corrected files.
+    if _sha_file(AMENDMENT_11_PATH) != AMENDMENT_11_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 11 bytes were altered — append-only "
+            "history is broken; corrections append, never edit")
+    if not AMENDMENT_12_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 absent — the environment "
+            "recovery is not yet part of the chain")
+    a12 = _strict_json_bytes(AMENDMENT_12_PATH.read_bytes(),
+                             "amendment 12")
+    _A12_KEYS = {"schema", "amends_amendment_11_sha256",
+                 "incident_record_sha256", "order",
+                 "change_disclosure", "scientific_change",
+                 "campaign_generation_v6",
+                 "supersedes_generation",
+                 "supersedes_results_root_logical",
+                 "v6_results_root_logical",
+                 "prior_generations_gpu_seconds_charged",
+                 "final_code_pins", "chronology_truth",
+                 "amendment_sha256"}
+    if set(a12) != _A12_KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 keys are not the exact schema")
+    body12 = {k: a12[k] for k in sorted(a12)
+              if k != "amendment_sha256"}
+    if hashlib.sha256(json.dumps(
+            body12, sort_keys=True).encode()).hexdigest() != \
+            a12["amendment_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 self-integrity digest does not "
+            "re-derive")
+    if a12["schema"] != ("agent_multi.b4_superseding_design_"
+                         "amendment.v10_environment_recovery"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 carries a foreign schema")
+    if a12["amends_amendment_11_sha256"] != AMENDMENT_11_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 does not name amendment 11's "
+            "exact reviewed bytes")
+    if not INCIDENT_RECORD_PATH.is_file() or \
+            _sha_file(INCIDENT_RECORD_PATH) != INCIDENT_RECORD_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: the Musashi incident record is absent or "
+            "its bytes differ from the pinned digest")
+    if a12["incident_record_sha256"] != INCIDENT_RECORD_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 does not name the incident "
+            "record's exact bytes")
+    if a12["scientific_change"] != \
+            "NONE — environment recovery only":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 must declare NO scientific "
+            "change")
+    if a12["campaign_generation_v6"] != CAMPAIGN_GENERATION or \
+            a12["supersedes_generation"] != \
+            AUTHORIZED_CAMPAIGN_GENERATION or \
+            a12["supersedes_results_root_logical"] != \
+            V5_RESULTS_ROOT_LOGICAL or \
+            a12["v6_results_root_logical"] != \
+            V6_RESULTS_ROOT_LOGICAL:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 generation/root lineage differs "
+            "from the live constants")
+    if a12["prior_generations_gpu_seconds_charged"] != \
+            PRIOR_GENERATIONS_GPU_SECONDS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 12 ceiling charge differs from the "
+            "incident acta's fixed 0.01 h")
+    a12_pins = a12.get("final_code_pins", {})
+    for req in _PINNED_SURFACE:
+        if req not in a12_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 12 does not pin the complete "
+                "corrected execution, verification and test "
+                "surface")
+    pins.update(a12_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -1137,10 +1258,59 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_8_PATH),
                _sha_file(AMENDMENT_9_PATH),
                _sha_file(AMENDMENT_10_PATH),
-               _sha_file(AMENDMENT_11_PATH)],
+               _sha_file(AMENDMENT_11_PATH),
+               _sha_file(AMENDMENT_12_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
+
+
+def require_v6_launch_open() -> dict:
+    """C33: the v6 LAUNCH gate — closed until the external Musashi
+    recovery-audit acta exists at the repo-constant path and
+    validates (reviewer, decision, amendment-12 binding). The
+    candidate submission grants nothing; no tip digest lives inside
+    the tip."""
+    p = RECOVERY_AUDIT_RECORD_PATH
+    if not p.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_"
+            "MUSASHI_AUDIT — the v6 launch stays closed until the "
+            "external recovery-audit acta pins the recovered "
+            "commit and opens it")
+    rec = _strict_json_bytes(p.read_bytes(),
+                             "recovery audit record")
+    _KEYS = {"schema", "reviewed_at_date", "reviewer", "decision",
+             "amendment_12_sha256", "pinned_commit",
+             "preflight_reviewed", "ledger_v6_reviewed",
+             "v5_v6_scientific_equality_reviewed"}
+    if set(rec) != _KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: recovery-audit record keys are not the exact "
+            "schema")
+    if rec["schema"] != "agent_multi.musashi_b4_v6_recovery_audit.v1":
+        raise B4AuthorityRefusal(
+            "REFUSED: recovery-audit record carries a foreign "
+            "schema")
+    if rec["reviewer"] != "General Musashi":
+        raise B4AuthorityRefusal(
+            "REFUSED: recovery-audit author is not the external "
+            "reviewer")
+    if rec["decision"] != "OPEN_B4_V6_LAUNCH":
+        raise B4AuthorityRefusal(
+            "REFUSED: recovery-audit decision does not open the "
+            "v6 launch")
+    if rec["amendment_12_sha256"] != _sha_file(AMENDMENT_12_PATH):
+        raise B4AuthorityRefusal(
+            "REFUSED: recovery-audit record pins a different "
+            "amendment 12 than the live chain")
+    for k in ("preflight_reviewed", "ledger_v6_reviewed",
+              "v5_v6_scientific_equality_reviewed"):
+        if rec[k] is not True:
+            raise B4AuthorityRefusal(
+                f"REFUSED: recovery-audit record does not attest "
+                f"{k}")
+    return rec
 
 
 def verify_campaign_materialization(mat_root: Path) -> dict:

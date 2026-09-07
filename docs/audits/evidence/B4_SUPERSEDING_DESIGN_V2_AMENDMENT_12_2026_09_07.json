@@ -1,0 +1,26 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v10_environment_recovery",
+ "amends_amendment_11_sha256": "449a138726b56c9af3a29d2bdb68f1ba846468bb7feae64d738c9554a7de8e89",
+ "incident_record_sha256": "6e0905602f28517d6584a4969672c70a63ea57720cdfcdb3e32c5dce4c6d5587",
+ "order": "C29-C34 (environment recovery order 2026-09-06): the first dispatch failed before any gradient because the launching interpreter lacked the sac_agent entry point; the failure escaped the typed-terminal boundary and left cell o2022_seed101 AMBIGUOUS_CLAIM. This amendment records the append-only v6 recovery.",
+ "change_disclosure": "environment recovery ONLY: (C29) the incident frozen as regression from a real filtered entry-point registry; (C30) zero-write environment preflight \u2014 interpreter/versions/CUDA/entry points/effective imports from the frozen checkout/dependencies/live authority \u2014 refusing BEFORE claim, wired into the dry-run and the execute path; (C31) total post-claim exception boundary: plugin load, constructors, pipeline, scoring and verification all produce typed terminals (FAILED_PLUGIN_ENVIRONMENT/FAILED_CONSTRUCTION/FAILED_PREFLIGHT_TYPED); (C32) generation v6 with fresh provenance-bearing ledger, identical twelve-cell scientific identity, the fixed 0.01h prior charge deducted from the never-restarting 96h ceiling, superseded v5 root and ambiguous attempt preserved byte-exact and structurally unreadable by v6. No population, config, data, genesis, comparator, limit or ordering change.",
+ "scientific_change": "NONE \u2014 environment recovery only",
+ "campaign_generation_v6": "b4_campaign_generation_v6_20260907",
+ "supersedes_generation": "b4_campaign_generation_v5_20260906",
+ "supersedes_results_root_logical": "b4_campaign_results_20260906",
+ "v6_results_root_logical": "b4_campaign_results_v6_20260907",
+ "prior_generations_gpu_seconds_charged": 36.0,
+ "final_code_pins": {
+  "tools/b4_authority.py": "93270f5ed22e69feddfb01b67edaf61eac18c5d5fd87345d98269e6ea90e956c",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "474a49c81a9a02cbc270f0a54d0513673071a997eb83dabdd7ca736be0dd2c26",
+  "tools/b4_campaign_ledger.py": "4ba6de944952f5b5980e86ad88d28da7ecec48e0cc49b8b4f60ac8cac259efb5",
+  "tools/b4_campaign_orchestrator.py": "5d715a34a56d6518c3427d1b6142af9d95cbeb56a794935cfa29ef7d2ab656a1",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
+  "tests/test_b4_materializer_authority.py": "5ac21cc729c417844c9e6a5b7fdddca129c2320cc1698aec57047947f2d6ac71"
+ },
+ "chronology_truth": "authored AFTER the C29-C34 PRE freeze and after all corrected code and tests were finalized and hashed from disk; amendments 1-11 untouched; the v6 launch remains CLOSED until the external Musashi recovery-audit acta pins the recovered commit",
+ "amendment_sha256": "a2ad0ea7d55a037959206e957f3c1ab253dcca28e6d6e0895a5512948cb45d3e"
+}

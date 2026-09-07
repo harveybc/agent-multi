@@ -1,0 +1,11 @@
+{
+ "schema": "agent_multi.musashi_b4_v6_recovery_audit.v1",
+ "reviewed_at_date": "<MUSASHI_FILLS_DATE>",
+ "reviewer": "General Musashi",
+ "decision": "OPEN_B4_V6_LAUNCH",
+ "amendment_12_sha256": "74174c596efe405e4a7d1a6531a781c9649dafd5dd316a6bb389003aac2203ca",
+ "pinned_commit": "<MUSASHI_PINS_THE_RECOVERED_COMMIT>",
+ "preflight_reviewed": "<MUSASHI_SETS_true>",
+ "ledger_v6_reviewed": "<MUSASHI_SETS_true>",
+ "v5_v6_scientific_equality_reviewed": "<MUSASHI_SETS_true>"
+}

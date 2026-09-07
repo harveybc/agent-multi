@@ -746,6 +746,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "b4_gen_amendment_12.py": {
+   "purpose": "C33 (environment recovery order): authors amendment 12 \u2014 append-only after byte-pinned a11; names the dispatch-environment incident record, generation v6 lineage, the fixed 0.01h prior charge and the corrected surface pins; a PUBLISHED (git-tracked) amendment can never be regenerated (a9 lesson enforced structurally); pre-publication regeneration requires the explicit flag",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

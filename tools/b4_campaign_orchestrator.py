@@ -702,8 +702,12 @@ def gpu_seconds_spent(results_root: Path) -> float:
 
 def remaining_global_seconds(results_root: Path,
                              limits: dict) -> float:
+    """C32: the 96h budget NEVER restarts across generations — the
+    superseded v5 generation's fixed charge from the incident acta
+    (0.01 h) is deducted before this root's own spending."""
     ceiling = float(limits["global_gpu_hours_ceiling"]) * 3600.0
-    return ceiling - gpu_seconds_spent(results_root)
+    return (ceiling - b4a.PRIOR_GENERATIONS_GPU_SECONDS
+            - gpu_seconds_spent(results_root))
 
 
 # ------------------- C15: resume adjudication ---------------------
@@ -733,7 +737,11 @@ def adjudicate_cell_state(results_root: Path, cell_id: str) -> str:
         return "COMPLETED_VERIFIED"
     if term.get("terminal") in ("FAILED", "TIMED_OUT",
                                 "THERMAL_STOP", "RESOURCE_STOP",
-                                "EXTERNALLY_STOPPED"):
+                                "EXTERNALLY_STOPPED",
+                                # C31: typed post-claim failures
+                                "FAILED_PLUGIN_ENVIRONMENT",
+                                "FAILED_CONSTRUCTION",
+                                "FAILED_PREFLIGHT_TYPED"):
         return f"TERMINAL_{term['terminal']}"
     return "UNCERTAIN"
 
@@ -784,9 +792,28 @@ def run_campaign(mat_root: Path, ledger_path: Path,
     limits = b4a.load_resource_contract()
     results_root = Path(results_root)
 
+    # C32: NO path — dry-run included — may interpret a
+    # superseded-generation root: a v5 claim adjudicated by v6
+    # code would look PENDING, which is a lie. Foreign objects
+    # refuse before any state is reported.
+    if Path(results_root).exists():
+        for claim_p in Path(results_root).glob("*/CLAIM_*.json"):
+            if claim_p.name != \
+                    f"CLAIM_{b4a.CAMPAIGN_GENERATION}.json":
+                raise OrchestratorRefusal(
+                    f"REFUSED: results root holds a foreign-"
+                    f"generation object {claim_p.name} — "
+                    "superseded incident roots are immutable "
+                    "history, never reused or re-adjudicated")
     # ---- C11: pure dry-run — ZERO writes anywhere ----
     if not execute:
         pre = _snapshot(results_root)
+        # C30: the strong dry-run validates the EXECUTION
+        # ENVIRONMENT — interpreter, versions, CUDA, entry points,
+        # effective plugin imports from the frozen checkout,
+        # dependencies and live authority — with zero writes. The
+        # incident's plugin-blind dry-run is dead.
+        env_facts = executor.preflight_environment(device)
         ledger = ledger_mod.verify_ledger(ledger_path, mat_root)
         b4a.verify_campaign_materialization(mat_root)
         states = {cid: adjudicate_cell_state(results_root, cid)
@@ -795,14 +822,19 @@ def run_campaign(mat_root: Path, ledger_path: Path,
                 if st == "PENDING"]
         spent_h = (gpu_seconds_spent(results_root) / 3600.0
                    if results_root.exists() else 0.0)
+        prior_h = b4a.PRIOR_GENERATIONS_GPU_SECONDS / 3600.0
         print(json.dumps({
             "dry_run": True, "writes": 0,
             "generation": b4a.CAMPAIGN_GENERATION,
+            "environment_preflight": env_facts,
             "cell_states": states,
             "dispatch_plan_in_order": plan,
             "gpu_hours_spent": round(spent_h, 2),
+            "gpu_hours_charged_prior_generations":
+                round(prior_h, 2),
             "gpu_hours_remaining": round(
-                limits["global_gpu_hours_ceiling"] - spent_h, 2),
+                limits["global_gpu_hours_ceiling"] - prior_h
+                - spent_h, 2),
         }, indent=1))
         post = _snapshot(results_root)
         if pre != post:
@@ -815,6 +847,13 @@ def run_campaign(mat_root: Path, ledger_path: Path,
         raise OrchestratorRefusal(
             "REFUSED: no Musashi campaign authorization record — "
             "the orchestrator dispatches nothing")
+    # C33: the v6 launch is CLOSED until the external Musashi
+    # recovery-audit acta exists — the candidate submission grants
+    # nothing.
+    b4a.require_v6_launch_open()
+    # C30: the environment preflight runs with ZERO writes BEFORE
+    # any claim, lease, binding or origin contract exists.
+    executor.preflight_environment(device)
     ledger = ledger_mod.verify_ledger(ledger_path, mat_root)
     if not results_root.exists():
         os.makedirs(str(results_root), mode=0o700)
