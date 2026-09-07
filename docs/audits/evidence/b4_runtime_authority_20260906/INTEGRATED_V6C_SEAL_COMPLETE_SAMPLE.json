@@ -1,0 +1,7 @@
+{
+ "schema": "agent_multi.b4_seal_completion.v1",
+ "intent_sha256": "798f6ad565bb1c0e08851dd5680664349a831b6eabee89997f608ae2a6732bfd",
+ "terminal_sha256": "ee516a37e9cc8288738ed983dfe3fe18e6c67b1eefddd773a28e3ca974034361",
+ "attempt_id": "attempt_bf9df1cd5e0e4cd0",
+ "completion_sha256": "03acf0302f36c96d0beb7c379562933338a34cf414986ef008643cddd97e5dd4"
+}

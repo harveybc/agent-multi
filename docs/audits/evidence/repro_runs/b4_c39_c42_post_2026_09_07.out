@@ -1,0 +1,18 @@
+== 0. PRODUCTION: gate closed; acta path OUTSIDE git ==
+productive acta path: ~/.config/agent-multi/reviewer_authority/ (outside the candidate repo)
+REAL_GATE: DIES [REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launc] match=True
+
+== 1. C39: the PRE's modified-SAC checkout now refuses ==
+clean exact-commit checkout: head 509e4e18ea tree a1780af3aa
+MODIFIED_SAC: DIES [REFUSED: the checkout is not clean against the pinned commit (1 modified/staged ] match=True
+UNTRACKED_SHADOW: DIES [REFUSED: untracked/ignored executable source can shadow repository imports (1 fi] match=True
+DIFFERENT_HEAD: DIES [REFUSED: executing HEAD 509e4e18ea46 differs from the acta's pinned commit d5229] match=True
+
+== 2. C40: a repo lookalike grants nothing; custody walk enforced ==
+REPO_LOOKALIKE: DIES [REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launc] match=True
+PERMISSIVE_CHAIN: DIES [REFUSED: authority directory 'reviewer_authority' mode 0o755 is not the private ] match=True
+PERMISSIVE_FILE: DIES [REFUSED: the authority record mode 0o644 is not the exact private 0600] match=True
+valid private fixture witness v2: c40fe8f87e | tree a1780af3aa
+honest custody-not-authorship prose present
+
+POST CONFIRMED: full-checkout authority + external private custody; real acta ABSENT, launch CLOSED

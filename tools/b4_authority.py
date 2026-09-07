@@ -163,6 +163,14 @@ AMENDMENT_14_PATH = (EVIDENCE /
 _SHADOW_SUFFIXES = (".py", ".so", ".pyd", ".pth")
 _SHADOW_NAMES = ("entry_points.txt",)
 _SHADOW_DIR_TOKENS = (".dist-info", ".egg-info", ".egg-link")
+# Import shadowing is only possible where Python actually
+# resolves imports for this campaign: the repository root and its
+# importable package/tool roots (PYTHONPATH=. plus the explicit
+# tools/tests path inserts). Executable files elsewhere (e.g.
+# committed evidence under docs/) cannot shadow an import;
+# distribution metadata and .pth files shadow from ANYWHERE.
+_IMPORT_ROOTS = ("agent_plugins", "app", "pipeline_plugins",
+                 "tools", "tests")
 # C35/C37: amendment 12's bytes are HISTORY now — pinned like
 # a9/a10/a11; the recovery custody chain appends amendment 13.
 AMENDMENT_12_SHA = ("74174c596efe405e4a7d1a6531a781c9649dafd5dd"
@@ -1508,9 +1516,14 @@ def verify_checkout_identity(pinned_commit: str) -> dict:
         if code in ("??", "!!"):
             name = rel.rsplit("/", 1)[-1]
             low = rel.lower()
+            top = rel.split("/", 1)[0]
+            in_import_path = ("/" not in rel
+                              or top in _IMPORT_ROOTS)
             is_shadow = (
-                any(low.endswith(sfx)
-                    for sfx in _SHADOW_SUFFIXES)
+                (in_import_path
+                 and any(low.endswith(sfx)
+                         for sfx in _SHADOW_SUFFIXES))
+                or low.endswith(".pth")
                 or name in _SHADOW_NAMES
                 or any(tok in low for tok in _SHADOW_DIR_TOKENS))
             if low.endswith(".pyc") and "__pycache__" in rel:

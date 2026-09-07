@@ -1,0 +1,9 @@
+{
+ "schema": "agent_multi.b4_seal_intent.v1",
+ "campaign_generation": "b4_campaign_generation_v6_20260907",
+ "cell": "o2024_seed101",
+ "attempt_id": "attempt_bf9df1cd5e0e4cd0",
+ "holder_pid": 4011312,
+ "terminal_sha256": "ee516a37e9cc8288738ed983dfe3fe18e6c67b1eefddd773a28e3ca974034361",
+ "recovery_acta_sha256": "c40fe8f87eef6e64bbae634e5bfb2dc82f29fa6ed85871c572581197b1ad6fd3"
+}

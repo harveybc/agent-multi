@@ -1,0 +1,26 @@
+real gate CLOSED before arming: REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_MUSASHI_AUDIT — the v6 launc
+fixture witness armed: c40fe8f87eef | pinned 509e4e18 | tree a1780af3
+Attempting to load plugin: sac_agent from group: agent.plugins
+Successfully loaded plugin: sac_agent (class-level defaults, see config_out.json for actual): {'total_timesteps': 10000, 'learning_rate': 0.0003, 'buffer_size': 100000, 'learning_starts': 1000, 'batch_size': 256, 'tau': 0.005, 'gamma': 0.99, 'train_freq': 1, 'gradient_steps': 1, 'ent_coef': 'auto', 'target_update_interval': 1, 'target_entropy': 'auto', 'use_sde': False, 'net_arch': (256, 256), 'feature_extractor_plugin': None, 'feature_extractor_config': None, 'device': 'auto', 'agent_verbose': 0, 'train_seed': 0, 'training_progress_file': None, 'progress_file': None, 'progress_update_interval_steps': 1000, 'ga_fitness_dd_lambda': 1.0, 'oracle_behavior_pretrain_enabled': False, 'oracle_behavior_labels_file': None, 'oracle_behavior_pretrain_epochs': 3, 'oracle_behavior_pretrain_batch_size': 512, 'oracle_behavior_pretrain_hold_fraction': 0.1, 'oracle_behavior_pretrain_max_samples': 0, 'oracle_behavior_pretrain_clip_grad_norm': 1.0}
+Attempting to load plugin: rl_pipeline_with_validation from group: pipeline.plugins
+Successfully loaded plugin: rl_pipeline_with_validation (class-level defaults, see config_out.json for actual): {'train_years': 4, 'val_years': 1, 'test_years': 1, 'train_days': None, 'val_days': None, 'test_days': None, 'train_start': None, 'train_end': None, 'validation_start': None, 'validation_end': None, 'val_start': None, 'val_end': None, 'test_start': None, 'test_end': None, 'min_split_rows': 100, 'split_anchor': 'start', 'epoch_timesteps': 2000, 'max_epochs': 2000, 'l1_patience': 60, 'l1_patience_start_epoch': 40, 'l1_activity_patience': 40, 'l1_activity_patience_start_epoch': None, 'l1_min_delta': 1e-05, 'l1_min_checkpoint_timesteps': None, 'early_stop_train_tail_days': 7, 'early_stop_min_trades': 1, 'early_stop_min_train_tail_trades': None, 'early_stop_min_validation_trades': None, 'early_stop_no_trade_penalty': 1000000.0, 'selection_metric': 'total_return', 'risk_penalty_lambda': 1.0, 'l1_generalization_gap_penalty_beta': 0.25, 'plateau_lr': None, 'eval_seed': 0, 'train_seed': 0, 'save_model': './agent_model.zip', 'load_model': None, 'warm_start_model': None, 'warm_start_replay_buffer': None, 'save_replay_buffer': None, 'checkpoint_bundle_dir': None, 'warm_start_bundle': None, 'warm_start_replay_from_bundle': False, 'return_trace_dir': None, 'evaluate_test_split': True, 'write_results_sidecar': True, 'execution_cost_curriculum_epochs': None, 'actor_liveness_probe_observations': 256, 'actor_liveness_min_live_unit_fraction': 0.1, 'refuse_dead_actor': True, 'refuse_constant_policy_actor': False}
+environment preflight: {"python_version": "3.12.13", "version_agent-multi": "0.4.0", "version_torch": "2.13.0", "amendment_chain_length": 14}
+o2022_seed101: COMPLETED_VERIFIED sealed (4.3s)
+o2022_seed202: COMPLETED_VERIFIED sealed (3.3s)
+o2022_seed303: COMPLETED_VERIFIED sealed (3.8s)
+o2022_seed404: COMPLETED_VERIFIED sealed (3.4s)
+o2023_seed101: COMPLETED_VERIFIED sealed (3.5s)
+o2023_seed202: COMPLETED_VERIFIED sealed (3.4s)
+o2023_seed303: COMPLETED_VERIFIED sealed (3.7s)
+o2023_seed404: COMPLETED_VERIFIED sealed (3.6s)
+o2024_seed101: COMPLETED_VERIFIED sealed (3.4s)
+o2024_seed202: COMPLETED_VERIFIED sealed (3.7s)
+o2024_seed303: COMPLETED_VERIFIED sealed (3.7s)
+o2024_seed404: COMPLETED_VERIFIED sealed (3.5s)
+{
+ "integrated_v6c": "COMPLETE",
+ "cells_verified": 12,
+ "comparator_dir": "<derived from materialization>",
+ "total_wall_seconds": 44.6
+}
+samples written

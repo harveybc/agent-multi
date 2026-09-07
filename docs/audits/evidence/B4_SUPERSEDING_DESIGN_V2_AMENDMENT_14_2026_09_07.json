@@ -5,7 +5,7 @@
  "change_disclosure": "authority custody ONLY: verify_checkout_identity() (HEAD/clean/shadow rules; RECOVERY_SURFACE_FILES demoted to a human review index); _open_private_authority_file() descriptor-first walk (O_NOFOLLOW every component, 0700/uid on the authority chain, exact 0600 file, one read stream); RECOVERY_AUDIT_RECORD_PATH relocated under ~/.config/agent-multi/reviewer_authority/ (repo JSONs grant nothing; template only); witness v2 adds the checkout tree; honest custody-not-authorship prose. No scientific, population, data, genesis, comparator, resource-limit or scheduling change.",
  "scientific_change": "NONE \u2014 full-checkout identity and external custody only",
  "final_code_pins": {
-  "tools/b4_authority.py": "7710978efc1eaf317c4b81195003aa2c682ae245fd90fcafb90993224c5b2368",
+  "tools/b4_authority.py": "1788aecbbf05731e8236abe145f90fd4a40a224215d548396a6792c29413e144",
   "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
   "tools/b4_campaign_executor.py": "20378790786cfb1da4229e00fd3b181a6eeb557f06ba9b73fce9c3e7877f452c",
   "tools/b4_campaign_ledger.py": "a6ef3ba27c733cc592aeb9ff127b4f41813e290a2e9a0f62238e622811e331ee",
@@ -16,5 +16,5 @@
   "tests/test_b4_materializer_authority.py": "0275f7bf5e37a2fda0aa7b4d40428d8c672c17db36dc94eded4dd84af74e3515"
  },
  "chronology_truth": "authored AFTER the C39-C42 PRE freeze and after all corrected code and tests were finalized and hashed from disk; amendments 1-13 untouched; the real Musashi acta remains ABSENT (external root not created by candidate code) and the v6 launch remains CLOSED",
- "amendment_sha256": "b340ec3845a70e8d4d5d0d4ee7f8dadc86c8036109deffd540e7e75eecbe8975"
+ "amendment_sha256": "1426e39f52ca9cf02f394260f1a1e2f884e1835cbf2af54530d9fd75737e7b94"
 }
