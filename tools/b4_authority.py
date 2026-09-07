@@ -141,11 +141,28 @@ AMENDMENT_11_SHA = ("449a138726b56c9af3a29d2bdb68f1ba846468bb7fea"
 AMENDMENT_12_PATH = (EVIDENCE /
                      "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_12_"
                      "2026_09_07.json")
-# C33: the future Musashi recovery-audit acta — repo-constant path,
-# candidate never authors or selects it; until it exists the v6
-# launch REFUSES with the stop label.
+# C40: the PRODUCTIVE acta lives OUTSIDE the candidate repository,
+# at ONE fixed path under the private reviewer-authority root —
+# never CLI- or environment-selected, never created/chmodded/
+# repaired by candidate code. A JSON committed under docs/ grants
+# nothing (the repo carries a non-authorizing template only).
+# These checks establish CUSTODY FACTS and exact bytes; without a
+# signature they do NOT cryptographically identify an author.
+AUTHORITY_ROOT = (Path.home() /
+                  ".config/agent-multi/reviewer_authority")
 RECOVERY_AUDIT_RECORD_PATH = (
-    EVIDENCE / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+    AUTHORITY_ROOT / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+# C41: amendment 13's bytes are HISTORY — pinned like a9-a12.
+AMENDMENT_13_SHA = ("1d8b46ce527598d45d519f0885f5e7ea81f35aeef5"
+                    "28dfa14952d3f9d646a5ff")
+AMENDMENT_14_PATH = (EVIDENCE /
+                     "B4_SUPERSEDING_DESIGN_V2_AMENDMENT_14_"
+                     "2026_09_07.json")
+# Executable/shadow-capable suffixes and metadata names that an
+# untracked or ignored file must never contribute to the checkout.
+_SHADOW_SUFFIXES = (".py", ".so", ".pyd", ".pth")
+_SHADOW_NAMES = ("entry_points.txt",)
+_SHADOW_DIR_TOKENS = (".dist-info", ".egg-info", ".egg-link")
 # C35/C37: amendment 12's bytes are HISTORY now — pinned like
 # a9/a10/a11; the recovery custody chain appends amendment 13.
 AMENDMENT_12_SHA = ("74174c596efe405e4a7d1a6531a781c9649dafd5dd"
@@ -1310,6 +1327,54 @@ def verify_amendment_chain() -> dict:
                 "REFUSED: amendment 13 does not pin the complete "
                 "corrected surface")
     pins.update(a13_pins)
+    # --- C41: amendment 14 (full-checkout + external custody) —
+    # append-only after the byte-pinned a13; C39-C41 only.
+    if _sha_file(AMENDMENT_13_PATH) != AMENDMENT_13_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 13 bytes were altered — "
+            "append-only history is broken")
+    if not AMENDMENT_14_PATH.is_file():
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 absent — the checkout-"
+            "authority custody chain is incomplete")
+    a14 = _strict_json_bytes(AMENDMENT_14_PATH.read_bytes(),
+                             "amendment 14")
+    _A14_KEYS = {"schema", "amends_amendment_13_sha256", "order",
+                 "change_disclosure", "scientific_change",
+                 "final_code_pins", "chronology_truth",
+                 "amendment_sha256"}
+    if set(a14) != _A14_KEYS:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 keys are not the exact schema")
+    body14 = {k: a14[k] for k in sorted(a14)
+              if k != "amendment_sha256"}
+    if hashlib.sha256(json.dumps(
+            body14, sort_keys=True).encode()).hexdigest() != \
+            a14["amendment_sha256"]:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 self-integrity digest does "
+            "not re-derive")
+    if a14["schema"] != ("agent_multi.b4_superseding_design_"
+                         "amendment.v12_full_checkout_external_"
+                         "custody"):
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 carries a foreign schema")
+    if a14["amends_amendment_13_sha256"] != AMENDMENT_13_SHA:
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 does not name amendment 13's "
+            "exact reviewed bytes")
+    if a14["scientific_change"] != \
+            "NONE — full-checkout identity and external custody only":
+        raise B4AuthorityRefusal(
+            "REFUSED: amendment 14 must declare NO scientific "
+            "change")
+    a14_pins = a14.get("final_code_pins", {})
+    for req in _PINNED_SURFACE:
+        if req not in a14_pins:
+            raise B4AuthorityRefusal(
+                "REFUSED: amendment 14 does not pin the complete "
+                "corrected surface")
+    pins.update(a14_pins)
     for rel, want in pins.items():
         live = _sha_file(REPO / rel)
         if live != want:
@@ -1327,10 +1392,155 @@ def verify_amendment_chain() -> dict:
                _sha_file(AMENDMENT_10_PATH),
                _sha_file(AMENDMENT_11_PATH),
                _sha_file(AMENDMENT_12_PATH),
-               _sha_file(AMENDMENT_13_PATH)],
+               _sha_file(AMENDMENT_13_PATH),
+               _sha_file(AMENDMENT_14_PATH)],
             "final_code_pins": pins,
             "proposed_campaign_population": campaign_pins,
             "design": json.loads(DESIGN_PATH.read_bytes())}
+
+
+def _open_private_authority_file(path: Path):
+    """C40: descriptor-first open of ONE private-authority object —
+    every path component walked WITHOUT following symlinks; the
+    final two directories (the reviewer-authority root and its
+    parent) must be owned by the executing uid with mode 0700; the
+    file must be a regular file, same uid, EXACT mode 0600. The
+    complete byte stream is read from this same descriptor by the
+    caller. Nothing is created, chmodded, repaired or replaced
+    here — custody violations refuse. These are CUSTODY facts;
+    they do not cryptographically identify an author."""
+    import stat as _stat
+    parts = Path(path).parts
+    if parts[0] != os.sep:
+        raise B4AuthorityRefusal(
+            "REFUSED: the authority path must be absolute")
+    fd = os.open("/", os.O_RDONLY
+                 | getattr(os, "O_DIRECTORY", 0))
+    try:
+        for i, comp in enumerate(parts[1:-1], start=1):
+            nfd = os.open(comp, os.O_RDONLY | os.O_NOFOLLOW
+                          | getattr(os, "O_DIRECTORY", 0),
+                          dir_fd=fd)
+            os.close(fd)
+            fd = nfd
+            depth_from_leaf = len(parts) - 1 - i
+            if depth_from_leaf <= 2:
+                st = os.fstat(fd)
+                if st.st_uid != os.getuid():
+                    raise B4AuthorityRefusal(
+                        f"REFUSED: authority directory "
+                        f"{comp!r} has a foreign owner")
+                if _stat.S_IMODE(st.st_mode) != 0o700:
+                    raise B4AuthorityRefusal(
+                        f"REFUSED: authority directory "
+                        f"{comp!r} mode "
+                        f"{oct(_stat.S_IMODE(st.st_mode))} is "
+                        "not the private 0700 — refused, never "
+                        "chmodded")
+        leaf = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW,
+                       dir_fd=fd)
+    except FileNotFoundError:
+        os.close(fd)
+        raise B4AuthorityRefusal(
+            "REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_"
+            "MUSASHI_AUDIT — the v6 launch stays closed until the "
+            "EXTERNAL recovery-audit acta exists under the "
+            "private reviewer-authority root")
+    except OSError as exc:
+        os.close(fd)
+        raise B4AuthorityRefusal(
+            f"REFUSED: authority path unopenable without "
+            f"following links (errno {exc.errno}: {exc.strerror})")
+    os.close(fd)
+    st = os.fstat(leaf)
+    if not _stat.S_ISREG(st.st_mode):
+        os.close(leaf)
+        raise B4AuthorityRefusal(
+            "REFUSED: the authority record is not a regular file")
+    if st.st_uid != os.getuid():
+        os.close(leaf)
+        raise B4AuthorityRefusal(
+            "REFUSED: the authority record has a foreign owner")
+    if _stat.S_IMODE(st.st_mode) != 0o600:
+        os.close(leaf)
+        raise B4AuthorityRefusal(
+            f"REFUSED: the authority record mode "
+            f"{oct(_stat.S_IMODE(st.st_mode))} is not the exact "
+            "private 0600")
+    return leaf
+
+
+def verify_checkout_identity(pinned_commit: str) -> dict:
+    """C39: the authority binds the ENTIRE executable checkout —
+    exact HEAD == pinned_commit, clean index and tracked worktree
+    against that commit, and NO untracked or ignored executable
+    source/config capable of shadowing repository imports (.py,
+    extension modules, .pth, plugin metadata). The nine-file
+    RECOVERY_SURFACE_FILES list remains a human review index only,
+    never the authority boundary. A __pycache__ bytecode file
+    whose tracked source exists cannot shadow an import and is
+    tolerated; sourceless bytecode refuses."""
+    import subprocess as _sp
+    head = _sp.run(["git", "-C", str(REPO), "rev-parse", "HEAD"],
+                   capture_output=True, text=True)
+    if head.returncode != 0:
+        raise B4AuthorityRefusal(
+            "REFUSED: the executing tree is not a git checkout")
+    head_sha = head.stdout.strip()
+    if head_sha != pinned_commit:
+        raise B4AuthorityRefusal(
+            f"REFUSED: executing HEAD {head_sha[:12]} differs "
+            f"from the acta's pinned commit "
+            f"{pinned_commit[:12]} — the reviewed commit must BE "
+            "the executed commit")
+    st = _sp.run(["git", "-C", str(REPO), "status",
+                  "--porcelain=v1", "--untracked-files=all",
+                  "--ignored=matching"],
+                 capture_output=True, text=True)
+    if st.returncode != 0:
+        raise B4AuthorityRefusal(
+            "REFUSED: git status failed — checkout identity "
+            "unverifiable")
+    dirty = []
+    shadows = []
+    for line in st.stdout.splitlines():
+        code, rel = line[:2], line[3:]
+        if code in ("??", "!!"):
+            name = rel.rsplit("/", 1)[-1]
+            low = rel.lower()
+            is_shadow = (
+                any(low.endswith(sfx)
+                    for sfx in _SHADOW_SUFFIXES)
+                or name in _SHADOW_NAMES
+                or any(tok in low for tok in _SHADOW_DIR_TOKENS))
+            if low.endswith(".pyc") and "__pycache__" in rel:
+                src_rel = (rel.split("__pycache__")[0]
+                           + name.split(".")[0] + ".py")
+                tracked = _sp.run(
+                    ["git", "-C", str(REPO), "ls-files",
+                     "--error-unmatch", src_rel],
+                    capture_output=True).returncode == 0
+                if not tracked:
+                    is_shadow = True
+            if is_shadow:
+                shadows.append(rel)
+        else:
+            dirty.append(line)
+    if dirty:
+        raise B4AuthorityRefusal(
+            f"REFUSED: the checkout is not clean against the "
+            f"pinned commit ({len(dirty)} modified/staged "
+            f"entries, e.g. {dirty[:2]}) — the reviewed tree "
+            "must BE the executed tree")
+    if shadows:
+        raise B4AuthorityRefusal(
+            f"REFUSED: untracked/ignored executable source can "
+            f"shadow repository imports ({len(shadows)} files, "
+            f"e.g. {shadows[:2]})")
+    tree = _sp.run(["git", "-C", str(REPO), "rev-parse",
+                    "HEAD^{tree}"], capture_output=True,
+                   text=True).stdout.strip()
+    return {"head": head_sha, "tree": tree}
 
 
 def read_recovery_acta() -> dict:
@@ -1346,33 +1556,8 @@ def read_recovery_acta() -> dict:
     amendment digest — an older link grants nothing. Returns a
     typed witness; a reviewer label or booleans alone grant
     nothing."""
-    p = RECOVERY_AUDIT_RECORD_PATH
+    fd = _open_private_authority_file(RECOVERY_AUDIT_RECORD_PATH)
     try:
-        fd = os.open(str(p), os.O_RDONLY | os.O_NOFOLLOW)
-    except FileNotFoundError:
-        raise B4AuthorityRefusal(
-            "REFUSED: B4_V6_ENVIRONMENT_RECOVERY_READY_FOR_FINAL_"
-            "MUSASHI_AUDIT — the v6 launch stays closed until the "
-            "external recovery-audit acta pins the recovered "
-            "commit and opens it")
-    except OSError as exc:
-        raise B4AuthorityRefusal(
-            f"REFUSED: recovery acta unopenable without following "
-            f"links (errno {exc.errno}: {exc.strerror})")
-    try:
-        import stat as _stat
-        st = os.fstat(fd)
-        if not _stat.S_ISREG(st.st_mode):
-            raise B4AuthorityRefusal(
-                "REFUSED: recovery acta is not a regular file")
-        if st.st_uid != os.getuid():
-            raise B4AuthorityRefusal(
-                "REFUSED: recovery acta is not owned by the "
-                "executing user")
-        if st.st_mode & 0o022:
-            raise B4AuthorityRefusal(
-                "REFUSED: recovery acta is group/world-writable — "
-                "a permissive authority object grants nothing")
         chunks = []
         while True:
             b = os.read(fd, 1 << 20)
@@ -1442,36 +1627,27 @@ def read_recovery_acta() -> dict:
         raise B4AuthorityRefusal(
             "REFUSED: pinned_commit does not name an existing "
             "git commit in this repository")
-    # the reviewed surface AT the pinned commit must equal the
-    # LIVE surface being admitted — an explicit finite file set.
-    for rel in RECOVERY_SURFACE_FILES:
-        show = _sp.run(["git", "-C", str(REPO), "show",
-                        f"{pin}:{rel}"], capture_output=True)
-        if show.returncode != 0:
-            raise B4AuthorityRefusal(
-                f"REFUSED: pinned commit lacks reviewed surface "
-                f"file {rel}")
-        if hashlib.sha256(show.stdout).hexdigest() != \
-                _sha_file(REPO / rel):
-            raise B4AuthorityRefusal(
-                f"REFUSED: live surface {rel} differs from the "
-                "reviewed surface at the pinned commit — the "
-                "acta does not cover this code")
+    # C39: the authority boundary is the ENTIRE executable
+    # checkout — exact HEAD, clean tracked tree, no shadow-capable
+    # untracked/ignored source. The nine-file list stays a human
+    # review index only.
+    checkout = verify_checkout_identity(pin)
     # the LATEST recovery amendment — an older link grants nothing
-    if not AMENDMENT_13_PATH.is_file():
+    if not AMENDMENT_14_PATH.is_file():
         raise B4AuthorityRefusal(
-            "REFUSED: amendment 13 absent — the recovery custody "
+            "REFUSED: amendment 14 absent — the recovery custody "
             "chain is incomplete")
-    a13_sha = _sha_file(AMENDMENT_13_PATH)
-    if rec["latest_amendment_sha256"] != a13_sha:
+    a14_sha = _sha_file(AMENDMENT_14_PATH)
+    if rec["latest_amendment_sha256"] != a14_sha:
         raise B4AuthorityRefusal(
             "REFUSED: the acta does not name the LATEST recovery "
-            "amendment's exact bytes — an amendment-12-only or "
+            "amendment's exact bytes — an amendment-13-only or "
             "older link grants nothing")
-    return {"schema": "agent_multi.b4_v6_recovery_witness.v1",
+    return {"schema": "agent_multi.b4_v6_recovery_witness.v2",
             "acta_sha256": acta_sha,
             "pinned_commit": pin,
-            "latest_amendment_sha256": a13_sha,
+            "checkout_tree_sha": checkout["tree"],
+            "latest_amendment_sha256": a14_sha,
             "campaign_generation": CAMPAIGN_GENERATION}
 
 

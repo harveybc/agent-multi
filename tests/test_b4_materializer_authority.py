@@ -266,7 +266,7 @@ def _pins(*rels):
 def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
              a7_over=None, a8_over=None, a9_over=None,
              a10_over=None, a11_over=None, a12_over=None,
-             a13_over=None, **over):
+             a13_over=None, a14_over=None, **over):
     a4 = {"amends_design_sha256": a.DESIGN_SHA,
           "supersedes_amendment_shas": list(a.AMENDMENT_SHAS),
           "final_code_pins": _pins(
@@ -486,6 +486,34 @@ def _fake_a4(tmp_path, monkeypatch, a5_over=None, a6_over=None,
     f13 = tmp_path / "a13.json"
     f13.write_text(json.dumps(a13))
     monkeypatch.setattr(a, "AMENDMENT_13_PATH", f13)
+    # C41: amendment 14 (full-checkout + external custody)
+    monkeypatch.setattr(a, "AMENDMENT_13_SHA", a._sha_file(f13))
+    a14 = {"schema": "agent_multi.b4_superseding_design_"
+                     "amendment.v12_full_checkout_external_"
+                     "custody",
+           "amends_amendment_13_sha256": a._sha_file(f13),
+           "order": "fixture", "change_disclosure": "fixture",
+           "scientific_change":
+               "NONE — full-checkout identity and external "
+               "custody only",
+           "final_code_pins": _pins(
+               "tools/b4_authority.py", "tools/b4_run_cell.py",
+               "tools/b4_campaign_executor.py",
+               "tools/b4_campaign_ledger.py",
+               "tools/b4_campaign_orchestrator.py",
+               "tools/b4_adjudicator.py",
+               "tools/materialize_b4_causal_sac.py",
+               "pipeline_plugins/rl_pipeline_with_validation.py",
+               "tests/test_b4_materializer_authority.py"),
+           "chronology_truth": "fixture"}
+    a14.update(a14_over or {})
+    if "amendment_sha256" not in a14:
+        body = {k: a14[k] for k in sorted(a14)}
+        a14["amendment_sha256"] = hashlib.sha256(json.dumps(
+            body, sort_keys=True).encode()).hexdigest()
+    f14 = tmp_path / "a14.json"
+    f14.write_text(json.dumps(a14))
+    monkeypatch.setattr(a, "AMENDMENT_14_PATH", f14)
     return a4
 
 
@@ -493,7 +521,7 @@ def test_e3_valid_chain_passes(tmp_path, monkeypatch):
     _fake_a4(tmp_path, monkeypatch)
     chain = a.verify_amendment_chain()
     assert chain["design_sha256"] == a.DESIGN_SHA
-    assert len(chain["amendment_shas"]) == 13
+    assert len(chain["amendment_shas"]) == 14
 
 
 def test_e3_missing_final_amendment_refuses(tmp_path, monkeypatch):
@@ -529,7 +557,7 @@ def test_e3_drifted_code_refuses(tmp_path, monkeypatch):
     pins["tools/b4_authority.py"] = "0" * 64
     # C37: the latest amendment (a13) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a13_over={"final_code_pins": pins})
+             a14_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3111,7 +3139,7 @@ def test_c26_altered_code_after_a10_refuses(tmp_path, monkeypatch):
     pins["tools/b4_campaign_orchestrator.py"] = "2" * 64
     # C37: the latest amendment (a13) owns the live-checked pins
     _fake_a4(tmp_path, monkeypatch,
-             a13_over={"final_code_pins": pins})
+             a14_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3366,7 +3394,7 @@ def test_c27_final_code_mutation_after_a11_refuses(tmp_path,
     # surface (a12 supersedes a11's pins exactly as a11 superseded
     # a10's) — the mutation is planted in amendment 12.
     _fake_a4(tmp_path, monkeypatch,
-             a13_over={"final_code_pins": pins})
+             a14_over={"final_code_pins": pins})
     with pytest.raises(SystemExit, match="differs from the final"):
         a.verify_amendment_chain()
 
@@ -3507,29 +3535,65 @@ def _close_gate(tmp_path, monkeypatch):
                         tmp_path / "no_acta_here.json")
 
 
+def _private_chain(base):
+    """A fixture private-authority chain mirroring
+    ~/.config/agent-multi/reviewer_authority (0700/uid) — the
+    productive walk verifies these custody facts for real."""
+    am = base / "agent-multi"
+    ra = am / "reviewer_authority"
+    for d in (base, am, ra):
+        d.mkdir(mode=0o700, exist_ok=True)
+        os.chmod(d, 0o700)
+    return ra
+
+
 def _fixture_acta(tmp_path, monkeypatch, **over):
-    """C35: an ISOLATED fixture acta — the authority digest is
-    injected only by TEST SETUP (surface + path monkeypatched);
-    no productive TEST_ONLY entry point exists. The pinned commit
-    is the real HEAD and the declared surface is a committed,
-    unmodified file so the byte-match check runs for real."""
+    """C35/C40: an ISOLATED fixture acta under a fixture PRIVATE
+    chain — authority digests injected only by TEST SETUP (path +
+    checkout-identity monkeypatched); no productive TEST_ONLY
+    entry point exists. The custody walk (0700 chain, 0600 file,
+    O_NOFOLLOW) runs for real; the checkout-identity stub returns
+    the real HEAD/tree without the clean-tree requirement, which
+    the C42 mutation tests exercise with the REAL function on a
+    scratch checkout."""
     rec = {"schema": "agent_multi.musashi_b4_v6_recovery_audit.v2",
            "reviewed_at_date": "2026-09-07",
            "reviewer": "General Musashi",
            "decision": "OPEN_B4_V6_LAUNCH",
            "latest_amendment_sha256":
-               a._sha_file(a.AMENDMENT_13_PATH),
+               a._sha_file(a.AMENDMENT_14_PATH),
            "pinned_commit": _head_commit(),
            "preflight_reviewed": True,
            "ledger_v6_reviewed": True,
            "v5_v6_scientific_equality_reviewed": True}
     rec.update(over)
-    p = tmp_path / "recovery_acta.json"
+    ra = _private_chain(tmp_path / "auth")
+    p = ra / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json"
+    if p.exists():
+        p.unlink()
     p.write_text(json.dumps(rec))
     os.chmod(p, 0o600)
     monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", p)
-    monkeypatch.setattr(a, "RECOVERY_SURFACE_FILES",
-                        _FIXTURE_SURFACE)
+
+    if not hasattr(a, "_ORIG_verify_checkout_identity"):
+        a._ORIG_verify_checkout_identity = \
+            a.verify_checkout_identity
+
+    def _stub_checkout(pin):
+        import subprocess as _sp
+        head = _sp.run(["git", "-C", str(REPO), "rev-parse",
+                        "HEAD"], capture_output=True,
+                       text=True).stdout.strip()
+        if head != pin:
+            raise SystemExit(
+                f"REFUSED: executing HEAD {head[:12]} differs "
+                f"from the acta's pinned commit {pin[:12]}")
+        tree = _sp.run(["git", "-C", str(REPO), "rev-parse",
+                        "HEAD^{tree}"], capture_output=True,
+                       text=True).stdout.strip()
+        return {"head": head, "tree": tree}
+    monkeypatch.setattr(a, "verify_checkout_identity",
+                        _stub_checkout)
     return p
 
 
@@ -3817,7 +3881,6 @@ def test_c34_10_two_processes_one_claim(tmp_path):
     root.mkdir()
     os.chmod(root, 0o700)
     acta = a.RECOVERY_AUDIT_RECORD_PATH
-    surf = _FIXTURE_SURFACE
     code = (
         "import sys, importlib.util\n"
         f"sys.path.insert(0, {str(REPO)!r})\n"
@@ -3825,7 +3888,8 @@ def test_c34_10_two_processes_one_claim(tmp_path):
         "import b4_authority as b4a\n"
         "from pathlib import Path\n"
         f"b4a.RECOVERY_AUDIT_RECORD_PATH = Path({str(acta)!r})\n"
-        f"b4a.RECOVERY_SURFACE_FILES = {tuple(surf)!r}\n"
+        "b4a.verify_checkout_identity = lambda pin: "
+        "{'head': pin, 'tree': 'fixture'}\n"
         f"spec = importlib.util.spec_from_file_location('o', "
         f"{str(REPO / 'tools/b4_campaign_orchestrator.py')!r})\n"
         "m = importlib.util.module_from_spec(spec)\n"
@@ -3884,10 +3948,9 @@ def test_c38_2_surface_mismatch_and_stale_amendment_refuse(
         ["git", "-C", str(REPO), "rev-parse", pre_commit],
         capture_output=True, text=True).stdout.strip()
     _fixture_acta(tmp_path, monkeypatch, pinned_commit=full)
-    monkeypatch.setattr(a, "RECOVERY_SURFACE_FILES",
-                        ("tools/b4_authority.py",))
     with pytest.raises(SystemExit,
-                       match="differs from the reviewed surface"):
+                       match="differs from the acta's pinned "
+                             "commit"):
         a.require_v6_launch_open()
     # nonexistent commit
     _fixture_acta(tmp_path, monkeypatch, pinned_commit="a" * 40)
@@ -3897,38 +3960,22 @@ def test_c38_2_surface_mismatch_and_stale_amendment_refuse(
     # amendment-12-only link grants nothing
     _fixture_acta(tmp_path, monkeypatch,
                   latest_amendment_sha256=a._sha_file(
-                      a.AMENDMENT_12_PATH))
+                      a.AMENDMENT_13_PATH))
     with pytest.raises(SystemExit,
                        match="LATEST recovery amendment"):
         a.require_v6_launch_open()
 
 
 def test_c38_3_acta_object_boundaries(tmp_path, monkeypatch):
-    """C35: absent, symlinked, non-regular, permissive and
-    swapped-bytes actas refuse or are caught downstream."""
+    """C35/C40: absent external record -> stop label; swapped acta
+    bytes between claim and lease die as transplanted authority.
+    (Symlink/non-regular/permissive chain adversaries live in
+    test_c42_3 against the productive private walk.)"""
     _close_gate(tmp_path, monkeypatch)
     with pytest.raises(SystemExit,
                        match="READY_FOR_FINAL_MUSASHI_AUDIT"):
         a.require_v6_launch_open()
-    real = _fixture_acta(tmp_path, monkeypatch)
-    link = tmp_path / "acta_link.json"
-    os.symlink(real, link)
-    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", link)
-    with pytest.raises(SystemExit,
-                       match="without following links"):
-        a.require_v6_launch_open()
-    d = tmp_path / "acta_dir"
-    d.mkdir()
-    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", d)
-    with pytest.raises(SystemExit,
-                       match="not a regular file|following links"):
-        a.require_v6_launch_open()
     _fixture_acta(tmp_path, monkeypatch)
-    os.chmod(a.RECOVERY_AUDIT_RECORD_PATH, 0o666)
-    with pytest.raises(SystemExit,
-                       match="group/world-writable"):
-        a.require_v6_launch_open()
-    os.chmod(a.RECOVERY_AUDIT_RECORD_PATH, 0o600)
     # swapped bytes between claim and lease: same labels, new
     # bytes -> transplanted authority refusal at issue_lease
     orch2 = _orch()
@@ -3947,7 +3994,6 @@ def test_c38_3_acta_object_boundaries(tmp_path, monkeypatch):
             orch2.issue_lease(root, "o2022_seed101", claim,
                               executor2.CAMPAIGN_AUTH_SHA,
                               _MAT_V5)
-
 
 def test_c38_4_every_entry_point_gated(tmp_path, monkeypatch):
     """C36: claim, lease, verify_lease, execute_cell and the
@@ -4136,3 +4182,221 @@ def test_c38_6_verifier_rederives_recovery_bindings(tmp_path,
                                  "reviewed recovery authority"):
             ledger_mod.verify_single_cell_result(
                 root, "o2022_seed101", "1" * 64)
+
+
+# ====== C39-C42 checkout-authority battery (order 2026-09-07) ======
+
+
+def _scratch_checkout(tmp_path, ref="HEAD"):
+    import subprocess
+    sc = tmp_path / "scratch_co"
+    r = subprocess.run(["git", "-C", str(REPO), "worktree",
+                        "add", "--detach", str(sc), ref],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-200:]
+    return sc
+
+
+def _drop_scratch(sc):
+    import subprocess
+    subprocess.run(["git", "-C", str(REPO), "worktree",
+                    "remove", "--force", str(sc)],
+                   capture_output=True)
+
+
+def test_c42_1_checkout_mutations_each_refuse(tmp_path,
+                                              monkeypatch):
+    """C39: the REAL verify_checkout_identity on a scratch
+    checkout — every ordered mutation refuses before any claim,
+    and reverting each restores the gate."""
+    import subprocess
+    sc = _scratch_checkout(tmp_path)
+    try:
+        head = subprocess.run(
+            ["git", "-C", str(sc), "rev-parse", "HEAD"],
+            capture_output=True, text=True).stdout.strip()
+        monkeypatch.setattr(a, "REPO", sc)
+        # the REAL function (the autouse fixture stubs the module
+        # attribute; C42 exercises the productive rule itself)
+        real_vci = a._ORIG_verify_checkout_identity
+        monkeypatch.setattr(a, "verify_checkout_identity",
+                            real_vci)
+        assert a.verify_checkout_identity(head)["head"] == head
+        # tracked modifications: the three named modules
+        for rel in ("agent_plugins/sac_agent.py",
+                    "app/plugin_loader.py",
+                    "pipeline_plugins/_observation_contract.py"):
+            f = sc / rel
+            orig = f.read_bytes()
+            f.write_bytes(orig + b"\n# shadow probe\n")
+            with pytest.raises(SystemExit,
+                               match="not clean against the "
+                                     "pinned commit"):
+                a.verify_checkout_identity(head)
+            f.write_bytes(orig)
+            assert a.verify_checkout_identity(head)["head"] == \
+                head, rel
+        # one staged tracked file
+        f = sc / "tools/b4_authority.py"
+        orig = f.read_bytes()
+        f.write_bytes(orig + b"\n# staged probe\n")
+        subprocess.run(["git", "-C", str(sc), "add",
+                        "tools/b4_authority.py"],
+                       capture_output=True)
+        with pytest.raises(SystemExit, match="not clean"):
+            a.verify_checkout_identity(head)
+        subprocess.run(["git", "-C", str(sc), "restore",
+                        "--staged", "tools/b4_authority.py"],
+                       capture_output=True)
+        f.write_bytes(orig)
+        assert a.verify_checkout_identity(head)["head"] == head
+        # one untracked import-shadowing module
+        shadow = sc / "agent_plugins/zz_shadow_probe.py"
+        shadow.write_text("# shadow\n")
+        with pytest.raises(SystemExit,
+                           match="shadow repository imports"):
+            a.verify_checkout_identity(head)
+        shadow.unlink()
+        assert a.verify_checkout_identity(head)["head"] == head
+        # a DIFFERENT HEAD whose old nine-file surface is
+        # byte-identical (the packet commit only added docs)
+        import subprocess as sp
+        parent = sp.run(["git", "-C", str(sc), "rev-parse",
+                         "HEAD~1"], capture_output=True,
+                        text=True).stdout.strip()
+        same = all(sp.run(["git", "-C", str(sc), "diff",
+                           "--quiet", parent, head, "--", rel],
+                          capture_output=True).returncode == 0
+                   for rel in a.RECOVERY_SURFACE_FILES)
+        if same:
+            with pytest.raises(SystemExit,
+                               match="differs from the acta's "
+                                     "pinned commit"):
+                a.verify_checkout_identity(parent)
+    finally:
+        _drop_scratch(sc)
+
+
+def test_c42_2_repo_lookalike_grants_nothing(tmp_path,
+                                             monkeypatch):
+    """C40: a schema-perfect acta committed-style under
+    docs/audits/evidence/ opens NOTHING while the external private
+    record is absent."""
+    rec = json.loads(
+        a.RECOVERY_AUDIT_RECORD_PATH.read_text()) \
+        if a.RECOVERY_AUDIT_RECORD_PATH.exists() else None
+    assert rec is not None      # armed fixture (private chain)
+    # point the productive path at the REAL external location,
+    # which does not exist; drop a lookalike inside the repo
+    monkeypatch.setattr(
+        a, "RECOVERY_AUDIT_RECORD_PATH",
+        Path.home() / ".config/agent-multi/reviewer_authority/"
+        "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+    look = REPO / ("docs/audits/evidence/"
+                   "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json")
+    assert not look.exists()    # repo carries a TEMPLATE only
+    look.write_text(json.dumps(rec))
+    try:
+        if a.RECOVERY_AUDIT_RECORD_PATH.exists():
+            pytest.skip("real external record present on host")
+        with pytest.raises(SystemExit,
+                           match="READY_FOR_FINAL_MUSASHI_AUDIT"):
+            a.require_v6_launch_open()
+    finally:
+        look.unlink()
+
+
+def test_c42_3_private_chain_custody(tmp_path, monkeypatch):
+    """C40: wrong parent mode, symlinked component, wrong file
+    mode, non-regular, malformed, duplicate-key, non-finite and
+    another-commit/amendment actas all refuse via the productive
+    walk."""
+    base = tmp_path / "auth"
+    _fixture_acta(tmp_path, monkeypatch)
+    ra = base / "agent-multi" / "reviewer_authority"
+    p = ra / "MUSASHI_B4_V6_RECOVERY_AUDIT_RECORD.json"
+    good = p.read_bytes()
+    # parent (reviewer_authority) too permissive
+    os.chmod(ra, 0o755)
+    with pytest.raises(SystemExit, match="not the private 0700"):
+        a.require_v6_launch_open()
+    os.chmod(ra, 0o700)
+    # grandparent (agent-multi) too permissive
+    os.chmod(base / "agent-multi", 0o775)
+    with pytest.raises(SystemExit, match="not the private 0700"):
+        a.require_v6_launch_open()
+    os.chmod(base / "agent-multi", 0o700)
+    # symlinked component in the chain
+    alt = tmp_path / "elsewhere"
+    alt.mkdir(mode=0o700)
+    (alt / p.name).write_bytes(good)
+    os.chmod(alt / p.name, 0o600)
+    link_dir = base / "agent-multi" / "ra_link"
+    os.symlink(alt, link_dir)
+    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH",
+                        link_dir / p.name)
+    with pytest.raises(SystemExit,
+                       match="without.*following links|"
+                             "unopenable"):
+        a.require_v6_launch_open()
+    monkeypatch.setattr(a, "RECOVERY_AUDIT_RECORD_PATH", p)
+    # wrong file mode
+    os.chmod(p, 0o644)
+    with pytest.raises(SystemExit, match="exact.*0600|not the "
+                                         "exact private 0600"):
+        a.require_v6_launch_open()
+    os.chmod(p, 0o600)
+    # non-regular (directory) at the acta name
+    p.unlink()
+    p.mkdir(mode=0o700)
+    with pytest.raises(SystemExit,
+                       match="not a regular file|unopenable"):
+        a.require_v6_launch_open()
+    p.rmdir()
+    # malformed / duplicate key / non-finite
+    for payload, needle in (
+            (b"{not json", "never a record|well-formed|REFUSED"),
+            (b'{"schema": 1, "schema": 2}', "duplicate JSON key"),
+            (good.replace(b"true", b"NaN", 1), "non-finite")):
+        p.write_bytes(payload)
+        os.chmod(p, 0o600)
+        with pytest.raises(SystemExit):
+            a.require_v6_launch_open()
+        p.unlink()
+    # another amendment / another commit
+    p.write_bytes(good)
+    os.chmod(p, 0o600)
+    doc = json.loads(good)
+    doc["latest_amendment_sha256"] = a._sha_file(
+        a.AMENDMENT_13_PATH)
+    p.write_text(json.dumps(doc))
+    os.chmod(p, 0o600)
+    with pytest.raises(SystemExit,
+                       match="LATEST recovery amendment"):
+        a.require_v6_launch_open()
+    doc = json.loads(good)
+    doc["pinned_commit"] = "b" * 40
+    p.write_text(json.dumps(doc))
+    os.chmod(p, 0o600)
+    with pytest.raises(SystemExit,
+                       match="existing git commit"):
+        a.require_v6_launch_open()
+    # restore for later autouse consumers
+    p.write_bytes(good)
+    os.chmod(p, 0o600)
+
+
+def test_c42_4_witness_v2_carries_tree(tmp_path, monkeypatch):
+    """C39/C41: the witness re-derives the checkout commit AND
+    tree; the human review index remains but is not the
+    boundary."""
+    wit = a.require_v6_launch_open()
+    assert wit["schema"] == "agent_multi.b4_v6_recovery_witness.v2"
+    assert len(wit["checkout_tree_sha"]) == 40
+    assert wit["pinned_commit"] == _head_commit()
+    src = (REPO / "tools/b4_authority.py").read_text()
+    seg = src[src.index("def read_recovery_acta"):]
+    seg = seg[:seg.index("\ndef require_v6_launch_open")]
+    assert "verify_checkout_identity(pin)" in seg
+    assert "git show" not in seg     # nine-file loop retired
+    assert "cryptographically identify an author" in src

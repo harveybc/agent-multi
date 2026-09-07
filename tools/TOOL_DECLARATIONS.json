@@ -760,6 +760,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "b4_gen_amendment_14.py": {
+   "purpose": "C41 (checkout authority order): authors amendment 14 \u2014 append-only after byte-pinned a13; records only C39-C41 (full-checkout identity, private external acta custody, witness v2 with checkout tree) and pins the corrected surface; structural published-regeneration guard",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

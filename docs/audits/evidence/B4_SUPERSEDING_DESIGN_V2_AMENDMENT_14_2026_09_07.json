@@ -1,0 +1,20 @@
+{
+ "schema": "agent_multi.b4_superseding_design_amendment.v12_full_checkout_external_custody",
+ "amends_amendment_13_sha256": "1d8b46ce527598d45d519f0885f5e7ea81f35aeef528dfa14952d3f9d646a5ff",
+ "order": "C39-C42 (checkout authority order 2026-09-07): the reviewed commit must BE the executed commit \u2014 the authority binds the ENTIRE checkout (exact HEAD == pinned_commit, clean index and tracked worktree, no untracked/ignored shadow-capable source), and the productive acta moves OUT of the candidate repository to the fixed private reviewer-authority root.",
+ "change_disclosure": "authority custody ONLY: verify_checkout_identity() (HEAD/clean/shadow rules; RECOVERY_SURFACE_FILES demoted to a human review index); _open_private_authority_file() descriptor-first walk (O_NOFOLLOW every component, 0700/uid on the authority chain, exact 0600 file, one read stream); RECOVERY_AUDIT_RECORD_PATH relocated under ~/.config/agent-multi/reviewer_authority/ (repo JSONs grant nothing; template only); witness v2 adds the checkout tree; honest custody-not-authorship prose. No scientific, population, data, genesis, comparator, resource-limit or scheduling change.",
+ "scientific_change": "NONE \u2014 full-checkout identity and external custody only",
+ "final_code_pins": {
+  "tools/b4_authority.py": "7710978efc1eaf317c4b81195003aa2c682ae245fd90fcafb90993224c5b2368",
+  "tools/b4_run_cell.py": "e033aae594ee9104b43ad4d46982c2392d4ad018bbee3f012e6a2845109bd96c",
+  "tools/b4_campaign_executor.py": "20378790786cfb1da4229e00fd3b181a6eeb557f06ba9b73fce9c3e7877f452c",
+  "tools/b4_campaign_ledger.py": "a6ef3ba27c733cc592aeb9ff127b4f41813e290a2e9a0f62238e622811e331ee",
+  "tools/b4_campaign_orchestrator.py": "930ef8e468bacff63192f53cce6c3e95beedd58c66aa7ad3a8161df524448600",
+  "tools/b4_adjudicator.py": "7ce51057d5b278887bc2641d302267b70cf53f32aa95de07d514ac7b3804f1d4",
+  "tools/materialize_b4_causal_sac.py": "3a1e19b7266113dcb5d9f038fe6ded90bd12cf32d33888c14bb3ed9eb54b289e",
+  "pipeline_plugins/rl_pipeline_with_validation.py": "36875599adf060183debf97d9664c3184b024e8dbe484f22e7e6b63a94a0c6a2",
+  "tests/test_b4_materializer_authority.py": "0275f7bf5e37a2fda0aa7b4d40428d8c672c17db36dc94eded4dd84af74e3515"
+ },
+ "chronology_truth": "authored AFTER the C39-C42 PRE freeze and after all corrected code and tests were finalized and hashed from disk; amendments 1-13 untouched; the real Musashi acta remains ABSENT (external root not created by candidate code) and the v6 launch remains CLOSED",
+ "amendment_sha256": "b340ec3845a70e8d4d5d0d4ee7f8dadc86c8036109deffd540e7e75eecbe8975"
+}
