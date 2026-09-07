@@ -1,0 +1,9 @@
+{
+ "schema": "agent_multi.t2_v3_state_digests.v1",
+ "sha256": {
+  "t2_public_data_manifest_20260906.json": "43c48f6bb513be37d4a591f67694880e9f768391ab0db710902c3aadd55b76ff",
+  "t2_bank_census_20260906.json": "dc1bf8c770b297c506b1e30195753d7b25f82c51cbdd62b27667f58e7964674f",
+  "t2_confirmatory_design_DRAFT_V3_20260906.json": "dc31b54a434e93da82cf0d2f566f574310b3207668bd0ab3eaa9c242b3f2b199",
+  "t2_coverage_sim_20260906.json": "e7fae7819dd26c8ec37455d72d29d3d03a315c10fe037bad8958375ef1d6390b"
+ }
+}

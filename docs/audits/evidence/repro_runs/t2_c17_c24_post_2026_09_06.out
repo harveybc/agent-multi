@@ -1,0 +1,30 @@
+== 1: NaN refuses with the exact path ==
+refused: REFUSED: f0::s0.origin0.D.ridge: metric 'mase_primary' is not finite
+
+== 2: family relabel refuses ==
+refused: REFUSED: f0::s0: family 'f1' differs from the design binding 'f0' — relabeled po
+
+== 3/4: null costs and forged MLP refuse ==
+costs refused: REFUSED: f0::s0.origin0.costs: phase cost 'denoise_fit_trans
+forged MLP refused: REFUSED: f0::s0.origin0.X.mlp.seed11: model result is not a 
+
+== 5/6: manifest schema/identity/license + symlink ==
+extra top key refused: REFUSED: manifest top-level keys are not the exact schema (d
+internal symlink refused: REFUSED: link.tsf: unopenable under the verified root ([Errn
+
+== 7: fresh verifier kills a non-derivable census ==
+honest census re-derives from bytes: True
+forged census refused: REFUSED: hospital: census unit digests do not re-derive from
+
+== 8: family cap is global and exact ==
+two same-family panels select: 40 (cap 40)
+
+== 9: duplicates and bool die in the design validator ==
+refused: REFUSED: seed_tape: duplicated entries
+refused: REFUSED: seed_tape: element True is not a true int
+
+== 10: no fabricated precision ==
+single panel per family -> INCONCLUSIVE
+ICC=0.5: naive 0.2562 | within-panel ICC 0.2562 | panel-level (t, K=4) 0.9507
+
+POST CONFIRMED: C17-C24 findings no longer reproduce

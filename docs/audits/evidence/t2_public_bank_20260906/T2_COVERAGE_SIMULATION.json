@@ -1,0 +1,47 @@
+{
+ "schema": "agent_multi.t2_coverage_simulation.v2",
+ "nominal": 0.95,
+ "rule": "panel_replication_or_descriptive: K>=3 panels -> panel-level CI; one panel -> DESCRIPTIVE + INCONCLUSIVE (within-panel dependence is not identifiable, proven by the within_panel_icc row equalling naive)",
+ "rows": [
+  {
+   "icc_true": 0.0,
+   "n_series": 36,
+   "k_panels": 4,
+   "n_sim": 4000,
+   "naive_single_panel_coverage": 0.9485,
+   "within_panel_icc_coverage": 0.9485,
+   "panel_level_coverage": 0.948,
+   "single_panel_rule": "INCONCLUSIVE by design \u2014 no interval is licensed"
+  },
+  {
+   "icc_true": 0.2,
+   "n_series": 36,
+   "k_panels": 4,
+   "n_sim": 4000,
+   "naive_single_panel_coverage": 0.4693,
+   "within_panel_icc_coverage": 0.4693,
+   "panel_level_coverage": 0.9517,
+   "single_panel_rule": "INCONCLUSIVE by design \u2014 no interval is licensed"
+  },
+  {
+   "icc_true": 0.5,
+   "n_series": 36,
+   "k_panels": 4,
+   "n_sim": 4000,
+   "naive_single_panel_coverage": 0.2562,
+   "within_panel_icc_coverage": 0.2562,
+   "panel_level_coverage": 0.9507,
+   "single_panel_rule": "INCONCLUSIVE by design \u2014 no interval is licensed"
+  },
+  {
+   "icc_true": 0.8,
+   "n_series": 36,
+   "k_panels": 4,
+   "n_sim": 4000,
+   "naive_single_panel_coverage": 0.1313,
+   "within_panel_icc_coverage": 0.1313,
+   "panel_level_coverage": 0.9523,
+   "single_panel_rule": "INCONCLUSIVE by design \u2014 no interval is licensed"
+  }
+ ]
+}

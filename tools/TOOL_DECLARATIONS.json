@@ -830,6 +830,20 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_coverage_sim.py": {
+   "purpose": "C23 evidence: coverage simulation proving naive AND within-panel-ICC intervals under-cover with one panel (shared effect unidentifiable) while t-based panel-level CIs over K>=3 panels cover nominally; grounds the panel_replication_or_descriptive rule",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "evidence_producer",
+   "owner": "General Satoshi III"
+  },
+  "t2_fresh_verifier.py": {
+   "purpose": "C21 fresh-process population verifier: validates the manifest, reopens datasets by descriptor, rebuilds every unit and digest through the C1/C2/C4 loaders, reproduces the complete census and the exact v3 design population (family top-k); emits only a non-authorizing consistency label",
+   "lifecycle": "supported",
+   "mutability": "read_only",
+   "authority_class": "verifier",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {

@@ -90,6 +90,38 @@ def strict_json_load(path: Path, where: str) -> dict:
             "record")
 
 
+_MANIFEST_TOP_KEYS = {"schema", "acquired_at_utc",
+                      "remanifested_at_utc", "byte_cap",
+                      "bytes_downloaded_total", "raw_root_note",
+                      "etth1_disposition", "datasets"}
+
+
+def _open_nofollow_under(root: Path, rel: Path):
+    """C20: open strictly UNDER an already-verified root using
+    dir_fd/openat with O_NOFOLLOW on EVERY component — the object
+    identity named in the manifest is preserved to fstat; no
+    resolve() ever follows a link first."""
+    fd = os.open(str(root), os.O_RDONLY | os.O_NOFOLLOW
+                 | getattr(os, "O_DIRECTORY", 0))
+    try:
+        parts = rel.parts
+        for comp in parts[:-1]:
+            nfd = os.open(comp, os.O_RDONLY | os.O_NOFOLLOW
+                          | getattr(os, "O_DIRECTORY", 0),
+                          dir_fd=fd)
+            os.close(fd)
+            fd = nfd
+        leaf = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW,
+                       dir_fd=fd)
+    except OSError as exc:
+        os.close(fd)
+        raise ConfirmatoryRefusal(
+            f"{rel}: unopenable under the verified root ({exc}) "
+            "— symlinks refuse at their own component")
+    os.close(fd)
+    return leaf
+
+
 def validate_public_manifest(manifest: dict,
                              raw_root: Path = None,
                              verify_bytes: bool = True) -> dict:
@@ -103,6 +135,11 @@ def validate_public_manifest(manifest: dict,
         raise ConfirmatoryRefusal(
             "public-data manifest absent or foreign schema "
             "(v2 physically-bound manifest required)")
+    # C20: the TOP-LEVEL schema is exact too
+    if set(manifest) != _MANIFEST_TOP_KEYS:
+        raise ConfirmatoryRefusal(
+            f"manifest top-level keys are not the exact schema "
+            f"(diff: {sorted(set(manifest) ^ _MANIFEST_TOP_KEYS)})")
     ds = manifest.get("datasets")
     if not isinstance(ds, dict) or not ds:
         raise ConfirmatoryRefusal("manifest lists no datasets")
@@ -128,11 +165,23 @@ def validate_public_manifest(manifest: dict,
         if type(d["byte_size"]) is not int or d["byte_size"] <= 0:
             raise ConfirmatoryRefusal(
                 f"dataset {lid!r} byte size mistyped")
+        # C20: the mapping key IS the identity
+        if lid != d["logical_id"]:
+            raise ConfirmatoryRefusal(
+                f"manifest key {lid!r} differs from the row's "
+                f"logical_id {d['logical_id']!r} — decoupled "
+                "identity refused")
         _canon_sha(d["sha256"], f"{lid} sha256")
         _canon_sha(d["record_metadata_sha256"],
                    f"{lid} record metadata digest")
         _canon_sha(d["license_id_sha256"],
                    f"{lid} license id digest")
+        # C20: the license digest is RECOMPUTED, never trusted
+        if d["license_id_sha256"] != hashlib.sha256(
+                d["license_id"].encode()).hexdigest():
+            raise ConfirmatoryRefusal(
+                f"{lid}: license_id_sha256 does not re-derive "
+                "from the license identifier bytes")
         if d["license_text_sha256"] != "UNAVAILABLE":
             _canon_sha(d["license_text_sha256"],
                        f"{lid} license text digest")
@@ -157,14 +206,7 @@ def validate_public_manifest(manifest: dict,
                 f"dataset {lid!r} admissible without a concrete "
                 "license")
         if verify_bytes:
-            try:
-                fd = os.open(str(target),
-                             os.O_RDONLY | os.O_NOFOLLOW)
-            except OSError as exc:
-                raise ConfirmatoryRefusal(
-                    f"dataset {lid!r} bytes unopenable ({exc}) — "
-                    "a manifest row without its physical file is "
-                    "not evidence")
+            fd = _open_nofollow_under(raw_root, rel)
             try:
                 import stat as _stat
                 st = os.fstat(fd)
@@ -187,6 +229,35 @@ def validate_public_manifest(manifest: dict,
                 raise ConfirmatoryRefusal(
                     f"dataset {lid!r} bytes differ from the "
                     "manifest digest")
+            # C20: the archival record metadata is verified
+            # against PHYSICAL bytes when the row names a Zenodo
+            # record whose metadata file is archived; otherwise
+            # the digest must equal the declared non-verifying
+            # derivation (sha of the archival_record string).
+            rec_txt = d["archival_record"]
+            if "zenodo:" in rec_txt:
+                rid = rec_txt.split("zenodo:")[1].rstrip(")")
+                meta_rel = Path(f"record_{rid}.json")
+                mfd = _open_nofollow_under(raw_root, meta_rel)
+                try:
+                    mh = hashlib.sha256()
+                    while True:
+                        chunk = os.read(mfd, 1 << 20)
+                        if not chunk:
+                            break
+                        mh.update(chunk)
+                finally:
+                    os.close(mfd)
+                if mh.hexdigest() != d["record_metadata_sha256"]:
+                    raise ConfirmatoryRefusal(
+                        f"{lid}: archival record metadata bytes "
+                        "differ from the manifest digest")
+            elif d["record_metadata_sha256"] != hashlib.sha256(
+                    rec_txt.encode()).hexdigest():
+                raise ConfirmatoryRefusal(
+                    f"{lid}: record_metadata_sha256 does not "
+                    "re-derive from its declared non-verifying "
+                    "source")
         admissible[lid] = d
     if total > MANIFEST_BYTE_LIMIT:
         raise ConfirmatoryRefusal(
@@ -204,10 +275,26 @@ _DESIGN_KEYS = {
     "primary_contrast", "secondary_gates", "primary_metric",
     "practical_margin_mase", "observed_precision_rule",
     "harm_margins", "precision_rule", "sensitivity_rule",
-    "inference_scope", "multiplicity_rule", "missing_unit_rule",
-    "inconclusive_rule", "resource_contract",
+    "inference_method", "inference_scope", "multiplicity_rule",
+    "missing_unit_rule", "inconclusive_rule", "resource_contract",
     "verifier_specification", "design_review_record_sha256",
     "design_sha256"}
+
+
+def _unique_list(v, what, elem_type=None):
+    """C22: a list validator that a duplicated list cannot fool —
+    set() is never the only check."""
+    if not isinstance(v, list) or not v:
+        raise ConfirmatoryRefusal(f"{what}: not a nonempty list")
+    if len(v) != len(set(map(str, v))):
+        raise ConfirmatoryRefusal(f"{what}: duplicated entries")
+    if elem_type is int:
+        for x in v:
+            if isinstance(x, bool) or type(x) is not int:
+                raise ConfirmatoryRefusal(
+                    f"{what}: element {x!r} is not a true int "
+                    "(bool is never a number)")
+    return v
 
 
 def validate_confirmatory_design(design: dict,
@@ -254,16 +341,46 @@ def validate_confirmatory_design(design: dict,
         raise ConfirmatoryRefusal(
             "design must declare the single frozen primary "
             "contrast (paired D-X under the frozen ridge)")
-    if not isinstance(design["seed_tape"], list) or \
-            not design["seed_tape"]:
-        raise ConfirmatoryRefusal("design seed tape missing")
+    _unique_list(design["seed_tape"], "design.seed_tape",
+                 elem_type=int)
     tp2 = design["task_population"]
-    if len(tp2.get("primary_gate_families", [])) != 6:
+    fams = tp2.get("primary_gate_families", [])
+    _unique_list(fams, "design.primary_gate_families")
+    if len(fams) != 6:
         raise ConfirmatoryRefusal(
-            "design must name exactly six primary-gate families")
+            "design must name exactly six DISTINCT primary-gate "
+            "families")
+    _unique_list(tp2.get("series_ids", []),
+                 "design.series_ids")
     if not tp2.get("unit_digests"):
         raise ConfirmatoryRefusal(
             "design must bind every unit's numeric digest")
+    if not tp2.get("unit_map"):
+        raise ConfirmatoryRefusal(
+            "design must carry the canonical per-unit map "
+            "(family/dataset/digest/period/horizon)")
+    rg = design["role_geometry"]
+    for k in ("rolling_origins", "origin_base_frac", "lags",
+              "horizon"):
+        if k not in rg:
+            raise ConfirmatoryRefusal(
+                f"design.role_geometry lacks {k}")
+    for k in ("practical_margin_mase",):
+        v = design[k]
+        if isinstance(v, bool) or not isinstance(
+                v, (int, float)) or not math.isfinite(float(v)) \
+                or v <= 0:
+            raise ConfirmatoryRefusal(
+                f"design.{k} outside its domain")
+    a_ = design["multiplicity_rule"].get("alpha")
+    if isinstance(a_, bool) or not isinstance(a_, (int, float)) \
+            or not 0 < float(a_) < 1:
+        raise ConfirmatoryRefusal(
+            "design.multiplicity_rule.alpha outside (0,1)")
+    if not design.get("inference_method", {}).get("rule"):
+        raise ConfirmatoryRefusal(
+            "design must predeclare its inference method "
+            "(intrapanel dependence rule)")
     if not design["resource_contract"] or \
             not design["verifier_specification"]:
         raise ConfirmatoryRefusal(
@@ -428,6 +545,120 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
         "C9-C16 corrections")
 
 
+# ------- C17/C19: total numeric validation + model evidence -------
+
+METRIC_DOMAINS = {
+    "mase_primary": ("nonneg", False),
+    "mae_per_series_diagnostic": ("nonneg", True),
+    "rmse_per_series_diagnostic": ("nonneg", True),
+    "interval_coverage_train_q90": ("unit_interval", False),
+    "interval_width_train_q90": ("nonneg", False),
+    "mase_on_extreme_innovations": ("nonneg", True),
+    "extreme_support": ("nonneg_int", True),
+}
+_REQUIRED_METRICS = [k for k, (_, opt) in METRIC_DOMAINS.items()
+                     if not opt]
+
+
+def check_metric(value, name: str, path: str):
+    """C17: every consumed metric is an exact-typed finite number
+    inside its physical domain; None only where the design
+    declares a typed absence (optional metrics), and an absence
+    can never improve a gate. NaN/inf/str/bool/out-of-domain
+    refuse with the exact field path."""
+    domain, optional = METRIC_DOMAINS.get(name, ("nonneg", True))
+    if value is None:
+        if optional:
+            return None
+        raise ConfirmatoryRefusal(
+            f"{path}: required metric {name!r} is absent")
+    if isinstance(value, bool) or not isinstance(
+            value, (int, float)):
+        raise ConfirmatoryRefusal(
+            f"{path}: metric {name!r} has non-numeric type "
+            f"{type(value).__name__}")
+    v = float(value)
+    if not math.isfinite(v):
+        raise ConfirmatoryRefusal(
+            f"{path}: metric {name!r} is not finite")
+    if domain in ("nonneg", "nonneg_int") and v < 0:
+        raise ConfirmatoryRefusal(
+            f"{path}: metric {name!r} violates its nonnegative "
+            "domain")
+    if domain == "unit_interval" and not 0.0 <= v <= 1.0:
+        raise ConfirmatoryRefusal(
+            f"{path}: metric {name!r} outside [0,1]")
+    if domain == "nonneg_int" and (isinstance(value, float)
+                                   and not v.is_integer()):
+        raise ConfirmatoryRefusal(
+            f"{path}: metric {name!r} must be an integer count")
+    return v
+
+
+def check_model_result(entry, path: str) -> dict:
+    """C19: ONE exact reusable schema for every model result —
+    ridge, every MLP seed, and the seasonal-naive baseline alike.
+    Opaque payloads refuse."""
+    if not isinstance(entry, dict):
+        raise ConfirmatoryRefusal(
+            f"{path}: model result is not a mapping (opaque "
+            "payload refused)")
+    unknown = set(entry) - set(METRIC_DOMAINS)
+    if unknown:
+        raise ConfirmatoryRefusal(
+            f"{path}: unknown metric fields {sorted(unknown)}")
+    missing = [m for m in _REQUIRED_METRICS if m not in entry]
+    if missing:
+        raise ConfirmatoryRefusal(
+            f"{path}: required metrics missing {missing}")
+    out = {}
+    for k, v in entry.items():
+        out[k] = check_metric(v, k, path)
+    return out
+
+
+_COST_PHASE_PREFIXES = ("denoise_fit_transform_s",
+                        "target_construction_s",
+                        "seasonal_naive_s")
+
+
+def check_origin_costs(oc, arms, seed_tape, path: str) -> None:
+    """C19: costs enumerate every phase and every arm/model with
+    finite nonnegative values — a single arm_* key satisfies
+    nothing."""
+    if not isinstance(oc, dict):
+        raise ConfirmatoryRefusal(f"{path}: costs are not a "
+                                  "mapping")
+    def _num(v, where):
+        if isinstance(v, bool) or not isinstance(
+                v, (int, float)) or not math.isfinite(float(v)) \
+                or float(v) < 0:
+            raise ConfirmatoryRefusal(
+                f"{where}: cost is not a finite nonnegative "
+                "number")
+    for ph in ("denoise_fit_transform_s",):
+        if ph not in oc:
+            raise ConfirmatoryRefusal(
+                f"{path}: phase cost {ph!r} missing")
+        _num(oc[ph], f"{path}.{ph}")
+    for arm in arms:
+        key = f"arm_{arm}"
+        ac = oc.get(key)
+        if not isinstance(ac, dict) or not ac:
+            raise ConfirmatoryRefusal(
+                f"{path}.{key}: arm costs absent or opaque")
+        if "lag_features_s" not in ac or \
+                "ridge_fit_forecast_s" not in ac:
+            raise ConfirmatoryRefusal(
+                f"{path}.{key}: lag/ridge phase costs missing")
+        for s in seed_tape:
+            if f"mlp_fit_forecast_seed{s}_s" not in ac:
+                raise ConfirmatoryRefusal(
+                    f"{path}.{key}: MLP seed{s} cost missing")
+        for ck, cv in ac.items():
+            _num(cv, f"{path}.{key}.{ck}")
+
+
 # ------------- C8/C14: complete decision rule ---------------------
 
 _REQUIRED_ARMS = ("X", "D", "XDR", "width_control")
@@ -443,11 +674,11 @@ def _series_stats(rec, design, arm="D", model="ridge"):
         res = o["results"]
         x = res["X"][model]
         a_ = res[arm][model]
-        if x["mase_primary"] is None or \
-                a_["mase_primary"] is None:
-            raise ConfirmatoryRefusal(
-                f"{rec['unit_id']}: non-finite primary metric")
-        deltas.append(x["mase_primary"] - a_["mase_primary"])
+        xm = check_metric(x["mase_primary"], "mase_primary",
+                          f"{rec['unit_id']}.X.{model}")
+        am = check_metric(a_["mase_primary"], "mase_primary",
+                          f"{rec['unit_id']}.{arm}.{model}")
+        deltas.append(xm - am)
         ex_x = x.get("mase_on_extreme_innovations")
         ex_a = a_.get("mase_on_extreme_innovations")
         if ex_x and ex_a:
@@ -464,49 +695,83 @@ def _series_stats(rec, design, arm="D", model="ridge"):
 
 
 def check_record_completeness(rec: dict, design: dict) -> None:
-    """C14: three origins, ALL arms, both models with the full
-    seed tape, per-phase costs and finite preservation/calibration
-    metrics — every record, no producer aggregate trusted."""
+    """C14/C17/C18/C19: three origins, ALL arms, ridge + every
+    MLP seed + the seasonal-naive baseline validated against the
+    ONE exact model-result schema with full numeric domains;
+    per-unit design binding (family/digest/geometry) enforced;
+    costs enumerated for every phase and arm/model."""
+    uid = rec.get("unit_id")
     want_origins = int(design["role_geometry"]["rolling_origins"])
     origins = rec.get("rolling_origins")
     if not isinstance(origins, dict) or \
             len(origins) != want_origins:
         raise ConfirmatoryRefusal(
-            f"{rec.get('unit_id')}: expected {want_origins} "
-            "rolling origins")
+            f"{uid}: expected {want_origins} rolling origins")
+    # C18: per-unit binding to the design's canonical map
+    umap = design["task_population"].get("unit_map", {})
+    bound = umap.get(uid)
+    if bound is None:
+        raise ConfirmatoryRefusal(
+            f"{uid}: no canonical unit binding in the design — "
+            "population membership alone is not identity")
+    if rec.get("family") != bound["family"]:
+        raise ConfirmatoryRefusal(
+            f"{uid}: family {rec.get('family')!r} differs from "
+            f"the design binding {bound['family']!r} — relabeled "
+            "populations refuse")
+    for bk, rk in (("dataset", "dataset"),
+                   ("series_numeric_sha256",
+                    "series_numeric_sha256"),
+                   ("seasonal_period", "seasonal_period"),
+                   ("horizon", "horizon")):
+        if bk in bound and rec.get(rk) != bound[bk]:
+            raise ConfirmatoryRefusal(
+                f"{uid}: {rk} differs from the design binding")
     costs = rec.get("costs_by_phase")
     if not isinstance(costs, dict) or \
             set(costs) != set(origins):
         raise ConfirmatoryRefusal(
-            f"{rec.get('unit_id')}: per-phase costs incomplete")
+            f"{uid}: per-phase costs incomplete")
+    want_seeds = {f"seed{s}" for s in design["seed_tape"]}
     for okey, o in origins.items():
+        if "origin_binding" in (bound or {}):
+            ob = bound["origin_binding"].get(okey)
+            got = {"train": o.get("train"),
+                   "score": o.get("score")}
+            if ob is not None and (got["train"] != ob["train"]
+                                   or got["score"] != ob["score"]):
+                raise ConfirmatoryRefusal(
+                    f"{uid} {okey}: origin geometry differs from "
+                    "the design binding")
         res = o.get("results", {})
+        want_res = set(_REQUIRED_ARMS) | {"seasonal_naive"}
+        if not isinstance(res, dict) or \
+                not want_res.issubset(res):
+            raise ConfirmatoryRefusal(
+                f"{uid} {okey}: arms/baseline missing "
+                f"({sorted(want_res - set(res))}) — incomplete "
+                "evidence never adjudicates")
+        sn = res["seasonal_naive"]
+        if not isinstance(sn, dict) or "metrics" not in sn:
+            raise ConfirmatoryRefusal(
+                f"{uid} {okey}: seasonal-naive baseline malformed")
+        check_model_result(sn["metrics"],
+                           f"{uid}.{okey}.seasonal_naive")
         for arm in _REQUIRED_ARMS:
-            if arm not in res:
-                raise ConfirmatoryRefusal(
-                    f"{rec.get('unit_id')} {okey}: arm {arm!r} "
-                    "missing — incomplete evidence never "
-                    "adjudicates")
-            ridge = res[arm].get("ridge")
-            if not isinstance(ridge, dict) or \
-                    "mase_primary" not in ridge or \
-                    "interval_coverage_train_q90" not in ridge or \
-                    "interval_width_train_q90" not in ridge:
-                raise ConfirmatoryRefusal(
-                    f"{rec.get('unit_id')} {okey} {arm}: ridge "
-                    "metrics incomplete")
+            check_model_result(res[arm].get("ridge"),
+                               f"{uid}.{okey}.{arm}.ridge")
             mlp = res[arm].get("mlp_small")
-            want_seeds = {f"seed{s}" for s in design["seed_tape"]}
             if not isinstance(mlp, dict) or \
                     set(mlp) != want_seeds:
                 raise ConfirmatoryRefusal(
-                    f"{rec.get('unit_id')} {okey} {arm}: MLP "
-                    "seed tape incomplete")
-        acost = costs.get(okey, {})
-        if not any(k.startswith("arm_") for k in acost):
-            raise ConfirmatoryRefusal(
-                f"{rec.get('unit_id')} {okey}: separated arm "
-                "costs missing")
+                    f"{uid} {okey} {arm}: MLP seed tape "
+                    "incomplete")
+            for sk, sv in mlp.items():
+                check_model_result(
+                    sv, f"{uid}.{okey}.{arm}.mlp.{sk}")
+        check_origin_costs(costs.get(okey), _REQUIRED_ARMS,
+                           design["seed_tape"],
+                           f"{uid}.{okey}.costs")
 
 
 def adjudicate_confirmatory(records: list, design: dict) -> dict:
@@ -561,28 +826,96 @@ def adjudicate_confirmatory(records: list, design: dict) -> dict:
     z = NormalDist().inv_cdf(1 - alpha / 2)
     fam_stats = {}
     harmed, unattributed, imprecise, failing = [], [], [], []
+    unidentifiable = []
     hm = design["harm_margins"]
+    inf_rule = design.get("inference_method", {}).get(
+        "rule", "panel_replication_or_descriptive")
+    if inf_rule != "panel_replication_or_descriptive":
+        raise ConfirmatoryRefusal(
+            "design names an unimplemented inference rule")
+    # C23: series inside ONE panel share unidentifiable panel-
+    # level dependence (my own coverage simulation shows the
+    # within-panel ICC estimator CANNOT see a common intercept —
+    # the mean removes it). Therefore: with >=2 independent
+    # panels per family, the PANEL is the inferential unit
+    # (delta per panel = mean of its series); with a single
+    # panel, between-series intervals are DESCRIPTIVE ONLY and
+    # the family is INCONCLUSIVE for the primary gate.
+    umap = design["task_population"].get("unit_map", {})
+    # group series deltas by (family, dataset/panel)
+    panel_map = {}
+    for rec in records:
+        fam = rec["family"]
+        if fam not in fams_required:
+            continue
+        panel = umap.get(rec["unit_id"], {}).get("dataset",
+                                                 "UNKNOWN")
+        s = _series_stats(rec, design, "D", "ridge")
+        w = _series_stats(rec, design, "width_control", "ridge")
+        panel_map.setdefault(fam, {}).setdefault(
+            panel, {"d": [], "a": []})
+        panel_map[fam][panel]["d"].append(s["delta"])
+        panel_map[fam][panel]["a"].append(
+            s["delta"] - w["delta"])
     for fam in fams_required:
         arr = np.array(fam_deltas[fam], dtype=float)
         att = np.array(fam_attrib[fam], dtype=float)
         n = len(arr)
-        se = float(arr.std(ddof=1) / math.sqrt(n))
-        lo = float(arr.mean() - z * se)
-        width = float(2 * z * se)
+        panels = panel_map.get(fam, {})
+        k_panels = len(panels)
+        if k_panels >= 2:
+            pd = np.array([float(np.mean(v["d"]))
+                           for v in panels.values()])
+            pa = np.array([float(np.mean(v["a"]))
+                           for v in panels.values()])
+            if k_panels < 3:
+                unidentifiable.append(fam)
+                fam_stats[fam] = {
+                    "n_series": n, "n_panels": k_panels,
+                    "mean_delta": float(arr.mean()),
+                    "ci_class": "descriptive_insufficient_"
+                                "panel_replication",
+                    "note": "at least 3 panels are needed for a "
+                            "panel-level interval"}
+                continue
+            from scipy import stats as _st
+            tq = float(_st.t.ppf(1 - alpha / 2, k_panels - 1))
+            se = float(pd.std(ddof=1) / math.sqrt(k_panels))
+            lo = float(pd.mean() - tq * se)
+            width = float(2 * tq * se)
+            mean_delta = float(pd.mean())
+            att_mean = float(pa.mean())
+            ci_class = "panel_level_inferential"
+            n_support = k_panels
+        else:
+            unidentifiable.append(fam)
+            fam_stats[fam] = {
+                "n_series": n, "n_panels": k_panels,
+                "mean_delta": float(arr.mean()),
+                "descriptive_series_sd":
+                    float(arr.std(ddof=1)) if n > 1 else None,
+                "ci_class": "descriptive_within_single_panel",
+                "note": "panel-level dependence unidentifiable "
+                        "with one panel — no inferential "
+                        "interval exists; INCONCLUSIVE for the "
+                        "primary gate"}
+            continue
         ex = [h["extreme_ratio"] for h in fam_harms[fam]
               if h["extreme_ratio"] is not None]
         cov = [h["coverage_drop"] for h in fam_harms[fam]]
         wid = [h["width_ratio"] for h in fam_harms[fam]]
         fam_stats[fam] = {
-            "n_series": n, "mean_delta": float(arr.mean()),
+            "n_series": n, "n_panels": n_support,
+            "mean_delta": mean_delta,
             "ci_low": lo, "ci_width": width,
-            "attribution_mean": float(att.mean()),
+            "ci_class": ci_class,
+            "attribution_mean": att_mean,
             "extreme_ratio_mean": (float(np.mean(ex))
                                    if ex else None),
             "coverage_drop_mean": float(np.mean(cov)),
             "width_ratio_mean": float(np.mean(wid))}
         st = fam_stats[fam]
-        if arr.mean() < -margin:
+        if mean_delta < -margin:
             harmed.append(fam)
         if width > max_ci_width:
             imprecise.append(fam)
@@ -600,6 +933,14 @@ def adjudicate_confirmatory(records: list, design: dict) -> dict:
             unattributed.append(fam)
         if lo <= margin:
             failing.append(fam)
+    if unidentifiable:
+        return {"verdict": "INCONCLUSIVE",
+                "reason": (f"dependence not identifiable / "
+                           f"effective support too small in "
+                           f"{sorted(unidentifiable)} — "
+                           "intrapanel correlation never "
+                           "fabricates precision"),
+                "families": fam_stats}
     if harmed:
         return {"verdict": "PUBLICLY_INELIGIBLE",
                 "reason": (f"material harm in families "

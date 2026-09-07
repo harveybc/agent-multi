@@ -1,0 +1,2364 @@
+{
+ "schema": "agent_multi.t2_confirmatory_design.v3_draft",
+ "sealed_after_census_manifest_sha256": "43c48f6bb513be37d4a591f67694880e9f768391ab0db710902c3aadd55b76ff",
+ "supersedes_draft_sha256": "25acad3a4bf4f8f14b7d7f4db0b85942e7b32b71d668b5ce947b4c33c99c3571",
+ "operator": {
+  "kind": "ewma",
+  "params": {
+   "alpha": 0.3
+  },
+  "selection_source": "T1_v4_record_LAB_CALIBRATED"
+ },
+ "task_population": {
+  "series_ids": [
+   "electricity_weekly::T103",
+   "electricity_weekly::T109",
+   "electricity_weekly::T110",
+   "electricity_weekly::T114",
+   "electricity_weekly::T116",
+   "electricity_weekly::T130",
+   "electricity_weekly::T14",
+   "electricity_weekly::T140",
+   "electricity_weekly::T142",
+   "electricity_weekly::T176",
+   "electricity_weekly::T177",
+   "electricity_weekly::T183",
+   "electricity_weekly::T188",
+   "electricity_weekly::T192",
+   "electricity_weekly::T197",
+   "electricity_weekly::T205",
+   "electricity_weekly::T212",
+   "electricity_weekly::T216",
+   "electricity_weekly::T22",
+   "electricity_weekly::T223",
+   "electricity_weekly::T225",
+   "electricity_weekly::T234",
+   "electricity_weekly::T258",
+   "electricity_weekly::T265",
+   "electricity_weekly::T267",
+   "electricity_weekly::T272",
+   "electricity_weekly::T273",
+   "electricity_weekly::T285",
+   "electricity_weekly::T293",
+   "electricity_weekly::T299",
+   "electricity_weekly::T302",
+   "electricity_weekly::T309",
+   "electricity_weekly::T319",
+   "electricity_weekly::T35",
+   "electricity_weekly::T37",
+   "electricity_weekly::T42",
+   "electricity_weekly::T87",
+   "electricity_weekly::T91",
+   "electricity_weekly::T92",
+   "electricity_weekly::T95",
+   "hospital::T105",
+   "hospital::T127",
+   "hospital::T135",
+   "hospital::T141",
+   "hospital::T18",
+   "hospital::T215",
+   "hospital::T229",
+   "hospital::T23",
+   "hospital::T230",
+   "hospital::T242",
+   "hospital::T243",
+   "hospital::T285",
+   "hospital::T331",
+   "hospital::T340",
+   "hospital::T348",
+   "hospital::T35",
+   "hospital::T366",
+   "hospital::T368",
+   "hospital::T377",
+   "hospital::T385",
+   "hospital::T390",
+   "hospital::T392",
+   "hospital::T407",
+   "hospital::T436",
+   "hospital::T45",
+   "hospital::T465",
+   "hospital::T481",
+   "hospital::T528",
+   "hospital::T540",
+   "hospital::T582",
+   "hospital::T60",
+   "hospital::T603",
+   "hospital::T623",
+   "hospital::T635",
+   "hospital::T68",
+   "hospital::T730",
+   "hospital::T740",
+   "hospital::T765",
+   "hospital::T98",
+   "hospital::T99",
+   "pedestrian_counts::T1",
+   "pedestrian_counts::T10",
+   "pedestrian_counts::T11",
+   "pedestrian_counts::T12",
+   "pedestrian_counts::T15",
+   "pedestrian_counts::T16",
+   "pedestrian_counts::T17",
+   "pedestrian_counts::T18",
+   "pedestrian_counts::T19",
+   "pedestrian_counts::T2",
+   "pedestrian_counts::T21",
+   "pedestrian_counts::T22",
+   "pedestrian_counts::T25",
+   "pedestrian_counts::T27",
+   "pedestrian_counts::T28",
+   "pedestrian_counts::T3",
+   "pedestrian_counts::T30",
+   "pedestrian_counts::T31",
+   "pedestrian_counts::T33",
+   "pedestrian_counts::T34",
+   "pedestrian_counts::T37",
+   "pedestrian_counts::T39",
+   "pedestrian_counts::T4",
+   "pedestrian_counts::T40",
+   "pedestrian_counts::T41",
+   "pedestrian_counts::T43",
+   "pedestrian_counts::T49",
+   "pedestrian_counts::T50",
+   "pedestrian_counts::T51",
+   "pedestrian_counts::T54",
+   "pedestrian_counts::T55",
+   "pedestrian_counts::T56",
+   "pedestrian_counts::T59",
+   "pedestrian_counts::T6",
+   "pedestrian_counts::T61",
+   "pedestrian_counts::T62",
+   "pedestrian_counts::T63",
+   "pedestrian_counts::T64",
+   "pedestrian_counts::T7",
+   "pedestrian_counts::T9",
+   "saugeenday::T1",
+   "solar_10_minutes::T10",
+   "solar_10_minutes::T101",
+   "solar_10_minutes::T104",
+   "solar_10_minutes::T105",
+   "solar_10_minutes::T107",
+   "solar_10_minutes::T110",
+   "solar_10_minutes::T114",
+   "solar_10_minutes::T115",
+   "solar_10_minutes::T12",
+   "solar_10_minutes::T120",
+   "solar_10_minutes::T126",
+   "solar_10_minutes::T131",
+   "solar_10_minutes::T136",
+   "solar_10_minutes::T15",
+   "solar_10_minutes::T18",
+   "solar_10_minutes::T23",
+   "solar_10_minutes::T24",
+   "solar_10_minutes::T26",
+   "solar_10_minutes::T28",
+   "solar_10_minutes::T36",
+   "solar_10_minutes::T37",
+   "solar_10_minutes::T4",
+   "solar_10_minutes::T47",
+   "solar_10_minutes::T51",
+   "solar_10_minutes::T56",
+   "solar_10_minutes::T58",
+   "solar_10_minutes::T65",
+   "solar_10_minutes::T67",
+   "solar_10_minutes::T70",
+   "solar_10_minutes::T71",
+   "solar_10_minutes::T74",
+   "solar_10_minutes::T77",
+   "solar_10_minutes::T81",
+   "solar_10_minutes::T82",
+   "solar_10_minutes::T84",
+   "solar_10_minutes::T85",
+   "solar_10_minutes::T89",
+   "solar_10_minutes::T93",
+   "solar_10_minutes::T96",
+   "solar_10_minutes::T98",
+   "tourism_monthly::T103",
+   "tourism_monthly::T104",
+   "tourism_monthly::T110",
+   "tourism_monthly::T111",
+   "tourism_monthly::T115",
+   "tourism_monthly::T118",
+   "tourism_monthly::T127",
+   "tourism_monthly::T129",
+   "tourism_monthly::T143",
+   "tourism_monthly::T144",
+   "tourism_monthly::T151",
+   "tourism_monthly::T152",
+   "tourism_monthly::T169",
+   "tourism_monthly::T174",
+   "tourism_monthly::T176",
+   "tourism_monthly::T193",
+   "tourism_monthly::T205",
+   "tourism_monthly::T207",
+   "tourism_monthly::T213",
+   "tourism_monthly::T238",
+   "tourism_monthly::T249",
+   "tourism_monthly::T256",
+   "tourism_monthly::T257",
+   "tourism_monthly::T284",
+   "tourism_monthly::T291",
+   "tourism_monthly::T302",
+   "tourism_monthly::T309",
+   "tourism_monthly::T31",
+   "tourism_monthly::T318",
+   "tourism_monthly::T323",
+   "tourism_monthly::T327",
+   "tourism_monthly::T328",
+   "tourism_monthly::T330",
+   "tourism_monthly::T333",
+   "tourism_monthly::T340",
+   "tourism_monthly::T360",
+   "tourism_monthly::T5",
+   "tourism_monthly::T62",
+   "tourism_monthly::T64",
+   "tourism_monthly::T96",
+   "us_births::T1",
+   "weather::T103",
+   "weather::T1112",
+   "weather::T1171",
+   "weather::T1215",
+   "weather::T1219",
+   "weather::T1270",
+   "weather::T1400",
+   "weather::T1406",
+   "weather::T1445",
+   "weather::T146",
+   "weather::T1464",
+   "weather::T149",
+   "weather::T1512",
+   "weather::T1568",
+   "weather::T1677",
+   "weather::T1709",
+   "weather::T1717",
+   "weather::T1955",
+   "weather::T1995",
+   "weather::T2036",
+   "weather::T2059",
+   "weather::T2135",
+   "weather::T2514",
+   "weather::T2592",
+   "weather::T2611",
+   "weather::T2699",
+   "weather::T27",
+   "weather::T2716",
+   "weather::T2742",
+   "weather::T2866",
+   "weather::T329",
+   "weather::T351",
+   "weather::T487",
+   "weather::T555",
+   "weather::T592",
+   "weather::T618",
+   "weather::T732",
+   "weather::T746",
+   "weather::T912",
+   "weather::T980"
+  ],
+  "unit_digests": {
+   "tourism_monthly::T103": "2867cdeeebd666866b22bec76aa775c9bce59bba4dcc8537883bc71558431f11",
+   "tourism_monthly::T104": "9bb1e4a0509ff7beeb6af44bedfe722a76e3146591135c286f102fc645c01395",
+   "tourism_monthly::T110": "bea0a8c4ae31f5494047693bda6ca4088bd383d54d911e7fe9c59c4dfa4b4c64",
+   "tourism_monthly::T111": "199bdff58cfc8197aa7248fa157b0aaf8ed9902d1805365e8fe08b0402a1a046",
+   "tourism_monthly::T115": "421e3d400f9d40131e5b744e5e011edcea0744d0f3ccb203860e54f8fed9c627",
+   "tourism_monthly::T118": "bcafcc38b63668d911b7134308edfcbb21813281806b176f76f03baf180183fa",
+   "tourism_monthly::T127": "954a1f3a198da120295bce8260f2969a246d7656f40b6b36af486a876783b5d1",
+   "tourism_monthly::T129": "45e5cc9938b8ad23bc78f4f44837a39a9508a1fa3a8e5538b1dfc307a6c69d26",
+   "tourism_monthly::T143": "d27848239239dba859afe18284ab88ded9cc6ad8eb74dae21c6025218ac3c81d",
+   "tourism_monthly::T144": "9d84a607d041b12f687146a846b711151b03be1dcde3360ebe2b3d66c0c638d8",
+   "tourism_monthly::T151": "09b112f758eadd4622fab0aba118a148db12fb14f2bd8d969ca6748d541e102a",
+   "tourism_monthly::T152": "bdd3a31518b03441232663679d37c41b144c435548e133aeb6655d0ec88a267f",
+   "tourism_monthly::T169": "33372dc35498c7ba28a4a52aa20e3675a77dfb4ca1440c0424c4fe773a09c724",
+   "tourism_monthly::T174": "4518ed374521de8626fe4ae9658a8a9e9ee8b2add1e88645d85829a342a48949",
+   "tourism_monthly::T176": "680e8473d624a17af49b2c86c8aa4d8c78ae8f230ef53d36c8dff8c0eff87369",
+   "tourism_monthly::T193": "f1bbfd46ee2d47f29008656c30ad58aa605118fb236b3dc9b2c7bd3dac2f85ad",
+   "tourism_monthly::T205": "a90d7e8d404bc421bb350906d666db000ae4f97ad244753009d9c5bfab168104",
+   "tourism_monthly::T207": "08f20b7b982bc6ad94684a2a7c05adffe4169fc80917459389be78af00a82a32",
+   "tourism_monthly::T213": "7377d17055e36f87aa403083ed5f22313d72f87b4942a53c3acb56f5a2b3ed6b",
+   "tourism_monthly::T238": "24bef6599bf137aa12d716bbaa3137d4d9bccbacbaa9e3d514de660369b8aa8c",
+   "tourism_monthly::T249": "a55d8537f0fe90f488532a81d1ce8059ea63951641d798712be297d2920313a5",
+   "tourism_monthly::T256": "5a08a4fdaea224abaa730771e6db4e710bfbef51880441c9d7701f07cb9ffdf7",
+   "tourism_monthly::T257": "55a5c7d45fd725ccfbd56bf5af30b1163cb6b63bcd7184a5884b611f2ebc2bee",
+   "tourism_monthly::T284": "7920f1f87d91c58ad0b1a80340fbd4008d316809b928e8e153431e9e08116f63",
+   "tourism_monthly::T291": "2fe06f9935baa9caa24ed2d8bf8e726aa261f89ab9f3703dce0efbf6bfde3f05",
+   "tourism_monthly::T302": "8b10dd10790eb82423e5979d7faf47e0ea6de3e640088802fa8efd933ba2b8d5",
+   "tourism_monthly::T309": "8b15a0c1b97237a01ada75a6220cb89bc286663c5f8c2db879f3eec3719335f7",
+   "tourism_monthly::T31": "cc20ce65cb691b3a3765840384c37d9a8bf9cd46c3c314f685e68e4ec1486526",
+   "tourism_monthly::T318": "1dec91e41432f863d5533e1164ec9a41f16e10b65a8fe147964fdf0b015dba81",
+   "tourism_monthly::T323": "1bd8974c37cfaa6b130850e1aad42e6c4f330d444ae15b537a563c42c4c5b138",
+   "tourism_monthly::T327": "50e56ec2451581e71b56f83e2ff8b2d43acab42ec10f88fb57e69443726ebeb8",
+   "tourism_monthly::T328": "95405f3cc392c00f1ab4c910ab30e95348f662c935ba05a8e61cc6e95dbd2277",
+   "tourism_monthly::T330": "60e4d1503f71f68aa29307d2689e9271d04c7116f78342fd8733cc7ffeae5dfa",
+   "tourism_monthly::T333": "655698e6e09c92520b93233ac20e956b0519260da5dedac55e0f186facf6d9e8",
+   "tourism_monthly::T340": "892625eaddb404e15b5a5aaa4b2b9d3b53b572f1002ccd0d187da738c78096d4",
+   "tourism_monthly::T360": "a7deed7aafbe72677fde2ce6c0152e193a20ae0e2fe1037a8057c671dcab54f8",
+   "tourism_monthly::T5": "b56a6272d19fb7914d5c9bbf0021fb455f59e7f53bb983150292deb119653d0e",
+   "tourism_monthly::T62": "c6fc2cd237230bd14cbd516ff47d5decf67e29d7d93d47a963ef57e65d1926dd",
+   "tourism_monthly::T64": "11e2bdeb5e9619f3070eab1c99c30438c8145a0feecd85d9308520cb269fdf06",
+   "tourism_monthly::T96": "76b9b5205555ca6dd38332b6fba2c27dc79dc3e20260db24794b8518f5a993d8",
+   "pedestrian_counts::T1": "8028bc8114cc0d004f1f92a99d82ca8b72b7d0956e74f9644c428467b833a550",
+   "pedestrian_counts::T10": "088a264d4829fd3d68a4c1a35accc80ae71886dcf017436c6089a7e340a086ee",
+   "pedestrian_counts::T11": "7802a8b2d443bc6d4e352bce818d13e0a5239facebeb3609e48f487f9b63a17e",
+   "pedestrian_counts::T12": "f4512eda358bcad357f82471afac048319069c8eab81a85e8de6cf20741a8ecd",
+   "pedestrian_counts::T15": "f3db74ae4abed72c4bd477f77b658714b9a976c39acb47f0a4cc56e57851a836",
+   "pedestrian_counts::T16": "615dcbe8225ea12a6299b03c301bf81b3409de6c29c7650a61201d1fd8996de1",
+   "pedestrian_counts::T17": "95c42a1e30dca3d2812e0a195897cf5a18ac27989c74516709a5b6057d9cd5cc",
+   "pedestrian_counts::T18": "95aef5c0e89b44d492589fd4829f85af8933c9dd3de18242b41e518b7a0da88c",
+   "pedestrian_counts::T19": "3f9ad9ea926df8c7d2841f9f8f543621163dc8f5d281947fd93d5341fef56c49",
+   "pedestrian_counts::T2": "0f7ed053a4a0a02977c0494779f5825fb62ddbf94c00a1b82c0b8aaefff472d8",
+   "pedestrian_counts::T21": "b61abdab2946f56efb201a45608ece5b55c1ec5468963e72e26d5b6ba1512f19",
+   "pedestrian_counts::T22": "046bf29094f650728bd9ea3fbb1eacc222af73388c7e719b352fd03509b6e66c",
+   "pedestrian_counts::T25": "42606f5d14f5562507f6fd47e06e03f4ac66f39a1e2ae81047a281db3ef73ceb",
+   "pedestrian_counts::T27": "30096e3ea75b49caedbdccfa69ce4b1ffb264ba46f60e305dca64d77413fc7fb",
+   "pedestrian_counts::T28": "15b79e7ad6cccb251862afe8bf8e891aa0dea58bf1a7097aee2308f6e628dca9",
+   "pedestrian_counts::T3": "26d8c27331859fbd94aec55bd1c31b2455f6191769b3c2353c288a6935ff6557",
+   "pedestrian_counts::T30": "d7f6297dfb3566e114771711fa593cc5532eb3787d0288656782acaa466a2cb1",
+   "pedestrian_counts::T31": "c94118aaf466a2bcff48eb8bb3b115019ac4065e40139d9e2833323e0f29a328",
+   "pedestrian_counts::T33": "034d3b1f093ada97fd5eb3a0961fc23e991fbf202b129267dc9cb2e2f2ce03d9",
+   "pedestrian_counts::T34": "20125c9ebed3dee32f395d14caa9316aa459c8b0a43d0277f023d86167dc3031",
+   "pedestrian_counts::T37": "50b898fea00cafa894553a550ba85603fe9e7d61208d6003c4341a79721c85da",
+   "pedestrian_counts::T39": "49516f4a42b21a90324d8dfb0813dd090cf5d2dd4de2f39506e4e605de29bce2",
+   "pedestrian_counts::T4": "f3d489a7f2055a4974e5867f85dfd4ce713516a73e24d88c96a1e8ec443b9225",
+   "pedestrian_counts::T40": "5b823c27a5f6836ccd0a96d57a3cd5e6e1855841338f92f4c2634349f3b3ea76",
+   "pedestrian_counts::T41": "c6ff6c39ceb1f235b1cb945926a6c05adabe4c28774ba4d6cc168eb67fbfa609",
+   "pedestrian_counts::T43": "75bce90eea3f0c110beb84a88e7aba8dcfcc1977e442970d134732542f4cd6d8",
+   "pedestrian_counts::T49": "08da1d8bca58193afa444d531e7fff92635cee06db7097552007842040e45de2",
+   "pedestrian_counts::T50": "45cefb96cef90f6a749f49cb114809766b8f39b60e89e9c57dbce1d15203b669",
+   "pedestrian_counts::T51": "d035c57f4653ad9b8722a14fe2e5849ea487f2a2e78ea61720270263d7030530",
+   "pedestrian_counts::T54": "5122bc7a0630325b69699e6a96ed55e6f0cca7c6cea1536face8dffb8d0d239e",
+   "pedestrian_counts::T55": "fceda18d16da6efa0d694ef997546ba7d1885f35585ad64053d20701e61f6e55",
+   "pedestrian_counts::T56": "64a9273e2b34eb6f2fdec41599694fde1a8da26c38419f24c005cbea5e220a51",
+   "pedestrian_counts::T59": "7242658bef31c073f3f41299df3bf686680c7a0d6827654f3c0efbe411467d62",
+   "pedestrian_counts::T6": "24438c6d0589c2e1515cac8cff606a25d8e5688a5880aa510b6807d72a0adff0",
+   "pedestrian_counts::T61": "9b262ad631d4805f5bd6b79994da7f11005968a5f95893b8c5ff5ec71cfd744d",
+   "pedestrian_counts::T62": "5e317486d96e7b943307426f139562107d441a8cb3a926e373a0d84a153237eb",
+   "pedestrian_counts::T63": "b122da6b1bae2e5f490e6679f4f2e1e6df048dbda44034a1856711541a3ba21f",
+   "pedestrian_counts::T64": "5e47b8136e0ec8448f7d5a28816b9b97c5b8f70d53794e4a57bce6d0f918d2ff",
+   "pedestrian_counts::T7": "c0dafa8e449f36e5275664a6b6552e1cf997cf542a716a0e04f8fbab00f7c958",
+   "pedestrian_counts::T9": "8aa89868fede01a6d8de7bd778a826d01409da926995b49b5123c001921963e4",
+   "hospital::T105": "0823498bb0ac0e8fbb5bae6e31d3ff82554eefcec98a2c0fade688409fc92bd3",
+   "hospital::T127": "b7774f5d33b903973b17009d76c90154183478d394ffdfcdd9ab2a2ee1b3deb5",
+   "hospital::T135": "53855455cfe5b963a224c61ab89cb6d0909e82e634071ee1d62f8866f1dad8f6",
+   "hospital::T141": "2e918b35d2cd7747505d16fbbc990e2be4f9561a6194267cad20ca53b6ff9694",
+   "hospital::T18": "f1a2bd5f29828a4d54336aef9c4a8369c0fcd7909769949e2511248d6d18e398",
+   "hospital::T215": "d34312baa1f284806b6bf143f78be64b5a402b824510781f00a02a9587e21c7b",
+   "hospital::T229": "a6984eac26054c2389f55f696bc5f99c9d119dfcf24556cf28540bdccf8b7d0e",
+   "hospital::T23": "f692e2ae8e6a57ee36c543181634874f18fbeeba3bf4e1d8956c96fe95c3252d",
+   "hospital::T230": "eb711786e41ffe822ea36350851014ffa67af37fc188d709ecc6c01494bceed4",
+   "hospital::T242": "6da357ae099259b1a5019264ab84e70bc1eaaf4c0a9bfe8b43f0b85707512129",
+   "hospital::T243": "35b6e29ca73972d082a9c6f05b4a21a10c33d5bab825986dd88b4ad0f92a0e23",
+   "hospital::T285": "eddac7993bb0fcb4b469a3712ebea3958a1af634587ee1adbda7d94a77c14c92",
+   "hospital::T331": "fcf06d575122cb6530c24b273bb4e56b7971628b7fa67ea7b84012bb5e0338bc",
+   "hospital::T340": "1a704a831f60d3d9df033daea74de9b5b87b237a83ca88bf318757325c2672e1",
+   "hospital::T348": "adf4260a5fb03f5788a109df8928d194e0af94726332806c53e1b99afcc71663",
+   "hospital::T35": "6b98928f30eeee383c1ff1d639ccd712d814d8cb0dcbeb02a62a6c30c15497b8",
+   "hospital::T366": "7cc41b9910d79ea0c241fb375be2af2bb02197fad29fa7da20400fe588edff97",
+   "hospital::T368": "3aa49682981448dc36f329765ae5b4f2a01e28ab971a92dfbd55d244f1bfbeb1",
+   "hospital::T377": "5f8b4774d48176fc15c74da70246cb7b6dc9a5e2940f9a49756c4a1b732b59fb",
+   "hospital::T385": "78a947161ca307581a8f70668e7b2e6e6b71e8acfe6537537d6356bb985f8148",
+   "hospital::T390": "d6a157dc63597c8d24444f7fa8139291d87a4ff03da079fabf5b9ff57ba824dd",
+   "hospital::T392": "dc1fb732287c05c2f250cad5f6264bbf5226cb5317d5214189c3d4c5e82fb386",
+   "hospital::T407": "08b13c1edbd689e6a3d9866d2c039389c0b5f772559e35660737061cc682ee1e",
+   "hospital::T436": "dad4392700513df797b8586fc60ff984b206e2550c0646ab52043e34bb5f8188",
+   "hospital::T45": "43582e2bb093c9b8818f2617ad8ed30f7c668b29dfd82d7a25907ce3c59bdd5d",
+   "hospital::T465": "60ea942889765103aab79573e9b2f8e30067799cba643abf9cab09927b9295cf",
+   "hospital::T481": "9d84711244f74b19293e47acf7ef305a439634b20781990e7ea5fcecb1107851",
+   "hospital::T528": "2ba5d535531624ea04b2667a285701c22dab5afb04dc3cba37523ddb5902b0d8",
+   "hospital::T540": "e7623ecebfbe08c5d1579d8f7ea901573f28060b8cc6ec30e2ac060ad23849fb",
+   "hospital::T582": "a4829a91ee943beb0bb2fa4dfb20eae3323ce85d7b5cd262c50240d01a3124aa",
+   "hospital::T60": "1a8cfe7e9993791d0367cba74e098391066c949369f9b847fab3cfad20dd7fb4",
+   "hospital::T603": "592174d345dd68f7acd1bc066a27ca565ddb3b359a071ff371dee3892092b534",
+   "hospital::T623": "2ed55530173bdaab0a5b0f48e2718eadbab5095fbdeb449254f003c857dc18b5",
+   "hospital::T635": "a1b0149ea3e5ac67ca6c4d8cb88b960dab232a6f00a17af0b71fd92508a10689",
+   "hospital::T68": "e79b73a5618b4c17e30a7c1c27d04dc8b71a8535803068fab4753e8a09706c8b",
+   "hospital::T730": "d439660e30aafc58d784dee11d832b42f189c114ae6862f42f7f3642cc5ac021",
+   "hospital::T740": "57faf922012beb55da39a928747b40fb44e9483bd15dceedcd21e37e92d877e7",
+   "hospital::T765": "03d3769f3174363eb16d7eac3736841180fc5e8cd0ae54747051f5df1ec89c76",
+   "hospital::T98": "a0c1b7da3fcaa882232c76153631635e573c6433c820aa14e41d266b41f54550",
+   "hospital::T99": "308f4b6c1195a66ed7c4c22bdb8933e8b029a90632c6ec6b553f90c1a599fb0a",
+   "solar_10_minutes::T10": "c89e580bde6f3a05c4315a5252e8dc745531c4d57514292e7a062b8f9244a25e",
+   "solar_10_minutes::T101": "b164f824989ff7dd375e0b087cfb4f5ced6c2fc18d46f9435defdd737255c6cd",
+   "solar_10_minutes::T104": "0d30a7c0d027434121410deeaf734d7119b93f8cc0f50c9e4934565b41488706",
+   "solar_10_minutes::T105": "8e0941736804e6ab3032e31034f219f2f8fcdd867af017182f21d519d3622405",
+   "solar_10_minutes::T107": "7ec503ad9a9f66e307c252b3bd57cbe59cdf729887fd4c5a5a8b70eaa9ccd1e0",
+   "solar_10_minutes::T110": "8e76ae4770a0c564483cefb901acb9ebe416ac3324cbb81a33f10aaec10ad0b9",
+   "solar_10_minutes::T114": "9ed87bab1cc656c5862b5d0f7a76e14b0b0783a35363e772d3f1e781feb30047",
+   "solar_10_minutes::T115": "e49d80bc624acf71557df916845152ae76f7443f47513e5f0f206cc5f60b1317",
+   "solar_10_minutes::T12": "043873a7580975edced9762703eab24037d4e52e9163bba340c70f2997f3ef99",
+   "solar_10_minutes::T120": "d2db3d6e412df87de9f115ba41a08e28438eaf12181f6f8b5f2f95b2d488a70a",
+   "solar_10_minutes::T126": "559e798cd020c7c30520b11a53e368342a7e78e19c906ded277f11d9d1ea7410",
+   "solar_10_minutes::T131": "f78d1891874055e27be2b3fc38db0f564ff130df4e2c15e632b58fcd5d1ea0cd",
+   "solar_10_minutes::T136": "72c98445602c1c3596ca17451556856405bc129303142b63d14f953993d0ed3d",
+   "solar_10_minutes::T15": "0d6d86fe341e9152a3193a21a7e01095ad938ff070e52f882aa8906dfda994fb",
+   "solar_10_minutes::T18": "206c394ba1fa1c2437b24050c41db6ce81a12b6b048b4d55cea3750a377adfd0",
+   "solar_10_minutes::T23": "0171810b4cac2d7c1fd987a3ffeafd03cc69b09ed4d2d0d466d3ae42d219934c",
+   "solar_10_minutes::T24": "33124558edd1ef85154660781fbff887e32c5169e104400e2129a449f3e756aa",
+   "solar_10_minutes::T26": "4364645aa3584bdc631063228b07a60f77f01cb10b408693d138020a57097d1a",
+   "solar_10_minutes::T28": "0ad8b5d33cf8ef10dca161ecbef31708d9392964ba1c1b9054ea8896990aeff0",
+   "solar_10_minutes::T36": "745ed19aaa2cf84f2f2f72bf34c183b4233f7c026450826e4cc402dfbaf63922",
+   "solar_10_minutes::T37": "79c15cc62a34de0f1981a3b32a2e6a19faffcc84e1839df5cc0361697c6a7f63",
+   "solar_10_minutes::T4": "071e3d6d0a5467687c7b9d510dd3b531c5902daed3285a776d6e789ccfdad206",
+   "solar_10_minutes::T47": "795f7dd95678167cdb9a4790ca913a37f979f861420b00a3f7c565a4e562f831",
+   "solar_10_minutes::T51": "a0e03fc93b6c82474a6ae7a9cf268dd5d6c9d2f628dfad66a1e2c8ad7b6e1b08",
+   "solar_10_minutes::T56": "9abec7aba688034bead87457fad9cddc0f932b449ea69bc360762685924e7ae8",
+   "solar_10_minutes::T58": "e3d12c4aed13dab7035ff655e2fb9e0f1fcc9c90b34430cc40f6537df8e2033e",
+   "solar_10_minutes::T65": "47b24082c5d12ae4d26e7df975d23076ce21d1fa1f6a9970a901b017f2a436f3",
+   "solar_10_minutes::T67": "35f89d95043764192abb81f9088685d734917636207a61a5534c2f62bfe61ca8",
+   "solar_10_minutes::T70": "587bad7bbd163ff1f05565d8ad94ee8040480575b91d1ed05b301a3b1abfb1c6",
+   "solar_10_minutes::T71": "866e342b00b73e9170c3af5513e45f0645734ef84598840f3edb2ddfb4ac4cf1",
+   "solar_10_minutes::T74": "c1a836051ba237f1a9ea1e84744baa9cee2b6121ce2a6b09c330452752a16987",
+   "solar_10_minutes::T77": "7c3ad1063f9ddc174cd566bf50f0ac017e6880ef112fe7e9b2d24ed6eb2c549c",
+   "solar_10_minutes::T81": "c6ea3bf3c985049fda3a1536d0be7efa532e4fb38680e04b18be2ed2d9aa9a2f",
+   "solar_10_minutes::T82": "6dcf0e4694c6892776d21e79ccdfac5752abd9e3f12500cebced200cb4c53dcc",
+   "solar_10_minutes::T84": "41c2ea88faa7c189fad864eed4600d87cfe41b911b836d596813299a7c2389d9",
+   "solar_10_minutes::T85": "538834466f71eac67a72f75636eba172c264ca2284e83cbe2678da976e4926fd",
+   "solar_10_minutes::T89": "484c57e8b174b7c0ffa019bad681b7c21e7ae8ddce53da21e15b7ac0a8ed3224",
+   "solar_10_minutes::T93": "416487e94be121910882e82b57d761950fc2570c3135519fdd7f91d878d5a37a",
+   "solar_10_minutes::T96": "224f6d93e085ea5e377b27e96d01d482e99d80887153d3077849cc4241e17dce",
+   "solar_10_minutes::T98": "498e435d7b6fcb33bfc5a9f8ed07633c5f3f2fc75a23369a5670ad3c840e58f7",
+   "saugeenday::T1": "9b94d00f57bc44f9af3af9b4bde3e41f6fd66366eeabdb4321d798bfb1092d93",
+   "us_births::T1": "f1ded1628cc6ff15f69bbf19136d3c3bed050d5aeb53fa4d18cbf72b742b6f53",
+   "electricity_weekly::T103": "63bfc89bb9501bf00fd1e0999b068f1517f8bb794881213e4da7aaf300f1c5b9",
+   "electricity_weekly::T109": "6e12d520820f59e55bc560ecae17aba455121afc2862aaf645cc28b4c62008ee",
+   "electricity_weekly::T110": "5345b58ba65d7565855dcc1e9ac7e6b4017fcfbabfe59062fc8c30e0c4ecbfce",
+   "electricity_weekly::T114": "9b61bf3d85b3f987581367db10eff8415771107362b6bd519f38c0ec0e88e6c3",
+   "electricity_weekly::T116": "015fce828f03ae09f66d852a50cc387cf4f44ec5ba7882bf16509d5d0ea4bcc5",
+   "electricity_weekly::T130": "f6e105d3800983b8cb61501ea63108c608f06d6eef332b5de998ec0b030a1b03",
+   "electricity_weekly::T14": "c93501b909e4a2feb711858d12e01e3d3319e46301eac53293bd4d4237509e81",
+   "electricity_weekly::T140": "521838fa39f7ccbb9beb1176a7c388bf164b8ae54152afbdb07e04485f4ce2e1",
+   "electricity_weekly::T142": "e9649570d7a65cda31494140ebeea4ac9dcfd8aa35a27947c49e41188c31bf37",
+   "electricity_weekly::T176": "dd192d7f36b31c2495b6d74d085b15d2485b19455b5c5bc4958dac6c2f36e4c3",
+   "electricity_weekly::T177": "9b1f93b32afe851b6a188c477b1a48bbe83cae0ac5b0780ccf192ed4131d1f31",
+   "electricity_weekly::T183": "b48e5a2175c638f003dfa17fd56a608f2d49e013dbef584368a3a0bacf22e47d",
+   "electricity_weekly::T188": "48f9a8bec53c734685a3572278eb0548dcbdf43b51a17fb3c0249d1d3101b894",
+   "electricity_weekly::T192": "b18ac0dfccdb291776a4c716903d5ed0838d0312d9a384beaa0e632d2474a159",
+   "electricity_weekly::T197": "6e36dd00100c9b871320c3dd2660da126e25d7b771367c6e08e8b6eb24496371",
+   "electricity_weekly::T205": "4cb570bd2e0ae12ecb8866f5a05bb51c97f5667e951594657023d57a9346dc37",
+   "electricity_weekly::T212": "01dcf596e1f2d0537685512c120f9fd585747d843be31e44ee2f605e0330d166",
+   "electricity_weekly::T216": "daf150e01603561a9e73bebf235f35bb3f44065d35d489f43b0ab5fe6abcba4d",
+   "electricity_weekly::T22": "47df78c1ac07fc2d343337384e39f6e82f5a4204210c250b7c40720334265a0a",
+   "electricity_weekly::T223": "7ba75526f56986c6d86cf7babd3b46d7e307ad0c4136cce974f690ec31b58173",
+   "electricity_weekly::T225": "db06daa4d690a38275fe1b7f1332534e0784f37577b928a3dd07c30e7aa06d1c",
+   "electricity_weekly::T234": "263c71e8cd45bf4e25af0a58ecfbee381e6a86ebbfcbb7bafcf747993950a7d7",
+   "electricity_weekly::T258": "94602a1241e4622573186b38c5334b3b5fc4c7e089edab0c76025e6efbe69742",
+   "electricity_weekly::T265": "0fa39251ccceaccd220defdfb5876e1106c02ddbf69221f11bd5abc1be9bd60e",
+   "electricity_weekly::T267": "608fd6f0eba5d6352833f0295e74a80d03c67858ca1c57407b8a790958edcd1d",
+   "electricity_weekly::T272": "170eec8b12da2f5fb86f9cd61a5a1e492ccc9fee65db4c43b6522802ba24f464",
+   "electricity_weekly::T273": "0a759091bf30e2d2791fab7dc7a2e46c2200bb7aa50bc263a207d099b66d1f22",
+   "electricity_weekly::T285": "4fde86a4bd308e9a2b97eb3ea12e0e4c05cfbc81e4267135aabec860180f60bb",
+   "electricity_weekly::T293": "35e3ebb76d8c1f9167dba69f1807c382765d767a9790cefd53fe4472dc899ddf",
+   "electricity_weekly::T299": "2a834be640b2931935017d710962c1685515486be3f7c8aa3f899b26e985690f",
+   "electricity_weekly::T302": "9ecfbf7db64c493b0ec5506956fc4237ff4f5769767e70395a13f9bd17459ae6",
+   "electricity_weekly::T309": "3c324e948a6ed769e242c4801c7826099b2aff4ba23ac3c2dfc5c6e7c7f499af",
+   "electricity_weekly::T319": "95e7ad33a5c296ffa107c4b71612150efee8bd126eb3bcfdf8e7b2ee262426aa",
+   "electricity_weekly::T35": "8d4237f5914b13cb70e2591a1a13e20514714adc09f773157d6f19bfd0c76203",
+   "electricity_weekly::T37": "19f37c6438cbef8d2cd6c1cd26af7c1ceeb811e3aa6121aa6bb344366d072c57",
+   "electricity_weekly::T42": "e6113a71d436b5bb91cbe88b964f2082b94e50d3cc6ec5cf624ca52d4a1a0ec0",
+   "electricity_weekly::T87": "70c8c8c91c07091f063528b1597929df2c67bc7ad5140456f8f51f2f41d18cec",
+   "electricity_weekly::T91": "c8fd8d321cc35e82edb4dd77bfeb36b3fac375cc9af3cd2a29065a27076e679c",
+   "electricity_weekly::T92": "169b9a128b8d069bb2cb66f27fccf65dfe6b74cc7d80230e71c984ae37ac59d0",
+   "electricity_weekly::T95": "478953cf9ac316fe8c17da330bf130e6bd545d5bd40b73a3cecffa564287604d",
+   "weather::T103": "6df2eea2be19dab2ff7e04ec75354260f73ed73f90248caed714fb65e21f5f94",
+   "weather::T1112": "47356a77ac8f09c06a2a67ef145b7dc88bb0f00027b66cd00f5f13128a146e3f",
+   "weather::T1171": "5e8dd4ed8ac3d3279fa1b3ea6d596d4ecd881ebd41e33e81479a5ae785799f86",
+   "weather::T1215": "c509178239e296a3b9e4fdf8a5e210ffc94c6ed7427c0ee397ff5d690be1b036",
+   "weather::T1219": "d62b1c899f3028731c31589f4d0c1584e866c3cfe935714f76e7c3e989cd1758",
+   "weather::T1270": "9435e15fcf88508584229b86926af5279ec5d5463f4e078a6f360dd2a846475d",
+   "weather::T1400": "ebf5835c601f84739b65853e59940456b26f0670864c517cfff94544c1e85f0e",
+   "weather::T1406": "7af1751da2a8c9a20793db3131a5b6d64ba475f2f186eb5bb2e8359640ddadbf",
+   "weather::T1445": "3555dd478401544bf7e7e07926c8db87d9e07784f0b87d83259e9103c3a03ef8",
+   "weather::T146": "ebeca2d735426059aa7066e76d9578b272a4b565cdb04b9bf7aeb6f8d1f23e76",
+   "weather::T1464": "c11b11a7f5a59338b25e9f30663baae06a150938be1c344e86ca50f8cf5fc9b5",
+   "weather::T149": "1f487346f13bbe06105893d4481a0f8014d58ef877020f98890f8e6d28629e4f",
+   "weather::T1512": "4062568c69619d65b633741c4a0e2616a1bd2375db37df3a5181b08aed7947e8",
+   "weather::T1568": "52858e710242bd5146ab5d4c27dedd896f9d7e8587afa82af0a2ec2a4e4016ca",
+   "weather::T1677": "3cd4a3284652ab18a15b6daee67f2a2f82156afc5da0aa330978daa374b0a11b",
+   "weather::T1709": "e21108bc5069262e0eabd1e4c10679e9ae5ea9a5da139aa3455e332b7b6d257e",
+   "weather::T1717": "35f96114a8c2a695c148f6aeefb966488a4b19688a0994ccd28cb271890501a8",
+   "weather::T1955": "b80d5dc09b1a533c9fbb7dfee83786452bb4826d826237c629bc26e31a4f144b",
+   "weather::T1995": "a3410345fba75687364ded2850f5d5be057726cad7478563f18bdbf414b5616e",
+   "weather::T2036": "3dff325b2fe76241919c36e0a5cff00b7eed5179fdc3d5ba60680ac33d3bcd3b",
+   "weather::T2059": "87b27415d5291d206aac8fc0f1c25f305b381d84c78237512295194c690ce356",
+   "weather::T2135": "aeb20ae3d839256dcb44bb66acbef9ea788edcc5d3c85025c85232afded4b36d",
+   "weather::T2514": "1df911bddc2b99642c749aff26f79cbf0fa6b5047a4ccdc1ed41fbd6751a1264",
+   "weather::T2592": "a7e91a986bedd84d10100f1d85164b7c8240853637b09409560c86d5ec2d30db",
+   "weather::T2611": "1bd3e77482f84ddef97fa48969638ee929a67ca8c494cd9956f633986704fecf",
+   "weather::T2699": "c792ecff9d00a6fe662095d05d65d21f113ce95dd4752936999b8ad3beb192be",
+   "weather::T27": "994fa6414766fab8588b04120ffd181433505819220462ecb8eb13aa0c21dab1",
+   "weather::T2716": "63d475705910dea598e11bd6c47f3715f4518745cedaebe9e77b37d9e98ce728",
+   "weather::T2742": "f65cd8a03117f8fabf6086f2738e604cb008608799935079290154b73965efb7",
+   "weather::T2866": "c998d79d3a95095b4f48cc93f4b38f4d5b3d03d53ae35a35b67851e3842d65e1",
+   "weather::T329": "15524983c1e4ddadbb26bc9720304e54c1df015c37490783b9510043a1328a43",
+   "weather::T351": "16467b9f1bcbd34b7a78669d42d6a65329ad18ff6b2fff863b53ac01e87c642c",
+   "weather::T487": "92fe1cc514e04e81e70c9f72ac1cc5283d17be16336aea8f8ec29beac68d5605",
+   "weather::T555": "0f71c950bced0f94fac27ca749e51510ed1e7ecd002e7943a517e2334b1bdb07",
+   "weather::T592": "1743476eccc25d3ed57550073e05bbb693eb4bbbc03931cd5b33902d1477be4c",
+   "weather::T618": "9d583b2ec334bddbe219386b75b3db2e425c5aa409fb6be84ae42eb3625ba8c2",
+   "weather::T732": "b613ee2c1ae902f59df22dfc251d508733cbbfd39aa24637abb0b0dd8209192c",
+   "weather::T746": "c4fbe604c9911aef498fbf6e44c4603be8f67b79ffff2a66c305c0f6953e3063",
+   "weather::T912": "96c4a89458a6ac7ba289e24f45a1fcb3e1d9b77dfdc95f15a59356300dc6bd06",
+   "weather::T980": "5e3d963091f398f295e030f44fc8dffcd2e75975de7327e7819948e8ee3d80ef"
+  },
+  "unit_map": {
+   "tourism_monthly::T103": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "2867cdeeebd666866b22bec76aa775c9bce59bba4dcc8537883bc71558431f11",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T104": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "9bb1e4a0509ff7beeb6af44bedfe722a76e3146591135c286f102fc645c01395",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T110": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "bea0a8c4ae31f5494047693bda6ca4088bd383d54d911e7fe9c59c4dfa4b4c64",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T111": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "199bdff58cfc8197aa7248fa157b0aaf8ed9902d1805365e8fe08b0402a1a046",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T115": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "421e3d400f9d40131e5b744e5e011edcea0744d0f3ccb203860e54f8fed9c627",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T118": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "bcafcc38b63668d911b7134308edfcbb21813281806b176f76f03baf180183fa",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T127": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "954a1f3a198da120295bce8260f2969a246d7656f40b6b36af486a876783b5d1",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T129": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "45e5cc9938b8ad23bc78f4f44837a39a9508a1fa3a8e5538b1dfc307a6c69d26",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T143": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "d27848239239dba859afe18284ab88ded9cc6ad8eb74dae21c6025218ac3c81d",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T144": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "9d84a607d041b12f687146a846b711151b03be1dcde3360ebe2b3d66c0c638d8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T151": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "09b112f758eadd4622fab0aba118a148db12fb14f2bd8d969ca6748d541e102a",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T152": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "bdd3a31518b03441232663679d37c41b144c435548e133aeb6655d0ec88a267f",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T169": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "33372dc35498c7ba28a4a52aa20e3675a77dfb4ca1440c0424c4fe773a09c724",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T174": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "4518ed374521de8626fe4ae9658a8a9e9ee8b2add1e88645d85829a342a48949",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T176": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "680e8473d624a17af49b2c86c8aa4d8c78ae8f230ef53d36c8dff8c0eff87369",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T193": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "f1bbfd46ee2d47f29008656c30ad58aa605118fb236b3dc9b2c7bd3dac2f85ad",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T205": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "a90d7e8d404bc421bb350906d666db000ae4f97ad244753009d9c5bfab168104",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T207": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "08f20b7b982bc6ad94684a2a7c05adffe4169fc80917459389be78af00a82a32",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T213": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "7377d17055e36f87aa403083ed5f22313d72f87b4942a53c3acb56f5a2b3ed6b",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T238": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "24bef6599bf137aa12d716bbaa3137d4d9bccbacbaa9e3d514de660369b8aa8c",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T249": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "a55d8537f0fe90f488532a81d1ce8059ea63951641d798712be297d2920313a5",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T256": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "5a08a4fdaea224abaa730771e6db4e710bfbef51880441c9d7701f07cb9ffdf7",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T257": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "55a5c7d45fd725ccfbd56bf5af30b1163cb6b63bcd7184a5884b611f2ebc2bee",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T284": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "7920f1f87d91c58ad0b1a80340fbd4008d316809b928e8e153431e9e08116f63",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T291": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "2fe06f9935baa9caa24ed2d8bf8e726aa261f89ab9f3703dce0efbf6bfde3f05",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T302": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "8b10dd10790eb82423e5979d7faf47e0ea6de3e640088802fa8efd933ba2b8d5",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T309": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "8b15a0c1b97237a01ada75a6220cb89bc286663c5f8c2db879f3eec3719335f7",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T31": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "cc20ce65cb691b3a3765840384c37d9a8bf9cd46c3c314f685e68e4ec1486526",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T318": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "1dec91e41432f863d5533e1164ec9a41f16e10b65a8fe147964fdf0b015dba81",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T323": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "1bd8974c37cfaa6b130850e1aad42e6c4f330d444ae15b537a563c42c4c5b138",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T327": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "50e56ec2451581e71b56f83e2ff8b2d43acab42ec10f88fb57e69443726ebeb8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T328": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "95405f3cc392c00f1ab4c910ab30e95348f662c935ba05a8e61cc6e95dbd2277",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T330": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "60e4d1503f71f68aa29307d2689e9271d04c7116f78342fd8733cc7ffeae5dfa",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T333": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "655698e6e09c92520b93233ac20e956b0519260da5dedac55e0f186facf6d9e8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T340": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "892625eaddb404e15b5a5aaa4b2b9d3b53b572f1002ccd0d187da738c78096d4",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T360": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "a7deed7aafbe72677fde2ce6c0152e193a20ae0e2fe1037a8057c671dcab54f8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T5": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "b56a6272d19fb7914d5c9bbf0021fb455f59e7f53bb983150292deb119653d0e",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T62": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "c6fc2cd237230bd14cbd516ff47d5decf67e29d7d93d47a963ef57e65d1926dd",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T64": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "11e2bdeb5e9619f3070eab1c99c30438c8145a0feecd85d9308520cb269fdf06",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "tourism_monthly::T96": {
+    "family": "tourism",
+    "dataset": "tourism_monthly",
+    "series_numeric_sha256": "76b9b5205555ca6dd38332b6fba2c27dc79dc3e20260db24794b8518f5a993d8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "pedestrian_counts::T1": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "8028bc8114cc0d004f1f92a99d82ca8b72b7d0956e74f9644c428467b833a550",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T10": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "088a264d4829fd3d68a4c1a35accc80ae71886dcf017436c6089a7e340a086ee",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T11": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "7802a8b2d443bc6d4e352bce818d13e0a5239facebeb3609e48f487f9b63a17e",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T12": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "f4512eda358bcad357f82471afac048319069c8eab81a85e8de6cf20741a8ecd",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T15": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "f3db74ae4abed72c4bd477f77b658714b9a976c39acb47f0a4cc56e57851a836",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T16": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "615dcbe8225ea12a6299b03c301bf81b3409de6c29c7650a61201d1fd8996de1",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T17": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "95c42a1e30dca3d2812e0a195897cf5a18ac27989c74516709a5b6057d9cd5cc",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T18": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "95aef5c0e89b44d492589fd4829f85af8933c9dd3de18242b41e518b7a0da88c",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T19": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "3f9ad9ea926df8c7d2841f9f8f543621163dc8f5d281947fd93d5341fef56c49",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T2": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "0f7ed053a4a0a02977c0494779f5825fb62ddbf94c00a1b82c0b8aaefff472d8",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T21": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "b61abdab2946f56efb201a45608ece5b55c1ec5468963e72e26d5b6ba1512f19",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T22": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "046bf29094f650728bd9ea3fbb1eacc222af73388c7e719b352fd03509b6e66c",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T25": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "42606f5d14f5562507f6fd47e06e03f4ac66f39a1e2ae81047a281db3ef73ceb",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T27": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "30096e3ea75b49caedbdccfa69ce4b1ffb264ba46f60e305dca64d77413fc7fb",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T28": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "15b79e7ad6cccb251862afe8bf8e891aa0dea58bf1a7097aee2308f6e628dca9",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T3": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "26d8c27331859fbd94aec55bd1c31b2455f6191769b3c2353c288a6935ff6557",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T30": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "d7f6297dfb3566e114771711fa593cc5532eb3787d0288656782acaa466a2cb1",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T31": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "c94118aaf466a2bcff48eb8bb3b115019ac4065e40139d9e2833323e0f29a328",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T33": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "034d3b1f093ada97fd5eb3a0961fc23e991fbf202b129267dc9cb2e2f2ce03d9",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T34": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "20125c9ebed3dee32f395d14caa9316aa459c8b0a43d0277f023d86167dc3031",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T37": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "50b898fea00cafa894553a550ba85603fe9e7d61208d6003c4341a79721c85da",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T39": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "49516f4a42b21a90324d8dfb0813dd090cf5d2dd4de2f39506e4e605de29bce2",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T4": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "f3d489a7f2055a4974e5867f85dfd4ce713516a73e24d88c96a1e8ec443b9225",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T40": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "5b823c27a5f6836ccd0a96d57a3cd5e6e1855841338f92f4c2634349f3b3ea76",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T41": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "c6ff6c39ceb1f235b1cb945926a6c05adabe4c28774ba4d6cc168eb67fbfa609",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T43": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "75bce90eea3f0c110beb84a88e7aba8dcfcc1977e442970d134732542f4cd6d8",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T49": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "08da1d8bca58193afa444d531e7fff92635cee06db7097552007842040e45de2",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T50": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "45cefb96cef90f6a749f49cb114809766b8f39b60e89e9c57dbce1d15203b669",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T51": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "d035c57f4653ad9b8722a14fe2e5849ea487f2a2e78ea61720270263d7030530",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T54": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "5122bc7a0630325b69699e6a96ed55e6f0cca7c6cea1536face8dffb8d0d239e",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T55": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "fceda18d16da6efa0d694ef997546ba7d1885f35585ad64053d20701e61f6e55",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T56": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "64a9273e2b34eb6f2fdec41599694fde1a8da26c38419f24c005cbea5e220a51",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T59": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "7242658bef31c073f3f41299df3bf686680c7a0d6827654f3c0efbe411467d62",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T6": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "24438c6d0589c2e1515cac8cff606a25d8e5688a5880aa510b6807d72a0adff0",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T61": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "9b262ad631d4805f5bd6b79994da7f11005968a5f95893b8c5ff5ec71cfd744d",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T62": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "5e317486d96e7b943307426f139562107d441a8cb3a926e373a0d84a153237eb",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T63": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "b122da6b1bae2e5f490e6679f4f2e1e6df048dbda44034a1856711541a3ba21f",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T64": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "5e47b8136e0ec8448f7d5a28816b9b97c5b8f70d53794e4a57bce6d0f918d2ff",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T7": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "c0dafa8e449f36e5275664a6b6552e1cf997cf542a716a0e04f8fbab00f7c958",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "pedestrian_counts::T9": {
+    "family": "urban_pedestrian",
+    "dataset": "pedestrian_counts",
+    "series_numeric_sha256": "8aa89868fede01a6d8de7bd778a826d01409da926995b49b5123c001921963e4",
+    "seasonal_period": 24,
+    "horizon": 1
+   },
+   "hospital::T105": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "0823498bb0ac0e8fbb5bae6e31d3ff82554eefcec98a2c0fade688409fc92bd3",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T127": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "b7774f5d33b903973b17009d76c90154183478d394ffdfcdd9ab2a2ee1b3deb5",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T135": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "53855455cfe5b963a224c61ab89cb6d0909e82e634071ee1d62f8866f1dad8f6",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T141": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "2e918b35d2cd7747505d16fbbc990e2be4f9561a6194267cad20ca53b6ff9694",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T18": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "f1a2bd5f29828a4d54336aef9c4a8369c0fcd7909769949e2511248d6d18e398",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T215": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "d34312baa1f284806b6bf143f78be64b5a402b824510781f00a02a9587e21c7b",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T229": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "a6984eac26054c2389f55f696bc5f99c9d119dfcf24556cf28540bdccf8b7d0e",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T23": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "f692e2ae8e6a57ee36c543181634874f18fbeeba3bf4e1d8956c96fe95c3252d",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T230": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "eb711786e41ffe822ea36350851014ffa67af37fc188d709ecc6c01494bceed4",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T242": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "6da357ae099259b1a5019264ab84e70bc1eaaf4c0a9bfe8b43f0b85707512129",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T243": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "35b6e29ca73972d082a9c6f05b4a21a10c33d5bab825986dd88b4ad0f92a0e23",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T285": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "eddac7993bb0fcb4b469a3712ebea3958a1af634587ee1adbda7d94a77c14c92",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T331": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "fcf06d575122cb6530c24b273bb4e56b7971628b7fa67ea7b84012bb5e0338bc",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T340": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "1a704a831f60d3d9df033daea74de9b5b87b237a83ca88bf318757325c2672e1",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T348": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "adf4260a5fb03f5788a109df8928d194e0af94726332806c53e1b99afcc71663",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T35": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "6b98928f30eeee383c1ff1d639ccd712d814d8cb0dcbeb02a62a6c30c15497b8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T366": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "7cc41b9910d79ea0c241fb375be2af2bb02197fad29fa7da20400fe588edff97",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T368": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "3aa49682981448dc36f329765ae5b4f2a01e28ab971a92dfbd55d244f1bfbeb1",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T377": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "5f8b4774d48176fc15c74da70246cb7b6dc9a5e2940f9a49756c4a1b732b59fb",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T385": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "78a947161ca307581a8f70668e7b2e6e6b71e8acfe6537537d6356bb985f8148",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T390": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "d6a157dc63597c8d24444f7fa8139291d87a4ff03da079fabf5b9ff57ba824dd",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T392": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "dc1fb732287c05c2f250cad5f6264bbf5226cb5317d5214189c3d4c5e82fb386",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T407": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "08b13c1edbd689e6a3d9866d2c039389c0b5f772559e35660737061cc682ee1e",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T436": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "dad4392700513df797b8586fc60ff984b206e2550c0646ab52043e34bb5f8188",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T45": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "43582e2bb093c9b8818f2617ad8ed30f7c668b29dfd82d7a25907ce3c59bdd5d",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T465": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "60ea942889765103aab79573e9b2f8e30067799cba643abf9cab09927b9295cf",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T481": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "9d84711244f74b19293e47acf7ef305a439634b20781990e7ea5fcecb1107851",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T528": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "2ba5d535531624ea04b2667a285701c22dab5afb04dc3cba37523ddb5902b0d8",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T540": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "e7623ecebfbe08c5d1579d8f7ea901573f28060b8cc6ec30e2ac060ad23849fb",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T582": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "a4829a91ee943beb0bb2fa4dfb20eae3323ce85d7b5cd262c50240d01a3124aa",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T60": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "1a8cfe7e9993791d0367cba74e098391066c949369f9b847fab3cfad20dd7fb4",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T603": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "592174d345dd68f7acd1bc066a27ca565ddb3b359a071ff371dee3892092b534",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T623": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "2ed55530173bdaab0a5b0f48e2718eadbab5095fbdeb449254f003c857dc18b5",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T635": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "a1b0149ea3e5ac67ca6c4d8cb88b960dab232a6f00a17af0b71fd92508a10689",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T68": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "e79b73a5618b4c17e30a7c1c27d04dc8b71a8535803068fab4753e8a09706c8b",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T730": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "d439660e30aafc58d784dee11d832b42f189c114ae6862f42f7f3642cc5ac021",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T740": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "57faf922012beb55da39a928747b40fb44e9483bd15dceedcd21e37e92d877e7",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T765": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "03d3769f3174363eb16d7eac3736841180fc5e8cd0ae54747051f5df1ec89c76",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T98": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "a0c1b7da3fcaa882232c76153631635e573c6433c820aa14e41d266b41f54550",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "hospital::T99": {
+    "family": "health_hospital",
+    "dataset": "hospital",
+    "series_numeric_sha256": "308f4b6c1195a66ed7c4c22bdb8933e8b029a90632c6ec6b553f90c1a599fb0a",
+    "seasonal_period": 12,
+    "horizon": 1
+   },
+   "solar_10_minutes::T10": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "c89e580bde6f3a05c4315a5252e8dc745531c4d57514292e7a062b8f9244a25e",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T101": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "b164f824989ff7dd375e0b087cfb4f5ced6c2fc18d46f9435defdd737255c6cd",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T104": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "0d30a7c0d027434121410deeaf734d7119b93f8cc0f50c9e4934565b41488706",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T105": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "8e0941736804e6ab3032e31034f219f2f8fcdd867af017182f21d519d3622405",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T107": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "7ec503ad9a9f66e307c252b3bd57cbe59cdf729887fd4c5a5a8b70eaa9ccd1e0",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T110": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "8e76ae4770a0c564483cefb901acb9ebe416ac3324cbb81a33f10aaec10ad0b9",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T114": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "9ed87bab1cc656c5862b5d0f7a76e14b0b0783a35363e772d3f1e781feb30047",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T115": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "e49d80bc624acf71557df916845152ae76f7443f47513e5f0f206cc5f60b1317",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T12": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "043873a7580975edced9762703eab24037d4e52e9163bba340c70f2997f3ef99",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T120": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "d2db3d6e412df87de9f115ba41a08e28438eaf12181f6f8b5f2f95b2d488a70a",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T126": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "559e798cd020c7c30520b11a53e368342a7e78e19c906ded277f11d9d1ea7410",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T131": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "f78d1891874055e27be2b3fc38db0f564ff130df4e2c15e632b58fcd5d1ea0cd",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T136": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "72c98445602c1c3596ca17451556856405bc129303142b63d14f953993d0ed3d",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T15": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "0d6d86fe341e9152a3193a21a7e01095ad938ff070e52f882aa8906dfda994fb",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T18": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "206c394ba1fa1c2437b24050c41db6ce81a12b6b048b4d55cea3750a377adfd0",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T23": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "0171810b4cac2d7c1fd987a3ffeafd03cc69b09ed4d2d0d466d3ae42d219934c",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T24": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "33124558edd1ef85154660781fbff887e32c5169e104400e2129a449f3e756aa",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T26": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "4364645aa3584bdc631063228b07a60f77f01cb10b408693d138020a57097d1a",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T28": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "0ad8b5d33cf8ef10dca161ecbef31708d9392964ba1c1b9054ea8896990aeff0",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T36": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "745ed19aaa2cf84f2f2f72bf34c183b4233f7c026450826e4cc402dfbaf63922",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T37": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "79c15cc62a34de0f1981a3b32a2e6a19faffcc84e1839df5cc0361697c6a7f63",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T4": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "071e3d6d0a5467687c7b9d510dd3b531c5902daed3285a776d6e789ccfdad206",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T47": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "795f7dd95678167cdb9a4790ca913a37f979f861420b00a3f7c565a4e562f831",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T51": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "a0e03fc93b6c82474a6ae7a9cf268dd5d6c9d2f628dfad66a1e2c8ad7b6e1b08",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T56": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "9abec7aba688034bead87457fad9cddc0f932b449ea69bc360762685924e7ae8",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T58": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "e3d12c4aed13dab7035ff655e2fb9e0f1fcc9c90b34430cc40f6537df8e2033e",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T65": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "47b24082c5d12ae4d26e7df975d23076ce21d1fa1f6a9970a901b017f2a436f3",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T67": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "35f89d95043764192abb81f9088685d734917636207a61a5534c2f62bfe61ca8",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T70": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "587bad7bbd163ff1f05565d8ad94ee8040480575b91d1ed05b301a3b1abfb1c6",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T71": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "866e342b00b73e9170c3af5513e45f0645734ef84598840f3edb2ddfb4ac4cf1",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T74": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "c1a836051ba237f1a9ea1e84744baa9cee2b6121ce2a6b09c330452752a16987",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T77": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "7c3ad1063f9ddc174cd566bf50f0ac017e6880ef112fe7e9b2d24ed6eb2c549c",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T81": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "c6ea3bf3c985049fda3a1536d0be7efa532e4fb38680e04b18be2ed2d9aa9a2f",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T82": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "6dcf0e4694c6892776d21e79ccdfac5752abd9e3f12500cebced200cb4c53dcc",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T84": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "41c2ea88faa7c189fad864eed4600d87cfe41b911b836d596813299a7c2389d9",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T85": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "538834466f71eac67a72f75636eba172c264ca2284e83cbe2678da976e4926fd",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T89": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "484c57e8b174b7c0ffa019bad681b7c21e7ae8ddce53da21e15b7ac0a8ed3224",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T93": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "416487e94be121910882e82b57d761950fc2570c3135519fdd7f91d878d5a37a",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T96": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "224f6d93e085ea5e377b27e96d01d482e99d80887153d3077849cc4241e17dce",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "solar_10_minutes::T98": {
+    "family": "solar_energy",
+    "dataset": "solar_10_minutes",
+    "series_numeric_sha256": "498e435d7b6fcb33bfc5a9f8ed07633c5f3f2fc75a23369a5670ad3c840e58f7",
+    "seasonal_period": 144,
+    "horizon": 1
+   },
+   "saugeenday::T1": {
+    "family": "hydrology",
+    "dataset": "saugeenday",
+    "series_numeric_sha256": "9b94d00f57bc44f9af3af9b4bde3e41f6fd66366eeabdb4321d798bfb1092d93",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "us_births::T1": {
+    "family": "demography",
+    "dataset": "us_births",
+    "series_numeric_sha256": "f1ded1628cc6ff15f69bbf19136d3c3bed050d5aeb53fa4d18cbf72b742b6f53",
+    "seasonal_period": 7,
+    "horizon": 1
+   },
+   "electricity_weekly::T103": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "63bfc89bb9501bf00fd1e0999b068f1517f8bb794881213e4da7aaf300f1c5b9",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T109": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "6e12d520820f59e55bc560ecae17aba455121afc2862aaf645cc28b4c62008ee",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T110": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "5345b58ba65d7565855dcc1e9ac7e6b4017fcfbabfe59062fc8c30e0c4ecbfce",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T114": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "9b61bf3d85b3f987581367db10eff8415771107362b6bd519f38c0ec0e88e6c3",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T116": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "015fce828f03ae09f66d852a50cc387cf4f44ec5ba7882bf16509d5d0ea4bcc5",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T130": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "f6e105d3800983b8cb61501ea63108c608f06d6eef332b5de998ec0b030a1b03",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T14": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "c93501b909e4a2feb711858d12e01e3d3319e46301eac53293bd4d4237509e81",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T140": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "521838fa39f7ccbb9beb1176a7c388bf164b8ae54152afbdb07e04485f4ce2e1",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T142": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "e9649570d7a65cda31494140ebeea4ac9dcfd8aa35a27947c49e41188c31bf37",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T176": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "dd192d7f36b31c2495b6d74d085b15d2485b19455b5c5bc4958dac6c2f36e4c3",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T177": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "9b1f93b32afe851b6a188c477b1a48bbe83cae0ac5b0780ccf192ed4131d1f31",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T183": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "b48e5a2175c638f003dfa17fd56a608f2d49e013dbef584368a3a0bacf22e47d",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T188": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "48f9a8bec53c734685a3572278eb0548dcbdf43b51a17fb3c0249d1d3101b894",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T192": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "b18ac0dfccdb291776a4c716903d5ed0838d0312d9a384beaa0e632d2474a159",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T197": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "6e36dd00100c9b871320c3dd2660da126e25d7b771367c6e08e8b6eb24496371",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T205": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "4cb570bd2e0ae12ecb8866f5a05bb51c97f5667e951594657023d57a9346dc37",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T212": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "01dcf596e1f2d0537685512c120f9fd585747d843be31e44ee2f605e0330d166",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T216": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "daf150e01603561a9e73bebf235f35bb3f44065d35d489f43b0ab5fe6abcba4d",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T22": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "47df78c1ac07fc2d343337384e39f6e82f5a4204210c250b7c40720334265a0a",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T223": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "7ba75526f56986c6d86cf7babd3b46d7e307ad0c4136cce974f690ec31b58173",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T225": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "db06daa4d690a38275fe1b7f1332534e0784f37577b928a3dd07c30e7aa06d1c",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T234": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "263c71e8cd45bf4e25af0a58ecfbee381e6a86ebbfcbb7bafcf747993950a7d7",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T258": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "94602a1241e4622573186b38c5334b3b5fc4c7e089edab0c76025e6efbe69742",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T265": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "0fa39251ccceaccd220defdfb5876e1106c02ddbf69221f11bd5abc1be9bd60e",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T267": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "608fd6f0eba5d6352833f0295e74a80d03c67858ca1c57407b8a790958edcd1d",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T272": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "170eec8b12da2f5fb86f9cd61a5a1e492ccc9fee65db4c43b6522802ba24f464",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T273": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "0a759091bf30e2d2791fab7dc7a2e46c2200bb7aa50bc263a207d099b66d1f22",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T285": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "4fde86a4bd308e9a2b97eb3ea12e0e4c05cfbc81e4267135aabec860180f60bb",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T293": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "35e3ebb76d8c1f9167dba69f1807c382765d767a9790cefd53fe4472dc899ddf",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T299": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "2a834be640b2931935017d710962c1685515486be3f7c8aa3f899b26e985690f",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T302": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "9ecfbf7db64c493b0ec5506956fc4237ff4f5769767e70395a13f9bd17459ae6",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T309": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "3c324e948a6ed769e242c4801c7826099b2aff4ba23ac3c2dfc5c6e7c7f499af",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T319": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "95e7ad33a5c296ffa107c4b71612150efee8bd126eb3bcfdf8e7b2ee262426aa",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T35": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "8d4237f5914b13cb70e2591a1a13e20514714adc09f773157d6f19bfd0c76203",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T37": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "19f37c6438cbef8d2cd6c1cd26af7c1ceeb811e3aa6121aa6bb344366d072c57",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T42": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "e6113a71d436b5bb91cbe88b964f2082b94e50d3cc6ec5cf624ca52d4a1a0ec0",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T87": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "70c8c8c91c07091f063528b1597929df2c67bc7ad5140456f8f51f2f41d18cec",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T91": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "c8fd8d321cc35e82edb4dd77bfeb36b3fac375cc9af3cd2a29065a27076e679c",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T92": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "169b9a128b8d069bb2cb66f27fccf65dfe6b74cc7d80230e71c984ae37ac59d0",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "electricity_weekly::T95": {
+    "family": "electricity_demand",
+    "dataset": "electricity_weekly",
+    "series_numeric_sha256": "478953cf9ac316fe8c17da330bf130e6bd545d5bd40b73a3cecffa564287604d",
+    "seasonal_period": 52,
+    "horizon": 1
+   },
+   "weather::T103": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "6df2eea2be19dab2ff7e04ec75354260f73ed73f90248caed714fb65e21f5f94",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1112": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "47356a77ac8f09c06a2a67ef145b7dc88bb0f00027b66cd00f5f13128a146e3f",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1171": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "5e8dd4ed8ac3d3279fa1b3ea6d596d4ecd881ebd41e33e81479a5ae785799f86",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1215": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "c509178239e296a3b9e4fdf8a5e210ffc94c6ed7427c0ee397ff5d690be1b036",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1219": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "d62b1c899f3028731c31589f4d0c1584e866c3cfe935714f76e7c3e989cd1758",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1270": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "9435e15fcf88508584229b86926af5279ec5d5463f4e078a6f360dd2a846475d",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1400": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "ebf5835c601f84739b65853e59940456b26f0670864c517cfff94544c1e85f0e",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1406": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "7af1751da2a8c9a20793db3131a5b6d64ba475f2f186eb5bb2e8359640ddadbf",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1445": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "3555dd478401544bf7e7e07926c8db87d9e07784f0b87d83259e9103c3a03ef8",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T146": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "ebeca2d735426059aa7066e76d9578b272a4b565cdb04b9bf7aeb6f8d1f23e76",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1464": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "c11b11a7f5a59338b25e9f30663baae06a150938be1c344e86ca50f8cf5fc9b5",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T149": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "1f487346f13bbe06105893d4481a0f8014d58ef877020f98890f8e6d28629e4f",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1512": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "4062568c69619d65b633741c4a0e2616a1bd2375db37df3a5181b08aed7947e8",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1568": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "52858e710242bd5146ab5d4c27dedd896f9d7e8587afa82af0a2ec2a4e4016ca",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1677": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "3cd4a3284652ab18a15b6daee67f2a2f82156afc5da0aa330978daa374b0a11b",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1709": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "e21108bc5069262e0eabd1e4c10679e9ae5ea9a5da139aa3455e332b7b6d257e",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1717": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "35f96114a8c2a695c148f6aeefb966488a4b19688a0994ccd28cb271890501a8",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1955": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "b80d5dc09b1a533c9fbb7dfee83786452bb4826d826237c629bc26e31a4f144b",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T1995": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "a3410345fba75687364ded2850f5d5be057726cad7478563f18bdbf414b5616e",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2036": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "3dff325b2fe76241919c36e0a5cff00b7eed5179fdc3d5ba60680ac33d3bcd3b",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2059": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "87b27415d5291d206aac8fc0f1c25f305b381d84c78237512295194c690ce356",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2135": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "aeb20ae3d839256dcb44bb66acbef9ea788edcc5d3c85025c85232afded4b36d",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2514": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "1df911bddc2b99642c749aff26f79cbf0fa6b5047a4ccdc1ed41fbd6751a1264",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2592": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "a7e91a986bedd84d10100f1d85164b7c8240853637b09409560c86d5ec2d30db",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2611": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "1bd3e77482f84ddef97fa48969638ee929a67ca8c494cd9956f633986704fecf",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2699": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "c792ecff9d00a6fe662095d05d65d21f113ce95dd4752936999b8ad3beb192be",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T27": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "994fa6414766fab8588b04120ffd181433505819220462ecb8eb13aa0c21dab1",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2716": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "63d475705910dea598e11bd6c47f3715f4518745cedaebe9e77b37d9e98ce728",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2742": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "f65cd8a03117f8fabf6086f2738e604cb008608799935079290154b73965efb7",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T2866": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "c998d79d3a95095b4f48cc93f4b38f4d5b3d03d53ae35a35b67851e3842d65e1",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T329": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "15524983c1e4ddadbb26bc9720304e54c1df015c37490783b9510043a1328a43",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T351": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "16467b9f1bcbd34b7a78669d42d6a65329ad18ff6b2fff863b53ac01e87c642c",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T487": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "92fe1cc514e04e81e70c9f72ac1cc5283d17be16336aea8f8ec29beac68d5605",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T555": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "0f71c950bced0f94fac27ca749e51510ed1e7ecd002e7943a517e2334b1bdb07",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T592": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "1743476eccc25d3ed57550073e05bbb693eb4bbbc03931cd5b33902d1477be4c",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T618": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "9d583b2ec334bddbe219386b75b3db2e425c5aa409fb6be84ae42eb3625ba8c2",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T732": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "b613ee2c1ae902f59df22dfc251d508733cbbfd39aa24637abb0b0dd8209192c",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T746": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "c4fbe604c9911aef498fbf6e44c4603be8f67b79ffff2a66c305c0f6953e3063",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T912": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "96c4a89458a6ac7ba289e24f45a1fcb3e1d9b77dfdc95f15a59356300dc6bd06",
+    "seasonal_period": 365,
+    "horizon": 1
+   },
+   "weather::T980": {
+    "family": "weather",
+    "dataset": "weather",
+    "series_numeric_sha256": "5e3d963091f398f295e030f44fc8dffcd2e75975de7327e7819948e8ee3d80ef",
+    "seasonal_period": 365,
+    "horizon": 1
+   }
+  },
+  "families": [
+   "demography",
+   "electricity_demand",
+   "health_hospital",
+   "hydrology",
+   "solar_energy",
+   "tourism",
+   "urban_pedestrian",
+   "weather"
+  ],
+  "primary_gate_families": [
+   "tourism",
+   "urban_pedestrian",
+   "health_hospital",
+   "solar_energy",
+   "electricity_demand",
+   "weather"
+  ],
+  "sensitivity_only_families": [
+   "hydrology",
+   "demography"
+  ],
+  "per_dataset": {
+   "tourism_monthly": {
+    "family": "tourism",
+    "n_series": 40,
+    "seasonal_period": 12
+   },
+   "pedestrian_counts": {
+    "family": "urban_pedestrian",
+    "n_series": 40,
+    "seasonal_period": 24
+   },
+   "hospital": {
+    "family": "health_hospital",
+    "n_series": 40,
+    "seasonal_period": 12
+   },
+   "solar_weekly": {
+    "family": "solar_energy",
+    "n_series": 0,
+    "seasonal_period": 52
+   },
+   "solar_10_minutes": {
+    "family": "solar_energy",
+    "n_series": 40,
+    "seasonal_period": 144
+   },
+   "saugeenday": {
+    "family": "hydrology",
+    "n_series": 1,
+    "seasonal_period": 365
+   },
+   "us_births": {
+    "family": "demography",
+    "n_series": 1,
+    "seasonal_period": 7
+   },
+   "electricity_weekly": {
+    "family": "electricity_demand",
+    "n_series": 40,
+    "seasonal_period": 52
+   },
+   "weather": {
+    "family": "weather",
+    "n_series": 40,
+    "seasonal_period": 365
+   }
+  },
+  "selection_rule": "exact top-k by lowest sha256 of 't2_design_v3|<id>' over the WHOLE family (datasets pooled), k=min(40, n_admissible_family); global ids unique; order-independent; the family total never exceeds k"
+ },
+ "role_geometry": {
+  "rolling_origins": 3,
+  "origin_base_frac": 0.6,
+  "lags": 8,
+  "horizon": 1
+ },
+ "arms": {
+  "X": "identity",
+  "D": "causal ewma(alpha=0.3) via T0 contract",
+  "XDR": "[X, D, X-D]",
+  "width_control": "train-frozen independent channels matching XDR width"
+ },
+ "models": {
+  "ridge": {
+   "lags": 8,
+   "lambda": 1.0,
+   "intercept": "unpenalized",
+   "scaling": "train-only standardization"
+  },
+  "mlp_small": {
+   "hidden": [
+    16
+   ],
+   "tol": 0.0001,
+   "scaling": "train-only",
+   "epoch_rule": "temporally final 20% of fit rows; grid [40,80,120,200]"
+  },
+  "seasonal_naive": {
+   "period": "per-unit predeclared"
+  }
+ },
+ "seed_tape": [
+  11,
+  12,
+  13
+ ],
+ "primary_contrast": {
+  "delta": "D_minus_X",
+  "model": "ridge",
+  "statistic": "paired per-series MASE delta, origins averaged within series"
+ },
+ "secondary_gates": {
+  "attribution": "family mean of (D-X) minus (width_control-X) must be positive",
+  "XDR": "secondary descriptive contrast, predeclared, never promoted post hoc",
+  "preservation": "extreme-innovation MASE ratio gate",
+  "calibration": "coverage-drop and width-inflation gates"
+ },
+ "primary_metric": "MASE (train-defined seasonal-naive denominator); raw MAE/RMSE per-series diagnostics only, never pooled",
+ "practical_margin_mase": 0.02,
+ "observed_precision_rule": {
+  "max_ci_halfwidth": 0.02,
+  "rule": "if any primary family's multiplicity-corrected CI half-width exceeds this, the result is INCONCLUSIVE even with a favorable mean"
+ },
+ "harm_margins": {
+  "extreme_innovation_mase_ratio_max": 1.2,
+  "coverage_drop_max": 0.1,
+  "width_inflation_max": 1.5,
+  "frozen_before_any_confirmatory_score": true
+ },
+ "precision_rule": {
+  "sd_planning_source": "development pilot per-origin delta scale (mechanics only)",
+  "sd_planning": 0.04,
+  "z_two_sided_bonferroni": 2.6383,
+  "min_series_per_family": 28,
+  "min_families": 6,
+  "note": "n >= (z*sd/margin)^2 = 28; the executable minimum IS this computed value"
+ },
+ "sensitivity_rule": {
+  "sd_grid_n_min": {
+   "0.02": 7,
+   "0.04": 28,
+   "0.08": 112
+  },
+  "note": "planning sd comes from a small mechanics pilot; the observed-precision rule governs the final call, and this grid discloses how n_min moves with sd"
+ },
+ "inference_method": {
+  "rule": "panel_replication_or_descriptive",
+  "detail": "the PANEL (source dataset) is the inferential unit: with >=3 independent panels per family, the family CI is over panel-mean deltas; with 1-2 panels the between-series interval is DESCRIPTIVE ONLY and the family is INCONCLUSIVE for the primary gate. Chosen because my own coverage simulation shows within-panel dependence (a shared panel effect) is NOT identifiable from inside one panel \u2014 the mean removes it \u2014 so no within-panel estimator can license precision",
+  "coverage_simulation": "tools/t2_coverage_sim.py (committed evidence: naive AND within-panel-ICC intervals under-cover at ICC>0 with one panel; panel-level intervals with K>=3 panels cover nominally; single-panel is INCONCLUSIVE, never precise)"
+ },
+ "inference_scope": "conclusions are limited to the named public panels; with the CURRENT bank (one panel per primary family) the primary gate is INCONCLUSIVE by construction \u2014 a confirmatory positive requires acquiring >=3 independent panels per family, which is declared here rather than papered over",
+ "multiplicity_rule": {
+  "alpha": 0.05,
+  "method": "bonferroni_by_family"
+ },
+ "missing_unit_rule": "a refused/absent unit is a typed PREFLIGHT fact; the adjudicator refuses population inequality \u2014 nothing is silently dropped",
+ "inconclusive_rule": "any primary family absent/below support, observed precision unmet, or unattributed gain",
+ "resource_contract": {
+  "cpu_nice": 15,
+  "max_rss_bytes": 8589934592,
+  "max_wall_seconds": 14400,
+  "stop_file": "<state_root>/T2_STOP"
+ },
+ "verifier_specification": "fresh-process verifier: re-parse manifested source bytes, rebuild units through the C1/C2/C4 loaders, reconstruct splits/arms/seed tape, recompute every metric and per-phase cost, check exact population cardinality and family clusters, and emit ONLY a non-authorizing consistency label",
+ "design_review_record_sha256": "PENDING_MUSASHI_DESIGN_REVIEW",
+ "design_sha256": "f5c774c66213e38da87d14ba0428ef8c7e679e2b8dd6d48690d000909bfefc89"
+}

@@ -154,6 +154,22 @@ def series_numeric_digest(y: np.ndarray) -> str:
 series_content_digest = None
 
 
+def family_top_k(ids_by_dataset: dict, k: int,
+                 salt: str) -> list:
+    """C21: top-k over the WHOLE FAMILY — all datasets of the
+    family pooled first, global ids required unique, exact
+    k=min(k,n) by lowest hash; dataset/series permutation cannot
+    change the选 selection and the family total never exceeds k."""
+    pooled = []
+    for ds_ids in ids_by_dataset.values():
+        pooled.extend(ds_ids)
+    if len(pooled) != len(set(pooled)):
+        raise BankRefusal(
+            "duplicate global series identifier across the "
+            "family's datasets")
+    return deterministic_top_k(pooled, k, salt)
+
+
 def deterministic_top_k(series_ids, k: int, salt: str) -> list:
     """C11: EXACT top-k selection by lowest identifier hash —
     order-independent, outcome-independent, never exceeds k."""

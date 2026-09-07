@@ -39,34 +39,58 @@ def main() -> int:
     n_min = math.ceil((z * sd_planning / margin) ** 2)
     sensitivity = {str(s): math.ceil((z * s / margin) ** 2)
                    for s in sd_sensitivity}
-    # C11: EXACT top-k selection by lowest id hash, k=min(40,n)
+    # C21: EXACT top-k over the WHOLE FAMILY (datasets pooled),
+    # k=min(40,n); global ids unique; permutation-invariant
     K = 40
+    by_family = {}
+    meta_by_lid = {}
+    for lid, p_ in census["population"].items():
+        by_family.setdefault(p_["family"], {})[lid] = \
+            p_["admissible_unit_ids"]
+        meta_by_lid[lid] = p_
+    selected_by_family = {}
+    for fam, ds_map in by_family.items():
+        if fam in families_primary:
+            selected_by_family[fam] = set(bank.family_top_k(
+                ds_map, K, salt="t2_design_v3"))
+        else:
+            selected_by_family[fam] = set(
+                sid for ids in ds_map.values() for sid in ids)
     population = {}
     unit_digests = {}
+    unit_map = {}
     for lid, p_ in census["population"].items():
-        ids = p_["admissible_unit_ids"]
-        if p_["family"] in families_primary:
-            ids = bank.deterministic_top_k(ids, K,
-                                           salt="t2_design_v2")
-        population[lid] = {"family": p_["family"],
+        fam = p_["family"]
+        ids = sorted(set(p_["admissible_unit_ids"])
+                     & selected_by_family[fam])
+        population[lid] = {"family": fam,
                            "series_ids": ids,
                            "seasonal_period":
                                p_["seasonal_period"]}
         for uid in ids:
-            unit_digests[uid] = p_.get(
-                "unit_numeric_digests", {}).get(uid, "PENDING")
+            dg = p_.get("unit_numeric_digests", {}).get(
+                uid, "PENDING")
+            unit_digests[uid] = dg
+            unit_map[uid] = {
+                "family": fam, "dataset": lid,
+                "series_numeric_sha256": dg,
+                "seasonal_period": p_["seasonal_period"],
+                "horizon": 1}
     series_ids = [sid for p_ in population.values()
                   for sid in p_["series_ids"]]
     draft = {
-        "schema": "agent_multi.t2_confirmatory_design.v2_draft",
+        "schema": "agent_multi.t2_confirmatory_design.v3_draft",
         "sealed_after_census_manifest_sha256": manifest_sha,
-        "supersedes_draft_sha256": "GENESIS_V2_DRAFT",
+        "supersedes_draft_sha256": sha_file(
+            STATE / "t2_confirmatory_design_DRAFT_V2_20260906"
+                    ".json"),
         "operator": {"kind": "ewma", "params": {"alpha": 0.3},
                      "selection_source":
                          "T1_v4_record_LAB_CALIBRATED"},
         "task_population": {
             "series_ids": sorted(series_ids),
             "unit_digests": unit_digests,
+            "unit_map": unit_map,
             "families": sorted({p_["family"]
                                 for p_ in population.values()}),
             "primary_gate_families": families_primary,
@@ -79,10 +103,12 @@ def main() -> int:
                                     v["seasonal_period"]}
                             for k, v in population.items()},
             "selection_rule": f"exact top-k by lowest sha256 of "
-                              f"'t2_design_v2|<id>', k=min({K},"
-                              "n_admissible) per primary family "
-                              "(order-independent, never exceeds "
-                              "k)"},
+                              f"'t2_design_v3|<id>' over the "
+                              f"WHOLE family (datasets pooled), "
+                              f"k=min({K}, n_admissible_family); "
+                              "global ids unique; order-"
+                              "independent; the family total "
+                              "never exceeds k"},
         "role_geometry": {"rolling_origins": 3,
                           "origin_base_frac": 0.6,
                           "lags": 8, "horizon": 1},
@@ -144,11 +170,33 @@ def main() -> int:
                     "pilot; the observed-precision rule governs "
                     "the final call, and this grid discloses how "
                     "n_min moves with sd"},
+        "inference_method": {
+            "rule": "panel_replication_or_descriptive",
+            "detail": ("the PANEL (source dataset) is the "
+                       "inferential unit: with >=3 independent "
+                       "panels per family, the family CI is over "
+                       "panel-mean deltas; with 1-2 panels the "
+                       "between-series interval is DESCRIPTIVE "
+                       "ONLY and the family is INCONCLUSIVE for "
+                       "the primary gate. Chosen because my own "
+                       "coverage simulation shows within-panel "
+                       "dependence (a shared panel effect) is "
+                       "NOT identifiable from inside one panel — "
+                       "the mean removes it — so no within-panel "
+                       "estimator can license precision"),
+            "coverage_simulation":
+                "tools/t2_coverage_sim.py (committed evidence: "
+                "naive AND within-panel-ICC intervals under-cover "
+                "at ICC>0 with one panel; panel-level intervals "
+                "with K>=3 panels cover nominally; single-panel "
+                "is INCONCLUSIVE, never precise)"},
         "inference_scope": (
             "conclusions are limited to the named public panels; "
-            "generalization to whole series families is NOT "
-            "claimed (one panel per family carries no "
-            "between-dataset replication)"),
+            "with the CURRENT bank (one panel per primary "
+            "family) the primary gate is INCONCLUSIVE by "
+            "construction — a confirmatory positive requires "
+            "acquiring >=3 independent panels per family, which "
+            "is declared here rather than papered over"),
         "multiplicity_rule": {"alpha": 0.05,
                               "method": "bonferroni_by_family"},
         "missing_unit_rule": "a refused/absent unit is a typed "
@@ -176,13 +224,13 @@ def main() -> int:
     body = {k: draft[k] for k in sorted(draft)}
     draft["design_sha256"] = hashlib.sha256(json.dumps(
         body, sort_keys=True).encode()).hexdigest()
-    out = STATE / "t2_confirmatory_design_DRAFT_V2_20260906.json"
+    out = STATE / "t2_confirmatory_design_DRAFT_V3_20260906.json"
     out.write_text(json.dumps(draft, indent=1))
     counts = {p_["family"]: 0 for p_ in population.values()}
     for p_ in population.values():
         counts[p_["family"]] += len(p_["series_ids"])
     print(json.dumps({
-        "draft_v2_sha256": draft["design_sha256"],
+        "draft_v3_sha256": draft["design_sha256"],
         "series_total": len(series_ids),
         "per_family": counts,
         "n_min": n_min,
