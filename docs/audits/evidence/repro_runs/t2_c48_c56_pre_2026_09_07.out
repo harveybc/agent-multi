@@ -1,0 +1,35 @@
+== P1: attacker-controlled candidate_commit is ACCEPTED ==
+verify_execution_record -> ACCEPTED_UNPINNED_EXECUTOR_IDENTITY attacker-controlled-nonempty-string
+=> no form / existence / HEAD / tree / code-identity check exists in the gate
+
+== P2: forged wrapper with repaired self-digest is ACCEPTED ==
+forged fields: unit_id, execution_record_sha256 (64 zeros), code_identity, and 34 mase_on_extreme_innovations -> 999.0
+verify_unit_record -> {'verified_units': 1} ACCEPTED_FORGED_AUTHORITY_UNIT_AND_EXTREMES
+
+== P3: bounds do not govern the interior; effects precede gates ==
+a) _budget() runs once per unit; assay_unit() takes no guard — wall/RSS/stop cannot fire inside a unit
+b) started = time.time() at every launch — resume restarts the 4 h wall; no durable accumulation exists
+c) sealed design declares '<state_root>/T2_STOP'; the executor polls <out_root>/T2_STOP — a stop at the declared root is invisible
+d) lock released by unlink(); NPZ written via open('wb') — no exclusive creation, no durable release protocol
+e) --plan with the record ABSENT: typed refusal, but out_root WAS created — an effect before the gate
+{
+ "plan": {
+  "units": 242,
+  "origins_per_unit": 2,
+  "arms": 4,
+  "mlp_seeds": 3,
+  "model_fits": 7744,
+  "baseline_evals": 484
+ },
+ "authority": {
+  "sealed_design_file_sha256": "d1720f4d6ad05af3",
+  "sealed_design_self_sha256": "e1e3761b4c878c39",
+  "design_review_record_sha256": "13310ef88720f6a5",
+  "execution_record_sha256": "0f4440a84ebfa890",
+  "manifest_sha256": "43c48f6bb513be37",
+  "census_sha256": "dc1bf8c770b297c5"
+ }
+}
+f) --plan exit 0; ledger created by the plan: True -> agent_multi.t2_attempt_ledger.v2
+
+PRE CONFIRMED at b49aa1f6: P1 unpinned executor identity, P2 forged wrapper accepted, P3 ungoverned interior + effectful plan — all frozen
