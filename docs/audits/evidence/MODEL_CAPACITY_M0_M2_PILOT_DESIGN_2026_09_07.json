@@ -1,0 +1,132 @@
+{
+  "boolean_mlp": {
+    "hidden_widths": [
+      4,
+      16,
+      64
+    ],
+    "input_count": 12,
+    "rules": [
+      "majority",
+      "xor3",
+      "three_term_dnf"
+    ],
+    "seeds": [
+      11,
+      12,
+      13
+    ],
+    "split_sizes": {
+      "calibration": 512,
+      "evaluation": 512,
+      "train": 1024
+    },
+    "train_label_noise": [
+      0.0,
+      0.2
+    ]
+  },
+  "claim_scope": "M0_M2_BOUNDED_CPU_PILOT_ONLY",
+  "code_identity": {
+    "tools/model_capacity_pilot.py": "762a06b79a2b9a37b40bc5f8452c8c3aa2a615d915d5d1f4ed4fe24ba8b0f859",
+    "tools/model_information_contract.py": "0f47ce1a38ffb646b696505055425837b9b9651418416b80ba134b7ffdf3cd9d"
+  },
+  "date": "2026-09-07",
+  "decision": {
+    "capacity_saturation_requires_both_fit_and_failure_regimes": true,
+    "confirmatory_claims_authorized": false,
+    "doin_gene_authorized": false,
+    "pilot_only": true,
+    "post_stop_branch_may_select": false
+  },
+  "description_contract": {
+    "compressors": [
+      "zlib",
+      "bz2",
+      "lzma"
+    ],
+    "independent_information_multiplier_for_repeated_epochs": 1,
+    "interpretation": "estimator_specific_upper_bounds_not_exact_kolmogorov_complexity",
+    "model_quantization_bits": [
+      4,
+      8,
+      16
+    ]
+  },
+  "design_sha256": "d18b5ea0a3957c2056b8b531fbc526b3f67b74fb38e38cee267180ed4a5c88e8",
+  "resources": {
+    "device": "cpu",
+    "heartbeat_seconds": 20,
+    "max_peak_rss_bytes": 1073741824,
+    "max_wall_seconds": 7200,
+    "torch_threads": 1
+  },
+  "schema": "agent_multi.model_capacity_m0_m2_design.v1",
+  "temporal_mlp": {
+    "families": [
+      "sine",
+      "chirp",
+      "heavisine"
+    ],
+    "hidden_widths": [
+      8,
+      32
+    ],
+    "lookback": 16,
+    "seeds": [
+      11,
+      12
+    ],
+    "snr_db": [
+      "inf",
+      10,
+      0
+    ],
+    "source_contract": "t1_known_truth_bank.clean_signal_and_realized_noise"
+  },
+  "threshold_neuron": {
+    "algorithm": "pocket_perceptron_no_bias",
+    "association_ratios": [
+      1.0,
+      1.5,
+      2.0,
+      2.5,
+      3.0
+    ],
+    "input_counts": [
+      4,
+      8,
+      16
+    ],
+    "max_updates": 20000,
+    "perfect_fit_tolerance": 1.0,
+    "seeds": [
+      11,
+      12,
+      13
+    ],
+    "theoretical_reference": "approximately_two_random_binary_associations_per_weight_under_stated_single_threshold_neuron_assumptions"
+  },
+  "training": {
+    "checkpoint_epochs": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      96,
+      120
+    ],
+    "diagnostic_post_stop_epochs": 15,
+    "evaluation_used_for_stopping": false,
+    "learning_rate": 0.01,
+    "max_epochs": 120,
+    "minimum_delta": 1e-05,
+    "minimum_stop_epoch": 20,
+    "optimizer": "adam",
+    "patience": 10
+  }
+}
