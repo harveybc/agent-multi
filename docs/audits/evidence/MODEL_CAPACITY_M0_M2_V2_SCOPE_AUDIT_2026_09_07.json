@@ -1,0 +1,17 @@
+{
+  "design_sha256": "dc915b19cd78cd39cec07add224503028d9bf1b79798a03470614e4b4a69f35e",
+  "disposition": "V2_VERIFIER_ACCEPTED_BUT_BANK_SCOPE_INCOMPLETE",
+  "findings": [
+    "the threshold design did not explicitly bind Gaussian points in general position to random binary label assignments, leaving the MacKay/Cover reference ambiguous",
+    "temporal tasks contained white noise only and omitted a structured-noise regime",
+    "the Boolean bank lacked explicit identity and random-label null controls",
+    "model descriptions contained quantization and spectra but omitted the ordered pruning and low-rank distortion curves"
+  ],
+  "fresh_recomputation": {
+    "result": "PASS_EXACT",
+    "summary_sha256": "0b18171961b59fe7532612ced02765c230b0d804e406adee1e78dea2ff3ab62c",
+    "units": 135
+  },
+  "scope": "POST_V2_PRE_V3",
+  "statement": "The v2 results remain reproducible range evidence for their stated design, but v3 supersedes them to satisfy the complete M0-M2 order."
+}

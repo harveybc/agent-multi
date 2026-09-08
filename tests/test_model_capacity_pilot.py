@@ -71,6 +71,20 @@ def test_model_description_mutation_breaks_self_digest():
         mic.verify_model_description(description)
 
 
+def test_model_description_contains_pruning_and_low_rank_distortion_curves():
+    description = mic.describe_model_arrays(
+        {"matrix": np.arange(24, dtype=np.float64).reshape(6, 4)}
+    )
+    assert [
+        point["requested_pruned_fraction"]
+        for point in description["magnitude_pruning_curve"]
+    ] == [0.0, 0.25, 0.5, 0.75, 0.9]
+    assert description["magnitude_pruning_curve"][0]["parameter_mse"] == 0.0
+    low_rank = description["low_rank_distortion_curves"][0]
+    assert low_rank["name"] == "matrix"
+    assert low_rank["points"][-1]["relative_frobenius_error"] < 1e-12
+
+
 def test_repeated_weights_never_infer_spare_capacity():
     description = mic.describe_model_arrays({"w": np.ones(128)})
     assert description["exact_repeated_value_fraction"] > 0.99
@@ -130,6 +144,23 @@ def test_capacity_endpoint_requires_fit_and_failure_regimes():
     boundary = pilot._threshold_summary(records)["boundaries"][0]
     assert boundary["status"] == "SATURATION_NOT_IDENTIFIED"
     assert boundary["endpoint_is_never_called_capacity_without_both_regimes"] is True
+
+
+def test_v3_bank_contains_required_controls_and_structured_noise(design):
+    units = pilot.expected_units(design)
+    assert len(units) == 195
+    boolean_rules = {
+        spec["rule"] for kind, spec in units if kind == "boolean_mlp"
+    }
+    assert "first_bit_identity_control" in boolean_rules
+    assert "random_labels_null_control" in boolean_rules
+    perturbations = {
+        spec["perturbation"] for kind, spec in units if kind == "temporal_mlp"
+    }
+    assert perturbations == {"white", "colored", "impulsive"}
+    assert design["threshold_neuron"]["input_distribution"] == (
+        "random_gaussian_points_in_general_position_row_normalized"
+    )
 
 
 def test_code_identity_change_refuses_even_after_resealing(design):
@@ -244,3 +275,12 @@ def test_json_roundtrip_preserves_a_valid_unit(boolean_record):
     design, spec, record = boolean_record
     roundtrip = json.loads(json.dumps(record, allow_nan=False))
     pilot.verify_unit_record(roundtrip, design, "boolean_mlp", spec)
+    assert set(roundtrip["diagnostic_cpu_seconds"]) == {
+        "activation_geometry",
+        "data_description",
+        "gradient_fisher_hessian",
+        "initial_model_description",
+        "losses_and_scores",
+        "model_description",
+        "sample_specific_memorization",
+    }

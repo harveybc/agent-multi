@@ -201,6 +201,82 @@ def _matrix_spectrum(name: str, array: np.ndarray) -> dict[str, Any] | None:
     }
 
 
+def _pruning_curve(arrays: Mapping[str, np.ndarray]) -> list[dict[str, Any]]:
+    names = sorted(arrays)
+    flat = np.concatenate([arrays[name].ravel() for name in names]).astype(
+        np.float64, copy=False
+    )
+    order = np.argsort(np.abs(flat), kind="stable")
+    curve: list[dict[str, Any]] = []
+    for fraction in (0.0, 0.25, 0.5, 0.75, 0.9):
+        pruned = flat.copy()
+        count = int(math.floor(fraction * len(pruned)))
+        pruned[order[:count]] = 0.0
+        offset = 0
+        pieces: list[bytes] = []
+        for name in names:
+            source = arrays[name]
+            size = source.size
+            restored = pruned[offset : offset + size].reshape(source.shape)
+            pieces.append(_array_blob(name, restored))
+            offset += size
+        curve.append(
+            {
+                "requested_pruned_fraction": fraction,
+                "pruned_parameters": count,
+                "retained_nonzero_parameters": int(np.count_nonzero(pruned)),
+                "parameter_mse": float(np.mean((flat - pruned) ** 2)),
+                "serialization": _compressed_lengths(b"".join(pieces)),
+            }
+        )
+    return curve
+
+
+def _low_rank_distortion_curves(
+    arrays: Mapping[str, np.ndarray],
+) -> list[dict[str, Any]]:
+    output: list[dict[str, Any]] = []
+    for name in sorted(arrays):
+        matrix = np.asarray(arrays[name], dtype=np.float64)
+        if matrix.ndim != 2 or min(matrix.shape) == 0:
+            continue
+        left, singular, right = np.linalg.svd(matrix, full_matrices=False)
+        max_rank = len(singular)
+        ranks = sorted(
+            {
+                1,
+                max(1, int(math.ceil(max_rank * 0.25))),
+                max(1, int(math.ceil(max_rank * 0.5))),
+                max_rank,
+            }
+        )
+        denominator = max(float(np.linalg.norm(matrix, ord="fro")), 1e-300)
+        points: list[dict[str, Any]] = []
+        for rank in ranks:
+            approximation = (left[:, :rank] * singular[:rank]) @ right[:rank, :]
+            points.append(
+                {
+                    "rank": rank,
+                    "retained_parameterization_scalars": int(
+                        rank * (matrix.shape[0] + matrix.shape[1] + 1)
+                    ),
+                    "relative_frobenius_error": float(
+                        np.linalg.norm(matrix - approximation, ord="fro")
+                        / denominator
+                    ),
+                }
+            )
+        output.append(
+            {
+                "name": name,
+                "rows": int(matrix.shape[0]),
+                "columns": int(matrix.shape[1]),
+                "points": points,
+            }
+        )
+    return output
+
+
 def describe_model_arrays(arrays: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(arrays, Mapping) or not arrays:
         raise ModelInformationError("model arrays must be a non-empty mapping")
@@ -243,6 +319,8 @@ def describe_model_arrays(arrays: Mapping[str, Any]) -> dict[str, Any]:
         "histogram_entropy_bits_per_parameter": _entropy_bits(flat),
         "raw_serialization": _compressed_lengths(raw_blob),
         "quantized": quantized,
+        "magnitude_pruning_curve": _pruning_curve(normalized),
+        "low_rank_distortion_curves": _low_rank_distortion_curves(normalized),
         "matrix_spectra": spectra,
         "residual_capacity_inferred": False,
     }
@@ -281,6 +359,8 @@ MODEL_DESCRIPTION_KEYS = {
     "histogram_entropy_bits_per_parameter",
     "raw_serialization",
     "quantized",
+    "magnitude_pruning_curve",
+    "low_rank_distortion_curves",
     "matrix_spectra",
     "residual_capacity_inferred",
     "description_sha256",

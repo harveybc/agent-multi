@@ -31,15 +31,15 @@ import model_information_contract as mic  # noqa: E402
 import t1_known_truth_bank as t1_bank  # noqa: E402
 
 
-DESIGN_SCHEMA = "agent_multi.model_capacity_m0_m2_design.v2"
-UNIT_SCHEMA = "agent_multi.model_capacity_m0_m2_unit.v1"
-SUMMARY_SCHEMA = "agent_multi.model_capacity_m0_m2_summary.v2"
+DESIGN_SCHEMA = "agent_multi.model_capacity_m0_m2_design.v3"
+UNIT_SCHEMA = "agent_multi.model_capacity_m0_m2_unit.v2"
+SUMMARY_SCHEMA = "agent_multi.model_capacity_m0_m2_summary.v3"
 SUPERSEDED_DESIGN_SHA256 = (
-    "d18b5ea0a3957c2056b8b531fbc526b3f67b74fb38e38cee267180ed4a5c88e8"
+    "dc915b19cd78cd39cec07add224503028d9bf1b79798a03470614e4b4a69f35e"
 )
 DEFAULT_DESIGN = (
     REPO
-    / "docs/audits/evidence/MODEL_CAPACITY_M0_M2_PILOT_DESIGN_V2_2026_09_07.json"
+    / "docs/audits/evidence/MODEL_CAPACITY_M0_M2_PILOT_DESIGN_V3_2026_09_07.json"
 )
 CODE_FILES = (
     "tools/model_information_contract.py",
@@ -128,13 +128,26 @@ def make_design() -> dict[str, Any]:
             "association_ratios": [1.0, 1.5, 2.0, 2.5, 3.0],
             "seeds": [11, 12, 13],
             "algorithm": "pocket_perceptron_no_bias",
+            "input_distribution": (
+                "random_gaussian_points_in_general_position_row_normalized"
+            ),
             "max_updates": 20000,
             "perfect_fit_tolerance": 1.0,
             "theoretical_reference": "approximately_two_random_binary_associations_per_weight_under_stated_single_threshold_neuron_assumptions",
+            "theoretical_reference_citation": (
+                "MacKay_2003_chapter_40_capacity_of_a_single_neuron_"
+                "and_Cover_1965_geometrical_statistical_properties"
+            ),
         },
         "boolean_mlp": {
             "input_count": 12,
-            "rules": ["majority", "xor3", "three_term_dnf"],
+            "rules": [
+                "first_bit_identity_control",
+                "majority",
+                "xor3",
+                "three_term_dnf",
+                "random_labels_null_control",
+            ],
             "train_label_noise": [0.0, 0.2],
             "hidden_widths": [4, 16, 64],
             "seeds": [11, 12, 13],
@@ -142,7 +155,11 @@ def make_design() -> dict[str, Any]:
         },
         "temporal_mlp": {
             "families": ["sine", "chirp", "heavisine"],
-            "snr_db": ["inf", 10, 0],
+            "noise_regimes": [
+                {"perturbation": "white", "snr_db": ["inf", 10, 0]},
+                {"perturbation": "colored", "snr_db": [10]},
+                {"perturbation": "impulsive", "snr_db": [10]},
+            ],
             "hidden_widths": [8, 32],
             "seeds": [11, 12],
             "lookback": 16,
@@ -183,6 +200,8 @@ def make_design() -> dict[str, Any]:
                 "quantized_8bit_zlib_bytes",
                 "histogram_entropy_bits_per_parameter",
                 "effective_rank",
+                "magnitude_pruning_distortion",
+                "low_rank_distortion",
             ],
             "trajectory_association": (
                 "within_unit_pearson_only_when_both_series_have_nonzero_variance"
@@ -228,7 +247,7 @@ def verify_design(design: dict[str, Any]) -> None:
     if design["code_identity"] != current_code_identity():
         raise PilotRefusal("design code identity does not match executing bytes")
     if design["supersedes_design_sha256"] != SUPERSEDED_DESIGN_SHA256:
-        raise PilotRefusal("design does not supersede the frozen v1 pilot")
+        raise PilotRefusal("design does not supersede the frozen v2 pilot")
     resources = design["resources"]
     if resources.get("device") != "cpu":
         raise PilotRefusal("pilot device must be cpu")
@@ -308,20 +327,22 @@ def expected_units(design: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
                     )
     temporal = design["temporal_mlp"]
     for family in temporal["families"]:
-        for snr in temporal["snr_db"]:
-            for width in temporal["hidden_widths"]:
-                for seed in temporal["seeds"]:
-                    units.append(
-                        (
-                            "temporal_mlp",
-                            {
-                                "family": family,
-                                "snr_db": snr,
-                                "hidden_width": width,
-                                "seed": seed,
-                            },
+        for regime in temporal["noise_regimes"]:
+            for snr in regime["snr_db"]:
+                for width in temporal["hidden_widths"]:
+                    for seed in temporal["seeds"]:
+                        units.append(
+                            (
+                                "temporal_mlp",
+                                {
+                                    "family": family,
+                                    "perturbation": regime["perturbation"],
+                                    "snr_db": snr,
+                                    "hidden_width": width,
+                                    "seed": seed,
+                                },
+                            )
                         )
-                    )
     return units
 
 
@@ -435,6 +456,13 @@ def _loss_and_score(
     return float(loss), float(score)
 
 
+def _record_overhead(
+    overhead: dict[str, float] | None, name: str, started: float
+) -> None:
+    if overhead is not None:
+        overhead[name] = overhead.get(name, 0.0) + (time.process_time() - started)
+
+
 def _checkpoint(
     model: TinyMLP,
     *,
@@ -447,7 +475,9 @@ def _checkpoint(
     initial_hidden: np.ndarray,
     noisy_train_targets: torch.Tensor | None,
     clean_train_targets: torch.Tensor | None,
+    overhead: dict[str, float] | None = None,
 ) -> dict[str, Any]:
+    started = time.process_time()
     losses: dict[str, float] = {}
     scores: dict[str, float] = {}
     for name, pair in (
@@ -458,6 +488,8 @@ def _checkpoint(
         loss, score = _loss_and_score(model, *pair, classification=classification)
         losses[name] = loss
         scores[name] = score
+    _record_overhead(overhead, "losses_and_scores", started)
+    started = time.process_time()
     with torch.no_grad():
         _, hidden = model(calibration[0][:128], return_hidden=True)
     hidden_np = hidden.detach().cpu().numpy()
@@ -479,6 +511,23 @@ def _checkpoint(
                 }
     else:
         memorization = {"available": False, "reason": "not_a_noisy_label_task"}
+    _record_overhead(overhead, "sample_specific_memorization", started)
+    started = time.process_time()
+    model_description = mic.describe_model_arrays(_tensor_state(model))
+    _record_overhead(overhead, "model_description", started)
+    started = time.process_time()
+    activation = {
+        "effective_dimension": _effective_dimension(hidden_np),
+        "linear_cka_to_initial": _linear_cka(initial_hidden, hidden_np),
+    }
+    _record_overhead(overhead, "activation_geometry", started)
+    started = time.process_time()
+    differential = _gradient_and_hessian_metrics(
+        model,
+        *calibration,
+        classification=classification,
+    )
+    _record_overhead(overhead, "gradient_fisher_hessian", started)
     body = {
         "schema": "agent_multi.model_capacity_checkpoint.v1",
         "epoch": epoch,
@@ -487,22 +536,17 @@ def _checkpoint(
         "losses": losses,
         "scores": scores,
         "sample_specific_memorization": memorization,
-        "model_description": mic.describe_model_arrays(_tensor_state(model)),
-        "activation": {
-            "effective_dimension": _effective_dimension(hidden_np),
-            "linear_cka_to_initial": _linear_cka(initial_hidden, hidden_np),
-        },
-        "differential": _gradient_and_hessian_metrics(
-            model,
-            *calibration,
-            classification=classification,
-        ),
+        "model_description": model_description,
+        "activation": activation,
+        "differential": differential,
     }
     return mic.seal_document(body, "checkpoint_sha256")
 
 
 def _boolean_rule(name: str, values: np.ndarray) -> np.ndarray:
     bits = values.astype(bool)
+    if name == "first_bit_identity_control":
+        return bits[:, 0].astype(np.float32)
     if name == "majority":
         return (bits.sum(axis=1) >= bits.shape[1] / 2).astype(np.float32)
     if name == "xor3":
@@ -513,6 +557,8 @@ def _boolean_rule(name: str, values: np.ndarray) -> np.ndarray:
         result = (bits[:, 0] & bits[:, 1]) | (bits[:, 2] & ~bits[:, 3])
         result |= bits[:, 4] & bits[:, 5] & bits[:, 6]
         return result.astype(np.float32)
+    if name == "random_labels_null_control":
+        raise PilotRefusal("random-label control requires a split-specific seed")
     raise PilotRefusal(f"unknown Boolean rule {name}")
 
 
@@ -538,9 +584,20 @@ def _boolean_data(design: dict[str, Any], spec: dict[str, Any]):
         all_patterns[cal_idx],
         all_patterns[eval_idx],
     )
-    y_train_clean = _boolean_rule(spec["rule"], x_train)
-    y_cal = _boolean_rule(spec["rule"], x_cal)
-    y_eval = _boolean_rule(spec["rule"], x_eval)
+    if spec["rule"] == "random_labels_null_control":
+        y_train_clean = np.random.default_rng(
+            _seed(spec, "random_labels_train")
+        ).integers(0, 2, len(x_train), dtype=np.int8).astype(np.float32)
+        y_cal = np.random.default_rng(_seed(spec, "random_labels_calibration")).integers(
+            0, 2, len(x_cal), dtype=np.int8
+        ).astype(np.float32)
+        y_eval = np.random.default_rng(_seed(spec, "random_labels_evaluation")).integers(
+            0, 2, len(x_eval), dtype=np.int8
+        ).astype(np.float32)
+    else:
+        y_train_clean = _boolean_rule(spec["rule"], x_train)
+        y_cal = _boolean_rule(spec["rule"], x_cal)
+        y_eval = _boolean_rule(spec["rule"], x_eval)
     flip_rng = np.random.default_rng(_seed(spec, "label_noise"))
     flips = flip_rng.random(len(y_train_clean)) < float(spec["train_label_noise"])
     y_train = np.logical_xor(y_train_clean.astype(bool), flips).astype(np.float32)
@@ -563,7 +620,9 @@ def _boolean_data(design: dict[str, Any], spec: dict[str, Any]):
 def _temporal_data(design: dict[str, Any], spec: dict[str, Any]):
     rng = np.random.default_rng(_seed(spec, "temporal_signal"))
     clean = t1_bank.clean_signal(spec["family"], rng)[0]
-    perturbation = t1_bank.realized_noise("white", clean[None, :], spec["snr_db"], rng)
+    perturbation = t1_bank.realized_noise(
+        spec["perturbation"], clean[None, :], spec["snr_db"], rng
+    )
     observed = (clean[None, :] + perturbation["noise"])[0]
     lookback = design["temporal_mlp"]["lookback"]
     features = np.array(
@@ -636,6 +695,7 @@ def _train_mlp_unit(
     design: dict[str, Any],
     kind: str,
     spec: dict[str, Any],
+    overhead: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     torch.manual_seed(_seed(spec, "model"))
     torch.use_deterministic_algorithms(True)
@@ -694,6 +754,7 @@ def _train_mlp_unit(
             initial_hidden=initial_hidden,
             noisy_train_targets=observed_train,
             clean_train_targets=clean_train,
+            overhead=overhead,
         )
     )
     for epoch in range(1, int(training["max_epochs"]) + 1):
@@ -737,6 +798,7 @@ def _train_mlp_unit(
                     initial_hidden=initial_hidden,
                     noisy_train_targets=observed_train,
                     clean_train_targets=clean_train,
+                    overhead=overhead,
                 )
             )
         if diagnostic_end is not None and epoch >= diagnostic_end:
@@ -756,6 +818,7 @@ def _train_mlp_unit(
         initial_hidden=initial_hidden,
         noisy_train_targets=observed_train,
         clean_train_targets=clean_train,
+        overhead=overhead,
     )
     _load_state(model, diagnostic_state)
     diagnostic_checkpoint = _checkpoint(
@@ -773,12 +836,19 @@ def _train_mlp_unit(
         initial_hidden=initial_hidden,
         noisy_train_targets=observed_train,
         clean_train_targets=clean_train,
+        overhead=overhead,
     )
     # Restore selected state so no caller can accidentally consume diagnostics.
     _load_state(model, best_state)
+    started = time.process_time()
+    data_description = mic.describe_data_arrays(arrays, repeated_exposures=epoch)
+    _record_overhead(overhead, "data_description", started)
+    started = time.process_time()
+    initial_model_description = mic.describe_model_arrays(initial_state)
+    _record_overhead(overhead, "initial_model_description", started)
     return {
-        "data_description": mic.describe_data_arrays(arrays, repeated_exposures=epoch),
-        "initial_model_description": mic.describe_model_arrays(initial_state),
+        "data_description": data_description,
+        "initial_model_description": initial_model_description,
         "checkpoints": checkpoints,
         "stopping": {
             "selection_epoch": best_epoch,
@@ -793,7 +863,11 @@ def _train_mlp_unit(
     }
 
 
-def _threshold_unit(design: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+def _threshold_unit(
+    design: dict[str, Any],
+    spec: dict[str, Any],
+    overhead: dict[str, float] | None = None,
+) -> dict[str, Any]:
     rng = np.random.default_rng(_seed(spec, "threshold"))
     n = int(spec["associations"])
     k = int(spec["inputs"])
@@ -827,15 +901,19 @@ def _threshold_unit(design: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
     eval_accuracy = float(np.mean(labels_eval * (x_eval @ weight) > 0))
     arrays = {"inputs": x, "labels": labels, "evaluation_inputs": x_eval,
               "evaluation_labels": labels_eval}
+    started = time.process_time()
+    data_description = mic.describe_data_arrays(
+        arrays,
+        repeated_exposures=(converged_at if converged_at is not None else max_updates)
+        + 1,
+    )
+    _record_overhead(overhead, "data_description", started)
+    started = time.process_time()
+    model_description = mic.describe_model_arrays({"weight": weight})
+    _record_overhead(overhead, "model_description", started)
     return {
-        "data_description": mic.describe_data_arrays(
-            arrays,
-            repeated_exposures=(
-                converged_at if converged_at is not None else max_updates
-            )
-            + 1,
-        ),
-        "model_description": mic.describe_model_arrays({"weight": weight}),
+        "data_description": data_description,
+        "model_description": model_description,
         "train_accuracy": train_accuracy,
         "independent_random_label_evaluation_accuracy": eval_accuracy,
         "perfect_fit": train_accuracy == 1.0,
@@ -853,6 +931,7 @@ UNIT_KEYS = {
     "code_identity",
     "status",
     "result",
+    "diagnostic_cpu_seconds",
     "cpu_wall_seconds",
     "peak_rss_bytes",
     "record_sha256",
@@ -860,19 +939,23 @@ UNIT_KEYS = {
 
 
 def _scientific_result(
-    design: dict[str, Any], kind: str, spec: dict[str, Any]
+    design: dict[str, Any],
+    kind: str,
+    spec: dict[str, Any],
+    overhead: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     return (
-        _threshold_unit(design, spec)
+        _threshold_unit(design, spec, overhead)
         if kind == "threshold_neuron"
-        else _train_mlp_unit(design, kind, spec)
+        else _train_mlp_unit(design, kind, spec, overhead)
     )
 
 
 def _run_unit(design: dict[str, Any], kind: str, spec: dict[str, Any]) -> dict[str, Any]:
     started = time.perf_counter()
     unit_id = _unit_id(kind, spec)
-    result = _scientific_result(design, kind, spec)
+    overhead: dict[str, float] = {}
+    result = _scientific_result(design, kind, spec, overhead)
     body = {
         "schema": UNIT_SCHEMA,
         "unit_id": unit_id,
@@ -882,6 +965,9 @@ def _run_unit(design: dict[str, Any], kind: str, spec: dict[str, Any]) -> dict[s
         "code_identity": design["code_identity"],
         "status": "COMPLETED",
         "result": result,
+        "diagnostic_cpu_seconds": {
+            key: round(value, 9) for key, value in sorted(overhead.items())
+        },
         "cpu_wall_seconds": round(time.perf_counter() - started, 6),
         "peak_rss_bytes": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024),
     }
@@ -908,6 +994,12 @@ def verify_unit_record(
         raise PilotRefusal("unit is not completed")
     mic.require_number("cpu_wall_seconds", record["cpu_wall_seconds"], minimum=0.0)
     mic.require_int("peak_rss_bytes", record["peak_rss_bytes"], minimum=1)
+    if not isinstance(record["diagnostic_cpu_seconds"], dict):
+        raise PilotRefusal("diagnostic overhead must be a mapping")
+    for name, value in record["diagnostic_cpu_seconds"].items():
+        if not isinstance(name, str) or not name:
+            raise PilotRefusal("diagnostic overhead name is invalid")
+        mic.require_number(f"diagnostic_cpu_seconds.{name}", value, minimum=0.0)
     result = record["result"]
     mic.verify_data_description(result["data_description"])
     if kind == "threshold_neuron":
@@ -1050,7 +1142,10 @@ def _mlp_group_summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
         elif record["kind"] == "temporal_mlp":
             key = (
                 record["spec"]["family"],
-                f"snr_db={record['spec']['snr_db']}",
+                (
+                    f"perturbation={record['spec']['perturbation']};"
+                    f"snr_db={record['spec']['snr_db']}"
+                ),
                 record["spec"]["hidden_width"],
             )
         else:
@@ -1237,6 +1332,22 @@ def derive_summary(records: list[dict[str, Any]], design: dict[str, Any]) -> dic
                 sum(record["cpu_wall_seconds"] for record in records)
             ),
             "peak_rss_bytes": int(max(record["peak_rss_bytes"] for record in records)),
+            "producer_measured_diagnostic_cpu_seconds": {
+                name: float(
+                    sum(
+                        record["diagnostic_cpu_seconds"].get(name, 0.0)
+                        for record in records
+                    )
+                )
+                for name in sorted(
+                    {
+                        name
+                        for record in records
+                        for name in record["diagnostic_cpu_seconds"]
+                    }
+                )
+            },
+            "timing_authority": "producer_measured_resource_telemetry_not_scientific_score",
         },
         "claims_not_made": [
             "exact_kolmogorov_complexity",
