@@ -301,6 +301,27 @@ _DESIGN_KEYS = {
     "verifier_specification", "design_review_record_sha256",
     "design_sha256"}
 
+T2_SUCCESSOR_SCHEMA = ("agent_multi.t2_screen_design"
+                       ".v6_resource_successor")
+
+
+def t2_active_design_path() -> Path:
+    """C76: the resource-only successor supersedes v6 for
+    execution when present; v6 stays byte-immutable."""
+    state = Path.home() / ".local/share/agent-multi"
+    succ = state / "t2_screen_design_RESOURCE_SUCCESSOR_V1.json"
+    return succ if succ.exists() else \
+        state / "t2_screen_design_SEALED_V6.json"
+T2_SUCCESSOR_EXTRA_KEYS = {"supersedes_sealed_file_sha256",
+                           "supersedes_sealed_self_sha256",
+                           "resource_amendment"}
+T2_SUCCESSOR_CLASSIFICATION = (
+    "DISCLOSED_PRE_EXECUTION_RESOURCE_LIMIT_AMENDMENT_FROM_"
+    "MEASURED_IMPLEMENTATION_COST")
+T2_SUCCESSOR_MAX_WALL = 216000
+T2_BUDGET_PROJECTION_PATH = (
+    REPO / "docs/audits/evidence/"
+           "T2_BUDGET_PROJECTION_2026_09_08.json")
 _ACCEPTED_DESIGN_SCHEMAS = {"agent_multi.t2_screen_design.v6_draft",
                       "agent_multi.t2_screen_design.v6"}
 SCREEN_OUTCOMES = ("ADVANCE_TO_DOMAIN_VALIDATION",
@@ -338,10 +359,16 @@ def validate_confirmatory_design(design: dict,
         # C39: the SEALED object carries exactly one extra field —
         # the review chronology; drafts never carry it.
         _want_keys = _DESIGN_KEYS | {"sealed_at_date"}
+    if isinstance(design, dict) and \
+            design.get("schema") == T2_SUCCESSOR_SCHEMA:
+        _want_keys = _DESIGN_KEYS | {"sealed_at_date"} | \
+            T2_SUCCESSOR_EXTRA_KEYS
     if not isinstance(design, dict) or set(design) != _want_keys:
         raise ConfirmatoryRefusal(
             "confirmatory design absent or not the exact schema")
-    if design.get("schema") not in _ACCEPTED_DESIGN_SCHEMAS:
+    if design.get("schema") == T2_SUCCESSOR_SCHEMA:
+        pass          # field-by-field diff verified at the gates
+    elif design.get("schema") not in _ACCEPTED_DESIGN_SCHEMAS:
         raise ConfirmatoryRefusal(
             "design schema is not the v4 T2-S screen contract — "
             "superseded drafts (v3 and earlier) never validate")
@@ -734,6 +761,100 @@ def verify_design_review_record(design: dict,
     return rec
 
 
+def _flatten_paths(obj, prefix=()):
+    out = {}
+    if isinstance(obj, dict):
+        for k in obj:
+            out.update(_flatten_paths(obj[k], prefix + (k,)))
+    else:
+        out[prefix] = obj
+    return out
+
+
+_SUCCESSOR_ALLOWED_DELTAS = {
+    ("schema",), ("design_sha256",),
+    ("supersedes_sealed_file_sha256",),
+    ("supersedes_sealed_self_sha256",),
+    ("resource_amendment",),
+    ("resource_contract", "max_wall_seconds")}
+
+
+def verify_resource_successor(successor: dict,
+                              sealed_path: Path = None) -> None:
+    """C76: an EXECUTABLE field-by-field diff — the successor may
+    differ from the immutable v6 ONLY in schema/self-digest,
+    supersession bindings, the amendment metadata and
+    resource_contract.max_wall_seconds (216,000 s hard ceiling).
+    Any scientific delta refuses. v6 stays byte-immutable."""
+    sealed_path = sealed_path or (
+        Path.home() / ".local/share/agent-multi/"
+                      "t2_screen_design_SEALED_V6.json")
+    sealed = strict_json_load(sealed_path, "sealed v6 design")
+    if _self_sha_design(sealed) != sealed.get("design_sha256"):
+        raise ConfirmatoryRefusal(
+            "sealed v6 self identity does not re-derive")
+    if _self_sha_design(successor) != \
+            successor.get("design_sha256"):
+        raise ConfirmatoryRefusal(
+            "successor self identity does not re-derive")
+    if successor.get("supersedes_sealed_file_sha256") != \
+            _sha_file(sealed_path):
+        raise ConfirmatoryRefusal(
+            "successor does not pin the immutable v6 physical "
+            "bytes")
+    if successor.get("supersedes_sealed_self_sha256") != \
+            sealed.get("design_sha256"):
+        raise ConfirmatoryRefusal(
+            "successor does not pin the immutable v6 self "
+            "identity")
+    am = successor.get("resource_amendment")
+    if type(am) is not dict or am.get("classification") != \
+            T2_SUCCESSOR_CLASSIFICATION:
+        raise ConfirmatoryRefusal(
+            "successor amendment classification is not the "
+            "truthful disclosed pre-execution resource label")
+    if am.get("chronology_pre_execution") is not True:
+        raise ConfirmatoryRefusal(
+            "successor amendment must state the pre-execution "
+            "chronology")
+    if successor["resource_contract"].get("max_wall_seconds") \
+            != T2_SUCCESSOR_MAX_WALL:
+        raise ConfirmatoryRefusal(
+            "successor hard campaign ceiling must be exactly "
+            f"{T2_SUCCESSOR_MAX_WALL} seconds")
+    flat_a = _flatten_paths(sealed)
+    flat_b = _flatten_paths(successor)
+    deltas = set()
+    for path in set(flat_a) | set(flat_b):
+        if flat_a.get(path, "\x00absent") != \
+                flat_b.get(path, "\x00absent"):
+            deltas.add(path)
+    normalized = set()
+    for d in deltas:
+        for allowed in _SUCCESSOR_ALLOWED_DELTAS:
+            if d[:len(allowed)] == allowed:
+                normalized.add(allowed)
+                break
+        else:
+            raise ConfirmatoryRefusal(
+                "successor carries a SCIENTIFIC delta at "
+                f"{'.'.join(map(str, d))} — a resource-only "
+                "successor may never change it")
+    for k in ("cpu_nice", "max_rss_bytes", "stop_file"):
+        if successor["resource_contract"].get(k) != \
+                sealed["resource_contract"].get(k):
+            raise ConfirmatoryRefusal(
+                f"successor resource_contract.{k} must stay "
+                "byte-equivalent")
+
+
+def _self_sha_design(design: dict) -> str:
+    body = {k: design[k] for k in sorted(design)
+            if k != "design_sha256"}
+    return hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+
+
 def open_attempt_ledger(path: Path) -> dict:
     """C15: the durable append-only attempt ledger — created ONLY
     after every prior verification (never as a side effect of a
@@ -832,6 +953,12 @@ def verify_confirmatory_gates(manifest_path: Path,
             "SEALED_DESIGN_REQUIRED: a draft schema never scores "
             "— seal the accepted draft v6 through the external "
             "review record first")
+    # C76: a resource-only successor must prove its executable
+    # field-by-field diff against the immutable v6 at every gate
+    # pass; any scientific delta refuses.
+    if design.get("schema") == T2_SUCCESSOR_SCHEMA:
+        verify_resource_successor(design)
+
     # C28: the fresh-process re-derivation runs INSIDE the single
     # path, immediately before any durable artifact — census and
     # design schemas via the productive parsers, population,
@@ -845,6 +972,25 @@ def verify_confirmatory_gates(manifest_path: Path,
     # ledger artifact can exist.
     review = verify_design_review_record(design, manifest_sha,
                                          census_sha)
+    # C77: the committed budget projection is non-authoritative
+    # planning evidence, but a design whose HARD limit is below
+    # the committed feasibility estimate refuses BEFORE execution
+    # authority is consumed. The projection never grants time —
+    # the hard wall alone governs runtime.
+    if T2_BUDGET_PROJECTION_PATH.is_file():
+        proj = strict_json_load(T2_BUDGET_PROJECTION_PATH,
+                                "budget projection")
+        need = float(proj["projection_wall_seconds"])
+        have = float(design["resource_contract"]
+                     ["max_wall_seconds"])
+        if have < need:
+            raise ConfirmatoryRefusal(
+                "T2_DESIGN_HARD_LIMIT_BELOW_COMMITTED_"
+                f"FEASIBILITY_ESTIMATE: the design's hard wall "
+                f"({have:.0f}s) is below the committed "
+                f"projection ({need:.0f}s) — a transparent "
+                "resource successor is required; the projection "
+                "itself never grants time")
     # C48 (execution-custody order): confirmatory EXECUTION is
     # structurally closed by a SECOND external record — the
     # Musashi v2 execution record at the private authority root,

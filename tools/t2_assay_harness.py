@@ -621,7 +621,7 @@ def main() -> int:
         # scoring belongs exclusively to the executor's --execute.
         conf.verify_confirmatory_gates(
             state / "t2_public_data_manifest_20260906.json",
-            state / "t2_screen_design_SEALED_V6.json",
+            conf.t2_active_design_path(),
             census_path=state / "t2_bank_census_20260906.json")
         raise HarnessRefusal(
             "T2_SCORING_ONLY_VIA_EXECUTOR: the gates opened but "

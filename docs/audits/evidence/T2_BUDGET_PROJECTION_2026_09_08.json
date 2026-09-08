@@ -1,0 +1,28 @@
+{
+ "schema": "agent_multi.t2_budget_projection.v1",
+ "authority": "NON_AUTHORITATIVE_PLANNING_EVIDENCE_NEVER_GRANTS_TIME",
+ "computed_at_date": "2026-09-08",
+ "population_units": 242,
+ "population_observations_total": 4317185,
+ "population_observations_mean": 17840,
+ "population_observations_max": 95994,
+ "dev_basis": {
+  "rehearsal_wall_seconds": 26.7,
+  "rehearsal_observations": 935,
+  "rehearsal_units": 3,
+  "harness": "corrected single-supervised-fit harness (C70)"
+ },
+ "work_census": {
+  "selected_model_instances": 7744,
+  "linear_solves": 1936,
+  "mlp_selection_sequences": 5808,
+  "mlp_candidate_fits": 23232,
+  "prediction_sets": 15488,
+  "baseline_evals": 484
+ },
+ "scaling_assumption": "fitting wall scales linearly in unit observations (dominant MLP cost is linear in training rows)",
+ "projection_wall_seconds": 123282,
+ "projection_hours": 34.25,
+ "headroom_vs_216000s_hard_ceiling": 1.75,
+ "notes": "the final deep re-verification pass adds a no-fit verification sweep; runtime obeys the HARD wall only and may stop earlier; this projection can never extend any limit"
+}

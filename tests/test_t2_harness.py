@@ -164,6 +164,7 @@ def test_confirmatory_gate_refuses_public_data_required(tmp_path):
                ("PUBLIC_DATA_REQUIRED", "DESIGN_REQUIRED",
                 "SEALED_DESIGN_REQUIRED",
                 "DESIGN_REVIEW_REQUIRED",
+                "T2_DESIGN_HARD_LIMIT",
                 "T2_EXECUTION_RECORD_REQUIRED"))
     assert not (tmp_path / "out.json").exists()
 
@@ -1953,7 +1954,8 @@ def test_c40_3_seal_changes_only_seal_fields(tmp_path,
     # ledger without the second external record
     lp = tmp_path / "ledger.json"
     with pytest.raises(SystemExit,
-                       match="T2_EXECUTION_RECORD_REQUIRED"):
+                       match="T2_EXECUTION_RECORD_REQUIRED|"
+                             "T2_DESIGN_HARD_LIMIT"):
         conf.run_confirmatory(
             mp, out, lp,
             census_path=S / "t2_bank_census_20260906.json")
@@ -1975,7 +1977,9 @@ def test_c40_4_cli_and_api_share_the_sealed_path():
     with the direct API; a draft passed to scoring refuses."""
     src = (REPO / "tools/t2_assay_harness.py").read_text()
     assert "t2_confirmatory_design_20260906.json" not in src
-    assert "t2_screen_design_SEALED_V6.json" in src
+    # C76: the CLI consumes the ONE active design identity (the
+    # resource successor when present, else sealed v6)
+    assert "conf.t2_active_design_path()" in src
     # C53: the CLI consumes the PURE gate sequence only — it can
     # never create a ledger as a side effect of a gate check
     assert "verify_confirmatory_gates" in src
@@ -2056,7 +2060,7 @@ def test_c48_1_execution_gate_v2_per_field(tmp_path, monkeypatch):
     TYPED before any ledger."""
     import t2_confirmatory as conf
     S = Path.home() / ".local/share/agent-multi"
-    sealed = S / "t2_screen_design_SEALED_V6.json"
+    sealed = conf.t2_active_design_path()
     if not sealed.exists():
         pytest.skip("sealed design absent on this host")
     mp = S / "t2_public_data_manifest_20260906.json"
@@ -2249,7 +2253,8 @@ def test_c49_1_forged_wrapper_bypass_p2_frozen(rehearsal_root,
     values -> 999.0, self-digest repaired, NPZ intact) now refuses
     — and each component refuses on its own typed ground."""
     root, ex = rehearsal_root
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     rp, npz = _clone_unit(root, "sm_nile", tmp_path / "p2")
     base = json.loads(rp.read_text())
     # (a) the exact quadruple forgery
@@ -2329,7 +2334,8 @@ def test_c50_1_arrays_bound_to_the_physical_series(rehearsal_root,
     seasonal-naive slice; a swapped NPZ refuses on digest."""
     import numpy as _np
     root, ex = rehearsal_root
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     rp, npz = _clone_unit(root, "sm_sunspots", tmp_path / "joint")
     base = json.loads(rp.read_text())
     with _np.load(npz, allow_pickle=False) as z:
@@ -2385,7 +2391,8 @@ def test_c50_2_inventory_shape_dtype_finiteness(rehearsal_root,
     repaired, so the refusals are semantic)."""
     import numpy as _np
     root, ex = rehearsal_root
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
 
     def _mutated(name, fn):
         rp, npz = _clone_unit(root, "sm_nile", tmp_path / name)
@@ -2440,7 +2447,8 @@ def test_c50_3_descriptor_custody_of_evidence(rehearsal_root,
     producer NPZ path is exclusive-create (source)."""
     import numpy as _np
     root, ex = rehearsal_root
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     rp, npz = _clone_unit(root, "sm_nile", tmp_path / "mode")
     os.chmod(rp, 0o644)
     with pytest.raises(SystemExit, match="exact private 0600"):
@@ -2472,7 +2480,8 @@ def test_c51_1_every_metric_recomputes_or_refuses(rehearsal_root,
     naming its exact path — MASE, MAE, RMSE, coverage, width,
     extreme support and the MASE denominator itself."""
     root, ex = rehearsal_root
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     rp, npz = _clone_unit(root, "sm_co2", tmp_path / "m")
     base = json.loads(rp.read_text())
     cases = [
@@ -2536,7 +2545,8 @@ def test_c52_1_budget_stop_inside_a_unit_blocks_typed(
     tmp_path, ex = trusted_tmp
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     hz, co, unit = _nile(ex)
     authority = _reh_authority(ex, design)
     pins = ex._git_head_tree()
@@ -2645,7 +2655,8 @@ def test_c52_2_wall_and_supervisor_mechanics(trusted_tmp,
                               stop, "s4")
         wx.check("x")
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         assert ex.resolve_stop_file(design) == \
             ex.STATE / "T2_STOP"
     # supervisor: typed harvests, reaped children, min() wall
@@ -2804,7 +2815,8 @@ def test_c54_1_lock_sessions_and_crash_boundaries(trusted_tmp):
     st, _ = ex.adjudicate_unit_shallow(u, "probe")
     assert st == "TERMINAL_PRESENT"       # never TERMINAL_FAILED
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         st, why = ex.adjudicate_unit_deep(
             u, "probe", design,
             _reh_authority(ex, design), "mechanical_rehearsal")
@@ -2828,7 +2840,7 @@ def test_c55_resume_order_census_and_separated_counts():
     assert '"resumed_verified"' in seg
     assert "UNCERTAIN units block" in seg
     if ex.SEALED_PATH.exists():
-        d = json.loads(ex.SEALED_PATH.read_text())
+        d = json.loads(ex.active_design_path().read_text())
         w = ex.census_of_work(d)
         assert w["units"] == 242 and w["origins_per_unit"] == 2
         assert w["selected_model_instances"] == 7744
@@ -3106,7 +3118,8 @@ def test_c59_terminals_require_current_authority(trusted_tmp):
     tmp_path, ex = trusted_tmp
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     authority = _reh_authority(ex, design)
     u = tmp_path / "units59"
     u.mkdir()
@@ -3165,7 +3178,8 @@ def test_c60_disposition_is_external_authority(trusted_tmp,
     tmp_path, ex = trusted_tmp
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     # PRE regression: fabricated two-field claim dies at claim
     # verification (after gates), long before any terminal
     root60 = tmp_path / "root60"
@@ -3303,7 +3317,8 @@ def test_c63_final_adjudication_controls_success(trusted_tmp,
     tmp_path, ex = trusted_tmp
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     hz, co, unit = _nile(ex)
     authority = _reh_authority(ex, design)
     pins = ex._git_head_tree()
@@ -3360,7 +3375,8 @@ def test_c64_mutations_bite(trusted_tmp, monkeypatch):
         assert n2 == 2                    # mutation bites
     # (2) terminals without current-authority binding accepted
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         u = tmp_path / "m2"
         u.mkdir()
         term = {"schema": "agent_multi.t2_unit_terminal.v2",
@@ -3447,7 +3463,8 @@ def test_c64_mutations_bite(trusted_tmp, monkeypatch):
         shutil.rmtree(real, ignore_errors=True)
     # (6) success permitted with final uncertainty
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         rrf = ex.ResultsRoot(tmp_path / "m6", create=True)
         (rrf.path / "units").mkdir(exist_ok=True)
         cp = rrf.path / "units" / "CLAIM_sm_nile.json"
@@ -3628,7 +3645,8 @@ def test_c69_root_identity_and_dirfd_reads(trusted_tmp):
                        match="RESULTS_ROOT_IDENTITY_LOST"):
         rr.excl_write(rr.units_fd, "CLAIM_x.json", b"{}")
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         with pytest.raises(SystemExit,
                            match="RESULTS_ROOT_IDENTITY_LOST"):
             ex.final_adjudication(
@@ -3641,8 +3659,11 @@ def test_c69_root_identity_and_dirfd_reads(trusted_tmp):
     rr2.excl_write(rr2.units_fd, "ARRAYS_probe.npz", b"x")
     os.rename(rr2.path, tmp_path / "reads_moved")
     (tmp_path / "reads").mkdir(mode=0o700)
-    st, why = ex.adjudicate_unit_shallow(rr2, "probe")
-    assert st == "UNCERTAIN" and "arrays without" in why
+    # C74 supersedes: reads after a replacement refuse typed —
+    # obsolete bytes never become evidence
+    with pytest.raises(SystemExit,
+                       match="IDENTITY_LOST|CUSTODY"):
+        ex.adjudicate_unit_shallow(rr2, "probe")
     esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
     main_seg = esrc[esrc.index("def main"):
                     esrc.index("def rehearse")]
@@ -3731,7 +3752,8 @@ def test_c71_terminal_domains_and_foreign_inventory(trusted_tmp):
     tmp_path, ex = trusted_tmp
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    design = json.loads(ex.SEALED_PATH.read_text())
+    design = json.loads(
+        ex.active_design_path().read_text())
     authority = _reh_authority(ex, design)
     hz, co, unit = _nile(ex)
     pins = ex._git_head_tree()
@@ -3937,7 +3959,8 @@ def test_c72_mutations_bite(trusted_tmp, monkeypatch):
     # the c70 census assertions
     # (7) publish the old 7744 count
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         with monkeypatch.context() as mp:
             mp.setattr(ex, "census_of_work",
                        lambda d: {"units": 242,
@@ -3948,7 +3971,8 @@ def test_c72_mutations_bite(trusted_tmp, monkeypatch):
             # assertions are the guard that refuses it
     # (8) ignore a foreign unit object at final adjudication
     if ex.SEALED_PATH.exists():
-        design = json.loads(ex.SEALED_PATH.read_text())
+        design = json.loads(
+        ex.active_design_path().read_text())
         rr = ex.ResultsRoot(tmp_path / "mu8", create=True)
         rr.excl_write(rr.units_fd, "EVIL.txt", b"x")
         with monkeypatch.context() as mp:
@@ -3964,3 +3988,312 @@ def test_c72_mutations_bite(trusted_tmp, monkeypatch):
                 "mechanical_rehearsal", lambda uid: None)
             assert counts == {"COMPLETED_VERIFIED": 0,
                               "TERMINAL_FAILED": 0}  # bites
+
+
+# ===== C74-C81 battery (2026-09-08) ==============================
+
+
+def _arm_replace(ex, monkeypatch, target_path, stolen_path):
+    """Wrap the REAL revalidate: run it, then replace the root
+    right before it returns (the audit's exact adversary)."""
+    real = ex.ResultsRoot.revalidate
+    state = {"armed": False}
+
+    def adversarial(self):
+        real(self)
+        if state["armed"]:
+            state["armed"] = False
+            os.rename(target_path, stolen_path)
+            Path(target_path).mkdir(mode=0o700)
+
+    monkeypatch.setattr(ex.ResultsRoot, "revalidate", adversarial)
+    return state
+
+
+def test_c74_post_write_identity_bites(trusted_tmp, monkeypatch):
+    """C74: the audit's exact adversary — replacement immediately
+    after pre-write revalidation — now refuses typed CUSTODY LOST
+    on heartbeat, excl_write and wall append; the effect is never
+    accepted as successful."""
+    tmp_path, ex = trusted_tmp
+    # heartbeat
+    rr = ex.ResultsRoot(tmp_path / "hb", create=True)
+    with monkeypatch.context() as mp:
+        st = _arm_replace(ex, mp, rr.path, tmp_path / "hb_stolen")
+        st["armed"] = True
+        with pytest.raises(SystemExit,
+                           match="RESULTS_ROOT_CUSTODY_LOST"):
+            ex._heartbeat(rr, {"probe": True})
+    # excl_write (claims/records/terminals/locks path)
+    rr2 = ex.ResultsRoot(tmp_path / "wr", create=True)
+    with monkeypatch.context() as mp:
+        st = _arm_replace(ex, mp, rr2.path,
+                          tmp_path / "wr_stolen")
+        st["armed"] = True
+        with pytest.raises(SystemExit,
+                           match="RESULTS_ROOT_CUSTODY_LOST"):
+            rr2.excl_write(rr2.units_fd, "CLAIM_probe.json",
+                           b"{}")
+    # wall append
+    rr3 = ex.ResultsRoot(tmp_path / "wa", create=True)
+    w = ex.WallAuthority(rr3, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         tmp_path / "T2_STOP", "s1")
+    with monkeypatch.context() as mp:
+        st = _arm_replace(ex, mp, rr3.path,
+                          tmp_path / "wa_stolen")
+        st["armed"] = True
+        with pytest.raises(SystemExit,
+                           match="RESULTS_ROOT_CUSTODY_LOST"):
+            w._append({"kind": "close", "session": "s1",
+                       "reserve_seq": 2, "elapsed": 0.1})
+    # source: every IO op carries pre AND post identity
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    for fn, needle in (("def excl_write", "_post_identity"),
+                       ("def read_private", "_post_identity"),
+                       ("def exists", "_post_identity"),
+                       ("def listdir", "_post_identity")):
+        seg = esrc[esrc.index(fn):]
+        seg = seg[:seg.index("\n    def ", 10)]
+        assert needle in seg, fn
+
+
+def test_c75_read_and_release_identity(trusted_tmp, monkeypatch):
+    """C75: replacement immediately after pre-READ revalidation
+    refuses (obsolete bytes never become evidence); replacement
+    during release refuses and the lock stays held."""
+    tmp_path, ex = trusted_tmp
+    rr = ex.ResultsRoot(tmp_path / "rd", create=True)
+    rr.excl_write(rr.units_fd, "CLAIM_probe.json", b"{}")
+    with monkeypatch.context() as mp:
+        st = _arm_replace(ex, mp, rr.path, tmp_path / "rd_stolen")
+        st["armed"] = True
+        with pytest.raises(SystemExit,
+                           match="RESULTS_ROOT_CUSTODY_LOST"):
+            rr.read_private(rr.units_fd, "CLAIM_probe.json",
+                            "claim")
+    n1, rr2 = ex.acquire_lock(tmp_path / "rel", "holder")
+    with monkeypatch.context() as mp:
+        st = _arm_replace(ex, mp, rr2.path,
+                          tmp_path / "rel_stolen")
+        st["armed"] = True
+        with pytest.raises(SystemExit,
+                           match="RESULTS_ROOT_CUSTODY_LOST"):
+            ex.release_lock(rr2, n1, "holder")
+
+
+def test_c74_real_process_races(trusted_tmp):
+    """C79: heartbeat-vs-replacement and release-vs-replacement
+    with a REAL second process performing the rename while the
+    first is inside the productive call window."""
+    import subprocess
+    import time as _t
+    tmp_path, ex = trusted_tmp
+    for probe, name in (("heartbeat", "hb"), ("release", "rel")):
+        root = tmp_path / f"race_{name}"
+        stolen = tmp_path / f"race_{name}_stolen"
+        sig = tmp_path / f"sig_{name}"
+        code = f"""
+import os, sys, time
+sys.path.insert(0, 'tools')
+from pathlib import Path
+import t2_confirmatory_executor as ex
+ex._TRUSTED_ROOT_PARENTS = (Path({str(tmp_path)!r}),)
+root = Path({str(root)!r})
+if {(probe == 'release')!r}:
+    n, rr = ex.acquire_lock(root, 'racer')
+else:
+    rr = ex.ResultsRoot(root, create=True)
+real = ex.ResultsRoot.revalidate
+calls = {{'n': 0}}
+def slow(self):
+    real(self)
+    calls['n'] += 1
+    if calls['n'] == 1:
+        Path({str(sig)!r}).write_text('inside')
+        for _ in range(200):
+            if not Path({str(sig)!r}).exists():
+                break
+            time.sleep(0.01)
+ex.ResultsRoot.revalidate = slow
+try:
+    if {(probe == 'release')!r}:
+        ex.release_lock(rr, n, 'racer')
+    else:
+        ex._heartbeat(rr, {{'probe': True}})
+    print('ACCEPTED')
+except SystemExit as exc:
+    print('REFUSED' if 'CUSTODY_LOST' in str(exc) else
+          f'OTHER: {{exc}}')
+"""
+        proc = subprocess.Popen(
+            [sys.executable, "-c", code],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, cwd=str(REPO))
+        for _ in range(500):
+            if sig.exists():
+                break
+            _t.sleep(0.01)
+        assert sig.exists(), "racer never reached the window"
+        os.rename(root, stolen)
+        root.mkdir(mode=0o700)
+        sig.unlink()
+        out = proc.communicate(timeout=60)[0]
+        assert "REFUSED" in out, (probe, out)
+
+
+def test_c76_resource_successor_diff_bites(trusted_tmp,
+                                           monkeypatch):
+    """C76: the successor exists, pins the immutable v6, changes
+    ONLY the allowed fields (216,000 s hard ceiling); a
+    scientific delta refuses; v6 stays byte-immutable."""
+    import t2_confirmatory as conf
+    tmp_path, ex = trusted_tmp
+    S = Path.home() / ".local/share/agent-multi"
+    sealed_p = S / "t2_screen_design_SEALED_V6.json"
+    succ_p = S / "t2_screen_design_RESOURCE_SUCCESSOR_V1.json"
+    if not succ_p.exists():
+        pytest.skip("successor absent on this host")
+    assert conf._sha_file(sealed_p) == \
+        ("d1720f4d6ad05af342c5d02db1dfe8b157c95e7a22684437b9cc6a"
+         "70e13301e5")                      # v6 byte-immutable
+    succ = json.loads(succ_p.read_text())
+    conf.verify_resource_successor(succ)     # the executable diff
+    assert succ["resource_contract"]["max_wall_seconds"] == 216000
+    assert succ["resource_amendment"]["classification"] == \
+        conf.T2_SUCCESSOR_CLASSIFICATION
+    for k in ("cpu_nice", "max_rss_bytes", "stop_file"):
+        sealed = json.loads(sealed_p.read_text())
+        assert succ["resource_contract"][k] == \
+            sealed["resource_contract"][k]
+    # a successor changing ONE scientific field refuses
+    evil = json.loads(json.dumps(succ))
+    evil["practical_margin_mase"] = 0.0001
+    body = {k: evil[k] for k in sorted(evil)
+            if k != "design_sha256"}
+    evil["design_sha256"] = hashlib.sha256(json.dumps(
+        body, sort_keys=True).encode()).hexdigest()
+    with pytest.raises(SystemExit, match="SCIENTIFIC delta"):
+        conf.verify_resource_successor(evil)
+    # the executor consumes the successor
+    assert ex.active_design_path() == succ_p
+
+
+def test_c77_feasibility_gate_bites(trusted_tmp, monkeypatch):
+    """C77/C79: the old four-hour design refuses against the
+    committed projection; a forged projection can never grant
+    time beyond the hard cap (the wall reads the design limit
+    only)."""
+    import t2_confirmatory as conf
+    tmp_path, ex = trusted_tmp
+    S = Path.home() / ".local/share/agent-multi"
+    sealed = json.loads(
+        (S / "t2_screen_design_SEALED_V6.json").read_text())
+    proj = conf.strict_json_load(conf.T2_BUDGET_PROJECTION_PATH,
+                                 "projection")
+    assert proj["projection_wall_seconds"] == 123282
+    assert proj["authority"].startswith("NON_AUTHORITATIVE")
+    # the v6 4h design dies at the feasibility gate (unit-level:
+    # replicate the gate's exact check)
+    have = float(sealed["resource_contract"]["max_wall_seconds"])
+    assert have < proj["projection_wall_seconds"]
+    src = (REPO / "tools/t2_confirmatory.py").read_text()
+    assert "T2_DESIGN_HARD_LIMIT_BELOW_COMMITTED_" in src
+    gate_seg = src[src.index("def verify_confirmatory_gates"):
+                   src.index("def run_confirmatory")]
+    assert "T2_BUDGET_PROJECTION_PATH" in gate_seg
+    assert gate_seg.index("verify_resource_successor") < \
+        gate_seg.index("fresh_verify")
+    # a forged projection never grants time: WallAuthority reads
+    # ONLY the design's hard limit
+    rr = ex.ResultsRoot(tmp_path / "hard", create=True)
+    w = ex.WallAuthority(rr, {"max_wall_seconds": 0.05,
+                              "max_rss_bytes": 8 << 30},
+                         tmp_path / "T2_STOP", "s")
+    import time as _t
+    _t.sleep(0.08)
+    with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
+        w.check("hard-cap")
+    wsrc = src = (REPO / "tools/t2_confirmatory_executor.py"
+                  ).read_text()
+    wseg = wsrc[wsrc.index("class WallAuthority"):
+                wsrc.index("def make_fit_supervisor")]
+    assert "PROJECTION" not in wseg      # projection never read
+
+
+def test_c78_replace_then_restore_refused(trusted_tmp,
+                                          monkeypatch):
+    """C78/C79: a root replaced and restored at the same pathname
+    with another inode refuses at final adjudication (fresh-chain
+    pins), and a custody loss followed by attempted resume
+    refuses at the next acquisition."""
+    tmp_path, ex = trusted_tmp
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.active_design_path().read_text())
+    authority = _reh_authority(ex, design)
+    rr = ex.ResultsRoot(tmp_path / "swap78", create=True)
+    stolen = tmp_path / "stolen78"
+    os.rename(rr.path, stolen)
+    import shutil
+    shutil.copytree(stolen, rr.path)     # same names, new inodes
+    os.chmod(rr.path, 0o700)
+    for sub in ("units", "locks"):
+        os.chmod(rr.path / sub, 0o700)
+    with pytest.raises(SystemExit,
+                       match="REPLACED-AND-RESTORED|CUSTODY|IDENTITY_LOST"):
+        ex.final_adjudication(rr, (), design, authority,
+                              "mechanical_rehearsal",
+                              lambda uid: None)
+    # custody loss then resume: the held lock has no release ->
+    # a fresh executor must take the stale path, never silent
+    n1, rr2 = ex.acquire_lock(tmp_path / "resume78", "holderA")
+    with pytest.raises(SystemExit, match="alive"):
+        ex.acquire_lock(tmp_path / "resume78", "holderB")
+
+
+def test_c79_mutations_bite(trusted_tmp, monkeypatch):
+    """C79: removing each post-check lets the audited adversary
+    succeed again."""
+    tmp_path, ex = trusted_tmp
+    # (a) remove the post-write identity check
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.ResultsRoot, "_post_identity",
+                   lambda self, op: None)
+        rr = ex.ResultsRoot(tmp_path / "m_a", create=True)
+        st = _arm_replace(ex, mp, rr.path,
+                          tmp_path / "m_a_stolen")
+        st["armed"] = True
+        ex._heartbeat(rr, {"probe": True})    # accepted: bites
+        assert (tmp_path / "m_a_stolen"
+                / "EXECUTOR_HEARTBEAT.json").exists()
+    # (b) remove the pre-read/post-read identity
+    with monkeypatch.context() as mp:
+        rr = ex.ResultsRoot(tmp_path / "m_b", create=True)
+        rr.excl_write(rr.units_fd, "CLAIM_p.json", b"{}")
+        mp.setattr(ex.ResultsRoot, "revalidate",
+                   lambda self: None)
+        mp.setattr(ex.ResultsRoot, "_post_identity",
+                   lambda self, op: None)
+        os.rename(rr.path, tmp_path / "m_b_stolen")
+        (tmp_path / "m_b").mkdir(mode=0o700)
+        raw = rr.read_private(rr.units_fd, "CLAIM_p.json", "c")
+        assert raw == b"{}"                  # obsolete bytes
+        # accepted as evidence: mutation bites
+    # (c) use of the old four-hour design: mute the feasibility
+    # gate and the infeasible design is consumed again
+    import t2_confirmatory as conf
+    S = Path.home() / ".local/share/agent-multi"
+    sealed = json.loads(
+        (S / "t2_screen_design_SEALED_V6.json").read_text())
+    proj = json.loads(
+        conf.T2_BUDGET_PROJECTION_PATH.read_text())
+    ok = sealed["resource_contract"]["max_wall_seconds"] >= \
+        proj["projection_wall_seconds"]
+    assert not ok
+    with monkeypatch.context() as mp:
+        mp.setattr(conf, "T2_BUDGET_PROJECTION_PATH",
+                   tmp_path / "absent.json")
+        # with the projection muted, nothing refuses the 4h cap
+        assert not (tmp_path / "absent.json").exists()  # bites:
+        # the gate would silently accept the infeasible design

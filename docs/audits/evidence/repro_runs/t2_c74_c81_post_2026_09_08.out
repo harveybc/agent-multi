@@ -1,0 +1,37 @@
+== C74 DEAD: the exact adversary refuses typed ==
+  REFUSED: RESULTS_ROOT_CUSTODY_LOST_AFTER_HEARTBEAT: the declared path no longer names the held root — th
+  effect NOT accepted; attempt semantics: UNCERTAIN, no release, external disposition
+
+== C75: reads and wall appends carry before/after identity (source) ==
+  excl_write/read_private/exists/listdir/_append: pre + post proofs present
+
+== C76: the resource-only successor and its diff ==
+  v6 byte-immutable (d1720f4d…); successor 0542ed0536c3… wall=216000s; executable field-by-field diff PASSES
+  scientific delta -> REFUSED: successor carries a SCIENTIFIC delta at seed_tape — a resource-only success
+
+== C77: feasibility gate + hard wall only ==
+  projection 123282s (non-authoritative) vs v6 cap 14400s -> the old 4h design refuses at the gates; successor headroom 1.75x
+  WallAuthority reads ONLY the design hard limit — a forged projection can never grant time
+
+== v5 rehearsal at the final tip (successor consumed) ==
+{
+ "rehearsal": "COMPLETE_MECHANICS_ONLY",
+ "units": [
+  "sm_co2",
+  "sm_sunspots",
+  "sm_nile"
+ ],
+ "per_unit_wall_seconds": {
+  "sm_co2": 18.0,
+  "sm_sunspots": 4.94,
+  "sm_nile": 4.65
+ },
+ "sealed_bank_series_touched": 0,
+ "records_verified_from_persisted_arrays": 3,
+ "final_adjudication": {
+  "COMPLETED_VERIFIED": 3,
+  "TERMINAL_FAILED": 0
+ }
+}
+
+POST CONFIRMED: C74-C78 dead through the productive APIs; scoring stays closed by the ABSENT external records; no execution authority was created

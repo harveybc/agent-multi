@@ -92,6 +92,16 @@ import t2_bank_census as census_mod  # noqa: E402
 
 STATE = Path.home() / ".local/share/agent-multi"
 SEALED_PATH = STATE / "t2_screen_design_SEALED_V6.json"
+SUCCESSOR_PATH = (STATE
+                  / "t2_screen_design_RESOURCE_SUCCESSOR_V1"
+                  ".json")
+
+
+def active_design_path() -> Path:
+    """C76: the resource-only successor supersedes v6 for
+    EXECUTION when present; v6 itself stays byte-immutable."""
+    return SUCCESSOR_PATH if SUCCESSOR_PATH.exists() \
+        else SEALED_PATH
 MANIFEST_PATH = STATE / "t2_public_data_manifest_20260906.json"
 CENSUS_PATH = STATE / "t2_bank_census_20260906.json"
 DEV_UNITS = ("sm_co2", "sm_sunspots", "sm_nile")
@@ -365,6 +375,25 @@ class ResultsRoot:
         self._require_private_dir(fd, f"control directory {name}")
         return fd
 
+    def _post_identity(self, op: str):
+        """C74: the truthful contract — no effect or read is
+        accepted unless the DECLARED path names the held root
+        both immediately before AND immediately after the
+        operation. A failed post-check is a typed custody loss:
+        the effect is NOT accepted, any in-flight unit stays
+        UNCERTAIN, the lock is never released and continuation
+        requires external disposition."""
+        try:
+            self.revalidate()
+        except SystemExit:
+            raise ExecutorRefusal(
+                f"RESULTS_ROOT_CUSTODY_LOST_AFTER_{op}: the "
+                "declared path no longer names the held root — "
+                "the operation's effect is NOT accepted as "
+                "successful; the attempt is UNCERTAIN; the lock "
+                "stays held; external disposition is required "
+                "before continuation")
+
     # -- descriptor-relative object IO --
     def excl_write(self, dfd, name, payload: bytes):
         self.revalidate()
@@ -376,8 +405,10 @@ class ResultsRoot:
         finally:
             os.close(fd)
         os.fsync(dfd)
+        self._post_identity("WRITE")
 
     def read_private(self, dfd, name, what) -> bytes:
+        self.revalidate()
         try:
             fd = os.open(name, os.O_RDONLY | os.O_NOFOLLOW,
                          dir_fd=dfd)
@@ -408,22 +439,30 @@ class ResultsRoot:
                 chunks.append(b)
         finally:
             os.close(fd)
+        # C75: bytes from an obsolete root are never evidence
+        self._post_identity("READ")
         return b"".join(chunks)
 
     def exists(self, dfd, name) -> bool:
+        self.revalidate()
         try:
             os.stat(name, dir_fd=dfd, follow_symlinks=False)
-            return True
+            found = True
         except FileNotFoundError:
-            return False
+            found = False
+        self._post_identity("STAT")
+        return found
 
     def listdir(self, dfd):
+        self.revalidate()
         fd2 = os.dup(dfd)
         try:
             with os.scandir(f"/proc/self/fd/{fd2}") as it:
-                return sorted(e.name for e in it)
+                names = sorted(e.name for e in it)
         finally:
             os.close(fd2)
+        self._post_identity("LIST")
+        return names
 
     def close(self):
         for fd in (self.units_fd, self.locks_fd, self.root_fd):
@@ -743,6 +782,7 @@ class WallAuthority:
         return charged, last_sha, seq, False
 
     def _append(self, doc: dict):
+        self.rr.revalidate()
         doc = dict(doc)
         doc["seq"] = self._seq + 1
         doc["prev_sha"] = self._last_sha
@@ -752,6 +792,9 @@ class WallAuthority:
         os.fsync(self._fd)
         self._seq = doc["seq"]
         self._last_sha = doc["record_sha"]
+        # C75: charges written into a replaced root are uncertain
+        # evidence, never a successful effect
+        self.rr._post_identity("WALL_APPEND")
 
     # -- accounting --
     def _elapsed_in_reserve(self) -> float:
@@ -891,6 +934,7 @@ class WallAuthority:
                 "fresh-descriptor ledger replay does not equal "
                 "the in-memory wall state — charges would be "
                 "lost or forged; stopping for review")
+        self.rr._post_identity("WALL_CLOSE")
 
 
 # ------------- C62: wall-aware supervised fits -------------
@@ -1199,6 +1243,7 @@ def release_lock(rr: ResultsRoot, session_n: int,
     # torn/absent, the release stays uncertain and never frees.
     payload = json.dumps(done, indent=1).encode()
     name = f"RELEASE_DONE_{session_n:06d}.json"
+    rr.revalidate()
     fd = os.open(name, os.O_CREAT | os.O_EXCL | os.O_WRONLY
                  | os.O_NOFOLLOW, 0o600, dir_fd=rr.locks_fd)
     try:
@@ -1209,6 +1254,7 @@ def release_lock(rr: ResultsRoot, session_n: int,
     finally:
         os.close(fd)
     os.fsync(rr.locks_fd)
+    rr._post_identity("RELEASE")
 
 
 # ---------------- unit reconstruction ----------------
@@ -1303,7 +1349,7 @@ def physical_authority(design: dict, mode: str,
                        repo_root: Path = None) -> dict:
     if mode not in MODES:
         raise ExecutorRefusal(f"unknown execution mode {mode!r}")
-    sealed_file_sha = _sha_file(SEALED_PATH)
+    sealed_file_sha = _sha_file(active_design_path())
     self_sha = _self_sha(design, "design_sha256")
     if self_sha != design.get("design_sha256"):
         raise ExecutorRefusal(
@@ -2083,6 +2129,18 @@ def final_adjudication(rr: ResultsRoot, uids, design: dict,
     held descriptors, zero UNCERTAIN, counts equal the sealed
     population exactly."""
     rr.revalidate()
+    # C78: the final chain is FRESH — a new component-by-component
+    # walk whose device/inode pins must equal the held ones, so a
+    # replace-then-restore with another inode at the same
+    # pathname refuses even between operations.
+    rr_fresh = ResultsRoot(rr.path)
+    if rr_fresh._pins != rr._pins:
+        rr_fresh.close()
+        raise ExecutorRefusal(
+            "final adjudication found a REPLACED-AND-RESTORED "
+            "results root (same pathname, different identity) — "
+            "refusing success")
+    rr = rr_fresh
     expected_names = set()
     for uid in uids:
         safe = _safe_name(uid)
@@ -2131,10 +2189,12 @@ def declare_attempt_failed(out_root: Path, uid: str,
     if mode not in MODES:
         raise ExecutorRefusal(f"unknown execution mode {mode!r}")
     rr = ResultsRoot(out_root, create=False)
-    design = conf.strict_json_load(SEALED_PATH, "sealed design")
+    design = conf.strict_json_load(active_design_path(),
+                                   "active design")
     if mode == "confirmatory":
         facts = conf.verify_confirmatory_gates(
-            MANIFEST_PATH, SEALED_PATH, census_path=CENSUS_PATH)
+            MANIFEST_PATH, active_design_path(),
+            census_path=CENSUS_PATH)
         authority = {
             "sealed_design_file_sha256":
                 facts["design_file_sha256"],
@@ -2282,6 +2342,7 @@ def _heartbeat(rr: ResultsRoot, payload: dict) -> None:
         os.close(fd)
     os.rename(tmp, "EXECUTOR_HEARTBEAT.json",
               src_dir_fd=rr.root_fd, dst_dir_fd=rr.root_fd)
+    rr._post_identity("HEARTBEAT")
 
 
 def _adjudication_counts(units_dir: Path, uids) -> dict:
@@ -2328,8 +2389,10 @@ def main(argv=None) -> int:
     out_root = args.out_root or (
         STATE / "t2_confirmatory_results_v6")
     facts = conf.verify_confirmatory_gates(
-        MANIFEST_PATH, SEALED_PATH, census_path=CENSUS_PATH)
-    design = conf.strict_json_load(SEALED_PATH, "sealed design")
+        MANIFEST_PATH, active_design_path(),
+        census_path=CENSUS_PATH)
+    design = conf.strict_json_load(active_design_path(),
+                                   "active design")
     manifest = conf.strict_json_load(MANIFEST_PATH, "manifest")
     authority = {
         "sealed_design_file_sha256": facts["design_file_sha256"],
@@ -2474,7 +2537,8 @@ def rehearse(out_root: Path = None) -> int:
                 "refusing to clear a rehearsal root outside the "
                 "cache area")
         shutil.rmtree(out_root)
-    design = conf.strict_json_load(SEALED_PATH, "sealed design")
+    design = conf.strict_json_load(active_design_path(),
+                                   "active design")
     sealed_ids = set(design["task_population"]["series_ids"])
     authority = physical_authority(design, "mechanical_rehearsal")
     pins = _git_head_tree()
