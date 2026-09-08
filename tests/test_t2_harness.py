@@ -2190,19 +2190,36 @@ def test_c48_2_checkout_verifier_bites(tmp_path):
 
 
 @pytest.fixture(scope="module")
-def rehearsal_root(tmp_path_factory):
-    """ONE shared v2 mechanical rehearsal over the dev units —
-    real records, real NPZ, real claims, zero sealed series."""
+def rehearsal_root():
+    """ONE shared v3 mechanical rehearsal over the dev units —
+    real records, real NPZ, real authority-bound claims, zero
+    sealed series. Lives under the REAL trusted cache parent
+    (C61 refuses foreign roots such as pytest tmp)."""
+    import shutil
     os.environ.setdefault(
         "B4_T1_PREPROCESSOR_ROOT",
         str(Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
     ex = _exec_mod()
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    root = tmp_path_factory.mktemp("t2reh") / "t2root"
+    root = (Path.home() / ".cache"
+            / f"t2_reh_battery_{os.getpid()}")
     rc = ex.rehearse(root)
     assert rc == 0
-    return root, ex
+    yield root, ex
+    shutil.rmtree(root, ignore_errors=True)
+
+
+@pytest.fixture()
+def trusted_tmp(tmp_path, monkeypatch):
+    """Adds this test's tmp_path to the executor's trusted root
+    parents so ResultsRoot custody can be exercised on pytest
+    tmp; dedicated C61 tests use the REAL tuple."""
+    ex = _exec_mod()
+    monkeypatch.setattr(
+        ex, "_TRUSTED_ROOT_PARENTS",
+        tuple(ex._TRUSTED_ROOT_PARENTS) + (tmp_path,))
+    return tmp_path, ex
 
 
 def _clone_unit(root, uid, dst):
@@ -2445,7 +2462,7 @@ def test_c50_3_descriptor_custody_of_evidence(rehearsal_root,
         ex.verify_unit_record(rp2, npz2, design)
     esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
     assert 'with open(npz_p, "wb")' not in esrc
-    assert "_excl_write_npz(npz_p, arrays)" in esrc
+    assert "rr.excl_write(rr.units_fd, npz_name" in esrc
     assert "O_EXCL" in esrc and "allow_pickle=False" in esrc
 
 
@@ -2498,26 +2515,31 @@ def test_c51_1_every_metric_recomputes_or_refuses(rehearsal_root,
         ex.verify_unit_record(rp, npz, design)
 
 
-def test_c52_1_budget_stop_inside_a_unit_blocks_typed(tmp_path):
-    """C52/C54.3: a budget stop MID-UNIT re-raises typed WITHOUT a
-    terminal; the claim then adjudicates UNCERTAIN and blocks
-    until the EXPLICIT recorded operator disposition converts it
-    to TERMINAL_FAILED; a second disposition refuses."""
-    os.environ.setdefault(
-        "B4_T1_PREPROCESSOR_ROOT",
-        str(Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
-    ex = _exec_mod()
-    if not ex.SEALED_PATH.exists():
-        pytest.skip("sealed design absent on this host")
-    design = json.loads(ex.SEALED_PATH.read_text())
+def _reh_authority(ex, design):
+    return ex.physical_authority(design, "mechanical_rehearsal")
+
+
+def _nile(ex):
     import t2_assay_harness as hz
     import t2_public_data_census as dc
     co = hz.load_co()
-    unit = hz.load_task_unit(dc.build_census(), "sm_nile")
-    authority = ex.physical_authority(design,
-                                      "mechanical_rehearsal")
-    root = tmp_path / "t2stop"
-    root.mkdir(mode=0o700)
+    return hz, co, hz.load_task_unit(dc.build_census(), "sm_nile")
+
+
+def test_c52_1_budget_stop_inside_a_unit_blocks_typed(
+        trusted_tmp):
+    """C52/C54.3: a budget stop MID-UNIT re-raises typed WITHOUT
+    a terminal (claim -> UNCERTAIN, awaiting the EXTERNAL
+    disposition); a NON-budget assay failure writes an integral
+    v3 terminal (T2AssayFailed) that deep-verifies under current
+    authority."""
+    tmp_path, ex = trusted_tmp
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.SEALED_PATH.read_text())
+    hz, co, unit = _nile(ex)
+    authority = _reh_authority(ex, design)
+    pins = ex._git_head_tree()
     calls = []
 
     def tripping_guard(label):
@@ -2525,139 +2547,173 @@ def test_c52_1_budget_stop_inside_a_unit_blocks_typed(tmp_path):
         if len(calls) == 7:
             raise ex.T2BudgetStop("test bound", label)
 
+    rr = ex.ResultsRoot(tmp_path / "t2stop", create=True)
     with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
-        ex.run_unit(hz, co, unit, design, authority, root,
-                    "mechanical_rehearsal", guard=tripping_guard)
-    u = root / "units"
+        ex.run_unit(hz, co, unit, design, authority, rr,
+                    "mechanical_rehearsal", pins,
+                    guard=tripping_guard)
+    u = rr.path / "units"
     assert (u / "CLAIM_sm_nile.json").exists()
     assert not (u / "RECORD_sm_nile.json").exists()
     assert not (u / "TERMINAL_sm_nile.json").exists()
     st, why = ex.adjudicate_unit_shallow(u, "sm_nile")
     assert st == "UNCERTAIN" and "claim without" in why
-    # the explicit recorded operator disposition
-    ex.declare_attempt_failed(root, "sm_nile",
-                              "test disposition: budget-stopped "
-                              "attempt adjudicated failed")
-    st, _ = ex.adjudicate_unit_shallow(u, "sm_nile")
-    assert st == "TERMINAL_FAILED"
-    term = json.loads((u / "TERMINAL_sm_nile.json").read_text())
-    assert term["operator_disposition"] is True
-    assert term["failure_class"] == "OPERATOR_DISPOSITION"
-    with pytest.raises(SystemExit, match="applies only to"):
-        ex.declare_attempt_failed(root, "sm_nile", "again")
-    # in-assay checkpoints reached origins/arms before the trip
+    assert "EXTERNAL operator disposition" in why
     assert calls[0] == "origin0:start"
     assert any("epoch_candidate" in c for c in calls)
     # C55: the stop also fires BETWEEN ORIGINS and BETWEEN SEEDS
-    for trip_label, sub in (("origin1:start", "between origins"),
-                            ("mlp_seed12:start",
-                             "between seeds")):
-        subroot = tmp_path / f"t2stop_{trip_label.split(':')[0]}"
-        subroot.mkdir(mode=0o700)
+    for trip_label in ("origin1:start", "mlp_seed12:start"):
+        rr2 = ex.ResultsRoot(
+            tmp_path / f"t2stop_{trip_label.split(':')[0]}",
+            create=True)
 
         def boundary_guard(label, _t=trip_label):
             if label.endswith(_t):
                 raise ex.T2BudgetStop(f"stop {_t}", label)
 
         with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
-            ex.run_unit(hz, co, unit, design, authority, subroot,
-                        "mechanical_rehearsal",
+            ex.run_unit(hz, co, unit, design, authority, rr2,
+                        "mechanical_rehearsal", pins,
                         guard=boundary_guard)
-        st, why = ex.adjudicate_unit_shallow(subroot / "units",
+        st, why = ex.adjudicate_unit_shallow(rr2.path / "units",
                                              "sm_nile")
-        assert st == "UNCERTAIN" and "claim without" in why, sub
-        assert not (subroot / "units"
-                    / "RECORD_sm_nile.json").exists()
-    # a NON-budget in-unit failure DOES write a typed terminal
-    root2 = tmp_path / "t2fail"
-    root2.mkdir(mode=0o700)
+        assert st == "UNCERTAIN" and "claim without" in why
+    # a NON-budget in-unit failure writes a v3 terminal that
+    # deep-verifies TERMINAL_FAILED under current authority
+    rr3 = ex.ResultsRoot(tmp_path / "t2fail", create=True)
 
     def broken_guard(label):
         if "ridge_done" in label:
             raise ValueError("synthetic in-unit defect")
 
-    with pytest.raises(ValueError):
-        ex.run_unit(hz, co, unit, design, authority, root2,
-                    "mechanical_rehearsal", guard=broken_guard)
-    st, _ = ex.adjudicate_unit_shallow(root2 / "units", "sm_nile")
-    assert st == "TERMINAL_FAILED"
+    with pytest.raises(ex.T2AssayFailed):
+        ex.run_unit(hz, co, unit, design, authority, rr3,
+                    "mechanical_rehearsal", pins,
+                    guard=broken_guard)
+    st, _ = ex.adjudicate_unit_shallow(rr3.path / "units",
+                                       "sm_nile")
+    assert st == "TERMINAL_PRESENT"
+    st, why = ex.adjudicate_unit_deep(
+        rr3.path / "units", "sm_nile", design, authority,
+        "mechanical_rehearsal")
+    assert st == "TERMINAL_FAILED", why
+    term = json.loads(
+        (rr3.path / "units" / "TERMINAL_sm_nile.json")
+        .read_text())
+    assert term["schema"] == "agent_multi.t2_unit_terminal.v3"
+    assert term["execution_record_sha256"] == \
+        ex.REHEARSAL_EXECUTION_SENTINEL
+    assert term["closed_claim_sha256"]
 
 
-def test_c52_2_budget_mechanics_bite(tmp_path, monkeypatch):
-    """C52: the durable accumulated wall (resume NEVER renews the
-    4 h), the RSS bound, the design-declared stop-file location and
-    the supervised worker's typed harvests."""
-    ex = _exec_mod()
-    ledger = tmp_path / "wall.jsonl"
-    ledger.write_text(json.dumps(
-        {"session": "prior", "elapsed_seconds": 100.0}) + "\n")
+def test_c52_2_wall_and_supervisor_mechanics(trusted_tmp,
+                                             monkeypatch):
+    """C57/C62 mechanics: charge-in-advance reservations (a crash
+    charges the FULL reservation — resume never renews); stop-file
+    at the design-declared state root; RSS bound; the supervisor
+    uses min(remaining_global, per_fit), charges before dispatch,
+    refuses with no budget, and NEVER leaves an orphan (typed
+    OK/WALL_KILLED/CRASH/EOF harvests, child reaped)."""
+    import time as _t
+    tmp_path, ex = trusted_tmp
     stop = tmp_path / "T2_STOP"
-    g = ex.BudgetGuard({"max_wall_seconds": 50,
-                        "max_rss_bytes": 8 << 30}, stop, ledger,
-                       "fresh")
-    assert g.prior_wall == 100.0
+    rr = ex.ResultsRoot(tmp_path / "wroot", create=True)
+    # crash charges the whole reservation
+    w1 = ex.WallAuthority(rr, {"max_wall_seconds": 0.5,
+                               "max_rss_bytes": 8 << 30},
+                          stop, "s1")
+    os.close(w1._fd)                       # simulate crash
     with pytest.raises(SystemExit, match="never renews"):
-        g.check("between_units:probe")
-    g.close()
-    # RSS bound
-    g2 = ex.BudgetGuard({"max_wall_seconds": 10 ** 6,
-                         "max_rss_bytes": 1}, stop,
-                        tmp_path / "w2.jsonl", "s2")
-    with pytest.raises(SystemExit, match="RSS"):
-        g2.check("x")
-    g2.close()
-    # stop-file at the DESIGN-DECLARED state root
-    g3 = ex.BudgetGuard({"max_wall_seconds": 10 ** 6,
-                         "max_rss_bytes": 8 << 30}, stop,
-                        tmp_path / "w3.jsonl", "s3")
-    g3.check("pre")
+        ex.WallAuthority(rr, {"max_wall_seconds": 0.5,
+                              "max_rss_bytes": 8 << 30},
+                         stop, "s2")
+    # stop-file and RSS
+    rr2 = ex.ResultsRoot(tmp_path / "wroot2", create=True)
+    w = ex.WallAuthority(rr2, {"max_wall_seconds": 10 ** 6,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "s3")
+    w.check("pre")
     stop.write_text("halt")
     with pytest.raises(SystemExit, match="state root"):
-        g3.check("post")
-    g3.close()
+        w.check("post")
+    stop.unlink()
+    w.close()
+    rr3 = ex.ResultsRoot(tmp_path / "wroot3", create=True)
+    with pytest.raises(SystemExit, match="RSS"):
+        wx = ex.WallAuthority(rr3, {"max_wall_seconds": 10 ** 6,
+                                    "max_rss_bytes": 1},
+                              stop, "s4")
+        wx.check("x")
     if ex.SEALED_PATH.exists():
         design = json.loads(ex.SEALED_PATH.read_text())
         assert ex.resolve_stop_file(design) == \
             ex.STATE / "T2_STOP"
-        assert design["resource_contract"]["stop_file"] == \
-            "<state_root>/T2_STOP"
-    # supervised worker: typed WALL_KILLED and CRASH harvests
+    # supervisor: typed harvests, reaped children, min() wall
     monkeypatch.setattr(ex, "PER_FIT_WALL_SECONDS", 1.0)
-    sup = ex.make_fit_supervisor({"max_rss_bytes": 8 << 30})
+    rr4 = ex.ResultsRoot(tmp_path / "wroot4", create=True)
+    w4 = ex.WallAuthority(rr4, {"max_wall_seconds": 10 ** 6,
+                                "max_rss_bytes": 8 << 30},
+                          stop, "s5")
+    sup = ex.make_fit_supervisor({"max_rss_bytes": 8 << 30}, w4)
+
+    class _Ok:
+        def __call__(self):
+            return 41 + 1
 
     class _Hang:
         def __call__(self):
-            import time as _t
             _t.sleep(30)
 
     class _Boom:
         def __call__(self):
             raise ValueError("synthetic fit crash")
 
-    class _Ok:
+    class _Die:
         def __call__(self):
-            return 41 + 1
+            os.kill(os.getpid(), 9)
 
     assert sup(_Ok(), "ok") == 42
     with pytest.raises(SystemExit, match="WALL_KILLED"):
         sup(_Hang(), "hang")
     with pytest.raises(SystemExit, match="CRASH.*synthetic fit"):
         sup(_Boom(), "boom")
+    with pytest.raises(SystemExit, match="EOF"):
+        sup(_Die(), "die")
+    import multiprocessing as _mp
+    assert not _mp.active_children(), "orphan worker left behind"
+    w4.close()
+    # C62: min(remaining_global, per_fit) — a fit is killed at the
+    # REMAINING budget, far below the per-fit constant
+    rr5 = ex.ResultsRoot(tmp_path / "wroot5", create=True)
+    w5 = ex.WallAuthority(rr5, {"max_wall_seconds": 0.6,
+                                "max_rss_bytes": 8 << 30},
+                          stop, "s6")
+    _t.sleep(0.35)
+    sup5 = ex.make_fit_supervisor({"max_rss_bytes": 8 << 30}, w5)
+    t0 = _t.monotonic()
+    with pytest.raises(SystemExit, match="WALL_KILLED"):
+        sup5(_Hang(), "bounded-by-remaining")
+    assert _t.monotonic() - t0 < 0.9      # killed near remaining,
+    # and with the budget exhausted no dispatch starts at all
+    _t.sleep(0.3)
+    with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
+        sup5(_Ok(), "no-budget-left")
+    w5.close()                        # clean close after spend
     # the harness passes the guard INTO epoch candidates (source)
     hsrc = (REPO / "tools/t2_assay_harness.py").read_text()
     assert "guard(f\"{label}:epoch_candidate_{epochs}\")" in hsrc
-    assert "fit_supervisor" in hsrc
     esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
-    assert "guard=guard.check" in esrc
+    assert "guard=wall.check" in esrc
     assert "fit_supervisor=supervisor" in esrc
+    assert "min(PER_FIT_WALL_SECONDS" in esrc
 
 
 def test_c53_1_plan_is_pure_and_gates_precede_effects(tmp_path,
                                                       monkeypatch):
-    """C53: --plan and a failed gate leave ZERO writes (the
-    out_root is not even created); with gates stubbed open the
-    plan still writes nothing; durable effects exist only in
-    --execute after all gates."""
+    """C53 (+C63 source): --plan and failed gates leave ZERO
+    writes; durable effects only in --execute after all gates;
+    main has NO bare BaseException arm and final adjudication
+    precedes release and success."""
     import t2_confirmatory as conf
     ex = _exec_mod()
     if not ex.SEALED_PATH.exists():
@@ -2675,7 +2731,6 @@ def test_c53_1_plan_is_pure_and_gates_precede_effects(tmp_path,
         ex.main(["--execute", "--out-root", str(t)])
     assert not t.exists()
     assert sorted(p.name for p in tmp_path.iterdir()) == before
-    # gates stubbed OPEN: the plan prints and still writes nothing
     fake_facts = {"gates": "ALL_OPEN",
                   "execution_record_sha256": "e" * 64,
                   "review_record_sha256": "r" * 64,
@@ -2689,65 +2744,53 @@ def test_c53_1_plan_is_pure_and_gates_precede_effects(tmp_path,
     assert rc == 0
     assert not t.exists()
     assert sorted(p.name for p in tmp_path.iterdir()) == before
-    # source: in main, gates run BEFORE mkdir/lock/ledger; the
-    # ledger exists only on the --execute path
     esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
     seg = esrc[esrc.index("def main"):esrc.index("def rehearse")]
     assert seg.index("verify_confirmatory_gates") < \
         seg.index("if args.plan") < \
-        seg.index("out_root.mkdir") < \
         seg.index("acquire_lock") < \
         seg.index("open_attempt_ledger")
     plan_seg = seg[seg.index("if args.plan"):
-                   seg.index("out_root.mkdir")]
-    for effect in ("mkdir", "acquire_lock", "open_attempt_ledger",
-                   "_excl_write", "_heartbeat"):
+                   seg.index("acquire_lock")]
+    for effect in ("ResultsRoot", "acquire_lock",
+                   "open_attempt_ledger", "excl_write",
+                   "_heartbeat", "WallAuthority"):
         assert effect not in plan_seg
+    # C63 source facts: no bare BaseException arm; assay failures
+    # are the ONLY counted-and-continue path; final adjudication
+    # gates release and success
+    assert "except BaseException:" not in seg
+    assert "except T2AssayFailed:" in seg
+    i_final = seg.index("final_adjudication(")
+    i_rel = seg.rindex("release_lock(")
+    i_print = seg.index('"final_adjudication": counts')
+    assert i_final < i_rel < i_print
 
 
-def test_c54_1_monotonic_lock_and_crash_boundaries(tmp_path):
-    """C54: locks are never unlinked — release is a durable
-    record; a live pid refuses; a provably dead pid requires the
-    EXPLICIT recorded takeover; crash remnants adjudicate
-    UNCERTAIN with typed causes."""
-    ex = _exec_mod()
+def test_c54_1_lock_sessions_and_crash_boundaries(trusted_tmp):
+    """C54/C58: sessions are monotonic and never unlinked; the
+    v2 release (intent+done) frees; a live pid refuses; crash
+    remnants adjudicate UNCERTAIN typed; TERMINAL_FAILED exists
+    only as a deep outcome."""
+    tmp_path, ex = trusted_tmp
     root = tmp_path / "lockroot"
-    root.mkdir(mode=0o700)
-    n1 = ex.acquire_lock(root, "sess-one")
+    n1, rr = ex.acquire_lock(root, "sess-one")
     assert n1 == 1
     with pytest.raises(SystemExit, match="alive"):
-        ex.acquire_lock(root, "sess-two")
-    ex.release_lock(root, 1, "sess-one")
-    assert (root / "locks" / "RELEASE_000001.json").exists()
-    assert (root / "locks" / "SESSION_000001.json").exists()
-    n2 = ex.acquire_lock(root, "sess-two")
+        ex.acquire_lock(rr, "sess-two")
+    ex.release_lock(rr, 1, "sess-one")
+    assert (rr.path / "locks" / "RELEASE_INTENT_000001.json"
+            ).exists()
+    assert (rr.path / "locks" / "RELEASE_DONE_000001.json"
+            ).exists()
+    n2, _ = ex.acquire_lock(rr, "sess-two")
     assert n2 == 2
-    ex.release_lock(root, 2, "sess-two")
-    # a dead-pid session without release: stale, never stolen
-    import subprocess
-    p = subprocess.Popen(["true"])
-    p.wait()
-    doc = {"schema": "agent_multi.t2_lock_session.v1",
-           "session": 3, "session_uuid": "ghost",
-           "pid": p.pid, "started_wall": 0.0}
-    doc["session_sha256"] = ex._self_sha(doc, "session_sha256")
-    sp = root / "locks" / "SESSION_000003.json"
-    sp.write_text(json.dumps(doc))
-    os.chmod(sp, 0o600)
-    with pytest.raises(SystemExit,
-                       match="explicit recorded takeover"):
-        ex.acquire_lock(root, "sess-four")
-    n4 = ex.acquire_lock(root, "sess-four", takeover_stale=True)
-    assert n4 == 4
-    assert (root / "locks" / "TAKEOVER_000003.json").exists()
-    ex.release_lock(root, 4, "sess-four")
-    # locks are never unlinked in the productive source
+    ex.release_lock(rr, 2, "sess-two")
     esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
     assert "lock.unlink" not in esrc
     assert ".unlink(missing_ok=True)" not in esrc
     # crash boundaries adjudicate UNCERTAIN with typed causes
-    u = root / "units"
-    u.mkdir(mode=0o700)
+    u = rr.path / "units"
     (u / "ARRAYS_probe.npz").write_bytes(b"partial")
     st, why = ex.adjudicate_unit_shallow(u, "probe")
     assert st == "UNCERTAIN" and "arrays without a record" in why
@@ -2758,26 +2801,31 @@ def test_c54_1_monotonic_lock_and_crash_boundaries(tmp_path):
     tp = u / "TERMINAL_probe.json"
     tp.write_text(json.dumps(bad))
     os.chmod(tp, 0o600)
-    st, why = ex.adjudicate_unit_shallow(u, "probe")
-    assert st == "UNCERTAIN" and "does not re-derive" in why
+    st, _ = ex.adjudicate_unit_shallow(u, "probe")
+    assert st == "TERMINAL_PRESENT"       # never TERMINAL_FAILED
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        st, why = ex.adjudicate_unit_deep(
+            u, "probe", design,
+            _reh_authority(ex, design), "mechanical_rehearsal")
+        assert st == "UNCERTAIN"
+        assert "does not verify under current authority" in why
 
 
 def test_c55_resume_order_census_and_separated_counts():
-    """C55/C56: resume verifies COMPLETED records (deep, under
-    current authority) before counting terminals, before budget/
-    load; the census is exact; every reported count separates
-    done / failed_preserved / resumed_verified — a skip is never
-    published as a pass."""
+    """C55/C56: resume deep-verifies COMPLETED and TERMINAL
+    states under current authority before any new work; census
+    exact; counts separated; rehearsal output carries the final
+    adjudication."""
     ex = _exec_mod()
     esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
     seg = esrc[esrc.index("def main"):esrc.index("def rehearse")]
-    i_adj = seg.index("adjudicate_unit_shallow")
     i_completed = seg.index('== "COMPLETED"')
-    i_term = seg.index('== "TERMINAL_FAILED"')
-    i_load_new = seg.rindex("load_bank_unit(")
-    assert i_adj < i_completed < i_term < i_load_new
+    i_term = seg.index('== "TERMINAL_PRESENT"')
+    i_deep1 = seg.index("adjudicate_unit_deep")
+    i_load_new = seg.rindex("load_bank_unit(design, uid")
+    assert i_completed < i_deep1 < i_term < i_load_new
     assert '"resumed_verified"' in seg
-    assert '"failed_preserved"' in seg
     assert "UNCERTAIN units block" in seg
     if ex.SEALED_PATH.exists():
         d = json.loads(ex.SEALED_PATH.read_text())
@@ -2785,7 +2833,620 @@ def test_c55_resume_order_census_and_separated_counts():
         assert w["units"] == 242 and w["origins_per_unit"] == 2
         assert w["model_fits"] == 242 * 2 * 4 * 4 == 7744
         assert w["baseline_evals"] == 484
-    # rehearsal output separates its facts too
     rseg = esrc[esrc.index("def rehearse"):]
     assert '"records_verified_from_persisted_arrays"' in rseg
     assert '"sealed_bank_series_touched": 0' in rseg
+    assert '"final_adjudication": counts' in rseg
+
+
+# ===== C57-C65 runtime-correction battery (2026-09-07) ==========
+
+
+def test_c57_wall_cannot_be_renewed_by_restart(trusted_tmp,
+                                               monkeypatch):
+    """C57: the audit PRE (eight sub-cadence crash sessions
+    accepted) is a frozen regression — now exactly ONE session is
+    charged and every later session refuses; interior mutation,
+    torn final line, ledger replacement and reboot identity all
+    behave fail-closed; two real processes cannot share the
+    protocol."""
+    import subprocess
+    tmp_path, ex = trusted_tmp
+    stop = tmp_path / "T2_STOP"
+    budget = {"max_wall_seconds": 0.08, "max_rss_bytes": 8 << 30}
+    rr = ex.ResultsRoot(tmp_path / "renew", create=True)
+    accepted = 0
+    for k in range(8):
+        try:
+            g = ex.WallAuthority(rr, budget, stop, f"crash{k}")
+            accepted += 1
+            os.close(g._fd)              # crash: reserve stays
+        except SystemExit as exc:
+            assert "never renews" in str(exc)
+    assert accepted == 1                  # PRE accepted 8/8
+    # interior mutation fails closed
+    rr2 = ex.ResultsRoot(tmp_path / "mut", create=True)
+    g = ex.WallAuthority(rr2, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "m1")
+    g.close()
+    led = rr2.path / "T2_WALL_LEDGER.jsonl"
+    lines = led.read_text().splitlines()
+    doc = json.loads(lines[1])
+    doc["seconds"] = 0.000001             # shrink the reservation
+    lines[1] = json.dumps(doc, sort_keys=True)
+    led.write_text("\n".join(lines) + "\n")
+    os.chmod(led, 0o600)
+    with pytest.raises(SystemExit, match="fail closed"):
+        ex.WallAuthority(rr2, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "m2")
+    # a torn FINAL line is tolerated (crash mid-append) but every
+    # durable reservation stays charged
+    rr3 = ex.ResultsRoot(tmp_path / "torn", create=True)
+    g = ex.WallAuthority(rr3, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "t1")
+    os.close(g._fd)                       # open reservation
+    led3 = rr3.path / "T2_WALL_LEDGER.jsonl"
+    with open(led3, "a") as f:
+        f.write('{"kind":"close","truncat')      # torn append
+    g2 = ex.WallAuthority(rr3, {"max_wall_seconds": 100,
+                                "max_rss_bytes": 8 << 30},
+                          stop, "t2")
+    assert g2.prior >= 29.9               # full quantum charged
+    g2.close()
+    # replacement between read and append is DETECTED
+    rr4 = ex.ResultsRoot(tmp_path / "repl", create=True)
+    g = ex.WallAuthority(rr4, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "r1")
+    led4 = rr4.path / "T2_WALL_LEDGER.jsonl"
+    led4.rename(rr4.path / "stolen.jsonl")
+    led4.write_text("")
+    os.chmod(led4, 0o600)
+    with pytest.raises(SystemExit, match="REPLACED"):
+        g.close()
+    # reboot identity is recorded and never renews the budget
+    rr5 = ex.ResultsRoot(tmp_path / "boot", create=True)
+    g = ex.WallAuthority(rr5, {"max_wall_seconds": 0.08,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "b1")
+    os.close(g._fd)
+    with monkeypatch.context() as mp:
+        mp.setattr(ex, "_boot_id",
+                   lambda: "another-boot-identity-0000")
+        with pytest.raises(SystemExit, match="never renews"):
+            ex.WallAuthority(rr5, {"max_wall_seconds": 0.08,
+                                   "max_rss_bytes": 8 << 30},
+                             stop, "b2")
+    led5 = (rr5.path / "T2_WALL_LEDGER.jsonl").read_text()
+    assert '"boot_id"' in led5
+    # a second REAL process interleaving on the same ledger is
+    # detected by the chain on the next replay
+    rr6 = ex.ResultsRoot(tmp_path / "two", create=True)
+    g = ex.WallAuthority(rr6, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "p1")
+    code = (
+        "import sys; sys.path.insert(0, 'tools');"
+        "import t2_confirmatory_executor as ex;"
+        "from pathlib import Path;"
+        f"ex._TRUSTED_ROOT_PARENTS = (Path('{tmp_path}'),);"
+        f"rr = ex.ResultsRoot(Path('{rr6.path}'));"
+        "w = ex.WallAuthority(rr, {'max_wall_seconds': 100, "
+        "'max_rss_bytes': 8 << 30}, "
+        f"Path('{stop}'), 'p2'); w.close()")
+    rc = subprocess.run([sys.executable, "-c", code],
+                        capture_output=True, text=True,
+                        cwd=str(REPO))
+    assert rc.returncode == 0             # it appended in between
+    try:
+        g.close()                          # same inode: may pass
+    except SystemExit:
+        pass
+    with pytest.raises(SystemExit, match="fail closed|chain"):
+        ex.WallAuthority(rr6, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "p3")
+
+
+def test_c58_release_protocol_bites(trusted_tmp, monkeypatch):
+    """C58: the audit PRE (an empty bare release filename frees a
+    LIVE lock) is a frozen regression; absent/empty/malformed/
+    permissive/symlinked/transplanted/fsync-uncertain completions
+    never free; post-election revalidation is real; two real
+    contenders elect exactly one."""
+    import subprocess
+    tmp_path, ex = trusted_tmp
+    n1, rr = ex.acquire_lock(tmp_path / "l1", "holder")
+    locks = rr.path / "locks"
+    # PRE regression: empty legacy release name + empty v2 names
+    for name in ("RELEASE_000001.json",
+                 "RELEASE_INTENT_000001.json",
+                 "RELEASE_DONE_000001.json"):
+        fd = os.open(locks / name,
+                     os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        os.close(fd)
+    with pytest.raises(SystemExit, match="alive"):
+        ex.acquire_lock(rr, "thief")
+    for name in ("RELEASE_INTENT_000001.json",
+                 "RELEASE_DONE_000001.json"):
+        (locks / name).unlink()
+    # a real release, then per-field forgeries on a NEW session
+    ex.release_lock(rr, 1, "holder")
+    n2, _ = ex.acquire_lock(rr, "holder2")
+    assert n2 == 2
+    sess2 = json.loads((locks / "SESSION_000002.json").read_text())
+    intent = {"schema": "agent_multi.t2_lock_release_intent.v1",
+              "session": 2,
+              "session_sha256": sess2["session_sha256"],
+              "session_uuid": "holder2", "pid": os.getpid(),
+              "campaign_generation": ex.T2_CAMPAIGN_GENERATION,
+              "released_wall": 0.0}
+    intent["intent_sha256"] = ex._self_sha(intent,
+                                           "intent_sha256")
+    done = {"schema": "agent_multi.t2_lock_release_done.v1",
+            "session": 2, "intent_sha256": intent["intent_sha256"]}
+    done["done_sha256"] = ex._self_sha(done, "done_sha256")
+    cases = [
+        ("malformed done", json.dumps(intent), "{not json"),
+        ("transplanted done", json.dumps(intent),
+         json.dumps({**done, "intent_sha256": "0" * 64,
+                     "done_sha256": ex._self_sha(
+                         {**done, "intent_sha256": "0" * 64},
+                         "done_sha256")})),
+        ("foreign-uuid intent",
+         json.dumps({**intent, "session_uuid": "someone",
+                     "intent_sha256": ex._self_sha(
+                         {**intent, "session_uuid": "someone"},
+                         "intent_sha256")}),
+         json.dumps(done)),
+    ]
+    for what, i_doc, d_doc in cases:
+        for name in ("RELEASE_INTENT_000002.json",
+                     "RELEASE_DONE_000002.json"):
+            p = locks / name
+            if p.exists():
+                p.unlink()
+        (locks / "RELEASE_INTENT_000002.json").write_text(i_doc)
+        (locks / "RELEASE_DONE_000002.json").write_text(d_doc)
+        for name in ("RELEASE_INTENT_000002.json",
+                     "RELEASE_DONE_000002.json"):
+            os.chmod(locks / name, 0o600)
+        with pytest.raises(SystemExit, match="alive"):
+            ex.acquire_lock(rr, "thief")
+    # permissive completion mode never frees
+    (locks / "RELEASE_INTENT_000002.json").unlink()
+    (locks / "RELEASE_DONE_000002.json").unlink()
+    (locks / "RELEASE_INTENT_000002.json").write_text(
+        json.dumps(intent))
+    os.chmod(locks / "RELEASE_INTENT_000002.json", 0o600)
+    (locks / "RELEASE_DONE_000002.json").write_text(
+        json.dumps(done))
+    os.chmod(locks / "RELEASE_DONE_000002.json", 0o644)
+    with pytest.raises(SystemExit, match="alive"):
+        ex.acquire_lock(rr, "thief")
+    os.chmod(locks / "RELEASE_DONE_000002.json", 0o600)
+    n3, _ = ex.acquire_lock(rr, "holder3")   # now truly released
+    assert n3 == 3
+    # fsync-uncertain completion: the DONE write dies -> intent
+    # alone never frees; the holder stays the lock owner
+    calls = {"n": 0}
+    real_fsync = os.fsync
+
+    def flaky_fsync(fd):
+        calls["n"] += 1
+        if calls["n"] == 3:               # the DONE file fsync
+            raise OSError("simulated fsync failure")
+        return real_fsync(fd)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(os, "fsync", flaky_fsync)
+        with pytest.raises(OSError):
+            ex.release_lock(rr, 3, "holder3")
+    # the torn DONE (invalid until its final byte) never frees
+    with pytest.raises(SystemExit, match="alive"):
+        ex.acquire_lock(rr, "thief")
+    # the held session-3 lock stays held: a torn completion is
+    # decided by verification, never by overwrite
+    with pytest.raises(SystemExit, match="never by overwrite"):
+        ex.release_lock(rr, 3, "holder3")
+    # post-election revalidation really re-reads both objects
+    n1b, rrb = ex.acquire_lock(tmp_path / "l1b", "holderB")
+    ex.release_lock(rrb, 1, "holderB")
+    seen = {"n": 0}
+    real_rc = ex._release_complete
+
+    def flappy(rr_, n_, doc_):
+        seen["n"] += 1
+        if seen["n"] == 1:
+            return real_rc(rr_, n_, doc_)
+        return False
+
+    with monkeypatch.context() as mp:
+        mp.setattr(ex, "_release_complete", flappy)
+        with pytest.raises(SystemExit, match="after the election"):
+            ex.acquire_lock(rrb, "holderB2")
+    # two REAL contenders: exactly one wins the O_EXCL election
+    root2 = tmp_path / "race"
+    code = (
+        "import sys; sys.path.insert(0, 'tools');"
+        "import t2_confirmatory_executor as ex;"
+        "from pathlib import Path;"
+        f"ex._TRUSTED_ROOT_PARENTS = (Path('{tmp_path}'),);"
+        f"n, rr = ex.acquire_lock(Path('{root2}'), 'contender');"
+        "print('WON', n)")
+    procs = [subprocess.Popen([sys.executable, "-c", code],
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT,
+                              text=True, cwd=str(REPO))
+             for _ in range(2)]
+    outs = [p.communicate()[0] for p in procs]
+    wins = sum("WON" in o for o in outs)
+    refusals = sum("REFUSED" in o for o in outs)
+    assert wins == 1 and refusals == 1, outs
+
+
+def test_c59_terminals_require_current_authority(trusted_tmp):
+    """C59: the audit PRE (a fabricated authority-free terminal
+    accepted as TERMINAL_FAILED) is a frozen regression — deep
+    verification against current physical authority is the only
+    path to TERMINAL_FAILED; stale, transplanted or restamped
+    terminals adjudicate UNCERTAIN."""
+    tmp_path, ex = trusted_tmp
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.SEALED_PATH.read_text())
+    authority = _reh_authority(ex, design)
+    u = tmp_path / "units59"
+    u.mkdir()
+    term = {"schema": "agent_multi.t2_unit_terminal.v2",
+            "unit_id": "ghost", "attempt_id": "attempt_" + "a" * 16,
+            "mode": "confirmatory", "terminal": "FAILED",
+            "failure_class": "Fabricated", "reason": "none",
+            "operator_disposition": False, "wall_seconds": 0.0}
+    term["terminal_sha256"] = ex._self_sha(term, "terminal_sha256")
+    tp = u / "TERMINAL_ghost.json"
+    tp.write_text(json.dumps(term))
+    os.chmod(tp, 0o600)
+    st, why = ex.adjudicate_unit_deep(u, "ghost", design,
+                                      authority,
+                                      "mechanical_rehearsal")
+    assert st == "UNCERTAIN"
+    assert "does not verify under current authority" in why
+    # a legitimate v3 terminal (from run_unit) DEEP-verifies; a
+    # restamped authority field flips it to UNCERTAIN
+    hz, co, unit = _nile(ex)
+    pins = ex._git_head_tree()
+    rr = ex.ResultsRoot(tmp_path / "legit", create=True)
+
+    def broken_guard(label):
+        if "ridge_done" in label:
+            raise ValueError("defect")
+
+    with pytest.raises(ex.T2AssayFailed):
+        ex.run_unit(hz, co, unit, design, authority, rr,
+                    "mechanical_rehearsal", pins,
+                    guard=broken_guard)
+    ud = rr.path / "units"
+    st, why = ex.adjudicate_unit_deep(
+        ud, "sm_nile", design, authority, "mechanical_rehearsal")
+    assert st == "TERMINAL_FAILED", why
+    doc = json.loads((ud / "TERMINAL_sm_nile.json").read_text())
+    doc["execution_record_sha256"] = "0" * 64
+    doc["terminal_sha256"] = ex._self_sha(doc, "terminal_sha256")
+    (ud / "TERMINAL_sm_nile.json").unlink()
+    (ud / "TERMINAL_sm_nile.json").write_text(json.dumps(doc))
+    os.chmod(ud / "TERMINAL_sm_nile.json", 0o600)
+    st, why = ex.adjudicate_unit_deep(
+        ud, "sm_nile", design, authority, "mechanical_rehearsal")
+    assert st == "UNCERTAIN" and "authority" in why
+
+
+def test_c60_disposition_is_external_authority(trusted_tmp,
+                                               monkeypatch):
+    """C60: the audit PRE (a two-field fabricated claim converted
+    to TERMINAL_FAILED) is a frozen regression; disposition runs
+    the gates, fully verifies the claim, and consumes the EXTERNAL
+    Musashi disposition record — absent record refuses typed;
+    forged fields refuse; the fixture chain closes the attempt
+    with the record pinned."""
+    import t2_confirmatory as conf
+    tmp_path, ex = trusted_tmp
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.SEALED_PATH.read_text())
+    # PRE regression: fabricated two-field claim dies at claim
+    # verification (after gates), long before any terminal
+    root60 = tmp_path / "root60"
+    rr = ex.ResultsRoot(root60, create=True)
+    fake = {"attempt_id": "attempt_" + "b" * 16,
+            "mode": "mechanical_rehearsal"}
+    cp = rr.path / "units" / "CLAIM_invented__series.json"
+    cp.write_text(json.dumps(fake))
+    os.chmod(cp, 0o600)
+    with pytest.raises(SystemExit, match="exact v3 schema"):
+        ex.declare_attempt_failed(root60, "invented::series",
+                                  mode="mechanical_rehearsal")
+    assert not (rr.path / "units"
+                / "TERMINAL_invented__series.json").exists()
+    # a REAL uncertain claim (budget-stopped attempt)
+    hz, co, unit = _nile(ex)
+    authority = _reh_authority(ex, design)
+    pins = ex._git_head_tree()
+    rr2 = ex.ResultsRoot(tmp_path / "real60", create=True)
+
+    def trip(label):
+        if "mlp_seed12" in label:
+            raise ex.T2BudgetStop("stop", label)
+
+    with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
+        ex.run_unit(hz, co, unit, design, authority, rr2,
+                    "mechanical_rehearsal", pins, guard=trip)
+    claim = json.loads(
+        (rr2.path / "units" / "CLAIM_sm_nile.json").read_text())
+    # absent external record -> typed refusal
+    monkeypatch.setattr(conf, "AUTHORITY_ROOT",
+                        tmp_path / "auth" / "agent-multi"
+                        / "reviewer_authority")
+    ra = _t2_private_chain(tmp_path / "auth")
+    with pytest.raises(SystemExit,
+                       match="T2_DISPOSITION_RECORD_REQUIRED"):
+        ex.declare_attempt_failed(tmp_path / "real60", "sm_nile",
+                                  mode="mechanical_rehearsal")
+    good = {"schema":
+            "agent_multi.musashi_t2_disposition_record.v1",
+            "reviewed_at_date": "2026-09-07",
+            "reviewer": "General Musashi",
+            "decision": "DECLARE_ATTEMPT_FAILED",
+            "unit_id": "sm_nile",
+            "attempt_id": claim["attempt_id"],
+            "claim_sha256": claim["claim_sha256"],
+            "execution_record_sha256":
+                ex.REHEARSAL_EXECUTION_SENTINEL,
+            "reason": "fixture disposition of a stopped attempt"}
+    dp = ra / "MUSASHI_T2_DISPOSITION_sm_nile.json"
+    for field, val, needle in (
+            ("reviewer", "candidate", "external reviewer role"),
+            ("decision", "OTHER", "does not close"),
+            ("claim_sha256", "0" * 64, "physical claim"),
+            ("execution_record_sha256", "1" * 64,
+             "CURRENT execution authority"),
+            ("attempt_id", "attempt_" + "c" * 16,
+             "unit and attempt"),
+            ("reviewed_at_date", "7/9/2026", "canonical")):
+        _priv_write(dp, {**good, field: val})
+        with pytest.raises(SystemExit, match=needle):
+            ex.declare_attempt_failed(tmp_path / "real60",
+                                      "sm_nile",
+                                      mode="mechanical_rehearsal")
+    _priv_write(dp, good)
+    ex.declare_attempt_failed(tmp_path / "real60", "sm_nile",
+                              mode="mechanical_rehearsal")
+    st, why = ex.adjudicate_unit_deep(
+        rr2.path / "units", "sm_nile", design, authority,
+        "mechanical_rehearsal")
+    assert st == "TERMINAL_FAILED", why
+    term = json.loads(
+        (rr2.path / "units" / "TERMINAL_sm_nile.json")
+        .read_text())
+    assert term["operator_disposition"] is True
+    assert term["disposition_record_sha256"] == \
+        hashlib.sha256(dp.read_bytes()).hexdigest()
+
+
+def test_c61_root_custody_bites(tmp_path):
+    """C61: the audit PRE (a symlinked results root followed) is
+    a frozen regression under the REAL trusted parents; foreign,
+    permissive, symlinked-intermediate and non-normal roots fail
+    before writes; the heartbeat uses no fixed .tmp path."""
+    ex = _exec_mod()
+    cache = Path.home() / ".cache"
+    real = cache / f"t2_c61_target_{os.getpid()}"
+    link = cache / f"t2_c61_link_{os.getpid()}"
+    real.mkdir(mode=0o700, exist_ok=True)
+    if link.is_symlink():
+        link.unlink()
+    link.symlink_to(real)
+    try:
+        before = sorted(p.name for p in real.iterdir())
+        with pytest.raises(SystemExit,
+                           match="O_NOFOLLOW|symlink"):
+            ex.ResultsRoot(link, create=True)
+        assert sorted(p.name for p in real.iterdir()) == before
+        with pytest.raises(SystemExit, match="trusted"):
+            ex.ResultsRoot(tmp_path / "foreign", create=True)
+        perm = cache / f"t2_c61_perm_{os.getpid()}"
+        perm.mkdir(mode=0o755, exist_ok=True)
+        os.chmod(perm, 0o755)
+        with pytest.raises(SystemExit, match="0700"):
+            ex.ResultsRoot(perm, create=True)
+        os.chmod(perm, 0o700)
+        sub = cache / f"t2_c61_sub_{os.getpid()}"
+        sub.mkdir(mode=0o700, exist_ok=True)
+        (sub / "units").symlink_to(real)
+        with pytest.raises(SystemExit, match="custody"):
+            ex.ResultsRoot(sub)
+        with pytest.raises(SystemExit, match="not normal"):
+            ex.ResultsRoot(cache / ".." / ".cache" / "x",
+                           create=True)
+        esrc = (REPO
+                / "tools/t2_confirmatory_executor.py").read_text()
+        assert 'with_suffix(".tmp")' not in esrc
+        assert 'f".hb_{os.urandom(8).hex()}"' in esrc
+    finally:
+        import shutil
+        for p in (link,):
+            if p.is_symlink():
+                p.unlink()
+        for p in (real, cache / f"t2_c61_perm_{os.getpid()}",
+                  cache / f"t2_c61_sub_{os.getpid()}"):
+            shutil.rmtree(p, ignore_errors=True)
+
+
+def test_c63_final_adjudication_controls_success(trusted_tmp,
+                                                 monkeypatch):
+    """C63: the audit PRE (rc=0 with a fresh UNCERTAIN claim) is
+    a frozen regression — a post-assay persistence failure now
+    HALTS typed (never counted and continued), and the final deep
+    adjudication refuses success over any uncertainty."""
+    tmp_path, ex = trusted_tmp
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.SEALED_PATH.read_text())
+    hz, co, unit = _nile(ex)
+    authority = _reh_authority(ex, design)
+    pins = ex._git_head_tree()
+    rr = ex.ResultsRoot(tmp_path / "halt", create=True)
+    import numpy as _np
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.np, "savez_compressed",
+                   lambda *a, **k: (_ for _ in ()).throw(
+                       OSError("simulated persistence crash")))
+        with pytest.raises(SystemExit,
+                           match="campaign halts") as ei:
+            ex.run_unit(hz, co, unit, design, authority, rr,
+                        "mechanical_rehearsal", pins)
+    assert "UNCERTAIN" in str(ei.value)
+    st, why = ex.adjudicate_unit_shallow(rr.path / "units",
+                                         "sm_nile")
+    assert st == "UNCERTAIN" and "claim without" in why
+    assert not (rr.path / "units"
+                / "TERMINAL_sm_nile.json").exists()
+    # final adjudication refuses success over any uncertainty
+    rr2 = ex.ResultsRoot(tmp_path / "final", create=True)
+    with pytest.raises(ex.T2AssayFailed):
+        ex.run_unit(hz, co, unit, design, authority, rr2,
+                    "mechanical_rehearsal", pins,
+                    guard=lambda lb: (_ for _ in ()).throw(
+                        ValueError("defect"))
+                    if "ridge_done" in lb else None)
+    counts = ex.final_adjudication(
+        rr2, ("sm_nile",), design, authority,
+        "mechanical_rehearsal", lambda uid: None)
+    assert counts == {"COMPLETED_VERIFIED": 0,
+                      "TERMINAL_FAILED": 1}
+    (rr2.path / "units" / "TERMINAL_sm_nile.json").unlink()
+    with pytest.raises(SystemExit, match="typed uncertainty"):
+        ex.final_adjudication(rr2, ("sm_nile",), design,
+                              authority, "mechanical_rehearsal",
+                              lambda uid: None)
+
+
+def test_c64_mutations_bite(trusted_tmp, monkeypatch):
+    """C64: each named mutation reintroduces one audited defect
+    against the productive functions and the corresponding attack
+    SUCCEEDS again — proving the shipped guard is what blocks
+    it."""
+    import time as _t
+    tmp_path, ex = trusted_tmp
+    stop = tmp_path / "T2_STOP"
+    # (1) bare release existence frees a live lock again
+    n1, rr = ex.acquire_lock(tmp_path / "m1", "holder")
+    with monkeypatch.context() as mp:
+        mp.setattr(ex, "_release_complete",
+                   lambda rr_, n_, d_: True)
+        n2, _ = ex.acquire_lock(rr, "thief")
+        assert n2 == 2                    # mutation bites
+    # (2) terminals without current-authority binding accepted
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        u = tmp_path / "m2"
+        u.mkdir()
+        term = {"schema": "agent_multi.t2_unit_terminal.v2",
+                "unit_id": "ghost", "terminal": "FAILED"}
+        term["terminal_sha256"] = ex._self_sha(term,
+                                               "terminal_sha256")
+        tp = u / "TERMINAL_ghost.json"
+        tp.write_text(json.dumps(term))
+        os.chmod(tp, 0o600)
+        with monkeypatch.context() as mp:
+            mp.setattr(
+                ex, "verify_unit_terminal",
+                lambda p, d, authority=None, mode_expected=None,
+                repo_root=None: {"terminal": "FAILED"})
+            st, _ = ex.adjudicate_unit_deep(
+                u, "ghost", design,
+                _reh_authority(ex, design),
+                "mechanical_rehearsal")
+            assert st == "TERMINAL_FAILED"    # mutation bites
+    # (3) the five-second crash credit restored
+    real_replay = ex.WallAuthority._replay
+
+    def lossy_replay(self, raw):
+        charged, last, seq, torn = real_replay(self, raw)
+        return 0.0, last, seq, torn       # forget every charge
+
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.WallAuthority, "_replay", lossy_replay)
+        rrw = ex.ResultsRoot(tmp_path / "m3", create=True)
+        accepted = 0
+        for k in range(8):
+            g = ex.WallAuthority(rrw, {"max_wall_seconds": 0.08,
+                                       "max_rss_bytes": 8 << 30},
+                                 stop, f"c{k}")
+            accepted += 1
+            os.close(g._fd)
+        assert accepted == 8              # mutation bites
+    # (4) the supervisor ignores the remaining wall again
+    rrs = ex.ResultsRoot(tmp_path / "m4", create=True)
+    w = ex.WallAuthority(rrs, {"max_wall_seconds": 0.01,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "s")
+    class _Slow:
+        def __call__(self):
+            _t.sleep(0.12)
+            return "finished"
+
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.WallAuthority, "ensure_reserved",
+                   lambda self, s, lb: float(s))
+        sup = ex.make_fit_supervisor({"max_rss_bytes": 8 << 30},
+                                     w)
+        assert sup(_Slow(), "slow") == "finished"  # bites
+    # (5) the results-root symlink followed again
+    cache = Path.home() / ".cache"
+    real = cache / f"t2_m5_target_{os.getpid()}"
+    link = cache / f"t2_m5_link_{os.getpid()}"
+    real.mkdir(mode=0o700, exist_ok=True)
+    if link.is_symlink():
+        link.unlink()
+    link.symlink_to(real)
+
+    class _NaiveRoot:
+        def __init__(self, out_root, create=False):
+            self.path = Path(out_root)
+            (self.path / "units").mkdir(parents=True,
+                                        exist_ok=True)
+            (self.path / "locks").mkdir(exist_ok=True)
+
+    try:
+        with monkeypatch.context() as mp:
+            mp.setattr(ex, "ResultsRoot", _NaiveRoot)
+            ex.ResultsRoot(link, create=True)
+            assert (real / "units").exists()  # mutation bites
+    finally:
+        import shutil
+        if link.is_symlink():
+            link.unlink()
+        shutil.rmtree(real, ignore_errors=True)
+    # (6) success permitted with final uncertainty
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        rrf = ex.ResultsRoot(tmp_path / "m6", create=True)
+        (rrf.path / "units").mkdir(exist_ok=True)
+        cp = rrf.path / "units" / "CLAIM_sm_nile.json"
+        cp.write_text("{}")
+        os.chmod(cp, 0o600)
+        with monkeypatch.context() as mp:
+            mp.setattr(ex, "final_adjudication",
+                       lambda *a, **k: {
+                           "COMPLETED_VERIFIED": 0,
+                           "TERMINAL_FAILED": 0})
+            counts = ex.final_adjudication(
+                rrf, ("sm_nile",), design,
+                _reh_authority(ex, design),
+                "mechanical_rehearsal", lambda uid: None)
+            assert counts["TERMINAL_FAILED"] == 0  # bites: no
+            # refusal fired under the mutation

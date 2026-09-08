@@ -1,0 +1,53 @@
+== C57 DEAD: a restart cannot renew the wall ==
+crash sessions: 1 accepted, 7 refused typed (PRE accepted 8/8)
+=> hash-chained, descriptor-bound, charge-in-advance (source facts)
+
+== C58 DEAD: a bare release never frees a live lock ==
+  empty release filenames against a LIVE holder (the PRE) -> REFUSED: another executor holds lock session 1 (pid 694923 is alive; its release is absent or does n
+  a REAL intent+completion release frees: session 2
+
+== C59 DEAD: terminals require current authority ==
+  the PRE's fabricated terminal -> UNCERTAIN: ghost: terminal does not verify under current authority — REFUSED: unit terminal key
+
+== C60 DEAD: disposition is external authority ==
+  the PRE's two-field fabricated claim -> REFUSED: unit claim keys are not the exact v3 schema (diff: ['campaign_generation', 'census_sha256',
+  a REAL uncertain attempt without the external record -> REFUSED: T2_DISPOSITION_RECORD_REQUIRED: an uncertain attempt is closed only by the EXTERNAL Musashi
+
+== C61 DEAD: the results root cannot be a symlink ==
+  the PRE's symlinked results root -> REFUSED: results-root path component refuses O_NOFOLLOW custody (errno 20: Not a directory) — a syml
+  writes under the target: 0
+
+== C62 DEAD: one effective wall for supervised fits ==
+  the PRE's wall-blind fit (remaining ~0.25s of 0.6s) -> SUPERVISED_FIT_FAILURE: slow-fit exceeded its effective wall bound (0.250s = min(remaining global, p
+  killed after 0.27s = min(remaining, per-fit); PRE ran to completion
+  dispatch with zero remaining budget -> T2_BUDGET_STOP at no-budget: no positive wall budget remains for a supervised interval
+  orphan workers: 0
+
+== C63 DEAD: adjudication controls success ==
+  the PRE's post-assay persistence crash -> REFUSED: sm_nile: post-assay persistence/verification failed (OSError: simulated persistence crash) 
+  claim preserved: UNCERTAIN: sm_nile: claim without terminal or record — a crashed or budget-stopped at
+  assay failure with terminal -> {'COMPLETED_VERIFIED': 0, 'TERMINAL_FAILED': 1}
+  final adjudication over a missing terminal -> REFUSED: final adjudication found typed uncertainty — sm_nile: claim without terminal or record — a 
+
+== v3 mechanical rehearsal at the final tip ==
+{
+ "rehearsal": "COMPLETE_MECHANICS_ONLY",
+ "units": [
+  "sm_co2",
+  "sm_sunspots",
+  "sm_nile"
+ ],
+ "per_unit_wall_seconds": {
+  "sm_co2": 27.52,
+  "sm_sunspots": 7.57,
+  "sm_nile": 7.08
+ },
+ "sealed_bank_series_touched": 0,
+ "records_verified_from_persisted_arrays": 3,
+ "final_adjudication": {
+  "COMPLETED_VERIFIED": 3,
+  "TERMINAL_FAILED": 0
+ }
+}
+
+POST CONFIRMED: C57-C63 dead through the productive APIs; the executor charges walls in advance, frees locks only through verified two-phase releases, adjudicates terminals under current authority, defers disposition to the external record, walks the root with O_NOFOLLOW, bounds fits by the remaining global wall, and refuses success over any physical uncertainty; scoring remains closed by the ABSENT external execution record
