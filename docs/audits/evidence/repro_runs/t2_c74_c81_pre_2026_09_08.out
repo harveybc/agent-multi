@@ -1,0 +1,15 @@
+== C74: replacement AFTER pre-write revalidation is accepted ==
+{
+ "heartbeat_call_accepted": true,
+ "landed_on_old_held_inode": true,
+ "visible_at_declared_path": false
+}
+
+== C74/C75: no post-operation identity proof exists (source) ==
+heartbeat/excl_write: pre-check only; read_private and WallAuthority._append: no identity proof at all
+
+== C76/C77: the infeasible 4-hour design is accepted ==
+sealed cap: 14400s = 4.0h; recorded projection: ~123,282s (~34.2h) from the corrected rehearsal — physically incompatible
+=> no successor design, no persisted projection basis, no feasibility gate — the gates would consume the infeasible design
+
+PRE CONFIRMED at a8fe2be6: the post-revalidation replacement window, the unproven reads/appends, and the absent resource successor/feasibility gate — all frozen
