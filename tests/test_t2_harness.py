@@ -1401,13 +1401,21 @@ def test_c30_kill_8_fresh_verifier_wired_into_single_path(
                              "bytes"):
         conf.run_confirmatory(mp, fp, lp, census_path=cp)
     assert not lp.exists()
-    # source guard: the call precedes verify_design_review_record
+    # source guard: inside the PURE gate sequence the fresh
+    # verifier precedes the review gate, which precedes the
+    # execution gate; the effectful wrapper orders gates before
+    # the ledger (C53)
     src = (REPO / "tools/t2_confirmatory.py").read_text()
-    seg = src[src.index("def run_confirmatory"):]
-    seg = seg[:seg.index("def ", 10)]
+    seg = src[src.index("def verify_confirmatory_gates"):]
+    seg = seg[:seg.index("\ndef run_confirmatory")]
     assert seg.index("fresh_verify") < seg.index(
         "verify_design_review_record") < seg.index(
-        "open_attempt_ledger")
+        "verify_execution_record")
+    assert "open_attempt_ledger" not in seg
+    wrap = src[src.index("def run_confirmatory"):]
+    wrap = wrap[:wrap.index("\nT2_EXECUTION_RECORD_PATH")]
+    assert wrap.index("verify_confirmatory_gates") < \
+        wrap.index("open_attempt_ledger")
 
 
 def test_c30_kill_9_dominant_panel_fails_lopo():
@@ -1968,15 +1976,20 @@ def test_c40_4_cli_and_api_share_the_sealed_path():
     src = (REPO / "tools/t2_assay_harness.py").read_text()
     assert "t2_confirmatory_design_20260906.json" not in src
     assert "t2_screen_design_SEALED_V6.json" in src
-    assert "run_confirmatory" in src
+    # C53: the CLI consumes the PURE gate sequence only — it can
+    # never create a ledger as a side effect of a gate check
+    assert "verify_confirmatory_gates" in src
+    cli_seg = src[src.index("if args.confirmatory"):]
+    cli_seg = cli_seg[:cli_seg.index("if not args.development")]
+    assert "run_confirmatory" not in cli_seg
     csrc = (REPO / "tools/t2_confirmatory.py").read_text()
-    seg = csrc[csrc.index("def run_confirmatory"):]
-    seg = seg[:seg.index("\ndef ", 10)]
+    seg = csrc[csrc.index("def verify_confirmatory_gates"):]
+    seg = seg[:seg.index("\ndef run_confirmatory")]
     assert "SEALED_DESIGN_REQUIRED" in seg
     assert seg.index("SEALED_DESIGN_REQUIRED") < \
         seg.index("fresh_verify") < \
         seg.index("verify_design_review_record") < \
-        seg.index("open_attempt_ledger")
+        seg.index("verify_execution_record")
     assert "_ACCEPTED_DESIGN_SCHEMAS" in csrc
 
 
@@ -1992,12 +2005,55 @@ def _exec_mod():
     return m
 
 
-def test_c47_1_execution_gate_structurally_closed(tmp_path,
-                                                  monkeypatch):
-    """C42/C47: without the external EXECUTION record the single
-    path refuses TYPED before any ledger; forged execution records
-    refuse per field; a valid fixture record opens the gates
-    WITHOUT computing anything."""
+
+def _priv_write(path, doc):
+    """0600 fixture writer — the v2 custody walk refuses anything
+    else."""
+    p = Path(path)
+    if p.exists():
+        p.unlink()
+    p.write_text(doc if isinstance(doc, str) else json.dumps(doc))
+    os.chmod(p, 0o600)
+
+
+def _git_head_tree():
+    import subprocess
+    h = subprocess.run(["git", "-C", str(REPO), "rev-parse",
+                       "HEAD"], capture_output=True,
+                      text=True).stdout.strip()
+    t = subprocess.run(["git", "-C", str(REPO), "rev-parse",
+                       "HEAD^{tree}"], capture_output=True,
+                      text=True).stdout.strip()
+    return h, t
+
+
+def _v2_exec_record(conf, sealed, design, **over):
+    S = Path.home() / ".local/share/agent-multi"
+    head, tree = _git_head_tree()
+    rec = {"schema": "agent_multi.musashi_t2_execution_record.v2",
+           "reviewed_at_date": "2026-09-07",
+           "reviewer": "General Musashi",
+           "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
+           "sealed_design_file_sha256": conf._sha_file(sealed),
+           "sealed_design_self_sha256": design["design_sha256"],
+           "design_review_record_sha256":
+               conf._sha_file(conf.T2_REVIEW_RECORD_PATH),
+           "manifest_sha256": conf._sha_file(
+               S / "t2_public_data_manifest_20260906.json"),
+           "census_sha256": conf._sha_file(
+               S / "t2_bank_census_20260906.json"),
+           "executor_code_identity":
+               conf.executor_code_identity(),
+           "pinned_commit": head, "pinned_tree": tree}
+    rec.update(over)
+    return rec
+
+
+def test_c48_1_execution_gate_v2_per_field(tmp_path, monkeypatch):
+    """C48: the v2 execution record refuses per field; the P1
+    bypass (an attacker-controlled nonempty candidate string) is a
+    frozen regression; without the record the single path refuses
+    TYPED before any ledger."""
     import t2_confirmatory as conf
     S = Path.home() / ".local/share/agent-multi"
     sealed = S / "t2_screen_design_SEALED_V6.json"
@@ -2013,151 +2069,723 @@ def test_c47_1_execution_gate_structurally_closed(tmp_path,
             mp, sealed, lp,
             census_path=S / "t2_bank_census_20260906.json")
     assert not lp.exists()
-    # forged records refuse per field
     ra = _t2_private_chain(tmp_path / "auth")
     er = ra / "MUSASHI_T2_V6_EXECUTION_RECORD.json"
     monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH", er)
     d = json.loads(sealed.read_text())
-    good = {"schema": "agent_multi.musashi_t2_execution_record.v1",
-            "reviewed_at_date": "2026-09-07",
-            "reviewer": "General Musashi",
-            "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
-            "sealed_design_file_sha256": conf._sha_file(sealed),
-            "sealed_design_self_sha256": d["design_sha256"],
-            "candidate_commit": "f" * 40}
+    args = (d, conf._sha_file(sealed),
+            conf._sha_file(conf.T2_REVIEW_RECORD_PATH),
+            conf._sha_file(mp),
+            conf._sha_file(S / "t2_bank_census_20260906.json"))
+    # P1 REGRESSION with the REAL checkout verifier: the exact
+    # attacker string dies on FORM before anything else
+    good = _v2_exec_record(conf, sealed, d)
+    _priv_write(er, {**good, "pinned_commit":
+                     "attacker-controlled-nonempty-string"})
+    with pytest.raises(SystemExit, match="40 lowercase hex"):
+        conf.verify_execution_record(*args)
+    # a v1-shaped record is a foreign schema now
+    v1 = {k: good[k] for k in
+          ("schema", "reviewed_at_date", "reviewer", "decision",
+           "sealed_design_file_sha256",
+           "sealed_design_self_sha256")}
+    v1["schema"] = "agent_multi.musashi_t2_execution_record.v1"
+    v1["candidate_commit"] = "attacker-controlled-nonempty-string"
+    _priv_write(er, v1)
+    with pytest.raises(SystemExit, match="exact v2 schema"):
+        conf.verify_execution_record(*args)
+    # per-field forgeries (checkout verifier stubbed so field
+    # semantics are what refuses, not this dev tree's dirt)
+    seen = []
+    monkeypatch.setattr(conf, "verify_executor_checkout",
+                        lambda c, t, repo_root=None:
+                        seen.append((c, t)))
     for field, val, needle in (
             ("decision", "SOMETHING_ELSE", "does not open"),
             ("reviewer", "candidate", "external reviewer role"),
+            ("reviewed_at_date", "7/9/2026", "canonical"),
             ("sealed_design_file_sha256", "e" * 64,
              "physical bytes"),
             ("sealed_design_self_sha256", "e" * 64,
              "self identity"),
-            ("reviewed_at_date", "7/9/2026", "canonical")):
-        doc = dict(good)
-        doc[field] = val
-        if er.exists():
-            er.unlink()
-        er.write_text(json.dumps(doc))
-        os.chmod(er, 0o600)
+            ("design_review_record_sha256", "0" * 64,
+             "verified external design review record"),
+            ("manifest_sha256", "1" * 64, "public-data manifest"),
+            ("census_sha256", "2" * 64, "bank census"),
+            ("executor_code_identity", {"attacker.py": "f" * 64},
+             "physical checkout surface")):
+        _priv_write(er, {**good, field: val})
         with pytest.raises(SystemExit, match=needle):
-            conf.run_confirmatory(
-                mp, sealed, lp,
-                census_path=S / "t2_bank_census_20260906.json")
+            conf.verify_execution_record(*args)
         assert not lp.exists()
-    # a VALID fixture record opens the gates; NOTHING is computed
-    er.unlink()
-    er.write_text(json.dumps(good))
-    os.chmod(er, 0o600)
-    out = conf.run_confirmatory(
-        mp, sealed, lp,
-        census_path=S / "t2_bank_census_20260906.json")
-    assert out["gates"] == "ALL_OPEN"
-    assert lp.exists()          # tmp fixture ledger only
-    assert out["execution_record_sha256"] == conf._sha_file(er)
+    # missing and extra keys refuse
+    less = dict(good)
+    less.pop("pinned_tree")
+    _priv_write(er, less)
+    with pytest.raises(SystemExit, match="exact v2 schema"):
+        conf.verify_execution_record(*args)
+    _priv_write(er, {**good, "extra": "x"})
+    with pytest.raises(SystemExit, match="exact v2 schema"):
+        conf.verify_execution_record(*args)
+    # the VALID v2 record verifies (checkout stub records the pin)
+    _priv_write(er, good)
+    out = conf.verify_execution_record(*args)
+    assert out["_record_sha256"] == conf._sha_file(er)
+    assert seen[-1] == (good["pinned_commit"],
+                        good["pinned_tree"])
 
 
-def test_c47_2_unit_record_custody_and_array_recompute(
-        tmp_path, monkeypatch):
-    """C43/C44: the rehearsal's REAL records verify from persisted
-    arrays; a mutated prediction, a swapped NPZ, an edited summary
-    and a broken self-digest each refuse; the rehearsal can never
-    touch a sealed-bank series; duplicate unit claims refuse."""
-    ex = _exec_mod()
+def test_c48_2_checkout_verifier_bites(tmp_path):
+    """C48.2-4: the REAL verify_executor_checkout against a
+    synthetic repository — form, existence, HEAD, tree, dirty
+    tracked files and shadowing untracked sources each refuse;
+    inert untracked files are tolerated."""
+    import subprocess
+    import t2_confirmatory as conf
+    r = tmp_path / "repo"
+    (r / "tools").mkdir(parents=True)
+    (r / "tools/a.py").write_text("x = 1\n")
+
+    def g(*a):
+        return subprocess.run(["git", "-C", str(r), *a],
+                              capture_output=True, text=True)
+    g("init", "-q")
+    g("config", "user.email", "t@example.invalid")
+    g("config", "user.name", "t")
+    g("add", "-A")
+    g("commit", "-q", "-m", "one")
+    head = g("rev-parse", "HEAD").stdout.strip()
+    tree = g("rev-parse", "HEAD^{tree}").stdout.strip()
+    conf.verify_executor_checkout(head, tree, repo_root=r)  # clean
+    with pytest.raises(SystemExit, match="40 lowercase hex"):
+        conf.verify_executor_checkout(
+            "attacker-controlled-nonempty-string", tree,
+            repo_root=r)
+    with pytest.raises(SystemExit, match="existing commit"):
+        conf.verify_executor_checkout("f" * 40, tree, repo_root=r)
+    with pytest.raises(SystemExit, match="not the tree"):
+        conf.verify_executor_checkout(head, "0" * 40, repo_root=r)
+    (r / "tools/a.py").write_text("x = 2\n")
+    g("add", "-A")
+    g("commit", "-q", "-m", "two")
+    head2 = g("rev-parse", "HEAD").stdout.strip()
+    tree2 = g("rev-parse", "HEAD^{tree}").stdout.strip()
+    with pytest.raises(SystemExit, match="not the.*pinned commit"):
+        conf.verify_executor_checkout(head, tree, repo_root=r)
+    (r / "tools/a.py").write_text("x = 3\n")     # dirty tracked
+    with pytest.raises(SystemExit, match="clean checkout"):
+        conf.verify_executor_checkout(head2, tree2, repo_root=r)
+    g("checkout", "-q", "--", ".")
+    (r / "tools/evil.py").write_text("import os\n")
+    with pytest.raises(SystemExit, match="shadow"):
+        conf.verify_executor_checkout(head2, tree2, repo_root=r)
+    (r / "tools/evil.py").unlink()
+    (r / "evil.pth").write_text("import evil\n")
+    with pytest.raises(SystemExit, match="import machinery"):
+        conf.verify_executor_checkout(head2, tree2, repo_root=r)
+    (r / "evil.pth").unlink()
+    (r / "docs").mkdir()
+    (r / "docs/note.md").write_text("inert\n")   # tolerated
+    conf.verify_executor_checkout(head2, tree2, repo_root=r)
+
+
+@pytest.fixture(scope="module")
+def rehearsal_root(tmp_path_factory):
+    """ONE shared v2 mechanical rehearsal over the dev units —
+    real records, real NPZ, real claims, zero sealed series."""
     os.environ.setdefault(
         "B4_T1_PREPROCESSOR_ROOT",
         str(Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
+    ex = _exec_mod()
     if not ex.SEALED_PATH.exists():
         pytest.skip("sealed design absent on this host")
-    out_root = tmp_path / "rehearsal"
-    rc = ex.rehearse(out_root)
+    root = tmp_path_factory.mktemp("t2reh") / "t2root"
+    rc = ex.rehearse(root)
     assert rc == 0
-    design = json.loads(ex.SEALED_PATH.read_text())
-    units = sorted((out_root / "units").glob("RECORD_*.json"))
-    assert len(units) == 3
-    for rp in units:
-        npz = rp.parent / rp.name.replace("RECORD_", "ARRAYS_"
-                                          ).replace(".json",
-                                                    ".npz")
-        ex.verify_unit_record(rp, npz, design)
-    # (a) mutate one persisted prediction -> MASE recompute dies
-    import numpy as _np
-    rp = units[0]
-    npz = rp.parent / rp.name.replace("RECORD_", "ARRAYS_"
-                                      ).replace(".json", ".npz")
-    data = dict(_np.load(npz))
-    k = next(k for k in data if k.startswith("pred__"))
-    data[k] = data[k] + 1.0
-    mut = tmp_path / "mut.npz"
-    with open(mut, "wb") as f:
-        _np.savez_compressed(f, **data)
-    wrapper = json.loads(rp.read_text())
-    wrapper["arrays_npz_sha256"] = ex._sha_file(mut)
+    return root, ex
+
+
+def _clone_unit(root, uid, dst):
+    import shutil
+    dst.mkdir(mode=0o700, exist_ok=True)
+    safe = uid.replace("::", "__").replace("/", "_")
+    for pref, suf in (("RECORD_", ".json"), ("ARRAYS_", ".npz"),
+                      ("CLAIM_", ".json")):
+        s = root / "units" / f"{pref}{safe}{suf}"
+        t = dst / f"{pref}{safe}{suf}"
+        shutil.copy(s, t)
+        os.chmod(t, 0o600)
+    return (dst / f"RECORD_{safe}.json",
+            dst / f"ARRAYS_{safe}.npz")
+
+
+def _restamp(ex, wrapper):
     wrapper["record_sha256"] = ex._self_sha(wrapper,
                                             "record_sha256")
-    rp2 = tmp_path / "mut_record.json"
-    rp2.write_text(json.dumps(wrapper))
+    return wrapper
+
+
+def test_c49_1_forged_wrapper_bypass_p2_frozen(rehearsal_root,
+                                               tmp_path):
+    """C49: the FULL P2 forgery (foreign unit_id, 64-zero
+    execution record, attacker code_identity, all 34 extreme MASE
+    values -> 999.0, self-digest repaired, NPZ intact) now refuses
+    — and each component refuses on its own typed ground."""
+    root, ex = rehearsal_root
+    design = json.loads(ex.SEALED_PATH.read_text())
+    rp, npz = _clone_unit(root, "sm_nile", tmp_path / "p2")
+    base = json.loads(rp.read_text())
+    # (a) the exact quadruple forgery
+    w = json.loads(json.dumps(base))
+    w["unit_id"] = "attacker::not_in_sealed_population"
+    w["execution_record_sha256"] = "0" * 64
+    w["code_identity"] = {"attacker.py": "f" * 64}
+    n = 0
+    for o in w["assay_record"]["rolling_origins"].values():
+        for arm, entry in o["results"].items():
+            pools = ([entry["metrics"]]
+                     if arm == "seasonal_naive" else
+                     [entry["ridge"], *entry["mlp_small"].values()])
+            for m in pools:
+                m["mase_on_extreme_innovations"] = 999.0
+                n += 1
+    assert n == 34
+    _priv_write(rp, _restamp(ex, w))
     with pytest.raises(SystemExit,
-                       match="does not recompute from persisted"):
-        ex.verify_unit_record(rp2, mut, design)
-    # (b) swapped NPZ (digest mismatch)
-    other = units[1].parent / units[1].name.replace(
-        "RECORD_", "ARRAYS_").replace(".json", ".npz")
+                       match="not a development unit"):
+        ex.verify_unit_record(rp, npz, design)
+    # (b) forged execution-record digest alone
+    w = json.loads(json.dumps(base))
+    w["execution_record_sha256"] = "0" * 64
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit, match="physical authority"):
+        ex.verify_unit_record(rp, npz, design)
+    # (c) forged code identity alone
+    w = json.loads(json.dumps(base))
+    w["code_identity"] = {"attacker.py": "f" * 64}
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit, match="reviewed checkout"):
+        ex.verify_unit_record(rp, npz, design)
+    # (d) all 34 extreme metrics alone — the exact path is named
+    w = json.loads(json.dumps(base))
+    for o in w["assay_record"]["rolling_origins"].values():
+        for arm, entry in o["results"].items():
+            pools = ([entry["metrics"]]
+                     if arm == "seasonal_naive" else
+                     [entry["ridge"], *entry["mlp_small"].values()])
+            for m in pools:
+                m["mase_on_extreme_innovations"] = 999.0
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit,
+                       match="mase_on_extreme_innovations"):
+        ex.verify_unit_record(rp, npz, design)
+    # (e) foreign unit_id alone (a real dev id on foreign arrays)
+    w = json.loads(json.dumps(base))
+    w["unit_id"] = "sm_sunspots"
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit, match="filename|claim|binding"):
+        ex.verify_unit_record(rp, npz, design)
+    # (f) transplanted sealed binding
+    w = json.loads(json.dumps(base))
+    uid0 = design["task_population"]["series_ids"][0]
+    w["unit_binding"] = \
+        design["task_population"]["unit_map"][uid0]
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit, match="binding"):
+        ex.verify_unit_record(rp, npz, design)
+    # (g) the intact record still verifies
+    _priv_write(rp, base)
+    out = ex.verify_unit_record(rp, npz, design)
+    assert out["verified_units"] == 1
+    # (h) a rehearsal record can NEVER verify as confirmatory
+    with pytest.raises(SystemExit, match="does not match the "
+                                         "expected"):
+        ex.verify_unit_record(rp, npz, design,
+                              mode_expected="confirmatory")
+
+
+def test_c50_1_arrays_bound_to_the_physical_series(rehearsal_root,
+                                                   tmp_path):
+    """C50.5: altering obs AND pred together (metrics recompute
+    consistently!) still refuses — obs must be the exact slice of
+    the physical series; the baseline prediction must be the
+    seasonal-naive slice; a swapped NPZ refuses on digest."""
+    import numpy as _np
+    root, ex = rehearsal_root
+    design = json.loads(ex.SEALED_PATH.read_text())
+    rp, npz = _clone_unit(root, "sm_sunspots", tmp_path / "joint")
+    base = json.loads(rp.read_text())
+    with _np.load(npz, allow_pickle=False) as z:
+        data = {k: z[k] for k in z.files}
+    key = next(k for k in data if k.startswith("pred__")
+               and "ridge" in k)
+    okye = key.replace("pred__", "obs__")
+    data[key] = data[key] + 3.7
+    data[okye] = data[okye] + 3.7          # err unchanged
+    mut = tmp_path / "joint" / npz.name
+    mut.unlink()
+    with open(mut, "wb") as f:
+        _np.savez_compressed(f, **data)
+    os.chmod(mut, 0o600)
+    w = json.loads(json.dumps(base))
+    w["arrays_npz_sha256"] = ex._sha_file(mut)
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit,
+                       match="exact.*slice of the physical "
+                             "series"):
+        ex.verify_unit_record(rp, mut, design)
+    # baseline prediction must derive from the series itself
+    rp2, npz2 = _clone_unit(root, "sm_sunspots", tmp_path / "bl")
+    with _np.load(npz2, allow_pickle=False) as z:
+        data2 = {k: z[k] for k in z.files}
+    bkey = next(k for k in data2 if k.startswith("pred__")
+                and k.endswith("__baseline"))
+    data2[bkey] = data2[bkey] + 1.0
+    npz2.unlink()
+    with open(npz2, "wb") as f:
+        _np.savez_compressed(f, **data2)
+    os.chmod(npz2, 0o600)
+    w2 = json.loads(json.dumps(base))
+    w2["arrays_npz_sha256"] = ex._sha_file(npz2)
+    _priv_write(rp2, _restamp(ex, w2))
+    with pytest.raises(SystemExit, match="seasonal-naive slice"):
+        ex.verify_unit_record(rp2, npz2, design)
+    # a swapped NPZ (another unit's arrays under THIS unit's
+    # filename) dies on the digest
+    import shutil
+    rp3, npz3 = _clone_unit(root, "sm_nile", tmp_path / "swap")
+    npz3.unlink()
+    shutil.copy(root / "units" / "ARRAYS_sm_co2.npz", npz3)
+    os.chmod(npz3, 0o600)
     with pytest.raises(SystemExit, match="swapped or edited"):
-        ex.verify_unit_record(rp, other, design)
-    # (c) edited summary (self-digest breaks)
-    doc = json.loads(rp.read_text())
-    doc["assay_record"]["rolling_origins"]["origin0"]["results"][
-        "D"]["ridge"]["mase_primary"] = 0.0001
-    rp3 = tmp_path / "edited.json"
-    rp3.write_text(json.dumps(doc))
-    with pytest.raises(SystemExit,
-                       match="self-digest does not"):
-        ex.verify_unit_record(rp3, npz, design)
-    # (d) duplicate unit claim refuses (O_EXCL attempts)
-    import t2_assay_harness as hz
-    co = hz.load_co()
-    import t2_public_data_census as dc
-    census = dc.build_census()
-    unit = hz.load_task_unit(census, "sm_nile")
-    with pytest.raises(SystemExit,
-                       match="already claimed"):
-        ex.run_unit(hz, co, unit, design, {
-            "sealed_design_file_sha256": "x",
-            "sealed_design_self_sha256": "x",
-            "design_review_record_sha256": "x",
-            "execution_record_sha256": "x",
-            "manifest_sha256": "x", "census_sha256": "x"},
-            out_root)
-    # (e) the rehearsal population is disjoint from the sealed one
-    sealed_ids = set(design["task_population"]["series_ids"])
-    assert not sealed_ids & set(ex.DEV_UNITS)
-    src = (REPO / "tools/t2_confirmatory_executor.py").read_text()
-    assert "assert uid not in sealed_ids" in src
+        ex.verify_unit_record(rp3, npz3, design)
 
 
-def test_c47_3_budget_resume_and_lock():
-    """C45: the sealed budget bounds, the O_EXCL executor lock,
-    heartbeat and resume order are present in the productive
-    source; FAILED units are preserved as missing, never rerun."""
-    src = (REPO / "tools/t2_confirmatory_executor.py").read_text()
-    seg = src[src.index("def main"):]
-    assert "max_wall_seconds" in src and "max_rss_bytes" in src
-    assert "T2_STOP" in src and "os.nice(15)" in src
-    assert "EXECUTOR_LOCK" in src and "EXECUTOR_HEARTBEAT" in src
-    # resume: verified records skip BEFORE terminals, terminals
-    # count as preserved-missing, budget checked BEFORE work
-    i_rec = seg.index('f"RECORD_{safe}.json"')
-    i_term = seg.index('f"TERMINAL_{safe}.json"')
-    i_budget = seg.index("_budget(")
-    i_load = seg.index("load_bank_unit(")
-    assert i_rec < i_term < i_budget < i_load
-    assert "never rerun" in src or "preserved as missing" in src
-    # the work census is executable
+def test_c50_2_inventory_shape_dtype_finiteness(rehearsal_root,
+                                                tmp_path):
+    """C50.3-4: missing arrays, extra arrays, NaN, wrong dtype and
+    wrong length each refuse typed (with the record's digest
+    repaired, so the refusals are semantic)."""
+    import numpy as _np
+    root, ex = rehearsal_root
+    design = json.loads(ex.SEALED_PATH.read_text())
+
+    def _mutated(name, fn):
+        rp, npz = _clone_unit(root, "sm_nile", tmp_path / name)
+        base = json.loads(rp.read_text())
+        with _np.load(npz, allow_pickle=False) as z:
+            data = {k: z[k] for k in z.files}
+        fn(data)
+        npz.unlink()
+        with open(npz, "wb") as f:
+            _np.savez_compressed(f, **data)
+        os.chmod(npz, 0o600)
+        w = json.loads(json.dumps(base))
+        w["arrays_npz_sha256"] = ex._sha_file(npz)
+        _priv_write(rp, _restamp(ex, w))
+        return rp, npz
+
+    fitk = None
+    with _np.load(root / "units" / "ARRAYS_sm_nile.npz",
+                  allow_pickle=False) as z:
+        fitk = next(k for k in z.files if k.startswith("fit__"))
+        predk = next(k for k in z.files
+                     if k.startswith("pred__") and "ridge" in k)
+    rp, npz = _mutated("miss", lambda d: d.pop(fitk))
+    with pytest.raises(SystemExit, match="inventory is not exact"):
+        ex.verify_unit_record(rp, npz, design)
+    rp, npz = _mutated("extra", lambda d: d.update(
+        {"smuggled": _np.zeros(3)}))
+    with pytest.raises(SystemExit, match="inventory is not exact"):
+        ex.verify_unit_record(rp, npz, design)
+
+    def _nan(d):
+        a = d[predk].copy()
+        a[0] = _np.nan
+        d[predk] = a
+    rp, npz = _mutated("nan", _nan)
+    with pytest.raises(SystemExit, match="finite float64"):
+        ex.verify_unit_record(rp, npz, design)
+    rp, npz = _mutated("f32", lambda d: d.update(
+        {predk: d[predk].astype(_np.float32)}))
+    with pytest.raises(SystemExit, match="finite float64"):
+        ex.verify_unit_record(rp, npz, design)
+    rp, npz = _mutated("short", lambda d: d.update(
+        {predk: d[predk][:-1]}))
+    with pytest.raises(SystemExit, match="length"):
+        ex.verify_unit_record(rp, npz, design)
+
+
+def test_c50_3_descriptor_custody_of_evidence(rehearsal_root,
+                                              tmp_path):
+    """C50.1-2: wrong mode refuses (never chmodded); a symlinked
+    evidence object refuses; pickled/object arrays refuse; the
+    producer NPZ path is exclusive-create (source)."""
+    import numpy as _np
+    root, ex = rehearsal_root
+    design = json.loads(ex.SEALED_PATH.read_text())
+    rp, npz = _clone_unit(root, "sm_nile", tmp_path / "mode")
+    os.chmod(rp, 0o644)
+    with pytest.raises(SystemExit, match="exact private 0600"):
+        ex.verify_unit_record(rp, npz, design)
+    os.chmod(rp, 0o600)
+    link = tmp_path / "mode" / "link.npz"
+    link.symlink_to(npz)
+    with pytest.raises(SystemExit, match="unopenable|filename"):
+        ex.verify_unit_record(rp, link, design)
+    rp2, npz2 = _clone_unit(root, "sm_nile", tmp_path / "pick")
+    npz2.unlink()
+    with open(npz2, "wb") as f:
+        _np.savez(f, y=_np.array([{"a": 1}], dtype=object))
+    os.chmod(npz2, 0o600)
+    base = json.loads(rp2.read_text())
+    base["arrays_npz_sha256"] = ex._sha_file(npz2)
+    _priv_write(rp2, _restamp(ex, base))
+    with pytest.raises(SystemExit, match="pickle-free"):
+        ex.verify_unit_record(rp2, npz2, design)
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    assert 'with open(npz_p, "wb")' not in esrc
+    assert "_excl_write_npz(npz_p, arrays)" in esrc
+    assert "O_EXCL" in esrc and "allow_pickle=False" in esrc
+
+
+def test_c51_1_every_metric_recomputes_or_refuses(rehearsal_root,
+                                                  tmp_path):
+    """C51: falsifying ANY consumed metric of any entry refuses
+    naming its exact path — MASE, MAE, RMSE, coverage, width,
+    extreme support and the MASE denominator itself."""
+    root, ex = rehearsal_root
+    design = json.loads(ex.SEALED_PATH.read_text())
+    rp, npz = _clone_unit(root, "sm_co2", tmp_path / "m")
+    base = json.loads(rp.read_text())
+    cases = [
+        ("mase_primary", 0.0001, "mase_primary"),
+        ("mae_per_series_diagnostic", 0.0001,
+         "mae_per_series_diagnostic"),
+        ("rmse_per_series_diagnostic", 0.0001,
+         "rmse_per_series_diagnostic"),
+        ("interval_coverage_train_q90", 0.123456,
+         "interval_coverage_train_q90"),
+        ("interval_width_train_q90", 0.0001,
+         "interval_width_train_q90"),
+        ("extreme_support", 999, "extreme_support"),
+    ]
+    for field, val, needle in cases:
+        w = json.loads(json.dumps(base))
+        entry = w["assay_record"]["rolling_origins"]["origin0"][
+            "results"]["D"]["ridge"]
+        entry[field] = val
+        _priv_write(rp, _restamp(ex, w))
+        with pytest.raises(SystemExit, match=needle) as ei:
+            ex.verify_unit_record(rp, npz, design)
+        assert "origin0" in str(ei.value)
+        assert "ridge" in str(ei.value)
+    # the denominator itself is re-derived from the series
+    w = json.loads(json.dumps(base))
+    w["assay_record"]["rolling_origins"]["origin1"][
+        "mase_denominator_train_snaive"] = 0.5
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit,
+                       match="mase_denominator_train_snaive"):
+        ex.verify_unit_record(rp, npz, design)
+    # and a seed-level MLP entry names its full path
+    w = json.loads(json.dumps(base))
+    w["assay_record"]["rolling_origins"]["origin0"]["results"][
+        "XDR"]["mlp_small"]["seed12"]["mase_primary"] = 0.0001
+    _priv_write(rp, _restamp(ex, w))
+    with pytest.raises(SystemExit,
+                       match=r"mlp_small\.seed12\.mase_primary"):
+        ex.verify_unit_record(rp, npz, design)
+
+
+def test_c52_1_budget_stop_inside_a_unit_blocks_typed(tmp_path):
+    """C52/C54.3: a budget stop MID-UNIT re-raises typed WITHOUT a
+    terminal; the claim then adjudicates UNCERTAIN and blocks
+    until the EXPLICIT recorded operator disposition converts it
+    to TERMINAL_FAILED; a second disposition refuses."""
+    os.environ.setdefault(
+        "B4_T1_PREPROCESSOR_ROOT",
+        str(Path.home() / "Documents/GitHub/.worktrees/prep-t0t1"))
     ex = _exec_mod()
-    S = Path.home() / ".local/share/agent-multi"
-    if (S / "t2_screen_design_SEALED_V6.json").exists():
-        d = json.loads(
-            (S / "t2_screen_design_SEALED_V6.json").read_text())
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.SEALED_PATH.read_text())
+    import t2_assay_harness as hz
+    import t2_public_data_census as dc
+    co = hz.load_co()
+    unit = hz.load_task_unit(dc.build_census(), "sm_nile")
+    authority = ex.physical_authority(design,
+                                      "mechanical_rehearsal")
+    root = tmp_path / "t2stop"
+    root.mkdir(mode=0o700)
+    calls = []
+
+    def tripping_guard(label):
+        calls.append(label)
+        if len(calls) == 7:
+            raise ex.T2BudgetStop("test bound", label)
+
+    with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
+        ex.run_unit(hz, co, unit, design, authority, root,
+                    "mechanical_rehearsal", guard=tripping_guard)
+    u = root / "units"
+    assert (u / "CLAIM_sm_nile.json").exists()
+    assert not (u / "RECORD_sm_nile.json").exists()
+    assert not (u / "TERMINAL_sm_nile.json").exists()
+    st, why = ex.adjudicate_unit_shallow(u, "sm_nile")
+    assert st == "UNCERTAIN" and "claim without" in why
+    # the explicit recorded operator disposition
+    ex.declare_attempt_failed(root, "sm_nile",
+                              "test disposition: budget-stopped "
+                              "attempt adjudicated failed")
+    st, _ = ex.adjudicate_unit_shallow(u, "sm_nile")
+    assert st == "TERMINAL_FAILED"
+    term = json.loads((u / "TERMINAL_sm_nile.json").read_text())
+    assert term["operator_disposition"] is True
+    assert term["failure_class"] == "OPERATOR_DISPOSITION"
+    with pytest.raises(SystemExit, match="applies only to"):
+        ex.declare_attempt_failed(root, "sm_nile", "again")
+    # in-assay checkpoints reached origins/arms before the trip
+    assert calls[0] == "origin0:start"
+    assert any("epoch_candidate" in c for c in calls)
+    # C55: the stop also fires BETWEEN ORIGINS and BETWEEN SEEDS
+    for trip_label, sub in (("origin1:start", "between origins"),
+                            ("mlp_seed12:start",
+                             "between seeds")):
+        subroot = tmp_path / f"t2stop_{trip_label.split(':')[0]}"
+        subroot.mkdir(mode=0o700)
+
+        def boundary_guard(label, _t=trip_label):
+            if label.endswith(_t):
+                raise ex.T2BudgetStop(f"stop {_t}", label)
+
+        with pytest.raises(SystemExit, match="T2_BUDGET_STOP"):
+            ex.run_unit(hz, co, unit, design, authority, subroot,
+                        "mechanical_rehearsal",
+                        guard=boundary_guard)
+        st, why = ex.adjudicate_unit_shallow(subroot / "units",
+                                             "sm_nile")
+        assert st == "UNCERTAIN" and "claim without" in why, sub
+        assert not (subroot / "units"
+                    / "RECORD_sm_nile.json").exists()
+    # a NON-budget in-unit failure DOES write a typed terminal
+    root2 = tmp_path / "t2fail"
+    root2.mkdir(mode=0o700)
+
+    def broken_guard(label):
+        if "ridge_done" in label:
+            raise ValueError("synthetic in-unit defect")
+
+    with pytest.raises(ValueError):
+        ex.run_unit(hz, co, unit, design, authority, root2,
+                    "mechanical_rehearsal", guard=broken_guard)
+    st, _ = ex.adjudicate_unit_shallow(root2 / "units", "sm_nile")
+    assert st == "TERMINAL_FAILED"
+
+
+def test_c52_2_budget_mechanics_bite(tmp_path, monkeypatch):
+    """C52: the durable accumulated wall (resume NEVER renews the
+    4 h), the RSS bound, the design-declared stop-file location and
+    the supervised worker's typed harvests."""
+    ex = _exec_mod()
+    ledger = tmp_path / "wall.jsonl"
+    ledger.write_text(json.dumps(
+        {"session": "prior", "elapsed_seconds": 100.0}) + "\n")
+    stop = tmp_path / "T2_STOP"
+    g = ex.BudgetGuard({"max_wall_seconds": 50,
+                        "max_rss_bytes": 8 << 30}, stop, ledger,
+                       "fresh")
+    assert g.prior_wall == 100.0
+    with pytest.raises(SystemExit, match="never renews"):
+        g.check("between_units:probe")
+    g.close()
+    # RSS bound
+    g2 = ex.BudgetGuard({"max_wall_seconds": 10 ** 6,
+                         "max_rss_bytes": 1}, stop,
+                        tmp_path / "w2.jsonl", "s2")
+    with pytest.raises(SystemExit, match="RSS"):
+        g2.check("x")
+    g2.close()
+    # stop-file at the DESIGN-DECLARED state root
+    g3 = ex.BudgetGuard({"max_wall_seconds": 10 ** 6,
+                         "max_rss_bytes": 8 << 30}, stop,
+                        tmp_path / "w3.jsonl", "s3")
+    g3.check("pre")
+    stop.write_text("halt")
+    with pytest.raises(SystemExit, match="state root"):
+        g3.check("post")
+    g3.close()
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        assert ex.resolve_stop_file(design) == \
+            ex.STATE / "T2_STOP"
+        assert design["resource_contract"]["stop_file"] == \
+            "<state_root>/T2_STOP"
+    # supervised worker: typed WALL_KILLED and CRASH harvests
+    monkeypatch.setattr(ex, "PER_FIT_WALL_SECONDS", 1.0)
+    sup = ex.make_fit_supervisor({"max_rss_bytes": 8 << 30})
+
+    class _Hang:
+        def __call__(self):
+            import time as _t
+            _t.sleep(30)
+
+    class _Boom:
+        def __call__(self):
+            raise ValueError("synthetic fit crash")
+
+    class _Ok:
+        def __call__(self):
+            return 41 + 1
+
+    assert sup(_Ok(), "ok") == 42
+    with pytest.raises(SystemExit, match="WALL_KILLED"):
+        sup(_Hang(), "hang")
+    with pytest.raises(SystemExit, match="CRASH.*synthetic fit"):
+        sup(_Boom(), "boom")
+    # the harness passes the guard INTO epoch candidates (source)
+    hsrc = (REPO / "tools/t2_assay_harness.py").read_text()
+    assert "guard(f\"{label}:epoch_candidate_{epochs}\")" in hsrc
+    assert "fit_supervisor" in hsrc
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    assert "guard=guard.check" in esrc
+    assert "fit_supervisor=supervisor" in esrc
+
+
+def test_c53_1_plan_is_pure_and_gates_precede_effects(tmp_path,
+                                                      monkeypatch):
+    """C53: --plan and a failed gate leave ZERO writes (the
+    out_root is not even created); with gates stubbed open the
+    plan still writes nothing; durable effects exist only in
+    --execute after all gates."""
+    import t2_confirmatory as conf
+    ex = _exec_mod()
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    monkeypatch.setattr(conf, "T2_EXECUTION_RECORD_PATH",
+                        tmp_path / "missing.json")
+    t = tmp_path / "planroot"
+    before = sorted(p.name for p in tmp_path.iterdir())
+    with pytest.raises(SystemExit,
+                       match="T2_EXECUTION_RECORD_REQUIRED"):
+        ex.main(["--plan", "--out-root", str(t)])
+    assert not t.exists()
+    with pytest.raises(SystemExit,
+                       match="T2_EXECUTION_RECORD_REQUIRED"):
+        ex.main(["--execute", "--out-root", str(t)])
+    assert not t.exists()
+    assert sorted(p.name for p in tmp_path.iterdir()) == before
+    # gates stubbed OPEN: the plan prints and still writes nothing
+    fake_facts = {"gates": "ALL_OPEN",
+                  "execution_record_sha256": "e" * 64,
+                  "review_record_sha256": "r" * 64,
+                  "design_file_sha256": "d" * 64,
+                  "manifest_sha256": "m" * 64,
+                  "census_sha256": "c" * 64,
+                  "pinned_commit": "0" * 40}
+    monkeypatch.setattr(conf, "verify_confirmatory_gates",
+                        lambda *a, **k: fake_facts)
+    rc = ex.main(["--plan", "--out-root", str(t)])
+    assert rc == 0
+    assert not t.exists()
+    assert sorted(p.name for p in tmp_path.iterdir()) == before
+    # source: in main, gates run BEFORE mkdir/lock/ledger; the
+    # ledger exists only on the --execute path
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    seg = esrc[esrc.index("def main"):esrc.index("def rehearse")]
+    assert seg.index("verify_confirmatory_gates") < \
+        seg.index("if args.plan") < \
+        seg.index("out_root.mkdir") < \
+        seg.index("acquire_lock") < \
+        seg.index("open_attempt_ledger")
+    plan_seg = seg[seg.index("if args.plan"):
+                   seg.index("out_root.mkdir")]
+    for effect in ("mkdir", "acquire_lock", "open_attempt_ledger",
+                   "_excl_write", "_heartbeat"):
+        assert effect not in plan_seg
+
+
+def test_c54_1_monotonic_lock_and_crash_boundaries(tmp_path):
+    """C54: locks are never unlinked — release is a durable
+    record; a live pid refuses; a provably dead pid requires the
+    EXPLICIT recorded takeover; crash remnants adjudicate
+    UNCERTAIN with typed causes."""
+    ex = _exec_mod()
+    root = tmp_path / "lockroot"
+    root.mkdir(mode=0o700)
+    n1 = ex.acquire_lock(root, "sess-one")
+    assert n1 == 1
+    with pytest.raises(SystemExit, match="alive"):
+        ex.acquire_lock(root, "sess-two")
+    ex.release_lock(root, 1, "sess-one")
+    assert (root / "locks" / "RELEASE_000001.json").exists()
+    assert (root / "locks" / "SESSION_000001.json").exists()
+    n2 = ex.acquire_lock(root, "sess-two")
+    assert n2 == 2
+    ex.release_lock(root, 2, "sess-two")
+    # a dead-pid session without release: stale, never stolen
+    import subprocess
+    p = subprocess.Popen(["true"])
+    p.wait()
+    doc = {"schema": "agent_multi.t2_lock_session.v1",
+           "session": 3, "session_uuid": "ghost",
+           "pid": p.pid, "started_wall": 0.0}
+    doc["session_sha256"] = ex._self_sha(doc, "session_sha256")
+    sp = root / "locks" / "SESSION_000003.json"
+    sp.write_text(json.dumps(doc))
+    os.chmod(sp, 0o600)
+    with pytest.raises(SystemExit,
+                       match="explicit recorded takeover"):
+        ex.acquire_lock(root, "sess-four")
+    n4 = ex.acquire_lock(root, "sess-four", takeover_stale=True)
+    assert n4 == 4
+    assert (root / "locks" / "TAKEOVER_000003.json").exists()
+    ex.release_lock(root, 4, "sess-four")
+    # locks are never unlinked in the productive source
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    assert "lock.unlink" not in esrc
+    assert ".unlink(missing_ok=True)" not in esrc
+    # crash boundaries adjudicate UNCERTAIN with typed causes
+    u = root / "units"
+    u.mkdir(mode=0o700)
+    (u / "ARRAYS_probe.npz").write_bytes(b"partial")
+    st, why = ex.adjudicate_unit_shallow(u, "probe")
+    assert st == "UNCERTAIN" and "arrays without a record" in why
+    (u / "ARRAYS_probe.npz").unlink()
+    bad = {"schema": "agent_multi.t2_unit_terminal.v2",
+           "unit_id": "probe", "terminal": "FAILED",
+           "terminal_sha256": "0" * 64}
+    tp = u / "TERMINAL_probe.json"
+    tp.write_text(json.dumps(bad))
+    os.chmod(tp, 0o600)
+    st, why = ex.adjudicate_unit_shallow(u, "probe")
+    assert st == "UNCERTAIN" and "does not re-derive" in why
+
+
+def test_c55_resume_order_census_and_separated_counts():
+    """C55/C56: resume verifies COMPLETED records (deep, under
+    current authority) before counting terminals, before budget/
+    load; the census is exact; every reported count separates
+    done / failed_preserved / resumed_verified — a skip is never
+    published as a pass."""
+    ex = _exec_mod()
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    seg = esrc[esrc.index("def main"):esrc.index("def rehearse")]
+    i_adj = seg.index("adjudicate_unit_shallow")
+    i_completed = seg.index('== "COMPLETED"')
+    i_term = seg.index('== "TERMINAL_FAILED"')
+    i_load_new = seg.rindex("load_bank_unit(")
+    assert i_adj < i_completed < i_term < i_load_new
+    assert '"resumed_verified"' in seg
+    assert '"failed_preserved"' in seg
+    assert "UNCERTAIN units block" in seg
+    if ex.SEALED_PATH.exists():
+        d = json.loads(ex.SEALED_PATH.read_text())
         w = ex.census_of_work(d)
         assert w["units"] == 242 and w["origins_per_unit"] == 2
-        assert w["model_fits"] == 242 * 2 * 4 * 4
+        assert w["model_fits"] == 242 * 2 * 4 * 4 == 7744
+        assert w["baseline_evals"] == 484
+    # rehearsal output separates its facts too
+    rseg = esrc[esrc.index("def rehearse"):]
+    assert '"records_verified_from_persisted_arrays"' in rseg
+    assert '"sealed_bank_series_touched": 0' in rseg

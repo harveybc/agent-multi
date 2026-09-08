@@ -789,17 +789,18 @@ def open_attempt_ledger(path: Path) -> dict:
     return led
 
 
-def run_confirmatory(manifest_path: Path, design_path: Path,
-                     ledger_path: Path,
-                     census_path: Path = None,
-                     raw_root: Path = None) -> None:
-    """C3/C9/C15/C28: the ordered gate sequence — every missing
-    element refuses with its own typed reason; the FRESH VERIFIER
-    is an executing precondition of THIS single path (a separate
-    script satisfies nothing); the attempt ledger is created ONLY
-    after every verification passes; and the external review root
-    cannot be candidate-written. Scoring remains unimplemented
-    pending the external audit of the C25-C30 screen contract."""
+def verify_confirmatory_gates(manifest_path: Path,
+                              design_path: Path,
+                              census_path: Path = None,
+                              raw_root: Path = None,
+                              repo_root: Path = REPO) -> dict:
+    """C3/C9/C28/C53: the ordered gate sequence, PURE — every
+    missing element refuses with its own typed reason; the FRESH
+    VERIFIER is an executing precondition of THIS single path (a
+    separate script satisfies nothing); the external review root
+    cannot be candidate-written; and NOTHING durable is created
+    here — no ledger, no directory, no lock. Effects belong to the
+    executor's --execute step, strictly after these gates."""
     mp = Path(manifest_path)
     if not mp.is_file():
         raise ConfirmatoryRefusal(
@@ -842,35 +843,165 @@ def run_confirmatory(manifest_path: Path, design_path: Path,
                      manifest_sha=manifest_sha)
     # C9: the external review — verified in full, BEFORE any
     # ledger artifact can exist.
-    verify_design_review_record(design, manifest_sha, census_sha)
-    # C42/C47 (executor order): confirmatory EXECUTION is
+    review = verify_design_review_record(design, manifest_sha,
+                                         census_sha)
+    # C48 (execution-custody order): confirmatory EXECUTION is
     # structurally closed by a SECOND external record — the
-    # Musashi execution record at the private authority root. The
-    # ledger is created only after it verifies.
-    exec_rec = verify_execution_record(design, _sha_file(dp))
+    # Musashi v2 execution record at the private authority root,
+    # which pins the sealed design, the review record, manifest,
+    # census, the physical executor code identity and the FULL
+    # executing checkout.
+    exec_rec = verify_execution_record(
+        design, _sha_file(dp), review["_record_sha256"],
+        manifest_sha, census_sha, repo_root=repo_root)
+    return {"gates": "ALL_OPEN",
+            "execution_record_sha256": exec_rec["_record_sha256"],
+            "review_record_sha256": review["_record_sha256"],
+            "design_file_sha256": _sha_file(dp),
+            "manifest_sha256": manifest_sha,
+            "census_sha256": census_sha,
+            "pinned_commit": exec_rec["pinned_commit"],
+            "note": "gates only — durable effects (out_root, "
+                    "lock, ledger, claims) are created by the "
+                    "executor's --execute step alone"}
+
+
+def run_confirmatory(manifest_path: Path, design_path: Path,
+                     ledger_path: Path,
+                     census_path: Path = None,
+                     raw_root: Path = None,
+                     repo_root: Path = REPO) -> dict:
+    """C15/C53: the effectful entry — the PURE gate sequence first,
+    then (and only then) the durable attempt ledger. `--plan` and
+    every read-only consumer must call verify_confirmatory_gates
+    directly; this path exists for the executor's --execute step."""
+    facts = verify_confirmatory_gates(
+        manifest_path, design_path, census_path=census_path,
+        raw_root=raw_root, repo_root=repo_root)
     # C15: only now may the durable attempt ledger be created.
     open_attempt_ledger(Path(ledger_path))
-    return {"gates": "ALL_OPEN", "execution_record_sha256":
-            exec_rec["_record_sha256"],
-            "note": "the confirmatory executor may now be "
-                    "invoked by the CLI/tool layer"}
+    return facts
 
 
 T2_EXECUTION_RECORD_PATH = (
     AUTHORITY_ROOT / "MUSASHI_T2_V6_EXECUTION_RECORD.json")
+# C48: the exact code surface the execution record pins — every
+# module the confirmatory executor imports to fit, score or verify.
+T2_EXECUTOR_CODE_SURFACE = (
+    "tools/t2_confirmatory.py",
+    "tools/t2_confirmatory_executor.py",
+    "tools/t2_assay_harness.py",
+    "tools/t2_bank.py",
+    "tools/t2_bank_census.py",
+    "tools/t2_fresh_verifier.py",
+    "tools/t2_public_data_census.py",
+)
+# Untracked/ignored sources under these roots (or the repo root)
+# can shadow executor imports — the checkout gate refuses them.
+_IMPORT_ROOTS = ("agent_plugins", "app", "pipeline_plugins",
+                 "tools", "tests")
 _EXEC_KEYS = {"schema", "reviewed_at_date", "reviewer",
               "decision", "sealed_design_file_sha256",
-              "sealed_design_self_sha256", "candidate_commit"}
+              "sealed_design_self_sha256",
+              "design_review_record_sha256", "manifest_sha256",
+              "census_sha256", "executor_code_identity",
+              "pinned_commit", "pinned_tree"}
+
+
+def executor_code_identity(repo_root: Path = REPO) -> dict:
+    """C48.5: the physical identity of the executor code surface,
+    derived from checkout bytes — never from a declared value."""
+    return {rel: _sha_file(Path(repo_root) / rel)
+            for rel in T2_EXECUTOR_CODE_SURFACE}
+
+
+def _git(repo_root, *args) -> str:
+    import subprocess
+    r = subprocess.run(["git", "-C", str(repo_root), *args],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise ConfirmatoryRefusal(
+            f"git {' '.join(args[:2])} failed "
+            f"({r.stderr.strip()[:120]}) — the executor identity "
+            "cannot be established")
+    return r.stdout
+
+
+def verify_executor_checkout(pinned_commit: str,
+                             pinned_tree: str,
+                             repo_root: Path = REPO) -> None:
+    """C48.2-C48.4: the execution record names the FULL checkout —
+    a real existing commit that IS the executing HEAD, the exact
+    tree of that commit, a clean index and tracked worktree, and no
+    untracked or ignored sources/configurations able to alter
+    imports or entry points."""
+    import re as _re
+    from pathlib import PurePosixPath
+    for name, v in (("pinned_commit", pinned_commit),
+                    ("pinned_tree", pinned_tree)):
+        if type(v) is not str or not _re.fullmatch(
+                r"[0-9a-f]{40}", v):
+            raise ConfirmatoryRefusal(
+                f"execution record {name} must be 40 lowercase hex "
+                "— an arbitrary string never names the executor")
+    import subprocess as _sp
+    typ = _sp.run(["git", "-C", str(repo_root), "cat-file", "-t",
+                   pinned_commit], capture_output=True, text=True)
+    if typ.returncode != 0 or typ.stdout.strip() != "commit":
+        raise ConfirmatoryRefusal(
+            "execution record pinned_commit does not name an "
+            "existing commit object")
+    head = _git(repo_root, "rev-parse", "HEAD").strip()
+    if head != pinned_commit:
+        raise ConfirmatoryRefusal(
+            f"the executing checkout HEAD ({head[:12]}) is not the "
+            f"pinned commit ({pinned_commit[:12]}) — the record "
+            "authorizes exactly one executor identity")
+    tree = _git(repo_root, "rev-parse",
+                pinned_commit + "^{tree}").strip()
+    if tree != pinned_tree:
+        raise ConfirmatoryRefusal(
+            "execution record pinned_tree is not the tree of the "
+            "pinned commit")
+    status = _git(repo_root, "status", "--porcelain=v1",
+                  "--untracked-files=all", "--ignored=matching")
+    for line in status.splitlines():
+        code, path = line[:2], line[3:]
+        if " -> " in path:
+            path = path.split(" -> ", 1)[1]
+        if code not in ("??", "!!"):
+            raise ConfirmatoryRefusal(
+                f"tracked path {path!r} is modified — the executor "
+                "runs only a clean checkout of the pinned commit")
+        p = PurePosixPath(path.strip('"'))
+        base = p.name
+        if base.endswith(".pth") or base == "entry_points.txt" or \
+                any(part.endswith((".dist-info", ".egg-info"))
+                    for part in p.parts):
+            raise ConfirmatoryRefusal(
+                f"untracked/ignored import machinery {path!r} can "
+                "alter entry points — refused")
+        if base.endswith((".py", ".so", ".pyd")) and (
+                len(p.parts) == 1 or p.parts[0] in _IMPORT_ROOTS):
+            raise ConfirmatoryRefusal(
+                f"untracked/ignored source {path!r} can shadow "
+                "executor imports — refused")
 
 
 def verify_execution_record(design: dict,
-                            design_file_sha: str) -> dict:
-    """C42/C47: the EXECUTION record — a second, separate external
+                            design_file_sha: str,
+                            review_record_sha: str,
+                            manifest_sha: str,
+                            census_sha: str,
+                            repo_root: Path = REPO) -> dict:
+    """C48: the v2 EXECUTION record — a second, separate external
     Musashi record at the private authority root; the review
-    record seals the design, THIS one opens scoring. Read
-    descriptor-first with the same custody walk; exact schema;
-    must pin the sealed design's physical AND self identity.
-    Custody facts and exact bytes only."""
+    record seals the design, THIS one opens scoring AND pins the
+    executor: the sealed design (physical + self), the verified
+    review record, manifest, census, the physical code identity of
+    the executor surface, and the FULL checkout (existing commit ==
+    executing HEAD, exact tree, clean worktree, no shadowing
+    sources). Custody facts and exact bytes only."""
     fd = _open_private_authority_file(
         T2_EXECUTION_RECORD_PATH,
         missing_msg=(
@@ -905,14 +1036,14 @@ def verify_execution_record(design: dict,
             f"({exc.msg})")
     if set(rec) != _EXEC_KEYS:
         raise ConfirmatoryRefusal(
-            "execution record keys are not the exact schema")
-    for k in _EXEC_KEYS:
+            "execution record keys are not the exact v2 schema")
+    for k in _EXEC_KEYS - {"executor_code_identity"}:
         if type(rec[k]) is not str or not rec[k]:
             raise ConfirmatoryRefusal(
                 f"execution record field {k!r} must be a "
                 "nonempty string")
     if rec["schema"] != \
-            "agent_multi.musashi_t2_execution_record.v1":
+            "agent_multi.musashi_t2_execution_record.v2":
         raise ConfirmatoryRefusal(
             "execution record carries a foreign schema")
     import datetime as _dt
@@ -948,6 +1079,41 @@ def verify_execution_record(design: dict,
         raise ConfirmatoryRefusal(
             "execution record does not pin THIS sealed design's "
             "physical bytes")
+    # C48.5: the record binds the verified review record, the exact
+    # manifest and census, and the PHYSICAL executor code identity.
+    for k, want, what in (
+            ("design_review_record_sha256", review_record_sha,
+             "the verified external design review record"),
+            ("manifest_sha256", manifest_sha,
+             "the public-data manifest"),
+            ("census_sha256", census_sha, "the bank census")):
+        _canon_sha(rec[k], f"execution {k}")
+        if rec[k] != want:
+            raise ConfirmatoryRefusal(
+                f"execution record does not pin {what}")
+    ci = rec["executor_code_identity"]
+    if type(ci) is not dict or not ci:
+        raise ConfirmatoryRefusal(
+            "execution record executor_code_identity must be a "
+            "nonempty object")
+    for k, v in ci.items():
+        if type(k) is not str or type(v) is not str:
+            raise ConfirmatoryRefusal(
+                "execution record executor_code_identity entries "
+                "must be string -> string")
+        _canon_sha(v, f"executor_code_identity[{k}]")
+    physical_ci = executor_code_identity(repo_root)
+    if ci != physical_ci:
+        diff = sorted(set(ci) ^ set(physical_ci)) or sorted(
+            k for k in ci if ci[k] != physical_ci[k])
+        raise ConfirmatoryRefusal(
+            "execution record executor_code_identity does not "
+            f"match the physical checkout surface (diff: {diff}) "
+            "— a declared identity never substitutes for bytes")
+    # C48.2-4: the FULL checkout — commit form/existence/HEAD,
+    # exact tree, clean worktree, no shadowing sources.
+    verify_executor_checkout(rec["pinned_commit"],
+                             rec["pinned_tree"], repo_root)
     return {**rec, "_record_sha256": rec_sha}
 
 

@@ -1,0 +1,17 @@
+{
+ "schema": "agent_multi.musashi_t2_execution_record.v2",
+ "reviewed_at_date": "<CANONICAL_ISO_DATE_OF_MUSASHI_RUNTIME_REVIEW>",
+ "reviewer": "General Musashi",
+ "decision": "OPEN_T2_CONFIRMATORY_EXECUTION",
+ "sealed_design_file_sha256": "<SHA256_OF_THE_INSTALLED_SEALED_V6_FILE_BYTES_d1720f4d...>",
+ "sealed_design_self_sha256": "<THE_SEALED_DESIGN_INTERNAL_design_sha256_e1e3761b...>",
+ "design_review_record_sha256": "<SHA256_OF_YOUR_INSTALLED_DESIGN_REVIEW_RECORD_BYTES>",
+ "manifest_sha256": "<SHA256_OF_THE_PHYSICAL_PUBLIC_DATA_MANIFEST>",
+ "census_sha256": "<SHA256_OF_THE_PHYSICAL_BANK_CENSUS>",
+ "executor_code_identity": {
+  "<EVERY_RELPATH_IN_T2_EXECUTOR_CODE_SURFACE>": "<SHA256_DERIVED_FROM_THE_PHYSICAL_FILE_AT_THE_REVIEWED_TIP_NEVER_COPIED_FROM_A_TEMPLATE>"
+ },
+ "pinned_commit": "<40_HEX_LOWERCASE_HEAD_OF_THE_REVIEWED_CLEAN_CHECKOUT>",
+ "pinned_tree": "<40_HEX_LOWERCASE_TREE_OF_THAT_EXACT_COMMIT>",
+ "_template_note": "TEMPLATE ONLY — GRANTS NOTHING. This file never verifies: the productive gate requires the exact v2 key set (this note key alone refuses), canonical values, digests derived from the PHYSICAL objects at install time, and the record installed by General Musashi alone at the private reviewer-authority root (0600, descriptor-first custody). The executor surface is tools/t2_confirmatory.py::T2_EXECUTOR_CODE_SURFACE; verify_execution_record() in the same file is the executable schema authority."
+}

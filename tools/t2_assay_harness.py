@@ -223,11 +223,17 @@ def _ridge(Xt, yt, Xs):
     return Zs1 @ w
 
 
-def _mlp(Xt, yt, Xs, seed, val_frac=0.2):
+def _mlp(Xt, yt, Xs, seed, val_frac=0.2, guard=None,
+         fit_supervisor=None, label=""):
     """C5: same train-only scaling; the VALIDATION role has an
     explicit purpose — the temporally FINAL fraction of the fit
     rows drives the epoch rule (early stopping) without ever
-    seeing score rows."""
+    seeing score rows. C52 (execution-custody order): `guard` is
+    checked between epoch candidates so the sealed bounds govern
+    the interior of a fit sequence; `fit_supervisor` runs each
+    non-interruptible sklearn fit under a supervised worker with
+    its own wall/RSS bounds and typed harvest. Neither hook
+    changes any number: identical candidates, seeds and selection."""
     from sklearn.neural_network import MLPRegressor
     mu, sd = _train_scaler(Xt)
     Zt = (Xt - mu) / sd
@@ -242,15 +248,36 @@ def _mlp(Xt, yt, Xs, seed, val_frac=0.2):
         fit_Z, fit_y = Zt[:-n_val], yt[:-n_val]
         val_Z, val_y = Zt[-n_val:], yt[-n_val:]
         for epochs in (40, 80, 120, 200):
+            if guard is not None:
+                guard(f"{label}:epoch_candidate_{epochs}")
             mm = MLPRegressor(random_state=seed,
                               **{**MLP_BUDGET,
                                  "max_iter": epochs})
-            mm.fit(fit_Z, fit_y)
+            if fit_supervisor is not None:
+                mm = fit_supervisor(
+                    _FitClosure(mm, fit_Z, fit_y),
+                    f"{label}:fit_epochs{epochs}")
+            else:
+                mm.fit(fit_Z, fit_y)
             v = float(np.mean(np.abs(mm.predict(val_Z) - val_y)))
             if v < best_val:
                 best, best_val = mm, v
         m = best
     return m.predict(Zs)
+
+
+class _FitClosure:
+    """A picklable single fit call for the supervised worker: run
+    estimator.fit(X, y) and return the fitted estimator."""
+    def __init__(self, est, X, y):
+        self.est, self.X, self.y = est, X, y
+
+    def __call__(self):
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.est.fit(self.X, self.y)
+        return self.est
 
 
 def _metrics(y_true, y_pred, resid_train_q, mase_denom,
@@ -333,18 +360,29 @@ def _mase_denominator(y, lo_t, hi_t, period):
     return float(np.mean(d))
 
 
-def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
+def assay_unit(co, unit: dict, h: int = 1, sink: dict = None,
+               guard=None, fit_supervisor=None) -> dict:
     """All arms on identical rows/budgets per origin; every cost
     phase recorded separately (C7). C44 (executor order): when
-    `sink` is a dict, the RAW predictions and observations of every
-    origin/arm/model (and the seasonal-naive baseline) are captured
-    into it under (origin_key, arm, model) so the executor can
-    persist them and an independent verifier can recompute every
-    MASE and extreme metric from persisted arrays — a producer
-    summary alone never authorizes."""
+    `sink` is a dict, the RAW predictions, observations AND
+    in-sample fit rows of every origin/arm/model (and the
+    seasonal-naive baseline) are captured into it under
+    (origin_key, arm, model) -> (pred, obs, fit_in_sample) so the
+    executor can persist them and an independent verifier can
+    recompute EVERY consumed metric from persisted arrays — a
+    producer summary alone never authorizes. C52
+    (execution-custody order): `guard(label)` is an EXECUTING
+    bound check invoked before and after every origin, arm, ridge
+    fit, MLP seed and epoch candidate; `fit_supervisor` wraps each
+    non-interruptible sklearn fit. Both default to None and change
+    no number."""
     y = unit["y"]
     n = len(y)
     period = unit["seasonal_period"]
+
+    def _g(label):
+        if guard is not None:
+            guard(label)
     # C35: feasibility is decided by the ONE geometry authority
     # (real model minimums, period-aware) — the retired fixed 120
     # floor lives only in git history.
@@ -353,6 +391,7 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
     costs = {}
     for oi, (o_lo, o_hi) in enumerate(origins):
         okey = f"origin{oi}"
+        _g(f"{okey}:start")
         ocost = {}
         lo_t, hi_t = 0, o_lo
         t0 = time.perf_counter()
@@ -396,10 +435,11 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
         if sink is not None:
             sink[(okey, "seasonal_naive", "baseline")] = (
                 np.asarray(y[snv_idx], dtype=np.float64),
-                np.asarray(ys, dtype=np.float64))
+                np.asarray(ys, dtype=np.float64), None)
         ocost["seasonal_naive_s"] = round(
             time.perf_counter() - t0, 4)
         for arm, series in arms.items():
+            _g(f"{okey}:{arm}:start")
             acost = {}
             t0 = time.perf_counter()
             Xt = _lag_matrix(series, lo_t, hi_t, h)
@@ -411,6 +451,7 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
             ridge_in = _ridge(Xt, yt, Xt)
             acost["ridge_fit_forecast_s"] = round(
                 time.perf_counter() - t0, 4)
+            _g(f"{okey}:{arm}:ridge_done")
             rq = np.quantile(ridge_in - yt, [0.05, 0.95])
             arm_out = {"ridge": _metrics(
                 ys, ridge_pred, (float(rq[0]), float(rq[1])),
@@ -418,14 +459,22 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
             if sink is not None:
                 sink[(okey, arm, "ridge")] = (
                     np.asarray(ridge_pred, dtype=np.float64),
-                    np.asarray(ys, dtype=np.float64))
+                    np.asarray(ys, dtype=np.float64),
+                    np.asarray(ridge_in, dtype=np.float64))
             mlp_runs = {}
             for seed in SEED_TAPE:
+                _g(f"{okey}:{arm}:mlp_seed{seed}:start")
                 t0 = time.perf_counter()
-                pred = _mlp(Xt, yt, Xs, seed)
-                inp = _mlp(Xt, yt, Xt, seed)
+                lbl = f"{okey}:{arm}:mlp_seed{seed}"
+                pred = _mlp(Xt, yt, Xs, seed, guard=guard,
+                            fit_supervisor=fit_supervisor,
+                            label=f"{lbl}:score")
+                inp = _mlp(Xt, yt, Xt, seed, guard=guard,
+                           fit_supervisor=fit_supervisor,
+                           label=f"{lbl}:insample")
                 acost[f"mlp_fit_forecast_seed{seed}_s"] = round(
                     time.perf_counter() - t0, 4)
+                _g(f"{okey}:{arm}:mlp_seed{seed}:done")
                 tq = np.quantile(inp - yt, [0.05, 0.95])
                 mlp_runs[f"seed{seed}"] = _metrics(
                     ys, pred, (float(tq[0]), float(tq[1])),
@@ -433,7 +482,8 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
                 if sink is not None:
                     sink[(okey, arm, f"mlp_seed{seed}")] = (
                         np.asarray(pred, dtype=np.float64),
-                        np.asarray(ys, dtype=np.float64))
+                        np.asarray(ys, dtype=np.float64),
+                        np.asarray(inp, dtype=np.float64))
             arm_out["mlp_small"] = mlp_runs
             oout[arm] = arm_out
             ocost[f"arm_{arm}"] = acost
@@ -444,6 +494,7 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None) -> dict:
             "operator_artifact_sha256": den["artifact_sha256"],
             "results": oout}
         costs[okey] = ocost
+        _g(f"{okey}:done")
     peak_rss = resource.getrusage(
         resource.RUSAGE_SELF).ru_maxrss * 1024
     import t2_bank as _bank
@@ -539,19 +590,19 @@ def main() -> int:
         # with its own typed reason; nothing is unconditional.
         import t2_confirmatory as conf
         state = Path.home() / ".local/share/agent-multi"
-        # C39: the public CLI consumes the ONE current SEALED-v6
-        # identity (produced by tools/t2_seal_design.py only after
-        # the external review record exists); it shares the exact
-        # validation/fresh-verification/review/ledger sequence
-        # with direct run_confirmatory().
-        conf.run_confirmatory(
+        # C39/C53: the public CLI consumes the ONE current
+        # SEALED-v6 identity through the PURE gate sequence only —
+        # it can never create a ledger or any durable artifact;
+        # scoring belongs exclusively to the executor's --execute.
+        conf.verify_confirmatory_gates(
             state / "t2_public_data_manifest_20260906.json",
             state / "t2_screen_design_SEALED_V6.json",
-            state / "t2_attempt_ledger_20260906.json",
             census_path=state / "t2_bank_census_20260906.json")
         raise HarnessRefusal(
-            "unreachable: run_confirmatory always refuses until "
-            "the design review exists")
+            "T2_SCORING_ONLY_VIA_EXECUTOR: the gates opened but "
+            "this CLI computes nothing — confirmatory scoring "
+            "runs only through tools/t2_confirmatory_executor.py "
+            "--execute")
     if not args.development_only:
         raise HarnessRefusal(
             "choose --development-only (zero authority) or "

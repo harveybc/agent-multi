@@ -1,0 +1,48 @@
+== P1 DEAD (C48): the record pins the executor ==
+  PRE's exact attacker commit -> REFUSED: execution record pinned_commit must be 40 lowercase hex — an arbitrary string never names the e
+  nonexistent 40-hex commit -> REFUSED: execution record pinned_commit does not name an existing commit object
+  the PRE's whole v1 record shape -> REFUSED: execution record keys are not the exact v2 schema
+  forged code identity -> REFUSED: execution record executor_code_identity does not match the physical checkout surface (diff: ['a
+  absent record, single path -> REFUSED: T2_EXECUTION_RECORD_REQUIRED: confirmatory scoring stays STRUCTURALLY CLOSED — the external Mus
+  => structurally closed; zero ledger
+
+== scientific identity: hooks change NO number ==
+rolling_origins identical with/without hooks: True | guard checkpoints: 260 | epoch candidates guarded: True | sink entries: 34 | fit rows: 32
+
+== v2 mechanical rehearsal at the final tip ==
+{
+ "rehearsal": "COMPLETE_MECHANICS_ONLY",
+ "units": [
+  "sm_co2",
+  "sm_sunspots",
+  "sm_nile"
+ ],
+ "per_unit_wall_seconds": {
+  "sm_co2": 33.03,
+  "sm_sunspots": 14.0,
+  "sm_nile": 13.44
+ },
+ "sealed_bank_series_touched": 0,
+ "records_verified_from_persisted_arrays": 3
+}
+
+== P2 DEAD (C49/C50/C51) on a REAL rehearsal record ==
+  the PRE's EXACT quadruple forgery (34 extremes -> 999.0) -> REFUSED: unit 'attacker::not_in_sealed_population' is not a development unit — the rehearsal population 
+  34 extremes alone (path named) -> REFUSED: rolling_origins.origin0.results.seasonal_naive.metrics.mase_on_extreme_innovations: recomputed 
+  64-zero execution digest alone -> REFUSED: unit record execution_record_sha256 does not match the physical authority object — a repaired s
+  obs+pred altered JOINTLY -> REFUSED: origin0__X__ridge: persisted obs is not the exact slice of the physical series at the re-derive
+  intact record -> {'verified_units': 1, 'unit_id': 'sm_co2', 'mode': 'mechanical_rehearsal'}
+
+== P3 DEAD (C52/C53/C54) ==
+a) mid-unit stop: T2_BUDGET_STOP at origin0:X:mlp_seed11:score:epoch_candidate_120: post probe bound
+   adjudication: UNCERTAIN | sm_nile: claim without terminal or record — a crashed or budget-stopped atte
+   after recorded operator disposition: TERMINAL_FAILED
+  b) resume with 100s prior against a 50s wall -> T2_BUDGET_STOP at probe: accumulated wall 100.0s exceeds the sealed 50s (prior sessions 100.0s — resume 
+c) stop-file resolves at the design-declared state root: True | declared: <state_root>/T2_STOP
+d) --plan with the record ABSENT: typed refusal; out_root created: False
+   --execute refused likewise: ZERO writes before gates
+  e) second executor against a live lock -> REFUSED: another executor holds lock session 1 (pid 373980 is alive)
+   monotonic sessions: 1 -> 2 | RELEASE_000001 exists: True
+   lock never unlinked; NPZ exclusive-create (source)
+
+POST CONFIRMED: P1/P2/P3 dead through the productive APIs; hooks change no number; the v2 rehearsal verifies with fully re-derived custody; scoring remains closed by the ABSENT external v2 record
