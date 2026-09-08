@@ -1,0 +1,26 @@
+== C57: repeated sub-cadence crashes renew the wall ==
+sessions accepted: 8/8 against a sealed 0.08s wall; real elapsed ~0.24s
+=> lossy cadence + exists()/read_text() ledger confirmed in source
+
+== C58: an EMPTY release filename frees a LIVE lock ==
+holder pid 657838 ALIVE; empty RELEASE_000001 -> second acquire got session 2
+
+== C59: an authority-free terminal adjudicates TERMINAL_FAILED ==
+adjudication of a terminal bound to NO design/execution authority: TERMINAL_FAILED
+=> terminal schema carries no sealed/execution/code/binding/claim authority (source)
+
+== C60: disposition legitimizes a fabricated claim ==
+two-field fabricated claim -> TERMINAL_FAILED (no schema, no self-digest, no membership, no gate)
+
+== C61: a symlinked results root is followed ==
+lock written UNDER the symlink target: True
+
+== C62: supervised fit ignores the remaining global wall ==
+global wall remaining: 0.01s (never consulted); 0.12s fit returned 'finished' after 0.13s
+=> the supervisor reads ONLY the RSS limit; poll timeout is the fixed per-fit constant (source)
+
+== C63: post-assay persistence failure -> rc 0 with a new UNCERTAIN ==
+main_rc=0, failed_preserved=1; physical adjudication AFTER exit: UNCERTAIN: sm_nile: claim without terminal or record — a crashed or budget-st
+=> no final deep adjudication before release/exit (source)
+
+PRE CONFIRMED at 4e5f19dc: C57 crash-renewal, C58 bare release, C59 authority-free terminal, C60 fabricated-claim disposition, C61 symlink root, C62 wall-blind supervisor, C63 zero-exit with fresh uncertainty — all frozen
