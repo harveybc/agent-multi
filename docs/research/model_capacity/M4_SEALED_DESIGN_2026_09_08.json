@@ -1,0 +1,114 @@
+{
+ "schema": "agent_multi.m4_residual_capacity_design.v1",
+ "sealed_at_date": "2026-09-08",
+ "stage": "C2_C3_residual_capacity_intervention",
+ "question": "after a one-hidden-layer MLP learns a structured task, how many additional BLINDED random associations can it fit before crossing a FROZEN original-task retention margin, conditional on the checkpoint \u2014 and is that endpoint predictable from parameter count or compressed length alone (H2 of the M3-M6 draft)",
+ "endpoint_semantics": "a conditional empirical intervention result under this exact protocol; NEVER 'unused bits', 'remaining intelligence' or exact Kolmogorov complexity",
+ "task_families": {
+  "boolean": [
+   "identity",
+   "majority",
+   "dnf3",
+   "parity4",
+   "random_label_null"
+  ],
+  "temporal": [
+   "sine",
+   "chirp",
+   "am",
+   "discontinuous",
+   "state_space"
+  ],
+  "noise_regimes": [
+   "white",
+   "colored",
+   "impulsive",
+   "heteroscedastic"
+  ],
+  "generator_identity_rule": "generator id = sha256(master|family|regime|role|instance); DEVELOPMENT, CALIBRATION and CONFIRMATION roles use DISJOINT instance ranges (0-15, 16-23, 24-31) and never share a generator id"
+ },
+ "architectures": {
+  "family": "one-hidden-layer MLP only",
+  "hidden_units_grid": [
+   8,
+   16,
+   32,
+   64
+  ],
+  "precision": "float64",
+  "activation": "tanh",
+  "output": "linear regression head / sigmoid for boolean tasks"
+ },
+ "optimizer_capability_controls": {
+  "rule": "before any capacity claim, the SAME optimizer budget must first learn each structured family to its frozen learnability criterion on a clean development instance; a family that fails is typed OPTIMIZATION_LIMITED and its cells never become capacity evidence",
+  "learnability_criterion": "task metric within the family's frozen threshold on held-out rows of the SAME generator"
+ },
+ "checkpoints": [
+  "initialization",
+  "pre_stop",
+  "calibration_stop",
+  "post_stop_bounded"
+ ],
+ "retention": {
+  "metric": "original-task evaluation loss on held-out rows of the training generator",
+  "margin_rule": "frozen at intervention start: retention violated when loss exceeds (1 + 0.10) * checkpoint loss on two consecutive evaluations",
+  "frozen_before_outcomes": true
+ },
+ "association_batches": {
+  "blinding": "random input/label associations drawn from the sealed seed stream; batch contents never inspected before commitment",
+  "batch_size": 8,
+  "max_batches": 64,
+  "max_updates_per_batch": 2000,
+  "acquisition_criterion": "batch fitted when its association error falls below the frozen threshold within the update budget",
+  "ambiguous_states": [
+   "ACQUISITION_TIMEOUT",
+   "RETENTION_AMBIGUOUS",
+   "NUMERICAL_ANOMALY"
+  ],
+  "stop_rule": "first confirmed retention violation OR first acquisition failure; the endpoint batch index is the result"
+ },
+ "controls": {
+  "random_initialization": "an untrained matched-architecture model runs the identical intervention with matched compute",
+  "matched_compute": "control updates equal treatment updates within 1%"
+ },
+ "statistics": {
+  "unit": "the task GENERATOR (never a checkpoint, seed or adjacent temporal sample)",
+  "nested_seeds": "3 model seeds nested per generator; reported as nested repetitions",
+  "multiplicity": "Bonferroni over the frozen confirmatory contrast family; family list frozen before any confirmation outcome",
+  "missing_runs": "typed states remain in the denominator; never silently dropped"
+ },
+ "measurements": {
+  "trajectory": [
+   "train/calibration loss curves",
+   "gradient norm summaries",
+   "exception-memorization probes"
+  ],
+  "description": [
+   "8-bit sparse description length",
+   "prune-at-threshold parameter count",
+   "spectral rank profile"
+  ],
+  "cost_rule": "every measurement's CPU cost is recorded per checkpoint and stays in the cost denominator"
+ },
+ "resources": {
+  "cpu_only": true,
+  "cuda_hidden": true,
+  "logical_workers": 1,
+  "max_wall_seconds": 21600,
+  "max_rss_bytes": 8589934592,
+  "nice": 15,
+  "heartbeat": "M4_HEARTBEAT.json",
+  "stop_file": "M4_STOP in the runs directory"
+ },
+ "seeds": {
+  "master_phrase": "m4_residual_capacity_2026_09_08",
+  "derivation": "sha256(master|kind|generator|index)[:8] -> numpy default_rng"
+ },
+ "grants_nothing": [
+  "DOIN gene",
+  "production gate",
+  "scalar intelligence measure",
+  "exact complexity claim"
+ ],
+ "design_sha256": "af6f92705cf894b7ecef07f3c51b9d0e54c7b1a378c8efa5b80fe2e21df318f7"
+}

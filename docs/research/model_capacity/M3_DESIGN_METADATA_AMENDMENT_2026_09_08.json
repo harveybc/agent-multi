@@ -1,0 +1,29 @@
+{
+ "schema": "agent_multi.m3_design_metadata_amendment.v1",
+ "amended_at_date": "2026-09-08",
+ "order": "MUSASHI_TO_GENERAL_SATOSHI_T2_C66_C73_M3_C1_C6_AND_M4_0_ORDER_2026_09_08",
+ "scope": "prose/metadata ONLY \u2014 the sealed v1/v2/v3 design files and every run under m3_runs*/ remain byte-for-byte immutable evidence",
+ "sealed_chain": {
+  "v1_design_sha256": "915d144485ccf4652baeac12a688b7b804a659f61a7458ec6bcab4a7eb3232b6",
+  "v2_design_sha256": "3b2d27ae033867c9f24a729032ad285465eafa0e93f5714d2122d5903745ea46",
+  "v3_design_sha256": "21a2ad48e0ec503ea4ec9633321c7643ea3afda84f3de987719dba689763d7f1"
+ },
+ "reclassification": {
+  "v3_change_label": "DISCLOSED_STATISTICAL_PRECISION_SAMPLE_SIZE_AMENDMENT_INFORMED_BY_V2",
+  "supersedes_label": "the v3 'scientific_change NONE' label was too strong: raising the per-cell cap from 800 to 3200 AFTER observing v2's precision failure is a statistical design change, disclosed and informed by v2's cap miss",
+  "unchanged_facts": [
+   "question",
+   "estimand",
+   "grid",
+   "family alpha and simultaneous-interval rule",
+   "seed derivation",
+   "solver tolerances",
+   "control census",
+   "verdict rule"
+  ]
+ },
+ "sigma_min_clarification": "the singular-value check is a FULL-RANK numerical diagnostic of the whole point matrix; it does not prove every required subset is in general position \u2014 Gaussian generation supplies that almost surely and the exact enumerated cases remain the finite check",
+ "boundary_alignment": "the max-margin implementation now types optima in (0, zero_tol] as AMBIGUOUS_MARGIN exactly as the sealed design states (the retired logic mapped that zone to NONSEPARABLE); the audit's 1e-10 one-point example is additionally typed AMBIGUOUS_GENERAL_POSITION under the sealed sigma_min tolerance (1e-8), because data whose scale sits below the LP solver's own matrix tolerance admits no numerically meaningful separability outcome \u2014 it is never NONSEPARABLE; the corrected verifier's full regeneration over the immutable v3 records proves no published task ever landed on either boundary",
+ "scientific_result_disposition": "COVER_CALIBRATION_REPRODUCED_AFTER_DISCLOSED_PRECISION_AMENDMENT (Musashi audit 2026-09-08)",
+ "amendment_sha256": "c9b8f4906e3db82d6514919f5e3f94854f837030c80b91d055e90db44a20b08e"
+}

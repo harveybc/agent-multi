@@ -117,6 +117,11 @@ def gen_labels(n: int, seed: int):
 
 
 def general_position_sigma(x) -> float:
+    """A FULL-RANK numerical diagnostic (smallest singular value
+    of the whole matrix). It does NOT prove that every required
+    subset of points is in general position; Gaussian generation
+    supplies that almost surely, and the exact enumerated cases
+    remain the finite check."""
     import numpy as np
     s = np.linalg.svd(x, compute_uv=False)
     return float(s[min(x.shape) - 1])
@@ -149,9 +154,15 @@ def solve_max_margin(x, y, tol_sigma: float,
     d_star = float(res.x[-1])
     if d_star > zero_tol:
         return "SEPARABLE"
-    if d_star >= 0.0:
-        return "NONSEPARABLE" if d_star == 0.0 or \
-            d_star <= zero_tol else "AMBIGUOUS_MARGIN"
+    if d_star <= 0.0:
+        return "NONSEPARABLE"
+    # 0 < d* <= zero_tol: exactly what the sealed design types as
+    # AMBIGUOUS_MARGIN. Data whose scale sits BELOW the solver's
+    # own matrix tolerance (the audit's 1e-10 one-point example)
+    # never reaches this branch honestly: the sealed sigma_min
+    # diagnostic (1e-8) types it AMBIGUOUS_GENERAL_POSITION
+    # first, because no LP outcome on such input is numerically
+    # meaningful.
     return "AMBIGUOUS_MARGIN"
 
 
@@ -655,12 +666,60 @@ def execute(runs_dir: Path = None,
     return summary
 
 
+def _expected_task_body(design, k, ratio, n, idx):
+    """M3-C2: regenerate the task from the sealed seeds and rerun
+    the productive solvers; return the exact record body."""
+    tol = design["solvers"]["general_position_sigma_min"]
+    ztol = design["solvers"]["zero_tol"]
+    primary = _primary_for(design)
+    x = gen_points(n, k, _task_seed("points", k, ratio, idx))
+    y = gen_labels(n, _task_seed("labels", k, ratio, idx))
+    v = primary(x, y, tol)
+    rec = {"kind": "task", "K": k, "ratio": ratio, "N": n,
+           "index": idx, "outcome": v,
+           "sigma_min": round(general_position_sigma(x), 12)}
+    if idx < 25 or v.startswith("AMBIGUOUS"):
+        v2 = solve_min_slack(x, y, ztol)
+        rec["independent_outcome"] = v2
+        if v2 != v:
+            rec["outcome"] = "AMBIGUOUS_SOLVER_DISAGREEMENT"
+    rec["record_sha256"] = _self_sha(rec, "record_sha256")
+    return rec
+
+
+_TASK_KEYS = {"kind", "K", "ratio", "N", "index", "outcome",
+              "sigma_min", "record_sha256"}
+_CONTROL_KINDS = {"control_positive": 5, "control_negative": 5,
+                  "control_invariance": 10}
+
+
+def _strict_record(line: str, what: str) -> dict:
+    def _no_dupes(pairs):
+        keys = [k for k, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise M3Refusal(f"duplicate JSON key in {what}")
+        return dict(pairs)
+    doc = json.loads(
+        line, object_pairs_hook=_no_dupes,
+        parse_constant=lambda c: (_ for _ in ()).throw(
+            M3Refusal(f"non-finite constant in {what}")))
+    if _self_sha(doc, "record_sha256") != doc.get("record_sha256"):
+        raise M3Refusal(f"{what} self-digest does not re-derive")
+    return doc
+
+
 def verify(runs_dir: Path = None,
            design_path: Path = None) -> dict:
-    """Fresh-process reconstruction: re-read the immutable task
-    records, re-derive every aggregate and the verdict, and
-    compare with the published summary bit-for-bit on the facts
-    that matter."""
+    """M3-C1/C2: the INDEPENDENT verifier — exact schemas and
+    primitive types; the exact task-index population re-derived
+    from the sealed adaptive rule; the exact 20 controls of the
+    declared kinds per cell (`all([])` can never certify);
+    every point set and label vector REGENERATED from the sealed
+    seeds with the primary (and, on the sealed subset and all
+    controls, the independent) formulation re-executed and the
+    full record body re-derived to exact semantic equality; only
+    then are aggregates and the verdict rebuilt and compared. A
+    supplied self-digest is a checksum, not authority."""
     if design_path is None:
         design_path = DESIGN_PATH_V3 if DESIGN_PATH_V3.exists() \
             else (DESIGN_PATH_V2 if DESIGN_PATH_V2.exists()
@@ -681,13 +740,110 @@ def verify(runs_dir: Path = None,
             summary["records_file_sha256"]:
         raise M3Refusal(
             "task records differ from the summary's digest")
-    records = []
+    by_cell_tasks = {}
+    by_cell_controls = {}
     for line in rec_path.read_text().splitlines():
-        r = json.loads(line)
-        if _self_sha(r, "record_sha256") != r["record_sha256"]:
-            raise M3Refusal("a task record self-digest does not "
-                            "re-derive")
-        records.append(r)
+        r = _strict_record(line, "M3 record")
+        kind = r.get("kind")
+        if kind == "task":
+            want_keys = set(_TASK_KEYS)
+            if "independent_outcome" in r:
+                want_keys.add("independent_outcome")
+            if set(r) != want_keys:
+                raise M3Refusal(
+                    "task record keys are not the exact schema")
+            if type(r["index"]) is not int or \
+                    isinstance(r["index"], bool) or \
+                    r["index"] < 0:
+                raise M3Refusal(
+                    "task index is not a canonical nonnegative "
+                    "integer")
+            sm = r["sigma_min"]
+            if type(sm) not in (int, float) or \
+                    isinstance(sm, bool) or not math.isfinite(sm):
+                raise M3Refusal(
+                    "task sigma_min is not a finite number")
+            by_cell_tasks.setdefault(
+                (r["K"], r["ratio"]), {})
+            cell = by_cell_tasks[(r["K"], r["ratio"])]
+            if r["index"] in cell:
+                raise M3Refusal(
+                    f"duplicate task index {r['index']} in cell "
+                    f"K={r['K']} r={r['ratio']} — duplicated "
+                    "records are never independent observations")
+            cell[r["index"]] = r
+        elif kind in _CONTROL_KINDS:
+            if type(r.get("passed")) is not bool:
+                raise M3Refusal(
+                    "control 'passed' must be a boolean")
+            by_cell_controls.setdefault(
+                (r["K"], r["ratio"]), []).append(r)
+        else:
+            raise M3Refusal(
+                f"unknown record kind {kind!r} in the records "
+                "file")
+    records = []
+    for cell_def in design["grid"]["cells"]:
+        k, ratio, n = cell_def["K"], cell_def["ratio"], \
+            cell_def["N"]
+        tasks = by_cell_tasks.get((k, ratio), {})
+        controls = by_cell_controls.get((k, ratio), [])
+        # M3-C1: the exact 20 controls of the declared kinds,
+        # REGENERATED and re-derived
+        kinds_count = {}
+        for c in controls:
+            kinds_count[c["kind"]] = kinds_count.get(
+                c["kind"], 0) + 1
+        if kinds_count != _CONTROL_KINDS:
+            raise M3Refusal(
+                f"cell K={k} r={ratio} does not carry the exact "
+                f"control census {_CONTROL_KINDS} (got "
+                f"{kinds_count}) — an empty control list can "
+                "never certify")
+        expected_controls = run_controls(design, k, ratio, n)
+        def _ckey(c):
+            return (c["kind"], c["index"])
+        got_sorted = sorted(controls, key=_ckey)
+        want_sorted = sorted(expected_controls, key=_ckey)
+        if got_sorted != want_sorted:
+            raise M3Refusal(
+                f"cell K={k} r={ratio} controls do not "
+                "REGENERATE from the sealed seeds — recorded "
+                "control evidence is not reproducible")
+        # M3-C1/C2: exact adaptive population, regenerated
+        # outcomes, exact record-body equality
+        n_expected = design["tasks_per_cell_initial"]
+        cap = design["precision_rule"]["tasks_per_cell_cap"]
+        regen = {}
+        while True:
+            for idx in range(len(regen), n_expected):
+                regen[idx] = _expected_task_body(
+                    design, k, ratio, n, idx)
+            agg = aggregate_cell(
+                design, list(regen.values()) + expected_controls,
+                k, ratio)
+            if agg["state"] != "INCONCLUSIVE_PRECISION":
+                break
+            nxt = min(n_expected * 2, cap)
+            if nxt == n_expected:
+                break
+            n_expected = nxt
+        if sorted(tasks) != list(range(n_expected)):
+            raise M3Refusal(
+                f"cell K={k} r={ratio} task population is not "
+                f"the exact sealed adaptive population "
+                f"(expected indices 0..{n_expected - 1}, got "
+                f"{len(tasks)} records) — gaps, extras or "
+                "duplicates refuse")
+        for idx in range(n_expected):
+            if tasks[idx] != regen[idx]:
+                raise M3Refusal(
+                    f"cell K={k} r={ratio} task {idx} does not "
+                    "REGENERATE from the sealed seeds and "
+                    "solvers — recorded outcomes are not "
+                    "reproducible")
+        records.extend(regen.values())
+        records.extend(expected_controls)
     cell_aggs = [aggregate_cell(design, records, c["K"],
                                 c["ratio"])
                  for c in design["grid"]["cells"]]
@@ -701,8 +857,13 @@ def verify(runs_dir: Path = None,
             "reconstructed verdict differs from the published "
             "summary")
     return {"verified": True, "verdict": verdict,
-            "total_tasks": summary["total_tasks"],
-            "cells": len(cell_aggs)}
+            "total_tasks": sum(len(by_cell_tasks[(c["K"],
+                                                  c["ratio"])])
+                               for c in design["grid"]["cells"]),
+            "controls_verified": sum(
+                len(v) for v in by_cell_controls.values()),
+            "cells": len(cell_aggs),
+            "regenerated": True}
 
 
 def main(argv=None) -> int:

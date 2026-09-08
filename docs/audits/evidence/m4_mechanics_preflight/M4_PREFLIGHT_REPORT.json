@@ -1,0 +1,35 @@
+{
+ "schema": "agent_multi.m4_mechanics_preflight.v1",
+ "design_sha256": "af6f92705cf894b7ecef07f3c51b9d0e54c7b1a378c8efa5b80fe2e21df318f7",
+ "authority": "MECHANICS_ONLY_NO_SCIENTIFIC_CONCLUSION",
+ "units": [
+  {
+   "family": "sine",
+   "checkpoint_identity": {
+    "init_sha": "b13653961caffba0",
+    "stop_sha": "dcb5a7360fee7ae4",
+    "reload_matches": true
+   },
+   "retention_margin": 0.14595,
+   "batches_fitted_mechanics_only": 0,
+   "endpoint_mechanics_only": "ACQUISITION_FAILURE_AT_BATCH_0",
+   "original_checkpoint_untouched": true,
+   "restart_identity": true
+  },
+  {
+   "family": "majority",
+   "checkpoint_identity": {
+    "init_sha": "c33e4300f8ee6102",
+    "stop_sha": "56fb86a9c334ed86",
+    "reload_matches": true
+   },
+   "retention_margin": 0.052592,
+   "batches_fitted_mechanics_only": 0,
+   "endpoint_mechanics_only": "ACQUISITION_FAILURE_AT_BATCH_0",
+   "original_checkpoint_untouched": true,
+   "restart_identity": true
+  }
+ ],
+ "wall_seconds": 0.13,
+ "report_sha256": "94a07ad6ca24560a19495c7cb52da4d15d0217ebbae531125ad57260d4d869d1"
+}
