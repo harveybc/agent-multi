@@ -1,0 +1,9 @@
+{
+ "accepted_batches": 1,
+ "batch_index": 1,
+ "family": "majority",
+ "retention_margin": 0.05422572884562562,
+ "retention_streak": 1,
+ "state_digest": "735ce83ee819290ea54b76a4726cc77298e5047e12ac1546ac85bdfa64d1a43d",
+ "updates_done": 400
+}

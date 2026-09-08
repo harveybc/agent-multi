@@ -270,7 +270,12 @@ def test_c1_absent_controls_refuse(tmp_path):
              .splitlines()
              if json.loads(ln)["kind"] == "task"]
     _repair(work, lines)
-    with pytest.raises(SystemExit, match="control census"):
+    # C7's global-population equality fires first (controls of
+    # every cell are now entirely absent); either the census
+    # guard or the population guard is a correct refusal
+    with pytest.raises(SystemExit,
+                       match="control census|do not equal the "
+                             "sealed grid"):
         m3.verify(runs_dir=work, design_path=m3.DESIGN_PATH_V3)
 
 
@@ -465,5 +470,108 @@ def test_c5_mutations_bite_the_verifier(tmp_path, monkeypatch):
                         design_path=m3.DESIGN_PATH_V3)
         assert out["verified"]         # mutation bites: the
         # control-census guard was the only thing refusing
-    with pytest.raises(SystemExit, match="control census"):
+    with pytest.raises(SystemExit,
+                       match="control census|do not equal the "
+                             "sealed grid"):
         m3.verify(runs_dir=work, design_path=m3.DESIGN_PATH_V3)
+
+
+# ===== M3-C7..C9 battery (2026-09-08) ============================
+
+
+def test_c7_foreign_cell_refuses_before_regeneration(tmp_path):
+    """M3-C7: the audit's exact attack — one valid task moved to
+    K=999 with all digests repaired — refuses BEFORE the 9,800-
+    task solver replay (cheap population check first)."""
+    import shutil
+    import time
+    src = m3.RUNS_DIR_V3
+    if not (src / "M3_SUMMARY.json").exists():
+        pytest.skip("v3 run not present")
+    work = tmp_path / "runs"
+    shutil.copytree(src, work)
+    lines = (work / "M3_TASK_RECORDS.jsonl").read_text() \
+        .splitlines()
+    donor = next(json.loads(ln) for ln in lines
+                 if json.loads(ln)["kind"] == "task")
+    foreign = dict(donor)
+    foreign["K"] = 999
+    foreign["record_sha256"] = m3._self_sha(foreign,
+                                            "record_sha256")
+    lines.append(json.dumps(foreign, sort_keys=True))
+    (work / "M3_TASK_RECORDS.jsonl").write_text(
+        "\n".join(lines) + "\n")
+    summ = json.loads((work / "M3_SUMMARY.json").read_text())
+    summ["records_file_sha256"] = hashlib.sha256(
+        (work / "M3_TASK_RECORDS.jsonl").read_bytes()).hexdigest()
+    summ["summary_sha256"] = m3._self_sha(summ, "summary_sha256")
+    (work / "M3_SUMMARY.json").write_text(json.dumps(summ))
+    t0 = time.monotonic()
+    with pytest.raises(SystemExit, match="outside the sealed "
+                                         "grid"):
+        m3.verify(runs_dir=work, design_path=m3.DESIGN_PATH_V3)
+    assert time.monotonic() - t0 < 30      # cheap, pre-solver
+
+
+def test_c8_strict_design_and_summary(tmp_path):
+    """M3-C8: duplicate keys, non-finite constants, extra summary
+    cells, wrong totals and foreign summary cells refuse."""
+    import shutil
+    src = m3.RUNS_DIR_V3
+    if not (src / "M3_SUMMARY.json").exists():
+        pytest.skip("v3 run not present")
+    # duplicate key in the design
+    dpath = tmp_path / "dup_design.json"
+    txt = m3.DESIGN_PATH_V3.read_text().rstrip()
+    dpath.write_text(txt[:-1] + ',\n "stage": "x"}')
+    with pytest.raises(SystemExit,
+                       match="duplicate JSON key|exact schema"):
+        m3.load_design(dpath)
+    # extra / wrong-total summary
+    work = tmp_path / "runs"
+    shutil.copytree(src, work)
+    summ = json.loads((work / "M3_SUMMARY.json").read_text())
+    summ["total_tasks"] = 12345
+    summ["summary_sha256"] = m3._self_sha(summ, "summary_sha256")
+    (work / "M3_SUMMARY.json").write_text(json.dumps(summ))
+    with pytest.raises(SystemExit,
+                       match="total_tasks is inconsistent"):
+        m3.verify(runs_dir=work, design_path=m3.DESIGN_PATH_V3)
+    work2 = tmp_path / "runs2"
+    shutil.copytree(src, work2)
+    summ = json.loads((work2 / "M3_SUMMARY.json").read_text())
+    summ["cells"].append({**summ["cells"][0], "K": 777})
+    summ["summary_sha256"] = m3._self_sha(summ, "summary_sha256")
+    (work2 / "M3_SUMMARY.json").write_text(json.dumps(summ))
+    with pytest.raises(SystemExit,
+                       match="outside the sealed grid|"
+                             "duplicate cell"):
+        m3.verify(runs_dir=work2, design_path=m3.DESIGN_PATH_V3)
+
+
+def test_c8_foreign_design_non_authoritative():
+    """M3-C8: only the reviewed v3 identity may report the
+    accepted label; a foreign design is a consistency check
+    that never inherits the accepted disposition."""
+    if not (m3.RUNS_DIR_V3 / "M3_SUMMARY.json").exists():
+        pytest.skip("v3 run not present")
+    out = m3.verify(runs_dir=m3.RUNS_DIR_V3,
+                    design_path=m3.DESIGN_PATH_V3)
+    assert out["authoritative_v3"] is True
+    assert "non_authoritative_consistency" not in out
+    # v1 IS a real sealed design but NOT the reviewed v3 identity
+    assert m3.load_design(m3.DESIGN_PATH)["design_sha256"] != \
+        m3.V3_ACCEPTED_DESIGN_SHA
+
+
+def test_c9_corrected_verifier_reproduces_v3_unchanged():
+    """M3-C9: the accepted result is unchanged under the exact-
+    global verifier."""
+    if not (m3.RUNS_DIR_V3 / "M3_SUMMARY.json").exists():
+        pytest.skip("v3 run not present")
+    out = m3.verify(runs_dir=m3.RUNS_DIR_V3,
+                    design_path=m3.DESIGN_PATH_V3)
+    assert out["verified"] and out["authoritative_v3"]
+    assert out["verdict"] == m3.VERDICTS[0]
+    assert out["total_tasks"] == 9800
+    assert out["controls_verified"] == 420

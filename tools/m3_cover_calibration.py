@@ -71,6 +71,11 @@ MASTER_SEED_PHRASE = "m3_cover_calibration_2026_09_08"
 
 VERDICTS = ("COVER_CALIBRATION_CONFIRMED_WITHIN_DECLARED_"
             "PRECISION", "NOT_CONFIRMED", "INCONCLUSIVE")
+# M3-C8: the ONE reviewed v3 identity whose verification may
+# report the ACCEPTED scientific label; any other design is
+# testable but non-authoritative.
+V3_ACCEPTED_DESIGN_SHA = ("21a2ad48e0ec503ea4ec9633321c7643ea3a"
+                          "fda84f3de987719dba689763d7f1")
 
 
 class M3Refusal(SystemExit):
@@ -413,13 +418,47 @@ def seal_design(path: Path = DESIGN_PATH,
     return d
 
 
+def _strict_json_file(path: Path, what: str) -> dict:
+    """M3-C8: duplicate keys and non-finite constants refuse."""
+    def _no_dupes(pairs):
+        keys = [k for k, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise M3Refusal(f"duplicate JSON key in {what}")
+        return dict(pairs)
+    try:
+        return json.loads(
+            Path(path).read_text(), object_pairs_hook=_no_dupes,
+            parse_constant=lambda c: (_ for _ in ()).throw(
+                M3Refusal(f"non-finite constant in {what}")))
+    except json.JSONDecodeError as exc:
+        raise M3Refusal(f"{what} is not well-formed JSON "
+                        f"({exc.msg})")
+
+
+_DESIGN_BASE_KEYS = {
+    "schema", "sealed_at_date", "stage", "question",
+    "classifier_convention", "primary_citation",
+    "secondary_citation", "grid", "tasks_per_cell_initial",
+    "precision_rule", "intervals", "solvers",
+    "controls_per_cell", "seeds", "resources",
+    "allowed_verdicts", "verdict_rule", "not_estimated",
+    "formula_machine_check", "design_sha256"}
+_DESIGN_KEYS_BY_VERSION = {
+    "1": _DESIGN_BASE_KEYS,
+    "2": _DESIGN_BASE_KEYS | {"supersedes_design_sha256",
+                              "instrument_change_note"},
+    "3": _DESIGN_BASE_KEYS | {"supersedes_design_sha256",
+                              "statistical_coherence_note"},
+}
+
+
 def load_design(path: Path = DESIGN_PATH) -> dict:
     p = Path(path)
     if not p.is_file():
         raise M3Refusal(
             "M3_DESIGN_REQUIRED: seal the design before any "
             "outcome is computed (--seal-design)")
-    d = json.loads(p.read_text())
+    d = _strict_json_file(p, "M3 sealed design")
     if _self_sha(d, "design_sha256") != d.get("design_sha256"):
         raise M3Refusal(
             "sealed M3 design self-digest does not re-derive")
@@ -429,6 +468,20 @@ def load_design(path: Path = DESIGN_PATH) -> dict:
             "agent_multi.m3_cover_calibration_design.v3"):
         raise M3Refusal("sealed M3 design carries a foreign "
                         "schema")
+    want = _DESIGN_KEYS_BY_VERSION[d["schema"][-1]]
+    if set(d) != want:
+        raise M3Refusal(
+            "sealed M3 design keys are not the exact schema "
+            f"(diff: {sorted(set(d) ^ want)[:6]})")
+    for cell in d["grid"]["cells"]:
+        if type(cell.get("N")) is not int or \
+                isinstance(cell.get("N"), bool) or cell["N"] <= 0:
+            raise M3Refusal("design cell N is not a positive "
+                            "integer")
+        if cell.get("K") not in d["grid"]["K"] or \
+                cell.get("ratio") not in d["grid"]["N_over_K"]:
+            raise M3Refusal("design cell identity is outside "
+                            "the declared grid axes")
     return d
 
 
@@ -730,21 +783,85 @@ def verify(runs_dir: Path = None,
                     "3": RUNS_DIR_V3}[design["schema"][-1]]
     runs = Path(runs_dir)
     rec_path = runs / "M3_TASK_RECORDS.jsonl"
-    summary = json.loads((runs / "M3_SUMMARY.json").read_text())
+    summary = _strict_json_file(runs / "M3_SUMMARY.json",
+                                "M3 summary")
+    _SUMMARY_KEYS = {"schema", "design_sha256",
+                     "records_file_sha256", "cells",
+                     "total_tasks", "total_ambiguous",
+                     "wall_seconds", "verdict",
+                     "summary_sha256"}
+    if set(summary) != _SUMMARY_KEYS:
+        raise M3Refusal(
+            "summary keys are not the exact schema (diff: "
+            f"{sorted(set(summary) ^ _SUMMARY_KEYS)[:6]})")
     if _self_sha(summary, "summary_sha256") != \
             summary.get("summary_sha256"):
         raise M3Refusal("summary self-digest does not re-derive")
     if summary["design_sha256"] != design["design_sha256"]:
         raise M3Refusal("summary does not bind the sealed design")
+    if summary["verdict"] not in VERDICTS:
+        raise M3Refusal("summary verdict is not an allowed "
+                        "verdict")
+    _CELL_KEYS = {"K", "ratio", "N", "tasks", "separable",
+                  "ambiguous", "p_hat", "p_exact", "ci_low",
+                  "ci_high", "ci_halfwidth", "state",
+                  "covers_exact", "controls_passed",
+                  "n_controls"}
+    sealed_cells = {(c["K"], c["ratio"])
+                    for c in design["grid"]["cells"]}
+    seen_cells = set()
+    for c in summary["cells"]:
+        if set(c) != _CELL_KEYS:
+            raise M3Refusal(
+                "summary cell keys are not the exact schema")
+        key = (c["K"], c["ratio"])
+        if key not in sealed_cells:
+            raise M3Refusal(
+                f"summary carries a cell outside the sealed "
+                f"grid: K={c['K']} r={c['ratio']}")
+        if key in seen_cells:
+            raise M3Refusal("summary carries a duplicate cell")
+        seen_cells.add(key)
+        for k in ("tasks", "separable", "ambiguous",
+                  "n_controls"):
+            if type(c[k]) is not int or isinstance(c[k], bool) \
+                    or c[k] < 0:
+                raise M3Refusal(
+                    f"summary cell {k} is not a canonical "
+                    "nonnegative integer")
+        if c["separable"] + c["ambiguous"] > c["tasks"]:
+            raise M3Refusal("summary cell counts are "
+                            "inconsistent")
+    if seen_cells != sealed_cells:
+        raise M3Refusal(
+            "summary cell population does not equal the sealed "
+            "grid exactly")
+    if summary["total_tasks"] != sum(c["tasks"]
+                                     for c in summary["cells"]):
+        raise M3Refusal("summary total_tasks is inconsistent "
+                        "with its cells")
+    if summary["total_ambiguous"] != sum(
+            c["ambiguous"] for c in summary["cells"]):
+        raise M3Refusal("summary total_ambiguous is "
+                        "inconsistent with its cells")
     if hashlib.sha256(rec_path.read_bytes()).hexdigest() != \
             summary["records_file_sha256"]:
         raise M3Refusal(
             "task records differ from the summary's digest")
+    sealed_cell_keys = {(c["K"], c["ratio"])
+                        for c in design["grid"]["cells"]}
     by_cell_tasks = {}
     by_cell_controls = {}
     for line in rec_path.read_text().splitlines():
         r = _strict_record(line, "M3 record")
         kind = r.get("kind")
+        # M3-C7: a record naming a cell OUTSIDE the sealed grid
+        # refuses immediately — long before the solver replay
+        if (r.get("K"), r.get("ratio")) not in sealed_cell_keys:
+            raise M3Refusal(
+                f"record names a cell outside the sealed grid "
+                f"(K={r.get('K')} r={r.get('ratio')}) — foreign "
+                "cells are never part of the population")
         if kind == "task":
             want_keys = set(_TASK_KEYS)
             if "independent_outcome" in r:
@@ -782,6 +899,14 @@ def verify(runs_dir: Path = None,
             raise M3Refusal(
                 f"unknown record kind {kind!r} in the records "
                 "file")
+    # M3-C7: exact GLOBAL population equality (cheap, before the
+    # expensive regeneration): observed task and control cell
+    # keys must equal the sealed grid exactly
+    if set(by_cell_tasks) != sealed_cell_keys or \
+            set(by_cell_controls) != sealed_cell_keys:
+        raise M3Refusal(
+            "observed record cells do not equal the sealed grid "
+            "exactly (missing or foreign cells)")
     records = []
     for cell_def in design["grid"]["cells"]:
         k, ratio, n = cell_def["K"], cell_def["ratio"], \
@@ -856,14 +981,24 @@ def verify(runs_dir: Path = None,
         raise M3Refusal(
             "reconstructed verdict differs from the published "
             "summary")
-    return {"verified": True, "verdict": verdict,
-            "total_tasks": sum(len(by_cell_tasks[(c["K"],
-                                                  c["ratio"])])
-                               for c in design["grid"]["cells"]),
-            "controls_verified": sum(
-                len(v) for v in by_cell_controls.values()),
-            "cells": len(cell_aggs),
-            "regenerated": True}
+    authoritative = (design["design_sha256"]
+                     == V3_ACCEPTED_DESIGN_SHA)
+    out = {"verified": True, "verdict": verdict,
+           "total_tasks": sum(len(by_cell_tasks[(c["K"],
+                                                 c["ratio"])])
+                              for c in design["grid"]["cells"]),
+           "controls_verified": sum(
+               len(v) for v in by_cell_controls.values()),
+           "cells": len(cell_aggs),
+           "regenerated": True,
+           "authoritative_v3": authoritative}
+    if not authoritative:
+        out["non_authoritative_consistency"] = True
+        out["note"] = ("a foreign design identity was supplied "
+                       "explicitly; this output is a "
+                       "consistency check only and does NOT "
+                       "inherit the accepted v3 disposition")
+    return out
 
 
 def main(argv=None) -> int:
