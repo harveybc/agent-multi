@@ -886,6 +886,13 @@
    "mutability": "mutating",
    "authority_class": "evidence_producer",
    "owner": "General Satoshi III"
+  },
+  "t2_resource_successor.py": {
+   "purpose": "C76: generate the resource-only successor of the immutable sealed T2 v6 design — changes ONLY schema/self-digest, supersession bindings, the amendment metadata and resource_contract.max_wall_seconds (216,000 s hard campaign ceiling); every scientific field stays byte-equivalent and conf.verify_resource_successor refuses anything else; NEVER creates or installs the external Musashi review or execution record",
+   "lifecycle": "supported",
+   "mutability": "mutating",
+   "authority_class": "design_author",
+   "owner": "General Satoshi III"
   }
  },
  "plugins": {
