@@ -1,0 +1,23 @@
+== P0-a (C66): a negative reservation renews the budget ==
+prior_charged=-100.0 remaining=110.0 (sealed limit 10 s) -> ACCEPTED
+
+== P0-b (C67): the torn tail poisons the NEXT replay ==
+session 2: accepted_and_closed (records appended BEHIND the torn fragment)
+session 3: REFUSED: wall ledger interior record is malformed — fail closed, stopping for review
+
+== P0-c (C69): root replacement is not detected ==
+{
+ "write_accepted": true,
+ "landed_on_held_inode": true,
+ "visible_at_declared_path": false
+}
+
+== P1-d (C68): a boot change does not stop for review ==
+second session under a DIFFERENT boot id: accepted = True (ordered semantics: stop for review — silently weakened in C57 to 'does not renew'; my fault, confessed)
+
+== P1-e (C70): the physical fit census, counted live ==
+sm_nile (2 origins x 4 arms x 3 seeds): 16 ridge solves, 192 MLP candidate fits
+projected sealed population: 3872 ridge + 46464 MLP candidate fits = 50336 fitting operations (published census: 7744)
+=> ridge runs in the parent OUTSIDE the fit supervisor (source); one stalled solve can evade the per-fit contract
+
+PRE CONFIRMED at 81cfc253: negative-charge renewal, torn-tail poisoning, undetected root replacement, accepted boot change, and a 7,744-count that is physically 50,336 — all frozen
