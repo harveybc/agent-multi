@@ -8,7 +8,6 @@ from B4 and T2: no financial data, no GPU, no promotion, and no optimizer gene.
 from __future__ import annotations
 
 import argparse
-import copy
 import hashlib
 import json
 import math
@@ -28,16 +27,19 @@ from torch import nn
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
 
-import model_information_contract as mic
-import t1_known_truth_bank as t1_bank
+import model_information_contract as mic  # noqa: E402
+import t1_known_truth_bank as t1_bank  # noqa: E402
 
 
-DESIGN_SCHEMA = "agent_multi.model_capacity_m0_m2_design.v1"
+DESIGN_SCHEMA = "agent_multi.model_capacity_m0_m2_design.v2"
 UNIT_SCHEMA = "agent_multi.model_capacity_m0_m2_unit.v1"
-SUMMARY_SCHEMA = "agent_multi.model_capacity_m0_m2_summary.v1"
+SUMMARY_SCHEMA = "agent_multi.model_capacity_m0_m2_summary.v2"
+SUPERSEDED_DESIGN_SHA256 = (
+    "d18b5ea0a3957c2056b8b531fbc526b3f67b74fb38e38cee267180ed4a5c88e8"
+)
 DEFAULT_DESIGN = (
     REPO
-    / "docs/audits/evidence/MODEL_CAPACITY_M0_M2_PILOT_DESIGN_2026_09_07.json"
+    / "docs/audits/evidence/MODEL_CAPACITY_M0_M2_PILOT_DESIGN_V2_2026_09_07.json"
 )
 CODE_FILES = (
     "tools/model_information_contract.py",
@@ -112,6 +114,7 @@ def make_design() -> dict[str, Any]:
         "schema": DESIGN_SCHEMA,
         "date": "2026-09-07",
         "claim_scope": "M0_M2_BOUNDED_CPU_PILOT_ONLY",
+        "supersedes_design_sha256": SUPERSEDED_DESIGN_SHA256,
         "code_identity": current_code_identity(),
         "resources": {
             "device": "cpu",
@@ -162,6 +165,29 @@ def make_design() -> dict[str, Any]:
             "interpretation": "estimator_specific_upper_bounds_not_exact_kolmogorov_complexity",
             "independent_information_multiplier_for_repeated_epochs": 1,
         },
+        "verification_contract": {
+            "scientific_result_recomputed_from_design_specification_and_code": True,
+            "producer_self_digest_is_not_scientific_authority": True,
+            "exact_result_equality_required": True,
+        },
+        "analysis_contract": {
+            "grouping": "task_or_signal_family_by_regime_by_hidden_width",
+            "selection_metrics": [
+                "train_score",
+                "calibration_score",
+                "evaluation_score",
+                "sample_specific_memorization_when_defined",
+            ],
+            "description_metrics": [
+                "raw_zlib_bytes",
+                "quantized_8bit_zlib_bytes",
+                "histogram_entropy_bits_per_parameter",
+                "effective_rank",
+            ],
+            "trajectory_association": (
+                "within_unit_pearson_only_when_both_series_have_nonzero_variance"
+            ),
+        },
         "decision": {
             "pilot_only": True,
             "capacity_saturation_requires_both_fit_and_failure_regimes": True,
@@ -177,6 +203,7 @@ DESIGN_KEYS = {
     "schema",
     "date",
     "claim_scope",
+    "supersedes_design_sha256",
     "code_identity",
     "resources",
     "threshold_neuron",
@@ -184,6 +211,8 @@ DESIGN_KEYS = {
     "temporal_mlp",
     "training",
     "description_contract",
+    "verification_contract",
+    "analysis_contract",
     "decision",
     "design_sha256",
 }
@@ -198,6 +227,8 @@ def verify_design(design: dict[str, Any]) -> None:
     )
     if design["code_identity"] != current_code_identity():
         raise PilotRefusal("design code identity does not match executing bytes")
+    if design["supersedes_design_sha256"] != SUPERSEDED_DESIGN_SHA256:
+        raise PilotRefusal("design does not supersede the frozen v1 pilot")
     resources = design["resources"]
     if resources.get("device") != "cpu":
         raise PilotRefusal("pilot device must be cpu")
@@ -219,6 +250,16 @@ def verify_design(design: dict[str, Any]) -> None:
         "estimator_specific_upper_bounds_not_exact_kolmogorov_complexity"
     ):
         raise PilotRefusal("description contract overclaims its meaning")
+    if design["verification_contract"] != {
+        "scientific_result_recomputed_from_design_specification_and_code": True,
+        "producer_self_digest_is_not_scientific_authority": True,
+        "exact_result_equality_required": True,
+    }:
+        raise PilotRefusal("scientific verification contract is weakened")
+    if design["analysis_contract"].get("grouping") != (
+        "task_or_signal_family_by_regime_by_hidden_width"
+    ):
+        raise PilotRefusal("analysis grouping contract changed")
 
 
 def load_design(path: Path) -> dict[str, Any]:
@@ -578,7 +619,7 @@ def choose_stop_from_calibration(
     best = math.inf
     best_epoch = -1
     stale = 0
-    for epoch, value in enumerate(calibration_losses):
+    for epoch, value in enumerate(calibration_losses, start=1):
         mic.require_number(f"calibration_losses[{epoch}]", value, minimum=0.0)
         if value < best - minimum_delta:
             best = value
@@ -720,7 +761,11 @@ def _train_mlp_unit(
     diagnostic_checkpoint = _checkpoint(
         model,
         epoch=diagnostic_epoch,
-        branch="diagnostic_continuation",
+        branch=(
+            "diagnostic_continuation"
+            if stop_epoch is not None
+            else "max_epoch_endpoint"
+        ),
         train=train,
         calibration=calibration,
         evaluation=evaluation,
@@ -784,7 +829,11 @@ def _threshold_unit(design: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
               "evaluation_labels": labels_eval}
     return {
         "data_description": mic.describe_data_arrays(
-            arrays, repeated_exposures=(converged_at or max_updates) + 1
+            arrays,
+            repeated_exposures=(
+                converged_at if converged_at is not None else max_updates
+            )
+            + 1,
         ),
         "model_description": mic.describe_model_arrays({"weight": weight}),
         "train_accuracy": train_accuracy,
@@ -810,14 +859,20 @@ UNIT_KEYS = {
 }
 
 
-def _run_unit(design: dict[str, Any], kind: str, spec: dict[str, Any]) -> dict[str, Any]:
-    started = time.perf_counter()
-    unit_id = _unit_id(kind, spec)
-    result = (
+def _scientific_result(
+    design: dict[str, Any], kind: str, spec: dict[str, Any]
+) -> dict[str, Any]:
+    return (
         _threshold_unit(design, spec)
         if kind == "threshold_neuron"
         else _train_mlp_unit(design, kind, spec)
     )
+
+
+def _run_unit(design: dict[str, Any], kind: str, spec: dict[str, Any]) -> dict[str, Any]:
+    started = time.perf_counter()
+    unit_id = _unit_id(kind, spec)
+    result = _scientific_result(design, kind, spec)
     body = {
         "schema": UNIT_SCHEMA,
         "unit_id": unit_id,
@@ -874,6 +929,13 @@ def verify_unit_record(
             raise PilotRefusal("selected checkpoint is not from selection branch")
         if result["diagnostic_checkpoint"].get("selection_authority") is not False:
             raise PilotRefusal("diagnostic checkpoint gained selection authority")
+        expected_endpoint_branch = (
+            "diagnostic_continuation"
+            if observed_stop is not None
+            else "max_epoch_endpoint"
+        )
+        if result["diagnostic_checkpoint"].get("branch") != expected_endpoint_branch:
+            raise PilotRefusal("diagnostic endpoint branch contradicts stopping state")
         for checkpoint in result["checkpoints"] + [
             result["selection_checkpoint"],
             result["diagnostic_checkpoint"],
@@ -889,6 +951,11 @@ def verify_unit_record(
                         mic.require_int(f"checkpoint.{group}.{name}", value, minimum=1)
                     else:
                         mic.require_number(f"checkpoint.{group}.{name}", value)
+    recomputed = _scientific_result(design, kind, spec)
+    if result != recomputed:
+        raise PilotRefusal(
+            "scientific result differs from fresh design/specification recomputation"
+        )
 
 
 def _threshold_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
@@ -941,6 +1008,185 @@ def _threshold_summary(records: list[dict[str, Any]]) -> dict[str, Any]:
     return {"curves": curves, "boundaries": boundaries}
 
 
+def _mean(values: list[float]) -> float | None:
+    return float(np.mean(values)) if values else None
+
+
+def _description_projection(description: dict[str, Any]) -> dict[str, float | int]:
+    ranks = [row["effective_rank"] for row in description["matrix_spectra"]]
+    return {
+        "parameter_count": description["parameter_count"],
+        "raw_zlib_bytes": description["raw_serialization"]["zlib_bytes"],
+        "quantized_8bit_zlib_bytes": description["quantized"]["8"][
+            "serialization"
+        ]["zlib_bytes"],
+        "histogram_entropy_bits_per_parameter": description[
+            "histogram_entropy_bits_per_parameter"
+        ],
+        "mean_matrix_effective_rank": _mean(ranks) or 0.0,
+    }
+
+
+def _pearson(left: list[float], right: list[float]) -> float | None:
+    if len(left) < 3 or len(left) != len(right):
+        return None
+    left_array = np.asarray(left, dtype=np.float64)
+    right_array = np.asarray(right, dtype=np.float64)
+    if float(np.std(left_array)) == 0.0 or float(np.std(right_array)) == 0.0:
+        return None
+    value = float(np.corrcoef(left_array, right_array)[0, 1])
+    return value if math.isfinite(value) else None
+
+
+def _mlp_group_summary(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str, int], list[dict[str, Any]]] = {}
+    for record in records:
+        if record["kind"] == "boolean_mlp":
+            key = (
+                record["spec"]["rule"],
+                f"label_noise={record['spec']['train_label_noise']}",
+                record["spec"]["hidden_width"],
+            )
+        elif record["kind"] == "temporal_mlp":
+            key = (
+                record["spec"]["family"],
+                f"snr_db={record['spec']['snr_db']}",
+                record["spec"]["hidden_width"],
+            )
+        else:
+            continue
+        groups.setdefault(key, []).append(record)
+
+    output: list[dict[str, Any]] = []
+    for (family, regime, width), rows in sorted(groups.items()):
+        selected = [row["result"]["selection_checkpoint"] for row in rows]
+        endpoint = [row["result"]["diagnostic_checkpoint"] for row in rows]
+        initial = [row["result"]["initial_model_description"] for row in rows]
+        selected_descriptions = [row["model_description"] for row in selected]
+        endpoint_descriptions = [row["model_description"] for row in endpoint]
+        memorization = [
+            row["sample_specific_memorization"]
+            for row in selected
+            if isinstance(row["sample_specific_memorization"], float)
+        ]
+        initial_raw = [item["raw_serialization"]["zlib_bytes"] for item in initial]
+        selected_raw = [
+            item["raw_serialization"]["zlib_bytes"]
+            for item in selected_descriptions
+        ]
+        endpoint_raw = [
+            item["raw_serialization"]["zlib_bytes"]
+            for item in endpoint_descriptions
+        ]
+        initial_q8 = [
+            item["quantized"]["8"]["serialization"]["zlib_bytes"]
+            for item in initial
+        ]
+        selected_q8 = [
+            item["quantized"]["8"]["serialization"]["zlib_bytes"]
+            for item in selected_descriptions
+        ]
+        item = {
+            "kind": rows[0]["kind"],
+            "family_or_rule": family,
+            "regime": regime,
+            "hidden_width": width,
+            "replicates": len(rows),
+            "early_stop_observed": sum(
+                row["result"]["stopping"]["observed_stop_epoch"] is not None
+                for row in rows
+            ),
+            "mean_selection_epoch": _mean(
+                [row["result"]["stopping"]["selection_epoch"] for row in rows]
+            ),
+            "mean_selected_scores": {
+                split: _mean([row["scores"][split] for row in selected])
+                for split in ("train", "calibration", "evaluation")
+            },
+            "mean_endpoint_evaluation_score": _mean(
+                [row["scores"]["evaluation"] for row in endpoint]
+            ),
+            "mean_selected_sample_specific_memorization": _mean(memorization),
+            "selected_model_description": {
+                key: _mean(
+                    [float(_description_projection(value)[key]) for value in selected_descriptions]
+                )
+                for key in (
+                    "parameter_count",
+                    "raw_zlib_bytes",
+                    "quantized_8bit_zlib_bytes",
+                    "histogram_entropy_bits_per_parameter",
+                    "mean_matrix_effective_rank",
+                )
+            },
+            "mean_raw_zlib_growth_selected_from_initial_bytes": _mean(
+                [selected_raw[i] - initial_raw[i] for i in range(len(rows))]
+            ),
+            "mean_raw_zlib_growth_endpoint_from_selected_bytes": _mean(
+                [endpoint_raw[i] - selected_raw[i] for i in range(len(rows))]
+            ),
+            "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": _mean(
+                [selected_q8[i] - initial_q8[i] for i in range(len(rows))]
+            ),
+        }
+        output.append(item)
+    return output
+
+
+def _trajectory_associations(records: list[dict[str, Any]]) -> dict[str, Any]:
+    names = (
+        "description_vs_train_score",
+        "description_vs_evaluation_score",
+        "description_vs_sample_specific_memorization",
+        "epoch_vs_description",
+    )
+    values: dict[str, list[float]] = {name: [] for name in names}
+    mlp_units = 0
+    for record in records:
+        if record["kind"] == "threshold_neuron":
+            continue
+        mlp_units += 1
+        checkpoints = record["result"]["checkpoints"]
+        description = [
+            float(row["model_description"]["raw_serialization"]["zlib_bytes"])
+            for row in checkpoints
+        ]
+        series = {
+            "description_vs_train_score": [
+                float(row["scores"]["train"]) for row in checkpoints
+            ],
+            "description_vs_evaluation_score": [
+                float(row["scores"]["evaluation"]) for row in checkpoints
+            ],
+            "epoch_vs_description": [float(row["epoch"]) for row in checkpoints],
+        }
+        memorization = [row["sample_specific_memorization"] for row in checkpoints]
+        if memorization and all(isinstance(value, float) for value in memorization):
+            series["description_vs_sample_specific_memorization"] = memorization
+        for name, other in series.items():
+            correlation = (
+                _pearson(description, other)
+                if name != "epoch_vs_description"
+                else _pearson(other, description)
+            )
+            if correlation is not None:
+                values[name].append(correlation)
+    return {
+        "mlp_units": mlp_units,
+        "description_measure": "raw_float32_serialization_zlib_bytes",
+        "interpretation": (
+            "descriptive_within_unit_association_not_information_content_or_causality"
+        ),
+        "associations": {
+            name: {
+                "units_with_defined_correlation": len(items),
+                "mean_within_unit_pearson": _mean(items),
+            }
+            for name, items in values.items()
+        },
+    }
+
+
 def derive_summary(records: list[dict[str, Any]], design: dict[str, Any]) -> dict[str, Any]:
     expected = expected_units(design)
     by_id = {record["unit_id"]: record for record in records}
@@ -976,6 +1222,8 @@ def derive_summary(records: list[dict[str, Any]], design: dict[str, Any]) -> dic
         "units_total": len(records),
         "all_units_completed": True,
         "threshold_reference": _threshold_summary(records),
+        "mlp_groups": _mlp_group_summary(records),
+        "trajectory_associations": _trajectory_associations(records),
         "training_trajectory": {
             "mlp_units": len(mlp_records),
             "early_stop_observed_units": stop_observed,

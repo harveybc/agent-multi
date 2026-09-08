@@ -1,0 +1,154 @@
+{
+  "analysis_contract": {
+    "description_metrics": [
+      "raw_zlib_bytes",
+      "quantized_8bit_zlib_bytes",
+      "histogram_entropy_bits_per_parameter",
+      "effective_rank"
+    ],
+    "grouping": "task_or_signal_family_by_regime_by_hidden_width",
+    "selection_metrics": [
+      "train_score",
+      "calibration_score",
+      "evaluation_score",
+      "sample_specific_memorization_when_defined"
+    ],
+    "trajectory_association": "within_unit_pearson_only_when_both_series_have_nonzero_variance"
+  },
+  "boolean_mlp": {
+    "hidden_widths": [
+      4,
+      16,
+      64
+    ],
+    "input_count": 12,
+    "rules": [
+      "majority",
+      "xor3",
+      "three_term_dnf"
+    ],
+    "seeds": [
+      11,
+      12,
+      13
+    ],
+    "split_sizes": {
+      "calibration": 512,
+      "evaluation": 512,
+      "train": 1024
+    },
+    "train_label_noise": [
+      0.0,
+      0.2
+    ]
+  },
+  "claim_scope": "M0_M2_BOUNDED_CPU_PILOT_ONLY",
+  "code_identity": {
+    "tools/model_capacity_pilot.py": "4f46211dfd716157aaa344dcc73182082d683fb00c2f94a40027a925116b58b3",
+    "tools/model_information_contract.py": "0f47ce1a38ffb646b696505055425837b9b9651418416b80ba134b7ffdf3cd9d"
+  },
+  "date": "2026-09-07",
+  "decision": {
+    "capacity_saturation_requires_both_fit_and_failure_regimes": true,
+    "confirmatory_claims_authorized": false,
+    "doin_gene_authorized": false,
+    "pilot_only": true,
+    "post_stop_branch_may_select": false
+  },
+  "description_contract": {
+    "compressors": [
+      "zlib",
+      "bz2",
+      "lzma"
+    ],
+    "independent_information_multiplier_for_repeated_epochs": 1,
+    "interpretation": "estimator_specific_upper_bounds_not_exact_kolmogorov_complexity",
+    "model_quantization_bits": [
+      4,
+      8,
+      16
+    ]
+  },
+  "design_sha256": "dc915b19cd78cd39cec07add224503028d9bf1b79798a03470614e4b4a69f35e",
+  "resources": {
+    "device": "cpu",
+    "heartbeat_seconds": 20,
+    "max_peak_rss_bytes": 1073741824,
+    "max_wall_seconds": 7200,
+    "torch_threads": 1
+  },
+  "schema": "agent_multi.model_capacity_m0_m2_design.v2",
+  "supersedes_design_sha256": "d18b5ea0a3957c2056b8b531fbc526b3f67b74fb38e38cee267180ed4a5c88e8",
+  "temporal_mlp": {
+    "families": [
+      "sine",
+      "chirp",
+      "heavisine"
+    ],
+    "hidden_widths": [
+      8,
+      32
+    ],
+    "lookback": 16,
+    "seeds": [
+      11,
+      12
+    ],
+    "snr_db": [
+      "inf",
+      10,
+      0
+    ],
+    "source_contract": "t1_known_truth_bank.clean_signal_and_realized_noise"
+  },
+  "threshold_neuron": {
+    "algorithm": "pocket_perceptron_no_bias",
+    "association_ratios": [
+      1.0,
+      1.5,
+      2.0,
+      2.5,
+      3.0
+    ],
+    "input_counts": [
+      4,
+      8,
+      16
+    ],
+    "max_updates": 20000,
+    "perfect_fit_tolerance": 1.0,
+    "seeds": [
+      11,
+      12,
+      13
+    ],
+    "theoretical_reference": "approximately_two_random_binary_associations_per_weight_under_stated_single_threshold_neuron_assumptions"
+  },
+  "training": {
+    "checkpoint_epochs": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      96,
+      120
+    ],
+    "diagnostic_post_stop_epochs": 15,
+    "evaluation_used_for_stopping": false,
+    "learning_rate": 0.01,
+    "max_epochs": 120,
+    "minimum_delta": 1e-05,
+    "minimum_stop_epoch": 20,
+    "optimizer": "adam",
+    "patience": 10
+  },
+  "verification_contract": {
+    "exact_result_equality_required": true,
+    "producer_self_digest_is_not_scientific_authority": true,
+    "scientific_result_recomputed_from_design_specification_and_code": true
+  }
+}

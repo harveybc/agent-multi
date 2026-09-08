@@ -1,0 +1,12 @@
+{
+  "code_commit": "0f9d1b92",
+  "design_sha256": "d18b5ea0a3957c2056b8b531fbc526b3f67b74fb38e38cee267180ed4a5c88e8",
+  "disposition": "V1_EVIDENCE_NOT_PUBLISHABLE_WITHOUT_FRESH_SCIENTIFIC_RECOMPUTATION",
+  "reproducer_results": {
+    "coherent_checkpoint_metric_forgery": "ACCEPTED",
+    "coherent_threshold_metric_forgery": "ACCEPTED",
+    "undeclared_result_field": "ACCEPTED"
+  },
+  "scope": "PRE_FROZEN_BEFORE_V2_CORRECTION",
+  "statement": "The v1 verifier checked self-digests and re-derived aggregates but did not independently reconstruct each scientific result from the frozen design, unit specification, and executing code."
+}

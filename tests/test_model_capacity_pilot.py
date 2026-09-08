@@ -105,7 +105,7 @@ def test_stopping_is_a_function_of_calibration_losses_only():
     second = pilot.choose_stop_from_calibration(
         list(losses), minimum_epoch=2, patience=3, minimum_delta=1e-6
     )
-    assert first == second == (2, 5)
+    assert first == second == (3, 6)
 
 
 def test_capacity_endpoint_requires_fit_and_failure_regimes():
@@ -187,6 +187,30 @@ def test_checkpoint_mutation_refuses_even_if_wrapper_is_redigested(boolean_recor
     forged["result"]["selection_checkpoint"]["losses"]["evaluation"] = 999.0
     forged = _reseal(forged, "record_sha256")
     with pytest.raises(pilot.PilotRefusal, match="checkpoint self-digest"):
+        pilot.verify_unit_record(forged, design, "boolean_mlp", spec)
+
+
+def test_coherent_checkpoint_forgery_refuses_after_all_self_digests_are_repaired(
+    boolean_record,
+):
+    design, spec, record = boolean_record
+    forged = copy.deepcopy(record)
+    checkpoint = forged["result"]["selection_checkpoint"]
+    checkpoint["losses"]["evaluation"] = 999.0
+    forged["result"]["selection_checkpoint"] = _reseal(
+        checkpoint, "checkpoint_sha256"
+    )
+    forged = _reseal(forged, "record_sha256")
+    with pytest.raises(pilot.PilotRefusal, match="fresh.*recomputation"):
+        pilot.verify_unit_record(forged, design, "boolean_mlp", spec)
+
+
+def test_undeclared_result_field_refuses_even_after_resealing(boolean_record):
+    design, spec, record = boolean_record
+    forged = copy.deepcopy(record)
+    forged["result"]["producer_claim"] = "looks_good"
+    forged = _reseal(forged, "record_sha256")
+    with pytest.raises(pilot.PilotRefusal, match="fresh.*recomputation"):
         pilot.verify_unit_record(forged, design, "boolean_mlp", spec)
 
 
