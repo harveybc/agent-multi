@@ -1,0 +1,269 @@
+{
+ "schema": "agent_multi.m3_cover_calibration_design.v2",
+ "sealed_at_date": "2026-09-08",
+ "stage": "C1_exact_threshold_reference",
+ "question": "does an optimization-independent linear-separability test reproduce Cover's exact finite-N separability probabilities over the sealed grid around N/K = 2",
+ "classifier_convention": {
+  "kind": "homogeneous",
+  "statement": "linear threshold through the origin; NO bias term; data carries no ones column; the formula counts homogeneous dichotomies; the solvers search w in R^K only",
+  "formula": "C(N,K) = 2 * sum_{i=0}^{K-1} C(N-1, i)",
+  "probability": "P(N,K) = C(N,K) / 2^N"
+ },
+ "primary_citation": "T. M. Cover, 'Geometrical and Statistical Properties of Systems of Linear Inequalities with Applications in Pattern Recognition', IEEE Trans. Electronic Computers EC-14(3):326-334, 1965 (Theorem 1; function C(N,K))",
+ "secondary_citation": "D. J. C. MacKay, 'Information Theory, Inference, and Learning Algorithms', CUP 2003, ch. 40",
+ "grid": {
+  "K": [
+   32,
+   64,
+   128
+  ],
+  "N_over_K": [
+   1.25,
+   1.5,
+   1.75,
+   2.0,
+   2.25,
+   2.5,
+   2.75
+  ],
+  "cells": [
+   {
+    "K": 32,
+    "ratio": 1.25,
+    "N": 40,
+    "p_exact": 0.9999648726079613,
+    "p_exact_fraction": "4294816425/4294967296"
+   },
+   {
+    "K": 32,
+    "ratio": 1.5,
+    "N": 48,
+    "p_exact": 0.9906880816924968,
+    "p_exact_fraction": "136159133165/137438953472"
+   },
+   {
+    "K": 32,
+    "ratio": 1.75,
+    "N": 56,
+    "p_exact": 0.8596951411508229,
+    "p_exact_fraction": "60495667458423/70368744177664"
+   },
+   {
+    "K": 32,
+    "ratio": 2.0,
+    "N": 64,
+    "p_exact": 0.5,
+    "p_exact_fraction": "1/2"
+   },
+   {
+    "K": 32,
+    "ratio": 2.25,
+    "N": 72,
+    "p_exact": 0.17123549920993394,
+    "p_exact_fraction": "3158737430259545849/18446744073709551616"
+   },
+   {
+    "K": 32,
+    "ratio": 2.5,
+    "N": 80,
+    "p_exact": 0.035581704347645585,
+    "p_exact_fraction": "10501865500918664623/295147905179352825856"
+   },
+   {
+    "K": 32,
+    "ratio": 2.75,
+    "N": 88,
+    "p_exact": 0.004836609273634933,
+    "p_exact_fraction": "182721932196400859671/37778931862957161709568"
+   },
+   {
+    "K": 64,
+    "ratio": 1.25,
+    "N": 80,
+    "p_exact": 0.9999999884828022,
+    "p_exact_fraction": "295147901780076027989/295147905179352825856"
+   },
+   {
+    "K": 64,
+    "ratio": 1.5,
+    "N": 96,
+    "p_exact": 0.9995376777941141,
+    "p_exact_fraction": "4833467625451809760126541/4835703278458516698824704"
+   },
+   {
+    "K": 64,
+    "ratio": 1.75,
+    "N": 112,
+    "p_exact": 0.9357622839571201,
+    "p_exact_fraction": "1186219620929182158921624988691/1267650600228229401496703205376"
+   },
+   {
+    "K": 64,
+    "ratio": 2.0,
+    "N": 128,
+    "p_exact": 0.5,
+    "p_exact_fraction": "1/2"
+   },
+   {
+    "K": 64,
+    "ratio": 2.25,
+    "N": 144,
+    "p_exact": 0.09035054292074288,
+    "p_exact_fraction": "245957572781297809500196294478515646719/2722258935367507707706996859454145691648"
+   },
+   {
+    "K": 64,
+    "ratio": 2.5,
+    "N": 160,
+    "p_exact": 0.005462280345872436,
+    "p_exact_fraction": "243625844392485840352477462419775316440911/44601490397061246283071436545296723011960832"
+   },
+   {
+    "K": 64,
+    "ratio": 2.75,
+    "N": 176,
+    "p_exact": 0.00013108406484336083,
+    "p_exact_fraction": "1532636603172496772014079889487385427538620269/11692013098647223345629478661730264157247460343808"
+   },
+   {
+    "K": 128,
+    "ratio": 1.25,
+    "N": 160,
+    "p_exact": 0.9999999999999983,
+    "p_exact_fraction": "44601490397061171906371427782041932741316405/44601490397061246283071436545296723011960832"
+   },
+   {
+    "K": 128,
+    "ratio": 1.5,
+    "N": 192,
+    "p_exact": 0.999998522794714,
+    "p_exact_fraction": "47890414907980474423467421281414007434101261403823101/47890485652059026823698344598447161988085597568237568"
+   },
+   {
+    "K": 128,
+    "ratio": 1.75,
+    "N": 224,
+    "p_exact": 0.9840544587128041,
+    "p_exact_fraction": "809633048232085864633582204368837464572498740246903952432086419/822752278660603021077484591278675252491367932816789931674304512"
+   },
+   {
+    "K": 128,
+    "ratio": 2.0,
+    "N": 256,
+    "p_exact": 0.5,
+    "p_exact_fraction": "1/2"
+   },
+   {
+    "K": 128,
+    "ratio": 2.25,
+    "N": 288,
+    "p_exact": 0.02935804827560788,
+    "p_exact_fraction": "222785027818299382709553767156166526461974966776553276710828492191966346304074535/7588550360256754183279148073529370729071901715047420004889892225542594864082845696"
+   },
+   {
+    "K": 128,
+    "ratio": 2.5,
+    "N": 320,
+    "p_exact": 0.0001624707050130558,
+    "p_exact_fraction": "1323834684848089617765510530069997996094662711531766109091471756251458255405395574123007/8148143905337944345073782753637512644205873574663745002544561797417525199053346824733589504"
+   },
+   {
+    "K": 128,
+    "ratio": 2.75,
+    "N": 352,
+    "p_exact": 1.2634937426252976e-07,
+    "p_exact_fraction": "17686896667622287396628205804468602127502664195176471419333398330238896108834568253101636577037/139984046386112763159840142535527767382602843577165595931249318810236991948760059086304843329475444736"
+   }
+  ]
+ },
+ "tasks_per_cell_initial": 200,
+ "precision_rule": {
+  "target_simultaneous_halfwidth": 0.05,
+  "extension": "double the cell's tasks while its simultaneous CI half-width exceeds the target",
+  "tasks_per_cell_cap": 800,
+  "on_cap_miss": "cell INCONCLUSIVE_PRECISION"
+ },
+ "intervals": {
+  "family_alpha": 0.05,
+  "cells": 21,
+  "per_cell_level": "Clopper-Pearson at level 1 - 0.05/21 (Bonferroni over the 21 grid cells)"
+ },
+ "solvers": {
+  "primary": "scipy.optimize.linprog method='highs' Chebyshev max-margin: max d s.t. y_i <w, x_i> >= d, |w_j| <= 1, d <= 1; separable iff d* > zero_tol",
+  "independent": "min-slack LP: min 1's, y_i <w, x_i> >= 1 - s_i, s >= 0; separable iff optimum <= zero_tol",
+  "cross_check_subset": "the first 25 tasks of every cell, plus every control and every enumerated case",
+  "zero_tol": 1e-09,
+  "general_position_sigma_min": 1e-08,
+  "disagreement_or_ambiguity": "typed state; stays in the denominator; any such task makes its cell INCONCLUSIVE_AMBIGUOUS"
+ },
+ "controls_per_cell": {
+  "planted_separable_positives": 5,
+  "inconsistent_negatives": 5,
+  "permutation_and_sign_subset": 10
+ },
+ "seeds": {
+  "master_phrase": "m3_cover_calibration_2026_09_08",
+  "derivation": "sha256(master|kind|K|ratio|index)[:8 bytes] -> numpy default_rng"
+ },
+ "resources": {
+  "cpu_only": true,
+  "cuda_hidden": true,
+  "logical_workers": 1,
+  "max_wall_seconds": 21600,
+  "nice": 15,
+  "heartbeat": "M3_HEARTBEAT.json per cell",
+  "stop_file": "M3_STOP in the runs directory"
+ },
+ "allowed_verdicts": [
+  "COVER_CALIBRATION_CONFIRMED_WITHIN_DECLARED_PRECISION",
+  "NOT_CONFIRMED",
+  "INCONCLUSIVE"
+ ],
+ "verdict_rule": "CONFIRMED iff EVERY cell reaches the precision target with zero typed-ambiguous tasks and its simultaneous Clopper-Pearson interval covers p_exact; NOT_CONFIRMED iff every cell reaches precision, none is ambiguous, and at least one interval excludes its p_exact; INCONCLUSIVE otherwise",
+ "not_estimated": [
+  "MLP intelligence",
+  "residual capacity",
+  "exact Kolmogorov complexity",
+  "any DOIN feature or gene"
+ ],
+ "formula_machine_check": [
+  {
+   "K": 2,
+   "N": 3,
+   "separable_labelings": 6,
+   "cover_count": 6,
+   "exact_match": true
+  },
+  {
+   "K": 2,
+   "N": 4,
+   "separable_labelings": 8,
+   "cover_count": 8,
+   "exact_match": true
+  },
+  {
+   "K": 2,
+   "N": 5,
+   "separable_labelings": 10,
+   "cover_count": 10,
+   "exact_match": true
+  },
+  {
+   "K": 3,
+   "N": 4,
+   "separable_labelings": 14,
+   "cover_count": 14,
+   "exact_match": true
+  },
+  {
+   "K": 3,
+   "N": 6,
+   "separable_labelings": 32,
+   "cover_count": 32,
+   "exact_match": true
+  }
+ ],
+ "supersedes_design_sha256": "915d144485ccf4652baeac12a688b7b804a659f61a7458ec6bcab4a7eb3232b6",
+ "instrument_change_note": "v1's pure-feasibility primary returned HiGHS status 4 (numerical difficulty) on ~5% of infeasible systems; the v1 run is preserved INCONCLUSIVE as immutable evidence. v2 replaces ONLY the primary solver formulation with the always-feasible Chebyshev max-margin LP. Grid, task counts, precision rule, intervals, seeds, controls, resources and verdict rule are IDENTICAL: scientific_change NONE.",
+ "design_sha256": "3b2d27ae033867c9f24a729032ad285465eafa0e93f5714d2122d5903745ea46"
+}
