@@ -1,0 +1,1795 @@
+{
+  "all_units_completed": true,
+  "claims_not_made": [
+    "exact_kolmogorov_complexity",
+    "intelligence_in_bits",
+    "knowledge_localized_to_individual_weights",
+    "residual_capacity_from_repeated_weights",
+    "confirmatory_capacity_law",
+    "doin_or_live_eligibility"
+  ],
+  "code_identity": {
+    "tools/model_capacity_pilot.py": "ca632974dc7edfc1c009f81ce30eab8ca5633dade314b1c490fa1147973f1899",
+    "tools/model_information_contract.py": "6c5d35c29ea8aa9d121b93260c3990c4a145ec36f513e79fd5cd0cdcfcedeb62"
+  },
+  "design_sha256": "5df1c6dfde6b06267d44c50355c71211396318c523ce7ebea221650422947c2a",
+  "disposition": "M0_M2_PILOT_COMPLETE_CONFIRMATORY_DESIGN_READY_FOR_REVIEW",
+  "mlp_groups": [
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.8328424692153931,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 1.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 3.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.843626469373703,
+        "evaluation": 0.7541857659816742,
+        "train": 0.8891185224056244
+      },
+      "mean_selection_epoch": 33.0,
+      "regime": "perturbation=colored;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.547415372764721,
+        "mean_matrix_effective_rank": 3.3389863834673084,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 366.0,
+        "raw_zlib_bytes": 698.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.8877945244312286,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 6.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 5.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 7.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9209069609642029,
+        "evaluation": 0.8944709300994873,
+        "train": 0.9353949129581451
+      },
+      "mean_selection_epoch": 38.5,
+      "regime": "perturbation=colored;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.3973606481407295,
+        "mean_matrix_effective_rank": 6.802001045159729,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 833.0,
+        "raw_zlib_bytes": 2296.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.972802072763443,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 5.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -1.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9794215857982635,
+        "evaluation": 0.9805715382099152,
+        "train": 0.9681176841259003
+      },
+      "mean_selection_epoch": 59.0,
+      "regime": "perturbation=impulsive;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.5029995640708025,
+        "mean_matrix_effective_rank": 3.0598497339209922,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 369.0,
+        "raw_zlib_bytes": 703.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9632255136966705,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -4.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 7.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 6.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9751996397972107,
+        "evaluation": 0.9747619032859802,
+        "train": 0.973515123128891
+      },
+      "mean_selection_epoch": 48.0,
+      "regime": "perturbation=impulsive;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.431866623808271,
+        "mean_matrix_effective_rank": 6.4945001823613095,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 826.5,
+        "raw_zlib_bytes": 2296.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.8002269268035889,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 6.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.7594020366668701,
+        "evaluation": 0.7546771168708801,
+        "train": 0.8586208522319794
+      },
+      "mean_selection_epoch": 34.0,
+      "regime": "perturbation=white;snr_db=0",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.592310372794562,
+        "mean_matrix_effective_rank": 3.144257917774649,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 370.0,
+        "raw_zlib_bytes": 698.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.7442319989204407,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -2.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 9.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.8544749021530151,
+        "evaluation": 0.7529432475566864,
+        "train": 0.9015249609947205
+      },
+      "mean_selection_epoch": 46.0,
+      "regime": "perturbation=white;snr_db=0",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.4880780808625325,
+        "mean_matrix_effective_rank": 6.303926867883671,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 829.0,
+        "raw_zlib_bytes": 2304.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9616701304912567,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -3.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9739756286144257,
+        "evaluation": 0.9665524065494537,
+        "train": 0.9733930826187134
+      },
+      "mean_selection_epoch": 76.5,
+      "regime": "perturbation=white;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.521519596887732,
+        "mean_matrix_effective_rank": 3.3214238387484194,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 370.0,
+        "raw_zlib_bytes": 703.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9614273011684418,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 10.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -4.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 19.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9718487858772278,
+        "evaluation": 0.972860723733902,
+        "train": 0.9705030024051666
+      },
+      "mean_selection_epoch": 39.0,
+      "regime": "perturbation=white;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.327748139031093,
+        "mean_matrix_effective_rank": 6.463532497819847,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 829.0,
+        "raw_zlib_bytes": 2306.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9937750101089478,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -1.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -2.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 6.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9958434700965881,
+        "evaluation": 0.9928384721279144,
+        "train": 0.9909315705299377
+      },
+      "mean_selection_epoch": 44.0,
+      "regime": "perturbation=white;snr_db=inf",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.463175857099649,
+        "mean_matrix_effective_rank": 2.882273238325541,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 368.0,
+        "raw_zlib_bytes": 702.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "chirp",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9930964112281799,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 6.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 11.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9983263909816742,
+        "evaluation": 0.9971397519111633,
+        "train": 0.9941489398479462
+      },
+      "mean_selection_epoch": 42.5,
+      "regime": "perturbation=white;snr_db=inf",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.467434402385777,
+        "mean_matrix_effective_rank": 6.312557543400359,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 832.5,
+        "raw_zlib_bytes": 2303.0
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "first_bit_identity_control",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -20.666666666666668,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 0.3333333333333333,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 1.0
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 3.5152324023972454,
+        "mean_matrix_effective_rank": 1.0074356939210005,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 249.33333333333334,
+        "raw_zlib_bytes": 343.6666666666667
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "first_bit_identity_control",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -28.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 19.666666666666668,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 1.0
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.138478789083119,
+        "mean_matrix_effective_rank": 1.2376790181191843,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 421.0,
+        "raw_zlib_bytes": 1023.6666666666666
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "first_bit_identity_control",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -88.66666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 59.333333333333336,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 1.0
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.536641701018222,
+        "mean_matrix_effective_rank": 2.228661877619706,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1070.0,
+        "raw_zlib_bytes": 3535.0
+      }
+    },
+    {
+      "early_stop_observed": 1,
+      "family_or_rule": "first_bit_identity_control",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -0.3333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -0.6666666666666666,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 1.0,
+      "mean_selected_sample_specific_memorization": 0.0,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 0.8079427083333334
+      },
+      "mean_selection_epoch": 109.0,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.075294253804304,
+        "mean_matrix_effective_rank": 1.343420909549599,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 273.3333333333333,
+        "raw_zlib_bytes": 344.3333333333333
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "first_bit_identity_control",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 0.3333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -1.6666666666666667,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 11.333333333333334,
+      "mean_selected_sample_specific_memorization": 0.0,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 0.794921875
+      },
+      "mean_selection_epoch": 55.666666666666664,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.460134588211772,
+        "mean_matrix_effective_rank": 2.9211799187548553,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 454.0,
+        "raw_zlib_bytes": 1014.3333333333334
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "first_bit_identity_control",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -7.666666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.3333333333333333,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -0.3333333333333333,
+      "mean_selected_sample_specific_memorization": 0.0,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 0.8040364583333334
+      },
+      "mean_selection_epoch": 30.333333333333332,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.297767206897009,
+        "mean_matrix_effective_rank": 5.357233661961,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1157.0,
+        "raw_zlib_bytes": 3475.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.5056100487709045,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -0.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -6.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.6923685967922211,
+        "evaluation": 0.5990703999996185,
+        "train": 0.8848578035831451
+      },
+      "mean_selection_epoch": 4.0,
+      "regime": "perturbation=colored;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.590051676132308,
+        "mean_matrix_effective_rank": 3.473207790345161,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 368.0,
+        "raw_zlib_bytes": 698.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.5997235774993896,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 3.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 13.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 8.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.8020175695419312,
+        "evaluation": 0.33925390243530273,
+        "train": 0.880107194185257
+      },
+      "mean_selection_epoch": 9.0,
+      "regime": "perturbation=colored;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.621103905995898,
+        "mean_matrix_effective_rank": 6.924282330957503,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 830.0,
+        "raw_zlib_bytes": 2295.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.5338012278079987,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 1.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -3.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.7871261537075043,
+        "evaluation": 0.46174371242523193,
+        "train": 0.8366761207580566
+      },
+      "mean_selection_epoch": 4.5,
+      "regime": "perturbation=impulsive;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.690119089955252,
+        "mean_matrix_effective_rank": 3.1816793615725683,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 368.5,
+        "raw_zlib_bytes": 705.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.7714010775089264,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 10.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 2.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 6.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.8559699952602386,
+        "evaluation": 0.8332230448722839,
+        "train": 0.9534318149089813
+      },
+      "mean_selection_epoch": 14.0,
+      "regime": "perturbation=impulsive;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.485092001633314,
+        "mean_matrix_effective_rank": 6.530332387605679,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 832.5,
+        "raw_zlib_bytes": 2297.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.32400205731391907,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -1.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.5946325063705444,
+        "evaluation": 0.10438045859336853,
+        "train": 0.8643782734870911
+      },
+      "mean_selection_epoch": 7.0,
+      "regime": "perturbation=white;snr_db=0",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.615947452009298,
+        "mean_matrix_effective_rank": 3.4389122573537287,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 366.5,
+        "raw_zlib_bytes": 700.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.1923702359199524,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 5.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.5840500593185425,
+        "evaluation": 0.6027318239212036,
+        "train": 0.901274710893631
+      },
+      "mean_selection_epoch": 18.5,
+      "regime": "perturbation=white;snr_db=0",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.383373174682409,
+        "mean_matrix_effective_rank": 6.3312108012697275,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 826.5,
+        "raw_zlib_bytes": 2299.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.27832096815109253,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -2.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -0.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.8723624348640442,
+        "evaluation": 0.39173564314842224,
+        "train": 0.8684546947479248
+      },
+      "mean_selection_epoch": 5.5,
+      "regime": "perturbation=white;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.575914208993998,
+        "mean_matrix_effective_rank": 3.792500075640964,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 363.5,
+        "raw_zlib_bytes": 701.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.6219102442264557,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -2.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -1.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 16.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9077978432178497,
+        "evaluation": 0.9044409096240997,
+        "train": 0.9339300692081451
+      },
+      "mean_selection_epoch": 17.5,
+      "regime": "perturbation=white;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.450431667001354,
+        "mean_matrix_effective_rank": 6.648115647190305,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 824.5,
+        "raw_zlib_bytes": 2307.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.3264845609664917,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 0.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 2.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9389403164386749,
+        "evaluation": 0.7728234231472015,
+        "train": 0.9294618368148804
+      },
+      "mean_selection_epoch": 7.0,
+      "regime": "perturbation=white;snr_db=inf",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.657326762354124,
+        "mean_matrix_effective_rank": 3.559766248516817,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 368.0,
+        "raw_zlib_bytes": 700.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "heavisine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.8379016518592834,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 5.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 4.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 14.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9648503661155701,
+        "evaluation": 0.9240264892578125,
+        "train": 0.9583292305469513
+      },
+      "mean_selection_epoch": 14.5,
+      "regime": "perturbation=white;snr_db=inf",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.501321400069061,
+        "mean_matrix_effective_rank": 6.913114715030469,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 831.5,
+        "raw_zlib_bytes": 2301.5
+      }
+    },
+    {
+      "early_stop_observed": 1,
+      "family_or_rule": "majority",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.8763020833333334,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -3.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -0.3333333333333333,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -0.3333333333333333,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.8619791666666666,
+        "evaluation": 0.8697916666666666,
+        "train": 0.8675130208333334
+      },
+      "mean_selection_epoch": 85.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.062769637137191,
+        "mean_matrix_effective_rank": 1.4421029235565979,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 271.3333333333333,
+        "raw_zlib_bytes": 343.3333333333333
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "majority",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -3.6666666666666665,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -7.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 1.0
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.852916678171137,
+        "mean_matrix_effective_rank": 1.2974392373103651,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 449.3333333333333,
+        "raw_zlib_bytes": 995.6666666666666
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "majority",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 1.0,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 2.6666666666666665,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -2.3333333333333335,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 1.0,
+        "evaluation": 1.0,
+        "train": 1.0
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.6293214567761956,
+        "mean_matrix_effective_rank": 2.3133558929956823,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1166.3333333333333,
+        "raw_zlib_bytes": 3471.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "majority",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.8717447916666666,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -1.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 0.3333333333333333,
+      "mean_selected_sample_specific_memorization": 0.14903933989504972,
+      "mean_selected_scores": {
+        "calibration": 0.85546875,
+        "evaluation": 0.8522135416666666,
+        "train": 0.7138671875
+      },
+      "mean_selection_epoch": 82.66666666666667,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.606253245146243,
+        "mean_matrix_effective_rank": 1.8081176767328708,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 273.0,
+        "raw_zlib_bytes": 344.0
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "majority",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.8033854166666666,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 4.333333333333333,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 2.6666666666666665,
+      "mean_selected_sample_specific_memorization": 0.31035006046295166,
+      "mean_selected_scores": {
+        "calibration": 0.7311197916666666,
+        "evaluation": 0.7415364583333334,
+        "train": 0.6285807291666666
+      },
+      "mean_selection_epoch": 35.666666666666664,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.874643006773437,
+        "mean_matrix_effective_rank": 3.9377646495119536,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 452.3333333333333,
+        "raw_zlib_bytes": 1004.6666666666666
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "majority",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.9459635416666666,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 5.333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -2.6666666666666665,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 2.3333333333333335,
+      "mean_selected_sample_specific_memorization": 0.04073311031485597,
+      "mean_selected_scores": {
+        "calibration": 0.9524739583333334,
+        "evaluation": 0.9583333333333334,
+        "train": 0.7763671875
+      },
+      "mean_selection_epoch": 53.0,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.30421064425926,
+        "mean_matrix_effective_rank": 5.735478563048464,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1167.0,
+        "raw_zlib_bytes": 3476.6666666666665
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "random_labels_null_control",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.4915364583333333,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.3333333333333333,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -0.6666666666666666,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.4915364583333333,
+        "evaluation": 0.4986979166666667,
+        "train": 0.53515625
+      },
+      "mean_selection_epoch": 35.666666666666664,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.56675097905172,
+        "mean_matrix_effective_rank": 1.923755973325817,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 276.3333333333333,
+        "raw_zlib_bytes": 343.6666666666667
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "random_labels_null_control",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.4954427083333333,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -1.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -5.666666666666667,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.3333333333333335,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.5130208333333334,
+        "evaluation": 0.4934895833333333,
+        "train": 0.5234375
+      },
+      "mean_selection_epoch": 10.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.101056223696861,
+        "mean_matrix_effective_rank": 4.65398532293489,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 453.3333333333333,
+        "raw_zlib_bytes": 1007.3333333333334
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "random_labels_null_control",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.5,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 5.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -2.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -3.6666666666666665,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.4895833333333333,
+        "evaluation": 0.5045572916666666,
+        "train": 0.5387369791666666
+      },
+      "mean_selection_epoch": 3.6666666666666665,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.701905964441967,
+        "mean_matrix_effective_rank": 5.911225656347587,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1168.3333333333333,
+        "raw_zlib_bytes": 3469.0
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "random_labels_null_control",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.4876302083333333,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 1.6666666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.3333333333333333,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 0.3333333333333333,
+      "mean_selected_sample_specific_memorization": 0.5102493762969971,
+      "mean_selected_scores": {
+        "calibration": 0.5084635416666666,
+        "evaluation": 0.5026041666666666,
+        "train": 0.5159505208333334
+      },
+      "mean_selection_epoch": 9.666666666666666,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.566750979051719,
+        "mean_matrix_effective_rank": 2.0976545217188662,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 272.3333333333333,
+        "raw_zlib_bytes": 343.0
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "random_labels_null_control",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.5169270833333334,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 1.6666666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 4.666666666666667,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 0.0,
+      "mean_selected_sample_specific_memorization": 0.542844812075297,
+      "mean_selected_scores": {
+        "calibration": 0.5045572916666666,
+        "evaluation": 0.51953125,
+        "train": 0.53125
+      },
+      "mean_selection_epoch": 11.333333333333334,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.046662464460037,
+        "mean_matrix_effective_rank": 4.593633927714451,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 455.0,
+        "raw_zlib_bytes": 1000.6666666666666
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "random_labels_null_control",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.4876302083333333,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.666666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 2.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -7.0,
+      "mean_selected_sample_specific_memorization": 0.5350220600763956,
+      "mean_selected_scores": {
+        "calibration": 0.5188802083333334,
+        "evaluation": 0.4798177083333333,
+        "train": 0.5367838541666666
+      },
+      "mean_selection_epoch": 5.0,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.737096040539252,
+        "mean_matrix_effective_rank": 6.003036937477941,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1165.3333333333333,
+        "raw_zlib_bytes": 3472.3333333333335
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9228554964065552,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9018895626068115,
+        "evaluation": 0.9206138253211975,
+        "train": 0.920347660779953
+      },
+      "mean_selection_epoch": 31.5,
+      "regime": "perturbation=colored;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.608138270952434,
+        "mean_matrix_effective_rank": 3.518750659337858,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 365.5,
+        "raw_zlib_bytes": 702.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9511406123638153,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 8.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 10.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9259179532527924,
+        "evaluation": 0.9481168389320374,
+        "train": 0.930277019739151
+      },
+      "mean_selection_epoch": 6.5,
+      "regime": "perturbation=colored;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.565916368423764,
+        "mean_matrix_effective_rank": 6.726913072530879,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 828.5,
+        "raw_zlib_bytes": 2298.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9361809492111206,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -2.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9452515542507172,
+        "evaluation": 0.9303426742553711,
+        "train": 0.9403282701969147
+      },
+      "mean_selection_epoch": 5.5,
+      "regime": "perturbation=impulsive;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.621153572713874,
+        "mean_matrix_effective_rank": 3.4737836812908642,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 372.5,
+        "raw_zlib_bytes": 702.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9774289727210999,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 4.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 8.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9757251441478729,
+        "evaluation": 0.9763631820678711,
+        "train": 0.9824727773666382
+      },
+      "mean_selection_epoch": 84.0,
+      "regime": "perturbation=impulsive;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.262844604924833,
+        "mean_matrix_effective_rank": 6.597319295387917,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 834.0,
+        "raw_zlib_bytes": 2300.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.8793622851371765,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 3.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9178659915924072,
+        "evaluation": 0.8778950870037079,
+        "train": 0.907617598772049
+      },
+      "mean_selection_epoch": 27.0,
+      "regime": "perturbation=white;snr_db=0",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.5529658571593306,
+        "mean_matrix_effective_rank": 3.1664041589590823,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 366.5,
+        "raw_zlib_bytes": 702.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9056607186794281,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 7.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -2.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 16.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9194625616073608,
+        "evaluation": 0.8956552147865295,
+        "train": 0.8971999287605286
+      },
+      "mean_selection_epoch": 23.0,
+      "regime": "perturbation=white;snr_db=0",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.480216942721169,
+        "mean_matrix_effective_rank": 6.560307110241594,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 832.0,
+        "raw_zlib_bytes": 2304.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9219165742397308,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -10.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -1.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 3.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9485277235507965,
+        "evaluation": 0.9352485239505768,
+        "train": 0.9545916318893433
+      },
+      "mean_selection_epoch": 6.5,
+      "regime": "perturbation=white;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.659929822706412,
+        "mean_matrix_effective_rank": 3.548608441878585,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 360.0,
+        "raw_zlib_bytes": 700.5
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "sine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9774972200393677,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": -3.5,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 18.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9809041917324066,
+        "evaluation": 0.9758499562740326,
+        "train": 0.980962485074997
+      },
+      "mean_selection_epoch": 71.5,
+      "regime": "perturbation=white;snr_db=10",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.389386920854866,
+        "mean_matrix_effective_rank": 6.643621300878614,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 829.0,
+        "raw_zlib_bytes": 2302.0
+      }
+    },
+    {
+      "early_stop_observed": 1,
+      "family_or_rule": "sine",
+      "hidden_width": 8,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.9635531306266785,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 4.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 3.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.5,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9677622020244598,
+        "evaluation": 0.9578972160816193,
+        "train": 0.9688231348991394
+      },
+      "mean_selection_epoch": 63.0,
+      "regime": "perturbation=white;snr_db=inf",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.605535210600146,
+        "mean_matrix_effective_rank": 3.304457354228666,
+        "parameter_count": 145.0,
+        "quantized_8bit_zlib_bytes": 372.0,
+        "raw_zlib_bytes": 701.5
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "sine",
+      "hidden_width": 32,
+      "kind": "temporal_mlp",
+      "mean_endpoint_evaluation_score": 0.999004453420639,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 2.5,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 7.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 6.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9990958869457245,
+        "evaluation": 0.9989948570728302,
+        "train": 0.9991337060928345
+      },
+      "mean_selection_epoch": 118.5,
+      "regime": "perturbation=white;snr_db=inf",
+      "replicates": 2,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.347621146382904,
+        "mean_matrix_effective_rank": 6.464660920358333,
+        "parameter_count": 577.0,
+        "quantized_8bit_zlib_bytes": 828.0,
+        "raw_zlib_bytes": 2302.5
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "three_term_dnf",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.7916666666666666,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -1.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 0.6666666666666666,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.7884114583333334,
+        "evaluation": 0.7916666666666666,
+        "train": 0.806640625
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.5389446193899445,
+        "mean_matrix_effective_rank": 1.4298875476414477,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 272.6666666666667,
+        "raw_zlib_bytes": 344.0
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "three_term_dnf",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.9427083333333334,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 1.6666666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 7.666666666666667,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9205729166666666,
+        "evaluation": 0.9427083333333334,
+        "train": 0.9479166666666666
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.765902132082684,
+        "mean_matrix_effective_rank": 3.2101589706900224,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 452.0,
+        "raw_zlib_bytes": 1012.0
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "three_term_dnf",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.9947916666666666,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -33.666666666666664,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 32.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.9954427083333334,
+        "evaluation": 0.9947916666666666,
+        "train": 0.9983723958333334
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.038403609312314,
+        "mean_matrix_effective_rank": 3.9125205359304434,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1127.0,
+        "raw_zlib_bytes": 3506.0
+      }
+    },
+    {
+      "early_stop_observed": 0,
+      "family_or_rule": "three_term_dnf",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.810546875,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -0.3333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 1.3333333333333333,
+      "mean_selected_sample_specific_memorization": 0.19450529416402182,
+      "mean_selected_scores": {
+        "calibration": 0.8196614583333334,
+        "evaluation": 0.810546875,
+        "train": 0.6998697916666666
+      },
+      "mean_selection_epoch": 120.0,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.634059604808017,
+        "mean_matrix_effective_rank": 1.861354831630357,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 273.0,
+        "raw_zlib_bytes": 344.0
+      }
+    },
+    {
+      "early_stop_observed": 2,
+      "family_or_rule": "three_term_dnf",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.8561197916666666,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -2.6666666666666665,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.0,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 4.333333333333333,
+      "mean_selected_sample_specific_memorization": 0.15767432997624078,
+      "mean_selected_scores": {
+        "calibration": 0.830078125,
+        "evaluation": 0.837890625,
+        "train": 0.7125651041666666
+      },
+      "mean_selection_epoch": 69.0,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 6.761462928494019,
+        "mean_matrix_effective_rank": 3.1915739277608424,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 450.0,
+        "raw_zlib_bytes": 1009.6666666666666
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "three_term_dnf",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.828125,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 6.333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 10.333333333333334,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -4.333333333333333,
+      "mean_selected_sample_specific_memorization": 0.196920375029246,
+      "mean_selected_scores": {
+        "calibration": 0.8020833333333334,
+        "evaluation": 0.802734375,
+        "train": 0.7099609375
+      },
+      "mean_selection_epoch": 23.333333333333332,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.53155794967024,
+        "mean_matrix_effective_rank": 5.270969172774162,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1168.0,
+        "raw_zlib_bytes": 3470.0
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "xor3",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.484375,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -2.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.6666666666666667,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": -0.3333333333333333,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.5091145833333334,
+        "evaluation": 0.4993489583333333,
+        "train": 0.4983723958333333
+      },
+      "mean_selection_epoch": 14.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.629645058011739,
+        "mean_matrix_effective_rank": 2.2116818812267742,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 270.3333333333333,
+        "raw_zlib_bytes": 342.6666666666667
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "xor3",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.4772135416666667,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 3.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.6666666666666666,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.51171875,
+        "evaluation": 0.4895833333333333,
+        "train": 0.5094401041666666
+      },
+      "mean_selection_epoch": 3.0,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.047298700819847,
+        "mean_matrix_effective_rank": 4.668201189293518,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 454.3333333333333,
+        "raw_zlib_bytes": 1006.3333333333334
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "xor3",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.5227864583333334,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 6.333333333333333,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 3.3333333333333335,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 2.0,
+      "mean_selected_sample_specific_memorization": null,
+      "mean_selected_scores": {
+        "calibration": 0.5104166666666666,
+        "evaluation": 0.4837239583333333,
+        "train": 0.5354817708333334
+      },
+      "mean_selection_epoch": 6.333333333333333,
+      "regime": "label_noise=0.0",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.730874004624361,
+        "mean_matrix_effective_rank": 5.937025598306771,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1168.6666666666667,
+        "raw_zlib_bytes": 3474.3333333333335
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "xor3",
+      "hidden_width": 4,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.4811197916666667,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -1.6666666666666667,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 1.6666666666666667,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 0.6666666666666666,
+      "mean_selected_sample_specific_memorization": 0.5124927163124084,
+      "mean_selected_scores": {
+        "calibration": 0.4993489583333333,
+        "evaluation": 0.48828125,
+        "train": 0.501953125
+      },
+      "mean_selection_epoch": 4.333333333333333,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 5.69253913697176,
+        "mean_matrix_effective_rank": 2.265959397084366,
+        "parameter_count": 57.0,
+        "quantized_8bit_zlib_bytes": 271.6666666666667,
+        "raw_zlib_bytes": 343.6666666666667
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "xor3",
+      "hidden_width": 16,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.5032552083333334,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": -2.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 0.6666666666666666,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 1.0,
+      "mean_selected_sample_specific_memorization": 0.5040357808272043,
+      "mean_selected_scores": {
+        "calibration": 0.4973958333333333,
+        "evaluation": 0.5143229166666666,
+        "train": 0.5081380208333334
+      },
+      "mean_selection_epoch": 8.0,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.021334571286023,
+        "mean_matrix_effective_rank": 4.723450248653083,
+        "parameter_count": 225.0,
+        "quantized_8bit_zlib_bytes": 448.6666666666667,
+        "raw_zlib_bytes": 1002.3333333333334
+      }
+    },
+    {
+      "early_stop_observed": 3,
+      "family_or_rule": "xor3",
+      "hidden_width": 64,
+      "kind": "boolean_mlp",
+      "mean_endpoint_evaluation_score": 0.5091145833333334,
+      "mean_quantized_8bit_zlib_growth_selected_from_initial_bytes": 8.0,
+      "mean_raw_zlib_growth_endpoint_from_selected_bytes": 2.6666666666666665,
+      "mean_raw_zlib_growth_selected_from_initial_bytes": 1.0,
+      "mean_selected_sample_specific_memorization": 0.5627268751462301,
+      "mean_selected_scores": {
+        "calibration": 0.49609375,
+        "evaluation": 0.486328125,
+        "train": 0.5286458333333334
+      },
+      "mean_selection_epoch": 2.3333333333333335,
+      "regime": "label_noise=0.2",
+      "replicates": 3,
+      "selected_model_description": {
+        "histogram_entropy_bits_per_parameter": 7.755856543538157,
+        "mean_matrix_effective_rank": 6.008120991303751,
+        "parameter_count": 897.0,
+        "quantized_8bit_zlib_bytes": 1169.6666666666667,
+        "raw_zlib_bytes": 3476.6666666666665
+      }
+    }
+  ],
+  "resource": {
+    "peak_rss_bytes": 947482624,
+    "producer_measured_diagnostic_cpu_seconds": {
+      "activation_geometry": 0.389624588,
+      "data_description": 17.33999159,
+      "gradient_fisher_hessian": 1.930329963,
+      "initial_model_description": 45.37468447,
+      "losses_and_scores": 0.700544195,
+      "model_description": 534.907525223,
+      "sample_specific_memorization": 0.264856252
+    },
+    "sum_unit_cpu_wall_seconds": 611.453155,
+    "timing_authority": "producer_measured_resource_telemetry_not_scientific_score"
+  },
+  "schema": "agent_multi.model_capacity_m0_m2_summary.v3",
+  "scope": "mechanics_and_range_evidence_only",
+  "summary_sha256": "743ed8dca3d9783d95d9d374e8b4d6ffc67e4ea717b6baf968b722f2a9f3748d",
+  "threshold_reference": {
+    "boundaries": [
+      {
+        "endpoint_is_never_called_capacity_without_both_regimes": true,
+        "first_ratio_with_majority_failure": 2.0,
+        "inputs": 4,
+        "last_ratio_with_majority_perfect_fit": 1.5,
+        "status": "SATURATION_TRANSITION_OBSERVED"
+      },
+      {
+        "endpoint_is_never_called_capacity_without_both_regimes": true,
+        "first_ratio_with_majority_failure": 3.0,
+        "inputs": 8,
+        "last_ratio_with_majority_perfect_fit": 2.5,
+        "status": "SATURATION_TRANSITION_OBSERVED"
+      },
+      {
+        "endpoint_is_never_called_capacity_without_both_regimes": true,
+        "first_ratio_with_majority_failure": 2.5,
+        "inputs": 16,
+        "last_ratio_with_majority_perfect_fit": 2.0,
+        "status": "SATURATION_TRANSITION_OBSERVED"
+      }
+    ],
+    "curves": [
+      {
+        "association_ratio": 1.0,
+        "associations": 4,
+        "inputs": 4,
+        "mean_random_label_evaluation_accuracy": 0.5104166666666666,
+        "mean_train_accuracy": 1.0,
+        "perfect_fit_rate": 1.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 1.5,
+        "associations": 6,
+        "inputs": 4,
+        "mean_random_label_evaluation_accuracy": 0.4375,
+        "mean_train_accuracy": 0.9444444444444445,
+        "perfect_fit_rate": 0.6666666666666666,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 2.0,
+        "associations": 8,
+        "inputs": 4,
+        "mean_random_label_evaluation_accuracy": 0.515625,
+        "mean_train_accuracy": 0.9166666666666666,
+        "perfect_fit_rate": 0.3333333333333333,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 2.5,
+        "associations": 10,
+        "inputs": 4,
+        "mean_random_label_evaluation_accuracy": 0.4583333333333333,
+        "mean_train_accuracy": 0.9,
+        "perfect_fit_rate": 0.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 3.0,
+        "associations": 12,
+        "inputs": 4,
+        "mean_random_label_evaluation_accuracy": 0.4947916666666667,
+        "mean_train_accuracy": 0.8888888888888888,
+        "perfect_fit_rate": 0.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 1.0,
+        "associations": 8,
+        "inputs": 8,
+        "mean_random_label_evaluation_accuracy": 0.5364583333333334,
+        "mean_train_accuracy": 1.0,
+        "perfect_fit_rate": 1.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 1.5,
+        "associations": 12,
+        "inputs": 8,
+        "mean_random_label_evaluation_accuracy": 0.4479166666666667,
+        "mean_train_accuracy": 0.9722222222222222,
+        "perfect_fit_rate": 0.6666666666666666,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 2.0,
+        "associations": 16,
+        "inputs": 8,
+        "mean_random_label_evaluation_accuracy": 0.4583333333333333,
+        "mean_train_accuracy": 0.9791666666666666,
+        "perfect_fit_rate": 0.6666666666666666,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 2.5,
+        "associations": 20,
+        "inputs": 8,
+        "mean_random_label_evaluation_accuracy": 0.4947916666666667,
+        "mean_train_accuracy": 0.9500000000000001,
+        "perfect_fit_rate": 0.6666666666666666,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 3.0,
+        "associations": 24,
+        "inputs": 8,
+        "mean_random_label_evaluation_accuracy": 0.4791666666666667,
+        "mean_train_accuracy": 0.8472222222222223,
+        "perfect_fit_rate": 0.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 1.0,
+        "associations": 16,
+        "inputs": 16,
+        "mean_random_label_evaluation_accuracy": 0.484375,
+        "mean_train_accuracy": 1.0,
+        "perfect_fit_rate": 1.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 1.5,
+        "associations": 24,
+        "inputs": 16,
+        "mean_random_label_evaluation_accuracy": 0.4791666666666667,
+        "mean_train_accuracy": 0.9722222222222222,
+        "perfect_fit_rate": 0.6666666666666666,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 2.0,
+        "associations": 32,
+        "inputs": 16,
+        "mean_random_label_evaluation_accuracy": 0.4947916666666667,
+        "mean_train_accuracy": 0.9791666666666666,
+        "perfect_fit_rate": 0.6666666666666666,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 2.5,
+        "associations": 40,
+        "inputs": 16,
+        "mean_random_label_evaluation_accuracy": 0.4427083333333333,
+        "mean_train_accuracy": 0.8666666666666667,
+        "perfect_fit_rate": 0.0,
+        "replicates": 3
+      },
+      {
+        "association_ratio": 3.0,
+        "associations": 48,
+        "inputs": 16,
+        "mean_random_label_evaluation_accuracy": 0.46875,
+        "mean_train_accuracy": 0.8125,
+        "perfect_fit_rate": 0.0,
+        "replicates": 3
+      }
+    ]
+  },
+  "training_trajectory": {
+    "diagnostic_continuation_selected": false,
+    "early_stop_observed_units": 114,
+    "evaluation_governed_stopping": false,
+    "mean_diagnostic_end_evaluation_score": 0.7673972872893016,
+    "mean_selected_evaluation_score": 0.7764687871932984,
+    "mlp_units": 150
+  },
+  "trajectory_associations": {
+    "associations": {
+      "description_vs_evaluation_score": {
+        "mean_within_unit_pearson": 0.30264361254012334,
+        "units_with_defined_correlation": 150
+      },
+      "description_vs_sample_specific_memorization": {
+        "mean_within_unit_pearson": -0.08433273836089158,
+        "units_with_defined_correlation": 45
+      },
+      "description_vs_train_score": {
+        "mean_within_unit_pearson": 0.3521160817574574,
+        "units_with_defined_correlation": 150
+      },
+      "epoch_vs_description": {
+        "mean_within_unit_pearson": 0.30496835826669355,
+        "units_with_defined_correlation": 150
+      }
+    },
+    "description_measure": "raw_float32_serialization_zlib_bytes",
+    "interpretation": "descriptive_within_unit_association_not_information_content_or_causality",
+    "mlp_units": 150
+  },
+  "unit_counts": {
+    "boolean_mlp": 90,
+    "temporal_mlp": 60,
+    "threshold_neuron": 45
+  },
+  "units_total": 195
+}

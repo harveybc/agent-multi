@@ -1,7 +1,7 @@
 # 44. Data-Centric Signal, Model Information and Capacity Program
 
-Status: ACCEPTED PROGRAM; M0-M2 bounded CPU work ordered; T2 correction active;
-B4 remains isolated and unchanged
+Status: ACCEPTED PROGRAM; M0-M2 bounded CPU pilot executed and independently
+recomputed; T2 correction active; B4 remains isolated and unchanged
 
 Date: 2026-09-07
 
@@ -59,7 +59,7 @@ adjudication lane. It does not reinterpret B4, T0, T1 or any completed result.
 | T3 selector | Closed | Opens only if T2 supplies enough heterogeneous outcomes |
 | T4 DOIN genes | Closed | Opens only for publicly eligible operators |
 | T5 financial confirmation | Closed | Opens after B4 and T4 under a new identity |
-| Model capacity/information lane | Accepted, not yet measured | Execute M0-M2 bounded CPU order |
+| Model capacity/information lane | M0-M2 pilot accepted as bounded range evidence | M3-M4 confirmatory design follows the dependency rules in section 7 |
 | STEP 04-13 implementations | Scheduled below | Open by explicit dependencies, not by memory |
 
 ## 4. Per-Feature Evidence Card
@@ -279,7 +279,36 @@ scientific result and must be recorded.
 - compare drift, latency and action divergence; and
 - request separate approval for any Paper/Demo canary.
 
-## 8. Non-Negotiable Boundaries
+## 8. M0-M2 Execution Record
+
+The bounded CPU pilot was completed on 2026-09-07 under design v3
+`5df1c6dfde6b06267d44c50355c71211396318c523ce7ebea221650422947c2a`.
+It contains 195 units: 45 threshold-neuron calibrations, 90 Boolean MLP
+units and 60 temporal MLP units. The scientific result of every unit was
+reconstructed from the design, specification and frozen code; producer
+self-digests were not treated as scientific authority.
+
+Disposition: `M0_M2_PILOT_ACCEPTED_AS_BOUNDED_RANGE_EVIDENCE`.
+
+The result does not establish exact Kolmogorov complexity, intelligence in
+bits, localization of knowledge in individual weights, residual capacity, a
+general capacity law for multilayer networks, or eligibility for DOIN/live.
+Its accepted uses are:
+
+- calibrating the single-neuron experiment near the Cover/MacKay transition;
+- demonstrating separable measurements of data exposure, memorization,
+  generalization and model description;
+- costing the diagnostics before a confirmatory experiment;
+- selecting the confirmatory controls; and
+- rejecting raw checkpoint compression as a standalone measure of knowledge
+  or remaining capacity.
+
+The complete public summary is
+`docs/audits/evidence/MODEL_CAPACITY_M0_M2_PILOT_V3_SUMMARY_2026_09_07.json`.
+The next design is recorded in
+`docs/research/model_capacity/M3_M6_CONFIRMATORY_DESIGN_DRAFT_2026_09_07.md`.
+
+## 9. Non-Negotiable Boundaries
 
 - B4 is never retrofitted with these measurements or transformations.
 - The current T2 design is not changed by M0-M2.
@@ -292,7 +321,7 @@ scientific result and must be recorded.
   and target-relevant value must be measured.
 - No null result is bypassed by expanding the search after seeing it.
 
-## 9. Program Completion
+## 10. Program Completion
 
 The data-centric program is complete only when:
 
