@@ -1,0 +1,27 @@
+== M3: the exact foreign-cell attack is ACCEPTED ==
+{
+ "extra_cell_record_accepted": true,
+ "verified": true,
+ "verdict": "COVER_CALIBRATION_CONFIRMED_WITHIN_DECLARED_PRECISION",
+ "total_tasks": 9800,
+ "controls_verified": 420,
+ "cells": 21,
+ "regenerated": true
+}
+=> no global cell-population equality; permissive design/summary parsing (source)
+
+== M4: six claimed mechanics are absent or wrong ==
+{
+ "trains_only_newest_batch": true,
+ "acq_loss_only_newest": true,
+ "restart_never_continues": true,
+ "one_retention_failure_not_two": true,
+ "no_heartbeat_or_stop": true,
+ "no_matched_compute_execution": true,
+ "no_verify_preflight": true
+}
+{
+ "report_self_valid_after_checkpoint_forgery": true
+}
+
+PRE CONFIRMED at 16e12a25: foreign-cell acceptance, permissive parsers, non-cumulative M4 intervention, no-continuation restart, declarative-only limits, and forgery-blind reports — all frozen
