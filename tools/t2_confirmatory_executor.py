@@ -103,6 +103,9 @@ NO_DISPOSITION_SENTINEL = "NOT_AN_OPERATOR_DISPOSITION"
 T2_CAMPAIGN_GENERATION = "t2_confirmatory_v6_generation_20260907"
 PER_FIT_WALL_SECONDS = 120.0
 RESERVE_QUANTUM_S = 30.0
+# C66: the grammar bound on any single reservation — the idle
+# quantum or one full supervised-fit charge, whichever is larger.
+MAX_RESERVE_S = max(RESERVE_QUANTUM_S, PER_FIT_WALL_SECONDS)
 BOOT_ID_PATH = "/proc/sys/kernel/random/boot_id"
 _TRUSTED_ROOT_PARENTS = (STATE, Path.home() / ".cache")
 
@@ -277,6 +280,58 @@ class ResultsRoot:
         self._require_private_dir(self.root_fd, "results root")
         self.units_fd = self._ensure_subdir("units")
         self.locks_fd = self._ensure_subdir("locks")
+        self._pins = {}
+        for name, dfd in (("root", self.root_fd),
+                          ("units", self.units_fd),
+                          ("locks", self.locks_fd)):
+            st = os.fstat(dfd)
+            self._pins[name] = (st.st_dev, st.st_ino)
+
+    def revalidate(self):
+        """C69: re-open the DECLARED path component by component
+        with O_NOFOLLOW and prove it still names the held
+        objects (device/inode pins for the root and every
+        control directory). A rename-and-replace refuses before
+        any side effect."""
+        parts = self.path.parts
+        fd = os.open("/", os.O_RDONLY
+                     | getattr(os, "O_DIRECTORY", 0))
+        try:
+            for comp in parts[1:]:
+                nfd = self._open_dir_at(fd, comp)
+                os.close(fd)
+                fd = nfd
+            st = os.fstat(fd)
+            if (st.st_dev, st.st_ino) != self._pins["root"]:
+                raise ExecutorRefusal(
+                    "RESULTS_ROOT_IDENTITY_LOST: the declared "
+                    "results-root path no longer names the held "
+                    "root object (renamed or replaced) — "
+                    "refusing before any side effect")
+            for name in ("units", "locks"):
+                sfd = self._open_dir_at(fd, name)
+                try:
+                    st2 = os.fstat(sfd)
+                    if (st2.st_dev, st2.st_ino) != \
+                            self._pins[name]:
+                        raise ExecutorRefusal(
+                            "RESULTS_ROOT_IDENTITY_LOST: control "
+                            f"directory {name!r} at the declared "
+                            "path is not the held object")
+                finally:
+                    os.close(sfd)
+        except ExecutorRefusal:
+            raise
+        except OSError as exc:
+            raise ExecutorRefusal(
+                "RESULTS_ROOT_IDENTITY_LOST: the declared path "
+                f"cannot be re-walked (errno {exc.errno}) — "
+                "refusing before any side effect")
+        finally:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
 
     @staticmethod
     def _open_dir_at(dfd, name):
@@ -312,6 +367,7 @@ class ResultsRoot:
 
     # -- descriptor-relative object IO --
     def excl_write(self, dfd, name, payload: bytes):
+        self.revalidate()
         fd = os.open(name, os.O_CREAT | os.O_EXCL | os.O_WRONLY
                      | os.O_NOFOLLOW, 0o600, dir_fd=dfd)
         try:
@@ -396,6 +452,33 @@ def _excl_write(path: Path, payload: bytes) -> None:
     finally:
         os.close(fd)
     _fsync_dir(path.parent)
+
+
+def _read_evidence(src, what: str) -> bytes:
+    """C69: production passes (ResultsRoot, name) so reads go
+    through the HELD units descriptor; a bare Path stays for
+    battery/inspection use."""
+    if isinstance(src, tuple):
+        rr, name = src
+        return rr.read_private(rr.units_fd, name, what)
+    return _read_private_bytes(Path(src), what)
+
+
+def _src_name(src) -> str:
+    return src[1] if isinstance(src, tuple) else Path(src).name
+
+
+def _src_sibling(src, name: str):
+    if isinstance(src, tuple):
+        return (src[0], name)
+    return Path(src).parent / name
+
+
+def _src_exists(src) -> bool:
+    if isinstance(src, tuple):
+        rr, name = src
+        return rr.exists(rr.units_fd, name)
+    return Path(src).exists()
 
 
 def _read_private_bytes(path: Path, what: str) -> bytes:
@@ -485,7 +568,7 @@ class WallAuthority:
                 break
             chunks.append(b)
         raw = b"".join(chunks)
-        self.prior, self._last_sha, self._seq, tail_torn = \
+        self.prior, self._last_sha, self._seq, _ = \
             self._replay(raw)
         self._closed_session = 0.0
         self._reserve_seq = None
@@ -494,81 +577,170 @@ class WallAuthority:
         self._append({"kind": "session_open",
                       "session": session_uuid,
                       "boot_id": self.boot,
-                      "tail_torn_tolerated": bool(tail_torn),
+                      "tail_torn_tolerated": False,
                       "pid": os.getpid()})
         # C57: the FIRST charge happens before any work interval
         self._rollover("session_start")
 
-    # -- replay --
+    # -- replay: C66 exact grammar + state machine --
+    _LEDGER_KEYS = {
+        "session_open": {"kind", "session", "boot_id",
+                         "tail_torn_tolerated", "pid", "seq",
+                         "prev_sha", "record_sha"},
+        "reserve": {"kind", "session", "seconds", "seq",
+                    "prev_sha", "record_sha"},
+        "close": {"kind", "session", "reserve_seq", "elapsed",
+                  "seq", "prev_sha", "record_sha"},
+    }
+
+    @staticmethod
+    def _g_str(v):
+        return type(v) is str and bool(v)
+
+    @staticmethod
+    def _g_posint(v):
+        return type(v) is int and not isinstance(v, bool) and \
+            v > 0
+
+    @staticmethod
+    def _g_finite(v):
+        import math as _m
+        return type(v) in (int, float) and \
+            not isinstance(v, bool) and _m.isfinite(v)
+
     def _replay(self, raw: bytes):
+        """C66: every record kind has an exact schema, exact
+        primitive types and a finite positive domain BEFORE it
+        affects state; C67: a torn final fragment is a REVIEW
+        boundary — nothing may follow it; C68: a boot identity
+        different from the current one is a REVIEW boundary."""
         charged = 0.0
         pending = {}
+        opened_sessions = set()
         last_sha = _LEDGER_GENESIS
         seq = 0
+        max_wall = float(self.limits["max_wall_seconds"])
         lines = raw.split(b"\n")
-        tail_torn = False
         body = lines[:-1] if lines and lines[-1] == b"" else lines
+        if raw == b"":
+            body = []
         for i, line in enumerate(body):
             is_last = (i == len(body) - 1)
+            torn_candidate = is_last and lines[-1] != b""
             try:
                 doc = _strict_parse(line, "wall ledger record")
             except SystemExit:
-                if is_last and lines[-1] != b"":
-                    tail_torn = True   # crash mid-append: nothing
-                    break              # executed without fsync
+                if torn_candidate:
+                    raise ExecutorRefusal(
+                        "WALL_LEDGER_TORN_TAIL_REVIEW_REQUIRED: "
+                        "the final ledger record is torn (a "
+                        "crash mid-append); nothing may execute "
+                        "behind it — external review decides "
+                        "recovery, never truncation, overwrite "
+                        "or continued appends")
                 raise ExecutorRefusal(
                     "wall ledger interior record is malformed — "
                     "fail closed, stopping for review")
-            for k in ("kind", "seq", "prev_sha", "record_sha"):
-                if k not in doc:
-                    if is_last and lines[-1] != b"":
-                        tail_torn = True
-                        break
+            kind = doc.get("kind")
+            if kind not in self._LEDGER_KEYS:
+                raise ExecutorRefusal(
+                    f"wall ledger unknown record kind {kind!r} "
+                    "— fail closed")
+            if set(doc) != self._LEDGER_KEYS[kind]:
+                raise ExecutorRefusal(
+                    f"wall ledger {kind} keys are not the exact "
+                    "schema — fail closed")
+            if not (self._g_posint(doc["seq"])
+                    and self._g_str(doc["prev_sha"])
+                    and self._g_str(doc["record_sha"])
+                    and self._g_str(doc["session"])):
+                raise ExecutorRefusal(
+                    "wall ledger chain fields are not canonical "
+                    "positive/nonempty primitives — fail closed")
+            if _self_sha(doc, "record_sha") != doc["record_sha"]:
+                raise ExecutorRefusal(
+                    "wall ledger record self-digest does not "
+                    "re-derive — mutated or transplanted; fail "
+                    "closed")
+            if doc["prev_sha"] != last_sha or \
+                    int(doc["seq"]) != seq + 1:
+                raise ExecutorRefusal(
+                    "wall ledger chain broken (reordered, "
+                    "duplicated or replaced records) — fail "
+                    "closed")
+            last_sha = doc["record_sha"]
+            seq = int(doc["seq"])
+            if kind == "session_open":
+                if not (self._g_str(doc["boot_id"])
+                        and self._g_posint(doc["pid"])
+                        and type(doc["tail_torn_tolerated"])
+                        is bool):
                     raise ExecutorRefusal(
-                        "wall ledger record lacks its chain "
-                        "fields — fail closed")
-            else:
-                if _self_sha(doc, "record_sha") != \
-                        doc["record_sha"]:
+                        "wall ledger session_open fields are not "
+                        "canonical — fail closed")
+                if doc["boot_id"] != self.boot:
                     raise ExecutorRefusal(
-                        "wall ledger record self-digest does not "
-                        "re-derive — mutated or transplanted; "
+                        "CLOCK_AUTHORITY_REVIEW_REQUIRED: the "
+                        "ledger names a different boot identity "
+                        f"({doc['boot_id'][:16]}…) than the "
+                        "current boot — a reboot is a review "
+                        "boundary; no reservation or work may "
+                        "start without a separate external "
+                        "record")
+                opened_sessions.add(doc["session"])
+            elif kind == "reserve":
+                if doc["session"] not in opened_sessions:
+                    raise ExecutorRefusal(
+                        "wall ledger reserve precedes its "
+                        "session_open — fail closed")
+                sec = doc["seconds"]
+                if not self._g_finite(sec) or float(sec) <= 0:
+                    raise ExecutorRefusal(
+                        "wall ledger reservation must be a "
+                        "finite strictly positive duration — "
                         "fail closed")
-                if doc["prev_sha"] != last_sha or \
-                        int(doc["seq"]) != seq + 1:
+                sec = float(sec)
+                if sec > MAX_RESERVE_S + 0.25:
                     raise ExecutorRefusal(
-                        "wall ledger chain broken (reordered, "
-                        "duplicated or replaced records) — fail "
+                        "wall ledger reservation exceeds the "
+                        "protocol quantum — fail closed")
+                open_total = sum(x for x, _ in pending.values())
+                if charged + open_total + sec > max_wall + 0.25:
+                    raise ExecutorRefusal(
+                        "wall ledger reservation exceeds the "
+                        "sealed remaining budget at its point in "
+                        "the chain — fail closed")
+                pending[seq] = (sec, doc["session"])
+            elif kind == "close":
+                if not self._g_posint(doc["reserve_seq"]):
+                    raise ExecutorRefusal(
+                        "wall ledger close reserve_seq is not a "
+                        "canonical positive integer — fail "
                         "closed")
-                last_sha = doc["record_sha"]
-                seq = int(doc["seq"])
-                kind = doc["kind"]
-                if kind == "reserve":
-                    pending[seq] = (float(doc["seconds"]),
-                                    doc["session"])
-                elif kind == "close":
-                    rs = int(doc["reserve_seq"])
-                    if rs not in pending:
-                        raise ExecutorRefusal(
-                            "wall ledger close without its "
-                            "reservation — fail closed")
-                    res_s, res_sess = pending.pop(rs)
-                    el = float(doc["elapsed"])
-                    if doc["session"] != res_sess or el < 0 or \
-                            el > res_s + 0.25:
-                        raise ExecutorRefusal(
-                            "wall ledger close does not bind its "
-                            "reservation — fail closed")
-                    charged += el
-                elif kind != "session_open":
+                rs = int(doc["reserve_seq"])
+                if rs not in pending:
                     raise ExecutorRefusal(
-                        f"wall ledger unknown record kind "
-                        f"{kind!r} — fail closed")
-                continue
-            break
+                        "wall ledger close without its OPEN "
+                        "reservation (missing, duplicate or "
+                        "already closed) — fail closed")
+                res_s, res_sess = pending[rs]
+                el = doc["elapsed"]
+                if not self._g_finite(el):
+                    raise ExecutorRefusal(
+                        "wall ledger close elapsed is not a "
+                        "finite number — fail closed")
+                el = float(el)
+                if doc["session"] != res_sess or el < 0 or \
+                        el > res_s + 0.25:
+                    raise ExecutorRefusal(
+                        "wall ledger close does not bind its "
+                        "reservation (cross-session or "
+                        "out-of-range elapsed) — fail closed")
+                pending.pop(rs)
+                charged += el
         # C57: a reservation that was never closed charges IN FULL
-        charged += sum(s for s, _ in pending.values())
-        return charged, last_sha, seq, tail_torn
+        charged += sum(x for x, _ in pending.values())
+        return charged, last_sha, seq, False
 
     def _append(self, doc: dict):
         doc = dict(doc)
@@ -649,7 +821,8 @@ class WallAuthority:
                     "no positive wall budget remains for a "
                     "supervised interval", label)
             want = min(float(seconds), rem)
-            self._reserve(min(max(RESERVE_QUANTUM_S, want), rem))
+            self._reserve(min(max(RESERVE_QUANTUM_S, want),
+                              rem, MAX_RESERVE_S))
         return want
 
     def check(self, label: str) -> None:
@@ -696,6 +869,28 @@ class WallAuthority:
                 "the wall ledger path was REPLACED while held — "
                 "charges landed on the original inode; stopping "
                 "for review, never renewing the budget")
+        # C67: replay the complete active chain from a FRESH
+        # descriptor and require equality with in-memory state
+        fd2 = os.open(self.ledger_name,
+                      os.O_RDONLY | os.O_NOFOLLOW,
+                      dir_fd=self.rr.root_fd)
+        try:
+            chunks = []
+            while True:
+                b = os.read(fd2, 1 << 20)
+                if not b:
+                    break
+                chunks.append(b)
+        finally:
+            os.close(fd2)
+        charged2, last2, seq2, _ = self._replay(b"".join(chunks))
+        want = self.prior + self._closed_session
+        if last2 != self._last_sha or seq2 != self._seq or \
+                abs(charged2 - want) > 0.3:
+            raise ExecutorRefusal(
+                "fresh-descriptor ledger replay does not equal "
+                "the in-memory wall state — charges would be "
+                "lost or forged; stopping for review")
 
 
 # ------------- C62: wall-aware supervised fits -------------
@@ -1193,13 +1388,13 @@ def _verify_authority_block(doc: dict, design: dict,
                 "exact schema")
 
 
-def verify_unit_claim(claim_path: Path, design: dict,
+def verify_unit_claim(claim_path, design: dict,
                       authority: dict = None,
                       mode_expected: str = None,
                       uid_expected: str = None,
                       repo_root: Path = None) -> dict:
     claim = _strict_parse(
-        _read_private_bytes(claim_path, "unit claim"),
+        _read_evidence(claim_path, "unit claim"),
         "unit claim")
     if set(claim) != _CLAIM_KEYS:
         raise ExecutorRefusal(
@@ -1227,10 +1422,24 @@ def verify_unit_claim(claim_path: Path, design: dict,
     if uid_expected is not None and uid != uid_expected:
         raise ExecutorRefusal(
             "unit claim does not name the expected unit")
-    if Path(claim_path).name != f"CLAIM_{_safe_name(uid)}.json":
+    if _src_name(claim_path) != \
+            f"CLAIM_{_safe_name(uid)}.json":
         raise ExecutorRefusal(
             "unit claim filename does not derive from its "
             "unit_id")
+    # C71: exact domains
+    if not (type(claim["pid"]) is int
+            and not isinstance(claim["pid"], bool)
+            and claim["pid"] > 0):
+        raise ExecutorRefusal(
+            "unit claim pid is not a canonical positive integer")
+    import math as _m
+    cw = claim["claimed_wall"]
+    if type(cw) not in (int, float) or isinstance(cw, bool) or \
+            not _m.isfinite(cw) or cw <= 0:
+        raise ExecutorRefusal(
+            "unit claim claimed_wall is not a finite positive "
+            "number")
     expected = authority if authority is not None else \
         physical_authority(design, mode, repo_root=repo_root)
     _verify_authority_block(claim, design, expected, mode, uid,
@@ -1238,7 +1447,7 @@ def verify_unit_claim(claim_path: Path, design: dict,
     return claim
 
 
-def verify_unit_terminal(term_path: Path, design: dict,
+def verify_unit_terminal(term_path, design: dict,
                          authority: dict = None,
                          mode_expected: str = None,
                          repo_root: Path = None) -> dict:
@@ -1247,7 +1456,7 @@ def verify_unit_terminal(term_path: Path, design: dict,
     failure here must adjudicate typed UNCERTAIN — never
     TERMINAL_FAILED."""
     term = _strict_parse(
-        _read_private_bytes(term_path, "unit terminal"),
+        _read_evidence(term_path, "unit terminal"),
         "unit terminal")
     if set(term) != _TERMINAL_KEYS:
         raise ExecutorRefusal(
@@ -1276,17 +1485,29 @@ def verify_unit_terminal(term_path: Path, design: dict,
         raise ExecutorRefusal(
             f"unit terminal mode {mode!r} does not match the "
             f"expected {mode_expected!r}")
-    if Path(term_path).name != \
+    if _src_name(term_path) != \
             f"TERMINAL_{_safe_name(uid)}.json":
         raise ExecutorRefusal(
             "unit terminal filename does not derive from its "
             "unit_id")
+    # C71: exact domains
+    import math as _m
+    ws = term["wall_seconds"]
+    if type(ws) not in (int, float) or isinstance(ws, bool) or \
+            not _m.isfinite(ws) or ws < 0:
+        raise ExecutorRefusal(
+            "unit terminal wall_seconds is not a finite "
+            "nonnegative number")
+    for k in ("failure_class", "reason"):
+        if type(term[k]) is not str or not term[k]:
+            raise ExecutorRefusal(
+                f"unit terminal {k} must be a nonempty string")
     expected = authority if authority is not None else \
         physical_authority(design, mode, repo_root=repo_root)
     _verify_authority_block(term, design, expected, mode, uid,
                             "unit terminal", repo_root)
-    claim_p = Path(term_path).parent / \
-        f"CLAIM_{_safe_name(uid)}.json"
+    claim_p = _src_sibling(term_path,
+                           f"CLAIM_{_safe_name(uid)}.json")
     claim = verify_unit_claim(claim_p, design,
                               authority=expected,
                               mode_expected=mode,
@@ -1419,8 +1640,7 @@ def run_unit(hz, co, unit: dict, design: dict, authority: dict,
         rr.excl_write(rr.units_fd, f"RECORD_{safe}.json",
                       json.dumps(wrapper, indent=1).encode())
         verify_unit_record(
-            rr.path / "units" / f"RECORD_{safe}.json",
-            rr.path / "units" / npz_name, design,
+            (rr, f"RECORD_{safe}.json"), (rr, npz_name), design,
             authority=authority,
             unit_y=np.asarray(unit["y"], dtype=np.float64),
             mode_expected=mode)
@@ -1454,7 +1674,7 @@ def _expect_close(got, want, path: str, tol=1e-9) -> None:
             "does not recompute from persisted arrays")
 
 
-def verify_unit_record(rec_path: Path, npz_path: Path,
+def verify_unit_record(rec_path, npz_path,
                        design: dict, authority: dict = None,
                        unit_y=None, mode_expected: str = None,
                        repo_root: Path = None) -> dict:
@@ -1462,9 +1682,8 @@ def verify_unit_record(rec_path: Path, npz_path: Path,
     the full v3 claim the record's attempt binds to."""
     import t2_assay_harness as hz
     repo_root = repo_root or conf.REPO
-    rec_path, npz_path = Path(rec_path), Path(npz_path)
     wrapper = _strict_parse(
-        _read_private_bytes(rec_path, "unit record"),
+        _read_evidence(rec_path, "unit record"),
         "unit record")
     if set(wrapper) != _WRAPPER_KEYS:
         raise ExecutorRefusal(
@@ -1539,14 +1758,14 @@ def verify_unit_record(rec_path: Path, npz_path: Path,
                 "a rehearsal record can never name a sealed-"
                 "population series")
     safe = _safe_name(uid)
-    if rec_path.name != f"RECORD_{safe}.json":
+    if _src_name(rec_path) != f"RECORD_{safe}.json":
         raise ExecutorRefusal(
-            f"unit record filename {rec_path.name!r} does not "
-            f"derive from its unit_id ({uid!r})")
-    if npz_path.name != f"ARRAYS_{safe}.npz":
+            f"unit record filename {_src_name(rec_path)!r} does "
+            f"not derive from its unit_id ({uid!r})")
+    if _src_name(npz_path) != f"ARRAYS_{safe}.npz":
         raise ExecutorRefusal(
-            f"arrays filename {npz_path.name!r} does not derive "
-            f"from the unit_id ({uid!r})")
+            f"arrays filename {_src_name(npz_path)!r} does not "
+            f"derive from the unit_id ({uid!r})")
     expected = authority if authority is not None else \
         physical_authority(design, mode, repo_root=repo_root)
     for k in _AUTHORITY_KEYS:
@@ -1563,14 +1782,14 @@ def verify_unit_record(rec_path: Path, npz_path: Path,
             "grant nothing")
     # C59: the claim this record's attempt binds to must verify
     claim = verify_unit_claim(
-        rec_path.parent / f"CLAIM_{safe}.json", design,
+        _src_sibling(rec_path, f"CLAIM_{safe}.json"), design,
         authority=expected, mode_expected=mode,
         uid_expected=uid, repo_root=repo_root)
     if claim["attempt_id"] != wrapper["attempt_id"]:
         raise ExecutorRefusal(
             "unit record does not bind this unit's claimed "
             "attempt")
-    raw_npz = _read_private_bytes(npz_path, "persisted arrays")
+    raw_npz = _read_evidence(npz_path, "persisted arrays")
     if hashlib.sha256(raw_npz).hexdigest() != \
             wrapper["arrays_npz_sha256"]:
         raise ExecutorRefusal(
@@ -1787,28 +2006,38 @@ def verify_unit_record(rec_path: Path, npz_path: Path,
 
 # ---------------- C63: adjudication ----------------
 
-def adjudicate_unit_shallow(units_dir: Path, uid: str) -> tuple:
-    """Physical-presence scan ONLY: PENDING / COMPLETED (deep
-    verification pending) / TERMINAL_PRESENT (deep verification
-    pending) / UNCERTAIN. TERMINAL_FAILED exists ONLY as a deep
-    adjudication outcome (C59)."""
-    units_dir = Path(units_dir)
+def _unit_srcs(root, uid):
     safe = _safe_name(uid)
-    rec_p = units_dir / f"RECORD_{safe}.json"
-    npz_p = units_dir / f"ARRAYS_{safe}.npz"
-    term_p = units_dir / f"TERMINAL_{safe}.json"
-    claim_p = units_dir / f"CLAIM_{safe}.json"
-    if rec_p.exists():
-        if not npz_p.exists():
+    names = {k: f"{k}_{safe}.{'npz' if k == 'ARRAYS' else 'json'}"
+             for k in ("RECORD", "ARRAYS", "TERMINAL", "CLAIM")}
+    if isinstance(root, ResultsRoot):
+        return {k: (root, n) for k, n in names.items()}
+    return {k: Path(root) / n for k, n in names.items()}
+
+
+def adjudicate_unit_shallow(root, uid: str) -> tuple:
+    """Physical-presence scan ONLY (C69: descriptor-relative when
+    given a ResultsRoot): PENDING / COMPLETED / TERMINAL_PRESENT
+    / UNCERTAIN. TERMINAL_FAILED exists ONLY as a deep
+    adjudication outcome (C59). A unit carrying BOTH a record and
+    a terminal is UNCERTAIN (C71)."""
+    srcs = _unit_srcs(root, uid)
+    has = {k: _src_exists(v) for k, v in srcs.items()}
+    if has["RECORD"] and has["TERMINAL"]:
+        return ("UNCERTAIN",
+                f"{uid}: BOTH a record and a terminal exist — "
+                "contradictory evidence")
+    if has["RECORD"]:
+        if not has["ARRAYS"]:
             return ("UNCERTAIN", f"{uid}: record without arrays")
         return ("COMPLETED", "")
-    if term_p.exists():
+    if has["TERMINAL"]:
         return ("TERMINAL_PRESENT", "")
-    if npz_p.exists():
+    if has["ARRAYS"]:
         return ("UNCERTAIN",
                 f"{uid}: arrays without a record — crash between "
                 "NPZ and record")
-    if claim_p.exists():
+    if has["CLAIM"]:
         return ("UNCERTAIN",
                 f"{uid}: claim without terminal or record — a "
                 "crashed or budget-stopped attempt; explicit "
@@ -1816,16 +2045,14 @@ def adjudicate_unit_shallow(units_dir: Path, uid: str) -> tuple:
     return ("PENDING", "")
 
 
-def adjudicate_unit_deep(units_dir: Path, uid: str, design: dict,
+def adjudicate_unit_deep(root, uid: str, design: dict,
                          authority: dict, mode: str,
                          unit_y=None) -> tuple:
-    st, why = adjudicate_unit_shallow(units_dir, uid)
-    units_dir = Path(units_dir)
-    safe = _safe_name(uid)
+    st, why = adjudicate_unit_shallow(root, uid)
+    srcs = _unit_srcs(root, uid)
     if st == "COMPLETED":
         try:
-            verify_unit_record(units_dir / f"RECORD_{safe}.json",
-                               units_dir / f"ARRAYS_{safe}.npz",
+            verify_unit_record(srcs["RECORD"], srcs["ARRAYS"],
                                design, authority=authority,
                                unit_y=unit_y, mode_expected=mode)
             return ("COMPLETED_VERIFIED", "")
@@ -1835,7 +2062,7 @@ def adjudicate_unit_deep(units_dir: Path, uid: str, design: dict,
     if st == "TERMINAL_PRESENT":
         try:
             verify_unit_terminal(
-                units_dir / f"TERMINAL_{safe}.json", design,
+                srcs["TERMINAL"], design,
                 authority=authority, mode_expected=mode)
             return ("TERMINAL_FAILED", "")
         except SystemExit as exc:
@@ -1848,15 +2075,33 @@ def adjudicate_unit_deep(units_dir: Path, uid: str, design: dict,
 def final_adjudication(rr: ResultsRoot, uids, design: dict,
                        authority: dict, mode: str,
                        rebuild) -> dict:
-    """C63: before the lock is released with success, EVERY unit
-    re-adjudicates deeply under current authority; zero UNCERTAIN;
-    counts equal the population exactly."""
-    units_dir = rr.path / "units"
+    """C63/C69/C71: before the lock is released with success —
+    the declared root identity is revalidated, the control
+    directory carries EXACTLY the expected objects (foreign,
+    duplicate or unrecognized objects refuse), EVERY unit
+    re-adjudicates deeply under current authority through the
+    held descriptors, zero UNCERTAIN, counts equal the sealed
+    population exactly."""
+    rr.revalidate()
+    expected_names = set()
+    for uid in uids:
+        safe = _safe_name(uid)
+        expected_names.update({f"CLAIM_{safe}.json",
+                               f"RECORD_{safe}.json",
+                               f"ARRAYS_{safe}.npz",
+                               f"TERMINAL_{safe}.json"})
+    actual = set(rr.listdir(rr.units_fd))
+    foreign = actual - expected_names
+    if foreign:
+        raise ExecutorRefusal(
+            "final adjudication found foreign or unrecognized "
+            f"objects in the control directory: "
+            f"{sorted(foreign)[:5]} — refusing success")
     counts = {"COMPLETED_VERIFIED": 0, "TERMINAL_FAILED": 0}
     for uid in uids:
-        st, why = adjudicate_unit_shallow(units_dir, uid)
+        st, why = adjudicate_unit_shallow(rr, uid)
         y = rebuild(uid) if st == "COMPLETED" else None
-        st, why = adjudicate_unit_deep(units_dir, uid, design,
+        st, why = adjudicate_unit_deep(rr, uid, design,
                                        authority, mode, unit_y=y)
         if st == "UNCERTAIN":
             raise ExecutorRefusal(
@@ -1902,17 +2147,15 @@ def declare_attempt_failed(out_root: Path, uid: str,
             "census_sha256": facts["census_sha256"]}
     else:
         authority = physical_authority(design, mode)
-    units_dir = rr.path / "units"
-    st, why = adjudicate_unit_shallow(units_dir, uid)
+    st, why = adjudicate_unit_shallow(rr, uid)
     if not (st == "UNCERTAIN" and "claim without" in why):
         raise ExecutorRefusal(
             f"{uid}: operator disposition applies only to a "
             f"claim without terminal or record (state: {st})")
     safe = _safe_name(uid)
-    claim = verify_unit_claim(units_dir / f"CLAIM_{safe}.json",
-                              design, authority=authority,
-                              mode_expected=mode,
-                              uid_expected=uid)
+    claim = verify_unit_claim(
+        (rr, f"CLAIM_{safe}.json"), design, authority=authority,
+        mode_expected=mode, uid_expected=uid)
     disp_path = conf.AUTHORITY_ROOT / \
         f"MUSASHI_T2_DISPOSITION_{safe}.json"
     fd = conf._open_private_authority_file(
@@ -2001,20 +2244,31 @@ def declare_attempt_failed(out_root: Path, uid: str,
 
 
 def census_of_work(design: dict) -> dict:
+    """C70: the census names the PHYSICAL work of the corrected
+    harness, distinguishing selected model instances, selection
+    sequences, candidate fits, linear solves, prediction sets and
+    baseline evaluations — never a single conflated 'fits'
+    number."""
     tp = design["task_population"]
-    n_units = len(tp["series_ids"])
-    ro = int(design["role_geometry"]["rolling_origins"])
+    u = len(tp["series_ids"])
+    o = int(design["role_geometry"]["rolling_origins"])
     seeds = len(design["seed_tape"])
-    arms = len(design["arms"])
-    return {"units": n_units, "origins_per_unit": ro,
-            "arms": arms, "mlp_seeds": seeds,
-            "model_fits": n_units * ro * arms * (1 + seeds),
-            "baseline_evals": n_units * ro}
+    a = len(design["arms"])
+    return {"units": u, "origins_per_unit": o,
+            "arms": a, "mlp_seeds": seeds,
+            "selected_model_instances": u * o * a * (1 + seeds),
+            "linear_solves": u * o * a,
+            "mlp_selection_sequences": u * o * a * seeds,
+            "mlp_candidate_fits": u * o * a * seeds * 4,
+            "prediction_sets": u * o * a * (1 + seeds) * 2,
+            "baseline_evals": u * o}
 
 
 def _heartbeat(rr: ResultsRoot, payload: dict) -> None:
-    """C61: random per-write temp name + descriptor-relative
-    replace — no fixed shared .tmp path."""
+    """C61/C69: random per-write temp name + descriptor-relative
+    replace, after root-identity revalidation — no fixed shared
+    .tmp path, no write to a replaced root."""
+    rr.revalidate()
     tmp = f".hb_{os.urandom(8).hex()}"
     data = json.dumps({**payload, "pid": os.getpid(),
                        "monotonic": time.monotonic()},
@@ -2116,8 +2370,7 @@ def main(argv=None) -> int:
     wall = WallAuthority(rr, limits, resolve_stop_file(design),
                          session_uuid)
     supervisor = make_fit_supervisor(limits, wall)
-    units_dir = rr.path / "units"
-    adj = _adjudication_counts(units_dir, uids)
+    adj = _adjudication_counts(rr, uids)
     if adj["counts"]["UNCERTAIN"]:
         release_lock(rr, session_n, session_uuid)
         wall.close()
@@ -2140,10 +2393,10 @@ def main(argv=None) -> int:
         for uid in uids:
             current_uid = uid
             wall.check(f"between_units:{uid}")
-            st, why = adjudicate_unit_shallow(units_dir, uid)
+            st, why = adjudicate_unit_shallow(rr, uid)
             if st == "COMPLETED":
                 st2, why2 = adjudicate_unit_deep(
-                    units_dir, uid, design, authority,
+                    rr, uid, design, authority,
                     "confirmatory", unit_y=_rebuild(uid))
                 if st2 != "COMPLETED_VERIFIED":
                     raise ExecutorRefusal(
@@ -2152,7 +2405,7 @@ def main(argv=None) -> int:
                 continue
             if st == "TERMINAL_PRESENT":
                 st2, why2 = adjudicate_unit_deep(
-                    units_dir, uid, design, authority,
+                    rr, uid, design, authority,
                     "confirmatory")
                 if st2 != "TERMINAL_FAILED":
                     raise ExecutorRefusal(
@@ -2177,7 +2430,7 @@ def main(argv=None) -> int:
     except T2BudgetStop as stop:
         in_flight = {}
         if current_uid is not None:
-            st_f, why_f = adjudicate_unit_shallow(units_dir,
+            st_f, why_f = adjudicate_unit_shallow(rr,
                                                   current_uid)
             in_flight = {"unit_id": current_uid, "state": st_f,
                          "why": why_f}
@@ -2201,6 +2454,7 @@ def main(argv=None) -> int:
     # C63: physical adjudication controls process success
     counts = final_adjudication(rr, uids, design, authority,
                                 "confirmatory", _rebuild)
+    rr.revalidate()
     release_lock(rr, session_n, session_uuid)
     wall.close()
     print(json.dumps({"done": done, "failed_preserved": failed,
@@ -2252,6 +2506,7 @@ def rehearse(out_root: Path = None) -> int:
     counts = final_adjudication(
         rr, DEV_UNITS, design, authority, "mechanical_rehearsal",
         lambda uid: units_y[uid])
+    rr.revalidate()
     release_lock(rr, session_n, session_uuid)
     wall.close()
     print(json.dumps({

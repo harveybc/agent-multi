@@ -1,0 +1,44 @@
+== C66 DEAD: the wall grammar refuses semantic forgery ==
+  the PRE's seconds=-100 reservation -> REFUSED: wall ledger reservation must be a finite strictly positive duration — fail closed
+  bool seconds -> REFUSED: wall ledger reservation must be a finite strictly positive duration — fail closed
+  string nan -> REFUSED: wall ledger reservation must be a finite strictly positive duration — fail closed
+  zero seconds -> REFUSED: wall ledger reservation must be a finite strictly positive duration — fail closed
+
+== C67 DEAD: torn tail is a review boundary ==
+  the PRE's poisoning session 2 -> REFUSED: WALL_LEDGER_TORN_TAIL_REVIEW_REQUIRED: the final ledger record is torn (a crash mid-app
+  nothing appended behind the fragment: True
+
+== C68 DEAD: a boot change stops for review ==
+  the PRE's accepted second boot -> REFUSED: CLOCK_AUTHORITY_REVIEW_REQUIRED: the ledger names a different boot identity (boot-ident
+
+== C69 DEAD: root replacement refuses before writes ==
+  the PRE's renamed-and-replaced root (heartbeat) -> REFUSED: RESULTS_ROOT_IDENTITY_LOST: the declared results-root path no longer names the held roo
+  landed on held inode: False
+
+== C70 DEAD: one supervised fit; honest census ==
+  sm_nile physical work: 8 ridge solves (PRE: 16), 96 MLP candidate fits (PRE: 192)
+  census v2: {"units": 242, "origins_per_unit": 2, "arms": 4, "mlp_seeds": 3, "selected_model_instances": 7744, "linear_solves": 1936, "mlp_selection_sequences": 5808, "mlp_candidate_fits": 23232, "prediction_sets": 15488, "baseline_evals": 484}
+
+== v4 mechanical rehearsal at the final tip ==
+{
+ "rehearsal": "COMPLETE_MECHANICS_ONLY",
+ "units": [
+  "sm_co2",
+  "sm_sunspots",
+  "sm_nile"
+ ],
+ "per_unit_wall_seconds": {
+  "sm_co2": 17.49,
+  "sm_sunspots": 4.96,
+  "sm_nile": 4.2
+ },
+ "sealed_bank_series_touched": 0,
+ "records_verified_from_persisted_arrays": 3,
+ "final_adjudication": {
+  "COMPLETED_VERIFIED": 3,
+  "TERMINAL_FAILED": 0
+ }
+}
+  rehearsal wall: 26.7s
+
+POST CONFIRMED: C66-C71 dead through the productive APIs; the wall ledger is a typed grammar, torn tails and boot changes stop for review, the declared root identity is proven before every side effect, and the census names the physical work of single supervised fits with proven bit-identity; scoring remains closed by the ABSENT external execution record

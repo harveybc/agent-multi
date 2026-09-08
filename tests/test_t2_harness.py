@@ -2831,8 +2831,13 @@ def test_c55_resume_order_census_and_separated_counts():
         d = json.loads(ex.SEALED_PATH.read_text())
         w = ex.census_of_work(d)
         assert w["units"] == 242 and w["origins_per_unit"] == 2
-        assert w["model_fits"] == 242 * 2 * 4 * 4 == 7744
+        assert w["selected_model_instances"] == 7744
+        assert w["linear_solves"] == 1936
+        assert w["mlp_selection_sequences"] == 5808
+        assert w["mlp_candidate_fits"] == 23232
+        assert w["prediction_sets"] == 15488
         assert w["baseline_evals"] == 484
+        assert "model_fits" not in w      # the conflated count
     rseg = esrc[esrc.index("def rehearse"):]
     assert '"records_verified_from_persisted_arrays"' in rseg
     assert '"sealed_bank_series_touched": 0' in rseg
@@ -2881,8 +2886,8 @@ def test_c57_wall_cannot_be_renewed_by_restart(trusted_tmp,
         ex.WallAuthority(rr2, {"max_wall_seconds": 100,
                                "max_rss_bytes": 8 << 30},
                          stop, "m2")
-    # a torn FINAL line is tolerated (crash mid-append) but every
-    # durable reservation stays charged
+    # C67 supersedes the old toleration: a torn FINAL line is a
+    # REVIEW boundary — nothing runs behind it
     rr3 = ex.ResultsRoot(tmp_path / "torn", create=True)
     g = ex.WallAuthority(rr3, {"max_wall_seconds": 100,
                                "max_rss_bytes": 8 << 30},
@@ -2891,11 +2896,11 @@ def test_c57_wall_cannot_be_renewed_by_restart(trusted_tmp,
     led3 = rr3.path / "T2_WALL_LEDGER.jsonl"
     with open(led3, "a") as f:
         f.write('{"kind":"close","truncat')      # torn append
-    g2 = ex.WallAuthority(rr3, {"max_wall_seconds": 100,
-                                "max_rss_bytes": 8 << 30},
-                          stop, "t2")
-    assert g2.prior >= 29.9               # full quantum charged
-    g2.close()
+    with pytest.raises(SystemExit,
+                       match="TORN_TAIL_REVIEW_REQUIRED"):
+        ex.WallAuthority(rr3, {"max_wall_seconds": 100,
+                               "max_rss_bytes": 8 << 30},
+                         stop, "t2")
     # replacement between read and append is DETECTED
     rr4 = ex.ResultsRoot(tmp_path / "repl", create=True)
     g = ex.WallAuthority(rr4, {"max_wall_seconds": 100,
@@ -2916,7 +2921,11 @@ def test_c57_wall_cannot_be_renewed_by_restart(trusted_tmp,
     with monkeypatch.context() as mp:
         mp.setattr(ex, "_boot_id",
                    lambda: "another-boot-identity-0000")
-        with pytest.raises(SystemExit, match="never renews"):
+        # C68 supersedes: the boot change stops for review BEFORE
+        # any charge question is even reached
+        with pytest.raises(SystemExit,
+                           match="CLOCK_AUTHORITY_REVIEW_"
+                                 "REQUIRED"):
             ex.WallAuthority(rr5, {"max_wall_seconds": 0.08,
                                    "max_rss_bytes": 8 << 30},
                              stop, "b2")
@@ -3371,12 +3380,17 @@ def test_c64_mutations_bite(trusted_tmp, monkeypatch):
                 _reh_authority(ex, design),
                 "mechanical_rehearsal")
             assert st == "TERMINAL_FAILED"    # mutation bites
-    # (3) the five-second crash credit restored
-    real_replay = ex.WallAuthority._replay
-
+    # (3) the five-second crash credit restored: a lax replay
+    # that ignores the grammar AND forgets every charge
     def lossy_replay(self, raw):
-        charged, last, seq, torn = real_replay(self, raw)
-        return 0.0, last, seq, torn       # forget every charge
+        last, seq = ex._LEDGER_GENESIS, 0
+        for line in raw.split(b"\n"):
+            if not line:
+                continue
+            doc = json.loads(line)
+            last = doc["record_sha"]
+            seq = int(doc["seq"])
+        return 0.0, last, seq, False      # forget every charge
 
     with monkeypatch.context() as mp:
         mp.setattr(ex.WallAuthority, "_replay", lossy_replay)
@@ -3450,3 +3464,503 @@ def test_c64_mutations_bite(trusted_tmp, monkeypatch):
                 "mechanical_rehearsal", lambda uid: None)
             assert counts["TERMINAL_FAILED"] == 0  # bites: no
             # refusal fired under the mutation
+
+
+# ===== C66-C73 battery (2026-09-08) ==============================
+
+
+def _mk_chain(ex, recs):
+    out, last = [], ex._LEDGER_GENESIS
+    for i, body in enumerate(recs):
+        body = dict(body)
+        body["seq"] = i + 1
+        body["prev_sha"] = last
+        body["record_sha"] = ex._self_sha(body, "record_sha")
+        last = body["record_sha"]
+        out.append(json.dumps(body, sort_keys=True))
+    return "\n".join(out) + "\n"
+
+
+def test_c66_wall_grammar_bites(trusted_tmp):
+    """C66: the negative-reservation PRE is a frozen regression;
+    every named malformation refuses typed."""
+    tmp_path, ex = trusted_tmp
+    stop = tmp_path / "T2_STOP"
+    lim = {"max_wall_seconds": 10, "max_rss_bytes": 8 << 30}
+
+    def _attempt(recs, needle):
+        rr = ex.ResultsRoot(
+            tmp_path / f"g{abs(hash(needle)) % 10**8}",
+            create=True)
+        led = rr.path / "T2_WALL_LEDGER.jsonl"
+        led.write_text(_mk_chain(ex, recs))
+        os.chmod(led, 0o600)
+        with pytest.raises(SystemExit, match=needle):
+            ex.WallAuthority(rr, lim, stop, "probe")
+
+    boot = ex._boot_id()
+    so = {"kind": "session_open", "session": "s",
+          "boot_id": boot, "tail_torn_tolerated": False,
+          "pid": 1}
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": -100.0}],
+             "strictly positive")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": 0}], "strictly positive")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": True}], "strictly positive|finite")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": "nan"}],
+             "strictly positive|finite")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": float("1e9")}],
+             "quantum")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": 9.0},
+              {"kind": "reserve", "session": "s",
+               "seconds": 9.0}],
+             "remaining budget")
+    _attempt([{"kind": "reserve", "session": "s",
+               "seconds": 1.0}], "precedes its session_open")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": 1.0},
+              {"kind": "close", "session": "s",
+               "reserve_seq": 2, "elapsed": 0.5},
+              {"kind": "close", "session": "s",
+               "reserve_seq": 2, "elapsed": 0.5}],
+             "OPEN reservation")
+    _attempt([so, {"kind": "session_open", "session": "z",
+                   "boot_id": boot,
+                   "tail_torn_tolerated": False, "pid": 2},
+              {"kind": "reserve", "session": "s",
+               "seconds": 1.0},
+              {"kind": "close", "session": "z",
+               "reserve_seq": 3, "elapsed": 0.5}],
+             "cross-session|does not bind")
+    _attempt([so, {"kind": "reserve", "session": "s",
+                   "seconds": 1.0, "extra": 1}],
+             "exact schema")
+    _attempt([so, {"kind": "unknown", "session": "s"}],
+             "unknown record kind|exact schema")
+    # a VALID crashed reservation still charges in full
+    rr = ex.ResultsRoot(tmp_path / "gvalid", create=True)
+    led = rr.path / "T2_WALL_LEDGER.jsonl"
+    led.write_text(_mk_chain(ex, [
+        so, {"kind": "reserve", "session": "s",
+             "seconds": 10.0}]))
+    os.chmod(led, 0o600)
+    with pytest.raises(SystemExit, match="never renews"):
+        ex.WallAuthority(rr, lim, stop, "next")
+
+
+def test_c67_torn_tail_is_a_review_boundary(trusted_tmp):
+    """C67: the poisoning PRE is a frozen regression — a torn
+    final line stops for review; nothing runs behind it; the
+    fresh-descriptor replay before success detects a replaced
+    ledger even without close-time inode facts."""
+    tmp_path, ex = trusted_tmp
+    stop = tmp_path / "T2_STOP"
+    lim = {"max_wall_seconds": 100, "max_rss_bytes": 8 << 30}
+    rr = ex.ResultsRoot(tmp_path / "torn", create=True)
+    g = ex.WallAuthority(rr, lim, stop, "t1")
+    os.close(g._fd)
+    with open(rr.path / "T2_WALL_LEDGER.jsonl", "a") as f:
+        f.write('{"kind":"close","trunc')
+    with pytest.raises(SystemExit,
+                       match="WALL_LEDGER_TORN_TAIL_REVIEW_"
+                             "REQUIRED"):
+        ex.WallAuthority(rr, lim, stop, "t2")
+    # nothing was appended behind the fragment
+    tail = (rr.path / "T2_WALL_LEDGER.jsonl").read_text()
+    assert tail.endswith('{"kind":"close","trunc')
+    # fresh replay before success: replace the ledger under a
+    # live authority -> close() refuses (charges would be lost)
+    rr2 = ex.ResultsRoot(tmp_path / "repl", create=True)
+    g2 = ex.WallAuthority(rr2, lim, stop, "r1")
+    led = rr2.path / "T2_WALL_LEDGER.jsonl"
+    led.rename(rr2.path / "stolen.jsonl")
+    led.write_text("")
+    os.chmod(led, 0o600)
+    with pytest.raises(SystemExit, match="REPLACED|does not equal"):
+        g2.close()
+
+
+def test_c68_boot_change_stops_for_review(trusted_tmp,
+                                          monkeypatch):
+    """C68: the accepted-boot PRE is a frozen regression — a
+    ledger naming a different boot identity stops typed BEFORE
+    any reservation or work."""
+    tmp_path, ex = trusted_tmp
+    stop = tmp_path / "T2_STOP"
+    lim = {"max_wall_seconds": 100, "max_rss_bytes": 8 << 30}
+    rr = ex.ResultsRoot(tmp_path / "boot", create=True)
+    with monkeypatch.context() as mp:
+        mp.setattr(ex, "_boot_id",
+                   lambda: "boot-identity-AAAA-0001")
+        g = ex.WallAuthority(rr, lim, stop, "b1")
+        g.close()
+    with monkeypatch.context() as mp:
+        mp.setattr(ex, "_boot_id",
+                   lambda: "boot-identity-BBBB-0002")
+        with pytest.raises(SystemExit,
+                           match="CLOCK_AUTHORITY_REVIEW_"
+                                 "REQUIRED"):
+            ex.WallAuthority(rr, lim, stop, "b2")
+    led = (rr.path / "T2_WALL_LEDGER.jsonl").read_text()
+    assert "BBBB" not in led          # no reservation, no work
+
+
+def test_c69_root_identity_and_dirfd_reads(trusted_tmp):
+    """C69: the replacement PRE is a frozen regression — a
+    rename-and-replace refuses before heartbeat/claim/terminal
+    writes and before final adjudication; adjudication reads go
+    through the held descriptors."""
+    tmp_path, ex = trusted_tmp
+    rr = ex.ResultsRoot(tmp_path / "swap", create=True)
+    os.rename(rr.path, tmp_path / "stolen")
+    (tmp_path / "swap").mkdir(mode=0o700)
+    with pytest.raises(SystemExit,
+                       match="RESULTS_ROOT_IDENTITY_LOST"):
+        ex._heartbeat(rr, {"probe": True})
+    assert not (tmp_path / "stolen"
+                / "EXECUTOR_HEARTBEAT.json").exists()
+    with pytest.raises(SystemExit,
+                       match="RESULTS_ROOT_IDENTITY_LOST"):
+        rr.excl_write(rr.units_fd, "CLAIM_x.json", b"{}")
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        with pytest.raises(SystemExit,
+                           match="RESULTS_ROOT_IDENTITY_LOST"):
+            ex.final_adjudication(
+                rr, ("sm_nile",), design,
+                _reh_authority(ex, design),
+                "mechanical_rehearsal", lambda uid: None)
+    # dirfd reads: shallow adjudication through the ROOT OBJECT
+    # still sees the held units dir, not the impostor path
+    rr2 = ex.ResultsRoot(tmp_path / "reads", create=True)
+    rr2.excl_write(rr2.units_fd, "ARRAYS_probe.npz", b"x")
+    os.rename(rr2.path, tmp_path / "reads_moved")
+    (tmp_path / "reads").mkdir(mode=0o700)
+    st, why = ex.adjudicate_unit_shallow(rr2, "probe")
+    assert st == "UNCERTAIN" and "arrays without" in why
+    esrc = (REPO / "tools/t2_confirmatory_executor.py").read_text()
+    main_seg = esrc[esrc.index("def main"):
+                    esrc.index("def rehearse")]
+    assert 'adjudicate_unit_shallow(rr,' in main_seg
+    assert 'adjudicate_unit_deep(\n                    rr,' in \
+        main_seg
+
+
+def test_c70_single_fits_identity_and_census(trusted_tmp):
+    """C70: one ridge solve and one MLP selection per block —
+    counted live; predictions bit-identical to the retired
+    two-call path; the census separates the physical work; the
+    denoiser is a bounded fit-free deterministic transform."""
+    import numpy as _np
+    tmp_path, ex = trusted_tmp
+    import t2_assay_harness as hz
+    import t2_public_data_census as dc
+    co = hz.load_co()
+    unit = hz.load_task_unit(dc.build_census(), "sm_nile")
+    counts = {"ridge": 0, "mlp": 0}
+    real_solve = _np.linalg.solve
+
+    def csolve(*a, **k):
+        counts["ridge"] += 1
+        return real_solve(*a, **k)
+
+    from sklearn.neural_network import MLPRegressor
+    real_fit = MLPRegressor.fit
+
+    def cfit(self, X, y):
+        counts["mlp"] += 1
+        return real_fit(self, X, y)
+
+    _np.linalg.solve = csolve
+    MLPRegressor.fit = cfit
+    try:
+        hz.assay_unit(co, unit)
+    finally:
+        _np.linalg.solve = real_solve
+        MLPRegressor.fit = real_fit
+    assert counts["ridge"] == 2 * 4 * 1
+    assert counts["mlp"] == 2 * 4 * 3 * 4
+    # bit identity vs the retired path on one real block
+    y = unit["y"]
+    origins = hz.unit_origins(len(y),
+                              seasonal_period=unit[
+                                  "seasonal_period"])
+    o_lo, o_hi = origins[0]
+    Xt = hz._lag_matrix([y], 0, o_lo, 1)
+    Xs = hz._lag_matrix([y], o_lo, o_hi, 1)
+    yt = hz._targets(y, 0, o_lo, 1)
+    rfit = hz._ridge_fit(Xt, yt)
+    mu, sd = hz._train_scaler(Xt)
+    Zt1 = _np.hstack([_np.ones((len(Xt), 1)), (Xt - mu) / sd])
+    Zs1 = _np.hstack([_np.ones((len(Xs), 1)), (Xs - mu) / sd])
+    reg = hz.RIDGE_LAMBDA * _np.eye(Zt1.shape[1])
+    reg[0, 0] = 0.0
+    w = _np.linalg.solve(Zt1.T @ Zt1 + reg, Zt1.T @ yt)
+    assert _np.array_equal(hz._ridge_predict(rfit, Xs), Zs1 @ w)
+    assert _np.array_equal(hz._ridge_predict(rfit, Xt), Zt1 @ w)
+    mfit = hz._mlp_select(Xt, yt, 11)
+    p1 = hz._mlp_predict(mfit, Xs)
+    mfit2 = hz._mlp_select(Xt, yt, 11)     # deterministic rerun
+    assert _np.array_equal(p1, hz._mlp_predict(mfit2, Xs))
+    # census keys (asserted against the sealed design in c55)
+    src = (REPO / "tools/t2_assay_harness.py").read_text()
+    assert "ridge_in = _ridge(Xt, yt, Xt)" not in src
+    assert "_ridge_fit(Xt, yt)" in src
+    assert "_mlp_select(Xt, yt, seed" in src
+    assert "_RidgeFitClosure(Xt, yt)" in src   # supervised ridge
+    # the denoiser: bounded, fit-free deterministic transform
+    import time as _t
+    t0 = _t.monotonic()
+    d1 = hz.causal_denoise(co, y, {"train": (0, o_lo)}, "u|p")
+    d2 = hz.causal_denoise(co, y, {"train": (0, o_lo)}, "u|p")
+    dt = _t.monotonic() - t0
+    assert d1["artifact_sha256"] == d2["artifact_sha256"]
+    assert _np.array_equal(d1["d"], d2["d"])
+    assert dt < 5.0
+
+
+def test_c71_terminal_domains_and_foreign_inventory(trusted_tmp):
+    """C71: bool/NaN/negative domains refuse in claims and
+    terminals; final adjudication rejects foreign objects and
+    contradictory record+terminal pairs."""
+    tmp_path, ex = trusted_tmp
+    if not ex.SEALED_PATH.exists():
+        pytest.skip("sealed design absent on this host")
+    design = json.loads(ex.SEALED_PATH.read_text())
+    authority = _reh_authority(ex, design)
+    hz, co, unit = _nile(ex)
+    pins = ex._git_head_tree()
+    rr = ex.ResultsRoot(tmp_path / "dom", create=True)
+    with pytest.raises(ex.T2AssayFailed):
+        ex.run_unit(hz, co, unit, design, authority, rr,
+                    "mechanical_rehearsal", pins,
+                    guard=lambda lb: (_ for _ in ()).throw(
+                        ValueError("d")) if "ridge_done" in lb
+                    else None)
+    term = json.loads(
+        (rr.path / "units" / "TERMINAL_sm_nile.json").read_text())
+    for field, val, needle in (
+            ("wall_seconds", True, "finite nonnegative"),
+            ("wall_seconds", -1.0, "finite nonnegative"),
+            ("failure_class", "", "nonempty"),
+            ("reason", "", "nonempty")):
+        doc = dict(term)
+        doc[field] = val
+        doc["terminal_sha256"] = ex._self_sha(doc,
+                                              "terminal_sha256")
+        tp = tmp_path / "TERMINAL_sm_nile.json"
+        if tp.exists():
+            tp.unlink()
+        tp.write_text(json.dumps(doc))
+        os.chmod(tp, 0o600)
+        cp = tmp_path / "CLAIM_sm_nile.json"
+        if not cp.exists():
+            import shutil
+            shutil.copy(rr.path / "units" / "CLAIM_sm_nile.json",
+                        cp)
+            os.chmod(cp, 0o600)
+        with pytest.raises(SystemExit, match=needle):
+            ex.verify_unit_terminal(tp, design,
+                                    authority=authority,
+                                    mode_expected=
+                                    "mechanical_rehearsal")
+    # foreign object at final adjudication
+    rr.excl_write(rr.units_fd, "EVIL.txt", b"x")
+    with pytest.raises(SystemExit, match="foreign"):
+        ex.final_adjudication(rr, ("sm_nile",), design,
+                              authority, "mechanical_rehearsal",
+                              lambda uid: None)
+    # record+terminal contradiction is UNCERTAIN
+    rr2 = ex.ResultsRoot(tmp_path / "both", create=True)
+    for name in ("RECORD_p.json", "ARRAYS_p.npz",
+                 "TERMINAL_p.json"):
+        rr2.excl_write(rr2.units_fd, name, b"{}")
+    st, why = ex.adjudicate_unit_shallow(rr2, "p")
+    assert st == "UNCERTAIN" and "BOTH" in why
+
+
+def test_c72_mutations_bite(trusted_tmp, monkeypatch):
+    """C72: each named mutation reintroduces one audited defect
+    and its attack SUCCEEDS again."""
+    tmp_path, ex = trusted_tmp
+    stop = tmp_path / "T2_STOP"
+    lim10 = {"max_wall_seconds": 10, "max_rss_bytes": 8 << 30}
+    boot = ex._boot_id()
+    # (1) remove the positive-duration check: restore the
+    # pre-grammar float()-coercion replay
+    real_replay_fn = ex.WallAuthority._replay
+
+    def lax_replay(self, raw):
+        charged, pending, last, seq = 0.0, {}, \
+            ex._LEDGER_GENESIS, 0
+        for line in raw.split(b"\n"):
+            if not line:
+                continue
+            doc = json.loads(line)
+            last = doc["record_sha"]
+            seq = int(doc["seq"])
+            if doc["kind"] == "reserve":
+                pending[seq] = (float(doc["seconds"]),
+                                doc["session"])
+            elif doc["kind"] == "close":
+                res_s, _sess = pending.pop(
+                    int(doc["reserve_seq"]))
+                charged += float(doc["elapsed"])
+        charged += sum(x for x, _ in pending.values())
+        return charged, last, seq, False
+
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.WallAuthority, "_replay", lax_replay)
+        rr = ex.ResultsRoot(tmp_path / "mu1", create=True)
+        led = rr.path / "T2_WALL_LEDGER.jsonl"
+        led.write_text(_mk_chain(ex, [
+            {"kind": "session_open", "session": "s",
+             "boot_id": boot, "tail_torn_tolerated": False,
+             "pid": 1},
+            {"kind": "reserve", "session": "s",
+             "seconds": -100.0}]))
+        os.chmod(led, 0o600)
+        w = ex.WallAuthority(rr, lim10, stop, "evil")
+        assert w.remaining() > 100        # mutation bites
+        os.close(w._fd)
+    assert ex.WallAuthority._replay is real_replay_fn
+    # (2) append after a torn tail (tolerate again)
+    real_replay = ex.WallAuthority._replay
+
+    def tolerant_replay(self, raw):
+        try:
+            return real_replay(self, raw)
+        except SystemExit as exc:
+            if "TORN_TAIL" in str(exc):
+                cut = raw.rfind(b"\n") + 1
+                return real_replay(self, raw[:cut])
+            raise
+
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.WallAuthority, "_replay", tolerant_replay)
+        rr = ex.ResultsRoot(tmp_path / "mu2", create=True)
+        g = ex.WallAuthority(rr, {"max_wall_seconds": 100,
+                                  "max_rss_bytes": 8 << 30},
+                             stop, "t1")
+        os.close(g._fd)
+        with open(rr.path / "T2_WALL_LEDGER.jsonl", "a") as f:
+            f.write('{"kind":"close","trunc')
+        g2 = ex.WallAuthority(rr, {"max_wall_seconds": 100,
+                                   "max_rss_bytes": 8 << 30},
+                              stop, "t2")   # accepted: bites
+        os.close(g2._fd)
+    # (3) accept a new boot id
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.WallAuthority, "_LEDGER_KEYS",
+                   ex.WallAuthority._LEDGER_KEYS)
+        rr = ex.ResultsRoot(tmp_path / "mu3", create=True)
+        with monkeypatch.context() as mp2:
+            mp2.setattr(ex, "_boot_id", lambda: "boot-A")
+            g = ex.WallAuthority(rr, {"max_wall_seconds": 100,
+                                      "max_rss_bytes": 8 << 30},
+                                 stop, "b1")
+            g.close()
+        real_boot_fn = ex._boot_id
+
+        def replay_no_boot(self, raw):
+            self.boot_backup = self.boot
+            self.boot = None
+
+            class _Any(str):
+                def __ne__(self, other):
+                    return False
+            self.boot = _Any("any")
+            try:
+                return real_replay(self, raw)
+            finally:
+                self.boot = self.boot_backup
+
+        with monkeypatch.context() as mp2:
+            mp2.setattr(ex, "_boot_id", lambda: "boot-B")
+            mp2.setattr(ex.WallAuthority, "_replay",
+                        replay_no_boot)
+            g2 = ex.WallAuthority(rr,
+                                  {"max_wall_seconds": 100,
+                                   "max_rss_bytes": 8 << 30},
+                                  stop, "b2")  # accepted: bites
+            os.close(g2._fd)
+    # (4) skip root-path identity revalidation
+    with monkeypatch.context() as mp:
+        mp.setattr(ex.ResultsRoot, "revalidate",
+                   lambda self: None)
+        rr = ex.ResultsRoot(tmp_path / "mu4", create=True)
+        os.rename(rr.path, tmp_path / "mu4_stolen")
+        (tmp_path / "mu4").mkdir(mode=0o700)
+        ex._heartbeat(rr, {"probe": True})   # accepted: bites
+        assert (tmp_path / "mu4_stolen"
+                / "EXECUTOR_HEARTBEAT.json").exists()
+    # (5) execute ridge outside the supervisor / (6) restore the
+    # duplicated score+insample fits — reintroduce the legacy
+    # two-solve block and count it
+    import numpy as _np
+    import t2_assay_harness as hz
+
+    def legacy_block(Xt, yt, Xs):
+        mu, sd = hz._train_scaler(Xt)
+        Zt1 = _np.hstack([_np.ones((len(Xt), 1)),
+                          (Xt - mu) / sd])
+        Zs1 = _np.hstack([_np.ones((len(Xs), 1)),
+                          (Xs - mu) / sd])
+        reg = hz.RIDGE_LAMBDA * _np.eye(Zt1.shape[1])
+        reg[0, 0] = 0.0
+        w1 = _np.linalg.solve(Zt1.T @ Zt1 + reg, Zt1.T @ yt)
+        w2 = _np.linalg.solve(Zt1.T @ Zt1 + reg, Zt1.T @ yt)
+        return Zs1 @ w1, Zt1 @ w2
+
+    counts = {"solves": 0}
+    real_solve = _np.linalg.solve
+
+    def csolve(*a, **k):
+        counts["solves"] += 1
+        return real_solve(*a, **k)
+
+    Xt = _np.random.default_rng(1).standard_normal((60, 8))
+    yt = _np.random.default_rng(2).standard_normal(60)
+    Xs = _np.random.default_rng(3).standard_normal((20, 8))
+    _np.linalg.solve = csolve
+    try:
+        legacy_block(Xt, yt, Xs)
+    finally:
+        _np.linalg.solve = real_solve
+    assert counts["solves"] == 2          # mutation bites: the
+    # duplicated unsupervised solve is observable and refused by
+    # the c70 census assertions
+    # (7) publish the old 7744 count
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        with monkeypatch.context() as mp:
+            mp.setattr(ex, "census_of_work",
+                       lambda d: {"units": 242,
+                                  "model_fits": 7744})
+            w = ex.census_of_work(design)
+            assert w["model_fits"] == 7744    # bites: the
+            # dishonest census returns and c55's exact-key
+            # assertions are the guard that refuses it
+    # (8) ignore a foreign unit object at final adjudication
+    if ex.SEALED_PATH.exists():
+        design = json.loads(ex.SEALED_PATH.read_text())
+        rr = ex.ResultsRoot(tmp_path / "mu8", create=True)
+        rr.excl_write(rr.units_fd, "EVIL.txt", b"x")
+        with monkeypatch.context() as mp:
+            real_final = ex.final_adjudication
+
+            def blind_final(rr_, uids, d_, a_, m_, rb_):
+                return {"COMPLETED_VERIFIED": 0,
+                        "TERMINAL_FAILED": 0}
+
+            mp.setattr(ex, "final_adjudication", blind_final)
+            counts = ex.final_adjudication(
+                rr, (), design, _reh_authority(ex, design),
+                "mechanical_rehearsal", lambda uid: None)
+            assert counts == {"COMPLETED_VERIFIED": 0,
+                              "TERMINAL_FAILED": 0}  # bites

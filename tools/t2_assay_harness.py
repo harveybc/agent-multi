@@ -210,37 +210,51 @@ def _train_scaler(Xt):
     return mu, sd
 
 
-def _ridge(Xt, yt, Xs):
-    """C5: intercept + train-only standardization."""
+def _ridge_fit(Xt, yt):
+    """C5: intercept + train-only standardization. C70: ONE
+    linear solve per origin/arm; the fitted (mu, sd, w) produces
+    BOTH the score and the in-sample predictions — numerically
+    identical to the retired two-solve path, because both solves
+    ran np.linalg.solve on the same matrices."""
     mu, sd = _train_scaler(Xt)
     Zt = (Xt - mu) / sd
-    Zs = (Xs - mu) / sd
     Zt1 = np.hstack([np.ones((len(Zt), 1)), Zt])
-    Zs1 = np.hstack([np.ones((len(Zs), 1)), Zs])
     reg = RIDGE_LAMBDA * np.eye(Zt1.shape[1])
     reg[0, 0] = 0.0                    # never penalize the mean
     w = np.linalg.solve(Zt1.T @ Zt1 + reg, Zt1.T @ yt)
-    return Zs1 @ w
+    return (mu, sd, w)
 
 
-def _mlp(Xt, yt, Xs, seed, val_frac=0.2, guard=None,
-         fit_supervisor=None, label=""):
-    """C5: same train-only scaling; the VALIDATION role has an
-    explicit purpose — the temporally FINAL fraction of the fit
-    rows drives the epoch rule (early stopping) without ever
-    seeing score rows. C52 (execution-custody order): `guard` is
-    checked between epoch candidates so the sealed bounds govern
-    the interior of a fit sequence; `fit_supervisor` runs each
-    non-interruptible sklearn fit under a supervised worker with
-    its own wall/RSS bounds and typed harvest. Neither hook
-    changes any number: identical candidates, seeds and selection."""
+def _ridge_predict(rfit, X):
+    mu, sd, w = rfit
+    Z1 = np.hstack([np.ones((len(X), 1)), (X - mu) / sd])
+    return Z1 @ w
+
+
+class _RidgeFitClosure:
+    """A picklable single ridge solve for the supervised worker."""
+    def __init__(self, Xt, yt):
+        self.Xt, self.yt = Xt, yt
+
+    def __call__(self):
+        return _ridge_fit(self.Xt, self.yt)
+
+
+def _mlp_select(Xt, yt, seed, val_frac=0.2, guard=None,
+                fit_supervisor=None, label=""):
+    """C5: same train-only scaling; the VALIDATION role drives the
+    epoch rule on the temporally FINAL fraction of the fit rows.
+    C70: ONE selection sequence per origin/arm/seed — the four
+    candidate fits run once (each under the supervised worker
+    when provided) and the SELECTED fitted model produces both
+    prediction sets. Numerically identical to the retired
+    two-call path: that path ran the same deterministic selection
+    twice and predicted from the same chosen state. C52: `guard`
+    is checked between epoch candidates."""
     from sklearn.neural_network import MLPRegressor
     mu, sd = _train_scaler(Xt)
     Zt = (Xt - mu) / sd
-    Zs = (Xs - mu) / sd
     n_val = max(8, int(len(Zt) * val_frac))
-    m = MLPRegressor(random_state=seed,
-                     early_stopping=False, **MLP_BUDGET)
     import warnings
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -258,12 +272,18 @@ def _mlp(Xt, yt, Xs, seed, val_frac=0.2, guard=None,
                     _FitClosure(mm, fit_Z, fit_y),
                     f"{label}:fit_epochs{epochs}")
             else:
-                mm.fit(fit_Z, fit_y)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    mm.fit(fit_Z, fit_y)
             v = float(np.mean(np.abs(mm.predict(val_Z) - val_y)))
             if v < best_val:
                 best, best_val = mm, v
-        m = best
-    return m.predict(Zs)
+    return (best, mu, sd)
+
+
+def _mlp_predict(mfit, X):
+    best, mu, sd = mfit
+    return best.predict((X - mu) / sd)
 
 
 class _FitClosure:
@@ -447,8 +467,14 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None,
             acost["lag_features_s"] = round(
                 time.perf_counter() - t0, 4)
             t0 = time.perf_counter()
-            ridge_pred = _ridge(Xt, yt, Xs)
-            ridge_in = _ridge(Xt, yt, Xt)
+            if fit_supervisor is not None:
+                rfit = fit_supervisor(
+                    _RidgeFitClosure(Xt, yt),
+                    f"{okey}:{arm}:ridge_fit")
+            else:
+                rfit = _ridge_fit(Xt, yt)
+            ridge_pred = _ridge_predict(rfit, Xs)
+            ridge_in = _ridge_predict(rfit, Xt)
             acost["ridge_fit_forecast_s"] = round(
                 time.perf_counter() - t0, 4)
             _g(f"{okey}:{arm}:ridge_done")
@@ -466,12 +492,11 @@ def assay_unit(co, unit: dict, h: int = 1, sink: dict = None,
                 _g(f"{okey}:{arm}:mlp_seed{seed}:start")
                 t0 = time.perf_counter()
                 lbl = f"{okey}:{arm}:mlp_seed{seed}"
-                pred = _mlp(Xt, yt, Xs, seed, guard=guard,
-                            fit_supervisor=fit_supervisor,
-                            label=f"{lbl}:score")
-                inp = _mlp(Xt, yt, Xt, seed, guard=guard,
-                           fit_supervisor=fit_supervisor,
-                           label=f"{lbl}:insample")
+                mfit = _mlp_select(Xt, yt, seed, guard=guard,
+                                   fit_supervisor=fit_supervisor,
+                                   label=f"{lbl}:select")
+                pred = _mlp_predict(mfit, Xs)
+                inp = _mlp_predict(mfit, Xt)
                 acost[f"mlp_fit_forecast_seed{seed}_s"] = round(
                     time.perf_counter() - t0, 4)
                 _g(f"{okey}:{arm}:mlp_seed{seed}:done")
