@@ -1,0 +1,84 @@
+{
+ "f1_paired_assoc_X_equal": false,
+ "f1_paired_assoc_y_equal": false,
+ "f1_treatment_assoc_y": [
+  1,
+  1,
+  1,
+  0,
+  1,
+  1,
+  0,
+  1
+ ],
+ "f1_control_assoc_y": [
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  1,
+  1
+ ],
+ "f1_arm_enters_state_family": true,
+ "f2_genesis_digest_equal": false,
+ "f2_only_one_checkpoint_materialized": true,
+ "f3_boolean_baseline_mismatches": {
+  "identity g0": {
+   "reported": 0.567708,
+   "held_out_majority_acc": 0.5
+  },
+  "identity g1": {
+   "reported": 0.520833,
+   "held_out_majority_acc": 0.46875
+  },
+  "majority g0": {
+   "reported": 0.520833,
+   "held_out_majority_acc": 0.515625
+  },
+  "majority g1": {
+   "reported": 0.510417,
+   "held_out_majority_acc": 0.46875
+  },
+  "dnf3 g0": {
+   "reported": 0.697917,
+   "held_out_majority_acc": 0.796875
+  },
+  "dnf3 g1": {
+   "reported": 0.713542,
+   "held_out_majority_acc": 0.640625
+  },
+  "parity4 g0": {
+   "reported": 0.546875,
+   "held_out_majority_acc": 0.484375
+  },
+  "parity4 g1": {
+   "reported": 0.515625,
+   "held_out_majority_acc": 0.421875
+  }
+ },
+ "f3_linear_head_out_of_unit_range": true,
+ "f3_design_declares_sigmoid": true,
+ "f4_std_normal_binary_for_all": true,
+ "f4_bool_assoc_inputs_not_pm1": true,
+ "f5_no_stop_slice": true,
+ "f6_v4_seal_and_outcomes_same_commit": true,
+ "rt_jsonl_mode_group_readable": "0o664",
+ "rt_jsonl_not_0600": true,
+ "rt_lookalike_escapes_inventory": true,
+ "rt_verify_passes_with_lookalike_present": true,
+ "rt_execute_never_calls_verifier": true,
+ "rt_second_invocation_extra_report": true,
+ "rt_wall_limit_contradiction": {
+  "enforced_resources_max_wall_seconds": 21600,
+  "declared_reduction_ceiling_hours": 48.0,
+  "contradict": true
+ },
+ "ct_family_spelling_conflict": true,
+ "ct_inherited_numeric_ranges_vs_role_namespaces": true,
+ "packet_47427d74_zero_placeholders": true,
+ "packet_47427d74_final_counts_present": true
+}
+
+PRE CONFIRMED at 47427d74: arms consume DIFFERENT association tapes and DIFFERENT geneses, only one checkpoint exists, all eight Boolean baselines mismatch held-out majority accuracy under a linear head with a sigmoid-declaring design, one std-normal/binary association distribution serves every family, the bank has no STOP role, v4 sealed alongside its own outcomes, intervention logs are group-readable, report lookalikes escape inventory, execute never verifies, a second invocation mints extra reports, the wall limits contradict, and the inherited generator contract contradicts the implemented one; the pushed C17-C24 packet already carries the exact final counts
