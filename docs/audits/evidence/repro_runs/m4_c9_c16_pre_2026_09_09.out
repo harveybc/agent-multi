@@ -1,0 +1,13 @@
+honest_run: {"verified": true, "units": 2, "artifacts": 15}
+forged_run: {"verified": true, "units": 2, "artifacts": 15}
+source_facts: {
+ "jsonl_parsed_permissively": true,
+ "strict_loader_only_dead_code": true,
+ "restart_boolean_trusted": true,
+ "matched_compute_boolean_trusted": true,
+ "heartbeat_digest_bound_but_skipped": true,
+ "no_state_load_no_replay": true,
+ "no_rehearsal_arm_trains_half_examples": true
+}
+
+PRE CONFIRMED at f06008da: a forged first-batch outcome and an arbitrary-bytes checkpoint under repaired checksums are VERIFIED true; the verifier reconstructs nothing from the deterministic generator and trusts producer booleans; the no-rehearsal diagnostic processes half the primary arm's examples
