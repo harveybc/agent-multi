@@ -187,25 +187,43 @@ def _limits(design, out, t0, acct):
     return None
 
 
+_DESC_INVALID = {"numerically_invalid_descriptor": True,
+                 "compressed_len_zlib9": None,
+                 "spectral_rank_W1_1e3": None,
+                 "prune_fraction_1e3": None}
+
+
 def _descriptors(p, acct):
+    """C31B: the descriptor numeric domain is the DECLARED
+    float32 serialization boundary — finite float64 values
+    outside that range are a typed NUMERICALLY_INVALID_DESCRIPTOR
+    (infinity bytes are never compressed); SVD failure and
+    nonfinite singular values are the same typed invalidity,
+    never a zero rank or an apparently valid measurement."""
     t0 = time.monotonic()
+    acct["descriptor_evals"] += 1
     w = np.concatenate([np.ascontiguousarray(p[k]).ravel()
                         for k in sorted(p)])
     if not np.isfinite(w).all():
-        acct["descriptor_evals"] += 1
-        return {"numerically_invalid": True,
-                "compressed_len_zlib9": None,
-                "spectral_rank_W1_1e3": None,
-                "prune_fraction_1e3": None,
-                "descriptor_seconds": 0.0}
+        return {**_DESC_INVALID, "descriptor_seconds": 0.0}
+    wr = np.round(w, 6)
+    f32max = float(np.finfo(np.float32).max)
+    if (np.abs(wr) > f32max).any():
+        return {**_DESC_INVALID, "descriptor_seconds": 0.0}
     comp = len(zlib.compress(
-        np.round(w, 6).astype(np.float32).tobytes(), 9))
-    s = np.linalg.svd(p["W1"], compute_uv=False)
-    rank = int((s > s.max() * 1e-3).sum()) if s.size else 0
+        wr.astype(np.float32).tobytes(), 9))
+    try:
+        sv = np.linalg.svd(p["W1"], compute_uv=False)
+    except np.linalg.LinAlgError:
+        return {**_DESC_INVALID, "descriptor_seconds": 0.0}
+    if sv.size and not np.isfinite(sv).all():
+        return {**_DESC_INVALID, "descriptor_seconds": 0.0}
+    rank = int((sv > sv.max() * 1e-3).sum()) if sv.size else 0
     prune = float((np.abs(w) < 1e-3).mean())
     dt = time.monotonic() - t0
     acct["descriptor_seconds"] += dt
-    acct["descriptor_evals"] += 1
+    # the invalid marker exists ONLY on invalid results, so the
+    # committed finite DEVELOPMENT records stay bit-identical
     return {"compressed_len_zlib9": comp,
             "spectral_rank_W1_1e3": rank,
             "prune_fraction_1e3": round(prune, 8),
@@ -852,6 +870,19 @@ def verify_run_v5(design, out_root: Path, roles) -> dict:
                     raise RunnerV5Refusal(
                         f"{lp.name} record {i} binds a foreign "
                         "tape")
+            fresh_desc = _descriptors(
+                ck["checkpoints"][arm]["params"],
+                {"descriptor_seconds": 0.0,
+                 "descriptor_evals": 0})
+            rec_desc = dict(r["arms"][arm]["descriptors"])
+            for tkey in ("descriptor_seconds",):
+                fresh_desc.pop(tkey, None)
+                rec_desc.pop(tkey, None)
+            if fresh_desc != rec_desc:
+                raise RunnerV5Refusal(
+                    f"{u['unit_id']}/{arm}: descriptor "
+                    "validity/values do not re-derive from the "
+                    "original float64 parameters")
             derived[f"{u['unit_id']}::{arm}"] = \
                 res["restricted_endpoint"]
         want = (derived[f"{u['unit_id']}::calibration_stop"]

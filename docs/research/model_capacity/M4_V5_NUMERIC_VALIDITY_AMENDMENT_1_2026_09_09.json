@@ -1,0 +1,15 @@
+{
+ "schema": "agent_multi.m4_v5_numeric_validity_amendment.v1",
+ "sealed_at_date": "2026-09-09",
+ "amends_design_sha256": "d7280a92047d98898418fb7cd750b22c506a621eb381d9847e0fe926b7df69b9",
+ "amendment_classification": "NUMERIC_VALIDITY_AMENDMENT_FROM_RUNTIME_WARNING_AND_CODE_PATH_INSPECTION_NO_SCIENTIFIC_EFFECT",
+ "trigger": "the attempt-2 productive RuntimeWarning 'overflow encountered in cast' at the descriptor float32 serialization line, plus code-path inspection of the SVD and adjudication routes \u2014 NOT any scientific effect or outcome",
+ "changed_fields": {
+  "descriptor_validity": "finite float64 parameters outside the finite float32 range at the ALREADY-DECLARED float32 serialization boundary are a typed NUMERICALLY_INVALID_DESCRIPTOR; infinity bytes are never compressed",
+  "svd_failure": "SVD decomposition failure and nonfinite singular values are the same typed NUMERICALLY_INVALID_DESCRIPTOR \u2014 never a zero rank, zero cost or apparently valid measurement; producer and fresh verifier derive the same invalidity from the original float64 parameters",
+  "complete_pair_rule": "a complete primary pair = initialization AND calibration_stop both ending in an endpoint state admitted by the sealed restricted-endpoint contract (ACQUISITION_ENDPOINT, RETENTION_ENDPOINT, CAP_REACHED) with valid descriptors; NUMERICAL_ANOMALY, invalid task training, invalid descriptor, resource stop, missing record and uncertain state are never complete; a generator-level mean requires EXACTLY the three sealed model seeds complete, else INCOMPLETE_PAIRED_GENERATOR in the denominator; the prediction ladder consumes only complete quartets with valid descriptors and reports every exclusion",
+  "attrition_accounting": "dispersion publishes planned/complete/incomplete generator counts per cell; estimation only when complete >= max(3, ceil(planned x (1 - 0.20))) under the sealed 20% attrition allowance, else CALIBRATION_INCOMPLETE and never precision-supported"
+ },
+ "unchanged": "every other sealed v5 field \u2014 tapes, genesis, task contracts, data roles, checkpoint rules, restricted endpoint, populations, dispersion estimator formula, ladder form, margins \u2014 is byte-untouched; the finite DEVELOPMENT path remains bit-identical (re-verified)",
+ "amendment_sha256": "43e0804e1e6e583b10ddbe46b7d4cd752838b0473ccbc6496f0e458c49aedd4b"
+}
