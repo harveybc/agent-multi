@@ -421,3 +421,26 @@ def test_kill_18_edited_aggregate_refuses(world):
     _repair_report(out)
     with pytest.raises(SystemExit, match="does not re-derive"):
         rn.verify_run_v5(d, out, ("DEVELOPMENT",))
+
+
+def test_ladder_handles_batch_zero_failures():
+    """Regression (confessed): an arm failing at batch 0 — the
+    typical untrained control — crashed the hazard event builder;
+    it now contributes exactly one at-risk event with y=1."""
+    rows = []
+    groups = []
+    for i in range(8):
+        rows.append({"param_count": 161,
+                     "nuisance": [float(i % 2)],
+                     "checkpoint_loss": 0.4,
+                     "task_updates": 50,
+                     "compressed_len": 400,
+                     "spectral_rank": 6,
+                     "prune_fraction": 0.2,
+                     "stop_traj_slope": -0.02,
+                     "fail_batch": 0 if i % 2 == 0 else None})
+        groups.append(f"g{i // 2}")
+    r = pv.ladder_compare(rows, groups)
+    assert r["status"] == "EXECUTED"
+    w = pv.fit_hazard(rows, 0)
+    assert np.isfinite(w).all()

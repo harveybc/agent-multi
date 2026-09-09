@@ -440,12 +440,11 @@ def fit_hazard(rows, level, lam=LADDER_RIDGE_LAMBDA,
     events = []
     for i, r in enumerate(rows):
         fail_b = r["fail_batch"]       # None if cap-censored
-        last = MAX_BATCHES if fail_b is None else fail_b
+        last = MAX_BATCHES if fail_b is None else fail_b + 1
         for b in range(last):
-            events.append((i, b, 0.0))
-        if fail_b is not None:
-            events[-1] = (i, fail_b - 1, 1.0) if fail_b > 0 \
-                else (i, 0, 1.0)
+            y = 1.0 if (fail_b is not None and b == fail_b) \
+                else 0.0
+            events.append((i, b, y))
     idx = np.asarray([e[0] for e in events])
     bb = np.asarray([e[1] for e in events], dtype=np.float64)
     yy = np.asarray([e[2] for e in events])
