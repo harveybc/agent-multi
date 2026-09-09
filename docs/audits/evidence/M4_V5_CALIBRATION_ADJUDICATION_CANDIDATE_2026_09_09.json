@@ -1,0 +1,1558 @@
+{
+ "schema": "agent_multi.m4_v5_calibration_adjudication.candidate.v1",
+ "authority": "CANDIDATE_FOR_MUSASHI_REVIEW_NO_CONFIRMATION_AUTHORITY",
+ "design_sha256": "d7280a92047d98898418fb7cd750b22c506a621eb381d9847e0fe926b7df69b9",
+ "calibration_margin": 0.09375,
+ "proposed_eligibility_rule": {
+  "rule": "a family/noise/width cell is ELIGIBLE when >= 12 of its 16 CALIBRATION generators return LEARNABLE_UNDER_FROZEN_BUDGET and none returns NUMERICALLY_INVALID",
+  "status": "PROPOSED_ELIGIBILITY_RULE_FOR_MUSASHI_REVIEW",
+  "min_learnable": 12
+ },
+ "eligibility": {
+  "am::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::colored::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::colored::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::colored::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::colored::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::heteroscedastic::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::heteroscedastic::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::heteroscedastic::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::heteroscedastic::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::impulsive::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::impulsive::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::impulsive::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::impulsive::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::white::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::white::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::white::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "am::white::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 15,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::colored::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 15,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::colored::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::colored::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::colored::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 15,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::heteroscedastic::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::heteroscedastic::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 15,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::heteroscedastic::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::heteroscedastic::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 12,
+    "OPTIMIZATION_LIMITED": 4,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::impulsive::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 9,
+    "OPTIMIZATION_LIMITED": 7,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "chirp::impulsive::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 12,
+    "OPTIMIZATION_LIMITED": 4,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::impulsive::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 11,
+    "OPTIMIZATION_LIMITED": 5,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "chirp::impulsive::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 10,
+    "OPTIMIZATION_LIMITED": 6,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "chirp::white::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::white::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::white::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "chirp::white::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 15,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "discontinuity::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::colored::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::colored::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::colored::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::colored::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 0,
+    "OPTIMIZATION_LIMITED": 16,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::heteroscedastic::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 5,
+    "OPTIMIZATION_LIMITED": 11,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::heteroscedastic::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 4,
+    "OPTIMIZATION_LIMITED": 12,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::heteroscedastic::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 6,
+    "OPTIMIZATION_LIMITED": 10,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::heteroscedastic::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 5,
+    "OPTIMIZATION_LIMITED": 11,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::impulsive::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 6,
+    "OPTIMIZATION_LIMITED": 10,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::impulsive::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 5,
+    "OPTIMIZATION_LIMITED": 11,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::impulsive::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 3,
+    "OPTIMIZATION_LIMITED": 13,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::impulsive::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 4,
+    "OPTIMIZATION_LIMITED": 12,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::white::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 6,
+    "OPTIMIZATION_LIMITED": 10,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::white::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 3,
+    "OPTIMIZATION_LIMITED": 13,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::white::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 3,
+    "OPTIMIZATION_LIMITED": 13,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "discontinuity::white::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 5,
+    "OPTIMIZATION_LIMITED": 11,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "dnf3::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "dnf3::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "dnf3::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 15,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "dnf3::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "identity::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "identity::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "identity::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "identity::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "majority::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "majority::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "majority::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "majority::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "parity4::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 2,
+    "OPTIMIZATION_LIMITED": 14,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "parity4::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 2,
+    "OPTIMIZATION_LIMITED": 14,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "parity4::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 4,
+    "OPTIMIZATION_LIMITED": 12,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "parity4::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 1,
+    "OPTIMIZATION_LIMITED": 15,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "sine::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::colored::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::colored::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::colored::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::colored::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::heteroscedastic::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::heteroscedastic::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::heteroscedastic::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::heteroscedastic::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::impulsive::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::impulsive::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::impulsive::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::impulsive::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::white::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::white::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::white::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "sine::white::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 16,
+    "OPTIMIZATION_LIMITED": 0,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::clean::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::clean::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::clean::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 1,
+    "NUMERICALLY_INVALID": 2,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "state_space::clean::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::colored::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::colored::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::colored::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::colored::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::heteroscedastic::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 12,
+    "OPTIMIZATION_LIMITED": 4,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::heteroscedastic::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::heteroscedastic::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 14,
+    "OPTIMIZATION_LIMITED": 2,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::heteroscedastic::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 13,
+    "OPTIMIZATION_LIMITED": 3,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::impulsive::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 11,
+    "OPTIMIZATION_LIMITED": 5,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "state_space::impulsive::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 11,
+    "OPTIMIZATION_LIMITED": 5,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "state_space::impulsive::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 9,
+    "OPTIMIZATION_LIMITED": 7,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "state_space::impulsive::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 11,
+    "OPTIMIZATION_LIMITED": 5,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  },
+  "state_space::white::w16": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 12,
+    "OPTIMIZATION_LIMITED": 4,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::white::w32": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 12,
+    "OPTIMIZATION_LIMITED": 4,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::white::w64": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 12,
+    "OPTIMIZATION_LIMITED": 4,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": true
+  },
+  "state_space::white::w8": {
+   "counts": {
+    "LEARNABLE_UNDER_FROZEN_BUDGET": 11,
+    "OPTIMIZATION_LIMITED": 5,
+    "NUMERICALLY_INVALID": 0,
+    "total": 16
+   },
+   "eligible_under_proposed_rule": false
+  }
+ },
+ "dispersion": {
+  "identity::clean::w16": {
+   "n_generators": 16,
+   "sd": 2.523959,
+   "sd_ucb95": 3.629063,
+   "supported": true
+  },
+  "identity::clean::w64": {
+   "n_generators": 16,
+   "sd": 2.360163,
+   "sd_ucb95": 3.393549,
+   "supported": true
+  },
+  "majority::clean::w16": {
+   "n_generators": 16,
+   "sd": 2.328567,
+   "sd_ucb95": 3.348118,
+   "supported": true
+  },
+  "majority::clean::w64": {
+   "n_generators": 16,
+   "sd": 2.916111,
+   "sd_ucb95": 4.192916,
+   "supported": true
+  },
+  "dnf3::clean::w16": {
+   "n_generators": 16,
+   "sd": 3.079201,
+   "sd_ucb95": 4.427415,
+   "supported": true
+  },
+  "dnf3::clean::w64": {
+   "n_generators": 16,
+   "sd": 3.297586,
+   "sd_ucb95": 4.741418,
+   "supported": true
+  },
+  "parity4::clean::w16": {
+   "n_generators": 16,
+   "sd": 1.180082,
+   "sd_ucb95": 1.696775,
+   "supported": true
+  },
+  "parity4::clean::w64": {
+   "n_generators": 16,
+   "sd": 4.511713,
+   "sd_ucb95": 6.487145,
+   "supported": false
+  },
+  "sine::clean::w16": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "sine::clean::w64": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "sine::white::w16": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "sine::white::w64": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "chirp::clean::w16": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "chirp::clean::w64": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "chirp::white::w16": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "chirp::white::w64": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "am::clean::w16": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "am::clean::w64": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "am::white::w16": {
+   "n_generators": 16,
+   "sd": 0.973729,
+   "sd_ucb95": 1.400072,
+   "supported": true
+  },
+  "am::white::w64": {
+   "n_generators": 16,
+   "sd": 0.666667,
+   "sd_ucb95": 0.958563,
+   "supported": true
+  },
+  "discontinuity::clean::w16": {
+   "n_generators": 16,
+   "sd": 35.188803,
+   "sd_ucb95": 50.596051,
+   "supported": false
+  },
+  "discontinuity::clean::w64": {
+   "n_generators": 16,
+   "sd": 6.848628,
+   "sd_ucb95": 9.847267,
+   "supported": false
+  },
+  "discontinuity::white::w16": {
+   "n_generators": 16,
+   "sd": 0.666667,
+   "sd_ucb95": 0.958563,
+   "supported": true
+  },
+  "discontinuity::white::w64": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "state_space::clean::w16": {
+   "n_generators": 16,
+   "sd": 0.973729,
+   "sd_ucb95": 1.400072,
+   "supported": true
+  },
+  "state_space::clean::w64": {
+   "n_generators": 14,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "state_space::white::w16": {
+   "n_generators": 16,
+   "sd": 0.0,
+   "sd_ucb95": 0.0,
+   "supported": true
+  },
+  "state_space::white::w64": {
+   "n_generators": 16,
+   "sd": 0.973729,
+   "sd_ucb95": 1.400072,
+   "supported": true
+  }
+ },
+ "precision_supported_on_eligible_cells": true,
+ "ladder": {
+  "status": "EXECUTED",
+  "integrated_brier": {
+   "M0": 0.00326721,
+   "M1": 0.00994001,
+   "M2": 0.00994001
+  },
+  "m2_minus_m1_paired_gain": 0.0,
+  "m2_vs_m1_t": 0.0,
+  "n_groups": 224
+ },
+ "incomplete_units_in_denominator": [
+  "intervention::CALIBRATION::state_space::clean::w64::g0::s0",
+  "intervention::CALIBRATION::state_space::clean::w64::g0::s1",
+  "intervention::CALIBRATION::state_space::clean::w64::g0::s2",
+  "intervention::CALIBRATION::state_space::clean::w64::g6::s0",
+  "intervention::CALIBRATION::state_space::clean::w64::g6::s1",
+  "intervention::CALIBRATION::state_space::clean::w64::g6::s2"
+ ],
+ "confirmation_slots": [
+  {
+   "cell": "identity::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 2.523959,
+    "sd_ucb95": 3.629063,
+    "supported": true
+   }
+  },
+  {
+   "cell": "identity::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 2.360163,
+    "sd_ucb95": 3.393549,
+    "supported": true
+   }
+  },
+  {
+   "cell": "majority::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 2.328567,
+    "sd_ucb95": 3.348118,
+    "supported": true
+   }
+  },
+  {
+   "cell": "majority::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 2.916111,
+    "sd_ucb95": 4.192916,
+    "supported": true
+   }
+  },
+  {
+   "cell": "dnf3::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 3.079201,
+    "sd_ucb95": 4.427415,
+    "supported": true
+   }
+  },
+  {
+   "cell": "dnf3::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 3.297586,
+    "sd_ucb95": 4.741418,
+    "supported": true
+   }
+  },
+  {
+   "cell": "parity4::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 1.180082,
+    "sd_ucb95": 1.696775,
+    "supported": true
+   }
+  },
+  {
+   "cell": "parity4::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 4.511713,
+    "sd_ucb95": 6.487145,
+    "supported": false
+   }
+  },
+  {
+   "cell": "sine::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::white::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "sine::white::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::white::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "chirp::white::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::white::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.973729,
+    "sd_ucb95": 1.400072,
+    "supported": true
+   }
+  },
+  {
+   "cell": "am::white::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.666667,
+    "sd_ucb95": 0.958563,
+    "supported": true
+   }
+  },
+  {
+   "cell": "discontinuity::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 35.188803,
+    "sd_ucb95": 50.596051,
+    "supported": false
+   }
+  },
+  {
+   "cell": "discontinuity::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 6.848628,
+    "sd_ucb95": 9.847267,
+    "supported": false
+   }
+  },
+  {
+   "cell": "discontinuity::white::w16",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.666667,
+    "sd_ucb95": 0.958563,
+    "supported": true
+   }
+  },
+  {
+   "cell": "discontinuity::white::w64",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::clean::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.973729,
+    "sd_ucb95": 1.400072,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::clean::w64",
+   "reserved_generators": 48,
+   "typed_status": "INELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 14,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::white::w16",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.0,
+    "sd_ucb95": 0.0,
+    "supported": true
+   }
+  },
+  {
+   "cell": "state_space::white::w64",
+   "reserved_generators": 48,
+   "typed_status": "ELIGIBLE_UNDER_PROPOSED_RULE",
+   "dispersion": {
+    "n_generators": 16,
+    "sd": 0.973729,
+    "sd_ucb95": 1.400072,
+    "supported": true
+   }
+  }
+ ],
+ "record_sha256": "858db7077cd3252a75bfa72b754cc058db206c7b4fd0d17a1538ac3f95beb636"
+}

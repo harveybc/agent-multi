@@ -264,14 +264,12 @@ def test_kill_10_relabeled_family_refuses(world):
     d, out = world
     p = out / "LEARNABILITY_TABLE.json"
     tab = json.loads(p.read_text())
-    victim = next(
-        (k for k, v in tab["cells"].items()
-         if v["outcome"] == "OPTIMIZATION_LIMITED"), None)
-    if victim is None:
-        victim = next(iter(tab["cells"]))
-        tab["cells"][victim]["outcome"] = "OPTIMIZATION_LIMITED"
-    tab["cells"][victim]["outcome"] = \
-        "LEARNABLE_UNDER_FROZEN_BUDGET"
+    victim = next(iter(tab["cells"]))
+    cur = tab["cells"][victim]["outcome"]
+    tab["cells"][victim]["outcome"] = (
+        "OPTIMIZATION_LIMITED"
+        if cur == "LEARNABLE_UNDER_FROZEN_BUDGET"
+        else "LEARNABLE_UNDER_FROZEN_BUDGET")
     tab.pop("record_sha256")
     tab["record_sha256"] = m4._self_sha(tab, "record_sha256")
     p.write_text(json.dumps(tab, indent=1, sort_keys=True))
