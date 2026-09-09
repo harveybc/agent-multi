@@ -1,0 +1,16 @@
+phase1: {
+ "r2_typed_no_overflow": true,
+ "r3_svd_typed": true,
+ "r4_nonfinite_singular_typed": true,
+ "r8_anomalous_arm_refused": true,
+ "r9_exact_three_enforced": true,
+ "r10_attrition_gate_present": true,
+ "r11_quartet_filter_present": true,
+ "r12_counts_published": true
+}
+mutant A_f32_range_off: {"adversary": "f32_off", "result": "LEAKED"}
+mutant B_svd_typing_off: {"adversary": "svd_off", "result": "UNTYPED_ESCAPE"}
+mutant C_complete_pair_off: {"adversary": "pair_off", "result": "PAIRED"}
+mutant D_exact_three_off: {"adversary": "seeds_off", "result": "AVERAGED_PARTIAL"}
+
+POST CONFIRMED: every open incident route is typed on the corrected code and each of the four new guards (f32 range, SVD typing, complete pair, exact three seeds) BITES alone under mutation
