@@ -192,64 +192,135 @@ licensed; tapes/geneses/lineages exact). Corrected DEV margin
 timings and the corrected learnability table are in the
 committed root and summarized in the adjudication.
 
-## C35 — bounded CALIBRATION execution
+## C31A-C31F — the numeric incident correction (order
+@f4bf7d39, executed inside this return)
 
-The sealed 16-generator CALIBRATION population executed on CPU
-(root outside Git at
-`<state_root>/m4_v5_calibration_run_20260909`; RUN_REPORT sha
-`10683e0548fe2ceb…`): **3,328 units (1,984 screen + 1,344
-four-arm interventions), 1,341.63 s, 10,603,900 updates
-accounted**, terminal report + exact inventory, independently
-re-verified by full replay (`verified: true`; first attempt
-crashed untyped and is preserved as `_CRASHED_ATTEMPT_1` — see
-own-fault 1). Six units typed
+**Chronology confession (C31A)**: the incident order was
+authored while attempt 2 ran; in my timeline attempt 2 had
+finished and I had already run AND PUSHED the C35 adjudication
+derived from it before receiving the order. That artifact is
+RETIRED — renamed
+`M4_V5_CALIBRATION_ADJUDICATION_ATTEMPT2_NON_GOVERNING_2026_09_09.json`
+(history preserved) — and attempt 3's adjudication below is the
+only governing one.
+
+Attempt identities and dispositions (all preserved byte-for-byte
+under `<state_root>/`):
+
+1. `m4_v5_calibration_run_20260909_CRASHED_ATTEMPT_1` —
+   `CRASHED_UNTYPED_NON_GOVERNING` (exit: SVD LinAlgError after
+   untyped training divergence; no report).
+2. `m4_v5_calibration_run_20260909` —
+   `VERIFIER_RESULT_RECORDED_NON_GOVERNING_NUMERIC_GUARD_GAP`
+   (exit: execute completed all 3,328 units and its report, the
+   terminal verifier refused on my descriptor-accounting bug,
+   then the root verified standalone under `f3a4c6a3`; the
+   productive overflow warning fired from the descriptor cast).
+3. `m4_v5_calibration_run_attempt3_20260909` — the governing
+   attempt (below), executed AFTER the pushed amendment.
+
+**Incident PRE (`m4_c31a_c31f_pre_2026_09_09.py|.out`, commit
+`67eb0d4f`)**: eight routes frozen OPEN on the pre-amendment
+code (f64-out-of-f32-range passes the guard with the exact
+attempt-2 overflow warning; SVD failure escapes untyped;
+nonfinite singular values yield a valid-looking rank; anomalous
+arms enter dispersion; 1-2 seeds average as complete; no
+attrition gate; invalid descriptors reach M2 rows; no
+planned/complete/incomplete accounting); routes 1/5/6/7 verified
+already corrected at `3f432a0b`.
+
+**C31B/C31C (commit `71695521`, PUSHED BEFORE attempt 3)**:
+descriptor validity at the declared float32 serialization
+boundary (typed `NUMERICALLY_INVALID_DESCRIPTOR`; infinity
+bytes never compressed; SVD failure and nonfinite singular
+values the same typed invalidity, never zero-rank; the fresh
+verifier re-derives the same validity/values from the original
+float64 parameters arm-by-arm; the valid-case record layout is
+unchanged so the committed DEVELOPMENT root re-verifies
+BIT-IDENTICAL — proven). Complete primary pair = both primary
+arms in admitted endpoint states with valid descriptors;
+generator means require EXACTLY the three sealed seeds
+(`INCOMPLETE_PAIRED_GENERATOR` otherwise, kept in the
+denominator); dispersion publishes planned/complete/incomplete
+per cell and estimates only at ≥ max(3, ceil(16×0.8)) = 13
+complete under the sealed 20 % attrition, else
+`CALIBRATION_INCOMPLETE` never supported; the ladder consumes
+only complete quartets with valid descriptors and reports every
+exclusion with reasons.
+
+**C31D**: 12-route incident battery on productive code
+(`tests/test_m4_numeric_incident.py`, 12 passed; 32 with the v5
+battery). **Incident POST**
+(`m4_c31a_c31f_post_2026_09_09.py|.out`): all eight open routes
+typed on the corrected code, and the four new guards each BITE
+alone (f32-range off → overflow bytes compress; SVD-typing off
+→ untyped escape; complete-pair off → anomalous arm pairs;
+exact-three off → partial seeds average).
+
+**C31E**: sealed append-only amendment
+`M4_V5_NUMERIC_VALIDITY_AMENDMENT_1_2026_09_09.json`
+(`43e0804e…`, amends v5 `d7280a92…`): trigger = the runtime
+warning + code-path inspection, NO scientific effect; exactly
+the four changed fields mapped; everything else byte-untouched;
+committed and pushed at `71695521` BEFORE attempt 3.
+
+## C35 — bounded CALIBRATION execution (GOVERNING: attempt 3)
+
+Attempt 3 executed once in a fresh root
+(`<state_root>/m4_v5_calibration_run_attempt3_20260909`) AFTER
+the pushed amendment `71695521`: **3,328 units, 1,011.75 s,
+10,603,900 updates, terminal fresh verification `verified:
+true`** (5,352 descriptor evaluations = 4 × 1,338 valid units).
+The update count equals attempt 2 exactly — executable proof of
+inter-attempt determinism. Six units typed
 `NUMERICALLY_INVALID_TASK_TRAINING` stay in the denominator.
 
-Candidate adjudication (committed:
-`M4_V5_CALIBRATION_ADJUDICATION_CANDIDATE_2026_09_09.json`,
+Governing adjudication (committed:
+`M4_V5_CALIBRATION_ADJUDICATION_ATTEMPT3_GOVERNING_2026_09_09.json`,
 authority CANDIDATE_FOR_MUSASHI_REVIEW_NO_CONFIRMATION_
 AUTHORITY):
 
-- **Frozen calibration margin 0.09375** (p95 of random_label
-  improvements under the corrected semantics).
-- Eligibility under the PROPOSED rule (≥12/16 LEARNABLE, zero
-  NUMERICALLY_INVALID — explicitly labeled for your review, not
-  sealed): **83/116 screen cells; 21/28 confirmatory slots
-  ELIGIBLE**; the seven typed INELIGIBLE slots are
-  parity4 (both widths), discontinuity clean/white (both
-  widths) and state_space::clean::w64 — coherent with the
-  persistence-baseline limitation.
-- **Dispersion**: every ELIGIBLE confirmatory cell has
-  UCB95 ≤ 6 associations (Boolean clean cells 3.3-4.4) —
-  **precision SUPPORTED on eligible cells** under the sealed
-  gate; the fixed 48-generator reservation stands.
-- **Ladder EXECUTED** (224 generator groups): integrated Brier
-  M0 0.00327 / M1 0.00994 / M2 0.00994; paired M2−M1 gain 0.0 —
-  **M2 does NOT advance** (the frozen descriptors add nothing
-  under the sealed λ; M0's parameter-count-plus-nuisance base
-  is best). Honest negative, reported as-is with descriptor
-  costs in the run accounting.
-- CONFIRMATION: nothing generated, loaded or scored
-  (structurally enforced and battery-proven); the 1,344
-  reserved slot ids stand typed in the ledger and adjudication.
+- **Frozen calibration margin 0.09375**; eligibility under the
+  PROPOSED rule (labeled for your review): 83/116 screen cells;
+  **21/28 confirmatory slots ELIGIBLE**, the seven INELIGIBLE
+  typed (parity4 both widths, discontinuity clean/white both
+  widths, state_space::clean::w64).
+- **Complete-pair / three-seed / attrition accounting (C31C,
+  live on real data)**: every cell publishes
+  planned/complete/incomplete — complete generators 14-16 of 16
+  per cell, **2 generators typed INCOMPLETE_PAIRED_GENERATOR**
+  (kept in denominators), **zero CALIBRATION_INCOMPLETE cells**
+  (all ≥ the 13-complete attrition floor).
+- **Dispersion**: every ELIGIBLE cell has UCB95 ≤ 6 —
+  **precision SUPPORTED on eligible cells**; the fixed
+  48-generator reservation stands.
+- **Ladder EXECUTED** (224 groups; **1 quartet excluded with
+  its reason published** — the C31C filter biting real data):
+  integrated Brier M0 0.00327 / M1 0.00994 / M2 0.42977; paired
+  M2−M1 gain **−0.41983** — **M2 does NOT advance** (the frozen
+  descriptors actively hurt under the sealed λ; M0 remains
+  best). Honest negative, descriptor costs in the accounting.
+- CONFIRMATION: nothing generated, loaded or scored; 1,344
+  reserved slot ids stand.
 
 ## C36 — counts and runtime
 
-- v5 battery 20 passed; intervention battery 13 passed; M4
+- v5 battery 20 passed; incident battery 12 passed;
+  intervention battery 13 passed; M4
   mechanics battery 19 passed (all at the final code tip).
-- Full suite at code tip `1869856e`: **3,214 passed, 4
-  failed, 5 skipped (45:02)** — the inherited D1-anchor pair,
-  the branch-inherited c4-race, and `test_kill_10` of MY v4
-  battery: its no-victim branch double-flipped a cell (net
-  no-op), latent since the bank grew the STOP slice because I
-  never re-ran that battery after the bank change (own-fault
-  6); fixed test-only in the final commit (symmetric flip;
-  battery 13/13 at the final tip). The adjudication + packet
-  commits atop `1869856e` are docs/test-only.
+- Full suite at final code tip `71695521`: **3,228 passed, 2
+  failed, 5 skipped (30:04)** — ONLY the inherited D1-anchor
+  pair (the branch-inherited c4-race and the weekly flake both
+  passed this run; the kill_10 double-flip found at `1869856e`
+  was fixed test-only and is green). The adjudication + packet
+  commits atop `71695521` are docs-only.
 - B4/T2 read-only at start: both `active`, `NRestarts=0` (B4
-  86 °C under its own guard). At return: B4 v7 `active`,
-  `NRestarts=0`, GPU 81 °C; T2 successor campaign `active`,
-  `NRestarts=0` — both untouched.
+  86 °C under its own guard). At return: **BOTH campaigns
+  COMPLETED — B4 v7 `inactive/Result=success` (exit 0) and the
+  T2 successor campaign `inactive/Result=success` (exit 0),
+  zero restarts each, untouched by me throughout**; their
+  results await their own adjudications (T2 is Musashi's; B4's
+  is its runtime's).
 
 ## Remaining blockers, each assigned
 
